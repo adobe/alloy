@@ -25,7 +25,7 @@ export default ({ error, message }) => {
   const newMessage = `${message}\nCaused by: ${errorToStack.message}`;
   updateErrorMessage({
     error: errorToStack,
-    message: newMessage
+    message: newMessage,
   });
   return errorToStack;
 };

@@ -17,5 +17,5 @@ import isNil from "./isNil.js";
  * @param {*} value
  * @returns {boolean}
  */
-export default value =>
+export default (value) =>
   !isNil(value) && !Array.isArray(value) && typeof value === "object";

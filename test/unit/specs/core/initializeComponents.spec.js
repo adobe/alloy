@@ -23,14 +23,14 @@ describe("initializeComponents", () => {
     lifecycle = {
       onComponentsRegistered: jasmine
         .createSpy()
-        .and.returnValue(Promise.resolve())
+        .and.returnValue(Promise.resolve()),
     };
     componentRegistry = {
-      register: jasmine.createSpy()
+      register: jasmine.createSpy(),
     };
     componentByNamespace = {
       Comp1: {},
-      Comp2: {}
+      Comp2: {},
     };
     const componentCreator1 = jasmine
       .createSpy()
@@ -42,16 +42,16 @@ describe("initializeComponents", () => {
     componentCreator2.namespace = "Comp2";
     componentCreators = [componentCreator1, componentCreator2];
 
-    getImmediatelyAvailableTools = componentName => {
+    getImmediatelyAvailableTools = (componentName) => {
       return {
         tool1: {
           name: "tool1",
-          componentName
+          componentName,
         },
         tool2: {
           name: "tool2",
-          componentName
-        }
+          componentName,
+        },
       };
     };
   });
@@ -61,31 +61,31 @@ describe("initializeComponents", () => {
       componentCreators,
       lifecycle,
       componentRegistry,
-      getImmediatelyAvailableTools
+      getImmediatelyAvailableTools,
     });
 
-    componentCreators.forEach(componentCreator => {
+    componentCreators.forEach((componentCreator) => {
       const { namespace } = componentCreator;
       expect(componentCreator).toHaveBeenCalledWith({
         tool1: {
           name: "tool1",
-          componentName: componentCreator.namespace
+          componentName: componentCreator.namespace,
         },
         tool2: {
           name: "tool2",
-          componentName: componentCreator.namespace
-        }
+          componentName: componentCreator.namespace,
+        },
       });
       expect(componentRegistry.register).toHaveBeenCalledWith(
         namespace,
-        componentByNamespace[namespace]
+        componentByNamespace[namespace],
       );
     });
     expect(lifecycle.onComponentsRegistered).toHaveBeenCalledWith({
-      lifecycle
+      lifecycle,
     });
 
-    return initializeComponentsPromise.then(result => {
+    return initializeComponentsPromise.then((result) => {
       expect(result).toBe(componentRegistry);
     });
   });
@@ -98,7 +98,7 @@ describe("initializeComponents", () => {
         componentCreators,
         lifecycle,
         componentRegistry,
-        getImmediatelyAvailableTools
+        getImmediatelyAvailableTools,
       });
     }).toThrowError(/\[Comp2\] An error occurred during component creation./);
   });

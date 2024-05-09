@@ -23,7 +23,7 @@ describe("createConsent", () => {
       "out",
       "pending",
       "awaitConsent",
-      "withConsent"
+      "withConsent",
     ]);
     logger = jasmine.createSpyObj("logger", ["warn"]);
     subject = createConsent({ generalConsentState: state, logger });

@@ -16,26 +16,26 @@ describe("injectStorage", () => {
   [
     {
       storageProperty: "session",
-      windowProperty: "sessionStorage"
+      windowProperty: "sessionStorage",
     },
     {
       storageProperty: "persistent",
-      windowProperty: "localStorage"
-    }
+      windowProperty: "localStorage",
+    },
   ].forEach(({ storageProperty, windowProperty }) => {
     describe(storageProperty, () => {
       describe("setItem", () => {
         it("sets item", () => {
           const window = {
             [windowProperty]: {
-              setItem: jasmine.createSpy().and.returnValue(true)
-            }
+              setItem: jasmine.createSpy().and.returnValue(true),
+            },
           };
           const storage = injectStorage(window)("example.");
           const result = storage[storageProperty].setItem("foo", "bar");
           expect(window[windowProperty].setItem).toHaveBeenCalledWith(
             "com.adobe.alloy.example.foo",
-            "bar"
+            "bar",
           );
           expect(result).toBeTrue();
         });
@@ -43,8 +43,8 @@ describe("injectStorage", () => {
         it("returns false if an error occurs setting item", () => {
           const window = {
             [windowProperty]: {
-              setItem: jasmine.createSpy().and.throwError()
-            }
+              setItem: jasmine.createSpy().and.throwError(),
+            },
           };
           const storage = injectStorage(window)("example.");
           const result = storage[storageProperty].setItem("foo", "bar");
@@ -56,13 +56,13 @@ describe("injectStorage", () => {
         it("gets item", () => {
           const window = {
             [windowProperty]: {
-              getItem: jasmine.createSpy().and.returnValue("abc")
-            }
+              getItem: jasmine.createSpy().and.returnValue("abc"),
+            },
           };
           const storage = injectStorage(window)("example.");
           const result = storage[storageProperty].getItem("foo");
           expect(window[windowProperty].getItem).toHaveBeenCalledWith(
-            "com.adobe.alloy.example.foo"
+            "com.adobe.alloy.example.foo",
           );
           expect(result).toBe("abc");
         });
@@ -70,8 +70,8 @@ describe("injectStorage", () => {
         it("returns null if an error occurs while getting item", () => {
           const window = {
             [windowProperty]: {
-              getItem: jasmine.createSpy().and.throwError()
-            }
+              getItem: jasmine.createSpy().and.throwError(),
+            },
           };
           const storage = injectStorage(window)("example.");
           const result = storage[storageProperty].getItem("foo");
@@ -87,22 +87,22 @@ describe("injectStorage", () => {
               "com.adobe.alloy.example.a": "1",
               "com.adobe.alloy.example.b": "2",
               c: "3",
-              "com.adobe.alloy.d": "4"
-            }
+              "com.adobe.alloy.d": "4",
+            },
           };
           const storage = injectStorage(window)("example.");
           storage[storageProperty].clear();
           expect(window[windowProperty].removeItem).toHaveBeenCalledWith(
-            "com.adobe.alloy.example.a"
+            "com.adobe.alloy.example.a",
           );
           expect(window[windowProperty].removeItem).toHaveBeenCalledWith(
-            "com.adobe.alloy.example.b"
+            "com.adobe.alloy.example.b",
           );
           expect(window[windowProperty].removeItem).not.toHaveBeenCalledWith(
-            "c"
+            "c",
           );
           expect(window[windowProperty].removeItem).not.toHaveBeenCalledWith(
-            "com.adobe.alloy.d"
+            "com.adobe.alloy.d",
           );
         });
       });

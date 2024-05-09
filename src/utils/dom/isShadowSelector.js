@@ -12,4 +12,4 @@ governing permissions and limitations under the License.
 
 import SHADOW_SEPARATOR from "../../constants/shadowSeparator.js";
 
-export default str => str.indexOf(SHADOW_SEPARATOR) !== -1;
+export default (str) => str.indexOf(SHADOW_SEPARATOR) !== -1;

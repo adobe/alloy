@@ -20,24 +20,24 @@ describe("createDataCollectionRequestPayload", () => {
   it("adds an identity", () => {
     const payload = createDataCollectionRequestPayload();
     payload.addIdentity("IDNS", {
-      id: "ABC123"
+      id: "ABC123",
     });
     payload.addIdentity("IDNS", {
-      id: "DEF456"
+      id: "DEF456",
     });
     expect(JSON.parse(JSON.stringify(payload))).toEqual({
       xdm: {
         identityMap: {
           IDNS: [
             {
-              id: "ABC123"
+              id: "ABC123",
             },
             {
-              id: "DEF456"
-            }
-          ]
-        }
-      }
+              id: "DEF456",
+            },
+          ],
+        },
+      },
     });
   });
 
@@ -46,7 +46,7 @@ describe("createDataCollectionRequestPayload", () => {
     payload.addEvent({ xdm: { a: "b" } });
     payload.addEvent({ xdm: { c: "d" } });
     expect(JSON.parse(JSON.stringify(payload))).toEqual({
-      events: [{ xdm: { a: "b" } }, { xdm: { c: "d" } }]
+      events: [{ xdm: { a: "b" } }, { xdm: { c: "d" } }],
     });
   });
 

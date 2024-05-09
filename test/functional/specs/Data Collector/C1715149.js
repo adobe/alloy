@@ -14,14 +14,14 @@ import createNetworkLogger from "../../helpers/networkLogger/index.js";
 import createFixture from "../../helpers/createFixture/index.js";
 import {
   debugEnabled,
-  orgMainConfigMain
+  orgMainConfigMain,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import createConsoleLogger from "../../helpers/consoleLogger/index.js";
 
 const networkLogger = createNetworkLogger();
 
-const onBeforeEventSend = ClientFunction(content => {
+const onBeforeEventSend = ClientFunction((content) => {
   window.onBeforeEventSendCalled = true;
   content.xdm.foo = "bar";
 });
@@ -43,20 +43,20 @@ const getOnBeforeEventSendCalled = ClientFunction(() => {
 createFixture({
   title:
     "C1715149 sendEvent should call onBeforeEventSend callback and send when expected",
-  requestHooks: [networkLogger.edgeInteractEndpointLogs]
+  requestHooks: [networkLogger.edgeInteractEndpointLogs],
 });
 
 test.meta({
   ID: "C1715149",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("C1715149 Events should call onBeforeEventSend callback and still send event", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure({
     ...orgMainConfigMain,
-    onBeforeEventSend
+    onBeforeEventSend,
   });
   await alloy.sendEvent();
 
@@ -71,7 +71,7 @@ test("C1715149 Events should call onBeforeEventSend callback, fail, and not send
   const alloy = createAlloyProxy();
   await alloy.configure({
     ...orgMainConfigMain,
-    onBeforeEventSend: onBeforeEventSendFailed
+    onBeforeEventSend: onBeforeEventSendFailed,
   });
   const errorMessage = await alloy.sendEventErrorMessage();
 
@@ -86,7 +86,7 @@ test("C1715149 Events should call onBeforeEventSend callback, return false, and 
   await alloy.configure({
     ...orgMainConfigMain,
     ...debugEnabled,
-    onBeforeEventSend: onBeforeEventSendFalse
+    onBeforeEventSend: onBeforeEventSendFalse,
   });
 
   const result = await alloy.sendEvent();

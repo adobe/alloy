@@ -13,20 +13,20 @@ governing permissions and limitations under the License.
 import {
   createAddIdentity,
   createHasIdentity,
-  createRequestPayload
+  createRequestPayload,
 } from "../../../utils/request";
 
-export default namespaces => {
+export default (namespaces) => {
   const content = {
     query: {
       identity: {
-        fetch: namespaces
-      }
-    }
+        fetch: namespaces,
+      },
+    },
   };
   return createRequestPayload({
     content,
     addIdentity: createAddIdentity(content),
-    hasIdentity: createHasIdentity(content)
+    hasIdentity: createHasIdentity(content),
   });
 };

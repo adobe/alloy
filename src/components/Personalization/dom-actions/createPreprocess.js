@@ -11,12 +11,12 @@ governing permissions and limitations under the License.
 */
 import { assign } from "../../../utils/index.js";
 
-export default preprocessors => action => {
+export default (preprocessors) => (action) => {
   if (!action) {
     return action;
   }
   return preprocessors.reduce(
     (processed, fn) => assign(processed, fn(processed)),
-    action
+    action,
   );
 };

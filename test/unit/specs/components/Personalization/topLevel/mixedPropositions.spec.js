@@ -22,9 +22,9 @@ describe("PersonalizationComponent", () => {
     const alloy = buildAlloy(mocks);
     const { event, result } = await alloy.sendEvent(
       {
-        renderDecisions: true
+        renderDecisions: true,
       },
-      MIXED_PROPOSITIONS
+      MIXED_PROPOSITIONS,
     );
     expect(event.toJSON()).toEqual({
       query: {
@@ -37,12 +37,12 @@ describe("PersonalizationComponent", () => {
             "https://ns.adobe.com/personalization/ruleset-item",
             "https://ns.adobe.com/personalization/message/in-app",
             "https://ns.adobe.com/personalization/message/feed-item",
-            "https://ns.adobe.com/personalization/dom-action"
+            "https://ns.adobe.com/personalization/dom-action",
           ],
           decisionScopes: ["__view__"],
-          surfaces: ["web://example.com/home"]
-        }
-      }
+          surfaces: ["web://example.com/home"],
+        },
+      },
     });
     expect(result.propositions).toEqual(
       jasmine.arrayWithExactContents([
@@ -57,10 +57,10 @@ describe("PersonalizationComponent", () => {
               data: {
                 type: "click",
                 format: "application/vnd.adobe.target.dom-action",
-                selector: "#root"
-              }
-            }
-          ]
+                selector: "#root",
+              },
+            },
+          ],
         },
         {
           renderAttempted: true,
@@ -73,10 +73,10 @@ describe("PersonalizationComponent", () => {
               data: {
                 type: "click",
                 format: "application/vnd.adobe.target.dom-action",
-                selector: "#root"
-              }
-            }
-          ]
+                selector: "#root",
+              },
+            },
+          ],
         },
         {
           renderAttempted: false,
@@ -89,10 +89,10 @@ describe("PersonalizationComponent", () => {
               data: {
                 content: "<p>Some custom content for the home page</p>",
                 format: "text/html",
-                id: "1202448"
-              }
-            }
-          ]
+                id: "1202448",
+              },
+            },
+          ],
         },
         {
           renderAttempted: false,
@@ -105,10 +105,10 @@ describe("PersonalizationComponent", () => {
               data: {
                 content: "{'field1': 'custom content'}",
                 format: "text/javascript",
-                id: "1202449"
-              }
-            }
-          ]
+                id: "1202449",
+              },
+            },
+          ],
         },
         {
           renderAttempted: false,
@@ -126,11 +126,11 @@ describe("PersonalizationComponent", () => {
                 language: ["en-us"],
                 content: "<p>An html offer from Offer Decisioning</p>",
                 characteristics: {
-                  testing: "true"
-                }
-              }
-            }
-          ]
+                  testing: "true",
+                },
+              },
+            },
+          ],
         },
         {
           renderAttempted: false,
@@ -143,12 +143,12 @@ describe("PersonalizationComponent", () => {
               data: {
                 type: "click",
                 format: "application/vnd.adobe.target.dom-action",
-                selector: "#root"
-              }
-            }
-          ]
-        }
-      ])
+                selector: "#root",
+              },
+            },
+          ],
+        },
+      ]),
     );
     expect(result.decisions).toEqual(
       jasmine.arrayWithExactContents([
@@ -162,10 +162,10 @@ describe("PersonalizationComponent", () => {
               data: {
                 content: "<p>Some custom content for the home page</p>",
                 format: "text/html",
-                id: "1202448"
-              }
-            }
-          ]
+                id: "1202448",
+              },
+            },
+          ],
         },
         {
           id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
@@ -177,10 +177,10 @@ describe("PersonalizationComponent", () => {
               data: {
                 content: "{'field1': 'custom content'}",
                 format: "text/javascript",
-                id: "1202449"
-              }
-            }
-          ]
+                id: "1202449",
+              },
+            },
+          ],
         },
         {
           id: "AT:eyJhY3Rpdml0eUlkIjoiMTQxNjY0IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
@@ -197,11 +197,11 @@ describe("PersonalizationComponent", () => {
                 language: ["en-us"],
                 content: "<p>An html offer from Offer Decisioning</p>",
                 characteristics: {
-                  testing: "true"
-                }
-              }
-            }
-          ]
+                  testing: "true",
+                },
+              },
+            },
+          ],
         },
         {
           id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn0=",
@@ -213,12 +213,12 @@ describe("PersonalizationComponent", () => {
               data: {
                 type: "click",
                 format: "application/vnd.adobe.target.dom-action",
-                selector: "#root"
-              }
-            }
-          ]
-        }
-      ])
+                selector: "#root",
+              },
+            },
+          ],
+        },
+      ]),
     );
     expect(mocks.sendEvent).not.toHaveBeenCalled();
 
@@ -231,9 +231,9 @@ describe("PersonalizationComponent", () => {
       metadata: {
         home: {
           selector: "#myhomeselector",
-          actionType: "appendHtml"
-        }
-      }
+          actionType: "appendHtml",
+        },
+      },
     });
     expect(applyPropositionsResult.propositions).toEqual([
       {
@@ -246,12 +246,12 @@ describe("PersonalizationComponent", () => {
             data: {
               type: "click",
               format: "application/vnd.adobe.target.dom-action",
-              selector: "#root"
-            }
-          }
+              selector: "#root",
+            },
+          },
         ],
         renderAttempted: true,
-        scopeDetails: undefined
+        scopeDetails: undefined,
       },
       {
         id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
@@ -265,13 +265,13 @@ describe("PersonalizationComponent", () => {
               format: "text/html",
               id: "1202448",
               selector: "#myhomeselector",
-              type: "appendHtml"
-            }
-          }
+              type: "appendHtml",
+            },
+          },
         ],
         renderAttempted: true,
-        scopeDetails: undefined
-      }
+        scopeDetails: undefined,
+      },
     ]);
     expect(applyPropositionsResult.decisions).toBeUndefined();
 
@@ -279,7 +279,7 @@ describe("PersonalizationComponent", () => {
     expect(mocks.sendEvent).not.toHaveBeenCalled();
     expect(mocks.actions.appendHtml).toHaveBeenCalledOnceWith(
       "#myhomeselector",
-      "<p>Some custom content for the home page</p>"
+      "<p>Some custom content for the home page</p>",
     );
     expect(mocks.logger.warn).not.toHaveBeenCalled();
     expect(mocks.logger.error).not.toHaveBeenCalled();

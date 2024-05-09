@@ -16,13 +16,13 @@ import reloadPage from "../../helpers/reloadPage.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 createFixture({
-  title: "C2584: Toggle logging through setDebug command"
+  title: "C2584: Toggle logging through setDebug command",
 });
 
 test.meta({
   ID: "C2584",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C2584: setDebug command with enable: true. getLibraryInfo. refresh. toggle and repeat.", async () => {

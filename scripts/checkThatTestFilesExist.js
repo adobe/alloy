@@ -23,12 +23,12 @@ const srcDir = path.join(__dirname, "../src");
 const testDir = path.join(__dirname, "../test/unit/specs");
 const specExtension = ".spec.js";
 
-const ignoreMinimatches = ignorePatterns.map(ignorePattern => {
+const ignoreMinimatches = ignorePatterns.map((ignorePattern) => {
   return new Minimatch(ignorePattern);
 });
 
-const shouldFileBeIgnored = file => {
-  return ignoreMinimatches.some(minimatch => {
+const shouldFileBeIgnored = (file) => {
+  return ignoreMinimatches.some((minimatch) => {
     return minimatch.match(path.relative(srcDir, file));
   });
 };
@@ -38,26 +38,26 @@ const shouldFileBeIgnored = file => {
  * If not, the missing spec files will be listed and the process will
  * exit with an exit code of 1.
  */
-recursive(srcDir, [shouldFileBeIgnored]).then(srcFiles => {
+recursive(srcDir, [shouldFileBeIgnored]).then((srcFiles) => {
   const missingTestFiles = srcFiles
-    .map(srcFile => {
+    .map((srcFile) => {
       const pathRelativeToSrcDir = path.relative(srcDir, srcFile);
       const pathRelativeToTestDir = path.join(
         path.dirname(pathRelativeToSrcDir),
         `${path.basename(
           pathRelativeToSrcDir,
-          path.extname(pathRelativeToSrcDir)
-        )}${specExtension}`
+          path.extname(pathRelativeToSrcDir),
+        )}${specExtension}`,
       );
       return path.join(testDir, pathRelativeToTestDir);
     })
-    .filter(testFile => {
+    .filter((testFile) => {
       return !fs.existsSync(testFile);
     });
 
   if (missingTestFiles.length) {
     console.error("Test files are missing for their respective source files:");
-    missingTestFiles.forEach(missingTestFile => {
+    missingTestFiles.forEach((missingTestFile) => {
       const pathRelativeToBaseDir = path.relative(baseDir, missingTestFile);
       console.error(`- ${pathRelativeToBaseDir}`);
     });

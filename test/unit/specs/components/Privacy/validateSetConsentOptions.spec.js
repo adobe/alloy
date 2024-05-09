@@ -13,7 +13,7 @@ import validateSetConsentOptions from "../../../../../src/components/Privacy/val
 import describeValidation from "../../../helpers/describeValidation.js";
 
 const validGeneralConsent = [
-  { standard: "Adobe", version: "1.0", value: { general: "in" } }
+  { standard: "Adobe", version: "1.0", value: { general: "in" } },
 ];
 
 describeValidation(
@@ -23,9 +23,9 @@ describeValidation(
     {
       value: {
         consent: [
-          { standard: "Adobe", version: "1.0", value: { general: "in" } }
-        ]
-      }
+          { standard: "Adobe", version: "1.0", value: { general: "in" } },
+        ],
+      },
     },
     { value: { consent: [] }, error: true },
     { value: { consent: null }, error: true },
@@ -40,10 +40,10 @@ describeValidation(
             standard: "IAB",
             version: "2.0",
             value: "1234abcd",
-            gdprApplies: true
-          }
-        ]
-      }
+            gdprApplies: true,
+          },
+        ],
+      },
     },
     {
       value: {
@@ -52,19 +52,19 @@ describeValidation(
             standard: "IAB",
             version: "2.0",
             value: "1234abcd",
-            gdprApplies: true
+            gdprApplies: true,
           },
-          { standard: "Adobe", version: "1.0", value: { general: "in" } }
-        ]
-      }
+          { standard: "Adobe", version: "1.0", value: { general: "in" } },
+        ],
+      },
     },
     {
       value: {
         consent: validGeneralConsent,
         identityMap: {
-          HYP: [{}]
-        }
-      }
+          HYP: [{}],
+        },
+      },
     },
     {
       value: {
@@ -73,11 +73,11 @@ describeValidation(
           HYP: [
             {
               id: "1234",
-              authenticatedState: "ambiguous"
-            }
-          ]
-        }
-      }
+              authenticatedState: "ambiguous",
+            },
+          ],
+        },
+      },
     },
     {
       value: {
@@ -85,47 +85,47 @@ describeValidation(
         identityMap: {
           HYP: [
             {
-              blah: "1234"
-            }
-          ]
-        }
+              blah: "1234",
+            },
+          ],
+        },
       },
-      error: true
+      error: true,
     },
     {
       value: {
         consent: validGeneralConsent,
-        identityMap: []
+        identityMap: [],
       },
-      error: true
-    },
-    {
-      value: {
-        consent: validGeneralConsent,
-        identityMap: {
-          email: []
-        }
-      }
+      error: true,
     },
     {
       value: {
         consent: validGeneralConsent,
         identityMap: {
-          email: [[]]
-        }
+          email: [],
+        },
       },
-      error: true
+    },
+    {
+      value: {
+        consent: validGeneralConsent,
+        identityMap: {
+          email: [[]],
+        },
+      },
+      error: true,
     },
     {
       value: {
         consent: validGeneralConsent,
         edgeConfigOverrides: {
           identity: {
-            idSyncContainerId: "123"
-          }
-        }
-      }
+            idSyncContainerId: "123",
+          },
+        },
+      },
     },
-    { value: { consent: validGeneralConsent, edgeConfigOverrides: {} } }
-  ]
+    { value: { consent: validGeneralConsent, edgeConfigOverrides: {} } },
+  ],
 );

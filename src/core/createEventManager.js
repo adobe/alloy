@@ -26,12 +26,10 @@ export default ({
   createDataCollectionRequestPayload,
   createDataCollectionRequest,
   sendEdgeNetworkRequest,
-  applyResponse
+  applyResponse,
 }) => {
-  const {
-    onBeforeEventSend,
-    edgeConfigOverrides: globalConfigOverrides
-  } = config;
+  const { onBeforeEventSend, edgeConfigOverrides: globalConfigOverrides } =
+    config;
 
   return {
     createEvent,
@@ -49,14 +47,12 @@ export default ({
      * @returns {*}
      */
     sendEvent(event, options = {}) {
-      const {
-        edgeConfigOverrides: localConfigOverrides,
-        ...otherOptions
-      } = options;
+      const { edgeConfigOverrides: localConfigOverrides, ...otherOptions } =
+        options;
       const requestParams = createRequestParams({
         payload: createDataCollectionRequestPayload(),
         localConfigOverrides,
-        globalConfigOverrides
+        globalConfigOverrides,
       });
       const request = createDataCollectionRequest(requestParams);
       const onResponseCallbackAggregator = createCallbackAggregator();
@@ -67,7 +63,7 @@ export default ({
           ...otherOptions,
           event,
           onResponse: onResponseCallbackAggregator.add,
-          onRequestFailure: onRequestFailureCallbackAggregator.add
+          onRequestFailure: onRequestFailureCallbackAggregator.add,
         })
         .then(() => {
           requestParams.payload.addEvent(event);
@@ -104,7 +100,7 @@ export default ({
             request,
             runOnResponseCallbacks: onResponseCallbackAggregator.call,
             runOnRequestFailureCallbacks:
-              onRequestFailureCallbackAggregator.call
+              onRequestFailureCallbackAggregator.call,
           });
         });
     },
@@ -114,7 +110,7 @@ export default ({
         decisionContext = {},
         responseHeaders = {},
         responseBody = { handle: [] },
-        personalization
+        personalization,
       } = options;
 
       const payload = createDataCollectionRequestPayload();
@@ -129,7 +125,7 @@ export default ({
           decisionScopes: [PAGE_WIDE_SCOPE],
           personalization,
           onResponse: onResponseCallbackAggregator.add,
-          onRequestFailure: noop
+          onRequestFailure: noop,
         })
         .then(() => {
           payload.addEvent(event);
@@ -137,9 +133,9 @@ export default ({
             request,
             responseHeaders,
             responseBody,
-            runOnResponseCallbacks: onResponseCallbackAggregator.call
+            runOnResponseCallbacks: onResponseCallbackAggregator.call,
           });
         });
-    }
+    },
   };
 };

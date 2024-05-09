@@ -23,7 +23,7 @@ describe("padStart", () => {
     [null, 5, "0", "0null"],
     ["", 3, "0", "000"],
     ["foo", 10, "bar", "barbarbfoo"],
-    ["a", 2, "", "a"]
+    ["a", 2, "", "a"],
   ].forEach(([input, size, padString, expected]) => {
     it(`padStart(${input}, ${size}, "${padString}") === '${expected}'`, () => {
       expect(padStart(input, size, padString)).toEqual(expected);

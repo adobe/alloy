@@ -14,10 +14,10 @@ import {
   isEmptyObject,
   deepAssign,
   isNonEmptyArray,
-  deduplicateArray
+  deduplicateArray,
 } from "../utils";
 
-const getXdmPropositions = xdm => {
+const getXdmPropositions = (xdm) => {
   return xdm &&
     // eslint-disable-next-line no-underscore-dangle
     xdm._experience &&
@@ -38,10 +38,10 @@ export default () => {
   let isFinalized = false;
   let shouldSendEvent = true;
 
-  const throwIfEventFinalized = methodName => {
+  const throwIfEventFinalized = (methodName) => {
     if (isFinalized) {
       throw new Error(
-        `${methodName} cannot be called after event is finalized.`
+        `${methodName} cannot be called after event is finalized.`,
       );
     }
   };
@@ -112,7 +112,7 @@ export default () => {
             a.id === b.id &&
             a.scope &&
             b.scope &&
-            a.scope === b.scope)
+            a.scope === b.scope),
       );
       if (userXdm) {
         this.mergeXdm(userXdm);
@@ -137,7 +137,7 @@ export default () => {
         // on the object passed to the callback
         const tempContent = {
           xdm: content.xdm || {},
-          data: content.data || {}
+          data: content.data || {},
         };
 
         const result = onBeforeEventSend(tempContent);
@@ -182,7 +182,7 @@ export default () => {
       }
 
       return content;
-    }
+    },
   };
 
   return event;

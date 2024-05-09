@@ -15,7 +15,7 @@ import {
   compose,
   orgMainConfigMain,
   consentPending,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import createConsoleLogger from "../../helpers/consoleLogger/index.js";
 
@@ -28,16 +28,16 @@ const networkLogger = createNetworkLogger();
 
 createFixture({
   title: "C14406: Unidentified user can consent to no purposes",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C14406",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
-test("Test C14406: Unidentified user can consent to no purposes", async t => {
+test("Test C14406: Unidentified user can consent to no purposes", async (t) => {
   const logger = await createConsoleLogger();
   const alloy = createAlloyProxy();
   await alloy.configure(config);

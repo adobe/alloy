@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { assign } from "../../utils/index.js";
 
-const createConfig = options => {
+const createConfig = (options) => {
   return assign({}, options);
 };
 

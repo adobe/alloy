@@ -24,17 +24,17 @@ describe("Personalization::createSetTargetMigration", () => {
 
   it("adds to request meta if targetMigrationEnabled=true is configured", () => {
     const setTargetMigration = createSetTargetMigration({
-      targetMigrationEnabled: true
+      targetMigrationEnabled: true,
     });
     setTargetMigration(request);
     expect(payload.mergeMeta).toHaveBeenCalledOnceWith({
-      target: { migration: true }
+      target: { migration: true },
     });
   });
 
   it("does not add to request meta if targetMigrationEnabled is not configured", () => {
     const setTargetMigration = createSetTargetMigration({
-      targetMigrationEnabled: false
+      targetMigrationEnabled: false,
     });
     setTargetMigration(request);
     expect(payload.mergeMeta).not.toHaveBeenCalled();

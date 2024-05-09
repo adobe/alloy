@@ -15,24 +15,25 @@ const createResultLogMessage = (idSync, success) => {
   return `ID sync ${success ? "succeeded" : "failed"}: ${idSync.spec.url}`;
 };
 
-export default ({ fireReferrerHideableImage, logger }) => idSyncs => {
-  const urlIdSyncs = idSyncs.filter(idSync => idSync.type === "url");
+export default ({ fireReferrerHideableImage, logger }) =>
+  (idSyncs) => {
+    const urlIdSyncs = idSyncs.filter((idSync) => idSync.type === "url");
 
-  if (!urlIdSyncs.length) {
-    return Promise.resolve();
-  }
-  return Promise.all(
-    urlIdSyncs.map(idSync => {
-      return fireReferrerHideableImage(idSync.spec)
-        .then(() => {
-          logger.info(createResultLogMessage(idSync, true));
-        })
-        .catch(() => {
-          // We intentionally do not throw an error if id syncs fail. We
-          // consider it a non-critical failure and therefore do not want it to
-          // reject the promise handed back to the customer.
-          logger.error(createResultLogMessage(idSync, false));
-        });
-    })
-  ).then(noop);
-};
+    if (!urlIdSyncs.length) {
+      return Promise.resolve();
+    }
+    return Promise.all(
+      urlIdSyncs.map((idSync) => {
+        return fireReferrerHideableImage(idSync.spec)
+          .then(() => {
+            logger.info(createResultLogMessage(idSync, true));
+          })
+          .catch(() => {
+            // We intentionally do not throw an error if id syncs fail. We
+            // consider it a non-critical failure and therefore do not want it to
+            // reject the promise handed back to the customer.
+            logger.error(createResultLogMessage(idSync, false));
+          });
+      }),
+    ).then(noop);
+  };

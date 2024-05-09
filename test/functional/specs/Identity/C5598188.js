@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import { TEST_PAGE } from "../../helpers/constants/url.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
@@ -21,19 +21,19 @@ import createFixture from "../../helpers/createFixture/index.js";
 import createConsoleLogger from "../../helpers/consoleLogger/index.js";
 
 const config = compose(orgMainConfigMain, debugEnabled, {
-  orgId: "invalid-org-id@Adobe"
+  orgId: "invalid-org-id@Adobe",
 });
 
 createFixture({
   url: TEST_PAGE,
   title:
-    "C5598188: Informative error messages are given when an identity cookie fails to be set"
+    "C5598188: Informative error messages are given when an identity cookie fails to be set",
 });
 
 test.meta({
   ID: "C5598188",
   SEVERTIY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("C5598188: Informative error message given when using an invalid orgID", async () => {

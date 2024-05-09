@@ -9,7 +9,7 @@ const usePropositions = ({ viewName }) => {
   useEffect(() => {
     if (propositions) {
       window.alloy("applyPropositions", {
-        propositions
+        propositions,
       });
     }
   }, [propositions]);

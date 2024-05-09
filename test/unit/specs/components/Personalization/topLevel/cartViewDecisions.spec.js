@@ -22,9 +22,9 @@ describe("PersonalizationComponent", () => {
     const alloy = buildAlloy(mocks);
     let { event, result } = await alloy.sendEvent(
       {
-        renderDecisions: true
+        renderDecisions: true,
       },
-      CART_VIEW_DECISIONS
+      CART_VIEW_DECISIONS,
     );
     expect(event.toJSON()).toEqual({
       query: {
@@ -37,16 +37,16 @@ describe("PersonalizationComponent", () => {
             "https://ns.adobe.com/personalization/ruleset-item",
             "https://ns.adobe.com/personalization/message/in-app",
             "https://ns.adobe.com/personalization/message/feed-item",
-            "https://ns.adobe.com/personalization/dom-action"
+            "https://ns.adobe.com/personalization/dom-action",
           ],
           decisionScopes: ["__view__"],
-          surfaces: ["web://example.com/home"]
-        }
-      }
+          surfaces: ["web://example.com/home"],
+        },
+      },
     });
     expect(result).toEqual({
       propositions: [],
-      decisions: []
+      decisions: [],
     });
     expect(mocks.sendEvent).not.toHaveBeenCalled();
 
@@ -60,12 +60,12 @@ describe("PersonalizationComponent", () => {
         xdm: {
           web: {
             webPageDetails: {
-              viewName: "cart"
-            }
-          }
-        }
+              viewName: "cart",
+            },
+          },
+        },
       },
-      []
+      [],
     ));
 
     expect(event.toJSON()).toEqual({
@@ -79,22 +79,22 @@ describe("PersonalizationComponent", () => {
                 scopeDetails: {
                   blah: "test",
                   characteristics: {
-                    scopeType: "view"
-                  }
-                }
-              }
+                    scopeType: "view",
+                  },
+                },
+              },
             ],
             propositionEventType: {
-              display: 1
-            }
-          }
+              display: 1,
+            },
+          },
         },
         web: {
           webPageDetails: {
-            viewName: "cart"
-          }
-        }
-      }
+            viewName: "cart",
+          },
+        },
+      },
     });
     expect(result).toEqual({
       propositions: [
@@ -108,40 +108,40 @@ describe("PersonalizationComponent", () => {
               data: {
                 type: "setHtml",
                 selector: "#foo",
-                content: "<div>welcome to cart view</div>"
-              }
+                content: "<div>welcome to cart view</div>",
+              },
             },
             {
               schema: "https://ns.adobe.com/personalization/dom-action",
               data: {
                 type: "setHtml",
                 selector: "#foo2",
-                content: "<div>here is a target activity for cart view</div>"
-              }
+                content: "<div>here is a target activity for cart view</div>",
+              },
             },
             {
               schema:
-                "https://ns.adobe.com/personalization/default-content-item"
-            }
+                "https://ns.adobe.com/personalization/default-content-item",
+            },
           ],
           scopeDetails: {
             blah: "test",
             characteristics: {
-              scopeType: "view"
-            }
-          }
-        }
+              scopeType: "view",
+            },
+          },
+        },
       ],
-      decisions: []
+      decisions: [],
     });
     expect(mocks.sendEvent).not.toHaveBeenCalled();
     expect(mocks.actions.setHtml).toHaveBeenCalledWith(
       "#foo",
-      "<div>welcome to cart view</div>"
+      "<div>welcome to cart view</div>",
     );
     expect(mocks.actions.setHtml).toHaveBeenCalledWith(
       "#foo2",
-      "<div>here is a target activity for cart view</div>"
+      "<div>here is a target activity for cart view</div>",
     );
     expect(mocks.actions.setHtml).toHaveBeenCalledTimes(2);
     expect(mocks.logger.warn).not.toHaveBeenCalled();
@@ -157,12 +157,12 @@ describe("PersonalizationComponent", () => {
         xdm: {
           web: {
             webPageDetails: {
-              viewName: "cart"
-            }
-          }
-        }
+              viewName: "cart",
+            },
+          },
+        },
       },
-      CART_VIEW_DECISIONS
+      CART_VIEW_DECISIONS,
     );
 
     await flushPromiseChains();
@@ -178,19 +178,19 @@ describe("PersonalizationComponent", () => {
             "https://ns.adobe.com/personalization/ruleset-item",
             "https://ns.adobe.com/personalization/message/in-app",
             "https://ns.adobe.com/personalization/message/feed-item",
-            "https://ns.adobe.com/personalization/dom-action"
+            "https://ns.adobe.com/personalization/dom-action",
           ],
           decisionScopes: ["__view__"],
-          surfaces: ["web://example.com/home"]
-        }
+          surfaces: ["web://example.com/home"],
+        },
       },
       xdm: {
         web: {
           webPageDetails: {
-            viewName: "cart"
-          }
-        }
-      }
+            viewName: "cart",
+          },
+        },
+      },
     });
     expect(result).toEqual({
       propositions: [
@@ -204,31 +204,31 @@ describe("PersonalizationComponent", () => {
               data: {
                 type: "setHtml",
                 selector: "#foo",
-                content: "<div>welcome to cart view</div>"
-              }
+                content: "<div>welcome to cart view</div>",
+              },
             },
             {
               schema: "https://ns.adobe.com/personalization/dom-action",
               data: {
                 type: "setHtml",
                 selector: "#foo2",
-                content: "<div>here is a target activity for cart view</div>"
-              }
+                content: "<div>here is a target activity for cart view</div>",
+              },
             },
             {
               schema:
-                "https://ns.adobe.com/personalization/default-content-item"
-            }
+                "https://ns.adobe.com/personalization/default-content-item",
+            },
           ],
           scopeDetails: {
             blah: "test",
             characteristics: {
-              scopeType: "view"
-            }
-          }
-        }
+              scopeType: "view",
+            },
+          },
+        },
       ],
-      decisions: []
+      decisions: [],
     });
     expect(mocks.sendEvent).toHaveBeenCalledWith({
       xdm: {
@@ -241,31 +241,31 @@ describe("PersonalizationComponent", () => {
                 scopeDetails: {
                   blah: "test",
                   characteristics: {
-                    scopeType: "view"
-                  }
-                }
-              }
+                    scopeType: "view",
+                  },
+                },
+              },
             ],
             propositionEventType: {
-              display: 1
-            }
-          }
+              display: 1,
+            },
+          },
         },
         eventType: "decisioning.propositionDisplay",
         web: {
           webPageDetails: {
-            viewName: "cart"
-          }
-        }
-      }
+            viewName: "cart",
+          },
+        },
+      },
     });
     expect(mocks.actions.setHtml).toHaveBeenCalledWith(
       "#foo",
-      "<div>welcome to cart view</div>"
+      "<div>welcome to cart view</div>",
     );
     expect(mocks.actions.setHtml).toHaveBeenCalledWith(
       "#foo2",
-      "<div>here is a target activity for cart view</div>"
+      "<div>here is a target activity for cart view</div>",
     );
     expect(mocks.actions.setHtml).toHaveBeenCalledTimes(2);
     expect(mocks.logger.warn).not.toHaveBeenCalled();

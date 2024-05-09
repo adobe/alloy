@@ -21,7 +21,7 @@ describe("ActivityCollector::createLinkClick", () => {
   it("Extends event XDM data with link information for supported anchor elements when clickCollectionEnabled", () => {
     const config = {
       downloadLinkQualifier,
-      clickCollectionEnabled: true
+      clickCollectionEnabled: true,
     };
     const linkClick = createLinkClick({ getLinkDetails, config });
 
@@ -30,11 +30,11 @@ describe("ActivityCollector::createLinkClick", () => {
       xdm: {
         web: {
           webInteraction: {
-            name: "test1"
-          }
-        }
+            name: "test1",
+          },
+        },
       },
-      data: {}
+      data: {},
     });
     linkClick({ targetElement: {}, event });
     expect(event.isEmpty()).toBe(false);
@@ -43,7 +43,7 @@ describe("ActivityCollector::createLinkClick", () => {
     const event = createEvent();
     const config = {
       downloadLinkQualifier,
-      clickCollectionEnabled: false
+      clickCollectionEnabled: false,
     };
 
     const linkClick = createLinkClick({ getLinkDetails, config });
@@ -52,11 +52,11 @@ describe("ActivityCollector::createLinkClick", () => {
       xdm: {
         web: {
           webInteraction: {
-            name: "test1"
-          }
-        }
+            name: "test1",
+          },
+        },
       },
-      data: {}
+      data: {},
     });
     linkClick({ targetElement: {}, event });
     expect(event.isEmpty()).toBe(true);
@@ -65,7 +65,7 @@ describe("ActivityCollector::createLinkClick", () => {
     const event = createEvent();
     const config = {
       downloadLinkQualifier,
-      clickCollectionEnabled: true
+      clickCollectionEnabled: true,
     };
 
     const linkClick = createLinkClick({ getLinkDetails, config });

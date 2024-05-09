@@ -20,7 +20,7 @@ describe("isObject", () => {
   });
 
   it("returns false if the value is not an object", () => {
-    nonObjects.forEach(obj => {
+    nonObjects.forEach((obj) => {
       expect(isObject(obj)).toBe(false);
     });
   });

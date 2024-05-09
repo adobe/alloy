@@ -17,7 +17,7 @@ export default ({
   sendFetchRequest,
   sendBeaconRequest,
   isRequestRetryable,
-  getRequestRetryDelay
+  getRequestRetryDelay,
 }) => {
   /**
    * Send a network request and returns details about the response.
@@ -35,7 +35,7 @@ export default ({
     logger.logOnBeforeNetworkRequest({
       url,
       requestId,
-      payload: parsedPayload
+      payload: parsedPayload,
     });
 
     const executeRequest = (retriesAttempted = 0) => {
@@ -43,18 +43,18 @@ export default ({
         ? sendBeaconRequest
         : sendFetchRequest;
 
-      return requestMethod(url, stringifiedPayload).then(response => {
+      return requestMethod(url, stringifiedPayload).then((response) => {
         const requestIsRetryable = isRequestRetryable({
           response,
-          retriesAttempted
+          retriesAttempted,
         });
 
         if (requestIsRetryable) {
           const requestRetryDelay = getRequestRetryDelay({
             response,
-            retriesAttempted
+            retriesAttempted,
           });
-          return new Promise(resolve => {
+          return new Promise((resolve) => {
             setTimeout(() => {
               resolve(executeRequest(retriesAttempted + 1));
             }, requestRetryDelay);
@@ -75,24 +75,24 @@ export default ({
           payload: parsedPayload,
           ...response,
           parsedBody,
-          retriesAttempted
+          retriesAttempted,
         });
 
         return {
           statusCode: response.statusCode,
           body: response.body,
           parsedBody,
-          getHeader: response.getHeader
+          getHeader: response.getHeader,
         };
       });
     };
 
-    return executeRequest().catch(error => {
+    return executeRequest().catch((error) => {
       logger.logOnNetworkError({
         requestId,
         url,
         payload: parsedPayload,
-        error
+        error,
       });
       throw stackError({ error, message: "Network request failed." });
     });

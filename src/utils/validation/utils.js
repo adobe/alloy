@@ -19,7 +19,7 @@ import assign from "../assign.js";
  *
  * @param {function} validator - the validator to call if the value is not null
  */
-const skipIfNull = validator =>
+const skipIfNull = (validator) =>
   function skipIfNullValidator(value, path) {
     return value == null ? value : validator.call(this, value, path);
   };
@@ -38,7 +38,7 @@ const callSequentially = (firstValidator, secondValidator) =>
     return secondValidator.call(
       this,
       firstValidator.call(this, value, path),
-      path
+      path,
     );
   };
 
@@ -62,7 +62,7 @@ const callSequentiallyJoinErrors = (firstValidator, secondValidator) =>
           return memo;
         }
       },
-      value
+      value,
     );
     if (errors.length) {
       throw new Error(errors.join("\n"));
@@ -86,7 +86,7 @@ export const chain = (baseValidator, newValidator, additionalMethods) => {
   return assign(
     callSequentially(baseValidator, newValidator),
     baseValidator,
-    additionalMethods
+    additionalMethods,
   );
 };
 
@@ -108,12 +108,12 @@ export const chain = (baseValidator, newValidator, additionalMethods) => {
 export const nullSafeChain = (
   baseValidator,
   newValidator,
-  additionalMethods
+  additionalMethods,
 ) => {
   return assign(
     callSequentially(baseValidator, skipIfNull(newValidator)),
     baseValidator,
-    additionalMethods
+    additionalMethods,
   );
 };
 
@@ -131,12 +131,12 @@ export const nullSafeChain = (
 export const reverseNullSafeChainJoinErrors = (
   baseValidator,
   newValidator,
-  additionalMethods
+  additionalMethods,
 ) => {
   return assign(
     callSequentiallyJoinErrors(skipIfNull(newValidator), baseValidator),
     baseValidator,
-    additionalMethods
+    additionalMethods,
   );
 };
 
@@ -153,7 +153,7 @@ export const reverseNullSafeChainJoinErrors = (
 export const assertValid = (isValid, value, path, message) => {
   if (!isValid) {
     throw new Error(
-      `'${path}': Expected ${message}, but got ${JSON.stringify(value)}.`
+      `'${path}': Expected ${message}, but got ${JSON.stringify(value)}.`,
     );
   }
 };

@@ -19,7 +19,7 @@ import { assign } from "../../../utils/index.js";
 const ACTION_CUSTOM_CODE = "customCode";
 const TARGET_BODY_SELECTOR = "BODY > *:eq(0)";
 
-export default action => {
+export default (action) => {
   const { selector, type } = action;
 
   if (type !== ACTION_CUSTOM_CODE) {

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { toArray } from "../../../../utils/index.js";
 
-export default element => {
+export default (element) => {
   const { childNodes } = element;
 
   if (childNodes) {

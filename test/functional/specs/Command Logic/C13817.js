@@ -13,16 +13,16 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import createFixture from "../../helpers/createFixture/index.js";
 
 createFixture({
-  title: "C13817: Throws error when running command after bad configure"
+  title: "C13817: Throws error when running command after bad configure",
 });
 
 test.meta({
   ID: "C13817",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
-test("Test C13817: Throws error when running command after bad configure", async t => {
+test("Test C13817: Throws error when running command after bad configure", async (t) => {
   const alloy = createAlloyProxy();
   await alloy.configureErrorMessage();
   const eventErrorMessage = await alloy.sendEventErrorMessage();

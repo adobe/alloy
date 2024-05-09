@@ -20,7 +20,7 @@ describe("validateCommandOptions", () => {
     options = {};
     command = {
       commandName: "TEST",
-      run: () => {}
+      run: () => {},
     };
   });
 

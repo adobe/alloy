@@ -25,7 +25,7 @@ describe("shouldTransferCookie", () => {
   const build = () => {
     shouldTransferCookie = injectShouldTransferCookie({
       targetMigrationEnabled,
-      orgId
+      orgId,
     });
   };
 

@@ -31,7 +31,7 @@ describe("createCookieTransfer", () => {
       cookieJar,
       shouldTransferCookie,
       apexDomain,
-      dateProvider
+      dateProvider,
     });
   });
 
@@ -40,7 +40,7 @@ describe("createCookieTransfer", () => {
       cookieTransfer.cookiesToPayload(payload, "edge.example.com");
       expect(payload.mergeState).toHaveBeenCalledWith({
         domain: apexDomain,
-        cookiesEnabled: true
+        cookiesEnabled: true,
       });
     });
 
@@ -49,7 +49,7 @@ describe("createCookieTransfer", () => {
       cookieTransfer.cookiesToPayload(payload, endpointDomain);
       expect(payload.mergeState).toHaveBeenCalledWith({
         domain: apexDomain,
-        cookiesEnabled: true
+        cookiesEnabled: true,
       });
     });
 
@@ -59,7 +59,7 @@ describe("createCookieTransfer", () => {
         ineligible_cookie: "foo",
         kndctr_ABC_CustomOrg_optIn: "all",
         at_qa_mode:
-          '{"token":"QATokenString","listedActivitiesOnly":true,"evaluateAsTrueAudienceIds":["2480042"],"previewIndexes":[{"activityIndex":1,"experienceIndex":1}]}'
+          '{"token":"QATokenString","listedActivitiesOnly":true,"evaluateAsTrueAudienceIds":["2480042"],"previewIndexes":[{"activityIndex":1,"experienceIndex":1}]}',
       });
       shouldTransferCookie.and.returnValues(true, false, true, true);
       cookieTransfer.cookiesToPayload(payload, endpointDomain);
@@ -69,18 +69,18 @@ describe("createCookieTransfer", () => {
         entries: [
           {
             key: "kndctr_ABC_CustomOrg_identity",
-            value: "XYZ@CustomOrg"
+            value: "XYZ@CustomOrg",
           },
           {
             key: "kndctr_ABC_CustomOrg_optIn",
-            value: "all"
+            value: "all",
           },
           {
             key: "at_qa_mode",
             value:
-              '{"token":"QATokenString","listedActivitiesOnly":true,"evaluateAsTrueAudienceIds":["2480042"],"previewIndexes":[{"activityIndex":1,"experienceIndex":1}]}'
-          }
-        ]
+              '{"token":"QATokenString","listedActivitiesOnly":true,"evaluateAsTrueAudienceIds":["2480042"],"previewIndexes":[{"activityIndex":1,"experienceIndex":1}]}',
+          },
+        ],
       });
     });
   });
@@ -95,12 +95,12 @@ describe("createCookieTransfer", () => {
       response.getPayloadsByType.and.returnValue([
         {
           key: "mykey",
-          value: "myvalue"
-        }
+          value: "myvalue",
+        },
       ]);
       cookieTransfer.responseToCookies(response);
       expect(cookieJar.set).toHaveBeenCalledOnceWith("mykey", "myvalue", {
-        domain: "example.com"
+        domain: "example.com",
       });
     });
 
@@ -108,23 +108,23 @@ describe("createCookieTransfer", () => {
       response.getPayloadsByType.and.returnValue([
         {
           key: "mykey1",
-          value: "myvalue1"
+          value: "myvalue1",
         },
         {
           key: "mykey2",
-          value: "myvalue2"
-        }
+          value: "myvalue2",
+        },
       ]);
       cookieTransfer.responseToCookies(response);
       expect(cookieJar.set).toHaveBeenCalledWith(
         "mykey1",
         "myvalue1",
-        jasmine.any(Object)
+        jasmine.any(Object),
       );
       expect(cookieJar.set).toHaveBeenCalledWith(
         "mykey2",
         "myvalue2",
-        jasmine.any(Object)
+        jasmine.any(Object),
       );
     });
 
@@ -133,12 +133,12 @@ describe("createCookieTransfer", () => {
         {
           key: "mykey",
           value: "myvalue",
-          maxAge: 172800 // 24 * 60 * 60 * 2
-        }
+          maxAge: 172800, // 24 * 60 * 60 * 2
+        },
       ]);
       cookieTransfer.responseToCookies(response);
       expect(cookieJar.set.calls.argsFor(0)[2].expires.getTime()).toEqual(
-        date.getTime() + 172800 * 1000
+        date.getTime() + 172800 * 1000,
       );
     });
 
@@ -147,8 +147,8 @@ describe("createCookieTransfer", () => {
         {
           key: "mykey",
           value: "myvalue",
-          attrs: { SameSite: "None" }
-        }
+          attrs: { SameSite: "None" },
+        },
       ]);
       cookieTransfer.responseToCookies(response);
       expect(cookieJar.set.calls.argsFor(0)[2].sameSite).toEqual("none");
@@ -160,8 +160,8 @@ describe("createCookieTransfer", () => {
         {
           key: "mykey",
           value: "myvalue",
-          attrs: { SameSite: "Strict" }
-        }
+          attrs: { SameSite: "Strict" },
+        },
       ]);
       cookieTransfer.responseToCookies(response);
       expect(cookieJar.set.calls.argsFor(0)[2].sameSite).toEqual("strict");

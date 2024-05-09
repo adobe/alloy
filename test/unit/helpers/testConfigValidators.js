@@ -13,7 +13,7 @@ export default ({
   configValidators,
   validConfigurations,
   invalidConfigurations,
-  defaultValues
+  defaultValues,
 }) => {
   validConfigurations.forEach((cfg, i) => {
     it(`validates configuration (${i})`, () => {
@@ -31,7 +31,7 @@ export default ({
 
   it("provides default values", () => {
     const config = configValidators({});
-    Object.keys(defaultValues).forEach(key => {
+    Object.keys(defaultValues).forEach((key) => {
       expect(config[key]).toBe(defaultValues[key]);
     });
   });

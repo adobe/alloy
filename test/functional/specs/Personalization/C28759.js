@@ -16,7 +16,7 @@ import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
 import createResponse from "../../helpers/createResponse.js";
@@ -29,13 +29,13 @@ const PAGE_WIDE_SCOPE = "__view__";
 createFixture({
   title: "C28759 Inline scripts should render when renderDecision=true",
   url: `${TEST_PAGE_URL}?test=C28759`,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C28759",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const getScriptExecutionResult = ClientFunction(() => {
@@ -65,16 +65,16 @@ test("Test C28759: Inline scripts should render when renderDecision=true", async
     "https://ns.adobe.com/personalization/dom-action",
     "https://ns.adobe.com/personalization/html-content-item",
     "https://ns.adobe.com/personalization/json-content-item",
-    "https://ns.adobe.com/personalization/redirect-item"
-  ].every(schema => personalizationSchemas.includes(schema));
+    "https://ns.adobe.com/personalization/redirect-item",
+  ].every((schema) => personalizationSchemas.includes(schema));
 
   await t.expect(result).eql(true);
 
   const response = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
   );
   const personalizationPayload = createResponse({
-    content: response
+    content: response,
   }).getPayloadsByType("personalization:decisions");
 
   await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);

@@ -24,25 +24,25 @@ describe("uploadToCDN", () => {
     expect(logger.info).toHaveBeenCalledWith("Uploading files to CDN.");
     expect(exec).toHaveBeenCalledWith(
       "sftp",
-      'echo "-mkdir 1.2.3\ncd 1.2.3\nput ./dist/alloy.js\nput ./dist/alloy.min.js\nbye\n" | sftp -oHostKeyAlgorithms=+ssh-dss -oStrictHostKeyChecking=no -b - sshacs@dxresources.ssh.upload.akamai.com:/prod/alloy'
+      'echo "-mkdir 1.2.3\ncd 1.2.3\nput ./dist/alloy.js\nput ./dist/alloy.min.js\nbye\n" | sftp -oHostKeyAlgorithms=+ssh-dss -oStrictHostKeyChecking=no -b - sshacs@dxresources.ssh.upload.akamai.com:/prod/alloy',
     );
     expect(urlExists).toHaveBeenCalledWith(
-      "https://cdn1.adoberesources.net/alloy/1.2.3/alloy.js"
+      "https://cdn1.adoberesources.net/alloy/1.2.3/alloy.js",
     );
     expect(urlExists).toHaveBeenCalledWith(
-      "https://cdn1.adoberesources.net/alloy/1.2.3/alloy.min.js"
+      "https://cdn1.adoberesources.net/alloy/1.2.3/alloy.min.js",
     );
   });
   it("fails to upload min file to CDN", async () => {
     urlExists.and.returnValues([Promise.resolve(false), Promise.resolve(true)]);
     await expectAsync(uploadToCDN(container)).toBeRejectedWithError(
-      ApplicationError
+      ApplicationError,
     );
   });
   it("fails to upload regular file to CDN", async () => {
     urlExists.and.returnValues([Promise.resolve(true), Promise.resolve(false)]);
     await expectAsync(uploadToCDN(container)).toBeRejectedWithError(
-      ApplicationError
+      ApplicationError,
     );
   });
 });

@@ -16,7 +16,7 @@ import { VIEW_SCOPE_TYPE } from "../../constants/scopeType.js";
 const getMetasIfMatches = (
   clickedElement,
   selector,
-  getClickMetasBySelector
+  getClickMetasBySelector,
 ) => {
   const { documentElement } = document;
   let element = clickedElement;
@@ -26,15 +26,17 @@ const getMetasIfMatches = (
     if (matchesSelectorWithEq(selector, element)) {
       const matchedMetas = getClickMetasBySelector(selector);
       const returnValue = {
-        metas: matchedMetas
+        metas: matchedMetas,
       };
-      const foundMetaWithLabel = matchedMetas.find(meta => meta.trackingLabel);
+      const foundMetaWithLabel = matchedMetas.find(
+        (meta) => meta.trackingLabel,
+      );
       if (foundMetaWithLabel) {
         returnValue.label = foundMetaWithLabel.trackingLabel;
         returnValue.weight = i;
       }
       const foundMetaWithScopeTypeView = matchedMetas.find(
-        meta => meta.scopeType === VIEW_SCOPE_TYPE
+        (meta) => meta.scopeType === VIEW_SCOPE_TYPE,
       );
       if (foundMetaWithScopeTypeView) {
         returnValue.viewName = foundMetaWithScopeTypeView.scope;
@@ -48,23 +50,23 @@ const getMetasIfMatches = (
   }
 
   return {
-    metas: null
+    metas: null,
   };
 };
 
-const cleanMetas = metas =>
-  metas.map(meta => {
+const cleanMetas = (metas) =>
+  metas.map((meta) => {
     const { trackingLabel, scopeType, ...rest } = meta;
     return rest;
   });
 
-const dedupMetas = metas =>
+const dedupMetas = (metas) =>
   metas.filter((meta, index) => {
     const stringifiedMeta = JSON.stringify(meta);
     return (
       index ===
       metas.findIndex(
-        innerMeta => JSON.stringify(innerMeta) === stringifiedMeta
+        (innerMeta) => JSON.stringify(innerMeta) === stringifiedMeta,
       )
     );
   });
@@ -81,7 +83,7 @@ export default (clickedElement, selectors, getClickMetasBySelector) => {
     const { metas, label, weight, viewName } = getMetasIfMatches(
       clickedElement,
       selectors[i],
-      getClickMetasBySelector
+      getClickMetasBySelector,
     );
 
     if (!metas) {
@@ -102,6 +104,6 @@ export default (clickedElement, selectors, getClickMetasBySelector) => {
   return {
     decisionsMeta: dedupMetas(result),
     eventLabel: resultLabel,
-    viewName: resultViewName
+    viewName: resultViewName,
   };
 };

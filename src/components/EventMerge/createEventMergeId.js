@@ -14,6 +14,6 @@ import { uuid } from "../../utils/index.js";
 
 export default () => {
   return {
-    eventMergeId: uuid()
+    eventMergeId: uuid(),
   };
 };

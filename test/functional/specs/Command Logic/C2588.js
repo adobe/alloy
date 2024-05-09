@@ -14,16 +14,16 @@ import { orgMainConfigMain } from "../../helpers/constants/configParts/index.js"
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 createFixture({
-  title: "C2588: Throws error when configure is executed multiple times."
+  title: "C2588: Throws error when configure is executed multiple times.",
 });
 
 test.meta({
   ID: "C2588",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
-test("Test C2588: Throw error when configure is executed multiple times.", async t => {
+test("Test C2588: Throw error when configure is executed multiple times.", async (t) => {
   const alloy = createAlloyProxy();
   await alloy.configure(orgMainConfigMain);
   const errorMessage = await alloy.configureErrorMessage(orgMainConfigMain);
@@ -31,6 +31,6 @@ test("Test C2588: Throw error when configure is executed multiple times.", async
   await t
     .expect(errorMessage)
     .match(
-      /The library has already been configured and may only be configured once./
+      /The library has already been configured and may only be configured once./,
     );
 });

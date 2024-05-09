@@ -18,8 +18,8 @@ describe("Identity::addEcidQueryToPayload", () => {
     addEcidQueryToPayload(payload);
     expect(payload.mergeQuery).toHaveBeenCalledWith({
       identity: {
-        fetch: ["ECID"]
-      }
+        fetch: ["ECID"],
+      },
     });
   });
 });

@@ -19,7 +19,7 @@ export default (...values) => {
   }
   return values.reduce((accumulator, currentValue) => {
     if (isObject(currentValue)) {
-      Object.keys(currentValue).forEach(key => {
+      Object.keys(currentValue).forEach((key) => {
         if (Array.isArray(currentValue[key])) {
           if (Array.isArray(accumulator[key])) {
             accumulator[key].push(...currentValue[key]);

@@ -16,7 +16,7 @@ import {
   compose,
   orgMainConfigMain,
   clickCollectionEnabled,
-  clickCollectionDisabled
+  clickCollectionDisabled,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import preventLinkNavigation from "../../helpers/preventLinkNavigation.js";
@@ -29,28 +29,28 @@ createFixture({
   title:
     "C81182: Test onBeforeLinkClickSend callback when personalization metric involved",
   url: `${TEST_PAGE_URL}?test=C81182`,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C81182",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const addLinkToBody = () => {
   return addHtmlToBody(
-    `<a href="canceled.html"><span id="canceled-alloy-link-test">Link Click that is canceled</span></a>`
+    `<a href="canceled.html"><span id="canceled-alloy-link-test">Link Click that is canceled</span></a>`,
   );
 };
 
-const clickLink = async selector => {
+const clickLink = async (selector) => {
   await t.click(Selector(selector));
 };
 
 const expectedExprienceDecisioning = {
   propositionEventType: {
-    interact: 1
+    interact: 1,
   },
   propositions: [
     {
@@ -59,20 +59,20 @@ const expectedExprienceDecisioning = {
       scopeDetails: {
         decisionProvider: "TGT",
         activity: {
-          id: "145448"
+          id: "145448",
         },
         characteristics: {
-          eventToken: "VwlBQpRYFcQXcG9jkRhiRA=="
-        }
-      }
-    }
-  ]
+          eventToken: "VwlBQpRYFcQXcG9jkRhiRA==",
+        },
+      },
+    },
+  ],
 };
 
 const assertRequestXdm = async (
   request,
   expectedWebInteraction,
-  expectedData
+  expectedData,
 ) => {
   const requestBody = JSON.parse(request.request.body);
   const eventXdm = requestBody.events[0].xdm;
@@ -91,13 +91,13 @@ test.skip("Test C81182: Verify that onBeforeLinkClickSend removes the link-click
   const alloy = createAlloyProxy();
 
   const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
-    onBeforeLinkClickSend: options => {
+    onBeforeLinkClickSend: (options) => {
       const { data } = options;
 
       data.customField = "test";
 
       return false;
-    }
+    },
   });
   await alloy.configure(testConfig);
   await alloy.sendEvent({ renderDecisions: true });
@@ -113,7 +113,7 @@ test.skip("Test C81182: Verify that onBeforeLinkClickSend augments request when 
   const alloy = createAlloyProxy();
 
   const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
-    onBeforeLinkClickSend: options => {
+    onBeforeLinkClickSend: (options) => {
       const { xdm, data, clickedElement } = options;
 
       if (clickedElement.id === "alloy-link-test") {
@@ -124,7 +124,7 @@ test.skip("Test C81182: Verify that onBeforeLinkClickSend augments request when 
       }
 
       return false;
-    }
+    },
   });
   await alloy.configure(testConfig);
   await addLinkToBody();
@@ -138,12 +138,12 @@ test.skip("Test C81182: Verify that onBeforeLinkClickSend augments request when 
     region: "BODY",
     type: "other",
     URL: "https://alloyio.com/functional-test/valid.html",
-    linkClicks: { value: 1 }
+    linkClicks: { value: 1 },
   };
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(3);
   const linkClickRequest = networkLogger.edgeEndpointLogs.requests[2];
   await assertRequestXdm(linkClickRequest, expectedXdmWebInteraction, {
-    customField: "test123"
+    customField: "test123",
   });
 });
 

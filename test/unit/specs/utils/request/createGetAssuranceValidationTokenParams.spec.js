@@ -16,9 +16,9 @@ import uuidV4Regex from "../../../constants/uuidV4Regex.js";
 
 const win = {
   location: {
-    search: ""
+    search: "",
   },
-  localStorage: window.localStorage
+  localStorage: window.localStorage,
 };
 
 describe("createGetAssuranceValidationTokenParams", () => {
@@ -27,12 +27,11 @@ describe("createGetAssuranceValidationTokenParams", () => {
     let token;
     let firstClientId;
     let clientId;
-    const getAssuranceValidationTokenParams = createGetAssuranceValidationTokenParams(
-      {
+    const getAssuranceValidationTokenParams =
+      createGetAssuranceValidationTokenParams({
         window: win,
-        createNamespacedStorage: injectStorage(win)
-      }
-    );
+        createNamespacedStorage: injectStorage(win),
+      });
     expect(getAssuranceValidationTokenParams()).toEqual("");
 
     win.location.search = "?adb_validation_sessionid=abc-123";
@@ -42,7 +41,7 @@ describe("createGetAssuranceValidationTokenParams", () => {
     expect(token).toEqual("&adobeAepValidationToken=abc-123");
     expect(uuidV4Regex.test(firstClientId)).toBeTrue();
     expect(
-      win.localStorage.getItem("com.adobe.alloy.validation.clientId")
+      win.localStorage.getItem("com.adobe.alloy.validation.clientId"),
     ).toEqual(firstClientId);
 
     win.location.search = "?adb_validation_sessionid=abc-123%20fgh";

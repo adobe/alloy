@@ -16,7 +16,7 @@ import createConsoleLogger from "../../helpers/consoleLogger/index.js";
 import {
   compose,
   debugEnabled,
-  orgMainConfigMain
+  orgMainConfigMain,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import { CONSENT_OUT } from "../../helpers/constants/consent.js";
@@ -25,13 +25,13 @@ const networkLogger = createNetworkLogger();
 
 createFixture({
   title: "C25148 - When default consent is 'in', consent can be revoked.",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C25148",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const config = compose(orgMainConfigMain, debugEnabled);
@@ -54,7 +54,7 @@ test("C25148 - When default consent is 'in', consent can be revoked", async () =
   // ensure only one event was sent
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
   const stringifyRequest = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body
+    networkLogger.edgeEndpointLogs.requests[0].request.body,
   );
   await t.expect(stringifyRequest.events.length).eql(1);
 });

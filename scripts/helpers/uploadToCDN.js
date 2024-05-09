@@ -1,7 +1,7 @@
 const ApplicationError = require("./applicationError");
 
 const uploadToCDN = async ({ exec, logger, urlExists, version }) => {
-  const ensureUrlResolves = async url => {
+  const ensureUrlResolves = async (url) => {
     if (!(await urlExists(url))) {
       throw new ApplicationError(`File not found on CDN: ${url}`);
     }
@@ -21,14 +21,14 @@ bye
   logger.info("Uploading files to CDN.");
   await exec(
     "sftp",
-    `echo "${ftpCommands}" | sftp -oHostKeyAlgorithms=+ssh-dss -oStrictHostKeyChecking=no -b - sshacs@dxresources.ssh.upload.akamai.com:/prod/alloy`
+    `echo "${ftpCommands}" | sftp -oHostKeyAlgorithms=+ssh-dss -oStrictHostKeyChecking=no -b - sshacs@dxresources.ssh.upload.akamai.com:/prod/alloy`,
   );
 
   await ensureUrlResolves(
-    `https://cdn1.adoberesources.net/alloy/${version}/alloy.js`
+    `https://cdn1.adoberesources.net/alloy/${version}/alloy.js`,
   );
   await ensureUrlResolves(
-    `https://cdn1.adoberesources.net/alloy/${version}/alloy.min.js`
+    `https://cdn1.adoberesources.net/alloy/${version}/alloy.min.js`,
   );
 };
 

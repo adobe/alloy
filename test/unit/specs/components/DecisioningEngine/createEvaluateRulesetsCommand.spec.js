@@ -37,8 +37,8 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
       id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
       scopeDetails: {
         activity: {
-          id: "abc#xyz"
-        }
+          id: "abc#xyz",
+        },
       },
       items: [
         {
@@ -58,27 +58,27 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
                               definition: {
                                 key: "color",
                                 matcher: "eq",
-                                values: ["orange", "blue"]
+                                values: ["orange", "blue"],
                               },
-                              type: "matcher"
+                              type: "matcher",
                             },
                             {
                               definition: {
                                 key: "action",
                                 matcher: "eq",
-                                values: ["greet"]
+                                values: ["greet"],
                               },
-                              type: "matcher"
-                            }
+                              type: "matcher",
+                            },
                           ],
-                          logic: "and"
+                          logic: "and",
                         },
-                        type: "group"
-                      }
+                        type: "group",
+                      },
                     ],
-                    logic: "and"
+                    logic: "and",
                   },
-                  type: "group"
+                  type: "group",
                 },
                 consequences: [
                   {
@@ -90,27 +90,27 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
                           "HTML > BODY > DIV.offer:eq(0) > IMG:nth-of-type(1)",
                         type: "setAttribute",
                         content: {
-                          src: "img/demo-marketing-offer1-exp-A.png"
+                          src: "img/demo-marketing-offer1-exp-A.png",
                         },
                         prehidingSelector:
-                          "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)"
+                          "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
                       },
-                      id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
+                      id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
                     },
-                    id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
-                  }
-                ]
-              }
-            ]
-          }
-        }
+                    id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
+                  },
+                ],
+              },
+            ],
+          },
+        },
       ],
-      scope: "web://mywebsite.com"
+      scope: "web://mywebsite.com",
     });
 
     evaluateRulesetsCommand = createEvaluateRulesetsCommand({
       contextProvider,
-      decisionProvider
+      decisionProvider,
     });
   });
 
@@ -118,7 +118,7 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
     const result = evaluateRulesetsCommand.run({
       renderDecisions: true,
       decisionContext: { color: "orange", action: "greet" },
-      applyResponse
+      applyResponse,
     });
 
     const expectedResult = {
@@ -127,8 +127,8 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
           id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
           scopeDetails: {
             activity: {
-              id: "abc#xyz"
-            }
+              id: "abc#xyz",
+            },
           },
           items: [
             {
@@ -137,19 +137,19 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
                 selector: "HTML > BODY > DIV.offer:eq(0) > IMG:nth-of-type(1)",
                 type: "setAttribute",
                 content: {
-                  src: "img/demo-marketing-offer1-exp-A.png"
+                  src: "img/demo-marketing-offer1-exp-A.png",
                 },
                 prehidingSelector:
                   "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
                 qualifiedDate: jasmine.any(Number),
-                displayedDate: undefined
+                displayedDate: undefined,
               },
-              id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
-            }
+              id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
+            },
           ],
-          scope: "web://mywebsite.com"
-        }
-      ]
+          scope: "web://mywebsite.com",
+        },
+      ],
     };
 
     expect(result).toEqual(expectedResult);
@@ -157,14 +157,14 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
       renderDecisions: true,
       event: undefined,
       personalization: undefined,
-      ...expectedResult
+      ...expectedResult,
     });
   });
 
   it("onDecisions receives renderDecisions=false", () => {
     const result = evaluateRulesetsCommand.run({
       decisionContext: { color: "orange", action: "greet" },
-      applyResponse
+      applyResponse,
     });
 
     const expectedResult = {
@@ -173,8 +173,8 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
           id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
           scopeDetails: {
             activity: {
-              id: "abc#xyz"
-            }
+              id: "abc#xyz",
+            },
           },
           items: [
             {
@@ -183,19 +183,19 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
                 selector: "HTML > BODY > DIV.offer:eq(0) > IMG:nth-of-type(1)",
                 type: "setAttribute",
                 content: {
-                  src: "img/demo-marketing-offer1-exp-A.png"
+                  src: "img/demo-marketing-offer1-exp-A.png",
                 },
                 prehidingSelector:
                   "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
                 qualifiedDate: jasmine.any(Number),
-                displayedDate: undefined
+                displayedDate: undefined,
               },
-              id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
-            }
+              id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
+            },
           ],
-          scope: "web://mywebsite.com"
-        }
-      ]
+          scope: "web://mywebsite.com",
+        },
+      ],
     };
 
     expect(result).toEqual(expectedResult);
@@ -203,7 +203,7 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
       renderDecisions: false,
       event: undefined,
       personalization: undefined,
-      ...expectedResult
+      ...expectedResult,
     });
   });
 });

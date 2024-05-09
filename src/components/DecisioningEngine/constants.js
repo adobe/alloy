@@ -11,17 +11,17 @@ governing permissions and limitations under the License.
 */
 export const CONTEXT_KEY = {
   TYPE: "~type",
-  SOURCE: "~source"
+  SOURCE: "~source",
 };
 
 export const CONTEXT_EVENT_TYPE = {
   LIFECYCLE: "com.adobe.eventType.lifecycle",
   TRACK: "com.adobe.eventType.generic.track",
   EDGE: "com.adobe.eventType.edge",
-  RULES_ENGINE: "com.adobe.eventType.rulesEngine"
+  RULES_ENGINE: "com.adobe.eventType.rulesEngine",
 };
 
 export const CONTEXT_EVENT_SOURCE = {
   LAUNCH: "com.adobe.eventSource.applicationLaunch",
-  REQUEST: "com.adobe.eventSource.requestContent"
+  REQUEST: "com.adobe.eventSource.requestContent",
 };

@@ -16,16 +16,16 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 createFixture({
   title: "C2586: Toggle logging through the querystring parameter.",
-  url: `${TEST_PAGE_URL}?alloy_debug=true`
+  url: `${TEST_PAGE_URL}?alloy_debug=true`,
 });
 
 test.meta({
   ID: "C2586",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
-test("Test C2586: Toggle logging through the querystring parameter.", async t => {
+test("Test C2586: Toggle logging through the querystring parameter.", async (t) => {
   const alloy = createAlloyProxy();
   await alloy.configure(orgMainConfigMain);
   await alloy.getLibraryInfo();

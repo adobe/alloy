@@ -17,7 +17,7 @@ import {
   compose,
   configOverridesMain,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
@@ -26,13 +26,13 @@ const config = compose(orgMainConfigMain, debugEnabled);
 
 createFixture({
   title: "C2592: Event command sends a request",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C2592",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C2592: Event command sends a request.", async () => {
@@ -40,7 +40,8 @@ test("Test C2592: Event command sends a request.", async () => {
   await alloy.configure(config);
   await alloy.sendEvent({
     datasetId:
-      configOverridesMain.com_adobe_experience_platform.datasets.event.datasetId
+      configOverridesMain.com_adobe_experience_platform.datasets.event
+        .datasetId,
   });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
@@ -48,7 +49,7 @@ test("Test C2592: Event command sends a request.", async () => {
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body
+    networkLogger.edgeEndpointLogs.requests[0].request.body,
   );
 
   await t

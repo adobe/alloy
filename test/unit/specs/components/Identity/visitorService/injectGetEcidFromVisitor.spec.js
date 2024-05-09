@@ -21,7 +21,7 @@ Visitor.getInstance = () => {
       setTimeout(() => {
         cb("ecid123");
       }, 0);
-    }
+    },
   };
 };
 
@@ -53,7 +53,7 @@ describe("getEcidFromVisitor", () => {
       const getEcidFromVisitor = injectGetEcidFromVisitor({
         logger,
         orgId,
-        awaitVisitorOptIn
+        awaitVisitorOptIn,
       });
       return expectAsync(getEcidFromVisitor()).toBeResolvedTo("ecid123");
     });
@@ -69,7 +69,7 @@ describe("getEcidFromVisitor", () => {
       const getEcidFromVisitor = injectGetEcidFromVisitor({
         logger,
         orgId,
-        awaitVisitorOptIn
+        awaitVisitorOptIn,
       });
       return expectAsync(getEcidFromVisitor()).toBeResolvedTo(undefined);
     });
@@ -83,7 +83,7 @@ describe("getEcidFromVisitor", () => {
     const getEcidFromVisitor = injectGetEcidFromVisitor({
       logger,
       orgId,
-      awaitVisitorOptIn
+      awaitVisitorOptIn,
     });
     window.Visitor = Visitor;
     return expectAsync(getEcidFromVisitor()).toBeResolvedTo("ecid123");

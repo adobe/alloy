@@ -16,7 +16,7 @@ import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
@@ -29,13 +29,13 @@ const decisionContent = '<div id="C205529">Device based offer!</div>';
 
 createFixture({
   title: "C205529: Receive offer based on device",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C205529",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C205529: Receive offer based on device", async () => {
@@ -44,9 +44,9 @@ test("Test C205529: Receive offer based on device", async () => {
   const result = await alloy.sendEvent({
     xdm: {
       device: {
-        customDeviceField: 9999
-      }
-    }
+        customDeviceField: 9999,
+      },
+    },
   });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
@@ -67,12 +67,12 @@ test("Test C205529: Receive offer based on device", async () => {
     "https://ns.adobe.com/personalization/dom-action",
     "https://ns.adobe.com/personalization/html-content-item",
     "https://ns.adobe.com/personalization/json-content-item",
-    "https://ns.adobe.com/personalization/redirect-item"
-  ].every(schema => personalizationSchemas.includes(schema));
+    "https://ns.adobe.com/personalization/redirect-item",
+  ].every((schema) => personalizationSchemas.includes(schema));
 
   await t.expect(requestSchemas).eql(true);
 
-  const matchingDecision = result.decisions.find(decision => {
+  const matchingDecision = result.decisions.find((decision) => {
     return decision.id === decisionId;
   });
 

@@ -22,87 +22,87 @@ describe("createEvent", () => {
   it("deeply merges XDM with user-provided XDM merged last", () => {
     event.setUserXdm({
       fruit: {
-        type: "apple"
+        type: "apple",
       },
       veggie: {
-        type: "carrot"
-      }
+        type: "carrot",
+      },
     });
     event.mergeXdm({
       fruit: {
-        type: "strawberry"
+        type: "strawberry",
       },
       sport: {
-        type: "basketball"
-      }
+        type: "basketball",
+      },
     });
     event.mergeXdm();
     event.mergeXdm(null);
     event.mergeXdm({
       sport: {
-        type: "football"
+        type: "football",
       },
       game: {
-        type: "clue"
-      }
+        type: "clue",
+      },
     });
     event.finalize();
     expect(event.toJSON()).toEqual({
       xdm: {
         fruit: {
-          type: "apple"
+          type: "apple",
         },
         veggie: {
-          type: "carrot"
+          type: "carrot",
         },
         sport: {
-          type: "football"
+          type: "football",
         },
         game: {
-          type: "clue"
-        }
-      }
+          type: "clue",
+        },
+      },
     });
   });
 
   it("does not modify the original user XDM object", () => {
     const dataLayer = {
       fruit: {
-        type: "apple"
+        type: "apple",
       },
       veggie: {
-        type: "carrot"
-      }
+        type: "carrot",
+      },
     };
     event.setUserXdm(dataLayer);
     event.mergeXdm({
       fruit: {
-        type: "strawberry"
+        type: "strawberry",
       },
       sport: {
-        type: "basketball"
-      }
+        type: "basketball",
+      },
     });
     expect(dataLayer).toEqual({
       fruit: {
-        type: "apple"
+        type: "apple",
       },
       veggie: {
-        type: "carrot"
-      }
+        type: "carrot",
+      },
     });
   });
 
   it("handles undefined user XDM", () => {
     event.setUserXdm(undefined);
     event.mergeXdm({
-      fruit: "apple"
+      fruit: "apple",
     });
     event.finalize();
     expect(event.toJSON()).toEqual({
       xdm: {
-        fruit: "apple"
-      }
+        fruit: "apple",
+      },
     });
   });
 
@@ -112,8 +112,8 @@ describe("createEvent", () => {
     event.finalize();
     expect(event.toJSON()).toEqual({
       data: {
-        veggie: "carrot"
-      }
+        veggie: "carrot",
+      },
     });
   });
 
@@ -126,19 +126,19 @@ describe("createEvent", () => {
   it("deeply merges meta", () => {
     event.mergeMeta({
       fruit: {
-        type: "strawberry"
+        type: "strawberry",
       },
       sport: {
-        type: "basketball"
-      }
+        type: "basketball",
+      },
     });
     event.mergeMeta({
       sport: {
-        type: "football"
+        type: "football",
       },
       game: {
-        type: "clue"
-      }
+        type: "clue",
+      },
     });
     event.mergeMeta();
     event.mergeMeta(null);
@@ -146,34 +146,34 @@ describe("createEvent", () => {
     expect(event.toJSON()).toEqual({
       meta: {
         fruit: {
-          type: "strawberry"
+          type: "strawberry",
         },
         sport: {
-          type: "football"
+          type: "football",
         },
         game: {
-          type: "clue"
-        }
-      }
+          type: "clue",
+        },
+      },
     });
   });
 
   it("deeply merges query", () => {
     event.mergeQuery({
       fruit: {
-        type: "strawberry"
+        type: "strawberry",
       },
       sport: {
-        type: "basketball"
-      }
+        type: "basketball",
+      },
     });
     event.mergeQuery({
       sport: {
-        type: "football"
+        type: "football",
       },
       game: {
-        type: "clue"
-      }
+        type: "clue",
+      },
     });
     event.mergeQuery();
     event.mergeQuery(null);
@@ -181,15 +181,15 @@ describe("createEvent", () => {
     expect(event.toJSON()).toEqual({
       query: {
         fruit: {
-          type: "strawberry"
+          type: "strawberry",
         },
         sport: {
-          type: "football"
+          type: "football",
         },
         game: {
-          type: "clue"
-        }
-      }
+          type: "clue",
+        },
+      },
     });
   });
 
@@ -203,7 +203,7 @@ describe("createEvent", () => {
     event.setUserXdm({ web: {} });
     event.finalize();
     expect(() => event.mergeXdm({ a: "b" })).toThrowError(
-      "mergeXdm cannot be called after event is finalized."
+      "mergeXdm cannot be called after event is finalized.",
     );
   });
 
@@ -250,7 +250,7 @@ describe("createEvent", () => {
       subject.finalize(callback);
       expect(subject.toJSON()).toEqual({
         xdm: { a: "1", b: "2" },
-        data: { a: "1", b: "2" }
+        data: { a: "1", b: "2" },
       });
     });
 
@@ -267,7 +267,7 @@ describe("createEvent", () => {
     });
 
     it("can set xdm or data to empty objects", () => {
-      const callback = content => {
+      const callback = (content) => {
         content.xdm = {};
         content.data = {};
       };
@@ -279,7 +279,7 @@ describe("createEvent", () => {
     });
 
     it("can delete xdm or data objects", () => {
-      const callback = content => {
+      const callback = (content) => {
         delete content.xdm;
         delete content.data;
       };
@@ -304,7 +304,7 @@ describe("createEvent", () => {
       expect(() => subject.finalize(callback)).toThrowError("Expected Error");
       expect(subject.toJSON()).toEqual({
         xdm: { b: "2", c: "3" },
-        data: { b: "2", c: "3" }
+        data: { b: "2", c: "3" },
       });
     });
 
@@ -345,7 +345,7 @@ describe("createEvent", () => {
     });
 
     it("can replace xdm or data", () => {
-      const callback = content => {
+      const callback = (content) => {
         content.xdm = { a: "1" };
         content.data = { b: "2" };
       };
@@ -356,7 +356,7 @@ describe("createEvent", () => {
       subject.finalize(callback);
       expect(subject.toJSON()).toEqual({
         xdm: { a: "1" },
-        data: { b: "2" }
+        data: { b: "2" },
       });
     });
   });
@@ -368,10 +368,10 @@ describe("createEvent", () => {
         decisioning: {
           propositions: [
             { id: "1", scope: "a" },
-            { id: "2", scope: "a" }
-          ]
-        }
-      }
+            { id: "2", scope: "a" },
+          ],
+        },
+      },
     });
     subject.setUserXdm({
       _experience: {
@@ -379,10 +379,10 @@ describe("createEvent", () => {
           propositions: [
             { id: "2", scope: "a" },
             { id: "3", scope: "a" },
-            { id: "3", scope: "a" }
-          ]
-        }
-      }
+            { id: "3", scope: "a" },
+          ],
+        },
+      },
     });
     subject.finalize();
     expect(subject.toJSON()).toEqual({
@@ -392,11 +392,11 @@ describe("createEvent", () => {
             propositions: [
               { id: "2", scope: "a" },
               { id: "3", scope: "a" },
-              { id: "1", scope: "a" }
-            ]
-          }
-        }
-      }
+              { id: "1", scope: "a" },
+            ],
+          },
+        },
+      },
     });
   });
 });

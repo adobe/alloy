@@ -16,18 +16,18 @@ import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  targetMigrationEnabled
+  targetMigrationEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url.js";
 import cookies from "../../helpers/cookies.js";
 import {
   MBOX_EDGE_CLUSTER,
-  MBOX
+  MBOX,
 } from "../../../../src/constants/legacyCookies.js";
 import {
   assertTargetMigrationEnabledIsSent,
   getLocationHint,
-  injectAlloyAndSendEvent
+  injectAlloyAndSendEvent,
 } from "./helper.js";
 
 const networkLogger = createNetworkLogger();
@@ -39,16 +39,16 @@ createFixture({
     "used for both of the requests interact and delivery API",
   requestHooks: [
     networkLogger.edgeEndpointLogs,
-    networkLogger.targetMboxJsonEndpointLogs
+    networkLogger.targetMboxJsonEndpointLogs,
   ],
   url: TEST_PAGE_AT_JS_ONE,
-  includeAlloyLibrary: false
+  includeAlloyLibrary: false,
 });
 
 test.meta({
   ID: "C8085775",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test(
@@ -87,7 +87,7 @@ test(
     // Check that mbox cookie is present in the request state
     const { entries: stateStore } = requestBody.meta.state;
 
-    const requestMboxCookie = stateStore.find(entry => {
+    const requestMboxCookie = stateStore.find((entry) => {
       return entry.key.includes(MBOX);
     });
     // Assert the session IDs are the same
@@ -95,7 +95,7 @@ test(
       .expect(requestMboxCookie.value)
       .contains(
         `#${sessionIdFromMboxJsonRequest}#`,
-        "Session ID from request should be eql to session ID from mbox cookie sent in meta.state"
+        "Session ID from request should be eql to session ID from mbox cookie sent in meta.state",
       );
-  }
+  },
 );

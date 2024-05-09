@@ -13,5 +13,5 @@ governing permissions and limitations under the License.
 import { assign } from "../../../utils/index.js";
 
 export default ({ decisions, renderAttempted }) => {
-  return decisions.map(decision => assign({ renderAttempted }, decision));
+  return decisions.map((decision) => assign({ renderAttempted }, decision));
 };

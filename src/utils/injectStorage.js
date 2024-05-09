@@ -49,7 +49,7 @@ const getStorageByType = (context, storageType, namespace) => {
      */
     clear() {
       try {
-        Object.keys(context[storageType]).forEach(key => {
+        Object.keys(context[storageType]).forEach((key) => {
           if (startsWith(key, namespace)) {
             context[storageType].removeItem(key);
           }
@@ -58,14 +58,14 @@ const getStorageByType = (context, storageType, namespace) => {
       } catch (e) {
         return false;
       }
-    }
+    },
   };
 };
 
-export default context => additionalNamespace => {
+export default (context) => (additionalNamespace) => {
   const finalNamespace = baseNamespace + additionalNamespace;
   return {
     session: getStorageByType(context, "sessionStorage", finalNamespace),
-    persistent: getStorageByType(context, "localStorage", finalNamespace)
+    persistent: getStorageByType(context, "localStorage", finalNamespace),
   };
 };

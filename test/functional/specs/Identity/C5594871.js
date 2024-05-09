@@ -15,7 +15,7 @@ import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import createRandomEcid from "../../helpers/createRandomEcid.js";
@@ -30,13 +30,13 @@ const adobemc = createAdobeMC({ id });
 createFixture({
   url: `${TEST_PAGE_URL}?adobe_mc=${adobemc}`,
   title: "C5594871: getIdentity works with adobe_mc query string parameter",
-  requestHooks: []
+  requestHooks: [],
 });
 
 test.meta({
   ID: "C5594871",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("C5594871: getIdentity works with adobe_mc query string parameter", async () => {

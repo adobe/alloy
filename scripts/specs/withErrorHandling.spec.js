@@ -38,7 +38,7 @@ describe("withErrorHandling", () => {
     expect(logger.error).toHaveBeenCalledWith("Deploy FAILED.");
     expect(logger.error).toHaveBeenCalledWith(
       "An unexpected error was thrown.",
-      error
+      error,
     );
     expect(process.exit).toHaveBeenCalledWith(1);
   });

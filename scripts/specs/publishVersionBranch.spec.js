@@ -17,7 +17,7 @@ describe("publishVersionBranch", () => {
     container.version = "1.2.3-beta.0";
     await publishVersionBranch(container);
     expect(logger.info).toHaveBeenCalledOnceWith(
-      "No need to create a test branch for a prerelease version."
+      "No need to create a test branch for a prerelease version.",
     );
     expect(logger.warn).not.toHaveBeenCalled();
     expect(execSync).not.toHaveBeenCalled();
@@ -28,7 +28,7 @@ describe("publishVersionBranch", () => {
     execSync.and.returnValue("v1.2.3");
     await publishVersionBranch(container);
     expect(logger.warn).toHaveBeenCalledOnceWith(
-      "Git branch v1.2.3 already published."
+      "Git branch v1.2.3 already published.",
     );
     expect(logger.info).not.toHaveBeenCalled();
     expect(exec).not.toHaveBeenCalled();
@@ -39,7 +39,7 @@ describe("publishVersionBranch", () => {
     exec.and.returnValue(Promise.resolve(), Promise.resolve());
     await publishVersionBranch(container);
     expect(logger.info).toHaveBeenCalledOnceWith(
-      "Publishing Git branch v1.2.3."
+      "Publishing Git branch v1.2.3.",
     );
     expect(logger.warn).not.toHaveBeenCalled();
     expect(exec).toHaveBeenCalledWith("git branch", jasmine.any(String));

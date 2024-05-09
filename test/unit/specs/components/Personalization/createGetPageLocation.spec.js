@@ -18,8 +18,8 @@ describe("Personalization::createGetPageLocation", () => {
       location: {
         href: "https://alloy.test.com/test/page/1/",
         host: "alloy.test.com",
-        pathname: "/test/page/1/"
-      }
+        pathname: "/test/page/1/",
+      },
     };
     const getPageLocation = createGetPageLocation({ window: win });
     const location = getPageLocation();

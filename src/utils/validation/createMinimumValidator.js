@@ -16,7 +16,7 @@ export default (typeName, minimum) => (value, path) => {
     value >= minimum,
     value,
     path,
-    `${typeName} greater than or equal to ${minimum}`
+    `${typeName} greater than or equal to ${minimum}`,
   );
   return value;
 };

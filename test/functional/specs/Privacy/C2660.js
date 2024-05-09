@@ -14,7 +14,10 @@ import createNetworkLogger from "../../helpers/networkLogger/index.js";
 import createFixture from "../../helpers/createFixture/index.js";
 import flushPromiseChains from "../../helpers/flushPromiseChains.js";
 import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain.js";
-import { compose, consentPending } from "../../helpers/constants/configParts/index.js";
+import {
+  compose,
+  consentPending,
+} from "../../helpers/constants/configParts/index.js";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import { CONSENT_IN } from "../../helpers/constants/consent.js";
@@ -23,16 +26,16 @@ const networkLogger = createNetworkLogger();
 
 createFixture({
   title: "C2660 - Context data is captured before user consents.",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C2660",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
-const getContextUrlFromRequest = request => {
+const getContextUrlFromRequest = (request) => {
   const parsedBody = JSON.parse(request.request.body);
   return parsedBody.events[0].xdm.web.webPageDetails.URL;
 };

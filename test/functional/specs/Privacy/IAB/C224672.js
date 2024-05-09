@@ -20,7 +20,7 @@ import {
   compose,
   orgMainConfigMain,
   consentPending,
-  debugEnabled
+  debugEnabled,
 } from "../../../helpers/constants/configParts/index.js";
 import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies.js";
 import createAlloyProxy from "../../../helpers/createAlloyProxy.js";
@@ -35,14 +35,14 @@ createFixture({
     "C224672: Passing the `gdprContainsPersonalData` flag should return in the response.",
   requestHooks: [
     networkLogger.setConsentEndpointLogs,
-    networkLogger.edgeEndpointLogs
-  ]
+    networkLogger.edgeEndpointLogs,
+  ],
 });
 
 test.meta({
   ID: "C224672",
   SEVERITY: "P0",
-  TEST_RUN: "REGRESSION"
+  TEST_RUN: "REGRESSION",
 });
 
 test("Test C224672: Passing the `gdprContainsPersonalData` flag should return in the response", async () => {
@@ -54,7 +54,7 @@ test("Test C224672: Passing the `gdprContainsPersonalData` flag should return in
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
   const consentRawResponse = JSON.parse(
-    getResponseBody(networkLogger.setConsentEndpointLogs.requests[0])
+    getResponseBody(networkLogger.setConsentEndpointLogs.requests[0]),
   );
 
   const consentResponse = createResponse({ content: consentRawResponse });
@@ -67,7 +67,7 @@ test("Test C224672: Passing the `gdprContainsPersonalData` flag should return in
 
   // 2. The ECID should exist in the response payload as well, if queried
   const identityHandle = consentResponse.getPayloadsByType("identity:result");
-  const returnedNamespaces = identityHandle.map(i => i.namespace.code);
+  const returnedNamespaces = identityHandle.map((i) => i.namespace.code);
   await t.expect(identityHandle.length).eql(1);
   await t.expect(returnedNamespaces).contains("ECID");
 

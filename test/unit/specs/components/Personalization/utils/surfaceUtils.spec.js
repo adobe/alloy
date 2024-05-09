@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import {
   buildPageSurface,
   isPageWideSurface,
-  normalizeSurfaces
+  normalizeSurfaces,
 } from "../../../../../../src/components/Personalization/utils/surfaceUtils";
 
 let pageLocation;
@@ -26,32 +26,32 @@ describe("Personalization::surfaceUtils", () => {
     logger = jasmine.createSpyObj("logger", ["error", "warn"]);
     pageLocation = {
       host: "domain.com",
-      pathname: "/products/test/"
+      pathname: "/products/test/",
     };
   });
 
   it("builds page-wide surface from location", () => {
     expect(buildPageSurface(getPageLocation)).toEqual(
-      "web://domain.com/products/test"
+      "web://domain.com/products/test",
     );
     pageLocation = {
       host: "DOMain.com",
-      pathname: undefined
+      pathname: undefined,
     };
     expect(buildPageSurface(getPageLocation)).toEqual("web://domain.com/");
     pageLocation = {
       host: "domain.com:8080",
-      pathname: "/"
+      pathname: "/",
     };
     expect(buildPageSurface(getPageLocation)).toEqual("web://domain.com:8080/");
     pageLocation = {
       host: "domain.com",
-      pathname: "/a"
+      pathname: "/a",
     };
     expect(buildPageSurface(getPageLocation)).toEqual("web://domain.com/a");
     pageLocation = {
       host: "domain.com",
-      pathname: "/a/"
+      pathname: "/a/",
     };
     expect(buildPageSurface(getPageLocation)).toEqual("web://domain.com/a");
   });
@@ -72,11 +72,11 @@ describe("Personalization::surfaceUtils", () => {
     result = normalizeSurfaces(
       ["web://custom.surface.com", "#fragment1", "test"],
       getPageLocation,
-      logger
+      logger,
     );
     expect(result).toEqual([
       "web://custom.surface.com/",
-      "web://domain.com/products/test#fragment1"
+      "web://domain.com/products/test#fragment1",
     ]);
     expect(logger.warn).toHaveBeenCalledOnceWith("Invalid surface: test");
   });
@@ -91,15 +91,15 @@ describe("Personalization::surfaceUtils", () => {
         "webAPP://domain5.com/test",
         "://domain5.com/test",
         "web:///domain6.com/test",
-        "mobileapp://domain7.com/test"
+        "mobileapp://domain7.com/test",
       ],
       getPageLocation,
-      logger
+      logger,
     );
     expect(result).toEqual([
       "web://domain2.com/test",
       "webapp://domain4.com/test",
-      "webapp://domain5.com/test"
+      "webapp://domain5.com/test",
     ]);
     expect(logger.warn).toHaveBeenCalledTimes(5);
   });
@@ -127,10 +127,10 @@ describe("Personalization::surfaceUtils", () => {
         "web://a.b-c.de",
         "web://223.255.255.254",
         "web://[::1]",
-        "web://[ff11:af21:::1]:3000"
+        "web://[ff11:af21:::1]:3000",
       ],
       getPageLocation,
-      logger
+      logger,
     );
     expect(result).toEqual([
       "web://foo.com/",
@@ -153,7 +153,7 @@ describe("Personalization::surfaceUtils", () => {
       "web://a.b-c.de/",
       "web://223.255.255.254/",
       "web://[::1]/",
-      "web://[ff11:af21:::1]:3000/"
+      "web://[ff11:af21:::1]:3000/",
     ]);
     expect(logger.warn).not.toHaveBeenCalled();
 
@@ -165,10 +165,10 @@ describe("Personalization::surfaceUtils", () => {
         "web://userid@examp&le.com",
         "web:///page",
         "web://[::1)",
-        "web://[ff11:af21:12zx::1]:3000"
+        "web://[ff11:af21:12zx::1]:3000",
       ],
       getPageLocation,
-      logger
+      logger,
     );
     expect(result).toEqual([]);
     expect(logger.warn).toHaveBeenCalledTimes(7);
@@ -182,10 +182,10 @@ describe("Personalization::surfaceUtils", () => {
         "web://domain3.com/PROD.1/a",
         "web://domain4.com/~prod-1/bb/c/",
         "web://domain5.com/例子/☺",
-        "web://domain6.com/a/%D0%B6%D0%BE%D1%80%D0%B0%D1%82%D0%B5%D1%81%D1%82"
+        "web://domain6.com/a/%D0%B6%D0%BE%D1%80%D0%B0%D1%82%D0%B5%D1%81%D1%82",
       ],
       getPageLocation,
-      logger
+      logger,
     );
     expect(result).toEqual([
       "web://domain1.com/",
@@ -193,7 +193,7 @@ describe("Personalization::surfaceUtils", () => {
       "web://domain3.com/PROD.1/a",
       "web://domain4.com/~prod-1/bb/c",
       "web://domain5.com/例子/☺",
-      "web://domain6.com/a/%D0%B6%D0%BE%D1%80%D0%B0%D1%82%D0%B5%D1%81%D1%82"
+      "web://domain6.com/a/%D0%B6%D0%BE%D1%80%D0%B0%D1%82%D0%B5%D1%81%D1%82",
     ]);
     expect(logger.warn).not.toHaveBeenCalled();
 
@@ -205,10 +205,10 @@ describe("Personalization::surfaceUtils", () => {
         "web://domain4.com/~prod-1/bb/c/?query=aa",
         "web://domain5.com/例子/test*/1",
         "web://domain6.com/a/%D0%B6%D0%ZX",
-        "web://domain7.com/a/%D0%B6%D0%%AF"
+        "web://domain7.com/a/%D0%B6%D0%%AF",
       ],
       getPageLocation,
-      logger
+      logger,
     );
     expect(result).toEqual([]);
     expect(logger.warn).toHaveBeenCalledTimes(7);
@@ -222,10 +222,10 @@ describe("Personalization::surfaceUtils", () => {
         "web://domain3.com#PROD.1",
         "web://domain4.com#~prod-1/bb/c/",
         "web://domain5.com#例子/☺",
-        "web://domain6.com#my-%D0%B6%D0%BE%D1%80%D0%B0%D1%82%D0%B5%D1%81%D1%82"
+        "web://domain6.com#my-%D0%B6%D0%BE%D1%80%D0%B0%D1%82%D0%B5%D1%81%D1%82",
       ],
       getPageLocation,
-      logger
+      logger,
     );
     expect(result).toEqual([
       "web://domain1.com/#/home",
@@ -233,7 +233,7 @@ describe("Personalization::surfaceUtils", () => {
       "web://domain3.com/#PROD.1",
       "web://domain4.com/#~prod-1/bb/c/",
       "web://domain5.com/#例子/☺",
-      "web://domain6.com/#my-%D0%B6%D0%BE%D1%80%D0%B0%D1%82%D0%B5%D1%81%D1%82"
+      "web://domain6.com/#my-%D0%B6%D0%BE%D1%80%D0%B0%D1%82%D0%B5%D1%81%D1%82",
     ]);
     expect(logger.warn).not.toHaveBeenCalled();
 
@@ -245,10 +245,10 @@ describe("Personalization::surfaceUtils", () => {
         "web://domain4.com/#~prod-1/bb/c/?query=aa",
         "web://domain5.com/#例子/test*!/1",
         "web://domain6.com/#a/%D0%B6%D0%ZX",
-        "web://domain7.com/#a/%D0%B6%D0%%AF"
+        "web://domain7.com/#a/%D0%B6%D0%%AF",
       ],
       getPageLocation,
-      logger
+      logger,
     );
     expect(result).toEqual([]);
     expect(logger.warn).toHaveBeenCalledTimes(7);

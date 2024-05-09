@@ -24,7 +24,7 @@ const createSubscription = () => {
   let counter = 0;
   const subscriptions = {};
 
-  const createUnsubscribe = id => {
+  const createUnsubscribe = (id) => {
     return () => {
       delete subscriptions[id];
     };
@@ -41,13 +41,13 @@ const createSubscription = () => {
     return createUnsubscribe(counter);
   };
 
-  const setEmissionPreprocessor = value => {
+  const setEmissionPreprocessor = (value) => {
     if (typeof value === "function") {
       preprocessor = value;
     }
   };
 
-  const setEmissionCondition = value => {
+  const setEmissionCondition = (value) => {
     if (typeof value === "function") {
       emissionCondition = value;
     }
@@ -69,7 +69,7 @@ const createSubscription = () => {
     emit,
     hasSubscriptions,
     setEmissionPreprocessor,
-    setEmissionCondition
+    setEmissionCondition,
   };
 };
 

@@ -17,7 +17,7 @@ describe("publishTag", () => {
     execSync.and.returnValue("v1.2.3");
     await publishTag(container);
     expect(logger.warn).toHaveBeenCalledOnceWith(
-      "Git tag v1.2.3 already published."
+      "Git tag v1.2.3 already published.",
     );
     expect(logger.info).not.toHaveBeenCalled();
     expect(exec).not.toHaveBeenCalled();

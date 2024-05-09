@@ -10,7 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { CHROME, EDGE, EDGE_CHROMIUM, IE, UNKNOWN } from "../constants/browser.js";
+import {
+  CHROME,
+  EDGE,
+  EDGE_CHROMIUM,
+  IE,
+  UNKNOWN,
+} from "../constants/browser.js";
 import includes from "./includes.js";
 
 // Users could have also disabled third-party cookies within these browsers, but
@@ -21,7 +27,8 @@ const browsersSupportingThirdPartyCookie = [
   EDGE,
   EDGE_CHROMIUM,
   IE,
-  UNKNOWN
+  UNKNOWN,
 ];
 
-export default browser => includes(browsersSupportingThirdPartyCookie, browser);
+export default (browser) =>
+  includes(browsersSupportingThirdPartyCookie, browser);

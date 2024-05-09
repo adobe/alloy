@@ -18,10 +18,8 @@ import { objectOf, string } from "../../../utils/validation/index.js";
  * @returns {*} Validated options
  */
 export default objectOf({
-  url: string()
-    .required()
-    .nonEmpty(),
-  edgeConfigOverrides: validateConfigOverride
+  url: string().required().nonEmpty(),
+  edgeConfigOverrides: validateConfigOverride,
 })
   .required()
   .noUnknownFields();

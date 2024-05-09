@@ -17,7 +17,7 @@ import getFirstChild from "../../../../../../../src/components/Personalization/d
 describe("Personalization::helper::dom::getNextSibling", () => {
   it("returns the element next sibling", () => {
     const element = createFragment(
-      `<div id="foo">foo</div><h1>hello there</h1>`
+      `<div id="foo">foo</div><h1>hello there</h1>`,
     );
     const firstElement = getFirstChild(element);
     const nextSibling = getNextSibling(firstElement);

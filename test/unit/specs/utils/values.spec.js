@@ -15,7 +15,7 @@ import values from "../../../../src/utils/values.js";
 describe("values", () => {
   it("returns an array of own values from object", () => {
     const obj = {
-      a: "w"
+      a: "w",
     };
     const extendedObj = Object.create(obj);
     extendedObj.b = "x";

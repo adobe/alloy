@@ -18,17 +18,17 @@ describe("Personalization::createCollect", () => {
   const decisionsMeta = [
     {
       id: 1,
-      decisionId: "foo"
-    }
+      decisionId: "foo",
+    },
   ];
   const event = {
-    mergeXdm: jasmine.createSpy()
+    mergeXdm: jasmine.createSpy(),
   };
 
   beforeEach(() => {
     eventManager = jasmine.createSpyObj("eventManager", {
       sendEvent: undefined,
-      createEvent: event
+      createEvent: event,
     });
     mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
   });
@@ -38,13 +38,13 @@ describe("Personalization::createCollect", () => {
     collect({ decisionsMeta });
     expect(eventManager.createEvent).toHaveBeenCalled();
     expect(event.mergeXdm).toHaveBeenCalledWith({
-      eventType: "decisioning.propositionDisplay"
+      eventType: "decisioning.propositionDisplay",
     });
     expect(mergeDecisionsMeta).toHaveBeenCalledWith(
       event,
       decisionsMeta,
       [PropositionEventType.DISPLAY],
-      undefined
+      undefined,
     );
     expect(eventManager.sendEvent).toHaveBeenCalled();
   });

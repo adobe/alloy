@@ -15,7 +15,7 @@ import find from "../find.js";
 export default (validators, message) =>
   function anyOf(value, path) {
     let newValue;
-    const valid = find(validators, validator => {
+    const valid = find(validators, (validator) => {
       try {
         newValue = validator.call(this, value, path);
         return true;

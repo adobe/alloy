@@ -16,7 +16,7 @@ import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import { TEST_PAGE } from "../../helpers/constants/url.js";
@@ -29,14 +29,14 @@ createFixture({
   title: "C9369211: sendEvent includes a header for the referer",
   requestHooks: [
     networkLogger.edgeEndpointLogs,
-    networkLogger.edgeCollectEndpointLogs
-  ]
+    networkLogger.edgeCollectEndpointLogs,
+  ],
 });
 
 test.meta({
   ID: "C9369211",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C9369211: sendEvent includes a header for the referer when calling interact.", async () => {

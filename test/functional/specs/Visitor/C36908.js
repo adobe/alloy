@@ -17,7 +17,7 @@ import {
   orgMainConfigMain,
   debugEnabled,
   migrationEnabled,
-  consentPending
+  consentPending,
 } from "../../helpers/constants/configParts/index.js";
 import { CONSENT_IN } from "../../helpers/constants/consent.js";
 import getVisitorEcid from "../../helpers/visitorService/getVisitorEcid.js";
@@ -26,20 +26,20 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 createFixture({
   title:
     "C36908 When ID migration is enabled and Visitor and Alloy are both awaiting consent, when Visitor is denied and Alloy is approved, Alloy gets an ECID which is the same as Visitor's.",
-  includeVisitorLibrary: true
+  includeVisitorLibrary: true,
 });
 
 test.meta({
   ID: "C35448",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const config = compose(
   orgMainConfigMain,
   debugEnabled,
   migrationEnabled,
-  consentPending
+  consentPending,
 );
 
 test("C36908 When ID migration is enabled and Visitor and Alloy are both awaiting consent, when Visitor is denied and Alloy is approved, Alloy gets an ECID which is the same as Visitor's.", async () => {

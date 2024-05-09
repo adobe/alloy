@@ -19,7 +19,7 @@ import cookies from "../../../helpers/cookies.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
 } from "../../../helpers/constants/configParts/index.js";
 import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies.js";
 import createAlloyProxy from "../../../helpers/createAlloyProxy.js";
@@ -30,13 +30,13 @@ const networkLogger = createNetworkLogger();
 
 createFixture({
   title: "C224676: Passing a positive Consent in the sendEvent command.",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C224676",
   SEVERITY: "P0",
-  TEST_RUN: "REGRESSION"
+  TEST_RUN: "REGRESSION",
 });
 
 const eventOptionsWithConsent = {
@@ -47,10 +47,10 @@ const eventOptionsWithConsent = {
         consentStandardVersion: "2.0",
         consentStringValue: "CO052l-O052l-DGAMBFRACBgAIBAAAAAAIYgEawAQEagAAAA",
         gdprApplies: true,
-        containsPersonalData: false
-      }
-    ]
-  }
+        containsPersonalData: false,
+      },
+    ],
+  },
 };
 
 test("Test C224676: Passing a positive Consent in the sendEvent command", async () => {
@@ -62,7 +62,7 @@ test("Test C224676: Passing a positive Consent in the sendEvent command", async 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
   const rawResponse = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
   );
 
   const response = createResponse({ content: rawResponse });

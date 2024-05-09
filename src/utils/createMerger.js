@@ -20,7 +20,7 @@ import deepAssign from "./deepAssign.js";
  * can be a dot-notation property path.
  * @returns {Function}
  */
-export default (content, key) => updates => {
+export default (content, key) => (updates) => {
   const propertyPath = key.split(".");
   const hostObjectForUpdates = propertyPath.reduce((obj, propertyName) => {
     obj[propertyName] = obj[propertyName] || {};

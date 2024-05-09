@@ -15,8 +15,8 @@ const validateOptions = ({ options }) => {
   const validator = objectOf({
     renderDecisions: boolean(),
     personalization: objectOf({
-      decisionContext: objectOf({})
-    })
+      decisionContext: objectOf({}),
+    }),
   }).noUnknownFields();
 
   return validator(options);
@@ -27,15 +27,15 @@ export default ({ contextProvider, decisionProvider }) => {
     return applyResponse({
       renderDecisions,
       propositions: decisionProvider.evaluate(
-        contextProvider.getContext(decisionContext)
-      )
+        contextProvider.getContext(decisionContext),
+      ),
     });
   };
 
-  const optionsValidator = options => validateOptions({ options });
+  const optionsValidator = (options) => validateOptions({ options });
 
   return {
     optionsValidator,
-    run
+    run,
   };
 };

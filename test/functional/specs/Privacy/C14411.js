@@ -13,7 +13,7 @@ import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  consentPending
+  consentPending,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import { CONSENT_OUT } from "../../helpers/constants/consent.js";
@@ -24,13 +24,13 @@ import reloadPage from "../../helpers/reloadPage.js";
 const config = compose(orgMainConfigMain, consentPending);
 
 createFixture({
-  title: "C14411: User consents to no purposes after consenting to no purposes"
+  title: "C14411: User consents to no purposes after consenting to no purposes",
 });
 
 test.meta({
   ID: "C14411",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C14411: User consents to no purposes after consenting to no purposes with cache", async () => {

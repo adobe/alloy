@@ -44,7 +44,7 @@ describe("Personalization::turbine::initDomActionsModules", () => {
 
     expect(keys.length).toEqual(STANDARD_MODULES.size);
 
-    Object.keys(result).forEach(key => {
+    Object.keys(result).forEach((key) => {
       expect(STANDARD_MODULES.has(key)).toEqual(true);
     });
   });

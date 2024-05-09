@@ -16,7 +16,7 @@ import createFragment from "../../../../../../../src/components/Personalization/
 describe("Personalization::helper::dom::getFirstChild", () => {
   it("returns the first child node of the element", () => {
     const element = createFragment(
-      `<h1>hello there</h1><div id="foo">foo</div>`
+      `<h1>hello there</h1><div id="foo">foo</div>`,
     );
     const result = getFirstChild(element);
 

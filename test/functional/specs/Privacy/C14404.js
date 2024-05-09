@@ -17,7 +17,7 @@ import {
   compose,
   orgMainConfigMain,
   consentPending,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import { CONSENT_OUT, CONSENT_IN } from "../../helpers/constants/consent.js";
@@ -33,14 +33,14 @@ createFixture({
     "C14404: User cannot consent to all purposes after consenting to no purposes",
   requestHooks: [
     networkLogger.edgeEndpointLogs,
-    networkLogger.setConsentEndpointLogs
-  ]
+    networkLogger.setConsentEndpointLogs,
+  ],
 });
 
 test.meta({
   ID: "C14404",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C14404: User can consent to all purposes after consenting to no purposes", async () => {

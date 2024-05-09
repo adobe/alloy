@@ -16,8 +16,8 @@ describe("Personalization::isAuthoringModeEnabled", () => {
   it("returns true if authoring mode is enabled", () => {
     const doc = {
       location: {
-        href: "http://foo.com?adobe_authoring_enabled=1"
-      }
+        href: "http://foo.com?adobe_authoring_enabled=1",
+      },
     };
     expect(isAuthoringModeEnabled(doc)).toEqual(true);
   });
@@ -25,8 +25,8 @@ describe("Personalization::isAuthoringModeEnabled", () => {
   it("returns false if authoring mode is disabled", () => {
     const doc = {
       location: {
-        href: "http://foo.com"
-      }
+        href: "http://foo.com",
+      },
     };
     expect(isAuthoringModeEnabled(doc)).toEqual(false);
   });

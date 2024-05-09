@@ -35,7 +35,7 @@ describe("createProcessRedirect", () => {
     proposition = {
       getNotification() {
         return meta;
-      }
+      },
     };
     item = {
       getData() {
@@ -43,13 +43,13 @@ describe("createProcessRedirect", () => {
       },
       getProposition() {
         return proposition;
-      }
+      },
     };
 
     processRedirect = createProcessRedirect({
       logger,
       executeRedirect,
-      collect
+      collect,
     });
   });
 
@@ -58,7 +58,7 @@ describe("createProcessRedirect", () => {
     expect(processRedirect(item)).toEqual({});
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid Redirect data",
-      undefined
+      undefined,
     );
   });
 
@@ -75,7 +75,7 @@ describe("createProcessRedirect", () => {
     expect(result).toEqual({
       render: jasmine.any(Function),
       setRenderAttempted: true,
-      onlyRenderThis: true
+      onlyRenderThis: true,
     });
     expect(collect).not.toHaveBeenCalled();
     expect(executeRedirect).not.toHaveBeenCalled();
@@ -83,7 +83,7 @@ describe("createProcessRedirect", () => {
     await flushPromiseChains();
     expect(collect).toHaveBeenCalledWith({
       decisionsMeta: ["mymetavalue"],
-      documentMayUnload: true
+      documentMayUnload: true,
     });
     expect(executeRedirect).not.toHaveBeenCalled();
     collectDefer.resolve();

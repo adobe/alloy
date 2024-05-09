@@ -20,13 +20,13 @@ import {
   compose,
   orgMainConfigMain,
   consentPending,
-  debugEnabled
+  debugEnabled,
 } from "../../../helpers/constants/configParts/index.js";
 import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies.js";
 import createAlloyProxy from "../../../helpers/createAlloyProxy.js";
 import {
   IAB_NO_PURPOSE_ONE,
-  IAB_NO_ADOBE_VENDOR
+  IAB_NO_ADOBE_VENDOR,
 } from "../../../helpers/constants/consent.js";
 
 const config = compose(orgMainConfigMain, consentPending, debugEnabled);
@@ -37,17 +37,17 @@ createFixture({
   title: "C224671: Opt out of IAB using the setConsent command.",
   requestHooks: [
     networkLogger.setConsentEndpointLogs,
-    networkLogger.edgeEndpointLogs
-  ]
+    networkLogger.edgeEndpointLogs,
+  ],
 });
 
 test.meta({
   ID: "C224671",
   SEVERITY: "P0",
-  TEST_RUN: "REGRESSION"
+  TEST_RUN: "REGRESSION",
 });
 
-[IAB_NO_PURPOSE_ONE, IAB_NO_ADOBE_VENDOR].forEach(consent => {
+[IAB_NO_PURPOSE_ONE, IAB_NO_ADOBE_VENDOR].forEach((consent) => {
   test("Test C224671: Opt out of IAB - No Purpose 1 & No Vendor", async () => {
     const alloy = createAlloyProxy();
     await alloy.configure(config);
@@ -57,7 +57,7 @@ test.meta({
     await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
     const consentRawResponse = JSON.parse(
-      getResponseBody(networkLogger.setConsentEndpointLogs.requests[0])
+      getResponseBody(networkLogger.setConsentEndpointLogs.requests[0]),
     );
 
     const consentResponse = createResponse({ content: consentRawResponse });

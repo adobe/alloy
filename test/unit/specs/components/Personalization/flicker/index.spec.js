@@ -9,10 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { selectNodes, removeNode } from "../../../../../../src/utils/dom/index.js";
+import {
+  selectNodes,
+  removeNode,
+} from "../../../../../../src/utils/dom/index.js";
 import {
   hideElements,
-  showElements
+  showElements,
 } from "../../../../../../src/components/Personalization/flicker";
 
 describe("Personalization::flicker", () => {
@@ -36,7 +39,7 @@ describe("Personalization::flicker", () => {
     const styleDefinition = styles[0].textContent;
 
     expect(styleDefinition).toEqual(
-      `${prehidingSelector} { visibility: hidden }`
+      `${prehidingSelector} { visibility: hidden }`,
     );
   });
 

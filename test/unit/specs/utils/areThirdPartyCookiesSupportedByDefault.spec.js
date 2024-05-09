@@ -18,20 +18,20 @@ import {
   FIREFOX,
   IE,
   SAFARI,
-  UNKNOWN
+  UNKNOWN,
 } from "../../../../src/constants/browser";
 
 const browsersWithSupport = [CHROME, EDGE, EDGE_CHROMIUM, IE, UNKNOWN];
 const browsersWithoutSupport = [FIREFOX, SAFARI];
 
 describe("areThirdPartyCookiesSupportedByDefault", () => {
-  browsersWithSupport.forEach(browser => {
+  browsersWithSupport.forEach((browser) => {
     it(`reports true for ${browser}`, () => {
       expect(areThirdPartyCookiesSupportedByDefault(browser)).toBeTrue();
     });
   });
 
-  browsersWithoutSupport.forEach(browser => {
+  browsersWithoutSupport.forEach((browser) => {
     it(`reports false for ${browser}`, () => {
       expect(areThirdPartyCookiesSupportedByDefault(browser)).toBeFalse();
     });

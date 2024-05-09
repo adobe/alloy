@@ -25,7 +25,7 @@ export default ({ src, currentDocument = document }) => {
     const props = {
       onload: resolve,
       onerror: reject,
-      onabort: reject
+      onabort: reject,
     };
 
     createNode(IMG, attrs, props, [], currentDocument);

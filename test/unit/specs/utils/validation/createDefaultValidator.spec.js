@@ -18,6 +18,6 @@ describe("validation::default", () => {
     { value: null, expected: "my default" },
     { value: undefined, expected: "my default" },
     { value: "" },
-    { value: "hello" }
+    { value: "hello" },
   ]);
 });

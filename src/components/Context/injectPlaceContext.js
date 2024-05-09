@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 import { deepAssign, toISOStringLocal, toInteger } from "../../utils/index.js";
 
-export default dateProvider => {
-  return xdm => {
+export default (dateProvider) => {
+  return (xdm) => {
     const date = dateProvider();
 
     const placeContext = {};

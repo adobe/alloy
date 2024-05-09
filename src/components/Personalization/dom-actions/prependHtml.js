@@ -15,7 +15,7 @@ import {
   createFragment,
   getChildNodes,
   getFirstChild,
-  insertBefore
+  insertBefore,
 } from "./dom";
 import { loadImages } from "./images.js";
 import addNonceToInlineStyleElements from "./addNonceToInlineStyleElements.js";
@@ -23,7 +23,7 @@ import {
   getInlineScripts,
   getRemoteScriptsUrls,
   executeInlineScripts,
-  executeRemoteScripts
+  executeRemoteScripts,
 } from "./scripts";
 
 export default (container, html) => {

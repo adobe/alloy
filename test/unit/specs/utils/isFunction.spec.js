@@ -20,7 +20,7 @@ describe("isFunction", () => {
   });
 
   it("returns false if the value is not a function", () => {
-    nonFunctions.forEach(nonFunction => {
+    nonFunctions.forEach((nonFunction) => {
       expect(isFunction(nonFunction)).toBe(false);
     });
   });

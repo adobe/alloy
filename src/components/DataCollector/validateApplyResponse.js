@@ -15,7 +15,7 @@ import {
   boolean,
   mapOfValues,
   objectOf,
-  string
+  string,
 } from "../../utils/validation";
 
 export default ({ options }) => {
@@ -26,14 +26,14 @@ export default ({ options }) => {
       handle: arrayOf(
         objectOf({
           type: string().required(),
-          payload: anything().required()
-        })
-      ).required()
+          payload: anything().required(),
+        }),
+      ).required(),
     }).required(),
     personalization: objectOf({
       sendDisplayEvent: boolean().default(true),
-      decisionContext: objectOf({})
-    }).default({ sendDisplayEvent: true })
+      decisionContext: objectOf({}),
+    }).default({ sendDisplayEvent: true }),
   }).noUnknownFields();
 
   return validator(options);

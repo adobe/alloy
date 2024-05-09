@@ -26,8 +26,8 @@ describe("Personalization::dom-actions::createPreprocess", () => {
   });
 
   it("passes the data through", () => {
-    preprocessor1.and.callFake(data => data);
-    preprocessor2.and.callFake(data => data);
+    preprocessor1.and.callFake((data) => data);
+    preprocessor2.and.callFake((data) => data);
     expect(preprocess({ a: 1, b: 2 })).toEqual({ a: 1, b: 2 });
   });
 
@@ -44,8 +44,8 @@ describe("Personalization::dom-actions::createPreprocess", () => {
   });
 
   it("updates the data2", () => {
-    preprocessor1.and.callFake(data => ({ ...data, c: 3 }));
-    preprocessor2.and.callFake(data => ({ ...data, d: 4 }));
+    preprocessor1.and.callFake((data) => ({ ...data, c: 3 }));
+    preprocessor2.and.callFake((data) => ({ ...data, d: 4 }));
     expect(preprocess({ a: 1, b: 2 })).toEqual({ a: 1, b: 2, c: 3, d: 4 });
   });
 });

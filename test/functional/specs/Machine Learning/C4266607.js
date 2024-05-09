@@ -15,13 +15,13 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import createFixture from "../../helpers/createFixture/index.js";
 
 createFixture({
-  title: "C4266607 sendEvent command returns an `inferences` key in the result"
+  title: "C4266607 sendEvent command returns an `inferences` key in the result",
 });
 
 test.meta({
   ID: "C4266607",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("C4266607 sendEvent command returns an `inferences` key in the result", async () => {

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { useEffect } from "react.js";
 
-const isNonEmptyArray = value => Array.isArray(value) && value.length > 0;
+const isNonEmptyArray = (value) => Array.isArray(value) && value.length > 0;
 
 export default ({
   instanceName = "alloy",
@@ -20,7 +20,7 @@ export default ({
   data = {},
   xdm = {},
   decisionScopes,
-  setPropositions
+  setPropositions,
 } = {}) => {
   useEffect(() => {
     xdm.eventType = "page-view";
@@ -28,8 +28,8 @@ export default ({
     if (viewName) {
       xdm.web = {
         webPageDetails: {
-          viewName
-        }
+          viewName,
+        },
       };
     }
 
@@ -37,8 +37,8 @@ export default ({
       renderDecisions: true,
       decisionScopes, // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
       xdm,
-      data
-    }).then(res => {
+      data,
+    }).then((res) => {
       const { propositions } = res;
       if (setPropositions && isNonEmptyArray(propositions)) {
         setPropositions(propositions);
@@ -50,6 +50,6 @@ export default ({
     instanceName,
     setPropositions,
     viewName,
-    JSON.stringify(xdm)
+    JSON.stringify(xdm),
   ]);
 };

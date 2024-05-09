@@ -20,13 +20,13 @@ const networkLogger = createNetworkLogger();
 createFixture({
   title:
     "C75372 - XDM and data objects passed into event command should not be modified",
-  requestHooks: [networkLogger.setConsentEndpointLogs]
+  requestHooks: [networkLogger.setConsentEndpointLogs],
 });
 
 test.meta({
   ID: "C75372",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const sendEvent = ClientFunction(() => {
@@ -38,12 +38,12 @@ const sendEvent = ClientFunction(() => {
     .alloy("sendEvent", {
       xdm: xdmDataLayer,
       data: nonXdmDataLayer,
-      mergeId: "abc"
+      mergeId: "abc",
     })
     .then(() => {
       return {
         xdmDataLayer,
-        nonXdmDataLayer
+        nonXdmDataLayer,
       };
     });
 });

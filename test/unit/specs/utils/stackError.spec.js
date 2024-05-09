@@ -18,7 +18,7 @@ describe("stackError", () => {
     const result = stackError({ error, message: "Predicament discovered." });
     expect(result).toEqual(jasmine.any(Error));
     expect(result.message).toBe(
-      "Predicament discovered.\nCaused by: Conundrum encountered."
+      "Predicament discovered.\nCaused by: Conundrum encountered.",
     );
   });
 
@@ -27,7 +27,7 @@ describe("stackError", () => {
     const result = stackError({ error, message: "Predicament discovered." });
     expect(result).toEqual(jasmine.any(Error));
     expect(result.message).toBe(
-      "Predicament discovered.\nCaused by: Conundrum encountered."
+      "Predicament discovered.\nCaused by: Conundrum encountered.",
     );
   });
 });

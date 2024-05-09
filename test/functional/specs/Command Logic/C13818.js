@@ -14,48 +14,48 @@ import createFixture from "../../helpers/createFixture/index.js";
 
 import {
   orgMainConfigMain,
-  orgAltConfigAlt
+  orgAltConfigAlt,
 } from "../../helpers/constants/configParts/index.js";
 
 const networkLoggerConfig = {
   logRequestBody: true,
-  stringifyRequestBody: true
+  stringifyRequestBody: true,
 };
 const networkLogger1 = RequestLogger(
   new RegExp(
-    `v1\\/(interact|collect)\\?configId=${orgMainConfigMain.datastreamId}`
+    `v1\\/(interact|collect)\\?configId=${orgMainConfigMain.datastreamId}`,
   ),
-  networkLoggerConfig
+  networkLoggerConfig,
 );
 const networkLogger2 = RequestLogger(
   new RegExp(
-    `v1\\/(interact|collect)\\?configId=${orgAltConfigAlt.datastreamId}`
+    `v1\\/(interact|collect)\\?configId=${orgAltConfigAlt.datastreamId}`,
   ),
-  networkLoggerConfig
+  networkLoggerConfig,
 );
 
 createFixture({
   title:
     "C13818: Changing the options object after configure doesn't change the computed config",
-  requestHooks: [networkLogger1, networkLogger2]
+  requestHooks: [networkLogger1, networkLogger2],
 });
 
 test.meta({
   ID: "C13818",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const apiCalls = ClientFunction((configObject, alternateConfigObject) => {
   return window.alloy("configure", configObject).then(() => {
-    Object.keys(alternateConfigObject).forEach(key => {
+    Object.keys(alternateConfigObject).forEach((key) => {
       configObject[key] = alternateConfigObject[key];
     });
     return window.alloy("sendEvent");
   });
 });
 
-test("Test C13818: Changing the options object after configure doesn't change the computed config", async t => {
+test("Test C13818: Changing the options object after configure doesn't change the computed config", async (t) => {
   await apiCalls(orgMainConfigMain, orgAltConfigAlt);
 
   await t.expect(networkLogger1.requests.length).eql(1);

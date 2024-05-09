@@ -11,7 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import createCoreConfigs from "../../../../../src/core/config/createCoreConfigs.js";
-import { IN, OUT, PENDING } from "../../../../../src/constants/consentStatus.js";
+import {
+  IN,
+  OUT,
+  PENDING,
+} from "../../../../../src/constants/consentStatus.js";
 
 describe("createCoreConfigs", () => {
   let validator;
@@ -30,14 +34,14 @@ describe("createCoreConfigs", () => {
     it("validates debugEnabled=true", () => {
       const config = validator({
         debugEnabled: true,
-        ...baseConfig
+        ...baseConfig,
       });
       expect(config.debugEnabled).toBe(true);
     });
     it("validates debugEnabled=false", () => {
       const config = validator({
         debugEnabled: false,
-        ...baseConfig
+        ...baseConfig,
       });
       expect(config.debugEnabled).toBe(false);
     });
@@ -58,21 +62,21 @@ describe("createCoreConfigs", () => {
       expect(() => {
         validator({
           defaultConsent: {},
-          ...baseConfig
+          ...baseConfig,
         });
       }).toThrowError();
     });
     it("validates defaultConsent='in'", () => {
       const config = validator({
         defaultConsent: IN,
-        ...baseConfig
+        ...baseConfig,
       });
       expect(config.defaultConsent).toEqual(IN);
     });
     it("validates defaultConsent='pending'", () => {
       const config = validator({
         defaultConsent: PENDING,
-        ...baseConfig
+        ...baseConfig,
       });
       expect(config.defaultConsent).toEqual(PENDING);
     });
@@ -84,7 +88,7 @@ describe("createCoreConfigs", () => {
     it("validates defaultConsent='out'", () => {
       const config = validator({
         defaultConsent: OUT,
-        ...baseConfig
+        ...baseConfig,
       });
       expect(config.defaultConsent).toEqual(OUT);
     });
@@ -95,26 +99,26 @@ describe("createCoreConfigs", () => {
     { datastreamId: "asdfasdf", orgId: "" },
     {
       datastreamId: "myproperty1",
-      orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+      orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
     },
     {
       datastreamId: "myproperty1",
-      orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+      orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
     },
     {
       datastreamId: "myproperty1",
       edgeDomain: "stats.firstparty.com",
-      orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+      orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
     },
     {
       datastreamId: "myproperty1",
       edgeDomain: "STATS.FIRSTPARTY.COM",
-      orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+      orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
     },
     {
       datastreamId: "myproperty1",
       edgeDomain: "STATS.FIRSTPARTY.COM",
-      orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+      orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
     },
     {
       datastreamId: "myproperty1",
@@ -124,11 +128,11 @@ describe("createCoreConfigs", () => {
         experience_platform: {
           datasets: {
             event: "werewr",
-            profile: "www"
-          }
-        }
-      }
-    }
+            profile: "www",
+          },
+        },
+      },
+    },
   ].forEach((cfg, i) => {
     it(`validates configuration (${i})`, () => {
       validator(cfg);
@@ -142,12 +146,12 @@ describe("createCoreConfigs", () => {
     {
       datastreamId: "myproperty1",
       edgeDomain: "stats firstparty.com",
-      prehidingStyle: ""
+      prehidingStyle: "",
     },
     {
       datastreamId: "myproperty1",
-      edgeBasePath: 123
-    }
+      edgeBasePath: 123,
+    },
   ].forEach((cfg, i) => {
     it(`invalidates configuration (${i})`, () => {
       expect(() => validator(cfg)).toThrowError();

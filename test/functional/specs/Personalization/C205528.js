@@ -15,13 +15,14 @@ import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const networkLogger = createNetworkLogger();
-const redirectEndpoint = /functional-test\/alloyTestPage.html\?redirectedTest=true/;
+const redirectEndpoint =
+  /functional-test\/alloyTestPage.html\?redirectedTest=true/;
 
 const redirectLogger = RequestLogger(redirectEndpoint);
 
@@ -30,13 +31,13 @@ createFixture({
   title:
     "C205528 A redirect offer should redirect the page to the URL in the redirect decision",
   url: `${TEST_PAGE_URL}?test=C205528`,
-  requestHooks: [networkLogger.edgeEndpointLogs, redirectLogger]
+  requestHooks: [networkLogger.edgeEndpointLogs, redirectLogger],
 });
 
 test.meta({
   ID: "C205528",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C205528: A redirect offer should redirect the page to the URL in the redirect decision", async () => {
@@ -44,7 +45,7 @@ test("Test C205528: A redirect offer should redirect the page to the URL in the 
   await alloy.configure(config);
   try {
     await alloy.sendEvent({
-      renderDecisions: true
+      renderDecisions: true,
     });
   } catch (e) {
     // an exception will be thrown because a redirect will be executed within the Alloy Client Function
@@ -58,7 +59,7 @@ test("Test C205528: A redirect offer should not redirect if renderDecisions is f
   await alloy.configure(config);
   await alloy.sendEvent({});
   // wait 1 second for the redirect to happen
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
   await t.expect(redirectLogger.count(() => true)).eql(0);
 });
 
@@ -68,13 +69,13 @@ test("Test 205528: When there is a redirect offer web sdk should not send a bott
   await alloy.sendEventAsync({
     renderDecisions: true,
     personalization: {
-      sendDisplayEvent: false
-    }
+      sendDisplayEvent: false,
+    },
   });
   await alloy.sendEventAsync({
     personalization: {
-      includeRenderedPropositions: true
-    }
+      includeRenderedPropositions: true,
+    },
   });
 
   await t.expect(redirectLogger.count(() => true)).eql(1);

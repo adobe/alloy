@@ -14,7 +14,7 @@ import setAttribute from "../../../../../../../src/components/Personalization/do
 import {
   createNode,
   removeNode,
-  selectNodes
+  selectNodes,
 } from "../../../../../../../src/utils/dom";
 import { getAttribute } from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 

@@ -20,12 +20,12 @@ describe("validation:literal", () => {
     { value: "hello", error: false },
     { value: {}, error: true },
     { value: "", error: true },
-    { value: "goodbye", error: true }
+    { value: "goodbye", error: true },
   ]);
   describeValidation("literal required integer", literal(42).required(), [
     { value: 42, error: false },
     { value: 41, error: true },
     { value: null, error: true },
-    { value: undefined, error: true }
+    { value: undefined, error: true },
   ]);
 });

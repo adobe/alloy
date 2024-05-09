@@ -19,24 +19,24 @@ describe("ActivityCollector config validators", () => {
     validConfigurations: [
       {},
       {
-        clickCollectionEnabled: false
+        clickCollectionEnabled: false,
       },
       {
         clickCollectionEnabled: false,
-        downloadLinkQualifier: ""
-      }
+        downloadLinkQualifier: "",
+      },
     ],
     invalidConfigurations: [
       { clickCollectionEnabled: "" },
       {
         clickCollectionEnabled: true,
-        downloadLinkQualifier: "["
-      }
+        downloadLinkQualifier: "[",
+      },
     ],
     defaultValues: {
       clickCollectionEnabled: true,
       downloadLinkQualifier:
-        "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$"
-    }
+        "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$",
+    },
   });
 });

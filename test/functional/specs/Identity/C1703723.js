@@ -15,7 +15,7 @@ import cookies from "../../helpers/cookies.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
@@ -28,13 +28,13 @@ const networkLogger = createNetworkLogger();
 createFixture({
   title:
     "C1703723: getIdentity uses cached values when interact already called",
-  requestHooks: [networkLogger.acquireEndpointLogs]
+  requestHooks: [networkLogger.acquireEndpointLogs],
 });
 
 test.meta({
   ID: "C1703773",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("C1703723: getIdentity uses cached values when interact already called", async () => {

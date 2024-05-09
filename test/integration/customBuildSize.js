@@ -16,20 +16,20 @@ const util = require("util");
 const execAsync = util.promisify(exec);
 
 // Function to get file size in KB
-const getFileSizeInKB = filePath => {
+const getFileSizeInKB = (filePath) => {
   const stats = fs.statSync(filePath);
   return (stats.size / 1024).toFixed(2); // Rounded to 2 decimal places
 };
 
 // Function to run the build excluding a component and log the size
-const testExcludeComponent = async component => {
+const testExcludeComponent = async (component) => {
   try {
     await execAsync(`npm run build:custom -- --exclude ${component}`);
     // Assuming the output files are in the 'dist' directory
     const size = getFileSizeInKB(`../../dist/alloy.js`);
     const minSize = getFileSizeInKB(`../../dist/alloy.min.js`);
     console.log(
-      `Build size excluding ${component}: ${size} KB, Minified: ${minSize} KB`
+      `Build size excluding ${component}: ${size} KB, Minified: ${minSize} KB`,
     );
   } catch (error) {
     console.error(`Error excluding ${component}: ${error}`);
@@ -43,7 +43,7 @@ const components = [
   "personalization",
   "eventmerge",
   "decisioningengine",
-  "machinelearning"
+  "machinelearning",
 ];
 
 // Run tests for all components

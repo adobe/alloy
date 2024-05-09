@@ -3,12 +3,12 @@ const updateDevDependency = async ({
   execSync,
   githubRef,
   logger,
-  version
+  version,
 }) => {
   const {
     dependencies: {
-      "@adobe/alloy": { version: installedVersion }
-    }
+      "@adobe/alloy": { version: installedVersion },
+    },
   } = JSON.parse(execSync(`npm ls @adobe/alloy --json`).toString());
   if (installedVersion === version) {
     logger.warn(`Dependency @adobe/alloy@${version} already installed.`);
@@ -18,7 +18,7 @@ const updateDevDependency = async ({
     await exec("git add", `git add package.json package-lock.json`);
     await exec(
       "git commit",
-      `git commit -m "[skip ci] update self devDependency to ${version}"`
+      `git commit -m "[skip ci] update self devDependency to ${version}"`,
     );
     await exec("git push", `git push gh-origin HEAD:${githubRef}`);
   }

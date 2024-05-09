@@ -17,7 +17,7 @@ import isNumber from "./isNumber.js";
  * @param {*} value
  * @returns {boolean}
  */
-export default value => {
+export default (value) => {
   const parsed = parseInt(value, 10);
 
   return isNumber(parsed) && value === parsed;

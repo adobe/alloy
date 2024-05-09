@@ -36,14 +36,14 @@ describe("injectFireReferrerHideableImage", () => {
       appendNode: appendNodeMock,
       awaitSelector: awaitSelectorMock,
       createNode: createNodeMock,
-      fireImage: fireImageMock
+      fireImage: fireImageMock,
     });
   });
 
   it("should create an iframe for a request that hides the referrer", async () => {
     const request = {
       hideReferrer: true,
-      url: "https://adobe.com/test-referrer.jpg"
+      url: "https://adobe.com/test-referrer.jpg",
     };
     await fireReferrerHideableImage(request);
 
@@ -55,7 +55,7 @@ describe("injectFireReferrerHideableImage", () => {
   it("should fire the image on the page for a request that does not hide the referrer", async () => {
     const request = {
       hideReferrer: false,
-      url: "https://adobe.com/test-referrer.jpg"
+      url: "https://adobe.com/test-referrer.jpg",
     };
     await fireReferrerHideableImage(request);
 
@@ -66,11 +66,11 @@ describe("injectFireReferrerHideableImage", () => {
   it("should only create one iframe when called multiple times", async () => {
     const request = {
       hideReferrer: true,
-      url: "https://adobe.com/test-invalid-referrer.jpg"
+      url: "https://adobe.com/test-invalid-referrer.jpg",
     };
     const secondRequest = {
       hideReferrer: true,
-      url: "https://adobe.com/test-invalid-referrer2.jpg"
+      url: "https://adobe.com/test-invalid-referrer2.jpg",
     };
 
     await fireReferrerHideableImage(request);

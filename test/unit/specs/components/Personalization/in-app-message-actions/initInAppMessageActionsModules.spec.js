@@ -21,7 +21,7 @@ describe("Personalization::turbine::initInAppMessageActionsModules", () => {
     expect(Object.keys(messagingActionsModules).length).toEqual(1);
 
     expect(messagingActionsModules.defaultContent).toEqual(
-      jasmine.any(Function)
+      jasmine.any(Function),
     );
   });
 });

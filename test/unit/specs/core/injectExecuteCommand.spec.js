@@ -24,9 +24,9 @@ describe("injectExecuteCommand", () => {
       "error",
       "logOnBeforeCommand",
       "logOnCommandResolved",
-      "logOnCommandRejected"
+      "logOnCommandRejected",
     ]);
-    handleError = jasmine.createSpy().and.callFake(error => {
+    handleError = jasmine.createSpy().and.callFake((error) => {
       throw error;
     });
   });
@@ -34,12 +34,12 @@ describe("injectExecuteCommand", () => {
   it("rejects promise if configure is not the first command executed", () => {
     const executeCommand = injectExecuteCommand({
       logger,
-      handleError
+      handleError,
     });
 
     return executeCommand("sendEvent")
       .then(fail)
-      .catch(error => {
+      .catch((error) => {
         expect(error.message).toContain("The library must be configured first");
         expect(handleError).toHaveBeenCalledWith(error, "sendEvent command");
       });
@@ -50,15 +50,15 @@ describe("injectExecuteCommand", () => {
     const executeCommand = injectExecuteCommand({
       logger,
       configureCommand,
-      handleError
+      handleError,
     });
 
     executeCommand("configure");
     return executeCommand("configure")
       .then(fail)
-      .catch(error => {
+      .catch((error) => {
         expect(error.message).toContain(
-          "The library has already been configured"
+          "The library has already been configured",
         );
         expect(handleError).toHaveBeenCalledWith(error, "configure command");
       });
@@ -69,20 +69,20 @@ describe("injectExecuteCommand", () => {
       getCommand() {},
       getCommandNames() {
         return ["genuine"];
-      }
+      },
     };
     const configureCommand = () => Promise.resolve(componentRegistry);
     const executeCommand = injectExecuteCommand({
       logger,
       configureCommand,
-      handleError
+      handleError,
     });
     executeCommand("configure");
     return executeCommand("bogus")
       .then(fail)
-      .catch(error => {
+      .catch((error) => {
         expect(error.message).toBe(
-          "The bogus command does not exist. List of available commands: configure, setDebug, genuine."
+          "The bogus command does not exist. List of available commands: configure, setDebug, genuine.",
         );
         expect(handleError).toHaveBeenCalledWith(error, "bogus command");
       });
@@ -94,13 +94,11 @@ describe("injectExecuteCommand", () => {
     const executeCommand = injectExecuteCommand({
       logger,
       configureCommand,
-      handleError
+      handleError,
     });
 
     const configureRejectedSpy = jasmine.createSpy("configureRejectedSpy");
-    executeCommand("configure")
-      .then(fail)
-      .catch(configureRejectedSpy);
+    executeCommand("configure").then(fail).catch(configureRejectedSpy);
     const sendEventResolvedSpy = jasmine.createSpy("sendEventResolvedSpy");
     const sendEventRejectedSpy = jasmine.createSpy("sendEventRejectedSpy");
     executeCommand("sendEvent")
@@ -109,7 +107,7 @@ describe("injectExecuteCommand", () => {
     return flushPromiseChains().then(() => {
       expect(configureRejectedSpy).toHaveBeenCalledWith(configureError);
       expect(logger.warn).toHaveBeenCalledWith(
-        "An error during configuration is preventing the sendEvent command from executing."
+        "An error during configuration is preventing the sendEvent command from executing.",
       );
       expect(sendEventResolvedSpy).not.toHaveBeenCalled();
       expect(sendEventRejectedSpy).not.toHaveBeenCalled();
@@ -121,26 +119,26 @@ describe("injectExecuteCommand", () => {
       .createSpy()
       .and.throwError(new Error("Unexpected error"));
     const testCommand = {
-      run: runCommandSpy
+      run: runCommandSpy,
     };
     const componentRegistry = {
       getCommand: () => testCommand,
       getCommandNames() {
         return ["test"];
-      }
+      },
     };
     const configureCommand = () => Promise.resolve(componentRegistry);
     const executeCommand = injectExecuteCommand({
       logger,
       configureCommand,
       handleError,
-      validateCommandOptions: options => options
+      validateCommandOptions: (options) => options,
     });
     executeCommand("configure");
     return executeCommand("test", {}).catch(() => {
       expect(handleError).toHaveBeenCalledWith(
         new Error("Unexpected error"),
-        "test command"
+        "test command",
       );
     });
   });
@@ -150,19 +148,19 @@ describe("injectExecuteCommand", () => {
       .createSpy()
       .and.returnValues(
         "with-result-post-validation-options",
-        "without-result-post-validation-options"
+        "without-result-post-validation-options",
       );
     const testCommandWithResult = jasmine.createSpyObj(
       "testCommandWithResult",
       {
-        run: { foo: "bar" }
-      }
+        run: { foo: "bar" },
+      },
     );
     const testCommandWithoutResult = jasmine.createSpyObj(
       "testCommandWithoutResult",
       {
-        run: undefined
-      }
+        run: undefined,
+      },
     );
     const componentRegistry = {
       getCommand: jasmine
@@ -170,48 +168,48 @@ describe("injectExecuteCommand", () => {
         .and.returnValues(testCommandWithResult, testCommandWithoutResult),
       getCommandNames() {
         return ["testCommandWithResult", "testCommandWithoutResult"];
-      }
+      },
     };
     const configureCommand = () => Promise.resolve(componentRegistry);
     const executeCommand = injectExecuteCommand({
       logger,
       configureCommand,
       handleError,
-      validateCommandOptions: validateCommandOptionsSpy
+      validateCommandOptions: validateCommandOptionsSpy,
     });
     executeCommand("configure");
     return Promise.all([
       executeCommand(
         "testCommandWithResult",
-        "with-result-pre-validation-options"
+        "with-result-pre-validation-options",
       ),
       executeCommand(
         "testCommandWithoutResult",
-        "without-result-pre-validation-options"
-      )
-    ]).then(results => {
+        "without-result-pre-validation-options",
+      ),
+    ]).then((results) => {
       expect(results[0]).toEqual({ foo: "bar" });
       expect(results[1]).toEqual({});
       expect(validateCommandOptionsSpy).toHaveBeenCalledWith({
         command: testCommandWithResult,
-        options: "with-result-pre-validation-options"
+        options: "with-result-pre-validation-options",
       });
       expect(validateCommandOptionsSpy).toHaveBeenCalledWith({
         command: testCommandWithoutResult,
-        options: "without-result-pre-validation-options"
+        options: "without-result-pre-validation-options",
       });
       expect(testCommandWithResult.run).toHaveBeenCalledWith(
-        "with-result-post-validation-options"
+        "with-result-post-validation-options",
       );
       expect(testCommandWithoutResult.run).toHaveBeenCalledWith(
-        "without-result-post-validation-options"
+        "without-result-post-validation-options",
       );
     });
   });
 
   it("executes the core commands", () => {
     const componentRegistry = {
-      getCommand() {}
+      getCommand() {},
     };
     const configureCommand = jasmine
       .createSpy()
@@ -221,12 +219,12 @@ describe("injectExecuteCommand", () => {
       logger,
       configureCommand,
       setDebugCommand,
-      handleError
+      handleError,
     });
 
     return Promise.all([
       executeCommand("configure", { foo: "bar" }),
-      executeCommand("setDebug", { baz: "qux" })
+      executeCommand("setDebug", { baz: "qux" }),
     ]).then(([configureResult, setDebugResult]) => {
       expect(configureCommand).toHaveBeenCalledWith({ foo: "bar" });
       expect(setDebugCommand).toHaveBeenCalledWith({ baz: "qux" });
@@ -235,22 +233,22 @@ describe("injectExecuteCommand", () => {
     });
   });
 
-  const buildWithTestCommand = runCommand => {
+  const buildWithTestCommand = (runCommand) => {
     const testCommand = {
-      run: runCommand
+      run: runCommand,
     };
     const componentRegistry = {
       getCommand: () => testCommand,
       getCommandNames() {
         return ["test"];
-      }
+      },
     };
     const configureCommand = () => Promise.resolve(componentRegistry);
     return injectExecuteCommand({
       logger,
       configureCommand,
       handleError,
-      validateCommandOptions: options => options
+      validateCommandOptions: (options) => options,
     });
   };
 
@@ -258,7 +256,7 @@ describe("injectExecuteCommand", () => {
     const executeCommand = buildWithTestCommand(() => {
       expect(logger.logOnBeforeCommand).toHaveBeenCalledWith({
         commandName: "test",
-        options: { my: "options" }
+        options: { my: "options" },
       });
     });
     executeCommand("configure");
@@ -271,12 +269,12 @@ describe("injectExecuteCommand", () => {
       return { go: "bananas" };
     });
     executeCommand("configure");
-    return executeCommand("test", { my: "options" }).then(result => {
+    return executeCommand("test", { my: "options" }).then((result) => {
       expect(result).toEqual({ go: "bananas" });
       expect(logger.logOnCommandResolved).toHaveBeenCalledWith({
         commandName: "test",
         options: { my: "options" },
-        result: { go: "bananas" }
+        result: { go: "bananas" },
       });
     });
   });
@@ -288,12 +286,12 @@ describe("injectExecuteCommand", () => {
       throw myerror;
     });
     executeCommand("configure");
-    return executeCommand("test", { my: "options" }).catch(error => {
+    return executeCommand("test", { my: "options" }).catch((error) => {
       expect(error).toEqual(myerror);
       expect(logger.logOnCommandRejected).toHaveBeenCalledWith({
         commandName: "test",
         options: { my: "options" },
-        error: myerror
+        error: myerror,
       });
     });
   });
@@ -305,12 +303,12 @@ describe("injectExecuteCommand", () => {
       throw myerror;
     });
     executeCommand("configure");
-    return executeCommand("test", { my: "options" }).then(result => {
+    return executeCommand("test", { my: "options" }).then((result) => {
       expect(result).toEqual({});
       expect(logger.logOnCommandResolved).toHaveBeenCalledWith({
         commandName: "test",
         options: { my: "options" },
-        result: {}
+        result: {},
       });
       expect(logger.logOnCommandRejected).not.toHaveBeenCalled();
     });

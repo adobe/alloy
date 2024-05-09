@@ -19,14 +19,14 @@ export default ({
   cookieTransfer,
   lifecycle,
   createResponse,
-  processWarningsAndErrors
+  processWarningsAndErrors,
 }) => {
   return ({
     request,
     responseHeaders,
     responseBody,
     runOnResponseCallbacks = noop,
-    runOnRequestFailureCallbacks = noop
+    runOnRequestFailureCallbacks = noop,
   }) => {
     const onResponseCallbackAggregator = createCallbackAggregator();
     onResponseCallbackAggregator.add(lifecycle.onResponse);
@@ -36,27 +36,27 @@ export default ({
     onRequestFailureCallbackAggregator.add(lifecycle.onRequestFailure);
     onRequestFailureCallbackAggregator.add(runOnRequestFailureCallbacks);
 
-    const getHeader = key => responseHeaders[key];
+    const getHeader = (key) => responseHeaders[key];
 
     return lifecycle
       .onBeforeRequest({
         request,
         onResponse: onResponseCallbackAggregator.add,
-        onRequestFailure: onRequestFailureCallbackAggregator.add
+        onRequestFailure: onRequestFailureCallbackAggregator.add,
       })
       .then(() =>
         processWarningsAndErrors({
           statusCode: HTTP_STATUS_OK,
           getHeader,
           body: JSON.stringify(responseBody),
-          parsedBody: responseBody
-        })
+          parsedBody: responseBody,
+        }),
       )
       .catch(handleRequestFailure(onRequestFailureCallbackAggregator))
       .then(() => {
         const response = createResponse({
           content: responseBody,
-          getHeader
+          getHeader,
         });
 
         // This will clobber any cookies set via HTTP from the server.  So care should be given to remove any state:store handles if that is not desirable

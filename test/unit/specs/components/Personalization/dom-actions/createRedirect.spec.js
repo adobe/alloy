@@ -5,8 +5,8 @@ describe("createRedirect", () => {
     const window = {
       location: {
         replace: jasmine.createSpy(),
-        href: jasmine.createSpy()
-      }
+        href: jasmine.createSpy(),
+      },
     };
     const redirect = createRedirect(window);
     redirect("myurl");
@@ -18,8 +18,8 @@ describe("createRedirect", () => {
     const window = {
       location: {
         href: jasmine.createSpy(),
-        replace: jasmine.createSpy()
-      }
+        replace: jasmine.createSpy(),
+      },
     };
     const redirectUrl = "https://www.adobe.com";
     const redirect = createRedirect(window);

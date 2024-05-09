@@ -15,7 +15,7 @@ import {
   selectNodes,
   removeNode,
   appendNode,
-  createNode
+  createNode,
 } from "../../../../../../../src/utils/dom";
 import { getNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 
@@ -28,7 +28,7 @@ describe("Personalization::DOM::getNonce", () => {
     testResetCachedNonce();
     appendNode(
       document.head,
-      createNode("script", { id: "fooById", nonce: "123" })
+      createNode("script", { id: "fooById", nonce: "123" }),
     );
     expect(getNonce()).toEqual("123");
   });

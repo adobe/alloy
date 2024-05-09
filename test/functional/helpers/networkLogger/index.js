@@ -17,10 +17,10 @@ const networkLoggerOptions = {
   logResponseBody: true,
   stringifyResponseBody: false,
   stringifyRequestBody: true,
-  logResponseHeaders: true
+  logResponseHeaders: true,
 };
 
-const createRequestLogger = endpoint => {
+const createRequestLogger = (endpoint) => {
   return RequestLogger(endpoint, networkLoggerOptions);
 };
 
@@ -39,10 +39,10 @@ const createNetworkLogger = () => {
   const setConsentEndpointLogs = createRequestLogger(setConsentEndpoint);
   const acquireEndpointLogs = createRequestLogger(acquireEndpoint);
   const targetDeliveryEndpointLogs = createRequestLogger(
-    targetDeliveryEndpoint
+    targetDeliveryEndpoint,
   );
   const targetMboxJsonEndpointLogs = createRequestLogger(
-    targetMboxJsonEndpoint
+    targetMboxJsonEndpoint,
   );
 
   const clearLogs = async () => {
@@ -65,7 +65,7 @@ const createNetworkLogger = () => {
     acquireEndpointLogs,
     targetDeliveryEndpointLogs,
     targetMboxJsonEndpointLogs,
-    clearLogs
+    clearLogs,
   };
 };
 

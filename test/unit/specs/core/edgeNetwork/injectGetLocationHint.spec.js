@@ -31,7 +31,7 @@ describe("injectGetLocationHint", () => {
     cookieJar.get.and.returnValue("mycluster");
     getLocationHint();
     expect(cookieJar.get).toHaveBeenCalledOnceWith(
-      "kndctr_myorg_AdobeOrg_cluster"
+      "kndctr_myorg_AdobeOrg_cluster",
     );
   });
 

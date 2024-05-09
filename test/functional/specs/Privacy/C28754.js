@@ -18,7 +18,7 @@ import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
 import {
   compose,
   orgMainConfigMain,
-  consentPending
+  consentPending,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
@@ -31,13 +31,13 @@ const networkLogger = createNetworkLogger();
 createFixture({
   title:
     "C28754 - Consenting to no purposes should result in no data handles in the response.",
-  requestHooks: [networkLogger.setConsentEndpointLogs]
+  requestHooks: [networkLogger.setConsentEndpointLogs],
 });
 
 test.meta({
   ID: "C28754",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("C28754 - Consenting to no purposes should result in no data handles in the response.", async () => {
@@ -48,14 +48,14 @@ test("C28754 - Consenting to no purposes should result in no data handles in the
   await responseStatus(networkLogger.setConsentEndpointLogs.requests, 200);
 
   const response = JSON.parse(
-    getResponseBody(networkLogger.setConsentEndpointLogs.requests[0])
+    getResponseBody(networkLogger.setConsentEndpointLogs.requests[0]),
   );
 
   const alloyResponse = createResponse({ content: response });
 
   const idSyncsPayload = alloyResponse.getPayloadsByType("identity:exchange");
   const personalizationPayload = alloyResponse.getPayloadsByType(
-    "personalization:decisions"
+    "personalization:decisions",
   );
   const audiencesPayload = alloyResponse.getPayloadsByType("activation:push");
 

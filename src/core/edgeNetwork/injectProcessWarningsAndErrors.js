@@ -15,7 +15,7 @@ import { NO_CONTENT } from "../../constants/httpStatusCode.js";
 const MESSAGE_PREFIX = "The server responded with a";
 
 export default ({ logger }) => {
-  return networkResponse => {
+  return (networkResponse) => {
     const { statusCode, body, parsedBody } = networkResponse;
 
     if (
@@ -29,16 +29,16 @@ export default ({ logger }) => {
         ? `response body:\n${bodyToLog}`
         : `no response body.`;
       throw new Error(
-        `${MESSAGE_PREFIX} status code ${statusCode} and ${messageSuffix}`
+        `${MESSAGE_PREFIX} status code ${statusCode} and ${messageSuffix}`,
       );
     }
 
     if (parsedBody) {
       const { warnings = [], errors = [] } = parsedBody;
-      warnings.forEach(warning => {
+      warnings.forEach((warning) => {
         logger.warn(`${MESSAGE_PREFIX} warning:`, warning);
       });
-      errors.forEach(error => {
+      errors.forEach((error) => {
         logger.error(`${MESSAGE_PREFIX} non-fatal error:`, error);
       });
     }

@@ -20,7 +20,7 @@ describe("DecisioningEngine:decisionHistory", () => {
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
 
     history = createDecisionHistory({
-      eventRegistry: createEventRegistry({ storage })
+      eventRegistry: createEventRegistry({ storage }),
     });
   });
 
@@ -31,15 +31,15 @@ describe("DecisioningEngine:decisionHistory", () => {
     expect(decision.timestamp).toEqual(jasmine.any(Number));
   });
 
-  it("preserves first decision time, if decision already recorded", done => {
+  it("preserves first decision time, if decision already recorded", (done) => {
     const firstDecision = history.recordQualified({ id: "abc" });
 
     setTimeout(() => {
       expect(history.recordQualified({ id: "abc" }).firstTimestamp).toEqual(
-        firstDecision.firstTimestamp
+        firstDecision.firstTimestamp,
       );
       expect(history.recordQualified({ id: "abc" }).firstTimestamp).toEqual(
-        firstDecision.timestamp
+        firstDecision.timestamp,
       );
       done();
     }, 20);
@@ -49,13 +49,13 @@ describe("DecisioningEngine:decisionHistory", () => {
     expect(storage.getItem).toHaveBeenCalledWith("events");
   });
 
-  it("saves history to event storage", done => {
+  it("saves history to event storage", (done) => {
     history.recordQualified({ id: "abc" });
 
     setTimeout(() => {
       expect(storage.setItem).toHaveBeenCalledWith(
         "events",
-        jasmine.any(String)
+        jasmine.any(String),
       );
       done();
     }, 20);

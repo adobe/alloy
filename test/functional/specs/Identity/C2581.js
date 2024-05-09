@@ -15,7 +15,7 @@ import cookies from "../../helpers/cookies.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
@@ -27,13 +27,13 @@ const networkLogger = createNetworkLogger();
 
 createFixture({
   title: "C2581: Queue events when no ECID available on client",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C2581",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C2581: Queue requests until we receive an ECID.", async () => {

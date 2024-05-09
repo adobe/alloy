@@ -20,11 +20,11 @@ describe("DataCollector::validateApplyResponse", () => {
             handle: [
               {
                 type: "something:special",
-                payload: {}
-              }
-            ]
-          }
-        }
+                payload: {},
+              },
+            ],
+          },
+        },
       });
     }).not.toThrowError();
   });
@@ -33,8 +33,8 @@ describe("DataCollector::validateApplyResponse", () => {
     expect(() => {
       validateApplyResponse({
         options: {
-          who_dis: true
-        }
+          who_dis: true,
+        },
       });
     }).toThrowError();
   });

@@ -16,18 +16,18 @@ describe("utils:filterObject", () => {
   it("should filter out keys with values that do not pass the predicate", () => {
     const obj = {
       a: 5,
-      b: 6
+      b: 6,
     };
-    const predicate = val => val > 5;
+    const predicate = (val) => val > 5;
     expect(filterObject(obj, predicate)).toEqual({ b: 6 });
   });
 
   it("should filter out nested keys with values that do not pass the predicate", () => {
     const obj = {
       a: 5,
-      b: { c: 6 }
+      b: { c: 6 },
     };
-    const predicate = val => val > 5;
+    const predicate = (val) => val > 5;
     expect(filterObject(obj, predicate)).toEqual({ b: { c: 6 } });
   });
 
@@ -35,9 +35,9 @@ describe("utils:filterObject", () => {
     const obj = {
       a: 5,
       b: { c: { d: 4, e: 6 } },
-      f: { g: 4 }
+      f: { g: 4 },
     };
-    const predicate = val => val > 5;
+    const predicate = (val) => val > 5;
     expect(filterObject(obj, predicate)).toEqual({ b: { c: { e: 6 } } });
   });
 });

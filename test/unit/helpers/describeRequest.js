@@ -15,7 +15,7 @@ import uuidV4Regex from "../constants/uuidV4Regex.js";
 /**
  * Tests the base methods that all types of requests share.
  */
-export default createRequest => {
+export default (createRequest) => {
   describe("base request functionality", () => {
     let payload;
     let request;

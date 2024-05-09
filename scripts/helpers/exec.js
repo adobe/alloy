@@ -11,20 +11,20 @@ const exec = async (name, command, options = {}) => {
       [
         {
           name,
-          command
-        }
+          command,
+        },
       ],
       {
         prefix: "[{time} {name}]",
         timestampFormat: "HH:mm:ss.SSS",
-        ...options
-      }
+        ...options,
+      },
     );
   } catch (e) {
     if (!e.message) {
       // when a command fails, concurrently rejects with an array of objects.
       throw new ApplicationError(
-        "Previous command exited with non-zero exit code."
+        "Previous command exited with non-zero exit code.",
       );
     }
     throw e;

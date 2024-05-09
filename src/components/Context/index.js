@@ -31,14 +31,14 @@ const defaultEnabledContexts = {
   web,
   device,
   environment,
-  placeContext
+  placeContext,
 };
 const defaultDisabledContexts = {
-  highEntropyUserAgentHints
+  highEntropyUserAgentHints,
 };
 const optionalContexts = {
   ...defaultEnabledContexts,
-  ...defaultDisabledContexts
+  ...defaultDisabledContexts,
 };
 const requiredContexts = [timestamp, implementationDetails];
 
@@ -47,7 +47,7 @@ const createContext = ({ config, logger }) => {
 };
 createContext.namespace = "Context";
 createContext.configValidators = objectOf({
-  context: arrayOf(string()).default(Object.keys(defaultEnabledContexts))
+  context: arrayOf(string()).default(Object.keys(defaultEnabledContexts)),
 });
 
 export default createContext;

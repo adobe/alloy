@@ -14,12 +14,18 @@ import {
   WEB,
   WEBAPP,
   SURFACE_TYPE_DELIMITER,
-  FRAGMENT_DELIMITER
+  FRAGMENT_DELIMITER,
 } from "../constants/surface";
-import { startsWith, isNil, isNonEmptyString, includes } from "../../../utils/index.js";
+import {
+  startsWith,
+  isNil,
+  isNonEmptyString,
+  includes,
+} from "../../../utils/index.js";
 
 const SURFACE_REGEX = /^(\w+):\/\/([^/#]+)(\/[^#]*)?(#.*)?$/;
-const AUTHORITY_REGEX = /^(?:.*@)?(?:[a-z\d\u00a1-\uffff.-]+|\[[a-f\d:]+])(?::\d+)?$/;
+const AUTHORITY_REGEX =
+  /^(?:.*@)?(?:[a-z\d\u00a1-\uffff.-]+|\[[a-f\d:]+])(?::\d+)?$/;
 const PATH_REGEX = /^\/(?:[/\w\u00a1-\uffff-.~]|%[a-fA-F\d]{2})*$/;
 const FRAGMENT_REGEX = /^#(?:[/\w\u00a1-\uffff-.~]|%[a-fA-F\d]{2})+$/;
 
@@ -31,33 +37,33 @@ const normalizePath = (path = "/") => {
   return path.substring(0, end) || "/";
 };
 
-const getSurfaceType = surfaceTypeMatch =>
+const getSurfaceType = (surfaceTypeMatch) =>
   isNonEmptyString(surfaceTypeMatch) ? surfaceTypeMatch.toLowerCase() : "";
 
-const getAuthority = authorityMatch =>
+const getAuthority = (authorityMatch) =>
   isNonEmptyString(authorityMatch) ? authorityMatch.toLowerCase() : "";
 
-const getPath = pathMatch =>
+const getPath = (pathMatch) =>
   isNonEmptyString(pathMatch) ? normalizePath(pathMatch) : "/";
 
-const parseSurface = surfaceString => {
+const parseSurface = (surfaceString) => {
   const matched = surfaceString.match(SURFACE_REGEX);
   return matched
     ? {
         surfaceType: getSurfaceType(matched[1]),
         authority: getAuthority(matched[2]),
         path: getPath(matched[3]),
-        fragment: matched[4]
+        fragment: matched[4],
       }
     : null;
 };
 
-const stringifySurface = surface =>
+const stringifySurface = (surface) =>
   `${surface.surfaceType}${SURFACE_TYPE_DELIMITER}${
     surface.authority
   }${surface.path || ""}${surface.fragment || ""}`;
 
-export const buildPageSurface = getPageLocation => {
+export const buildPageSurface = (getPageLocation) => {
   const location = getPageLocation();
   const host = location.host.toLowerCase();
   const path = location.pathname;
@@ -70,7 +76,7 @@ const expandFragmentSurface = (surface, getPageLocation) =>
     : surface;
 
 const validateSurface = (surface, getPageLocation, logger) => {
-  const invalidateSurface = validationError => {
+  const invalidateSurface = (validationError) => {
     logger.warn(validationError);
     return null;
   };
@@ -85,34 +91,34 @@ const validateSurface = (surface, getPageLocation, logger) => {
   }
   if (!includes([WEB, WEBAPP], parsed.surfaceType)) {
     return invalidateSurface(
-      `Unsupported surface type ${parsed.surfaceType} in surface: ${surface}`
+      `Unsupported surface type ${parsed.surfaceType} in surface: ${surface}`,
     );
   }
   if (!parsed.authority || !AUTHORITY_REGEX.test(parsed.authority)) {
     return invalidateSurface(
-      `Invalid authority ${parsed.authority} in surface: ${surface}`
+      `Invalid authority ${parsed.authority} in surface: ${surface}`,
     );
   }
   if (parsed.path && !PATH_REGEX.test(parsed.path)) {
     return invalidateSurface(
-      `Invalid path ${parsed.path} in surface: ${surface}`
+      `Invalid path ${parsed.path} in surface: ${surface}`,
     );
   }
   if (parsed.fragment && !FRAGMENT_REGEX.test(parsed.fragment)) {
     return invalidateSurface(
-      `Invalid fragment ${parsed.fragment} in surface: ${surface}`
+      `Invalid fragment ${parsed.fragment} in surface: ${surface}`,
     );
   }
   return parsed;
 };
 
-export const isPageWideSurface = scope =>
+export const isPageWideSurface = (scope) =>
   !!scope &&
   scope.indexOf(WEB + SURFACE_TYPE_DELIMITER) === 0 &&
   scope.indexOf(FRAGMENT_DELIMITER) === -1;
 
 export const normalizeSurfaces = (surfaces = [], getPageLocation, logger) =>
   surfaces
-    .map(surface => validateSurface(surface, getPageLocation, logger))
-    .filter(surface => !isNil(surface))
+    .map((surface) => validateSurface(surface, getPageLocation, logger))
+    .filter((surface) => !isNil(surface))
     .map(stringifySurface);

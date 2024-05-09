@@ -7,7 +7,7 @@ const publishVersionBranch = async ({ exec, execSync, logger, version }) => {
   }
 
   const publishedBranchData = execSync(
-    `git ls-remote gh-origin refs/heads/v${version}`
+    `git ls-remote gh-origin refs/heads/v${version}`,
   ).toString();
   if (publishedBranchData !== "") {
     logger.warn(`Git branch v${version} already published.`);

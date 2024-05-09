@@ -18,7 +18,7 @@ import cookies from "../../../helpers/cookies.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
 } from "../../../helpers/constants/configParts/index.js";
 import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies.js";
 import createAlloyProxy from "../../../helpers/createAlloyProxy.js";
@@ -32,14 +32,14 @@ createFixture({
   title: "C224677: Call setConsent when purpose 10 is FALSE.",
   requestHooks: [
     networkLogger.setConsentEndpointLogs,
-    networkLogger.edgeEndpointLogs
-  ]
+    networkLogger.edgeEndpointLogs,
+  ],
 });
 
 test.meta({
   ID: "C224677",
   SEVERITY: "P0",
-  TEST_RUN: "REGRESSION"
+  TEST_RUN: "REGRESSION",
 });
 
 test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
@@ -50,7 +50,7 @@ test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
 
   const rawResponse = JSON.parse(
-    getResponseBody(networkLogger.setConsentEndpointLogs.requests[0])
+    getResponseBody(networkLogger.setConsentEndpointLogs.requests[0]),
   );
 
   const response = createResponse({ content: rawResponse });
@@ -63,19 +63,19 @@ test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
 
   // 2. The ECID should exist in the response payload as well, if queried
   const identityHandle = response.getPayloadsByType("identity:result");
-  const returnedNamespaces = identityHandle.map(i => i.namespace.code);
+  const returnedNamespaces = identityHandle.map((i) => i.namespace.code);
   await t.expect(identityHandle.length).eql(1);
   await t.expect(returnedNamespaces).contains("ECID");
 
   // 3. Event calls going forward should remain opted in, even though AAM opts out consents with no purpose 10.
   await alloy.sendEvent();
   const rawEventResponse = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
   );
   const eventResponse = createResponse({ content: rawEventResponse });
 
   // 4. No warning message regarding opt-out should be returned anymore
-  const warningTypes = eventResponse.getWarnings().map(w => w.type);
+  const warningTypes = eventResponse.getWarnings().map((w) => w.type);
   await t
     .expect(warningTypes)
     .notContains("https://ns.adobe.com/aep/errors/EXEG-0301-200");
@@ -85,8 +85,8 @@ test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
     .expect(
       networkLogger.edgeEndpointLogs.count(
         ({ response: { statusCode } }) =>
-          statusCode === 200 || statusCode === 207
-      )
+          statusCode === 200 || statusCode === 207,
+      ),
     )
     .eql(1);
 });

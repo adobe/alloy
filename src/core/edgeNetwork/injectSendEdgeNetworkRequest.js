@@ -24,7 +24,7 @@ export default ({
   createResponse,
   processWarningsAndErrors,
   getLocationHint,
-  getAssuranceValidationTokenParams
+  getAssuranceValidationTokenParams,
 }) => {
   const { edgeDomain, edgeBasePath, datastreamId } = config;
 
@@ -35,7 +35,7 @@ export default ({
   return ({
     request,
     runOnResponseCallbacks = noop,
-    runOnRequestFailureCallbacks = noop
+    runOnRequestFailureCallbacks = noop,
   }) => {
     const onResponseCallbackAggregator = createCallbackAggregator();
     onResponseCallbackAggregator.add(lifecycle.onResponse);
@@ -49,7 +49,7 @@ export default ({
       .onBeforeRequest({
         request,
         onResponse: onResponseCallbackAggregator.add,
-        onRequestFailure: onRequestFailureCallbackAggregator.add
+        onRequestFailure: onRequestFailureCallbackAggregator.add,
       })
       .then(() => {
         const endpointDomain = request.getUseIdThirdPartyDomain()
@@ -65,9 +65,9 @@ export default ({
           payload.mergeMeta({
             sdkConfig: {
               datastream: {
-                original: datastreamId
-              }
-            }
+                original: datastreamId,
+              },
+            },
           });
         }
         const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${configId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
@@ -76,10 +76,10 @@ export default ({
           requestId: request.getId(),
           url,
           payload,
-          useSendBeacon: request.getUseSendBeacon()
+          useSendBeacon: request.getUseSendBeacon(),
         });
       })
-      .then(networkResponse => {
+      .then((networkResponse) => {
         processWarningsAndErrors(networkResponse);
         return networkResponse;
       })
@@ -96,7 +96,7 @@ export default ({
         // Konductor plugin, for example).
         return onResponseCallbackAggregator
           .call({
-            response
+            response,
           })
           .then(mergeLifecycleResponses);
       });

@@ -15,7 +15,7 @@ describe("handleRequestFailure", () => {
   it("works", () => {
     const onRequestFailureCallbackAggregator = jasmine.createSpyObj(
       "onRequestFailureCallbackAggregator",
-      ["add", "call"]
+      ["add", "call"],
     );
 
     onRequestFailureCallbackAggregator.call.and.returnValue(Promise.resolve());
@@ -23,12 +23,12 @@ describe("handleRequestFailure", () => {
     const error = new Error("woopsie");
 
     handleRequestFailure(onRequestFailureCallbackAggregator)(error).catch(
-      err => {
+      (err) => {
         expect(onRequestFailureCallbackAggregator.call).toHaveBeenCalledWith({
-          error
+          error,
         });
         expect(err).toEqual(error);
-      }
+      },
     );
   });
 });

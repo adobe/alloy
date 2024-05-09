@@ -14,7 +14,7 @@ import querySelectorAll from "./querySelectorAll.js";
 import startsWith from "../startsWith.js";
 import SHADOW_SEPARATOR from "../../constants/shadowSeparator.js";
 
-const splitWithShadow = selector => {
+const splitWithShadow = (selector) => {
   return selector.split(SHADOW_SEPARATOR);
 };
 

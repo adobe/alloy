@@ -9,7 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { anything, objectOf, arrayOf, string } from "../../utils/validation/index.js";
+import {
+  anything,
+  objectOf,
+  arrayOf,
+  string,
+} from "../../utils/validation/index.js";
 
 export const EMPTY_PROPOSITIONS = { propositions: [] };
 
@@ -17,7 +22,7 @@ export default ({ logger, options }) => {
   const applyPropositionsOptionsValidator = objectOf({
     propositions: arrayOf(objectOf(anything())),
     metadata: objectOf(anything()),
-    viewName: string()
+    viewName: string(),
   }).required();
 
   try {
@@ -25,7 +30,7 @@ export default ({ logger, options }) => {
   } catch (e) {
     logger.warn(
       "Invalid options for applyPropositions. No propositions will be applied.",
-      e
+      e,
     );
     return EMPTY_PROPOSITIONS;
   }

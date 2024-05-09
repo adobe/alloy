@@ -71,7 +71,7 @@ describe("deepAssign", () => {
       {},
       { a: { c: 1 } },
       { b: 2 },
-      { a: { c: 2, d: 3 } }
+      { a: { c: 2, d: 3 } },
     );
 
     expect(result).toEqual({ a: { c: 2, d: 3 }, b: 2 });

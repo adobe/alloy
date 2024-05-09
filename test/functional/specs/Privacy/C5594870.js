@@ -15,7 +15,7 @@ import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import createNetworkLogger from "../../helpers/networkLogger/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
@@ -28,7 +28,7 @@ import createAdobeMC from "../../helpers/createAdobeMC.js";
 const config = compose(
   orgMainConfigMain,
   { defaultConsent: "pending" },
-  debugEnabled
+  debugEnabled,
 );
 
 const networkLogger = createNetworkLogger();
@@ -40,13 +40,13 @@ createFixture({
   url: `${TEST_PAGE_URL}?adobe_mc=${adobemc}`,
   title:
     "C5594870: Identity can be set via the adobe_mc query string parameter when calling set-consent",
-  requestHooks: [networkLogger.setConsentEndpointLogs]
+  requestHooks: [networkLogger.setConsentEndpointLogs],
 });
 
 test.meta({
   ID: "C5594870",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("C5594870: Identity can be set via the adobe_mc query string parameter when calling set-consent", async () => {
@@ -55,7 +55,7 @@ test("C5594870: Identity can be set via the adobe_mc query string parameter when
 
   await alloy.setConsent(CONSENT_IN);
   const ecid = getReturnedEcid(
-    networkLogger.setConsentEndpointLogs.requests[0]
+    networkLogger.setConsentEndpointLogs.requests[0],
   );
   await t.expect(ecid).eql(id);
 });

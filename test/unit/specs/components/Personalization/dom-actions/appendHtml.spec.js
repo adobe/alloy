@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import {
   selectNodes,
   appendNode,
-  createNode
+  createNode,
 } from "../../../../../../src/utils/dom";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
@@ -33,7 +33,7 @@ describe("Personalization::actions::appendHtml", () => {
     const element = createNode(
       "ul",
       { id: "appendHtml" },
-      { innerHTML: content }
+      { innerHTML: content },
     );
 
     appendNode(document.body, element);
@@ -43,7 +43,7 @@ describe("Personalization::actions::appendHtml", () => {
       selector: "#appendHtml",
       prehidingSelector: "#appendHtml",
       content: `<li>2</li><li>3</li>`,
-      meta
+      meta,
     };
 
     return appendHtml(settings).then(() => {

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 import {
   createHasIdentity,
-  createAddIdentity
+  createAddIdentity,
 } from "../../../../../src/utils/request";
 
 describe("createHasIdentity", () => {

@@ -16,7 +16,7 @@ import {
   compose,
   orgMainConfigMain,
   consentPending,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
@@ -28,16 +28,16 @@ const networkLogger = createNetworkLogger();
 
 createFixture({
   title: "C14405: Unidentified user can consent to all purposes",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C14405",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
-test("Test C14405: Unidentified user can consent to all purposes", async t => {
+test("Test C14405: Unidentified user can consent to all purposes", async (t) => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.setConsent(CONSENT_IN);

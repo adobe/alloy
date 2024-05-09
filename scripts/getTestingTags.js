@@ -27,7 +27,7 @@ const octokit = new Octokit({
   // (15000/hr if we upgrade to a GitHub Enterprise Cloud account).
   // We'll use the Github token when it's available (when this script
   // is running as part of a Github workflow).
-  auth: process.env.GITHUB_TOKEN
+  auth: process.env.GITHUB_TOKEN,
 });
 
 module.exports = () => {
@@ -35,19 +35,19 @@ module.exports = () => {
     octokit.repos.listReleases,
     {
       owner: "adobe",
-      repo: "alloy"
+      repo: "alloy",
     },
     ({ data: releases }, done) => {
       const prodReleases = releases
-        .filter(release => !release.draft && !release.prerelease)
-        .map(release => release.tag_name);
-      const prodReleasesToTest = prodReleases.filter(tag =>
-        semver.lte("2.12.0", semver.clean(tag))
+        .filter((release) => !release.draft && !release.prerelease)
+        .map((release) => release.tag_name);
+      const prodReleasesToTest = prodReleases.filter((tag) =>
+        semver.lte("2.12.0", semver.clean(tag)),
       );
       if (prodReleasesToTest.length < prodReleases.length) {
         done();
       }
       return prodReleasesToTest;
-    }
+    },
   );
 };

@@ -17,16 +17,16 @@ const title =
   "C3484892: Resolves promise with empty result object from configure command.";
 
 createFixture({
-  title
+  title,
 });
 
 test.meta({
   ID: "C3484892",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
-test(title, async t => {
+test(title, async (t) => {
   const alloy = createAlloyProxy();
   const result = await alloy.configure(orgMainConfigMain);
   await t.expect(result).eql({});

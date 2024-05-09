@@ -17,11 +17,11 @@ const SCHEMA = "schema";
 
 const adapters = {
   [CJM_IN_APP_MESSAGE_TYPE]: inAppMessageConsequenceAdapter,
-  [SCHEMA]: schemaTypeConsequenceAdapter
+  [SCHEMA]: schemaTypeConsequenceAdapter,
 };
 
 export default () => {
-  return consequence => {
+  return (consequence) => {
     const { id, type, detail } = consequence;
 
     return typeof adapters[type] === "function"

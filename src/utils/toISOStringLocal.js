@@ -17,7 +17,7 @@ import toInteger from "./toInteger.js";
  * @param {Date} date
  * @returns {string}
  */
-export default date => {
+export default (date) => {
   const YYYY = date.getFullYear();
   const MM = padStart(date.getMonth() + 1, 2, "0");
   const DD = padStart(date.getDate(), 2, "0");

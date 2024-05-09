@@ -20,7 +20,7 @@ import {
   JSON_CONTENT_ITEM,
   REDIRECT_ITEM,
   RULESET_ITEM,
-  MESSAGE_FEED_ITEM
+  MESSAGE_FEED_ITEM,
 } from "../../../../../src/constants/schema";
 
 describe("Personalization::createPersonalizationDetails", () => {
@@ -28,8 +28,8 @@ describe("Personalization::createPersonalizationDetails", () => {
   const window = {
     location: {
       host: "alloy.test.com",
-      pathname: "/test/page/1/"
-    }
+      pathname: "/test/page/1/",
+    },
   };
   const getPageLocation = createGetPageLocation({ window });
 
@@ -59,7 +59,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     { s: false, i: false, fetch: true },
     { s: true, i: false, fetch: true },
     { s: false, i: true, fetch: false },
-    { s: true, i: true, fetch: true }
+    { s: true, i: true, fetch: true },
   ].forEach(({ s, i, dp, fetch }) => {
     it(`should ${fetch ? "" : "not "}fetch data when ${
       s ? "" : "no "
@@ -72,11 +72,11 @@ describe("Personalization::createPersonalizationDetails", () => {
         decisionScopes: [],
         personalization: {
           decisionScopes: s ? ["test"] : undefined,
-          defaultPersonalizationEnabled: dp
+          defaultPersonalizationEnabled: dp,
         },
         event,
         isCacheInitialized: i,
-        logger
+        logger,
       });
       expect(personalizationDetails.shouldFetchData()).toEqual(fetch);
     });
@@ -94,7 +94,7 @@ describe("Personalization::createPersonalizationDetails", () => {
       personalization,
       event,
       isCacheInitialized: false,
-      logger
+      logger,
     });
     const expectedDecisionScopes = [PAGE_WIDE_SCOPE];
     const expectedQueryDetails = {
@@ -106,10 +106,10 @@ describe("Personalization::createPersonalizationDetails", () => {
         RULESET_ITEM,
         MESSAGE_IN_APP,
         MESSAGE_FEED_ITEM,
-        DOM_ACTION
+        DOM_ACTION,
       ],
       decisionScopes: expectedDecisionScopes,
-      surfaces: [TEST_SURFACE]
+      surfaces: [TEST_SURFACE],
     };
     const queryDetails = personalizationDetails.createQueryDetails();
 
@@ -134,7 +134,7 @@ describe("Personalization::createPersonalizationDetails", () => {
       personalization,
       event,
       isCacheInitialized: false,
-      logger
+      logger,
     });
     const expectedDecisionScopes = [PAGE_WIDE_SCOPE];
     const expectedQueryDetails = {
@@ -146,10 +146,10 @@ describe("Personalization::createPersonalizationDetails", () => {
         RULESET_ITEM,
         MESSAGE_IN_APP,
         MESSAGE_FEED_ITEM,
-        DOM_ACTION
+        DOM_ACTION,
       ],
       decisionScopes: expectedDecisionScopes,
-      surfaces: [TEST_SURFACE]
+      surfaces: [TEST_SURFACE],
     };
     const queryDetails = personalizationDetails.createQueryDetails();
 
@@ -174,7 +174,7 @@ describe("Personalization::createPersonalizationDetails", () => {
       personalization,
       event,
       isCacheInitialized: false,
-      logger
+      logger,
     });
     const expectedDecisionScopes = ["test1", "__view__"];
     const expectedQueryDetails = {
@@ -186,10 +186,10 @@ describe("Personalization::createPersonalizationDetails", () => {
         RULESET_ITEM,
         MESSAGE_IN_APP,
         MESSAGE_FEED_ITEM,
-        DOM_ACTION
+        DOM_ACTION,
       ],
       decisionScopes: expectedDecisionScopes,
-      surfaces: [TEST_SURFACE]
+      surfaces: [TEST_SURFACE],
     };
     const queryDetails = personalizationDetails.createQueryDetails();
 
@@ -214,7 +214,7 @@ describe("Personalization::createPersonalizationDetails", () => {
       decisionScopes,
       event,
       isCacheInitialized: true,
-      logger
+      logger,
     });
     const expectedDecisionScopes = ["test1"];
     const expectedQueryDetails = {
@@ -225,10 +225,10 @@ describe("Personalization::createPersonalizationDetails", () => {
         REDIRECT_ITEM,
         RULESET_ITEM,
         MESSAGE_IN_APP,
-        MESSAGE_FEED_ITEM
+        MESSAGE_FEED_ITEM,
       ],
       decisionScopes: expectedDecisionScopes,
-      surfaces: []
+      surfaces: [],
     };
     const queryDetails = personalizationDetails.createQueryDetails();
 
@@ -244,7 +244,7 @@ describe("Personalization::createPersonalizationDetails", () => {
   it("should fetch data when cache initialized, renderDecisions is false, no viewName, and surfaces is not empty", () => {
     const decisionScopes = [];
     const personalization = {
-      surfaces: ["web://test1.com"]
+      surfaces: ["web://test1.com"],
     };
     const renderDecisions = false;
     event.getViewName.and.returnValue(undefined);
@@ -255,7 +255,7 @@ describe("Personalization::createPersonalizationDetails", () => {
       personalization,
       event,
       isCacheInitialized: true,
-      logger
+      logger,
     });
     const expectedDecisionScopes = [];
     const expectedQueryDetails = {
@@ -266,10 +266,10 @@ describe("Personalization::createPersonalizationDetails", () => {
         REDIRECT_ITEM,
         RULESET_ITEM,
         MESSAGE_IN_APP,
-        MESSAGE_FEED_ITEM
+        MESSAGE_FEED_ITEM,
       ],
       decisionScopes: expectedDecisionScopes,
-      surfaces: ["web://test1.com/"]
+      surfaces: ["web://test1.com/"],
     };
     const queryDetails = personalizationDetails.createQueryDetails();
 
@@ -287,7 +287,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     const decisionScopes = ["test1"];
     const personalization = {
       decisionScopes: ["test2"],
-      surfaces: ["web://test1.com"]
+      surfaces: ["web://test1.com"],
     };
     const renderDecisions = true;
     const personalizationDetails = createPersonalizationDetails({
@@ -297,7 +297,7 @@ describe("Personalization::createPersonalizationDetails", () => {
       personalization,
       event,
       isCacheInitialized: true,
-      logger
+      logger,
     });
 
     const expectedDecisionScopes = ["test1", "test2"];
@@ -309,10 +309,10 @@ describe("Personalization::createPersonalizationDetails", () => {
         REDIRECT_ITEM,
         RULESET_ITEM,
         MESSAGE_IN_APP,
-        MESSAGE_FEED_ITEM
+        MESSAGE_FEED_ITEM,
       ],
       decisionScopes: expectedDecisionScopes,
-      surfaces: ["web://test1.com/"]
+      surfaces: ["web://test1.com/"],
     };
     const queryDetails = personalizationDetails.createQueryDetails();
 
@@ -336,7 +336,7 @@ describe("Personalization::createPersonalizationDetails", () => {
       personalization,
       event,
       isCacheInitialized: true,
-      logger
+      logger,
     });
 
     expect(personalizationDetails.isRenderDecisions()).toEqual(true);
@@ -359,7 +359,7 @@ describe("Personalization::createPersonalizationDetails", () => {
       personalization,
       event,
       isCacheInitialized: true,
-      logger
+      logger,
     });
 
     expect(personalizationDetails.isRenderDecisions()).toEqual(false);
@@ -382,7 +382,7 @@ describe("Personalization::createPersonalizationDetails", () => {
       decisionScopes,
       event,
       isCacheInitialized: true,
-      logger
+      logger,
     });
 
     expect(personalizationDetails.isRenderDecisions()).toEqual(true);
@@ -405,7 +405,7 @@ describe("Personalization::createPersonalizationDetails", () => {
       decisionScopes,
       event,
       isCacheInitialized: true,
-      logger
+      logger,
     });
 
     expect(personalizationDetails.isRenderDecisions()).toEqual(false);
@@ -420,7 +420,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     event.getViewName.and.returnValue("cart");
     const decisionScopes = ["__view__"];
     const personalization = {
-      surfaces: [TEST_SURFACE]
+      surfaces: [TEST_SURFACE],
     };
     const renderDecisions = true;
     const personalizationDetails = createPersonalizationDetails({
@@ -430,7 +430,7 @@ describe("Personalization::createPersonalizationDetails", () => {
       personalization,
       event,
       isCacheInitialized: true,
-      logger
+      logger,
     });
 
     const expectedDecisionScopes = ["__view__"];
@@ -443,10 +443,10 @@ describe("Personalization::createPersonalizationDetails", () => {
         RULESET_ITEM,
         MESSAGE_IN_APP,
         MESSAGE_FEED_ITEM,
-        DOM_ACTION
+        DOM_ACTION,
       ],
       decisionScopes: expectedDecisionScopes,
-      surfaces: [TEST_SURFACE]
+      surfaces: [TEST_SURFACE],
     };
     const queryDetails = personalizationDetails.createQueryDetails();
 
@@ -470,7 +470,7 @@ describe("Personalization::createPersonalizationDetails", () => {
       personalization,
       event,
       isCacheInitialized: false,
-      logger
+      logger,
     });
     expect(personalizationDetails.isRenderDecisions()).toEqual(true);
     expect(personalizationDetails.hasViewName()).toEqual(false);

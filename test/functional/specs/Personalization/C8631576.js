@@ -16,7 +16,7 @@ import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import isUserAgentClientHintsSupported from "../../helpers/isUserAgentClientHintsSupported.js";
@@ -29,17 +29,17 @@ const DESCRIPTION = `${ID} - Visitor should qualify for an experience based on l
 
 createFixture({
   title: DESCRIPTION,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID,
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const sendEventOptions = {
-  decisionScopes: ["chromeBrowserClientHint"]
+  decisionScopes: ["chromeBrowserClientHint"],
 };
 
 test(DESCRIPTION, async () => {
@@ -47,7 +47,7 @@ test(DESCRIPTION, async () => {
   await alloy.configure(config);
   const eventResult = await alloy.sendEvent(sendEventOptions);
   const browserHintProposition = eventResult.propositions.find(
-    proposition => proposition.scope === "chromeBrowserClientHint"
+    (proposition) => proposition.scope === "chromeBrowserClientHint",
   );
   const hasChromeBrowserClientHintProposition =
     browserHintProposition !== undefined &&

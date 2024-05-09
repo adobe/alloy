@@ -13,15 +13,16 @@ governing permissions and limitations under the License.
 import { isNamespacedCookieName } from "../utils/index.js";
 import { AT_QA_MODE, MBOX } from "../constants/legacyCookies.js";
 
-export default ({ orgId, targetMigrationEnabled }) => name => {
-  // We have a contract with the server that we will pass
-  // all cookies whose names are namespaced according to the
-  // logic in isNamespacedCookieName as well as any legacy
-  // cookie names (so that the server can handle migrating
-  // identities on websites previously using Visitor.js)
-  return (
-    isNamespacedCookieName(orgId, name) ||
-    name === AT_QA_MODE ||
-    (targetMigrationEnabled && name === MBOX)
-  );
-};
+export default ({ orgId, targetMigrationEnabled }) =>
+  (name) => {
+    // We have a contract with the server that we will pass
+    // all cookies whose names are namespaced according to the
+    // logic in isNamespacedCookieName as well as any legacy
+    // cookie names (so that the server can handle migrating
+    // identities on websites previously using Visitor.js)
+    return (
+      isNamespacedCookieName(orgId, name) ||
+      name === AT_QA_MODE ||
+      (targetMigrationEnabled && name === MBOX)
+    );
+  };

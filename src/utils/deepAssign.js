@@ -14,7 +14,7 @@ import isNil from "./isNil.js";
 import isObject from "./isObject.js";
 
 const deepAssignObject = (target, source) => {
-  Object.keys(source).forEach(key => {
+  Object.keys(source).forEach((key) => {
     if (isObject(target[key]) && isObject(source[key])) {
       deepAssignObject(target[key], source[key]);
       return;
@@ -39,7 +39,7 @@ export default (target, ...sources) => {
 
   const result = Object(target);
 
-  sources.forEach(source => deepAssignObject(result, Object(source)));
+  sources.forEach((source) => deepAssignObject(result, Object(source)));
 
   return result;
 };

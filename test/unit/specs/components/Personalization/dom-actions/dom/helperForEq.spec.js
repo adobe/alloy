@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import {
   isNotEqSelector,
-  splitWithEq
+  splitWithEq,
 } from "../../../../../../../src/components/Personalization/dom-actions/dom/helperForEq";
 
 describe("Personalization::DOM::helperForEq::isNotEqSelector", () => {

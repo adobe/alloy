@@ -29,13 +29,13 @@ describe("assignConcatArrayValues", () => {
 
   it("works with two objects with the same property that is an array", () => {
     expect(assignConcatArrayValues({ a: [1] }, { a: [2] })).toEqual({
-      a: [1, 2]
+      a: [1, 2],
     });
   });
 
   it("works with three objects with the same property that is an array", () => {
     expect(assignConcatArrayValues({ a: [1] }, { a: [] }, { a: [3] })).toEqual({
-      a: [1, 3]
+      a: [1, 3],
     });
   });
 
@@ -44,22 +44,22 @@ describe("assignConcatArrayValues", () => {
       assignConcatArrayValues(
         { a: [1] },
         { a: [], c: true, d: false },
-        { a: [3], b: "2", e: null }
-      )
+        { a: [3], b: "2", e: null },
+      ),
     ).toEqual({
       a: [1, 3],
       b: "2",
       c: true,
       d: false,
-      e: null
+      e: null,
     });
   });
 
   it("skips non-objects", () => {
     expect(
-      assignConcatArrayValues({ a: [1] }, null, { a: [3] }, false, [], 5)
+      assignConcatArrayValues({ a: [1] }, null, { a: [3] }, false, [], 5),
     ).toEqual({
-      a: [1, 3]
+      a: [1, 3],
     });
   });
 });

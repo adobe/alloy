@@ -20,22 +20,22 @@ describe("Identity::getIdentityOptionsValidator", () => {
     expect(() => {
       getIdentityOptionsValidator({
         key1: ["item1", "item2"],
-        key2: ["item1", "item2"]
+        key2: ["item1", "item2"],
       });
     }).toThrow(new Error("'key1': Unknown field.\n'key2': Unknown field."));
 
     expect(() => {
       getIdentityOptionsValidator({ namespaces: [] });
     }).toThrow(
-      new Error("'namespaces': Expected a non-empty array, but got [].")
+      new Error("'namespaces': Expected a non-empty array, but got []."),
     );
 
     expect(() => {
       getIdentityOptionsValidator({ namespaces: ["ECID", "ECID"] });
     }).toThrow(
       new Error(
-        `'namespaces': Expected array values to be unique, but got ["ECID","ECID"].`
-      )
+        `'namespaces': Expected array values to be unique, but got ["ECID","ECID"].`,
+      ),
     );
 
     expect(() => {
@@ -61,7 +61,7 @@ describe("Identity::getIdentityOptionsValidator", () => {
   it("should return valid options when configuration is passed", () => {
     expect(() => {
       getIdentityOptionsValidator({
-        edgeConfigOverrides: { identity: { idSyncContainerId: "123" } }
+        edgeConfigOverrides: { identity: { idSyncContainerId: "123" } },
       });
     }).not.toThrow();
   });
@@ -69,7 +69,7 @@ describe("Identity::getIdentityOptionsValidator", () => {
   it("should return valid options when an empty configuration is passed", () => {
     expect(() => {
       getIdentityOptionsValidator({
-        edgeConfigOverrides: {}
+        edgeConfigOverrides: {},
       });
     }).not.toThrow();
   });

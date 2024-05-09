@@ -19,7 +19,7 @@ export default ({
   createLogger,
   instanceName,
   createNamespacedStorage,
-  getMonitors
+  getMonitors,
 }) => {
   const parsedQueryString = queryString.parse(locationSearch);
   const storage = createNamespacedStorage(`instance.${instanceName}.`);
@@ -43,7 +43,7 @@ export default ({
 
   if (parsedQueryString[debugQueryParam] !== undefined) {
     setDebugEnabled(stringToBoolean(parsedQueryString[debugQueryParam]), {
-      fromConfig: false
+      fromConfig: false,
     });
   }
 
@@ -53,15 +53,15 @@ export default ({
       getDebugEnabled,
       context: { instanceName },
       getMonitors,
-      console
+      console,
     }),
     createComponentLogger(componentName) {
       return createLogger({
         getDebugEnabled,
         context: { instanceName, componentName },
         getMonitors,
-        console
+        console,
       });
-    }
+    },
   };
 };

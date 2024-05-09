@@ -13,23 +13,23 @@ governing permissions and limitations under the License.
 import defer from "../../../../src/utils/defer.js";
 
 describe("defer", () => {
-  it("resolves an exposed promise", done => {
+  it("resolves an exposed promise", (done) => {
     const deferred = defer();
-    deferred.promise.then(value => {
+    deferred.promise.then((value) => {
       expect(value).toBe("abc");
       done();
     });
     deferred.resolve("abc");
   });
 
-  it("rejects an exposed promise", done => {
+  it("rejects an exposed promise", (done) => {
     const deferred = defer();
     deferred.promise.then(
       () => {},
-      value => {
+      (value) => {
         expect(value).toBe("abc");
         done();
-      }
+      },
     );
     deferred.reject("abc");
   });

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import {
   selectNodes,
   appendNode,
-  createNode
+  createNode,
 } from "../../../../../../src/utils/dom";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
@@ -38,7 +38,7 @@ describe("Personalization::actions::remove", () => {
     const settings = {
       selector: "#remove",
       prehidingSelector: "#remove",
-      meta
+      meta,
     };
 
     return remove(settings).then(() => {

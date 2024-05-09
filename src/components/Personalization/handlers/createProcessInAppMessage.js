@@ -22,7 +22,7 @@ const isValidInAppMessage = (data, logger) => {
     if (!Object.prototype.hasOwnProperty.call(data, prop)) {
       logger.warn(
         `Invalid in-app message data: missing property '${prop}'.`,
-        data
+        data,
       );
       return false;
     }
@@ -36,7 +36,7 @@ const isValidInAppMessage = (data, logger) => {
       if (!Object.prototype.hasOwnProperty.call(content, prop)) {
         logger.warn(
           `Invalid in-app message data.content: missing property '${prop}'.`,
-          data
+          data,
         );
         return false;
       }
@@ -47,7 +47,7 @@ const isValidInAppMessage = (data, logger) => {
 };
 
 export default ({ modules, logger }) => {
-  return item => {
+  return (item) => {
     const data = item.getData();
     const meta = { ...item.getProposition().getNotification() };
 
@@ -76,11 +76,11 @@ export default ({ modules, logger }) => {
       render: () => {
         return modules[type]({
           ...data,
-          meta
+          meta,
         });
       },
       setRenderAttempted: true,
-      includeInNotification: true
+      includeInNotification: true,
     };
   };
 };

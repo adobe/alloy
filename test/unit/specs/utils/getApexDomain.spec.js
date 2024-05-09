@@ -12,11 +12,11 @@ governing permissions and limitations under the License.
 
 import getApexDomain from "../../../../src/utils/getApexDomain.js";
 
-const mockWindowWithHostname = hostname => {
+const mockWindowWithHostname = (hostname) => {
   return {
     location: {
-      hostname
-    }
+      hostname,
+    },
   };
 };
 
@@ -26,7 +26,7 @@ describe("getTld", () => {
     const cookieJar = {
       get() {},
       set() {},
-      remove() {}
+      remove() {},
     };
     expect(getApexDomain(window, cookieJar)).toBe("");
   });
@@ -43,7 +43,7 @@ describe("getTld", () => {
           storedValue = value;
         }
       },
-      remove: jasmine.createSpy()
+      remove: jasmine.createSpy(),
     };
 
     expect(getApexDomain(window, cookieJar)).toBe("c.co.uk");
@@ -62,7 +62,7 @@ describe("getTld", () => {
           storedValue = value;
         }
       },
-      remove: jasmine.createSpy()
+      remove: jasmine.createSpy(),
     };
 
     expect(getApexDomain(window, cookieJar)).toBe("10.30.34.68");

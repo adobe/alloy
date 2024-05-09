@@ -16,14 +16,14 @@ describe("componentCreators", () => {
   it("is an array of component creators", () => {
     expect(componentCreators).toEqual(jasmine.any(Array));
 
-    componentCreators.forEach(componentCreator => {
+    componentCreators.forEach((componentCreator) => {
       expect(componentCreator).toEqual(jasmine.any(Function));
       expect(componentCreator.namespace).toEqual(jasmine.any(String));
 
       if (componentCreator.configValidators) {
         // should export a validator function
         expect(componentCreator.configValidators).toEqual(
-          jasmine.any(Function)
+          jasmine.any(Function),
         );
       }
     });

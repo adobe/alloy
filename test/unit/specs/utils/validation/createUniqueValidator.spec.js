@@ -12,10 +12,10 @@ governing permissions and limitations under the License.
 import { string } from "../../../../../src/utils/validation/index.js";
 
 describe("validation::createUnique", () => {
-  [["a"], ["a", "b", "c"]].forEach(values => {
+  [["a"], ["a", "b", "c"]].forEach((values) => {
     it(`should accept ${JSON.stringify(values)}`, () => {
       const validator = string().unique();
-      values.forEach(value => {
+      values.forEach((value) => {
         expect(validator(value, "mykey")).toEqual(value);
       });
     });
@@ -24,8 +24,8 @@ describe("validation::createUnique", () => {
   [
     ["a", "a"],
     ["a", "b", "a"],
-    ["a", "b", "b"]
-  ].forEach(values => {
+    ["a", "b", "b"],
+  ].forEach((values) => {
     it(`should reject ${JSON.stringify(values)}`, () => {
       const validator = string().unique();
       values.forEach((value, i) => {
@@ -38,11 +38,9 @@ describe("validation::createUnique", () => {
     });
   });
 
-  [null, undefined].forEach(value => {
+  [null, undefined].forEach((value) => {
     it(`complains about required when ${JSON.stringify(value)}`, () => {
-      const validator = string()
-        .unique()
-        .required();
+      const validator = string().unique().required();
       expect(() => validator(value, "key")).toThrowError();
     });
   });

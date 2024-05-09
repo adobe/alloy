@@ -16,17 +16,17 @@ export default ({
   sendEdgeNetworkRequest,
   createIdentityRequestPayload,
   createIdentityRequest,
-  globalConfigOverrides
+  globalConfigOverrides,
 }) => {
   return ({ namespaces, edgeConfigOverrides: localConfigOverrides } = {}) => {
     const requestParams = createRequestParams({
       payload: createIdentityRequestPayload(namespaces),
       globalConfigOverrides,
-      localConfigOverrides
+      localConfigOverrides,
     });
     const request = createIdentityRequest(requestParams);
     return sendEdgeNetworkRequest({
-      request
+      request,
     });
   };
 };

@@ -79,6 +79,5 @@ test("Test C8118: Verify link click sends a request to the collect endpoint when
   await clickLink();
   await collectEndpointAsserter.assertCollectCalledAndNotInteract();
   const collectRequest = collectEndpointAsserter.getCollectRequest();
-  console.log("aa", collectRequest);
   await assertRequestXdm(collectRequest);
 });

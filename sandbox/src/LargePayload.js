@@ -2,17 +2,19 @@ import React from "react.js";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy.js";
 import useSendPageViewEvent from "./useSendPageViewEvent.js";
 
-const makePayload = (size, times = 1) => () => {
-  for (let i = 0; i < times; i += 1) {
-    const payload = new Uint8Array(size * 1024);
-    window.alloy("sendEvent", {
-      documentUnloading: true,
-      data: {
-        payload
-      }
-    });
-  }
-};
+const makePayload =
+  (size, times = 1) =>
+  () => {
+    for (let i = 0; i < times; i += 1) {
+      const payload = new Uint8Array(size * 1024);
+      window.alloy("sendEvent", {
+        documentUnloading: true,
+        data: {
+          payload,
+        },
+      });
+    }
+  };
 
 export default function LargePayload() {
   useSendPageViewEvent();

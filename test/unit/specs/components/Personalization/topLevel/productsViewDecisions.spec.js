@@ -20,9 +20,9 @@ describe("PersonalizationComponent", () => {
     const alloy = buildAlloy(mocks);
     const { event, result } = await alloy.sendEvent(
       {
-        renderDecisions: true
+        renderDecisions: true,
       },
-      PRODUCTS_VIEW_DECISIONS
+      PRODUCTS_VIEW_DECISIONS,
     );
     expect(event.toJSON()).toEqual({
       query: {
@@ -35,16 +35,16 @@ describe("PersonalizationComponent", () => {
             "https://ns.adobe.com/personalization/ruleset-item",
             "https://ns.adobe.com/personalization/message/in-app",
             "https://ns.adobe.com/personalization/message/feed-item",
-            "https://ns.adobe.com/personalization/dom-action"
+            "https://ns.adobe.com/personalization/dom-action",
           ],
           decisionScopes: ["__view__"],
-          surfaces: ["web://example.com/home"]
-        }
-      }
+          surfaces: ["web://example.com/home"],
+        },
+      },
     });
     expect(result).toEqual({
       propositions: [],
-      decisions: []
+      decisions: [],
     });
     expect(mocks.sendEvent).not.toHaveBeenCalled();
 

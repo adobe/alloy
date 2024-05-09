@@ -16,15 +16,15 @@ describe("Personalization::addRenderAttemptedToDecisions", () => {
   it("adds a renderAttempted flag", () => {
     const decisions = [
       {
-        blah: "123"
+        blah: "123",
       },
       {
-        blah: "345"
-      }
+        blah: "345",
+      },
     ];
     const result = addRenderAttemptedToDecisions({
       decisions,
-      renderAttempted: true
+      renderAttempted: true,
     });
     expect(result[0].renderAttempted).toEqual(true);
     expect(result[1].renderAttempted).toEqual(true);

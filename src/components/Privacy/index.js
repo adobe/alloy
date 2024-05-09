@@ -14,7 +14,7 @@ import {
   createTaskQueue,
   cookieJar,
   injectDoesIdentityCookieExist,
-  sanitizeOrgIdForCookieName
+  sanitizeOrgIdForCookieName,
 } from "../../utils";
 import createComponent from "./createComponent.js";
 import createConsentHashStore from "./createConsentHashStore.js";
@@ -29,26 +29,26 @@ const createPrivacy = ({
   config,
   consent,
   sendEdgeNetworkRequest,
-  createNamespacedStorage
+  createNamespacedStorage,
 }) => {
   const { orgId, defaultConsent } = config;
   const storedConsent = createStoredConsent({
     parseConsentCookie,
     orgId,
-    cookieJar
+    cookieJar,
   });
   const taskQueue = createTaskQueue();
   const sendSetConsentRequest = injectSendSetConsentRequest({
     createConsentRequestPayload,
     createConsentRequest,
     sendEdgeNetworkRequest,
-    edgeConfigOverrides: config.edgeConfigOverrides
+    edgeConfigOverrides: config.edgeConfigOverrides,
   });
   const storage = createNamespacedStorage(
-    `${sanitizeOrgIdForCookieName(orgId)}.consentHashes.`
+    `${sanitizeOrgIdForCookieName(orgId)}.consentHashes.`,
   );
   const consentHashStore = createConsentHashStore({
-    storage: storage.persistent
+    storage: storage.persistent,
   });
 
   const doesIdentityCookieExist = injectDoesIdentityCookieExist({ orgId });
@@ -61,7 +61,7 @@ const createPrivacy = ({
     sendSetConsentRequest,
     validateSetConsentOptions,
     consentHashStore,
-    doesIdentityCookieExist
+    doesIdentityCookieExist,
   });
 };
 

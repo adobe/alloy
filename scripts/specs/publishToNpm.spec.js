@@ -19,7 +19,7 @@ describe("publishToNpm", () => {
     execSync.and.returnValue("");
     await publishToNpm(container);
     expect(execSync).toHaveBeenCalledOnceWith(
-      "npm view @adobe/alloy@1.2.3 version --json"
+      "npm view @adobe/alloy@1.2.3 version --json",
     );
     expect(logger.warn).not.toHaveBeenCalled();
     expect(logger.info).toHaveBeenCalledWith("Publishing NPM package.");
@@ -30,10 +30,10 @@ describe("publishToNpm", () => {
     execSync.and.returnValue('"1.2.3"');
     await publishToNpm(container);
     expect(execSync).toHaveBeenCalledOnceWith(
-      "npm view @adobe/alloy@1.2.3 version --json"
+      "npm view @adobe/alloy@1.2.3 version --json",
     );
     expect(logger.warn).toHaveBeenCalledOnceWith(
-      "NPM already has version 1.2.3."
+      "NPM already has version 1.2.3.",
     );
     expect(logger.info).not.toHaveBeenCalled();
     expect(exec).not.toHaveBeenCalled();

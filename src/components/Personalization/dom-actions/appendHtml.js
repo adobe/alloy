@@ -18,7 +18,7 @@ import {
   getInlineScripts,
   getRemoteScriptsUrls,
   executeInlineScripts,
-  executeRemoteScripts
+  executeRemoteScripts,
 } from "./scripts";
 
 export default (container, html) => {
@@ -30,7 +30,7 @@ export default (container, html) => {
 
   loadImages(fragment);
 
-  elements.forEach(element => {
+  elements.forEach((element) => {
     appendNode(container, element);
   });
 

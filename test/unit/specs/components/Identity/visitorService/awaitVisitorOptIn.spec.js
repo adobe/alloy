@@ -26,7 +26,7 @@ describe("awaitVisitorOptIn", () => {
   describe("No legacy opt in object is present", () => {
     it("should return promise resolved with undefined", () => {
       return expectAsync(awaitVisitorOptIn({ logger })).toBeResolvedTo(
-        undefined
+        undefined,
       );
     });
   });
@@ -42,13 +42,13 @@ describe("awaitVisitorOptIn", () => {
             return true;
           },
           Categories: {
-            ECID: "ecid"
-          }
-        }
+            ECID: "ecid",
+          },
+        },
       };
 
       return expectAsync(awaitVisitorOptIn({ logger })).toBeResolvedTo(
-        undefined
+        undefined,
       );
     });
   });
@@ -64,13 +64,13 @@ describe("awaitVisitorOptIn", () => {
             return false;
           },
           Categories: {
-            ECID: "ecid"
-          }
-        }
+            ECID: "ecid",
+          },
+        },
       };
 
       return expectAsync(awaitVisitorOptIn({ logger })).toBeRejectedWithError(
-        "Legacy opt-in was declined."
+        "Legacy opt-in was declined.",
       );
     });
   });

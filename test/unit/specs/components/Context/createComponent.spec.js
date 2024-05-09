@@ -16,15 +16,15 @@ import createConfig from "../../../../../src/core/config/createConfig.js";
 describe("Context::createComponent", () => {
   const logger = {
     log() {},
-    warn() {}
+    warn() {},
   };
-  const context1 = xdm => {
+  const context1 = (xdm) => {
     xdm.a = "1";
   };
-  const context2 = xdm => {
+  const context2 = (xdm) => {
     xdm.b = "2";
   };
-  const requiredContext = xdm => {
+  const requiredContext = (xdm) => {
     xdm.c = "3";
   };
   const availableContexts = { context1, context2 };
@@ -37,7 +37,7 @@ describe("Context::createComponent", () => {
   it("enables the configured contexts", async () => {
     const config = createConfig({ context: ["context1", "context2"] });
     const component = createComponent(config, logger, availableContexts, [
-      requiredContext
+      requiredContext,
     ]);
     await component.lifecycle.onBeforeEvent({ event });
 
@@ -46,7 +46,7 @@ describe("Context::createComponent", () => {
   it("ignores unknown contexts", async () => {
     const config = createConfig({ context: ["unknowncontext", "context1"] });
     const component = createComponent(config, logger, availableContexts, [
-      requiredContext
+      requiredContext,
     ]);
     await component.lifecycle.onBeforeEvent({ event });
 
@@ -56,7 +56,7 @@ describe("Context::createComponent", () => {
   it("can disable non-required contexts", async () => {
     const config = createConfig({ context: [] });
     const component = createComponent(config, logger, availableContexts, [
-      requiredContext
+      requiredContext,
     ]);
     await component.lifecycle.onBeforeEvent({ event });
 

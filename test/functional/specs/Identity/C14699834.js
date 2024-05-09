@@ -16,7 +16,7 @@ import {
   orgMainConfigMain,
   thirdPartyCookiesDisabled,
   debugEnabled,
-  edgeDomainFirstParty
+  edgeDomainFirstParty,
 } from "../../helpers/constants/configParts/index.js";
 import { TEST_PAGE } from "../../helpers/constants/url.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
@@ -27,20 +27,20 @@ import { CONSENT_IN } from "../../helpers/constants/consent.js";
 
 createFixture({
   url: TEST_PAGE,
-  title: "C14699834: Identity is still established if first request fails"
+  title: "C14699834: Identity is still established if first request fails",
 });
 
 test.meta({
   ID: "C9999999",
   SEVERTIY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const config = compose(
   orgMainConfigMain,
   thirdPartyCookiesDisabled,
   debugEnabled,
-  edgeDomainFirstParty
+  edgeDomainFirstParty,
 );
 
 test("C14699834: Identity is still established if the first send event fails", async () => {
@@ -51,11 +51,11 @@ test("C14699834: Identity is still established if the first send event fails", a
       identityMap: {
         ECID: [
           {
-            id: "INVALID_ID"
-          }
-        ]
-      }
-    }
+            id: "INVALID_ID",
+          },
+        ],
+      },
+    },
   });
   await t.expect(await errorMessage).contains("INVALID_ID");
   // make sure we don't have an ECID
@@ -78,11 +78,11 @@ test("C14699834: Identity is still established if the first set consent fails", 
     identityMap: {
       ECID: [
         {
-          id: "INVALID_ID"
-        }
-      ]
+          id: "INVALID_ID",
+        },
+      ],
     },
-    ...CONSENT_IN
+    ...CONSENT_IN,
   });
   await t.expect(await errorMessage).contains("INVALID_ID");
   // make sure we don't have an ECID
@@ -102,7 +102,7 @@ test("C14699834: Identity is still established if the first get identity fails",
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const errorMessage = await alloy.getIdentityErrorMessage({
-    edgeConfigOverrides: { myinvalidoverride: "myvalue" }
+    edgeConfigOverrides: { myinvalidoverride: "myvalue" },
   });
   await t.expect(await errorMessage).contains("myinvalidoverride");
   // make sure we don't have an ECID

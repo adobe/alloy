@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import {
   selectNodes,
   appendNode,
-  createNode
+  createNode,
 } from "../../../../../../src/utils/dom";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
@@ -37,7 +37,7 @@ describe("Personalization::actions::rearrange", () => {
     const element = createNode(
       "ul",
       { id: "rearrange" },
-      { innerHTML: content }
+      { innerHTML: content },
     );
 
     appendNode(document.body, element);
@@ -47,7 +47,7 @@ describe("Personalization::actions::rearrange", () => {
       selector: "#rearrange",
       prehidingSelector: "#rearrange",
       content: { from: 0, to: 2 },
-      meta
+      meta,
     };
 
     return rearrange(settings).then(() => {
@@ -70,7 +70,7 @@ describe("Personalization::actions::rearrange", () => {
     const element = createNode(
       "ul",
       { id: "rearrange" },
-      { innerHTML: content }
+      { innerHTML: content },
     );
 
     appendNode(document.body, element);
@@ -80,7 +80,7 @@ describe("Personalization::actions::rearrange", () => {
       selector: "#rearrange",
       prehidingSelector: "#rearrange",
       content: { from: 2, to: 0 },
-      meta
+      meta,
     };
 
     return rearrange(settings).then(() => {

@@ -20,7 +20,7 @@ export default ({
   mergeQuery,
   processPropositions,
   createProposition,
-  notificationHandler
+  notificationHandler,
 }) => {
   return ({ cacheUpdate, personalizationDetails, event, onResponse }) => {
     if (personalizationDetails.isRenderDecisions()) {
@@ -35,17 +35,17 @@ export default ({
     const handleNotifications = notificationHandler(
       personalizationDetails.isRenderDecisions(),
       personalizationDetails.isSendDisplayEvent(),
-      personalizationDetails.getViewName()
+      personalizationDetails.getViewName(),
     );
 
     onResponse(({ response }) => {
       const handles = response.getPayloadsByType(DECISIONS_HANDLE);
-      const propositions = handles.map(handle => createProposition(handle));
+      const propositions = handles.map((handle) => createProposition(handle));
       const {
         page: pagePropositions = [],
         view: viewPropositions = [],
-        proposition: nonRenderedPropositions = []
-      } = groupBy(propositions, p => p.getScopeType());
+        proposition: nonRenderedPropositions = [],
+      } = groupBy(propositions, (p) => p.getScopeType());
 
       const currentViewPropositions = cacheUpdate.update(viewPropositions);
 
@@ -54,14 +54,11 @@ export default ({
       let returnedDecisions;
 
       if (personalizationDetails.isRenderDecisions()) {
-        ({
-          render,
-          returnedPropositions,
-          returnedDecisions
-        } = processPropositions(
-          [...pagePropositions, ...currentViewPropositions],
-          nonRenderedPropositions
-        ));
+        ({ render, returnedPropositions, returnedDecisions } =
+          processPropositions(
+            [...pagePropositions, ...currentViewPropositions],
+            nonRenderedPropositions,
+          ));
         render().then(handleNotifications);
 
         // Render could take a long time especially if one of the renders
@@ -74,14 +71,14 @@ export default ({
           [
             ...pagePropositions,
             ...currentViewPropositions,
-            ...nonRenderedPropositions
-          ]
+            ...nonRenderedPropositions,
+          ],
         ));
       }
 
       return {
         propositions: returnedPropositions,
-        decisions: returnedDecisions
+        decisions: returnedDecisions,
       };
     });
   };

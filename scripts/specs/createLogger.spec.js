@@ -11,7 +11,7 @@ describe("createLogger", () => {
       "log",
       "info",
       "warn",
-      "error"
+      "error",
     ]);
     logger = createLogger(myConsole, () => now);
   });
@@ -30,13 +30,13 @@ describe("createLogger", () => {
   it("logs warnings yellow", () => {
     logger.warn("mywarn");
     expect(myConsole.warn).toHaveBeenCalledOnceWith(
-      `${prefix} ${chalk.yellow("mywarn")}`
+      `${prefix} ${chalk.yellow("mywarn")}`,
     );
   });
   it("logs errors red", () => {
     logger.error("myerror");
     expect(myConsole.error).toHaveBeenCalledOnceWith(
-      `${prefix} ${chalk.red("myerror")}`
+      `${prefix} ${chalk.red("myerror")}`,
     );
   });
   it("logs additional parameters", () => {

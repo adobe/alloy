@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import {
   mergeDecisionsMeta,
-  mergeQuery
+  mergeQuery,
 } from "../../../../../src/components/Personalization/event";
 import { PropositionEventType } from "../../../../../src/constants/propositionEventType.js";
 
@@ -28,12 +28,12 @@ describe("Personalization::event", () => {
       const decisionsMeta = [
         {
           id: "abc",
-          scope: "home"
+          scope: "home",
         },
         {
           id: "def",
-          scope: "cart"
-        }
+          scope: "cart",
+        },
       ];
       mergeDecisionsMeta(event, decisionsMeta, [PropositionEventType.DISPLAY]);
       expect(event.mergeXdm).toHaveBeenCalledWith({
@@ -42,18 +42,18 @@ describe("Personalization::event", () => {
             propositions: [
               {
                 id: "abc",
-                scope: "home"
+                scope: "home",
               },
               {
                 id: "def",
-                scope: "cart"
-              }
+                scope: "cart",
+              },
             ],
             propositionEventType: {
-              display: 1
-            }
-          }
-        }
+              display: 1,
+            },
+          },
+        },
       });
     });
   });
@@ -61,13 +61,13 @@ describe("Personalization::event", () => {
   describe("mergeQuery", () => {
     it("merges query details", () => {
       const details = {
-        foo: "bar"
+        foo: "bar",
       };
       mergeQuery(event, details);
       expect(event.mergeQuery).toHaveBeenCalledWith({
         personalization: {
-          foo: "bar"
-        }
+          foo: "bar",
+        },
       });
     });
   });

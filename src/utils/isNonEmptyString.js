@@ -17,4 +17,4 @@ import isString from "./isString.js";
  * @param {*} value
  * @returns {boolean}
  */
-export default value => isString(value) && value.length > 0;
+export default (value) => isString(value) && value.length > 0;

@@ -25,8 +25,8 @@ describe("validation::arrayOf", () => {
       { value: ["foo", "bar"] },
       { value: [] },
       { value: null },
-      { value: undefined }
-    ]
+      { value: undefined },
+    ],
   );
 
   describeValidation(
@@ -35,9 +35,9 @@ describe("validation::arrayOf", () => {
     [
       {
         value: ["a", null, undefined, "b"],
-        expected: ["a", "hello", "hello", "b"]
-      }
-    ]
+        expected: ["a", "hello", "hello", "b"],
+      },
+    ],
   );
 
   describeValidation(
@@ -46,7 +46,7 @@ describe("validation::arrayOf", () => {
     [
       { value: [null] },
       { value: null, error: true },
-      { value: undefined, error: true }
-    ]
+      { value: undefined, error: true },
+    ],
   );
 });

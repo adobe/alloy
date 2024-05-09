@@ -14,11 +14,11 @@ import appendNode from "./appendNode.js";
 import isObject from "../isObject.js";
 
 const populateElementProperties = (element, props) => {
-  Object.keys(props).forEach(key => {
+  Object.keys(props).forEach((key) => {
     // The following is to support setting style properties to avoid CSP errors.
     if (key === "style" && isObject(props[key])) {
       const styleProps = props[key];
-      Object.keys(styleProps).forEach(styleKey => {
+      Object.keys(styleProps).forEach((styleKey) => {
         element.style[styleKey] = styleProps[styleKey];
       });
     } else {
@@ -29,12 +29,12 @@ const populateElementProperties = (element, props) => {
 
 export default (tag, attrs = {}, props = {}, children = [], doc = document) => {
   const result = doc.createElement(tag);
-  Object.keys(attrs).forEach(key => {
+  Object.keys(attrs).forEach((key) => {
     // TODO: To highlight CSP problems consider throwing a descriptive error
     //       if nonce is available and key is style.
     result.setAttribute(key, attrs[key]);
   });
   populateElementProperties(result, props);
-  children.forEach(child => appendNode(result, child));
+  children.forEach((child) => appendNode(result, child));
   return result;
 };

@@ -20,9 +20,9 @@ describe("PersonalizationComponent", () => {
     const alloy = buildAlloy(mocks);
     const { event, result } = await alloy.sendEvent(
       {
-        renderDecisions: true
+        renderDecisions: true,
       },
-      MERGED_METRIC_DECISIONS
+      MERGED_METRIC_DECISIONS,
     );
     expect(event.toJSON()).toEqual({
       query: {
@@ -35,12 +35,12 @@ describe("PersonalizationComponent", () => {
             "https://ns.adobe.com/personalization/ruleset-item",
             "https://ns.adobe.com/personalization/message/in-app",
             "https://ns.adobe.com/personalization/message/feed-item",
-            "https://ns.adobe.com/personalization/dom-action"
+            "https://ns.adobe.com/personalization/dom-action",
           ],
           decisionScopes: ["__view__"],
-          surfaces: ["web://example.com/home"]
-        }
-      }
+          surfaces: ["web://example.com/home"],
+        },
+      },
     });
     expect(result).toEqual({
       propositions: [
@@ -55,28 +55,28 @@ describe("PersonalizationComponent", () => {
               data: {
                 id: "0",
                 format: "text/html",
-                content: "testScope content1"
-              }
+                content: "testScope content1",
+              },
             },
             {
               schema:
-                "https://ns.adobe.com/personalization/default-content-item"
+                "https://ns.adobe.com/personalization/default-content-item",
             },
             {
               schema: "https://ns.adobe.com/personalization/measurement",
               data: {
                 type: "click",
-                format: "application/vnd.adobe.target.metric"
-              }
-            }
+                format: "application/vnd.adobe.target.metric",
+              },
+            },
           ],
           scopeDetails: {
             eventTokens: {
               display: "displayToken1",
-              click: "clickToken1"
-            }
-          }
-        }
+              click: "clickToken1",
+            },
+          },
+        },
       ],
       decisions: [
         {
@@ -89,29 +89,29 @@ describe("PersonalizationComponent", () => {
               data: {
                 id: "0",
                 format: "text/html",
-                content: "testScope content1"
-              }
+                content: "testScope content1",
+              },
             },
             {
               schema:
-                "https://ns.adobe.com/personalization/default-content-item"
+                "https://ns.adobe.com/personalization/default-content-item",
             },
             {
               schema: "https://ns.adobe.com/personalization/measurement",
               data: {
                 type: "click",
-                format: "application/vnd.adobe.target.metric"
-              }
-            }
+                format: "application/vnd.adobe.target.metric",
+              },
+            },
           ],
           scopeDetails: {
             eventTokens: {
               display: "displayToken1",
-              click: "clickToken1"
-            }
-          }
-        }
-      ]
+              click: "clickToken1",
+            },
+          },
+        },
+      ],
     });
     expect(mocks.sendEvent).not.toHaveBeenCalled();
 

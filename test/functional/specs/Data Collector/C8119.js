@@ -14,7 +14,7 @@ import createFixture from "../../helpers/createFixture/index.js";
 import addHtmlToBody from "../../helpers/dom/addHtmlToBody.js";
 import {
   compose,
-  orgMainConfigMain
+  orgMainConfigMain,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import preventLinkNavigation from "../../helpers/preventLinkNavigation.js";
@@ -22,18 +22,18 @@ import createCollectEndpointAsserter from "../../helpers/createCollectEndpointAs
 
 createFixture({
   title:
-    "C8119: Does not send event with information about link clicks if disabled."
+    "C8119: Does not send event with information about link clicks if disabled.",
 });
 
 test.meta({
   ID: "C8119",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const addLinkToBody = () => {
   return addHtmlToBody(
-    `<a id="alloy-link-test" href="blank.html">Test Link</a>`
+    `<a id="alloy-link-test" href="blank.html">Test Link</a>`,
   );
 };
 
@@ -46,7 +46,7 @@ test("Test C8119: Load page with link. Click link. Verify no event sent.", async
   await preventLinkNavigation();
   const alloy = createAlloyProxy();
   const testConfig = compose(orgMainConfigMain, {
-    clickCollectionEnabled: false
+    clickCollectionEnabled: false,
   });
   await alloy.configure(testConfig);
   await addLinkToBody();

@@ -8,7 +8,7 @@ import {
   orgMainConfigMain,
   debugEnabled,
   thirdPartyCookiesDisabled,
-  ajoConfigForStage
+  ajoConfigForStage,
 } from "../../helpers/constants/configParts/index.js";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
 import createResponse from "../../helpers/createResponse.js";
@@ -25,13 +25,13 @@ const config = compose(
   orgMainConfigMain,
   ajoConfigForStage,
   debugEnabled,
-  thirdPartyCookiesDisabled
+  thirdPartyCookiesDisabled,
 );
 
 const clickInnerTrackedElement = ClientFunction(() => {
   document
     .querySelector(
-      "#root > DIV:nth-of-type(1) > DIV:nth-of-type(1) > H1:nth-of-type(1)"
+      "#root > DIV:nth-of-type(1) > DIV:nth-of-type(1) > H1:nth-of-type(1)",
     )
     .click();
 });
@@ -39,13 +39,13 @@ const clickInnerTrackedElement = ClientFunction(() => {
 createFixture({
   title: "C9932846: AJO click-tracking offers are delivered",
   url: `${TEST_PAGE_URL}?test=C9932846`,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C9932846",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test.skip("Test C9932846: AJO click-tracking offers are delivered", async () => {
@@ -55,7 +55,7 @@ test.skip("Test C9932846: AJO click-tracking offers are delivered", async () => 
   const personalization = { surfaces: [AJO_TEST_SURFACE] };
   const eventResult = await alloy.sendEvent({
     renderDecisions: true,
-    personalization
+    personalization,
   });
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
@@ -78,22 +78,22 @@ test.skip("Test C9932846: AJO click-tracking offers are delivered", async () => 
     "https://ns.adobe.com/personalization/dom-action",
     "https://ns.adobe.com/personalization/html-content-item",
     "https://ns.adobe.com/personalization/json-content-item",
-    "https://ns.adobe.com/personalization/redirect-item"
-  ].every(schema => personalizationSchemas.includes(schema));
+    "https://ns.adobe.com/personalization/redirect-item",
+  ].every((schema) => personalizationSchemas.includes(schema));
 
   await t.expect(result).eql(true);
 
   const response = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
   );
   const personalizationPayload = createResponse({
-    content: response
+    content: response,
   })
     .getPayloadsByType("personalization:decisions")
     .filter(
-      payload =>
+      (payload) =>
         payload.scope === AJO_TEST_SURFACE &&
-        payload.items.every(item => item.data.type === "click")
+        payload.items.every((item) => item.data.type === "click"),
     )[0];
 
   await t.expect(personalizationPayload.items.length).eql(2);
@@ -122,7 +122,7 @@ test.skip("Test C9932846: AJO click-tracking offers are delivered", async () => 
     .eql("decisioning.propositionInteract");
   await t
     .expect(
-      interactEvent.xdm._experience.decisioning.propositionEventType.interact
+      interactEvent.xdm._experience.decisioning.propositionEventType.interact,
     )
     .eql(1);
   await t

@@ -14,7 +14,7 @@ import { boolean, objectOf } from "../../utils/validation/index.js";
 
 const configValidators = objectOf({
   thirdPartyCookiesEnabled: boolean().default(true),
-  idMigrationEnabled: boolean().default(true)
+  idMigrationEnabled: boolean().default(true),
 });
 
 export default configValidators;

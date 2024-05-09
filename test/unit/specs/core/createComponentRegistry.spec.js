@@ -12,8 +12,10 @@ governing permissions and limitations under the License.
 
 import createComponentRegistry from "../../../../src/core/createComponentRegistry.js";
 
-const commandErrorRegex = /\[CompOne\] An error occurred while executing the perform command./;
-const lifecycleErrorRegex = /\[CompOne\] An error occurred while executing the onBeforeEvent lifecycle hook./;
+const commandErrorRegex =
+  /\[CompOne\] An error occurred while executing the perform command./;
+const lifecycleErrorRegex =
+  /\[CompOne\] An error occurred while executing the onBeforeEvent lifecycle hook./;
 
 describe("createComponentRegistry", () => {
   describe("register", () => {
@@ -24,18 +26,18 @@ describe("createComponentRegistry", () => {
           commands: {
             command1() {},
             command2() {},
-            command3() {}
-          }
+            command3() {},
+          },
         });
         registry.register("CompTwo", {
           commands: {
             command2() {},
             command3() {},
-            command4() {}
-          }
+            command4() {},
+          },
         });
       }).toThrowError(
-        "[ComponentRegistry] Could not register CompTwo because it has existing command(s): command2,command3"
+        "[ComponentRegistry] Could not register CompTwo because it has existing command(s): command2,command3",
       );
     });
   });
@@ -45,8 +47,8 @@ describe("createComponentRegistry", () => {
       const registry = createComponentRegistry();
       const component = {
         commands: {
-          perform: jasmine.createSpy().and.returnValue("nonPromiseValue")
-        }
+          perform: jasmine.createSpy().and.returnValue("nonPromiseValue"),
+        },
       };
       registry.register("CompOne", component);
       const command = registry.getCommand("perform");
@@ -61,14 +63,14 @@ describe("createComponentRegistry", () => {
         commands: {
           perform: jasmine
             .createSpy()
-            .and.returnValue(Promise.resolve("resolvedPromiseValue"))
-        }
+            .and.returnValue(Promise.resolve("resolvedPromiseValue")),
+        },
       };
       registry.register("CompOne", component);
       const command = registry.getCommand("perform");
       const result = command("arg1", "arg2");
       expect(component.commands.perform).toHaveBeenCalledWith("arg1", "arg2");
-      return result.then(value => {
+      return result.then((value) => {
         expect(value).toBe("resolvedPromiseValue");
       });
     });
@@ -79,9 +81,9 @@ describe("createComponentRegistry", () => {
       const component = {
         commands: {
           perform: {
-            run: runSpy
-          }
-        }
+            run: runSpy,
+          },
+        },
       };
       registry.register("CompOne", component);
       const command = registry.getCommand("perform");
@@ -99,15 +101,15 @@ describe("createComponentRegistry", () => {
       const component = {
         commands: {
           perform: {
-            run: runSpy
-          }
-        }
+            run: runSpy,
+          },
+        },
       };
       registry.register("CompOne", component);
       const command = registry.getCommand("perform");
       const result = command.run("arg1", "arg2");
       expect(runSpy).toHaveBeenCalledWith("arg1", "arg2");
-      return result.then(fail).catch(error => {
+      return result.then(fail).catch((error) => {
         expect(error).toEqual(jasmine.any(Error));
         expect(error.message).toMatch(commandErrorRegex);
       });
@@ -125,15 +127,15 @@ describe("createComponentRegistry", () => {
       const registry = createComponentRegistry();
       const component = {
         lifecycle: {
-          onBeforeEvent: jasmine.createSpy().and.returnValue("nonPromiseValue")
-        }
+          onBeforeEvent: jasmine.createSpy().and.returnValue("nonPromiseValue"),
+        },
       };
       registry.register("CompOne", component);
       const callback = registry.getLifecycleCallbacks("onBeforeEvent")[0];
       const result = callback("arg1", "arg2");
       expect(component.lifecycle.onBeforeEvent).toHaveBeenCalledWith(
         "arg1",
-        "arg2"
+        "arg2",
       );
       expect(result).toBe("nonPromiseValue");
     });
@@ -144,17 +146,17 @@ describe("createComponentRegistry", () => {
         lifecycle: {
           onBeforeEvent: jasmine
             .createSpy()
-            .and.returnValue(Promise.resolve("resolvedPromiseValue"))
-        }
+            .and.returnValue(Promise.resolve("resolvedPromiseValue")),
+        },
       };
       registry.register("CompOne", component);
       const callback = registry.getLifecycleCallbacks("onBeforeEvent")[0];
       const result = callback("arg1", "arg2");
       expect(component.lifecycle.onBeforeEvent).toHaveBeenCalledWith(
         "arg1",
-        "arg2"
+        "arg2",
       );
-      return result.then(value => {
+      return result.then((value) => {
         expect(value).toBe("resolvedPromiseValue");
       });
     });
@@ -163,8 +165,8 @@ describe("createComponentRegistry", () => {
       const registry = createComponentRegistry();
       const component = {
         lifecycle: {
-          onBeforeEvent: jasmine.createSpy().and.throwError("thrownError")
-        }
+          onBeforeEvent: jasmine.createSpy().and.throwError("thrownError"),
+        },
       };
       registry.register("CompOne", component);
       const callback = registry.getLifecycleCallbacks("onBeforeEvent")[0];
@@ -173,7 +175,7 @@ describe("createComponentRegistry", () => {
       }).toThrowError(lifecycleErrorRegex);
       expect(component.lifecycle.onBeforeEvent).toHaveBeenCalledWith(
         "arg1",
-        "arg2"
+        "arg2",
       );
     });
 
@@ -183,17 +185,17 @@ describe("createComponentRegistry", () => {
         lifecycle: {
           onBeforeEvent: jasmine
             .createSpy()
-            .and.returnValue(Promise.reject(new Error("rejectedPromiseError")))
-        }
+            .and.returnValue(Promise.reject(new Error("rejectedPromiseError"))),
+        },
       };
       registry.register("CompOne", component);
       const callback = registry.getLifecycleCallbacks("onBeforeEvent")[0];
       const result = callback("arg1", "arg2");
       expect(component.lifecycle.onBeforeEvent).toHaveBeenCalledWith(
         "arg1",
-        "arg2"
+        "arg2",
       );
-      return result.then(fail).catch(error => {
+      return result.then(fail).catch((error) => {
         expect(error).toEqual(jasmine.any(Error));
         expect(error.message).toMatch(lifecycleErrorRegex);
       });
@@ -203,13 +205,13 @@ describe("createComponentRegistry", () => {
       const registry = createComponentRegistry();
       registry.register("CompOne", {
         lifecycle: {
-          onBeforeEvent() {}
-        }
+          onBeforeEvent() {},
+        },
       });
       registry.register("CompTwo", {
         lifecycle: {
-          onBeforeEvent() {}
-        }
+          onBeforeEvent() {},
+        },
       });
       const callbacks = registry.getLifecycleCallbacks("onBeforeEvent");
       expect(callbacks.length).toBe(2);

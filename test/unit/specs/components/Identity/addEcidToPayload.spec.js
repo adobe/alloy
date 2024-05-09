@@ -17,7 +17,7 @@ describe("Identity:addEcidToPayload", () => {
     const payload = jasmine.createSpyObj("payload", ["addIdentity"]);
     addEcidToPayload(payload, "user@adobe");
     expect(payload.addIdentity).toHaveBeenCalledWith("ECID", {
-      id: "user@adobe"
+      id: "user@adobe",
     });
   });
 });

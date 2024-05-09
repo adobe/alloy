@@ -15,7 +15,7 @@ import { GENERAL } from "../../constants/consentPurpose.js";
 import {
   CONSENT_SOURCE_DEFAULT,
   CONSENT_SOURCE_INITIAL,
-  CONSENT_SOURCE_NEW
+  CONSENT_SOURCE_NEW,
 } from "./createConsentStateMachine";
 
 export default ({ generalConsentState, logger }) => {
@@ -54,6 +54,6 @@ export default ({ generalConsentState, logger }) => {
     },
     withConsent() {
       return generalConsentState.withConsent();
-    }
+    },
   };
 };

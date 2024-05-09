@@ -18,7 +18,7 @@ import {
   selectNodes,
   removeNode,
   appendNode,
-  createNode
+  createNode,
 } from "../../../../../../src/utils/dom";
 
 describe("Personalization::dom-actions::addNonceToInlineStyleElements", () => {
@@ -31,7 +31,7 @@ describe("Personalization::dom-actions::addNonceToInlineStyleElements", () => {
     // Make sure a nonce is available to alloy
     appendNode(
       document.head,
-      createNode("script", { id: "fooById", nonce: "123" })
+      createNode("script", { id: "fooById", nonce: "123" }),
     );
     const fragmentHtml = "<style>h1 { opacity: 0.5 };</style>";
     const fragment = createFragment(fragmentHtml);

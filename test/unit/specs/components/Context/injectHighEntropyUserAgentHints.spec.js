@@ -22,13 +22,13 @@ describe("Context::injectHighEntropyUserAgentHints", () => {
           model: "alloy",
           platformVersion: "1.2.3",
           wow64: false,
-          invalidHint: true
+          invalidHint: true,
         });
-      }
-    }
+      },
+    },
   };
 
-  it("works", done => {
+  it("works", (done) => {
     const xdm = {};
     injectHighEntropyUserAgentHints(navigator)(xdm, console).then(() => {
       expect(xdm).toEqual({
@@ -39,10 +39,10 @@ describe("Context::injectHighEntropyUserAgentHints", () => {
               bitness: "64",
               model: "alloy",
               platformVersion: "1.2.3",
-              wow64: false
-            }
-          }
-        }
+              wow64: false,
+            },
+          },
+        },
       });
       done();
     });

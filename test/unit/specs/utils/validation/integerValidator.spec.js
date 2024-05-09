@@ -20,30 +20,18 @@ describe("validation::integer()", () => {
     { value: NaN, error: true },
     { value: 0 },
     { value: 42 },
-    { value: -1 }
+    { value: -1 },
   ]);
 
-  describeValidation(
-    "required integer",
-    number()
-      .integer()
-      .required(),
-    [
-      { value: null, error: true },
-      { value: undefined, error: true },
-      { value: 10 }
-    ]
-  );
+  describeValidation("required integer", number().integer().required(), [
+    { value: null, error: true },
+    { value: undefined, error: true },
+    { value: 10 },
+  ]);
 
-  describeValidation(
-    "default integer",
-    number()
-      .integer()
-      .default(12345),
-    [
-      { value: null, expected: 12345 },
-      { value: undefined, expected: 12345 },
-      { value: 10, expected: 10 }
-    ]
-  );
+  describeValidation("default integer", number().integer().default(12345), [
+    { value: null, expected: 12345 },
+    { value: undefined, expected: 12345 },
+    { value: 10, expected: 10 },
+  ]);
 });

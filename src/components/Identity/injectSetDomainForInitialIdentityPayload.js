@@ -14,9 +14,9 @@ import getBrowser from "../../utils/getBrowser.js";
 
 export default ({
   thirdPartyCookiesEnabled,
-  areThirdPartyCookiesSupportedByDefault
+  areThirdPartyCookiesSupportedByDefault,
 }) => {
-  return request => {
+  return (request) => {
     if (
       thirdPartyCookiesEnabled &&
       areThirdPartyCookiesSupportedByDefault(getBrowser(window))
