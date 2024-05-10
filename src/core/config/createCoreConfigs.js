@@ -19,7 +19,7 @@ import {
 } from "../../utils/validation";
 import { noop, validateConfigOverride } from "../../utils/index.js";
 import { EDGE as EDGE_DOMAIN } from "../../constants/domain.js";
-import EDGE_BASE_PATH from "../../constants/edgeBasepath.js";
+import EDGE_BASE_PATH from "../../constants/edgeBasePath.js";
 import { IN, OUT, PENDING } from "../../constants/consentStatus.js";
 
 export default () =>
