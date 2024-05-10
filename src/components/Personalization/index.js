@@ -33,7 +33,7 @@ import injectCreateProposition from "./handlers/injectCreateProposition.js";
 import createAsyncArray from "./utils/createAsyncArray.js";
 import * as schema from "../../constants/schema.js";
 import processDefaultContent from "./handlers/processDefaultContent.js";
-import { isPageWideSurface } from "./utils/surfaceutils.js";
+import { isPageWideSurface } from "./utils/surfaceUtils.js";
 import createProcessDomAction from "./handlers/createProcessDomAction.js";
 import createProcessHtmlContent from "./handlers/createProcessHtmlContent.js";
 import createProcessRedirect from "./handlers/createProcessRedirect.js";

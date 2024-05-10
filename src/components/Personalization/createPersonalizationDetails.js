@@ -15,7 +15,7 @@ import {
   isNonEmptyString,
   isNonEmptyArray,
 } from "../../utils/index.js";
-import { buildPageSurface, normalizeSurfaces } from "./utils/surfaceutils.js";
+import { buildPageSurface, normalizeSurfaces } from "./utils/surfaceUtils.js";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope.js";
 import {
   DEFAULT_CONTENT_ITEM,
