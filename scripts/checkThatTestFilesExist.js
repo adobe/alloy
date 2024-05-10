@@ -12,11 +12,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const path = require("path");
-const fs = require("fs");
-const recursive = require("recursive-readdir");
-const { Minimatch } = require("minimatch");
-const ignorePatterns = require("../coverageignore");
+import path from "path";
+import fs from "fs";
+import recursive from "recursive-readdir";
+import pkg from "minimatch";
+import ignorePatterns from "../coverageignore.cjs";
+import { fileURLToPath } from "url";
+
+const { Minimatch } = pkg;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const baseDir = path.join(__dirname, "../");
 const srcDir = path.join(__dirname, "../src");
