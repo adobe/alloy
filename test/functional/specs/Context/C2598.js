@@ -69,8 +69,8 @@ test(DESCRIPTION, async () => {
   if (await isUserAgentClientHintsSupported()) {
     await t
       .expect(
-        parsedBody.events[0].xdm.environment.browserDetails
-          .userAgentClientHints,
+        parsedBody.events[0].xdm?.environment?.browserDetails
+          ?.userAgentClientHints,
       )
       .notOk();
   }

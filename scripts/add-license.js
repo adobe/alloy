@@ -11,10 +11,14 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const fs = require("fs");
-const path = require("path");
-const stagedGitFiles = require("staged-git-files");
-const Handlebars = require("handlebars");
+import fs from "fs";
+import path from "path";
+import stagedGitFiles from "staged-git-files";
+import Handlebars from "handlebars";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PROJECT_ROOT = path.resolve(__dirname, "../");
 const SOURCE_TEMPLATE = "source-header.handlebars";
