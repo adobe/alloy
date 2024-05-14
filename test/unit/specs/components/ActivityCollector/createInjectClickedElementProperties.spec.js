@@ -18,9 +18,9 @@ describe("ActivityCollector::createInjectClickedElementProperties", () => {
   const getClickedElementProperties = jasmine.createSpy(
     "getClickedElementProperties"
   );
-  const clickActivityStorage = jasmine.createSpy("clickActivityStorage", {
-    save: () => {}
-  });
+  const clickActivityStorage = jasmine.createSpyObj("clickActivityStorage", [
+    "save"
+  ]);
   const downloadLinkQualifier = dlwValidator();
 
   it("Extends event XDM data with link information for supported anchor elements when clickCollectionEnabled", () => {
@@ -50,7 +50,7 @@ describe("ActivityCollector::createInjectClickedElementProperties", () => {
     expect(event.isEmpty()).toBe(false);
   });
 
-  it("does not extend event XDM data when clickCollectionEnabled is false", () => {
+  it("Does not extend event XDM data when clickCollectionEnabled is false", () => {
     const event = createEvent();
     const config = {
       downloadLinkQualifier,
@@ -96,8 +96,85 @@ describe("ActivityCollector::createInjectClickedElementProperties", () => {
       isInternalLink: () => false,
       isValidActivityMapData: () => true
     });
-
     injectClickedElementProperties({ clickedElement: {}, event });
     expect(event.isEmpty()).toBe(true);
+  });
+
+  it("Does not save click data to storage if onBeforeLinkClickSend is defined", () => {
+    const config = {
+      clickCollectionEnabled: true,
+      clickCollection: {
+        internalLinkEnabled: true,
+        eventGroupingEnabled: true
+      },
+      onBeforeLinkClickSend: () => {}
+    };
+    const logger = jasmine.createSpyObj("logger", ["info"]);
+    getClickedElementProperties.and.returnValue({
+      isValidLink: () => true,
+      isInternalLink: () => true,
+      pageName: "testPage",
+      pageIDType: 1,
+      linkName: "testLink",
+      linkType: "other"
+    });
+    const injectClickedElementProperties = createInjectClickedElementProperties(
+      {
+        config,
+        logger,
+        getClickedElementProperties,
+        clickActivityStorage
+      }
+    );
+    const event = jasmine.createSpyObj("event", ["mergeXdm", "setUserData"]);
+    injectClickedElementProperties({ clickedElement: {}, event });
+    // No click data should be saved to storage, only the page data.
+    expect(clickActivityStorage.save).toHaveBeenCalledWith({
+      pageName: "testPage",
+      pageIDType: 1
+    });
+    // If mergeXdm and setUserData are called, it means that the click data was not saved and
+    // will instead go out with the event.
+    expect(event.mergeXdm).toHaveBeenCalled();
+    expect(event.setUserData).toHaveBeenCalled();
+  });
+
+  it("Does not save click data to storage if onBeforeLinkClickSend is defined", () => {
+    const config = {
+      clickCollectionEnabled: true,
+      clickCollection: {
+        internalLinkEnabled: true,
+        eventGroupingEnabled: true
+      },
+      onBeforeLinkClickSend: () => {}
+    };
+    const logger = jasmine.createSpyObj("logger", ["info"]);
+    getClickedElementProperties.and.returnValue({
+      isValidLink: () => true,
+      isInternalLink: () => true,
+      pageName: "testPage",
+      pageIDType: 1,
+      linkName: "testLink",
+      linkType: "other"
+    });
+    const injectClickedElementProperties = createInjectClickedElementProperties(
+      {
+        config,
+        logger,
+        getClickedElementProperties,
+        clickActivityStorage
+      }
+    );
+    const event = jasmine.createSpyObj("event", ["mergeXdm", "setUserData"]);
+    injectClickedElementProperties({ clickedElement: {}, event });
+    // No click data should be saved to storage, only the page data.
+    expect(clickActivityStorage.save).toHaveBeenCalledWith({
+      pageName: "testPage",
+      pageIDType: 1
+    });
+    // If mergeXdm and setUserData are called, it means that the click data was not saved and
+    // will instead go out with the event.
+    expect(event.mergeXdm).toHaveBeenCalled();
+    expect(event.setUserData).toHaveBeenCalled();
   });
 });

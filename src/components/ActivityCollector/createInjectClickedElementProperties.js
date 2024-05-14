@@ -52,13 +52,19 @@ export default ({
         `Cancelling link click event due to clickCollection.${linkType}LinkEnabled = false.`
       );
     } else if (
-      // Determine if element properties should be collected now or be saved
-      // for a future page view event.
+      // Determine if element properties should be sent with event now, or be saved
+      // and grouped with a future page view event.
+      // Event grouping is not supported for the deprecated onBeforeLinkClickSend callback
+      // because only click properties is saved and not XDM and DATA (which could have been modified).
+      // However, if the filterClickDetails callback is available we group events because it takes
+      // priority over onBeforeLinkClickSend and only supports processing click properties.
       elementProperties.isInternalLink() &&
-      clickCollection.eventGroupingEnabled
+      clickCollection.eventGroupingEnabled &&
+      (!config.onBeforeLinkClickSend || clickCollection.filterClickDetails)
     ) {
       clickActivityStorage.save(elementProperties.properties);
     } else if (elementProperties.isValidLink()) {
+      // Event will be sent
       event.mergeXdm(elementProperties.xdm);
       event.setUserData(elementProperties.data);
       clickActivityStorage.save({
