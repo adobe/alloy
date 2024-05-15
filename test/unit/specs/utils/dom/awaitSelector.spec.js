@@ -16,7 +16,7 @@ import {
   createNode,
   appendNode,
   removeNode,
-} from "../../../../../src/utils/dom";
+} from "../../../../../src/utils/dom/index.js";
 
 describe("DOM::awaitSelector", () => {
   const createAndAppendNodeDelayed = (id) => {

@@ -15,7 +15,7 @@ import {
   appendNode,
   selectNodes,
   removeNode,
-} from "../../../../../../../src/utils/dom";
+} from "../../../../../../../src/utils/dom/index.js";
 import collectClicks from "../../../../../../../src/components/Personalization/dom-actions/clicks/collectClicks.js";
 
 describe("Personalization::tracking::clicks", () => {

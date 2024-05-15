@@ -16,7 +16,7 @@ import {
   removeNode,
   appendNode,
   createNode,
-} from "../../../../../../../src/utils/dom";
+} from "../../../../../../../src/utils/dom/index.js";
 import {
   getElementById,
   getNextSibling,

@@ -14,7 +14,7 @@ import {
   createNode,
   selectNodes,
   removeNode,
-} from "../../../../../../src/utils/dom";
+} from "../../../../../../src/utils/dom/index.js";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
 
 describe("Personalization::actions::customCode", () => {

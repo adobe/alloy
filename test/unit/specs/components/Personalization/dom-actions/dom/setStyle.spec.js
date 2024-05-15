@@ -15,7 +15,7 @@ import {
   selectNodes,
   removeNode,
   createNode,
-} from "../../../../../../../src/utils/dom";
+} from "../../../../../../../src/utils/dom/index.js";
 import { getAttribute } from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 
 describe("Personalization::DOM::setStyle", () => {

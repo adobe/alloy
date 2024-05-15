@@ -15,7 +15,7 @@ import {
   appendNode,
   selectNodes,
   removeNode,
-} from "../../../../../../../src/utils/dom";
+} from "../../../../../../../src/utils/dom/index.js";
 import {
   escapeIdentifiersInSelector,
   parseSelector,

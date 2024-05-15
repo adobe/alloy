@@ -13,7 +13,7 @@ import {
   selectNodes,
   appendNode,
   createNode,
-} from "../../../../../../src/utils/dom";
+} from "../../../../../../src/utils/dom/index.js";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 

@@ -15,7 +15,7 @@ import {
   removeNode,
   appendNode,
   createNode,
-} from "../../../../../../../src/utils/dom";
+} from "../../../../../../../src/utils/dom/index.js";
 import { getElementById } from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 
 describe("Personalization::DOM::getElementById", () => {

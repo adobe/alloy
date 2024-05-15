@@ -16,7 +16,7 @@ import {
   removeNode,
   appendNode,
   createNode,
-} from "../../../../../../../src/utils/dom";
+} from "../../../../../../../src/utils/dom/index.js";
 import { getNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 
 describe("Personalization::DOM::getNonce", () => {

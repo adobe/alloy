@@ -15,7 +15,7 @@ import {
   createNode,
   removeNode,
   selectNodes,
-} from "../../../../../../../src/utils/dom";
+} from "../../../../../../../src/utils/dom/index.js";
 import {
   getAttribute,
   setAttribute,
