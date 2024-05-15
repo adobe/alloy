@@ -39,7 +39,7 @@ export default [
         "@babel/eslint-parser": [".js", ".cjs", ".mjs"],
       },
       "import/resolver": {
-        // typescript: true,
+        typescript: true,
         node: true,
       },
     },
