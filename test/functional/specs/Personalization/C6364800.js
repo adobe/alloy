@@ -207,7 +207,7 @@ test("C6364800 applyResponse accepts a response, updates DOM and returns decisio
 });
 
 test("C6364800 applyResponse applies personalization when called after a sendEvent", async () => {
-  const [responseHeaders, responseBody] = await getAepEdgeResponse(uuid());
+  const [responseHeaders, responseBody] = await getAepEdgeResponse(uuidv4());
 
   await addHtmlToHeader(testPageHead);
   await addHtmlToBody(testPageBody, true);

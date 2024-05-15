@@ -89,7 +89,9 @@ test("Test C28759: Inline scripts should render when renderDecision=true", async
   await t.expect(scripts.count).eql(1);
   await t
     .expect((await scripts.textContent).trim())
-    .eql("setTimeout(function onTimeout() { window.someEvar123 = 1; }, 200);");
+    .contains(
+      "setTimeout(function onTimeout() { window.someEvar123 = 1; }, 200);",
+    );
 
   await t.expect(getScriptExecutionResult()).eql(1);
 

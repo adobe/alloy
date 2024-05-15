@@ -34,7 +34,7 @@ const demdexHostRegex = /\.demdex\.net/;
 
 const getHostForFirstRequest = () => {
   const firstRequest = networkLogger.edgeInteractEndpointLogs.requests[0];
-  return firstRequest.request.headers.host;
+  return firstRequest.request.url;
 };
 
 const assertRequestWentToDemdex = async () => {

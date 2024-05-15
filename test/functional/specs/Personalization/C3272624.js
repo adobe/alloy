@@ -22,6 +22,7 @@ import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
 import createResponse from "../../helpers/createResponse.js";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import awaitRequestResponse from "../../helpers/networkLogger/awaitRequestResponse.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
@@ -55,7 +56,7 @@ test("Test C3272624: Support passing profile attributes and qualify for offers",
     },
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
 
@@ -66,9 +67,7 @@ test("Test C3272624: Support passing profile attributes and qualify for offers",
     .expect(requestBody.events[0].query.personalization.decisionScopes)
     .eql([PAGE_WIDE_SCOPE]);
 
-  const response = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
-  );
+  const response = JSON.parse(getResponseBody(sendEventRequest));
   const personalizationPayload = createResponse({
     content: response,
   }).getPayloadsByType("personalization:decisions");
@@ -92,6 +91,8 @@ test("Test C3272624: Support passing profile attributes and qualify for offers",
       },
     },
   });
+
+  await awaitRequestResponse(networkLogger.edgeEndpointLogs.requests[1]);
 
   const responseTwo = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[1]),

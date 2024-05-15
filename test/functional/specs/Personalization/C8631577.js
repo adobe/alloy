@@ -47,7 +47,7 @@ test(DESCRIPTION, async () => {
   await alloy.configure(config);
   const eventResult = await alloy.sendEvent(sendEventOptions);
   const browserHintProposition = eventResult.propositions.find(
-    (proposition) => proposition.scope === "chromeBrowserClientHint",
+    (proposition) => proposition.scope === "64BitClientHint",
   );
   const hasChromeBrowserClientHintProposition =
     browserHintProposition !== undefined &&
