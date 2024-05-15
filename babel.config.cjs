@@ -51,7 +51,7 @@ const transformModulesCommonjsPlugin = [
 
 const npmIgnoreFiles = ["src/baseCode.js", "src/standalone.js"];
 
-export default {
+module.exports = {
   env: {
     rollup: {
       presets: [

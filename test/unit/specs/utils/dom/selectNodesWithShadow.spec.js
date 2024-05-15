@@ -16,7 +16,7 @@ import {
   appendNode,
   selectNodes,
   removeNode,
-} from "../../../../../src/utils/dom";
+} from "../../../../../src/utils/dom/index.js";
 import { selectNodesWithEq } from "../../../../../src/components/Personalization/dom-actions/dom/index.js";
 
 const ieDetected = () => !!document.documentMode;

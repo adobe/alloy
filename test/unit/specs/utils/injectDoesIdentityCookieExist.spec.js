@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import {
   injectDoesIdentityCookieExist,
   cookieJar,
-} from "../../../../src/utils";
+} from "../../../../src/utils/index.js";
 import removeAllCookies from "../../helpers/removeAllCookies.js";
 
 describe("Identity::injectDoesIdentityCookieExist", () => {

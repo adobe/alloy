@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 const getResponseBody = (request) => {
   const bodyBuffer = request.response.body;
-  let decompressedBody = bodyBuffer;
+  const decompressedBody = bodyBuffer;
   return decompressedBody.toString();
 };
 

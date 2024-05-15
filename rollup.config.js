@@ -30,7 +30,7 @@ const NPM_PACKAGE_LOCAL = "NPM_PACKAGE_LOCAL";
 const NPM_PACKAGE_PROD = "NPM_PACKAGE_PROD";
 // Add "_MIN" to the end of the option name to build the minified version
 
-const __dirname = import.meta.dirname;
+const dirname = import.meta.dirname;
 
 const buildPlugins = (variant, minify) => {
   const plugins = [
@@ -44,7 +44,7 @@ const buildPlugins = (variant, minify) => {
     babel({
       envName: "rollup",
       babelHelpers: "bundled",
-      configFile: path.resolve(__dirname, "babel.config.js"),
+      configFile: path.resolve(dirname, "babel.config.js"),
     }),
   ];
 
@@ -72,7 +72,7 @@ const buildPlugins = (variant, minify) => {
       license({
         banner: {
           content: {
-            file: path.join(__dirname, "LICENSE_BANNER"),
+            file: path.join(dirname, "LICENSE_BANNER"),
           },
         },
       }),

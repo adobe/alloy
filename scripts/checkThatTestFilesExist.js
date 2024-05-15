@@ -16,8 +16,8 @@ import path from "path";
 import fs from "fs";
 import recursive from "recursive-readdir";
 import pkg from "minimatch";
-import ignorePatterns from "../coverageignore.cjs";
 import { fileURLToPath } from "url";
+import ignorePatterns from "../coverageignore.cjs";
 
 const { Minimatch } = pkg;
 const __filename = fileURLToPath(import.meta.url);

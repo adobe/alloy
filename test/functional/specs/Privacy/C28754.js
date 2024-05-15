@@ -45,7 +45,10 @@ test("C28754 - Consenting to no purposes should result in no data handles in the
   await alloy.configure(config);
 
   await alloy.setConsent(CONSENT_OUT);
-  await responseStatus(networkLogger.setConsentEndpointLogs.requests, [200, 207]);
+  await responseStatus(
+    networkLogger.setConsentEndpointLogs.requests,
+    [200, 207],
+  );
 
   const response = JSON.parse(
     getResponseBody(networkLogger.setConsentEndpointLogs.requests[0]),

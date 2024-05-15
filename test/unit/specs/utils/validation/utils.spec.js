@@ -14,7 +14,7 @@ import {
   chain,
   nullSafeChain,
   assertValid,
-} from "../../../../../src/utils/validation/utils";
+} from "../../../../../src/utils/validation/utils.js";
 
 describe("validation::utils", () => {
   describe("chain", () => {

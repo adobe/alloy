@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import {
   createHasIdentity,
   createAddIdentity,
-} from "../../../../../src/utils/request";
+} from "../../../../../src/utils/request/index.js";
 
 describe("createHasIdentity", () => {
   let content;

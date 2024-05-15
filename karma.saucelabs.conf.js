@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 const karmaSauceLauncher = require("karma-sauce-launcher");
-const karmaConfig = require("./karma.conf");
+const karmaConfig = require("./karma.conf.cjs");
 
 module.exports = (config) => {
   karmaConfig(config);
