@@ -14,11 +14,11 @@ import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 import {
   createFragment,
   getChildNodes,
-} from "../../../../../../src/components/Personalization/dom-actions/dom";
+} from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import {
   isImage,
   loadImage,
-} from "../../../../../../src/components/Personalization/dom-actions/images";
+} from "../../../../../../src/components/Personalization/dom-actions/images.js";
 import { IMG } from "../../../../../../src/constants/tagName.js";
 import { createNode } from "../../../../../../src/utils/dom/index.js";
 

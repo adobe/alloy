@@ -14,7 +14,7 @@ import {
   createIframe,
   createIframeClickHandler,
   displayHTMLContentInIframe,
-} from "../../../../../../../src/components/Personalization/in-app-message-actions/actions/displayIframeContent";
+} from "../../../../../../../src/components/Personalization/in-app-message-actions/actions/displayIframeContent.js";
 import cleanUpDomChanges from "../../../../../helpers/cleanUpDomChanges.js";
 import { getNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import { testResetCachedNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom/getNonce.js";

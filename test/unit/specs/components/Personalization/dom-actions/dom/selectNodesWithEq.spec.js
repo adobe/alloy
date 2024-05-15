@@ -20,7 +20,7 @@ import {
   escapeIdentifiersInSelector,
   parseSelector,
   selectNodesWithEq,
-} from "../../../../../../../src/components/Personalization/dom-actions/dom/selectNodesWithEq";
+} from "../../../../../../../src/components/Personalization/dom-actions/dom/selectNodesWithEq.js";
 
 describe("Personalization::DOM::escapeIdentifiersInSelector", () => {
   it("should escape when digits only for ID selector", () => {
@@ -91,7 +91,7 @@ describe("Personalization::DOM::selectNodesWithEq", () => {
         <div class="c">first</div>
 
         <div class="c">second</div>
-        
+
         <div class="c">third</div>
       </div>
     `;
@@ -113,7 +113,7 @@ describe("Personalization::DOM::selectNodesWithEq", () => {
         <div class="c">first</div>
 
         <div class="c">second</div>
-        
+
         <div class="c">third</div>
       </div>
     `;

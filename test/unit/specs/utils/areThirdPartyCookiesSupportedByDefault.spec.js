@@ -19,7 +19,7 @@ import {
   IE,
   SAFARI,
   UNKNOWN,
-} from "../../../../src/constants/browser";
+} from "../../../../src/constants/browser.js";
 
 const browsersWithSupport = [CHROME, EDGE, EDGE_CHROMIUM, IE, UNKNOWN];
 const browsersWithoutSupport = [FIREFOX, SAFARI];

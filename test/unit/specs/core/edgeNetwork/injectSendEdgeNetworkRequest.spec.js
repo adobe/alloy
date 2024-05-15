@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectSendEdgeNetworkRequest from "../../../../../src/core/edgeNetwork/injectSendEdgeNetworkrequest.js";
+import injectSendEdgeNetworkRequest from "../../../../../src/core/edgeNetwork/injectSendEdgeNetworkRequest.js";
 import createConfig from "../../../../../src/core/config/createConfig.js";
 import { defer } from "../../../../../src/utils/index.js";
 import flushPromiseChains from "../../../helpers/flushPromiseChains.js";

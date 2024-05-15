@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import "jasmine-expect";
 import validateApplyPropositionsOptions, {
   EMPTY_PROPOSITIONS,
-} from "../../../../../src/components/Personalization/validateApplyPropositionsOptions";
+} from "../../../../../src/components/Personalization/validateApplyPropositionsOptions.js";
 
 const PROPOSITIONS = [
   {

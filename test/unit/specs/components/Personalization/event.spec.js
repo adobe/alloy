@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import {
   mergeDecisionsMeta,
   mergeQuery,
-} from "../../../../../src/components/Personalization/event";
+} from "../../../../../src/components/Personalization/event.js";
 import { PropositionEventType } from "../../../../../src/constants/propositionEventType.js";
 
 describe("Personalization::event", () => {

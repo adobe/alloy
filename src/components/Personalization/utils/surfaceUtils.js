@@ -15,7 +15,7 @@ import {
   WEBAPP,
   SURFACE_TYPE_DELIMITER,
   FRAGMENT_DELIMITER,
-} from "../constants/surface";
+} from "../constants/surface.js";
 import {
   startsWith,
   isNil,

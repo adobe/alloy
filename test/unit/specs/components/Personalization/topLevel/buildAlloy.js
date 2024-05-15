@@ -19,7 +19,7 @@ import isAuthoringModeEnabled from "../../../../../../src/components/Personaliza
 import {
   mergeDecisionsMeta,
   mergeQuery,
-} from "../../../../../../src/components/Personalization/event";
+} from "../../../../../../src/components/Personalization/event.js";
 import createOnClickHandler from "../../../../../../src/components/Personalization/createOnClickHandler.js";
 import createViewCacheManager from "../../../../../../src/components/Personalization/createViewCacheManager.js";
 import createViewChangeHandler from "../../../../../../src/components/Personalization/createViewChangeHandler.js";
@@ -38,7 +38,7 @@ import createProcessDomAction from "../../../../../../src/components/Personaliza
 import createProcessHtmlContent from "../../../../../../src/components/Personalization/handlers/createProcessHtmlContent.js";
 import createProcessRedirect from "../../../../../../src/components/Personalization/handlers/createProcessRedirect.js";
 import processDefaultContent from "../../../../../../src/components/Personalization/handlers/processDefaultContent.js";
-import { isPageWideSurface } from "../../../../../../src/components/Personalization/utils/surfaceutils.js";
+import { isPageWideSurface } from "../../../../../../src/components/Personalization/utils/surfaceUtils.js";
 import createOnDecisionHandler from "../../../../../../src/components/Personalization/createOnDecisionHandler.js";
 import createNotificationHandler from "../../../../../../src/components/Personalization/createNotificationHandler.js";
 

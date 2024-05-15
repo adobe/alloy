@@ -16,7 +16,7 @@ import {
 import {
   hideElements,
   showElements,
-} from "../../../../../../src/components/Personalization/flicker";
+} from "../../../../../../src/components/Personalization/flicker/index.js";
 
 describe("Personalization::flicker", () => {
   beforeEach(() => {
