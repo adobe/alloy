@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import activityMapExtensionEnabled from "./utils/activityMapExtensionEnabled";
+import isDifferentDomains from "./utils/isDifferentDomains";
 
 const isDissallowedLinkType = (clickCollection, linkType) => {
   return (
@@ -60,7 +61,8 @@ export default ({
       // priority over onBeforeLinkClickSend and only supports processing click properties.
       elementProperties.isInternalLink() &&
       clickCollection.eventGroupingEnabled &&
-      (!config.onBeforeLinkClickSend || clickCollection.filterClickDetails)
+      (!config.onBeforeLinkClickSend || clickCollection.filterClickDetails) &&
+      !isDifferentDomains(window.location.hostname, elementProperties.linkUrl)
     ) {
       clickActivityStorage.save(elementProperties.properties);
     } else if (elementProperties.isValidLink()) {
