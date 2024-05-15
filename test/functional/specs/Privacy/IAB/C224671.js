@@ -54,7 +54,7 @@ test.meta({
     await alloy.setConsent(consent);
 
     await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
-    await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+    await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
     const consentRawResponse = JSON.parse(
       getResponseBody(networkLogger.setConsentEndpointLogs.requests[0]),

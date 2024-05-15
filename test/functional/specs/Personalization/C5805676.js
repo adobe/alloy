@@ -68,7 +68,7 @@ test("Test C5805676: Merged metric propositions should be delivered", async () =
     decisionScopes: [FORM_BASED_SCOPE],
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 

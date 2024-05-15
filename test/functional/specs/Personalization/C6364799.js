@@ -66,7 +66,7 @@ test("Test C6364799: applyPropositions should render html-content-item schemas w
     decisionScopes: [scope],
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 

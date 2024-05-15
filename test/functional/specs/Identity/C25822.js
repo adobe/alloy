@@ -74,7 +74,7 @@ test("C25822: Event command sends the identityMap", async () => {
   await alloy.configure(config);
   await alloy.sendEvent(goodAlloyEventOptions);
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 

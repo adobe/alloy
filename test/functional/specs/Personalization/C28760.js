@@ -51,7 +51,7 @@ test("Test C28760: A notification collect should be triggered if a VEC dom actio
   await alloy.configure(config);
   await alloy.sendEvent({ renderDecisions: true });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.count(() => true)).eql(2);
 

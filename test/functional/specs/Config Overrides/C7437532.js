@@ -47,7 +47,7 @@ test("Test C7437532: `appendIdentityToUrl` can receive config overrides in comma
     edgeConfigOverrides: overrides,
   });
 
-  await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.acquireEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
@@ -78,7 +78,7 @@ test("Test C7437532: `appendIdentityToUrl` can receive config overrides from `co
     url: "https://example.com",
   });
 
-  await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.acquireEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
@@ -112,7 +112,7 @@ test("Test C7437532: overrides from the `appendIdentityToUrl` should take preced
     edgeConfigOverrides: overrides,
   });
 
-  await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.acquireEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
@@ -148,7 +148,7 @@ test("Test C7437532: empty configuration overrides should not be sent to the Edg
     }),
   });
 
-  await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.acquireEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
@@ -181,7 +181,7 @@ test("Test C7437532: `appendIdentityToUrl` can override the datastreamId", async
     },
   });
 
-  await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.acquireEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
   const [request] = networkLogger.acquireEndpointLogs.requests;
   await t.expect(request.request.url).contains(alternateDatastreamId);

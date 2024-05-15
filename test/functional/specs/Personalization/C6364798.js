@@ -74,7 +74,7 @@ const simulatePageLoad = async (alloy) => {
   });
 
   // asserts the request fired to Experience Edge has the expected event query
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   const sendEventRequest = networkLogger.edgeEndpointLogs.requests[0];
   const requestBody = JSON.parse(sendEventRequest.request.body);

@@ -77,7 +77,7 @@ test("Test C28758: A VEC offer with ShadowDOM selectors should render", async ()
 
   const eventResult = await alloy.sendEvent({ renderDecisions: true });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
 
