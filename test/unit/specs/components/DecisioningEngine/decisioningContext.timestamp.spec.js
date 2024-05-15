@@ -13,7 +13,7 @@ import {
   mockWindow,
   setupResponseHandler,
   proposition,
-} from "./contextTestUtils";
+} from "./contextTestUtils.js";
 
 let mockedTimestamp;
 describe("DecisioningEngine:globalContext:timeContext", () => {

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import {
   DOM_ACTION,
   MESSAGE_FEED_ITEM,
-} from "../../../../../src/constants/schema";
+} from "../../../../../src/constants/schema.js";
 import createSubscribeRulesetItems from "../../../../../src/components/DecisioningEngine/createSubscribeRulesetItems.js";
 
 describe("DecisioningEngine:subscribeRulesetItems", () => {

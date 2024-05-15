@@ -16,7 +16,7 @@ import {
   getChildNodes,
   getFirstChild,
   insertBefore,
-} from "./dom";
+} from "./dom/index.js";
 import { loadImages } from "./images.js";
 import addNonceToInlineStyleElements from "./addNonceToInlineStyleElements.js";
 import {
@@ -24,7 +24,7 @@ import {
   getRemoteScriptsUrls,
   executeInlineScripts,
   executeRemoteScripts,
-} from "./scripts";
+} from "./scripts.js";
 
 export default (container, html) => {
   const fragment = createFragment(html);

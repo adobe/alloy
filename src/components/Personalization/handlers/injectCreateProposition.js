@@ -15,7 +15,7 @@ import {
   VIEW_SCOPE_TYPE,
   PAGE_SCOPE_TYPE,
   PROPOSITION_SCOPE_TYPE,
-} from "../constants/scopeType";
+} from "../constants/scopeType.js";
 
 export default ({ preprocess, isPageWideSurface }) => {
   const createItem = (item, proposition) => {

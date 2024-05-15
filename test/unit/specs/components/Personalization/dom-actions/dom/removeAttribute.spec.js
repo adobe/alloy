@@ -19,7 +19,7 @@ import {
 import {
   getAttribute,
   setAttribute,
-} from "../../../../../../../src/components/Personalization/dom-actions/dom";
+} from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 
 describe("Personalization::DOM::removeAttribute", () => {
   afterEach(() => {

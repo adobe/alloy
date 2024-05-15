@@ -16,7 +16,7 @@ import {
   CONSENT_SOURCE_DEFAULT,
   CONSENT_SOURCE_INITIAL,
   CONSENT_SOURCE_NEW,
-} from "./createConsentStateMachine";
+} from "./createConsentStateMachine.js";
 
 export default ({ generalConsentState, logger }) => {
   const setConsent = (consentByPurpose, source) => {

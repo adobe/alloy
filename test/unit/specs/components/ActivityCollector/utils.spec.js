@@ -16,7 +16,7 @@ import {
   isDownloadLink,
   isExitLink,
   trimQueryFromUrl,
-} from "../../../../../src/components/ActivityCollector/utils";
+} from "../../../../../src/components/ActivityCollector/utils.js";
 import { downloadLinkQualifier } from "../../../../../src/components/ActivityCollector/configValidators.js";
 
 const initAnchorState = (window, element, anchorState) => {

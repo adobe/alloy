@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 export default async (request) =>
-  await new Promise((r) => {
+  new Promise((r) => {
     const t = setInterval(() => {
       if (request.response) {
         clearInterval(t);

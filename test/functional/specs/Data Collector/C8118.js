@@ -78,9 +78,9 @@ test("Test C8118: Verify link click sends a request to the collect endpoint when
   // endpoint using sendBeacon.
   await clickLink();
   await collectEndpointAsserter.assertCollectCalledAndNotInteract();
-  const collectRequest = collectEndpointAsserter.getCollectRequest();
 
   // TODO: Testcafe no longer captures the request body for sendBeacon requests.
   // We could enhance this test to use Assurance to verify the request body.
+  // const collectRequest = collectEndpointAsserter.getCollectRequest();
   // await assertRequestXdm(collectRequest);
 });

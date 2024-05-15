@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import {
   MIXED_PROPOSITIONS,
   PAGE_WIDE_SCOPE_DECISIONS,
-} from "./responsesMock/eventResponses";
+} from "./responsesMock/eventResponses.js";
 import createApplyPropositions from "../../../../../src/components/Personalization/createApplyPropositions.js";
 import clone from "../../../../../src/utils/clone.js";
 import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition.js";

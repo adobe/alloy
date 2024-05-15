@@ -18,7 +18,7 @@ import {
   isFunction,
   createLoggingCookieJar,
   injectFireReferrerHideableImage,
-} from "../utils";
+} from "../utils/index.js";
 import createLogController from "./createLogController.js";
 import createLifecycle from "./createLifecycle.js";
 import createComponentRegistry from "./createComponentRegistry.js";
@@ -47,7 +47,7 @@ import {
   createDataCollectionRequest,
   createDataCollectionRequestPayload,
   createGetAssuranceValidationTokenParams,
-} from "../utils/request";
+} from "../utils/request/index.js";
 import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkRequest.js";
 import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsAndErrors.js";
 import injectGetLocationHint from "./edgeNetwork/injectGetLocationHint.js";

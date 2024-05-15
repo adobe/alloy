@@ -54,6 +54,8 @@ test("Test C14299421: Prehiding style is removed when there is a problem renderi
 
   await t.expect(Selector("#alloy-prehiding").exists).notOk();
   // wait for the rendering to timeout
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  await new Promise((resolve) => {
+    setTimeout(resolve, 5000);
+  });
   await logger.warn.expectMessageMatching(/Failed to execute action/);
 });

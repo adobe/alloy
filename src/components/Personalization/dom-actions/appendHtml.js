@@ -19,7 +19,7 @@ import {
   getRemoteScriptsUrls,
   executeInlineScripts,
   executeRemoteScripts,
-} from "./scripts";
+} from "./scripts.js";
 
 export default (container, html) => {
   const fragment = createFragment(html);

@@ -19,5 +19,5 @@ export default (window) =>
     }
     // Return a promise that never resolves because redirects never complete
     // within the current page.
-    return new Promise(() => undefined);
+    return new Promise(() => {});
   };

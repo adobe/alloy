@@ -13,7 +13,7 @@ import { t, Selector, ClientFunction } from "testcafe";
 import createFixture from "../../helpers/createFixture/index.js";
 import addHtmlToBody from "../../helpers/dom/addHtmlToBody.js";
 import createConsoleLogger from "../../helpers/consoleLogger/index.js";
-import createUnhandledRejectionLogger from "../../helpers/createunhandledrejectionlogger.js";
+import createUnhandledRejectionLogger from "../../helpers/createUnhandledRejectionLogger.js";
 import {
   compose,
   orgMainConfigMain,

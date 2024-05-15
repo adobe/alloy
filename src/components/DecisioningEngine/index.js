@@ -20,7 +20,7 @@ import {
   CONTEXT_KEY,
   CONTEXT_EVENT_SOURCE,
   CONTEXT_EVENT_TYPE,
-} from "./constants";
+} from "./constants.js";
 import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand.js";
 import { clearLocalStorage, createInMemoryStorage } from "./utils.js";
 import { objectOf, boolean } from "../../utils/validation/index.js";

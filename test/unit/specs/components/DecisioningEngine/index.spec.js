@@ -14,7 +14,7 @@ import { defer } from "../../../../../src/utils/index.js";
 import {
   mockRulesetResponseWithCondition,
   proposition,
-} from "./contextTestUtils";
+} from "./contextTestUtils.js";
 
 describe("createDecisioningEngine:commands:evaluateRulesets", () => {
   let mergeData;

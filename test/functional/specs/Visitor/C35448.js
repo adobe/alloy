@@ -19,7 +19,7 @@ import {
   migrationEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
-import { default as REMOTE_VISITOR_LIBRARY_URL } from "../../helpers/constants/remoteVisitorLibraryUrl.js";
+import REMOTE_VISITOR_LIBRARY_URL from "../../helpers/constants/remoteVisitorLibraryUrl.js";
 
 createFixture({
   title:

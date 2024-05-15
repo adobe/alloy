@@ -20,12 +20,12 @@ import { fileURLToPath } from "url";
 import ignorePatterns from "../coverageignore.cjs";
 
 const { Minimatch } = pkg;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
-const baseDir = path.join(__dirname, "../");
-const srcDir = path.join(__dirname, "../src");
-const testDir = path.join(__dirname, "../test/unit/specs");
+const baseDir = path.join(dirname, "../");
+const srcDir = path.join(dirname, "../src");
+const testDir = path.join(dirname, "../test/unit/specs");
 const specExtension = ".spec.js";
 
 const ignoreMinimatches = ignorePatterns.map((ignorePattern) => {

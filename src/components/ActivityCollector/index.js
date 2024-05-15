@@ -20,7 +20,7 @@ import {
   determineLinkType,
   findSupportedAnchorElement,
   getAbsoluteUrlFromAnchorElement,
-} from "./utils";
+} from "./utils.js";
 
 const getLinkDetails = createGetLinkDetails({
   window,

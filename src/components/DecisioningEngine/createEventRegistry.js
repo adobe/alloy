@@ -16,7 +16,7 @@ import {
   getActivityId,
   hasExperienceData,
   getDecisionProvider,
-} from "./utils";
+} from "./utils.js";
 import { EVENT_TYPE_TRUE } from "../../constants/eventType.js";
 import { ADOBE_JOURNEY_OPTIMIZER } from "../../constants/decisionProvider.js";
 

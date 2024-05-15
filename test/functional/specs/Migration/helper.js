@@ -18,7 +18,10 @@ import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
 import createResponse from "../../helpers/createResponse.js";
 
 export const MIGRATION_LOCATION = "location-for-migration-testing";
-export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+export const sleep = (ms) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 
 export const extractCluster = (hostname) => {
   const values = hostname.split(".");

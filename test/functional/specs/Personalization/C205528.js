@@ -59,7 +59,9 @@ test("Test C205528: A redirect offer should not redirect if renderDecisions is f
   await alloy.configure(config);
   await alloy.sendEvent({});
   // wait 1 second for the redirect to happen
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => {
+    setTimeout(resolve, 1000);
+  });
   await t.expect(redirectLogger.count(() => true)).eql(0);
 });
 

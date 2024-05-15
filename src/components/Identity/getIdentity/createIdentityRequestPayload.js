@@ -14,7 +14,7 @@ import {
   createAddIdentity,
   createHasIdentity,
   createRequestPayload,
-} from "../../../utils/request";
+} from "../../../utils/request/index.js";
 
 export default (namespaces) => {
   const content = {

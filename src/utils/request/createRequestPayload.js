@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createMerger, prepareConfigOverridesForEdge } from "..";
+import { createMerger, prepareConfigOverridesForEdge } from "../index.js";
 
 // This provides the base functionality that all types of
 // request payloads share.

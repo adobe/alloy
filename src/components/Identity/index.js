@@ -15,7 +15,7 @@ import {
   injectDoesIdentityCookieExist,
   createLoggingCookieJar,
   cookieJar,
-} from "../../utils";
+} from "../../utils/index.js";
 import injectProcessIdSyncs from "./injectProcessIdSyncs.js";
 import configValidators from "./configValidators.js";
 

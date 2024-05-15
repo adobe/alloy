@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 import createEventRegistry, {
   createEventPruner,
-} from "../../../../../src/components/DecisioningEngine/createEventRegistry";
+} from "../../../../../src/components/DecisioningEngine/createEventRegistry.js";
 
 describe("DecisioningEngine:createEventRegistry", () => {
   let storage;

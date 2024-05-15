@@ -17,10 +17,10 @@ import stagedGitFiles from "staged-git-files";
 import Handlebars from "handlebars";
 import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
-const PROJECT_ROOT = path.resolve(__dirname, "../");
+const PROJECT_ROOT = path.resolve(dirname, "../");
 const SOURCE_TEMPLATE = "source-header.handlebars";
 
 const GIT_DELETED = "Deleted";
@@ -97,7 +97,7 @@ const run = async () => {
   const stagedOnly = typeof process.env.STAGED_ONLY !== "undefined";
 
   const template = fs.readFileSync(
-    path.resolve(__dirname, SOURCE_TEMPLATE),
+    path.resolve(dirname, SOURCE_TEMPLATE),
     "utf-8",
   );
 

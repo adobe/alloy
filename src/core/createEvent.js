@@ -15,7 +15,7 @@ import {
   deepAssign,
   isNonEmptyArray,
   deduplicateArray,
-} from "../utils";
+} from "../utils/index.js";
 
 const getXdmPropositions = (xdm) => {
   return xdm &&

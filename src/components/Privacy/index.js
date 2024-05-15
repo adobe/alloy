@@ -15,7 +15,7 @@ import {
   cookieJar,
   injectDoesIdentityCookieExist,
   sanitizeOrgIdForCookieName,
-} from "../../utils";
+} from "../../utils/index.js";
 import createComponent from "./createComponent.js";
 import createConsentHashStore from "./createConsentHashStore.js";
 import createConsentRequestPayload from "./createConsentRequestPayload.js";

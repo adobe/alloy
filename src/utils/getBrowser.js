@@ -20,7 +20,7 @@ import {
   IE,
   SAFARI,
   UNKNOWN,
-} from "../constants/browser";
+} from "../constants/browser.js";
 
 const matchUserAgent = (regexs) => {
   return (userAgent) => {

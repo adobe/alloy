@@ -24,7 +24,7 @@ import {
   prependHtml,
   insertHtmlAfter,
   insertHtmlBefore,
-} from "./action";
+} from "./action.js";
 
 export default () => {
   return {

@@ -15,7 +15,7 @@ import {
   createSaveStorage,
   getActivityId,
   getExpirationDate,
-} from "../../../../../src/components/DecisioningEngine/utils";
+} from "../../../../../src/components/DecisioningEngine/utils.js";
 
 describe("DecisioningEngine:utils", () => {
   let storage;

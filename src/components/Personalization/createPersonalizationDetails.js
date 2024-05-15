@@ -26,7 +26,7 @@ import {
   REDIRECT_ITEM,
   RULESET_ITEM,
   MESSAGE_FEED_ITEM,
-} from "../../constants/schema";
+} from "../../constants/schema.js";
 
 const addPageWideScope = (scopes) => {
   if (!includes(scopes, PAGE_WIDE_SCOPE)) {

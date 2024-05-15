@@ -60,10 +60,6 @@ test("Test C6944931: The legacy Adobe Target location hint is used.", async () =
   const urls = networkLogger.edgeEndpointLogs.requests.map(
     (r) => r.request.url,
   );
-  await t
-    .expect(urls[0])
-    .match(new RegExp("^https://[^/]+/[^/]+/t38/v1/interact"));
-  await t
-    .expect(urls[1])
-    .match(new RegExp(`^https://[^/]+/[^/]+/sgp3/v1/interact`));
+  await t.expect(urls[0]).match(/^https:\/\/[^/]+\/[^/]+\/t38\/v1\/interact/);
+  await t.expect(urls[1]).match(/^https:\/\/[^/]+\/[^/]+\/sgp3\/v1\/interact/);
 });

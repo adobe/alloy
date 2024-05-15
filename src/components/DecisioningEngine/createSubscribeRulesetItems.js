@@ -14,7 +14,7 @@ import {
   callback as callbackType,
   objectOf,
   string,
-} from "../../utils/validation";
+} from "../../utils/validation/index.js";
 import createSubscription from "../../utils/createSubscription.js";
 import { includes } from "../../utils/index.js";
 
