@@ -17,7 +17,12 @@ import fs from "fs";
 import recursive from "recursive-readdir";
 import pkg from "minimatch";
 import { fileURLToPath } from "url";
-import ignorePatterns from "../coverageignore.cjs";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
+
+// eslint-disable-next-line import/extensions
+const ignorePatterns = require("../coverageignore.cjs");
 
 const { Minimatch } = pkg;
 const filename = fileURLToPath(import.meta.url);
