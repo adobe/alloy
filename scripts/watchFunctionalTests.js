@@ -12,12 +12,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const path = require("path");
-const rollup = require("rollup");
-const loadConfigFile = require("rollup/dist/loadConfigFile");
-const createTestCafe = require("testcafe");
-const yargs = require("yargs/yargs");
-const { hideBin } = require("yargs/helpers");
+import path from "path";
+import { watch } from "rollup";
+import createTestCafe from "testcafe";
+import yargs from "yargs/yargs";
+import { loadConfigFile } from "rollup/dist/loadConfigFile.js";
+// eslint-disable-next-line import/extensions
+import { hideBin } from "yargs/helpers";
+
+const dirname = import.meta.dirname;
 
 const argv = yargs(hideBin(process.argv)).option("browsers", {
   type: "array",
@@ -51,7 +54,7 @@ const effectByEventCode = {
       );
     } else {
       firstBuildComplete = true;
-      const testcafe = await createTestCafe();
+      const testcafe = await createTestCafe({ esm: true });
       const liveRunner = testcafe.createLiveModeRunner();
       await liveRunner.browsers(argv.browsers).run();
       await testcafe.close();
@@ -70,11 +73,11 @@ const effectByEventCode = {
   process.env.NPM_PACKAGE_LOCAL = "true";
   process.env.BASE_CODE_MIN = "true";
   const { options, warnings } = await loadConfigFile(
-    path.join(__dirname, "../rollup.config.js"),
+    path.join(dirname, "../rollup.config.js"),
   );
 
   warnings.flush();
-  const watcher = rollup.watch(options);
+  const watcher = watch(options);
   watcher.on("event", (event) => {
     const effect = effectByEventCode[event.code];
 

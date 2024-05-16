@@ -8,20 +8,24 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const fs = require("fs");
-const path = require("path");
-const { rollup } = require("rollup");
-const nodeResolve = require("@rollup/plugin-node-resolve").default;
-const commonjs = require("@rollup/plugin-commonjs");
-const babel = require("@rollup/plugin-babel").default;
-const terser = require("@rollup/plugin-terser").terser;
-const yargs = require("yargs/yargs");
-const { hideBin } = require("yargs/helpers");
-const conditionalBuildBabelPlugin = require("./conditionalBuildBabelPlugin");
+
+import fs from "fs";
+import path from "path";
+import { rollup } from "rollup";
+import nodeResolve from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
+import babel from "@rollup/plugin-babel";
+import terser from "@rollup/plugin-terser";
+import yargs from "yargs/yargs";
+// eslint-disable-next-line import/extensions
+import { hideBin } from "yargs/helpers";
+import conditionalBuildBabelPlugin from "./conditionalBuildBabelPlugin.js";
+
+const dirname = import.meta.dirname;
 
 // Path to componentCreators.js
 const componentCreatorsPath = path.join(
-  __dirname,
+  dirname,
   "../../src/core/componentCreators.js",
 );
 
@@ -60,9 +64,9 @@ const argv = yargs(hideBin(process.argv))
 
 if (!argv.exclude) {
   console.log(
-    `No components excluded. To exclude components, try running "npm run build:custom -- --exclude personalization". Your choices are: ${optionalComponents.join(
-      ", ",
-    )}`,
+    `No components excluded. To exclude components, try running "npm run build:custom -- --exclude personalization". Your choices are: "${optionalComponents.join(
+      '", "',
+    )}".`,
   );
   process.exit(0);
 }

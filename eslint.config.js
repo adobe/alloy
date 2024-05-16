@@ -143,6 +143,12 @@ export default [
     files: ["scripts/**/*.{cjs,js}"],
     rules: {
       "no-console": "off",
+      "import/extensions": [
+        "error",
+        {
+          js: "always",
+        },
+      ],
     },
   },
   pluginJs.configs.recommended,
