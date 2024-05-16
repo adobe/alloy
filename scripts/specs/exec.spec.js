@@ -1,6 +1,6 @@
-const { Writable } = require("stream");
-const exec = require("../helpers/exec");
-const ApplicationError = require("../helpers/applicationError");
+import { Writable } from "stream";
+import exec from "../helpers/exec.js";
+import ApplicationError from "../helpers/applicationError.js";
 
 const createStringBackedWritableStream = () => {
   let result = "";

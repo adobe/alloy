@@ -1,5 +1,5 @@
-const ApplicationError = require("../helpers/applicationError");
-const uploadToCDN = require("../helpers/uploadToCDN");
+import ApplicationError from "../helpers/applicationError.js";
+import uploadToCDN from "../helpers/uploadToCDN.js";
 
 describe("uploadToCDN", () => {
   let exec;

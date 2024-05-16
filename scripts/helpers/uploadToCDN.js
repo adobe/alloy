@@ -1,4 +1,4 @@
-const ApplicationError = require("./applicationError");
+import ApplicationError from "./applicationError.js";
 
 const uploadToCDN = async ({ exec, logger, urlExists, version }) => {
   const ensureUrlResolves = async (url) => {
@@ -32,4 +32,4 @@ bye
   );
 };
 
-module.exports = uploadToCDN;
+export default uploadToCDN;

@@ -1,4 +1,4 @@
-const setupDeployment = require("../helpers/setupDeployment");
+import setupDeployment from "../helpers/setupDeployment.js";
 
 describe("setupDeployment", () => {
   let exec;

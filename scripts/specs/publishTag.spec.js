@@ -1,4 +1,4 @@
-const publishTag = require("../helpers/publishTag");
+import publishTag from "../helpers/publishTag.js";
 
 describe("publishTag", () => {
   let exec;

@@ -1,4 +1,4 @@
-const semver = require("semver");
+import semver from "semver";
 
 const publishVersionBranch = async ({ exec, execSync, logger, version }) => {
   if (semver.prerelease(version) !== null) {
@@ -18,4 +18,4 @@ const publishVersionBranch = async ({ exec, execSync, logger, version }) => {
   }
 };
 
-module.exports = publishVersionBranch;
+export default publishVersionBranch;

@@ -1,4 +1,4 @@
-const updatePackageVersion = require("../helpers/updatePackageVersion");
+import updatePackageVersion from "../helpers/updatePackageVersion.js";
 
 describe("updatePackageVersion", () => {
   let exec;

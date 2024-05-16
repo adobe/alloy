@@ -11,4 +11,4 @@ const publishTag = async ({ exec, execSync, logger, version }) => {
   }
 };
 
-module.exports = publishTag;
+export default publishTag;

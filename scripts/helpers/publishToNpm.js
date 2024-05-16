@@ -10,4 +10,4 @@ const publishToNpm = async ({ exec, execSync, logger, npmTag, version }) => {
   }
 };
 
-module.exports = publishToNpm;
+export default publishToNpm;

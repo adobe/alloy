@@ -1,5 +1,5 @@
-const chalk = require("chalk");
-const createLogger = require("../helpers/createLogger");
+import chalk from "chalk";
+import createLogger from "../helpers/createLogger.js";
 
 describe("createLogger", () => {
   let myConsole;

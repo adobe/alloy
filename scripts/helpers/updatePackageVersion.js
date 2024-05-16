@@ -16,4 +16,4 @@ const updatePackage = async ({
   }
 };
 
-module.exports = updatePackage;
+export default updatePackage;

@@ -1,4 +1,4 @@
-const ApplicationError = require("./applicationError");
+import ApplicationError from "./applicationError.js";
 
 const withErrorHandling = async ({ logger, process }, operation, func) => {
   try {
@@ -16,4 +16,4 @@ const withErrorHandling = async ({ logger, process }, operation, func) => {
   }
 };
 
-module.exports = withErrorHandling;
+export default withErrorHandling;

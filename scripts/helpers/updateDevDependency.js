@@ -24,4 +24,4 @@ const updateDevDependency = async ({
   }
 };
 
-module.exports = updateDevDependency;
+export default updateDevDependency;

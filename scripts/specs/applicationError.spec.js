@@ -1,4 +1,4 @@
-const ApplicationError = require("../helpers/applicationError");
+import ApplicationError from "../helpers/applicationError.js";
 
 describe("ApplicationError", () => {
   it("sets the name of the error", () => {

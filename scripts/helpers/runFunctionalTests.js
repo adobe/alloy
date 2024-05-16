@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const fs = require("fs");
-const glob = require("glob");
-const createTestCafe = require("testcafe");
+import fs from "fs";
+import { glob } from "glob";
+import createTestCafe from "testcafe";
 
 fs.readFile("dist/alloy.js", "utf8", (readFileErr, alloyData) => {
   if (readFileErr) {

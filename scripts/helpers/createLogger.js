@@ -1,5 +1,5 @@
-const formatDate = require("date-fns/format");
-const chalk = require("chalk");
+import chalk from "chalk";
+import formatDate from "date-fns/format";
 
 const buildLogger =
   (logFunc, chalkFunc, dateFactory) =>
@@ -22,4 +22,4 @@ const createLogger = (console, dateFactory) => {
   };
 };
 
-module.exports = createLogger;
+export default createLogger;

@@ -1,4 +1,4 @@
-const updateDevDependency = require("../helpers/updateDevDependency");
+import updateDevDependency from "../helpers/updateDevDependency.js";
 
 describe("updateDevDependency", () => {
   let exec;

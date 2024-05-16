@@ -1,4 +1,4 @@
-const publishVersionBranch = require("../helpers/publishVersionBranch");
+import publishVersionBranch from "../helpers/publishVersionBranch.js";
 
 describe("publishVersionBranch", () => {
   let exec;

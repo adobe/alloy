@@ -22,4 +22,4 @@ const setupDeployment = async ({
   );
 };
 
-module.exports = setupDeployment;
+export default setupDeployment;

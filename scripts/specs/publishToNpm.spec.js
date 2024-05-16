@@ -1,4 +1,4 @@
-const publishToNpm = require("../helpers/publishToNpm");
+import publishToNpm from "../helpers/publishToNpm.js";
 
 describe("publishToNpm", () => {
   let exec;

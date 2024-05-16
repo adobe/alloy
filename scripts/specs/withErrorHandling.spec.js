@@ -1,5 +1,5 @@
-const ApplicationError = require("../helpers/applicationError");
-const withErrorHandling = require("../helpers/withErrorHandling");
+import ApplicationError from "../helpers/applicationError.js";
+import withErrorHandling from "../helpers/withErrorHandling.js";
 
 describe("withErrorHandling", () => {
   let logger;

@@ -1,13 +1,16 @@
-// Use concurrently for its great log handling and prefix capabilities
+import { createRequire } from "module";
+import ApplicationError from "./applicationError.js";
 
+const require = createRequire(import.meta.url);
+
+// Use concurrently for its great log handling and prefix capabilities
 const concurrently = require("concurrently");
-const ApplicationError = require("./applicationError");
 
 // even though I'm only ever running one thing at a time.
 
 const exec = async (name, command, options = {}) => {
   try {
-    await concurrently(
+    const { result } = await concurrently(
       [
         {
           name,
@@ -20,6 +23,7 @@ const exec = async (name, command, options = {}) => {
         ...options,
       },
     );
+    await result;
   } catch (e) {
     if (!e.message) {
       // when a command fails, concurrently rejects with an array of objects.
@@ -31,4 +35,4 @@ const exec = async (name, command, options = {}) => {
   }
 };
 
-module.exports = exec;
+export default exec;
