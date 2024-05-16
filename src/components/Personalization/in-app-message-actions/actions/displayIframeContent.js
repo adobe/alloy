@@ -261,6 +261,7 @@ const generateWebParameters = (mobileParameters) => {
   };
 };
 
+// eslint-disable-next-line default-param-last
 export const displayHTMLContentInIframe = (settings = {}, interact) => {
   dismissMessage();
   const { content, contentType, mobileParameters } = settings;

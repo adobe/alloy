@@ -117,6 +117,7 @@ export const isPageWideSurface = (scope) =>
   scope.indexOf(WEB + SURFACE_TYPE_DELIMITER) === 0 &&
   scope.indexOf(FRAGMENT_DELIMITER) === -1;
 
+// eslint-disable-next-line default-param-last
 export const normalizeSurfaces = (surfaces = [], getPageLocation, logger) =>
   surfaces
     .map((surface) => validateSurface(surface, getPageLocation, logger))

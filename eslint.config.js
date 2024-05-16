@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { FlatCompat } from "@eslint/eslintrc";
 import path from "path";
 import { fileURLToPath } from "url";
-import js from "@eslint/js";
+import pluginJs from "@eslint/js";
 import globals from "globals";
 import babelParser from "@babel/eslint-parser";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
@@ -28,7 +28,6 @@ const compat = new FlatCompat({
 });
 
 export default [
-  js.configs.recommended,
   ...compat.extends("airbnb-base", "plugin:testcafe/recommended"),
   ...compat.plugins("ban", "testcafe"),
   {
@@ -146,6 +145,6 @@ export default [
       "no-console": "off",
     },
   },
-
+  pluginJs.configs.recommended,
   eslintPluginPrettierRecommended,
 ];
