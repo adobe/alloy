@@ -30,10 +30,14 @@ export default ({
   setTargetMigration,
   mergeDecisionsMeta,
   renderedPropositions,
-  onDecisionHandler
+  onDecisionHandler,
+  handleConsentFlicker
 }) => {
   return {
     lifecycle: {
+      onComponentsRegistered() {
+        handleConsentFlicker();
+      },
       onDecision: onDecisionHandler,
       onBeforeRequest({ request }) {
         setTargetMigration(request);
