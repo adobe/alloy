@@ -150,5 +150,8 @@
     "karma-sauce-launcher": {
       "webdriverio": "^8.35.1"
     }
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.17.2"
   }
 }
