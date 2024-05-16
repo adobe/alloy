@@ -28,7 +28,8 @@ export default ({
     if (viewName) {
       xdm.web = {
         webPageDetails: {
-          viewName
+          viewName,
+          pageName: viewName
         }
       };
     }

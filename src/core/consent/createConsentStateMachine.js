@@ -111,6 +111,22 @@ export default ({ logger }) => {
     awaitConsent: awaitInitial,
     withConsent() {
       return this.awaitConsent(true);
+    },
+    current() {
+      switch (this.awaitConsent) {
+        case awaitInDefault:
+          return { state: "in", wasSet: false };
+        case awaitIn:
+          return { state: "in", wasSet: true };
+        case awaitOutDefault:
+          return { state: "out", wasSet: false };
+        case awaitOut:
+          return { state: "out", wasSet: true };
+        case awaitPending:
+          return { state: "pending", wasSet: false };
+        default:
+          return { state: "in", wasSet: false };
+      }
     }
   };
 };

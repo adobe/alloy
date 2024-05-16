@@ -41,6 +41,8 @@ import createDecisioningEngine from "../components/DecisioningEngine";
 
 /* @skipwhen ENV.alloy_machinelearning === false */
 import createMachineLearning from "../components/MachineLearning";
+import createStreamingMedia from "../components/StreamingMedia";
+import createLegacyMediaAnalytics from "../components/LegacyMediaAnalytics";
 
 // TODO: Register the Components here statically for now. They might be registered differently.
 // TODO: Figure out how sub-components will be made available/registered
@@ -56,5 +58,7 @@ export default [
   createEventMerge,
   createLibraryInfo,
   createMachineLearning,
-  createDecisioningEngine
+  createDecisioningEngine,
+  createLegacyMediaAnalytics,
+  createStreamingMedia
 ];

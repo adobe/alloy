@@ -26,6 +26,7 @@ describe("Personalization::createFetchDataHandler", () => {
   let createProposition;
   let renderedPropositions;
   let notificationHandler;
+  let consent;
 
   let cacheUpdate;
   let personalizationDetails;
@@ -52,6 +53,8 @@ describe("Personalization::createFetchDataHandler", () => {
       collect,
       renderedPropositions
     );
+    consent = jasmine.createSpyObj("consent", ["current"]);
+    consent.current.and.returnValue({ state: "in", wasSet: false });
 
     cacheUpdate = jasmine.createSpyObj("cacheUpdate", ["update"]);
     personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
@@ -75,7 +78,8 @@ describe("Personalization::createFetchDataHandler", () => {
       mergeQuery,
       processPropositions,
       createProposition,
-      notificationHandler
+      notificationHandler,
+      consent
     });
     fetchDataHandler({
       cacheUpdate,
@@ -99,6 +103,13 @@ describe("Personalization::createFetchDataHandler", () => {
 
   it("shouldn't hide containers if renderDecisions is false", () => {
     personalizationDetails.isRenderDecisions.and.returnValue(false);
+    run();
+    expect(hideContainers).not.toHaveBeenCalled();
+  });
+
+  it("shouldn't hide containers if we have out consent cookie", () => {
+    consent.current.and.returnValue({ state: "out", wasSet: true });
+    personalizationDetails.isRenderDecisions.and.returnValue(true);
     run();
     expect(hideContainers).not.toHaveBeenCalled();
   });

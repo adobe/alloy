@@ -157,6 +157,9 @@ const buildComponent = ({
     renderedPropositions
   );
 
+  const consent = jasmine.createSpyObj("consent", ["current"]);
+  consent.current.and.returnValue({ state: "in", wasSet: false });
+
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
     showContainers,
@@ -164,7 +167,8 @@ const buildComponent = ({
     mergeQuery,
     processPropositions,
     createProposition,
-    notificationHandler
+    notificationHandler,
+    consent
   });
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,

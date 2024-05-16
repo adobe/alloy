@@ -78,6 +78,7 @@ import createDeprecatedValidator from "./createDeprecatedValidator";
 import createLiteralValidator from "./createLiteralValidator";
 import createMapOfValuesValidator from "./createMapOfValuesValidator";
 import createMinimumValidator from "./createMinimumValidator";
+import createMaximumValidator from "./createMaximumValidator";
 import createNoUnknownFieldsValidator from "./createNoUnknownFieldsValidator";
 import createNonEmptyValidator from "./createNonEmptyValidator";
 import createObjectOfValidator from "./createObjectOfValidator";
@@ -90,6 +91,7 @@ import numberValidator from "./numberValidator";
 import regexpValidator from "./regexpValidator";
 import requiredValidator from "./requiredValidator";
 import stringValidator from "./stringValidator";
+import matchesRegexpValidator from "./matchesRegexpValidator";
 
 // The base validator does no validation and just returns the value unchanged
 const base = value => value;
@@ -114,6 +116,9 @@ const minimumInteger = function minimumInteger(minValue) {
 const minimumNumber = function minimumNumber(minValue) {
   return nullSafeChain(this, createMinimumValidator("a number", minValue));
 };
+const maximumNumber = function maximumNumber(maxValue) {
+  return nullSafeChain(this, createMaximumValidator("a number", maxValue));
+};
 const integer = function integer() {
   return nullSafeChain(this, integerValidator, { minimum: minimumInteger });
 };
@@ -128,6 +133,9 @@ const nonEmptyObject = function nonEmptyObject() {
 };
 const regexp = function regexp() {
   return nullSafeChain(this, regexpValidator);
+};
+const matches = function matches(regexpPattern) {
+  return nullSafeChain(this, matchesRegexpValidator(regexpPattern));
 };
 const unique = function createUnique() {
   return nullSafeChain(this, createUniqueValidator());
@@ -163,6 +171,7 @@ const literal = function literal(literalValue) {
 const number = function number() {
   return nullSafeChain(this, numberValidator, {
     minimum: minimumNumber,
+    maximum: maximumNumber,
     integer,
     unique
   });
@@ -208,7 +217,8 @@ const string = function string() {
     regexp,
     domain,
     nonEmpty: nonEmptyString,
-    unique
+    unique,
+    matches
   });
 };
 

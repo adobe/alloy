@@ -54,6 +54,9 @@ export default ({ generalConsentState, logger }) => {
     },
     withConsent() {
       return generalConsentState.withConsent();
+    },
+    current() {
+      return generalConsentState.current();
     }
   };
 };
