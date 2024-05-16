@@ -15,15 +15,15 @@ import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 import { INTERACT_ID_DATA_ATTRIBUTE } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
-import { DOM_ACTION_TRACK_INTERACTION } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
+import { DOM_ACTION_COLLECT_INTERACTIONS } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
 
-describe("Personalization::actions::trackInteraction", () => {
+describe("Personalization::actions::collectInteractions", () => {
   let decorateProposition;
 
   beforeEach(() => {
     cleanUpDomChanges("something");
     decorateProposition = createDecoratePropositionForTest({
-      type: DOM_ACTION_TRACK_INTERACTION
+      type: DOM_ACTION_COLLECT_INTERACTIONS
     });
   });
 
@@ -38,11 +38,14 @@ describe("Personalization::actions::trackInteraction", () => {
     };
 
     const modules = initDomActionsModules();
-    const { track } = modules;
+
     const element = createNode("div", { id: "something" });
     appendNode(document.body, element);
 
-    await track(itemData, decorateProposition);
+    await modules[DOM_ACTION_COLLECT_INTERACTIONS](
+      itemData,
+      decorateProposition
+    );
 
     expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
   });

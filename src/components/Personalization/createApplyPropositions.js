@@ -18,10 +18,11 @@ import {
   MESSAGE_IN_APP
 } from "../../constants/schema";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
-import { DOM_ACTION_TRACK_INTERACTION } from "./dom-actions/initDomActionsModules";
+import { DOM_ACTION_COLLECT_INTERACTIONS } from "./dom-actions/initDomActionsModules";
 
 const isInteractionTrackingItem = (schema, actionType) =>
-  schema === JSON_CONTENT_ITEM && actionType === DOM_ACTION_TRACK_INTERACTION;
+  schema === JSON_CONTENT_ITEM &&
+  actionType === DOM_ACTION_COLLECT_INTERACTIONS;
 
 const SUPPORTED_SCHEMAS = {
   [DOM_ACTION]: () => true,

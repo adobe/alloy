@@ -62,9 +62,9 @@ describe("Personalization::createDecorateProposition", () => {
     expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
   });
 
-  it("sets a data-attribute for interact id and label when autoTrackPropositionInteractions=decoratedElementsOnly", () => {
+  it("sets a data-attribute for interact id and label when autoCollectPropositionInteractions=decoratedElementsOnly", () => {
     decorateProposition = createDecoratePropositionForTest({
-      autoTrackPropositionInteractions: {
+      autoCollectPropositionInteractions: {
         [ADOBE_JOURNEY_OPTIMIZER]: DECORATED_ELEMENTS_ONLY,
         [ADOBE_TARGET]: NEVER
       },
@@ -183,9 +183,9 @@ describe("Personalization::createDecorateProposition", () => {
     expect(interactIds.size).toEqual(3);
   });
 
-  it("does not set data-attribute for interact id and label if autoTrackPropositionInteractions does not include the appropriate decisionProvider and dom action is not 'click'", () => {
+  it("does not set data-attribute for interact id and label if autoCollectPropositionInteractions does not include the appropriate decisionProvider and dom action is not 'click'", () => {
     decorateProposition = createDecoratePropositionForTest({
-      autoTrackPropositionInteractions: {},
+      autoCollectPropositionInteractions: {},
       type: DOM_ACTION_SET_HTML,
       trackingLabel: "myTrackingLabel"
     });
@@ -203,9 +203,9 @@ describe("Personalization::createDecorateProposition", () => {
     expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).toBeNull();
   });
 
-  it("does not set data-attribute for interact id and label if autoTrackPropositionInteractions does not include the appropriate decisionProvider and dom action is not 'click'", () => {
+  it("does not set data-attribute for interact id and label if autoCollectPropositionInteractions does not include the appropriate decisionProvider and dom action is not 'click'", () => {
     decorateProposition = createDecoratePropositionForTest({
-      autoTrackPropositionInteractions: {
+      autoCollectPropositionInteractions: {
         [ADOBE_JOURNEY_OPTIMIZER]: NEVER,
         [ADOBE_TARGET]: NEVER
       },
@@ -226,9 +226,9 @@ describe("Personalization::createDecorateProposition", () => {
     expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).toBeNull();
   });
 
-  it("sets data-attribute for interact id and label for all 'click' dom actions, regardless of autoTrackPropositionInteractions", () => {
+  it("sets data-attribute for interact id and label for all 'click' dom actions, regardless of autoCollectPropositionInteractions", () => {
     decorateProposition = createDecoratePropositionForTest({
-      autoTrackPropositionInteractions: {},
+      autoCollectPropositionInteractions: {},
       type: DOM_ACTION_CLICK,
       trackingLabel: "myTrackingLabel"
     });

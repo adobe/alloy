@@ -40,7 +40,7 @@ describe("createProcessHtmlContent", () => {
       modules,
       logger,
       storeInteractionMeta,
-      autoTrackPropositionInteractions: {
+      autoCollectPropositionInteractions: {
         [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
         [ADOBE_TARGET]: NEVER
       }

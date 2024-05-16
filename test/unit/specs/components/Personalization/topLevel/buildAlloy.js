@@ -100,7 +100,7 @@ const buildComponent = ({
   const {
     targetMigrationEnabled,
     prehidingStyle,
-    autoTrackPropositionInteractions
+    autoCollectPropositionInteractions
   } = config;
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
 
@@ -131,13 +131,13 @@ const buildComponent = ({
       logger,
       storeInteractionMeta,
       storeClickMeta,
-      autoTrackPropositionInteractions
+      autoCollectPropositionInteractions
     }),
     [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({
       modules,
       logger,
       storeInteractionMeta,
-      autoTrackPropositionInteractions
+      autoCollectPropositionInteractions
     }),
     [schema.REDIRECT_ITEM]: createProcessRedirect({
       logger,

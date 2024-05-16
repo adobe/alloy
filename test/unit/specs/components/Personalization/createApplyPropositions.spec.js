@@ -18,7 +18,7 @@ import createApplyPropositions from "../../../../../src/components/Personalizati
 import clone from "../../../../../src/utils/clone";
 import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
 import createMockProposition from "../../../helpers/createMockProposition";
-import { DOM_ACTION_TRACK_INTERACTION } from "../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
+import { DOM_ACTION_COLLECT_INTERACTIONS } from "../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
 import {
   JSON_CONTENT_ITEM,
   DOM_ACTION
@@ -266,7 +266,7 @@ describe("Personalization::createApplyPropositions", () => {
           data: {
             isGood: true,
             selector: "#superfluous123",
-            type: DOM_ACTION_TRACK_INTERACTION
+            type: DOM_ACTION_COLLECT_INTERACTIONS
           }
         }
       ]
@@ -277,7 +277,7 @@ describe("Personalization::createApplyPropositions", () => {
       metadata: {
         scope: {
           selector: `#${testElementId}`,
-          actionType: DOM_ACTION_TRACK_INTERACTION
+          actionType: DOM_ACTION_COLLECT_INTERACTIONS
         }
       }
     });

@@ -65,7 +65,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const {
     targetMigrationEnabled,
     prehidingStyle,
-    autoTrackPropositionInteractions
+    autoCollectPropositionInteractions
   } = config;
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
 
@@ -98,13 +98,13 @@ const createPersonalization = ({ config, logger, eventManager }) => {
       logger,
       storeInteractionMeta,
       storeClickMeta,
-      autoTrackPropositionInteractions
+      autoCollectPropositionInteractions
     }),
     [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({
       modules: domActionsModules,
       logger,
       storeInteractionMeta,
-      autoTrackPropositionInteractions
+      autoCollectPropositionInteractions
     }),
     [schema.REDIRECT_ITEM]: createProcessRedirect({
       logger,
@@ -145,7 +145,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     getInteractionMetas,
     getClickMetas,
     getClickSelectors,
-    autoTrackPropositionInteractions
+    autoCollectPropositionInteractions
   });
 
   const viewChangeHandler = createViewChangeHandler({
@@ -195,7 +195,7 @@ const interactionConfigOptions = PROPOSITION_INTERACTION_TYPES.map(
 createPersonalization.configValidators = objectOf({
   prehidingStyle: string().nonEmpty(),
   targetMigrationEnabled: boolean().default(false),
-  autoTrackPropositionInteractions: objectOf({
+  autoCollectPropositionInteractions: objectOf({
     [ADOBE_JOURNEY_OPTIMIZER]: anyOf(interactionConfigOptions).default(ALWAYS),
     [ADOBE_TARGET]: anyOf(interactionConfigOptions).default(NEVER)
   })

@@ -15,7 +15,7 @@ export default ({
   modules,
   logger,
   storeInteractionMeta,
-  autoTrackPropositionInteractions
+  autoCollectPropositionInteractions
 }) => item => {
   const { type, selector } = item.getData() || {};
 
@@ -29,7 +29,7 @@ export default ({
   }
 
   const decorateProposition = createDecorateProposition(
-    autoTrackPropositionInteractions,
+    autoCollectPropositionInteractions,
     type,
     item.getProposition().getId(),
     item.getId(),

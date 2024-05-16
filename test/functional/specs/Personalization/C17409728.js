@@ -30,7 +30,7 @@ import {
   DECORATED_ELEMENTS_ONLY,
   NEVER
 } from "../../../../src/constants/propositionInteractionType";
-import { DOM_ACTION_TRACK_INTERACTION } from "../../../../src/components/Personalization/dom-actions/initDomActionsModules";
+import { DOM_ACTION_COLLECT_INTERACTIONS } from "../../../../src/components/Personalization/dom-actions/initDomActionsModules";
 
 const REASONABLE_WAIT_TIME = 250;
 const networkLogger = createNetworkLogger();
@@ -105,7 +105,7 @@ const createMockResponse = ({
 
 test("Test C17409728: Automatically sends interact event for proposition click", async () => {
   config = compose(orgMainConfigMain, debugEnabled, {
-    autoTrackPropositionInteractions: {
+    autoCollectPropositionInteractions: {
       [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS
     }
   });
@@ -169,9 +169,9 @@ test("Test C17409728: Automatically sends interact event for proposition click",
     .eql(itemId);
 });
 
-test("Test C17409728: Does not automatically send interact event for proposition click when autoTrackPropositionInteractions configured to 'never'", async () => {
+test("Test C17409728: Does not automatically send interact event for proposition click when autoCollectPropositionInteractions configured to 'never'", async () => {
   config = compose(orgMainConfigMain, debugEnabled, {
-    autoTrackPropositionInteractions: {
+    autoCollectPropositionInteractions: {
       [ADOBE_JOURNEY_OPTIMIZER]: NEVER
     }
   });
@@ -217,9 +217,9 @@ test("Test C17409728: Does not automatically send interact event for proposition
   await t.expect(networkLogger.edgeEndpointLogs.count(() => true)).eql(0);
 });
 
-test("Test C17409728: Automatically sends interact event for proposition click when autoTrackPropositionInteractions configured to 'decoratedElementsOnly'", async () => {
+test("Test C17409728: Automatically sends interact event for proposition click when autoCollectPropositionInteractions configured to 'decoratedElementsOnly'", async () => {
   config = compose(orgMainConfigMain, debugEnabled, {
-    autoTrackPropositionInteractions: {
+    autoCollectPropositionInteractions: {
       [ADOBE_JOURNEY_OPTIMIZER]: DECORATED_ELEMENTS_ONLY
     }
   });
@@ -294,7 +294,7 @@ test("Test C17409728: Automatically sends interact event for proposition click w
 
 test("Test C17409728: Automatically sends interact event when using applyPropositions command", async () => {
   config = compose(orgMainConfigMain, debugEnabled, {
-    autoTrackPropositionInteractions: {
+    autoCollectPropositionInteractions: {
       [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS
     }
   });
@@ -331,7 +331,7 @@ test("Test C17409728: Automatically sends interact event when using applyProposi
     metadata: {
       "web://aepdemo.com/": {
         selector: "#page-header",
-        actionType: DOM_ACTION_TRACK_INTERACTION
+        actionType: DOM_ACTION_COLLECT_INTERACTIONS
       }
     }
   });

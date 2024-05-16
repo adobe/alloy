@@ -61,18 +61,18 @@ const extractViewName = metas => {
 };
 
 const createMetaFilter = (
-  autoTrackPropositionInteractions,
+  autoCollectPropositionInteractions,
   clickLabel,
   clickToken
 ) => meta => {
   const { scopeDetails = {} } = meta;
   const { decisionProvider } = scopeDetails;
-  if (autoTrackPropositionInteractions[decisionProvider] === ALWAYS) {
+  if (autoCollectPropositionInteractions[decisionProvider] === ALWAYS) {
     return true;
   }
 
   return (
-    autoTrackPropositionInteractions[decisionProvider] ===
+    autoCollectPropositionInteractions[decisionProvider] ===
       DECORATED_ELEMENTS_ONLY &&
     (clickLabel || clickToken)
   );
@@ -81,14 +81,14 @@ const createMetaFilter = (
 export default (
   clickedElement,
   getInteractionMetas,
-  autoTrackPropositionInteractions
+  autoCollectPropositionInteractions
 ) => {
   const { interactIds, clickLabel = "", clickToken } = getInteractionDetail(
     clickedElement
   );
 
   const metasMatchingConfigurationOptions = createMetaFilter(
-    autoTrackPropositionInteractions,
+    autoCollectPropositionInteractions,
     clickLabel,
     clickToken
   );

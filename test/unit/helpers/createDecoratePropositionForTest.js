@@ -21,7 +21,7 @@ import {
 } from "../../../src/constants/propositionInteractionType";
 
 export default ({
-  autoTrackPropositionInteractions = {
+  autoCollectPropositionInteractions = {
     [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
     [ADOBE_TARGET]: NEVER
   },
@@ -38,7 +38,7 @@ export default ({
 } = {}) => {
   const { storeInteractionMeta } = createInteractionStorage();
   return createDecorateProposition(
-    autoTrackPropositionInteractions,
+    autoCollectPropositionInteractions,
     type,
     propositionId,
     itemId,

@@ -70,7 +70,7 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
     thirdPartyCookiesEnabled: true,
     targetMigrationEnabled: false,
     personalizationStorageEnabled: false,
-    autoTrackPropositionInteractions: {
+    autoCollectPropositionInteractions: {
       [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
       [ADOBE_TARGET]: NEVER
     }

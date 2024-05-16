@@ -49,7 +49,7 @@ export default decisions => {
   const config = {
     targetMigrationEnabled: true,
     prehidingStyle: "myprehidingstyle",
-    autoTrackPropositionInteractions: {
+    autoCollectPropositionInteractions: {
       [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
       [ADOBE_TARGET]: NEVER
     }

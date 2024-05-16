@@ -39,7 +39,7 @@ export default ({
   getInteractionMetas,
   getClickMetas,
   getClickSelectors,
-  autoTrackPropositionInteractions
+  autoCollectPropositionInteractions
 }) => {
   // Called when an element qualifying for conversion within an offer is clicked.
   return ({ event, clickedElement }) => {
@@ -52,7 +52,7 @@ export default ({
       collectInteractions(
         clickedElement,
         getInteractionMetas,
-        autoTrackPropositionInteractions
+        autoCollectPropositionInteractions
       ),
       collectClicks(clickedElement, getClickSelectors(), getClickMetas)
     ].forEach(

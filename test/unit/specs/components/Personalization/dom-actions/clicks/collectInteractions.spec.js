@@ -31,7 +31,7 @@ import {
 describe("Personalization::tracking::interactions", () => {
   let storeInteractionMeta;
   let getInteractionMetas;
-  let autoTrackPropositionInteractions;
+  let autoCollectPropositionInteractions;
   let scopeDetails;
 
   beforeEach(() => {
@@ -41,7 +41,7 @@ describe("Personalization::tracking::interactions", () => {
       getInteractionMetas
     } = createInteractionStorage());
 
-    autoTrackPropositionInteractions = {
+    autoCollectPropositionInteractions = {
       [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
       [ADOBE_TARGET]: NEVER
     };
@@ -106,7 +106,7 @@ describe("Personalization::tracking::interactions", () => {
       } = collectInteractions(
         element,
         getInteractionMetas,
-        autoTrackPropositionInteractions
+        autoCollectPropositionInteractions
       );
 
       expect(decisionsMeta).toEqual([
@@ -127,7 +127,7 @@ describe("Personalization::tracking::interactions", () => {
   });
 
   it("should collect interactions for elements decorated with label when configured for 'decoratedElementsOnly'", () => {
-    autoTrackPropositionInteractions = {
+    autoCollectPropositionInteractions = {
       [ADOBE_JOURNEY_OPTIMIZER]: DECORATED_ELEMENTS_ONLY,
       [ADOBE_TARGET]: NEVER
     };
@@ -184,7 +184,7 @@ describe("Personalization::tracking::interactions", () => {
       } = collectInteractions(
         element,
         getInteractionMetas,
-        autoTrackPropositionInteractions
+        autoCollectPropositionInteractions
       );
 
       expect(decisionsMeta).toEqual([
@@ -205,7 +205,7 @@ describe("Personalization::tracking::interactions", () => {
   });
 
   it("should NOT collect interactions for elements NOT decorated with label when configured for 'decoratedElementsOnly'", () => {
-    autoTrackPropositionInteractions = {
+    autoCollectPropositionInteractions = {
       [ADOBE_JOURNEY_OPTIMIZER]: DECORATED_ELEMENTS_ONLY,
       [ADOBE_TARGET]: NEVER
     };
@@ -262,7 +262,7 @@ describe("Personalization::tracking::interactions", () => {
       } = collectInteractions(
         element,
         getInteractionMetas,
-        autoTrackPropositionInteractions
+        autoCollectPropositionInteractions
       );
 
       expect(decisionsMeta).toEqual([]);
@@ -323,7 +323,7 @@ describe("Personalization::tracking::interactions", () => {
       } = collectInteractions(
         element,
         getInteractionMetas,
-        autoTrackPropositionInteractions
+        autoCollectPropositionInteractions
       );
 
       expect(decisionsMeta).toEqual([
@@ -399,7 +399,7 @@ describe("Personalization::tracking::interactions", () => {
       } = collectInteractions(
         element,
         getInteractionMetas,
-        autoTrackPropositionInteractions
+        autoCollectPropositionInteractions
       );
 
       expect(decisionsMeta).toEqual([
@@ -455,7 +455,7 @@ describe("Personalization::tracking::interactions", () => {
       collectInteractions(
         element,
         getInteractionMetas,
-        autoTrackPropositionInteractions
+        autoCollectPropositionInteractions
       )
     ).toEqual({});
   });
@@ -569,7 +569,7 @@ describe("Personalization::tracking::interactions", () => {
     } = collectInteractions(
       element,
       getInteractionMetas,
-      autoTrackPropositionInteractions
+      autoCollectPropositionInteractions
     );
 
     expect(decisionsMeta).toEqual(

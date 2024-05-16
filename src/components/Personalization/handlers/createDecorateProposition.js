@@ -33,25 +33,25 @@ const getInteractId = (propositionId, existingInteractId) => {
 };
 
 const interactionTrackingSupported = (
-  autoTrackPropositionInteractions,
+  autoCollectPropositionInteractions,
   decisionProvider
 ) => {
-  if (!autoTrackPropositionInteractions) {
+  if (!autoCollectPropositionInteractions) {
     return false;
   }
 
-  if (!autoTrackPropositionInteractions[decisionProvider]) {
+  if (!autoCollectPropositionInteractions[decisionProvider]) {
     return false;
   }
 
   return includes(
     [ALWAYS, DECORATED_ELEMENTS_ONLY],
-    autoTrackPropositionInteractions[decisionProvider]
+    autoCollectPropositionInteractions[decisionProvider]
   );
 };
 
 const createDecorateProposition = (
-  autoTrackPropositionInteractions,
+  autoCollectPropositionInteractions,
   type,
   propositionId,
   itemId,
@@ -65,7 +65,7 @@ const createDecorateProposition = (
 
   if (
     !interactionTrackingSupported(
-      autoTrackPropositionInteractions,
+      autoCollectPropositionInteractions,
       decisionProvider
     ) &&
     type !== DOM_ACTION_CLICK

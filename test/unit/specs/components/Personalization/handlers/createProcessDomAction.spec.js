@@ -46,7 +46,7 @@ describe("createProcessDomAction", () => {
       logger,
       storeInteractionMeta,
       storeClickMeta,
-      autoTrackPropositionInteractions: {
+      autoCollectPropositionInteractions: {
         [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
         [ADOBE_TARGET]: NEVER
       }
