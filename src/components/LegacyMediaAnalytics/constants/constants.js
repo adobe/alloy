@@ -98,7 +98,8 @@ export const MEDIA_EVENTS_INTERNAL = {
   SessionComplete: "sessionComplete",
   Play: "play",
   Pause: "pauseStart",
-  Error: "error"
+  Error: "error",
+  StateUpdate: "statesUpdate"
 };
 
 export const MEDIA_OBJECT_KEYS = {

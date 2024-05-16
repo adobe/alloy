@@ -28,11 +28,17 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
     playerId: uuid()
   };
   const getEventType = ({ eventType }) => {
-    if (eventType === EVENT.BufferComplete) {
+    if (
+      eventType === EVENT.BufferComplete ||
+      eventType === EVENT.SeekComplete
+    ) {
       return MEDIA_EVENTS_INTERNAL.Play;
     }
     if (eventType === EVENT.StateStart || eventType === EVENT.StateEnd) {
-      return "statesUpdate";
+      return MEDIA_EVENTS_INTERNAL.StateUpdate;
+    }
+    if (eventType === EVENT.SeekStart) {
+      return MEDIA_EVENTS_INTERNAL.Pause;
     }
     return eventType;
   };
@@ -107,7 +113,7 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
         };
       }
       const xdm = createXdmObject({
-        eventType: "sessionStart",
+        eventType: MEDIA_EVENTS_INTERNAL.SessionStart,
         mediaDetails: mediaObject,
         contextData
       });
