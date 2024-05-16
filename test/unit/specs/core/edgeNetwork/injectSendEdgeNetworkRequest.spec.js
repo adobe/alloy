@@ -116,7 +116,8 @@ describe("injectSendEdgeNetworkRequest", () => {
       getPayload: payload,
       getUseIdThirdPartyDomain: false,
       getUseSendBeacon: false,
-      getDatastreamIdOverride: ""
+      getDatastreamIdOverride: "",
+      getEdgeSubPath: ""
     });
     logger = jasmine.createSpyObj("logger", ["info"]);
     lifecycle = jasmine.createSpyObj("lifecycle", {

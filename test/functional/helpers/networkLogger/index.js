@@ -32,6 +32,24 @@ const createNetworkLogger = () => {
   const acquireEndpoint = /v1\/identity\/acquire\?configId=/;
   const targetDeliveryEndpoint = /rest\/v1\/delivery\?client=/;
   const targetMboxJsonEndpoint = /m2\/unifiedjsqeonly\/mbox\/json\?mbox=/;
+  // media endpoints
+  const playEndpoint = /va\/v1\/play/;
+  const pauseEndpoint = /va\/v1\/pauseStart/;
+  const pingEndpoint = /va\/v1\/ping/;
+  const adBreakCompleteEndpoint = /va\/v1\/adBreakComplete/;
+  const adBreakStartEndpoint = /va\/v1\/adBreakStart/;
+  const adCompleteEndpoint = /va\/v1\/adComplete/;
+  const adSkipEndpoint = /va\/v1\/adSkip/;
+  const adStartEndpoint = /va\/v1\/adStart/;
+  const bitrateChangeEndpoint = /va\/v1\/bitrateChange/;
+  const bufferStartEndpoint = /va\/v1\/bufferStart/;
+  const chapterCompleteEndpoint = /va\/v1\/chapterComplete/;
+  const chapterSkipEndpoint = /va\/v1\/chapterSkip/;
+  const chapterStartEndpoint = /va\/v1\/chapterStart/;
+  const errorEndpoint = /va\/v1\/error/;
+  const sessionCompleteEndpoint = /va\/v1\/sessionComplete/;
+  const sessionEndEndpoint = /va\/v1\/sessionEnd/;
+  const statesUpdateEndpoint = /va\/v1\/statesUpdate/;
 
   const edgeEndpointLogs = createRequestLogger(edgeEndpoint);
   const edgeCollectEndpointLogs = createRequestLogger(edgeCollectEndpoint);
@@ -44,6 +62,30 @@ const createNetworkLogger = () => {
   const targetMboxJsonEndpointLogs = createRequestLogger(
     targetMboxJsonEndpoint
   );
+  // media endpoint loggers
+  const mediaPlayEndpointLogs = createRequestLogger(playEndpoint);
+  const mediaPauseEndpointLogs = createRequestLogger(pauseEndpoint);
+  const pingEndpointLogs = createRequestLogger(pingEndpoint);
+  const adBreakCompleteEndpointLogs = createRequestLogger(
+    adBreakCompleteEndpoint
+  );
+  const adBreakStartEndpointLogs = createRequestLogger(adBreakStartEndpoint);
+  const adCompleteEndpointLogs = createRequestLogger(adCompleteEndpoint);
+  const adSkipEndpointLogs = createRequestLogger(adSkipEndpoint);
+  const adStartEndpointLogs = createRequestLogger(adStartEndpoint);
+  const bitrateChangeEndpointLogs = createRequestLogger(bitrateChangeEndpoint);
+  const bufferStartEndpointLogs = createRequestLogger(bufferStartEndpoint);
+  const chapterCompleteEndpointLogs = createRequestLogger(
+    chapterCompleteEndpoint
+  );
+  const chapterSkipEndpointLogs = createRequestLogger(chapterSkipEndpoint);
+  const chapterStartEndpointLogs = createRequestLogger(chapterStartEndpoint);
+  const errorEndpointLogs = createRequestLogger(errorEndpoint);
+  const sessionCompleteEndpointLogs = createRequestLogger(
+    sessionCompleteEndpoint
+  );
+  const sessionEndEndpointLogs = createRequestLogger(sessionEndEndpoint);
+  const statesUpdateEndpointLogs = createRequestLogger(statesUpdateEndpoint);
 
   const clearLogs = async () => {
     await edgeEndpointLogs.clear();
@@ -53,6 +95,23 @@ const createNetworkLogger = () => {
     await acquireEndpointLogs.clear();
     await targetDeliveryEndpointLogs.clear();
     await targetMboxJsonEndpointLogs.clear();
+    await mediaPlayEndpointLogs.clear();
+    await mediaPauseEndpointLogs.clear();
+    await pingEndpointLogs.clear();
+    await adBreakCompleteEndpointLogs.clear();
+    await adBreakStartEndpointLogs.clear();
+    await adCompleteEndpointLogs.clear();
+    await adSkipEndpointLogs.clear();
+    await adStartEndpointLogs.clear();
+    await bitrateChangeEndpointLogs.clear();
+    await bufferStartEndpointLogs.clear();
+    await chapterCompleteEndpointLogs.clear();
+    await chapterSkipEndpointLogs.clear();
+    await chapterStartEndpointLogs.clear();
+    await errorEndpointLogs.clear();
+    await sessionCompleteEndpointLogs.clear();
+    await sessionEndEndpointLogs.clear();
+    await statesUpdateEndpointLogs.clear();
   };
 
   return {
@@ -65,6 +124,23 @@ const createNetworkLogger = () => {
     acquireEndpointLogs,
     targetDeliveryEndpointLogs,
     targetMboxJsonEndpointLogs,
+    mediaPlayEndpointLogs,
+    mediaPauseEndpointLogs,
+    pingEndpointLogs,
+    adBreakCompleteEndpointLogs,
+    adBreakStartEndpointLogs,
+    adCompleteEndpointLogs,
+    adSkipEndpointLogs,
+    adStartEndpointLogs,
+    bitrateChangeEndpointLogs,
+    bufferStartEndpointLogs,
+    chapterCompleteEndpointLogs,
+    chapterSkipEndpointLogs,
+    chapterStartEndpointLogs,
+    errorEndpointLogs,
+    sessionCompleteEndpointLogs,
+    sessionEndEndpointLogs,
+    statesUpdateEndpointLogs,
     clearLogs
   };
 };

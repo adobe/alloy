@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="stylesheet" href="/index.css" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="theme-color" content="#000000" />
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
+
+    <title>Mock website hosting Alloy using launch</title>
+
+    <script
+      src="https://assets.adobedtm.com/1281f6ff0c59/5713085bbf10/launch-29822268cf77-development.min.js"
+      async
+    ></script>
+  </head>
+
+  <body>
+    <div>
+      <h2>
+        Collect streaming media events using automatic session handling option.
+      </h2>
+      <video id="launch-media-movie" width="600" preload controls muted>
+        <source
+          src="clickbaby.mp4"
+          type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
+        />
+      </video>
+      <h2>
+        Collect streaming media events using manual session handling option.
+      </h2>
+      <video id="second-launch-media-movie" width="600" preload controls muted>
+        <source
+          src="clickbaby.mp4"
+          type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
+        />
+      </video>
+    </div>
+  </body>
+</html>
