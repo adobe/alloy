@@ -54,7 +54,7 @@ test("C6842981: FPID from a custom FPID cookie generates an ECID", async () => {
   await t.setCookies({
     name: "myFPID",
     value: uuidv4(),
-    domain: "alloyio.com",
+    domain: ".alloyio.com",
     path: "/",
   });
 
