@@ -1,4 +1,4 @@
-const createThirdVideoPlayer = thirdVideoPlayerId => {
+const createThirdVideoPlayer = (thirdVideoPlayerId) => {
   const thirdVideoPlayer = document.getElementById(thirdVideoPlayerId);
 
   const thirdPlayerSettings = {
@@ -6,7 +6,7 @@ const createThirdVideoPlayer = thirdVideoPlayerId => {
     videoId: "123",
     videoName: "",
     videoLoaded: false,
-    clock: null
+    clock: null,
   };
 
   return { thirdPlayerSettings, thirdVideoPlayer };
@@ -15,18 +15,18 @@ const createThirdVideoPlayer = thirdVideoPlayerId => {
 const createAddSampleEventsBasedOnVideoPlayhead = ({
   trackerInstance,
   Media,
-  videoPlayer
+  videoPlayer,
 }) => {
   const playhead = videoPlayer.currentTime;
   if (playhead > 1 && playhead < 2) {
     const chapterContextData = {
-      segmentType: "Sample segment type"
+      segmentType: "Sample segment type",
     };
     const chapterInfo = Media.createChapterObject("chapterNumber1", 2, 18, 1);
     trackerInstance.trackEvent(
       Media.Event.ChapterStart,
       chapterInfo,
-      chapterContextData
+      chapterContextData,
     );
   }
 
@@ -40,7 +40,7 @@ const createAddSampleEventsBasedOnVideoPlayhead = ({
 
     const adContextData = {
       affiliate: "Sample affiliate",
-      campaign: "Sample ad campaign"
+      campaign: "Sample ad campaign",
     };
 
     // Set standard Ad Metadata
@@ -60,7 +60,7 @@ const createAddSampleEventsBasedOnVideoPlayhead = ({
 
     const adContextData = {
       affiliate: "Sample affiliate 2",
-      campaign: "Sample ad campaign 2"
+      campaign: "Sample ad campaign 2",
     };
 
     // Set standard Ad Metadata
@@ -69,7 +69,7 @@ const createAddSampleEventsBasedOnVideoPlayhead = ({
     trackerInstance.trackEvent(
       Media.Event.AdStart,
       secondAdInfo,
-      adContextData
+      adContextData,
     );
   }
 
@@ -79,29 +79,28 @@ const createAddSampleEventsBasedOnVideoPlayhead = ({
   }
 };
 
-document.addEventListener("DOMContentLoaded", async function(event) {
-  const { thirdPlayerSettings, thirdVideoPlayer } = createThirdVideoPlayer(
-    "media-third-movie"
-  );
+document.addEventListener("DOMContentLoaded", async function (event) {
+  const { thirdPlayerSettings, thirdVideoPlayer } =
+    createThirdVideoPlayer("media-third-movie");
   const Media = await window.alloy("getMediaAnalyticsTracker", {});
   console.log("Media", Media);
   const trackerInstance = Media.getInstance();
   const trackerInstance2 = Media.getInstance();
   console.log("trackerInstance2", trackerInstance2);
-  thirdVideoPlayer.addEventListener("playing", function() {
+  thirdVideoPlayer.addEventListener("playing", function () {
     const mediaInfo = Media.createMediaObject(
       "NinasVideoName",
       "Ninas player video",
       60,
       Media.StreamType.VOD,
-      Media.MediaType.Video
+      Media.MediaType.Video,
     );
     if (!thirdPlayerSettings.videoLoaded) {
       const contextData = {
         isUserLoggedIn: "false",
         tvStation: "Sample TV station",
         programmer: "Sample programmer",
-        assetID: "/uri-reference"
+        assetID: "/uri-reference",
       };
 
       // Set standard Video Metadata
@@ -130,7 +129,7 @@ document.addEventListener("DOMContentLoaded", async function(event) {
         createAddSampleEventsBasedOnVideoPlayhead({
           trackerInstance,
           Media,
-          videoPlayer: thirdVideoPlayer
+          videoPlayer: thirdVideoPlayer,
         });
       }, 1000);
     } else {
@@ -138,17 +137,17 @@ document.addEventListener("DOMContentLoaded", async function(event) {
     }
   });
 
-  thirdVideoPlayer.addEventListener("seeking", function() {
+  thirdVideoPlayer.addEventListener("seeking", function () {
     console.log("seeking", thirdVideoPlayer);
   });
-  thirdVideoPlayer.addEventListener("seeked", function() {
+  thirdVideoPlayer.addEventListener("seeked", function () {
     console.log("seeked", thirdVideoPlayer);
   });
-  thirdVideoPlayer.addEventListener("pause", function() {
+  thirdVideoPlayer.addEventListener("pause", function () {
     trackerInstance.trackPause();
   });
 
-  thirdVideoPlayer.addEventListener("ended", function() {
+  thirdVideoPlayer.addEventListener("ended", function () {
     // reset player state
     trackerInstance.trackSessionEnd();
     clearInterval(thirdPlayerSettings.clock);

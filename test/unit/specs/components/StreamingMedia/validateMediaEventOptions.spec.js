@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import validateMediaEventOptions from "../../../../../src/components/StreamingMedia/validateMediaEventOptions";
+import validateMediaEventOptions from "../../../../../src/components/StreamingMedia/validateMediaEventOptions.js";
 
 describe("StreamingMedia::validateMediaEventOptions", () => {
   it("should not fail when payerId and xdm are used", () => {
@@ -20,9 +20,9 @@ describe("StreamingMedia::validateMediaEventOptions", () => {
         eventType: "media.play",
         mediaCollection: {
           playhead: 0,
-          sessionID: "sessionID"
-        }
-      }
+          sessionID: "sessionID",
+        },
+      },
     };
 
     expect(() => {
@@ -36,9 +36,9 @@ describe("StreamingMedia::validateMediaEventOptions", () => {
         eventType: "media.play",
         mediaCollection: {
           playhead: 0,
-          sessionID: "sessionID"
-        }
-      }
+          sessionID: "sessionID",
+        },
+      },
     };
 
     expect(() => {
@@ -52,9 +52,9 @@ describe("StreamingMedia::validateMediaEventOptions", () => {
         eventType: "media.play",
         mediaCollection: {
           playhead: "0",
-          sessionID: "sessionID"
-        }
-      }
+          sessionID: "sessionID",
+        },
+      },
     };
 
     expect(() => {

@@ -1,4 +1,4 @@
-import createMediaResponseHandler from "../../../../../src/components/StreamingMedia/createMediaResponseHandler";
+import createMediaResponseHandler from "../../../../../src/components/StreamingMedia/createMediaResponseHandler.js";
 
 describe("createMediaResponseHandler", () => {
   let trackMediaEvent;
@@ -11,31 +11,31 @@ describe("createMediaResponseHandler", () => {
 
   beforeEach(() => {
     response = {
-      getPayloadsByType: jasmine.createSpy()
+      getPayloadsByType: jasmine.createSpy(),
     };
     mediaSessionCacheManager = {
       getSession: jasmine.createSpy().and.returnValue({
         getPlayerDetails: jasmine.createSpy(),
-        sessionPromise: Promise.resolve({ sessionId: "123" })
+        sessionPromise: Promise.resolve({ sessionId: "123" }),
       }),
       stopPing: jasmine.createSpy(),
-      savePing: jasmine.createSpy()
+      savePing: jasmine.createSpy(),
     };
     config = {
       streamingMedia: {
         adPingInterval: 5,
-        mainPingInterval: 10
-      }
+        mainPingInterval: 10,
+      },
     };
     logger = {
-      info: jasmine.createSpy()
+      info: jasmine.createSpy(),
     };
     trackMediaEvent = jasmine.createSpy();
     mediaResponseHandler = createMediaResponseHandler({
       mediaSessionCacheManager,
       logger,
       config,
-      trackMediaEvent
+      trackMediaEvent,
     });
   });
 
@@ -45,7 +45,7 @@ describe("createMediaResponseHandler", () => {
     const result = await mediaResponseHandler({
       response,
       playerId: "player1",
-      getPlayerDetails
+      getPlayerDetails,
     });
     await expect(result).toEqual({});
     await expect(mediaSessionCacheManager.savePing).not.toHaveBeenCalled();
@@ -57,7 +57,7 @@ describe("createMediaResponseHandler", () => {
     const result = await mediaResponseHandler({
       response,
       playerId: "player1",
-      getPlayerDetails
+      getPlayerDetails,
     });
     await expect(result).toEqual({ sessionId: "123" });
     await expect(mediaSessionCacheManager.savePing).toHaveBeenCalled();
@@ -67,7 +67,7 @@ describe("createMediaResponseHandler", () => {
     response.getPayloadsByType.and.returnValue([{ sessionId: "123" }]);
 
     const result = await mediaResponseHandler({
-      response
+      response,
     });
     await expect(result).toEqual({ sessionId: "123" });
     await expect(mediaSessionCacheManager.savePing).not.toHaveBeenCalled();

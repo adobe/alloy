@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createStreamingMediaComponent from "../../../../../src/components/StreamingMedia/createStreamingMediaComponent";
+import createStreamingMediaComponent from "../../../../../src/components/StreamingMedia/createStreamingMediaComponent.js";
 
 describe("StreamingMedia::createComponent", () => {
   const config = {
     streamingMedia: {
       channel: "testChannel",
       playerName: "testPlayerName",
-      appVersion: "testAppVersion"
-    }
+      appVersion: "testAppVersion",
+    },
   };
   let logger;
   let mediaComponent;
@@ -26,13 +26,13 @@ describe("StreamingMedia::createComponent", () => {
   let mediaResponseHandler;
   let trackMediaSession;
 
-  const build = configs => {
+  const build = (configs) => {
     mediaComponent = createStreamingMediaComponent({
       config: configs,
       logger,
       trackMediaEvent,
       mediaResponseHandler,
-      trackMediaSession
+      trackMediaSession,
     });
   };
 
@@ -52,10 +52,10 @@ describe("StreamingMedia::createComponent", () => {
       xdm: {
         mediaCollection: {
           sessionDetails: {
-            playerName: "testPlayerName"
-          }
-        }
-      }
+            playerName: "testPlayerName",
+          },
+        },
+      },
     };
 
     const createMediaSession = mediaComponent.commands.createMediaSession;
@@ -68,8 +68,8 @@ describe("StreamingMedia::createComponent", () => {
     const options = {
       playerId: "testPlayerId",
       xdm: {
-        mediaCollection: {}
-      }
+        mediaCollection: {},
+      },
     };
 
     const { sendMediaEvent } = mediaComponent.commands;

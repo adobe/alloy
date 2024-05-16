@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -43,11 +43,11 @@
       }
 
       function includeScript(src) {
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
           var tag = document.createElement("script");
           tag.type = "text/javascript";
           tag.async = true;
-          tag.addEventListener("load", function() {
+          tag.addEventListener("load", function () {
             resolve();
           });
           tag.nonce = "%REACT_APP_NONCE%";
@@ -58,10 +58,10 @@
 
       if (getUrlParameter("includeVisitor") === "true") {
         includeScript(
-          "https://github.com/Adobe-Marketing-Cloud/id-service/releases/download/4.5.1/visitorapi.min.js"
-        ).then(function() {
+          "https://github.com/Adobe-Marketing-Cloud/id-service/releases/download/4.5.1/visitorapi.min.js",
+        ).then(function () {
           Visitor.getInstance("53A16ACB5CC1D3760A495C99@AdobeOrg", {
-            doesOptInApply: getUrlParameter("legacyOptIn") === "true"
+            doesOptInApply: getUrlParameter("legacyOptIn") === "true",
           });
           // Alloy only looks for window.Visitor when it initially loads, so only load Alloy after Visitor loaded.
           includeScript("/alloy.js");
@@ -79,7 +79,7 @@
           playerName: "ninas player",
           appVersion: "alloy 2.16.0",
           adPingInterval: 1,
-          mainPingInterval: 12
+          mainPingInterval: 12,
         },
         defaultConsent: "in",
         edgeBasePath: "ee",
@@ -87,9 +87,9 @@
         orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg", // UnifiedJS
         debugEnabled: true,
         prehidingStyle: ".personalization-container { opacity: 0 !important }",
-        onBeforeEventSend: function(options) {
+        onBeforeEventSend: function (options) {
           console.log("onBeforeEEveeent", options);
-        }
+        },
       });
     </script>
     <script src="video-player-1.js"></script>

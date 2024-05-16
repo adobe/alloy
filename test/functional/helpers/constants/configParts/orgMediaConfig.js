@@ -9,9 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import getBaseConfig from "../../getBaseConfig";
+import getBaseConfig from "../../getBaseConfig.js";
 
 export default getBaseConfig(
   "97D1F3F459CE0AD80A495CBE@AdobeOrg",
-  "27dae196-8c75-4eed-82d1-3895616f85d6"
+  "27dae196-8c75-4eed-82d1-3895616f85d6",
 );

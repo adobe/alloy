@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "../../../../../src/utils/validation";
-import describeValidation from "../../../helpers/describeValidation";
+import { string } from "../../../../../src/utils/validation/index.js";
+import describeValidation from "../../../helpers/describeValidation.js";
 
-const regexp = new RegExp("^[A-z]+$");
+const regexp = /^[A-z]+$/;
 
 describe("validation::matchesRegexp", () => {
   describeValidation("optional matchesRegexp", string().matches(regexp), [
@@ -22,30 +22,18 @@ describe("validation::matchesRegexp", () => {
     { value: "*", error: true },
     { value: "123", error: true },
     { value: null },
-    { value: undefined }
+    { value: undefined },
   ]);
 
-  describeValidation(
-    "required regexp",
-    string()
-      .regexp(regexp)
-      .required(),
-    [
-      { value: null, error: true },
-      { value: undefined, error: true },
-      { value: "" }
-    ]
-  );
+  describeValidation("required regexp", string().regexp(regexp).required(), [
+    { value: null, error: true },
+    { value: undefined, error: true },
+    { value: "" },
+  ]);
 
-  describeValidation(
-    "default regexp",
-    string()
-      .regexp(regexp)
-      .default("abc"),
-    [
-      { value: null, expected: "abc" },
-      { value: undefined, expected: "abc" },
-      { value: "a" }
-    ]
-  );
+  describeValidation("default regexp", string().regexp(regexp).default("abc"), [
+    { value: null, expected: "abc" },
+    { value: undefined, expected: "abc" },
+    { value: "a" },
+  ]);
 });
