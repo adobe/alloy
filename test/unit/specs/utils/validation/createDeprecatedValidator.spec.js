@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { objectOf, string } from "../../../../../src/utils/validation";
-import describeValidation from "../../../helpers/describeValidation";
+import { objectOf, string } from "../../../../../src/utils/validation/index.js";
+import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::deprecated", () => {
   const testCases = [
@@ -21,22 +21,22 @@ describe("validation::deprecated", () => {
     { value: { old: "a", new: "b" }, error: true },
     { value: "foo", error: true },
     { value: 1, error: true },
-    { value: undefined }
+    { value: undefined },
   ];
 
   describeValidation(
     "works for a single deprecated field",
     objectOf({
-      new: string().required()
+      new: string().required(),
     }).deprecated("old", string(), "new"),
-    testCases
+    testCases,
   );
 
   describeValidation(
     "works for multiple deprecated fields",
     objectOf({
       new1: string().required(),
-      new2: string().required()
+      new2: string().required(),
     })
       .deprecated("old1", string(), "new1")
       .deprecated("old2", string(), "new2"),
@@ -44,8 +44,8 @@ describe("validation::deprecated", () => {
       {
         value: { old1: "a", old2: "b" },
         expected: { new1: "a", new2: "b" },
-        warning: true
-      }
-    ]
+        warning: true,
+      },
+    ],
   );
 });

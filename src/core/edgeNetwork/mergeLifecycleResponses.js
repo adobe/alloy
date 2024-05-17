@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assignConcatArrayValues } from "../../utils";
+import { assignConcatArrayValues } from "../../utils/index.js";
 
-export default returnValues => {
+export default (returnValues) => {
   // Merges all returned objects from all `onResponse` callbacks into
   // a single object that can later be returned to the customer.
   const lifecycleOnResponseReturnValues = returnValues.shift() || [];
@@ -23,6 +23,6 @@ export default returnValues => {
     {},
     ...lifecycleOnResponseReturnValues,
     ...consumerOnResponseReturnValues,
-    ...lifecycleOnBeforeRequestReturnValues
+    ...lifecycleOnBeforeRequestReturnValues,
   );
 };

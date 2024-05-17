@@ -10,36 +10,36 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t, Selector } from "testcafe";
-import createFixture from "../../helpers/createFixture";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  consentPending
-} from "../../helpers/constants/configParts";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import addHtmlToHeader from "../../helpers/dom/addHtmlToHeader";
-import reloadPage from "../../helpers/reloadPage";
-import { CONSENT_OUT } from "../../helpers/constants/consent";
+  consentPending,
+} from "../../helpers/constants/configParts/index.js";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import addHtmlToHeader from "../../helpers/dom/addHtmlToHeader.js";
+import reloadPage from "../../helpers/reloadPage.js";
+import { CONSENT_OUT } from "../../helpers/constants/consent.js";
 
 const config = compose(orgMainConfigMain, debugEnabled, consentPending);
 
 createFixture({
   title: "C17294899: Prehiding style is removed when consent is set to out",
-  url: `${TEST_PAGE_URL}?test=CC17294899`
+  url: `${TEST_PAGE_URL}?test=CC17294899`,
 });
 
 test.meta({
   ID: "C17294899",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C17294899: Prehiding style is removed when consent is set to out", async () => {
   const alloy = createAlloyProxy();
   await addHtmlToHeader(
-    `<style id="alloy-prehiding">body { visibility: hidden; }</style`
+    `<style id="alloy-prehiding">body { visibility: hidden; }</style`,
   );
   await alloy.configure(config);
   await t.expect(Selector("#alloy-prehiding").exists).ok();
@@ -52,7 +52,7 @@ test("Test C17294899: Prehiding style is removed when consent is set to out", as
 
   await reloadPage();
   await addHtmlToHeader(
-    `<style id="alloy-prehiding">body { visibility: hidden; }</style`
+    `<style id="alloy-prehiding">body { visibility: hidden; }</style`,
   );
   await t.expect(Selector("#alloy-prehiding").exists).ok();
 

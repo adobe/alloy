@@ -9,14 +9,14 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { assertValid } from "./utils";
+import { assertValid } from "./utils.js";
 
 export default (typeName, minimum) => (value, path) => {
   assertValid(
     value >= minimum,
     value,
     path,
-    `${typeName} greater than or equal to ${minimum}`
+    `${typeName} greater than or equal to ${minimum}`,
   );
   return value;
 };

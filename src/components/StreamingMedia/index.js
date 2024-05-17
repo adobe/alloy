@@ -10,21 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 /* eslint-disable import/no-restricted-paths */
-import createMediaSessionCacheManager from "./createMediaSessionCacheManager";
-import createMediaEventManager from "./createMediaEventManager";
-import createTrackMediaEvent from "./createTrackMediaEvent";
-import configValidators from "./configValidators";
-import createStreamingMediaComponent from "./createStreamingMediaComponent";
-import createTrackMediaSession from "./createTrackMediaSession";
-import createMediaResponseHandler from "./createMediaResponseHandler";
-import injectTimestamp from "../Context/injectTimestamp";
+import createMediaSessionCacheManager from "./createMediaSessionCacheManager.js";
+import createMediaEventManager from "./createMediaEventManager.js";
+import createTrackMediaEvent from "./createTrackMediaEvent.js";
+import configValidators from "./configValidators.js";
+import createStreamingMediaComponent from "./createStreamingMediaComponent.js";
+import createTrackMediaSession from "./createTrackMediaSession.js";
+import createMediaResponseHandler from "./createMediaResponseHandler.js";
+import injectTimestamp from "../Context/injectTimestamp.js";
 
 const createStreamingMedia = ({
   config,
   logger,
   eventManager,
   sendEdgeNetworkRequest,
-  consent
+  consent,
 }) => {
   const mediaSessionCacheManager = createMediaSessionCacheManager({ config });
   const mediaEventManager = createMediaEventManager({
@@ -33,25 +33,25 @@ const createStreamingMedia = ({
     logger,
     consent,
     sendEdgeNetworkRequest,
-    setTimestamp: injectTimestamp(() => new Date())
+    setTimestamp: injectTimestamp(() => new Date()),
   });
 
   const trackMediaEvent = createTrackMediaEvent({
     mediaSessionCacheManager,
     mediaEventManager,
-    config
+    config,
   });
 
   const trackMediaSession = createTrackMediaSession({
     config,
     mediaEventManager,
-    mediaSessionCacheManager
+    mediaSessionCacheManager,
   });
 
   const mediaResponseHandler = createMediaResponseHandler({
     mediaSessionCacheManager,
     config,
-    trackMediaEvent
+    trackMediaEvent,
   });
 
   return createStreamingMediaComponent({
@@ -59,7 +59,7 @@ const createStreamingMedia = ({
     trackMediaEvent,
     mediaEventManager,
     mediaResponseHandler,
-    trackMediaSession
+    trackMediaSession,
   });
 };
 createStreamingMedia.namespace = "Streaming media";

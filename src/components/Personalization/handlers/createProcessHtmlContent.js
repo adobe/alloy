@@ -9,23 +9,24 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-export default ({ modules, logger }) => item => {
-  const { type, selector } = item.getData() || {};
+export default ({ modules, logger }) =>
+  (item) => {
+    const { type, selector } = item.getData() || {};
 
-  if (!selector || !type) {
-    return { setRenderAttempted: false, includeInNotification: false };
-  }
+    if (!selector || !type) {
+      return { setRenderAttempted: false, includeInNotification: false };
+    }
 
-  if (!modules[type]) {
-    logger.warn("Invalid HTML content data", item.getData());
-    return { setRenderAttempted: false, includeInNotification: false };
-  }
+    if (!modules[type]) {
+      logger.warn("Invalid HTML content data", item.getData());
+      return { setRenderAttempted: false, includeInNotification: false };
+    }
 
-  return {
-    render: () => {
-      modules[type](item.getData());
-    },
-    setRenderAttempted: true,
-    includeInNotification: true
+    return {
+      render: () => {
+        modules[type](item.getData());
+      },
+      setRenderAttempted: true,
+      includeInNotification: true,
+    };
   };
-};

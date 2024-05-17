@@ -10,23 +10,24 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { toError, updateErrorMessage } from "../utils";
-import { DECLINED_CONSENT_ERROR_CODE } from "./consent/createConsentStateMachine";
+import { toError, updateErrorMessage } from "../utils/index.js";
+import { DECLINED_CONSENT_ERROR_CODE } from "./consent/createConsentStateMachine.js";
 
-export default ({ errorPrefix, logger }) => (error, operation) => {
-  const err = toError(error);
+export default ({ errorPrefix, logger }) =>
+  (error, operation) => {
+    const err = toError(error);
 
-  // In the case of declined consent, we've opted to not reject the promise
-  // returned to the customer, but instead resolve the promise with an
-  // empty result object.
-  if (err.code === DECLINED_CONSENT_ERROR_CODE) {
-    logger.warn(`The ${operation} could not fully complete. ${err.message}`);
-    return {};
-  }
+    // In the case of declined consent, we've opted to not reject the promise
+    // returned to the customer, but instead resolve the promise with an
+    // empty result object.
+    if (err.code === DECLINED_CONSENT_ERROR_CODE) {
+      logger.warn(`The ${operation} could not fully complete. ${err.message}`);
+      return {};
+    }
 
-  updateErrorMessage({
-    error: err,
-    message: `${errorPrefix} ${err.message}`
-  });
-  throw err;
-};
+    updateErrorMessage({
+      error: err,
+      message: `${errorPrefix} ${err.message}`,
+    });
+    throw err;
+  };

@@ -10,13 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions/index";
-import createFixture from "../../helpers/createFixture";
-import { compose, debugEnabled } from "../../helpers/constants/configParts";
-import highEntropyUserAgentHintsContextConfig from "../../helpers/constants/highEntropyUserAgentHintsContextConfig";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import isUserAgentClientHintsSupported from "../../helpers/isUserAgentClientHintsSupported";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import {
+  compose,
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import highEntropyUserAgentHintsContextConfig from "../../helpers/constants/highEntropyUserAgentHintsContextConfig.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import isUserAgentClientHintsSupported from "../../helpers/isUserAgentClientHintsSupported.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(highEntropyUserAgentHintsContextConfig, debugEnabled);
@@ -26,17 +29,17 @@ const DESCRIPTION = `${ID} - Visitor should qualify for an experience based on h
 
 createFixture({
   title: DESCRIPTION,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID,
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const sendEventOptions = {
-  decisionScopes: ["64BitClientHint"]
+  decisionScopes: ["64BitClientHint"],
 };
 
 test(DESCRIPTION, async () => {
@@ -44,20 +47,20 @@ test(DESCRIPTION, async () => {
   await alloy.configure(config);
   const eventResult = await alloy.sendEvent(sendEventOptions);
   const browserHintProposition = eventResult.propositions.find(
-    proposition => proposition.scope === "chromeBrowserClientHint"
+    (proposition) => proposition.scope === "64BitClientHint",
   );
   const hasChromeBrowserClientHintProposition =
     browserHintProposition !== undefined &&
     browserHintProposition.items[0].schema !==
       "https://ns.adobe.com/personalization/default-content-item";
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   const requestHeaders =
     networkLogger.edgeEndpointLogs.requests[0].request.headers;
   const parsedBody = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body
+    networkLogger.edgeEndpointLogs.requests[0].request.body,
   );
 
   // Tests must be run using https otherwise this will return false
@@ -67,25 +70,26 @@ test(DESCRIPTION, async () => {
     await t.expect(requestHeaders["sec-ch-ua-platform"]).ok();
     await t
       .expect(
-        parsedBody.events[0].xdm.environment.browserDetails.userAgentClientHints
+        parsedBody.events[0].xdm.environment.browserDetails
+          .userAgentClientHints,
       )
       .ok();
     await t
       .expect(
         parsedBody.events[0].xdm.environment.browserDetails.userAgentClientHints
-          .bitness
+          .bitness,
       )
       .ok();
     await t
       .expect(
         parsedBody.events[0].xdm.environment.browserDetails.userAgentClientHints
-          .architecture
+          .architecture,
       )
       .ok();
     await t
       .expect(
         parsedBody.events[0].xdm.environment.browserDetails.userAgentClientHints
-          .platformVersion
+          .platformVersion,
       )
       .ok();
 

@@ -1,4 +1,15 @@
-import createNotificationHandler from "../../../../../src/components/Personalization/createNotificationHandler";
+/*
+Copyright 2024 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+import createNotificationHandler from "../../../../../src/components/Personalization/createNotificationHandler.js";
 
 describe("Personalization::createNotificationHandler", () => {
   let collect;
@@ -10,22 +21,22 @@ describe("Personalization::createNotificationHandler", () => {
       scope: "web://localhost:3000/inAppMessages",
       scopeDetails: {
         activity: {
-          id: "abc#123"
-        }
-      }
-    }
+          id: "abc#123",
+        },
+      },
+    },
   ];
 
   beforeEach(() => {
     collect = jasmine.createSpy("collect").and.returnValue(Promise.resolve());
 
     renderedPropositions = jasmine.createSpyObj("renderedPropositions", [
-      "concat"
+      "concat",
     ]);
 
     notificationHandler = createNotificationHandler(
       collect,
-      renderedPropositions
+      renderedPropositions,
     );
   });
 
@@ -34,7 +45,7 @@ describe("Personalization::createNotificationHandler", () => {
     handleNotifications(NOTIFICATIONS);
     expect(collect).toHaveBeenCalledOnceWith({
       decisionsMeta: NOTIFICATIONS,
-      viewName: "foo"
+      viewName: "foo",
     });
   });
 

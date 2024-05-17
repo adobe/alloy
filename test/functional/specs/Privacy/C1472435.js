@@ -10,19 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createFixture from "../../helpers/createFixture";
-import createNetworkLogger from "../../helpers/networkLogger";
-import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain";
-import reloadPage from "../../helpers/reloadPage";
-import flushPromiseChains from "../../helpers/flushPromiseChains";
-import cookies from "../../helpers/cookies";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+import createFixture from "../../helpers/createFixture/index.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain.js";
+import reloadPage from "../../helpers/reloadPage.js";
+import flushPromiseChains from "../../helpers/flushPromiseChains.js";
+import cookies from "../../helpers/cookies.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import {
   LEGACY_IDENTITY_COOKIE_NAME,
-  MAIN_IDENTITY_COOKIE_NAME
-} from "../../helpers/constants/cookies";
-
-const { ADOBE2_IN } = require("../../helpers/constants/consent");
+  MAIN_IDENTITY_COOKIE_NAME,
+} from "../../helpers/constants/cookies.js";
+import { ADOBE2_IN } from "../../helpers/constants/consent.js";
 
 const networkLogger = createNetworkLogger();
 
@@ -31,19 +30,19 @@ createFixture({
     "C1472435: Set-consent is called when identity cookie is missing even though consent is the same",
   requestHooks: [
     networkLogger.setConsentEndpointLogs,
-    networkLogger.edgeInteractEndpointLogs
-  ]
+    networkLogger.edgeInteractEndpointLogs,
+  ],
 });
 
 test.meta({
   ID: "C1472435",
   SEVERITY: "P0",
-  TEST_RUN: "REGRESSION"
+  TEST_RUN: "REGRESSION",
 });
 
 const configuration = {
   defaultConsent: "pending",
-  ...orgMainConfigMain
+  ...orgMainConfigMain,
 };
 
 test("C1472435: Set-consent is called when identity cookie is missing even though consent is the same", async () => {

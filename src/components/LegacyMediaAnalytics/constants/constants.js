@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 export const MEDIA_TYPE = {
   Video: "video",
-  Audio: "audio"
+  Audio: "audio",
 };
 export const STREAM_TYPE = {
   VOD: "vod",
@@ -20,14 +20,14 @@ export const STREAM_TYPE = {
   Linear: "linear",
   Podcast: "podcast",
   Audiobook: "audiobook",
-  AOD: "aod"
+  AOD: "aod",
 };
 export const PLAYER_STATE = {
   FullScreen: "fullScreen",
   ClosedCaption: "closedCaptioning",
   Mute: "mute",
   PictureInPicture: "pictureInPicture",
-  InFocus: "inFocus"
+  InFocus: "inFocus",
 };
 
 export const EVENT = {
@@ -90,7 +90,7 @@ export const EVENT = {
   /**
    * Constant defining event type for Custom State End
    */
-  StateEnd: "stateEnd"
+  StateEnd: "stateEnd",
 };
 export const MEDIA_EVENTS_INTERNAL = {
   SessionStart: "sessionStart",
@@ -99,12 +99,12 @@ export const MEDIA_EVENTS_INTERNAL = {
   Play: "play",
   Pause: "pauseStart",
   Error: "error",
-  StateUpdate: "statesUpdate"
+  StateUpdate: "statesUpdate",
 };
 
 export const MEDIA_OBJECT_KEYS = {
   MediaResumed: "media.resumed",
-  GranularAdTracking: "media.granularadtracking"
+  GranularAdTracking: "media.granularadtracking",
 };
 
 export const VIDEO_METADATA_KEYS = {
@@ -124,7 +124,7 @@ export const VIDEO_METADATA_KEYS = {
   Authorized: "a.media.pass.auth",
   DayPart: "a.media.dayPart",
   Feed: "a.media.feed",
-  StreamFormat: "a.media.format"
+  StreamFormat: "a.media.format",
 };
 
 export const AUDIO_METADATA_KEYS = {
@@ -133,7 +133,7 @@ export const AUDIO_METADATA_KEYS = {
   Label: "a.media.label",
   Author: "a.media.author",
   Station: "a.media.station",
-  Publisher: "a.media.publisher"
+  Publisher: "a.media.publisher",
 };
 
 export const AD_METADATA_KEYS = {
@@ -142,5 +142,5 @@ export const AD_METADATA_KEYS = {
   CreativeId: "a.media.ad.creative",
   PlacementId: "a.media.ad.placement",
   SiteId: "a.media.ad.site",
-  CreativeUrl: "a.media.ad.creativeURL"
+  CreativeUrl: "a.media.ad.creativeURL",
 };

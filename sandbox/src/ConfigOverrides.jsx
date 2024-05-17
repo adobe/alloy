@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import React, { useState } from "react";
+import React, { useState } from "react.js";
 
 const defaultOverrides = {
   datastreamId: "",

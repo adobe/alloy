@@ -1,13 +1,13 @@
 /* eslint-disable no-console */
 
-import React, { useEffect } from "react";
-import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
+import React, { useEffect } from "react.js";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy.js";
 
 export default function RedirectedNewPage() {
   useEffect(() => {
     window
       .alloy("sendEvent", {
-        renderDecisions: true
+        renderDecisions: true,
       })
       .then(({ decisions = [] }) => {
         console.log("personalized decisions on the redirected view", decisions);

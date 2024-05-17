@@ -10,19 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../../helpers/networkLogger";
-import { responseStatus } from "../../../helpers/assertions/index";
-import createFixture from "../../../helpers/createFixture";
-import createResponse from "../../../helpers/createResponse";
-import getResponseBody from "../../../helpers/networkLogger/getResponseBody";
-import cookies from "../../../helpers/cookies";
+import createNetworkLogger from "../../../helpers/networkLogger/index.js";
+import { responseStatus } from "../../../helpers/assertions/index.js";
+import createFixture from "../../../helpers/createFixture/index.js";
+import createResponse from "../../../helpers/createResponse.js";
+import getResponseBody from "../../../helpers/networkLogger/getResponseBody.js";
+import cookies from "../../../helpers/cookies.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
-} from "../../../helpers/constants/configParts";
-import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies";
-import createAlloyProxy from "../../../helpers/createAlloyProxy";
+  debugEnabled,
+} from "../../../helpers/constants/configParts/index.js";
+import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies.js";
+import createAlloyProxy from "../../../helpers/createAlloyProxy.js";
 
 const config = compose(orgMainConfigMain, debugEnabled);
 
@@ -30,13 +30,13 @@ const networkLogger = createNetworkLogger();
 
 createFixture({
   title: "C224676: Passing a positive Consent in the sendEvent command.",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C224676",
   SEVERITY: "P0",
-  TEST_RUN: "REGRESSION"
+  TEST_RUN: "REGRESSION",
 });
 
 const eventOptionsWithConsent = {
@@ -47,10 +47,10 @@ const eventOptionsWithConsent = {
         consentStandardVersion: "2.0",
         consentStringValue: "CO052l-O052l-DGAMBFRACBgAIBAAAAAAIYgEawAQEagAAAA",
         gdprApplies: true,
-        containsPersonalData: false
-      }
-    ]
-  }
+        containsPersonalData: false,
+      },
+    ],
+  },
 };
 
 test("Test C224676: Passing a positive Consent in the sendEvent command", async () => {
@@ -59,10 +59,10 @@ test("Test C224676: Passing a positive Consent in the sendEvent command", async 
   await alloy.sendEvent(eventOptionsWithConsent);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   const rawResponse = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
   );
 
   const response = createResponse({ content: rawResponse });

@@ -12,20 +12,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { execSync } = require("child_process");
-const urlExists = require("url-exists-nodejs");
-const { version: currentVersion } = require("../package.json");
+import { execSync } from "child_process";
+import { createRequire } from "module";
+import urlExists from "url-exists-nodejs";
+import createLogger from "./helpers/createLogger.js";
+import exec from "./helpers/exec.js";
+import publishTag from "./helpers/publishTag.js";
+import publishToNpm from "./helpers/publishToNpm.js";
+import publishVersionBranch from "./helpers/publishVersionBranch.js";
+import setupDeployment from "./helpers/setupDeployment.js";
+import updateDevDependency from "./helpers/updateDevDependency.js";
+import updatePackageVersion from "./helpers/updatePackageVersion.js";
+import uploadToCDN from "./helpers/uploadToCDN.js";
+import withErrorHandling from "./helpers/withErrorHandling.js";
 
-const createLogger = require("./helpers/createLogger");
-const exec = require("./helpers/exec");
-const publishTag = require("./helpers/publishTag");
-const publishToNpm = require("./helpers/publishToNpm");
-const publishVersionBranch = require("./helpers/publishVersionBranch");
-const setupDeployment = require("./helpers/setupDeployment");
-const updateDevDependency = require("./helpers/updateDevDependency");
-const updatePackageVersion = require("./helpers/updatePackageVersion");
-const uploadToCDN = require("./helpers/uploadToCDN");
-const withErrorHandling = require("./helpers/withErrorHandling");
+const require = createRequire(import.meta.url);
+const { version: currentVersion } = require("../package.json");
 
 const logger = createLogger(console, () => Date.now());
 
@@ -52,7 +54,7 @@ const container = {
   npmToken: process.env.NPM_TOKEN,
   process,
   urlExists,
-  version
+  version,
 };
 
 const run = async () => {

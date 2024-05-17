@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import deepAssign from "../../../../src/utils/deepAssign";
-import assign from "../../../../src/utils/assign";
+import deepAssign from "../../../../src/utils/deepAssign.js";
+import assign from "../../../../src/utils/assign.js";
 
 describe("deepAssign", () => {
   it("should throw when target is null or undefined", () => {
@@ -71,7 +71,7 @@ describe("deepAssign", () => {
       {},
       { a: { c: 1 } },
       { b: 2 },
-      { a: { c: 2, d: 3 } }
+      { a: { c: 2, d: 3 } },
     );
 
     expect(result).toEqual({ a: { c: 2, d: 3 }, b: 2 });

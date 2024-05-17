@@ -10,17 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import attachClickActivityCollector from "./attachClickActivityCollector";
-import configValidators from "./configValidators";
-import createLinkClick from "./createLinkClick";
-import createGetLinkDetails from "./createGetLinkDetails";
-import getLinkName from "./getLinkName";
-import getLinkRegion from "./getLinkRegion";
+import attachClickActivityCollector from "./attachClickActivityCollector.js";
+import configValidators from "./configValidators.js";
+import createLinkClick from "./createLinkClick.js";
+import createGetLinkDetails from "./createGetLinkDetails.js";
+import getLinkName from "./getLinkName.js";
+import getLinkRegion from "./getLinkRegion.js";
 import {
   determineLinkType,
   findSupportedAnchorElement,
-  getAbsoluteUrlFromAnchorElement
-} from "./utils";
+  getAbsoluteUrlFromAnchorElement,
+} from "./utils.js";
 
 const getLinkDetails = createGetLinkDetails({
   window,
@@ -28,14 +28,14 @@ const getLinkDetails = createGetLinkDetails({
   getLinkRegion,
   getAbsoluteUrlFromAnchorElement,
   findSupportedAnchorElement,
-  determineLinkType
+  determineLinkType,
 });
 
 const createActivityCollector = ({
   config,
   eventManager,
   handleError,
-  logger
+  logger,
 }) => {
   const linkClick = createLinkClick({ getLinkDetails, config, logger });
 
@@ -46,14 +46,14 @@ const createActivityCollector = ({
         attachClickActivityCollector({
           eventManager,
           lifecycle,
-          handleError
+          handleError,
         });
         // TODO: createScrollActivityCollector ...
       },
       onClick({ event, clickedElement }) {
         linkClick({ targetElement: clickedElement, event });
-      }
-    }
+      },
+    },
   };
 };
 
@@ -61,12 +61,12 @@ createActivityCollector.namespace = "ActivityCollector";
 createActivityCollector.configValidators = configValidators;
 createActivityCollector.buildOnInstanceConfiguredExtraParams = ({
   config,
-  logger
+  logger,
 }) => {
   return {
-    getLinkDetails: targetElement => {
+    getLinkDetails: (targetElement) => {
       return getLinkDetails({ targetElement, config, logger });
-    }
+    },
   };
 };
 

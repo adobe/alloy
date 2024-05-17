@@ -10,17 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { ClientFunction, t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions/index";
-import createFixture from "../../helpers/createFixture";
-import { compose } from "../../helpers/constants/configParts";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../helpers/createResponse";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import orgMediaConfig from "../../helpers/constants/configParts/orgMediaConfig";
-import streamingMedia from "../../helpers/constants/configParts/streamingMedia";
-import { sleep } from "../Migration/helper";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import { compose } from "../../helpers/constants/configParts/index.js";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
+import createResponse from "../../helpers/createResponse.js";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import orgMediaConfig from "../../helpers/constants/configParts/orgMediaConfig.js";
+import streamingMedia from "../../helpers/constants/configParts/streamingMedia.js";
+import { sleep } from "../Migration/helper.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMediaConfig, streamingMedia);
@@ -45,14 +45,14 @@ createFixture({
     networkLogger.sessionEndEndpointLogs,
     networkLogger.statesUpdateEndpointLogs,
     networkLogger.bitrateChangeEndpointLogs,
-    networkLogger.bufferStartEndpointLogs
-  ]
+    networkLogger.bufferStartEndpointLogs,
+  ],
 });
 
 test.meta({
   ID: "MA3",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const assertSessionStarted = async () => {
@@ -65,10 +65,10 @@ const assertSessionStarted = async () => {
   await t.expect(requestBody.events[0].xdm.eventType).eql("media.sessionStart");
   await t.expect(requestBody.events[0].xdm.mediaCollection.playhead).eql(0);
   const response = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
   );
   const mediaCollectionPayload = createResponse({
-    content: response
+    content: response,
   }).getPayloadsByType("media-analytics:new-session");
 
   return mediaCollectionPayload[0].sessionId;
@@ -79,7 +79,7 @@ const assertPingsNotSent = async () => {
   const secondPingEventRequest = networkLogger.pingEndpointLogs.requests[2];
   await t.expect(secondPingEventRequest).eql(undefined);
 };
-const assertPingsSent = async sessionId => {
+const assertPingsSent = async (sessionId) => {
   await t.expect(networkLogger.pingEndpointLogs.count(() => true)).gte(1);
   const pingEventRequest = networkLogger.pingEndpointLogs.requests[0];
   const pingEvent = JSON.parse(pingEventRequest.request.body).events[0];
@@ -91,7 +91,7 @@ const assertEventIsSent = async (
   eventType,
   sessionId,
   playhead,
-  order = 0
+  order = 0,
 ) => {
   await t.expect(endpointLogs.count(() => true)).gte(order + 1);
   const eventRequest = endpointLogs.requests[order];
@@ -104,14 +104,14 @@ const assertEventIsSent = async (
 };
 
 const initializeTracker = ClientFunction(() => {
-  return window.alloy("getMediaAnalyticsTracker").then(Media => {
+  return window.alloy("getMediaAnalyticsTracker").then((Media) => {
     window.Media = Media;
     window.mediaTrackerInstance = Media.getInstance();
     return Media;
   });
 });
 
-const trackEvent = ClientFunction(eventType => {
+const trackEvent = ClientFunction((eventType) => {
   const event = window.Media.Event[eventType];
   window.mediaTrackerInstance.trackEvent(event);
 });
@@ -121,24 +121,24 @@ const trackPlay = ClientFunction(() => {
 const trackPause = ClientFunction(() => {
   window.mediaTrackerInstance.trackPause();
 });
-const updatePlayhead = ClientFunction(playhead => {
+const updatePlayhead = ClientFunction((playhead) => {
   window.mediaTrackerInstance.updatePlayhead(playhead);
 });
 
 const startChapter = ClientFunction(() => {
   const chapterContextData = {
-    segmentType: "Sample segment type"
+    segmentType: "Sample segment type",
   };
   const chapterInfo = window.Media.createChapterObject(
     "chapterNumber1",
     2,
     18,
-    1
+    1,
   );
   window.mediaTrackerInstance.trackEvent(
     window.Media.Event.ChapterStart,
     chapterInfo,
-    chapterContextData
+    chapterContextData,
   );
 });
 
@@ -150,13 +150,13 @@ const trackSessionStart = ClientFunction(() => {
     "Ninas player video",
     60,
     Media.StreamType.VOD,
-    Media.MediaType.Video
+    Media.MediaType.Video,
   );
   const contextData = {
     isUserLoggedIn: "false",
     tvStation: "Sample TV station",
     programmer: "Sample programmer",
-    assetID: "/uri-reference"
+    assetID: "/uri-reference",
   };
 
   contextData[Media.VideoMetadataKeys.Episode] = "Sample Episode";
@@ -193,7 +193,7 @@ const trackAds = ClientFunction(() => {
   tracker.trackEvent(window.Media.Event.AdBreakComplete);
 });
 
-const trackError = ClientFunction(errorId => {
+const trackError = ClientFunction((errorId) => {
   window.mediaTrackerInstance.trackError(errorId);
 });
 
@@ -222,17 +222,17 @@ const bitrateChange = ClientFunction(() => {
 const stateChanges = ClientFunction(() => {
   // StateStart (ex: Mute is switched on)
   const stateObject = window.Media.createStateObject(
-    window.Media.PlayerState.Mute
+    window.Media.PlayerState.Mute,
   );
   window.mediaTrackerInstance.trackEvent(
     window.Media.Event.StateStart,
-    stateObject
+    stateObject,
   );
 
   // StateEnd
   window.mediaTrackerInstance.trackEvent(
     window.Media.Event.StateEnd,
-    stateObject
+    stateObject,
   );
 });
 
@@ -253,7 +253,7 @@ test("Test that legacy component send pings automatically and events are transfo
     networkLogger.mediaPlayEndpointLogs,
     "media.play",
     sessionId,
-    0
+    0,
   );
 
   // pause event
@@ -262,7 +262,7 @@ test("Test that legacy component send pings automatically and events are transfo
     networkLogger.mediaPauseEndpointLogs,
     "media.pauseStart",
     sessionId,
-    0
+    0,
   );
 
   // chapter start event
@@ -271,7 +271,7 @@ test("Test that legacy component send pings automatically and events are transfo
     networkLogger.chapterStartEndpointLogs,
     "media.chapterStart",
     sessionId,
-    0
+    0,
   );
 
   await updatePlayhead(10);
@@ -294,87 +294,87 @@ test("Test that legacy component send pings automatically and events are transfo
     networkLogger.chapterCompleteEndpointLogs,
     "media.chapterComplete",
     sessionId,
-    10
+    10,
   );
 
   await assertEventIsSent(
     networkLogger.chapterSkipEndpointLogs,
     "media.chapterSkip",
     sessionId,
-    10
+    10,
   );
 
   await assertEventIsSent(
     networkLogger.adBreakStartEndpointLogs,
     "media.adBreakStart",
     sessionId,
-    10
+    10,
   );
   await assertEventIsSent(
     networkLogger.adStartEndpointLogs,
     "media.adStart",
     sessionId,
-    10
+    10,
   );
   await assertEventIsSent(
     networkLogger.adCompleteEndpointLogs,
     "media.adComplete",
     sessionId,
-    10
+    10,
   );
   await assertEventIsSent(
     networkLogger.adBreakCompleteEndpointLogs,
     "media.adBreakComplete",
     sessionId,
-    10
+    10,
   );
   await assertEventIsSent(
     networkLogger.adSkipEndpointLogs,
     "media.adSkip",
     sessionId,
-    10
+    10,
   );
 
   await assertEventIsSent(
     networkLogger.errorEndpointLogs,
     "media.error",
     sessionId,
-    10
+    10,
   );
 
   await assertEventIsSent(
     networkLogger.bufferStartEndpointLogs,
     "media.bufferStart",
     sessionId,
-    10
+    10,
   );
   await assertEventIsSent(
     networkLogger.mediaPlayEndpointLogs,
     "media.play",
     sessionId,
     10,
-    1
+    1,
   );
 
   await assertEventIsSent(
     networkLogger.bitrateChangeEndpointLogs,
     "media.bitrateChange",
     sessionId,
-    10
+    10,
   );
   await assertEventIsSent(
     networkLogger.statesUpdateEndpointLogs,
     "media.statesUpdate",
     sessionId,
     10,
-    0
+    0,
   );
   await assertEventIsSent(
     networkLogger.statesUpdateEndpointLogs,
     "media.statesUpdate",
     sessionId,
     10,
-    1
+    1,
   );
   await sleep(10000);
   await assertPingsSent(sessionId);

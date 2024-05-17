@@ -12,23 +12,33 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const path = require("path");
-const fs = require("fs");
-const recursive = require("recursive-readdir");
-const { Minimatch } = require("minimatch");
-const ignorePatterns = require("../coverageignore");
+import path from "path";
+import fs from "fs";
+import recursive from "recursive-readdir";
+import pkg from "minimatch";
+import { fileURLToPath } from "url";
+import { createRequire } from "module";
 
-const baseDir = path.join(__dirname, "../");
-const srcDir = path.join(__dirname, "../src");
-const testDir = path.join(__dirname, "../test/unit/specs");
+const require = createRequire(import.meta.url);
+
+// eslint-disable-next-line import/extensions
+const ignorePatterns = require("../coverageignore.cjs");
+
+const { Minimatch } = pkg;
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
+
+const baseDir = path.join(dirname, "../");
+const srcDir = path.join(dirname, "../src");
+const testDir = path.join(dirname, "../test/unit/specs");
 const specExtension = ".spec.js";
 
-const ignoreMinimatches = ignorePatterns.map(ignorePattern => {
+const ignoreMinimatches = ignorePatterns.map((ignorePattern) => {
   return new Minimatch(ignorePattern);
 });
 
-const shouldFileBeIgnored = file => {
-  return ignoreMinimatches.some(minimatch => {
+const shouldFileBeIgnored = (file) => {
+  return ignoreMinimatches.some((minimatch) => {
     return minimatch.match(path.relative(srcDir, file));
   });
 };
@@ -38,26 +48,26 @@ const shouldFileBeIgnored = file => {
  * If not, the missing spec files will be listed and the process will
  * exit with an exit code of 1.
  */
-recursive(srcDir, [shouldFileBeIgnored]).then(srcFiles => {
+recursive(srcDir, [shouldFileBeIgnored]).then((srcFiles) => {
   const missingTestFiles = srcFiles
-    .map(srcFile => {
+    .map((srcFile) => {
       const pathRelativeToSrcDir = path.relative(srcDir, srcFile);
       const pathRelativeToTestDir = path.join(
         path.dirname(pathRelativeToSrcDir),
         `${path.basename(
           pathRelativeToSrcDir,
-          path.extname(pathRelativeToSrcDir)
-        )}${specExtension}`
+          path.extname(pathRelativeToSrcDir),
+        )}${specExtension}`,
       );
       return path.join(testDir, pathRelativeToTestDir);
     })
-    .filter(testFile => {
+    .filter((testFile) => {
       return !fs.existsSync(testFile);
     });
 
   if (missingTestFiles.length) {
     console.error("Test files are missing for their respective source files:");
-    missingTestFiles.forEach(missingTestFile => {
+    missingTestFiles.forEach((missingTestFile) => {
       const pathRelativeToBaseDir = path.relative(baseDir, missingTestFile);
       console.error(`- ${pathRelativeToBaseDir}`);
     });

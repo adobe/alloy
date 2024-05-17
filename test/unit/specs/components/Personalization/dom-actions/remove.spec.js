@@ -12,10 +12,10 @@ governing permissions and limitations under the License.
 import {
   selectNodes,
   appendNode,
-  createNode
-} from "../../../../../../src/utils/dom";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+  createNode,
+} from "../../../../../../src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 
 describe("Personalization::actions::remove", () => {
   beforeEach(() => {
@@ -38,7 +38,7 @@ describe("Personalization::actions::remove", () => {
     const settings = {
       selector: "#remove",
       prehidingSelector: "#remove",
-      meta
+      meta,
     };
 
     return remove(settings).then(() => {

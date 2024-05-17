@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isBoolean from "../isBoolean";
-import { assertValid } from "./utils";
+import isBoolean from "../isBoolean.js";
+import { assertValid } from "./utils.js";
 
 export default (value, path) => {
   assertValid(isBoolean(value), value, path, "true or false");

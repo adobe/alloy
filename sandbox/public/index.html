@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -32,7 +32,7 @@
             const linkDetails = getLinkDetails(listOfLinks[i]);
             console.log("link details", linkDetails);
           }
-        }
+        },
       });
     </script>
 
@@ -68,11 +68,11 @@
       }
 
       function includeScript(src) {
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
           var tag = document.createElement("script");
           tag.type = "text/javascript";
           tag.async = true;
-          tag.addEventListener("load", function() {
+          tag.addEventListener("load", function () {
             resolve();
           });
           tag.nonce = "%REACT_APP_NONCE%";
@@ -83,10 +83,10 @@
 
       if (getUrlParameter("includeVisitor") === "true") {
         includeScript(
-          "https://github.com/Adobe-Marketing-Cloud/id-service/releases/download/4.5.1/visitorapi.min.js"
-        ).then(function() {
+          "https://github.com/Adobe-Marketing-Cloud/id-service/releases/download/4.5.1/visitorapi.min.js",
+        ).then(function () {
           Visitor.getInstance("53A16ACB5CC1D3760A495C99@AdobeOrg", {
-            doesOptInApply: getUrlParameter("legacyOptIn") === "true"
+            doesOptInApply: getUrlParameter("legacyOptIn") === "true",
           });
           // Alloy only looks for window.Visitor when it initially loads, so only load Alloy after Visitor loaded.
           includeScript("/alloy.js");
@@ -114,7 +114,7 @@
           getUrlParameter("idMigrationEnabled") === "false"
         ),
         prehidingStyle: ".personalization-container { opacity: 0 !important }",
-        onBeforeEventSend: function(options) {
+        onBeforeEventSend: function (options) {
           const xdm = options.xdm;
           const data = options.data;
           const titleParam = getUrlParameter("title");
@@ -131,7 +131,7 @@
           xdm._unifiedjsqeonly = _unifiedjsqeonly;
           return true;
         },
-        onBeforeLinkClickSend: function(options) {
+        onBeforeLinkClickSend: function (options) {
           console.log("options", options);
           // options.linkElement
           // options.xdm
@@ -159,7 +159,7 @@
           return true;
         },
         targetMigrationEnabled: true,
-        clickCollectionEnabled: true
+        clickCollectionEnabled: true,
       });
 
       // For Testing multiple instances.
@@ -169,7 +169,7 @@
         orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
         debugEnabled: true,
         clickCollectionEnabled: false,
-        onBeforeEventSend: function(options) {
+        onBeforeEventSend: function (options) {
           const xdm = options.xdm;
           const eventType = xdm.eventType;
           if (eventType === "decisioning.propositionInteract") {
@@ -181,14 +181,13 @@
               analyticsPayloads.add(getClickAnalyticsToken(proposition));
             }
 
-            getECID("organizationTwo").then(visitorID => {
-              const analyticsPayload = concatenateAnalyticsPayloads(
-                analyticsPayloads
-              );
+            getECID("organizationTwo").then((visitorID) => {
+              const analyticsPayload =
+                concatenateAnalyticsPayloads(analyticsPayloads);
               sendAnalyticsPayload({ analyticsPayload, visitorID });
             });
           }
-        }
+        },
       });
 
       // For AJO testing in Prod.
@@ -198,7 +197,7 @@
         orgId: "4DA0571C5FDC4BF70A495FC2@AdobeOrg",
         thirdPartyCookiesEnabled: false,
         debugEnabled: true,
-        clickCollectionEnabled: false
+        clickCollectionEnabled: false,
       });
     </script>
   </head>

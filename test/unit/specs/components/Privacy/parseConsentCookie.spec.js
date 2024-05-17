@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import parseConsentCookie from "../../../../../src/components/Privacy/parseConsentCookie";
+import parseConsentCookie from "../../../../../src/components/Privacy/parseConsentCookie.js";
 
 describe("parseConsentCookie", () => {
   it("returns preferences by purpose", () => {
     expect(parseConsentCookie("foo=in;bar=out")).toEqual({
       foo: "in",
-      bar: "out"
+      bar: "out",
     });
   });
 });

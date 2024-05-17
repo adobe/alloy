@@ -8,21 +8,25 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const fs = require("fs");
-const path = require("path");
-const { rollup } = require("rollup");
-const nodeResolve = require("@rollup/plugin-node-resolve").default;
-const commonjs = require("@rollup/plugin-commonjs");
-const babel = require("@rollup/plugin-babel").default;
-const terser = require("rollup-plugin-terser").terser;
-const yargs = require("yargs/yargs");
-const { hideBin } = require("yargs/helpers");
-const conditionalBuildBabelPlugin = require("./conditionalBuildBabelPlugin");
+
+import fs from "fs";
+import path from "path";
+import { rollup } from "rollup";
+import nodeResolve from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
+import babel from "@rollup/plugin-babel";
+import terser from "@rollup/plugin-terser";
+import yargs from "yargs/yargs";
+// eslint-disable-next-line import/extensions
+import { hideBin } from "yargs/helpers";
+import conditionalBuildBabelPlugin from "./conditionalBuildBabelPlugin.js";
+
+const dirname = import.meta.dirname;
 
 // Path to componentCreators.js
 const componentCreatorsPath = path.join(
-  __dirname,
-  "../../src/core/componentCreators.js"
+  dirname,
+  "../../src/core/componentCreators.js",
 );
 
 // Read componentCreators.js
@@ -31,8 +35,8 @@ const componentCreatorsContent = fs.readFileSync(componentCreatorsPath, "utf8");
 // Extract optional components based on @skipwhen directive
 const optionalComponents = componentCreatorsContent
   .split("\n")
-  .filter(line => line.trim().startsWith("/* @skipwhen"))
-  .map(line => {
+  .filter((line) => line.trim().startsWith("/* @skipwhen"))
+  .map((line) => {
     const match = line.match(/ENV\.alloy_([a-zA-Z0-9]+) === false/);
     if (match) {
       const [, componentName] = match;
@@ -50,7 +54,7 @@ const argv = yargs(hideBin(process.argv))
   .option("exclude", {
     describe: "the components that you want to be excluded from the build",
     choices: optionalComponents,
-    type: "array"
+    type: "array",
   })
   .array("exclude")
   .check(() => {
@@ -60,9 +64,9 @@ const argv = yargs(hideBin(process.argv))
 
 if (!argv.exclude) {
   console.log(
-    `No components excluded. To exclude components, try running "npm run build:custom -- --exclude personalization". Your choices are: ${optionalComponents.join(
-      ", "
-    )}`
+    `No components excluded. To exclude components, try running "npm run build:custom -- --exclude personalization". Your choices are: "${optionalComponents.join(
+      '", "',
+    )}".`,
   );
   process.exit(0);
 }
@@ -71,7 +75,7 @@ const buildConfig = (minify, sandbox) => {
   const plugins = [
     nodeResolve({
       preferBuiltins: false,
-      mainFields: ["component", "main", "browser"]
+      mainFields: ["component", "main", "browser"],
     }),
     commonjs(),
     babel({
@@ -80,10 +84,10 @@ const buildConfig = (minify, sandbox) => {
           (argv.exclude || []).reduce((previousValue, currentValue) => {
             previousValue[`alloy_${currentValue}`] = "false";
             return previousValue;
-          }, {})
-        )
-      ]
-    })
+          }, {}),
+        ),
+      ],
+    }),
   ];
   if (minify) {
     plugins.push(terser());
@@ -103,20 +107,20 @@ const buildConfig = (minify, sandbox) => {
           "  console.warn('The Adobe Experience Cloud Web SDK does not support IE 10 and below.');\n" +
           "  return;\n" +
           "}\n",
-        sourcemap: false
-      }
+        sourcemap: false,
+      },
     ],
-    plugins
+    plugins,
   };
 };
 
-const getFileSizeInKB = filePath => {
+const getFileSizeInKB = (filePath) => {
   const stats = fs.statSync(filePath);
   const fileSizeInBytes = stats.size;
   return (fileSizeInBytes / 1024).toFixed(2);
 };
 
-const buildWithComponents = async sandbox => {
+const buildWithComponents = async (sandbox) => {
   const prodBuild = buildConfig(false, sandbox);
   const minifiedBuild = buildConfig(true, sandbox);
 

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { number, objectOf, string } from "../../utils/validation";
+import { number, objectOf, string } from "../../utils/validation/index.js";
 
 export default ({ logger }) => {
   const createMediaObject = (
@@ -18,14 +18,14 @@ export default ({ logger }) => {
     name,
     length,
     contentType,
-    streamType
+    streamType,
   ) => {
     const mediaObject = {
       friendlyName,
       name,
       length,
       streamType,
-      contentType
+      contentType,
     };
 
     const validate = objectOf({
@@ -33,7 +33,7 @@ export default ({ logger }) => {
       name: string().nonEmpty(),
       length: number().required(),
       streamType: string().nonEmpty(),
-      contentType: string().nonEmpty()
+      contentType: string().nonEmpty(),
     });
 
     try {
@@ -43,7 +43,7 @@ export default ({ logger }) => {
         friendlyName: result.friendlyName,
         length: result.length,
         streamType: result.streamType,
-        contentType: result.contentType
+        contentType: result.contentType,
       };
       return { sessionDetails };
     } catch (error) {
@@ -56,12 +56,12 @@ export default ({ logger }) => {
     const adBreakObject = {
       friendlyName: name,
       offset: position,
-      index: startTime
+      index: startTime,
     };
     const validator = objectOf({
       friendlyName: string().nonEmpty(),
       offset: number(),
-      index: number()
+      index: number(),
     });
 
     try {
@@ -69,14 +69,14 @@ export default ({ logger }) => {
       const advertisingPodDetails = {
         friendlyName: result.friendlyName,
         offset: result.offset,
-        index: result.index
+        index: result.index,
       };
 
       return { advertisingPodDetails };
     } catch (error) {
       logger.warn(
         `An error occurred while creating the Ad Break Object.`,
-        error
+        error,
       );
       return {};
     }
@@ -86,14 +86,14 @@ export default ({ logger }) => {
       friendlyName: name,
       name: id,
       podPosition: position,
-      length
+      length,
     };
 
     const validator = objectOf({
       friendlyName: string().nonEmpty(),
       name: string().nonEmpty(),
       podPosition: number(),
-      length: number()
+      length: number(),
     });
 
     try {
@@ -102,14 +102,14 @@ export default ({ logger }) => {
         friendlyName: result.friendlyName,
         name: result.name,
         podPosition: result.podPosition,
-        length: result.length
+        length: result.length,
       };
 
       return { advertisingDetails };
     } catch (error) {
       logger.warn(
         `An error occurred while creating the Advertising Object.`,
-        error
+        error,
       );
       return {};
     }
@@ -119,14 +119,14 @@ export default ({ logger }) => {
       friendlyName: name,
       offset: position,
       length,
-      index: startTime
+      index: startTime,
     };
 
     const validator = objectOf({
       friendlyName: string().nonEmpty(),
       offset: number(),
       length: number(),
-      index: number()
+      index: number(),
     });
 
     try {
@@ -135,31 +135,31 @@ export default ({ logger }) => {
         friendlyName: result.friendlyName,
         offset: result.offset,
         index: result.index,
-        length: result.length
+        length: result.length,
       };
 
       return { chapterDetails };
     } catch (error) {
       logger.warn(
         `An error occurred while creating the Chapter Object.`,
-        error
+        error,
       );
       return {};
     }
   };
-  const createStateObject = stateName => {
-    const STATE_NAME_REGEX = new RegExp("^[a-zA-Z0-9_]{1,64}$");
+  const createStateObject = (stateName) => {
+    const STATE_NAME_REGEX = /^[a-zA-Z0-9_]{1,64}$/;
 
     const validator = string().matches(
       STATE_NAME_REGEX,
-      "This is not a valid state name."
+      "This is not a valid state name.",
     );
 
     try {
       const result = validator(stateName);
 
       return {
-        name: result
+        name: result,
       };
     } catch (error) {
       logger.warn(`An error occurred while creating the State Object.`, error);
@@ -171,14 +171,14 @@ export default ({ logger }) => {
       bitrate,
       droppedFrames,
       fps,
-      startupTime
+      startupTime,
     };
 
     const validator = objectOf({
       bitrate: number(),
       droppedFrames: number(),
       fps: number(),
-      startupTime: number()
+      startupTime: number(),
     });
 
     try {
@@ -188,7 +188,7 @@ export default ({ logger }) => {
         bitrate: result.bitrate,
         droppedFrames: result.droppedFrames,
         framesPerSecond: result.fps,
-        timeToStart: result.startupTime
+        timeToStart: result.startupTime,
       };
     } catch (error) {
       logger.warn(`An error occurred while creating the QOE Object.`, error);
@@ -202,6 +202,6 @@ export default ({ logger }) => {
     createAdObject,
     createChapterObject,
     createStateObject,
-    createQoEObject
+    createQoEObject,
   };
 };

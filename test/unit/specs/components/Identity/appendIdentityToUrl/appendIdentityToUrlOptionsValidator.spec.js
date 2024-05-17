@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import appendIdentityToUrlOptionsValidator from "../../../../../../src/components/Identity/appendIdentityToUrl/appendIdentityToUrlOptionsValidator";
+import appendIdentityToUrlOptionsValidator from "../../../../../../src/components/Identity/appendIdentityToUrl/appendIdentityToUrlOptionsValidator.js";
 
 describe("Identity::appendIdentityToUrlOptionsValidator", () => {
   [
@@ -17,8 +17,8 @@ describe("Identity::appendIdentityToUrlOptionsValidator", () => {
     "myurl",
     {},
     { url: "" },
-    { url: "hello", other: "goodbye" }
-  ].forEach(param => {
+    { url: "hello", other: "goodbye" },
+  ].forEach((param) => {
     it(`should throw an error when ${JSON.stringify(param)} is passed`, () => {
       expect(() => {
         appendIdentityToUrlOptionsValidator(param);
@@ -28,7 +28,7 @@ describe("Identity::appendIdentityToUrlOptionsValidator", () => {
 
   it("should accept a url", () => {
     expect(
-      appendIdentityToUrlOptionsValidator({ url: "http://google.com" })
+      appendIdentityToUrlOptionsValidator({ url: "http://google.com" }),
     ).toEqual({ url: "http://google.com" });
   });
 
@@ -36,13 +36,13 @@ describe("Identity::appendIdentityToUrlOptionsValidator", () => {
     expect(() => {
       appendIdentityToUrlOptionsValidator({
         url: "http://google.com",
-        edgeConfigOverrides: { identity: { idSyncContainerId: "123" } }
+        edgeConfigOverrides: { identity: { idSyncContainerId: "123" } },
       });
     }).not.toThrowError();
     expect(() => {
       appendIdentityToUrlOptionsValidator({
         url: "http://google.com",
-        edgeConfigOverrides: {}
+        edgeConfigOverrides: {},
       });
     }).not.toThrowError();
   });

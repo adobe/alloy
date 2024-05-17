@@ -15,9 +15,9 @@ import {
   enumOf,
   number,
   objectOf,
-  string
-} from "../../utils/validation";
-import EventTypes from "./constants/eventTypes";
+  string,
+} from "../../utils/validation/index.js";
+import EventTypes from "./constants/eventTypes.js";
 
 export default ({ options }) => {
   const validator = anyOf(
@@ -26,24 +26,22 @@ export default ({ options }) => {
         playerId: string().required(),
         xdm: objectOf({
           eventType: enumOf(...Object.values(EventTypes)).required(),
-          mediaCollection: objectOf(anything())
-        }).required()
+          mediaCollection: objectOf(anything()),
+        }).required(),
       }).required(),
 
       objectOf({
         xdm: objectOf({
           eventType: enumOf(...Object.values(EventTypes)).required(),
           mediaCollection: objectOf({
-            playhead: number()
-              .integer()
-              .required(),
-            sessionID: string().required()
-          }).required()
-        }).required()
-      }).required()
+            playhead: number().integer().required(),
+            sessionID: string().required(),
+          }).required(),
+        }).required(),
+      }).required(),
     ],
 
-    "Error validating the sendMediaEvent command options."
+    "Error validating the sendMediaEvent command options.",
   );
 
   return validator(options);

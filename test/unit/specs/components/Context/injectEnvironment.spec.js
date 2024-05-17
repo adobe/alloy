@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import injectEnvironment from "../../../../../src/components/Context/injectEnvironment";
+import injectEnvironment from "../../../../../src/components/Context/injectEnvironment.js";
 
 describe("Context::injectEnvironment", () => {
   const run = (description, mywindow, expectedXdm) => {
@@ -29,19 +29,19 @@ describe("Context::injectEnvironment", () => {
       document: {
         documentElement: {
           clientWidth: 1005,
-          clientHeight: 1006
-        }
-      }
+          clientHeight: 1006,
+        },
+      },
     },
     {
       environment: {
         type: "browser",
         browserDetails: {
           viewportWidth: 1005,
-          viewportHeight: 1006
-        }
-      }
-    }
+          viewportHeight: 1006,
+        },
+      },
+    },
   );
 
   run(
@@ -50,15 +50,15 @@ describe("Context::injectEnvironment", () => {
       document: {
         documentElement: {
           clientWidth: -10,
-          clientHeight: -20
-        }
-      }
+          clientHeight: -20,
+        },
+      },
     },
     {
       environment: {
-        type: "browser"
-      }
-    }
+        type: "browser",
+      },
+    },
   );
 
   run(
@@ -67,41 +67,41 @@ describe("Context::injectEnvironment", () => {
       document: {
         documentElement: {
           clientWidth: -10,
-          clientHeight: -42
-        }
-      }
+          clientHeight: -42,
+        },
+      },
     },
     {
       environment: {
-        type: "browser"
-      }
-    }
+        type: "browser",
+      },
+    },
   );
 
   run(
     "handles missing width and height",
     {
       document: {
-        documentElement: {}
-      }
+        documentElement: {},
+      },
     },
     {
       environment: {
-        type: "browser"
-      }
-    }
+        type: "browser",
+      },
+    },
   );
 
   run(
     "handles missing documentElement",
     {
-      document: {}
+      document: {},
     },
     {
       environment: {
-        type: "browser"
-      }
-    }
+        type: "browser",
+      },
+    },
   );
 
   run(
@@ -110,19 +110,19 @@ describe("Context::injectEnvironment", () => {
       document: {
         documentElement: {
           clientWidth: 0,
-          clientHeight: 0
-        }
-      }
+          clientHeight: 0,
+        },
+      },
     },
     {
       environment: {
         type: "browser",
         browserDetails: {
           viewportWidth: 0,
-          viewportHeight: 0
-        }
-      }
-    }
+          viewportHeight: 0,
+        },
+      },
+    },
   );
   run(
     "handles floating point height and width",
@@ -130,19 +130,19 @@ describe("Context::injectEnvironment", () => {
       document: {
         documentElement: {
           clientWidth: 10,
-          clientHeight: 4.2
-        }
-      }
+          clientHeight: 4.2,
+        },
+      },
     },
     {
       environment: {
         type: "browser",
         browserDetails: {
           viewportWidth: 10,
-          viewportHeight: 4
-        }
-      }
-    }
+          viewportHeight: 4,
+        },
+      },
+    },
   );
 
   run(
@@ -151,15 +151,15 @@ describe("Context::injectEnvironment", () => {
       document: {
         documentElement: {
           clientWidth: null,
-          clientHeight: null
-        }
-      }
+          clientHeight: null,
+        },
+      },
     },
     {
       environment: {
-        type: "browser"
-      }
-    }
+        type: "browser",
+      },
+    },
   );
 
   run(
@@ -167,18 +167,18 @@ describe("Context::injectEnvironment", () => {
     {
       document: {
         documentElement: {
-          clientWidth: 1234
-        }
-      }
+          clientWidth: 1234,
+        },
+      },
     },
     {
       environment: {
         type: "browser",
         browserDetails: {
-          viewportWidth: 1234
-        }
-      }
-    }
+          viewportWidth: 1234,
+        },
+      },
+    },
   );
 
   run(
@@ -186,17 +186,17 @@ describe("Context::injectEnvironment", () => {
     {
       document: {
         documentElement: {
-          clientHeight: "1234.5"
-        }
-      }
+          clientHeight: "1234.5",
+        },
+      },
     },
     {
       environment: {
         type: "browser",
         browserDetails: {
-          viewportHeight: 1235
-        }
-      }
-    }
+          viewportHeight: 1235,
+        },
+      },
+    },
   );
 });

@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createProcessDomAction from "../../../../../../src/components/Personalization/handlers/createProcessDomAction";
+import createProcessDomAction from "../../../../../../src/components/Personalization/handlers/createProcessDomAction.js";
 
 describe("createProcessDomAction", () => {
   let item;
@@ -30,7 +30,7 @@ describe("createProcessDomAction", () => {
       },
       getScopeType() {
         return scopeType;
-      }
+      },
     };
     item = {
       getData() {
@@ -41,11 +41,11 @@ describe("createProcessDomAction", () => {
       },
       getTrackingLabel() {
         return trackingLabel;
-      }
+      },
     };
     modules = {
       typeA: jasmine.createSpy("typeA"),
-      typeB: jasmine.createSpy("typeB")
+      typeB: jasmine.createSpy("typeB"),
     };
     logger = jasmine.createSpyObj("logger", ["warn"]);
     storeClickMetrics = jasmine.createSpy("storeClickMetrics");
@@ -53,7 +53,7 @@ describe("createProcessDomAction", () => {
     processDomAction = createProcessDomAction({
       modules,
       logger,
-      storeClickMetrics
+      storeClickMetrics,
     });
   });
 
@@ -61,11 +61,11 @@ describe("createProcessDomAction", () => {
     data = undefined;
     expect(processDomAction(item)).toEqual({
       setRenderAttempted: false,
-      includeInNotification: false
+      includeInNotification: false,
     });
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid DOM action data: missing type.",
-      undefined
+      undefined,
     );
   });
 
@@ -73,11 +73,11 @@ describe("createProcessDomAction", () => {
     data = {};
     expect(processDomAction(item)).toEqual({
       setRenderAttempted: false,
-      includeInNotification: false
+      includeInNotification: false,
     });
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid DOM action data: missing type.",
-      {}
+      {},
     );
   });
 
@@ -85,13 +85,13 @@ describe("createProcessDomAction", () => {
     data = { type: "typeC" };
     expect(processDomAction(item)).toEqual({
       setRenderAttempted: false,
-      includeInNotification: false
+      includeInNotification: false,
     });
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid DOM action data: unknown type.",
       {
-        type: "typeC"
-      }
+        type: "typeC",
+      },
     );
   });
 
@@ -99,13 +99,13 @@ describe("createProcessDomAction", () => {
     data = { type: "click" };
     expect(processDomAction(item)).toEqual({
       setRenderAttempted: false,
-      includeInNotification: false
+      includeInNotification: false,
     });
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid DOM action data: missing selector.",
       {
-        type: "click"
-      }
+        type: "click",
+      },
     );
   });
 
@@ -116,7 +116,7 @@ describe("createProcessDomAction", () => {
     scopeType = "myscopetype";
     expect(processDomAction(item)).toEqual({
       setRenderAttempted: true,
-      includeInNotification: false
+      includeInNotification: false,
     });
     expect(storeClickMetrics).toHaveBeenCalledWith({
       selector: ".selector",
@@ -124,8 +124,8 @@ describe("createProcessDomAction", () => {
         id: "myid",
         scope: "myscope",
         trackingLabel: "mytrackinglabel",
-        scopeType: "myscopetype"
-      }
+        scopeType: "myscopetype",
+      },
     });
   });
 
@@ -135,7 +135,7 @@ describe("createProcessDomAction", () => {
     expect(result).toEqual({
       render: jasmine.any(Function),
       setRenderAttempted: true,
-      includeInNotification: true
+      includeInNotification: true,
     });
     expect(modules.typeA).not.toHaveBeenCalled();
     result.render();

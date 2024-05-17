@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import React from "react";
-import { Helmet } from "react-helmet";
+import React from "react.js";
+import { Helmet } from "react-helmet.js";
 
 export default function ContentSecurityPolicy() {
   return (

@@ -1,27 +1,27 @@
-import React, { useEffect, useState } from "react";
-import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import React, { useEffect, useState } from "react.js";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy.js";
+import useSendPageViewEvent from "./useSendPageViewEvent.js";
 
 const SCOPES_FOR_PAGE = ["sandbox-personalization-page2"];
 
 const metadata = {
   "sandbox-personalization-page2": {
     selector: "#form-based-personalization",
-    actionType: "setHtml"
-  }
+    actionType: "setHtml",
+  },
 };
 
 const usePropositions = () => {
   const [propositions, setPropositions] = useState(undefined);
   useSendPageViewEvent({
     setPropositions,
-    decisionScopes: SCOPES_FOR_PAGE // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
+    decisionScopes: SCOPES_FOR_PAGE, // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
   });
   useEffect(() => {
     if (propositions) {
       window.alloy("applyPropositions", {
         propositions,
-        metadata
+        metadata,
       });
     }
   });

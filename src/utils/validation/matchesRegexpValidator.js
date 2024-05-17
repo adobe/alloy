@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assertValid } from "./utils";
+import { assertValid } from "./utils.js";
 
-export default regexp => (value, path) => {
+export default (regexp) => (value, path) => {
   assertValid(
     regexp.test(value),
     value,
     path,
-    `does not match the ${regexp.toString()}`
+    `does not match the ${regexp.toString()}`,
   );
   return value;
 };

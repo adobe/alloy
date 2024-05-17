@@ -10,19 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import validateUserEventOptions from "./validateUserEventOptions";
-import validateApplyResponse from "./validateApplyResponse";
-import { deepAssign } from "../../utils";
+import validateUserEventOptions from "./validateUserEventOptions.js";
+import validateApplyResponse from "./validateApplyResponse.js";
+import { deepAssign } from "../../utils/index.js";
 
 const createDataCollector = ({ eventManager, logger }) => {
   return {
     commands: {
       sendEvent: {
         documentationUri: "https://adobe.ly/3GQ3Q7t",
-        optionsValidator: options => {
+        optionsValidator: (options) => {
           return validateUserEventOptions({ options });
         },
-        run: options => {
+        run: (options) => {
           const {
             xdm,
             data,
@@ -44,13 +44,13 @@ const createDataCollector = ({ eventManager, logger }) => {
 
           if (type) {
             event.mergeXdm({
-              eventType: type
+              eventType: type,
             });
           }
 
           if (mergeId) {
             event.mergeXdm({
-              eventMergeId: mergeId
+              eventMergeId: mergeId,
             });
           }
 
@@ -60,30 +60,30 @@ const createDataCollector = ({ eventManager, logger }) => {
 
           if (datasetId) {
             logger.warn(
-              "The 'datasetId' option has been deprecated. Please use 'edgeConfigOverrides.com_adobe_experience_platform.datasets.event.datasetId' instead."
+              "The 'datasetId' option has been deprecated. Please use 'edgeConfigOverrides.com_adobe_experience_platform.datasets.event.datasetId' instead.",
             );
             eventManagerOptions.edgeConfigOverrides = edgeConfigOverrides || {};
             deepAssign(eventManagerOptions.edgeConfigOverrides, {
               com_adobe_experience_platform: {
-                datasets: { event: { datasetId } }
-              }
+                datasets: { event: { datasetId } },
+              },
             });
           }
           return eventManager.sendEvent(event, eventManagerOptions);
-        }
+        },
       },
       applyResponse: {
         documentationUri: "",
-        optionsValidator: options => {
+        optionsValidator: (options) => {
           return validateApplyResponse({ options });
         },
-        run: options => {
+        run: (options) => {
           const {
             renderDecisions = false,
             decisionContext = {},
             responseHeaders = {},
             responseBody = { handle: [] },
-            personalization
+            personalization,
           } = options;
 
           const event = eventManager.createEvent();
@@ -93,11 +93,11 @@ const createDataCollector = ({ eventManager, logger }) => {
             decisionContext,
             responseHeaders,
             responseBody,
-            personalization
+            personalization,
           });
-        }
-      }
-    }
+        },
+      },
+    },
   };
 };
 

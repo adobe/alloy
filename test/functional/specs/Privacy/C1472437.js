@@ -10,13 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createFixture from "../../helpers/createFixture";
-import createNetworkLogger from "../../helpers/networkLogger";
-import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain";
-import flushPromiseChains from "../../helpers/flushPromiseChains";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-
-const { ADOBE2_IN } = require("../../helpers/constants/consent");
+import createFixture from "../../helpers/createFixture/index.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain.js";
+import flushPromiseChains from "../../helpers/flushPromiseChains.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import { ADOBE2_IN } from "../../helpers/constants/consent.js";
 
 const networkLogger = createNetworkLogger();
 
@@ -24,19 +23,19 @@ createFixture({
   title: "C1472437: Adobe consent version 2.0 is translated to general=in",
   requestHooks: [
     networkLogger.setConsentEndpointLogs,
-    networkLogger.edgeInteractEndpointLogs
-  ]
+    networkLogger.edgeInteractEndpointLogs,
+  ],
 });
 
 test.meta({
   ID: "C1472437",
   SEVERITY: "P0",
-  TEST_RUN: "REGRESSION"
+  TEST_RUN: "REGRESSION",
 });
 
 const configuration = {
   defaultConsent: "pending",
-  ...orgMainConfigMain
+  ...orgMainConfigMain,
 };
 
 test("C1472437: Adobe consent version 2.0 is translated to general=in", async () => {

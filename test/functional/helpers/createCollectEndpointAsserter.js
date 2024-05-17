@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "./networkLogger";
-import sendBeaconMock from "./sendBeaconMock";
-import isSendBeaconSupported from "./isSendBeaconSupported";
+import createNetworkLogger from "./networkLogger/index.js";
+import sendBeaconMock from "./sendBeaconMock.js";
+import isSendBeaconSupported from "./isSendBeaconSupported.js";
 
 /**
  * A useful utility when dealing with assertions related to
@@ -27,7 +27,7 @@ export default async () => {
   const networkLogger = createNetworkLogger();
   await t.addRequestHooks(
     networkLogger.edgeInteractEndpointLogs,
-    networkLogger.edgeCollectEndpointLogs
+    networkLogger.edgeCollectEndpointLogs,
   );
 
   if (isSendBeaconSupported()) {
@@ -125,7 +125,7 @@ export default async () => {
     getInteractRequest() {
       if (!interactRequestAsserted) {
         throw new Error(
-          "You must call assertInteractCalledAndNotCollect before getting the interact request"
+          "You must call assertInteractCalledAndNotCollect before getting the interact request",
         );
       }
       return networkLogger.edgeInteractEndpointLogs.requests[0];
@@ -133,10 +133,10 @@ export default async () => {
     getCollectRequest() {
       if (!collectRequestAsserted) {
         throw new Error(
-          "You must call assertCollectCalledAndNotInteract before getting the collect request"
+          "You must call assertCollectCalledAndNotInteract before getting the collect request",
         );
       }
       return networkLogger.edgeCollectEndpointLogs.requests[0];
-    }
+    },
   };
 };

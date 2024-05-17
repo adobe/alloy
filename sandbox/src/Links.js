@@ -1,13 +1,13 @@
-import React from "react";
-import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import React from "react.js";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy.js";
+import useSendPageViewEvent from "./useSendPageViewEvent.js";
 
 const adobeLink = () => {
   window.alloy("sendEvent", {
     documentUnloading: true,
     xdm: {
-      "activitystreams:href": "http://www.adobe.com"
-    }
+      "activitystreams:href": "http://www.adobe.com",
+    },
   });
 };
 

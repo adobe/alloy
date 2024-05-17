@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createDataCollectionRequestPayload } from "../../../../../src/utils/request";
-import createEvent from "../../../../../src/core/createEvent";
-import describeRequestPayload from "../../../helpers/describeRequestPayload";
+import { createDataCollectionRequestPayload } from "../../../../../src/utils/request/index.js";
+import createEvent from "../../../../../src/core/createEvent.js";
+import describeRequestPayload from "../../../helpers/describeRequestPayload.js";
 
 describe("createDataCollectionRequestPayload", () => {
   describeRequestPayload(createDataCollectionRequestPayload);
@@ -20,24 +20,24 @@ describe("createDataCollectionRequestPayload", () => {
   it("adds an identity", () => {
     const payload = createDataCollectionRequestPayload();
     payload.addIdentity("IDNS", {
-      id: "ABC123"
+      id: "ABC123",
     });
     payload.addIdentity("IDNS", {
-      id: "DEF456"
+      id: "DEF456",
     });
     expect(JSON.parse(JSON.stringify(payload))).toEqual({
       xdm: {
         identityMap: {
           IDNS: [
             {
-              id: "ABC123"
+              id: "ABC123",
             },
             {
-              id: "DEF456"
-            }
-          ]
-        }
-      }
+              id: "DEF456",
+            },
+          ],
+        },
+      },
     });
   });
 
@@ -46,7 +46,7 @@ describe("createDataCollectionRequestPayload", () => {
     payload.addEvent({ xdm: { a: "b" } });
     payload.addEvent({ xdm: { c: "d" } });
     expect(JSON.parse(JSON.stringify(payload))).toEqual({
-      events: [{ xdm: { a: "b" } }, { xdm: { c: "d" } }]
+      events: [{ xdm: { a: "b" } }, { xdm: { c: "d" } }],
     });
   });
 

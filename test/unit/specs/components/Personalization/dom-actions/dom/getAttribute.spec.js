@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getAttribute from "../../../../../../../src/components/Personalization/dom-actions/dom/getAttribute";
-import createFragment from "../../../../../../../src/components/Personalization/dom-actions/dom/createFragment";
+import getAttribute from "../../../../../../../src/components/Personalization/dom-actions/dom/getAttribute.js";
+import createFragment from "../../../../../../../src/components/Personalization/dom-actions/dom/createFragment.js";
 
 describe("Personalization::helper::dom::getAttribute", () => {
   it("returns element's attribute if exists", () => {
