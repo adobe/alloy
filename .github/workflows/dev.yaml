@@ -15,10 +15,6 @@ jobs:
     name: "Unit Test"
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Node.js version
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         id: npm-cache
@@ -34,7 +30,6 @@ jobs:
         with:
           username: ${{ secrets.SAUCE_USERNAME }}
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-          tunnelName: $GITHUB_JOB
       - name: Run Unit Test
         run: npx karma start karma.saucelabs.conf.cjs --single-run
         env:

@@ -11,7 +11,7 @@ env:
   EDGE_BASE_PATH: ee-pre-prd
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
-  version: 2.6.2
+  version: 3.6.0
 speed: 1
 pageLoadTimeout: 3000
 disablePageCaching: true
@@ -37,7 +37,11 @@ suites:
     src:
       - "test/functional/specs/**/*.js"
     platformName: "Windows 11"
-    excludedTestFiles: [ "test/functional/specs/Personalization/C782718.js", "test/functional/specs/Privacy/C5594870.js"]
+    excludedTestFiles:
+      [
+        "test/functional/specs/Personalization/C782718.js",
+        "test/functional/specs/Privacy/C5594870.js",
+      ]
   - name: "Safari"
     browserName: "safari"
     headless: true
@@ -45,7 +49,14 @@ suites:
     src:
       - "test/functional/specs/**/*.js"
     platformName: "macOS 13"
-    excludedTestFiles: [ "test/functional/specs/Personalization/C205528.js", "test/functional/specs/Identity/C6842981.js", "test/functional/specs/Privacy/IAB/C224677.js", "test/functional/specs/Privacy/C5594870.js", "test/functional/specs/LibraryInfo/C2589.js" ]
+    excludedTestFiles:
+      [
+        "test/functional/specs/Personalization/C205528.js",
+        "test/functional/specs/Identity/C6842981.js",
+        "test/functional/specs/Privacy/IAB/C224677.js",
+        "test/functional/specs/Privacy/C5594870.js",
+        "test/functional/specs/LibraryInfo/C2589.js",
+      ]
   - name: "Firefox"
     browserName: "firefox"
     headless: true
@@ -53,7 +64,7 @@ suites:
     src:
       - "test/functional/specs/**/*.js"
     platformName: "Windows 11"
-    excludedTestFiles: [ "test/functional/specs/Privacy/C5594870.js" ]
+    excludedTestFiles: ["test/functional/specs/Privacy/C5594870.js"]
   - name: "Chrome"
     browserName: "chrome"
     headless: true
@@ -61,4 +72,8 @@ suites:
     src:
       - "test/functional/specs/**/*.js"
     platformName: "Windows 11"
-    excludedTestFiles: [ "test/functional/specs/Privacy/C5594870.js", "test/functional/specs/Personalization/C7494472.js" ]
+    excludedTestFiles:
+      [
+        "test/functional/specs/Privacy/C5594870.js",
+        "test/functional/specs/Personalization/C7494472.js",
+      ]

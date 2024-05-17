@@ -17,7 +17,7 @@
     "test:unit": "karma start karma.conf.cjs --single-run",
     "test:unit:debug": "karma start --browsers=Chrome --single-run=false --debug",
     "test:unit:watch": "karma start",
-    "test:unit:saucelabs:local": "karma start karma.saucelabs.conf.js --single-run",
+    "test:unit:saucelabs:local": "karma start karma.saucelabs.conf.cjs --single-run",
     "test:unit:coverage": "karma start --single-run --reporters spec,coverage",
     "test:functional": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe --esm chrome",
     "test:functional:custom": "node scripts/helpers/runFunctionalTests.js",
