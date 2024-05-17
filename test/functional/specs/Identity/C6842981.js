@@ -51,10 +51,23 @@ test.meta({
 });
 
 test("C6842981: FPID from a custom FPID cookie generates an ECID", async () => {
+  const value = uuidv4();
+
+  // TestCafe uses Native automation when running tests in Chrome. For this case, the cookie need
+  // to be set to `.allioyio.com` and not `alloyio.com`. For Firefox, TestCase uses a reverse proxy
+  // to automate browsers. The emulation is not fully compatible with Native automation. So we need
+  // to set the cookie also on `alloyio.com` to make the test to pass on other browsers.
   await t.setCookies({
     name: "myFPID",
-    value: uuidv4(),
+    value,
     domain: ".alloyio.com",
+    path: "/",
+  });
+
+  await t.setCookies({
+    name: "myFPID",
+    value,
+    domain: "alloyio.com",
     path: "/",
   });
 

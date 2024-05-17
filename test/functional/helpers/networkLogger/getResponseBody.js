@@ -10,9 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+const zlib = require("zlib");
+
 const getResponseBody = (request) => {
+  const encoding = request.response.headers["content-encoding"];
   const bodyBuffer = request.response.body;
-  const decompressedBody = bodyBuffer;
+  let decompressedBody = bodyBuffer;
+
+  // Chrome responses are getting here already decompressed.
+  // For Firefox, we need to decompress the body.
+  try {
+    // eslint-disable-next-line default-case
+    switch (encoding) {
+      case "deflate":
+        decompressedBody = zlib.inflateRawSync(bodyBuffer);
+        break;
+      case "gzip":
+        decompressedBody = zlib.gunzipSync(bodyBuffer);
+        break;
+    }
+    // eslint-disable-next-line no-empty
+  } catch {}
+
   return decompressedBody.toString();
 };
 
