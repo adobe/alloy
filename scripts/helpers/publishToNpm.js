@@ -10,9 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 const publishToNpm = async ({ exec, execSync, logger, npmTag, version }) => {
-  const publishVersionJson = execSync(
-    `npm view @adobe/alloy@${version} version --json`,
-  ).toString();
+  let publishVersionJson = "";
+  try {
+    publishVersionJson = execSync(
+      `npm view @adobe/alloy@${version} version --json`,
+    ).toString();
+  } catch (e) {
+    logger.info(e.message);
+  }
   if (publishVersionJson !== "") {
     logger.warn(`NPM already has version ${version}.`);
   } else {
