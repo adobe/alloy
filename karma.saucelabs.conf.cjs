@@ -25,7 +25,7 @@ module.exports = (config) => {
       base: "SauceLabs",
       browserName: "safari",
       browserVersion: "latest",
-      platform: "macOS 11.00",
+      platform: "macOS 13",
     },
     sl_firefoxW3C: {
       base: "SauceLabs",
