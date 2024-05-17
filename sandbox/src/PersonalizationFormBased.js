@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react.js";
-import ContentSecurityPolicy from "./components/ContentSecurityPolicy.js";
-import useSendPageViewEvent from "./useSendPageViewEvent.js";
+import React, { useEffect, useState } from "react";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
+import useSendPageViewEvent from "./useSendPageViewEvent";
 
 const SCOPES_FOR_PAGE = ["sandbox-personalization-page2"];
 

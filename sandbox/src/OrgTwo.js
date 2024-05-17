@@ -1,5 +1,5 @@
-import React from "react.js";
-import useSendPageViewEvent from "./useSendPageViewEvent.js";
+import React from "react";
+import useSendPageViewEvent from "./useSendPageViewEvent";
 
 export default function OrgTwo() {
   useSendPageViewEvent({ instanceName: "organizationTwo" });

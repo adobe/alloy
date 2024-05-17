@@ -10,28 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import React from "react.js";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom.js";
+import React from "react";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
-import Home from "./Home.js";
-import Consent from "./Consent.js";
-import Personalization from "./Personalization.js";
-import PersonalizationSpa from "./PersonalizationSpa.js";
-import PersonalizationAjo from "./PersonalizationAjo.js";
-import PersonalizationProfile from "./PersonalizationProfile.js";
-import Links from "./Links.js";
-import EventMerge from "./EventMerge.js";
-import LargePayload from "./LargePayload.js";
-import OrgTwo from "./OrgTwo.js";
-import DualTag from "./DualTag.js";
-import RedirectOffers from "./RedirectOffers.js";
-import RedirectedNewPage from "./RedirectedNewPage.js";
-import PersonalizationAnalyticsClientSide from "./PersonalizationAnalyticsClientSide.js";
-import PersonalizationFormBased from "./PersonalizationFormBased.js";
-import Identity from "./Identity.js";
-import AlloyVersion from "./components/AlloyVersion.js";
-import ConfigOverrides from "./ConfigOverrides.jsx.js";
-import InAppMessages from "./components/InAppMessagesDemo/InAppMessages.js";
+import Home from "./Home";
+import Consent from "./Consent";
+import Personalization from "./Personalization";
+import PersonalizationSpa from "./PersonalizationSpa";
+import PersonalizationAjo from "./PersonalizationAjo";
+import PersonalizationProfile from "./PersonalizationProfile";
+import Links from "./Links";
+import EventMerge from "./EventMerge";
+import LargePayload from "./LargePayload";
+import OrgTwo from "./OrgTwo";
+import DualTag from "./DualTag";
+import RedirectOffers from "./RedirectOffers";
+import RedirectedNewPage from "./RedirectedNewPage";
+import PersonalizationAnalyticsClientSide from "./PersonalizationAnalyticsClientSide";
+import PersonalizationFormBased from "./PersonalizationFormBased";
+import Identity from "./Identity";
+import AlloyVersion from "./components/AlloyVersion";
+import ConfigOverrides from "./ConfigOverrides.jsx";
+import InAppMessages from "./components/InAppMessagesDemo/InAppMessages";
 
 const BasicExample = () => {
   return (

@@ -12,7 +12,7 @@
 
 /* eslint-disable no-console, func-names */
 
-import React, { useEffect, useState } from "react.js";
+import React, { useEffect, useState } from "react";
 
 const readCookies = () => {
   const cookies = {};
