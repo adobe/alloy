@@ -16,7 +16,7 @@ const publishToNpm = async ({ exec, execSync, logger, npmTag, version }) => {
       `npm view @adobe/alloy@${version} version --json`,
     ).toString();
   } catch (e) {
-    logger.info(e.message);
+    // the error is already printed to stdErr
   }
   if (publishVersionJson !== "") {
     logger.warn(`NPM already has version ${version}.`);

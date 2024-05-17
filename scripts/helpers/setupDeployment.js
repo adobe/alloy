@@ -29,7 +29,7 @@ const setupDeployment = async ({
   logger.info("Configuring NPM.");
   await exec(
     "npm config",
-    `npm config set //registry.npmjs.org/:_authToken=${npmToken}`,
+    `npm config set //registry.npmjs.org/:_auth=${npmToken}`,
   );
 };
 
