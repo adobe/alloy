@@ -41,6 +41,7 @@ describe("createGetInstance", () => {
       trackMediaEvent,
       uuid
     });
+    result.trackSessionStart({ sessionDetails: {} });
     result.trackPlay();
 
     expect(trackMediaEvent).toHaveBeenCalledWith({
@@ -55,6 +56,7 @@ describe("createGetInstance", () => {
       trackMediaEvent,
       uuid
     });
+    result.trackSessionStart({ sessionDetails: {} });
     result.trackPause();
 
     expect(trackMediaEvent).toHaveBeenCalledWith({
@@ -118,6 +120,7 @@ describe("createGetInstance", () => {
       trackMediaEvent,
       uuid
     });
+    result.trackSessionStart({ sessionDetails: {} });
     result.trackError("error");
 
     expect(trackMediaEvent).toHaveBeenCalledWith({
@@ -139,6 +142,7 @@ describe("createGetInstance", () => {
       trackMediaEvent,
       uuid
     });
+    result.trackSessionStart({ sessionDetails: {} });
     result.trackComplete();
 
     expect(trackMediaEvent).toHaveBeenCalledWith({
@@ -156,6 +160,7 @@ describe("createGetInstance", () => {
       trackMediaEvent,
       uuid
     });
+    result.trackSessionStart({ sessionDetails: {} });
     result.trackSessionEnd();
 
     expect(trackMediaEvent).toHaveBeenCalledWith({
@@ -176,6 +181,7 @@ describe("createGetInstance", () => {
     const state = {
       name: "muted"
     };
+    result.trackSessionStart({ sessionDetails: {} });
     result.trackEvent("stateStart", state);
 
     expect(trackMediaEvent).toHaveBeenCalledWith({
@@ -198,6 +204,7 @@ describe("createGetInstance", () => {
     const state = {
       name: "muted"
     };
+    result.trackSessionStart({ sessionDetails: {} });
     result.trackEvent("stateEnd", state);
 
     expect(trackMediaEvent).toHaveBeenCalledWith({
@@ -230,7 +237,7 @@ describe("createGetInstance", () => {
       "a.media.ad.advertiser": "Sample Advertiser 2",
       "a.media.ad.campaign": "csmpaign2"
     };
-
+    result.trackSessionStart({ sessionDetails: {} });
     result.trackEvent("adStart", { advertisingDetails }, adContextData);
 
     expect(trackMediaEvent).toHaveBeenCalledWith({
