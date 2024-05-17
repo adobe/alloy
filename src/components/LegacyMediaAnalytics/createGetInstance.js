@@ -13,6 +13,7 @@ import { EVENT, MEDIA_EVENTS_INTERNAL } from "./constants/constants";
 import {
   includes,
   isEmptyObject,
+  isNil,
   isNonEmptyArray,
   isNumber
 } from "../../utils";
@@ -22,10 +23,13 @@ import {
 } from "./constants/mediaKeysToXdmConverter";
 
 export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
-  let trackerState = {
-    qoe: null,
-    lastPlayhead: 0,
-    playerId: uuid()
+  let trackerState = null;
+  const instantiateTracker = () => {
+    trackerState = {
+      qoe: null,
+      lastPlayhead: 0,
+      playerId: uuid()
+    };
   };
   const getEventType = ({ eventType }) => {
     if (
@@ -98,7 +102,7 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
 
   return {
     trackSessionStart: (mediaObject, contextData = {}) => {
-      if (isEmptyObject(mediaObject)) {
+      if (isNil(mediaObject) || isEmptyObject(mediaObject)) {
         logger.warn("Invalid media object");
         return {};
       }
@@ -106,11 +110,7 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
         logger.warn(
           "The Media Session was completed. Restarting a new session."
         );
-        trackerState = {
-          qoe: null,
-          lastPlayhead: 0,
-          playerId: uuid()
-        };
+        instantiateTracker();
       }
       const xdm = createXdmObject({
         eventType: MEDIA_EVENTS_INTERNAL.SessionStart,
