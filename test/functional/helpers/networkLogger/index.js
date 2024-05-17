@@ -17,10 +17,10 @@ const networkLoggerOptions = {
   logResponseBody: true,
   stringifyResponseBody: false,
   stringifyRequestBody: true,
-  logResponseHeaders: true
+  logResponseHeaders: true,
 };
 
-const createRequestLogger = endpoint => {
+const createRequestLogger = (endpoint) => {
   return RequestLogger(endpoint, networkLoggerOptions);
 };
 
@@ -57,17 +57,17 @@ const createNetworkLogger = () => {
   const setConsentEndpointLogs = createRequestLogger(setConsentEndpoint);
   const acquireEndpointLogs = createRequestLogger(acquireEndpoint);
   const targetDeliveryEndpointLogs = createRequestLogger(
-    targetDeliveryEndpoint
+    targetDeliveryEndpoint,
   );
   const targetMboxJsonEndpointLogs = createRequestLogger(
-    targetMboxJsonEndpoint
+    targetMboxJsonEndpoint,
   );
   // media endpoint loggers
   const mediaPlayEndpointLogs = createRequestLogger(playEndpoint);
   const mediaPauseEndpointLogs = createRequestLogger(pauseEndpoint);
   const pingEndpointLogs = createRequestLogger(pingEndpoint);
   const adBreakCompleteEndpointLogs = createRequestLogger(
-    adBreakCompleteEndpoint
+    adBreakCompleteEndpoint,
   );
   const adBreakStartEndpointLogs = createRequestLogger(adBreakStartEndpoint);
   const adCompleteEndpointLogs = createRequestLogger(adCompleteEndpoint);
@@ -76,13 +76,13 @@ const createNetworkLogger = () => {
   const bitrateChangeEndpointLogs = createRequestLogger(bitrateChangeEndpoint);
   const bufferStartEndpointLogs = createRequestLogger(bufferStartEndpoint);
   const chapterCompleteEndpointLogs = createRequestLogger(
-    chapterCompleteEndpoint
+    chapterCompleteEndpoint,
   );
   const chapterSkipEndpointLogs = createRequestLogger(chapterSkipEndpoint);
   const chapterStartEndpointLogs = createRequestLogger(chapterStartEndpoint);
   const errorEndpointLogs = createRequestLogger(errorEndpoint);
   const sessionCompleteEndpointLogs = createRequestLogger(
-    sessionCompleteEndpoint
+    sessionCompleteEndpoint,
   );
   const sessionEndEndpointLogs = createRequestLogger(sessionEndEndpoint);
   const statesUpdateEndpointLogs = createRequestLogger(statesUpdateEndpoint);
@@ -141,7 +141,7 @@ const createNetworkLogger = () => {
     sessionCompleteEndpointLogs,
     sessionEndEndpointLogs,
     statesUpdateEndpointLogs,
-    clearLogs
+    clearLogs,
   };
 };
 

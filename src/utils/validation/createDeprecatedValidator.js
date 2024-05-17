@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import isObject from "../isObject";
-import { assertValid } from "./utils";
+import isObject from "../isObject.js";
+import { assertValid } from "./utils.js";
 
 export default (oldField, oldSchema, newField) =>
   function deprecated(value, path) {
@@ -36,6 +36,6 @@ export default (oldField, oldSchema, newField) =>
     }
     return {
       [newField]: newValue || validatedOldValue,
-      ...otherValues
+      ...otherValues,
     };
   };

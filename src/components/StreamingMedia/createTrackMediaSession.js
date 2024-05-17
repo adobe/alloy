@@ -9,15 +9,15 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import PlaybackState from "./constants/playbackState";
+import PlaybackState from "./constants/playbackState.js";
 
 export default ({
   config,
   mediaEventManager,
   mediaSessionCacheManager,
-  legacy = false
+  legacy = false,
 }) => {
-  return options => {
+  return (options) => {
     if (!config.streamingMedia) {
       return Promise.reject(new Error("Streaming media is not configured."));
     }
@@ -28,7 +28,7 @@ export default ({
     mediaEventManager.augmentMediaEvent({
       event,
       playerId,
-      getPlayerDetails
+      getPlayerDetails,
     });
 
     const sessionPromise = mediaEventManager.trackMediaSession({
@@ -36,8 +36,8 @@ export default ({
       mediaOptions: {
         playerId,
         getPlayerDetails,
-        legacy
-      }
+        legacy,
+      },
     });
 
     mediaSessionCacheManager.storeSession({
@@ -45,8 +45,8 @@ export default ({
       sessionDetails: {
         sessionPromise,
         getPlayerDetails,
-        playbackState: PlaybackState.MAIN
-      }
+        playbackState: PlaybackState.MAIN,
+      },
     });
 
     return sessionPromise;

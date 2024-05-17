@@ -16,7 +16,7 @@ export default ({ command, options }) => {
   const {
     commandName,
     documentationUri = COMMAND_DOC_URI,
-    optionsValidator
+    optionsValidator,
   } = command;
   let validatedOptions = options;
   if (optionsValidator) {

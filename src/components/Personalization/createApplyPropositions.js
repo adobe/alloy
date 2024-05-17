@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray, isObject, defer } from "../../utils";
+import { isNonEmptyArray, isObject, defer } from "../../utils/index.js";
 import {
   DOM_ACTION,
   HTML_CONTENT_ITEM,
-  MESSAGE_IN_APP
-} from "../../constants/schema";
-import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
+  MESSAGE_IN_APP,
+} from "../../constants/schema.js";
+import PAGE_WIDE_SCOPE from "../../constants/pageWideScope.js";
 
 const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM, MESSAGE_IN_APP];
 
@@ -24,15 +24,15 @@ export default ({
   processPropositions,
   createProposition,
   renderedPropositions,
-  viewCache
+  viewCache,
 }) => {
-  const filterItemsPredicate = item =>
+  const filterItemsPredicate = (item) =>
     SUPPORTED_SCHEMAS.indexOf(item.schema) > -1;
 
   const updatePropositionItems = ({ items, metadataForScope }) => {
     return items
       .filter(filterItemsPredicate)
-      .map(item => {
+      .map((item) => {
         if (item.schema !== HTML_CONTENT_ITEM) {
           return { ...item };
         }
@@ -42,16 +42,16 @@ export default ({
             data: {
               ...item.data,
               selector: metadataForScope.selector,
-              type: metadataForScope.actionType
-            }
+              type: metadataForScope.actionType,
+            },
           };
         }
         return undefined;
       })
-      .filter(item => item);
+      .filter((item) => item);
   };
 
-  const filterPropositionsPredicate = proposition => {
+  const filterPropositionsPredicate = (proposition) => {
     return !(
       proposition.scope === PAGE_WIDE_SCOPE && proposition.renderAttempted
     );
@@ -60,7 +60,7 @@ export default ({
   const preparePropositions = ({ propositions, metadata }) => {
     return propositions
       .filter(filterPropositionsPredicate)
-      .map(proposition => {
+      .map((proposition) => {
         if (isNonEmptyArray(proposition.items)) {
           const { id, scope, scopeDetails } = proposition;
           return {
@@ -69,13 +69,13 @@ export default ({
             scopeDetails,
             items: updatePropositionItems({
               items: proposition.items,
-              metadataForScope: metadata[proposition.scope]
-            })
+              metadataForScope: metadata[proposition.scope],
+            }),
           };
         }
         return proposition;
       })
-      .filter(proposition => isNonEmptyArray(proposition.items));
+      .filter((proposition) => isNonEmptyArray(proposition.items));
   };
 
   return ({ propositions = [], metadata = {}, viewName }) => {
@@ -86,8 +86,8 @@ export default ({
 
     const propositionsToExecute = preparePropositions({
       propositions,
-      metadata
-    }).map(proposition => createProposition(proposition));
+      metadata,
+    }).map((proposition) => createProposition(proposition));
 
     return Promise.resolve()
       .then(() => {
@@ -96,16 +96,16 @@ export default ({
         }
         return [];
       })
-      .then(additionalPropositions => {
+      .then((additionalPropositions) => {
         const { render, returnedPropositions } = processPropositions([
           ...propositionsToExecute,
-          ...additionalPropositions
+          ...additionalPropositions,
         ]);
 
         render().then(renderedPropositionsDeferred.resolve);
 
         return {
-          propositions: returnedPropositions
+          propositions: returnedPropositions,
         };
       });
   };

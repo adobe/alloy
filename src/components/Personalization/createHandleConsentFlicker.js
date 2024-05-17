@@ -9,13 +9,14 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { OUT } from "../../constants/consentStatus";
+import { OUT } from "../../constants/consentStatus.js";
 
-export default ({ showContainers, consent }) => () => {
-  const { state, wasSet } = consent.current();
-  if (state === OUT && wasSet) {
-    showContainers();
-  } else {
-    consent.awaitConsent().catch(showContainers);
-  }
-};
+export default ({ showContainers, consent }) =>
+  () => {
+    const { state, wasSet } = consent.current();
+    if (state === OUT && wasSet) {
+      showContainers();
+    } else {
+      consent.awaitConsent().catch(showContainers);
+    }
+  };

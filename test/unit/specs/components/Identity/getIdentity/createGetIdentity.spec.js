@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createGetIdentity from "../../../../../../src/components/Identity/getIdentity/createGetIdentity";
+import createGetIdentity from "../../../../../../src/components/Identity/getIdentity/createGetIdentity.js";
 
 describe("Identity::createGetIdentity", () => {
   let sendEdgeNetworkRequest;
@@ -24,8 +24,8 @@ describe("Identity::createGetIdentity", () => {
       "requestPayload",
       ["mergeConfigOverride"],
       {
-        type: "payload"
-      }
+        type: "payload",
+      },
     );
     createIdentityRequestPayload = jasmine
       .createSpy("createIdentityRequestPayload")
@@ -33,7 +33,7 @@ describe("Identity::createGetIdentity", () => {
     request = {
       getPayload() {
         return requestPayload;
-      }
+      },
     };
     createIdentityRequest = jasmine
       .createSpy("createIdentityRequest")
@@ -44,11 +44,11 @@ describe("Identity::createGetIdentity", () => {
     const getIdentity = createGetIdentity({
       sendEdgeNetworkRequest,
       createIdentityRequestPayload,
-      createIdentityRequest
+      createIdentityRequest,
     });
     getIdentity();
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
-      request
+      request,
     });
   });
 
@@ -57,15 +57,15 @@ describe("Identity::createGetIdentity", () => {
       "requestPayload",
       ["mergeConfigOverride"],
       {
-        type: "payload1"
-      }
+        type: "payload1",
+      },
     );
     const payload2 = jasmine.createSpyObj(
       "requestPayload",
       ["mergeConfigOverride"],
       {
-        type: "payload2"
-      }
+        type: "payload2",
+      },
     );
     const request1 = { type: "request1" };
     const request2 = { type: "request2" };
@@ -74,25 +74,25 @@ describe("Identity::createGetIdentity", () => {
     const getIdentity = createGetIdentity({
       sendEdgeNetworkRequest,
       createIdentityRequestPayload,
-      createIdentityRequest
+      createIdentityRequest,
     });
     getIdentity({ namespaces: ["namespace1", "namespace2"] });
     expect(createIdentityRequestPayload).toHaveBeenCalledWith([
       "namespace1",
-      "namespace2"
+      "namespace2",
     ]);
     expect(createIdentityRequest).toHaveBeenCalledWith({
-      payload: payload1
+      payload: payload1,
     });
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
-      request: request1
+      request: request1,
     });
     getIdentity();
     expect(createIdentityRequest).toHaveBeenCalledWith({
-      payload: payload2
+      payload: payload2,
     });
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
-      request: request2
+      request: request2,
     });
   });
 
@@ -103,28 +103,28 @@ describe("Identity::createGetIdentity", () => {
     const getIdentity = createGetIdentity({
       sendEdgeNetworkRequest,
       createIdentityRequestPayload,
-      createIdentityRequest
+      createIdentityRequest,
     });
     const configuration = {
       com_adobe_identity: {
-        idSyncContainerId: "123"
-      }
+        idSyncContainerId: "123",
+      },
     };
     getIdentity({
       namespaces: ["namespace1"],
-      edgeConfigOverrides: configuration
+      edgeConfigOverrides: configuration,
     });
     expect(createIdentityRequestPayload).toHaveBeenCalledWith(["namespace1"]);
     expect(createIdentityRequest).toHaveBeenCalledWith({
-      payload: requestPayload
+      payload: requestPayload,
     });
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
-      request: request1
+      request: request1,
     });
     expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
       com_adobe_identity: {
-        idSyncContainerId: configuration.com_adobe_identity.idSyncContainerId
-      }
+        idSyncContainerId: configuration.com_adobe_identity.idSyncContainerId,
+      },
     });
   });
 
@@ -134,29 +134,29 @@ describe("Identity::createGetIdentity", () => {
     createIdentityRequest.and.returnValues(request1);
     const configuration = {
       com_adobe_identity: {
-        idSyncContainerId: "123"
-      }
+        idSyncContainerId: "123",
+      },
     };
     const getIdentity = createGetIdentity({
       sendEdgeNetworkRequest,
       createIdentityRequestPayload,
       createIdentityRequest,
-      globalConfigOverrides: configuration
+      globalConfigOverrides: configuration,
     });
     getIdentity({
-      namespaces: ["namespace1"]
+      namespaces: ["namespace1"],
     });
     expect(createIdentityRequestPayload).toHaveBeenCalledWith(["namespace1"]);
     expect(createIdentityRequest).toHaveBeenCalledWith({
-      payload: requestPayload
+      payload: requestPayload,
     });
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
-      request: request1
+      request: request1,
     });
     expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
       com_adobe_identity: {
-        idSyncContainerId: configuration.com_adobe_identity.idSyncContainerId
-      }
+        idSyncContainerId: configuration.com_adobe_identity.idSyncContainerId,
+      },
     });
   });
 
@@ -167,21 +167,21 @@ describe("Identity::createGetIdentity", () => {
     const getIdentity = createGetIdentity({
       sendEdgeNetworkRequest,
       createIdentityRequestPayload,
-      createIdentityRequest
+      createIdentityRequest,
     });
     getIdentity({
       namespaces: ["namespace1"],
       edgeConfigOverrides: {
-        datastreamId: "123"
-      }
+        datastreamId: "123",
+      },
     });
     expect(createIdentityRequestPayload).toHaveBeenCalledWith(["namespace1"]);
     expect(createIdentityRequest).toHaveBeenCalledWith({
       payload: requestPayload,
-      datastreamIdOverride: "123"
+      datastreamIdOverride: "123",
     });
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
-      request: request1
+      request: request1,
     });
   });
 });

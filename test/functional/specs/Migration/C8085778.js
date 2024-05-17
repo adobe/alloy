@@ -10,26 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  targetMigrationEnabled
-} from "../../helpers/constants/configParts";
-import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
+  targetMigrationEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url.js";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
 import {
   assertTargetMigrationEnabledIsSent,
   fetchMboxOffer,
   getEcid,
   MIGRATION_LOCATION,
-  sleep
-} from "./helper";
-import migrationEnabled from "../../helpers/constants/configParts/migrationEnabled";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createResponse from "../../helpers/createResponse";
+  sleep,
+} from "./helper.js";
+import migrationEnabled from "../../helpers/constants/configParts/migrationEnabled.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createResponse from "../../helpers/createResponse.js";
 
 const favoriteColor = "purple-123";
 const networkLogger = createNetworkLogger();
@@ -38,7 +38,7 @@ const config = compose(
   orgMainConfigMain,
   debugEnabled,
   migrationEnabled,
-  targetMigrationEnabled
+  targetMigrationEnabled,
 );
 
 createFixture({
@@ -47,16 +47,16 @@ createFixture({
     "using web sdk and fetch offer based on profile attr using at.js 1.x",
   requestHooks: [
     networkLogger.edgeEndpointLogs,
-    networkLogger.targetMboxJsonEndpointLogs
+    networkLogger.targetMboxJsonEndpointLogs,
   ],
   url: TEST_PAGE,
-  includeAlloyLibrary: true
+  includeAlloyLibrary: true,
 });
 
 test.meta({
   ID: "C8085778",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test.skip(
@@ -68,10 +68,10 @@ test.skip(
       data: {
         __adobe: {
           target: {
-            "profile.favoriteColor": favoriteColor
-          }
-        }
-      }
+            "profile.favoriteColor": favoriteColor,
+          },
+        },
+      },
     };
     const alloy = createAlloyProxy();
     await alloy.configure(config);
@@ -83,11 +83,11 @@ test.skip(
 
     // Extract state:store payload
     const response = JSON.parse(
-      getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+      getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
     );
 
     const identityPayload = createResponse({
-      content: response
+      content: response,
     }).getPayloadsByType("identity:result");
     const ecid = getEcid(identityPayload)[0].id;
 
@@ -98,7 +98,7 @@ test.skip(
       .expect(networkLogger.targetMboxJsonEndpointLogs.count(() => true))
       .eql(1);
     await fetchMboxOffer({
-      mbox: MIGRATION_LOCATION
+      mbox: MIGRATION_LOCATION,
     });
     await t
       .expect(networkLogger.targetMboxJsonEndpointLogs.count(() => true))
@@ -116,5 +116,5 @@ test.skip(
     await t
       .expect(mboxContent)
       .eql(`The favorite Color for this visitor is ${favoriteColor}.`);
-  }
+  },
 );

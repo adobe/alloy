@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createLegacyIdentity from "../../../../../src/components/Identity/createLegacyIdentity";
+import createLegacyIdentity from "../../../../../src/components/Identity/createLegacyIdentity.js";
 
 describe("Identity::createLegacyIdentity", () => {
   let idMigrationEnabled;
@@ -39,12 +39,12 @@ describe("Identity::createLegacyIdentity", () => {
     legacyIdentity = createLegacyIdentity({
       config: {
         idMigrationEnabled,
-        orgId
+        orgId,
       },
       getEcidFromVisitor,
       apexDomain,
       isPageSsl,
-      cookieJar
+      cookieJar,
     });
   };
 
@@ -67,19 +67,19 @@ describe("Identity::createLegacyIdentity", () => {
       "random|string|MCMID|1234|random|random",
       "MCMID|1234|random|random",
       "random|random|MCMID|1234",
-      "MCMID|1234"
-    ].forEach(cookieValue => {
+      "MCMID|1234",
+    ].forEach((cookieValue) => {
       it(`should return promise resolved with ECID if AMCV cookie is ${cookieValue}`, async () => {
-        cookieJar.get.and.callFake(cookieName =>
-          cookieName === "AMCV_TEST_ORG" ? cookieValue : undefined
+        cookieJar.get.and.callFake((cookieName) =>
+          cookieName === "AMCV_TEST_ORG" ? cookieValue : undefined,
         );
         build();
         expect(await legacyIdentity.getEcid()).toEqual("1234");
       });
 
       it(`should return promise resolved with ECID if s_ecid cookie is ${cookieValue}`, async () => {
-        cookieJar.get.and.callFake(cookieName =>
-          cookieName === "s_ecid" ? cookieValue : undefined
+        cookieJar.get.and.callFake((cookieName) =>
+          cookieName === "s_ecid" ? cookieValue : undefined,
         );
         build();
         expect(await legacyIdentity.getEcid()).toEqual("1234");
@@ -118,8 +118,8 @@ describe("Identity::createLegacyIdentity", () => {
           domain: "mydomain",
           expires: 390,
           sameSite: "none",
-          secure: true
-        }
+          secure: true,
+        },
       );
     });
 
@@ -132,8 +132,8 @@ describe("Identity::createLegacyIdentity", () => {
         "MCMID|1234",
         {
           domain: "mydomain",
-          expires: 390
-        }
+          expires: 390,
+        },
       );
     });
 

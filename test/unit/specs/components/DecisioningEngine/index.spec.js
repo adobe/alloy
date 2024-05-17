@@ -9,12 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createDecisioningEngine from "../../../../../src/components/DecisioningEngine/index";
-import { defer } from "../../../../../src/utils";
+import createDecisioningEngine from "../../../../../src/components/DecisioningEngine/index.js";
+import { defer } from "../../../../../src/utils/index.js";
 import {
   mockRulesetResponseWithCondition,
-  proposition
-} from "./contextTestUtils";
+  proposition,
+} from "./contextTestUtils.js";
 
 describe("createDecisioningEngine:commands:evaluateRulesets", () => {
   let mergeData;
@@ -29,35 +29,35 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
     mergeData = jasmine.createSpy();
     awaitConsentDeferred = defer();
     consent = jasmine.createSpyObj("consent", {
-      awaitConsent: awaitConsentDeferred.promise
+      awaitConsent: awaitConsentDeferred.promise,
     });
     window.referrer =
       "https://www.google.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer";
     persistentStorage = jasmine.createSpyObj("persistentStorage", [
       "getItem",
       "setItem",
-      "clear"
+      "clear",
     ]);
     createNamespacedStorage = jasmine.createSpy().and.returnValue({
-      persistent: persistentStorage
+      persistent: persistentStorage,
     });
     mockEvent = {
       getContent: () => ({}),
       hasQuery: () => true,
       getViewName: () => undefined,
-      mergeData
+      mergeData,
     };
   });
 
   const setUpDecisionEngine = ({ personalizationStorageEnabled }) => {
     const config = {
       orgId: "exampleOrgId",
-      personalizationStorageEnabled
+      personalizationStorageEnabled,
     };
     const decisioningEngine = createDecisioningEngine({
       config,
       createNamespacedStorage,
-      consent
+      consent,
     });
     decisioningEngine.lifecycle.onComponentsRegistered(() => {});
     return decisioningEngine;
@@ -65,117 +65,117 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
 
   it("should run the evaluateRulesets command and satisfy the rule based on global context", async () => {
     const decisioningEngine = setUpDecisionEngine({
-      personalizationStorageEnabled: true
+      personalizationStorageEnabled: true,
     });
     await awaitConsentDeferred.resolve();
-    onResponseHandler = onResponse => {
+    onResponseHandler = (onResponse) => {
       onResponse({
         response: mockRulesetResponseWithCondition({
           definition: {
             key: "referringPage.path",
             matcher: "eq",
-            values: ["/search"]
+            values: ["/search"],
           },
-          type: "matcher"
-        })
+          type: "matcher",
+        }),
       });
     };
     decisioningEngine.lifecycle.onBeforeEvent({
       event: mockEvent,
       renderDecisions: true,
       personalization: { decisionContext: {} },
-      onResponse: onResponseHandler
+      onResponse: onResponseHandler,
     });
     const result = decisioningEngine.commands.evaluateRulesets.run({});
     expect(result).toEqual({
-      propositions: [proposition]
+      propositions: [proposition],
     });
   });
 
   it("should run the evaluateRulesets command and does not satisfy rule due to unmatched global context", async () => {
     const decisioningEngine = setUpDecisionEngine({
-      personalizationStorageEnabled: true
+      personalizationStorageEnabled: true,
     });
     await awaitConsentDeferred.resolve();
-    onResponseHandler = onResponse => {
+    onResponseHandler = (onResponse) => {
       onResponse({
         response: mockRulesetResponseWithCondition({
           definition: {
             key: "referringPage.path",
             matcher: "eq",
-            values: ["/about"]
+            values: ["/about"],
           },
-          type: "matcher"
-        })
+          type: "matcher",
+        }),
       });
     };
     decisioningEngine.lifecycle.onBeforeEvent({
       event: mockEvent,
       renderDecisions: true,
       personalization: { decisionContext: {} },
-      onResponse: onResponseHandler
+      onResponse: onResponseHandler,
     });
     const result = decisioningEngine.commands.evaluateRulesets.run({});
     expect(result).toEqual({
-      propositions: []
+      propositions: [],
     });
   });
 
   it("should run the evaluateRulesets command and return propositions with renderDecisions true", async () => {
     const decisioningEngine = setUpDecisionEngine({
-      personalizationStorageEnabled: true
+      personalizationStorageEnabled: true,
     });
     await awaitConsentDeferred.resolve();
-    onResponseHandler = onResponse => {
+    onResponseHandler = (onResponse) => {
       onResponse({
         response: mockRulesetResponseWithCondition({
           definition: {
             key: "referringPage.path",
             matcher: "eq",
-            values: ["/search"]
+            values: ["/search"],
           },
-          type: "matcher"
-        })
+          type: "matcher",
+        }),
       });
     };
     decisioningEngine.lifecycle.onBeforeEvent({
       event: mockEvent,
       renderDecisions: true,
       personalization: { decisionContext: {} },
-      onResponse: onResponseHandler
+      onResponse: onResponseHandler,
     });
     const result = decisioningEngine.commands.evaluateRulesets.run({});
     expect(result).toEqual({
-      propositions: [proposition]
+      propositions: [proposition],
     });
   });
 
   it("should run the evaluateRulesets command returns propositions with renderDecisions false", async () => {
     const decisioningEngine = setUpDecisionEngine({
-      personalizationStorageEnabled: true
+      personalizationStorageEnabled: true,
     });
     await awaitConsentDeferred.resolve();
-    onResponseHandler = onResponse => {
+    onResponseHandler = (onResponse) => {
       onResponse({
         response: mockRulesetResponseWithCondition({
           definition: {
             key: "referringPage.path",
             matcher: "eq",
-            values: ["/search"]
+            values: ["/search"],
           },
-          type: "matcher"
-        })
+          type: "matcher",
+        }),
       });
     };
     decisioningEngine.lifecycle.onBeforeEvent({
       event: mockEvent,
       renderDecisions: false,
       personalization: { decisionContext: {} },
-      onResponse: onResponseHandler
+      onResponse: onResponseHandler,
     });
     const result = decisioningEngine.commands.evaluateRulesets.run({});
     expect(result).toEqual({
-      propositions: [proposition]
+      propositions: [proposition],
     });
   });
   it("should clear the local storage when personalizationStorageEnabled is false", async () => {

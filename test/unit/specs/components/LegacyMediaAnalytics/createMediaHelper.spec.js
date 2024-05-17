@@ -1,4 +1,15 @@
-import createMediaHelper from "../../../../../src/components/LegacyMediaAnalytics/createMediaHelper";
+/*
+Copyright 2024 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+import createMediaHelper from "../../../../../src/components/LegacyMediaAnalytics/createMediaHelper.js";
 
 describe("createMediaHelper", () => {
   let logger;
@@ -6,7 +17,7 @@ describe("createMediaHelper", () => {
 
   beforeEach(() => {
     logger = {
-      warn: jasmine.createSpy("warn")
+      warn: jasmine.createSpy("warn"),
     };
     mediaHelper = createMediaHelper({ logger });
   });
@@ -25,8 +36,8 @@ describe("createMediaHelper", () => {
           name,
           length,
           contentType,
-          streamType
-        }
+          streamType,
+        },
       };
 
       const result = mediaHelper.createMediaObject(
@@ -34,7 +45,7 @@ describe("createMediaHelper", () => {
         name,
         length,
         contentType,
-        streamType
+        streamType,
       );
 
       expect(result).toEqual(expectedResult);
@@ -54,7 +65,7 @@ describe("createMediaHelper", () => {
         name,
         length,
         contentType,
-        streamType
+        streamType,
       );
 
       expect(result).toEqual(expectedResult);
@@ -72,8 +83,8 @@ describe("createMediaHelper", () => {
         advertisingPodDetails: {
           friendlyName: name,
           offset: position,
-          index: startTime
-        }
+          index: startTime,
+        },
       };
 
       const result = mediaHelper.createAdBreakObject(name, position, startTime);
@@ -107,8 +118,8 @@ describe("createMediaHelper", () => {
           friendlyName: name,
           name: id,
           podPosition: position,
-          length
-        }
+          length,
+        },
       };
 
       const result = mediaHelper.createAdObject(name, id, position, length);
@@ -143,15 +154,15 @@ describe("createMediaHelper", () => {
           friendlyName: name,
           offset: position,
           length,
-          index: startTime
-        }
+          index: startTime,
+        },
       };
 
       const result = mediaHelper.createChapterObject(
         name,
         position,
         length,
-        startTime
+        startTime,
       );
 
       expect(result).toEqual(expectedResult);
@@ -169,7 +180,7 @@ describe("createMediaHelper", () => {
         name,
         position,
         length,
-        startTime
+        startTime,
       );
 
       expect(result).toEqual(expectedResult);
@@ -182,7 +193,7 @@ describe("createMediaHelper", () => {
       const stateName = "testState";
 
       const expectedResult = {
-        name: stateName
+        name: stateName,
       };
 
       const result = mediaHelper.createStateObject(stateName);
@@ -213,14 +224,14 @@ describe("createMediaHelper", () => {
         bitrate,
         droppedFrames,
         framesPerSecond,
-        timeToStart
+        timeToStart,
       };
 
       const result = mediaHelper.createQoEObject(
         bitrate,
         droppedFrames,
         framesPerSecond,
-        timeToStart
+        timeToStart,
       );
 
       expect(result).toEqual(expectedResult);
@@ -238,7 +249,7 @@ describe("createMediaHelper", () => {
         bitrate,
         droppedFrames,
         fps,
-        startupTime
+        startupTime,
       );
 
       expect(result).toEqual(expectedResult);

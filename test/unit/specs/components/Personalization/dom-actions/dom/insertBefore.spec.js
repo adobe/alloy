@@ -11,4 +11,4 @@ governing permissions and limitations under the License.
 */
 
 // eslint-disable-next-line no-unused-vars
-import insertBefore from "../../../../../../../src/components/Personalization/dom-actions/dom/insertBefore";
+import insertBefore from "../../../../../../../src/components/Personalization/dom-actions/dom/insertBefore.js";

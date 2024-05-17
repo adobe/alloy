@@ -21,27 +21,27 @@ jobs:
     outputs:
       matrixInput: ${{ steps.list-tags.outputs.matrixInput }}
     steps:
-      - uses: actions/labeler@v2
+      - uses: actions/labeler@v5
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
         env:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - run: npm install @octokit/rest semver
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: sauce-config
           path: .sauce
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: sauce-ignore
           path: .sauceignore
 
       - name: Retrieve tags
         id: list-tags
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -61,16 +61,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-
       - name: Create a workflow dispatch event with ${{ matrix.tag }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: refs/heads/${{ matrix.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Clear cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: npm-cache
         with:
           path: "**/node_modules"
@@ -80,7 +79,7 @@ jobs:
         uses: nyaa8/package-version@v1
 
       - name: Download sauce config into tags
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: sauce-config
           path: .sauce
@@ -90,7 +89,7 @@ jobs:
         with:
           path: .sauceignore
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: sauce-ignore
           path: .
@@ -108,7 +107,7 @@ jobs:
           ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
 
       - name: Chrome Functional Test
-        uses: saucelabs/saucectl-run-action@v3.0.1
+        uses: saucelabs/saucectl-run-action@v4
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -124,7 +123,7 @@ jobs:
           select-suite: "Chrome"
 
       - name: Edge Functional Test
-        uses: saucelabs/saucectl-run-action@v3.0.1
+        uses: saucelabs/saucectl-run-action@v4
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -140,7 +139,7 @@ jobs:
           select-suite: "Edge"
 
       - name: Firefox Functional Test
-        uses: saucelabs/saucectl-run-action@v3.0.1
+        uses: saucelabs/saucectl-run-action@v4
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -156,7 +155,7 @@ jobs:
           select-suite: "Firefox"
 
       - name: Safari Functional Test
-        uses: saucelabs/saucectl-run-action@v3.0.1
+        uses: saucelabs/saucectl-run-action@v4
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:

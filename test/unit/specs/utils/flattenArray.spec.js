@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import flattenArray from "../../../../src/utils/flattenArray";
+import flattenArray from "../../../../src/utils/flattenArray.js";
 
 describe("flattenArray", () => {
   it("recursively flattens an array", () => {
@@ -27,16 +27,16 @@ describe("flattenArray", () => {
             "i",
             ["j"],
             "k",
-            ["l", ["m"], ["n", ["o"], ["p", ["q"], "r"], "s"], "t"]
+            ["l", ["m"], ["n", ["o"], ["p", ["q"], "r"], "s"], "t"],
           ],
-          "u"
+          "u",
         ],
         "v",
         "w",
         "x",
         "y",
-        "z"
-      ])
+        "z",
+      ]),
     ).toEqual([
       "a",
       "b",
@@ -63,7 +63,7 @@ describe("flattenArray", () => {
       "w",
       "x",
       "y",
-      "z"
+      "z",
     ]);
   });
 

@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import PlaybackState from "./constants/playbackState";
+import PlaybackState from "./constants/playbackState.js";
 
 export default () => {
   let mediaSessionCache;
 
-  const getSession = playerId => {
+  const getSession = (playerId) => {
     return mediaSessionCache[playerId] || {};
   };
 
@@ -55,6 +55,6 @@ export default () => {
     getSession,
     storeSession,
     stopPing,
-    savePing
+    savePing,
   };
 };

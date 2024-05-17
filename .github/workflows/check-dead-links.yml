@@ -7,10 +7,10 @@ jobs:
   linkChecker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Dead Link Checker
         id: lychee
-        uses: lycheeverse/lychee-action@v1.4.1
+        uses: lycheeverse/lychee-action@v1
         with:
           args: "--no-progress --include=adobe.ly --include=experienceleague.adobe.com {src,scripts,test}/**/*.{md,js,html} *.{md,js}"
           format: detailed

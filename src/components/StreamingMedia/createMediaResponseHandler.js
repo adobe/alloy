@@ -9,15 +9,15 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import isBlankString from "../../utils/isBlankString";
-import MediaEvents from "./constants/eventTypes";
-import { isNonEmptyArray } from "../../utils";
-import PlaybackState from "./constants/playbackState";
+import isBlankString from "../../utils/isBlankString.js";
+import MediaEvents from "./constants/eventTypes.js";
+import { isNonEmptyArray } from "../../utils/index.js";
+import PlaybackState from "./constants/playbackState.js";
 
 export default ({ mediaSessionCacheManager, config, trackMediaEvent }) => {
   return ({ response, playerId, getPlayerDetails }) => {
     const mediaPayload = response.getPayloadsByType(
-      "media-analytics:new-session"
+      "media-analytics:new-session",
     );
     if (isNonEmptyArray(mediaPayload)) {
       const { sessionId } = mediaPayload[0];
@@ -33,15 +33,15 @@ export default ({ mediaSessionCacheManager, config, trackMediaEvent }) => {
         trackMediaEvent({
           playerId,
           xdm: {
-            eventType: MediaEvents.PING
-          }
+            eventType: MediaEvents.PING,
+          },
         });
       }, config.streamingMedia.mainPingInterval * 1000);
 
       mediaSessionCacheManager.savePing({
         playerId,
         pingId,
-        playbackState: PlaybackState.MAIN
+        playbackState: PlaybackState.MAIN,
       });
 
       return { sessionId };

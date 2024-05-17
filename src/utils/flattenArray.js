@@ -16,7 +16,7 @@ const flattenArray = (items = []) => {
     return items;
   }
 
-  items.forEach(item => {
+  items.forEach((item) => {
     if (Array.isArray(item)) {
       flat.push(...flattenArray(item));
     } else {

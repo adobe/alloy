@@ -10,17 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 import {
   createFragment,
-  getChildNodes
-} from "../../../../../../src/components/Personalization/dom-actions/dom";
+  getChildNodes,
+} from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import {
   isImage,
-  loadImage
-} from "../../../../../../src/components/Personalization/dom-actions/images";
-import { IMG } from "../../../../../../src/constants/tagName";
-import { createNode } from "../../../../../../src/utils/dom";
+  loadImage,
+} from "../../../../../../src/components/Personalization/dom-actions/images.js";
+import { IMG } from "../../../../../../src/constants/tagName.js";
+import { createNode } from "../../../../../../src/utils/dom/index.js";
 
 describe("Personalization::helper::images", () => {
   beforeEach(() => {

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { removeNode } from "../../../utils/dom";
+import { removeNode } from "../../../utils/dom/index.js";
 import {
   createAction,
   setHtml,
@@ -23,8 +23,8 @@ import {
   appendHtml,
   prependHtml,
   insertHtmlAfter,
-  insertHtmlBefore
-} from "./action";
+  insertHtmlBefore,
+} from "./action.js";
 
 export default () => {
   return {
@@ -42,6 +42,6 @@ export default () => {
     insertBefore: createAction(insertHtmlBefore),
     replaceHtml: createAction(replaceHtml),
     prependHtml: createAction(prependHtml),
-    appendHtml: createAction(appendHtml)
+    appendHtml: createAction(appendHtml),
   };
 };

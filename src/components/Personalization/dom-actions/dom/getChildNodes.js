@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { toArray } from "../../../../utils";
+import { toArray } from "../../../../utils/index.js";
 
-export default element => {
+export default (element) => {
   const { childNodes } = element;
 
   if (childNodes) {

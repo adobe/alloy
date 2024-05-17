@@ -27,5 +27,5 @@ export default {
   CHAPTER_SKIP: "media.chapterSkip",
   CHAPTER_START: "media.chapterStart",
   ERROR: "media.error",
-  STATES_UPDATE: "media.statesUpdate"
+  STATES_UPDATE: "media.statesUpdate",
 };

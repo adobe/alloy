@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNonEmptyArray from "../../../../src/utils/isNonEmptyArray";
+import isNonEmptyArray from "../../../../src/utils/isNonEmptyArray.js";
 
 describe("isNonEmptyArray", () => {
   it("returns true when array with values", () => {

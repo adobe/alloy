@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import matchesSelector from "../../../../../src/utils/dom/matchesSelector";
+import matchesSelector from "../../../../../src/utils/dom/matchesSelector.js";
 
 describe("DOM::matchesSelector", () => {
   it("should match selector for existing element", () => {

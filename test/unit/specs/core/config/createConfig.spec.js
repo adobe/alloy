@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createConfig from "../../../../../src/core/config/createConfig";
+import createConfig from "../../../../../src/core/config/createConfig.js";
 
 let testConfig = {};
 
@@ -20,11 +20,11 @@ describe("createConfig", () => {
       a: 123,
       b: "abc",
       c: {
-        a1: "xyz"
+        a1: "xyz",
       },
       neg: {
-        neg: false
-      }
+        neg: false,
+      },
     };
   });
   it("supports being instantiated with a config", () => {

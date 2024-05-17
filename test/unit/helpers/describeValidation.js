@@ -18,8 +18,8 @@ export default (description, validator, specObjects) => {
           it(`rejects ${JSON.stringify(value)}`, () => {
             const logger = jasmine.createSpyObj("logger", ["warn"]);
             expect(() =>
-              validator.call({ logger }, value, "mykey")
-            ).toThrowMatching(e => {
+              validator.call({ logger }, value, "mykey"),
+            ).toThrowMatching((e) => {
               return /'mykey[^']*'(:| is)/.test(e.message);
             });
             if (warning) {
@@ -30,11 +30,11 @@ export default (description, validator, specObjects) => {
           });
         } else {
           it(`transforms \`${JSON.stringify(value)}\` to \`${JSON.stringify(
-            expected
+            expected,
           )}\``, () => {
             const logger = jasmine.createSpyObj("logger", ["warn"]);
             expect(validator.call({ logger }, value, "mykey")).toEqual(
-              expected
+              expected,
             );
             if (warning) {
               expect(logger.warn).toHaveBeenCalled();
@@ -43,7 +43,7 @@ export default (description, validator, specObjects) => {
             }
           });
         }
-      }
+      },
     );
   });
 };

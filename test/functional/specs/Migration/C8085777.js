@@ -10,29 +10,29 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  targetMigrationEnabled
-} from "../../helpers/constants/configParts";
-import { TEST_PAGE, TEST_PAGE_AT_JS_TWO } from "../../helpers/constants/url";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
+  targetMigrationEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import { TEST_PAGE, TEST_PAGE_AT_JS_TWO } from "../../helpers/constants/url.js";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
 import {
   MBOX_EDGE_CLUSTER,
-  MBOX
-} from "../../../../src/constants/legacyCookies";
+  MBOX,
+} from "../../../../src/constants/legacyCookies.js";
 import {
   assertKonductorReturnsCookieAndCookieIsSet,
   assertSameLocationHintIsUsed,
   assertTargetMigrationEnabledIsSent,
   fetchMboxOffer,
-  MIGRATION_LOCATION
-} from "./helper";
-import migrationEnabled from "../../helpers/constants/configParts/migrationEnabled";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+  MIGRATION_LOCATION,
+} from "./helper.js";
+import migrationEnabled from "../../helpers/constants/configParts/migrationEnabled.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const favoriteColor = "violet-1234";
 const networkLogger = createNetworkLogger();
@@ -40,7 +40,7 @@ const config = compose(
   orgMainConfigMain,
   debugEnabled,
   migrationEnabled,
-  targetMigrationEnabled
+  targetMigrationEnabled,
 );
 createFixture({
   title:
@@ -48,16 +48,16 @@ createFixture({
     "web sdk and fetch offer based on profile attr using at.js 2.x",
   requestHooks: [
     networkLogger.edgeEndpointLogs,
-    networkLogger.targetDeliveryEndpointLogs
+    networkLogger.targetDeliveryEndpointLogs,
   ],
   url: TEST_PAGE,
-  includeAlloyLibrary: true
+  includeAlloyLibrary: true,
 });
 
 test.meta({
   ID: "C8085777",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test.skip(
@@ -69,10 +69,10 @@ test.skip(
       data: {
         __adobe: {
           target: {
-            "profile.favoriteColor": favoriteColor
-          }
-        }
-      }
+            "profile.favoriteColor": favoriteColor,
+          },
+        },
+      },
     };
     // Loaded a page with Alloy
     const alloy = createAlloyProxy();
@@ -87,14 +87,15 @@ test.skip(
     // Check that mbox cookie is present in the response from Konductor
     const mboxCookie = await assertKonductorReturnsCookieAndCookieIsSet(
       MBOX,
-      sendEventRequest
+      sendEventRequest,
     );
 
     // Check that mboxEdgeCluster cookie is present in the response from Konductor
-    const mboxEdgeClusterCookie = await assertKonductorReturnsCookieAndCookieIsSet(
-      MBOX_EDGE_CLUSTER,
-      sendEventRequest
-    );
+    const mboxEdgeClusterCookie =
+      await assertKonductorReturnsCookieAndCookieIsSet(
+        MBOX_EDGE_CLUSTER,
+        sendEventRequest,
+      );
 
     // NAVIGATE to clean page
     await t.navigateTo(TEST_PAGE_AT_JS_TWO);
@@ -123,10 +124,10 @@ test.skip(
       .expect(mboxCookie)
       .contains(
         `#${sessionIdFromDeliveryRequest}#`,
-        "Session ID returned from Target Upstream does not match the session ID sent to delivery API"
+        "Session ID returned from Target Upstream does not match the session ID sent to delivery API",
       );
 
     // assert the same cluster is used
     await assertSameLocationHintIsUsed(hostname, mboxEdgeClusterCookie);
-  }
+  },
 );

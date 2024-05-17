@@ -10,18 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions/index";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../helpers/createResponse";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
+import createResponse from "../../helpers/createResponse.js";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
@@ -33,13 +33,13 @@ createFixture({
   title:
     "C14317242: defaultPersonalizationEnabled should control fetching VEC offers",
   requestHooks: [networkLogger.edgeEndpointLogs],
-  url: `${TEST_PAGE_URL}?test=C28755`
+  url: `${TEST_PAGE_URL}?test=C28755`,
 });
 
 test.meta({
   ID: "C14317242",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C14317242: defaultPersonalizationEnabled should control fetching VEC offers", async () => {
@@ -47,16 +47,16 @@ test("Test C14317242: defaultPersonalizationEnabled should control fetching VEC 
   await alloy.configure(config);
   // Does not fetch offers because requestPersonalization is false.
   await alloy.sendEvent({
-    personalization: { defaultPersonalizationEnabled: false }
+    personalization: { defaultPersonalizationEnabled: false },
   });
   // Fetches offers because the cache has not been initialized.
   const result2 = await alloy.sendEvent({});
   // Fetches offers because initializePersonalization is true.
   const result3 = await alloy.sendEvent({
-    personalization: { defaultPersonalizationEnabled: true }
+    personalization: { defaultPersonalizationEnabled: true },
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(3);
 
@@ -76,10 +76,10 @@ test("Test C14317242: defaultPersonalizationEnabled should control fetching VEC 
     .eql([PAGE_WIDE_SCOPE]);
 
   const response2 = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[1])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[1]),
   );
   const personalizationPayload2 = createResponse({
-    content: response2
+    content: response2,
   }).getPayloadsByType("personalization:decisions");
   await t.expect(personalizationPayload2[0].scope).eql(PAGE_WIDE_SCOPE);
   await t
@@ -87,10 +87,10 @@ test("Test C14317242: defaultPersonalizationEnabled should control fetching VEC 
     .eql(decisionContent);
 
   const response3 = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[2])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[2]),
   );
   const personalizationPayload3 = createResponse({
-    content: response3
+    content: response3,
   }).getPayloadsByType("personalization:decisions");
   await t.expect(personalizationPayload3[0].scope).eql(PAGE_WIDE_SCOPE);
   await t

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { truncateWhiteSpace } from "./utils";
+import { truncateWhiteSpace } from "./utils.js";
 
 const unsupportedNodeNames = /^(SCRIPT|STYLE|LINK|CANVAS|NOSCRIPT|#COMMENT)$/i;
 
@@ -19,7 +19,7 @@ const unsupportedNodeNames = /^(SCRIPT|STYLE|LINK|CANVAS|NOSCRIPT|#COMMENT)$/i;
  * @param {*} node Node to determine support for.
  * @returns {boolean}
  */
-const isSupportedTextNode = node => {
+const isSupportedTextNode = (node) => {
   if (node && node.nodeName) {
     if (node.nodeName.match(unsupportedNodeNames)) {
       return false;
@@ -34,14 +34,14 @@ const isSupportedTextNode = node => {
  * @param {*} node The node to extract supported and unsupported nodes from.
  * @returns {{supportedNodes: Array, includesUnsupportedNodes: boolean}} Node support object.
  */
-const extractSupportedNodes = node => {
+const extractSupportedNodes = (node) => {
   let supportedNodes = [];
   let includesUnsupportedNodes = false;
   if (isSupportedTextNode(node)) {
     supportedNodes.push(node);
     if (node.childNodes) {
       const childNodes = Array.prototype.slice.call(node.childNodes);
-      childNodes.forEach(childNode => {
+      childNodes.forEach((childNode) => {
         const nodes = extractSupportedNodes(childNode);
         supportedNodes = supportedNodes.concat(nodes.supportedNodes);
         includesUnsupportedNodes =
@@ -53,7 +53,7 @@ const extractSupportedNodes = node => {
   }
   return {
     supportedNodes,
-    includesUnsupportedNodes
+    includesUnsupportedNodes,
   };
 };
 
@@ -77,28 +77,28 @@ const getNodeAttributeValue = (node, attributeName, nodeName) => {
  * @param {*} nodes The nodes array holding the children nodes.
  * The returned map contains the supported not empty children attributes values.
  * */
-const getChildrenAttributes = nodes => {
+const getChildrenAttributes = (nodes) => {
   const attributes = {
-    texts: []
+    texts: [],
   };
-  nodes.supportedNodes.forEach(supportedNode => {
+  nodes.supportedNodes.forEach((supportedNode) => {
     if (supportedNode.getAttribute) {
       if (!attributes.alt) {
         attributes.alt = truncateWhiteSpace(supportedNode.getAttribute("alt"));
       }
       if (!attributes.title) {
         attributes.title = truncateWhiteSpace(
-          supportedNode.getAttribute("title")
+          supportedNode.getAttribute("title"),
         );
       }
       if (!attributes.inputValue) {
         attributes.inputValue = truncateWhiteSpace(
-          getNodeAttributeValue(supportedNode, "value", "INPUT")
+          getNodeAttributeValue(supportedNode, "value", "INPUT"),
         );
       }
       if (!attributes.imgSrc) {
         attributes.imgSrc = truncateWhiteSpace(
-          getNodeAttributeValue(supportedNode, "src", "IMG")
+          getNodeAttributeValue(supportedNode, "src", "IMG"),
         );
       }
     }
@@ -129,7 +129,7 @@ const getChildrenAttributes = nodes => {
  * @param {*} node The node to find link text for.
  * @returns {string} link-name or an empty string if not link-name is found.
  */
-export default node => {
+export default (node) => {
   let nodeText = truncateWhiteSpace(node.innerText || node.textContent);
   const nodes = extractSupportedNodes(node);
   // if contains unsupported nodes we want children node attributes

@@ -14,8 +14,8 @@ export default ({ createEventMergeId }) => {
   return {
     commands: {
       createEventMergeId: {
-        run: createEventMergeId
-      }
-    }
+        run: createEventMergeId,
+      },
+    },
   };
 };

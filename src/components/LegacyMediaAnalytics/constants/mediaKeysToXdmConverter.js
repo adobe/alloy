@@ -34,7 +34,7 @@ export const mediaToXdmKeys = {
   "a.media.author": "author",
   "a.media.station": "station",
   "a.media.publisher": "publisher",
-  "media.resumed": "hasResume"
+  "media.resumed": "hasResume",
 };
 
 export const adsToXdmKeys = {
@@ -43,5 +43,5 @@ export const adsToXdmKeys = {
   "a.media.ad.creative": "creativeID",
   "a.media.ad.placement": "placementID",
   "a.media.ad.site": "siteID",
-  "a.media.ad.creativeURL": "creativeURL"
+  "a.media.ad.creativeURL": "creativeURL",
 };

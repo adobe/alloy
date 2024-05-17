@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Switch, Route, useRouteMatch, Link } from "react-router-dom";
-import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import React, { useEffect, useState } from "react.js";
+import { Switch, Route, useRouteMatch, Link } from "react-router-dom.js";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy.js";
+import useSendPageViewEvent from "./useSendPageViewEvent.js";
 
 const usePropositions = ({ viewName }) => {
   const [propositions, setPropositions] = useState(undefined);
@@ -9,7 +9,7 @@ const usePropositions = ({ viewName }) => {
   useEffect(() => {
     if (propositions) {
       window.alloy("applyPropositions", {
-        propositions
+        propositions,
       });
     }
   }, [propositions]);

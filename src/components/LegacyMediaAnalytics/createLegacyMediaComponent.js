@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { noop, uuid } from "../../utils";
+import { noop, uuid } from "../../utils/index.js";
 import {
   AD_METADATA_KEYS as AdMetadataKeys,
   AUDIO_METADATA_KEYS as AudioMetadataKeys,
@@ -19,8 +19,8 @@ import {
   MEDIA_TYPE as MediaType,
   PLAYER_STATE as PlayerState,
   STREAM_TYPE as StreamType,
-  VIDEO_METADATA_KEYS as VideoMetadataKeys
-} from "./constants/constants";
+  VIDEO_METADATA_KEYS as VideoMetadataKeys,
+} from "./constants/constants.js";
 
 export default ({
   trackMediaEvent,
@@ -29,7 +29,7 @@ export default ({
   logger,
   createMediaHelper,
   createGetInstance,
-  config
+  config,
 }) => {
   return {
     lifecycle: {
@@ -45,14 +45,14 @@ export default ({
         onResponse(({ response }) => {
           return mediaResponseHandler({ playerId, getPlayerDetails, response });
         });
-      }
+      },
     },
     commands: {
       getMediaAnalyticsTracker: {
         run: () => {
           if (!config.streamingMedia) {
             return Promise.reject(
-              new Error("Streaming media is not configured.")
+              new Error("Streaming media is not configured."),
             );
           }
           logger.info("Streaming media is configured in legacy mode.");
@@ -64,7 +64,7 @@ export default ({
                 logger,
                 trackMediaEvent,
                 trackMediaSession,
-                uuid
+                uuid,
               });
             },
             Event,
@@ -75,10 +75,10 @@ export default ({
             VideoMetadataKeys,
             AudioMetadataKeys,
             AdMetadataKeys,
-            ...mediaAnalyticsHelper
+            ...mediaAnalyticsHelper,
           });
-        }
-      }
-    }
+        },
+      },
+    },
   };
 };

@@ -19,23 +19,20 @@ export default ({ processPropositions, viewCache }) => {
     onResponse(() => {
       return {
         propositions: returnedPropositions,
-        decisions: returnedDecisions
+        decisions: returnedDecisions,
       };
     });
 
-    return viewCache.getView(viewName).then(propositions => {
+    return viewCache.getView(viewName).then((propositions) => {
       let render;
       if (personalizationDetails.isRenderDecisions()) {
-        ({
-          render,
-          returnedPropositions,
-          returnedDecisions
-        } = processPropositions(propositions));
+        ({ render, returnedPropositions, returnedDecisions } =
+          processPropositions(propositions));
         return render();
       }
       ({ returnedPropositions, returnedDecisions } = processPropositions(
         [],
-        propositions
+        propositions,
       ));
       return [];
     });

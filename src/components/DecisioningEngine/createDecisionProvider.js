@@ -9,16 +9,16 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createEvaluableRulesetPayload from "./createEvaluableRulesetPayload";
-import createDecisionHistory from "./createDecisionHistory";
-import { getActivityId } from "./utils";
+import createEvaluableRulesetPayload from "./createEvaluableRulesetPayload.js";
+import createDecisionHistory from "./createDecisionHistory.js";
+import { getActivityId } from "./utils.js";
 
 export default ({ eventRegistry }) => {
   const payloadsBasedOnActivityId = {};
 
   const decisionHistory = createDecisionHistory({ eventRegistry });
 
-  const addPayload = payload => {
+  const addPayload = (payload) => {
     const activityId = getActivityId(payload);
     if (!activityId) {
       return;
@@ -27,7 +27,7 @@ export default ({ eventRegistry }) => {
     const evaluableRulesetPayload = createEvaluableRulesetPayload(
       payload,
       eventRegistry,
-      decisionHistory
+      decisionHistory,
     );
 
     if (evaluableRulesetPayload.isEvaluable) {
@@ -37,16 +37,16 @@ export default ({ eventRegistry }) => {
 
   const evaluate = (context = {}) =>
     Object.values(payloadsBasedOnActivityId)
-      .map(payload => payload.evaluate(context))
-      .filter(payload => payload.items.length > 0);
+      .map((payload) => payload.evaluate(context))
+      .filter((payload) => payload.items.length > 0);
 
-  const addPayloads = personalizationPayloads => {
+  const addPayloads = (personalizationPayloads) => {
     personalizationPayloads.forEach(addPayload);
   };
 
   return {
     addPayload,
     addPayloads,
-    evaluate
+    evaluate,
   };
 };

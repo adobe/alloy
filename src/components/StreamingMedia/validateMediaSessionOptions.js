@@ -16,8 +16,8 @@ import {
   callback,
   number,
   objectOf,
-  string
-} from "../../utils/validation";
+  string,
+} from "../../utils/validation/index.js";
 
 export default ({ options }) => {
   const sessionValidator = anyOf(
@@ -27,22 +27,22 @@ export default ({ options }) => {
         getPlayerDetails: callback().required(),
         xdm: objectOf({
           mediaCollection: objectOf({
-            sessionDetails: objectOf(anything()).required()
-          })
-        })
+            sessionDetails: objectOf(anything()).required(),
+          }),
+        }),
       }).required(),
 
       objectOf({
         xdm: objectOf({
           mediaCollection: objectOf({
             playhead: number().required(),
-            sessionDetails: objectOf(anything()).required()
-          })
-        })
-      }).required()
+            sessionDetails: objectOf(anything()).required(),
+          }),
+        }),
+      }).required(),
     ],
 
-    "Error validating the createMediaSession command options."
+    "Error validating the createMediaSession command options.",
   );
 
   return sessionValidator(options);

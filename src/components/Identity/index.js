@@ -14,28 +14,28 @@ import {
   areThirdPartyCookiesSupportedByDefault,
   injectDoesIdentityCookieExist,
   createLoggingCookieJar,
-  cookieJar
-} from "../../utils";
-import injectProcessIdSyncs from "./injectProcessIdSyncs";
-import configValidators from "./configValidators";
+  cookieJar,
+} from "../../utils/index.js";
+import injectProcessIdSyncs from "./injectProcessIdSyncs.js";
+import configValidators from "./configValidators.js";
 
-import createComponent from "./createComponent";
-import createLegacyIdentity from "./createLegacyIdentity";
-import awaitVisitorOptIn from "./visitorService/awaitVisitorOptIn";
-import injectGetEcidFromVisitor from "./visitorService/injectGetEcidFromVisitor";
-import injectHandleResponseForIdSyncs from "./injectHandleResponseForIdSyncs";
-import injectEnsureSingleIdentity from "./injectEnsureSingleIdentity";
-import addEcidQueryToPayload from "./addEcidQueryToPayload";
-import injectSetDomainForInitialIdentityPayload from "./injectSetDomainForInitialIdentityPayload";
-import injectAddLegacyEcidToPayload from "./injectAddLegacyEcidToPayload";
-import injectAddQueryStringIdentityToPayload from "./injectAddQueryStringIdentityToPayload";
-import addEcidToPayload from "./addEcidToPayload";
-import injectAwaitIdentityCookie from "./injectAwaitIdentityCookie";
-import getEcidFromResponse from "./getEcidFromResponse";
-import createGetIdentity from "./getIdentity/createGetIdentity";
-import createIdentityRequest from "./getIdentity/createIdentityRequest";
-import createIdentityRequestPayload from "./getIdentity/createIdentityRequestPayload";
-import injectAppendIdentityToUrl from "./appendIdentityToUrl/injectAppendIdentityToUrl";
+import createComponent from "./createComponent.js";
+import createLegacyIdentity from "./createLegacyIdentity.js";
+import awaitVisitorOptIn from "./visitorService/awaitVisitorOptIn.js";
+import injectGetEcidFromVisitor from "./visitorService/injectGetEcidFromVisitor.js";
+import injectHandleResponseForIdSyncs from "./injectHandleResponseForIdSyncs.js";
+import injectEnsureSingleIdentity from "./injectEnsureSingleIdentity.js";
+import addEcidQueryToPayload from "./addEcidQueryToPayload.js";
+import injectSetDomainForInitialIdentityPayload from "./injectSetDomainForInitialIdentityPayload.js";
+import injectAddLegacyEcidToPayload from "./injectAddLegacyEcidToPayload.js";
+import injectAddQueryStringIdentityToPayload from "./injectAddQueryStringIdentityToPayload.js";
+import addEcidToPayload from "./addEcidToPayload.js";
+import injectAwaitIdentityCookie from "./injectAwaitIdentityCookie.js";
+import getEcidFromResponse from "./getEcidFromResponse.js";
+import createGetIdentity from "./getIdentity/createGetIdentity.js";
+import createIdentityRequest from "./getIdentity/createIdentityRequest.js";
+import createIdentityRequestPayload from "./getIdentity/createIdentityRequestPayload.js";
+import injectAppendIdentityToUrl from "./appendIdentityToUrl/injectAppendIdentityToUrl.js";
 
 const createIdentity = ({
   config,
@@ -43,18 +43,18 @@ const createIdentity = ({
   consent,
   fireReferrerHideableImage,
   sendEdgeNetworkRequest,
-  apexDomain
+  apexDomain,
 }) => {
   const {
     orgId,
     thirdPartyCookiesEnabled,
-    edgeConfigOverrides: globalConfigOverrides
+    edgeConfigOverrides: globalConfigOverrides,
   } = config;
 
   const getEcidFromVisitor = injectGetEcidFromVisitor({
     logger,
     orgId,
-    awaitVisitorOptIn
+    awaitVisitorOptIn,
   });
   const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });
   const legacyIdentity = createLegacyIdentity({
@@ -62,56 +62,55 @@ const createIdentity = ({
     getEcidFromVisitor,
     apexDomain,
     cookieJar: loggingCookieJar,
-    isPageSsl: window.location.protocol === "https:"
+    isPageSsl: window.location.protocol === "https:",
   });
   const doesIdentityCookieExist = injectDoesIdentityCookieExist({ orgId });
   const getIdentity = createGetIdentity({
     sendEdgeNetworkRequest,
     createIdentityRequestPayload,
     createIdentityRequest,
-    globalConfigOverrides
+    globalConfigOverrides,
   });
-  const setDomainForInitialIdentityPayload = injectSetDomainForInitialIdentityPayload(
-    {
+  const setDomainForInitialIdentityPayload =
+    injectSetDomainForInitialIdentityPayload({
       thirdPartyCookiesEnabled,
-      areThirdPartyCookiesSupportedByDefault
-    }
-  );
+      areThirdPartyCookiesSupportedByDefault,
+    });
   const addLegacyEcidToPayload = injectAddLegacyEcidToPayload({
     getLegacyEcid: legacyIdentity.getEcid,
-    addEcidToPayload
+    addEcidToPayload,
   });
   const addQueryStringIdentityToPayload = injectAddQueryStringIdentityToPayload(
     {
       locationSearch: window.document.location.search,
       dateProvider: () => new Date(),
       orgId,
-      logger
-    }
+      logger,
+    },
   );
   const awaitIdentityCookie = injectAwaitIdentityCookie({
     doesIdentityCookieExist,
     orgId,
-    logger
+    logger,
   });
   const ensureSingleIdentity = injectEnsureSingleIdentity({
     doesIdentityCookieExist,
     setDomainForInitialIdentityPayload,
     addLegacyEcidToPayload,
     awaitIdentityCookie,
-    logger
+    logger,
   });
   const processIdSyncs = injectProcessIdSyncs({
     fireReferrerHideableImage,
-    logger
+    logger,
   });
   const handleResponseForIdSyncs = injectHandleResponseForIdSyncs({
-    processIdSyncs
+    processIdSyncs,
   });
   const appendIdentityToUrl = injectAppendIdentityToUrl({
     dateProvider: () => new Date(),
     orgId,
-    globalConfigOverrides
+    globalConfigOverrides,
   });
   return createComponent({
     addEcidQueryToPayload,
@@ -124,7 +123,7 @@ const createIdentity = ({
     consent,
     appendIdentityToUrl,
     logger,
-    config
+    config,
   });
 };
 

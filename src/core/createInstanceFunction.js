@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default executeCommand => {
-  return args => {
+export default (executeCommand) => {
+  return (args) => {
     // Would use destructuring, but destructuring doesn't work on IE
     // without polyfilling Symbol.
     // https://github.com/babel/babel/issues/7597

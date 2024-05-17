@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isFunction } from "../../../utils";
+import { isFunction } from "../../../utils/index.js";
 
-export default window => {
+export default (window) => {
   const Visitor = window.Visitor;
   return isFunction(Visitor) && isFunction(Visitor.getInstance) && Visitor;
 };

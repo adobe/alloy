@@ -16,14 +16,14 @@ export default ({
   getLinkRegion,
   getAbsoluteUrlFromAnchorElement,
   findSupportedAnchorElement,
-  determineLinkType
+  determineLinkType,
 }) => {
   return ({ targetElement, config, logger }) => {
     const anchorElement = findSupportedAnchorElement(targetElement);
 
     if (!anchorElement) {
       logger.info(
-        "This link click event is not triggered because the HTML element is not an anchor."
+        "This link click event is not triggered because the HTML element is not an anchor.",
       );
       return undefined;
     }
@@ -31,7 +31,7 @@ export default ({
     const linkUrl = getAbsoluteUrlFromAnchorElement(window, anchorElement);
     if (!linkUrl) {
       logger.info(
-        "This link click event is not triggered because the HTML element doesn't have an URL."
+        "This link click event is not triggered because the HTML element doesn't have an URL.",
       );
       return undefined;
     }
@@ -52,13 +52,13 @@ export default ({
             type: linkType,
             URL: linkUrl,
             linkClicks: {
-              value: 1
-            }
-          }
-        }
+              value: 1,
+            },
+          },
+        },
       },
       data: {},
-      clickedElement: targetElement
+      clickedElement: targetElement,
     };
     if (!onBeforeLinkClickSend) {
       return options;
@@ -70,7 +70,7 @@ export default ({
       return options;
     }
     logger.info(
-      "This link click event is not triggered because it was canceled in onBeforeLinkClickSend."
+      "This link click event is not triggered because it was canceled in onBeforeLinkClickSend.",
     );
     return undefined;
   };

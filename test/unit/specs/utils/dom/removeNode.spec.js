@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createNode from "../../../../../src/utils/dom/createNode";
-import appendNode from "../../../../../src/utils/dom/appendNode";
-import removeNode from "../../../../../src/utils/dom/removeNode";
-import selectNodes from "../../../../../src/utils/dom/selectNodes";
+import createNode from "../../../../../src/utils/dom/createNode.js";
+import appendNode from "../../../../../src/utils/dom/appendNode.js";
+import removeNode from "../../../../../src/utils/dom/removeNode.js";
+import selectNodes from "../../../../../src/utils/dom/selectNodes.js";
 
 describe("DOM::removeNode", () => {
   afterEach(() => {

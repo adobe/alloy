@@ -1,4 +1,4 @@
-export const getDisplayAnalyticsToken = proposition => {
+export const getDisplayAnalyticsToken = (proposition) => {
   const { scopeDetails = {} } = proposition;
   const { characteristics = {} } = scopeDetails;
   const { analyticsTokens, analyticsToken } = characteristics;
@@ -9,17 +9,17 @@ export const getDisplayAnalyticsToken = proposition => {
   return analyticsToken;
 };
 
-export const concatenateAnalyticsPayloads = analyticsPayloads => {
+export const concatenateAnalyticsPayloads = (analyticsPayloads) => {
   if (analyticsPayloads.size > 1) {
     return [...analyticsPayloads].join(",");
   }
   return [...analyticsPayloads].join();
 };
 
-export const collectAnalyticsPayloadData = propositions => {
+export const collectAnalyticsPayloadData = (propositions) => {
   const analyticsPayloads = new Set();
 
-  propositions.forEach(proposition => {
+  propositions.forEach((proposition) => {
     const { renderAttempted = false } = proposition;
 
     if (renderAttempted !== true) {
@@ -38,10 +38,10 @@ export const collectAnalyticsPayloadData = propositions => {
   return concatenateAnalyticsPayloads(analyticsPayloads);
 };
 
-export const getECID = instanceName => {
+export const getECID = (instanceName) => {
   return window[instanceName]("getIdentity", { namespaces: ["ECID"] }).then(
-    result => {
+    (result) => {
       return result.identity.ECID;
-    }
+    },
   );
 };

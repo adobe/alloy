@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 describe("createModules", () => {
+  it("", () => {}); // TODO: This empty test is needed because jasmine fails now when describe block is empty.
   // const noop = () => undefined;
   // it("has dom-action modules", () => {
   //   const modules = createModules({ storeClickMetrics: noop, collect: noop });

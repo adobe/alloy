@@ -11,4 +11,4 @@ governing permissions and limitations under the License.
 */
 
 // eslint-disable-next-line no-unused-vars
-import fireImage from "../../../../src/utils/fireImage";
+import fireImage from "../../../../src/utils/fireImage.js";

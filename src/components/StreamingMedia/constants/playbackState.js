@@ -12,5 +12,5 @@ governing permissions and limitations under the License.
 export default {
   MAIN: "main",
   AD: "ad",
-  COMPLETED: "completed"
+  COMPLETED: "completed",
 };

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectAddLegacyEcidToPayload from "../../../../../src/components/Identity/injectAddLegacyEcidToPayload";
+import injectAddLegacyEcidToPayload from "../../../../../src/components/Identity/injectAddLegacyEcidToPayload.js";
 
 describe("Identity::injectAddLegacyEcidToPayload", () => {
   let getLegacyEcid;
@@ -25,7 +25,7 @@ describe("Identity::injectAddLegacyEcidToPayload", () => {
     addEcidToPayload = jasmine.createSpy("addEcidToPayload");
     addLegacyEcidToPayload = injectAddLegacyEcidToPayload({
       getLegacyEcid,
-      addEcidToPayload
+      addEcidToPayload,
     });
     payload = jasmine.createSpyObj("payload", ["hasIdentity"]);
   });

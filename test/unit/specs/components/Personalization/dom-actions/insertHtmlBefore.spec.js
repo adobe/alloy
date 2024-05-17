@@ -12,10 +12,10 @@ governing permissions and limitations under the License.
 import {
   selectNodes,
   appendNode,
-  createNode
-} from "../../../../../../src/utils/dom";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+  createNode,
+} from "../../../../../../src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 
 describe("Personalization::actions::insertBefore", () => {
   beforeEach(() => {
@@ -32,7 +32,7 @@ describe("Personalization::actions::insertBefore", () => {
     const child = createNode(
       "div",
       { id: "a", class: "ib" },
-      { innerHTML: "AAA" }
+      { innerHTML: "AAA" },
     );
     const element = createNode("div", { id: "insertBefore" }, {}, [child]);
 
@@ -43,7 +43,7 @@ describe("Personalization::actions::insertBefore", () => {
       selector: "#a",
       prehidingSelector: "#a",
       content: `<div id="b" class="ib">BBB</div>`,
-      meta
+      meta,
     };
 
     return insertBefore(settings).then(() => {

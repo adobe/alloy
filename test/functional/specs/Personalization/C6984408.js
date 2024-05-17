@@ -10,33 +10,33 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   thirdPartyCookiesDisabled,
-  edgeDomainThirdParty
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+  edgeDomainThirdParty,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(
   orgMainConfigMain,
   thirdPartyCookiesDisabled,
-  edgeDomainThirdParty
+  edgeDomainThirdParty,
 );
 
 createFixture({
   title:
     "C6984408: The legacy Adobe Target mbox cookie is included in requests",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C6984408",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C6984408: The legacy Adobe Target mbox cookie is included in requests when targetMigrationEnabled = true", async () => {
@@ -46,11 +46,11 @@ test("Test C6984408: The legacy Adobe Target mbox cookie is included in requests
     value:
       "PC#2177ea922eab463aafe0a22206c12762.35_0#1722369340|session#786adef0b32d411fbd0cf08d1d1bef9c#1659126405",
     domain: "alloyio.com",
-    path: "/"
+    path: "/",
   });
 
   const migrationEnabledConfig = compose(config, {
-    targetMigrationEnabled: true
+    targetMigrationEnabled: true,
   });
 
   const alloy = createAlloyProxy();
@@ -58,7 +58,7 @@ test("Test C6984408: The legacy Adobe Target mbox cookie is included in requests
   await alloy.sendEvent({});
 
   const request = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body
+    networkLogger.edgeEndpointLogs.requests[0].request.body,
   );
   await t.expect(request.meta).ok();
   await t.expect(request.meta.state).ok();

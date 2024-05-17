@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectSendXhrRequest from "../../../../../../src/core/network/requestMethods/injectSendXhrRequest";
+import injectSendXhrRequest from "../../../../../../src/core/network/requestMethods/injectSendXhrRequest.js";
 
 describe("sendXhrRequest", () => {
   const url = "https://example.com/endpoint";
@@ -25,7 +25,7 @@ describe("sendXhrRequest", () => {
       "setRequestHeader",
       "send",
       "onloadstart",
-      "getResponseHeader"
+      "getResponseHeader",
     ]);
     XMLHttpRequest = () => {
       return request;
@@ -50,7 +50,7 @@ describe("sendXhrRequest", () => {
     sendXhrRequest(url, body);
     expect(request.setRequestHeader).toHaveBeenCalledWith(
       "Content-Type",
-      "text/plain; charset=UTF-8"
+      "text/plain; charset=UTF-8",
     );
   });
 
@@ -62,7 +62,7 @@ describe("sendXhrRequest", () => {
   it("rejects promise upon error", () => {
     const xhrPromise = sendXhrRequest(url, body);
     request.onerror(new Error("bad thing happened"));
-    return xhrPromise.then(fail).catch(error => {
+    return xhrPromise.then(fail).catch((error) => {
       expect(error.message).toBe("bad thing happened");
     });
   });
@@ -70,7 +70,7 @@ describe("sendXhrRequest", () => {
   it("rejects promise upon abort", () => {
     const xhrPromise = sendXhrRequest(url, body);
     request.onabort(new Error("bad thing happened"));
-    return xhrPromise.then(fail).catch(error => {
+    return xhrPromise.then(fail).catch((error) => {
       expect(error.message).toBe("bad thing happened");
     });
   });
@@ -87,7 +87,7 @@ describe("sendXhrRequest", () => {
     request.responseText = "response text";
     request.status = 999;
     request.onreadystatechange();
-    return xhrPromise.then(result => {
+    return xhrPromise.then((result) => {
       expect(result.statusCode).toBe(999);
       expect(result.getHeader("Content-Type")).toBe("headervalue");
       expect(result.body).toBe("response text");

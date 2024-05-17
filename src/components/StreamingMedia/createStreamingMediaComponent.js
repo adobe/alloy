@@ -9,15 +9,15 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { noop } from "../../utils";
-import validateSessionOptions from "./validateMediaSessionOptions";
-import validateMediaEventOptions from "./validateMediaEventOptions";
+import { noop } from "../../utils/index.js";
+import validateSessionOptions from "./validateMediaSessionOptions.js";
+import validateMediaEventOptions from "./validateMediaEventOptions.js";
 
 export default ({
   config,
   trackMediaEvent,
   trackMediaSession,
-  mediaResponseHandler
+  mediaResponseHandler,
 }) => {
   return {
     lifecycle: {
@@ -32,28 +32,28 @@ export default ({
         onResponse(({ response }) => {
           return mediaResponseHandler({ playerId, getPlayerDetails, response });
         });
-      }
+      },
     },
     commands: {
       createMediaSession: {
-        optionsValidator: options => validateSessionOptions({ options }),
+        optionsValidator: (options) => validateSessionOptions({ options }),
 
-        run: trackMediaSession
+        run: trackMediaSession,
       },
 
       sendMediaEvent: {
-        optionsValidator: options => validateMediaEventOptions({ options }),
+        optionsValidator: (options) => validateMediaEventOptions({ options }),
 
-        run: options => {
+        run: (options) => {
           if (!config.streamingMedia) {
             return Promise.reject(
-              new Error("Streaming media is not configured.")
+              new Error("Streaming media is not configured."),
             );
           }
 
           return trackMediaEvent(options);
-        }
-      }
-    }
+        },
+      },
+    },
   };
 };

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { prepareConfigOverridesForEdge } from "../../../../src/utils";
+import { prepareConfigOverridesForEdge } from "../../../../src/utils/index.js";
 
 describe("utils:prepareConfigOverridesForEdge", () => {
   it("should filter out functions, unused objects and keys, empty arrays, and empty strings", () => {
@@ -19,31 +19,31 @@ describe("utils:prepareConfigOverridesForEdge", () => {
         com_adobe_experience_platform: {
           datasets: {
             event: { datasetId: "werewr" },
-            profile: { datasetId: "" }
+            profile: { datasetId: "" },
           },
-          enabled: false
+          enabled: false,
         },
         com_adobe_analytics: {
-          reportSuites: []
+          reportSuites: [],
         },
         com_adobe_identity: {},
         com_adobe_target: {
           propertyToken: "rrr",
-          environmentId: 0
+          environmentId: 0,
         },
-        toString: () => "{ com_adobe_experience_platform: '' }"
-      })
+        toString: () => "{ com_adobe_experience_platform: '' }",
+      }),
     ).toEqual({
       com_adobe_experience_platform: {
         datasets: {
-          event: { datasetId: "werewr" }
+          event: { datasetId: "werewr" },
         },
-        enabled: false
+        enabled: false,
       },
       com_adobe_target: {
         propertyToken: "rrr",
-        environmentId: 0
-      }
+        environmentId: 0,
+      },
     });
   });
 
@@ -53,19 +53,19 @@ describe("utils:prepareConfigOverridesForEdge", () => {
         com_adobe_experience_platform: {
           datasets: {
             event: { datasetId: "" },
-            profile: { datasetId: "" }
-          }
+            profile: { datasetId: "" },
+          },
         },
         com_adobe_analytics: {
-          reportSuites: []
+          reportSuites: [],
         },
         com_adobe_identity: {
-          idSyncContainerId: ""
+          idSyncContainerId: "",
         },
         com_adobe_target: {
-          propertyToken: ""
-        }
-      })
+          propertyToken: "",
+        },
+      }),
     ).toBeNull();
   });
 });
