@@ -4,7 +4,7 @@ import {
   getDisplayAnalyticsToken,
   getECID,
 } from "./analyticsTokenHandler";
-import { sendAnalyticsPayload } from "./DataInsertionAPI.js";
+import { sendAnalyticsPayload } from "./DataInsertionAPI";
 
 // this org is configured to have Analytics disabled thus it is A4T Client Side Logging
 const instanceName = "organizationTwo";

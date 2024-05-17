@@ -1,8 +1,8 @@
 /* eslint-disable no-console, func-names */
 
-import React from "react.js";
-import ContentSecurityPolicy from "./components/ContentSecurityPolicy.js";
-import useSendPageViewEvent from "./useSendPageViewEvent.js";
+import React from "react";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
+import useSendPageViewEvent from "./useSendPageViewEvent";
 
 const getIdentity = () => {
   window.alloy("getIdentity", { namespaces: ["ECID"] }).then(function (result) {

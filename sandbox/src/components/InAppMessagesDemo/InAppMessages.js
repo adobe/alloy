@@ -1,6 +1,6 @@
 /* eslint-disable no-bitwise, no-console */
-import React, { useEffect, useState } from "react.js";
-import ContentSecurityPolicy from "../ContentSecurityPolicy.js";
+import React, { useEffect, useState } from "react";
+import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./InAppMessagesStyle.css";
 
 const configKey =
