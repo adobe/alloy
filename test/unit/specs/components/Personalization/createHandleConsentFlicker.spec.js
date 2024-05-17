@@ -30,8 +30,8 @@ describe("Personalization::createHandleConsentFlicker", () => {
     consent.current.and.returnValue({ state: "out", wasSet: true });
     handleConsentFlicker();
     expect(showContainers).toHaveBeenCalled();
-    flushPromiseChains().then(() => {
-      // expect(consent.awaitConsent).not.toHaveBeenCalled();
+    return flushPromiseChains().then(() => {
+      expect(consent.awaitConsent).not.toHaveBeenCalled();
     });
   });
 
@@ -40,8 +40,8 @@ describe("Personalization::createHandleConsentFlicker", () => {
     consent.awaitConsent.and.returnValue(Promise.reject());
     handleConsentFlicker();
     expect(consent.awaitConsent).toHaveBeenCalled();
-    flushPromiseChains().then(() => {
-      // expect(showContainers).toHaveBeenCalled();
+    return flushPromiseChains().then(() => {
+      expect(showContainers).toHaveBeenCalled();
     });
   });
 
@@ -50,8 +50,8 @@ describe("Personalization::createHandleConsentFlicker", () => {
     consent.awaitConsent.and.returnValue(Promise.resolve());
     handleConsentFlicker();
     expect(consent.awaitConsent).toHaveBeenCalled();
-    flushPromiseChains().then(() => {
-      // expect(showContainers).not.toHaveBeenCalled();
+    return flushPromiseChains().then(() => {
+      expect(showContainers).not.toHaveBeenCalled();
     });
   });
 });
