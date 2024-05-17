@@ -54,7 +54,7 @@ const effectByEventCode = {
       );
     } else {
       firstBuildComplete = true;
-      const testcafe = await createTestCafe({ esm: true });
+      const testcafe = await createTestCafe();
       const liveRunner = testcafe.createLiveModeRunner();
       await liveRunner.browsers(argv.browsers).run();
       await testcafe.close();

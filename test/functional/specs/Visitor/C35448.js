@@ -40,10 +40,11 @@ const visitorReady = ClientFunction(() => {
 const injectVisitor = ClientFunction(
   () => {
     const s = document.createElement("script");
-    s.src = REMOTE_VISITOR_LIBRARY_URL;
+    // eslint-disable-next-line no-undef
+    s.src = scriptSrc;
     document.body.appendChild(s);
   },
-  { dependencies: { REMOTE_VISITOR_LIBRARY_URL } },
+  { dependencies: { scriptSrc: REMOTE_VISITOR_LIBRARY_URL } },
 );
 
 test("C35448 - When ID migration is enabled and Visitor is on the page, Alloy waits for Visitor to get ECID and then uses this value.", async () => {

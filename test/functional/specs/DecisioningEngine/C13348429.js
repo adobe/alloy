@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 import { ClientFunction, t } from "testcafe";
 import { v4 as uuidv4 } from "uuid";
-import fetch from "node-fetch";
 import createNetworkLogger from "../../helpers/networkLogger/index.js";
 import createFixture from "../../helpers/createFixture/index.js";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";

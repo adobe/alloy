@@ -17,7 +17,6 @@ import { ClientFunction } from "testcafe";
 import { INTEGRATION, PRODUCTION } from "../constants/alloyEnvironment.js";
 import REMOTE_VISITOR_LIBRARY_URL from "../constants/remoteVisitorLibraryUrl.js";
 
-const dirname = import.meta.dirname;
 const alloyEnv = process.env.ALLOY_ENV || INTEGRATION;
 const alloyProdVersion = process.env.ALLOY_PROD_VERSION;
 // eslint-disable-next-line no-console
@@ -35,20 +34,23 @@ if (alloyEnv === PRODUCTION) {
 }
 
 const localPromisePolyfillPath = path.join(
-  dirname,
+  __dirname,
   "../promisePolyfill/promise-polyfill.min.js",
 );
 const remotePromisePolyfillPath =
   "https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js";
 
-const baseCodePath = path.join(dirname, "../../../../distTest/baseCode.min.js");
-const localAlloyLibraryPath = path.join(dirname, "../../../../dist/alloy.js");
+const baseCodePath = path.join(
+  __dirname,
+  "../../../../distTest/baseCode.min.js",
+);
+const localAlloyLibraryPath = path.join(__dirname, "../../../../dist/alloy.js");
 const localNpmLibraryPath = path.join(
-  dirname,
+  __dirname,
   "../../../../distTest/npmPackageLocal.js",
 );
 const prodNpmLibraryPath = path.join(
-  dirname,
+  __dirname,
   "../../../../distTest/npmPackageProd.js",
 );
 const remoteAlloyLibraryUrl = `https://cdn1.adoberesources.net/alloy/${alloyProdVersion}/alloy.js`;

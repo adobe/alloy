@@ -1,7 +1,5 @@
 apiVersion: v1alpha
 kind: testcafe
-cliFlags:
-  esm: true
 sauce:
   region: us-west-1
   concurrency: 4
