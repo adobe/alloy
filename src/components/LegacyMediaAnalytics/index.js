@@ -41,8 +41,7 @@ const createLegacyMediaAnalytics = ({
   const trackMediaEvent = createTrackMediaEvent({
     mediaSessionCacheManager,
     mediaEventManager,
-    config,
-    logger
+    config
   });
   const trackMediaSession = createTrackMediaSession({
     config,
