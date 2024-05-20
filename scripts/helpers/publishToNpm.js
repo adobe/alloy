@@ -23,6 +23,7 @@ const publishToNpm = async ({ exec, execSync, logger, npmTag, version }) => {
   } else {
     logger.info("Publishing NPM package.");
     await exec("npm publish", `npm publish -access public --tag ${npmTag}`);
+    await exec("sleep 60", "sleep 60");
   }
 };
 
