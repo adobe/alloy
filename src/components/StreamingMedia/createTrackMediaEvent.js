@@ -38,11 +38,16 @@ const getContentState = (eventType, sessionContentState) => {
   return sessionContentState;
 };
 
-export default ({ mediaEventManager, mediaSessionCacheManager, config }) => {
+export default ({
+  mediaEventManager,
+  mediaSessionCacheManager,
+  config,
+  logger
+}) => {
   const sendMediaEvent = options => {
     const event = mediaEventManager.createMediaEvent({ options });
     const { playerId, xdm } = options;
-    const eventType = xdm.eventType;
+    const { eventType } = xdm;
     const action = eventType.split(".")[1];
     const {
       getPlayerDetails,
@@ -50,6 +55,12 @@ export default ({ mediaEventManager, mediaSessionCacheManager, config }) => {
       playbackState
     } = mediaSessionCacheManager.getSession(playerId);
     return sessionPromise.then(result => {
+      if (!result.sessionId) {
+        logger.error(
+          `Failed to trigger media event: ${eventType}. Session ID is not available for playerId: ${playerId}.`
+        );
+        return Promise.resolve();
+      }
       mediaEventManager.augmentMediaEvent({
         event,
         eventType,
