@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getBrowser from "../../utils/getBrowser";
+import getBrowser from "../../utils/getBrowser.js";
 
 export default ({
   thirdPartyCookiesEnabled,
-  areThirdPartyCookiesSupportedByDefault
+  areThirdPartyCookiesSupportedByDefault,
 }) => {
-  return request => {
+  return (request) => {
     if (
       thirdPartyCookiesEnabled &&
       areThirdPartyCookiesSupportedByDefault(getBrowser(window))

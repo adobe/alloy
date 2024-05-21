@@ -9,14 +9,14 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { boolean, objectOf } from "../../utils/validation";
+import { boolean, objectOf } from "../../utils/validation/index.js";
 
 const validateOptions = ({ options }) => {
   const validator = objectOf({
     renderDecisions: boolean(),
     personalization: objectOf({
-      decisionContext: objectOf({})
-    })
+      decisionContext: objectOf({}),
+    }),
   }).noUnknownFields();
 
   return validator(options);
@@ -27,15 +27,15 @@ export default ({ contextProvider, decisionProvider }) => {
     return applyResponse({
       renderDecisions,
       propositions: decisionProvider.evaluate(
-        contextProvider.getContext(decisionContext)
-      )
+        contextProvider.getContext(decisionContext),
+      ),
     });
   };
 
-  const optionsValidator = options => validateOptions({ options });
+  const optionsValidator = (options) => validateOptions({ options });
 
   return {
     optionsValidator,
-    run
+    run,
   };
 };

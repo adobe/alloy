@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { number } from "../../../../../src/utils/validation";
-import describeValidation from "../../../helpers/describeValidation";
+import { number } from "../../../../../src/utils/validation/index.js";
+import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::number", () => {
   describeValidation("optional number", number(), [
@@ -23,18 +23,18 @@ describe("validation::number", () => {
     { value: NaN, error: true },
     { value: 0 },
     { value: 0.01 },
-    { value: Infinity }
+    { value: Infinity },
   ]);
 
   describeValidation("required number", number().required(), [
     { value: null, error: true },
     { value: undefined, error: true },
-    { value: 123 }
+    { value: 123 },
   ]);
 
   describeValidation("default number", number().default(-1), [
     { value: null, expected: -1 },
     { value: undefined, expected: -1 },
-    { value: 123 }
+    { value: 123 },
   ]);
 });

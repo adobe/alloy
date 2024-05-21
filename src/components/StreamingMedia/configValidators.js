@@ -10,24 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { number, objectOf, string } from "../../utils/validation";
+import { number, objectOf, string } from "../../utils/validation/index.js";
 
 export default objectOf({
   streamingMedia: objectOf({
-    channel: string()
-      .nonEmpty()
-      .required(),
-    playerName: string()
-      .nonEmpty()
-      .required(),
+    channel: string().nonEmpty().required(),
+    playerName: string().nonEmpty().required(),
     appVersion: string(),
-    mainPingInterval: number()
-      .minimum(10)
-      .maximum(50)
-      .default(10),
-    adPingInterval: number()
-      .minimum(1)
-      .maximum(10)
-      .default(10)
-  }).noUnknownFields()
+    mainPingInterval: number().minimum(10).maximum(50).default(10),
+    adPingInterval: number().minimum(1).maximum(10).default(10),
+  }).noUnknownFields(),
 });

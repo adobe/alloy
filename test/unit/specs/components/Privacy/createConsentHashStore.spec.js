@@ -10,18 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createConsentHashStore from "../../../../../src/components/Privacy/createConsentHashStore";
+import createConsentHashStore from "../../../../../src/components/Privacy/createConsentHashStore.js";
 
 const CONSENT_IN = {
   standard: "Adobe",
   version: "1.0",
-  value: { general: "in" }
+  value: { general: "in" },
 };
 
 const CONSENT_OUT = {
   standard: "Adobe",
   version: "1.0",
-  value: { general: "out" }
+  value: { general: "out" },
 };
 
 describe("createConsentHashStore", () => {

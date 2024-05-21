@@ -10,28 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t, ClientFunction } from "testcafe";
-import createFixture from "../../helpers/createFixture";
+import createFixture from "../../helpers/createFixture/index.js";
 
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
 
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled, {
-  onBeforeEventSend: () => {}
+  onBeforeEventSend: () => {},
 });
 
 createFixture({
-  title: "C2589: getLibraryInfo command returns library information"
+  title: "C2589: getLibraryInfo command returns library information",
 });
 
 test.meta({
   ID: "C2589",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("C2589: getLibraryInfo command returns library information.", async () => {
@@ -45,7 +45,7 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
     "getIdentity",
     "sendEvent",
     "setConsent",
-    "setDebug"
+    "setDebug",
   ];
   const currentConfigs = {
     clickCollectionEnabled: true,
@@ -61,7 +61,7 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
     orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
     thirdPartyCookiesEnabled: true,
     targetMigrationEnabled: false,
-    personalizationStorageEnabled: false
+    personalizationStorageEnabled: false,
   };
 
   const alloy = createAlloyProxy();
@@ -90,7 +90,7 @@ test("C2589: libraryInfo can be marshaled to postMessage", async () => {
         window.postMessage(libraryInfo, "*");
       });
     },
-    { dependencies: { instanceName } }
+    { dependencies: { instanceName } },
   );
   const result = await postLibraryInfo();
   // This is really just asserting that we got this far. If libraryInfo cannot be

@@ -1,5 +1,16 @@
-import createTrackMediaSession from "../../../../../src/components/StreamingMedia/createTrackMediaSession";
-import PlaybackState from "../../../../../src/components/StreamingMedia/constants/playbackState";
+/*
+Copyright 2024 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+import createTrackMediaSession from "../../../../../src/components/StreamingMedia/createTrackMediaSession.js";
+import PlaybackState from "../../../../../src/components/StreamingMedia/constants/playbackState.js";
 
 describe("createTrackMediaEvent", () => {
   let trackMediaSession;
@@ -10,29 +21,29 @@ describe("createTrackMediaEvent", () => {
 
   beforeEach(() => {
     logger = {
-      warn: jasmine.createSpy()
+      warn: jasmine.createSpy(),
     };
     mediaEventManager = {
       createMediaSession: jasmine.createSpy(),
       augmentMediaEvent: jasmine.createSpy(),
-      trackMediaSession: jasmine.createSpy().and.returnValue(Promise.resolve())
+      trackMediaSession: jasmine.createSpy().and.returnValue(Promise.resolve()),
     };
     mediaSessionCacheManager = {
-      storeSession: jasmine.createSpy()
+      storeSession: jasmine.createSpy(),
     };
     config = {
       streamingMedia: {
         playerName: "testPlayerName",
         channel: "testChannel",
         adPingInterval: 5,
-        mainPingInterval: 10
-      }
+        mainPingInterval: 10,
+      },
     };
     trackMediaSession = createTrackMediaSession({
       config,
       logger,
       mediaEventManager,
-      mediaSessionCacheManager
+      mediaSessionCacheManager,
     });
   });
   it("should track a session", async () => {
@@ -49,10 +60,10 @@ describe("createTrackMediaEvent", () => {
       xdm: {
         mediaCollection: {
           sessionDetails: {
-            playerName
-          }
-        }
-      }
+            playerName,
+          },
+        },
+      },
     };
     mediaEventManager.createMediaSession.and.returnValue({ eventType });
     mediaEventManager.augmentMediaEvent.and.returnValue({
@@ -60,11 +71,11 @@ describe("createTrackMediaEvent", () => {
       xdm: {
         mediaCollection: {
           sessionDetails: {
-            playerName
+            playerName,
           },
-          playhead: 0
-        }
-      }
+          playhead: 0,
+        },
+      },
     });
     mediaEventManager.trackMediaSession.and.returnValue(sessionPromise);
 
@@ -75,7 +86,7 @@ describe("createTrackMediaEvent", () => {
     expect(mediaEventManager.augmentMediaEvent).toHaveBeenCalledWith({
       event,
       playerId,
-      getPlayerDetails
+      getPlayerDetails,
     });
 
     expect(mediaEventManager.trackMediaSession).toHaveBeenCalledWith({
@@ -83,8 +94,8 @@ describe("createTrackMediaEvent", () => {
       mediaOptions: {
         playerId,
         getPlayerDetails,
-        legacy: false
-      }
+        legacy: false,
+      },
     });
 
     expect(mediaSessionCacheManager.storeSession).toHaveBeenCalledWith({
@@ -92,8 +103,8 @@ describe("createTrackMediaEvent", () => {
       sessionDetails: {
         sessionPromise,
         getPlayerDetails,
-        playbackState: PlaybackState.MAIN
-      }
+        playbackState: PlaybackState.MAIN,
+      },
     });
   });
   it("should not track session when no valid configs", async () => {
@@ -101,14 +112,14 @@ describe("createTrackMediaEvent", () => {
     trackMediaSession = createTrackMediaSession({
       config,
       mediaEventManager,
-      mediaSessionCacheManager
+      mediaSessionCacheManager,
     });
     const options = {
       playerId: "player1",
       xdm: {
-        eventType: "media.sessionStart"
+        eventType: "media.sessionStart",
       },
-      getPlayerDetails: ""
+      getPlayerDetails: "",
     };
     return expectAsync(trackMediaSession(options)).toBeRejected();
   });

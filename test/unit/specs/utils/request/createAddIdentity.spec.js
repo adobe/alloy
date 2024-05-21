@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { createAddIdentity } from "../../../../../src/utils/request";
+import { createAddIdentity } from "../../../../../src/utils/request/index.js";
 
 describe("createAddIdentity", () => {
   it("should return a function to add identity", () => {
@@ -17,64 +17,64 @@ describe("createAddIdentity", () => {
     const addIdentity = createAddIdentity(content);
     expect(typeof addIdentity).toBe("function");
     addIdentity("IDNS", {
-      id: "ABC123"
+      id: "ABC123",
     });
     expect(content).toEqual({
       xdm: {
         identityMap: {
           IDNS: [
             {
-              id: "ABC123"
-            }
-          ]
-        }
-      }
+              id: "ABC123",
+            },
+          ],
+        },
+      },
     });
   });
   it("should append identity map if called more than once", () => {
     const content = {};
     const addIdentity = createAddIdentity(content);
     addIdentity("IDNS", {
-      id: "ABC123"
+      id: "ABC123",
     });
     addIdentity("IDNS", {
-      id: "ABC456"
+      id: "ABC456",
     });
     expect(content).toEqual({
       xdm: {
         identityMap: {
           IDNS: [
             {
-              id: "ABC123"
+              id: "ABC123",
             },
             {
-              id: "ABC456"
-            }
-          ]
-        }
-      }
+              id: "ABC456",
+            },
+          ],
+        },
+      },
     });
     addIdentity("IDNS2", {
-      id: "ABC456"
+      id: "ABC456",
     });
     expect(content).toEqual({
       xdm: {
         identityMap: {
           IDNS: [
             {
-              id: "ABC123"
+              id: "ABC123",
             },
             {
-              id: "ABC456"
-            }
+              id: "ABC456",
+            },
           ],
           IDNS2: [
             {
-              id: "ABC456"
-            }
-          ]
-        }
-      }
+              id: "ABC456",
+            },
+          ],
+        },
+      },
     });
   });
 });

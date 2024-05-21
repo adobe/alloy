@@ -13,12 +13,12 @@ import {
   buildStyleFromMobileParameters,
   createIframe,
   createIframeClickHandler,
-  displayHTMLContentInIframe
-} from "../../../../../../../src/components/Personalization/in-app-message-actions/actions/displayIframeContent";
-import cleanUpDomChanges from "../../../../../helpers/cleanUpDomChanges";
-import { getNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom";
-import { testResetCachedNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom/getNonce";
-import { TEXT_HTML } from "../../../../../../../src/constants/contentType";
+  displayHTMLContentInIframe,
+} from "../../../../../../../src/components/Personalization/in-app-message-actions/actions/displayIframeContent.js";
+import cleanUpDomChanges from "../../../../../helpers/cleanUpDomChanges.js";
+import { getNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+import { testResetCachedNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom/getNonce.js";
+import { TEXT_HTML } from "../../../../../../../src/constants/contentType.js";
 
 describe("DOM Actions on Iframe", () => {
   beforeEach(() => {
@@ -43,7 +43,7 @@ describe("DOM Actions on Iframe", () => {
         cornerRadius: 10,
         horizontalInset: 5,
         verticalInset: 10,
-        uiTakeover: true
+        uiTakeover: true,
       };
       const style = buildStyleFromMobileParameters(mobileParameters);
       expect(style.width).toBe("80%");
@@ -115,7 +115,7 @@ describe("DOM Actions on Iframe", () => {
       const mockClickHandler = jasmine.createSpy("clickHandler");
       const iframe = createIframe(mockHtmlContentWithScript, mockClickHandler);
 
-      const blob = await fetch(iframe.src).then(r => r.blob());
+      const blob = await fetch(iframe.src).then((r) => r.blob());
       const text = await blob.text();
       const parser = new DOMParser();
       const iframeDocument = parser.parseFromString(text, TEXT_HTML);
@@ -146,13 +146,13 @@ describe("DOM Actions on Iframe", () => {
         height: 60,
         cornerRadius: 10,
         horizontalInset: 5,
-        verticalInset: 10
+        verticalInset: 10,
       };
     });
 
     it("should remove display message when dismiss is clicked and UI takeover is false", () => {
       Object.assign(mobileParameters, {
-        uiTakeover: false
+        uiTakeover: false,
       });
 
       const anchor = document.createElement("a");
@@ -163,25 +163,25 @@ describe("DOM Actions on Iframe", () => {
       const mockEvent = {
         target: anchor,
         preventDefault: () => {},
-        stopImmediatePropagation: () => {}
+        stopImmediatePropagation: () => {},
       };
       const iframeClickHandler = createIframeClickHandler(mockedInteract);
       iframeClickHandler(mockEvent);
       const alloyMessagingContainer = document.getElementById(
-        "alloy-messaging-container"
+        "alloy-messaging-container",
       );
       expect(mockedInteract).toHaveBeenCalledOnceWith("dismiss", {
         label: "Cancel",
         id: "cancel",
         uuid: "12345",
-        link: ""
+        link: "",
       });
       expect(alloyMessagingContainer).toBeNull();
     });
 
     it("should remove display message when dismiss is clicked and Ui takeover is true", () => {
       Object.assign(mobileParameters, {
-        uiTakeover: true
+        uiTakeover: true,
       });
 
       const overlayContainer = document.createElement("div");
@@ -197,18 +197,18 @@ describe("DOM Actions on Iframe", () => {
       const mockEvent = {
         target: anchor,
         preventDefault: () => {},
-        stopImmediatePropagation: () => {}
+        stopImmediatePropagation: () => {},
       };
       const iframeClickHandler = createIframeClickHandler(mockedInteract);
       iframeClickHandler(mockEvent);
       const overlayContainerAfterDismissal = document.getElementById(
-        "alloy-overlay-container"
+        "alloy-overlay-container",
       );
       expect(mockedInteract).toHaveBeenCalledOnceWith("dismiss", {
         label: "Aloha",
         id: "cancel",
         uuid: "54321",
-        link: ""
+        link: "",
       });
 
       expect(overlayContainerAfterDismissal).toBeNull();
@@ -217,7 +217,7 @@ describe("DOM Actions on Iframe", () => {
     it("extracts propositionAction details from anchor tag and sends to interact()", () => {
       const mockNavigateToUrl = jasmine.createSpy("mockNavigateToUrl");
       Object.assign(mobileParameters, {
-        uiTakeover: true
+        uiTakeover: true,
       });
 
       const anchor = document.createElement("a");
@@ -229,25 +229,25 @@ describe("DOM Actions on Iframe", () => {
       const mockEvent = {
         target: anchor,
         preventDefault: () => {},
-        stopImmediatePropagation: () => {}
+        stopImmediatePropagation: () => {},
       };
       const iframeClickHandler = createIframeClickHandler(
         mockedInteract,
-        mockNavigateToUrl
+        mockNavigateToUrl,
       );
       iframeClickHandler(mockEvent);
       const overlayContainerAfterDismissal = document.getElementById(
-        "alloy-overlay-container"
+        "alloy-overlay-container",
       );
       expect(mockedInteract).toHaveBeenCalledOnceWith("dismiss", {
         label: "Woof",
         id: "accept",
         uuid: "blippi",
-        link: "https://www.google.com"
+        link: "https://www.google.com",
       });
       expect(mockNavigateToUrl).toHaveBeenCalledOnceWith(
         "https://www.google.com",
-        true
+        true,
       );
       expect(overlayContainerAfterDismissal).toBeNull();
     });
@@ -300,7 +300,7 @@ describe("DOM Actions on Iframe", () => {
           width: 72,
           displayAnimation: "bottom",
           backdropColor: "#4CA206",
-          height: 63
+          height: 63,
         },
         content:
           '<!doctype html>\n<html>\n<head>\n  <title>Bumper Sale!</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      font-family: Arial, sans-serif;\n    }\n\n    #announcement {\n      position: fixed;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 100%;\n      background-color: rgba(0, 0, 0, 0.8);\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: center;\n      color: #fff;\n    }\n\n    #announcement img {\n      max-width: 80%;\n      height: auto;\n      margin-bottom: 20px;\n    }\n\n    #cross {\n      position: absolute;\n      top: 10px;\n      right: 10px;\n      cursor: pointer;\n      font-size: 24px;\n      color: #fff;\n      text-decoration: none;\n    }\n\n    #buttons {\n      display: flex;\n      justify-content: center;\n      margin-top: 20px;\n    }\n\n    #buttons a {\n      margin: 0 10px;\n      padding: 10px 20px;\n      background-color: #ff5500;\n      color: #fff;\n      text-decoration: none;\n      border-radius: 4px;\n      font-weight: bold;\n      transition: background-color 0.3s ease;\n    }\n\n    #buttons a:hover {\n      background-color: #ff3300;\n    }\n  </style>\n</head>\n<body>\n<div id="announcement">\n  <a id="cross" href="adbinapp://dismiss?interaction=cancel">✕</a>\n  <h2>Black Friday Sale!</h2>\n   <img src="https://media3.giphy.com/media/kLhcBWs9Nza4hCW5IS/200.gif" alt="Technology Image">\n  <p>Don\'t miss out on our incredible discounts and deals at our gadgets!</p>\n  <div id="buttons">\n    <a href="adbinapp://dismiss?interaction=clicked&amp;link=https%3A%2F%2Fwww.nike.com%2Fw%2Fmens-jordan-clothing-37eefz6ymx6znik1">Shop</a>\n    <a href="adbinapp://dismiss?interaction=cancel">Dismiss</a>\n  </div>\n</div>\n<script>\n  // Listen for a click on the button inside the iframe\n  document.getElementById("buttons").addEventListener("click", handleButtonClick);\n  document.getElementById("cross").addEventListener("click", handleButtonClick);\n  function handleButtonClick(event) {\n    console.log("A button was clicked with text ", event.target);\n    const href = event.target.getAttribute("href");\n    // Send a message to the parent page\n    console.log("I am sending a message to the parent ", href);\n    parent.postMessage({ "Element was clicked": href }, "*");\n  }\n</script>\n\n</body></html>\n',
@@ -314,14 +314,13 @@ describe("DOM Actions on Iframe", () => {
             correlationID: "8794bfb9-3254-478a-860e-04f9da59ad82",
             characteristics: {
               eventToken:
-                "eyJtZXNzYWdlRXhlY3V0aW9uIjp7Im1lc3NhZ2VFeGVjdXRpb25JRCI6Ik5BIiwibWVzc2FnZUlEIjoiODc5NGJmYjktMzI1NC00NzhhLTg2MGUtMDRmOWRhNTlhZDgyIiwibWVzc2FnZVB1YmxpY2F0aW9uSUQiOiI1ZmYzZmM5Zi0zZTY2LTRiNzktODRmMS1kNzUzMGYwOWQ1ZTIiLCJtZXNzYWdlVHlwZSI6Im1hcmtldGluZyIsImNhbXBhaWduSUQiOiIyOGJlYTAxMS1lNTk2LTQ0MjktYjhmNy1iNWJkNjMwYzY3NDMiLCJjYW1wYWlnblZlcnNpb25JRCI6ImQ5OTQzODJhLTJjZDAtNDkwYS04NGM4LWM0NTk2NmMwYjYwZiIsImNhbXBhaWduQWN0aW9uSUQiOiJiNDU0OThjYi05NmQxLTQxN2EtODFlYi0yZjA5MTU3YWQ4YzYifSwibWVzc2FnZVByb2ZpbGUiOnsibWVzc2FnZVByb2ZpbGVJRCI6IjQ2MTg5Yjg1LWEwYTYtNDc4NS1hNmJlLTg4OWRiZjU3NjhiOSIsImNoYW5uZWwiOnsiX2lkIjoiaHR0cHM6Ly9ucy5hZG9iZS5jb20veGRtL2NoYW5uZWxzL2luQXBwIiwiX3R5cGUiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbC10eXBlcy9pbkFwcCJ9fX0="
+                "eyJtZXNzYWdlRXhlY3V0aW9uIjp7Im1lc3NhZ2VFeGVjdXRpb25JRCI6Ik5BIiwibWVzc2FnZUlEIjoiODc5NGJmYjktMzI1NC00NzhhLTg2MGUtMDRmOWRhNTlhZDgyIiwibWVzc2FnZVB1YmxpY2F0aW9uSUQiOiI1ZmYzZmM5Zi0zZTY2LTRiNzktODRmMS1kNzUzMGYwOWQ1ZTIiLCJtZXNzYWdlVHlwZSI6Im1hcmtldGluZyIsImNhbXBhaWduSUQiOiIyOGJlYTAxMS1lNTk2LTQ0MjktYjhmNy1iNWJkNjMwYzY3NDMiLCJjYW1wYWlnblZlcnNpb25JRCI6ImQ5OTQzODJhLTJjZDAtNDkwYS04NGM4LWM0NTk2NmMwYjYwZiIsImNhbXBhaWduQWN0aW9uSUQiOiJiNDU0OThjYi05NmQxLTQxN2EtODFlYi0yZjA5MTU3YWQ4YzYifSwibWVzc2FnZVByb2ZpbGUiOnsibWVzc2FnZVByb2ZpbGVJRCI6IjQ2MTg5Yjg1LWEwYTYtNDc4NS1hNmJlLTg4OWRiZjU3NjhiOSIsImNoYW5uZWwiOnsiX2lkIjoiaHR0cHM6Ly9ucy5hZG9iZS5jb20veGRtL2NoYW5uZWxzL2luQXBwIiwiX3R5cGUiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbC10eXBlcy9pbkFwcCJ9fX0=",
             },
             activity: {
-              id:
-                "28bea011-e596-4429-b8f7-b5bd630c6743#b45498cb-96d1-417a-81eb-2f09157ad8c6"
-            }
-          }
-        }
+              id: "28bea011-e596-4429-b8f7-b5bd630c6743#b45498cb-96d1-417a-81eb-2f09157ad8c6",
+            },
+          },
+        },
       };
 
       displayHTMLContentInIframe(settings, mockCollect);
@@ -341,13 +340,13 @@ describe("DOM Actions on Iframe", () => {
               height: "100%",
               background: "transparent",
               opacity: 0.5,
-              backgroundColor: "#FFFFFF"
+              backgroundColor: "#FFFFFF",
             },
             params: {
               enabled: true,
               parentElement: "body",
-              insertionMethod: "appendChild"
-            }
+              insertionMethod: "appendChild",
+            },
           },
           "alloy-messaging-container": {
             style: {
@@ -363,30 +362,30 @@ describe("DOM Actions on Iframe", () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              height: "63vh"
+              height: "63vh",
             },
             params: {
               enabled: true,
               parentElement: "body",
-              insertionMethod: "appendChild"
-            }
+              insertionMethod: "appendChild",
+            },
           },
           "alloy-content-iframe": {
             style: {
               width: "100%",
-              height: "100%"
+              height: "100%",
             },
             params: {
               enabled: true,
               parentElement: "#alloy-messaging-container",
-              insertionMethod: "appendChild"
-            }
-          }
+              insertionMethod: "appendChild",
+            },
+          },
         },
         content:
           '<!doctype html>\n<html>\n<head>\n  <title>Bumper Sale!</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      font-family: Arial, sans-serif;\n    }\n\n    #announcement {\n      position: fixed;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 100%;\n      background-color: rgba(0, 0, 0, 0.8);\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: center;\n      color: #fff;\n    }\n\n    #announcement img {\n      max-width: 80%;\n      height: auto;\n      margin-bottom: 20px;\n    }\n\n    #cross {\n      position: absolute;\n      top: 10px;\n      right: 10px;\n      cursor: pointer;\n      font-size: 24px;\n      color: #fff;\n      text-decoration: none;\n    }\n\n    #buttons {\n      display: flex;\n      justify-content: center;\n      margin-top: 20px;\n    }\n\n    #buttons a {\n      margin: 0 10px;\n      padding: 10px 20px;\n      background-color: #ff5500;\n      color: #fff;\n      text-decoration: none;\n      border-radius: 4px;\n      font-weight: bold;\n      transition: background-color 0.3s ease;\n    }\n\n    #buttons a:hover {\n      background-color: #ff3300;\n    }\n  </style>\n</head>\n<body>\n<div id="announcement">\n  <a id="cross" href="adbinapp://dismiss?interaction=cancel">✕</a>\n  <h2>Black Friday Sale!</h2>\n   <img src="https://media3.giphy.com/media/kLhcBWs9Nza4hCW5IS/200.gif" alt="Technology Image">\n  <p>Don\'t miss out on our incredible discounts and deals at our gadgets!</p>\n  <div id="buttons">\n    <a href="adbinapp://dismiss?interaction=clicked&amp;link=https%3A%2F%2Fwww.nike.com%2Fw%2Fmens-jordan-clothing-37eefz6ymx6znik1">Shop</a>\n    <a href="adbinapp://dismiss?interaction=cancel">Dismiss</a>\n  </div>\n</div>\n<script>\n  // Listen for a click on the button inside the iframe\n  document.getElementById("buttons").addEventListener("click", handleButtonClick);\n  document.getElementById("cross").addEventListener("click", handleButtonClick);\n  function handleButtonClick(event) {\n    console.log("A button was clicked with text ", event.target);\n    const href = event.target.getAttribute("href");\n    // Send a message to the parent page\n    console.log("I am sending a message to the parent ", href);\n    parent.postMessage({ "Element was clicked": href }, "*");\n  }\n</script>\n\n</body></html>\n',
         contentType: TEXT_HTML,
-        schema: "https://ns.adobe.com/personalization/message/in-app"
+        schema: "https://ns.adobe.com/personalization/message/in-app",
       };
 
       displayHTMLContentInIframe(settings, mockCollect);
@@ -404,13 +403,13 @@ describe("DOM Actions on Iframe", () => {
               height: "100%",
               background: "transparent",
               opacity: 0.5,
-              backgroundColor: "#FFFFFF"
+              backgroundColor: "#FFFFFF",
             },
             params: {
               enabled: false,
               parentElement: "body",
-              insertionMethod: "appendChild"
-            }
+              insertionMethod: "appendChild",
+            },
           },
           "alloy-messaging-container": {
             style: {
@@ -426,30 +425,30 @@ describe("DOM Actions on Iframe", () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              height: "63vh"
+              height: "63vh",
             },
             params: {
               enabled: true,
               parentElement: "body",
-              insertionMethod: "appendChild"
-            }
+              insertionMethod: "appendChild",
+            },
           },
           "alloy-content-iframe": {
             style: {
               width: "100%",
-              height: "100%"
+              height: "100%",
             },
             params: {
               enabled: true,
               parentElement: "#alloy-messaging-container",
-              insertionMethod: "appendChild"
-            }
-          }
+              insertionMethod: "appendChild",
+            },
+          },
         },
         content:
           '<!doctype html>\n<html>\n<head>\n  <title>Bumper Sale!</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      font-family: Arial, sans-serif;\n    }\n\n    #announcement {\n      position: fixed;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 100%;\n      background-color: rgba(0, 0, 0, 0.8);\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: center;\n      color: #fff;\n    }\n\n    #announcement img {\n      max-width: 80%;\n      height: auto;\n      margin-bottom: 20px;\n    }\n\n    #cross {\n      position: absolute;\n      top: 10px;\n      right: 10px;\n      cursor: pointer;\n      font-size: 24px;\n      color: #fff;\n      text-decoration: none;\n    }\n\n    #buttons {\n      display: flex;\n      justify-content: center;\n      margin-top: 20px;\n    }\n\n    #buttons a {\n      margin: 0 10px;\n      padding: 10px 20px;\n      background-color: #ff5500;\n      color: #fff;\n      text-decoration: none;\n      border-radius: 4px;\n      font-weight: bold;\n      transition: background-color 0.3s ease;\n    }\n\n    #buttons a:hover {\n      background-color: #ff3300;\n    }\n  </style>\n</head>\n<body>\n<div id="announcement">\n  <a id="cross" href="adbinapp://dismiss?interaction=cancel">✕</a>\n  <h2>Black Friday Sale!</h2>\n   <img src="https://media3.giphy.com/media/kLhcBWs9Nza4hCW5IS/200.gif" alt="Technology Image">\n  <p>Don\'t miss out on our incredible discounts and deals at our gadgets!</p>\n  <div id="buttons">\n    <a href="adbinapp://dismiss?interaction=clicked&amp;link=https%3A%2F%2Fwww.nike.com%2Fw%2Fmens-jordan-clothing-37eefz6ymx6znik1">Shop</a>\n    <a href="adbinapp://dismiss?interaction=cancel">Dismiss</a>\n  </div>\n</div>\n<script>\n  // Listen for a click on the button inside the iframe\n  document.getElementById("buttons").addEventListener("click", handleButtonClick);\n  document.getElementById("cross").addEventListener("click", handleButtonClick);\n  function handleButtonClick(event) {\n    console.log("A button was clicked with text ", event.target);\n    const href = event.target.getAttribute("href");\n    // Send a message to the parent page\n    console.log("I am sending a message to the parent ", href);\n    parent.postMessage({ "Element was clicked": href }, "*");\n  }\n</script>\n\n</body></html>\n',
         contentType: TEXT_HTML,
-        schema: "https://ns.adobe.com/personalization/message/in-app"
+        schema: "https://ns.adobe.com/personalization/message/in-app",
       };
 
       displayHTMLContentInIframe(settings, mockCollect);

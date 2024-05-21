@@ -10,16 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isObject from "../isObject";
-import { assertValid } from "./utils";
+import isObject from "../isObject.js";
+import { assertValid } from "./utils.js";
 
-export default schema =>
+export default (schema) =>
   function objectOf(value, path) {
     assertValid(isObject(value), value, path, "an object");
 
     const errors = [];
     const validatedObject = {};
-    Object.keys(schema).forEach(subKey => {
+    Object.keys(schema).forEach((subKey) => {
       const subValue = value[subKey];
       const subSchema = schema[subKey];
       const subPath = path ? `${path}.${subKey}` : subKey;
@@ -34,7 +34,7 @@ export default schema =>
     });
 
     // copy over unknown properties
-    Object.keys(value).forEach(subKey => {
+    Object.keys(value).forEach((subKey) => {
       if (!Object.prototype.hasOwnProperty.call(validatedObject, subKey)) {
         validatedObject[subKey] = value[subKey];
       }

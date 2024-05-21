@@ -10,9 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createNode, appendNode, removeNode } from "../../../utils/dom";
-import { STYLE } from "../../../constants/tagName";
-import { getElementById, getNonce } from "../dom-actions/dom";
+import {
+  createNode,
+  appendNode,
+  removeNode,
+} from "../../../utils/dom/index.js";
+import { STYLE } from "../../../constants/tagName.js";
+import { getElementById, getNonce } from "../dom-actions/dom/index.js";
 
 const PREHIDING_ID = "alloy-prehiding";
 const HIDING_STYLE_DEFINITION = "{ visibility: hidden }";
@@ -21,7 +25,7 @@ const HIDING_STYLE_DEFINITION = "{ visibility: hidden }";
 // so storing nodes even for multiple Alloy instances is fine
 const styleNodes = {};
 
-export const hideElements = prehidingSelector => {
+export const hideElements = (prehidingSelector) => {
   // if we have different events with the same
   // prehiding selector we don't want to recreate
   // the style tag
@@ -31,10 +35,10 @@ export const hideElements = prehidingSelector => {
 
   const nonce = getNonce();
   const attrs = {
-    ...(nonce && { nonce })
+    ...(nonce && { nonce }),
   };
   const props = {
-    textContent: `${prehidingSelector} ${HIDING_STYLE_DEFINITION}`
+    textContent: `${prehidingSelector} ${HIDING_STYLE_DEFINITION}`,
   };
   const node = createNode(STYLE, attrs, props);
 
@@ -43,7 +47,7 @@ export const hideElements = prehidingSelector => {
   styleNodes[prehidingSelector] = node;
 };
 
-export const showElements = prehidingSelector => {
+export const showElements = (prehidingSelector) => {
   const node = styleNodes[prehidingSelector];
 
   if (node) {
@@ -52,7 +56,7 @@ export const showElements = prehidingSelector => {
   }
 };
 
-export const hideContainers = prehidingStyle => {
+export const hideContainers = (prehidingStyle) => {
   if (!prehidingStyle) {
     return;
   }

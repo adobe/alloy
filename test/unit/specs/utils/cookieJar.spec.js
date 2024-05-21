@@ -11,4 +11,4 @@ governing permissions and limitations under the License.
 */
 
 // eslint-disable-next-line no-unused-vars
-import cookieJar from "../../../../src/utils/cookieJar";
+import cookieJar from "../../../../src/utils/cookieJar.js";

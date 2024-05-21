@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import configValidators from "../../../../../src/components/StreamingMedia/configValidators";
-import testConfigValidators from "../../../helpers/testConfigValidators";
+import configValidators from "../../../../../src/components/StreamingMedia/configValidators.js";
+import testConfigValidators from "../../../helpers/testConfigValidators.js";
 
 describe("Streaming Media config validators", () => {
   testConfigValidators({
@@ -21,15 +21,15 @@ describe("Streaming Media config validators", () => {
       {
         streamingMedia: {
           channel: "test-channel",
-          playerName: "test-player-name"
-        }
+          playerName: "test-player-name",
+        },
       },
       {
         streamingMedia: {
           channel: "test-channel",
           playerName: "test-player-name",
-          appVersion: "test-app-version"
-        }
+          appVersion: "test-app-version",
+        },
       },
       {
         streamingMedia: {
@@ -37,25 +37,25 @@ describe("Streaming Media config validators", () => {
           playerName: "test-player-name",
           appVersion: "test-app-version",
           mainPingInterval: 10,
-          adPingInterval: 1
-        }
-      }
+          adPingInterval: 1,
+        },
+      },
     ],
     invalidConfigurations: [
       { streamingMedia: "" },
       { streamingMedia: {} },
       { streamingMedia: { channel: "test-channel" } },
-      { streamingMedia: { playerName: "test-player-name" } }
+      { streamingMedia: { playerName: "test-player-name" } },
     ],
-    defaultValues: {}
+    defaultValues: {},
   });
 
   it("provides default values when Streaming media configured", () => {
     const config = configValidators({
       streamingMedia: {
         channel: "test-channel",
-        playerName: "test-player-name"
-      }
+        playerName: "test-player-name",
+      },
     });
     expect(config.streamingMedia.adPingInterval).toBe(10);
     expect(config.streamingMedia.mainPingInterval).toBe(10);

@@ -17,12 +17,12 @@ export default ({ fetch }) => {
       cache: "no-cache",
       credentials: "include", // To set the cookie header in the request.
       headers: {
-        "Content-Type": "text/plain; charset=UTF-8"
+        "Content-Type": "text/plain; charset=UTF-8",
       },
       referrerPolicy: "no-referrer-when-downgrade",
-      body
-    }).then(response => {
-      return response.text().then(responseBody => ({
+      body,
+    }).then((response) => {
+      return response.text().then((responseBody) => ({
         statusCode: response.status,
         // We expose headers through a function instead of creating an object
         // with all the headers up front largely because the native
@@ -31,7 +31,7 @@ export default ({ fetch }) => {
         getHeader(name) {
           return response.headers.get(name);
         },
-        body: responseBody
+        body: responseBody,
       }));
     });
   };

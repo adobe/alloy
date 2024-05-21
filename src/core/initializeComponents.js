@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { stackError } from "../utils";
+import { stackError } from "../utils/index.js";
 
 export default ({
   componentCreators,
   lifecycle,
   componentRegistry,
-  getImmediatelyAvailableTools
+  getImmediatelyAvailableTools,
 }) => {
-  componentCreators.forEach(createComponent => {
+  componentCreators.forEach((createComponent) => {
     const { namespace } = createComponent;
     // TO-DOCUMENT: Helpers that we inject into factories.
     const tools = getImmediatelyAvailableTools(namespace);
@@ -28,7 +28,7 @@ export default ({
     } catch (error) {
       throw stackError({
         error,
-        message: `[${namespace}] An error occurred during component creation.`
+        message: `[${namespace}] An error occurred during component creation.`,
       });
     }
     componentRegistry.register(namespace, component);
@@ -36,7 +36,7 @@ export default ({
 
   return lifecycle
     .onComponentsRegistered({
-      lifecycle
+      lifecycle,
     })
     .then(() => componentRegistry);
 };

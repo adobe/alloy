@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { setStyle } from "./dom";
+import { setStyle } from "./dom/index.js";
 
 export default (container, styles) => {
   const { priority, ...style } = styles;
 
-  Object.keys(style).forEach(key => {
+  Object.keys(style).forEach((key) => {
     setStyle(container, key, style[key], priority);
   });
 };

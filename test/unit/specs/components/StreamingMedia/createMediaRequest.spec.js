@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createMediaRequest from "../../../../../src/components/StreamingMedia/createMediaRequest";
+import createMediaRequest from "../../../../../src/components/StreamingMedia/createMediaRequest.js";
 
 describe("StreamingMedia::createMediaRequest", () => {
   it("should call createRequest with correct parameters", () => {

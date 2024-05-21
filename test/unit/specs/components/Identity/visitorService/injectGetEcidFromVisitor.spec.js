@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectGetEcidFromVisitor from "../../../../../../src/components/Identity/visitorService/injectGetEcidFromVisitor";
+import injectGetEcidFromVisitor from "../../../../../../src/components/Identity/visitorService/injectGetEcidFromVisitor.js";
 
 const logger = jasmine.createSpyObj(["info"]);
 
@@ -21,7 +21,7 @@ Visitor.getInstance = () => {
       setTimeout(() => {
         cb("ecid123");
       }, 0);
-    }
+    },
   };
 };
 
@@ -53,7 +53,7 @@ describe("getEcidFromVisitor", () => {
       const getEcidFromVisitor = injectGetEcidFromVisitor({
         logger,
         orgId,
-        awaitVisitorOptIn
+        awaitVisitorOptIn,
       });
       return expectAsync(getEcidFromVisitor()).toBeResolvedTo("ecid123");
     });
@@ -69,7 +69,7 @@ describe("getEcidFromVisitor", () => {
       const getEcidFromVisitor = injectGetEcidFromVisitor({
         logger,
         orgId,
-        awaitVisitorOptIn
+        awaitVisitorOptIn,
       });
       return expectAsync(getEcidFromVisitor()).toBeResolvedTo(undefined);
     });
@@ -83,7 +83,7 @@ describe("getEcidFromVisitor", () => {
     const getEcidFromVisitor = injectGetEcidFromVisitor({
       logger,
       orgId,
-      awaitVisitorOptIn
+      awaitVisitorOptIn,
     });
     window.Visitor = Visitor;
     return expectAsync(getEcidFromVisitor()).toBeResolvedTo("ecid123");

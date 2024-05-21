@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as createAddIdentity } from "./createAddIdentity";
-export { default as createDataCollectionRequest } from "./createDataCollectionRequest";
-export { default as createDataCollectionRequestPayload } from "./createDataCollectionRequestPayload";
-export { default as createHasIdentity } from "./createHasIdentity";
-export { default as createRequest } from "./createRequest";
-export { default as createRequestParams } from "./createRequestParams";
-export { default as createRequestPayload } from "./createRequestPayload";
-export { default as createGetAssuranceValidationTokenParams } from "./createGetAssuranceValidationTokenParams";
+export { default as createAddIdentity } from "./createAddIdentity.js";
+export { default as createDataCollectionRequest } from "./createDataCollectionRequest.js";
+export { default as createDataCollectionRequestPayload } from "./createDataCollectionRequestPayload.js";
+export { default as createHasIdentity } from "./createHasIdentity.js";
+export { default as createRequest } from "./createRequest.js";
+export { default as createRequestParams } from "./createRequestParams.js";
+export { default as createRequestPayload } from "./createRequestPayload.js";
+export { default as createGetAssuranceValidationTokenParams } from "./createGetAssuranceValidationTokenParams.js";

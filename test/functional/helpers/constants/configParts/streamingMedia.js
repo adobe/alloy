@@ -12,6 +12,6 @@ governing permissions and limitations under the License.
 export default {
   streamingMedia: {
     channel: "functional tests channel",
-    playerName: "functional test player"
-  }
+    playerName: "functional test player",
+  },
 };

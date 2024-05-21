@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { getNamespacedCookieName } from "../../utils";
-import { CONSENT } from "../../constants/cookieNameKey";
+import { getNamespacedCookieName } from "../../utils/index.js";
+import { CONSENT } from "../../constants/cookieNameKey.js";
 
 export default ({ parseConsentCookie, orgId, cookieJar }) => {
   const consentCookieName = getNamespacedCookieName(orgId, CONSENT);
@@ -23,6 +23,6 @@ export default ({ parseConsentCookie, orgId, cookieJar }) => {
     },
     clear() {
       cookieJar.remove(consentCookieName);
-    }
+    },
   };
 };

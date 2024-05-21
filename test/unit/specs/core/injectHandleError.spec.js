@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectHandleError from "../../../../src/core/injectHandleError";
+import injectHandleError from "../../../../src/core/injectHandleError.js";
 
 const expectedMessage = "[testinstanceName] Bad thing happened.";
 
 describe("injectHandleError", () => {
   it("converts non-error to error and throws", () => {
     const handleError = injectHandleError({
-      errorPrefix: "[testinstanceName]"
+      errorPrefix: "[testinstanceName]",
     });
 
     expect(() => {
@@ -27,7 +27,7 @@ describe("injectHandleError", () => {
 
   it("rethrows error with instanceName prepended", () => {
     const handleError = injectHandleError({
-      errorPrefix: "[testinstanceName]"
+      errorPrefix: "[testinstanceName]",
     });
 
     expect(() => {
@@ -39,14 +39,14 @@ describe("injectHandleError", () => {
     const logger = jasmine.createSpyObj("logger", ["warn"]);
     const handleError = injectHandleError({
       errorPrefix: "[testinstanceName]",
-      logger
+      logger,
     });
 
     const error = new Error("User declined consent.");
     error.code = "declinedConsent";
     expect(handleError(error, "myoperation")).toEqual({});
     expect(logger.warn).toHaveBeenCalledWith(
-      "The myoperation could not fully complete. User declined consent."
+      "The myoperation could not fully complete. User declined consent.",
     );
   });
 });

@@ -1,4 +1,15 @@
-import createSubscription from "../../../../src/utils/createSubscription";
+/*
+Copyright 2024 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+import createSubscription from "../../../../src/utils/createSubscription.js";
 
 describe("createSubscription", () => {
   const value = { something: 42 };
@@ -93,15 +104,15 @@ describe("createSubscription", () => {
 
     const unsubsubscribe1 = subscription.add(callback1, {
       name: "jim",
-      profitMargin: 3
+      profitMargin: 3,
     });
     const unsubsubscribe2 = subscription.add(callback2, {
       name: "bob",
-      profitMargin: 1.8
+      profitMargin: 1.8,
     });
     const unsubsubscribe3 = subscription.add(callback3, {
       name: "tina",
-      profitMargin: 1.1
+      profitMargin: 1.1,
     });
 
     subscription.emit(10);
@@ -125,22 +136,22 @@ describe("createSubscription", () => {
     subscription.setEmissionCondition((params, result) => {
       const price = parseInt(
         result.substring(result.length - 2, result.length),
-        10
+        10,
       );
       return price < 20;
     });
 
     const unsubsubscribe1 = subscription.add(callback1, {
       name: "jim",
-      profitMargin: 3
+      profitMargin: 3,
     });
     const unsubsubscribe2 = subscription.add(callback2, {
       name: "bob",
-      profitMargin: 1.8
+      profitMargin: 1.8,
     });
     const unsubsubscribe3 = subscription.add(callback3, {
       name: "tina",
-      profitMargin: 1.1
+      profitMargin: 1.1,
     });
 
     subscription.emit(10);

@@ -12,8 +12,8 @@ governing permissions and limitations under the License.
 
 import "jasmine-expect";
 import validateApplyPropositionsOptions, {
-  EMPTY_PROPOSITIONS
-} from "../../../../../src/components/Personalization/validateApplyPropositionsOptions";
+  EMPTY_PROPOSITIONS,
+} from "../../../../../src/components/Personalization/validateApplyPropositionsOptions.js";
 
 const PROPOSITIONS = [
   {
@@ -28,28 +28,28 @@ const PROPOSITIONS = [
           type: "click",
           format: "application/vnd.adobe.target.dom-action",
           selector:
-            "#root > DIV:nth-of-type(1) > UL:nth-of-type(1) > LI:nth-of-type(4) > A:nth-of-type(1)"
-        }
-      }
+            "#root > DIV:nth-of-type(1) > UL:nth-of-type(1) > LI:nth-of-type(4) > A:nth-of-type(1)",
+        },
+      },
     ],
     scopeDetails: {
       decisionProvider: "TGT",
       activity: {
-        id: "442358"
+        id: "442358",
       },
       characteristics: {
         eventToken: "+8J+6aZYrFL4hGqSwULhUQ==",
-        analyticsToken: "442358:0:0|32767"
-      }
-    }
-  }
+        analyticsToken: "442358:0:0|32767",
+      },
+    },
+  },
 ];
 
 const METADATA = {
   scope1: {
     selector: "#home-item1",
-    actionType: "setHtml"
-  }
+    actionType: "setHtml",
+  },
 };
 
 describe("Personalization::validateApplyPropositionsOptions", () => {
@@ -59,13 +59,13 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
   beforeEach(() => {
     loggerSpy = jasmine.createSpy("logger.warn");
     logger = {
-      warn: loggerSpy
+      warn: loggerSpy,
     };
   });
 
   it("it should log a warning when no options are present", () => {
     const result = validateApplyPropositionsOptions({
-      logger
+      logger,
     });
 
     expect(loggerSpy).toHaveBeenCalled();
@@ -75,7 +75,7 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
   it("it should not log a warning when options is empty object", () => {
     const result = validateApplyPropositionsOptions({
       logger,
-      options: {}
+      options: {},
     });
 
     expect(loggerSpy).not.toHaveBeenCalled();
@@ -86,8 +86,8 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
     const result = validateApplyPropositionsOptions({
       logger,
       options: {
-        propositions: []
-      }
+        propositions: [],
+      },
     });
 
     expect(loggerSpy).not.toHaveBeenCalled();
@@ -98,8 +98,8 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
     const result = validateApplyPropositionsOptions({
       logger,
       options: {
-        propositions: [{}]
-      }
+        propositions: [{}],
+      },
     });
 
     expect(loggerSpy).not.toHaveBeenCalled();
@@ -114,10 +114,10 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
           {
             a: "a",
             b: "b",
-            c: "c"
-          }
-        ]
-      }
+            c: "c",
+          },
+        ],
+      },
     });
 
     expect(loggerSpy).not.toHaveBeenCalled();
@@ -129,8 +129,8 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
       logger,
       options: {
         bad: "bad",
-        propositions: PROPOSITIONS
-      }
+        propositions: PROPOSITIONS,
+      },
     });
 
     expect(loggerSpy).not.toHaveBeenCalled();
@@ -142,8 +142,8 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
       logger,
       options: {
         propositions: PROPOSITIONS,
-        metadata: []
-      }
+        metadata: [],
+      },
     });
 
     expect(loggerSpy).toHaveBeenCalled();
@@ -155,8 +155,8 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
       logger,
       options: {
         propositions: PROPOSITIONS,
-        metadata: METADATA
-      }
+        metadata: METADATA,
+      },
     });
 
     expect(loggerSpy).not.toHaveBeenCalled();

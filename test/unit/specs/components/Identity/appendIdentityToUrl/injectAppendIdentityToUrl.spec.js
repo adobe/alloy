@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectAppendIdentityToUrl from "../../../../../../src/components/Identity/appendIdentityToUrl/injectAppendIdentityToUrl";
+import injectAppendIdentityToUrl from "../../../../../../src/components/Identity/appendIdentityToUrl/injectAppendIdentityToUrl.js";
 
 describe("appendIdentityToUrl", () => {
   const date = new Date(1234);
   const orgId = "myorg@adobe";
   const appendIdentityToUrl = injectAppendIdentityToUrl({
     dateProvider: () => date,
-    orgId
+    orgId,
   });
   const ecid = "1234";
   const qsp = "adobe_mc=TS%3D1%7CMCMID%3D1234%7CMCORGID%3Dmyorg%2540adobe";
@@ -42,6 +42,6 @@ describe("appendIdentityToUrl", () => {
   test("https://adobe.com?a=1#myhash", `https://adobe.com?a=1&${qsp}#myhash`);
   test(
     "https://adobe.com#myweird?hash",
-    `https://adobe.com?${qsp}#myweird?hash`
+    `https://adobe.com?${qsp}#myweird?hash`,
   );
 });

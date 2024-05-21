@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -132,7 +132,7 @@
         purpose10: true,
         vendorConsent: true,
         shouldWaitForExplicitConsent: true,
-        tcString: getUrlParameter("consentString")
+        tcString: getUrlParameter("consentString"),
       });
 
       var visitor = Visitor.getInstance(orgId, {
@@ -140,7 +140,7 @@
         isIabContext: true,
         isOptInStorageEnabled: false,
         audienceManagerServer:
-          getUrlParameter("aamServer") || "dcs-qe1.demdex.net"
+          getUrlParameter("aamServer") || "dcs-qe1.demdex.net",
       });
     </script>
   </head>
@@ -153,27 +153,27 @@
 
     <script>
       var submitBtn = document.querySelector(".submit");
-      submitBtn.addEventListener("click", function() {
+      submitBtn.addEventListener("click", function () {
         var consent = {
           shouldWaitForExplicitConsent: false,
           purpose1: true,
           purpose10: true,
-          vendorConsent: true
+          vendorConsent: true,
         };
 
         __tcfapi.configure(consent);
       });
 
       var getEcidBtn = document.querySelector(".getEcidBtn");
-      getEcidBtn.addEventListener("click", function() {
-        visitor.getMarketingCloudVisitorID(function(ecid) {
+      getEcidBtn.addEventListener("click", function () {
+        visitor.getMarketingCloudVisitorID(function (ecid) {
           console.log("ECID", ecid);
           window.ecid = ecid;
         }, true);
       });
 
       var createAmcvCookieBtn = document.querySelector(".create-amcv-cookie");
-      createAmcvCookieBtn.addEventListener("click", function() {
+      createAmcvCookieBtn.addEventListener("click", function () {
         const ecid = getUrlParameter("ECID");
         document.cookie = `AMCV_${encodeURIComponent(orgId)}=MCMID|${ecid}`;
       });

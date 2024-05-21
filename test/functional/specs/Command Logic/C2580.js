@@ -10,27 +10,27 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t, ClientFunction } from "testcafe";
-import createFixture from "../../helpers/createFixture";
-import createConsoleLogger from "../../helpers/consoleLogger";
+import createFixture from "../../helpers/createFixture/index.js";
+import createConsoleLogger from "../../helpers/consoleLogger/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import { injectAlloyDuringTest } from "../../helpers/createFixture/clientScripts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import { injectAlloyDuringTest } from "../../helpers/createFixture/clientScripts.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled);
 
 createFixture({
   title: "C2580: Command queueing test",
-  includeAlloyLibrary: false
+  includeAlloyLibrary: false,
 });
 
 test.meta({
   ID: "C2580",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const getAlloyCommandQueueLength = ClientFunction(() => {

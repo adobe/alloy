@@ -10,17 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { ClientFunction, t } from "testcafe";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createConsoleLogger from "../../helpers/consoleLogger";
-import { injectAlloyDuringTest } from "../../helpers/createFixture/clientScripts";
-import cookies from "../../helpers/cookies";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../helpers/createResponse";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createConsoleLogger from "../../helpers/consoleLogger/index.js";
+import { injectAlloyDuringTest } from "../../helpers/createFixture/clientScripts.js";
+import cookies from "../../helpers/cookies.js";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
+import createResponse from "../../helpers/createResponse.js";
 
 export const MIGRATION_LOCATION = "location-for-migration-testing";
-export const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+export const sleep = (ms) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 
-export const extractCluster = hostname => {
+export const extractCluster = (hostname) => {
   const values = hostname.split(".");
   return values[0];
 };
@@ -35,7 +38,7 @@ export const injectAlloyAndSendEvent = async (config, options = {}) => {
   await alloy.sendEvent(options);
 };
 
-export const assertTargetMigrationEnabledIsSent = async sendEventRequest => {
+export const assertTargetMigrationEnabledIsSent = async (sendEventRequest) => {
   const requestBody = JSON.parse(sendEventRequest.request.body);
 
   await t.expect(requestBody.meta.target).eql({ migration: true });
@@ -43,16 +46,16 @@ export const assertTargetMigrationEnabledIsSent = async sendEventRequest => {
 
 export const assertKonductorReturnsCookieAndCookieIsSet = async (
   cookieKey,
-  sendEventRequest
+  sendEventRequest,
 ) => {
   // Extract state:store payload
   const response = JSON.parse(getResponseBody(sendEventRequest));
   const stateStorePayload = createResponse({
-    content: response
+    content: response,
   }).getPayloadsByType("state:store");
   await t.expect(stateStorePayload.length).gte(0);
 
-  const responseContainsCookie = stateStorePayload.find(entry => {
+  const responseContainsCookie = stateStorePayload.find((entry) => {
     return entry.key.includes(cookieKey);
   });
   await t.expect(responseContainsCookie).ok();
@@ -63,20 +66,20 @@ export const assertKonductorReturnsCookieAndCookieIsSet = async (
   return cookieValue;
 };
 
-export const getLocationHint = pathname => {
+export const getLocationHint = (pathname) => {
   const values = pathname.split("/");
   const locationHint = values[2];
 
   return Number(locationHint.split("t")[1]);
 };
 
-export const getEcid = identityPayload => {
-  return identityPayload.filter(obj => obj.namespace.code === "ECID");
+export const getEcid = (identityPayload) => {
+  return identityPayload.filter((obj) => obj.namespace.code === "ECID");
 };
 
-export const getPropositionCustomContent = personalizationPayload => {
+export const getPropositionCustomContent = (personalizationPayload) => {
   const decisionScopeProposition = personalizationPayload.filter(
-    proposition => proposition.scope === MIGRATION_LOCATION
+    (proposition) => proposition.scope === MIGRATION_LOCATION,
   );
 
   return decisionScopeProposition[0].items[0].data.content;
@@ -91,20 +94,20 @@ export const fetchMboxOffer = ClientFunction(
         return response;
       },
       // eslint-disable-next-line no-console
-      error: console.error
+      error: console.error,
     });
-  }
+  },
 );
 
 export const assertSameLocationHintIsUsed = async (
   hostname,
-  mboxEdgeClusterCookie
+  mboxEdgeClusterCookie,
 ) => {
   const cluster = await extractCluster(hostname);
   await t
     .expect(`mboxedge${mboxEdgeClusterCookie}`)
     .eql(
       cluster,
-      "Cluster ID returned from Target Upstream does not match the cluster ID  used in the path to Target Edge API"
+      "Cluster ID returned from Target Upstream does not match the cluster ID  used in the path to Target Edge API",
     );
 };

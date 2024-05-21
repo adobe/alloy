@@ -12,13 +12,13 @@ governing permissions and limitations under the License.
 
 import { t } from "testcafe";
 
-export default async orgId => {
+export default async (orgId) => {
   const encodedOrgId = encodeURIComponent(orgId);
   await t.setCookies({
     name: `AMCV_${encodedOrgId}`,
     value:
       "77933605%7CMCIDTS%7C18290%7CMCMID%7C16908443662402872073525706953453086963%7CMCAAMLH-1580857889%7C9%7CMCAAMB-1580857889%7CRKhpRz8krg2tLO6pguXWp5olkAcUniQYPHaMWWgdJ3xzPWQmdj0y%7CMCOPTOUT-1580260289s%7CNONE%7CvVersion%7C4.5.1",
     domain: "alloyio.com",
-    path: "/"
+    path: "/",
   });
 };

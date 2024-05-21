@@ -11,19 +11,19 @@ governing permissions and limitations under the License.
 */
 
 import { t } from "testcafe";
-import createFixture from "../../helpers/createFixture";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
   thirdPartyCookiesDisabled,
-  migrationDisabled
-} from "../../helpers/constants/configParts";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import reloadPage from "../../helpers/reloadPage";
-import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid";
-import { TEST_PAGE, SECONDARY_TEST_PAGE } from "../../helpers/constants/url";
+  migrationDisabled,
+} from "../../helpers/constants/configParts/index.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import reloadPage from "../../helpers/reloadPage.js";
+import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid.js";
+import { TEST_PAGE, SECONDARY_TEST_PAGE } from "../../helpers/constants/url.js";
 
 // We disable third party cookies so that the domains don't share identities
 // through the demdex cookies.
@@ -31,7 +31,7 @@ const config = compose(
   orgMainConfigMain,
   thirdPartyCookiesDisabled,
   debugEnabled,
-  migrationDisabled
+  migrationDisabled,
 );
 
 const networkLogger = createNetworkLogger();
@@ -39,13 +39,13 @@ const networkLogger = createNetworkLogger();
 createFixture({
   title:
     "C5594866: Identity can be changed via the adobe_mc query string parameter",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C5594866",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("C5594866: Identity can be changed via the adobe_mc query string parameter", async () => {
@@ -67,12 +67,8 @@ test("C5594866: Identity can be changed via the adobe_mc query string parameter"
   await alloy.configure(config);
   await alloy.sendEvent({});
 
-  const [
-    originalEcid,
-    secondaryPageEcid,
-    newEcid,
-    reloadedEcid
-  ] = networkLogger.edgeEndpointLogs.requests.map(getReturnedEcid);
+  const [originalEcid, secondaryPageEcid, newEcid, reloadedEcid] =
+    networkLogger.edgeEndpointLogs.requests.map(getReturnedEcid);
 
   await t.expect(originalEcid).notEql(secondaryPageEcid);
   await t.expect(newEcid).eql(secondaryPageEcid);

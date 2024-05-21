@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createProcessHtmlContent from "../../../../../../src/components/Personalization/handlers/createProcessHtmlContent";
+import createProcessHtmlContent from "../../../../../../src/components/Personalization/handlers/createProcessHtmlContent.js";
 
 describe("createProcessHtmlContent", () => {
   let modules;
@@ -21,13 +21,13 @@ describe("createProcessHtmlContent", () => {
   beforeEach(() => {
     modules = {
       typeA: jasmine.createSpy("typeA"),
-      typeB: jasmine.createSpy("typeB")
+      typeB: jasmine.createSpy("typeB"),
     };
     logger = jasmine.createSpyObj("logger", ["warn"]);
     item = {
       getData() {
         return data;
-      }
+      },
     };
 
     processHtmlContent = createProcessHtmlContent({ modules, logger });
@@ -37,7 +37,7 @@ describe("createProcessHtmlContent", () => {
     data = undefined;
     expect(processHtmlContent(item)).toEqual({
       setRenderAttempted: false,
-      includeInNotification: false
+      includeInNotification: false,
     });
     expect(logger.warn).not.toHaveBeenCalled();
   });
@@ -46,7 +46,7 @@ describe("createProcessHtmlContent", () => {
     data = { selector: ".myselector" };
     expect(processHtmlContent(item)).toEqual({
       setRenderAttempted: false,
-      includeInNotification: false
+      includeInNotification: false,
     });
     expect(logger.warn).not.toHaveBeenCalled();
   });
@@ -55,7 +55,7 @@ describe("createProcessHtmlContent", () => {
     data = { type: "mytype" };
     expect(processHtmlContent(item)).toEqual({
       setRenderAttempted: false,
-      includeInNotification: false
+      includeInNotification: false,
     });
     expect(logger.warn).not.toHaveBeenCalled();
   });
@@ -64,12 +64,12 @@ describe("createProcessHtmlContent", () => {
     data = { type: "typeC", selector: ".myselector", content: "mycontent" };
     expect(processHtmlContent(item)).toEqual({
       setRenderAttempted: false,
-      includeInNotification: false
+      includeInNotification: false,
     });
     expect(logger.warn).toHaveBeenCalledWith("Invalid HTML content data", {
       type: "typeC",
       selector: ".myselector",
-      content: "mycontent"
+      content: "mycontent",
     });
   });
 
@@ -79,14 +79,14 @@ describe("createProcessHtmlContent", () => {
     expect(result).toEqual({
       render: jasmine.any(Function),
       setRenderAttempted: true,
-      includeInNotification: true
+      includeInNotification: true,
     });
     expect(modules.typeA).not.toHaveBeenCalled();
     result.render();
     expect(modules.typeA).toHaveBeenCalledWith({
       type: "typeA",
       selector: ".myselector",
-      content: "mycontent"
+      content: "mycontent",
     });
   });
 });

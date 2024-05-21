@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createConsentRequestPayload from "../../../../../src/components/Privacy/createConsentRequestPayload";
-import describeRequestPayload from "../../../helpers/describeRequestPayload";
+import createConsentRequestPayload from "../../../../../src/components/Privacy/createConsentRequestPayload.js";
+import describeRequestPayload from "../../../helpers/describeRequestPayload.js";
 
 describe("createConsentRequestPayload", () => {
   describeRequestPayload(createConsentRequestPayload);
@@ -19,22 +19,22 @@ describe("createConsentRequestPayload", () => {
   it("adds an identity", () => {
     const payload = createConsentRequestPayload();
     payload.addIdentity("IDNS", {
-      id: "ABC123"
+      id: "ABC123",
     });
     payload.addIdentity("IDNS", {
-      id: "DEF456"
+      id: "DEF456",
     });
     expect(JSON.parse(JSON.stringify(payload))).toEqual({
       identityMap: {
         IDNS: [
           {
-            id: "ABC123"
+            id: "ABC123",
           },
           {
-            id: "DEF456"
-          }
-        ]
-      }
+            id: "DEF456",
+          },
+        ],
+      },
     });
   });
 
@@ -45,9 +45,9 @@ describe("createConsentRequestPayload", () => {
         standard: "Adobe",
         version: "1.0",
         value: {
-          general: "in"
-        }
-      }
+          general: "in",
+        },
+      },
     ]);
     expect(JSON.parse(JSON.stringify(payload))).toEqual({
       consent: [
@@ -55,10 +55,10 @@ describe("createConsentRequestPayload", () => {
           standard: "Adobe",
           version: "1.0",
           value: {
-            general: "in"
-          }
-        }
-      ]
+            general: "in",
+          },
+        },
+      ],
     });
   });
 });
