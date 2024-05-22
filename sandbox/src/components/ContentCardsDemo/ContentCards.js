@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { useEffect, useState } from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
-import "./MessageFeed.css";
+import "./ContentCards.css";
 import { deleteAllCookies, getAlloyTestConfigs } from "../utils";
 
 const configKey = localStorage.getItem("iam-configKey") || "stage";
@@ -30,7 +30,7 @@ if (alloyInstance !== window.alloy) {
   });
 }
 
-const surface = "web://aepdemo.com/messageFeed";
+const surface = "web://aepdemo.com/contentCards";
 
 const mockResponse = {
   requestId: "5a38a9ef-67d7-4f66-8977-c4dc0e0967b6",
@@ -132,12 +132,11 @@ const mockResponse = {
                         type: "schema",
                         detail: {
                           schema:
-                            "https://ns.adobe.com/personalization/message/feed-item",
+                            "https://ns.adobe.com/personalization/message/content-card",
                           data: {
                             expiryDate: 1712190456,
                             publishedDate: 1677752640000,
                             meta: {
-                              feedName: "Winter Promo",
                               surface
                             },
                             content: {
@@ -245,12 +244,11 @@ const mockResponse = {
                         type: "schema",
                         detail: {
                           schema:
-                            "https://ns.adobe.com/personalization/message/feed-item",
+                            "https://ns.adobe.com/personalization/message/content-card",
                           data: {
                             expiryDate: 1712190456,
                             publishedDate: 1677839040000,
                             meta: {
-                              feedName: "Winter Promo",
                               surface
                             },
                             content: {
@@ -359,12 +357,11 @@ const mockResponse = {
                         type: "schema",
                         detail: {
                           schema:
-                            "https://ns.adobe.com/personalization/message/feed-item",
+                            "https://ns.adobe.com/personalization/message/content-card",
                           data: {
                             expiryDate: 1712190456,
                             publishedDate: 1678098240000,
                             meta: {
-                              feedName: "Winter Promo",
                               surface
                             },
                             content: {
@@ -474,12 +471,11 @@ const mockResponse = {
                         type: "schema",
                         detail: {
                           schema:
-                            "https://ns.adobe.com/personalization/message/feed-item",
+                            "https://ns.adobe.com/personalization/message/content-card",
                           data: {
                             expiryDate: 1712190456,
                             publishedDate: 1678184640000,
                             meta: {
-                              feedName: "Winter Promo",
                               surface
                             },
                             content: {
@@ -570,11 +566,11 @@ const prettyDate = value => {
   return output;
 };
 
-export default function MessageFeed() {
+export default function ContentCards() {
   const [clickHandler, setClickHandler] = useState(() => () => {});
   const [dismissHandler, setDismissHandler] = useState(() => () => {});
 
-  const [messageFeedItems, setMessageFeedItems] = useState([]);
+  const [contentCards, setContentCards] = useState([]);
 
   useEffect(() => {
     const startupPromises = Promise.all([
@@ -584,13 +580,13 @@ export default function MessageFeed() {
           console.log("subscribeRulesetItems", result);
         }
       }),
-      alloyInstance("subscribeMessageFeed", {
+      alloyInstance("subscribeContentCards", {
         surface,
         callback: ({ items = [], rendered, clicked, dismissed }) => {
-          console.log("subscribeMessageFeed", items);
+          console.log("subscribeContentCards", items);
           setClickHandler(() => clicked);
           setDismissHandler(() => dismissed);
-          setMessageFeedItems(items);
+          setContentCards(items);
           rendered(items);
         }
       }),
@@ -611,14 +607,14 @@ export default function MessageFeed() {
     ]);
 
     return () => {
-      startupPromises.then(([rulesetItems, messageFeed]) => {
-        messageFeed.unsubscribe();
+      startupPromises.then(([rulesetItems, contentCards]) => {
+        contentCards.unsubscribe();
         rulesetItems.unsubscribe();
       });
     };
   }, ["clickHandler"]);
 
-  const dismissFeedItem = items => {
+  const dismissContentCard = items => {
     dismissHandler(items).then(() => {
       alloyInstance("evaluateRulesets", {
         renderDecisions: true
@@ -626,7 +622,7 @@ export default function MessageFeed() {
     });
   };
 
-  const onClickedFeedItem = items => {
+  const onClickedContentCard = items => {
     if (items.length === 0) {
       return;
     }
@@ -663,14 +659,14 @@ export default function MessageFeed() {
     });
   };
 
-  const renderMessageFeed = () => {
+  const renderContentCards = () => {
     Promise.all([
-      alloyInstance("subscribeMessageFeed", {
+      alloyInstance("subscribeContentCards", {
         surface,
         callback: ({ items = [], rendered, clicked, dismissed }) => {
           setClickHandler(() => clicked);
           setDismissHandler(() => dismissed);
-          setMessageFeedItems(items);
+          setContentCards(items);
           rendered(items);
         }
       })
@@ -727,26 +723,26 @@ export default function MessageFeed() {
         <button id="deposit-funds" onClick={() => depositFunds()}>
           Deposit funds
         </button>
-        <button id="reset" onClick={() => renderMessageFeed()}>
-          Render Feed
+        <button id="reset" onClick={() => renderContentCards()}>
+          Render Content Cards
         </button>
         <button id="reset" onClick={() => resetPersistentData()}>
           Reset
         </button>
       </div>
       <div style={{ margin: "30px 0", maxWidth: "1000px" }}>
-        <h3>Message Feed</h3>
-        <div id="message-feed">
-          {messageFeedItems.map((item, index) => (
+        <h3>Content Cards</h3>
+        <div id="content-cards">
+          {contentCards.map((item, index) => (
             <div
               key={index}
               className="pretty-card"
-              onClick={() => onClickedFeedItem([item])}
+              onClick={() => onClickedContentCard([item])}
             >
               <button
                 onClick={evt => {
                   evt.stopPropagation();
-                  dismissFeedItem([item]);
+                  dismissContentCard([item]);
                 }}
               >
                 dismiss

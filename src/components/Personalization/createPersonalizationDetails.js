@@ -21,7 +21,7 @@ import {
   JSON_CONTENT_ITEM,
   REDIRECT_ITEM,
   RULESET_ITEM,
-  MESSAGE_FEED_ITEM
+  MESSAGE_CONTENT_CARD
 } from "../../constants/schema";
 
 const addPageWideScope = scopes => {
@@ -98,7 +98,7 @@ export default ({
         REDIRECT_ITEM,
         RULESET_ITEM,
         MESSAGE_IN_APP,
-        MESSAGE_FEED_ITEM
+        MESSAGE_CONTENT_CARD
       ];
 
       if (includes(scopes, PAGE_WIDE_SCOPE)) {

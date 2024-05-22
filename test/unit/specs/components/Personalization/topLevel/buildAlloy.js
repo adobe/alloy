@@ -36,7 +36,7 @@ import createProcessHtmlContent from "../../../../../../src/components/Personali
 import createProcessRedirect from "../../../../../../src/components/Personalization/handlers/createProcessRedirect";
 import processDefaultContent from "../../../../../../src/components/Personalization/handlers/processDefaultContent";
 import { isPageWideSurface } from "../../../../../../src/components/Personalization/utils/surfaceUtils";
-import createSubscribeMessageFeed from "../../../../../../src/components/Personalization/createSubscribeMessageFeed";
+import createSubscribeContentCards from "../../../../../../src/components/Personalization/createSubscribeContentCards";
 import createOnDecisionHandler from "../../../../../../src/components/Personalization/createOnDecisionHandler";
 import createNotificationHandler from "../../../../../../src/components/Personalization/createNotificationHandler";
 
@@ -151,7 +151,7 @@ const buildComponent = ({
     targetMigrationEnabled
   });
 
-  const subscribeMessageFeed = createSubscribeMessageFeed({
+  const subscribeContentCards = createSubscribeContentCards({
     collect
   });
 
@@ -159,7 +159,7 @@ const buildComponent = ({
     processPropositions,
     createProposition,
     notificationHandler,
-    subscribeMessageFeed
+    subscribeContentCards
   });
 
   return createComponent({
@@ -177,7 +177,7 @@ const buildComponent = ({
     mergeDecisionsMeta,
     renderedPropositions,
     onDecisionHandler,
-    subscribeMessageFeed
+    subscribeContentCards
   });
 };
 

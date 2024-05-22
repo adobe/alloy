@@ -36,7 +36,7 @@ describe("PersonalizationComponent", () => {
             "https://ns.adobe.com/personalization/redirect-item",
             "https://ns.adobe.com/personalization/ruleset-item",
             "https://ns.adobe.com/personalization/message/in-app",
-            "https://ns.adobe.com/personalization/message/feed-item",
+            "https://ns.adobe.com/personalization/message/content-card",
             "https://ns.adobe.com/personalization/dom-action"
           ],
           decisionScopes: ["__view__"],

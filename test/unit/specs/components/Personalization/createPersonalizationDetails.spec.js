@@ -20,7 +20,7 @@ import {
   JSON_CONTENT_ITEM,
   REDIRECT_ITEM,
   RULESET_ITEM,
-  MESSAGE_FEED_ITEM
+  MESSAGE_CONTENT_CARD
 } from "../../../../../src/constants/schema";
 
 describe("Personalization::createPersonalizationDetails", () => {
@@ -105,7 +105,7 @@ describe("Personalization::createPersonalizationDetails", () => {
         REDIRECT_ITEM,
         RULESET_ITEM,
         MESSAGE_IN_APP,
-        MESSAGE_FEED_ITEM,
+        MESSAGE_CONTENT_CARD,
         DOM_ACTION
       ],
       decisionScopes: expectedDecisionScopes,
@@ -145,7 +145,7 @@ describe("Personalization::createPersonalizationDetails", () => {
         REDIRECT_ITEM,
         RULESET_ITEM,
         MESSAGE_IN_APP,
-        MESSAGE_FEED_ITEM,
+        MESSAGE_CONTENT_CARD,
         DOM_ACTION
       ],
       decisionScopes: expectedDecisionScopes,
@@ -185,7 +185,7 @@ describe("Personalization::createPersonalizationDetails", () => {
         REDIRECT_ITEM,
         RULESET_ITEM,
         MESSAGE_IN_APP,
-        MESSAGE_FEED_ITEM,
+        MESSAGE_CONTENT_CARD,
         DOM_ACTION
       ],
       decisionScopes: expectedDecisionScopes,
@@ -225,7 +225,7 @@ describe("Personalization::createPersonalizationDetails", () => {
         REDIRECT_ITEM,
         RULESET_ITEM,
         MESSAGE_IN_APP,
-        MESSAGE_FEED_ITEM
+        MESSAGE_CONTENT_CARD
       ],
       decisionScopes: expectedDecisionScopes,
       surfaces: []
@@ -266,7 +266,7 @@ describe("Personalization::createPersonalizationDetails", () => {
         REDIRECT_ITEM,
         RULESET_ITEM,
         MESSAGE_IN_APP,
-        MESSAGE_FEED_ITEM
+        MESSAGE_CONTENT_CARD
       ],
       decisionScopes: expectedDecisionScopes,
       surfaces: ["web://test1.com/"]
@@ -309,7 +309,7 @@ describe("Personalization::createPersonalizationDetails", () => {
         REDIRECT_ITEM,
         RULESET_ITEM,
         MESSAGE_IN_APP,
-        MESSAGE_FEED_ITEM
+        MESSAGE_CONTENT_CARD
       ],
       decisionScopes: expectedDecisionScopes,
       surfaces: ["web://test1.com/"]
@@ -442,7 +442,7 @@ describe("Personalization::createPersonalizationDetails", () => {
         REDIRECT_ITEM,
         RULESET_ITEM,
         MESSAGE_IN_APP,
-        MESSAGE_FEED_ITEM,
+        MESSAGE_CONTENT_CARD,
         DOM_ACTION
       ],
       decisionScopes: expectedDecisionScopes,

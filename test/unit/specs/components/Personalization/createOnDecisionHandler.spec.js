@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createOnDecisionHandler from "../../../../../src/components/Personalization/createOnDecisionHandler";
-import { MESSAGE_FEED_ITEM } from "../../../../../src/constants/schema";
+import { MESSAGE_CONTENT_CARD } from "../../../../../src/constants/schema";
 import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
 import createNotificationHandler from "../../../../../src/components/Personalization/createNotificationHandler";
 
@@ -48,19 +48,18 @@ describe("Personalization::createOnDecisionHandler", () => {
           id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
         }
       ],
-      scope: "web://mywebsite.com/feed"
+      scope: "web://mywebsite.com/my-cards"
     },
     {
       id: "1a3d874f-39ee-4310-bfa9-6559a10041a4",
       items: [
         {
-          schema: MESSAGE_FEED_ITEM,
+          schema: MESSAGE_CONTENT_CARD,
           data: {
             expiryDate: 1712190456,
             publishedDate: 1677752640000,
             meta: {
-              feedName: "Winter Promo",
-              surface: "web://mywebsite.com/feed"
+              surface: "web://mywebsite.com/my-cards"
             },
             content: {
               imageUrl: "img/lumon.png",
@@ -76,14 +75,13 @@ describe("Personalization::createOnDecisionHandler", () => {
           id: "a48ca420-faea-467e-989a-5d179d9f562d"
         },
         {
-          schema: MESSAGE_FEED_ITEM,
+          schema: MESSAGE_CONTENT_CARD,
           data: {
             expiryDate: 1712190456,
             publishedDate: 1677839040000,
 
             meta: {
-              feedName: "Winter Promo",
-              surface: "web://mywebsite.com/feed"
+              surface: "web://mywebsite.com/my-cards"
             },
             content: {
               imageUrl: "img/achievement.png",
@@ -99,19 +97,18 @@ describe("Personalization::createOnDecisionHandler", () => {
           id: "b7173290-588f-40c6-a05c-43ed5ec08b28"
         }
       ],
-      scope: "web://mywebsite.com/feed"
+      scope: "web://mywebsite.com/my-cards"
     },
     {
       id: "1ae11bc5-96dc-41c7-8f71-157c57a5290e",
       items: [
         {
-          schema: MESSAGE_FEED_ITEM,
+          schema: MESSAGE_CONTENT_CARD,
           data: {
             expiryDate: 1712190456,
             publishedDate: 1678098240000,
             meta: {
-              feedName: "Winter Promo",
-              surface: "web://mywebsite.com/feed"
+              surface: "web://mywebsite.com/my-cards"
             },
             content: {
               imageUrl: "img/twitter.png",
@@ -127,10 +124,10 @@ describe("Personalization::createOnDecisionHandler", () => {
           id: "cfcb1af7-7bc2-45b2-a86a-0aa93fe69ce7"
         }
       ],
-      scope: "web://mywebsite.com/feed",
+      scope: "web://mywebsite.com/my-cards",
       scopeDetails: {
         id: "1ae11bc5-96dc-41c7-8f71-157c57a5290e",
-        scope: "web://mywebsite.com/feed",
+        scope: "web://mywebsite.com/my-cards",
         scopeDetails: {
           decisionProvider: "AJO",
           characteristics: {
@@ -155,13 +152,12 @@ describe("Personalization::createOnDecisionHandler", () => {
       id: "d1f7d411-a549-47bc-a4d8-c8e638b0a46b",
       items: [
         {
-          schema: MESSAGE_FEED_ITEM,
+          schema: MESSAGE_CONTENT_CARD,
           data: {
             expiryDate: 1712190456,
             publishedDate: 1678184640000,
             meta: {
-              feedName: "Winter Promo",
-              surface: "web://mywebsite.com/feed"
+              surface: "web://mywebsite.com/my-cards"
             },
             content: {
               imageUrl: "img/gold-coin.jpg",
@@ -177,7 +173,7 @@ describe("Personalization::createOnDecisionHandler", () => {
           id: "0263e171-fa32-4c7a-9611-36b28137a81d"
         }
       ],
-      scope: "web://mywebsite.com/feed"
+      scope: "web://mywebsite.com/my-cards"
     }
   ];
   let render;
@@ -187,7 +183,7 @@ describe("Personalization::createOnDecisionHandler", () => {
   let onDecisionHandler;
   let renderedPropositions;
   let notificationHandler;
-  let subscribeMessageFeed;
+  let subscribeContentCards;
 
   beforeEach(() => {
     render = jasmine
@@ -212,7 +208,7 @@ describe("Personalization::createOnDecisionHandler", () => {
       renderedPropositions
     );
 
-    subscribeMessageFeed = jasmine.createSpyObj("subscribeMessageFeed", [
+    subscribeContentCards = jasmine.createSpyObj("subscribeContentCards", [
       "refresh"
     ]);
 
@@ -220,7 +216,7 @@ describe("Personalization::createOnDecisionHandler", () => {
       processPropositions,
       createProposition,
       notificationHandler,
-      subscribeMessageFeed
+      subscribeContentCards
     });
   });
 
@@ -231,7 +227,9 @@ describe("Personalization::createOnDecisionHandler", () => {
       propositions: PROPOSITIONS
     });
 
-    expect(subscribeMessageFeed.refresh).toHaveBeenCalledOnceWith(PROPOSITIONS);
+    expect(subscribeContentCards.refresh).toHaveBeenCalledOnceWith(
+      PROPOSITIONS
+    );
     expect(render).not.toHaveBeenCalled();
   });
 
@@ -245,7 +243,9 @@ describe("Personalization::createOnDecisionHandler", () => {
     });
 
     expect(propositions).toEqual(PROPOSITIONS);
-    expect(subscribeMessageFeed.refresh).toHaveBeenCalledOnceWith(PROPOSITIONS);
+    expect(subscribeContentCards.refresh).toHaveBeenCalledOnceWith(
+      PROPOSITIONS
+    );
 
     expect(render).toHaveBeenCalledTimes(1);
 

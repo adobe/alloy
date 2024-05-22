@@ -31,7 +31,7 @@ export default ({
   mergeDecisionsMeta,
   renderedPropositions,
   onDecisionHandler,
-  subscribeMessageFeed
+  subscribeContentCards
 }) => {
   return {
     lifecycle: {
@@ -123,7 +123,7 @@ export default ({
           validateApplyPropositionsOptions({ logger, options }),
         run: applyPropositions
       },
-      subscribeMessageFeed: subscribeMessageFeed.command
+      subscribeContentCards: subscribeContentCards.command
     }
   };
 };

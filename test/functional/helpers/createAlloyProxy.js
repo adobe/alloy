@@ -93,7 +93,7 @@ const commands = [
   "applyPropositions",
   "subscribeRulesetItems",
   "evaluateRulesets",
-  "subscribeMessageFeed"
+  "subscribeContentCards"
 ];
 
 export default (instanceName = "alloy") => {

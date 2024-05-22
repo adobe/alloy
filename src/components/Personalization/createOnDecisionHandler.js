@@ -14,10 +14,10 @@ export default ({
   processPropositions,
   createProposition,
   notificationHandler,
-  subscribeMessageFeed
+  subscribeContentCards
 }) => {
   return ({ renderDecisions, propositions, event, personalization = {} }) => {
-    subscribeMessageFeed.refresh(propositions);
+    subscribeContentCards.refresh(propositions);
     if (!renderDecisions) {
       return Promise.resolve();
     }

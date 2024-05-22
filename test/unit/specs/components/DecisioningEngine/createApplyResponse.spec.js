@@ -66,7 +66,7 @@ describe("DecisioningEngine:createApplyResponse", () => {
   });
 
   it("call lifecycle.onDecision even if no propositions", () => {
-    // this use case is necessary for message feeds with no items
+    // this use case is necessary for content cards with no items
     const lifecycle = jasmine.createSpyObj("lifecycle", {
       onDecision: Promise.resolve()
     });

@@ -43,7 +43,7 @@ import createProcessInAppMessage from "./handlers/createProcessInAppMessage";
 import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMessageActionsModules";
 import createRedirect from "./dom-actions/createRedirect";
 import createNotificationHandler from "./createNotificationHandler";
-import createSubscribeMessageFeed from "./createSubscribeMessageFeed";
+import createSubscribeContentCards from "./createSubscribeContentCards";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
@@ -128,13 +128,13 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     targetMigrationEnabled
   });
 
-  const subscribeMessageFeed = createSubscribeMessageFeed({ collect });
+  const subscribeContentCards = createSubscribeContentCards({ collect });
 
   const onDecisionHandler = createOnDecisionHandler({
     processPropositions,
     createProposition,
     notificationHandler,
-    subscribeMessageFeed
+    subscribeContentCards
   });
 
   return createComponent({
@@ -152,7 +152,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     mergeDecisionsMeta,
     renderedPropositions,
     onDecisionHandler,
-    subscribeMessageFeed
+    subscribeContentCards
   });
 };
 

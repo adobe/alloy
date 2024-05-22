@@ -14,7 +14,7 @@ import {
   objectOf,
   string
 } from "../../utils/validation";
-import { MESSAGE_FEED_ITEM } from "../../constants/schema";
+import { MESSAGE_CONTENT_CARD } from "../../constants/schema";
 import { DISMISS, DISPLAY, INTERACT } from "../../constants/eventType";
 import createSubscription from "../../utils/createSubscription";
 
@@ -30,7 +30,7 @@ const validateOptions = ({ options }) => {
 export default ({ collect }) => {
   const renderedSet = new Set();
 
-  const createFeedItem = (payload, item) => {
+  const createContentCard = (payload, item) => {
     const { id, scope, scopeDetails } = payload;
 
     const { data = {} } = item;
@@ -131,8 +131,8 @@ export default ({ collect }) => {
         return [
           ...allItems,
           ...items
-            .filter(item => item.schema === MESSAGE_FEED_ITEM)
-            .map(item => createFeedItem(payload, item))
+            .filter(item => item.schema === MESSAGE_CONTENT_CARD)
+            .map(item => createContentCard(payload, item))
         ];
       }, [])
       .sort(
