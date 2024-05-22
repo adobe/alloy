@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { setAttribute } from "./dom";
+import { setAttribute } from "./dom/index.js";
 
 export default (container, attributes) => {
-  Object.keys(attributes).forEach(key => {
+  Object.keys(attributes).forEach((key) => {
     setAttribute(container, key, attributes[key]);
   });
 };

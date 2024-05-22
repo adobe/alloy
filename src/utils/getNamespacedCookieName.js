@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import COOKIE_NAME_PREFIX from "../constants/cookieNamePrefix";
-import sanitizeOrgIdForCookieName from "./sanitizeOrgIdForCookieName";
+import COOKIE_NAME_PREFIX from "../constants/cookieNamePrefix.js";
+import sanitizeOrgIdForCookieName from "./sanitizeOrgIdForCookieName.js";
 
 export default (orgId, key) =>
   `${COOKIE_NAME_PREFIX}_${sanitizeOrgIdForCookieName(orgId)}_${key}`;

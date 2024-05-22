@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createGetLinkDetails from "../../../../../src/components/ActivityCollector/createGetLinkDetails";
+import createGetLinkDetails from "../../../../../src/components/ActivityCollector/createGetLinkDetails.js";
 
 describe("ActivityCollector::createGetLinkDetails", () => {
   const mockWindow = {
@@ -18,13 +18,13 @@ describe("ActivityCollector::createGetLinkDetails", () => {
       protocol: "https:",
       host: "example.com",
       hostname: "example.com",
-      pathname: "/"
-    }
+      pathname: "/",
+    },
   };
   const supportedLinkElement = {
     tagName: "A",
     href: "index.html",
-    nodeType: 1
+    nodeType: 1,
   };
 
   let getLinkName;
@@ -37,10 +37,10 @@ describe("ActivityCollector::createGetLinkDetails", () => {
     getLinkName = jasmine.createSpy("getLinkName");
     getLinkRegion = jasmine.createSpy("getLinkRegion");
     getAbsoluteUrlFromAnchorElement = jasmine.createSpy(
-      "getAbsoluteUrlFromAnchorElement"
+      "getAbsoluteUrlFromAnchorElement",
     );
     findSupportedAnchorElement = jasmine.createSpy(
-      "findSupportedAnchorElement"
+      "findSupportedAnchorElement",
     );
     determineLinkType = jasmine.createSpy("determineLinkType");
     logger = jasmine.createSpyObj("logger", ["info"]);
@@ -48,10 +48,10 @@ describe("ActivityCollector::createGetLinkDetails", () => {
 
   it("Returns complete linkDetails when it is a supported anchor element", () => {
     const config = {
-      onBeforeLinkClickSend: options => {
+      onBeforeLinkClickSend: (options) => {
         options.data.custom = "test data field";
         return true;
-      }
+      },
     };
     getLinkRegion.and.returnValue("root");
     getLinkName.and.returnValue("Go to cart");
@@ -65,7 +65,7 @@ describe("ActivityCollector::createGetLinkDetails", () => {
       getAbsoluteUrlFromAnchorElement,
       findSupportedAnchorElement,
       determineLinkType,
-      window: mockWindow
+      window: mockWindow,
     });
 
     const result = getLinkDetails({ targetElement: {}, config, logger });
@@ -79,15 +79,15 @@ describe("ActivityCollector::createGetLinkDetails", () => {
             type: "exit",
             URL: "http://blah.com",
             linkClicks: {
-              value: 1
-            }
-          }
-        }
+              value: 1,
+            },
+          },
+        },
       },
       data: {
-        custom: "test data field"
+        custom: "test data field",
       },
-      clickedElement: {}
+      clickedElement: {},
     });
   });
 
@@ -95,7 +95,7 @@ describe("ActivityCollector::createGetLinkDetails", () => {
     const config = {
       onBeforeLinkClickSend: () => {
         return false;
-      }
+      },
     };
     getLinkRegion.and.returnValue("root");
     getLinkName.and.returnValue("Go to cart");
@@ -109,12 +109,12 @@ describe("ActivityCollector::createGetLinkDetails", () => {
       getAbsoluteUrlFromAnchorElement,
       findSupportedAnchorElement,
       determineLinkType,
-      window: mockWindow
+      window: mockWindow,
     });
 
     const result = getLinkDetails({ targetElement: {}, config, logger });
     expect(logger.info).toHaveBeenCalledWith(
-      "This link click event is not triggered because it was canceled in onBeforeLinkClickSend."
+      "This link click event is not triggered because it was canceled in onBeforeLinkClickSend.",
     );
     expect(result).toEqual(undefined);
   });
@@ -123,7 +123,7 @@ describe("ActivityCollector::createGetLinkDetails", () => {
     const config = {
       onBeforeLinkClickSend: () => {
         return true;
-      }
+      },
     };
     getLinkRegion.and.returnValue(undefined);
     getLinkName.and.returnValue("Go to cart");
@@ -137,12 +137,12 @@ describe("ActivityCollector::createGetLinkDetails", () => {
       getAbsoluteUrlFromAnchorElement,
       findSupportedAnchorElement,
       determineLinkType,
-      window: mockWindow
+      window: mockWindow,
     });
 
     const result = getLinkDetails({ targetElement: {}, config, logger });
     expect(logger.info).toHaveBeenCalledWith(
-      "This link click event is not triggered because the HTML element is not an anchor."
+      "This link click event is not triggered because the HTML element is not an anchor.",
     );
     expect(result).toEqual(undefined);
   });
@@ -151,7 +151,7 @@ describe("ActivityCollector::createGetLinkDetails", () => {
     const config = {
       onBeforeLinkClickSend: () => {
         return true;
-      }
+      },
     };
     getLinkRegion.and.returnValue("root");
     getLinkName.and.returnValue("Go to cart");
@@ -165,19 +165,19 @@ describe("ActivityCollector::createGetLinkDetails", () => {
       getAbsoluteUrlFromAnchorElement,
       findSupportedAnchorElement,
       determineLinkType,
-      window: mockWindow
+      window: mockWindow,
     });
 
     const result = getLinkDetails({ targetElement: {}, config, logger });
     expect(logger.info).toHaveBeenCalledWith(
-      "This link click event is not triggered because the HTML element doesn't have an URL."
+      "This link click event is not triggered because the HTML element doesn't have an URL.",
     );
     expect(result).toEqual(undefined);
   });
 
   it("Returns the object when callback does not return explicit false ", () => {
     const config = {
-      onBeforeLinkClickSend: () => {}
+      onBeforeLinkClickSend: () => {},
     };
     getLinkRegion.and.returnValue("root");
     getLinkName.and.returnValue("Go to cart");
@@ -191,7 +191,7 @@ describe("ActivityCollector::createGetLinkDetails", () => {
       getAbsoluteUrlFromAnchorElement,
       findSupportedAnchorElement,
       determineLinkType,
-      window: mockWindow
+      window: mockWindow,
     });
 
     const result = getLinkDetails({ targetElement: {}, config, logger });

@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import escape from "css.escape";
-import { selectNodes } from "../../../../utils/dom";
-import { isNotEqSelector, splitWithEq } from "./helperForEq";
+import { selectNodes } from "../../../../utils/dom/index.js";
+import { isNotEqSelector, splitWithEq } from "./helperForEq.js";
 
 // Trying to match ID or CSS class
 const CSS_IDENTIFIER_PATTERN = /(#|\.)(-?\w+)/g;
@@ -22,11 +22,11 @@ const CSS_IDENTIFIER_PATTERN = /(#|\.)(-?\w+)/g;
 // CSS.escape() polyfill can be found here: https://github.com/mathiasbynens/CSS.escape
 const replaceIdentifier = (_, $1, $2) => `${$1}${escape($2)}`;
 
-export const escapeIdentifiersInSelector = selector => {
+export const escapeIdentifiersInSelector = (selector) => {
   return selector.replace(CSS_IDENTIFIER_PATTERN, replaceIdentifier);
 };
 
-export const parseSelector = rawSelector => {
+export const parseSelector = (rawSelector) => {
   const result = [];
   const selector = escapeIdentifiersInSelector(rawSelector.trim());
   const parts = splitWithEq(selector);
@@ -54,7 +54,7 @@ export const parseSelector = rawSelector => {
  * @param {String} selector that contains Sizzle "eq(...)" pseudo selector
  * @returns {Array} an array of DOM nodes
  */
-export const selectNodesWithEq = selector => {
+export const selectNodesWithEq = (selector) => {
   const doc = document;
 
   if (isNotEqSelector(selector)) {

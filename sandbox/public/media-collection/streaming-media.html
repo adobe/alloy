@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="stylesheet" href="/index.css" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="theme-color" content="#000000" />
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
+
+    <title>Mock website hosting Alloy</title>
+
+    <!-- prettier-ignore -->
+    <script nonce="%REACT_APP_NONCE%">
+      !function(e,a,n,t){var i=e.head;if(i){
+        if (a) return;
+        var o=e.createElement("style");
+        o.setAttribute("nonce", "%REACT_APP_NONCE%");
+        o.id="alloy-prehiding",o.innerText=n,i.appendChild(o),
+          setTimeout(function(){o.parentNode&&o.parentNode.removeChild(o)},t)}}
+      (document, document.location.href.indexOf("mboxEdit") !== -1, ".personalization-container { opacity: 0 !important }", 3000);
+    </script>
+
+    <!-- prettier-ignore -->
+    <script nonce="%REACT_APP_NONCE%">
+      !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
+        []).push(o),n[o]=function(){var u=arguments;return new Promise(
+        function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
+      (window,["alloy"]);
+    </script>
+
+    <script nonce="%REACT_APP_NONCE%">
+      function getUrlParameter(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        var results = regex.exec(location.search);
+        return results === null
+          ? ""
+          : decodeURIComponent(results[1].replace(/\+/g, " "));
+      }
+
+      function includeScript(src) {
+        return new Promise(function (resolve, reject) {
+          var tag = document.createElement("script");
+          tag.type = "text/javascript";
+          tag.async = true;
+          tag.addEventListener("load", function () {
+            resolve();
+          });
+          tag.nonce = "%REACT_APP_NONCE%";
+          tag.src = src;
+          document.head.appendChild(tag);
+        });
+      }
+
+      if (getUrlParameter("includeVisitor") === "true") {
+        includeScript(
+          "https://github.com/Adobe-Marketing-Cloud/id-service/releases/download/4.5.1/visitorapi.min.js",
+        ).then(function () {
+          Visitor.getInstance("53A16ACB5CC1D3760A495C99@AdobeOrg", {
+            doesOptInApply: getUrlParameter("legacyOptIn") === "true",
+          });
+          // Alloy only looks for window.Visitor when it initially loads, so only load Alloy after Visitor loaded.
+          includeScript("/alloy.js");
+        });
+      } else {
+        includeScript("/alloy.js");
+      }
+    </script>
+    <script nonce="%REACT_APP_NONCE%">
+      alloy("configure", {
+        streamingMedia: {
+          // adobeStreamingMedia
+          // need to move these at session creation command
+          channel: "video channel",
+          playerName: "ninas player",
+          appVersion: "alloy 2.16.0",
+          adPingInterval: 1,
+          mainPingInterval: 12,
+        },
+        defaultConsent: "in",
+        edgeBasePath: "ee",
+        edgeConfigId: "27dae196-8c75-4eed-82d1-3895616f85d6",
+        orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg", // UnifiedJS
+        debugEnabled: true,
+        prehidingStyle: ".personalization-container { opacity: 0 !important }",
+        onBeforeEventSend: function (options) {
+          console.log("onBeforeEEveeent", options);
+        },
+      });
+    </script>
+    <script src="video-player-1.js"></script>
+    <script src="video-player-2.js"></script>
+    <script src="video-player-3.js"></script>
+  </head>
+  <body>
+    <div>
+      <h2>
+        Collect streaming media events using automatic session handling option.
+      </h2>
+      <video id="media-movie" width="600" preload controls muted>
+        <source
+          src="clickbaby.mp4"
+          type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
+        />
+      </video>
+      <h2>
+        Collect streaming media events using manual session handling option.
+      </h2>
+      <video id="media-second-movie" width="600" preload controls muted>
+        <source
+          src="clickbaby.mp4"
+          type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
+        />
+      </video>
+      <h2>Collect streaming media events using legacy Media Analytics API.</h2>
+      <video id="media-third-movie" width="600" preload controls muted>
+        <source
+          src="clickbaby.mp4"
+          type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
+        />
+      </video>
+    </div>
+    <div id="root"></div>
+  </body>
+</html>

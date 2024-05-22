@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectWeb from "./injectWeb";
-import injectDevice from "./injectDevice";
-import injectEnvironment from "./injectEnvironment";
-import injectPlaceContext from "./injectPlaceContext";
-import injectTimestamp from "./injectTimestamp";
-import implementationDetails from "./implementationDetails";
-import createComponent from "./createComponent";
-import injectHighEntropyUserAgentHints from "./injectHighEntropyUserAgentHints";
-import { arrayOf, objectOf, string } from "../../utils/validation";
+import injectWeb from "./injectWeb.js";
+import injectDevice from "./injectDevice.js";
+import injectEnvironment from "./injectEnvironment.js";
+import injectPlaceContext from "./injectPlaceContext.js";
+import injectTimestamp from "./injectTimestamp.js";
+import implementationDetails from "./implementationDetails.js";
+import createComponent from "./createComponent.js";
+import injectHighEntropyUserAgentHints from "./injectHighEntropyUserAgentHints.js";
+import { arrayOf, objectOf, string } from "../../utils/validation/index.js";
 
 const web = injectWeb(window);
 const device = injectDevice(window);
@@ -31,14 +31,14 @@ const defaultEnabledContexts = {
   web,
   device,
   environment,
-  placeContext
+  placeContext,
 };
 const defaultDisabledContexts = {
-  highEntropyUserAgentHints
+  highEntropyUserAgentHints,
 };
 const optionalContexts = {
   ...defaultEnabledContexts,
-  ...defaultDisabledContexts
+  ...defaultDisabledContexts,
 };
 const requiredContexts = [timestamp, implementationDetails];
 
@@ -47,7 +47,7 @@ const createContext = ({ config, logger }) => {
 };
 createContext.namespace = "Context";
 createContext.configValidators = objectOf({
-  context: arrayOf(string()).default(Object.keys(defaultEnabledContexts))
+  context: arrayOf(string()).default(Object.keys(defaultEnabledContexts)),
 });
 
 export default createContext;

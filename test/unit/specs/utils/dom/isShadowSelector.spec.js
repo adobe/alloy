@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isShadowSelector from "../../../../../src/utils/dom/isShadowSelector";
+import isShadowSelector from "../../../../../src/utils/dom/isShadowSelector.js";
 
 describe("Utils::DOM::isShadowSelector", () => {
   it("should detect shadow selectors", () => {

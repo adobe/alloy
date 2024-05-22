@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createFetchDataHandler from "../../../../../src/components/Personalization/createFetchDataHandler";
-import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
-import flushPromiseChains from "../../../helpers/flushPromiseChains";
-import defer from "../../../../../src/utils/defer";
-import createNotificationHandler from "../../../../../src/components/Personalization/createNotificationHandler";
+import createFetchDataHandler from "../../../../../src/components/Personalization/createFetchDataHandler.js";
+import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition.js";
+import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
+import defer from "../../../../../src/utils/defer.js";
+import createNotificationHandler from "../../../../../src/components/Personalization/createNotificationHandler.js";
 
 describe("Personalization::createFetchDataHandler", () => {
   let prehidingStyle;
@@ -26,6 +26,7 @@ describe("Personalization::createFetchDataHandler", () => {
   let createProposition;
   let renderedPropositions;
   let notificationHandler;
+  let consent;
 
   let cacheUpdate;
   let personalizationDetails;
@@ -42,23 +43,25 @@ describe("Personalization::createFetchDataHandler", () => {
     collect = jasmine.createSpy("collect");
     processPropositions = jasmine.createSpy("processPropositions");
     createProposition = injectCreateProposition({
-      preprocess: data => data,
-      isPageWideSurface: () => false
+      preprocess: (data) => data,
+      isPageWideSurface: () => false,
     });
     renderedPropositions = jasmine.createSpyObj("renderedPropositions", [
-      "concat"
+      "concat",
     ]);
     notificationHandler = createNotificationHandler(
       collect,
-      renderedPropositions
+      renderedPropositions,
     );
+    consent = jasmine.createSpyObj("consent", ["current"]);
+    consent.current.and.returnValue({ state: "in", wasSet: false });
 
     cacheUpdate = jasmine.createSpyObj("cacheUpdate", ["update"]);
     personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
       "isRenderDecisions",
       "createQueryDetails",
       "getViewName",
-      "isSendDisplayEvent"
+      "isSendDisplayEvent",
     ]);
     personalizationDetails.createQueryDetails.and.returnValue("myquerydetails");
     personalizationDetails.isSendDisplayEvent.and.returnValue(true);
@@ -75,13 +78,14 @@ describe("Personalization::createFetchDataHandler", () => {
       mergeQuery,
       processPropositions,
       createProposition,
-      notificationHandler
+      notificationHandler,
+      consent,
     });
     fetchDataHandler({
       cacheUpdate,
       personalizationDetails,
       event,
-      onResponse
+      onResponse,
     });
   };
 
@@ -103,6 +107,13 @@ describe("Personalization::createFetchDataHandler", () => {
     expect(hideContainers).not.toHaveBeenCalled();
   });
 
+  it("shouldn't hide containers if we have out consent cookie", () => {
+    consent.current.and.returnValue({ state: "out", wasSet: true });
+    personalizationDetails.isRenderDecisions.and.returnValue(true);
+    run();
+    expect(hideContainers).not.toHaveBeenCalled();
+  });
+
   it("should trigger responseHandler at onResponse", () => {
     personalizationDetails.isRenderDecisions.and.returnValue(false);
     run();
@@ -110,12 +121,12 @@ describe("Personalization::createFetchDataHandler", () => {
     cacheUpdate.update.and.returnValue([]);
     processPropositions.and.returnValue({
       returnedPropositions: [],
-      returnedDecisions: []
+      returnedDecisions: [],
     });
     const result = returnResponse();
     expect(result).toEqual({
       propositions: [],
-      decisions: []
+      decisions: [],
     });
   });
 
@@ -126,32 +137,32 @@ describe("Personalization::createFetchDataHandler", () => {
       return {
         render: () => Promise.resolve([{ id: "handle1" }]),
         returnedPropositions: [
-          { id: "handle1", items: ["item1"], renderAttempted: true }
+          { id: "handle1", items: ["item1"], renderAttempted: true },
         ],
-        returnedDecisions: []
+        returnedDecisions: [],
       };
     };
     run();
     response.getPayloadsByType.and.returnValue([
       {
         id: "handle1",
-        scopeDetails: { characteristics: { scopeType: "view" } }
+        scopeDetails: { characteristics: { scopeType: "view" } },
       },
-      { id: "handle2" }
+      { id: "handle2" },
     ]);
     cacheUpdate.update.and.returnValue([createProposition({ id: "handle1" })]);
     const result = returnResponse();
     expect(result).toEqual({
       propositions: [
-        { id: "handle1", items: ["item1"], renderAttempted: true }
+        { id: "handle1", items: ["item1"], renderAttempted: true },
       ],
-      decisions: []
+      decisions: [],
     });
     await flushPromiseChains();
     expect(showContainers).toHaveBeenCalled();
     expect(collect).toHaveBeenCalledOnceWith({
       decisionsMeta: [{ id: "handle1" }],
-      viewName: "myviewname"
+      viewName: "myviewname",
     });
   });
 
@@ -166,10 +177,10 @@ describe("Personalization::createFetchDataHandler", () => {
             id: "handle2",
             scope: "__view__",
             items: ["item1"],
-            renderAttempted: true
-          }
+            renderAttempted: true,
+          },
         ],
-        returnedDecisions: []
+        returnedDecisions: [],
       };
     };
     run();
@@ -177,8 +188,8 @@ describe("Personalization::createFetchDataHandler", () => {
       {
         id: "handle2",
         scope: "__view__",
-        items: ["item1"]
-      }
+        items: ["item1"],
+      },
     ]);
     cacheUpdate.update.and.returnValue([]);
     expect(showContainers).not.toHaveBeenCalled();
@@ -189,7 +200,7 @@ describe("Personalization::createFetchDataHandler", () => {
     await flushPromiseChains();
     expect(collect).toHaveBeenCalledOnceWith({
       decisionsMeta: [{ id: "handle2" }],
-      viewName: undefined
+      viewName: undefined,
     });
   });
 });

@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import isString from "./isString";
+import isString from "./isString.js";
 
-export default str => {
+export default (str) => {
   return isString(str) && str.toLowerCase() === "true";
 };

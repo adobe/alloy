@@ -9,13 +9,8 @@ let responseSource = localStorage.getItem("iam-responseSource") || "mock";
 
 const config = getAlloyTestConfigs();
 
-const {
-  datastreamId,
-  orgId,
-  decisionContext,
-  edgeDomain,
-  alloyInstance
-} = config[configKey];
+const { datastreamId, orgId, decisionContext, edgeDomain, alloyInstance } =
+  config[configKey];
 
 if (alloyInstance !== window.alloy) {
   alloyInstance("configure", {
@@ -26,7 +21,7 @@ if (alloyInstance !== window.alloy) {
     thirdPartyCookiesEnabled: false,
     targetMigrationEnabled: false,
     personalizationStorageEnabled: true,
-    debugEnabled: true
+    debugEnabled: true,
   });
 }
 
@@ -40,11 +35,11 @@ const mockResponse = {
         {
           id: "11893040138696185741718511332124641876",
           namespace: {
-            code: "ECID"
-          }
-        }
+            code: "ECID",
+          },
+        },
       ],
-      type: "identity:result"
+      type: "identity:result",
     },
     {
       payload: [
@@ -53,19 +48,18 @@ const mockResponse = {
             decisionProvider: "AJO",
             characteristics: {
               eventToken:
-                "eyJtZXNzYWdlRXhlY3V0aW9uIjp7Im1lc3NhZ2VFeGVjdXRpb25JRCI6Ik5BIiwibWVzc2FnZUlEIjoiMDJjNzdlYTgtN2MwZS00ZDMzLTgwOTAtNGE1YmZkM2Q3NTAzIiwibWVzc2FnZVR5cGUiOiJtYXJrZXRpbmciLCJjYW1wYWlnbklEIjoiMzlhZThkNGItYjU1ZS00M2RjLWExNDMtNzdmNTAxOTViNDg3IiwiY2FtcGFpZ25WZXJzaW9uSUQiOiJiZDg1ZDllOC0yMDM3LTQyMmYtYjZkMi0zOTU3YzkwNTU5ZDMiLCJjYW1wYWlnbkFjdGlvbklEIjoiYjQ3ZmRlOGItNTdjMS00YmJlLWFlMjItNjRkNWI3ODJkMTgzIiwibWVzc2FnZVB1YmxpY2F0aW9uSUQiOiJhZTUyY2VkOC0yMDBjLTQ5N2UtODc4Ny1lZjljZmMxNzgyMTUifSwibWVzc2FnZVByb2ZpbGUiOnsiY2hhbm5lbCI6eyJfaWQiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbHMvd2ViIiwiX3R5cGUiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbC10eXBlcy93ZWIifSwibWVzc2FnZVByb2ZpbGVJRCI6ImY1Y2Q5OTk1LTZiNDQtNDIyMS05YWI3LTViNTMzOGQ1ZjE5MyJ9fQ=="
+                "eyJtZXNzYWdlRXhlY3V0aW9uIjp7Im1lc3NhZ2VFeGVjdXRpb25JRCI6Ik5BIiwibWVzc2FnZUlEIjoiMDJjNzdlYTgtN2MwZS00ZDMzLTgwOTAtNGE1YmZkM2Q3NTAzIiwibWVzc2FnZVR5cGUiOiJtYXJrZXRpbmciLCJjYW1wYWlnbklEIjoiMzlhZThkNGItYjU1ZS00M2RjLWExNDMtNzdmNTAxOTViNDg3IiwiY2FtcGFpZ25WZXJzaW9uSUQiOiJiZDg1ZDllOC0yMDM3LTQyMmYtYjZkMi0zOTU3YzkwNTU5ZDMiLCJjYW1wYWlnbkFjdGlvbklEIjoiYjQ3ZmRlOGItNTdjMS00YmJlLWFlMjItNjRkNWI3ODJkMTgzIiwibWVzc2FnZVB1YmxpY2F0aW9uSUQiOiJhZTUyY2VkOC0yMDBjLTQ5N2UtODc4Ny1lZjljZmMxNzgyMTUifSwibWVzc2FnZVByb2ZpbGUiOnsiY2hhbm5lbCI6eyJfaWQiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbHMvd2ViIiwiX3R5cGUiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbC10eXBlcy93ZWIifSwibWVzc2FnZVByb2ZpbGVJRCI6ImY1Y2Q5OTk1LTZiNDQtNDIyMS05YWI3LTViNTMzOGQ1ZjE5MyJ9fQ==",
             },
             strategies: [
               {
                 strategyID: "3VQe3oIqiYq2RAsYzmDTSf",
-                treatmentID: "yu7rkogezumca7i0i44v"
-              }
+                treatmentID: "yu7rkogezumca7i0i44v",
+              },
             ],
             activity: {
-              id:
-                "8e24e51d-5203-4d0b-99c9-2b3c95ff48f2#05885219-ea84-43bc-874e-1ef4a85b6fbb"
+              id: "8e24e51d-5203-4d0b-99c9-2b3c95ff48f2#05885219-ea84-43bc-874e-1ef4a85b6fbb",
             },
-            correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503"
+            correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503",
           },
           id: "1a3d874f-39ee-4310-bfa9-6559a10041a4",
           items: [
@@ -85,13 +79,13 @@ const mockResponse = {
                                 {
                                   "iam.eventType": "dismiss",
                                   "iam.id":
-                                    "8e24e51d-5203-4d0b-99c9-2b3c95ff48f2#05885219-ea84-43bc-874e-1ef4a85b6fbb"
-                                }
+                                    "8e24e51d-5203-4d0b-99c9-2b3c95ff48f2#05885219-ea84-43bc-874e-1ef4a85b6fbb",
+                                },
                               ],
                               matcher: "le",
-                              value: 0
+                              value: 0,
                             },
-                            type: "historical"
+                            type: "historical",
                           },
                           {
                             definition: {
@@ -99,9 +93,9 @@ const mockResponse = {
                                 {
                                   definition: {
                                     key: "events",
-                                    matcher: "ex"
+                                    matcher: "ex",
                                   },
-                                  type: "matcher"
+                                  type: "matcher",
                                 },
                                 {
                                   definition: {
@@ -109,23 +103,23 @@ const mockResponse = {
                                       {
                                         "iam.eventType": "trigger",
                                         "iam.id":
-                                          "8e24e51d-5203-4d0b-99c9-2b3c95ff48f2#05885219-ea84-43bc-874e-1ef4a85b6fbb"
-                                      }
+                                          "8e24e51d-5203-4d0b-99c9-2b3c95ff48f2#05885219-ea84-43bc-874e-1ef4a85b6fbb",
+                                      },
                                     ],
                                     matcher: "ge",
-                                    value: 1
+                                    value: 1,
                                   },
-                                  type: "historical"
-                                }
+                                  type: "historical",
+                                },
                               ],
-                              logic: "or"
+                              logic: "or",
                             },
-                            type: "group"
-                          }
+                            type: "group",
+                          },
                         ],
-                        logic: "and"
+                        logic: "and",
                       },
-                      type: "group"
+                      type: "group",
                     },
                     consequences: [
                       {
@@ -137,47 +131,46 @@ const mockResponse = {
                             expiryDate: 1712190456,
                             publishedDate: 1677752640000,
                             meta: {
-                              surface
+                              surface,
                             },
                             content: {
                               imageUrl: "/img/lumon.png",
                               actionTitle: "Shop the sale!",
                               actionUrl: "https://luma.com/sale",
                               body: "a handshake is available upon request.",
-                              title: "Welcome to Lumon!"
+                              title: "Welcome to Lumon!",
                             },
-                            contentType: "application/json"
+                            contentType: "application/json",
                           },
-                          id: "a48ca420-faea-467e-989a-5d179d9f562d"
+                          id: "a48ca420-faea-467e-989a-5d179d9f562d",
                         },
-                        id: "a48ca420-faea-467e-989a-5d179d9f562d"
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
+                        id: "a48ca420-faea-467e-989a-5d179d9f562d",
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
           ],
-          scope: surface
+          scope: surface,
         },
         {
           scopeDetails: {
             decisionProvider: "AJO",
             characteristics: {
               eventToken:
-                "eyJtZXNzYWdlRXhlY3V0aW9uIjp7Im1lc3NhZ2VFeGVjdXRpb25JRCI6Ik5BIiwibWVzc2FnZUlEIjoiMDJjNzdlYTgtN2MwZS00ZDMzLTgwOTAtNGE1YmZkM2Q3NTAzIiwibWVzc2FnZVR5cGUiOiJtYXJrZXRpbmciLCJjYW1wYWlnbklEIjoiMzlhZThkNGItYjU1ZS00M2RjLWExNDMtNzdmNTAxOTViNDg3IiwiY2FtcGFpZ25WZXJzaW9uSUQiOiJiZDg1ZDllOC0yMDM3LTQyMmYtYjZkMi0zOTU3YzkwNTU5ZDMiLCJjYW1wYWlnbkFjdGlvbklEIjoiYjQ3ZmRlOGItNTdjMS00YmJlLWFlMjItNjRkNWI3ODJkMTgzIiwibWVzc2FnZVB1YmxpY2F0aW9uSUQiOiJhZTUyY2VkOC0yMDBjLTQ5N2UtODc4Ny1lZjljZmMxNzgyMTUifSwibWVzc2FnZVByb2ZpbGUiOnsiY2hhbm5lbCI6eyJfaWQiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbHMvd2ViIiwiX3R5cGUiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbC10eXBlcy93ZWIifSwibWVzc2FnZVByb2ZpbGVJRCI6ImY1Y2Q5OTk1LTZiNDQtNDIyMS05YWI3LTViNTMzOGQ1ZjE5MyJ9fQ=="
+                "eyJtZXNzYWdlRXhlY3V0aW9uIjp7Im1lc3NhZ2VFeGVjdXRpb25JRCI6Ik5BIiwibWVzc2FnZUlEIjoiMDJjNzdlYTgtN2MwZS00ZDMzLTgwOTAtNGE1YmZkM2Q3NTAzIiwibWVzc2FnZVR5cGUiOiJtYXJrZXRpbmciLCJjYW1wYWlnbklEIjoiMzlhZThkNGItYjU1ZS00M2RjLWExNDMtNzdmNTAxOTViNDg3IiwiY2FtcGFpZ25WZXJzaW9uSUQiOiJiZDg1ZDllOC0yMDM3LTQyMmYtYjZkMi0zOTU3YzkwNTU5ZDMiLCJjYW1wYWlnbkFjdGlvbklEIjoiYjQ3ZmRlOGItNTdjMS00YmJlLWFlMjItNjRkNWI3ODJkMTgzIiwibWVzc2FnZVB1YmxpY2F0aW9uSUQiOiJhZTUyY2VkOC0yMDBjLTQ5N2UtODc4Ny1lZjljZmMxNzgyMTUifSwibWVzc2FnZVByb2ZpbGUiOnsiY2hhbm5lbCI6eyJfaWQiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbHMvd2ViIiwiX3R5cGUiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbC10eXBlcy93ZWIifSwibWVzc2FnZVByb2ZpbGVJRCI6ImY1Y2Q5OTk1LTZiNDQtNDIyMS05YWI3LTViNTMzOGQ1ZjE5MyJ9fQ==",
             },
             strategies: [
               {
                 strategyID: "3VQe3oIqiYq2RAsYzmDTSf",
-                treatmentID: "yu7rkogezumca7i0i44v"
-              }
+                treatmentID: "yu7rkogezumca7i0i44v",
+              },
             ],
             activity: {
-              id:
-                "9d8d3896-872f-4fab-8440-220c7f012ba8#b1e22d27-40cb-42ba-aa1f-9a6d26a737a6"
+              id: "9d8d3896-872f-4fab-8440-220c7f012ba8#b1e22d27-40cb-42ba-aa1f-9a6d26a737a6",
             },
-            correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503"
+            correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503",
           },
           id: "532a0ac7-7412-42e1-b2c3-62fb0d0e5db0",
           items: [
@@ -197,13 +190,13 @@ const mockResponse = {
                                 {
                                   "iam.eventType": "dismiss",
                                   "iam.id":
-                                    "9d8d3896-872f-4fab-8440-220c7f012ba8#b1e22d27-40cb-42ba-aa1f-9a6d26a737a6"
-                                }
+                                    "9d8d3896-872f-4fab-8440-220c7f012ba8#b1e22d27-40cb-42ba-aa1f-9a6d26a737a6",
+                                },
                               ],
                               matcher: "le",
-                              value: 0
+                              value: 0,
                             },
-                            type: "historical"
+                            type: "historical",
                           },
                           {
                             definition: {
@@ -211,9 +204,9 @@ const mockResponse = {
                                 {
                                   definition: {
                                     key: "events",
-                                    matcher: "ex"
+                                    matcher: "ex",
                                   },
-                                  type: "matcher"
+                                  type: "matcher",
                                 },
                                 {
                                   definition: {
@@ -221,23 +214,23 @@ const mockResponse = {
                                       {
                                         "iam.eventType": "trigger",
                                         "iam.id":
-                                          "9d8d3896-872f-4fab-8440-220c7f012ba8#b1e22d27-40cb-42ba-aa1f-9a6d26a737a6"
-                                      }
+                                          "9d8d3896-872f-4fab-8440-220c7f012ba8#b1e22d27-40cb-42ba-aa1f-9a6d26a737a6",
+                                      },
                                     ],
                                     matcher: "ge",
-                                    value: 1
+                                    value: 1,
                                   },
-                                  type: "historical"
-                                }
+                                  type: "historical",
+                                },
                               ],
-                              logic: "or"
+                              logic: "or",
                             },
-                            type: "group"
-                          }
+                            type: "group",
+                          },
                         ],
-                        logic: "and"
+                        logic: "and",
                       },
-                      type: "group"
+                      type: "group",
                     },
                     consequences: [
                       {
@@ -249,47 +242,46 @@ const mockResponse = {
                             expiryDate: 1712190456,
                             publishedDate: 1677839040000,
                             meta: {
-                              surface
+                              surface,
                             },
                             content: {
                               imageUrl: "/img/achievement.jpg",
                               actionTitle: "Shop the sale!",
                               actionUrl: "https://luma.com/sale",
                               body: "Great job, you completed your profile.",
-                              title: "Achievement Unlocked!"
+                              title: "Achievement Unlocked!",
                             },
-                            contentType: "application/json"
+                            contentType: "application/json",
                           },
-                          id: "b7173290-588f-40c6-a05c-43ed5ec08b28"
+                          id: "b7173290-588f-40c6-a05c-43ed5ec08b28",
                         },
-                        id: "b7173290-588f-40c6-a05c-43ed5ec08b28"
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
+                        id: "b7173290-588f-40c6-a05c-43ed5ec08b28",
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
           ],
-          scope: surface
+          scope: surface,
         },
         {
           scopeDetails: {
             decisionProvider: "AJO",
             characteristics: {
               eventToken:
-                "eyJtZXNzYWdlRXhlY3V0aW9uIjp7Im1lc3NhZ2VFeGVjdXRpb25JRCI6Ik5BIiwibWVzc2FnZUlEIjoiMDJjNzdlYTgtN2MwZS00ZDMzLTgwOTAtNGE1YmZkM2Q3NTAzIiwibWVzc2FnZVR5cGUiOiJtYXJrZXRpbmciLCJjYW1wYWlnbklEIjoiMzlhZThkNGItYjU1ZS00M2RjLWExNDMtNzdmNTAxOTViNDg3IiwiY2FtcGFpZ25WZXJzaW9uSUQiOiJiZDg1ZDllOC0yMDM3LTQyMmYtYjZkMi0zOTU3YzkwNTU5ZDMiLCJjYW1wYWlnbkFjdGlvbklEIjoiYjQ3ZmRlOGItNTdjMS00YmJlLWFlMjItNjRkNWI3ODJkMTgzIiwibWVzc2FnZVB1YmxpY2F0aW9uSUQiOiJhZTUyY2VkOC0yMDBjLTQ5N2UtODc4Ny1lZjljZmMxNzgyMTUifSwibWVzc2FnZVByb2ZpbGUiOnsiY2hhbm5lbCI6eyJfaWQiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbHMvd2ViIiwiX3R5cGUiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbC10eXBlcy93ZWIifSwibWVzc2FnZVByb2ZpbGVJRCI6ImY1Y2Q5OTk1LTZiNDQtNDIyMS05YWI3LTViNTMzOGQ1ZjE5MyJ9fQ=="
+                "eyJtZXNzYWdlRXhlY3V0aW9uIjp7Im1lc3NhZ2VFeGVjdXRpb25JRCI6Ik5BIiwibWVzc2FnZUlEIjoiMDJjNzdlYTgtN2MwZS00ZDMzLTgwOTAtNGE1YmZkM2Q3NTAzIiwibWVzc2FnZVR5cGUiOiJtYXJrZXRpbmciLCJjYW1wYWlnbklEIjoiMzlhZThkNGItYjU1ZS00M2RjLWExNDMtNzdmNTAxOTViNDg3IiwiY2FtcGFpZ25WZXJzaW9uSUQiOiJiZDg1ZDllOC0yMDM3LTQyMmYtYjZkMi0zOTU3YzkwNTU5ZDMiLCJjYW1wYWlnbkFjdGlvbklEIjoiYjQ3ZmRlOGItNTdjMS00YmJlLWFlMjItNjRkNWI3ODJkMTgzIiwibWVzc2FnZVB1YmxpY2F0aW9uSUQiOiJhZTUyY2VkOC0yMDBjLTQ5N2UtODc4Ny1lZjljZmMxNzgyMTUifSwibWVzc2FnZVByb2ZpbGUiOnsiY2hhbm5lbCI6eyJfaWQiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbHMvd2ViIiwiX3R5cGUiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbC10eXBlcy93ZWIifSwibWVzc2FnZVByb2ZpbGVJRCI6ImY1Y2Q5OTk1LTZiNDQtNDIyMS05YWI3LTViNTMzOGQ1ZjE5MyJ9fQ==",
             },
             strategies: [
               {
                 strategyID: "3VQe3oIqiYq2RAsYzmDTSf",
-                treatmentID: "yu7rkogezumca7i0i44v"
-              }
+                treatmentID: "yu7rkogezumca7i0i44v",
+              },
             ],
             activity: {
-              id:
-                "cf087a6e-131d-4147-adc7-bc1ea947f09c#ff64e6e6-e43f-479d-b5c0-f5568c771b3b"
+              id: "cf087a6e-131d-4147-adc7-bc1ea947f09c#ff64e6e6-e43f-479d-b5c0-f5568c771b3b",
             },
-            correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503"
+            correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503",
           },
           id: "1ae11bc5-96dc-41c7-8f71-157c57a5290e",
           items: [
@@ -309,13 +301,13 @@ const mockResponse = {
                                 {
                                   "iam.eventType": "dismiss",
                                   "iam.id":
-                                    "cf087a6e-131d-4147-adc7-bc1ea947f09c#ff64e6e6-e43f-479d-b5c0-f5568c771b3b"
-                                }
+                                    "cf087a6e-131d-4147-adc7-bc1ea947f09c#ff64e6e6-e43f-479d-b5c0-f5568c771b3b",
+                                },
                               ],
                               matcher: "le",
-                              value: 0
+                              value: 0,
                             },
-                            type: "historical"
+                            type: "historical",
                           },
                           {
                             definition: {
@@ -324,9 +316,9 @@ const mockResponse = {
                                   definition: {
                                     key: "action",
                                     matcher: "eq",
-                                    values: ["share-social-media"]
+                                    values: ["share-social-media"],
                                   },
-                                  type: "matcher"
+                                  type: "matcher",
                                 },
                                 {
                                   definition: {
@@ -334,23 +326,23 @@ const mockResponse = {
                                       {
                                         "iam.eventType": "trigger",
                                         "iam.id":
-                                          "cf087a6e-131d-4147-adc7-bc1ea947f09c#ff64e6e6-e43f-479d-b5c0-f5568c771b3b"
-                                      }
+                                          "cf087a6e-131d-4147-adc7-bc1ea947f09c#ff64e6e6-e43f-479d-b5c0-f5568c771b3b",
+                                      },
                                     ],
                                     matcher: "ge",
-                                    value: 1
+                                    value: 1,
                                   },
-                                  type: "historical"
-                                }
+                                  type: "historical",
+                                },
                               ],
-                              logic: "or"
+                              logic: "or",
                             },
-                            type: "group"
-                          }
+                            type: "group",
+                          },
                         ],
-                        logic: "and"
+                        logic: "and",
                       },
-                      type: "group"
+                      type: "group",
                     },
                     consequences: [
                       {
@@ -362,48 +354,46 @@ const mockResponse = {
                             expiryDate: 1712190456,
                             publishedDate: 1678098240000,
                             meta: {
-                              surface
+                              surface,
                             },
                             content: {
                               imageUrl: "/img/twitter.png",
                               actionTitle: "Shop the sale!",
                               actionUrl: "https://luma.com/sale",
-                              body:
-                                "Posting on social media helps us spread the word.",
-                              title: "Thanks for sharing!"
+                              body: "Posting on social media helps us spread the word.",
+                              title: "Thanks for sharing!",
                             },
-                            contentType: "application/json"
+                            contentType: "application/json",
                           },
-                          id: "cfcb1af7-7bc2-45b2-a86a-0aa93fe69ce7"
+                          id: "cfcb1af7-7bc2-45b2-a86a-0aa93fe69ce7",
                         },
-                        id: "cfcb1af7-7bc2-45b2-a86a-0aa93fe69ce7"
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
+                        id: "cfcb1af7-7bc2-45b2-a86a-0aa93fe69ce7",
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
           ],
-          scope: surface
+          scope: surface,
         },
         {
           scopeDetails: {
             decisionProvider: "AJO",
             characteristics: {
               eventToken:
-                "eyJtZXNzYWdlRXhlY3V0aW9uIjp7Im1lc3NhZ2VFeGVjdXRpb25JRCI6Ik5BIiwibWVzc2FnZUlEIjoiMDJjNzdlYTgtN2MwZS00ZDMzLTgwOTAtNGE1YmZkM2Q3NTAzIiwibWVzc2FnZVR5cGUiOiJtYXJrZXRpbmciLCJjYW1wYWlnbklEIjoiMzlhZThkNGItYjU1ZS00M2RjLWExNDMtNzdmNTAxOTViNDg3IiwiY2FtcGFpZ25WZXJzaW9uSUQiOiJiZDg1ZDllOC0yMDM3LTQyMmYtYjZkMi0zOTU3YzkwNTU5ZDMiLCJjYW1wYWlnbkFjdGlvbklEIjoiYjQ3ZmRlOGItNTdjMS00YmJlLWFlMjItNjRkNWI3ODJkMTgzIiwibWVzc2FnZVB1YmxpY2F0aW9uSUQiOiJhZTUyY2VkOC0yMDBjLTQ5N2UtODc4Ny1lZjljZmMxNzgyMTUifSwibWVzc2FnZVByb2ZpbGUiOnsiY2hhbm5lbCI6eyJfaWQiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbHMvd2ViIiwiX3R5cGUiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbC10eXBlcy93ZWIifSwibWVzc2FnZVByb2ZpbGVJRCI6ImY1Y2Q5OTk1LTZiNDQtNDIyMS05YWI3LTViNTMzOGQ1ZjE5MyJ9fQ=="
+                "eyJtZXNzYWdlRXhlY3V0aW9uIjp7Im1lc3NhZ2VFeGVjdXRpb25JRCI6Ik5BIiwibWVzc2FnZUlEIjoiMDJjNzdlYTgtN2MwZS00ZDMzLTgwOTAtNGE1YmZkM2Q3NTAzIiwibWVzc2FnZVR5cGUiOiJtYXJrZXRpbmciLCJjYW1wYWlnbklEIjoiMzlhZThkNGItYjU1ZS00M2RjLWExNDMtNzdmNTAxOTViNDg3IiwiY2FtcGFpZ25WZXJzaW9uSUQiOiJiZDg1ZDllOC0yMDM3LTQyMmYtYjZkMi0zOTU3YzkwNTU5ZDMiLCJjYW1wYWlnbkFjdGlvbklEIjoiYjQ3ZmRlOGItNTdjMS00YmJlLWFlMjItNjRkNWI3ODJkMTgzIiwibWVzc2FnZVB1YmxpY2F0aW9uSUQiOiJhZTUyY2VkOC0yMDBjLTQ5N2UtODc4Ny1lZjljZmMxNzgyMTUifSwibWVzc2FnZVByb2ZpbGUiOnsiY2hhbm5lbCI6eyJfaWQiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbHMvd2ViIiwiX3R5cGUiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbC10eXBlcy93ZWIifSwibWVzc2FnZVByb2ZpbGVJRCI6ImY1Y2Q5OTk1LTZiNDQtNDIyMS05YWI3LTViNTMzOGQ1ZjE5MyJ9fQ==",
             },
             strategies: [
               {
                 strategyID: "3VQe3oIqiYq2RAsYzmDTSf",
-                treatmentID: "yu7rkogezumca7i0i44v"
-              }
+                treatmentID: "yu7rkogezumca7i0i44v",
+              },
             ],
             activity: {
-              id:
-                "57712381-1690-4d19-9469-0a35ea5bd4e3#74f8e5cf-d770-41c3-b595-557b3ee00ba3"
+              id: "57712381-1690-4d19-9469-0a35ea5bd4e3#74f8e5cf-d770-41c3-b595-557b3ee00ba3",
             },
-            correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503"
+            correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503",
           },
           id: "d1f7d411-a549-47bc-a4d8-c8e638b0a46b",
           items: [
@@ -423,13 +413,13 @@ const mockResponse = {
                                 {
                                   "iam.eventType": "dismiss",
                                   "iam.id":
-                                    "57712381-1690-4d19-9469-0a35ea5bd4e3#74f8e5cf-d770-41c3-b595-557b3ee00ba3"
-                                }
+                                    "57712381-1690-4d19-9469-0a35ea5bd4e3#74f8e5cf-d770-41c3-b595-557b3ee00ba3",
+                                },
                               ],
                               matcher: "le",
-                              value: 0
+                              value: 0,
                             },
-                            type: "historical"
+                            type: "historical",
                           },
                           {
                             definition: {
@@ -438,9 +428,9 @@ const mockResponse = {
                                   definition: {
                                     key: "action",
                                     matcher: "eq",
-                                    values: ["deposit-funds"]
+                                    values: ["deposit-funds"],
                                   },
-                                  type: "matcher"
+                                  type: "matcher",
                                 },
                                 {
                                   definition: {
@@ -448,23 +438,23 @@ const mockResponse = {
                                       {
                                         "iam.eventType": "trigger",
                                         "iam.id":
-                                          "57712381-1690-4d19-9469-0a35ea5bd4e3#74f8e5cf-d770-41c3-b595-557b3ee00ba3"
-                                      }
+                                          "57712381-1690-4d19-9469-0a35ea5bd4e3#74f8e5cf-d770-41c3-b595-557b3ee00ba3",
+                                      },
                                     ],
                                     matcher: "ge",
-                                    value: 1
+                                    value: 1,
                                   },
-                                  type: "historical"
-                                }
+                                  type: "historical",
+                                },
                               ],
-                              logic: "or"
+                              logic: "or",
                             },
-                            type: "group"
-                          }
+                            type: "group",
+                          },
                         ],
-                        logic: "and"
+                        logic: "and",
                       },
-                      type: "group"
+                      type: "group",
                     },
                     consequences: [
                       {
@@ -476,52 +466,52 @@ const mockResponse = {
                             expiryDate: 1712190456,
                             publishedDate: 1678184640000,
                             meta: {
-                              surface
+                              surface,
                             },
                             content: {
                               imageUrl: "/img/gold-coin.jpg",
                               actionTitle: "Shop the sale!",
                               actionUrl: "https://luma.com/sale",
                               body: "Now you're ready to earn!",
-                              title: "Funds deposited!"
+                              title: "Funds deposited!",
                             },
-                            contentType: "application/json"
+                            contentType: "application/json",
                           },
-                          id: "0263e171-fa32-4c7a-9611-36b28137a81d"
+                          id: "0263e171-fa32-4c7a-9611-36b28137a81d",
                         },
-                        id: "0263e171-fa32-4c7a-9611-36b28137a81d"
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
+                        id: "0263e171-fa32-4c7a-9611-36b28137a81d",
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
           ],
-          scope: surface
-        }
+          scope: surface,
+        },
       ],
       type: "personalization:decisions",
-      eventIndex: 0
+      eventIndex: 0,
     },
     {
       payload: [
         {
           scope: "Target",
           hint: "35",
-          ttlSeconds: 1800
+          ttlSeconds: 1800,
         },
         {
           scope: "AAM",
           hint: "9",
-          ttlSeconds: 1800
+          ttlSeconds: 1800,
         },
         {
           scope: "EdgeNetwork",
           hint: "or2",
-          ttlSeconds: 1800
-        }
+          ttlSeconds: 1800,
+        },
       ],
-      type: "locationHint:result"
+      type: "locationHint:result",
     },
     {
       payload: [
@@ -530,16 +520,16 @@ const mockResponse = {
           value: "or2",
           maxAge: 1800,
           attrs: {
-            SameSite: "None"
-          }
-        }
+            SameSite: "None",
+          },
+        },
       ],
-      type: "state:store"
-    }
-  ]
+      type: "state:store",
+    },
+  ],
 };
 
-const prettyDate = value => {
+const prettyDate = (value) => {
   let output = "";
 
   if (typeof value !== "undefined") {
@@ -576,9 +566,9 @@ export default function ContentCards() {
     const startupPromises = Promise.all([
       alloyInstance("subscribeRulesetItems", {
         surfaces: [surface],
-        callback: result => {
+        callback: (result) => {
           console.log("subscribeRulesetItems", result);
-        }
+        },
       }),
       alloyInstance("subscribeContentCards", {
         surface,
@@ -588,7 +578,7 @@ export default function ContentCards() {
           setDismissHandler(() => dismissed);
           setContentCards(items);
           rendered(items);
-        }
+        },
       }),
       responseSource === "edge"
         ? alloyInstance("sendEvent", {
@@ -597,13 +587,13 @@ export default function ContentCards() {
             personalization: {
               surfaces: [surface],
               decisionContext: { ...decisionContext },
-              sendDisplayEvent: false
-            }
+              sendDisplayEvent: false,
+            },
           })
         : alloyInstance("applyResponse", {
             renderDecisions: true,
-            responseBody: mockResponse
-          })
+            responseBody: mockResponse,
+          }),
     ]);
 
     return () => {
@@ -614,15 +604,15 @@ export default function ContentCards() {
     };
   }, ["clickHandler"]);
 
-  const dismissContentCard = items => {
+  const dismissContentCard = (items) => {
     dismissHandler(items).then(() => {
       alloyInstance("evaluateRulesets", {
-        renderDecisions: true
+        renderDecisions: true,
       });
     });
   };
 
-  const onClickedContentCard = items => {
+  const onClickedContentCard = (items) => {
     if (items.length === 0) {
       return;
     }
@@ -642,9 +632,9 @@ export default function ContentCards() {
       renderDecisions: true,
       personalization: {
         decisionContext: {
-          action: "share-social-media"
-        }
-      }
+          action: "share-social-media",
+        },
+      },
     });
   };
 
@@ -653,9 +643,9 @@ export default function ContentCards() {
       renderDecisions: true,
       personalization: {
         decisionContext: {
-          action: "deposit-funds"
-        }
-      }
+          action: "deposit-funds",
+        },
+      },
     });
   };
 
@@ -668,8 +658,8 @@ export default function ContentCards() {
           setDismissHandler(() => dismissed);
           setContentCards(items);
           rendered(items);
-        }
-      })
+        },
+      }),
       // alloyInstance("evaluateRulesets")
       // alloyInstance("sendEvent", {
       //   renderDecisions: true,
@@ -691,7 +681,7 @@ export default function ContentCards() {
     window.location.reload();
   };
 
-  const setResponseSource = value => {
+  const setResponseSource = (value) => {
     responseSource = value;
     localStorage.setItem("iam-responseSource", responseSource);
     resetPersistentData();
@@ -705,7 +695,7 @@ export default function ContentCards() {
         <select
           id="responseSource"
           name="responseSource"
-          onChange={evt => setResponseSource(evt.target.value)}
+          onChange={(evt) => setResponseSource(evt.target.value)}
           defaultValue={responseSource}
         >
           <option key="mock" value="mock">
@@ -740,7 +730,7 @@ export default function ContentCards() {
               onClick={() => onClickedContentCard([item])}
             >
               <button
-                onClick={evt => {
+                onClick={(evt) => {
                   evt.stopPropagation();
                   dismissContentCard([item]);
                 }}

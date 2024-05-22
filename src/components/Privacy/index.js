@@ -14,41 +14,41 @@ import {
   createTaskQueue,
   cookieJar,
   injectDoesIdentityCookieExist,
-  sanitizeOrgIdForCookieName
-} from "../../utils";
-import createComponent from "./createComponent";
-import createConsentHashStore from "./createConsentHashStore";
-import createConsentRequestPayload from "./createConsentRequestPayload";
-import createConsentRequest from "./createConsentRequest";
-import createStoredConsent from "./createStoredConsent";
-import injectSendSetConsentRequest from "./injectSendSetConsentRequest";
-import parseConsentCookie from "./parseConsentCookie";
-import validateSetConsentOptions from "./validateSetConsentOptions";
+  sanitizeOrgIdForCookieName,
+} from "../../utils/index.js";
+import createComponent from "./createComponent.js";
+import createConsentHashStore from "./createConsentHashStore.js";
+import createConsentRequestPayload from "./createConsentRequestPayload.js";
+import createConsentRequest from "./createConsentRequest.js";
+import createStoredConsent from "./createStoredConsent.js";
+import injectSendSetConsentRequest from "./injectSendSetConsentRequest.js";
+import parseConsentCookie from "./parseConsentCookie.js";
+import validateSetConsentOptions from "./validateSetConsentOptions.js";
 
 const createPrivacy = ({
   config,
   consent,
   sendEdgeNetworkRequest,
-  createNamespacedStorage
+  createNamespacedStorage,
 }) => {
   const { orgId, defaultConsent } = config;
   const storedConsent = createStoredConsent({
     parseConsentCookie,
     orgId,
-    cookieJar
+    cookieJar,
   });
   const taskQueue = createTaskQueue();
   const sendSetConsentRequest = injectSendSetConsentRequest({
     createConsentRequestPayload,
     createConsentRequest,
     sendEdgeNetworkRequest,
-    edgeConfigOverrides: config.edgeConfigOverrides
+    edgeConfigOverrides: config.edgeConfigOverrides,
   });
   const storage = createNamespacedStorage(
-    `${sanitizeOrgIdForCookieName(orgId)}.consentHashes.`
+    `${sanitizeOrgIdForCookieName(orgId)}.consentHashes.`,
   );
   const consentHashStore = createConsentHashStore({
-    storage: storage.persistent
+    storage: storage.persistent,
   });
 
   const doesIdentityCookieExist = injectDoesIdentityCookieExist({ orgId });
@@ -61,7 +61,7 @@ const createPrivacy = ({
     sendSetConsentRequest,
     validateSetConsentOptions,
     consentHashStore,
-    doesIdentityCookieExist
+    doesIdentityCookieExist,
   });
 };
 

@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { PERSONALIZATION_DECISIONS_HANDLE } from "../../constants/handle";
-import flattenObject from "../../utils/flattenObject";
+import { PERSONALIZATION_DECISIONS_HANDLE } from "../../constants/handle.js";
+import flattenObject from "../../utils/flattenObject.js";
 
 export default ({
   renderDecisions,
@@ -18,16 +18,16 @@ export default ({
   applyResponse,
   event,
   personalization,
-  decisionContext
+  decisionContext,
 }) => {
   const context = {
     ...flattenObject(event.getContent()),
-    ...decisionContext
+    ...decisionContext,
   };
 
   return ({ response }) => {
     decisionProvider.addPayloads(
-      response.getPayloadsByType(PERSONALIZATION_DECISIONS_HANDLE)
+      response.getPayloadsByType(PERSONALIZATION_DECISIONS_HANDLE),
     );
 
     // only evaluate events that include a personalization query
@@ -40,7 +40,7 @@ export default ({
       renderDecisions,
       propositions,
       event,
-      personalization
+      personalization,
     });
   };
 };

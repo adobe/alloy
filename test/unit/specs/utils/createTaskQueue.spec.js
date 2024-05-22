@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createTaskQueue from "../../../../src/utils/createTaskQueue";
-import { defer } from "../../../../src/utils";
-import flushPromiseChains from "../../helpers/flushPromiseChains";
+import createTaskQueue from "../../../../src/utils/createTaskQueue.js";
+import { defer } from "../../../../src/utils/index.js";
+import flushPromiseChains from "../../helpers/flushPromiseChains.js";
 
 describe("createTaskQueue", () => {
   it("executes a single task once even when it throws an error", () => {
@@ -20,7 +20,7 @@ describe("createTaskQueue", () => {
     const task1 = jasmine
       .createSpy("task1")
       .and.returnValue(Promise.reject(Error("myerror")));
-    return queue.addTask(task1).then(fail, e => {
+    return queue.addTask(task1).then(fail, (e) => {
       expect(e.message).toEqual("myerror");
       expect(task1).toHaveBeenCalledTimes(1);
     });

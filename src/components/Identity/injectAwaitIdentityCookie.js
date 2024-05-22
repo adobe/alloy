@@ -28,7 +28,7 @@ export default ({ doesIdentityCookieExist, orgId, logger }) => {
             `Identity cookie not found. This could be caused by any of the following issues:\n` +
               `\t* The org ID ${orgId} configured in Alloy doesn't match the org ID specified in the edge configuration.\n` +
               `\t* Experience edge was not able to set the identity cookie due to domain or cookie restrictions.\n` +
-              `\t* The request was canceled by the browser and not fully processed.`
+              `\t* The request was canceled by the browser and not fully processed.`,
           );
 
           // Rejecting the promise will tell queued events to still go out

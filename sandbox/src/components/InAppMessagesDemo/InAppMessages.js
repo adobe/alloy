@@ -9,15 +9,10 @@ const configKey =
 
 const config = getAlloyTestConfigs();
 
-const {
-  datastreamId,
-  orgId,
-  decisionContext,
-  edgeDomain,
-  alloyInstance
-} = config[configKey];
+const { datastreamId, orgId, decisionContext, edgeDomain, alloyInstance } =
+  config[configKey];
 
-const getURLParams = key => {
+const getURLParams = (key) => {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get(key);
 };
@@ -31,7 +26,7 @@ if (alloyInstance !== window.alloy) {
     thirdPartyCookiesEnabled: false,
     targetMigrationEnabled: false,
     personalizationStorageEnabled: true,
-    debugEnabled: true
+    debugEnabled: true,
   });
 }
 
@@ -41,27 +36,27 @@ const CUSTOM_TRAIT_VALUE = "iam-customtrait-value";
 export default function InAppMessages() {
   const [sentEvent, setSentEvent] = useState(false);
   const [customTraitKey, setCustomTraitKeyInternal] = useState(
-    localStorage.getItem(CUSTOM_TRAIT_KEY) || ""
+    localStorage.getItem(CUSTOM_TRAIT_KEY) || "",
   );
   const [customTraitValue, setCustomTraitValueInternal] = useState(
-    localStorage.getItem(CUSTOM_TRAIT_VALUE) || ""
+    localStorage.getItem(CUSTOM_TRAIT_VALUE) || "",
   );
 
-  const setCustomTraitKey = value => {
+  const setCustomTraitKey = (value) => {
     setCustomTraitKeyInternal(value);
     localStorage.setItem(CUSTOM_TRAIT_KEY, value);
   };
 
-  const setCustomTraitValue = value => {
+  const setCustomTraitValue = (value) => {
     setCustomTraitValueInternal(value);
     localStorage.setItem(CUSTOM_TRAIT_VALUE, value);
   };
 
   useEffect(() => {
     const unsubscribePromise = alloyInstance("subscribeRulesetItems", {
-      callback: result => {
+      callback: (result) => {
         console.log("subscribeRulesetItems", result);
-      }
+      },
     });
 
     return () => {
@@ -80,8 +75,8 @@ export default function InAppMessages() {
       alloyInstance("evaluateRulesets", {
         renderDecisions: true,
         personalization: {
-          decisionContext: context
-        }
+          decisionContext: context,
+        },
       });
       return;
     }
@@ -92,8 +87,8 @@ export default function InAppMessages() {
       personalization: {
         surfaces: ["#hello"],
         decisionContext: context,
-        sendDisplayEvent: false
-      }
+        sendDisplayEvent: false,
+      },
     }).then(() => {
       setSentEvent(true);
     });
@@ -103,12 +98,12 @@ export default function InAppMessages() {
     alloyInstance("sendEvent", {
       renderDecisions: false,
       personalization: {
-        includeRenderedPropositions: true
-      }
+        includeRenderedPropositions: true,
+      },
     });
   };
 
-  const setNewConfigEnv = value => {
+  const setNewConfigEnv = (value) => {
     localStorage.setItem("iam-configKey", value);
     deleteAllCookies();
     window.location.reload();
@@ -123,10 +118,10 @@ export default function InAppMessages() {
         <select
           id="configEnv"
           name="configEnv"
-          onChange={evt => setNewConfigEnv(evt.target.value)}
+          onChange={(evt) => setNewConfigEnv(evt.target.value)}
           defaultValue={configKey}
         >
-          {Object.keys(config).map(conf => (
+          {Object.keys(config).map((conf) => (
             <option key={conf} value={conf}>
               {config[conf].name}
             </option>
@@ -140,7 +135,7 @@ export default function InAppMessages() {
               id="input-custom-trait-key"
               type="text"
               value={customTraitKey}
-              onChange={evt => setCustomTraitKey(evt.target.value)}
+              onChange={(evt) => setCustomTraitKey(evt.target.value)}
             />
           </span>
           <span style={{ marginRight: "20px" }}>
@@ -149,7 +144,7 @@ export default function InAppMessages() {
               id="input-custom-trait-value"
               type="text"
               value={customTraitValue}
-              onChange={evt => setCustomTraitValue(evt.target.value)}
+              onChange={(evt) => setCustomTraitValue(evt.target.value)}
             />
           </span>
         </div>

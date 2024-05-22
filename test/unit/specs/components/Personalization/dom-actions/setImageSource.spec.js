@@ -9,9 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import {
+  appendNode,
+  createNode,
+} from "../../../../../../src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 
 describe("Personalization::actions::setImageSource", () => {
   beforeEach(() => {
@@ -36,7 +39,7 @@ describe("Personalization::actions::setImageSource", () => {
       selector: "#setImageSource",
       prehidingSelector: "#setImageSource",
       content: "http://foo.com/b.png",
-      meta
+      meta,
     };
 
     return setImageSource(settings).then(() => {

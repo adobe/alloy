@@ -9,18 +9,18 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createApplyResponse from "../../../../../src/components/DecisioningEngine/createApplyResponse";
+import createApplyResponse from "../../../../../src/components/DecisioningEngine/createApplyResponse.js";
 
 describe("DecisioningEngine:createApplyResponse", () => {
   const proposition = {
     id: "AT:eyJhY3Rpdml0eUlkIjoiMTQxMDY0IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
     scope: "__view__",
-    items: []
+    items: [],
   };
 
   it("calls lifecycle.onDecision with propositions", () => {
     const lifecycle = jasmine.createSpyObj("lifecycle", {
-      onDecision: Promise.resolve()
+      onDecision: Promise.resolve(),
     });
 
     const applyResponse = createApplyResponse(lifecycle);
@@ -31,20 +31,20 @@ describe("DecisioningEngine:createApplyResponse", () => {
     applyResponse({
       propositions: [proposition],
       event: mockEvent,
-      personalization
+      personalization,
     });
 
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
       renderDecisions: false,
       propositions: [proposition],
       event: mockEvent,
-      personalization: {}
+      personalization: {},
     });
   });
 
   it("calls lifecycle.onDecision with viewName", () => {
     const lifecycle = jasmine.createSpyObj("lifecycle", {
-      onDecision: Promise.resolve()
+      onDecision: Promise.resolve(),
     });
 
     const applyResponse = createApplyResponse(lifecycle);
@@ -54,21 +54,21 @@ describe("DecisioningEngine:createApplyResponse", () => {
       renderDecisions: true,
       event: mockEvent,
       personalization: {},
-      propositions: [proposition]
+      propositions: [proposition],
     });
 
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
       renderDecisions: true,
       propositions: [proposition],
       event: mockEvent,
-      personalization: {}
+      personalization: {},
     });
   });
 
   it("call lifecycle.onDecision even if no propositions", () => {
     // this use case is necessary for content cards with no items
     const lifecycle = jasmine.createSpyObj("lifecycle", {
-      onDecision: Promise.resolve()
+      onDecision: Promise.resolve(),
     });
 
     const applyResponse = createApplyResponse(lifecycle);
@@ -78,14 +78,14 @@ describe("DecisioningEngine:createApplyResponse", () => {
       renderDecisions: true,
       propositions: [],
       event: mockEvent,
-      personalization: {}
+      personalization: {},
     });
 
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
       renderDecisions: true,
       propositions: [],
       event: mockEvent,
-      personalization: {}
+      personalization: {},
     });
   });
 });

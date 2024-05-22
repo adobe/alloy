@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createLibraryInfo from "../../../../../src/components/LibraryInfo";
+import createLibraryInfo from "../../../../../src/components/LibraryInfo/index.js";
 
 describe("LibraryInfo", () => {
   let toolsMock;
@@ -17,11 +17,12 @@ describe("LibraryInfo", () => {
   beforeEach(() => {
     toolsMock = {
       config: {
-        foo: "bar"
+        foo: "bar",
       },
       componentRegistry: {
-        getCommandNames: () => ["bar"]
-      }
+        getCommandNames: () => ["bar"],
+        getComponentNames: () => ["ComponentA", "ComponentB"],
+      },
     };
   });
 
@@ -30,8 +31,9 @@ describe("LibraryInfo", () => {
       libraryInfo: {
         version: `__VERSION__`,
         configs: { foo: "bar" },
-        commands: ["bar", "configure", "setDebug"]
-      }
+        commands: ["bar", "configure", "setDebug"],
+        components: ["ComponentA", "ComponentB"],
+      },
     });
   });
 });

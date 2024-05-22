@@ -15,7 +15,7 @@ governing permissions and limitations under the License.
  * @param {Array} orderedFunctions The array of functions in the order
  * they should have been called.
  */
-export default orderedFunctions => {
+export default (orderedFunctions) => {
   for (let i = 0; i < orderedFunctions.length - 1; i += 1) {
     const fn = orderedFunctions[i];
     const nextFn = orderedFunctions[i + 1];

@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import flatMap from "../../../../src/utils/flatMap";
+import flatMap from "../../../../src/utils/flatMap.js";
 
-const identity = item => item;
+const identity = (item) => item;
 
 describe("flatMap", () => {
   it("handles empty array with identity function", () => {
@@ -24,13 +24,8 @@ describe("flatMap", () => {
   });
 
   it("maps and flattens together", () => {
-    expect(flatMap([1, 2, 3], item => [item, item])).toEqual([
-      1,
-      1,
-      2,
-      2,
-      3,
-      3
+    expect(flatMap([1, 2, 3], (item) => [item, item])).toEqual([
+      1, 1, 2, 2, 3, 3,
     ]);
   });
 });

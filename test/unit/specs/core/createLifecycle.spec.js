@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createLifecycle from "../../../../src/core/createLifecycle";
+import createLifecycle from "../../../../src/core/createLifecycle.js";
 
 describe("createLifecycle", () => {
   it("exposes all lifecycle methods and they return promises", () => {
     const componentRegistry = {
       getLifecycleCallbacks() {
         return [];
-      }
+      },
     };
     const lifecycle = createLifecycle(componentRegistry);
     [
@@ -26,8 +26,8 @@ describe("createLifecycle", () => {
       "onBeforeRequest",
       "onResponse",
       "onRequestFailure",
-      "onClick"
-    ].forEach(methodName => {
+      "onClick",
+    ].forEach((methodName) => {
       expect(lifecycle[methodName]()).toEqual(jasmine.any(Promise));
     });
   });
@@ -40,17 +40,17 @@ describe("createLifecycle", () => {
       jasmine
         .createSpy()
         .and.returnValue(
-          Promise.resolve({ returnValue2: "valueFromCallback2" })
-        )
+          Promise.resolve({ returnValue2: "valueFromCallback2" }),
+        ),
     ];
     const componentRegistry = {
       getLifecycleCallbacks(hookName) {
         return hookName === "onBeforeEvent" ? callbacks : [];
-      }
+      },
     };
     const lifecycle = createLifecycle(componentRegistry);
-    return lifecycle.onBeforeEvent("arg1", "arg2").then(result => {
-      callbacks.forEach(callback => {
+    return lifecycle.onBeforeEvent("arg1", "arg2").then((result) => {
+      callbacks.forEach((callback) => {
         expect(callback).toHaveBeenCalledWith("arg1", "arg2");
       });
       expect(result).toBeInstanceOf(Array);
@@ -66,22 +66,22 @@ describe("createLifecycle", () => {
         jasmine.createSpy().and.callFake(() => {
           lifecycle.onBeforeEvent();
         }),
-        jasmine.createSpy()
+        jasmine.createSpy(),
       ],
-      onBeforeEvent: [jasmine.createSpy()]
+      onBeforeEvent: [jasmine.createSpy()],
     };
     const componentRegistry = {
       getLifecycleCallbacks(hookName) {
         return callbacksByHookName[hookName] || [];
-      }
+      },
     };
     lifecycle = createLifecycle(componentRegistry);
     return lifecycle.onComponentsRegistered().then(() => {
       expect(
-        callbacksByHookName.onComponentsRegistered[0]
+        callbacksByHookName.onComponentsRegistered[0],
       ).toHaveBeenCalledBefore(callbacksByHookName.onComponentsRegistered[1]);
       expect(
-        callbacksByHookName.onComponentsRegistered[1]
+        callbacksByHookName.onComponentsRegistered[1],
       ).toHaveBeenCalledBefore(callbacksByHookName.onBeforeEvent[0]);
     });
   });

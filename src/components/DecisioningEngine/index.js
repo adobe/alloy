@@ -9,44 +9,44 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { noop, sanitizeOrgIdForCookieName } from "../../utils";
-import createOnResponseHandler from "./createOnResponseHandler";
-import createDecisionProvider from "./createDecisionProvider";
-import createApplyResponse from "./createApplyResponse";
-import createEventRegistry from "./createEventRegistry";
-import createContextProvider from "./createContextProvider";
-import createSubscribeRulesetItems from "./createSubscribeRulesetItems";
+import { noop, sanitizeOrgIdForCookieName } from "../../utils/index.js";
+import createOnResponseHandler from "./createOnResponseHandler.js";
+import createDecisionProvider from "./createDecisionProvider.js";
+import createApplyResponse from "./createApplyResponse.js";
+import createEventRegistry from "./createEventRegistry.js";
+import createContextProvider from "./createContextProvider.js";
+import createSubscribeRulesetItems from "./createSubscribeRulesetItems.js";
 import {
   CONTEXT_KEY,
   CONTEXT_EVENT_SOURCE,
-  CONTEXT_EVENT_TYPE
-} from "./constants";
-import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand";
-import { clearLocalStorage, createInMemoryStorage } from "./utils";
-import { objectOf, boolean } from "../../utils/validation";
+  CONTEXT_EVENT_TYPE,
+} from "./constants.js";
+import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand.js";
+import { clearLocalStorage, createInMemoryStorage } from "./utils.js";
+import { objectOf, boolean } from "../../utils/validation/index.js";
 
 const createDecisioningEngine = ({
   config,
   createNamespacedStorage,
-  consent
+  consent,
 }) => {
   const { orgId, personalizationStorageEnabled } = config;
   const storage = createNamespacedStorage(
-    `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`
+    `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`,
   );
   if (!personalizationStorageEnabled) {
     clearLocalStorage(storage.persistent);
   }
 
   const eventRegistry = createEventRegistry({
-    storage: createInMemoryStorage()
+    storage: createInMemoryStorage(),
   });
   const decisionProvider = createDecisionProvider({ eventRegistry });
   const contextProvider = createContextProvider({ eventRegistry, window });
 
   const evaluateRulesetsCommand = createEvaluateRulesetsCommand({
     contextProvider,
-    decisionProvider
+    decisionProvider,
   });
   const subscribeRulesetItems = createSubscribeRulesetItems();
   let applyResponse;
@@ -75,7 +75,7 @@ const createDecisioningEngine = ({
         event,
         renderDecisions,
         personalization = {},
-        onResponse = noop
+        onResponse = noop,
       }) {
         const { decisionContext = {} } = personalization;
 
@@ -89,9 +89,9 @@ const createDecisioningEngine = ({
             decisionContext: contextProvider.getContext({
               [CONTEXT_KEY.TYPE]: CONTEXT_EVENT_TYPE.EDGE,
               [CONTEXT_KEY.SOURCE]: CONTEXT_EVENT_SOURCE.REQUEST,
-              ...decisionContext
-            })
-          })
+              ...decisionContext,
+            }),
+          }),
         );
       },
       onBeforeRequest({ request }) {
@@ -100,8 +100,8 @@ const createDecisioningEngine = ({
         if (events.length === 0) {
           return;
         }
-        events.forEach(event => eventRegistry.addExperienceEdgeEvent(event));
-      }
+        events.forEach((event) => eventRegistry.addExperienceEdgeEvent(event));
+      },
     },
     commands: {
       evaluateRulesets: {
@@ -112,20 +112,20 @@ const createDecisioningEngine = ({
             decisionContext: {
               [CONTEXT_KEY.TYPE]: CONTEXT_EVENT_TYPE.RULES_ENGINE,
               [CONTEXT_KEY.SOURCE]: CONTEXT_EVENT_SOURCE.REQUEST,
-              ...decisionContext
+              ...decisionContext,
             },
-            applyResponse
+            applyResponse,
           });
         },
-        optionsValidator: evaluateRulesetsCommand.optionsValidator
+        optionsValidator: evaluateRulesetsCommand.optionsValidator,
       },
-      subscribeRulesetItems: subscribeRulesetItems.command
-    }
+      subscribeRulesetItems: subscribeRulesetItems.command,
+    },
   };
 };
 
 createDecisioningEngine.namespace = "DecisioningEngine";
 createDecisioningEngine.configValidators = objectOf({
-  personalizationStorageEnabled: boolean().default(false)
+  personalizationStorageEnabled: boolean().default(false),
 });
 export default createDecisioningEngine;

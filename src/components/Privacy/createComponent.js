@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { GENERAL } from "../../constants/consentPurpose";
+import { GENERAL } from "../../constants/consentPurpose.js";
 
 export default ({
   storedConsent,
@@ -20,7 +20,7 @@ export default ({
   sendSetConsentRequest,
   validateSetConsentOptions,
   consentHashStore,
-  doesIdentityCookieExist
+  doesIdentityCookieExist,
 }) => {
   const defaultConsentByPurpose = { [GENERAL]: defaultConsent };
   let storedConsentByPurpose = storedConsent.read();
@@ -57,7 +57,7 @@ export default ({
         run: ({
           consent: consentOptions,
           identityMap,
-          edgeConfigOverrides
+          edgeConfigOverrides,
         }) => {
           consent.suspend();
           const consentHashes = consentHashStore.lookup(consentOptions);
@@ -67,15 +67,15 @@ export default ({
                 return sendSetConsentRequest({
                   consentOptions,
                   identityMap,
-                  edgeConfigOverrides
+                  edgeConfigOverrides,
                 });
               }
               return Promise.resolve();
             })
             .then(() => consentHashes.save())
             .finally(readCookieIfQueueEmpty);
-        }
-      }
+        },
+      },
     },
     lifecycle: {
       // Read the cookie here too because the consent cookie may change on any request
@@ -85,7 +85,7 @@ export default ({
       // opted out in AudienceManager, but no consent cookie exists on the
       // client. The request will be sent and the server will respond with a
       // 403 Forbidden and a consent cookie.
-      onRequestFailure: readCookieIfQueueEmpty
-    }
+      onRequestFailure: readCookieIfQueueEmpty,
+    },
   };
 };

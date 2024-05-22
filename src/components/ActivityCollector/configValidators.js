@@ -10,16 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, callback, objectOf, string } from "../../utils/validation";
+import {
+  boolean,
+  callback,
+  objectOf,
+  string,
+} from "../../utils/validation/index.js";
 
 export const downloadLinkQualifier = string()
   .regexp()
   .default(
-    "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$"
+    "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$",
   );
 
 export default objectOf({
   clickCollectionEnabled: boolean().default(true),
   onBeforeLinkClickSend: callback(),
-  downloadLinkQualifier
+  downloadLinkQualifier,
 });

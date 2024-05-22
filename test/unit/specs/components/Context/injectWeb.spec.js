@@ -9,14 +9,14 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import injectWeb from "../../../../../src/components/Context/injectWeb";
+import injectWeb from "../../../../../src/components/Context/injectWeb.js";
 
 describe("Context::injectWeb", () => {
   const window = {
     location: { href: "http://mylocation.com" },
     document: {
-      referrer: "http://myreferrer.com"
-    }
+      referrer: "http://myreferrer.com",
+    },
   };
 
   it("works", () => {
@@ -25,12 +25,12 @@ describe("Context::injectWeb", () => {
     expect(xdm).toEqual({
       web: {
         webPageDetails: {
-          URL: "http://mylocation.com"
+          URL: "http://mylocation.com",
         },
         webReferrer: {
-          URL: "http://myreferrer.com"
-        }
-      }
+          URL: "http://myreferrer.com",
+        },
+      },
     });
   });
 });

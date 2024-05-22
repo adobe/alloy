@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions/index";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
@@ -30,23 +30,23 @@ const decisionContent = "<h3>welcome to TARGET AWESOME WORLD!!! </h3>";
 createFixture({
   title:
     "C28756: A form based offer should return if event command contains its scope",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C28756",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C28756: A form based offer should return if event command contains its scope.", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const result = await alloy.sendEvent({
-    decisionScopes: [scope]
+    decisionScopes: [scope],
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
@@ -63,14 +63,14 @@ test("Test C28756: A form based offer should return if event command contains it
     "https://ns.adobe.com/personalization/default-content-item",
     "https://ns.adobe.com/personalization/html-content-item",
     "https://ns.adobe.com/personalization/json-content-item",
-    "https://ns.adobe.com/personalization/redirect-item"
-  ].every(schema => personalizationSchemas.includes(schema));
+    "https://ns.adobe.com/personalization/redirect-item",
+  ].every((schema) => personalizationSchemas.includes(schema));
 
   await t.expect(results).eql(true);
 
   await t.expect(result.decisions[0].renderAttempted).eql(undefined);
   await t.expect(result.propositions[0].renderAttempted).eql(false);
-  const matchingDecision = result.decisions.find(decision => {
+  const matchingDecision = result.decisions.find((decision) => {
     return decision.id === decisionId;
   });
   await t.expect(matchingDecision).ok("Decision not found.");

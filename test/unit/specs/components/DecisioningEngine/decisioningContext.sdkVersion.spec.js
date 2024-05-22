@@ -9,12 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import libraryVersion from "../../../../../src/constants/libraryVersion";
+import libraryVersion from "../../../../../src/constants/libraryVersion.js";
 import {
   mockWindow,
   setupResponseHandler,
-  proposition
-} from "./contextTestUtils";
+  proposition,
+} from "./contextTestUtils.js";
 
 describe("DecisioningEngine:globalContext:sdkVersion", () => {
   let applyResponse;
@@ -28,15 +28,15 @@ describe("DecisioningEngine:globalContext:sdkVersion", () => {
       definition: {
         key: "~sdkver",
         matcher: "eq",
-        values: [currentVersion]
+        values: [currentVersion],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -45,15 +45,15 @@ describe("DecisioningEngine:globalContext:sdkVersion", () => {
       definition: {
         key: "~sdkver",
         matcher: "eq",
-        values: ["2.18.0-beta.0"]
+        values: ["2.18.0-beta.0"],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 });

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createComponent from "../../../../../src/components/Personalization/createComponent";
+import createComponent from "../../../../../src/components/Personalization/createComponent.js";
 
 describe("Personalization", () => {
   let logger;
@@ -42,7 +42,7 @@ describe("Personalization", () => {
       setTargetMigration,
       mergeDecisionsMeta,
       renderedPropositions,
-      subscribeContentCards
+      subscribeContentCards,
     });
   };
 
@@ -51,7 +51,7 @@ describe("Personalization", () => {
     event.getViewName.and.returnValue({});
     logger = {
       info: jasmine.createSpy("logger.info"),
-      warn: jasmine.createSpy("logger.warn")
+      warn: jasmine.createSpy("logger.warn"),
     };
     isAuthoringModeEnabled = jasmine
       .createSpy("isAuthoringModeEnabled")
@@ -63,14 +63,14 @@ describe("Personalization", () => {
     mergeQuery = jasmine.createSpy("mergeQuery");
     viewCache = jasmine.createSpyObj("viewCache", [
       "isInitialized",
-      "createCacheUpdate"
+      "createCacheUpdate",
     ]);
     cacheUpdate = jasmine.createSpyObj("cacheUpdate", ["update", "cancel"]);
     viewCache.createCacheUpdate.and.returnValue(cacheUpdate);
     setTargetMigration = jasmine.createSpy("setTargetMigration");
     mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
     renderedPropositions = jasmine.createSpyObj("renderedPropositions", [
-      "clear"
+      "clear",
     ]);
     subscribeContentCards = jasmine.createSpy("subscribeContentCards");
 
@@ -82,16 +82,16 @@ describe("Personalization", () => {
       isAuthoringModeEnabled.and.returnValue(true);
       const renderDecisions = true;
       const personalization = {
-        decisionScopes: ["foo"]
+        decisionScopes: ["foo"],
       };
       personalizationComponent.lifecycle.onBeforeEvent({
         event,
         renderDecisions,
-        personalization
+        personalization,
       });
 
       expect(logger.warn).toHaveBeenCalledWith(
-        "Rendering is disabled for authoring mode."
+        "Rendering is disabled for authoring mode.",
       );
       expect(isAuthoringModeEnabled).toHaveBeenCalled();
       expect(mergeQuery).toHaveBeenCalledWith(event, { enabled: false });
@@ -105,12 +105,12 @@ describe("Personalization", () => {
     it("should trigger pageLoad if there are decisionScopes", () => {
       const renderDecisions = false;
       const personalization = {
-        decisionScopes: ["alloy1"]
+        decisionScopes: ["alloy1"],
       };
       personalizationComponent.lifecycle.onBeforeEvent({
         event,
         renderDecisions,
-        personalization
+        personalization,
       });
 
       expect(isAuthoringModeEnabled).toHaveBeenCalled();
@@ -123,14 +123,14 @@ describe("Personalization", () => {
     it("should trigger pageLoad if cache is not initialized", () => {
       const renderDecisions = false;
       const personalization = {
-        decisionScopes: []
+        decisionScopes: [],
       };
       viewCache.isInitialized.and.returnValue(false);
 
       personalizationComponent.lifecycle.onBeforeEvent({
         event,
         renderDecisions,
-        personalization
+        personalization,
       });
 
       expect(isAuthoringModeEnabled).toHaveBeenCalled();
@@ -143,7 +143,7 @@ describe("Personalization", () => {
     it("should trigger viewHandler if cache is initialized and viewName is provided", () => {
       const renderDecisions = false;
       const personalization = {
-        decisionScopes: []
+        decisionScopes: [],
       };
       viewCache.isInitialized.and.returnValue(true);
       event.getViewName.and.returnValue("cart");
@@ -151,7 +151,7 @@ describe("Personalization", () => {
       personalizationComponent.lifecycle.onBeforeEvent({
         event,
         renderDecisions,
-        personalization
+        personalization,
       });
 
       expect(isAuthoringModeEnabled).toHaveBeenCalled();
@@ -170,11 +170,11 @@ describe("Personalization", () => {
       viewCache.isInitialized.and.returnValue(true);
       const onRequestFailure = jasmine
         .createSpy("onRequestFailure")
-        .and.callFake(func => func());
+        .and.callFake((func) => func());
 
       personalizationComponent.lifecycle.onBeforeEvent({
         event,
-        onRequestFailure
+        onRequestFailure,
       });
 
       expect(onRequestFailure).toHaveBeenCalled();
@@ -186,7 +186,7 @@ describe("Personalization", () => {
     it("should always call setTargetMigration during onBeforeRequest", () => {
       const request = jasmine.createSpyObj("request", ["getPayload"]);
       personalizationComponent.lifecycle.onBeforeRequest({
-        request
+        request,
       });
 
       expect(setTargetMigration).toHaveBeenCalledOnceWith(request);

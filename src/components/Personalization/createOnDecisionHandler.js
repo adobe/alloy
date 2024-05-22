@@ -14,7 +14,7 @@ export default ({
   processPropositions,
   createProposition,
   notificationHandler,
-  subscribeContentCards
+  subscribeContentCards,
 }) => {
   return ({ renderDecisions, propositions, event, personalization = {} }) => {
     subscribeContentCards.refresh(propositions);
@@ -25,23 +25,23 @@ export default ({
     const { sendDisplayEvent = true } = personalization;
     const viewName = event ? event.getViewName() : undefined;
 
-    const propositionsToExecute = propositions.map(proposition =>
-      createProposition(proposition, true)
+    const propositionsToExecute = propositions.map((proposition) =>
+      createProposition(proposition, true),
     );
 
     const { render, returnedPropositions } = processPropositions(
-      propositionsToExecute
+      propositionsToExecute,
     );
 
     const handleNotifications = notificationHandler(
       renderDecisions,
       sendDisplayEvent,
-      viewName
+      viewName,
     );
     render().then(handleNotifications);
 
     return Promise.resolve({
-      propositions: returnedPropositions
+      propositions: returnedPropositions,
     });
   };
 };

@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { APPLICATION_JSON } from "../../../constants/contentType";
+import { APPLICATION_JSON } from "../../../constants/contentType.js";
 
 const DEFAULT_CONTENT = "defaultContent";
 
@@ -22,7 +22,7 @@ const isValidInAppMessage = (data, logger) => {
     if (!Object.prototype.hasOwnProperty.call(data, prop)) {
       logger.warn(
         `Invalid in-app message data: missing property '${prop}'.`,
-        data
+        data,
       );
       return false;
     }
@@ -36,7 +36,7 @@ const isValidInAppMessage = (data, logger) => {
       if (!Object.prototype.hasOwnProperty.call(content, prop)) {
         logger.warn(
           `Invalid in-app message data.content: missing property '${prop}'.`,
-          data
+          data,
         );
         return false;
       }
@@ -47,7 +47,7 @@ const isValidInAppMessage = (data, logger) => {
 };
 
 export default ({ modules, logger }) => {
-  return item => {
+  return (item) => {
     const data = item.getData();
     const meta = { ...item.getProposition().getNotification() };
 
@@ -76,11 +76,11 @@ export default ({ modules, logger }) => {
       render: () => {
         return modules[type]({
           ...data,
-          meta
+          meta,
         });
       },
       setRenderAttempted: true,
-      includeInNotification: true
+      includeInNotification: true,
     };
   };
 };

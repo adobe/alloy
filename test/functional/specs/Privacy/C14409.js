@@ -10,24 +10,24 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
-import createConsoleLogger from "../../helpers/consoleLogger";
-import { CONSENT_OUT } from "../../helpers/constants/consent";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import reloadPage from "../../helpers/reloadPage";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import createConsoleLogger from "../../helpers/consoleLogger/index.js";
+import { CONSENT_OUT } from "../../helpers/constants/consent.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import reloadPage from "../../helpers/reloadPage.js";
 
 const networkLogger = createNetworkLogger();
 
 createFixture({
   title: "C14409 - Consenting to no purposes should be persisted.",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C14409",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const config = {
@@ -35,7 +35,7 @@ const config = {
   orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
   defaultConsent: "pending",
   idMigrationEnabled: false,
-  debugEnabled: true
+  debugEnabled: true,
 };
 
 test("C14409 - Consenting to no purposes should be persisted.", async () => {

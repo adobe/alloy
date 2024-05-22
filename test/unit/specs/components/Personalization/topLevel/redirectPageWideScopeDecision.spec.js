@@ -9,10 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { REDIRECT_PAGE_WIDE_SCOPE_DECISION } from "../responsesMock/eventResponses";
+import { REDIRECT_PAGE_WIDE_SCOPE_DECISION } from "../responsesMock/eventResponses.js";
 
-import buildMocks from "./buildMocks";
-import buildAlloy from "./buildAlloy";
+import buildMocks from "./buildMocks.js";
+import buildAlloy from "./buildAlloy.js";
 
 describe("PersonalizationComponent", () => {
   it("REDIRECT_PAGE_WIDE_SCOPE_DECISION", async () => {
@@ -20,9 +20,9 @@ describe("PersonalizationComponent", () => {
     const alloy = buildAlloy(mocks);
     const { event } = await alloy.sendEvent(
       {
-        renderDecisions: true
+        renderDecisions: true,
       },
-      REDIRECT_PAGE_WIDE_SCOPE_DECISION
+      REDIRECT_PAGE_WIDE_SCOPE_DECISION,
     );
     expect(event.toJSON()).toEqual({
       query: {
@@ -35,12 +35,12 @@ describe("PersonalizationComponent", () => {
             "https://ns.adobe.com/personalization/ruleset-item",
             "https://ns.adobe.com/personalization/message/in-app",
             "https://ns.adobe.com/personalization/message/content-card",
-            "https://ns.adobe.com/personalization/dom-action"
+            "https://ns.adobe.com/personalization/dom-action",
           ],
           decisionScopes: ["__view__"],
-          surfaces: ["web://example.com/home"]
-        }
-      }
+          surfaces: ["web://example.com/home"],
+        },
+      },
     });
     // No expectation on the result value because the page will redirect soon.
     expect(mocks.sendEvent).toHaveBeenCalledWith({
@@ -52,17 +52,17 @@ describe("PersonalizationComponent", () => {
                 id: "TNT:activity15:experience1",
                 scope: "__view__",
                 scopeDetails: {
-                  blah: "test"
-                }
-              }
+                  blah: "test",
+                },
+              },
             ],
             propositionEventType: {
-              display: 1
-            }
-          }
+              display: 1,
+            },
+          },
         },
-        eventType: "decisioning.propositionDisplay"
-      }
+        eventType: "decisioning.propositionDisplay",
+      },
     });
 
     expect(mocks.logger.warn).not.toHaveBeenCalled();

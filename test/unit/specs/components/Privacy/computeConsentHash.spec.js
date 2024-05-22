@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import computeConsentHash from "../../../../../src/components/Privacy/computeConsentHash";
+import computeConsentHash from "../../../../../src/components/Privacy/computeConsentHash.js";
 
 describe("computeConsentHash", () => {
   it("works", () => {
@@ -20,25 +20,25 @@ describe("computeConsentHash", () => {
           standard: "Adobe",
           version: "1.0",
           value: {
-            general: "in"
-          }
-        }
-      ])
+            general: "in",
+          },
+        },
+      ]),
     ).toBe(2905535662);
   });
 
   [
     [
       { a: 1, b: 2 },
-      { b: 2, a: 1 }
+      { b: 2, a: 1 },
     ],
     [[{ a: 1, b: 2 }], [{ b: 2, a: 1 }]],
     [{ a: { b: 2, c: 3 } }, { a: { c: 3, b: 2 } }],
     [
       { a: [1], b: [2] },
-      { b: [2], a: [1] }
+      { b: [2], a: [1] },
     ],
-    [{ a: undefined }, {}]
+    [{ a: undefined }, {}],
   ].forEach(([a, b], index) => {
     it(`computes the same hash ${index}`, () => {
       expect(computeConsentHash(a)).toBe(computeConsentHash(b));
@@ -48,12 +48,12 @@ describe("computeConsentHash", () => {
   [
     [
       [1, 2],
-      [2, 1]
+      [2, 1],
     ],
     ["1", 1],
     [{ a: null }, { a: undefined }],
     [{ "xdm:key": "value" }, { xdm: "key:value" }],
-    [null, {}]
+    [null, {}],
   ].forEach(([a, b], index) => {
     it(`computes a different hash ${index}`, () => {
       expect(computeConsentHash(a)).not.toBe(computeConsentHash(b));

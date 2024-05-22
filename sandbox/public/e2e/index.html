@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -32,8 +32,9 @@
       function generateEmail(length, domain) {
         const chars = [..."abcdefghijklmnopqrstuvwxyz0123456789"];
         return (
-          [...Array(length)].map(i => chars[(Math.random() * chars.length) | 0])
-            .join`` +
+          [...Array(length)].map(
+            (i) => chars[(Math.random() * chars.length) | 0],
+          ).join`` +
           "@" +
           domain
         );
@@ -47,10 +48,10 @@
       async function getEmailSha256(str) {
         const buf = await crypto.subtle.digest(
           "SHA-256",
-          new TextEncoder("utf-8").encode(str)
+          new TextEncoder("utf-8").encode(str),
         );
         return Array.prototype.map
-          .call(new Uint8Array(buf), x => ("00" + x.toString(16)).slice(-2))
+          .call(new Uint8Array(buf), (x) => ("00" + x.toString(16)).slice(-2))
           .join("");
       }
 
@@ -59,15 +60,15 @@
         thirdPartyCookiesEnabled: isSyncIdentity,
         edgeDomain: "firstparty.alloyio.com",
         configId: getUrlParameter("configId"),
-        orgId: "555B08345D76A68D0A495E79@AdobeOrg"
+        orgId: "555B08345D76A68D0A495E79@AdobeOrg",
       });
 
       if (isSyncIdentity) {
         var emailPromise = Promise.resolve(getEmailSha256(email));
-        emailPromise.then(function(result) {
+        emailPromise.then(function (result) {
           window.e2eParamsObj = {
             email_lc_sha256: result,
-            namespaceUserId: namespaceUserId
+            namespaceUserId: namespaceUserId,
           };
         });
         console.log("syncIdentity option is enabled");
@@ -77,27 +78,27 @@
               id: email,
               authenticatedState: "ambiguous",
               hashEnabled: true,
-              primary: true
+              primary: true,
             },
             HYP: {
               id: namespaceUserId,
-              authenticatedState: "ambiguous"
-            }
-          }
-        }).then(function() {
+              authenticatedState: "ambiguous",
+            },
+          },
+        }).then(function () {
           console.log(
             "Email SHA-256 value: ",
             e2eParamsObj["email_lc_sha256"],
             " and namespace user ID: ",
-            e2eParamsObj["namespaceUserId"]
+            e2eParamsObj["namespaceUserId"],
           );
           console.log("Sandbox: Sync identity has completed.");
         });
       }
 
       alloy("sendEvent", {
-        renderDecisions: true
-      }).then(function(data) {
+        renderDecisions: true,
+      }).then(function (data) {
         console.log("Sandbox: View start event has completed.", data);
       });
     </script>

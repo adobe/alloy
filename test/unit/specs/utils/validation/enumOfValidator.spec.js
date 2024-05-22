@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { enumOf } from "../../../../../src/utils/validation";
-import describeValidation from "../../../helpers/describeValidation";
+import { enumOf } from "../../../../../src/utils/validation/index.js";
+import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation:enumOf", () => {
   describeValidation("optional enum", enumOf("in", 1234, 0.1, false), [
@@ -24,7 +24,7 @@ describe("validation:enumOf", () => {
     { value: "out", error: true },
     { value: "", error: true },
     { value: {}, error: true },
-    { value: [], error: true }
+    { value: [], error: true },
   ]);
   describeValidation("required enum", enumOf("in", "pending").required(), [
     { value: "in", error: false },
@@ -36,6 +36,6 @@ describe("validation:enumOf", () => {
     { value: "out", error: true },
     { value: "", error: true },
     { value: {}, error: true },
-    { value: [], error: true }
+    { value: [], error: true },
   ]);
 });

@@ -9,11 +9,17 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import {
+  appendNode,
+  createNode,
+} from "../../../../../../src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 
 describe("Personalization::actions::setHtml", () => {
   beforeEach(() => {
@@ -40,7 +46,7 @@ describe("Personalization::actions::setHtml", () => {
       selector: "#setHtml",
       prehidingSelector: "#setHtml",
       content: "bar",
-      meta
+      meta,
     };
 
     await setHtml(settings);
@@ -61,7 +67,7 @@ describe("Personalization::actions::setHtml", () => {
       prehidingSelector: "#setHtml",
       content:
         "<script id='evar123'>setTimeout(function onTimeout() { window.someEvar123 = 1; }, 500);</script>",
-      meta
+      meta,
     };
 
     await setHtml(settings);
@@ -91,7 +97,7 @@ describe("Personalization::actions::setHtml", () => {
           var btn = document.getElementById('btn');
           btn.addEventListener('click', function onEvent() { window.someEvar123 = 2; });
         </script>`,
-      meta
+      meta,
     };
 
     await setHtml(settings);

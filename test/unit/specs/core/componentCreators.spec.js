@@ -10,19 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import componentCreators from "../../../../src/core/componentCreators";
+import componentCreators from "../../../../src/core/componentCreators.js";
 
 describe("componentCreators", () => {
   it("is an array of component creators", () => {
     expect(componentCreators).toEqual(jasmine.any(Array));
-    componentCreators.forEach(componentCreator => {
+
+    componentCreators.forEach((componentCreator) => {
       expect(componentCreator).toEqual(jasmine.any(Function));
       expect(componentCreator.namespace).toEqual(jasmine.any(String));
 
       if (componentCreator.configValidators) {
         // should export a validator function
         expect(componentCreator.configValidators).toEqual(
-          jasmine.any(Function)
+          jasmine.any(Function),
         );
       }
     });

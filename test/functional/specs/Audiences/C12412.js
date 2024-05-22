@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t, ClientFunction } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createConsoleLogger from "../../helpers/consoleLogger";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createConsoleLogger from "../../helpers/consoleLogger/index.js";
 
 const networkLogger = createNetworkLogger();
 
@@ -29,9 +29,9 @@ createFixture(
     meta: {
       ID: "C12412",
       SEVERITY: "P0",
-      TEST_RUN: "Regression"
-    }
-  }
+      TEST_RUN: "Regression",
+    },
+  },
 );
 
 const getDocumentCookie = ClientFunction(() => document.cookie);
@@ -47,9 +47,11 @@ test(`Verify cookie destinations are returned in the response when turned on in 
 
   const logs = await logger.info.getMessagesSinceReset();
   const setCookieAttributes = logs
-    .filter(message => message.length === 3 && message[1] === `Setting cookie`)
-    .map(message => message[2])
-    .filter(cookieSettings => cookieSettings.name === "C12412");
+    .filter(
+      (message) => message.length === 3 && message[1] === `Setting cookie`,
+    )
+    .map((message) => message[2])
+    .filter((cookieSettings) => cookieSettings.name === "C12412");
 
   await t.expect(setCookieAttributes.length).eql(1);
   await t.expect(setCookieAttributes[0].sameSite).eql("none");

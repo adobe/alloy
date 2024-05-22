@@ -12,16 +12,16 @@ governing permissions and limitations under the License.
 import {
   callback as callbackType,
   objectOf,
-  string
-} from "../../utils/validation";
-import { MESSAGE_CONTENT_CARD } from "../../constants/schema";
-import { DISMISS, DISPLAY, INTERACT } from "../../constants/eventType";
-import createSubscription from "../../utils/createSubscription";
+  string,
+} from "../../utils/validation/index.js";
+import { MESSAGE_CONTENT_CARD } from "../../constants/schema.js";
+import { DISMISS, DISPLAY, INTERACT } from "../../constants/eventType.js";
+import createSubscription from "../../utils/createSubscription.js";
 
 const validateOptions = ({ options }) => {
   const validator = objectOf({
     surface: string().required(),
-    callback: callbackType().required()
+    callback: callbackType().required(),
   }).noUnknownFields();
 
   return validator(options);
@@ -39,7 +39,7 @@ export default ({ collect }) => {
       meta = {},
       publishedDate,
       qualifiedDate,
-      displayedDate
+      displayedDate,
     } = data;
 
     return {
@@ -51,7 +51,7 @@ export default ({ collect }) => {
       getSurface: () => data.meta.surface,
       getAnalyticsDetail: () => {
         return { id, scope, scopeDetails };
-      }
+      },
     };
   };
 
@@ -63,7 +63,7 @@ export default ({ collect }) => {
     const decisionsMeta = [];
     const clickedSet = new Set();
 
-    items.forEach(item => {
+    items.forEach((item) => {
       const analyticsMeta = item.getAnalyticsDetail();
       if (!clickedSet.has(analyticsMeta.id)) {
         decisionsMeta.push(analyticsMeta);
@@ -84,7 +84,7 @@ export default ({ collect }) => {
     const decisionsMeta = [];
     const dismissedSet = new Set();
 
-    items.forEach(item => {
+    items.forEach((item) => {
       const analyticsMeta = item.getAnalyticsDetail();
       if (!dismissedSet.has(analyticsMeta.id)) {
         decisionsMeta.push(analyticsMeta);
@@ -104,7 +104,7 @@ export default ({ collect }) => {
 
     const decisionsMeta = [];
 
-    items.forEach(item => {
+    items.forEach((item) => {
       const analyticsMeta = item.getAnalyticsDetail();
       if (!renderedSet.has(analyticsMeta.id)) {
         decisionsMeta.push(analyticsMeta);
@@ -124,20 +124,21 @@ export default ({ collect }) => {
     const { surfaceIdentifier } = params;
 
     const result = propositions
-      .filter(payload => payload.scope === surfaceIdentifier)
+      .filter((payload) => payload.scope === surfaceIdentifier)
       .reduce((allItems, payload) => {
         const { items = [] } = payload;
 
         return [
           ...allItems,
           ...items
-            .filter(item => item.schema === MESSAGE_CONTENT_CARD)
-            .map(item => createContentCard(payload, item))
+            .filter((item) => item.schema === MESSAGE_CONTENT_CARD)
+            .map((item) => createContentCard(payload, item)),
         ];
       }, [])
       .sort(
         (a, b) =>
-          b.qualifiedDate - a.qualifiedDate || b.publishedDate - a.publishedDate
+          b.qualifiedDate - a.qualifiedDate ||
+          b.publishedDate - a.publishedDate,
       );
 
     return [{ items: result, clicked, rendered, dismissed }];
@@ -145,16 +146,16 @@ export default ({ collect }) => {
 
   const run = ({ surface, callback }) => {
     const { id, unsubscribe } = subscriptions.add(callback, {
-      surfaceIdentifier: surface
+      surfaceIdentifier: surface,
     });
     emitPropositions(id);
     return Promise.resolve({ unsubscribe });
   };
 
-  const optionsValidator = options => validateOptions({ options });
+  const optionsValidator = (options) => validateOptions({ options });
 
-  const refresh = propositions => {
-    emitPropositions = subscriptionId => {
+  const refresh = (propositions) => {
+    emitPropositions = (subscriptionId) => {
       if (subscriptionId) {
         subscriptions.emitOne(subscriptionId, propositions);
         return;
@@ -170,7 +171,7 @@ export default ({ collect }) => {
     refresh,
     command: {
       optionsValidator,
-      run
-    }
+      run,
+    },
   };
 };

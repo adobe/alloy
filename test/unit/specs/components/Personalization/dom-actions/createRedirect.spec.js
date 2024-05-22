@@ -9,15 +9,15 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createRedirect from "../../../../../../src/components/Personalization/dom-actions/createRedirect";
+import createRedirect from "../../../../../../src/components/Personalization/dom-actions/createRedirect.js";
 
 describe("createRedirect", () => {
   it("redirects", () => {
     const window = {
       location: {
         replace: jasmine.createSpy(),
-        href: jasmine.createSpy()
-      }
+        href: jasmine.createSpy(),
+      },
     };
     const redirect = createRedirect(window);
     redirect("myurl");
@@ -29,8 +29,8 @@ describe("createRedirect", () => {
     const window = {
       location: {
         href: jasmine.createSpy(),
-        replace: jasmine.createSpy()
-      }
+        replace: jasmine.createSpy(),
+      },
     };
     const redirectUrl = "https://www.adobe.com";
     const redirect = createRedirect(window);

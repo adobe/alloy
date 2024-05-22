@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import initDomActionsModules from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
+import initDomActionsModules from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 const buildSet = () => {
   const result = new Set();
@@ -44,7 +44,7 @@ describe("Personalization::turbine::initDomActionsModules", () => {
 
     expect(keys.length).toEqual(STANDARD_MODULES.size);
 
-    Object.keys(result).forEach(key => {
+    Object.keys(result).forEach((key) => {
       expect(STANDARD_MODULES.has(key)).toEqual(true);
     });
   });

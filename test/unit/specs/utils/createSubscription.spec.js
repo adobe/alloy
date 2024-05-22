@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createSubscription from "../../../../src/utils/createSubscription";
+import createSubscription from "../../../../src/utils/createSubscription.js";
 
 describe("createSubscription", () => {
   const value = { something: 42 };
@@ -104,15 +104,15 @@ describe("createSubscription", () => {
 
     const { unsubscribe: unsubscribe1 } = subscription.add(callback1, {
       name: "jim",
-      profitMargin: 3
+      profitMargin: 3,
     });
     const { unsubscribe: unsubscribe2 } = subscription.add(callback2, {
       name: "bob",
-      profitMargin: 1.8
+      profitMargin: 1.8,
     });
     const { unsubscribe: unsubscribe3 } = subscription.add(callback3, {
       name: "tina",
-      profitMargin: 1.1
+      profitMargin: 1.1,
     });
 
     subscription.emit(10);
@@ -136,22 +136,22 @@ describe("createSubscription", () => {
     subscription.setEmissionCondition((params, result) => {
       const price = parseInt(
         result.substring(result.length - 2, result.length),
-        10
+        10,
       );
       return price < 20;
     });
 
     const { unsubscribe: unsubscribe1 } = subscription.add(callback1, {
       name: "jim",
-      profitMargin: 3
+      profitMargin: 3,
     });
     const { unsubscribe: unsubscribe2 } = subscription.add(callback2, {
       name: "bob",
-      profitMargin: 1.8
+      profitMargin: 1.8,
     });
     const { unsubscribe: unsubscribe3 } = subscription.add(callback3, {
       name: "tina",
-      profitMargin: 1.1
+      profitMargin: 1.1,
     });
 
     subscription.emit(10);
