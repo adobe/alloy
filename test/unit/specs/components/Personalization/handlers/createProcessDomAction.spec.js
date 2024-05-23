@@ -9,19 +9,22 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createProcessDomAction from "../../../../../../src/components/Personalization/handlers/createProcessDomAction";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
-import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import { DOM_ACTION } from "../../../../../../src/constants/schema";
+import createProcessDomAction from "../../../../../../src/components/Personalization/handlers/createProcessDomAction.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
+import {
+  appendNode,
+  createNode,
+} from "../../../../../../src/utils/dom/index.js";
+import { DOM_ACTION } from "../../../../../../src/constants/schema.js";
 import {
   ADOBE_JOURNEY_OPTIMIZER,
-  ADOBE_TARGET
-} from "../../../../../../src/constants/decisionProvider";
+  ADOBE_TARGET,
+} from "../../../../../../src/constants/decisionProvider.js";
 import {
   ALWAYS,
-  NEVER
-} from "../../../../../../src/constants/propositionInteractionType";
-import createMockProposition from "../../../../helpers/createMockProposition";
+  NEVER,
+} from "../../../../../../src/constants/propositionInteractionType.js";
+import createMockProposition from "../../../../helpers/createMockProposition.js";
 
 describe("createProcessDomAction", () => {
   let modules;
@@ -35,7 +38,7 @@ describe("createProcessDomAction", () => {
 
     modules = {
       typeA: jasmine.createSpy("typeA"),
-      typeB: jasmine.createSpy("typeB")
+      typeB: jasmine.createSpy("typeB"),
     };
     logger = jasmine.createSpyObj("logger", ["warn"]);
     storeInteractionMeta = jasmine.createSpy("storeInteractionMeta");
@@ -48,8 +51,8 @@ describe("createProcessDomAction", () => {
       storeClickMeta,
       autoCollectPropositionInteractions: {
         [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
-        [ADOBE_TARGET]: NEVER
-      }
+        [ADOBE_TARGET]: NEVER,
+      },
     });
   });
 
@@ -60,72 +63,72 @@ describe("createProcessDomAction", () => {
   it("returns an empty object if the item has no data, and logs missing type", () => {
     const proposition = createMockProposition({
       schema: DOM_ACTION,
-      data: undefined
+      data: undefined,
     });
 
     expect(processDomAction(proposition.getItems()[0])).toEqual({
       setRenderAttempted: false,
-      includeInNotification: false
+      includeInNotification: false,
     });
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid DOM action data: missing type.",
-      undefined
+      undefined,
     );
   });
 
   it("returns an empty object if the item has no type, and logs missing type", () => {
     const proposition = createMockProposition({
       schema: DOM_ACTION,
-      data: {}
+      data: {},
     });
     expect(processDomAction(proposition.getItems()[0])).toEqual({
       setRenderAttempted: false,
-      includeInNotification: false
+      includeInNotification: false,
     });
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid DOM action data: missing type.",
-      {}
+      {},
     );
   });
 
   it("returns an empty object if the item has an unknown type, and logs unknown type", () => {
     const proposition = createMockProposition({
       schema: DOM_ACTION,
-      data: { type: "typeC" }
+      data: { type: "typeC" },
     });
     expect(processDomAction(proposition.getItems()[0])).toEqual({
       setRenderAttempted: false,
-      includeInNotification: false
+      includeInNotification: false,
     });
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid DOM action data: unknown type.",
       {
-        type: "typeC"
-      }
+        type: "typeC",
+      },
     );
   });
 
   it("returns an empty object if the item has no selector for a click type, and logs missing selector", () => {
     const proposition = createMockProposition({
       schema: DOM_ACTION,
-      data: { type: "click" }
+      data: { type: "click" },
     });
     expect(processDomAction(proposition.getItems()[0])).toEqual({
       setRenderAttempted: false,
-      includeInNotification: false
+      includeInNotification: false,
     });
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid DOM action data: missing selector.",
       {
-        type: "click"
-      }
+        type: "click",
+      },
     );
   });
 
   it("handles a click type", async () => {
     const element = createNode("div", {
       id: "click-element",
-      class: "click-element"
+      class: "click-element",
     });
     element.innerHTML = "click element";
     appendNode(document.body, element);
@@ -136,21 +139,21 @@ describe("createProcessDomAction", () => {
         schema: DOM_ACTION,
         data: { type: "click", selector: ".click-element" },
         characteristics: {
-          trackingLabel: "mytrackinglabel"
-        }
+          trackingLabel: "mytrackinglabel",
+        },
       },
       {
         characteristics: {
           scopeType: "page",
-          trackingLabel: "mytrackinglabel"
-        }
-      }
+          trackingLabel: "mytrackinglabel",
+        },
+      },
     );
     const clickAction = processDomAction(proposition.getItems()[0]);
 
     expect(clickAction).toEqual({
       setRenderAttempted: true,
-      includeInNotification: false
+      includeInNotification: false,
     });
 
     expect(storeInteractionMeta).not.toHaveBeenCalled();
@@ -163,31 +166,31 @@ describe("createProcessDomAction", () => {
           decisionProvider: "AJO",
           characteristics: {
             scopeType: "page",
-            trackingLabel: "mytrackinglabel"
-          }
+            trackingLabel: "mytrackinglabel",
+          },
         },
         trackingLabel: "mytrackinglabel",
-        scopeType: "proposition"
-      }
+        scopeType: "proposition",
+      },
     });
   });
 
   it("handles a non-click known type", () => {
     const proposition = createMockProposition({
       schema: DOM_ACTION,
-      data: { type: "typeA", a: "b" }
+      data: { type: "typeA", a: "b" },
     });
     const result = processDomAction(proposition.getItems()[0]);
     expect(result).toEqual({
       render: jasmine.any(Function),
       setRenderAttempted: true,
-      includeInNotification: true
+      includeInNotification: true,
     });
     expect(modules.typeA).not.toHaveBeenCalled();
     result.render();
     expect(modules.typeA).toHaveBeenCalledWith(
       { type: "typeA", a: "b" },
-      jasmine.any(Function)
+      jasmine.any(Function),
     );
   });
 });

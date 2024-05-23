@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const metasToArray = metas => {
-  return Object.keys(metas).map(key => {
+const metasToArray = (metas) => {
+  return Object.keys(metas).map((key) => {
     return {
       id: key,
-      ...metas[key]
+      ...metas[key],
     };
   });
 };
@@ -24,7 +24,7 @@ export default () => {
 
   const storeClickMeta = ({
     selector,
-    meta: { id, scope, scopeDetails, trackingLabel, scopeType }
+    meta: { id, scope, scopeDetails, trackingLabel, scopeType },
   }) => {
     if (!clickStorage[selector]) {
       clickStorage[selector] = {};
@@ -33,7 +33,7 @@ export default () => {
       scope,
       scopeDetails,
       trackingLabel,
-      scopeType
+      scopeType,
     };
   };
 
@@ -41,7 +41,7 @@ export default () => {
     return Object.keys(clickStorage);
   };
 
-  const getClickMetas = selector => {
+  const getClickMetas = (selector) => {
     const metas = clickStorage[selector];
     if (!metas) {
       return {};
@@ -51,6 +51,6 @@ export default () => {
   return {
     storeClickMeta,
     getClickSelectors,
-    getClickMetas
+    getClickMetas,
   };
 };

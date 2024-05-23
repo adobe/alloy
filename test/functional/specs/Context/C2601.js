@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions/index";
-import createFixture from "../../helpers/createFixture";
-import placeContextConfig from "../../helpers/constants/placeContextConfig";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
-import isUserAgentClientHintsSupported from "../../helpers/isUserAgentClientHintsSupported";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import placeContextConfig from "../../helpers/constants/placeContextConfig.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
+import isUserAgentClientHintsSupported from "../../helpers/isUserAgentClientHintsSupported.js";
 
 const networkLogger = createNetworkLogger();
 
@@ -25,23 +25,23 @@ const DESCRIPTION = `${ID} - Adds only placeContext context data when only devic
 
 createFixture({
   title: DESCRIPTION,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID,
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const sendEventOptions = {
   xdm: {
     web: {
       webPageDetails: {
-        URL: TEST_PAGE_URL
-      }
-    }
-  }
+        URL: TEST_PAGE_URL,
+      },
+    },
+  },
 };
 
 test(DESCRIPTION, async () => {
@@ -53,7 +53,7 @@ test(DESCRIPTION, async () => {
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   const parsedBody = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body
+    networkLogger.edgeEndpointLogs.requests[0].request.body,
   );
 
   await t.expect(parsedBody.events[0].xdm.placeContext).ok();
@@ -63,7 +63,8 @@ test(DESCRIPTION, async () => {
   if (await isUserAgentClientHintsSupported()) {
     await t
       .expect(
-        parsedBody.events[0].xdm.environment.browserDetails.userAgentClientHints
+        parsedBody.events[0].xdm?.environment?.browserDetails
+          ?.userAgentClientHints,
       )
       .notOk();
   }

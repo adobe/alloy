@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as awaitSelector } from "./awaitSelector";
-export { default as appendNode } from "./appendNode";
-export { default as createNode } from "./createNode";
-export { default as matchesSelector } from "./matchesSelector";
-export { default as querySelectorAll } from "./querySelectorAll";
-export { default as removeNode } from "./removeNode";
-export { default as selectNodes } from "./selectNodes";
-export { default as selectNodesWithShadow } from "./selectNodesWithShadow";
+export { default as awaitSelector } from "./awaitSelector.js";
+export { default as appendNode } from "./appendNode.js";
+export { default as createNode } from "./createNode.js";
+export { default as matchesSelector } from "./matchesSelector.js";
+export { default as querySelectorAll } from "./querySelectorAll.js";
+export { default as removeNode } from "./removeNode.js";
+export { default as selectNodes } from "./selectNodes.js";
+export { default as selectNodesWithShadow } from "./selectNodesWithShadow.js";

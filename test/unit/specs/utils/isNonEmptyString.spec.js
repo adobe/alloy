@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNonEmptyString from "../../../../src/utils/isNonEmptyString";
+import isNonEmptyString from "../../../../src/utils/isNonEmptyString.js";
 
 describe("isNonEmptyString", () => {
   it("returns true when string", () => {

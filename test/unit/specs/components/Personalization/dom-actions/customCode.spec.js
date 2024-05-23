@@ -9,11 +9,14 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
-import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
-import { DOM_ACTION_CUSTOM_CODE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
+import {
+  appendNode,
+  createNode,
+} from "../../../../../../src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import { DOM_ACTION_CUSTOM_CODE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::customCode", () => {
   let decorateProposition;
@@ -25,7 +28,7 @@ describe("Personalization::actions::customCode", () => {
     delete window.someEvar123;
 
     decorateProposition = createDecoratePropositionForTest({
-      type: DOM_ACTION_CUSTOM_CODE
+      type: DOM_ACTION_CUSTOM_CODE,
     });
 
     const modules = initDomActionsModules();
@@ -46,12 +49,12 @@ describe("Personalization::actions::customCode", () => {
       selector: ".customCode",
       prehidingSelector: ".customCode",
       content: "<p>Hola!</p>",
-      meta: { a: 1 }
+      meta: { a: 1 },
     };
 
     await customCode(settings, decorateProposition);
     expect(element.innerHTML).toMatch(
-      /<p data-aep-interact-id="\d+" data-aep-click-label="trackingLabel">Hola!<\/p><div id="inner1"><\/div><div id="inner2"><\/div>/
+      /<p data-aep-interact-id="\d+" data-aep-click-label="trackingLabel">Hola!<\/p><div id="inner1"><\/div><div id="inner2"><\/div>/,
     );
   });
 
@@ -63,12 +66,12 @@ describe("Personalization::actions::customCode", () => {
       selector: ".customCode",
       prehidingSelector: ".customCode",
       content: "<p>Hola!</p><div>Hello</div>",
-      meta: { a: 1 }
+      meta: { a: 1 },
     };
 
     await customCode(settings, decorateProposition);
     expect(element.innerHTML).toMatch(
-      /<p data-aep-interact-id="\d+" data-aep-click-label="trackingLabel">Hola!<\/p><div data-aep-interact-id="\d+" data-aep-click-label="trackingLabel">Hello<\/div>/
+      /<p data-aep-interact-id="\d+" data-aep-click-label="trackingLabel">Hola!<\/p><div data-aep-interact-id="\d+" data-aep-click-label="trackingLabel">Hello<\/div>/,
     );
   });
 });

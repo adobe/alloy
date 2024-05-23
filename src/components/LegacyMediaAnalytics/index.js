@@ -11,22 +11,22 @@ governing permissions and limitations under the License.
 */
 /* eslint-disable import/no-restricted-paths */
 
-import createMediaEventManager from "../StreamingMedia/createMediaEventManager";
-import createMediaSessionCacheManager from "../StreamingMedia/createMediaSessionCacheManager";
-import createTrackMediaEvent from "../StreamingMedia/createTrackMediaEvent";
-import createTrackMediaSession from "../StreamingMedia/createTrackMediaSession";
-import createMediaResponseHandler from "../StreamingMedia/createMediaResponseHandler";
-import createLegacyMediaComponent from "./createLegacyMediaComponent";
-import createMediaHelper from "./createMediaHelper";
-import createGetInstance from "./createGetInstance";
-import injectTimestamp from "../Context/injectTimestamp";
+import createMediaEventManager from "../StreamingMedia/createMediaEventManager.js";
+import createMediaSessionCacheManager from "../StreamingMedia/createMediaSessionCacheManager.js";
+import createTrackMediaEvent from "../StreamingMedia/createTrackMediaEvent.js";
+import createTrackMediaSession from "../StreamingMedia/createTrackMediaSession.js";
+import createMediaResponseHandler from "../StreamingMedia/createMediaResponseHandler.js";
+import createLegacyMediaComponent from "./createLegacyMediaComponent.js";
+import createMediaHelper from "./createMediaHelper.js";
+import createGetInstance from "./createGetInstance.js";
+import injectTimestamp from "../Context/injectTimestamp.js";
 
 const createLegacyMediaAnalytics = ({
   eventManager,
   sendEdgeNetworkRequest,
   config,
   logger,
-  consent
+  consent,
 }) => {
   const mediaSessionCacheManager = createMediaSessionCacheManager({ config });
 
@@ -35,24 +35,24 @@ const createLegacyMediaAnalytics = ({
     config,
     consent,
     eventManager,
-    setTimestamp: injectTimestamp(() => new Date())
+    setTimestamp: injectTimestamp(() => new Date()),
   });
 
   const trackMediaEvent = createTrackMediaEvent({
     mediaSessionCacheManager,
     mediaEventManager,
-    config
+    config,
   });
   const trackMediaSession = createTrackMediaSession({
     config,
     mediaEventManager,
     mediaSessionCacheManager,
-    legacy: true
+    legacy: true,
   });
   const mediaResponseHandler = createMediaResponseHandler({
     mediaSessionCacheManager,
     config,
-    trackMediaEvent
+    trackMediaEvent,
   });
 
   return createLegacyMediaComponent({
@@ -62,7 +62,7 @@ const createLegacyMediaAnalytics = ({
     createMediaHelper,
     createGetInstance,
     logger,
-    config
+    config,
   });
 };
 

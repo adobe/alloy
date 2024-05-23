@@ -11,46 +11,52 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { Selector, t } from "testcafe";
-import uuid from "uuid/v4";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
-import { compose, debugEnabled } from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import getBaseConfig from "../../helpers/getBaseConfig";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
-import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
+import uuid from "../../../../src/utils/uuid.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import {
+  compose,
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import getBaseConfig from "../../helpers/getBaseConfig.js";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
+import addHtmlToBody from "../../helpers/dom/addHtmlToBody.js";
 import {
   CLICK_LABEL_DATA_ATTRIBUTE,
-  INTERACT_ID_DATA_ATTRIBUTE
-} from "../../../../src/components/Personalization/handlers/createDecorateProposition";
-import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../src/constants/decisionProvider";
-import { INTERACT } from "../../../../src/constants/eventType";
+  INTERACT_ID_DATA_ATTRIBUTE,
+} from "../../../../src/components/Personalization/handlers/createDecorateProposition.js";
+import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../src/constants/decisionProvider.js";
+import { INTERACT } from "../../../../src/constants/eventType.js";
 import {
   ALWAYS,
   DECORATED_ELEMENTS_ONLY,
-  NEVER
-} from "../../../../src/constants/propositionInteractionType";
-import { DOM_ACTION_COLLECT_INTERACTIONS } from "../../../../src/components/Personalization/dom-actions/initDomActionsModules";
+  NEVER,
+} from "../../../../src/constants/propositionInteractionType.js";
+import { DOM_ACTION_COLLECT_INTERACTIONS } from "../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
 
-const REASONABLE_WAIT_TIME = 250;
+const REASONABLE_WAIT_TIME = 1000;
+
 const networkLogger = createNetworkLogger();
+const { edgeEndpointLogs } = networkLogger;
 
 const orgMainConfigMain = getBaseConfig(
   "97D1F3F459CE0AD80A495CBE@AdobeOrg",
-  "0a106b4d-1937-4196-a64d-4a324e972459"
+  "0a106b4d-1937-4196-a64d-4a324e972459",
 );
 let config;
 
 test.meta({
   ID: "C17409728",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 createFixture({
   title: "C17409728 - Proposition interactions are automatically tracked",
   url: `${TEST_PAGE_URL}?test=C17409728`,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [edgeEndpointLogs],
 });
 
 const testPageBody = `
@@ -61,7 +67,7 @@ const createMockResponse = ({
   propositionId = uuid(),
   activityId = uuid(),
   decisionProvider = ADOBE_JOURNEY_OPTIMIZER,
-  items = []
+  items = [],
 }) => {
   return {
     requestId: uuid(),
@@ -71,11 +77,11 @@ const createMockResponse = ({
           {
             id: "54671057599843051332294448941462242513",
             namespace: {
-              code: "ECID"
-            }
-          }
+              code: "ECID",
+            },
+          },
         ],
-        type: "identity:result"
+        type: "identity:result",
       },
       {
         payload: [
@@ -87,27 +93,27 @@ const createMockResponse = ({
               correlationID: "6dae465b-9553-4fc6-b7d4-6c9979c88f21-0",
               characteristics: {
                 eventToken:
-                  "eyJtZXNzYWdlRXhlY3V0aW9uIjp7Im1lc3NhZ2VFeGVjdXRpb25JRCI6IlVFOkluYm91bmQiLCJtZXNzYWdlSUQiOiJmMzgxZWJhYS1kNDIyLTQxNzQtOWUzNS0yMTY3NDYwMjk5MTAiLCJtZXNzYWdlUHVibGljYXRpb25JRCI6IjZkYWU0NjViLTk1NTMtNGZjNi1iN2Q0LTZjOTk3OWM4OGYyMSIsIm1lc3NhZ2VUeXBlIjoibWFya2V0aW5nIiwiY2FtcGFpZ25JRCI6ImVhZDg5MWE0LTNjYWUtNGE1ZC05MGEzLTFkZTc0MzkwYjNkMyIsImNhbXBhaWduVmVyc2lvbklEIjoiZDhiYzk5YmMtZGRhZC00Y2MyLThlYjItYTJlMGUzY2FmNzg0IiwiY2FtcGFpZ25BY3Rpb25JRCI6IjQzNmZmM2NkLTZkZWItNDczNi04NDc1LTA3NDhhYzc4MTlkOCJ9LCJtZXNzYWdlUHJvZmlsZSI6eyJtZXNzYWdlUHJvZmlsZUlEIjoiMDg5NGYwNmYtOTkyNi00YTc2LTk4OTktYThmZjc3NWZmNTA4IiwiY2hhbm5lbCI6eyJfaWQiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbHMvd2ViIiwiX3R5cGUiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbC10eXBlcy93ZWIifX19"
+                  "eyJtZXNzYWdlRXhlY3V0aW9uIjp7Im1lc3NhZ2VFeGVjdXRpb25JRCI6IlVFOkluYm91bmQiLCJtZXNzYWdlSUQiOiJmMzgxZWJhYS1kNDIyLTQxNzQtOWUzNS0yMTY3NDYwMjk5MTAiLCJtZXNzYWdlUHVibGljYXRpb25JRCI6IjZkYWU0NjViLTk1NTMtNGZjNi1iN2Q0LTZjOTk3OWM4OGYyMSIsIm1lc3NhZ2VUeXBlIjoibWFya2V0aW5nIiwiY2FtcGFpZ25JRCI6ImVhZDg5MWE0LTNjYWUtNGE1ZC05MGEzLTFkZTc0MzkwYjNkMyIsImNhbXBhaWduVmVyc2lvbklEIjoiZDhiYzk5YmMtZGRhZC00Y2MyLThlYjItYTJlMGUzY2FmNzg0IiwiY2FtcGFpZ25BY3Rpb25JRCI6IjQzNmZmM2NkLTZkZWItNDczNi04NDc1LTA3NDhhYzc4MTlkOCJ9LCJtZXNzYWdlUHJvZmlsZSI6eyJtZXNzYWdlUHJvZmlsZUlEIjoiMDg5NGYwNmYtOTkyNi00YTc2LTk4OTktYThmZjc3NWZmNTA4IiwiY2hhbm5lbCI6eyJfaWQiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbHMvd2ViIiwiX3R5cGUiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbC10eXBlcy93ZWIifX19",
               },
               activity: {
-                id: activityId
-              }
+                id: activityId,
+              },
             },
-            items: [...items]
-          }
+            items: [...items],
+          },
         ],
         type: "personalization:decisions",
-        eventIndex: 0
-      }
-    ]
+        eventIndex: 0,
+      },
+    ],
   };
 };
 
 test("Test C17409728: Automatically sends interact event for proposition click", async () => {
   config = compose(orgMainConfigMain, debugEnabled, {
     autoCollectPropositionInteractions: {
-      [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS
-    }
+      [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
+    },
   });
 
   const propositionId = uuid();
@@ -121,10 +127,10 @@ test("Test C17409728: Automatically sends interact event for proposition click",
         data: {
           type: "insertBefore",
           content: '<div id="something">This is something</div>',
-          selector: "#page-header"
-        }
-      }
-    ]
+          selector: "#page-header",
+        },
+      },
+    ],
   });
 
   await addHtmlToBody(testPageBody, true);
@@ -133,38 +139,37 @@ test("Test C17409728: Automatically sends interact event for proposition click",
   await alloy.configure(config);
   await alloy.applyResponse({
     renderDecisions: true,
-    responseBody
+    responseBody,
   });
 
   await t
     .expect(
-      Selector("#something").withAttribute(INTERACT_ID_DATA_ATTRIBUTE).exists
+      Selector("#something").withAttribute(INTERACT_ID_DATA_ATTRIBUTE).exists,
     )
     .ok();
 
-  await networkLogger.clearLogs();
+  edgeEndpointLogs.clear();
 
   await t.click("#something");
   await t.wait(REASONABLE_WAIT_TIME);
 
-  await t.expect(networkLogger.edgeEndpointLogs.count(() => true)).eql(1);
+  await responseStatus(edgeEndpointLogs.requests, [200, 204]);
+  await t.expect(edgeEndpointLogs.count(() => true)).eql(1);
 
-  const notification = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body
-  );
+  const notification = JSON.parse(edgeEndpointLogs.requests[0].request.body);
 
   await t.expect(notification.events[0].xdm.eventType).eql(INTERACT);
 
   await t
     .expect(
-      notification.events[0].xdm._experience.decisioning.propositions[0].id
+      notification.events[0].xdm._experience.decisioning.propositions[0].id,
     )
     .eql(propositionId);
 
   await t
     .expect(
       notification.events[0].xdm._experience.decisioning.propositions[0]
-        .items[0].id
+        .items[0].id,
     )
     .eql(itemId);
 });
@@ -172,8 +177,8 @@ test("Test C17409728: Automatically sends interact event for proposition click",
 test("Test C17409728: Does not automatically send interact event for proposition click when autoCollectPropositionInteractions configured to 'never'", async () => {
   config = compose(orgMainConfigMain, debugEnabled, {
     autoCollectPropositionInteractions: {
-      [ADOBE_JOURNEY_OPTIMIZER]: NEVER
-    }
+      [ADOBE_JOURNEY_OPTIMIZER]: NEVER,
+    },
   });
 
   const propositionId = uuid();
@@ -187,10 +192,10 @@ test("Test C17409728: Does not automatically send interact event for proposition
         data: {
           type: "insertAfter",
           content: '<div id="something-else">This is something else</div>',
-          selector: "#page-header"
-        }
-      }
-    ]
+          selector: "#page-header",
+        },
+      },
+    ],
   });
 
   await addHtmlToBody(testPageBody, true);
@@ -199,29 +204,30 @@ test("Test C17409728: Does not automatically send interact event for proposition
   await alloy.configure(config);
   await alloy.applyResponse({
     renderDecisions: true,
-    responseBody
+    responseBody,
   });
 
   await t
     .expect(
       Selector("#something-else").withAttribute(INTERACT_ID_DATA_ATTRIBUTE)
-        .exists
+        .exists,
     )
     .notOk();
 
-  await networkLogger.clearLogs();
+  edgeEndpointLogs.clear();
 
   await t.click("#something-else");
   await t.wait(REASONABLE_WAIT_TIME);
 
-  await t.expect(networkLogger.edgeEndpointLogs.count(() => true)).eql(0);
+  await responseStatus(edgeEndpointLogs.requests, [200, 204]);
+  await t.expect(edgeEndpointLogs.count(() => true)).eql(0);
 });
 
 test("Test C17409728: Automatically sends interact event for proposition click when autoCollectPropositionInteractions configured to 'decoratedElementsOnly'", async () => {
   config = compose(orgMainConfigMain, debugEnabled, {
     autoCollectPropositionInteractions: {
-      [ADOBE_JOURNEY_OPTIMIZER]: DECORATED_ELEMENTS_ONLY
-    }
+      [ADOBE_JOURNEY_OPTIMIZER]: DECORATED_ELEMENTS_ONLY,
+    },
   });
 
   const propositionId = uuid();
@@ -239,10 +245,10 @@ test("Test C17409728: Automatically sends interact event for proposition click w
                       <li id="some-list-item-b">two</li>
                       <li id="some-list-item-c">three <span id="some-list-item-span" ${CLICK_LABEL_DATA_ATTRIBUTE}="click-me-here">yippie</span></li>
                     </ul>`,
-          selector: "#page-header"
-        }
-      }
-    ]
+          selector: "#page-header",
+        },
+      },
+    ],
   });
 
   await addHtmlToBody(testPageBody, true);
@@ -251,43 +257,43 @@ test("Test C17409728: Automatically sends interact event for proposition click w
   await alloy.configure(config);
   await alloy.applyResponse({
     renderDecisions: true,
-    responseBody
+    responseBody,
   });
 
   await t
     .expect(
-      Selector("#some-list").withAttribute(INTERACT_ID_DATA_ATTRIBUTE).exists
+      Selector("#some-list").withAttribute(INTERACT_ID_DATA_ATTRIBUTE).exists,
     )
     .ok();
 
-  await networkLogger.clearLogs();
+  edgeEndpointLogs.clear();
 
   await t.click("#some-list-item-a");
   await t.wait(REASONABLE_WAIT_TIME);
 
-  await t.expect(networkLogger.edgeEndpointLogs.count(() => true)).eql(0);
+  await responseStatus(edgeEndpointLogs.requests, [200, 204]);
+  await t.expect(edgeEndpointLogs.count(() => true)).eql(0);
 
   await t.click("#some-list-item-span");
   await t.wait(REASONABLE_WAIT_TIME);
 
-  await t.expect(networkLogger.edgeEndpointLogs.count(() => true)).eql(1);
+  await responseStatus(edgeEndpointLogs.requests, [200, 204]);
+  await t.expect(edgeEndpointLogs.count(() => true)).eql(1);
 
-  const notification = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body
-  );
+  const notification = JSON.parse(edgeEndpointLogs.requests[0].request.body);
 
   await t.expect(notification.events[0].xdm.eventType).eql(INTERACT);
 
   await t
     .expect(
-      notification.events[0].xdm._experience.decisioning.propositions[0].id
+      notification.events[0].xdm._experience.decisioning.propositions[0].id,
     )
     .eql(propositionId);
 
   await t
     .expect(
       notification.events[0].xdm._experience.decisioning.propositions[0]
-        .items[0].id
+        .items[0].id,
     )
     .eql(itemId);
 });
@@ -295,8 +301,8 @@ test("Test C17409728: Automatically sends interact event for proposition click w
 test("Test C17409728: Automatically sends interact event when using applyPropositions command", async () => {
   config = compose(orgMainConfigMain, debugEnabled, {
     autoCollectPropositionInteractions: {
-      [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS
-    }
+      [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
+    },
   });
 
   const propositionId = uuid();
@@ -310,11 +316,11 @@ test("Test C17409728: Automatically sends interact event when using applyProposi
         data: {
           content: {
             favoriteColor: "orange",
-            preferredCrypto: "BTC"
-          }
-        }
-      }
-    ]
+            preferredCrypto: "BTC",
+          },
+        },
+      },
+    ],
   });
 
   await addHtmlToBody(testPageBody, true);
@@ -322,8 +328,8 @@ test("Test C17409728: Automatically sends interact event when using applyProposi
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const { propositions = [] } = await alloy.applyResponse({
-    renderDecisions: true,
-    responseBody
+    renderDecisions: false,
+    responseBody,
   });
 
   await alloy.applyPropositions({
@@ -331,40 +337,39 @@ test("Test C17409728: Automatically sends interact event when using applyProposi
     metadata: {
       "web://aepdemo.com/": {
         selector: "#page-header",
-        actionType: DOM_ACTION_COLLECT_INTERACTIONS
-      }
-    }
+        actionType: DOM_ACTION_COLLECT_INTERACTIONS,
+      },
+    },
   });
 
   await t
     .expect(
-      Selector("#page-header").withAttribute(INTERACT_ID_DATA_ATTRIBUTE).exists
+      Selector("#page-header").withAttribute(INTERACT_ID_DATA_ATTRIBUTE).exists,
     )
     .ok();
 
-  await networkLogger.clearLogs();
+  edgeEndpointLogs.clear();
 
   await t.click("#page-header");
   await t.wait(REASONABLE_WAIT_TIME);
 
-  await t.expect(networkLogger.edgeEndpointLogs.count(() => true)).eql(1);
+  await responseStatus(edgeEndpointLogs.requests, [200, 204]);
+  await t.expect(edgeEndpointLogs.count(() => true)).eql(1);
 
-  const notification = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body
-  );
+  const notification = JSON.parse(edgeEndpointLogs.requests[0].request.body);
 
   await t.expect(notification.events[0].xdm.eventType).eql(INTERACT);
 
   await t
     .expect(
-      notification.events[0].xdm._experience.decisioning.propositions[0].id
+      notification.events[0].xdm._experience.decisioning.propositions[0].id,
     )
     .eql(propositionId);
 
   await t
     .expect(
       notification.events[0].xdm._experience.decisioning.propositions[0]
-        .items[0].id
+        .items[0].id,
     )
     .eql(itemId);
 });

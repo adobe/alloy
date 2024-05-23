@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assertValid } from "./utils";
+import { assertValid } from "./utils.js";
 
 export default () => {
   const values = [];
@@ -19,7 +19,7 @@ export default () => {
       values.indexOf(value) === -1,
       value,
       path,
-      "a unique value across instances"
+      "a unique value across instances",
     );
     values.push(value);
     return value;

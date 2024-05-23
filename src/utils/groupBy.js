@@ -19,7 +19,7 @@ governing permissions and limitations under the License.
 export default (arr, keyGetter) => {
   const result = {};
 
-  arr.forEach(item => {
+  arr.forEach((item) => {
     const key = keyGetter(item);
 
     if (!result[key]) {

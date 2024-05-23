@@ -12,17 +12,17 @@ governing permissions and limitations under the License.
 import {
   appendNode,
   createNode,
-  selectNodes
-} from "../../../../../../src/utils/dom";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+  selectNodes,
+} from "../../../../../../src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 import {
   CLICK_LABEL_DATA_ATTRIBUTE,
-  INTERACT_ID_DATA_ATTRIBUTE
-} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
-import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
-import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
-import { DOM_ACTION_REPLACE_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
+  INTERACT_ID_DATA_ATTRIBUTE,
+} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import { DOM_ACTION_REPLACE_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::replaceHtml", () => {
   let decorateProposition;
@@ -30,7 +30,7 @@ describe("Personalization::actions::replaceHtml", () => {
   beforeEach(() => {
     cleanUpDomChanges("replaceHtml");
     decorateProposition = createDecoratePropositionForTest({
-      type: DOM_ACTION_REPLACE_HTML
+      type: DOM_ACTION_REPLACE_HTML,
     });
   });
 
@@ -44,7 +44,7 @@ describe("Personalization::actions::replaceHtml", () => {
     const child = createNode(
       "div",
       { id: "a", class: "rh" },
-      { innerHTML: "AAA" }
+      { innerHTML: "AAA" },
     );
     const element = createNode("div", { id: "replaceHtml" }, {}, [child]);
 
@@ -54,7 +54,7 @@ describe("Personalization::actions::replaceHtml", () => {
       selector: "#a",
       prehidingSelector: "#a",
       content: `<div id="b" class="rh">BBB</div>`,
-      meta: { a: 1 }
+      meta: { a: 1 },
     };
 
     return replaceHtml(settings, decorateProposition).then(() => {
@@ -64,10 +64,10 @@ describe("Personalization::actions::replaceHtml", () => {
       expect(result[0].innerHTML).toEqual("BBB");
 
       expect(getAttribute(result[0], CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
-        "trackingLabel"
+        "trackingLabel",
       );
       expect(
-        getAttribute(result[0], INTERACT_ID_DATA_ATTRIBUTE)
+        getAttribute(result[0], INTERACT_ID_DATA_ATTRIBUTE),
       ).not.toBeNull();
     });
   });

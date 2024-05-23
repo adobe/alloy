@@ -9,11 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import injectCreateProposition from "../../../src/components/Personalization/handlers/injectCreateProposition";
+import injectCreateProposition from "../../../src/components/Personalization/handlers/injectCreateProposition.js";
 
 const createProposition = injectCreateProposition({
-  preprocess: data => data,
-  isPageWideSurface: () => false
+  preprocess: (data) => data,
+  isPageWideSurface: () => false,
 });
 
 export default (item, scopeDetails = {}) => {
@@ -22,8 +22,8 @@ export default (item, scopeDetails = {}) => {
     scope: "scope",
     scopeDetails: {
       decisionProvider: "AJO",
-      ...scopeDetails
+      ...scopeDetails,
     },
-    items: [item]
+    items: [item],
   });
 };

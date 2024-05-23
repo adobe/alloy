@@ -9,17 +9,20 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import {
+  appendNode,
+  createNode,
+} from "../../../../../../src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 import {
   CLICK_LABEL_DATA_ATTRIBUTE,
-  INTERACT_ID_DATA_ATTRIBUTE
-} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
-import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
-import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
-import pause from "../../../../helpers/pause";
-import { DOM_ACTION_SET_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
+  INTERACT_ID_DATA_ATTRIBUTE,
+} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import pause from "../../../../helpers/pause.js";
+import { DOM_ACTION_SET_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::setHtml", () => {
   let decorateProposition;
@@ -29,7 +32,7 @@ describe("Personalization::actions::setHtml", () => {
     delete window.someEvar123;
 
     decorateProposition = createDecoratePropositionForTest({
-      type: DOM_ACTION_SET_HTML
+      type: DOM_ACTION_SET_HTML,
     });
   });
 
@@ -51,14 +54,14 @@ describe("Personalization::actions::setHtml", () => {
       selector: "#setHtml",
       prehidingSelector: "#setHtml",
       content: "bar",
-      meta: { a: 1 }
+      meta: { a: 1 },
     };
 
     await setHtml(settings, decorateProposition);
     expect(element.innerHTML).toEqual("bar");
 
     expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
-      "trackingLabel"
+      "trackingLabel",
     );
     expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
   });
@@ -76,7 +79,7 @@ describe("Personalization::actions::setHtml", () => {
       prehidingSelector: "#setHtml",
       content:
         "<script id='evar123'>setTimeout(function onTimeout() { window.someEvar123 = 1; }, 500);</script>",
-      meta: { a: 1 }
+      meta: { a: 1 },
     };
 
     await setHtml(settings, decorateProposition);
@@ -105,7 +108,7 @@ describe("Personalization::actions::setHtml", () => {
           var btn = document.getElementById('btn');
           btn.addEventListener('click', function onEvent() { window.someEvar123 = 2; });
         </script>`,
-      meta: { a: 1 }
+      meta: { a: 1 },
     };
 
     await setHtml(settings, decorateProposition);

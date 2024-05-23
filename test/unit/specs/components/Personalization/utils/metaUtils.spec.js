@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 import {
   cleanMetas,
-  dedupeMetas
-} from "../../../../../../src/components/Personalization/utils/metaUtils";
+  dedupeMetas,
+} from "../../../../../../src/components/Personalization/utils/metaUtils.js";
 
 describe("Personalization::metaUtils", () => {
   it("cleanMetas", () => {
@@ -25,14 +25,14 @@ describe("Personalization::metaUtils", () => {
             decisionProvider: "AJO",
             correlationID: "39",
             characteristics: {
-              eventToken: "eyJ"
+              eventToken: "eyJ",
             },
             activity: {
-              id: "12"
-            }
+              id: "12",
+            },
           },
           trackingLabel: "lbl-buy-now",
-          scopeType: "page"
+          scopeType: "page",
         },
         {
           id: "e9b",
@@ -41,17 +41,17 @@ describe("Personalization::metaUtils", () => {
             decisionProvider: "AJO",
             correlationID: "03",
             characteristics: {
-              eventToken: "eyJ"
+              eventToken: "eyJ",
             },
             activity: {
               id: "4f2",
-              matchedSurfaces: ["web://aepdemo.com/"]
-            }
+              matchedSurfaces: ["web://aepdemo.com/"],
+            },
           },
           trackingLabel: "lbl-buy-now",
-          scopeType: "page"
-        }
-      ])
+          scopeType: "page",
+        },
+      ]),
     ).toEqual([
       {
         id: "8f5",
@@ -60,12 +60,12 @@ describe("Personalization::metaUtils", () => {
           decisionProvider: "AJO",
           correlationID: "39",
           characteristics: {
-            eventToken: "eyJ"
+            eventToken: "eyJ",
           },
           activity: {
-            id: "12"
-          }
-        }
+            id: "12",
+          },
+        },
       },
       {
         id: "e9b",
@@ -74,14 +74,14 @@ describe("Personalization::metaUtils", () => {
           decisionProvider: "AJO",
           correlationID: "03",
           characteristics: {
-            eventToken: "eyJ"
+            eventToken: "eyJ",
           },
           activity: {
             id: "4f2",
-            matchedSurfaces: ["web://aepdemo.com/"]
-          }
-        }
-      }
+            matchedSurfaces: ["web://aepdemo.com/"],
+          },
+        },
+      },
     ]);
   });
 
@@ -95,14 +95,14 @@ describe("Personalization::metaUtils", () => {
             decisionProvider: "AJO",
             correlationID: "39",
             characteristics: {
-              eventToken: "eyJ"
+              eventToken: "eyJ",
             },
             activity: {
-              id: "12"
-            }
+              id: "12",
+            },
           },
           trackingLabel: "lbl-buy-now",
-          scopeType: "page"
+          scopeType: "page",
         },
         {
           id: "e9b",
@@ -111,15 +111,15 @@ describe("Personalization::metaUtils", () => {
             decisionProvider: "AJO",
             correlationID: "03",
             characteristics: {
-              eventToken: "eyJ"
+              eventToken: "eyJ",
             },
             activity: {
               id: "4f2",
-              matchedSurfaces: ["web://aepdemo.com/"]
-            }
+              matchedSurfaces: ["web://aepdemo.com/"],
+            },
           },
           trackingLabel: "lbl-buy-now",
-          scopeType: "page"
+          scopeType: "page",
         },
         {
           id: "8f5",
@@ -128,14 +128,14 @@ describe("Personalization::metaUtils", () => {
             decisionProvider: "AJO",
             correlationID: "39",
             characteristics: {
-              eventToken: "eyJ"
+              eventToken: "eyJ",
             },
             activity: {
-              id: "12"
-            }
+              id: "12",
+            },
           },
           trackingLabel: "lbl-buy-now",
-          scopeType: "page"
+          scopeType: "page",
         },
         {
           id: "e9b",
@@ -144,17 +144,17 @@ describe("Personalization::metaUtils", () => {
             decisionProvider: "AJO",
             correlationID: "03",
             characteristics: {
-              eventToken: "eyJ"
+              eventToken: "eyJ",
             },
             activity: {
               id: "4f2",
-              matchedSurfaces: ["web://aepdemo.com/"]
-            }
+              matchedSurfaces: ["web://aepdemo.com/"],
+            },
           },
           trackingLabel: "lbl-buy-now",
-          scopeType: "page"
-        }
-      ])
+          scopeType: "page",
+        },
+      ]),
     ).toEqual([
       {
         id: "8f5",
@@ -163,14 +163,14 @@ describe("Personalization::metaUtils", () => {
           decisionProvider: "AJO",
           correlationID: "39",
           characteristics: {
-            eventToken: "eyJ"
+            eventToken: "eyJ",
           },
           activity: {
-            id: "12"
-          }
+            id: "12",
+          },
         },
         trackingLabel: "lbl-buy-now",
-        scopeType: "page"
+        scopeType: "page",
       },
       {
         id: "e9b",
@@ -179,16 +179,16 @@ describe("Personalization::metaUtils", () => {
           decisionProvider: "AJO",
           correlationID: "03",
           characteristics: {
-            eventToken: "eyJ"
+            eventToken: "eyJ",
           },
           activity: {
             id: "4f2",
-            matchedSurfaces: ["web://aepdemo.com/"]
-          }
+            matchedSurfaces: ["web://aepdemo.com/"],
+          },
         },
         trackingLabel: "lbl-buy-now",
-        scopeType: "page"
-      }
+        scopeType: "page",
+      },
     ]);
   });
 });

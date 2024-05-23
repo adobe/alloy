@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createLegacyMediaComponent from "../../../../../src/components/LegacyMediaAnalytics/createLegacyMediaComponent";
+import createLegacyMediaComponent from "../../../../../src/components/LegacyMediaAnalytics/createLegacyMediaComponent.js";
 
 describe("LegacyMediaAnalytics::createLegacyMediaComponent", () => {
   const config = {
     streamingMedia: {
       channel: "testChannel",
       playerName: "testPlayerName",
-      appVersion: "testAppVersion"
-    }
+      appVersion: "testAppVersion",
+    },
   };
   let logger;
   let legacyMediaComponent;
@@ -28,7 +28,7 @@ describe("LegacyMediaAnalytics::createLegacyMediaComponent", () => {
   let createMediaHelper;
   let createGetInstance;
 
-  const build = configs => {
+  const build = (configs) => {
     legacyMediaComponent = createLegacyMediaComponent({
       config: configs,
       logger,
@@ -36,7 +36,7 @@ describe("LegacyMediaAnalytics::createLegacyMediaComponent", () => {
       mediaResponseHandler,
       trackMediaSession,
       createMediaHelper,
-      createGetInstance
+      createGetInstance,
     });
   };
 
@@ -74,16 +74,16 @@ describe("LegacyMediaAnalytics::createLegacyMediaComponent", () => {
     const mediaOptions = {
       legacy: true,
       playerId: "testPlayerId",
-      getPlayerDetails
+      getPlayerDetails,
     };
-    const onResponseHandler = onResponse => {
+    const onResponseHandler = (onResponse) => {
       onResponse({ response: {} });
     };
     onBeforeEvent({ mediaOptions, onResponse: onResponseHandler });
     expect(mediaResponseHandler).toHaveBeenCalledWith({
       getPlayerDetails,
       playerId: "testPlayerId",
-      response: {}
+      response: {},
     });
   });
 
@@ -94,9 +94,9 @@ describe("LegacyMediaAnalytics::createLegacyMediaComponent", () => {
     const mediaOptions = {
       legacy: false,
       playerId: "testPlayerId",
-      getPlayerDetails
+      getPlayerDetails,
     };
-    const onResponseHandler = onResponse => {
+    const onResponseHandler = (onResponse) => {
       onResponse({ response: {} });
     };
     onBeforeEvent({ mediaOptions, onResponse: onResponseHandler });

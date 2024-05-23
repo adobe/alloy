@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createInteractionStorage from "../../../../../src/components/Personalization/createInteractionStorage";
+import createInteractionStorage from "../../../../../src/components/Personalization/createInteractionStorage.js";
 
 describe("Personalization::createInteractionStorage", () => {
   let storeInteractionMeta;
@@ -20,14 +20,12 @@ describe("Personalization::createInteractionStorage", () => {
   let interactIDs = {};
 
   beforeEach(() => {
-    ({
-      storeInteractionMeta,
-      getInteractionMetas
-    } = createInteractionStorage());
+    ({ storeInteractionMeta, getInteractionMetas } =
+      createInteractionStorage());
 
     interactIDs = {
       "div:123:h2": [1],
-      "div:123:h1": [2]
+      "div:123:h1": [2],
     };
 
     PROPOSITIONS = [
@@ -37,8 +35,8 @@ describe("Personalization::createInteractionStorage", () => {
         scopeDetails: {
           test: "blah1",
           characteristics: {
-            scopeType: "page"
-          }
+            scopeType: "page",
+          },
         },
         items: [
           {
@@ -46,13 +44,13 @@ describe("Personalization::createInteractionStorage", () => {
             schema: "https://ns.adobe.com/personalization/dom-action",
             data: {
               type: "click",
-              selector: "div:123:h2"
+              selector: "div:123:h2",
             },
             characteristics: {
-              trackingLabel: "mylabel"
-            }
-          }
-        ]
+              trackingLabel: "mylabel",
+            },
+          },
+        ],
       },
       {
         id: "AT:123",
@@ -60,8 +58,8 @@ describe("Personalization::createInteractionStorage", () => {
         scopeDetails: {
           test: "blah3",
           characteristics: {
-            scopeType: "view"
-          }
+            scopeType: "view",
+          },
         },
         items: [
           {
@@ -69,10 +67,10 @@ describe("Personalization::createInteractionStorage", () => {
             schema: "https://ns.adobe.com/personalization/dom-action",
             data: {
               type: "click",
-              selector: "div:123:h2"
-            }
-          }
-        ]
+              selector: "div:123:h2",
+            },
+          },
+        ],
       },
       {
         id: "AT:234",
@@ -80,8 +78,8 @@ describe("Personalization::createInteractionStorage", () => {
         scopeDetails: {
           test: "blah4",
           characteristics: {
-            scopeType: "view"
-          }
+            scopeType: "view",
+          },
         },
         items: [
           {
@@ -89,10 +87,10 @@ describe("Personalization::createInteractionStorage", () => {
             schema: "https://ns.adobe.com/personalization/dom-action",
             data: {
               type: "click",
-              selector: "div:123:h2"
-            }
-          }
-        ]
+              selector: "div:123:h2",
+            },
+          },
+        ],
       },
       {
         id: "AT:123",
@@ -100,8 +98,8 @@ describe("Personalization::createInteractionStorage", () => {
         scopeDetails: {
           test: "blah5",
           characteristics: {
-            scopeType: "view"
-          }
+            scopeType: "view",
+          },
         },
         items: [
           {
@@ -109,11 +107,11 @@ describe("Personalization::createInteractionStorage", () => {
             schema: "https://ns.adobe.com/personalization/dom-action",
             data: {
               type: "click",
-              selector: "div:123:h1"
-            }
-          }
-        ]
-      }
+              selector: "div:123:h1",
+            },
+          },
+        ],
+      },
     ];
   });
 
@@ -122,16 +120,16 @@ describe("Personalization::createInteractionStorage", () => {
   });
 
   it("stores clicks as a map in the click storage and returns the metadata", () => {
-    PROPOSITIONS.forEach(proposition => {
+    PROPOSITIONS.forEach((proposition) => {
       const { id, scope, scopeDetails } = proposition;
-      proposition.items.forEach(item =>
+      proposition.items.forEach((item) =>
         storeInteractionMeta(
           proposition.id,
           item.id,
           proposition.scopeDetails.characteristics.scopeType,
           { id, scope, scopeDetails },
-          interactIDs[item.data.selector]
-        )
+          interactIDs[item.data.selector],
+        ),
       );
     });
 
@@ -142,7 +140,7 @@ describe("Personalization::createInteractionStorage", () => {
   it("getInteractionMetas returns the id, scopeDetails, scope, trackingLabel, and scopeType", () => {
     const proposition = PROPOSITIONS[0];
 
-    proposition.items.forEach(item =>
+    proposition.items.forEach((item) =>
       storeInteractionMeta(
         proposition.id,
         item.id,
@@ -150,10 +148,10 @@ describe("Personalization::createInteractionStorage", () => {
         {
           id: proposition.id,
           scope: proposition.scope,
-          scopeDetails: proposition.scopeDetails
+          scopeDetails: proposition.scopeDetails,
         },
-        interactIDs[item.data.selector]
-      )
+        interactIDs[item.data.selector],
+      ),
     );
 
     const meta = getInteractionMetas(interactIDs["div:123:h2"]);
@@ -166,15 +164,15 @@ describe("Personalization::createInteractionStorage", () => {
       scopeDetails: {
         test: "blah1",
         characteristics: {
-          scopeType: "page"
-        }
+          scopeType: "page",
+        },
       },
       scopeType: "page",
       items: [
         {
-          id: "0632668e-53a4-4f31-b092-45696e45829d"
-        }
-      ]
+          id: "0632668e-53a4-4f31-b092-45696e45829d",
+        },
+      ],
     });
   });
 });

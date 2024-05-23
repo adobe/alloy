@@ -9,19 +9,22 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS } from "../responsesMock/eventResponses";
+import { PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS } from "../responsesMock/eventResponses.js";
 
-import buildMocks from "./buildMocks";
-import buildAlloy from "./buildAlloy";
-import pause from "../../../../helpers/pause";
+import buildMocks from "./buildMocks.js";
+import buildAlloy from "./buildAlloy.js";
+import pause from "../../../../helpers/pause.js";
 
 describe("PersonalizationComponent", () => {
   it("PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS", async () => {
     const mocks = buildMocks(PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS);
     const alloy = buildAlloy(mocks);
-    const { event, result } = await alloy.sendEvent({
-      renderDecisions: true
-    });
+    const { event, result } = await alloy.sendEvent(
+      {
+        renderDecisions: true,
+      },
+      PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
+    );
     expect(event.toJSON()).toEqual({
       query: {
         personalization: {
@@ -33,12 +36,12 @@ describe("PersonalizationComponent", () => {
             "https://ns.adobe.com/personalization/ruleset-item",
             "https://ns.adobe.com/personalization/message/in-app",
             "https://ns.adobe.com/personalization/message/feed-item",
-            "https://ns.adobe.com/personalization/dom-action"
+            "https://ns.adobe.com/personalization/dom-action",
           ],
           decisionScopes: ["__view__"],
-          surfaces: ["web://example.com/home"]
-        }
-      }
+          surfaces: ["web://example.com/home"],
+        },
+      },
     });
     expect(result).toEqual({
       propositions: [
@@ -52,25 +55,25 @@ describe("PersonalizationComponent", () => {
               data: {
                 type: "setHtml",
                 selector: "#foo",
-                content: "<div>Hola Mundo</div>"
-              }
+                content: "<div>Hola Mundo</div>",
+              },
             },
             {
               schema: "https://ns.adobe.com/personalization/dom-action",
               data: {
                 type: "setHtml",
                 selector: "#foo2",
-                content: "<div>here is a target activity</div>"
-              }
+                content: "<div>here is a target activity</div>",
+              },
             },
             {
               schema:
-                "https://ns.adobe.com/personalization/default-content-item"
-            }
+                "https://ns.adobe.com/personalization/default-content-item",
+            },
           ],
           scopeDetails: {
-            blah: "test"
-          }
+            blah: "test",
+          },
         },
         {
           renderAttempted: true,
@@ -82,45 +85,45 @@ describe("PersonalizationComponent", () => {
               data: {
                 type: "setHtml",
                 selector: "#foo",
-                content: "<div>Hola Mundo</div>"
-              }
+                content: "<div>Hola Mundo</div>",
+              },
             },
             {
               schema: "https://ns.adobe.com/personalization/dom-action",
               data: {
                 type: "setHtml",
                 selector: "#foo2",
-                content: "<div>here is a target activity</div>"
-              }
+                content: "<div>here is a target activity</div>",
+              },
             },
             {
               schema:
-                "https://ns.adobe.com/personalization/default-content-item"
-            }
+                "https://ns.adobe.com/personalization/default-content-item",
+            },
           ],
           scopeDetails: {
-            decisionProvider: "AJO"
-          }
-        }
+            decisionProvider: "AJO",
+          },
+        },
       ],
-      decisions: []
+      decisions: [],
     });
 
     expect(mocks.actions.setHtml).toHaveBeenCalledWith(
       "#foo",
-      "<div>Hola Mundo</div>"
+      "<div>Hola Mundo</div>",
     );
     expect(mocks.actions.setHtml).toHaveBeenCalledWith(
       "#foo2",
-      "<div>here is a target activity</div>"
+      "<div>here is a target activity</div>",
     );
     expect(mocks.actions.setHtml).toHaveBeenCalledWith(
       "#foo",
-      "<div>Hola Mundo</div>"
+      "<div>Hola Mundo</div>",
     );
     expect(mocks.actions.setHtml).toHaveBeenCalledWith(
       "#foo2",
-      "<div>here is a target activity</div>"
+      "<div>here is a target activity</div>",
     );
     expect(mocks.actions.setHtml).toHaveBeenCalledTimes(4);
     expect(mocks.logger.warn).not.toHaveBeenCalled();
@@ -137,24 +140,43 @@ describe("PersonalizationComponent", () => {
                 id: "TNT:activity1:experience1",
                 scope: "__view__",
                 scopeDetails: {
-                  blah: "test"
-                }
+                  blah: "test",
+                },
               },
               {
                 id: "AJO:campaign1:message1",
                 scope: "web://alloy.test.com/test/page/1",
                 scopeDetails: {
-                  decisionProvider: "AJO"
-                }
-              }
+                  decisionProvider: "AJO",
+                },
+              },
             ],
             propositionEventType: {
-              display: 1
-            }
-          }
+              display: 1,
+            },
+          },
         },
-        eventType: "decisioning.propositionDisplay"
-      }
+        eventType: "decisioning.propositionDisplay",
+      },
     });
+    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
+      "#foo",
+      "<div>Hola Mundo</div>",
+    );
+    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
+      "#foo2",
+      "<div>here is a target activity</div>",
+    );
+    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
+      "#foo",
+      "<div>Hola Mundo</div>",
+    );
+    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
+      "#foo2",
+      "<div>here is a target activity</div>",
+    );
+    expect(mocks.actions.setHtml).toHaveBeenCalledTimes(4);
+    expect(mocks.logger.warn).not.toHaveBeenCalled();
+    expect(mocks.logger.error).not.toHaveBeenCalled();
   });
 });

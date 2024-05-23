@@ -11,7 +11,11 @@ governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
 
-const responseStatus = async (networkLogs, status) => {
+const responseStatus = async (networkLogs, statuses) => {
+  if (!Array.isArray(statuses)) {
+    statuses = [statuses];
+  }
+
   for (let i = 0; i < networkLogs.length; i += 1) {
     const req = networkLogs[i];
     // TODO: Check why some requests don't have responses.
@@ -19,12 +23,8 @@ const responseStatus = async (networkLogs, status) => {
     if (req.response) {
       // eslint-disable-next-line no-await-in-loop
       await t
-        .expect(
-          Array.isArray(status)
-            ? status.includes(req.response.statusCode)
-            : req.response.statusCode === status
-        )
-        .ok(`expected ${status} to be found in ${req.response.statusCode}`);
+        .expect(statuses.includes(req.response.statusCode))
+        .ok(`expected ${statuses} to be found in ${req.response.statusCode}`);
     }
   }
 };

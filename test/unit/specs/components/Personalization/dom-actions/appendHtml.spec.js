@@ -12,17 +12,17 @@ governing permissions and limitations under the License.
 import {
   appendNode,
   createNode,
-  selectNodes
-} from "../../../../../../src/utils/dom";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+  selectNodes,
+} from "../../../../../../src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 import {
   CLICK_LABEL_DATA_ATTRIBUTE,
-  INTERACT_ID_DATA_ATTRIBUTE
-} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
-import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
-import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
-import { DOM_ACTION_APPEND_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
+  INTERACT_ID_DATA_ATTRIBUTE,
+} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import { DOM_ACTION_APPEND_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::appendHtml", () => {
   let decorateProposition;
@@ -30,7 +30,7 @@ describe("Personalization::actions::appendHtml", () => {
   beforeEach(() => {
     cleanUpDomChanges("appendHtml");
     decorateProposition = createDecoratePropositionForTest({
-      type: DOM_ACTION_APPEND_HTML
+      type: DOM_ACTION_APPEND_HTML,
     });
   });
 
@@ -44,7 +44,7 @@ describe("Personalization::actions::appendHtml", () => {
     const element = createNode(
       "ul",
       { id: "appendHtml" },
-      { innerHTML: "<li>1</li>" }
+      { innerHTML: "<li>1</li>" },
     );
 
     appendNode(document.body, element);
@@ -53,7 +53,7 @@ describe("Personalization::actions::appendHtml", () => {
       selector: "#appendHtml",
       prehidingSelector: "#appendHtml",
       content: `<li>2</li><li>3</li>`,
-      meta: { a: 1 }
+      meta: { a: 1 },
     };
 
     return appendHtml(settings, decorateProposition).then(() => {
@@ -65,7 +65,7 @@ describe("Personalization::actions::appendHtml", () => {
       expect(result[2].innerHTML).toEqual("3");
 
       expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
-        "trackingLabel"
+        "trackingLabel",
       );
       expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
     });

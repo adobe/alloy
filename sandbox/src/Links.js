@@ -6,8 +6,8 @@ const adobeLink = () => {
   window.alloy("sendEvent", {
     documentUnloading: true,
     xdm: {
-      "activitystreams:href": "http://www.adobe.com"
-    }
+      "activitystreams:href": "http://www.adobe.com",
+    },
   });
 };
 

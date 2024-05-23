@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { ClientFunction } from "testcafe";
 
-export default ClientFunction(approved => {
+export default ClientFunction((approved) => {
   window.adobe = {
     optIn: {
       fetchPermissions(callback) {
@@ -24,8 +24,8 @@ export default ClientFunction(approved => {
         return approved;
       },
       Categories: {
-        ECID: "ecid"
-      }
-    }
+        ECID: "ecid",
+      },
+    },
   };
 });

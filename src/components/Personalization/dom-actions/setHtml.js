@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { removeNode } from "../../../utils/dom";
-import { getChildNodes } from "./dom";
-import appendHtml from "./appendHtml";
+import { removeNode } from "../../../utils/dom/index.js";
+import { getChildNodes } from "./dom/index.js";
+import appendHtml from "./appendHtml.js";
 
-const clear = container => {
+const clear = (container) => {
   // We want to remove ALL nodes, text, comments etc
   const childNodes = getChildNodes(container);
 

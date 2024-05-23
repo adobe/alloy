@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createClickStorage from "../../../../../src/components/Personalization/createClickStorage";
+import createClickStorage from "../../../../../src/components/Personalization/createClickStorage.js";
 
 describe("Personalization::createClickStorage", () => {
   let clickStorage;
@@ -20,11 +20,11 @@ describe("Personalization::createClickStorage", () => {
       id: "AT:123",
       scope: "__view__",
       scopeDetails: {
-        test: "blah1"
+        test: "blah1",
       },
       trackingLabel: "mylabel",
-      scopeType: "myscopetype"
-    }
+      scopeType: "myscopetype",
+    },
   };
   const SECOND_CLICK = {
     selector: "div:123:h2",
@@ -32,9 +32,9 @@ describe("Personalization::createClickStorage", () => {
       id: "AT:123",
       scope: "consent",
       scopeDetails: {
-        test: "blah3"
-      }
-    }
+        test: "blah3",
+      },
+    },
   };
   const THIRD_CLICK = {
     selector: "div:123:h2",
@@ -42,9 +42,9 @@ describe("Personalization::createClickStorage", () => {
       id: "AT:234",
       scope: "consent",
       scopeDetails: {
-        test: "blah4"
-      }
-    }
+        test: "blah4",
+      },
+    },
   };
   const FORTH_CLICK = {
     selector: "div:123:h1",
@@ -52,9 +52,9 @@ describe("Personalization::createClickStorage", () => {
       id: "AT:123",
       scope: "consent",
       scopeDetails: {
-        test: "blah5"
-      }
-    }
+        test: "blah5",
+      },
+    },
   };
 
   /*  this is how the clickStorage map should look like
@@ -116,7 +116,7 @@ describe("Personalization::createClickStorage", () => {
       scope: "__view__",
       scopeDetails: { test: "blah1" },
       trackingLabel: "mylabel",
-      scopeType: "myscopetype"
+      scopeType: "myscopetype",
     });
   });
 });

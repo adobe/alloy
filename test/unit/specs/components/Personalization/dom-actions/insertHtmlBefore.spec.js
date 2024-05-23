@@ -12,17 +12,17 @@ governing permissions and limitations under the License.
 import {
   appendNode,
   createNode,
-  selectNodes
-} from "../../../../../../src/utils/dom";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+  selectNodes,
+} from "../../../../../../src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 import {
   CLICK_LABEL_DATA_ATTRIBUTE,
-  INTERACT_ID_DATA_ATTRIBUTE
-} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
-import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
-import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
-import { DOM_ACTION_INSERT_BEFORE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
+  INTERACT_ID_DATA_ATTRIBUTE,
+} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import { DOM_ACTION_INSERT_BEFORE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::insertBefore", () => {
   let decorateProposition;
@@ -30,7 +30,7 @@ describe("Personalization::actions::insertBefore", () => {
   beforeEach(() => {
     cleanUpDomChanges("insertBefore");
     decorateProposition = createDecoratePropositionForTest({
-      type: DOM_ACTION_INSERT_BEFORE
+      type: DOM_ACTION_INSERT_BEFORE,
     });
   });
 
@@ -44,7 +44,7 @@ describe("Personalization::actions::insertBefore", () => {
     const child = createNode(
       "div",
       { id: "a", class: "ib" },
-      { innerHTML: "AAA" }
+      { innerHTML: "AAA" },
     );
     const element = createNode("div", { id: "insertBefore" }, {}, [child]);
 
@@ -54,25 +54,25 @@ describe("Personalization::actions::insertBefore", () => {
       selector: "#a",
       prehidingSelector: "#a",
       content: `<div id="b" class="ib">BBB</div>`,
-      meta: { a: 1 }
+      meta: { a: 1 },
     };
 
     return insertBefore(settings, decorateProposition).then(() => {
       const [insertedElement, existingElement] = selectNodes(
-        "div#insertBefore .ib"
+        "div#insertBefore .ib",
       );
 
       expect(insertedElement.innerHTML).toEqual("BBB");
       expect(getAttribute(insertedElement, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
-        "trackingLabel"
+        "trackingLabel",
       );
       expect(
-        getAttribute(insertedElement, INTERACT_ID_DATA_ATTRIBUTE)
+        getAttribute(insertedElement, INTERACT_ID_DATA_ATTRIBUTE),
       ).not.toBeNull();
 
       expect(existingElement.innerHTML).toEqual("AAA");
       expect(
-        getAttribute(existingElement, INTERACT_ID_DATA_ATTRIBUTE)
+        getAttribute(existingElement, INTERACT_ID_DATA_ATTRIBUTE),
       ).toBeNull();
     });
   });

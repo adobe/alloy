@@ -14,11 +14,11 @@ governing permissions and limitations under the License.
 // like the launch extension. Everything that is exported here can be used independently by other
 // npm projects.
 
-import { createExecuteCommand } from "./core";
-import createLogger from "./core/createLogger";
-import createLogController from "./core/createLogController";
-import { injectStorage } from "./utils";
-import { arrayOf, objectOf, string } from "./utils/validation";
+import { createExecuteCommand } from "./core/index.js";
+import createLogger from "./core/createLogger.js";
+import createLogController from "./core/createLogController.js";
+import { injectStorage } from "./utils/index.js";
+import { arrayOf, objectOf, string } from "./utils/validation/index.js";
 
 const { console } = window;
 const createNamespacedStorage = injectStorage(window);
@@ -26,7 +26,7 @@ const createNamespacedStorage = injectStorage(window);
 export const createInstance = (options = {}) => {
   const eventOptionsValidator = objectOf({
     name: string().default("alloy"),
-    monitors: arrayOf(objectOf({})).default([])
+    monitors: arrayOf(objectOf({})).default([]),
   }).noUnknownFields();
   const { name, monitors } = eventOptionsValidator(options);
 
@@ -39,7 +39,7 @@ export const createInstance = (options = {}) => {
     createLogger,
     instanceName: name,
     createNamespacedStorage,
-    getMonitors
+    getMonitors,
   });
   const instance = createExecuteCommand({ instanceName: name, logController });
   logController.logger.logOnInstanceCreated({ instance });

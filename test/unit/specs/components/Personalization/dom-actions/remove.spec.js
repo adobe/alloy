@@ -12,12 +12,12 @@ governing permissions and limitations under the License.
 import {
   appendNode,
   createNode,
-  selectNodes
-} from "../../../../../../src/utils/dom";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
-import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
-import { DOM_ACTION_REMOVE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
+  selectNodes,
+} from "../../../../../../src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import { DOM_ACTION_REMOVE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::remove", () => {
   let decorateProposition;
@@ -25,7 +25,7 @@ describe("Personalization::actions::remove", () => {
   beforeEach(() => {
     cleanUpDomChanges("remove");
     decorateProposition = createDecoratePropositionForTest({
-      type: DOM_ACTION_REMOVE
+      type: DOM_ACTION_REMOVE,
     });
   });
 
@@ -44,7 +44,7 @@ describe("Personalization::actions::remove", () => {
     const settings = {
       selector: "#remove",
       prehidingSelector: "#remove",
-      meta: { a: 1 }
+      meta: { a: 1 },
     };
 
     return remove(settings, decorateProposition).then(() => {

@@ -7,7 +7,7 @@ export default function RedirectOffers() {
   useEffect(() => {
     window
       .alloy("sendEvent", {
-        renderDecisions: true
+        renderDecisions: true,
       })
       .then(({ decisions = [] }) => {
         console.log("personalized decisions", decisions);

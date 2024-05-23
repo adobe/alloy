@@ -10,24 +10,24 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../../helpers/networkLogger";
-import { responseStatus } from "../../../helpers/assertions/index";
-import createFixture from "../../../helpers/createFixture";
-import createResponse from "../../../helpers/createResponse";
-import getResponseBody from "../../../helpers/networkLogger/getResponseBody";
-import cookies from "../../../helpers/cookies";
+import createNetworkLogger from "../../../helpers/networkLogger/index.js";
+import { responseStatus } from "../../../helpers/assertions/index.js";
+import createFixture from "../../../helpers/createFixture/index.js";
+import createResponse from "../../../helpers/createResponse.js";
+import getResponseBody from "../../../helpers/networkLogger/getResponseBody.js";
+import cookies from "../../../helpers/cookies.js";
 import {
   compose,
   orgMainConfigMain,
   consentPending,
-  debugEnabled
-} from "../../../helpers/constants/configParts";
-import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies";
-import createAlloyProxy from "../../../helpers/createAlloyProxy";
+  debugEnabled,
+} from "../../../helpers/constants/configParts/index.js";
+import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies.js";
+import createAlloyProxy from "../../../helpers/createAlloyProxy.js";
 import {
   IAB_NO_PURPOSE_ONE,
-  IAB_NO_ADOBE_VENDOR
-} from "../../../helpers/constants/consent";
+  IAB_NO_ADOBE_VENDOR,
+} from "../../../helpers/constants/consent.js";
 
 const config = compose(orgMainConfigMain, consentPending, debugEnabled);
 
@@ -37,17 +37,17 @@ createFixture({
   title: "C224671: Opt out of IAB using the setConsent command.",
   requestHooks: [
     networkLogger.setConsentEndpointLogs,
-    networkLogger.edgeEndpointLogs
-  ]
+    networkLogger.edgeEndpointLogs,
+  ],
 });
 
 test.meta({
   ID: "C224671",
   SEVERITY: "P0",
-  TEST_RUN: "REGRESSION"
+  TEST_RUN: "REGRESSION",
 });
 
-[IAB_NO_PURPOSE_ONE, IAB_NO_ADOBE_VENDOR].forEach(consent => {
+[IAB_NO_PURPOSE_ONE, IAB_NO_ADOBE_VENDOR].forEach((consent) => {
   test("Test C224671: Opt out of IAB - No Purpose 1 & No Vendor", async () => {
     const alloy = createAlloyProxy();
     await alloy.configure(config);
@@ -57,7 +57,7 @@ test.meta({
     await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
     const consentRawResponse = JSON.parse(
-      getResponseBody(networkLogger.setConsentEndpointLogs.requests[0])
+      getResponseBody(networkLogger.setConsentEndpointLogs.requests[0]),
     );
 
     const consentResponse = createResponse({ content: consentRawResponse });

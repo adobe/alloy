@@ -44,7 +44,7 @@ export default () => {
     itemId,
     scopeType,
     notification,
-    interactId
+    interactId,
   ) => {
     // eslint-disable-next-line no-param-reassign
     interactId = parseInt(interactId, 10);
@@ -62,44 +62,44 @@ export default () => {
 
     clickMetaStorage[interactId][propositionId] = {
       ...notification,
-      scopeType
+      scopeType,
     };
   };
 
-  const getInteractionMetas = interactIds => {
+  const getInteractionMetas = (interactIds) => {
     if (!Array.isArray(interactIds) || interactIds.length === 0) {
       return [];
     }
 
     return Object.values(
       interactIds
-        .map(value => parseInt(value, 10))
+        .map((value) => parseInt(value, 10))
         .reduce((metaMap, interactId) => {
           Object.keys(clickMetaStorage[interactId] || {}).forEach(
-            propositionId => {
+            (propositionId) => {
               if (!metaMap[propositionId]) {
                 metaMap[propositionId] = {
                   proposition: clickMetaStorage[interactId][propositionId],
-                  items: new Set()
+                  items: new Set(),
                 };
               }
 
               metaMap[propositionId].items = new Set([
                 ...metaMap[propositionId].items,
-                ...clickItemStorage[interactId][propositionId]
+                ...clickItemStorage[interactId][propositionId],
               ]);
-            }
+            },
           );
           return metaMap;
-        }, {})
+        }, {}),
     ).map(({ proposition, items }) => ({
       ...proposition,
-      items: Array.from(items).map(id => ({ id }))
+      items: Array.from(items).map((id) => ({ id })),
     }));
   };
 
   return {
     storeInteractionMeta,
-    getInteractionMetas
+    getInteractionMetas,
   };
 };

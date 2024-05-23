@@ -10,9 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { appendNode, createNode } from "../../../../../../../src/utils/dom";
-import cleanUpDomChanges from "../../../../../helpers/cleanUpDomChanges";
-import isDomElement from "../../../../../../../src/components/Personalization/dom-actions/dom/isDomElement";
+import {
+  appendNode,
+  createNode,
+} from "../../../../../../../src/utils/dom/index.js";
+import cleanUpDomChanges from "../../../../../helpers/cleanUpDomChanges.js";
+import isDomElement from "../../../../../../../src/components/Personalization/dom-actions/dom/isDomElement.js";
 
 describe("Personalization::DOM::isDomElement", () => {
   const testElementId = "superfluous123";
@@ -20,7 +23,7 @@ describe("Personalization::DOM::isDomElement", () => {
   beforeEach(() => {
     const element = createNode("div", {
       id: testElementId,
-      class: `test-element-${testElementId}`
+      class: `test-element-${testElementId}`,
     });
     element.innerHTML = "test element";
     appendNode(document.body, element);

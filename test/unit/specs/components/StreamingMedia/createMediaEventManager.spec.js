@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 // tests for createMediaEventManager.js
 
-import createMediaEventManager from "../../../../../src/components/StreamingMedia/createMediaEventManager";
+import createMediaEventManager from "../../../../../src/components/StreamingMedia/createMediaEventManager.js";
 
 describe("StreamingMedia::createMediaEventManager", () => {
   let config;
@@ -27,12 +27,12 @@ describe("StreamingMedia::createMediaEventManager", () => {
       streamingMedia: {
         playerName: "player1",
         channel: "channel1",
-        version: "1.0.0"
-      }
+        version: "1.0.0",
+      },
     };
     eventManager = jasmine.createSpyObj("eventManager", [
       "createEvent",
-      "sendEvent"
+      "sendEvent",
     ]);
     consent = jasmine.createSpyObj("consent", ["awaitConsent"]);
     sendEdgeNetworkRequest = jasmine
@@ -44,7 +44,7 @@ describe("StreamingMedia::createMediaEventManager", () => {
       eventManager,
       consent,
       sendEdgeNetworkRequest,
-      setTimestamp
+      setTimestamp,
     });
   });
 
@@ -52,7 +52,7 @@ describe("StreamingMedia::createMediaEventManager", () => {
     const options = { xdm: {} };
     const event = {
       setUserXdm: jasmine.createSpy("setUserXdm"),
-      toJSON: () => ({ a: 1 })
+      toJSON: () => ({ a: 1 }),
     };
 
     eventManager.createEvent.and.returnValue(event);
@@ -69,15 +69,15 @@ describe("StreamingMedia::createMediaEventManager", () => {
           playerName: "player1",
           channel: "channel1",
           version: "1.0.0",
-          sessionDetails: {}
-        }
-      }
+          sessionDetails: {},
+        },
+      },
     };
 
     const event = {
       setUserXdm: jasmine.createSpy("setUserXdm"),
       mergeXdm: jasmine.createSpy("mergeXdm"),
-      toJSON: () => ({ a: 1 })
+      toJSON: () => ({ a: 1 }),
     };
 
     eventManager.createEvent.and.returnValue(event);
@@ -89,14 +89,14 @@ describe("StreamingMedia::createMediaEventManager", () => {
 
   it("should augment media event with playhead, qoeDataDetails, and sessionID", () => {
     const event = {
-      mergeXdm: jasmine.createSpy("mergeXdm")
+      mergeXdm: jasmine.createSpy("mergeXdm"),
     };
     const playerId = "player1";
     const getPlayerDetails = jasmine
       .createSpy("getPlayerDetails")
       .and.returnValue({
         playhead: 10,
-        qoeDataDetails: { duration: 60 }
+        qoeDataDetails: { duration: 60 },
       });
     const sessionID = "session1";
 
@@ -104,7 +104,7 @@ describe("StreamingMedia::createMediaEventManager", () => {
       event,
       playerId,
       getPlayerDetails,
-      sessionID
+      sessionID,
     });
 
     expect(result).toBe(event);
@@ -113,8 +113,8 @@ describe("StreamingMedia::createMediaEventManager", () => {
       mediaCollection: {
         playhead: 10,
         qoeDataDetails: { duration: 60 },
-        sessionID: "session1"
-      }
+        sessionID: "session1",
+      },
     });
   });
 
@@ -126,10 +126,10 @@ describe("StreamingMedia::createMediaEventManager", () => {
 
     mediaEventManager.trackMediaSession({
       event,
-      mediaOptions
+      mediaOptions,
     });
     expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
-      mediaOptions
+      mediaOptions,
     });
   });
 

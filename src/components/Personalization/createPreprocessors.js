@@ -9,12 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { DOM_ACTION } from "../../constants/schema";
-import remapHeadOffers from "./dom-actions/remapHeadOffers";
-import remapCustomCodeOffers from "./dom-actions/remapCustomCodeOffers";
+import { DOM_ACTION } from "../../constants/schema.js";
+import remapHeadOffers from "./dom-actions/remapHeadOffers.js";
+import remapCustomCodeOffers from "./dom-actions/remapCustomCodeOffers.js";
 
 export default () => {
   return {
-    [DOM_ACTION]: [remapHeadOffers, remapCustomCodeOffers]
+    [DOM_ACTION]: [remapHeadOffers, remapCustomCodeOffers],
   };
 };

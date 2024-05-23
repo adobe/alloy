@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createComponent from "../../../../../src/components/Identity/createComponent";
-import { defer } from "../../../../../src/utils";
-import flushPromiseChains from "../../../helpers/flushPromiseChains";
+import createComponent from "../../../../../src/components/Identity/createComponent.js";
+import { defer } from "../../../../../src/utils/index.js";
+import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 describe("Identity::createComponent", () => {
   let ensureSingleIdentity;
@@ -36,7 +36,7 @@ describe("Identity::createComponent", () => {
     ensureSingleIdentity = jasmine.createSpy("ensureSingleIdentity");
     addEcidQueryToPayload = jasmine.createSpy("addEcidQueryToPayload");
     addQueryStringIdentityToPayload = jasmine.createSpy(
-      "addQueryStringIdentityToPayload"
+      "addQueryStringIdentityToPayload",
     );
     setLegacyEcid = jasmine.createSpy("setLegacyEcid");
     handleResponseForIdSyncs = jasmine.createSpy("handleResponseForIdSyncs");
@@ -46,7 +46,7 @@ describe("Identity::createComponent", () => {
     withConsentDeferred = defer();
     consent = jasmine.createSpyObj("consent", {
       awaitConsent: awaitConsentDeferred.promise,
-      withConsent: withConsentDeferred.promise
+      withConsent: withConsentDeferred.promise,
     });
     appendIdentityToUrl = jasmine.createSpy("appendIdentityToUrl");
     logger = jasmine.createSpyObj("logger", ["warn"]);
@@ -54,7 +54,7 @@ describe("Identity::createComponent", () => {
       .createSpy("getIdentity")
       .and.returnValue(getIdentityDeferred.promise);
     config = {
-      edgeConfigOverrides: {}
+      edgeConfigOverrides: {},
     };
     component = createComponent({
       ensureSingleIdentity,
@@ -67,7 +67,7 @@ describe("Identity::createComponent", () => {
       consent,
       appendIdentityToUrl,
       logger,
-      config
+      config,
     });
     response = jasmine.createSpyObj("response", ["getEdge"]);
   });
@@ -77,7 +77,7 @@ describe("Identity::createComponent", () => {
     const request = {
       getPayload() {
         return payload;
-      }
+      },
     };
     const onResponse = jasmine.createSpy("onResponse");
     component.lifecycle.onBeforeRequest({ request, onResponse });
@@ -89,7 +89,7 @@ describe("Identity::createComponent", () => {
     const request = {
       getPayload() {
         return payload;
-      }
+      },
     };
     component.lifecycle.onBeforeRequest({ request });
     expect(addQueryStringIdentityToPayload).toHaveBeenCalledOnceWith(payload);
@@ -100,7 +100,7 @@ describe("Identity::createComponent", () => {
     const request = {
       getPayload() {
         return payload;
-      }
+      },
     };
     const onResponse = jasmine.createSpy("onResponse");
     const onRequestFailure = jasmine.createSpy("onRequestFailure");
@@ -109,12 +109,12 @@ describe("Identity::createComponent", () => {
     const result = component.lifecycle.onBeforeRequest({
       request,
       onResponse,
-      onRequestFailure
+      onRequestFailure,
     });
     expect(ensureSingleIdentity).toHaveBeenCalledWith({
       request,
       onResponse,
-      onRequestFailure
+      onRequestFailure,
     });
     expect(result).toBe(ensureSingleIdentityPromise);
   });
@@ -174,11 +174,11 @@ describe("Identity::createComponent", () => {
       .then(() => {
         expect(onResolved).toHaveBeenCalledWith({
           identity: {
-            ECID: "user@adobe"
+            ECID: "user@adobe",
           },
           edge: {
-            regionId: 42
-          }
+            regionId: 42,
+          },
         });
       });
   });
@@ -202,11 +202,11 @@ describe("Identity::createComponent", () => {
         expect(getIdentity).not.toHaveBeenCalled();
         expect(onResolved).toHaveBeenCalledWith({
           identity: {
-            ECID: "user@adobe"
+            ECID: "user@adobe",
           },
           edge: {
-            regionId: 7
-          }
+            regionId: 7,
+          },
         });
       });
   });
@@ -220,9 +220,9 @@ describe("Identity::createComponent", () => {
       namespaces: ["ECID"],
       edgeConfigOverrides: {
         com_adobe_identity: {
-          idSyncContainerId: "123"
-        }
-      }
+          idSyncContainerId: "123",
+        },
+      },
     };
     component.commands.getIdentity.run(getIdentityOptions).then(onResolved);
 
@@ -243,25 +243,25 @@ describe("Identity::createComponent", () => {
       .then(() => {
         expect(onResolved).toHaveBeenCalledWith({
           identity: {
-            ECID: "user@adobe"
+            ECID: "user@adobe",
           },
           edge: {
-            regionId: 42
-          }
+            regionId: 42,
+          },
         });
       });
   });
 
   it("appendIdentityToUrl should return the unmodified url when consent is not given.", () => {
     const commandPromise = component.commands.appendIdentityToUrl.run({
-      url: "myurl"
+      url: "myurl",
     });
     withConsentDeferred.reject(new Error("My consent error."));
     return expectAsync(commandPromise)
       .toBeResolvedTo({ url: "myurl" })
       .then(() => {
         expect(logger.warn).toHaveBeenCalledWith(
-          "Unable to append identity to url. My consent error."
+          "Unable to append identity to url. My consent error.",
         );
         expect(getIdentity).not.toHaveBeenCalled();
         expect(appendIdentityToUrl).not.toHaveBeenCalled();
@@ -270,7 +270,7 @@ describe("Identity::createComponent", () => {
 
   it("appendIdentityToUrl should return the unmodified url when getIdentity returns an error.", () => {
     const commandPromise = component.commands.appendIdentityToUrl.run({
-      url: "myurl"
+      url: "myurl",
     });
     withConsentDeferred.resolve();
     getIdentityDeferred.reject(new Error("My getIdentity error."));
@@ -278,7 +278,7 @@ describe("Identity::createComponent", () => {
       .toBeResolvedTo({ url: "myurl" })
       .then(() => {
         expect(logger.warn).toHaveBeenCalledOnceWith(
-          "Unable to append identity to url. My getIdentity error."
+          "Unable to append identity to url. My getIdentity error.",
         );
         expect(appendIdentityToUrl).not.toHaveBeenCalled();
       });
@@ -303,7 +303,7 @@ describe("Identity::createComponent", () => {
       })
       .then(() => {
         expect(getIdentity).toHaveBeenCalledWith(
-          jasmine.objectContaining({ namespaces: ["ECID"] })
+          jasmine.objectContaining({ namespaces: ["ECID"] }),
         );
         getEcidFromResponse.and.returnValue("user@adobe");
         component.lifecycle.onResponse({ response });
@@ -314,7 +314,7 @@ describe("Identity::createComponent", () => {
         expect(logger.warn).not.toHaveBeenCalled();
         expect(appendIdentityToUrl).toHaveBeenCalledOnceWith(
           "user@adobe",
-          "myurl"
+          "myurl",
         );
       });
   });
@@ -329,7 +329,7 @@ describe("Identity::createComponent", () => {
 
     appendIdentityToUrl.and.returnValue("modifiedUrl");
     const commandPromise = component.commands.appendIdentityToUrl.run({
-      url: "myurl"
+      url: "myurl",
     });
     withConsentDeferred.resolve();
 
@@ -344,8 +344,8 @@ describe("Identity::createComponent", () => {
     response.getEdge.and.returnValue({ regionId: 42 });
     const edgeConfigOverrides = {
       com_adobe_identity: {
-        idSyncContainerId: "123"
-      }
+        idSyncContainerId: "123",
+      },
     };
     component.commands.appendIdentityToUrl
       .run({ namespaces: ["ECID"], url: "myurl", edgeConfigOverrides })
@@ -362,8 +362,8 @@ describe("Identity::createComponent", () => {
         expect(getIdentity).toHaveBeenCalledWith(
           jasmine.objectContaining({
             namespaces: ["ECID"],
-            edgeConfigOverrides
-          })
+            edgeConfigOverrides,
+          }),
         );
         getEcidFromResponse.and.returnValue("user@adobe");
         component.lifecycle.onResponse({ response });
@@ -374,7 +374,7 @@ describe("Identity::createComponent", () => {
         expect(logger.warn).not.toHaveBeenCalled();
         expect(appendIdentityToUrl).toHaveBeenCalledOnceWith(
           "user@adobe",
-          "myurl"
+          "myurl",
         );
       });
   });

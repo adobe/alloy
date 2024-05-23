@@ -10,20 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import { responseStatus } from "../../helpers/assertions";
-import createFixture from "../../helpers/createFixture";
-import createResponse from "../../helpers/createResponse";
-import { ECID as ECID_REGEX } from "../../helpers/constants/regex";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import createResponse from "../../helpers/createResponse.js";
+import { ECID as ECID_REGEX } from "../../helpers/constants/regex.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  migrationDisabled
-} from "../../helpers/constants/configParts";
-import setLegacyIdentityCookie from "../../helpers/setLegacyIdentityCookie";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+  migrationDisabled,
+} from "../../helpers/constants/configParts/index.js";
+import setLegacyIdentityCookie from "../../helpers/setLegacyIdentityCookie.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const config = compose(orgMainConfigMain, debugEnabled, migrationDisabled);
 
@@ -32,13 +32,13 @@ const networkLogger = createNetworkLogger();
 createFixture({
   title:
     "C14401: When ID migration is disabled and no identity cookie is found but legacy identity cookie is found, the ECID will not be sent on the request",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C14401",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C14401: When ID migration is disabled and no identity cookie is found but legacy identity cookie is found, the ECID will not be sent on the request", async () => {
@@ -50,21 +50,21 @@ test("Test C14401: When ID migration is disabled and no identity cookie is found
   await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   const request = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body
+    networkLogger.edgeEndpointLogs.requests[0].request.body,
   );
 
   await t.expect(request.xdm).eql(undefined);
 
   const response = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
   );
 
   const payloads = createResponse({ content: response }).getPayloadsByType(
-    "identity:result"
+    "identity:result",
   );
 
   const ecidPayload = payloads.filter(
-    payload => payload.namespace.code === "ECID"
+    (payload) => payload.namespace.code === "ECID",
   )[0];
 
   await t.expect(ecidPayload.id).match(ECID_REGEX);

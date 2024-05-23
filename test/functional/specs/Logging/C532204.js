@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { ClientFunction } from "testcafe";
-import createFixture from "../../helpers/createFixture";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled);
 
@@ -27,22 +27,22 @@ const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled);
  * scenarios and makes sure the logged objects can be stringified
  */
 createFixture({
-  title: "C532204: Logged objects can be stringified"
+  title: "C532204: Logged objects can be stringified",
 });
 
 test.meta({
   ID: "C532204",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const setupLogger = ClientFunction(() => {
-  ["log", "info", "warn", "error"].forEach(methodName => {
+  ["log", "info", "warn", "error"].forEach((methodName) => {
     // eslint-disable-next-line no-console
     const origConsoleMethod = console[methodName];
     // eslint-disable-next-line no-console
     console[methodName] = (...args) => {
-      args.forEach(arg => {
+      args.forEach((arg) => {
         String(arg);
       });
       origConsoleMethod.apply(console, args);

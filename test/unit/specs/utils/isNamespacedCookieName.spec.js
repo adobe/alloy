@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNamespacedCookieName from "../../../../src/utils/isNamespacedCookieName";
+import isNamespacedCookieName from "../../../../src/utils/isNamespacedCookieName.js";
 
 describe("isNamespacedCookieName", () => {
   it("returns true if it's a namespaced cookie name", () => {
     const result = isNamespacedCookieName(
       "ABC@CustomOrg",
-      "kndctr_ABC_CustomOrg_foo"
+      "kndctr_ABC_CustomOrg_foo",
     );
     expect(result).toBeTrue();
   });
@@ -24,7 +24,7 @@ describe("isNamespacedCookieName", () => {
   it("returns false if it's not a namespaced cookie name", () => {
     const result = isNamespacedCookieName(
       "kndctr_DEF_CustomOrg_foo",
-      "ABC@CustomOrg"
+      "ABC@CustomOrg",
     );
     expect(result).toBeFalse();
   });

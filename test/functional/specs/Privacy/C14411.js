@@ -9,28 +9,28 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createFixture from "../../helpers/createFixture";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  consentPending
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import { CONSENT_OUT } from "../../helpers/constants/consent";
-import { MAIN_CONSENT_COOKIE_NAME } from "../../helpers/constants/cookies";
-import cookies from "../../helpers/cookies";
-import reloadPage from "../../helpers/reloadPage";
+  consentPending,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import { CONSENT_OUT } from "../../helpers/constants/consent.js";
+import { MAIN_CONSENT_COOKIE_NAME } from "../../helpers/constants/cookies.js";
+import cookies from "../../helpers/cookies.js";
+import reloadPage from "../../helpers/reloadPage.js";
 
 const config = compose(orgMainConfigMain, consentPending);
 
 createFixture({
-  title: "C14411: User consents to no purposes after consenting to no purposes"
+  title: "C14411: User consents to no purposes after consenting to no purposes",
 });
 
 test.meta({
   ID: "C14411",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C14411: User consents to no purposes after consenting to no purposes with cache", async () => {

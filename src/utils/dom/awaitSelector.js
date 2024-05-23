@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isFunction from "../isFunction";
-import isNonEmptyArray from "../isNonEmptyArray";
-import selectNodes from "./selectNodes";
+import isFunction from "../isFunction.js";
+import isNonEmptyArray from "../isNonEmptyArray.js";
+import selectNodes from "./selectNodes.js";
 
 const MUTATION_OBSERVER = "MutationObserver";
 const RAF = "requestAnimationFrame";
@@ -22,15 +22,15 @@ const VISIBLE = "visible";
 const DELAY = 100;
 const MAX_POLLING_TIMEOUT = 5000;
 
-const createError = selector => {
+const createError = (selector) => {
   return new Error(`Could not find: ${selector}`);
 };
 
-const createPromise = executor => {
+const createPromise = (executor) => {
   return new Promise(executor);
 };
 
-export const canUseMutationObserver = win => {
+export const canUseMutationObserver = (win) => {
   return isFunction(win[MUTATION_OBSERVER]);
 };
 
@@ -39,7 +39,7 @@ export const awaitUsingMutationObserver = (
   doc,
   selector,
   timeout,
-  selectFunc
+  selectFunc,
 ) => {
   return createPromise((resolve, reject) => {
     let timer;
@@ -65,7 +65,7 @@ export const awaitUsingMutationObserver = (
   });
 };
 
-export const canUseRequestAnimationFrame = doc => {
+export const canUseRequestAnimationFrame = (doc) => {
   return doc[VISIBILITY_STATE] === VISIBLE;
 };
 
@@ -73,7 +73,7 @@ export const awaitUsingRequestAnimation = (
   win,
   selector,
   timeout,
-  selectFunc
+  selectFunc,
 ) => {
   return createPromise((resolve, reject) => {
     const execute = () => {
@@ -121,7 +121,7 @@ export default (
   selectFunc = selectNodes,
   timeout = MAX_POLLING_TIMEOUT,
   win = window,
-  doc = document
+  doc = document,
 ) => {
   const nodes = selectFunc(selector);
 

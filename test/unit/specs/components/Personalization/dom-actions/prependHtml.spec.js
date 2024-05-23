@@ -12,17 +12,17 @@ governing permissions and limitations under the License.
 import {
   appendNode,
   createNode,
-  selectNodes
-} from "../../../../../../src/utils/dom";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+  selectNodes,
+} from "../../../../../../src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 import {
   CLICK_LABEL_DATA_ATTRIBUTE,
-  INTERACT_ID_DATA_ATTRIBUTE
-} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
-import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
-import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
-import { DOM_ACTION_PREPEND_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
+  INTERACT_ID_DATA_ATTRIBUTE,
+} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import { DOM_ACTION_PREPEND_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::prependHtml", () => {
   let decorateProposition;
@@ -30,7 +30,7 @@ describe("Personalization::actions::prependHtml", () => {
   beforeEach(() => {
     cleanUpDomChanges("prependHtml");
     decorateProposition = createDecoratePropositionForTest({
-      type: DOM_ACTION_PREPEND_HTML
+      type: DOM_ACTION_PREPEND_HTML,
     });
   });
 
@@ -45,7 +45,7 @@ describe("Personalization::actions::prependHtml", () => {
     const element = createNode(
       "ul",
       { id: "prependHtml" },
-      { innerHTML: content }
+      { innerHTML: content },
     );
 
     appendNode(document.body, element);
@@ -54,7 +54,7 @@ describe("Personalization::actions::prependHtml", () => {
       selector: "#prependHtml",
       prehidingSelector: "#prependHtml",
       content: `<li>1</li><li>2</li>`,
-      meta: { a: 1 }
+      meta: { a: 1 },
     };
 
     return prependHtml(settings, decorateProposition).then(() => {
@@ -64,19 +64,19 @@ describe("Personalization::actions::prependHtml", () => {
       // first li (prepended)
       expect(result[0].innerHTML).toEqual("1");
       expect(getAttribute(result[0], CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
-        "trackingLabel"
+        "trackingLabel",
       );
       expect(
-        getAttribute(result[0], INTERACT_ID_DATA_ATTRIBUTE)
+        getAttribute(result[0], INTERACT_ID_DATA_ATTRIBUTE),
       ).not.toBeNull();
 
       // second li (prepended)
       expect(result[1].innerHTML).toEqual("2");
       expect(getAttribute(result[1], CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
-        "trackingLabel"
+        "trackingLabel",
       );
       expect(
-        getAttribute(result[1], INTERACT_ID_DATA_ATTRIBUTE)
+        getAttribute(result[1], INTERACT_ID_DATA_ATTRIBUTE),
       ).not.toBeNull();
 
       // third li (pre-existing)

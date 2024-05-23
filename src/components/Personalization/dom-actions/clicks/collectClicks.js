@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import matchesSelectorWithEq from "../dom/matchesSelectorWithEq";
-import { VIEW_SCOPE_TYPE } from "../../constants/scopeType";
-import { cleanMetas, dedupeMetas } from "../../utils/metaUtils";
+import matchesSelectorWithEq from "../dom/matchesSelectorWithEq.js";
+import { VIEW_SCOPE_TYPE } from "../../constants/scopeType.js";
+import { cleanMetas, dedupeMetas } from "../../utils/metaUtils.js";
 
 const getMetasIfMatches = (clickedElement, selector, getClickMetas) => {
   const { documentElement } = document;
@@ -23,15 +23,17 @@ const getMetasIfMatches = (clickedElement, selector, getClickMetas) => {
     if (matchesSelectorWithEq(selector, element)) {
       const matchedMetas = getClickMetas(selector);
       const returnValue = {
-        metas: matchedMetas
+        metas: matchedMetas,
       };
-      const foundMetaWithLabel = matchedMetas.find(meta => meta.trackingLabel);
+      const foundMetaWithLabel = matchedMetas.find(
+        (meta) => meta.trackingLabel,
+      );
       if (foundMetaWithLabel) {
         returnValue.label = foundMetaWithLabel.trackingLabel;
         returnValue.weight = i;
       }
       const foundMetaWithScopeTypeView = matchedMetas.find(
-        meta => meta.scopeType === VIEW_SCOPE_TYPE
+        (meta) => meta.scopeType === VIEW_SCOPE_TYPE,
       );
       if (foundMetaWithScopeTypeView) {
         returnValue.viewName = foundMetaWithScopeTypeView.scope;
@@ -45,7 +47,7 @@ const getMetasIfMatches = (clickedElement, selector, getClickMetas) => {
   }
 
   return {
-    metas: null
+    metas: null,
   };
 };
 
@@ -61,7 +63,7 @@ export default (clickedElement, selectors, getClickMetas) => {
     const { metas, label, weight, viewName } = getMetasIfMatches(
       clickedElement,
       selectors[i],
-      getClickMetas
+      getClickMetas,
     );
 
     if (!metas) {
@@ -83,6 +85,6 @@ export default (clickedElement, selectors, getClickMetas) => {
     decisionsMeta: dedupeMetas(result),
     propositionActionLabel: resultLabel,
     propositionActionToken: undefined,
-    viewName: resultViewName
+    viewName: resultViewName,
   };
 };

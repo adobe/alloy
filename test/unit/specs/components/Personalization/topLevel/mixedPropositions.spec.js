@@ -9,12 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { MIXED_PROPOSITIONS } from "../responsesMock/eventResponses";
+import { MIXED_PROPOSITIONS } from "../responsesMock/eventResponses.js";
 
-import buildMocks from "./buildMocks";
-import buildAlloy from "./buildAlloy";
-import resetMocks from "./resetMocks";
-import flushPromiseChains from "../../../../helpers/flushPromiseChains";
+import buildMocks from "./buildMocks.js";
+import buildAlloy from "./buildAlloy.js";
+import resetMocks from "./resetMocks.js";
+import flushPromiseChains from "../../../../helpers/flushPromiseChains.js";
 
 describe("PersonalizationComponent", () => {
   it("MIXED_PROPOSITIONS", async () => {
@@ -22,9 +22,9 @@ describe("PersonalizationComponent", () => {
     const alloy = buildAlloy(mocks);
     const { event, result } = await alloy.sendEvent(
       {
-        renderDecisions: true
+        renderDecisions: true,
       },
-      MIXED_PROPOSITIONS
+      MIXED_PROPOSITIONS,
     );
     expect(event.toJSON()).toEqual({
       query: {
@@ -37,12 +37,12 @@ describe("PersonalizationComponent", () => {
             "https://ns.adobe.com/personalization/ruleset-item",
             "https://ns.adobe.com/personalization/message/in-app",
             "https://ns.adobe.com/personalization/message/feed-item",
-            "https://ns.adobe.com/personalization/dom-action"
+            "https://ns.adobe.com/personalization/dom-action",
           ],
           decisionScopes: ["__view__"],
-          surfaces: ["web://example.com/home"]
-        }
-      }
+          surfaces: ["web://example.com/home"],
+        },
+      },
     });
     expect(result.propositions).toEqual(
       jasmine.arrayWithExactContents([
@@ -58,10 +58,10 @@ describe("PersonalizationComponent", () => {
               data: {
                 type: "click",
                 format: "application/vnd.adobe.target.dom-action",
-                selector: "#root"
-              }
-            }
-          ]
+                selector: "#root",
+              },
+            },
+          ],
         },
         {
           renderAttempted: true,
@@ -75,10 +75,10 @@ describe("PersonalizationComponent", () => {
               data: {
                 type: "click",
                 format: "application/vnd.adobe.target.dom-action",
-                selector: "#root"
-              }
-            }
-          ]
+                selector: "#root",
+              },
+            },
+          ],
         },
         {
           renderAttempted: false,
@@ -92,10 +92,10 @@ describe("PersonalizationComponent", () => {
               data: {
                 content: "<p>Some custom content for the home page</p>",
                 format: "text/html",
-                id: "1202448"
-              }
-            }
-          ]
+                id: "1202448",
+              },
+            },
+          ],
         },
         {
           renderAttempted: false,
@@ -109,10 +109,10 @@ describe("PersonalizationComponent", () => {
               data: {
                 content: "{'field1': 'custom content'}",
                 format: "text/javascript",
-                id: "1202449"
-              }
-            }
-          ]
+                id: "1202449",
+              },
+            },
+          ],
         },
         {
           renderAttempted: false,
@@ -131,11 +131,11 @@ describe("PersonalizationComponent", () => {
                 language: ["en-us"],
                 content: "<p>An html offer from Offer Decisioning</p>",
                 characteristics: {
-                  testing: "true"
-                }
-              }
-            }
-          ]
+                  testing: "true",
+                },
+              },
+            },
+          ],
         },
         {
           renderAttempted: false,
@@ -149,12 +149,12 @@ describe("PersonalizationComponent", () => {
               data: {
                 type: "click",
                 format: "application/vnd.adobe.target.dom-action",
-                selector: "#root"
-              }
-            }
-          ]
-        }
-      ])
+                selector: "#root",
+              },
+            },
+          ],
+        },
+      ]),
     );
     expect(result.decisions).toEqual(
       jasmine.arrayWithExactContents([
@@ -169,10 +169,10 @@ describe("PersonalizationComponent", () => {
               data: {
                 content: "<p>Some custom content for the home page</p>",
                 format: "text/html",
-                id: "1202448"
-              }
-            }
-          ]
+                id: "1202448",
+              },
+            },
+          ],
         },
         {
           id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
@@ -185,10 +185,10 @@ describe("PersonalizationComponent", () => {
               data: {
                 content: "{'field1': 'custom content'}",
                 format: "text/javascript",
-                id: "1202449"
-              }
-            }
-          ]
+                id: "1202449",
+              },
+            },
+          ],
         },
         {
           id: "AT:eyJhY3Rpdml0eUlkIjoiMTQxNjY0IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
@@ -206,11 +206,11 @@ describe("PersonalizationComponent", () => {
                 language: ["en-us"],
                 content: "<p>An html offer from Offer Decisioning</p>",
                 characteristics: {
-                  testing: "true"
-                }
-              }
-            }
-          ]
+                  testing: "true",
+                },
+              },
+            },
+          ],
         },
         {
           id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn0=",
@@ -223,12 +223,12 @@ describe("PersonalizationComponent", () => {
               data: {
                 type: "click",
                 format: "application/vnd.adobe.target.dom-action",
-                selector: "#root"
-              }
-            }
-          ]
-        }
-      ])
+                selector: "#root",
+              },
+            },
+          ],
+        },
+      ]),
     );
     expect(mocks.sendEvent).not.toHaveBeenCalled();
 
@@ -241,9 +241,9 @@ describe("PersonalizationComponent", () => {
       metadata: {
         home: {
           selector: "#myhomeselector",
-          actionType: "appendHtml"
-        }
-      }
+          actionType: "appendHtml",
+        },
+      },
     });
     expect(applyPropositionsResult.propositions).toEqual([
       {
@@ -256,12 +256,12 @@ describe("PersonalizationComponent", () => {
             data: {
               type: "click",
               format: "application/vnd.adobe.target.dom-action",
-              selector: "#root"
-            }
-          }
+              selector: "#root",
+            },
+          },
         ],
         renderAttempted: true,
-        scopeDetails: { decisionProvider: "AJO" }
+        scopeDetails: { decisionProvider: "AJO" },
       },
       {
         id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
@@ -275,13 +275,13 @@ describe("PersonalizationComponent", () => {
               format: "text/html",
               id: "1202448",
               selector: "#myhomeselector",
-              type: "appendHtml"
-            }
-          }
+              type: "appendHtml",
+            },
+          },
         ],
         renderAttempted: true,
-        scopeDetails: { decisionProvider: "AJO" }
-      }
+        scopeDetails: { decisionProvider: "AJO" },
+      },
     ]);
     expect(applyPropositionsResult.decisions).toBeUndefined();
 
@@ -289,7 +289,7 @@ describe("PersonalizationComponent", () => {
     expect(mocks.sendEvent).not.toHaveBeenCalled();
     expect(mocks.actions.appendHtml).toHaveBeenCalledOnceWith(
       "#myhomeselector",
-      "<p>Some custom content for the home page</p>"
+      "<p>Some custom content for the home page</p>",
     );
     expect(mocks.logger.warn).not.toHaveBeenCalled();
     expect(mocks.logger.error).not.toHaveBeenCalled();

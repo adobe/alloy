@@ -10,26 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  targetMigrationEnabled
-} from "../../helpers/constants/configParts";
-import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url";
-import cookies from "../../helpers/cookies";
+  targetMigrationEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url.js";
+import cookies from "../../helpers/cookies.js";
 import {
   MBOX_EDGE_CLUSTER,
-  MBOX
-} from "../../../../src/constants/legacyCookies";
+  MBOX,
+} from "../../../../src/constants/legacyCookies.js";
 import {
   assertTargetMigrationEnabledIsSent,
   getLocationHint,
-  injectAlloyAndSendEvent
-} from "./helper";
-import { responseStatus } from "../../helpers/assertions";
+  injectAlloyAndSendEvent,
+} from "./helper.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled, targetMigrationEnabled);
@@ -40,16 +40,16 @@ createFixture({
     "used for both of the requests interact and delivery API",
   requestHooks: [
     networkLogger.edgeEndpointLogs,
-    networkLogger.targetMboxJsonEndpointLogs
+    networkLogger.targetMboxJsonEndpointLogs,
   ],
   url: TEST_PAGE_AT_JS_ONE,
-  includeAlloyLibrary: false
+  includeAlloyLibrary: false,
 });
 
 test.meta({
   ID: "C8085775",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test(
@@ -88,7 +88,7 @@ test(
     // Check that mbox cookie is present in the request state
     const { entries: stateStore } = requestBody.meta.state;
 
-    const requestMboxCookie = stateStore.find(entry => {
+    const requestMboxCookie = stateStore.find((entry) => {
       return entry.key.includes(MBOX);
     });
     // Assert the session IDs are the same
@@ -96,7 +96,7 @@ test(
       .expect(requestMboxCookie.value)
       .contains(
         `#${sessionIdFromMboxJsonRequest}#`,
-        "Session ID from request should be eql to session ID from mbox cookie sent in meta.state"
+        "Session ID from request should be eql to session ID from mbox cookie sent in meta.state",
       );
-  }
+  },
 );

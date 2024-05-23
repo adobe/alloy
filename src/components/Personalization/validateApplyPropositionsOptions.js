@@ -9,7 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { anything, objectOf, arrayOf, string } from "../../utils/validation";
+import {
+  anything,
+  objectOf,
+  arrayOf,
+  string,
+} from "../../utils/validation/index.js";
 
 export const EMPTY_PROPOSITIONS = { propositions: [] };
 
@@ -20,23 +25,23 @@ export default ({ logger, options }) => {
         id: string().required(),
         scope: string().required(),
         scopeDetails: objectOf({
-          decisionProvider: string().required()
+          decisionProvider: string().required(),
         }).required(),
         items: arrayOf(
           objectOf({
             id: string().required(),
             schema: string().required(),
-            data: anything().required()
-          })
+            data: anything().required(),
+          }),
         )
           .nonEmpty()
-          .required()
-      }).required()
+          .required(),
+      }).required(),
     )
       .nonEmpty()
       .required(),
     metadata: objectOf(anything()),
-    viewName: string()
+    viewName: string(),
   }).required();
 
   try {
@@ -44,7 +49,7 @@ export default ({ logger, options }) => {
   } catch (e) {
     logger.warn(
       "Invalid options for applyPropositions. No propositions will be applied.",
-      e
+      e,
     );
     return EMPTY_PROPOSITIONS;
   }

@@ -9,13 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { getAttribute, setAttribute } from "../dom-actions/dom";
-import { includes, noop } from "../../../utils";
-import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules";
+import { getAttribute, setAttribute } from "../dom-actions/dom/index.js";
+import { includes, noop } from "../../../utils/index.js";
+import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules.js";
 import {
   ALWAYS,
-  DECORATED_ELEMENTS_ONLY
-} from "../../../constants/propositionInteractionType";
+  DECORATED_ELEMENTS_ONLY,
+} from "../../../constants/propositionInteractionType.js";
 
 export const INTERACT_ID_DATA_ATTRIBUTE = "data-aep-interact-id";
 export const CLICK_LABEL_DATA_ATTRIBUTE = "data-aep-click-label";
@@ -34,7 +34,7 @@ const getInteractId = (propositionId, existingInteractId) => {
 
 const interactionTrackingSupported = (
   autoCollectPropositionInteractions,
-  decisionProvider
+  decisionProvider,
 ) => {
   if (!autoCollectPropositionInteractions) {
     return false;
@@ -46,7 +46,7 @@ const interactionTrackingSupported = (
 
   return includes(
     [ALWAYS, DECORATED_ELEMENTS_ONLY],
-    autoCollectPropositionInteractions[decisionProvider]
+    autoCollectPropositionInteractions[decisionProvider],
   );
 };
 
@@ -58,7 +58,7 @@ const createDecorateProposition = (
   trackingLabel,
   scopeType,
   notification,
-  storeInteractionMeta
+  storeInteractionMeta,
 ) => {
   const { scopeDetails = {} } = notification;
   const { decisionProvider } = scopeDetails;
@@ -66,21 +66,21 @@ const createDecorateProposition = (
   if (
     !interactionTrackingSupported(
       autoCollectPropositionInteractions,
-      decisionProvider
+      decisionProvider,
     ) &&
     type !== DOM_ACTION_CLICK
   ) {
     return noop;
   }
 
-  return element => {
+  return (element) => {
     if (!element.tagName) {
       return;
     }
 
     const interactId = getInteractId(
       propositionId,
-      getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)
+      getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE),
     );
 
     storeInteractionMeta(
@@ -88,7 +88,7 @@ const createDecorateProposition = (
       itemId,
       scopeType,
       notification,
-      interactId
+      interactId,
     );
 
     setAttribute(element, INTERACT_ID_DATA_ATTRIBUTE, interactId);

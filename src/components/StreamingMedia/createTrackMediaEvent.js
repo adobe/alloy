@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import MediaEvents from "./constants/eventTypes";
+import MediaEvents from "./constants/eventTypes.js";
 
 const getContentState = (eventType, sessionContentState) => {
   if (
@@ -39,23 +39,27 @@ const getContentState = (eventType, sessionContentState) => {
 };
 
 export default ({ mediaEventManager, mediaSessionCacheManager, config }) => {
-  const sendMediaEvent = options => {
+  const sendMediaEvent = (options) => {
     const event = mediaEventManager.createMediaEvent({ options });
     const { playerId, xdm } = options;
-    const eventType = xdm.eventType;
+    const { eventType } = xdm;
     const action = eventType.split(".")[1];
-    const {
-      getPlayerDetails,
-      sessionPromise,
-      playbackState
-    } = mediaSessionCacheManager.getSession(playerId);
-    return sessionPromise.then(result => {
+    const { getPlayerDetails, sessionPromise, playbackState } =
+      mediaSessionCacheManager.getSession(playerId);
+    return sessionPromise.then((result) => {
+      if (!result.sessionId) {
+        return Promise.reject(
+          new Error(
+            `Failed to trigger media event: ${eventType}. Session ID is not available for playerId: ${playerId}.`,
+          ),
+        );
+      }
       mediaEventManager.augmentMediaEvent({
         event,
         eventType,
         playerId,
         getPlayerDetails,
-        sessionID: result.sessionId
+        sessionID: result.sessionId,
       });
 
       return mediaEventManager.trackMediaEvent({ event, action }).then(() => {
@@ -68,7 +72,7 @@ export default ({ mediaEventManager, mediaSessionCacheManager, config }) => {
           } else {
             const sessionPlaybackState = getContentState(
               eventType,
-              playbackState
+              playbackState,
             );
 
             if (sessionPlaybackState === "completed") {
@@ -83,15 +87,15 @@ export default ({ mediaEventManager, mediaSessionCacheManager, config }) => {
               const pingOptions = {
                 playerId,
                 xdm: {
-                  eventType: MediaEvents.PING
-                }
+                  eventType: MediaEvents.PING,
+                },
               };
               sendMediaEvent(pingOptions);
             }, interval * 1000);
             mediaSessionCacheManager.savePing({
               playerId,
               pingId,
-              playbackState: sessionPlaybackState
+              playbackState: sessionPlaybackState,
             });
           }
         }
@@ -99,5 +103,5 @@ export default ({ mediaEventManager, mediaSessionCacheManager, config }) => {
     });
   };
 
-  return options => sendMediaEvent(options);
+  return (options) => sendMediaEvent(options);
 };

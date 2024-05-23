@@ -9,19 +9,19 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createOnClickHandler from "../../../../../src/components/Personalization/createOnClickHandler";
-import { mergeDecisionsMeta } from "../../../../../src/components/Personalization/event";
-import createEvent from "../../../../../src/core/createEvent";
-import { createNode } from "../../../../../src/utils/dom";
+import createOnClickHandler from "../../../../../src/components/Personalization/createOnClickHandler.js";
+import { mergeDecisionsMeta } from "../../../../../src/components/Personalization/event.js";
+import createEvent from "../../../../../src/core/createEvent.js";
+import { createNode } from "../../../../../src/utils/dom/index.js";
 
 import {
   ALWAYS,
-  NEVER
-} from "../../../../../src/constants/propositionInteractionType";
+  NEVER,
+} from "../../../../../src/constants/propositionInteractionType.js";
 import {
   ADOBE_JOURNEY_OPTIMIZER,
-  ADOBE_TARGET
-} from "../../../../../src/constants/decisionProvider";
+  ADOBE_TARGET,
+} from "../../../../../src/constants/decisionProvider.js";
 
 describe("Personalization::createOnClickHandler", () => {
   let collectInteractions;
@@ -36,14 +36,14 @@ describe("Personalization::createOnClickHandler", () => {
   const decisionsMeta = [
     {
       id: 1,
-      scope: "foo"
-    }
+      scope: "foo",
+    },
   ];
   const decisionsMeta2 = [
     {
       id: 2,
-      scope: "bar"
-    }
+      scope: "bar",
+    },
   ];
 
   let autoCollectPropositionInteractions;
@@ -62,7 +62,7 @@ describe("Personalization::createOnClickHandler", () => {
 
     autoCollectPropositionInteractions = {
       [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
-      [ADOBE_TARGET]: NEVER
+      [ADOBE_TARGET]: NEVER,
     };
   });
 
@@ -71,7 +71,7 @@ describe("Personalization::createOnClickHandler", () => {
     collectInteractions.and.returnValue({ decisionsMeta: [] });
     collectClicks.and.returnValue({
       decisionsMeta,
-      eventLabel: ""
+      eventLabel: "",
     });
 
     getClickSelectors.and.returnValue(selectors);
@@ -82,7 +82,7 @@ describe("Personalization::createOnClickHandler", () => {
       getInteractionMetas,
       getClickMetas,
       getClickSelectors,
-      autoCollectPropositionInteractions
+      autoCollectPropositionInteractions,
     });
 
     const clickedElement = "foo";
@@ -96,25 +96,25 @@ describe("Personalization::createOnClickHandler", () => {
           propositions: [
             {
               id: 1,
-              scope: "foo"
-            }
+              scope: "foo",
+            },
           ],
           propositionEventType: {
-            interact: 1
-          }
-        }
-      }
+            interact: 1,
+          },
+        },
+      },
     };
 
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectClicks).toHaveBeenCalledWith(
       clickedElement,
       selectors,
-      getClickMetas
+      getClickMetas,
     );
     event.finalize();
     expect(event.toJSON()).toEqual({
-      xdm: expectedXdm
+      xdm: expectedXdm,
     });
   });
 
@@ -122,7 +122,7 @@ describe("Personalization::createOnClickHandler", () => {
     collectClicks.and.returnValue({ decisionsMeta: [] });
     collectInteractions.and.returnValue({
       decisionsMeta,
-      propositionActionLabel: ""
+      propositionActionLabel: "",
     });
 
     const handleOnClick = createOnClickHandler({
@@ -132,7 +132,7 @@ describe("Personalization::createOnClickHandler", () => {
       getInteractionMetas,
       getClickMetas,
       getClickSelectors,
-      autoCollectPropositionInteractions
+      autoCollectPropositionInteractions,
     });
     const clickedElement = createNode("div", { class: "clicked-element" });
 
@@ -145,25 +145,25 @@ describe("Personalization::createOnClickHandler", () => {
           propositions: [
             {
               id: 1,
-              scope: "foo"
-            }
+              scope: "foo",
+            },
           ],
           propositionEventType: {
-            interact: 1
-          }
-        }
-      }
+            interact: 1,
+          },
+        },
+      },
     };
 
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectInteractions).toHaveBeenCalledWith(
       clickedElement,
       getInteractionMetas,
-      autoCollectPropositionInteractions
+      autoCollectPropositionInteractions,
     );
     event.finalize();
     expect(event.toJSON()).toEqual({
-      xdm: expectedXdm
+      xdm: expectedXdm,
     });
   });
 
@@ -172,7 +172,7 @@ describe("Personalization::createOnClickHandler", () => {
     collectInteractions.and.returnValue({ decisionsMeta: [] });
     collectClicks.and.returnValue({
       decisionsMeta,
-      propositionActionLabel: "click-label"
+      propositionActionLabel: "click-label",
     });
     getClickSelectors.and.returnValue(selectors);
     const handleOnClick = createOnClickHandler({
@@ -182,7 +182,7 @@ describe("Personalization::createOnClickHandler", () => {
       getInteractionMetas,
       getClickMetas,
       getClickSelectors,
-      autoCollectPropositionInteractions
+      autoCollectPropositionInteractions,
     });
     const clickedElement = "foo";
 
@@ -195,28 +195,28 @@ describe("Personalization::createOnClickHandler", () => {
           propositions: [
             {
               id: 1,
-              scope: "foo"
-            }
+              scope: "foo",
+            },
           ],
           propositionEventType: {
-            interact: 1
+            interact: 1,
           },
           propositionAction: {
-            label: "click-label"
-          }
-        }
-      }
+            label: "click-label",
+          },
+        },
+      },
     };
 
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectClicks).toHaveBeenCalledWith(
       clickedElement,
       selectors,
-      getClickMetas
+      getClickMetas,
     );
     event.finalize();
     expect(event.toJSON()).toEqual({
-      xdm: expectedXdm
+      xdm: expectedXdm,
     });
   });
 
@@ -224,7 +224,7 @@ describe("Personalization::createOnClickHandler", () => {
     collectClicks.and.returnValue({ decisionsMeta: [] });
     collectInteractions.and.returnValue({
       decisionsMeta,
-      propositionActionLabel: "click-label"
+      propositionActionLabel: "click-label",
     });
 
     const handleOnClick = createOnClickHandler({
@@ -234,7 +234,7 @@ describe("Personalization::createOnClickHandler", () => {
       getInteractionMetas,
       getClickMetas,
       getClickSelectors,
-      autoCollectPropositionInteractions
+      autoCollectPropositionInteractions,
     });
     const clickedElement = createNode("div", { class: "clicked-element" });
 
@@ -247,28 +247,28 @@ describe("Personalization::createOnClickHandler", () => {
           propositions: [
             {
               id: 1,
-              scope: "foo"
-            }
+              scope: "foo",
+            },
           ],
           propositionEventType: {
-            interact: 1
+            interact: 1,
           },
           propositionAction: {
-            label: "click-label"
-          }
-        }
-      }
+            label: "click-label",
+          },
+        },
+      },
     };
 
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectInteractions).toHaveBeenCalledWith(
       clickedElement,
       getInteractionMetas,
-      autoCollectPropositionInteractions
+      autoCollectPropositionInteractions,
     );
     event.finalize();
     expect(event.toJSON()).toEqual({
-      xdm: expectedXdm
+      xdm: expectedXdm,
     });
   });
 
@@ -278,7 +278,7 @@ describe("Personalization::createOnClickHandler", () => {
     collectClicks.and.returnValue({ decisionsMeta: [] });
     collectInteractions.and.returnValue({
       decisionsMeta,
-      propositionActionToken: "click-token"
+      propositionActionToken: "click-token",
     });
 
     const handleOnClick = createOnClickHandler({
@@ -288,7 +288,7 @@ describe("Personalization::createOnClickHandler", () => {
       getInteractionMetas,
       getClickMetas,
       getClickSelectors,
-      autoCollectPropositionInteractions
+      autoCollectPropositionInteractions,
     });
     const clickedElement = createNode("div", { class: "clicked-element" });
 
@@ -301,28 +301,28 @@ describe("Personalization::createOnClickHandler", () => {
           propositions: [
             {
               id: 1,
-              scope: "foo"
-            }
+              scope: "foo",
+            },
           ],
           propositionEventType: {
-            interact: 1
+            interact: 1,
           },
           propositionAction: {
-            tokens: ["click-token"]
-          }
-        }
-      }
+            tokens: ["click-token"],
+          },
+        },
+      },
     };
 
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectInteractions).toHaveBeenCalledWith(
       clickedElement,
       getInteractionMetas,
-      autoCollectPropositionInteractions
+      autoCollectPropositionInteractions,
     );
     event.finalize();
     expect(event.toJSON()).toEqual({
-      xdm: expectedXdm
+      xdm: expectedXdm,
     });
   });
 
@@ -337,7 +337,7 @@ describe("Personalization::createOnClickHandler", () => {
       getInteractionMetas,
       getClickMetas,
       getClickSelectors,
-      autoCollectPropositionInteractions
+      autoCollectPropositionInteractions,
     });
     const clickedElement = createNode("div", { class: "clicked-element" });
 
@@ -350,7 +350,7 @@ describe("Personalization::createOnClickHandler", () => {
     collectClicks.and.returnValue({ decisionsMeta: [] });
     collectInteractions.and.returnValue({
       decisionsMeta,
-      viewName: "myview"
+      viewName: "myview",
     });
     const handleOnClick = createOnClickHandler({
       mergeDecisionsMeta,
@@ -359,7 +359,7 @@ describe("Personalization::createOnClickHandler", () => {
       getInteractionMetas,
       getClickMetas,
       getClickSelectors,
-      autoCollectPropositionInteractions
+      autoCollectPropositionInteractions,
     });
     const clickedElement = createNode("div", { class: "clicked-element" });
 
@@ -369,33 +369,33 @@ describe("Personalization::createOnClickHandler", () => {
       eventType: "decisioning.propositionInteract",
       web: {
         webPageDetails: {
-          viewName: "myview"
-        }
+          viewName: "myview",
+        },
       },
       _experience: {
         decisioning: {
           propositions: [
             {
               id: 1,
-              scope: "foo"
-            }
+              scope: "foo",
+            },
           ],
           propositionEventType: {
-            interact: 1
-          }
-        }
-      }
+            interact: 1,
+          },
+        },
+      },
     };
 
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectInteractions).toHaveBeenCalledWith(
       clickedElement,
       getInteractionMetas,
-      autoCollectPropositionInteractions
+      autoCollectPropositionInteractions,
     );
     event.finalize();
     expect(event.toJSON()).toEqual({
-      xdm: expectedXdm
+      xdm: expectedXdm,
     });
   });
 
@@ -404,7 +404,7 @@ describe("Personalization::createOnClickHandler", () => {
     collectInteractions.and.returnValue({ decisionsMeta: [] });
     collectClicks.and.returnValue({
       decisionsMeta,
-      viewName: "myview"
+      viewName: "myview",
     });
     getClickSelectors.and.returnValue(selectors);
     const handleOnClick = createOnClickHandler({
@@ -414,7 +414,7 @@ describe("Personalization::createOnClickHandler", () => {
       getInteractionMetas,
       getClickMetas,
       getClickSelectors,
-      autoCollectPropositionInteractions
+      autoCollectPropositionInteractions,
     });
     const clickedElement = "foo";
 
@@ -424,43 +424,43 @@ describe("Personalization::createOnClickHandler", () => {
       eventType: "decisioning.propositionInteract",
       web: {
         webPageDetails: {
-          viewName: "myview"
-        }
+          viewName: "myview",
+        },
       },
       _experience: {
         decisioning: {
           propositions: [
             {
               id: 1,
-              scope: "foo"
-            }
+              scope: "foo",
+            },
           ],
           propositionEventType: {
-            interact: 1
-          }
-        }
-      }
+            interact: 1,
+          },
+        },
+      },
     };
 
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectClicks).toHaveBeenCalledWith(
       clickedElement,
       selectors,
-      getClickMetas
+      getClickMetas,
     );
     event.finalize();
     expect(event.toJSON()).toEqual({
-      xdm: expectedXdm
+      xdm: expectedXdm,
     });
   });
 
   it("gets metas for both click and interact", () => {
     collectInteractions.and.returnValue({
-      decisionsMeta
+      decisionsMeta,
     });
 
     collectClicks.and.returnValue({
-      decisionsMeta: decisionsMeta2
+      decisionsMeta: decisionsMeta2,
     });
 
     const handleOnClick = createOnClickHandler({
@@ -470,7 +470,7 @@ describe("Personalization::createOnClickHandler", () => {
       getInteractionMetas,
       getClickMetas,
       getClickSelectors,
-      autoCollectPropositionInteractions
+      autoCollectPropositionInteractions,
     });
     const clickedElement = createNode("div", { class: "clicked-element" });
 
@@ -486,29 +486,29 @@ describe("Personalization::createOnClickHandler", () => {
           propositions: [
             {
               id: 1,
-              scope: "foo"
+              scope: "foo",
             },
             {
               id: 2,
-              scope: "bar"
-            }
+              scope: "bar",
+            },
           ],
           propositionEventType: {
-            interact: 1
-          }
-        }
-      }
+            interact: 1,
+          },
+        },
+      },
     };
 
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectInteractions).toHaveBeenCalledWith(
       clickedElement,
       getInteractionMetas,
-      autoCollectPropositionInteractions
+      autoCollectPropositionInteractions,
     );
     event.finalize();
     expect(event.toJSON()).toEqual({
-      xdm: expectedXdm
+      xdm: expectedXdm,
     });
   });
 });

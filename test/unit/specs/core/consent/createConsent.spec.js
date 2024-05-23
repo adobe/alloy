@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createConsent from "../../../../../src/core/consent/createConsent";
+import createConsent from "../../../../../src/core/consent/createConsent.js";
 
 describe("createConsent", () => {
   let state;
@@ -23,7 +23,7 @@ describe("createConsent", () => {
       "out",
       "pending",
       "awaitConsent",
-      "withConsent"
+      "withConsent",
     ]);
     logger = jasmine.createSpyObj("logger", ["warn"]);
     subject = createConsent({ generalConsentState: state, logger });

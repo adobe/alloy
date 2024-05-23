@@ -11,16 +11,16 @@ governing permissions and limitations under the License.
 */
 import {
   ADOBE_JOURNEY_OPTIMIZER,
-  ADOBE_TARGET
-} from "../../../../../../src/constants/decisionProvider";
-import createProcessHtmlContent from "../../../../../../src/components/Personalization/handlers/createProcessHtmlContent";
-import createInteractionStorage from "../../../../../../src/components/Personalization/createInteractionStorage";
-import { HTML_CONTENT_ITEM } from "../../../../../../src/constants/schema";
+  ADOBE_TARGET,
+} from "../../../../../../src/constants/decisionProvider.js";
+import createProcessHtmlContent from "../../../../../../src/components/Personalization/handlers/createProcessHtmlContent.js";
+import createInteractionStorage from "../../../../../../src/components/Personalization/createInteractionStorage.js";
+import { HTML_CONTENT_ITEM } from "../../../../../../src/constants/schema.js";
 import {
   ALWAYS,
-  NEVER
-} from "../../../../../../src/constants/propositionInteractionType";
-import createMockProposition from "../../../../helpers/createMockProposition";
+  NEVER,
+} from "../../../../../../src/constants/propositionInteractionType.js";
+import createMockProposition from "../../../../helpers/createMockProposition.js";
 
 describe("createProcessHtmlContent", () => {
   let modules;
@@ -32,7 +32,7 @@ describe("createProcessHtmlContent", () => {
 
     modules = {
       typeA: jasmine.createSpy("typeA"),
-      typeB: jasmine.createSpy("typeB")
+      typeB: jasmine.createSpy("typeB"),
     };
     logger = jasmine.createSpyObj("logger", ["warn"]);
 
@@ -42,20 +42,20 @@ describe("createProcessHtmlContent", () => {
       storeInteractionMeta,
       autoCollectPropositionInteractions: {
         [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
-        [ADOBE_TARGET]: NEVER
-      }
+        [ADOBE_TARGET]: NEVER,
+      },
     });
   });
 
   it("returns an empty object if the item has no data", () => {
     const proposition = createMockProposition({
       schema: HTML_CONTENT_ITEM,
-      data: undefined
+      data: undefined,
     });
 
     expect(processHtmlContent(proposition.getItems()[0])).toEqual({
       setRenderAttempted: false,
-      includeInNotification: false
+      includeInNotification: false,
     });
     expect(logger.warn).not.toHaveBeenCalled();
   });
@@ -63,12 +63,12 @@ describe("createProcessHtmlContent", () => {
   it("returns an empty object if the item has no type", () => {
     const proposition = createMockProposition({
       schema: HTML_CONTENT_ITEM,
-      data: { selector: ".myselector" }
+      data: { selector: ".myselector" },
     });
 
     expect(processHtmlContent(proposition.getItems()[0])).toEqual({
       setRenderAttempted: false,
-      includeInNotification: false
+      includeInNotification: false,
     });
     expect(logger.warn).not.toHaveBeenCalled();
   });
@@ -76,12 +76,12 @@ describe("createProcessHtmlContent", () => {
   it("returns an empty object if the item has no selector", () => {
     const proposition = createMockProposition({
       schema: HTML_CONTENT_ITEM,
-      data: { type: "mytype" }
+      data: { type: "mytype" },
     });
 
     expect(processHtmlContent(proposition.getItems()[0])).toEqual({
       setRenderAttempted: false,
-      includeInNotification: false
+      includeInNotification: false,
     });
     expect(logger.warn).not.toHaveBeenCalled();
   });
@@ -92,18 +92,18 @@ describe("createProcessHtmlContent", () => {
       data: {
         type: "typeC",
         selector: ".myselector",
-        content: "mycontent"
-      }
+        content: "mycontent",
+      },
     });
 
     expect(processHtmlContent(proposition.getItems()[0])).toEqual({
       setRenderAttempted: false,
-      includeInNotification: false
+      includeInNotification: false,
     });
     expect(logger.warn).toHaveBeenCalledWith("Invalid HTML content data", {
       type: "typeC",
       selector: ".myselector",
-      content: "mycontent"
+      content: "mycontent",
     });
   });
 
@@ -113,15 +113,15 @@ describe("createProcessHtmlContent", () => {
       data: {
         type: "typeA",
         selector: ".myselector",
-        content: "mycontent"
-      }
+        content: "mycontent",
+      },
     });
 
     const result = processHtmlContent(proposition.getItems()[0]);
     expect(result).toEqual({
       render: jasmine.any(Function),
       setRenderAttempted: true,
-      includeInNotification: true
+      includeInNotification: true,
     });
     expect(modules.typeA).not.toHaveBeenCalled();
     result.render();
@@ -129,9 +129,9 @@ describe("createProcessHtmlContent", () => {
       {
         type: "typeA",
         selector: ".myselector",
-        content: "mycontent"
+        content: "mycontent",
       },
-      jasmine.any(Function)
+      jasmine.any(Function),
     );
   });
 });

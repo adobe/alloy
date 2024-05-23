@@ -11,24 +11,27 @@ governing permissions and limitations under the License.
 */
 import {
   CLICK_LABEL_DATA_ATTRIBUTE,
-  INTERACT_ID_DATA_ATTRIBUTE
-} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
-import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
-import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
+  INTERACT_ID_DATA_ATTRIBUTE,
+} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
+import {
+  appendNode,
+  createNode,
+} from "../../../../../../src/utils/dom/index.js";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
 import {
   DOM_ACTION_CLICK,
-  DOM_ACTION_SET_HTML
-} from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
+  DOM_ACTION_SET_HTML,
+} from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 import {
   DECORATED_ELEMENTS_ONLY,
-  NEVER
-} from "../../../../../../src/constants/propositionInteractionType";
+  NEVER,
+} from "../../../../../../src/constants/propositionInteractionType.js";
 import {
   ADOBE_JOURNEY_OPTIMIZER,
-  ADOBE_TARGET
-} from "../../../../../../src/constants/decisionProvider";
+  ADOBE_TARGET,
+} from "../../../../../../src/constants/decisionProvider.js";
 
 describe("Personalization::createDecorateProposition", () => {
   let decorateProposition;
@@ -44,20 +47,20 @@ describe("Personalization::createDecorateProposition", () => {
   it("sets a data-attribute for interact id and label", () => {
     decorateProposition = createDecoratePropositionForTest({
       type: DOM_ACTION_CLICK,
-      trackingLabel: "myTrackingLabel"
+      trackingLabel: "myTrackingLabel",
     });
 
     const element = createNode(
       "div",
       { id: "something" },
-      { innerText: "superfluous" }
+      { innerText: "superfluous" },
     );
     appendNode(document.body, element);
 
     decorateProposition(element);
 
     expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
-      "myTrackingLabel"
+      "myTrackingLabel",
     );
     expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
   });
@@ -66,23 +69,23 @@ describe("Personalization::createDecorateProposition", () => {
     decorateProposition = createDecoratePropositionForTest({
       autoCollectPropositionInteractions: {
         [ADOBE_JOURNEY_OPTIMIZER]: DECORATED_ELEMENTS_ONLY,
-        [ADOBE_TARGET]: NEVER
+        [ADOBE_TARGET]: NEVER,
       },
       type: DOM_ACTION_CLICK,
-      trackingLabel: "myTrackingLabel"
+      trackingLabel: "myTrackingLabel",
     });
 
     const element = createNode(
       "div",
       { id: "something" },
-      { innerText: "superfluous" }
+      { innerText: "superfluous" },
     );
     appendNode(document.body, element);
 
     decorateProposition(element);
 
     expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
-      "myTrackingLabel"
+      "myTrackingLabel",
     );
     expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
   });
@@ -90,13 +93,13 @@ describe("Personalization::createDecorateProposition", () => {
   it("does not set a data-attribute for label if no label is specified", () => {
     decorateProposition = createDecoratePropositionForTest({
       type: DOM_ACTION_CLICK,
-      trackingLabel: null
+      trackingLabel: null,
     });
 
     const element = createNode(
       "div",
       { id: "something" },
-      { innerText: "superfluous" }
+      { innerText: "superfluous" },
     );
     appendNode(document.body, element);
 
@@ -110,19 +113,19 @@ describe("Personalization::createDecorateProposition", () => {
     const element = createNode(
       "div",
       { id: "something" },
-      { innerText: "superfluous" }
+      { innerText: "superfluous" },
     );
     appendNode(document.body, element);
 
     decorateProposition = createDecoratePropositionForTest({
       type: DOM_ACTION_CLICK,
       itemId: "itemId1",
-      trackingLabel: "myTrackingLabel"
+      trackingLabel: "myTrackingLabel",
     });
     decorateProposition(element);
 
     expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
-      "myTrackingLabel"
+      "myTrackingLabel",
     );
     const interactId = getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE);
     expect(interactId).not.toBeNull();
@@ -130,17 +133,17 @@ describe("Personalization::createDecorateProposition", () => {
     decorateProposition = createDecoratePropositionForTest({
       type: DOM_ACTION_CLICK,
       itemId: "itemId2",
-      trackingLabel: "myOtherTrackingLabel"
+      trackingLabel: "myOtherTrackingLabel",
     });
     decorateProposition(element);
 
     // tracking label remains the same despite another item targeting the same element with trackingLabel set to "myOtherTrackingLabel" (first one wins)
     expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
-      "myTrackingLabel"
+      "myTrackingLabel",
     );
 
     expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).toEqual(
-      interactId
+      interactId,
     );
   });
 
@@ -150,8 +153,8 @@ describe("Personalization::createDecorateProposition", () => {
       { id: "something" },
       {
         innerHTML:
-          "<li class='one'>one</li><li class='two'>two</li><li class='three'>three</li>"
-      }
+          "<li class='one'>one</li><li class='two'>two</li><li class='three'>three</li>",
+      },
     );
     appendNode(document.body, element);
 
@@ -166,14 +169,14 @@ describe("Personalization::createDecorateProposition", () => {
         notification: {
           id: `notifyId${idx}`,
           scope: "web://mywebsite.com",
-          scopeDetails: { something: true }
-        }
+          scopeDetails: { something: true },
+        },
       });
       const li = document.querySelector(`#something .${value}`);
       decorateProposition(li);
 
       expect(getAttribute(li, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
-        `trackingLabel${value}`
+        `trackingLabel${value}`,
       );
       const interactId = getAttribute(li, INTERACT_ID_DATA_ATTRIBUTE);
       expect(interactId).not.toBeNull();
@@ -187,13 +190,13 @@ describe("Personalization::createDecorateProposition", () => {
     decorateProposition = createDecoratePropositionForTest({
       autoCollectPropositionInteractions: {},
       type: DOM_ACTION_SET_HTML,
-      trackingLabel: "myTrackingLabel"
+      trackingLabel: "myTrackingLabel",
     });
 
     const element = createNode(
       "div",
       { id: "something" },
-      { innerText: "superfluous" }
+      { innerText: "superfluous" },
     );
     appendNode(document.body, element);
 
@@ -207,16 +210,16 @@ describe("Personalization::createDecorateProposition", () => {
     decorateProposition = createDecoratePropositionForTest({
       autoCollectPropositionInteractions: {
         [ADOBE_JOURNEY_OPTIMIZER]: NEVER,
-        [ADOBE_TARGET]: NEVER
+        [ADOBE_TARGET]: NEVER,
       },
       type: DOM_ACTION_SET_HTML,
-      trackingLabel: "myTrackingLabel"
+      trackingLabel: "myTrackingLabel",
     });
 
     const element = createNode(
       "div",
       { id: "something" },
-      { innerText: "superfluous" }
+      { innerText: "superfluous" },
     );
     appendNode(document.body, element);
 
@@ -230,20 +233,20 @@ describe("Personalization::createDecorateProposition", () => {
     decorateProposition = createDecoratePropositionForTest({
       autoCollectPropositionInteractions: {},
       type: DOM_ACTION_CLICK,
-      trackingLabel: "myTrackingLabel"
+      trackingLabel: "myTrackingLabel",
     });
 
     const element = createNode(
       "div",
       { id: "something" },
-      { innerText: "superfluous" }
+      { innerText: "superfluous" },
     );
     appendNode(document.body, element);
 
     decorateProposition(element);
 
     expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
-      "myTrackingLabel"
+      "myTrackingLabel",
     );
     expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
   });

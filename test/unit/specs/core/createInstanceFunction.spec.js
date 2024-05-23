@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createInstanceFunction from "../../../../src/core/createInstanceFunction";
-import flushPromiseChains from "../../helpers/flushPromiseChains";
+import createInstanceFunction from "../../../../src/core/createInstanceFunction.js";
+import flushPromiseChains from "../../helpers/flushPromiseChains.js";
 
 describe("createInstance", () => {
   it("successfully executes command", () => {

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import includes from "./includes";
+import includes from "./includes.js";
 
 /**
  * Returns items that are found within both arrays.
@@ -18,4 +18,4 @@ import includes from "./includes";
  * @param {Array} b
  * @returns {Array}
  */
-export default (a, b) => a.filter(x => includes(b, x));
+export default (a, b) => a.filter((x) => includes(b, x));

@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { noop } from "../../utils";
+import { noop } from "../../utils/index.js";
 
 const createClickHandler = ({ eventManager, lifecycle, handleError }) => {
-  return clickEvent => {
+  return (clickEvent) => {
     // TODO: Consider safeguarding from the same object being clicked multiple times in rapid succession?
     const clickedElement = clickEvent.target;
     const event = eventManager.createEvent();
@@ -32,7 +32,7 @@ const createClickHandler = ({ eventManager, lifecycle, handleError }) => {
         // eventManager.sendEvent() will return a promise resolved to an
         // object and we want to avoid returning any value to the customer
         .then(noop)
-        .catch(error => {
+        .catch((error) => {
           handleError(error, "click collection");
         })
     );
@@ -43,7 +43,7 @@ export default ({ eventManager, lifecycle, handleError }) => {
   const clickHandler = createClickHandler({
     eventManager,
     lifecycle,
-    handleError
+    handleError,
   });
 
   document.addEventListener("click", clickHandler, true);

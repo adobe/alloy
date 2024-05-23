@@ -10,21 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../../helpers/networkLogger";
-import { responseStatus } from "../../../helpers/assertions/index";
-import createFixture from "../../../helpers/createFixture";
-import createResponse from "../../../helpers/createResponse";
-import getResponseBody from "../../../helpers/networkLogger/getResponseBody";
-import cookies from "../../../helpers/cookies";
+import createNetworkLogger from "../../../helpers/networkLogger/index.js";
+import { responseStatus } from "../../../helpers/assertions/index.js";
+import createFixture from "../../../helpers/createFixture/index.js";
+import createResponse from "../../../helpers/createResponse.js";
+import getResponseBody from "../../../helpers/networkLogger/getResponseBody.js";
+import cookies from "../../../helpers/cookies.js";
 import {
   compose,
   orgMainConfigMain,
   consentPending,
-  debugEnabled
-} from "../../../helpers/constants/configParts";
-import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies";
-import createAlloyProxy from "../../../helpers/createAlloyProxy";
-import { IAB_CONSENT_IN_NO_GDPR } from "../../../helpers/constants/consent";
+  debugEnabled,
+} from "../../../helpers/constants/configParts/index.js";
+import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies.js";
+import createAlloyProxy from "../../../helpers/createAlloyProxy.js";
+import { IAB_CONSENT_IN_NO_GDPR } from "../../../helpers/constants/consent.js";
 
 const config = compose(orgMainConfigMain, consentPending, debugEnabled);
 
@@ -34,14 +34,14 @@ createFixture({
   title: "C224673: Opt in to IAB while gdprApplies is FALSE.",
   requestHooks: [
     networkLogger.setConsentEndpointLogs,
-    networkLogger.edgeEndpointLogs
-  ]
+    networkLogger.edgeEndpointLogs,
+  ],
 });
 
 test.meta({
   ID: "C224673",
   SEVERITY: "P0",
-  TEST_RUN: "REGRESSION"
+  TEST_RUN: "REGRESSION",
 });
 
 test("Test C224673: Opt in to IAB while gdprApplies is FALSE", async () => {
@@ -53,7 +53,7 @@ test("Test C224673: Opt in to IAB while gdprApplies is FALSE", async () => {
   await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   const consentRawResponse = JSON.parse(
-    getResponseBody(networkLogger.setConsentEndpointLogs.requests[0])
+    getResponseBody(networkLogger.setConsentEndpointLogs.requests[0]),
   );
 
   const consentResponse = createResponse({ content: consentRawResponse });
@@ -66,7 +66,7 @@ test("Test C224673: Opt in to IAB while gdprApplies is FALSE", async () => {
 
   // 2. The ECID should exist in the response payload as well, if queried
   const identityHandle = consentResponse.getPayloadsByType("identity:result");
-  const returnedNamespaces = identityHandle.map(i => i.namespace.code);
+  const returnedNamespaces = identityHandle.map((i) => i.namespace.code);
   await t.expect(identityHandle.length).eql(1);
   await t.expect(returnedNamespaces).contains("ECID");
 

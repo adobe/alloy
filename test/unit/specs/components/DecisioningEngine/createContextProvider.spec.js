@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createContextProvider from "../../../../../src/components/DecisioningEngine/createContextProvider";
-import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
+import createContextProvider from "../../../../../src/components/DecisioningEngine/createContextProvider.js";
+import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry.js";
 
 describe("DecisioningEngine:createContextProvider", () => {
   let contextProvider;
@@ -31,8 +31,8 @@ describe("DecisioningEngine:createContextProvider", () => {
       scrollY: 10,
       navigator: {
         userAgent:
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36"
-      }
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36",
+      },
     };
     mockedTimestamp = new Date(Date.UTC(2023, 4, 11, 12, 34, 56));
     jasmine.clock().install();
@@ -56,8 +56,8 @@ describe("DecisioningEngine:createContextProvider", () => {
         "page.fragment": "home",
         "page.domain": "my.web-site.net",
         "page.subdomain": "my",
-        "page.topLevelDomain": "net"
-      })
+        "page.topLevelDomain": "net",
+      }),
     );
   });
   it("returns referring page context", () => {
@@ -72,8 +72,8 @@ describe("DecisioningEngine:createContextProvider", () => {
         "referringPage.fragment": "",
         "referringPage.domain": "stage.applookout.net",
         "referringPage.subdomain": "stage",
-        "referringPage.topLevelDomain": "net"
-      })
+        "referringPage.topLevelDomain": "net",
+      }),
     );
   });
   it("returns browser context", () => {
@@ -82,8 +82,8 @@ describe("DecisioningEngine:createContextProvider", () => {
 
     expect(contextProvider.getContext()).toEqual(
       jasmine.objectContaining({
-        "browser.name": "Chrome"
-      })
+        "browser.name": "Chrome",
+      }),
     );
   });
   it("returns windows context", () => {
@@ -95,8 +95,8 @@ describe("DecisioningEngine:createContextProvider", () => {
         "window.height": 100,
         "window.width": 100,
         "window.scrollY": 10,
-        "window.scrollX": 10
-      })
+        "window.scrollX": 10,
+      }),
     );
   });
   it("includes provided context passed in", () => {
@@ -105,8 +105,8 @@ describe("DecisioningEngine:createContextProvider", () => {
 
     expect(contextProvider.getContext({ cool: "beans" })).toEqual(
       jasmine.objectContaining({
-        cool: "beans"
-      })
+        cool: "beans",
+      }),
     );
   });
 
@@ -115,16 +115,16 @@ describe("DecisioningEngine:createContextProvider", () => {
       abc: {
         event: { id: "abc", type: "display" },
         timestamp: new Date().getTime(),
-        count: 1
-      }
+        count: 1,
+      },
     };
     eventRegistry = {
-      toJSON: () => events
+      toJSON: () => events,
     };
     contextProvider = createContextProvider({ eventRegistry, window });
 
     expect(contextProvider.getContext({ cool: "beans" }).events).toEqual(
-      events
+      events,
     );
   });
 });

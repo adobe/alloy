@@ -10,60 +10,64 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createDecorateProposition from "./createDecorateProposition";
-import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules";
+import createDecorateProposition from "./createDecorateProposition.js";
+import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules.js";
 
 export default ({
-  modules,
-  logger,
-  storeInteractionMeta,
-  storeClickMeta,
-  autoCollectPropositionInteractions
-}) => item => {
-  const { type, selector } = item.getData() || {};
+    modules,
+    logger,
+    storeInteractionMeta,
+    storeClickMeta,
+    autoCollectPropositionInteractions,
+  }) =>
+  (item) => {
+    const { type, selector } = item.getData() || {};
 
-  if (!type) {
-    logger.warn("Invalid DOM action data: missing type.", item.getData());
-    return { setRenderAttempted: false, includeInNotification: false };
-  }
-
-  if (type === DOM_ACTION_CLICK) {
-    if (!selector) {
-      logger.warn("Invalid DOM action data: missing selector.", item.getData());
+    if (!type) {
+      logger.warn("Invalid DOM action data: missing type.", item.getData());
       return { setRenderAttempted: false, includeInNotification: false };
     }
 
-    storeClickMeta({
-      selector,
-      meta: {
-        ...item.getProposition().getNotification(),
-        trackingLabel: item.getTrackingLabel(),
-        scopeType: item.getProposition().getScopeType()
+    if (type === DOM_ACTION_CLICK) {
+      if (!selector) {
+        logger.warn(
+          "Invalid DOM action data: missing selector.",
+          item.getData(),
+        );
+        return { setRenderAttempted: false, includeInNotification: false };
       }
-    });
 
-    return { setRenderAttempted: true, includeInNotification: false };
-  }
+      storeClickMeta({
+        selector,
+        meta: {
+          ...item.getProposition().getNotification(),
+          trackingLabel: item.getTrackingLabel(),
+          scopeType: item.getProposition().getScopeType(),
+        },
+      });
 
-  if (!modules[type]) {
-    logger.warn("Invalid DOM action data: unknown type.", item.getData());
-    return { setRenderAttempted: false, includeInNotification: false };
-  }
+      return { setRenderAttempted: true, includeInNotification: false };
+    }
 
-  const decorateProposition = createDecorateProposition(
-    autoCollectPropositionInteractions,
-    type,
-    item.getProposition().getId(),
-    item.getId(),
-    item.getTrackingLabel(),
-    item.getProposition().getScopeType(),
-    item.getProposition().getNotification(),
-    storeInteractionMeta
-  );
+    if (!modules[type]) {
+      logger.warn("Invalid DOM action data: unknown type.", item.getData());
+      return { setRenderAttempted: false, includeInNotification: false };
+    }
 
-  return {
-    render: () => modules[type](item.getData(), decorateProposition),
-    setRenderAttempted: true,
-    includeInNotification: true
+    const decorateProposition = createDecorateProposition(
+      autoCollectPropositionInteractions,
+      type,
+      item.getProposition().getId(),
+      item.getId(),
+      item.getTrackingLabel(),
+      item.getProposition().getScopeType(),
+      item.getProposition().getNotification(),
+      storeInteractionMeta,
+    );
+
+    return {
+      render: () => modules[type](item.getData(), decorateProposition),
+      setRenderAttempted: true,
+      includeInNotification: true,
+    };
   };
-};

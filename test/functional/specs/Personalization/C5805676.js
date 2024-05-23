@@ -10,18 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions/index";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../helpers/createResponse";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
+import createResponse from "../../helpers/createResponse.js";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
@@ -36,8 +36,8 @@ const DEFAULT_CONTENT_ITEM = {
     "activity.name": "Functional: C5805676",
     "experience.id": "0",
     "offer.id": "0",
-    "offer.name": "Default Content"
-  }
+    "offer.name": "Default Content",
+  },
 };
 
 const MEASUREMENT_ITEM = {
@@ -45,27 +45,27 @@ const MEASUREMENT_ITEM = {
   schema: "https://ns.adobe.com/personalization/measurement",
   data: {
     format: "application/vnd.adobe.target.metric",
-    type: "click"
-  }
+    type: "click",
+  },
 };
 
 createFixture({
   title: "C5805676: Merged metric propositions should be delivered",
   url: `${TEST_PAGE_URL}?test=C5805676`,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C5805676",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C5805676: Merged metric propositions should be delivered", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const eventResult = await alloy.sendEvent({
-    decisionScopes: [FORM_BASED_SCOPE]
+    decisionScopes: [FORM_BASED_SCOPE],
   });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
@@ -86,19 +86,19 @@ test("Test C5805676: Merged metric propositions should be delivered", async () =
     "https://ns.adobe.com/personalization/dom-action",
     "https://ns.adobe.com/personalization/html-content-item",
     "https://ns.adobe.com/personalization/json-content-item",
-    "https://ns.adobe.com/personalization/redirect-item"
-  ].every(schema => personalizationSchemas.includes(schema));
+    "https://ns.adobe.com/personalization/redirect-item",
+  ].every((schema) => personalizationSchemas.includes(schema));
 
   await t.expect(result).eql(true);
 
   const response = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
   );
   const personalizationPayload = createResponse({
-    content: response
+    content: response,
   }).getPayloadsByType("personalization:decisions");
   const responseBodyProposition = personalizationPayload.find(
-    p => p.scope === FORM_BASED_SCOPE
+    (p) => p.scope === FORM_BASED_SCOPE,
   );
 
   await t.expect(responseBodyProposition.items.length).eql(2);
@@ -107,7 +107,7 @@ test("Test C5805676: Merged metric propositions should be delivered", async () =
   await t.expect(responseBodyProposition.items[1]).eql(MEASUREMENT_ITEM);
 
   const formBasedScopePropositions = eventResult.propositions.filter(
-    proposition => proposition.scope === FORM_BASED_SCOPE
+    (proposition) => proposition.scope === FORM_BASED_SCOPE,
   );
 
   await t.expect(formBasedScopePropositions.length).eql(1);

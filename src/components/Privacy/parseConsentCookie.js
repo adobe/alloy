@@ -16,7 +16,7 @@ governing permissions and limitations under the License.
  * @returns {Object} An object where the keys are purpose names and the values
  * are the consent status for the purpose.
  */
-export default cookieValue => {
+export default (cookieValue) => {
   const categoryPairs = cookieValue.split(";");
   return categoryPairs.reduce((consentByPurpose, categoryPair) => {
     const [name, value] = categoryPair.split("=");

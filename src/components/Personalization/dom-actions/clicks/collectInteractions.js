@@ -10,20 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { VIEW_SCOPE_TYPE } from "../../constants/scopeType";
-import getAttribute from "../dom/getAttribute";
+import { VIEW_SCOPE_TYPE } from "../../constants/scopeType.js";
+import getAttribute from "../dom/getAttribute.js";
 import {
   CLICK_LABEL_DATA_ATTRIBUTE,
   CLICK_TOKEN_DATA_ATTRIBUTE,
-  INTERACT_ID_DATA_ATTRIBUTE
-} from "../../handlers/createDecorateProposition";
-import { cleanMetas } from "../../utils/metaUtils";
+  INTERACT_ID_DATA_ATTRIBUTE,
+} from "../../handlers/createDecorateProposition.js";
+import { cleanMetas } from "../../utils/metaUtils.js";
 import {
   ALWAYS,
-  DECORATED_ELEMENTS_ONLY
-} from "../../../../constants/propositionInteractionType";
+  DECORATED_ELEMENTS_ONLY,
+} from "../../../../constants/propositionInteractionType.js";
 
-const getInteractionDetail = clickedElement => {
+const getInteractionDetail = (clickedElement) => {
   const { documentElement } = document;
   let element = clickedElement;
 
@@ -50,9 +50,9 @@ const getInteractionDetail = clickedElement => {
   return { interactIds: [...interactIds], clickLabel, clickToken };
 };
 
-const extractViewName = metas => {
+const extractViewName = (metas) => {
   const foundMetaWithScopeTypeView = metas.find(
-    meta => meta.scopeType === VIEW_SCOPE_TYPE
+    (meta) => meta.scopeType === VIEW_SCOPE_TYPE,
   );
 
   return foundMetaWithScopeTypeView
@@ -60,37 +60,36 @@ const extractViewName = metas => {
     : undefined;
 };
 
-const createMetaFilter = (
-  autoCollectPropositionInteractions,
-  clickLabel,
-  clickToken
-) => meta => {
-  const { scopeDetails = {} } = meta;
-  const { decisionProvider } = scopeDetails;
-  if (autoCollectPropositionInteractions[decisionProvider] === ALWAYS) {
-    return true;
-  }
+const createMetaFilter =
+  (autoCollectPropositionInteractions, clickLabel, clickToken) => (meta) => {
+    const { scopeDetails = {} } = meta;
+    const { decisionProvider } = scopeDetails;
+    if (autoCollectPropositionInteractions[decisionProvider] === ALWAYS) {
+      return true;
+    }
 
-  return (
-    autoCollectPropositionInteractions[decisionProvider] ===
-      DECORATED_ELEMENTS_ONLY &&
-    (clickLabel || clickToken)
-  );
-};
+    return (
+      autoCollectPropositionInteractions[decisionProvider] ===
+        DECORATED_ELEMENTS_ONLY &&
+      (clickLabel || clickToken)
+    );
+  };
 
 export default (
   clickedElement,
   getInteractionMetas,
-  autoCollectPropositionInteractions
+  autoCollectPropositionInteractions,
 ) => {
-  const { interactIds, clickLabel = "", clickToken } = getInteractionDetail(
-    clickedElement
-  );
+  const {
+    interactIds,
+    clickLabel = "",
+    clickToken,
+  } = getInteractionDetail(clickedElement);
 
   const metasMatchingConfigurationOptions = createMetaFilter(
     autoCollectPropositionInteractions,
     clickLabel,
-    clickToken
+    clickToken,
   );
 
   if (interactIds.length === 0) {
@@ -98,13 +97,13 @@ export default (
   }
 
   const metas = getInteractionMetas(interactIds).filter(
-    metasMatchingConfigurationOptions
+    metasMatchingConfigurationOptions,
   );
 
   return {
     decisionsMeta: cleanMetas(metas),
     propositionActionLabel: clickLabel,
     propositionActionToken: clickToken,
-    viewName: extractViewName(metas)
+    viewName: extractViewName(metas),
   };
 };

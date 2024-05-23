@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const urlStartsWithScheme = url => {
+const urlStartsWithScheme = (url) => {
   return url && /^[a-z0-9]+:\/\//i.test(url);
 };
 
@@ -37,7 +37,7 @@ const getAbsoluteUrlFromAnchorElement = (window, element) => {
   return url;
 };
 
-const isSupportedAnchorElement = element => {
+const isSupportedAnchorElement = (element) => {
   if (
     element.href &&
     (element.tagName === "A" || element.tagName === "AREA") &&
@@ -50,7 +50,7 @@ const isSupportedAnchorElement = element => {
   return false;
 };
 
-const trimQueryFromUrl = url => {
+const trimQueryFromUrl = (url) => {
   const questionMarkIndex = url.indexOf("?");
   const hashIndex = url.indexOf("#");
 
@@ -89,11 +89,11 @@ const isExitLink = (window, linkUrl) => {
  * @param {string} str String to be formatted.
  * @returns {string} Formatted string.
  */
-const truncateWhiteSpace = str => {
+const truncateWhiteSpace = (str) => {
   return str && str.replace(/\s+/g, " ").trim();
 };
 
-const isEmptyString = str => {
+const isEmptyString = (str) => {
   return !str || str.length === 0;
 };
 const determineLinkType = (window, config, linkUrl, clickedObj) => {
@@ -106,7 +106,7 @@ const determineLinkType = (window, config, linkUrl, clickedObj) => {
   return linkType;
 };
 
-const findSupportedAnchorElement = targetElement => {
+const findSupportedAnchorElement = (targetElement) => {
   let node = targetElement;
   while (node) {
     if (isSupportedAnchorElement(node)) {
@@ -127,5 +127,5 @@ export {
   trimQueryFromUrl,
   truncateWhiteSpace,
   findSupportedAnchorElement,
-  determineLinkType
+  determineLinkType,
 };

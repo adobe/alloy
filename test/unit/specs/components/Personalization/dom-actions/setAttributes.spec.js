@@ -9,16 +9,19 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import {
+  appendNode,
+  createNode,
+} from "../../../../../../src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 import {
   CLICK_LABEL_DATA_ATTRIBUTE,
-  INTERACT_ID_DATA_ATTRIBUTE
-} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
-import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
-import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
-import { DOM_ACTION_SET_ATTRIBUTE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
+  INTERACT_ID_DATA_ATTRIBUTE,
+} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import { DOM_ACTION_SET_ATTRIBUTE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::setAttribute", () => {
   let decorateProposition;
@@ -26,7 +29,7 @@ describe("Personalization::actions::setAttribute", () => {
   beforeEach(() => {
     cleanUpDomChanges("setAttribute");
     decorateProposition = createDecoratePropositionForTest({
-      type: DOM_ACTION_SET_ATTRIBUTE
+      type: DOM_ACTION_SET_ATTRIBUTE,
     });
   });
 
@@ -45,14 +48,14 @@ describe("Personalization::actions::setAttribute", () => {
       selector: "#setAttribute",
       prehidingSelector: "#setAttribute",
       content: { "data-test": "bar" },
-      meta: { a: 1 }
+      meta: { a: 1 },
     };
 
     return setAttribute(settings, decorateProposition).then(() => {
       expect(element.getAttribute("data-test")).toEqual("bar");
 
       expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
-        "trackingLabel"
+        "trackingLabel",
       );
       expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
     });

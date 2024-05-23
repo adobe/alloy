@@ -9,13 +9,16 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
-import { INTERACT_ID_DATA_ATTRIBUTE } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
-import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
-import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
-import { DOM_ACTION_COLLECT_INTERACTIONS } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
+import {
+  appendNode,
+  createNode,
+} from "../../../../../../src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
+import { INTERACT_ID_DATA_ATTRIBUTE } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import { DOM_ACTION_COLLECT_INTERACTIONS } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::collectInteractions", () => {
   let decorateProposition;
@@ -23,7 +26,7 @@ describe("Personalization::actions::collectInteractions", () => {
   beforeEach(() => {
     cleanUpDomChanges("something");
     decorateProposition = createDecoratePropositionForTest({
-      type: DOM_ACTION_COLLECT_INTERACTIONS
+      type: DOM_ACTION_COLLECT_INTERACTIONS,
     });
   });
 
@@ -34,7 +37,7 @@ describe("Personalization::actions::collectInteractions", () => {
   it("should decorate element", async () => {
     const itemData = {
       isCool: true,
-      selector: "#something"
+      selector: "#something",
     };
 
     const modules = initDomActionsModules();
@@ -44,7 +47,7 @@ describe("Personalization::actions::collectInteractions", () => {
 
     await modules[DOM_ACTION_COLLECT_INTERACTIONS](
       itemData,
-      decorateProposition
+      decorateProposition,
     );
 
     expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();

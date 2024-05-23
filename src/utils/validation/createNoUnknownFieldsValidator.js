@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default schema => (value, path) => {
+export default (schema) => (value, path) => {
   const errors = [];
-  Object.keys(value).forEach(subKey => {
+  Object.keys(value).forEach((subKey) => {
     if (!schema[subKey]) {
       const subPath = path ? `${path}.${subKey}` : subKey;
       errors.push(`'${subPath}': Unknown field.`);

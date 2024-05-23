@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import implementationDetails from "../../../../../src/components/Context/implementationDetails";
+import implementationDetails from "../../../../../src/components/Context/implementationDetails.js";
 
 describe("Context::implementationDetails", () => {
   it("works", () => {
@@ -20,8 +20,8 @@ describe("Context::implementationDetails", () => {
       implementationDetails: {
         name: "https://ns.adobe.com/experience/alloy",
         version: "__VERSION__",
-        environment: "browser"
-      }
+        environment: "browser",
+      },
     });
   });
 });

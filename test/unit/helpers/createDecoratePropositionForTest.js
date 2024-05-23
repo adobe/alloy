@@ -11,19 +11,19 @@ governing permissions and limitations under the License.
 */
 import {
   ADOBE_JOURNEY_OPTIMIZER,
-  ADOBE_TARGET
-} from "../../../src/constants/decisionProvider";
-import createInteractionStorage from "../../../src/components/Personalization/createInteractionStorage";
-import createDecorateProposition from "../../../src/components/Personalization/handlers/createDecorateProposition";
+  ADOBE_TARGET,
+} from "../../../src/constants/decisionProvider.js";
+import createInteractionStorage from "../../../src/components/Personalization/createInteractionStorage.js";
+import createDecorateProposition from "../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import {
   ALWAYS,
-  NEVER
-} from "../../../src/constants/propositionInteractionType";
+  NEVER,
+} from "../../../src/constants/propositionInteractionType.js";
 
 export default ({
   autoCollectPropositionInteractions = {
     [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
-    [ADOBE_TARGET]: NEVER
+    [ADOBE_TARGET]: NEVER,
   },
   type,
   propositionId = "propositionID",
@@ -33,8 +33,11 @@ export default ({
   notification = {
     id: "notifyId",
     scope: "web://mywebsite.com",
-    scopeDetails: { something: true, decisionProvider: ADOBE_JOURNEY_OPTIMIZER }
-  }
+    scopeDetails: {
+      something: true,
+      decisionProvider: ADOBE_JOURNEY_OPTIMIZER,
+    },
+  },
 } = {}) => {
   const { storeInteractionMeta } = createInteractionStorage();
   return createDecorateProposition(
@@ -45,6 +48,6 @@ export default ({
     trackingLabel,
     scopeType,
     notification,
-    storeInteractionMeta
+    storeInteractionMeta,
   );
 };

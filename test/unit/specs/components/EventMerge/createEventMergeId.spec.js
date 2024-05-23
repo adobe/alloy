@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createEventMergeId from "../../../../../src/components/EventMerge/createEventMergeId";
-import uuidV4Regex from "../../../constants/uuidV4Regex";
+import createEventMergeId from "../../../../../src/components/EventMerge/createEventMergeId.js";
+import uuidV4Regex from "../../../constants/uuidV4Regex.js";
 
 describe("EventMerge:createEventMergeId", () => {
   it("returns a UUID v4-compliant Id", () => {

@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray } from "../../utils";
-import { INTERACT } from "../../constants/eventType";
-import { PropositionEventType } from "../../constants/propositionEventType";
+import { isNonEmptyArray } from "../../utils/index.js";
+import { INTERACT } from "../../constants/eventType.js";
+import { PropositionEventType } from "../../constants/propositionEventType.js";
 
 const createPropositionAction = (clickLabel, clickToken) => {
   if (!clickToken && !clickLabel) {
@@ -39,7 +39,7 @@ export default ({
   getInteractionMetas,
   getClickMetas,
   getClickSelectors,
-  autoCollectPropositionInteractions
+  autoCollectPropositionInteractions,
 }) => {
   // Called when an element qualifying for conversion within an offer is clicked.
   return ({ event, clickedElement }) => {
@@ -52,15 +52,15 @@ export default ({
       collectInteractions(
         clickedElement,
         getInteractionMetas,
-        autoCollectPropositionInteractions
+        autoCollectPropositionInteractions,
       ),
-      collectClicks(clickedElement, getClickSelectors(), getClickMetas)
+      collectClicks(clickedElement, getClickSelectors(), getClickMetas),
     ].forEach(
       ({
         decisionsMeta: curDecisionsMeta,
         propositionActionLabel: curPropositionActionLabel,
         propositionActionToken: curPropositionActionToken,
-        viewName: curViewName
+        viewName: curViewName,
       }) => {
         Array.prototype.push.apply(decisionsMeta, curDecisionsMeta);
 
@@ -75,7 +75,7 @@ export default ({
         if (!viewName && curViewName) {
           viewName = curViewName;
         }
-      }
+      },
     );
 
     if (isNonEmptyArray(decisionsMeta)) {
@@ -84,8 +84,8 @@ export default ({
       if (viewName) {
         xdm.web = {
           webPageDetails: {
-            viewName
-          }
+            viewName,
+          },
         };
       }
 
@@ -95,7 +95,7 @@ export default ({
         event,
         decisionsMeta,
         [PropositionEventType.INTERACT],
-        createPropositionAction(propositionActionLabel, propositionActionToken)
+        createPropositionAction(propositionActionLabel, propositionActionToken),
       );
     }
   };

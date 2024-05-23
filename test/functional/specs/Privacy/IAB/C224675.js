@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../../helpers/networkLogger";
-import createFixture from "../../../helpers/createFixture";
+import createNetworkLogger from "../../../helpers/networkLogger/index.js";
+import createFixture from "../../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   consentPending,
-  debugEnabled
-} from "../../../helpers/constants/configParts";
-import createAlloyProxy from "../../../helpers/createAlloyProxy";
+  debugEnabled,
+} from "../../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../../helpers/createAlloyProxy.js";
 
 const config = compose(orgMainConfigMain, consentPending, debugEnabled);
 
@@ -29,14 +29,14 @@ createFixture({
     "C224675: Passing invalid consent options should throw a validation error.",
   requestHooks: [
     networkLogger.setConsentEndpointLogs,
-    networkLogger.edgeEndpointLogs
-  ]
+    networkLogger.edgeEndpointLogs,
+  ],
 });
 
 test.meta({
   ID: "C224675",
   SEVERITY: "P0",
-  TEST_RUN: "REGRESSION"
+  TEST_RUN: "REGRESSION",
 });
 
 test("Test C224675: Passing invalid consent options should throw a validation error", async () => {
@@ -48,9 +48,9 @@ test("Test C224675: Passing invalid consent options should throw a validation er
       {
         standard: "IAB",
         version: "2.0",
-        value: "CO052l-O052l-DGAMBFRACBgAIBAAAAAAIYgEawAQEagAAAA"
-      }
-    ]
+        value: "CO052l-O052l-DGAMBFRACBgAIBAAAAAAIYgEawAQEagAAAA",
+      },
+    ],
   });
 
   await t
@@ -68,9 +68,9 @@ test("Test C224675: Passing invalid consent options should throw a validation er
       {
         standard: "IAB TCF",
         version: "6.9",
-        value: "CO052l-O052l-DGAMBFRACBgAIBAAAAAAIYgEawAQEagAAAA"
-      }
-    ]
+        value: "CO052l-O052l-DGAMBFRACBgAIBAAAAAAIYgEawAQEagAAAA",
+      },
+    ],
   });
 
   await t
@@ -87,9 +87,9 @@ test("Test C224675: Passing invalid consent options should throw a validation er
     consent: [
       {
         standard: "IAB TCF",
-        version: "2.0"
-      }
-    ]
+        version: "2.0",
+      },
+    ],
   });
 
   await t
@@ -107,9 +107,9 @@ test("Test C224675: Passing invalid consent options should throw a validation er
       {
         standard: "IAB TCF",
         version: "2.0",
-        value: ""
-      }
-    ]
+        value: "",
+      },
+    ],
   });
 
   await t

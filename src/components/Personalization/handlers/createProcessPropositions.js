@@ -20,7 +20,7 @@ export default ({ schemaProcessors, logger }) => {
         }
         return true;
       })
-      .catch(error => {
+      .catch((error) => {
         if (logger.enabled) {
           const { message, stack } = error;
           const warning = `Failed to execute action ${item.toString()}. ${message} ${stack}`;
@@ -31,7 +31,7 @@ export default ({ schemaProcessors, logger }) => {
   };
 
   const renderItems = (renderers, meta) =>
-    Promise.all(renderers.map(renderer => renderer())).then(successes => {
+    Promise.all(renderers.map((renderer) => renderer())).then((successes) => {
       // as long as at least one renderer succeeds, we want to add the notification
       // to the display notifications
       if (!successes.includes(true)) {
@@ -40,7 +40,7 @@ export default ({ schemaProcessors, logger }) => {
       return meta;
     });
 
-  const processItem = item => {
+  const processItem = (item) => {
     const processor = schemaProcessors[item.getSchema()];
     if (!processor) {
       return {};
@@ -53,7 +53,7 @@ export default ({ schemaProcessors, logger }) => {
     returnedPropositions: existingReturnedPropositions,
     returnedDecisions: existingReturnedDecisions,
     items,
-    proposition
+    proposition,
   }) => {
     let renderers = [...existingRenderers];
     let returnedPropositions = [...existingReturnedPropositions];
@@ -71,12 +71,8 @@ export default ({ schemaProcessors, logger }) => {
 
     while (items.length > i) {
       item = items[i];
-      ({
-        render,
-        setRenderAttempted,
-        includeInNotification,
-        onlyRenderThis
-      } = processItem(item));
+      ({ render, setRenderAttempted, includeInNotification, onlyRenderThis } =
+        processItem(item));
       if (onlyRenderThis) {
         returnedPropositions = [];
         returnedDecisions = [];
@@ -118,7 +114,7 @@ export default ({ schemaProcessors, logger }) => {
         returnedPropositions,
         returnedDecisions,
         renderedItems,
-        true
+        true,
       );
     }
     if (nonRenderedItems.length > 0) {
@@ -126,7 +122,7 @@ export default ({ schemaProcessors, logger }) => {
         returnedPropositions,
         returnedDecisions,
         nonRenderedItems,
-        false
+        false,
       );
     }
 
@@ -134,7 +130,7 @@ export default ({ schemaProcessors, logger }) => {
       renderers,
       returnedPropositions,
       returnedDecisions,
-      onlyRenderThis
+      onlyRenderThis,
     };
   };
 
@@ -150,18 +146,14 @@ export default ({ schemaProcessors, logger }) => {
     while (renderPropositions.length > i) {
       proposition = renderPropositions[i];
       items = proposition.getItems();
-      ({
-        renderers,
-        returnedPropositions,
-        returnedDecisions,
-        onlyRenderThis
-      } = processItems({
-        renderers,
-        returnedPropositions,
-        returnedDecisions,
-        items,
-        proposition
-      }));
+      ({ renderers, returnedPropositions, returnedDecisions, onlyRenderThis } =
+        processItems({
+          renderers,
+          returnedPropositions,
+          returnedDecisions,
+          items,
+          proposition,
+        }));
       if (onlyRenderThis) {
         break;
       }
@@ -178,23 +170,23 @@ export default ({ schemaProcessors, logger }) => {
             returnedPropositions,
             returnedDecisions,
             p.getItems(),
-            false
+            false,
           );
         }
       });
     }
 
-    nonRenderPropositions.forEach(p => {
+    nonRenderPropositions.forEach((p) => {
       p.addToReturnValues(
         returnedPropositions,
         returnedDecisions,
         p.getItems(),
-        false
+        false,
       );
     });
     const render = () => {
-      return Promise.all(renderers.map(renderer => renderer())).then(metas =>
-        metas.filter(meta => meta)
+      return Promise.all(renderers.map((renderer) => renderer())).then(
+        (metas) => metas.filter((meta) => meta),
       );
     };
     return { returnedPropositions, returnedDecisions, render };

@@ -15,9 +15,9 @@ import {
   isSupportedAnchorElement,
   isDownloadLink,
   isExitLink,
-  trimQueryFromUrl
-} from "../../../../../src/components/ActivityCollector/utils";
-import { downloadLinkQualifier } from "../../../../../src/components/ActivityCollector/configValidators";
+  trimQueryFromUrl,
+} from "../../../../../src/components/ActivityCollector/utils.js";
+import { downloadLinkQualifier } from "../../../../../src/components/ActivityCollector/configValidators.js";
 
 const initAnchorState = (window, element, anchorState) => {
   element.href = anchorState["element.href"];
@@ -35,9 +35,9 @@ describe("ActivityCollector::utils", () => {
         "http://example.com",
         "https://example.com",
         "https://example.com:123/example?example=123",
-        "file://example.txt"
+        "file://example.txt",
       ];
-      urlsThatStartsWithScheme.forEach(url => {
+      urlsThatStartsWithScheme.forEach((url) => {
         expect(urlStartsWithScheme(url)).toBe(true);
       });
     });
@@ -46,9 +46,9 @@ describe("ActivityCollector::utils", () => {
         "example.com",
         "example.txt/http://example",
         "https:",
-        "//example.html"
+        "//example.html",
       ];
-      urlsThatDoesNotStartWithScheme.forEach(url => {
+      urlsThatDoesNotStartWithScheme.forEach((url) => {
         expect(urlStartsWithScheme(url)).toBe(false);
       });
     });
@@ -59,12 +59,12 @@ describe("ActivityCollector::utils", () => {
         location: {
           protocol: "",
           host: "",
-          pathname: ""
-        }
+          pathname: "",
+        },
       };
       const element = {
         protocol: "",
-        host: ""
+        host: "",
       };
       const anchorStates = [
         {
@@ -74,7 +74,7 @@ describe("ActivityCollector::utils", () => {
           "window.location.protocol": "http:",
           "window.location.host": "example.com",
           "window.location.pathname": "/",
-          expectedResult: "http://example.com/example.html"
+          expectedResult: "http://example.com/example.html",
         },
         {
           "element.href": "example.html",
@@ -83,13 +83,13 @@ describe("ActivityCollector::utils", () => {
           "window.location.protocol": "https:",
           "window.location.host": "example.com",
           "window.location.pathname": "/",
-          expectedResult: "https://example.com/example.html"
-        }
+          expectedResult: "https://example.com/example.html",
+        },
       ];
-      anchorStates.forEach(anchorState => {
+      anchorStates.forEach((anchorState) => {
         initAnchorState(window, element, anchorState);
         expect(getAbsoluteUrlFromAnchorElement(window, element)).toBe(
-          anchorState.expectedResult
+          anchorState.expectedResult,
         );
       });
     });
@@ -99,14 +99,14 @@ describe("ActivityCollector::utils", () => {
       const validAnchorElements = [
         {
           href: "http://example.com",
-          tagName: "A"
+          tagName: "A",
         },
         {
           href: "http://example.com",
-          tagName: "AREA"
-        }
+          tagName: "AREA",
+        },
       ];
-      validAnchorElements.forEach(element => {
+      validAnchorElements.forEach((element) => {
         expect(isSupportedAnchorElement(element)).toBe(true);
       });
     });
@@ -114,23 +114,23 @@ describe("ActivityCollector::utils", () => {
       const invalidAnchorElements = [
         {},
         {
-          href: ""
-        },
-        {
-          href: "http://example.com"
+          href: "",
         },
         {
           href: "http://example.com",
-          tagName: "LINK"
+        },
+        {
+          href: "http://example.com",
+          tagName: "LINK",
         },
         {
           href: "http://example.com",
           tagName: "A",
           onclick: "example();",
-          protocol: " javascript:"
-        }
+          protocol: " javascript:",
+        },
       ];
-      invalidAnchorElements.forEach(element => {
+      invalidAnchorElements.forEach((element) => {
         expect(isSupportedAnchorElement(element)).toBe(false);
       });
     });
@@ -138,7 +138,7 @@ describe("ActivityCollector::utils", () => {
   describe("isDownloadLink", () => {
     it("Returns true if the clicked element has a download attribute", () => {
       const clickedElement = {
-        download: "filename"
+        download: "filename",
       };
       expect(isDownloadLink("", "", clickedElement)).toBe(true);
     });
@@ -146,20 +146,20 @@ describe("ActivityCollector::utils", () => {
       const downloadLinks = [
         "download.pdf",
         "http://example.com/download.zip",
-        "https://example.com/download.docx"
+        "https://example.com/download.docx",
       ];
       // this runs the validator with undefined input which returns the default regex
-      downloadLinks.forEach(downloadLink => {
+      downloadLinks.forEach((downloadLink) => {
         expect(isDownloadLink(downloadLinkQualifier(), downloadLink, {})).toBe(
-          true
+          true,
         );
       });
     });
     it("Returns false if the link does not match the download link qualifying regular expression", () => {
       const downloadLinks = ["download.mod", "http://example.com/download.png"];
-      downloadLinks.forEach(downloadLink => {
+      downloadLinks.forEach((downloadLink) => {
         expect(isDownloadLink(downloadLinkQualifier(), downloadLink, {})).toBe(
-          false
+          false,
         );
       });
     });
@@ -168,25 +168,25 @@ describe("ActivityCollector::utils", () => {
     it("Returns true if the link leads away from the current hostname", () => {
       const mockWindow = {
         location: {
-          hostname: "adobe.com"
-        }
+          hostname: "adobe.com",
+        },
       };
       const clickedLinks = [
         "https://example.com",
-        "http://example.com/index.html"
+        "http://example.com/index.html",
       ];
-      clickedLinks.forEach(clickedLink => {
+      clickedLinks.forEach((clickedLink) => {
         expect(isExitLink(mockWindow, clickedLink)).toBe(true);
       });
     });
     it("Returns false if the link leads to the current hostname", () => {
       const mockWindow = {
         location: {
-          hostname: "adobe.com"
-        }
+          hostname: "adobe.com",
+        },
       };
       const clickedLinks = ["https://adobe.com", "http://adobe.com/index.html"];
-      clickedLinks.forEach(clickedLink => {
+      clickedLinks.forEach((clickedLink) => {
         expect(isExitLink(mockWindow, clickedLink)).toBe(false);
       });
     });
@@ -197,13 +197,13 @@ describe("ActivityCollector::utils", () => {
         ["http://example.com", "http://example.com"],
         [
           "https://example.com:123/example?example=123",
-          "https://example.com:123/example"
+          "https://example.com:123/example",
         ],
         ["file://example.txt", "file://example.txt"],
         ["http://example.com/?example=123", "http://example.com/"],
-        ["http://example.com/#example", "http://example.com/"]
+        ["http://example.com/#example", "http://example.com/"],
       ];
-      urls.forEach(url => {
+      urls.forEach((url) => {
         expect(trimQueryFromUrl(url[0])).toBe(url[1]);
       });
     });

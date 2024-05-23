@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions/index";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
@@ -30,13 +30,13 @@ const decisionContent = "<h3>welcome to TARGET AWESOME WORLD!!! </h3>";
 createFixture({
   title:
     "C6364799: applyPropositions should render html-content-item schemas when metadata is provided by the user",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C6364799",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const setupPropositions = () => {
@@ -52,11 +52,11 @@ const setupPropositions = () => {
           data: {
             content: "<p>Some custom content for the home page</p>",
             format: "text/html",
-            id: "1202448"
-          }
-        }
-      ]
-    }
+            id: "1202448",
+          },
+        },
+      ],
+    },
   ];
 };
 
@@ -64,7 +64,7 @@ test("Test C6364799: applyPropositions should render html-content-item schemas w
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const result = await alloy.sendEvent({
-    decisionScopes: [scope]
+    decisionScopes: [scope],
   });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
@@ -84,14 +84,14 @@ test("Test C6364799: applyPropositions should render html-content-item schemas w
     "https://ns.adobe.com/personalization/default-content-item",
     "https://ns.adobe.com/personalization/html-content-item",
     "https://ns.adobe.com/personalization/json-content-item",
-    "https://ns.adobe.com/personalization/redirect-item"
-  ].every(schema => personalizationSchemas.includes(schema));
+    "https://ns.adobe.com/personalization/redirect-item",
+  ].every((schema) => personalizationSchemas.includes(schema));
 
   await t.expect(results).eql(true);
 
   await t.expect(result.decisions[0].renderAttempted).eql(undefined);
   await t.expect(result.propositions[0].renderAttempted).eql(false);
-  const matchingDecision = result.decisions.find(decision => {
+  const matchingDecision = result.decisions.find((decision) => {
     return decision.id === decisionId;
   });
   await t.expect(matchingDecision).ok("Decision not found.");
@@ -101,18 +101,19 @@ test("Test C6364799: applyPropositions should render html-content-item schemas w
   const metadata = {
     "alloy-test-scope-1": {
       selector: "#home-item1",
-      actionType: "setHtml"
-    }
+      actionType: "setHtml",
+    },
   };
   const propositions = setupPropositions();
   const applyPropositionsResult = await alloy.applyPropositions({
     propositions,
-    metadata
+    metadata,
   });
 
-  const allPropositionsWereRendered = applyPropositionsResult.propositions.every(
-    proposition => proposition.renderAttempted
-  );
+  const allPropositionsWereRendered =
+    applyPropositionsResult.propositions.every(
+      (proposition) => proposition.renderAttempted,
+    );
   await t.expect(allPropositionsWereRendered).eql(true);
   await t.expect(applyPropositionsResult.propositions.length).eql(1);
   // make sure no new network requests are sent - applyPropositions is a client-side only command.

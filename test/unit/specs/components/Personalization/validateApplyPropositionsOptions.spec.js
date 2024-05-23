@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import "jasmine-expect";
-import { DOM_ACTION } from "@adobe/alloy/libEs5/constants/schema";
+import { DOM_ACTION } from "@adobe/alloy/libEs5/constants/schema.js";
 import validateApplyPropositionsOptions, {
-  EMPTY_PROPOSITIONS
-} from "../../../../../src/components/Personalization/validateApplyPropositionsOptions";
+  EMPTY_PROPOSITIONS,
+} from "../../../../../src/components/Personalization/validateApplyPropositionsOptions.js";
 
 const PROPOSITIONS = [
   {
@@ -28,10 +28,10 @@ const PROPOSITIONS = [
         data: {
           type: "setHtml",
           content: "woof",
-          selector: "#paragraph-text-1"
-        }
-      }
-    ]
+          selector: "#paragraph-text-1",
+        },
+      },
+    ],
   },
   {
     id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn0=",
@@ -44,28 +44,28 @@ const PROPOSITIONS = [
           type: "click",
           format: "application/vnd.adobe.target.dom-action",
           selector:
-            "#root > DIV:nth-of-type(1) > UL:nth-of-type(1) > LI:nth-of-type(4) > A:nth-of-type(1)"
-        }
-      }
+            "#root > DIV:nth-of-type(1) > UL:nth-of-type(1) > LI:nth-of-type(4) > A:nth-of-type(1)",
+        },
+      },
     ],
     scopeDetails: {
       decisionProvider: "TGT",
       activity: {
-        id: "442358"
+        id: "442358",
       },
       characteristics: {
         eventToken: "+8J+6aZYrFL4hGqSwULhUQ==",
-        analyticsToken: "442358:0:0|32767"
-      }
-    }
-  }
+        analyticsToken: "442358:0:0|32767",
+      },
+    },
+  },
 ];
 
 const METADATA = {
   scope1: {
     selector: "#home-item1",
-    actionType: "setHtml"
-  }
+    actionType: "setHtml",
+  },
 };
 
 describe("Personalization::validateApplyPropositionsOptions", () => {
@@ -75,7 +75,7 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
   const resetLogger = () => {
     loggerSpy = jasmine.createSpy("logger.warn");
     logger = {
-      warn: loggerSpy
+      warn: loggerSpy,
     };
   };
 
@@ -85,7 +85,7 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
 
   it("it should log a warning when no options are present", () => {
     const result = validateApplyPropositionsOptions({
-      logger
+      logger,
     });
 
     expect(loggerSpy).toHaveBeenCalled();
@@ -95,12 +95,12 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
   it("it should log a warning when propositions array is missing from options", () => {
     const result = validateApplyPropositionsOptions({
       logger,
-      options: {}
+      options: {},
     });
 
     expect(loggerSpy).toHaveBeenCalled();
     expect(loggerSpy.calls.first().args[1].message).toEqual(
-      "'propositions' is a required option"
+      "'propositions' is a required option",
     );
 
     expect(result).toEqual(EMPTY_PROPOSITIONS);
@@ -110,13 +110,13 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
     const result = validateApplyPropositionsOptions({
       logger,
       options: {
-        propositions: []
-      }
+        propositions: [],
+      },
     });
 
     expect(loggerSpy).toHaveBeenCalled();
     expect(loggerSpy.calls.first().args[1].message).toEqual(
-      "'propositions': Expected a non-empty array, but got []."
+      "'propositions': Expected a non-empty array, but got [].",
     );
 
     expect(result).toEqual(EMPTY_PROPOSITIONS);
@@ -132,26 +132,26 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
           "'propositions[0].id' is a required option\n" +
           "'propositions[0].scope' is a required option\n" +
           "'propositions[0].scopeDetails' is a required option\n" +
-          "'propositions[0].items' is a required option"
+          "'propositions[0].items' is a required option",
       },
       {
         propositions: [{ id: "abc" }],
         errorMessage:
           "'propositions[0].scope' is a required option\n" +
           "'propositions[0].scopeDetails' is a required option\n" +
-          "'propositions[0].items' is a required option"
+          "'propositions[0].items' is a required option",
       },
       {
         propositions: [{ id: "abc", scope: "web://aepdemo.com/" }],
         errorMessage:
           "'propositions[0].scopeDetails' is a required option\n" +
-          "'propositions[0].items' is a required option"
+          "'propositions[0].items' is a required option",
       },
       {
         propositions: [
-          { id: "abc", scope: "web://aepdemo.com/", scopeDetails }
+          { id: "abc", scope: "web://aepdemo.com/", scopeDetails },
         ],
-        errorMessage: "'propositions[0].items' is a required option"
+        errorMessage: "'propositions[0].items' is a required option",
       },
       {
         propositions: [
@@ -159,11 +159,11 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
             id: "abc",
             scope: "web://aepdemo.com/",
             scopeDetails,
-            items: []
-          }
+            items: [],
+          },
         ],
         errorMessage:
-          "'propositions[0].items': Expected a non-empty array, but got []."
+          "'propositions[0].items': Expected a non-empty array, but got [].",
       },
       {
         propositions: [
@@ -171,13 +171,13 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
             id: "abc",
             scope: "web://aepdemo.com/",
             scopeDetails,
-            items: [{}]
-          }
+            items: [{}],
+          },
         ],
         errorMessage:
           "'propositions[0].items[0].id' is a required option\n" +
           "'propositions[0].items[0].schema' is a required option\n" +
-          "'propositions[0].items[0].data' is a required option"
+          "'propositions[0].items[0].data' is a required option",
       },
       {
         propositions: [
@@ -185,12 +185,12 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
             id: "abc",
             scope: "web://aepdemo.com/",
             scopeDetails,
-            items: [{ id: "abc" }]
-          }
+            items: [{ id: "abc" }],
+          },
         ],
         errorMessage:
           "'propositions[0].items[0].schema' is a required option\n" +
-          "'propositions[0].items[0].data' is a required option"
+          "'propositions[0].items[0].data' is a required option",
       },
       {
         propositions: [
@@ -198,11 +198,11 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
             id: "abc",
             scope: "web://aepdemo.com/",
             scopeDetails,
-            items: [{ id: "abc", schema: DOM_ACTION }]
-          }
+            items: [{ id: "abc", schema: DOM_ACTION }],
+          },
         ],
-        errorMessage: "'propositions[0].items[0].data' is a required option"
-      }
+        errorMessage: "'propositions[0].items[0].data' is a required option",
+      },
     ];
 
     for (let i = 0; i < tests.length; i += 1) {
@@ -212,8 +212,8 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
       const result = validateApplyPropositionsOptions({
         logger,
         options: {
-          propositions
-        }
+          propositions,
+        },
       });
 
       expect(loggerSpy).toHaveBeenCalled();
@@ -229,8 +229,8 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
       logger,
       options: {
         bad: "bad",
-        propositions: PROPOSITIONS
-      }
+        propositions: PROPOSITIONS,
+      },
     });
 
     expect(loggerSpy).not.toHaveBeenCalled();
@@ -242,13 +242,13 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
       logger,
       options: {
         propositions: PROPOSITIONS,
-        metadata: []
-      }
+        metadata: [],
+      },
     });
 
     expect(loggerSpy).toHaveBeenCalled();
     expect(loggerSpy.calls.first().args[1].message).toEqual(
-      "'metadata': Expected an object, but got []."
+      "'metadata': Expected an object, but got [].",
     );
 
     expect(result).toEqual(EMPTY_PROPOSITIONS);
@@ -259,8 +259,8 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
       logger,
       options: {
         propositions: PROPOSITIONS,
-        metadata: METADATA
-      }
+        metadata: METADATA,
+      },
     });
 
     expect(loggerSpy).not.toHaveBeenCalled();

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 // eslint-disable-next-line no-unused-vars
-import { createRequest } from "../../../../../src/utils/request";
+import { createRequest } from "../../../../../src/utils/request/index.js";
 
 // This module is tested thoroughly through the different types of requests
 // that leverage this module.

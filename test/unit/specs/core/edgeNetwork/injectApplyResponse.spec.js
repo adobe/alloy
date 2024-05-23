@@ -9,10 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import injectApplyResponse from "../../../../../src/core/edgeNetwork/injectApplyResponse";
-import assertFunctionCallOrder from "../../../helpers/assertFunctionCallOrder";
-import { defer } from "../../../../../src/utils";
-import flushPromiseChains from "../../../helpers/flushPromiseChains";
+import injectApplyResponse from "../../../../../src/core/edgeNetwork/injectApplyResponse.js";
+import assertFunctionCallOrder from "../../../helpers/assertFunctionCallOrder.js";
+import { defer } from "../../../../../src/utils/index.js";
+import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 describe("injectApplyResponse", () => {
   let lifecycle;
@@ -27,14 +27,14 @@ describe("injectApplyResponse", () => {
 
   const testApplyResponseSuccess = ({
     runOnResponseCallbacks,
-    assertLifecycleCall
+    assertLifecycleCall,
   }) => {
     const successHandler = jasmine.createSpy("successHandler");
     applyResponse({
       request,
       responseHeaders,
       responseBody,
-      runOnResponseCallbacks
+      runOnResponseCallbacks,
     }).then(successHandler);
     return flushPromiseChains()
       .then(() => {
@@ -52,11 +52,11 @@ describe("injectApplyResponse", () => {
     lifecycle = jasmine.createSpyObj("lifecycle", {
       onBeforeRequest: Promise.resolve(),
       onRequestFailure: Promise.resolve(),
-      onResponse: Promise.resolve()
+      onResponse: Promise.resolve(),
     });
     cookieTransfer = jasmine.createSpyObj("cookieTransfer", [
       "cookiesToPayload",
-      "responseToCookies"
+      "responseToCookies",
     ]);
 
     processWarningsAndErrors = jasmine.createSpy("processWarningsAndErrors");
@@ -65,10 +65,10 @@ describe("injectApplyResponse", () => {
       getId: "RID123",
       getAction: "test-action",
       getPayload: {
-        type: "payload"
+        type: "payload",
       },
       getUseIdThirdPartyDomain: false,
-      getUseSendBeacon: false
+      getUseSendBeacon: false,
     });
 
     responseHeaders = { "x-hello": "yep" };
@@ -84,7 +84,7 @@ describe("injectApplyResponse", () => {
       cookieTransfer,
       lifecycle,
       createResponse,
-      processWarningsAndErrors
+      processWarningsAndErrors,
     });
   });
 
@@ -95,7 +95,7 @@ describe("injectApplyResponse", () => {
       assertLifecycleCall() {
         expect(lifecycle.onResponse).toHaveBeenCalledWith({ response });
         deferred.resolve();
-      }
+      },
     });
   });
 
@@ -112,7 +112,7 @@ describe("injectApplyResponse", () => {
       assertLifecycleCall() {
         expect(responseCallback).toHaveBeenCalledWith({ response });
         deferred.resolve();
-      }
+      },
     });
   });
 
@@ -126,7 +126,7 @@ describe("injectApplyResponse", () => {
       assertLifecycleCall() {
         expect(runOnResponseCallbacks).toHaveBeenCalledWith({ response });
         deferred.resolve();
-      }
+      },
     });
   });
 
@@ -134,12 +134,12 @@ describe("injectApplyResponse", () => {
     return applyResponse({
       request,
       responseHeaders,
-      responseBody
+      responseBody,
     }).then(() => {
       expect(cookieTransfer.responseToCookies).toHaveBeenCalledWith(response);
       assertFunctionCallOrder([
         cookieTransfer.responseToCookies,
-        lifecycle.onResponse
+        lifecycle.onResponse,
       ]);
     });
   });
@@ -150,7 +150,7 @@ describe("injectApplyResponse", () => {
       .and.returnValue(Promise.resolve([{ c: 2 }, { h: 9 }, undefined]));
 
     lifecycle.onResponse.and.returnValue(
-      Promise.resolve([{ a: 2 }, { b: 8 }, undefined])
+      Promise.resolve([{ a: 2 }, { b: 8 }, undefined]),
     );
 
     return expectAsync(
@@ -158,8 +158,8 @@ describe("injectApplyResponse", () => {
         request,
         responseHeaders,
         responseBody,
-        runOnResponseCallbacks
-      })
+        runOnResponseCallbacks,
+      }),
     ).toBeResolvedTo({ c: 2, h: 9, a: 2, b: 8 });
   });
 
@@ -172,11 +172,11 @@ describe("injectApplyResponse", () => {
     });
     lifecycle.onResponse.and.returnValue(Promise.resolve([{ c: 2 }]));
     return expectAsync(
-      applyResponse({ request, responseHeaders, responseBody })
+      applyResponse({ request, responseHeaders, responseBody }),
     ).toBeResolvedTo({
       a: 1,
       b: 1,
-      c: 2
+      c: 2,
     });
   });
 
@@ -184,11 +184,11 @@ describe("injectApplyResponse", () => {
     return applyResponse({
       request,
       responseHeaders,
-      responseBody
+      responseBody,
     }).then(() => {
       expect(createResponse).toHaveBeenCalledWith({
         content: responseBody,
-        getHeader: jasmine.any(Function)
+        getHeader: jasmine.any(Function),
       });
     });
   });
@@ -203,12 +203,12 @@ describe("injectApplyResponse", () => {
       cookieTransfer,
       lifecycle,
       createResponse,
-      processWarningsAndErrors
+      processWarningsAndErrors,
     });
 
     const runOnResponseCallbacks = jasmine.createSpy("runOnResponseCallbacks");
     const runOnRequestFailureCallbacks = jasmine.createSpy(
-      "runOnRequestFailureCallbacks"
+      "runOnRequestFailureCallbacks",
     );
 
     return applyResponse({
@@ -216,11 +216,11 @@ describe("injectApplyResponse", () => {
       responseHeaders,
       responseBody,
       runOnResponseCallbacks,
-      runOnRequestFailureCallbacks
+      runOnRequestFailureCallbacks,
     })
-      .catch(err => {
+      .catch((err) => {
         expect(runOnRequestFailureCallbacks).toHaveBeenCalledWith({
-          error
+          error,
         });
         expect(err).toEqual(error);
       })
@@ -236,12 +236,12 @@ describe("injectApplyResponse", () => {
       request,
       responseHeaders,
       responseBody,
-      runOnResponseCallbacks
-    }).then(result => {
+      runOnResponseCallbacks,
+    }).then((result) => {
       expect(runOnResponseCallbacks).toHaveBeenCalledWith({ response });
       assertFunctionCallOrder([
         cookieTransfer.responseToCookies,
-        lifecycle.onResponse
+        lifecycle.onResponse,
       ]);
       expect(result).not.toBeNull();
       expect(result).toEqual({ c: 2, h: 9 });

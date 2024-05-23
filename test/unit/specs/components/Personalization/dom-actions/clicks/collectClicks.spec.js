@@ -14,9 +14,9 @@ import {
   createNode,
   appendNode,
   selectNodes,
-  removeNode
-} from "../../../../../../../src/utils/dom";
-import collectClicks from "../../../../../../../src/components/Personalization/dom-actions/clicks/collectClicks";
+  removeNode,
+} from "../../../../../../../src/utils/dom/index.js";
+import collectClicks from "../../../../../../../src/components/Personalization/dom-actions/clicks/collectClicks.js";
 
 describe("Personalization::tracking::clicks", () => {
   afterEach(() => {
@@ -27,8 +27,8 @@ describe("Personalization::tracking::clicks", () => {
     const meta = [
       {
         id: "AT:1234",
-        scope: "example_scope"
-      }
+        scope: "example_scope",
+      },
     ];
     const getClickMetas = jasmine
       .createSpy("getClickMetas")
@@ -45,7 +45,7 @@ describe("Personalization::tracking::clicks", () => {
     const node = createNode(
       "DIV",
       { id: "abc", class: "eq" },
-      { innerHTML: content }
+      { innerHTML: content },
     );
 
     appendNode(document.body, node);
@@ -56,7 +56,7 @@ describe("Personalization::tracking::clicks", () => {
     const { decisionsMeta, propositionActionLabel } = collectClicks(
       element,
       selectors,
-      getClickMetas
+      getClickMetas,
     );
 
     expect(decisionsMeta).toEqual(meta);
@@ -67,34 +67,34 @@ describe("Personalization::tracking::clicks", () => {
     const metaOuter = [
       {
         id: "AT:outer-id-1",
-        scope: "outer-scope1"
+        scope: "outer-scope1",
       },
       {
         id: "AJO:inner-id-2",
         scope: "inner-scope2",
-        trackingLabel: "outer-label-2"
+        trackingLabel: "outer-label-2",
       },
       {
         id: "AJO:outer-id-3",
         scope: "outer-scope3",
-        trackingLabel: "outer-label-3"
-      }
+        trackingLabel: "outer-label-3",
+      },
     ];
     const metaInner = [
       {
         id: "AT:inner-id-1",
-        scope: "inner-scope1"
+        scope: "inner-scope1",
       },
       {
         id: "AJO:inner-id-2",
         scope: "inner-scope2",
-        trackingLabel: "inner-label-2"
+        trackingLabel: "inner-label-2",
       },
       {
         id: "AJO:inner-id-3",
         scope: "inner-scope3",
-        trackingLabel: "inner-label-3"
-      }
+        trackingLabel: "inner-label-3",
+      },
     ];
     const getClickMetas = jasmine
       .createSpy("getClickMetas")
@@ -114,44 +114,44 @@ describe("Personalization::tracking::clicks", () => {
     const node = createNode(
       "DIV",
       { id: "abc", class: "eq" },
-      { innerHTML: content }
+      { innerHTML: content },
     );
 
     appendNode(document.body, node);
 
     const selectors = [
       "#abc:eq(0) > div.b:eq(0)",
-      "#abc:eq(0) > div.b:eq(0) > div.c"
+      "#abc:eq(0) > div.b:eq(0) > div.c",
     ];
 
     const element = document.getElementById("one");
     const { decisionsMeta, propositionActionLabel } = collectClicks(
       element,
       selectors,
-      getClickMetas
+      getClickMetas,
     );
 
     expect(decisionsMeta).toEqual([
       {
         id: "AT:outer-id-1",
-        scope: "outer-scope1"
+        scope: "outer-scope1",
       },
       {
         id: "AJO:inner-id-2",
-        scope: "inner-scope2"
+        scope: "inner-scope2",
       },
       {
         id: "AJO:outer-id-3",
-        scope: "outer-scope3"
+        scope: "outer-scope3",
       },
       {
         id: "AT:inner-id-1",
-        scope: "inner-scope1"
+        scope: "inner-scope1",
       },
       {
         id: "AJO:inner-id-3",
-        scope: "inner-scope3"
-      }
+        scope: "inner-scope3",
+      },
     ]);
     expect(propositionActionLabel).toEqual("inner-label-2");
   });
