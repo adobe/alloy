@@ -30,7 +30,6 @@ export default () =>
     edgeDomain: string().domain().default(EDGE_DOMAIN),
     edgeBasePath: string().nonEmpty().default(EDGE_BASE_PATH),
     orgId: string().unique().required(),
-    personalizationStorageEnabled: boolean().default(true),
     onBeforeEventSend: callback().default(noop),
     edgeConfigOverrides: validateConfigOverride,
   }).deprecated("edgeConfigId", string().unique(), "datastreamId");

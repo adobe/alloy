@@ -92,11 +92,11 @@ const commands = [
   "appendIdentityToUrl",
   "applyPropositions",
   "subscribeRulesetItems",
+  "subscribeContentCards",
   "evaluateRulesets",
   "createMediaSession",
   "sendMediaEvent",
   "getMediaAnalyticsTracker",
-  "subscribeContentCards",
 ];
 
 export default (instanceName = "alloy") => {
