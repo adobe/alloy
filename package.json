@@ -20,7 +20,6 @@
     "test:unit:saucelabs:local": "karma start karma.saucelabs.conf.cjs --single-run",
     "test:unit:coverage": "karma start --single-run --reporters spec,coverage",
     "test:functional": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome",
-    "test:functional:one": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome /Users/waters/Development/alloy/test/functional/specs/Personalization/C17409728.js",
     "test:functional:custom": "node scripts/helpers/runFunctionalTests.js",
     "test:functional:saucelabs:dev": "NPM_PACKAGE_VERSION=$(npm pkg get version | tr -d '\"') EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" saucectl run --config ./.sauce/dev.yml",
     "test:functional:watch": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ./scripts/watchFunctionalTests.js --browsers chrome",
