@@ -16,8 +16,9 @@ export default (container, styles, decorateProposition) => {
   return new Promise((resolve) => {
     const { priority, ...style } = styles;
 
+    decorateProposition(container);
+
     Object.keys(style).forEach((key) => {
-      decorateProposition(container);
       setStyle(container, key, style[key], priority);
     });
 
