@@ -116,8 +116,8 @@ const getHistoricEventFromLocalStorage = ClientFunction(
 test("Test C1234567: Subscribes content cards", async () => {
   const surface = "web://mywebsite.com/#my-cards";
 
-  const publishedDate = 981010800000; // Math.ceil(new Date().getTime() / 1000) - 864000;
-  const expiryDate = 4105148400000; // Math.ceil(new Date().getTime() / 1000) + 864000;
+  const publishedDate = Math.ceil(new Date().getTime() / 1000) - 864000;
+  const expiryDate = Math.ceil(new Date().getTime() / 1000) + 864000;
 
   const activityId = uuid();
   const propositionId = uuid();
