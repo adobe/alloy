@@ -13,27 +13,22 @@ governing permissions and limitations under the License.
 import { getChildren, insertAfter, insertBefore } from "./dom/index.js";
 
 export default (container, { from, to }, decorateProposition) => {
-  return new Promise((resolve) => {
-    const children = getChildren(container);
-    const elementFrom = children[from];
-    const elementTo = children[to];
+  const children = getChildren(container);
+  const elementFrom = children[from];
+  const elementTo = children[to];
 
-    if (!elementFrom || !elementTo) {
-      // TODO: We will need to add logging
-      // to ease troubleshooting
-      resolve();
-      return;
-    }
+  if (!elementFrom || !elementTo) {
+    // TODO: We will need to add logging
+    // to ease troubleshooting
+    return;
+  }
 
-    if (from < to) {
-      insertAfter(elementTo, elementFrom);
-    } else {
-      insertBefore(elementTo, elementFrom);
-    }
+  if (from < to) {
+    insertAfter(elementTo, elementFrom);
+  } else {
+    insertBefore(elementTo, elementFrom);
+  }
 
-    decorateProposition(elementTo);
-    decorateProposition(elementFrom);
-
-    resolve();
-  });
+  decorateProposition(elementTo);
+  decorateProposition(elementFrom);
 };

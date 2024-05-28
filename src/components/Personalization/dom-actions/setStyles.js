@@ -13,15 +13,11 @@ governing permissions and limitations under the License.
 import { setStyle } from "./dom/index.js";
 
 export default (container, styles, decorateProposition) => {
-  return new Promise((resolve) => {
-    const { priority, ...style } = styles;
+  const { priority, ...style } = styles;
 
-    decorateProposition(container);
-
-    Object.keys(style).forEach((key) => {
-      setStyle(container, key, style[key], priority);
-    });
-
-    resolve();
+  Object.keys(style).forEach((key) => {
+    setStyle(container, key, style[key], priority);
   });
+
+  decorateProposition(container);
 };

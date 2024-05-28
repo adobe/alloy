@@ -16,7 +16,7 @@ import { isImage, loadImage } from "./images.js";
 
 export default (container, url, decorateProposition) => {
   if (!isImage(container)) {
-    return Promise.resolve();
+    return;
   }
 
   // Start downloading the image
@@ -29,5 +29,4 @@ export default (container, url, decorateProposition) => {
 
   // Replace the image "src"
   setAttribute(container, SRC, url);
-  return Promise.resolve();
 };

@@ -12,5 +12,4 @@ governing permissions and limitations under the License.
 
 export default (container, content, decorateProposition) => {
   decorateProposition(container);
-  return Promise.resolve();
 };

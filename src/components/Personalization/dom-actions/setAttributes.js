@@ -14,8 +14,8 @@ import { setAttribute } from "./dom/index.js";
 
 export default (container, attributes, decorateProposition) => {
   Object.keys(attributes).forEach((key) => {
-    decorateProposition(container);
     setAttribute(container, key, attributes[key]);
   });
-  return Promise.resolve();
+
+  decorateProposition(container);
 };
