@@ -25,15 +25,15 @@ export default objectOf({
     externalLinkEnabled: boolean().default(true),
     downloadLinkEnabled: boolean().default(true),
     // TODO: Consider moving downloadLinkQualifier here.
-    sessionStorageEnabled: boolean().default(true),
-    eventGroupingEnabled: boolean().default(true),
+    sessionStorageEnabled: boolean().default(false),
+    eventGroupingEnabled: boolean().default(false),
     filterClickProperties: callback()
   }).default({
     internalLinkEnabled: true,
     externalLinkEnabled: true,
     downloadLinkEnabled: true,
-    sessionStorageEnabled: true,
-    eventGroupingEnabled: true
+    sessionStorageEnabled: false,
+    eventGroupingEnabled: false
   }),
   downloadLinkQualifier,
   onBeforeLinkClickSend: callback().deprecated(
