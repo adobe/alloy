@@ -188,7 +188,7 @@ export default ({ properties, logger } = {}) => {
             );
           }
           this.options = undefined;
-          return undefined;
+          return;
         }
         this.options = opts;
         // This is just to ensure that any fields outside clicked element properties
@@ -196,7 +196,6 @@ export default ({ properties, logger } = {}) => {
         props.filteredXdm = opts.xdm;
         props.filteredData = opts.data;
       }
-      return opts;
     },
     get options() {
       const opts = {};
