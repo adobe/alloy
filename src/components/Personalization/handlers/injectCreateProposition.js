@@ -12,20 +12,28 @@ governing permissions and limitations under the License.
 
 import PAGE_WIDE_SCOPE from "../../../constants/pageWideScope.js";
 import {
-  VIEW_SCOPE_TYPE,
   PAGE_SCOPE_TYPE,
   PROPOSITION_SCOPE_TYPE,
+  VIEW_SCOPE_TYPE,
 } from "../constants/scopeType.js";
 
 export default ({ preprocess, isPageWideSurface }) => {
   const createItem = (item, proposition) => {
-    const { schema, data, characteristics: { trackingLabel } = {} } = item;
+    const { id, schema, data, characteristics: { trackingLabel } = {} } = item;
+
+    const schemaType = data ? data.type : undefined;
 
     const processedData = preprocess(data);
 
     return {
+      getId() {
+        return id;
+      },
       getSchema() {
         return schema;
+      },
+      getSchemaType() {
+        return schemaType;
       },
       getData() {
         return processedData;
@@ -73,6 +81,9 @@ export default ({ preprocess, isPageWideSurface }) => {
       },
       getNotification() {
         return { id, scope, scopeDetails };
+      },
+      getId() {
+        return id;
       },
       toJSON() {
         return payload;

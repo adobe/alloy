@@ -1,5 +1,5 @@
 /*
-Copyright 2019 Adobe. All rights reserved.
+Copyright 2024 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -30,15 +30,15 @@ describe("Personalization::tracking::clicks", () => {
         scope: "example_scope",
       },
     ];
-    const getClickMetasBySelector = jasmine
-      .createSpy("getClickMetasBySelector")
+    const getClickMetas = jasmine
+      .createSpy("getClickMetas")
       .and.returnValue(meta);
     const content = `
       <div class="b">
         <div id="one" class="c">first</div>
 
         <div id="two" class="c">second</div>
-        
+
         <div id="three" class="c">third</div>
       </div>
     `;
@@ -53,17 +53,17 @@ describe("Personalization::tracking::clicks", () => {
     const selectors = ["#abc:eq(0) > div.b:eq(0) > div.c"];
 
     const element = document.getElementById("one");
-    const { decisionsMeta, eventLabel } = collectClicks(
+    const { decisionsMeta, propositionActionLabel } = collectClicks(
       element,
       selectors,
-      getClickMetasBySelector,
+      getClickMetas,
     );
 
     expect(decisionsMeta).toEqual(meta);
-    expect(eventLabel).toEqual("");
+    expect(propositionActionLabel).toEqual("");
   });
 
-  it("should collect and dedup clicks with labels", () => {
+  it("should collect and dedupe clicks with labels", () => {
     const metaOuter = [
       {
         id: "AT:outer-id-1",
@@ -96,8 +96,8 @@ describe("Personalization::tracking::clicks", () => {
         trackingLabel: "inner-label-3",
       },
     ];
-    const getClickMetasBySelector = jasmine
-      .createSpy("getClickMetasBySelector")
+    const getClickMetas = jasmine
+      .createSpy("getClickMetas")
       .withArgs("#abc:eq(0) > div.b:eq(0)")
       .and.returnValue(metaOuter)
       .withArgs("#abc:eq(0) > div.b:eq(0) > div.c")
@@ -107,7 +107,7 @@ describe("Personalization::tracking::clicks", () => {
         <div id="one" class="c">first</div>
 
         <div id="two" class="c">second</div>
-        
+
         <div id="three" class="c">third</div>
       </div>
     `;
@@ -125,10 +125,10 @@ describe("Personalization::tracking::clicks", () => {
     ];
 
     const element = document.getElementById("one");
-    const { decisionsMeta, eventLabel } = collectClicks(
+    const { decisionsMeta, propositionActionLabel } = collectClicks(
       element,
       selectors,
-      getClickMetasBySelector,
+      getClickMetas,
     );
 
     expect(decisionsMeta).toEqual([
@@ -153,6 +153,6 @@ describe("Personalization::tracking::clicks", () => {
         scope: "inner-scope3",
       },
     ]);
-    expect(eventLabel).toEqual("inner-label-2");
+    expect(propositionActionLabel).toEqual("inner-label-2");
   });
 });

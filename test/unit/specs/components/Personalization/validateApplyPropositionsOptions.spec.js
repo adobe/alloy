@@ -11,13 +11,29 @@ governing permissions and limitations under the License.
 */
 
 import "jasmine-expect";
+import { DOM_ACTION } from "@adobe/alloy/libEs5/constants/schema.js";
 import validateApplyPropositionsOptions, {
   EMPTY_PROPOSITIONS,
 } from "../../../../../src/components/Personalization/validateApplyPropositionsOptions.js";
 
 const PROPOSITIONS = [
   {
-    renderAttempted: false,
+    id: "abc",
+    scope: "web://aepdemo.com/",
+    scopeDetails: { decisionProvider: "AJO" },
+    items: [
+      {
+        id: "abc",
+        schema: DOM_ACTION,
+        data: {
+          type: "setHtml",
+          content: "woof",
+          selector: "#paragraph-text-1",
+        },
+      },
+    ],
+  },
+  {
     id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn0=",
     scope: "__view__",
     items: [
@@ -56,11 +72,15 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
   let loggerSpy;
   let logger;
 
-  beforeEach(() => {
+  const resetLogger = () => {
     loggerSpy = jasmine.createSpy("logger.warn");
     logger = {
       warn: loggerSpy,
     };
+  };
+
+  beforeEach(() => {
+    resetLogger();
   });
 
   it("it should log a warning when no options are present", () => {
@@ -72,17 +92,21 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
     expect(result).toEqual(EMPTY_PROPOSITIONS);
   });
 
-  it("it should not log a warning when options is empty object", () => {
+  it("it should log a warning when propositions array is missing from options", () => {
     const result = validateApplyPropositionsOptions({
       logger,
       options: {},
     });
 
-    expect(loggerSpy).not.toHaveBeenCalled();
-    expect(result).not.toEqual(EMPTY_PROPOSITIONS);
+    expect(loggerSpy).toHaveBeenCalled();
+    expect(loggerSpy.calls.first().args[1].message).toEqual(
+      "'propositions' is a required option",
+    );
+
+    expect(result).toEqual(EMPTY_PROPOSITIONS);
   });
 
-  it("it should not log a warning when propositions is empty array", () => {
+  it("it should log a warning when propositions is empty array", () => {
     const result = validateApplyPropositionsOptions({
       logger,
       options: {
@@ -90,38 +114,114 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
       },
     });
 
-    expect(loggerSpy).not.toHaveBeenCalled();
+    expect(loggerSpy).toHaveBeenCalled();
+    expect(loggerSpy.calls.first().args[1].message).toEqual(
+      "'propositions': Expected a non-empty array, but got [].",
+    );
+
     expect(result).toEqual(EMPTY_PROPOSITIONS);
   });
 
-  it("it should not log a warning when propositions is array with an empty object", () => {
-    const result = validateApplyPropositionsOptions({
-      logger,
-      options: {
+  it("it should log a warning when propositions are missing required values", () => {
+    const scopeDetails = { decisionProvider: "AJO" };
+
+    const tests = [
+      {
         propositions: [{}],
+        errorMessage:
+          "'propositions[0].id' is a required option\n" +
+          "'propositions[0].scope' is a required option\n" +
+          "'propositions[0].scopeDetails' is a required option\n" +
+          "'propositions[0].items' is a required option",
       },
-    });
-
-    expect(loggerSpy).not.toHaveBeenCalled();
-    expect(result).not.toEqual(EMPTY_PROPOSITIONS);
-  });
-
-  it("it should not log a warning when propositions is an object with unknown properties", () => {
-    const result = validateApplyPropositionsOptions({
-      logger,
-      options: {
+      {
+        propositions: [{ id: "abc" }],
+        errorMessage:
+          "'propositions[0].scope' is a required option\n" +
+          "'propositions[0].scopeDetails' is a required option\n" +
+          "'propositions[0].items' is a required option",
+      },
+      {
+        propositions: [{ id: "abc", scope: "web://aepdemo.com/" }],
+        errorMessage:
+          "'propositions[0].scopeDetails' is a required option\n" +
+          "'propositions[0].items' is a required option",
+      },
+      {
+        propositions: [
+          { id: "abc", scope: "web://aepdemo.com/", scopeDetails },
+        ],
+        errorMessage: "'propositions[0].items' is a required option",
+      },
+      {
         propositions: [
           {
-            a: "a",
-            b: "b",
-            c: "c",
+            id: "abc",
+            scope: "web://aepdemo.com/",
+            scopeDetails,
+            items: [],
           },
         ],
+        errorMessage:
+          "'propositions[0].items': Expected a non-empty array, but got [].",
       },
-    });
+      {
+        propositions: [
+          {
+            id: "abc",
+            scope: "web://aepdemo.com/",
+            scopeDetails,
+            items: [{}],
+          },
+        ],
+        errorMessage:
+          "'propositions[0].items[0].id' is a required option\n" +
+          "'propositions[0].items[0].schema' is a required option\n" +
+          "'propositions[0].items[0].data' is a required option",
+      },
+      {
+        propositions: [
+          {
+            id: "abc",
+            scope: "web://aepdemo.com/",
+            scopeDetails,
+            items: [{ id: "abc" }],
+          },
+        ],
+        errorMessage:
+          "'propositions[0].items[0].schema' is a required option\n" +
+          "'propositions[0].items[0].data' is a required option",
+      },
+      {
+        propositions: [
+          {
+            id: "abc",
+            scope: "web://aepdemo.com/",
+            scopeDetails,
+            items: [{ id: "abc", schema: DOM_ACTION }],
+          },
+        ],
+        errorMessage: "'propositions[0].items[0].data' is a required option",
+      },
+    ];
 
-    expect(loggerSpy).not.toHaveBeenCalled();
-    expect(result).not.toEqual(EMPTY_PROPOSITIONS);
+    for (let i = 0; i < tests.length; i += 1) {
+      const { propositions, errorMessage } = tests[i];
+      resetLogger();
+
+      const result = validateApplyPropositionsOptions({
+        logger,
+        options: {
+          propositions,
+        },
+      });
+
+      expect(loggerSpy).toHaveBeenCalled();
+
+      expect(loggerSpy.calls.first().args[1].message).toEqual(errorMessage);
+
+      expect(result).toEqual(EMPTY_PROPOSITIONS);
+    }
   });
 
   it("it should not log a warning when extra options are present", () => {
@@ -147,6 +247,10 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
     });
 
     expect(loggerSpy).toHaveBeenCalled();
+    expect(loggerSpy.calls.first().args[1].message).toEqual(
+      "'metadata': Expected an object, but got [].",
+    );
+
     expect(result).toEqual(EMPTY_PROPOSITIONS);
   });
 

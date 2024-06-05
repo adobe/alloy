@@ -9,7 +9,17 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-export default ({ modules, logger, storeClickMetrics }) =>
+
+import createDecorateProposition from "./createDecorateProposition.js";
+import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules.js";
+
+export default ({
+    modules,
+    logger,
+    storeInteractionMeta,
+    storeClickMeta,
+    autoCollectPropositionInteractions,
+  }) =>
   (item) => {
     const { type, selector } = item.getData() || {};
 
@@ -18,7 +28,7 @@ export default ({ modules, logger, storeClickMetrics }) =>
       return { setRenderAttempted: false, includeInNotification: false };
     }
 
-    if (type === "click") {
+    if (type === DOM_ACTION_CLICK) {
       if (!selector) {
         logger.warn(
           "Invalid DOM action data: missing selector.",
@@ -26,7 +36,8 @@ export default ({ modules, logger, storeClickMetrics }) =>
         );
         return { setRenderAttempted: false, includeInNotification: false };
       }
-      storeClickMetrics({
+
+      storeClickMeta({
         selector,
         meta: {
           ...item.getProposition().getNotification(),
@@ -34,6 +45,7 @@ export default ({ modules, logger, storeClickMetrics }) =>
           scopeType: item.getProposition().getScopeType(),
         },
       });
+
       return { setRenderAttempted: true, includeInNotification: false };
     }
 
@@ -42,8 +54,19 @@ export default ({ modules, logger, storeClickMetrics }) =>
       return { setRenderAttempted: false, includeInNotification: false };
     }
 
+    const decorateProposition = createDecorateProposition(
+      autoCollectPropositionInteractions,
+      type,
+      item.getProposition().getId(),
+      item.getId(),
+      item.getTrackingLabel(),
+      item.getProposition().getScopeType(),
+      item.getProposition().getNotification(),
+      storeInteractionMeta,
+    );
+
     return {
-      render: () => modules[type](item.getData()),
+      render: () => modules[type](item.getData(), decorateProposition),
       setRenderAttempted: true,
       includeInNotification: true,
     };

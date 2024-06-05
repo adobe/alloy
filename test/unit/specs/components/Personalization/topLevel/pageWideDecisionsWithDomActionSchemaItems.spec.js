@@ -13,6 +13,7 @@ import { PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS } from "../responsesMo
 
 import buildMocks from "./buildMocks.js";
 import buildAlloy from "./buildAlloy.js";
+import pause from "../../../../helpers/pause.js";
 
 describe("PersonalizationComponent", () => {
   it("PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS", async () => {
@@ -107,6 +108,29 @@ describe("PersonalizationComponent", () => {
       ],
       decisions: [],
     });
+
+    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
+      "#foo",
+      "<div>Hola Mundo</div>",
+    );
+    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
+      "#foo2",
+      "<div>here is a target activity</div>",
+    );
+    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
+      "#foo",
+      "<div>Hola Mundo</div>",
+    );
+    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
+      "#foo2",
+      "<div>here is a target activity</div>",
+    );
+    expect(mocks.actions.setHtml).toHaveBeenCalledTimes(4);
+    expect(mocks.logger.warn).not.toHaveBeenCalled();
+    expect(mocks.logger.error).not.toHaveBeenCalled();
+
+    await pause(100);
+
     expect(mocks.sendEvent).toHaveBeenCalledWith({
       xdm: {
         _experience: {

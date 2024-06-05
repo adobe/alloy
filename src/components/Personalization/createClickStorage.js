@@ -22,7 +22,7 @@ const metasToArray = (metas) => {
 export default () => {
   const clickStorage = {};
 
-  const storeClickMetrics = ({
+  const storeClickMeta = ({
     selector,
     meta: { id, scope, scopeDetails, trackingLabel, scopeType },
   }) => {
@@ -41,7 +41,7 @@ export default () => {
     return Object.keys(clickStorage);
   };
 
-  const getClickMetasBySelector = (selector) => {
+  const getClickMetas = (selector) => {
     const metas = clickStorage[selector];
     if (!metas) {
       return {};
@@ -49,8 +49,8 @@ export default () => {
     return metasToArray(clickStorage[selector]);
   };
   return {
-    storeClickMetrics,
+    storeClickMeta,
     getClickSelectors,
-    getClickMetasBySelector,
+    getClickMetas,
   };
 };

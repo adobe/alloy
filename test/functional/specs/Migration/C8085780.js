@@ -28,6 +28,7 @@ import {
 import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
 import createResponse from "../../helpers/createResponse.js";
 import migrationEnabled from "../../helpers/constants/configParts/migrationEnabled.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
 
 const favoriteColor = "red-1234";
 
@@ -72,7 +73,7 @@ test(
       .eql(2);
     const deliveryRequest =
       networkLogger.targetDeliveryEndpointLogs.requests[1];
-    await t.expect(deliveryRequest.response.statusCode).eql(200);
+    await responseStatus(networkLogger.targetDeliveryEndpointLogs, [200, 207]);
     const requestBody = JSON.parse(deliveryRequest.request.body);
     const { marketingCloudVisitorId } = requestBody.id;
 

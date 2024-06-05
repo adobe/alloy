@@ -14,7 +14,7 @@ import flushPromiseChains from "../../../../helpers/flushPromiseChains.js";
 import createComponent from "../../../../../../src/components/Personalization/createComponent.js";
 import createCollect from "../../../../../../src/components/Personalization/createCollect.js";
 import createFetchDataHandler from "../../../../../../src/components/Personalization/createFetchDataHandler.js";
-import collectClicks from "../../../../../../src/components/Personalization/dom-actions/clicks/collectClicks.js";
+import collectInteractions from "../../../../../../src/components/Personalization/dom-actions/clicks/collectInteractions.js";
 import isAuthoringModeEnabled from "../../../../../../src/components/Personalization/utils/isAuthoringModeEnabled.js";
 import {
   mergeDecisionsMeta,
@@ -23,6 +23,7 @@ import {
 import createOnClickHandler from "../../../../../../src/components/Personalization/createOnClickHandler.js";
 import createViewCacheManager from "../../../../../../src/components/Personalization/createViewCacheManager.js";
 import createViewChangeHandler from "../../../../../../src/components/Personalization/createViewChangeHandler.js";
+import createInteractionStorage from "../../../../../../src/components/Personalization/createInteractionStorage.js";
 import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage.js";
 import createApplyPropositions from "../../../../../../src/components/Personalization/createApplyPropositions.js";
 import createSetTargetMigration from "../../../../../../src/components/Personalization/createSetTargetMigration.js";
@@ -41,15 +42,33 @@ import processDefaultContent from "../../../../../../src/components/Personalizat
 import { isPageWideSurface } from "../../../../../../src/components/Personalization/utils/surfaceUtils.js";
 import createOnDecisionHandler from "../../../../../../src/components/Personalization/createOnDecisionHandler.js";
 import createNotificationHandler from "../../../../../../src/components/Personalization/createNotificationHandler.js";
+import {
+  DOM_ACTION_APPEND_HTML,
+  DOM_ACTION_CLICK,
+  DOM_ACTION_CUSTOM_CODE,
+  DOM_ACTION_INSERT_AFTER,
+  DOM_ACTION_INSERT_BEFORE,
+  DOM_ACTION_MOVE,
+  DOM_ACTION_PREPEND_HTML,
+  DOM_ACTION_REARRANGE,
+  DOM_ACTION_REMOVE,
+  DOM_ACTION_REPLACE_HTML,
+  DOM_ACTION_RESIZE,
+  DOM_ACTION_SET_ATTRIBUTE,
+  DOM_ACTION_SET_HTML,
+  DOM_ACTION_SET_IMAGE_SOURCE,
+  DOM_ACTION_SET_STYLE,
+  DOM_ACTION_SET_TEXT,
+} from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
+import collectClicks from "../../../../../../src/components/Personalization/dom-actions/clicks/collectClicks.js";
 
 const createAction =
   (renderFunc) =>
   ({ selector, content }) => {
-    renderFunc(selector, content);
     if (selector === "#error") {
       return Promise.reject(new Error(`Error while rendering ${content}`));
     }
-    return Promise.resolve();
+    return renderFunc(selector, content);
   };
 
 const buildComponent = ({
@@ -64,28 +83,36 @@ const buildComponent = ({
 }) => {
   const initDomActionsModulesMocks = () => {
     return {
-      setHtml: createAction(actions.setHtml),
-      customCode: createAction(actions.prependHtml),
-      setText: createAction(actions.setText),
-      setAttribute: createAction(actions.setAttributes),
-      setImageSource: createAction(actions.swapImage),
-      setStyle: createAction(actions.setStyles),
-      move: createAction(actions.setStyles),
-      resize: createAction(actions.setStyles),
-      rearrange: createAction(actions.rearrangeChildren),
-      remove: createAction(actions.removeNode),
-      insertAfter: createAction(actions.insertHtmlAfter),
-      insertBefore: createAction(actions.insertHtmlBefore),
-      replaceHtml: createAction(actions.replaceHtml),
-      appendHtml: createAction(actions.appendHtml),
-      prependHtml: createAction(actions.prependHtml),
+      [DOM_ACTION_SET_HTML]: createAction(actions.setHtml),
+      [DOM_ACTION_CUSTOM_CODE]: createAction(actions.prependHtml),
+      [DOM_ACTION_SET_TEXT]: createAction(actions.setText),
+      [DOM_ACTION_SET_ATTRIBUTE]: createAction(actions.setAttributes),
+      [DOM_ACTION_SET_IMAGE_SOURCE]: createAction(actions.swapImage),
+      [DOM_ACTION_SET_STYLE]: createAction(actions.setStyles),
+      [DOM_ACTION_MOVE]: createAction(actions.setStyles),
+      [DOM_ACTION_RESIZE]: createAction(actions.setStyles),
+      [DOM_ACTION_REARRANGE]: createAction(actions.rearrangeChildren),
+      [DOM_ACTION_REMOVE]: createAction(actions.removeNode),
+      [DOM_ACTION_INSERT_AFTER]: createAction(actions.insertHtmlAfter),
+      [DOM_ACTION_INSERT_BEFORE]: createAction(actions.insertHtmlBefore),
+      [DOM_ACTION_REPLACE_HTML]: createAction(actions.replaceHtml),
+      [DOM_ACTION_PREPEND_HTML]: createAction(actions.prependHtml),
+      [DOM_ACTION_APPEND_HTML]: createAction(actions.appendHtml),
+      [DOM_ACTION_CLICK]: createAction(actions.click),
     };
   };
 
-  const { targetMigrationEnabled, prehidingStyle } = config;
+  const {
+    targetMigrationEnabled,
+    prehidingStyle,
+    autoCollectPropositionInteractions,
+  } = config;
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
 
-  const { getClickMetasBySelector, getClickSelectors, storeClickMetrics } =
+  const { storeInteractionMeta, getInteractionMetas } =
+    createInteractionStorage();
+
+  const { storeClickMeta, getClickSelectors, getClickMetas } =
     createClickStorage();
 
   const preprocess = (action) => action;
@@ -102,9 +129,16 @@ const buildComponent = ({
     [schema.DOM_ACTION]: createProcessDomAction({
       modules,
       logger,
-      storeClickMetrics,
+      storeInteractionMeta,
+      storeClickMeta,
+      autoCollectPropositionInteractions,
     }),
-    [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({ modules, logger }),
+    [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({
+      modules,
+      logger,
+      storeInteractionMeta,
+      autoCollectPropositionInteractions,
+    }),
     [schema.REDIRECT_ITEM]: createProcessRedirect({
       logger,
       executeRedirect: (url) => window.location.replace(url),
@@ -138,10 +172,13 @@ const buildComponent = ({
   });
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
+    collectInteractions,
     collectClicks,
+    getInteractionMetas,
+    getClickMetas,
     getClickSelectors,
-    getClickMetasBySelector,
   });
+
   const viewChangeHandler = createViewChangeHandler({
     processPropositions,
     viewCache,

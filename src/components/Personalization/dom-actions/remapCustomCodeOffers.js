@@ -15,14 +15,14 @@ governing permissions and limitations under the License.
  * target offers, to align with the way it works in at.js.
  */
 import { assign } from "../../../utils/index.js";
+import { DOM_ACTION_CUSTOM_CODE } from "./initDomActionsModules.js";
 
-const ACTION_CUSTOM_CODE = "customCode";
 const TARGET_BODY_SELECTOR = "BODY > *:eq(0)";
 
 export default (action) => {
   const { selector, type } = action;
 
-  if (type !== ACTION_CUSTOM_CODE) {
+  if (type !== DOM_ACTION_CUSTOM_CODE) {
     return action;
   }
 

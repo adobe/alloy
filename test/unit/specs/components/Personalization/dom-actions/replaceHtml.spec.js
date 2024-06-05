@@ -10,16 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import {
-  selectNodes,
   appendNode,
   createNode,
+  selectNodes,
 } from "../../../../../../src/utils/dom/index.js";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
+import {
+  CLICK_LABEL_DATA_ATTRIBUTE,
+  INTERACT_ID_DATA_ATTRIBUTE,
+} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import { DOM_ACTION_REPLACE_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::replaceHtml", () => {
+  let decorateProposition;
+
   beforeEach(() => {
     cleanUpDomChanges("replaceHtml");
+    decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_REPLACE_HTML,
+    });
   });
 
   afterEach(() => {
@@ -38,19 +50,25 @@ describe("Personalization::actions::replaceHtml", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#a",
       prehidingSelector: "#a",
       content: `<div id="b" class="rh">BBB</div>`,
-      meta,
+      meta: { a: 1 },
     };
 
-    return replaceHtml(settings).then(() => {
+    return replaceHtml(settings, decorateProposition).then(() => {
       const result = selectNodes("div#replaceHtml .rh");
 
       expect(result.length).toEqual(1);
       expect(result[0].innerHTML).toEqual("BBB");
+
+      expect(getAttribute(result[0], CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+        "trackingLabel",
+      );
+      expect(
+        getAttribute(result[0], INTERACT_ID_DATA_ATTRIBUTE),
+      ).not.toBeNull();
     });
   });
 });

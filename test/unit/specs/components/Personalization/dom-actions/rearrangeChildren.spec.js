@@ -10,16 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import {
-  selectNodes,
   appendNode,
   createNode,
+  selectNodes,
 } from "../../../../../../src/utils/dom/index.js";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
+import {
+  CLICK_LABEL_DATA_ATTRIBUTE,
+  INTERACT_ID_DATA_ATTRIBUTE,
+} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import { DOM_ACTION_REARRANGE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::rearrange", () => {
+  let decorateProposition;
+
   beforeEach(() => {
     cleanUpDomChanges("rearrange");
+    decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_REARRANGE,
+    });
   });
 
   afterEach(() => {
@@ -42,20 +54,35 @@ describe("Personalization::actions::rearrange", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#rearrange",
       prehidingSelector: "#rearrange",
       content: { from: 0, to: 2 },
-      meta,
+      meta: { a: 1 },
     };
 
-    return rearrange(settings).then(() => {
+    return rearrange(settings, decorateProposition).then(() => {
       const result = selectNodes("li");
 
       expect(result[0].textContent).toEqual("2");
+      expect(getAttribute(result[0], CLICK_LABEL_DATA_ATTRIBUTE)).toBeNull();
+      expect(getAttribute(result[0], INTERACT_ID_DATA_ATTRIBUTE)).toBeNull();
+
       expect(result[1].textContent).toEqual("3");
+      expect(getAttribute(result[1], CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+        "trackingLabel",
+      );
+      expect(
+        getAttribute(result[1], INTERACT_ID_DATA_ATTRIBUTE),
+      ).not.toBeNull();
+
       expect(result[2].textContent).toEqual("1");
+      expect(getAttribute(result[2], CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+        "trackingLabel",
+      );
+      expect(
+        getAttribute(result[2], INTERACT_ID_DATA_ATTRIBUTE),
+      ).not.toBeNull();
     });
   });
 
@@ -75,15 +102,14 @@ describe("Personalization::actions::rearrange", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#rearrange",
       prehidingSelector: "#rearrange",
       content: { from: 2, to: 0 },
-      meta,
+      meta: { a: 1 },
     };
 
-    return rearrange(settings).then(() => {
+    return rearrange(settings, decorateProposition).then(() => {
       const result = selectNodes("li");
 
       expect(result[0].textContent).toEqual("3");

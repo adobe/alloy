@@ -107,7 +107,7 @@ export default ({ schemaProcessors, logger }) => {
         : undefined;
       renderers.push(() => renderItems(itemRenderers, meta));
     } else if (atLeastOneWithNotification) {
-      renderers.push(() => proposition.getNotification());
+      renderers.push(() => Promise.resolve(proposition.getNotification()));
     }
     if (renderedItems.length > 0) {
       proposition.addToReturnValues(

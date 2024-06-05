@@ -21,7 +21,7 @@ const clear = (container) => {
   childNodes.forEach(removeNode);
 };
 
-export default (container, html) => {
+export default (container, html, decorateProposition) => {
   clear(container);
-  appendHtml(container, html);
+  return appendHtml(container, html, decorateProposition);
 };

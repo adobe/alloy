@@ -29,6 +29,7 @@ import {
 import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
 import createResponse from "../../helpers/createResponse.js";
 import migrationEnabled from "../../helpers/constants/configParts/migrationEnabled.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
 
 const favoriteColor = "green-1234";
 const networkLogger = createNetworkLogger();
@@ -73,7 +74,7 @@ test(
       .eql(2);
     const mboxJsonRequest =
       networkLogger.targetMboxJsonEndpointLogs.requests[1];
-    await t.expect(mboxJsonRequest.response.statusCode).eql(200);
+    await responseStatus(networkLogger.targetMboxJsonEndpointLogs, [200, 207]);
     const mboxRequestUrlQuery = new URL(mboxJsonRequest.request.url)
       .searchParams;
     const marketingCloudVisitorId = mboxRequestUrlQuery.get("mboxMCGVID");

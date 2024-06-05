@@ -11,16 +11,18 @@ governing permissions and limitations under the License.
 */
 
 import { SRC } from "../../../constants/elementAttribute.js";
-import { setAttribute, removeAttribute } from "./dom/index.js";
+import { removeAttribute, setAttribute } from "./dom/index.js";
 import { isImage, loadImage } from "./images.js";
 
-export default (container, url) => {
+export default (container, url, decorateProposition) => {
   if (!isImage(container)) {
     return;
   }
 
   // Start downloading the image
   loadImage(url);
+
+  decorateProposition(container);
 
   // Remove "src" so there is no flicker
   removeAttribute(container, SRC);

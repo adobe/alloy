@@ -15,16 +15,25 @@ import {
 } from "../../../../../../src/utils/dom/index.js";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
-
-const sleep = (ms) =>
-  new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
+import {
+  CLICK_LABEL_DATA_ATTRIBUTE,
+  INTERACT_ID_DATA_ATTRIBUTE,
+} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import pause from "../../../../helpers/pause.js";
+import { DOM_ACTION_SET_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::setHtml", () => {
+  let decorateProposition;
+
   beforeEach(() => {
     cleanUpDomChanges("setHtml");
     delete window.someEvar123;
+
+    decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_SET_HTML,
+    });
   });
 
   afterEach(() => {
@@ -41,16 +50,20 @@ describe("Personalization::actions::setHtml", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#setHtml",
       prehidingSelector: "#setHtml",
       content: "bar",
-      meta,
+      meta: { a: 1 },
     };
 
-    await setHtml(settings);
+    await setHtml(settings, decorateProposition);
     expect(element.innerHTML).toEqual("bar");
+
+    expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+      "trackingLabel",
+    );
+    expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
   });
 
   it("should execute inline JavaScript", async () => {
@@ -61,17 +74,16 @@ describe("Personalization::actions::setHtml", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#setHtml",
       prehidingSelector: "#setHtml",
       content:
         "<script id='evar123'>setTimeout(function onTimeout() { window.someEvar123 = 1; }, 500);</script>",
-      meta,
+      meta: { a: 1 },
     };
 
-    await setHtml(settings);
-    await sleep(501);
+    await setHtml(settings, decorateProposition);
+    await pause(501);
 
     expect(window.someEvar123).toEqual(1);
 
@@ -89,7 +101,6 @@ describe("Personalization::actions::setHtml", () => {
     appendNode(document.body, button);
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#setHtml",
       prehidingSelector: "#setHtml",
@@ -97,10 +108,10 @@ describe("Personalization::actions::setHtml", () => {
           var btn = document.getElementById('btn');
           btn.addEventListener('click', function onEvent() { window.someEvar123 = 2; });
         </script>`,
-      meta,
+      meta: { a: 1 },
     };
 
-    await setHtml(settings);
+    await setHtml(settings, decorateProposition);
 
     button.click();
     expect(window.someEvar123).toEqual(2);

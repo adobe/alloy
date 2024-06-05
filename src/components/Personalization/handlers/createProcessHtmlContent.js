@@ -9,7 +9,14 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-export default ({ modules, logger }) =>
+import createDecorateProposition from "./createDecorateProposition.js";
+
+export default ({
+    modules,
+    logger,
+    storeInteractionMeta,
+    autoCollectPropositionInteractions,
+  }) =>
   (item) => {
     const { type, selector } = item.getData() || {};
 
@@ -22,9 +29,20 @@ export default ({ modules, logger }) =>
       return { setRenderAttempted: false, includeInNotification: false };
     }
 
+    const decorateProposition = createDecorateProposition(
+      autoCollectPropositionInteractions,
+      type,
+      item.getProposition().getId(),
+      item.getId(),
+      item.getTrackingLabel(),
+      item.getProposition().getScopeType(),
+      item.getProposition().getNotification(),
+      storeInteractionMeta,
+    );
+
     return {
       render: () => {
-        modules[type](item.getData());
+        return modules[type](item.getData(), decorateProposition);
       },
       setRenderAttempted: true,
       includeInNotification: true,

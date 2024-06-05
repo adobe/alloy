@@ -20,7 +20,26 @@ export const EMPTY_PROPOSITIONS = { propositions: [] };
 
 export default ({ logger, options }) => {
   const applyPropositionsOptionsValidator = objectOf({
-    propositions: arrayOf(objectOf(anything())),
+    propositions: arrayOf(
+      objectOf({
+        id: string().required(),
+        scope: string().required(),
+        scopeDetails: objectOf({
+          decisionProvider: string().required(),
+        }).required(),
+        items: arrayOf(
+          objectOf({
+            id: string().required(),
+            schema: string().required(),
+            data: anything().required(),
+          }),
+        )
+          .nonEmpty()
+          .required(),
+      }).required(),
+    )
+      .nonEmpty()
+      .required(),
     metadata: objectOf(anything()),
     viewName: string(),
   }).required();
