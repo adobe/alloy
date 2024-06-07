@@ -29,6 +29,7 @@ import createAudiences from "../components/Audiences/index.js";
 import createPersonalization from "../components/Personalization/index.js";
 
 import createContext from "../components/Context/index.js";
+
 import createPrivacy from "../components/Privacy/index.js";
 
 /* @skipwhen ENV.alloy_eventmerge === false */
@@ -41,7 +42,9 @@ import createDecisioningEngine from "../components/DecisioningEngine/index.js";
 
 /* @skipwhen ENV.alloy_machinelearning === false */
 import createMachineLearning from "../components/MachineLearning/index.js";
+
 import createStreamingMedia from "../components/StreamingMedia/index.js";
+
 import createLegacyMediaAnalytics from "../components/LegacyMediaAnalytics/index.js";
 
 // TODO: Register the Components here statically for now. They might be registered differently.
