@@ -49,34 +49,58 @@ const getDefaultPath = () => {
   return process.cwd();
 };
 
-const argv = yargs(hideBin(process.argv))
-  .scriptName("build")
-  .example([
-    [`$0 --exclude ${optionalComponents.slice(0, 2).join(" ")}`],
-    [`$0 --minify --exclude ${optionalComponents.slice(0, 2).join(" ")}`],
-  ])
-  .option("exclude", {
-    describe: "components that can be excluded from the build",
-    choices: optionalComponents,
-    type: "array",
-    alias: "e",
-    default: [],
-  })
-  .option("minify", {
-    type: "boolean",
-    default: false,
-    alias: "m",
-  })
-  .option("outputDir", { alias: "o", default: getDefaultPath() }).argv;
+const argv =
+  // .coerce("outputDir", (opt) => {
+  //   console.log("aa", opt);
+  //   return !opt ? process.cwd() : `${process.cwd()}${path.sep}${opt}`;
+  // })
+  yargs(hideBin(process.argv))
+    .scriptName("build")
+    .example([
+      [`$0 --exclude ${optionalComponents.slice(0, 2).join(" ")}`],
+      [`$0 --minify --exclude ${optionalComponents.slice(0, 2).join(" ")}`],
+    ])
+    .option("exclude", {
+      describe: "components that can be excluded from the build",
+      choices: optionalComponents,
+      type: "array",
+      alias: "e",
+      default: [],
+    })
+    .option("minify", {
+      type: "boolean",
+      default: false,
+      alias: "m",
+    })
+    .option("outputDir", {
+      alias: "o",
+      default: getDefaultPath(),
+    })
+    .coerce("outputDir", (opt) => {
+      if (opt !== getDefaultPath()) {
+        opt = `${getDefaultPath()}${path.sep}${opt}`;
+      }
+
+      try {
+        const stats = fs.statSync(opt);
+        if (!stats.isDirectory()) {
+          throw new Error("Output directory must be a valid directory path.");
+        }
+      } catch (error) {
+        throw new Error("Output directory must be a valid directory path.");
+      }
+
+      return opt.replace(new RegExp(`${path.sep}+$`, "g"), "");
+    }).argv;
 
 const getFile = () => {
-  return `${[argv.path, `alloy${argv.minify ? ".min" : ""}.js`].join(path.sep)}`;
+  return `${[argv.outputDir, `alloy${argv.minify ? ".min" : ""}.js`].join(path.sep)} `;
 };
 
 const getFileSizeInKB = (filePath) => {
   const stats = fs.statSync(filePath);
   const fileSizeInBytes = stats.size;
-  return `${(fileSizeInBytes / 1024).toFixed(2)}K`;
+  return `${(fileSizeInBytes / 1024).toFixed(2)} K`;
 };
 
 const buildWithComponents = async () => {
@@ -86,7 +110,7 @@ const buildWithComponents = async () => {
     babelPlugins: [
       conditionalBuildBabelPlugin(
         argv.exclude.reduce((acc, module) => {
-          acc[`alloy_${module}`] = "false";
+          acc[`alloy_${module} `] = "false";
           return acc;
         }, {}),
       ),
