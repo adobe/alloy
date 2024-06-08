@@ -55,7 +55,7 @@ const argv =
   //   return !opt ? process.cwd() : `${process.cwd()}${path.sep}${opt}`;
   // })
   yargs(hideBin(process.argv))
-    .scriptName("build")
+    .scriptName("build-alloy")
     .example([
       [`$0 --exclude ${optionalComponents.slice(0, 2).join(" ")}`],
       [`$0 --minify --exclude ${optionalComponents.slice(0, 2).join(" ")}`],

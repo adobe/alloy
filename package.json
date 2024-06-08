@@ -10,7 +10,7 @@
     "libEs6"
   ],
   "bin": {
-    "alloy-build": "scripts/build.js"
+    "build-alloy": "scripts/build.js"
   },
   "scripts": {
     "clean": "rimraf dist distTest libEs5 libEs6",
@@ -33,7 +33,7 @@
     "sandbox:build": "rollup -c --environment SANDBOX && cd sandbox && npm run build",
     "dev": "concurrently --names build,sandbox \"rollup -c -w --environment SANDBOX\" \"cd sandbox && export REACT_APP_NONCE=321 && npm start\"",
     "build": "npm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN && echo \"Base Code:\" && cat distTest/baseCode.min.js",
-    "build:cli": "node scripts/build.js",
+    "build:cli": "node scripts/build-alloy.js",
     "prepare": "husky && cd sandbox && npm install",
     "prepublishOnly": "rimraf libEs5 libEs6 && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
