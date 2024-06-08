@@ -10,7 +10,7 @@
     "libEs6"
   ],
   "bin": {
-    "build-alloy": "scripts/build.js"
+    "build-alloy": "scripts/build-alloy.js"
   },
   "scripts": {
     "clean": "rimraf dist distTest libEs5 libEs6",
