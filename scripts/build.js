@@ -120,7 +120,10 @@ const buildWithComponents = async () => {
   const bundle = await rollup(rollupConfig);
   await bundle.write(rollupConfig.output[0]);
   console.log(
-    `🎉 Wrote ${rollupConfig.output[0].file} (${getFileSizeInKB(rollupConfig.output[0].file)}).`,
+    `🎉 Wrote ${path.relative(
+      process.cwd(),
+      rollupConfig.output[0].file,
+    )} (${getFileSizeInKB(rollupConfig.output[0].file)}).`,
   );
 };
 

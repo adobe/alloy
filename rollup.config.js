@@ -68,10 +68,10 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
       plugins.push(terser());
     }
   }
-
   if (variant === STANDALONE) {
     plugins.push(
       license({
+        cwd: dirname,
         banner: {
           content: {
             file: path.join(dirname, "LICENSE_BANNER"),

@@ -40,7 +40,11 @@ const transformTemplateLiteralsPlugin = [
     loose: true,
   },
 ];
-const versionPlugin = "version";
+const versionPlugin = [
+  "./scripts/helpers/versionBabelPlugin",
+  { cwd: __dirname },
+];
+
 const transformModulesCommonjsPlugin = [
   "@babel/plugin-transform-modules-commonjs",
   {
