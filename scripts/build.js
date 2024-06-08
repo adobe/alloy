@@ -94,7 +94,7 @@ const argv =
     }).argv;
 
 const getFile = () => {
-  return `${[argv.outputDir, `alloy${argv.minify ? ".min" : ""}.js`].join(path.sep)} `;
+  return `${[argv.outputDir, `alloy${argv.minify ? ".min" : ""}.js`].join(path.sep)}`;
 };
 
 const getFileSizeInKB = (filePath) => {
