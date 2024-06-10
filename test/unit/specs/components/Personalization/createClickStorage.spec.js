@@ -1,5 +1,5 @@
 /*
-Copyright 2023 Adobe. All rights reserved.
+Copyright 2024 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -91,25 +91,23 @@ describe("Personalization::createClickStorage", () => {
   });
 
   it("returns empty object when no metadata for this selector", () => {
-    expect(clickStorage.getClickMetasBySelector("123")).toEqual({});
+    expect(clickStorage.getClickMetas("123")).toEqual({});
   });
 
   it("stores clicks as a map in the click storage and returns the selectors and metadata", () => {
-    clickStorage.storeClickMetrics(FIRST_CLICK);
-    clickStorage.storeClickMetrics(SECOND_CLICK);
-    clickStorage.storeClickMetrics(THIRD_CLICK);
-    clickStorage.storeClickMetrics(FORTH_CLICK);
+    clickStorage.storeClickMeta(FIRST_CLICK);
+    clickStorage.storeClickMeta(SECOND_CLICK);
+    clickStorage.storeClickMeta(THIRD_CLICK);
+    clickStorage.storeClickMeta(FORTH_CLICK);
 
     expect(clickStorage.getClickSelectors().length).toEqual(2);
-    expect(clickStorage.getClickMetasBySelector("div:123:h2").length).toEqual(
-      2,
-    );
+    expect(clickStorage.getClickMetas("div:123:h2").length).toEqual(2);
   });
 
-  it("getClickMetasBySelector returns the id, scopeDetails, scope, trackingLabel, and scopeType", () => {
-    clickStorage.storeClickMetrics(FIRST_CLICK);
+  it("getClickMetas returns the id, scopeDetails, scope, trackingLabel, and scopeType", () => {
+    clickStorage.storeClickMeta(FIRST_CLICK);
 
-    const meta = clickStorage.getClickMetasBySelector("div:123:h2");
+    const meta = clickStorage.getClickMetas("div:123:h2");
 
     expect(clickStorage.getClickSelectors().length).toEqual(1);
     expect(meta.length).toEqual(1);

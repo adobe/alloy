@@ -9,16 +9,24 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { t, ClientFunction } from "testcafe";
+import { ClientFunction, t } from "testcafe";
 import createFixture from "../../helpers/createFixture/index.js";
 
 import {
   compose,
-  orgMainConfigMain,
   debugEnabled,
+  orgMainConfigMain,
 } from "../../helpers/constants/configParts/index.js";
 
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import {
+  ADOBE_JOURNEY_OPTIMIZER,
+  ADOBE_TARGET,
+} from "../../../../src/constants/decisionProvider.js";
+import {
+  ALWAYS,
+  NEVER,
+} from "../../../../src/constants/propositionInteractionType.js";
 
 const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled, {
   onBeforeEventSend: () => {},
@@ -63,6 +71,10 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
     thirdPartyCookiesEnabled: true,
     targetMigrationEnabled: false,
     personalizationStorageEnabled: false,
+    autoCollectPropositionInteractions: {
+      [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
+      [ADOBE_TARGET]: NEVER,
+    },
   };
 
   const alloy = createAlloyProxy();

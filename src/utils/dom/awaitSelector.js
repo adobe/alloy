@@ -42,16 +42,21 @@ export const awaitUsingMutationObserver = (
   selectFunc,
 ) => {
   return createPromise((resolve, reject) => {
+    let timer;
+
     const mutationObserver = new win[MUTATION_OBSERVER](() => {
       const nodes = selectFunc(selector);
 
       if (isNonEmptyArray(nodes)) {
         mutationObserver.disconnect();
+        if (timer) {
+          clearTimeout(timer);
+        }
         resolve(nodes);
       }
     });
 
-    setTimeout(() => {
+    timer = setTimeout(() => {
       mutationObserver.disconnect();
       reject(createError(selector));
     }, timeout);

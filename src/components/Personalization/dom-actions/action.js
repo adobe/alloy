@@ -26,20 +26,24 @@ export { default as setAttributes } from "./setAttributes.js";
 export { default as swapImage } from "./swapImage.js";
 export { default as rearrangeChildren } from "./rearrangeChildren.js";
 
-const renderContent = (elements, content, renderFunc) => {
-  const executions = elements.map((element) => renderFunc(element, content));
+const renderContent = (elements, content, decorateProposition, renderFunc) => {
+  const executions = elements.map((element) =>
+    renderFunc(element, content, decorateProposition),
+  );
 
   return Promise.all(executions);
 };
 
 export const createAction = (renderFunc) => {
-  return (itemData) => {
+  return (itemData, decorateProposition) => {
     const { selector, prehidingSelector, content } = itemData;
 
     hideElements(prehidingSelector);
 
     return awaitSelector(selector, selectNodesWithEq)
-      .then((elements) => renderContent(elements, content, renderFunc))
+      .then((elements) =>
+        renderContent(elements, content, decorateProposition, renderFunc),
+      )
       .then(
         () => {
           // if everything is OK, show elements

@@ -22,8 +22,8 @@ import { createFragment, selectNodesWithEq } from "./dom/index.js";
 import { assign } from "../../../utils/index.js";
 import isBlankString from "../../../utils/isBlankString.js";
 import { HEAD } from "../../../constants/tagName.js";
+import { DOM_ACTION_APPEND_HTML } from "./initDomActionsModules.js";
 
-const APPEND_HTML = "appendHtml";
 const HEAD_TAGS_SELECTOR = "SCRIPT,LINK,STYLE";
 
 const filterHeadContent = (content) => {
@@ -49,7 +49,7 @@ export default (action) => {
     return result;
   }
 
-  result.type = APPEND_HTML;
+  result.type = DOM_ACTION_APPEND_HTML;
   result.content = filterHeadContent(content);
 
   return result;

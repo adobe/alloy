@@ -44,6 +44,7 @@ const setupPropositions = () => {
     {
       id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
       scope: "alloy-test-scope-1",
+      scopeDetails: { decisionProvider: "TGT" },
       items: [
         {
           id: "442359",

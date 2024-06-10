@@ -26,7 +26,7 @@ describe("createProcessPropositions", () => {
   let redirect;
 
   beforeEach(() => {
-    render = jasmine.createSpy("render");
+    render = jasmine.createSpy("render").and.returnValue(Promise.resolve());
     always = (item) => ({
       render: () => render(item.getData()),
       setRenderAttempted: true,
@@ -237,6 +237,7 @@ describe("createProcessPropositions", () => {
       items: [{ schema: "always", data: "mydata3" }],
     });
     const result = processPropositions([prop1, prop2, prop3]);
+
     expect(result).toEqual({
       render: jasmine.any(Function),
       returnedPropositions: [

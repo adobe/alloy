@@ -10,7 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, objectOf, string } from "../../utils/validation/index.js";
+import {
+  anyOf,
+  boolean,
+  literal,
+  objectOf,
+  string,
+} from "../../utils/validation/index.js";
 import createComponent from "./createComponent.js";
 import { initDomActionsModules } from "./dom-actions/index.js";
 import createCollect from "./createCollect.js";
@@ -23,6 +29,7 @@ import createOnClickHandler from "./createOnClickHandler.js";
 import createViewCacheManager from "./createViewCacheManager.js";
 import createViewChangeHandler from "./createViewChangeHandler.js";
 import createClickStorage from "./createClickStorage.js";
+import createInteractionStorage from "./createInteractionStorage.js";
 import createApplyPropositions from "./createApplyPropositions.js";
 import createGetPageLocation from "./createGetPageLocation.js";
 import createSetTargetMigration from "./createSetTargetMigration.js";
@@ -45,13 +52,31 @@ import createRedirect from "./dom-actions/createRedirect.js";
 import createNotificationHandler from "./createNotificationHandler.js";
 import createHandleConsentFlicker from "./createHandleConsentFlicker.js";
 import createSubscribeContentCards from "./createSubscribeContentCards.js";
+import collectInteractions from "./dom-actions/clicks/collectInteractions.js";
+import {
+  ALWAYS,
+  NEVER,
+  PROPOSITION_INTERACTION_TYPES,
+} from "../../constants/propositionInteractionType.js";
+import {
+  ADOBE_JOURNEY_OPTIMIZER,
+  ADOBE_TARGET,
+} from "../../constants/decisionProvider.js";
 
 const createPersonalization = ({ config, logger, eventManager, consent }) => {
-  const { targetMigrationEnabled, prehidingStyle } = config;
+  const {
+    targetMigrationEnabled,
+    prehidingStyle,
+    autoCollectPropositionInteractions,
+  } = config;
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
 
-  const { getClickMetasBySelector, getClickSelectors, storeClickMetrics } =
+  const { storeInteractionMeta, getInteractionMetas } =
+    createInteractionStorage();
+
+  const { storeClickMeta, getClickSelectors, getClickMetas } =
     createClickStorage();
+
   const getPageLocation = createGetPageLocation({ window });
   const domActionsModules = initDomActionsModules();
 
@@ -68,11 +93,15 @@ const createPersonalization = ({ config, logger, eventManager, consent }) => {
     [schema.DOM_ACTION]: createProcessDomAction({
       modules: domActionsModules,
       logger,
-      storeClickMetrics,
+      storeInteractionMeta,
+      storeClickMeta,
+      autoCollectPropositionInteractions,
     }),
     [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({
       modules: domActionsModules,
       logger,
+      storeInteractionMeta,
+      autoCollectPropositionInteractions,
     }),
     [schema.REDIRECT_ITEM]: createProcessRedirect({
       logger,
@@ -109,10 +138,14 @@ const createPersonalization = ({ config, logger, eventManager, consent }) => {
 
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
+    collectInteractions,
     collectClicks,
+    getInteractionMetas,
+    getClickMetas,
     getClickSelectors,
-    getClickMetasBySelector,
+    autoCollectPropositionInteractions,
   });
+
   const viewChangeHandler = createViewChangeHandler({
     processPropositions,
     viewCache,
@@ -163,9 +196,22 @@ const createPersonalization = ({ config, logger, eventManager, consent }) => {
 
 createPersonalization.namespace = "Personalization";
 
+const interactionConfigOptions = PROPOSITION_INTERACTION_TYPES.map(
+  (propositionInteractionType) => literal(propositionInteractionType),
+);
+
 createPersonalization.configValidators = objectOf({
   prehidingStyle: string().nonEmpty(),
   targetMigrationEnabled: boolean().default(false),
+  autoCollectPropositionInteractions: objectOf({
+    [ADOBE_JOURNEY_OPTIMIZER]: anyOf(interactionConfigOptions).default(ALWAYS),
+    [ADOBE_TARGET]: anyOf(interactionConfigOptions).default(NEVER),
+  })
+    .default({
+      [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
+      [ADOBE_TARGET]: NEVER,
+    })
+    .noUnknownFields(),
 });
 
 export default createPersonalization;

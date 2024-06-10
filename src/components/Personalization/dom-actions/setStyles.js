@@ -12,10 +12,12 @@ governing permissions and limitations under the License.
 
 import { setStyle } from "./dom/index.js";
 
-export default (container, styles) => {
+export default (container, styles, decorateProposition) => {
   const { priority, ...style } = styles;
 
   Object.keys(style).forEach((key) => {
     setStyle(container, key, style[key], priority);
   });
+
+  decorateProposition(container);
 };

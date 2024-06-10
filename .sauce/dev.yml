@@ -19,7 +19,6 @@ timeZone: New_York
 npm:
   dependencies:
     - parse-uri
-    - node-fetch
     - js-cookie
     - read-cache
     - uuid
