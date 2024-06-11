@@ -54,8 +54,8 @@ inquirer
       params += ` --exclude ${exclude.join(" ")}`;
     }
 
-    if (minify) {
-      params += " --minify";
+    if (!minify) {
+      params += " --no-minify";
     }
 
     const resultPromise = execAsync(`npm run build:cli -- ${params}`);
