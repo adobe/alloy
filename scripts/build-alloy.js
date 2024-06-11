@@ -49,6 +49,8 @@ const getDefaultPath = () => {
   return process.cwd();
 };
 
+let pathIsAbsolute = false;
+
 const argv = yargs(hideBin(process.argv))
   .scriptName("build-alloy")
   .example([
@@ -72,8 +74,10 @@ const argv = yargs(hideBin(process.argv))
     default: getDefaultPath(),
   })
   .coerce("outputDir", (opt) => {
-    if (opt !== getDefaultPath()) {
+    if (!path.isAbsolute(opt)) {
       opt = `${getDefaultPath()}${path.sep}${opt}`;
+    } else {
+      pathIsAbsolute = true;
     }
 
     try {
@@ -115,10 +119,11 @@ const buildWithComponents = async () => {
   const bundle = await rollup(rollupConfig);
   await bundle.write(rollupConfig.output[0]);
   console.log(
-    `🎉 Wrote ${path.relative(
-      process.cwd(),
-      rollupConfig.output[0].file,
-    )} (${getFileSizeInKB(rollupConfig.output[0].file)}).`,
+    `🎉 Wrote ${
+      pathIsAbsolute
+        ? rollupConfig.output[0].file
+        : path.relative(process.cwd(), rollupConfig.output[0].file)
+    } (${getFileSizeInKB(rollupConfig.output[0].file)}).`,
   );
 };
 
