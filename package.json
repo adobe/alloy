@@ -77,7 +77,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@adobe/alloy": "2.21.0-beta.0",
+    "@adobe/alloy": "^2.21.0-beta.1",
     "@babel/cli": "^7.24.7",
     "@babel/core": "^7.24.7",
     "@babel/eslint-parser": "^7.24.7",
