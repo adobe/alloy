@@ -33,7 +33,7 @@ const NPM_PACKAGE_PROD = "NPM_PACKAGE_PROD";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const buildPlugins = (variant, minify) => {
+const buildPlugins = ({ variant, minify, babelPlugins }) => {
   const plugins = [
     resolve({
       preferBuiltins: false,
@@ -46,6 +46,7 @@ const buildPlugins = (variant, minify) => {
       envName: "rollup",
       babelHelpers: "bundled",
       configFile: path.resolve(dirname, "babel.config.cjs"),
+      plugins: babelPlugins,
     }),
   ];
 
@@ -67,10 +68,10 @@ const buildPlugins = (variant, minify) => {
       plugins.push(terser());
     }
   }
-
   if (variant === STANDALONE) {
     plugins.push(
       license({
+        cwd: dirname,
         banner: {
           content: {
             file: path.join(dirname, "LICENSE_BANNER"),
@@ -83,8 +84,13 @@ const buildPlugins = (variant, minify) => {
   return plugins;
 };
 
-const buildConfig = (variant, minify) => {
-  const plugins = buildPlugins(variant, minify);
+export const buildConfig = ({
+  variant = STANDALONE,
+  minify = false,
+  babelPlugins = [],
+  file,
+}) => {
+  const plugins = buildPlugins({ variant, minify, babelPlugins });
   const minifiedExtension = minify ? ".min" : "";
 
   if (variant === BASE_CODE) {
@@ -104,10 +110,10 @@ const buildConfig = (variant, minify) => {
     const destDirectory = variant === SANDBOX ? "sandbox/public/" : "dist/";
 
     return {
-      input: "src/standalone.js",
+      input: `${dirname}/src/standalone.js`,
       output: [
         {
-          file: `${destDirectory}alloy${minifiedExtension}.js`,
+          file: file || `${destDirectory}alloy${minifiedExtension}.js`,
           format: "iife",
           intro:
             "if (document.documentMode && document.documentMode < 11) {\n" +
@@ -139,12 +145,12 @@ const buildConfig = (variant, minify) => {
 
 const config = [];
 
-const addConfig = (version) => {
-  if (process.env[version]) {
-    config.push(buildConfig(version, false));
+const addConfig = (variant) => {
+  if (process.env[variant]) {
+    config.push(buildConfig({ variant, minify: false }));
   }
-  if (process.env[`${version}_MIN`]) {
-    config.push(buildConfig(version, true));
+  if (process.env[`${variant}_MIN`]) {
+    config.push(buildConfig({ variant, minify: true }));
   }
 };
 
@@ -154,9 +160,4 @@ addConfig(SANDBOX);
 addConfig(NPM_PACKAGE_LOCAL);
 addConfig(NPM_PACKAGE_PROD);
 
-if (config.length === 0) {
-  throw new Error(
-    "No files specified. Usage: rollup -c --environment BASE_CODE,STANDALONE,SANDBOX,NPM_PACKAGE_LOCAL,NPM_PACKAGE_PROD",
-  );
-}
 export default config;
