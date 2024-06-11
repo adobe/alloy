@@ -10,6 +10,7 @@
     "libEs6"
   ],
   "bin": {
+    "alloy": "scripts/tui-builder.js",
     "build-alloy": "scripts/build-alloy.js"
   },
   "scripts": {
@@ -72,6 +73,7 @@
     "@adobe/reactor-object-assign": "^1.0.0",
     "@adobe/reactor-query-string": "^1.0.0",
     "css.escape": "^1.5.1",
+    "inquirer": "^9.2.23",
     "js-cookie": "3.0.5",
     "parse-uri": "^1.0.9",
     "uuid": "^9.0.1"

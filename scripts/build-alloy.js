@@ -64,7 +64,7 @@ const argv = yargs(hideBin(process.argv))
   })
   .option("minify", {
     type: "boolean",
-    default: false,
+    default: true,
     alias: "m",
   })
   .option("outputDir", {
