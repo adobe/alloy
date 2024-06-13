@@ -7,11 +7,16 @@
   "module": "libEs6/index.js",
   "files": [
     "libEs5",
-    "libEs6"
+    "libEs6",
+    "LICENSE_BANNER",
+    "babel.config.cjs",
+    "rollup.config.js",
+    "scripts/helpers/alloyComponents.js",
+    "scripts/helpers/conditionalBuildBabelPlugin.js",
+    "scripts/helpers/versionBabelPlugin.js"
   ],
   "bin": {
-    "alloy": "scripts/tui-builder.js",
-    "build-alloy": "scripts/build-alloy.js"
+    "alloyBuilder": "scripts/alloyBuilder.js"
   },
   "scripts": {
     "clean": "rimraf dist distTest libEs5 libEs6",
@@ -36,7 +41,7 @@
     "build": "npm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN && echo \"Base Code:\" && cat distTest/baseCode.min.js",
     "build:cli": "node scripts/build-alloy.js",
     "prepare": "husky && cd sandbox && npm install",
-    "prepublishOnly": "rimraf libEs5 libEs6 && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6",
+    "prepack": "rimraf libEs5 libEs6 && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
     "add-license": "./scripts/add-license.js",
     "preinstall": "npx force-resolutions"
@@ -73,7 +78,6 @@
     "@adobe/reactor-object-assign": "^1.0.0",
     "@adobe/reactor-query-string": "^1.0.0",
     "css.escape": "^1.5.1",
-    "inquirer": "^9.2.23",
     "js-cookie": "3.0.5",
     "parse-uri": "^1.0.9",
     "uuid": "^9.0.1"
@@ -97,6 +101,7 @@
     "bundlesize": "^0.18.2",
     "chai": "^5.1.1",
     "chalk": "^5.3.0",
+    "commander": "^12.1.0",
     "concurrently": "^8.2.2",
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
@@ -112,6 +117,7 @@
     "globals": "^15.4.0",
     "handlebars": "^4.7.8",
     "husky": "^9.0.11",
+    "inquirer": "^9.2.23",
     "jasmine": "^5.1.0",
     "jasmine-core": "^5.1.2",
     "karma": "^6.4.3",

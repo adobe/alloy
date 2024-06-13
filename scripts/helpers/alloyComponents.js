@@ -21,13 +21,8 @@ export default [
     checked: true,
   },
   {
-    name: "Personalization",
-    value: "personalization",
-    checked: true,
-  },
-  {
-    name: "Event Merge",
-    value: "eventmerge",
+    name: "Context",
+    value: "context",
     checked: true,
   },
   {
@@ -36,7 +31,33 @@ export default [
     checked: true,
   },
   {
+    name: "Event Merge",
+    value: "eventmerge",
+    checked: true,
+  },
+  {
+    name: "Personalization",
+    value: "personalization",
+    checked: true,
+  },
+  {
+    name: "Privacy",
+    value: "privacy",
+    checked: true,
+  },
+  {
+    name: "Streaming Media",
+    value: "streamingmedia",
+    checked: true,
+  },
+  {
+    name: "Legacy Media Analytics",
+    value: "legacymediaanalytics",
+    checked: true,
+  },
+  {
     name: "Machine Learning",
     value: "machinelearning",
+    checked: true,
   },
 ];
