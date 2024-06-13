@@ -208,7 +208,7 @@ program
   .description(
     "Tool for generating custom Adobe Experience Platform Web SDK builds.",
   )
-  .version("0.0.1");
+  .version("1.0.0");
 
 program.addCommand(getMakeBuildCommand());
 program.addCommand(getInteractiveBuildCommand(), { isDefault: true });
