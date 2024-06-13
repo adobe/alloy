@@ -70,7 +70,7 @@ const build = async (argv) => {
   const rollupConfig = buildConfig({
     input: sourceRootPath.includes("src")
       ? `${dirname}/../src/standalone.js`
-      : `${dirname}/../libEs6/index.js`,
+      : `${dirname}/../libEs6/standalone.js`,
     file: getFile(argv),
     minify: argv.minify,
     babelPlugins: [
