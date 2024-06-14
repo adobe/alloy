@@ -108,7 +108,7 @@ createActivityCollector.buildOnInstanceConfiguredExtraParams = ({
         clickedElement: targetElement,
         config,
         logger
-      }).options;
+      }).properties;
     }
   };
 };

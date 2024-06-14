@@ -21,7 +21,8 @@ describe("ActivityCollector::createClickedElementProperties", () => {
       linkRegion: "testLinkRegion",
       linkType: "testLinkType",
       linkUrl: "testLinkUrl",
-      pageIDType: 0
+      pageIDType: 0,
+      clickedElement: {}
     };
   });
   it("Should return object with the init properties", () => {
@@ -131,7 +132,8 @@ describe("ActivityCollector::createClickedElementProperties", () => {
       linkRegion: "dataRegion",
       linkType: "xdmType",
       linkUrl: "xdmUrl",
-      pageIDType: 1
+      pageIDType: 1,
+      clickedElement: jasmine.any(Object)
     });
   });
   it("Can apply a property filter", () => {

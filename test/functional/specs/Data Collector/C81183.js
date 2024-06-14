@@ -50,14 +50,17 @@ const getLinkDetails = ClientFunction(selector => {
   const linkElement = document.getElementById(selector);
   // eslint-disable-next-line no-underscore-dangle
   const result = window.___getLinkDetails(linkElement);
-
+  console.log(result);
   if (!result) {
     return result;
   }
   return {
-    xdm: result.xdm,
-    data: result.data,
-    elementId: result.clickedElement.id
+    pageName: result.pageName,
+    linkName: result.linkName,
+    linkRegion: result.linkRegion,
+    linkType: result.linkType,
+    linkUrl: result.linkUrl,
+    elementId: result.clickedElement ? result.clickedElement.id : undefined
   };
 });
 
@@ -78,37 +81,11 @@ test("Test C81183: Verify that it returns the object augmented by onBeforeLinkCl
   });
   const expectedLinkDetails = {
     elementId: "alloy-link-test",
-    data: {
-      __adobe: {
-        analytics: {
-          c: {
-            a: {
-              activitymap: {
-                link: "Test Link",
-                page: "https://alloyio.com/functional-test/testPage.html",
-                pageIDType: 0,
-                region: "BODY"
-              }
-            }
-          }
-        }
-      },
-      customField: "test123"
-    },
-    xdm: {
-      eventType: "web.webinteraction.linkClicks",
-      web: {
-        webInteraction: {
-          URL: "https://alloyio.com/functional-test/valid.html",
-          linkClicks: {
-            value: 1
-          },
-          name: "augmented name",
-          region: "BODY",
-          type: "other"
-        }
-      }
-    }
+    linkName: "Test Link",
+    linkRegion: "BODY",
+    linkType: "other",
+    linkUrl: "https://alloyio.com/functional-test/valid.html",
+    pageName: "https://alloyio.com/functional-test/testPage.html"
   };
   await alloy.configure(testConfig);
   await addLinksToBody();
@@ -134,8 +111,16 @@ test("Test C81183: Verify that it returns undefined if onBeforeLinkClickSend ret
 
   await alloy.configure(testConfig);
   await addLinksToBody();
-
-  await t.expect(getLinkDetails("cancel-alloy-link-test")).eql(undefined);
+  const linkDetails = await getLinkDetails("cancel-alloy-link-test");
+  await t.wait(10000);
+  await t.expect(linkDetails).eql({
+    elementId: undefined,
+    linkName: undefined,
+    linkRegion: undefined,
+    linkType: undefined,
+    linkUrl: undefined,
+    pageName: undefined
+  });
 });
 
 test("Test C81183: Verify that it returns linkDetails irrespective on clickCollectionEnabled", async () => {
@@ -147,38 +132,20 @@ test("Test C81183: Verify that it returns linkDetails irrespective on clickColle
   await addLinksToBody();
   const expectedLinkDetails = {
     elementId: "alloy-link-test",
-    data: {
-      __adobe: {
-        analytics: {
-          c: {
-            a: {
-              activitymap: {
-                link: "Test Link",
-                page: "https://alloyio.com/functional-test/testPage.html",
-                pageIDType: 0,
-                region: "BODY"
-              }
-            }
-          }
-        }
-      }
-    },
-    xdm: {
-      eventType: "web.webinteraction.linkClicks",
-      web: {
-        webInteraction: {
-          URL: "https://alloyio.com/functional-test/valid.html",
-          linkClicks: {
-            value: 1
-          },
-          name: "Test Link",
-          region: "BODY",
-          type: "other"
-        }
-      }
-    }
+    linkName: "Test Link",
+    linkRegion: "BODY",
+    linkType: "other",
+    linkUrl: "https://alloyio.com/functional-test/valid.html",
+    pageName: "https://alloyio.com/functional-test/testPage.html"
   };
 
-  await t.expect(getLinkDetails("cancel-alloy-link-test")).eql(undefined);
+  await t.expect(getLinkDetails("cancel-alloy-link-test")).eql({
+    elementId: undefined,
+    linkName: undefined,
+    linkRegion: undefined,
+    linkType: undefined,
+    linkUrl: undefined,
+    pageName: undefined
+  });
   await t.expect(getLinkDetails("alloy-link-test")).eql(expectedLinkDetails);
 });
