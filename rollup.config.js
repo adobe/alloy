@@ -88,6 +88,7 @@ export const buildConfig = ({
   variant = STANDALONE,
   minify = false,
   babelPlugins = [],
+  input = `${dirname}/src/standalone.js`,
   file,
 }) => {
   const plugins = buildPlugins({ variant, minify, babelPlugins });
@@ -110,7 +111,7 @@ export const buildConfig = ({
     const destDirectory = variant === SANDBOX ? "sandbox/public/" : "dist/";
 
     return {
-      input: `${dirname}/src/standalone.js`,
+      input,
       output: [
         {
           file: file || `${destDirectory}alloy${minifiedExtension}.js`,
