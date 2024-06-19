@@ -16,11 +16,13 @@ import path from "path";
 import { rollup } from "rollup";
 import { Command, Option, InvalidOptionArgumentError } from "commander";
 import inquirer from "inquirer";
+import { fileURLToPath } from "url";
 import { buildConfig } from "../rollup.config.js";
 import conditionalBuildBabelPlugin from "./helpers/conditionalBuildBabelPlugin.js";
 import components from "./helpers/alloyComponents.js";
 
-const dirname = import.meta.dirname;
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+
 let sourceRootPath = `${dirname}/../src`;
 if (!fs.existsSync(sourceRootPath)) {
   sourceRootPath = `${dirname}/../libEs6`;
