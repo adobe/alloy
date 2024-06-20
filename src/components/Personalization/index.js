@@ -51,6 +51,7 @@ import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMe
 import createRedirect from "./dom-actions/createRedirect.js";
 import createNotificationHandler from "./createNotificationHandler.js";
 import createHandleConsentFlicker from "./createHandleConsentFlicker.js";
+import createSubscribeContentCards from "./createSubscribeContentCards.js";
 import collectInteractions from "./dom-actions/clicks/collectInteractions.js";
 import {
   ALWAYS,
@@ -159,10 +160,13 @@ const createPersonalization = ({ config, logger, eventManager, consent }) => {
     targetMigrationEnabled,
   });
 
+  const subscribeContentCards = createSubscribeContentCards({ collect });
+
   const onDecisionHandler = createOnDecisionHandler({
     processPropositions,
     createProposition,
     notificationHandler,
+    subscribeContentCards,
   });
 
   const handleConsentFlicker = createHandleConsentFlicker({
@@ -186,6 +190,7 @@ const createPersonalization = ({ config, logger, eventManager, consent }) => {
     renderedPropositions,
     onDecisionHandler,
     handleConsentFlicker,
+    subscribeContentCards,
   });
 };
 

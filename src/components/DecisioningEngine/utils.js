@@ -62,18 +62,10 @@ export const clearLocalStorage = (storage) => {
   storage.clear();
 };
 
-export const hasExperienceData = (xdm) => {
-  const { eventType = "", _experience } = xdm;
+export const hasExperienceData = (xdm = {}) => {
+  const { _experience } = xdm;
 
-  if (!eventType || eventType === "") {
-    return false;
-  }
-
-  if (!_experience || typeof _experience !== "object") {
-    return false;
-  }
-
-  return true;
+  return !(!_experience || typeof _experience !== "object");
 };
 
 export const getDecisionProvider = (proposition) => {

@@ -40,6 +40,7 @@ import createProcessHtmlContent from "../../../../../../src/components/Personali
 import createProcessRedirect from "../../../../../../src/components/Personalization/handlers/createProcessRedirect.js";
 import processDefaultContent from "../../../../../../src/components/Personalization/handlers/processDefaultContent.js";
 import { isPageWideSurface } from "../../../../../../src/components/Personalization/utils/surfaceUtils.js";
+import createSubscribeContentCards from "../../../../../../src/components/Personalization/createSubscribeContentCards.js";
 import createOnDecisionHandler from "../../../../../../src/components/Personalization/createOnDecisionHandler.js";
 import createNotificationHandler from "../../../../../../src/components/Personalization/createNotificationHandler.js";
 import {
@@ -193,10 +194,15 @@ const buildComponent = ({
     targetMigrationEnabled,
   });
 
+  const subscribeContentCards = createSubscribeContentCards({
+    collect,
+  });
+
   const onDecisionHandler = createOnDecisionHandler({
     processPropositions,
     createProposition,
     notificationHandler,
+    subscribeContentCards,
   });
 
   return createComponent({
@@ -214,6 +220,7 @@ const buildComponent = ({
     mergeDecisionsMeta,
     renderedPropositions,
     onDecisionHandler,
+    subscribeContentCards,
   });
 };
 

@@ -35,6 +35,7 @@ export default ({ options }) => {
     data: objectOf({}),
     documentUnloading: boolean(),
     renderDecisions: boolean(),
+    decisionContext: objectOf({}),
     decisionScopes: arrayOf(string()).uniqueItems(),
     personalization: objectOf({
       decisionScopes: arrayOf(string()).uniqueItems(),
