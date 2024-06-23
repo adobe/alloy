@@ -97,11 +97,11 @@
     "uuid": "^10.0.0"
   },
   "devDependencies": {
-    "@adobe/alloy": "^2.21.0-beta.7",
-    "@eslint/js": "^9.5.0",
-    "@octokit/rest": "^21.0.0",
+    "@adobe/alloy": "^2.21.0-beta.10",
     "@babel/cli": "^7.24.7",
     "@babel/plugin-transform-runtime": "^7.24.7",
+    "@eslint/js": "^9.5.0",
+    "@octokit/rest": "^21.0.0",
     "bundlesize": "^0.18.2",
     "chai": "^5.1.1",
     "chalk": "^5.3.0",
