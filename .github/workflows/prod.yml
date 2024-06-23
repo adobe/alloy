@@ -46,7 +46,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
-            const getTestingTags = require('./scripts/getTestingTags.js');
+            import getTestingTags from './scripts/getTestingTags.js';
             const tagsToTest = await getTestingTags();
             const matrixInput = { include: tagsToTest.map(tag => ({tag})) }
             core.setOutput("matrixInput", JSON.stringify(matrixInput));
