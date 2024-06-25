@@ -10,6 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import uuid from "uuid/v4";
+import { v4 as uuidv4 } from "uuid";
 
-export default uuid;
+export default uuidv4;

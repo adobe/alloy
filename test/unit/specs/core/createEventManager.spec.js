@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createEventManager from "../../../../src/core/createEventManager";
-import createConfig from "../../../../src/core/config/createConfig";
-import { defer } from "../../../../src/utils";
-import flushPromiseChains from "../../helpers/flushPromiseChains";
+import createEventManager from "../../../../src/core/createEventManager.js";
+import createConfig from "../../../../src/core/config/createConfig.js";
+import { defer } from "../../../../src/utils/index.js";
+import flushPromiseChains from "../../helpers/flushPromiseChains.js";
 
 const CANCELLATION_MESSAGE_REGEX = /Event was canceled/;
 
@@ -36,23 +36,23 @@ describe("createEventManager", () => {
       orgId: "ABC123",
       onBeforeEventSend: jasmine.createSpy(),
       debugEnabled: true,
-      edgeConfigOverrides: {}
+      edgeConfigOverrides: {},
     });
     logger = jasmine.createSpyObj("logger", ["info"]);
     lifecycle = jasmine.createSpyObj("lifecycle", {
       onBeforeEvent: Promise.resolve(),
       onBeforeDataCollectionRequest: Promise.resolve(),
-      onRequestFailure: Promise.resolve()
+      onRequestFailure: Promise.resolve(),
     });
     consent = jasmine.createSpyObj("consent", {
-      awaitConsent: Promise.resolve()
+      awaitConsent: Promise.resolve(),
     });
     event = jasmine.createSpyObj("event", {
       finalize: undefined,
-      shouldSend: true
+      shouldSend: true,
     });
     onRequestFailureForOnBeforeEvent = jasmine.createSpy(
-      "onRequestFailureForOnBeforeEvent"
+      "onRequestFailureForOnBeforeEvent",
     );
     fakeOnRequestFailure = ({ onRequestFailure }) => {
       onRequestFailure(onRequestFailureForOnBeforeEvent);
@@ -63,7 +63,7 @@ describe("createEventManager", () => {
     };
     requestPayload = jasmine.createSpyObj("requestPayload", [
       "addEvent",
-      "mergeConfigOverride"
+      "mergeConfigOverride",
     ]);
     const createDataCollectionRequestPayload = () => {
       return requestPayload;
@@ -71,7 +71,7 @@ describe("createEventManager", () => {
     request = {
       getPayload() {
         return requestPayload;
-      }
+      },
     };
     createDataCollectionRequest = jasmine
       .createSpy("createDataCollectionRequest")
@@ -91,7 +91,7 @@ describe("createEventManager", () => {
       createDataCollectionRequestPayload,
       createDataCollectionRequest,
       sendEdgeNetworkRequest,
-      applyResponse
+      applyResponse,
     });
   });
 
@@ -111,7 +111,7 @@ describe("createEventManager", () => {
     it("allows other components to access event and pause the lifecycle", () => {
       const deferred = defer();
       const options = {
-        renderDecisions: true
+        renderDecisions: true,
       };
       lifecycle.onBeforeEvent.and.returnValue(deferred.promise);
       eventManager.sendEvent(event, options);
@@ -121,7 +121,7 @@ describe("createEventManager", () => {
             event,
             renderDecisions: true,
             onResponse: jasmine.any(Function),
-            onRequestFailure: jasmine.any(Function)
+            onRequestFailure: jasmine.any(Function),
           });
           expect(consent.awaitConsent).not.toHaveBeenCalled();
           deferred.resolve();
@@ -141,15 +141,15 @@ describe("createEventManager", () => {
     it("does not send event when event.shouldSend returns false", () => {
       lifecycle.onBeforeEvent.and.callFake(fakeOnRequestFailure);
       event.shouldSend.and.returnValue(false);
-      return eventManager.sendEvent(event).then(result => {
+      return eventManager.sendEvent(event).then((result) => {
         expect(result).toBeUndefined();
         expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalled();
         expect(
           onRequestFailureForOnBeforeEvent.calls.mostRecent().args[0].error
-            .message
+            .message,
         ).toMatch(CANCELLATION_MESSAGE_REGEX);
         expect(logger.info).toHaveBeenCalledWith(
-          jasmine.stringMatching(CANCELLATION_MESSAGE_REGEX)
+          jasmine.stringMatching(CANCELLATION_MESSAGE_REGEX),
         );
         expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
       });
@@ -157,7 +157,7 @@ describe("createEventManager", () => {
 
     it("sends event when event.shouldSend returns true", () => {
       lifecycle.onBeforeEvent.and.callFake(fakeOnRequestFailure);
-      return eventManager.sendEvent(event).then(result => {
+      return eventManager.sendEvent(event).then((result) => {
         expect(result).toBeUndefined();
         expect(onRequestFailureForOnBeforeEvent).not.toHaveBeenCalled();
         expect(sendEdgeNetworkRequest).toHaveBeenCalled();
@@ -173,10 +173,10 @@ describe("createEventManager", () => {
         .then(() => {
           throw new Error("Should not have resolved.");
         })
-        .catch(error => {
+        .catch((error) => {
           expect(error.message).toEqual(errorMsg);
           expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalledWith({
-            error
+            error,
           });
           expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
         });
@@ -209,7 +209,7 @@ describe("createEventManager", () => {
 
     it("calls onResponse callbacks on response", () => {
       const onResponseForOnBeforeEvent = jasmine.createSpy(
-        "onResponseForOnBeforeEvent"
+        "onResponseForOnBeforeEvent",
       );
       lifecycle.onBeforeEvent.and.callFake(({ onResponse }) => {
         onResponse(onResponseForOnBeforeEvent);
@@ -232,14 +232,14 @@ describe("createEventManager", () => {
           const error = new Error();
           runOnRequestFailureCallbacks({ error });
           throw error;
-        }
+        },
       );
       return eventManager
         .sendEvent(event)
         .then(fail)
-        .catch(error => {
+        .catch((error) => {
           expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalledWith({
-            error
+            error,
           });
         });
     });
@@ -249,34 +249,34 @@ describe("createEventManager", () => {
         expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
           request,
           runOnResponseCallbacks: jasmine.any(Function),
-          runOnRequestFailureCallbacks: jasmine.any(Function)
+          runOnRequestFailureCallbacks: jasmine.any(Function),
         });
       });
     });
 
     it("fails returned promise if request fails", () => {
       sendEdgeNetworkRequest.and.returnValue(
-        Promise.reject(new Error("no connection"))
+        Promise.reject(new Error("no connection")),
       );
       return expectAsync(eventManager.sendEvent(event)).toBeRejectedWithError(
-        "no connection"
+        "no connection",
       );
     });
   });
 
   describe("applyResponse", () => {
     const responseHeaders = {
-      "x-request-id": "474ec8af-6326-4cb5-952a-4b7dc6be5749"
+      "x-request-id": "474ec8af-6326-4cb5-952a-4b7dc6be5749",
     };
     const responseBody = {
       requestId: "474ec8af-6326-4cb5-952a-4b7dc6be5749",
-      handle: []
+      handle: [],
     };
 
     const options = {
       renderDecisions: false,
       responseHeaders,
-      responseBody
+      responseBody,
     };
 
     it("creates the payload and adds event and meta", () => {
@@ -293,7 +293,7 @@ describe("createEventManager", () => {
 
     it("calls onResponse callbacks", () => {
       const onResponseForOnBeforeEvent = jasmine.createSpy(
-        "onResponseForOnBeforeEvent"
+        "onResponseForOnBeforeEvent",
       );
       lifecycle.onBeforeEvent.and.callFake(({ onResponse }) => {
         onResponse(onResponseForOnBeforeEvent);
@@ -315,76 +315,76 @@ describe("createEventManager", () => {
       const mockResult = { response: "yep" };
       applyResponse.and.returnValue(mockResult);
 
-      return eventManager.applyResponse(event, options).then(result => {
+      return eventManager.applyResponse(event, options).then((result) => {
         expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
         expect(applyResponse).toHaveBeenCalledWith({
           request,
           responseHeaders,
           responseBody,
-          runOnResponseCallbacks: jasmine.any(Function)
+          runOnResponseCallbacks: jasmine.any(Function),
         });
         expect(result).toEqual(mockResult);
       });
     });
 
-    it("includes override configuration, if provided", done => {
+    it("includes override configuration, if provided", (done) => {
       eventManager
         .sendEvent(event, {
           edgeConfigOverrides: {
             com_adobe_experience_platform: {
               event: {
-                datasetId: "456"
-              }
+                datasetId: "456",
+              },
             },
             com_adobe_identity: {
-              idSyncContainerId: "123"
-            }
-          }
+              idSyncContainerId: "123",
+            },
+          },
         })
         .then(() => {
           expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
             com_adobe_identity: {
-              idSyncContainerId: "123"
+              idSyncContainerId: "123",
             },
             com_adobe_experience_platform: {
               event: {
-                datasetId: "456"
-              }
-            }
+                datasetId: "456",
+              },
+            },
           });
           done();
         });
     });
 
-    it("includes global override configuration, if provided", done => {
+    it("includes global override configuration, if provided", (done) => {
       config.edgeConfigOverrides.com_adobe_identity = {
-        idSyncContainerId: "123"
+        idSyncContainerId: "123",
       };
 
       eventManager
         .sendEvent(event, {
-          edgeConfigOverrides: {}
+          edgeConfigOverrides: {},
         })
         .then(() => {
           expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
             com_adobe_identity: {
-              idSyncContainerId: "123"
-            }
+              idSyncContainerId: "123",
+            },
           });
           done();
         });
     });
-    it("includes the datastreamId override, if provided", done => {
+    it("includes the datastreamId override, if provided", (done) => {
       eventManager
         .sendEvent(event, {
           edgeConfigOverrides: {
-            datastreamId: "456"
-          }
+            datastreamId: "456",
+          },
         })
         .then(() => {
           expect(createDataCollectionRequest).toHaveBeenCalledWith({
             payload: jasmine.any(Object),
-            datastreamIdOverride: "456"
+            datastreamIdOverride: "456",
           });
           done();
         });

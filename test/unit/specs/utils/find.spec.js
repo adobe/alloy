@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import find from "../../../../src/utils/find";
+import find from "../../../../src/utils/find.js";
 
 const items = ["a", "b", "c"];
 
 describe("find", () => {
   it("returns item if match found", () => {
-    const predicate = jasmine.createSpy().and.callFake(item => item === "b");
+    const predicate = jasmine.createSpy().and.callFake((item) => item === "b");
     const result = find(items, predicate);
     expect(predicate).toHaveBeenCalledWith("a", 0, items);
     expect(predicate).toHaveBeenCalledWith("b", 1, items);
@@ -25,7 +25,7 @@ describe("find", () => {
   });
 
   it("returns undefined if match not found", () => {
-    const predicate = jasmine.createSpy().and.callFake(item => item === "z");
+    const predicate = jasmine.createSpy().and.callFake((item) => item === "z");
     const result = find(items, predicate);
     expect(predicate).toHaveBeenCalledWith("a", 0, items);
     expect(predicate).toHaveBeenCalledWith("b", 1, items);

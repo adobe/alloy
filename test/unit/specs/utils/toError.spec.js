@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import toError from "../../../../src/utils/toError";
+import toError from "../../../../src/utils/toError.js";
 
 describe("toError", () => {
   it("returns an error if value is not an error", () => {

@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getParent from "./getParent";
-import getNextSibling from "./getNextSibling";
+import getParent from "./getParent.js";
+import getNextSibling from "./getNextSibling.js";
 
 export default (container, element) => {
   if (!container) {

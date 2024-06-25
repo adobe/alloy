@@ -53,5 +53,5 @@ export {
   thirdPartyCookiesEnabled,
   thirdPartyCookiesDisabled,
   targetMigrationEnabled,
-  ajoConfigForStage
+  ajoConfigForStage,
 };

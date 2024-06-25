@@ -9,17 +9,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getLinkName from "../../../../../src/components/ActivityCollector/getLinkName";
+import getLinkName from "../../../../../src/components/ActivityCollector/getLinkName.js";
 
 const createNodeWithAttribute = (nodeName, attributeName, attributeValue) => {
   const node = {
     nodeName,
-    getAttribute: name => {
+    getAttribute: (name) => {
       if (name === attributeName) {
         return attributeValue;
       }
       return null;
-    }
+    },
   };
   node[attributeName] = attributeValue;
   return node;
@@ -37,8 +37,8 @@ describe("ActivityCollector::getLinkName", () => {
       getLinkName({
         nodeName: "A",
         innerText: "inner",
-        textContent: "content"
-      })
+        textContent: "content",
+      }),
     ).toBe("inner");
     // Child nodes are ignored unless they include non-supported elements
     // which can end up corrupting the innerText value
@@ -47,14 +47,14 @@ describe("ActivityCollector::getLinkName", () => {
         nodeName: "A",
         innerText: "inner",
         textContent: "content",
-        childNodes: [createNodeWithAttribute("IMG", "src", "image.jpg")]
-      })
+        childNodes: [createNodeWithAttribute("IMG", "src", "image.jpg")],
+      }),
     ).toBe("inner");
     expect(
       getLinkName({
         nodeName: "A",
-        textContent: "content"
-      })
+        textContent: "content",
+      }),
     ).toBe("content");
   });
   // this is an use case when in the children nodes there is an unsupported node,
@@ -68,9 +68,9 @@ describe("ActivityCollector::getLinkName", () => {
           // Title attributes would contribute to the link-name
           // However LINK is a non-supported element
           createNodeWithAttribute("LINK", "title", "Link Title"),
-          createNodeWithAttribute("IMG", "src", "image.jpg")
-        ]
-      })
+          createNodeWithAttribute("IMG", "src", "image.jpg"),
+        ],
+      }),
     ).toBe("image.jpg");
   });
 
@@ -81,9 +81,9 @@ describe("ActivityCollector::getLinkName", () => {
         nodeName: "A",
         childNodes: [
           createNodeWithAttribute("#text", "nodeValue", "Click Here"),
-          createNodeWithAttribute("IMG", "src", "image.jpg")
-        ]
-      })
+          createNodeWithAttribute("IMG", "src", "image.jpg"),
+        ],
+      }),
     ).toBe("Click Here");
   });
 
@@ -95,9 +95,9 @@ describe("ActivityCollector::getLinkName", () => {
           createNodeWithAttribute("IMG", "title", "title"),
           createNodeWithAttribute("IMG", "src", "image.jpg"),
           createNodeWithAttribute("IMG", "alt", "alt"),
-          createNodeWithAttribute("INPUT", "value", "input")
-        ]
-      })
+          createNodeWithAttribute("INPUT", "value", "input"),
+        ],
+      }),
     ).toBe("alt");
     expect(
       getLinkName({
@@ -105,24 +105,24 @@ describe("ActivityCollector::getLinkName", () => {
         childNodes: [
           createNodeWithAttribute("IMG", "title", "title"),
           createNodeWithAttribute("IMG", "src", "image.jpg"),
-          createNodeWithAttribute("INPUT", "value", "input")
-        ]
-      })
+          createNodeWithAttribute("INPUT", "value", "input"),
+        ],
+      }),
     ).toBe("title");
     expect(
       getLinkName({
         nodeName: "A",
         childNodes: [
           createNodeWithAttribute("IMG", "src", "image.jpg"),
-          createNodeWithAttribute("INPUT", "value", "input")
-        ]
-      })
+          createNodeWithAttribute("INPUT", "value", "input"),
+        ],
+      }),
     ).toBe("input");
     expect(
       getLinkName({
         nodeName: "A",
-        childNodes: [createNodeWithAttribute("IMG", "src", "image.jpg")]
-      })
+        childNodes: [createNodeWithAttribute("IMG", "src", "image.jpg")],
+      }),
     ).toBe("image.jpg");
   });
 
@@ -131,8 +131,8 @@ describe("ActivityCollector::getLinkName", () => {
       getLinkName({
         nodeName: "A",
         innerText: " ab   c",
-        textContent: "content"
-      })
+        textContent: "content",
+      }),
     ).toBe("ab c");
   });
 });
@@ -146,8 +146,8 @@ it("Ignores the spaces attributes", () => {
         createNodeWithAttribute("IMG", "src", "image.jpg"),
         createNodeWithAttribute("IMG", "alt", "  "),
         createNodeWithAttribute("IMG", "alt", "alt"),
-        createNodeWithAttribute("INPUT", "value", "input")
-      ]
-    })
+        createNodeWithAttribute("INPUT", "value", "input"),
+      ],
+    }),
   ).toBe("alt");
 });

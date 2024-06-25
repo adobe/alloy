@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createCallbackAggregator from "../../../../src/utils/createCallbackAggregator";
+import createCallbackAggregator from "../../../../src/utils/createCallbackAggregator.js";
 
 describe("createCallbackAggregator", () => {
   let callbackAggregator;
@@ -24,7 +24,7 @@ describe("createCallbackAggregator", () => {
     const callback2 = jasmine.createSpy("callback2").and.returnValue("bar");
     callbackAggregator.add(callback1);
     callbackAggregator.add(callback2);
-    return callbackAggregator.call("cherry", "tree").then(result => {
+    return callbackAggregator.call("cherry", "tree").then((result) => {
       expect(callback1).toHaveBeenCalledWith("cherry", "tree");
       expect(callback2).toHaveBeenCalledWith("cherry", "tree");
       expect(result).toEqual(["foo", "bar"]);
@@ -32,7 +32,7 @@ describe("createCallbackAggregator", () => {
   });
 
   it("doesn't throw errors when there are no callbacks", () => {
-    return callbackAggregator.call("cherry", "tree").then(result => {
+    return callbackAggregator.call("cherry", "tree").then((result) => {
       expect(result).toEqual([]);
     });
   });
@@ -40,7 +40,7 @@ describe("createCallbackAggregator", () => {
   it("doesn't throw errors when there are no arguments", () => {
     const callback = jasmine.createSpy("callback").and.returnValue("foo");
     callbackAggregator.add(callback);
-    return callbackAggregator.call().then(result => {
+    return callbackAggregator.call().then((result) => {
       expect(result).toEqual(["foo"]);
     });
   });

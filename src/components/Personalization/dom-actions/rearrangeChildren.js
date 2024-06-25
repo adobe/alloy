@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { getChildren, insertAfter, insertBefore } from "./dom";
+import { getChildren, insertAfter, insertBefore } from "./dom/index.js";
 
-export default (container, { from, to }) => {
+export default (container, { from, to }, decorateProposition) => {
   const children = getChildren(container);
   const elementFrom = children[from];
   const elementTo = children[to];
@@ -28,4 +28,7 @@ export default (container, { from, to }) => {
   } else {
     insertBefore(elementTo, elementFrom);
   }
+
+  decorateProposition(elementTo);
+  decorateProposition(elementFrom);
 };

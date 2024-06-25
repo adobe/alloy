@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getVisitor from "../../../../../../src/components/Identity/visitorService/getVisitor";
+import getVisitor from "../../../../../../src/components/Identity/visitorService/getVisitor.js";
 
 describe("getVisitor", () => {
   let mockWindow;

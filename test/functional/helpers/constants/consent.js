@@ -15,10 +15,10 @@ export const CONSENT_IN = {
       standard: "Adobe",
       version: "1.0",
       value: {
-        general: "in"
-      }
-    }
-  ]
+        general: "in",
+      },
+    },
+  ],
 };
 export const CONSENT_OUT = {
   consent: [
@@ -26,10 +26,10 @@ export const CONSENT_OUT = {
       standard: "Adobe",
       version: "1.0",
       value: {
-        general: "out"
-      }
-    }
-  ]
+        general: "out",
+      },
+    },
+  ],
 };
 
 export const IAB_CONSENT_IN = {
@@ -38,9 +38,9 @@ export const IAB_CONSENT_IN = {
       standard: "IAB TCF",
       version: "2.0",
       value: "CO052l-O052l-DGAMBFRACBgAIBAAAAAAIYgEawAQEagAAAA",
-      gdprApplies: true
-    }
-  ]
+      gdprApplies: true,
+    },
+  ],
 };
 
 export const IAB_CONSENT_IN_PERSONAL_DATA = {
@@ -50,9 +50,9 @@ export const IAB_CONSENT_IN_PERSONAL_DATA = {
       version: "2.0",
       value: "CO052l-O052l-DGAMBFRACBgAIBAAAAAAIYgEawAQEagAAAA",
       gdprApplies: true,
-      gdprContainsPersonalData: true
-    }
-  ]
+      gdprContainsPersonalData: true,
+    },
+  ],
 };
 
 export const IAB_CONSENT_IN_NO_GDPR = {
@@ -61,9 +61,9 @@ export const IAB_CONSENT_IN_NO_GDPR = {
       standard: "IAB TCF",
       version: "2.0",
       value: "CO052l-O052l-DGAMBFRACBgAIBAAAAAAIYgEawAQEagAAAA",
-      gdprApplies: false
-    }
-  ]
+      gdprApplies: false,
+    },
+  ],
 };
 
 export const IAB_NO_PURPOSE_ONE = {
@@ -72,9 +72,9 @@ export const IAB_NO_PURPOSE_ONE = {
       standard: "IAB TCF",
       version: "2.0",
       value: "CO052oTO052oTDGAMBFRACBgAABAAAAAAIYgEawAQEagAAAA",
-      gdprApplies: true
-    }
-  ]
+      gdprApplies: true,
+    },
+  ],
 };
 
 export const IAB_NO_PURPOSE_ONE_NO_GRPR = {
@@ -83,9 +83,9 @@ export const IAB_NO_PURPOSE_ONE_NO_GRPR = {
       standard: "IAB TCF",
       version: "2.0",
       value: "CO052oTO052oTDGAMBFRACBgAABAAAAAAIYgEawAQEagAAAA",
-      gdprApplies: false
-    }
-  ]
+      gdprApplies: false,
+    },
+  ],
 };
 
 export const IAB_NO_PURPOSE_TEN = {
@@ -94,9 +94,9 @@ export const IAB_NO_PURPOSE_TEN = {
       standard: "IAB TCF",
       version: "2.0",
       value: "CO052kIO052kIDGAMBFRACBgAIAAAAAAAIYgEawAQEagAAAA",
-      gdprApplies: true
-    }
-  ]
+      gdprApplies: true,
+    },
+  ],
 };
 
 export const IAB_NO_ADOBE_VENDOR = {
@@ -105,9 +105,9 @@ export const IAB_NO_ADOBE_VENDOR = {
       standard: "IAB TCF",
       version: "2.0",
       value: "CO052qdO052qdDGAMBFRACBgAIBAAAAAAIYgAAoAAAAA",
-      gdprApplies: true
-    }
-  ]
+      gdprApplies: true,
+    },
+  ],
 };
 
 export const ADOBE2_IN = {
@@ -117,14 +117,14 @@ export const ADOBE2_IN = {
       version: "2.0",
       value: {
         collect: {
-          val: "y"
+          val: "y",
         },
         metadata: {
-          time: "2019-01-01T15:52:25+00:00"
-        }
-      }
-    }
-  ]
+          time: "2019-01-01T15:52:25+00:00",
+        },
+      },
+    },
+  ],
 };
 
 export const ADOBE2_OUT = {
@@ -134,12 +134,12 @@ export const ADOBE2_OUT = {
       version: "2.0",
       value: {
         collect: {
-          val: "n"
+          val: "n",
         },
         metadata: {
-          time: "2019-01-01T15:52:25+00:00"
-        }
-      }
-    }
-  ]
+          time: "2019-01-01T15:52:25+00:00",
+        },
+      },
+    },
+  ],
 };

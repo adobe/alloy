@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { EVENT_TYPE_TRUE } from "../../constants/eventType";
+import { EVENT_TYPE_TRUE } from "../../constants/eventType.js";
 
 /* eslint-disable no-underscore-dangle */
 export const mergeDecisionsMeta = (
   event,
   decisionsMeta,
   propositionEventTypes,
-  propositionAction
+  propositionAction,
 ) => {
   // Do not send a display notification with no decisions. Even empty view changes
   // should include a proposition.
@@ -26,7 +26,7 @@ export const mergeDecisionsMeta = (
   }
   const propositionEventType = {};
 
-  propositionEventTypes.forEach(type => {
+  propositionEventTypes.forEach((type) => {
     propositionEventType[type] = EVENT_TYPE_TRUE;
   });
 
@@ -34,9 +34,9 @@ export const mergeDecisionsMeta = (
     _experience: {
       decisioning: {
         propositions: decisionsMeta,
-        propositionEventType
-      }
-    }
+        propositionEventType,
+      },
+    },
   };
 
   if (propositionAction) {

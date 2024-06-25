@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import injectDevice from "../../../../../src/components/Context/injectDevice";
+import injectDevice from "../../../../../src/components/Context/injectDevice.js";
 
 describe("Context::injectDevice", () => {
   let window;
@@ -18,8 +18,8 @@ describe("Context::injectDevice", () => {
     window = {
       screen: {
         width: 600,
-        height: 800
-      }
+        height: 800,
+      },
     };
   });
 
@@ -35,8 +35,8 @@ describe("Context::injectDevice", () => {
       device: {
         screenHeight: 800,
         screenWidth: 600,
-        screenOrientation: "landscape"
-      }
+        screenOrientation: "landscape",
+      },
     });
   });
 
@@ -46,34 +46,34 @@ describe("Context::injectDevice", () => {
       device: {
         screenHeight: 800,
         screenWidth: 600,
-        screenOrientation: "portrait"
-      }
+        screenOrientation: "portrait",
+      },
     });
   });
 
   it("handles matchMedia queries: portrait", () => {
-    window.matchMedia = query => ({
-      matches: query === "(orientation: portrait)"
+    window.matchMedia = (query) => ({
+      matches: query === "(orientation: portrait)",
     });
     expect(run()).toEqual({
       device: {
         screenHeight: 800,
         screenWidth: 600,
-        screenOrientation: "portrait"
-      }
+        screenOrientation: "portrait",
+      },
     });
   });
 
   it("handles matchMedia queries: landscape", () => {
-    window.matchMedia = query => ({
-      matches: query === "(orientation: landscape)"
+    window.matchMedia = (query) => ({
+      matches: query === "(orientation: landscape)",
     });
     expect(run()).toEqual({
       device: {
         screenHeight: 800,
         screenWidth: 600,
-        screenOrientation: "landscape"
-      }
+        screenOrientation: "landscape",
+      },
     });
   });
 
@@ -81,22 +81,22 @@ describe("Context::injectDevice", () => {
     window = {
       screen: {
         width: "600",
-        height: "800"
-      }
+        height: "800",
+      },
     };
     expect(run()).toEqual({
       device: {
         screenHeight: 800,
-        screenWidth: 600
-      }
+        screenWidth: 600,
+      },
     });
   });
   it("handles no good values", () => {
     window = {
       screen: {
         width: null,
-        height: undefined
-      }
+        height: undefined,
+      },
     };
     expect(run()).toEqual({});
   });
@@ -107,10 +107,10 @@ describe("Context::injectDevice", () => {
     {},
     { type: "foo" },
     { type: "a-b" },
-    { type: null }
-  ].forEach(orientation => {
+    { type: null },
+  ].forEach((orientation) => {
     it(`handles a bad screen orientation: ${JSON.stringify(
-      orientation
+      orientation,
     )}`, () => {
       if (orientation !== undefined) {
         window.screen.orientation = orientation;
@@ -119,8 +119,8 @@ describe("Context::injectDevice", () => {
       expect(run()).toEqual({
         device: {
           screenHeight: 800,
-          screenWidth: 600
-        }
+          screenWidth: 600,
+        },
       });
     });
   });

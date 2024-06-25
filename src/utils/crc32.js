@@ -19,7 +19,7 @@ const crc32 = (() => {
     table.push(c);
   }
 
-  return function(str, crc) {
+  return function (str, crc) {
     str = unescape(encodeURIComponent(str));
     if (!crc) crc = 0;
     crc = crc ^ -1;

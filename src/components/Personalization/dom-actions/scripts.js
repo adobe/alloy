@@ -11,27 +11,27 @@ governing permissions and limitations under the License.
 */
 
 import loadScript from "@adobe/reactor-load-script";
-import { selectNodes, createNode } from "../../../utils/dom";
-import { SCRIPT } from "../../../constants/tagName";
-import { SRC } from "../../../constants/elementAttribute";
-import { getAttribute, getNonce } from "./dom";
+import { selectNodes, createNode } from "../../../utils/dom/index.js";
+import { SCRIPT } from "../../../constants/tagName.js";
+import { SRC } from "../../../constants/elementAttribute.js";
+import { getAttribute, getNonce } from "./dom/index.js";
 
 export const is = (element, tagName) =>
   !!element && element.tagName === tagName;
 
-const isInlineScript = element =>
+const isInlineScript = (element) =>
   is(element, SCRIPT) && !getAttribute(element, SRC);
 
-const isRemoteScript = element =>
+const isRemoteScript = (element) =>
   is(element, SCRIPT) && getAttribute(element, SRC);
 
-export const getInlineScripts = fragment => {
+export const getInlineScripts = (fragment) => {
   const scripts = selectNodes(SCRIPT, fragment);
   const result = [];
   const { length } = scripts;
   const nonce = getNonce();
   const attributes = {
-    ...(nonce && { nonce })
+    ...(nonce && { nonce }),
   };
 
   /* eslint-disable no-continue */
@@ -55,7 +55,7 @@ export const getInlineScripts = fragment => {
   return result;
 };
 
-export const getRemoteScriptsUrls = fragment => {
+export const getRemoteScriptsUrls = (fragment) => {
   const scripts = selectNodes(SCRIPT, fragment);
   const result = [];
   const { length } = scripts;
@@ -82,12 +82,12 @@ export const getRemoteScriptsUrls = fragment => {
 };
 
 export const executeInlineScripts = (parent, scripts) => {
-  scripts.forEach(script => {
+  scripts.forEach((script) => {
     parent.appendChild(script);
     parent.removeChild(script);
   });
 };
 
-export const executeRemoteScripts = urls => {
+export const executeRemoteScripts = (urls) => {
   return Promise.all(urls.map(loadScript));
 };

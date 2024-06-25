@@ -10,20 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createFixture from "../../helpers/createFixture";
-import { orgMainConfigMain } from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createCollectEndpointAsserter from "../../helpers/createCollectEndpointAsserter";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
+import createFixture from "../../helpers/createFixture/index.js";
+import { orgMainConfigMain } from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createCollectEndpointAsserter from "../../helpers/createCollectEndpointAsserter.js";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
 
 createFixture({
-  title: "C5298194: Include propositions on every request"
+  title: "C5298194: Include propositions on every request",
 });
 
 test.meta({
   ID: "C5298194",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const runTest = async () => {
@@ -60,5 +60,5 @@ test("Test C5298194: Include propositions on every request", runTest);
 
 test.page(`${TEST_PAGE_URL}?adobe_authoring_enabled=true`)(
   "Test C5298194: Include propositions on every request in authoring mode",
-  runTest
+  runTest,
 );

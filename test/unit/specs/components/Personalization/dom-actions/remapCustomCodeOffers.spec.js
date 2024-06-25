@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import remapCustomCodeOffers from "../../../../../../src/components/Personalization/dom-actions/remapCustomCodeOffers";
+import remapCustomCodeOffers from "../../../../../../src/components/Personalization/dom-actions/remapCustomCodeOffers.js";
 
 describe("remapCustomCodeOffers", () => {
   it("changes target selector to parent for standard body selector", () => {
@@ -18,12 +18,12 @@ describe("remapCustomCodeOffers", () => {
       remapCustomCodeOffers({
         type: "customCode",
         content: "<div>superfluous</div>",
-        selector: "BODY > *:eq(0)"
-      })
+        selector: "BODY > *:eq(0)",
+      }),
     ).toEqual({
       type: "customCode",
       content: "<div>superfluous</div>",
-      selector: "BODY"
+      selector: "BODY",
     });
   });
 
@@ -32,12 +32,12 @@ describe("remapCustomCodeOffers", () => {
       remapCustomCodeOffers({
         type: "customCode",
         content: "<div>superfluous</div>",
-        selector: ".whoopie"
-      })
+        selector: ".whoopie",
+      }),
     ).toEqual({
       type: "customCode",
       content: "<div>superfluous</div>",
-      selector: ".whoopie"
+      selector: ".whoopie",
     });
   });
 
@@ -46,12 +46,12 @@ describe("remapCustomCodeOffers", () => {
       remapCustomCodeOffers({
         type: "somethingSpecial",
         content: "<div>superfluous</div>",
-        selector: "BODY > *:eq(0)"
-      })
+        selector: "BODY > *:eq(0)",
+      }),
     ).toEqual({
       type: "somethingSpecial",
       content: "<div>superfluous</div>",
-      selector: "BODY > *:eq(0)"
+      selector: "BODY > *:eq(0)",
     });
   });
 });

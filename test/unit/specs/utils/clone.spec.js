@@ -10,20 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import clone from "../../../../src/utils/clone";
+import clone from "../../../../src/utils/clone.js";
 
 describe("clone", () => {
   it("clones the object using JSON serialization/deserialization", () => {
     const obj = {
       toJSON() {
         return { foo: "bar" };
-      }
+      },
     };
 
     const result = clone(obj);
 
     expect(result).toEqual({
-      foo: "bar"
+      foo: "bar",
     });
   });
 });

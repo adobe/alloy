@@ -12,17 +12,33 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const path = require("path");
-const rollup = require("rollup");
-const loadConfigFile = require("rollup/dist/loadConfigFile");
-const createTestCafe = require("testcafe");
-const yargs = require("yargs/yargs");
-const { hideBin } = require("yargs/helpers");
+import path from "path";
+import { watch } from "rollup";
+import createTestCafe from "testcafe";
+import { loadConfigFile } from "rollup/dist/loadConfigFile.js";
+import { Command, Option } from "commander";
 
-const argv = yargs(hideBin(process.argv)).option("browsers", {
-  type: "array",
-  default: ["chrome"]
-}).argv;
+const dirname = import.meta.dirname;
+
+const program = new Command();
+
+program
+  .name("watchFunctionalTests")
+  .description("Script for running functional test in watch mode.")
+  .version("0.0.1");
+
+program.addOption(
+  new Option(
+    "-b, --browsers <browsers...>",
+    "the browser used to run the tests",
+  )
+    .choices(["chrome", "firefox", "safari"])
+    .default("chrome"),
+);
+
+program.parse();
+
+const argv = program.opts();
 
 /**
  * This script produces a build of Alloy from the source, then starts functional
@@ -47,7 +63,7 @@ const effectByEventCode = {
   async END() {
     if (firstBuildComplete) {
       console.log(
-        `Press Ctrl+R to restart the test run against the new build.`
+        `Press Ctrl+R to restart the test run against the new build.`,
       );
     } else {
       firstBuildComplete = true;
@@ -59,7 +75,7 @@ const effectByEventCode = {
   },
   ERROR(event) {
     console.error(event.error.stack);
-  }
+  },
 };
 
 (async () => {
@@ -70,12 +86,12 @@ const effectByEventCode = {
   process.env.NPM_PACKAGE_LOCAL = "true";
   process.env.BASE_CODE_MIN = "true";
   const { options, warnings } = await loadConfigFile(
-    path.join(__dirname, "../rollup.config.js")
+    path.join(dirname, "../rollup.config.js"),
   );
 
   warnings.flush();
-  const watcher = rollup.watch(options);
-  watcher.on("event", event => {
+  const watcher = watch(options);
+  watcher.on("event", (event) => {
     const effect = effectByEventCode[event.code];
 
     if (effect) {

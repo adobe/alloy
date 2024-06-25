@@ -9,7 +9,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import processResponse from "../../../../../src/components/MachineLearning/processResponse";
+import processResponse from "../../../../../src/components/MachineLearning/processResponse.js";
 
 describe("processResponse", () => {
   let response;
@@ -18,12 +18,12 @@ describe("processResponse", () => {
     response = jasmine.createSpyObj("response", {
       getPayloadsByType: [
         {
-          "xdm.path.1": 0.12
+          "xdm.path.1": 0.12,
         },
         {
-          "xdm.path.2": 0.3
-        }
-      ]
+          "xdm.path.2": 0.3,
+        },
+      ],
     });
   });
 
@@ -31,22 +31,22 @@ describe("processResponse", () => {
     expect(processResponse({ response })).toEqual({
       inferences: [
         {
-          "xdm.path.1": 0.12
+          "xdm.path.1": 0.12,
         },
         {
-          "xdm.path.2": 0.3
-        }
-      ]
+          "xdm.path.2": 0.3,
+        },
+      ],
     });
   });
 
   it("returns [] if no inferences were found", () => {
     const responseWithNoInferences = jasmine.createSpyObj("response", {
-      getPayloadsByType: []
+      getPayloadsByType: [],
     });
 
     expect(processResponse({ response: responseWithNoInferences })).toEqual({
-      inferences: []
+      inferences: [],
     });
   });
 });

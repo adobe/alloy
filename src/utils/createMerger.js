@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import deepAssign from "./deepAssign";
+import deepAssign from "./deepAssign.js";
 
 /**
  * Creates a function that, when passed an object of updates, will merge
@@ -20,7 +20,7 @@ import deepAssign from "./deepAssign";
  * can be a dot-notation property path.
  * @returns {Function}
  */
-export default (content, key) => updates => {
+export default (content, key) => (updates) => {
   const propertyPath = key.split(".");
   const hostObjectForUpdates = propertyPath.reduce((obj, propertyName) => {
     obj[propertyName] = obj[propertyName] || {};

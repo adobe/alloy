@@ -41,7 +41,7 @@ const createActivityCollector = ({
   config,
   eventManager,
   handleError,
-  logger
+  logger,
 }) => {
   const clickCollection = config.clickCollection;
   const createNamespacedStorage = injectStorage(window);
@@ -73,7 +73,7 @@ const createActivityCollector = ({
         attachClickActivityCollector({
           eventManager,
           lifecycle,
-          handleError
+          handleError,
         });
         // TODO: createScrollActivityCollector ...
       },
@@ -99,7 +99,7 @@ createActivityCollector.namespace = "ActivityCollector";
 createActivityCollector.configValidators = configValidators;
 createActivityCollector.buildOnInstanceConfiguredExtraParams = ({
   config,
-  logger
+  logger,
 }) => {
   return {
     getLinkDetails: targetElement => {

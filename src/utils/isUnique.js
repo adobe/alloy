@@ -14,7 +14,7 @@ governing permissions and limitations under the License.
  * @param {*} value
  * @returns {boolean}
  */
-export default values => {
+export default (values) => {
   const storedVals = Object.create(null);
   for (let i = 0; i < values.length; i += 1) {
     const item = values[i];

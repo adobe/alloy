@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isObject from "../../../../src/utils/isObject";
+import isObject from "../../../../src/utils/isObject.js";
 
 const nonObjects = [[], true, false, 123];
 
@@ -20,7 +20,7 @@ describe("isObject", () => {
   });
 
   it("returns false if the value is not an object", () => {
-    nonObjects.forEach(obj => {
+    nonObjects.forEach((obj) => {
       expect(isObject(obj)).toBe(false);
     });
   });

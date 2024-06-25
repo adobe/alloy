@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import computeConsentHash from "./computeConsentHash";
+import computeConsentHash from "./computeConsentHash.js";
 
 const getKey = ({ standard, version }) => {
   return `${standard}.${version}`;
@@ -22,7 +22,7 @@ export default ({ storage }) => {
     },
     lookup(consentObjects) {
       const currentHashes = {};
-      const getCurrentHash = consentObject => {
+      const getCurrentHash = (consentObject) => {
         const key = getKey(consentObject);
         const { standard, version, ...rest } = consentObject;
         if (!currentHashes[key]) {
@@ -33,7 +33,7 @@ export default ({ storage }) => {
 
       return {
         isNew() {
-          return consentObjects.some(consentObject => {
+          return consentObjects.some((consentObject) => {
             const key = getKey(consentObject);
             const previousHash = storage.getItem(key);
             return (
@@ -43,12 +43,12 @@ export default ({ storage }) => {
           });
         },
         save() {
-          consentObjects.forEach(consentObject => {
+          consentObjects.forEach((consentObject) => {
             const key = getKey(consentObject);
             storage.setItem(key, getCurrentHash(consentObject));
           });
-        }
+        },
       };
-    }
+    },
   };
 };

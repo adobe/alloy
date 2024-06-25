@@ -16,9 +16,9 @@ import {
   boolean,
   arrayOf,
   string,
-  literal
-} from "../../../../../src/utils/validation";
-import describeValidation from "../../../helpers/describeValidation";
+  literal,
+} from "../../../../../src/utils/validation/index.js";
+import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation:anyOf", () => {
   describeValidation(
@@ -27,16 +27,14 @@ describe("validation:anyOf", () => {
       [
         objectOf({
           renderDecisions: literal(true).required(),
-          decisionScopes: arrayOf(string())
+          decisionScopes: arrayOf(string()),
         }).required(),
         objectOf({
           renderDecisions: boolean(),
-          decisionScopes: arrayOf(string())
-            .nonEmpty()
-            .required()
-        }).required()
+          decisionScopes: arrayOf(string()).nonEmpty().required(),
+        }).required(),
       ],
-      "either renderDecisions set to true or decisionScopes set to a nonEmpty array"
+      "either renderDecisions set to true or decisionScopes set to a nonEmpty array",
     ),
     [
       { value: undefined, error: true },
@@ -50,10 +48,10 @@ describe("validation:anyOf", () => {
       { value: { decisionScopes: "bar" }, error: true },
       {
         value: { renderDecisions: true, decisionScopes: ["a", "b"] },
-        error: false
+        error: false,
       },
       { value: { renderDecisions: true, decisionScopes: "foo" }, error: true },
-      { value: { renderDecisions: "foo", decisionScopes: ["a"] }, error: true }
-    ]
+      { value: { renderDecisions: "foo", decisionScopes: ["a"] }, error: true },
+    ],
   );
 });

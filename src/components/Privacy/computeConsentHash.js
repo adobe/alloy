@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { crc32 } from "../../utils";
+import { crc32 } from "../../utils/index.js";
 
 // serialize an object with a consistent ordering
-const serialize = obj => {
+const serialize = (obj) => {
   if (Array.isArray(obj)) {
-    return obj.map(i => serialize(i));
+    return obj.map((i) => serialize(i));
   }
   if (typeof obj === "object" && obj !== null) {
     return Object.keys(obj)
@@ -28,6 +28,6 @@ const serialize = obj => {
   return obj;
 };
 
-export default obj => {
+export default (obj) => {
   return crc32(JSON.stringify(serialize(obj)));
 };

@@ -6,19 +6,19 @@
  */
 var VISITOR_DEBUG = false;
 
-var Visitor = (function() {
+var Visitor = (function () {
   "use strict";
 
   var commonjsGlobal =
     typeof globalThis !== "undefined"
       ? globalThis
       : typeof window !== "undefined"
-      ? window
-      : typeof global !== "undefined"
-      ? global
-      : typeof self !== "undefined"
-      ? self
-      : {};
+        ? window
+        : typeof global !== "undefined"
+          ? global
+          : typeof self !== "undefined"
+            ? self
+            : {};
 
   function createCommonjsModule(fn, module) {
     return (
@@ -46,7 +46,7 @@ var Visitor = (function() {
   var MESSAGES = {
     HANDSHAKE: "HANDSHAKE",
     GETSTATE: "GETSTATE",
-    PARENTSTATE: "PARENTSTATE"
+    PARENTSTATE: "PARENTSTATE",
   };
   var STATE_KEYS_MAP = {
     MCMID: "MCMID",
@@ -54,7 +54,7 @@ var Visitor = (function() {
     MCAAMB: "MCAAMB",
     MCAAMLH: "MCAAMLH",
     MCOPTOUT: "MCOPTOUT",
-    CUSTOMERIDS: "CUSTOMERIDS"
+    CUSTOMERIDS: "CUSTOMERIDS",
   };
   var ASYNC_API_MAP = {
     MCMID: "getMarketingCloudVisitorID",
@@ -62,10 +62,10 @@ var Visitor = (function() {
     MCAAMB: "getAudienceManagerBlob",
     MCAAMLH: "getAudienceManagerLocationHint",
     MCOPTOUT: "isOptedOut",
-    ALLFIELDS: "getVisitorValues"
+    ALLFIELDS: "getVisitorValues",
   };
   var SYNC_API_MAP = {
-    CUSTOMERIDS: "getCustomerIDs"
+    CUSTOMERIDS: "getCustomerIDs",
   };
   var ALL_APIS = {
     MCMID: "getMarketingCloudVisitorID",
@@ -74,29 +74,29 @@ var Visitor = (function() {
     MCOPTOUT: "isOptedOut",
     MCAID: "getAnalyticsVisitorID",
     CUSTOMERIDS: "getCustomerIDs",
-    ALLFIELDS: "getVisitorValues"
+    ALLFIELDS: "getVisitorValues",
   }; // Filedgroups in Visitor are using MC, A and AAM to annotate the requests, instead of MCMID..
   // So the loading calls are keyed by MC, A and AAM. We use this map to convert back and forth.
 
   var FIELDGROUP_TO_FIELD = {
     MC: "MCMID",
     A: "MCAID",
-    AAM: "MCAAMB"
+    AAM: "MCAAMB",
   };
   var FIELDS = {
     MCMID: "MCMID",
     MCOPTOUT: "MCOPTOUT",
     MCAID: "MCAID",
     MCAAMLH: "MCAAMLH",
-    MCAAMB: "MCAAMB"
+    MCAAMB: "MCAAMB",
   };
   var AUTH_STATE = {
     UNKNOWN: 0,
     AUTHENTICATED: 1,
-    LOGGED_OUT: 2
+    LOGGED_OUT: 2,
   };
   var OPT_OUT = {
-    GLOBAL: "global"
+    GLOBAL: "global",
   };
   var enums = {
     MESSAGES: MESSAGES,
@@ -107,7 +107,7 @@ var Visitor = (function() {
     FIELDGROUP_TO_FIELD: FIELDGROUP_TO_FIELD,
     FIELDS: FIELDS,
     AUTH_STATE: AUTH_STATE,
-    OPT_OUT: OPT_OUT
+    OPT_OUT: OPT_OUT,
   };
 
   var STATE_KEYS_MAP$1 = enums.STATE_KEYS_MAP; // 1. If value is in state, return it and call callback.
@@ -118,7 +118,7 @@ var Visitor = (function() {
 
     function makeFallback(key, callback) {
       var localVisitor = this;
-      return function() {
+      return function () {
         var randomMid = generateRandomID(0, key);
         var state = {};
         state[key] = randomMid;
@@ -128,13 +128,13 @@ var Visitor = (function() {
       };
     }
 
-    this.getMarketingCloudVisitorID = function(callback) {
+    this.getMarketingCloudVisitorID = function (callback) {
       callback = callback || noop;
       var fieldValue = this.findField(STATE_KEYS_MAP$1.MCMID, callback);
       var fallbackToRandomID = makeFallback.call(
         this,
         STATE_KEYS_MAP$1.MCMID,
-        callback
+        callback,
       );
       return typeof fieldValue !== "undefined"
         ? fieldValue
@@ -142,10 +142,10 @@ var Visitor = (function() {
     }; // Since we can only generate MIDs in LocalVisitor strategy, return an object
     // that contains the MID only.
 
-    this.getVisitorValues = function(callback) {
-      this.getMarketingCloudVisitorID(function(mid) {
+    this.getVisitorValues = function (callback) {
+      this.getMarketingCloudVisitorID(function (mid) {
         callback({
-          MCMID: mid
+          MCMID: mid,
         });
       });
     };
@@ -162,7 +162,7 @@ var Visitor = (function() {
 
     function makeFallback(key, callback) {
       var proxyVisitor = this;
-      return function() {
+      return function () {
         proxyVisitor.callbackRegistry.add(key, callback);
         proxyVisitor.messageParent(MESSAGES$1.GETSTATE);
         return "";
@@ -172,7 +172,7 @@ var Visitor = (function() {
     function generateAsyncAPI(apiKey) {
       var methodName = ASYNC_API_MAP$1[apiKey];
 
-      this[methodName] = function(callback) {
+      this[methodName] = function (callback) {
         callback = callback || noop;
         var fieldValue = this.findField(apiKey, callback);
         var fallbackToParent = makeFallback.call(this, apiKey, callback);
@@ -185,7 +185,7 @@ var Visitor = (function() {
     function generateSyncAPI(apiKey) {
       var methodName = SYNC_API_MAP$1[apiKey]; // getCustomerIDs is an async api. So if we don't have a value for it, we just return {}.
 
-      this[methodName] = function() {
+      this[methodName] = function () {
         var fieldValue = this.findField(apiKey, noop);
         return fieldValue || {};
       };
@@ -199,10 +199,10 @@ var Visitor = (function() {
   // Add calls into callback registry; they'll get called when the handshake call resolves.
 
   var PlaceholderVisitor = function PlaceholderVisitor() {
-    Object.keys(ASYNC_API_MAP$2).forEach(function(key) {
+    Object.keys(ASYNC_API_MAP$2).forEach(function (key) {
       var methodName = ASYNC_API_MAP$2[key];
 
-      this[methodName] = function(callback) {
+      this[methodName] = function (callback) {
         this.callbackRegistry.add(key, callback);
       };
     }, this);
@@ -212,11 +212,11 @@ var Visitor = (function() {
     "@babel/helpers - typeof";
 
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-      _typeof = function(obj) {
+      _typeof = function (obj) {
         return typeof obj;
       };
     } else {
-      _typeof = function(obj) {
+      _typeof = function (obj) {
         return obj &&
           typeof Symbol === "function" &&
           obj.constructor === Symbol &&
@@ -235,7 +235,7 @@ var Visitor = (function() {
         value: value,
         enumerable: true,
         configurable: true,
-        writable: true
+        writable: true,
       });
     } else {
       obj[key] = value;
@@ -244,8 +244,8 @@ var Visitor = (function() {
     return obj;
   }
 
-  var utils = createCommonjsModule(function(module, exports) {
-    exports.isObjectEmpty = function(obj) {
+  var utils = createCommonjsModule(function (module, exports) {
+    exports.isObjectEmpty = function (obj) {
       return obj === Object(obj) && Object.keys(obj).length === 0;
     }; // Empty string or empty object.
 
@@ -269,7 +269,7 @@ var Visitor = (function() {
       return false;
     }; // Checks if the browsers if IE, and return the version.
 
-    exports.getIeVersion = function() {
+    exports.getIeVersion = function () {
       // IE 8+ supports documentMode
       if (document.documentMode) {
         return document.documentMode;
@@ -290,7 +290,7 @@ var Visitor = (function() {
      *     encodeAndBuildRequest(['a=2', 'b=2'], '&'); // 'a%3D2&b%3D2'
      *********************************************************************/
 
-    exports.encodeAndBuildRequest = function(arr, character) {
+    exports.encodeAndBuildRequest = function (arr, character) {
       return arr.map(encodeURIComponent).join(character);
     };
     /*********************************************************************
@@ -302,7 +302,7 @@ var Visitor = (function() {
      *     isObject({}); // true
      *********************************************************************/
 
-    exports.isObject = function(arg) {
+    exports.isObject = function (arg) {
       return (
         arg !== null &&
         _typeof(arg) === "object" &&
@@ -310,13 +310,13 @@ var Visitor = (function() {
       );
     }; // Looks for an `adobe` object globally. If found, return it otherwise define a new `global.adobe` object.
 
-    exports.defineGlobalNamespace = function() {
+    exports.defineGlobalNamespace = function () {
       window.adobe = exports.isObject(window.adobe) ? window.adobe : {};
       return window.adobe;
     };
 
-    exports.pluck = function(obj, props) {
-      return props.reduce(function(result, field) {
+    exports.pluck = function (obj, props) {
+      return props.reduce(function (result, field) {
         if (obj[field]) {
           result[field] = obj[field];
         }
@@ -325,7 +325,7 @@ var Visitor = (function() {
       }, Object.create(null));
     };
 
-    exports.parseOptOut = function(data, optOut, NONE) {
+    exports.parseOptOut = function (data, optOut, NONE) {
       if (!optOut) {
         optOut = NONE; // We always need a value even if it's none
 
@@ -342,11 +342,11 @@ var Visitor = (function() {
 
       return {
         optOut: optOut,
-        d_ottl: d_ottl
+        d_ottl: d_ottl,
       };
     };
 
-    exports.normalizeBoolean = function(value) {
+    exports.normalizeBoolean = function (value) {
       var normalized = value;
 
       if (value === "true") {
@@ -377,7 +377,7 @@ var Visitor = (function() {
 
         var _instance = this;
 
-        return function() {
+        return function () {
           _instance.callbacks[key].splice(index, 1);
         };
       },
@@ -408,14 +408,14 @@ var Visitor = (function() {
           return;
         }
 
-        Object.keys(this.callbacks).forEach(function(key) {
+        Object.keys(this.callbacks).forEach(function (key) {
           var value = valuesMap[key] !== undefined ? valuesMap[key] : "";
           this.execute(key, value);
         }, this);
       },
       hasCallbacks: function hasCallbacks() {
         return Boolean(Object.keys(this.callbacks).length);
-      }
+      },
     };
   }
 
@@ -425,17 +425,17 @@ var Visitor = (function() {
   var MESSAGE_KEYS_MAP = {
     0: "prefix",
     1: "orgID",
-    2: "state"
+    2: "state",
   }; // dtoMessage.data format: prefix|orgID|state.
   // Example: HANDSHAKE|1234@AdobeOrg|{MCMID:1234}
   // state is an optional stringified JSON.
 
   var Message = function Message(orgID, targetOrigin) {
-    this.parse = function(dtoMessage) {
+    this.parse = function (dtoMessage) {
       try {
         var messageObj = {};
         var tokens = dtoMessage.data.split("|");
-        tokens.forEach(function(token, index) {
+        tokens.forEach(function (token, index) {
           if (token !== undefined) {
             var propName = MESSAGE_KEYS_MAP[index];
             messageObj[propName] = index !== 2 ? token : JSON.parse(token);
@@ -447,7 +447,7 @@ var Visitor = (function() {
       }
     };
 
-    this.isInvalid = function(dtoMessage) {
+    this.isInvalid = function (dtoMessage) {
       var msg = this.parse(dtoMessage);
 
       if (!msg || Object.keys(msg).length < 2) {
@@ -463,7 +463,7 @@ var Visitor = (function() {
       return isOrgIDInvalid || isOriginInvalid || isMsgPrefixInvalid;
     };
 
-    this.send = function(target, prefix, state) {
+    this.send = function (target, prefix, state) {
       var messageToSend = prefix + "|" + orgID;
 
       if (state && state === Object(state)) {
@@ -529,12 +529,12 @@ var Visitor = (function() {
     orgID,
     config,
     visitor,
-    parentWindow
+    parentWindow,
   ) {
     var childVisitor = this;
     var whitelistParentDomain = config.whitelistParentDomain;
     childVisitor.state = {
-      ALLFIELDS: {}
+      ALLFIELDS: {},
     };
     childVisitor.version = visitor.version;
     childVisitor.marketingCloudOrgID = orgID;
@@ -578,7 +578,7 @@ var Visitor = (function() {
 
       childVisitor.callbackRegistry.executeAll(
         childVisitor.state,
-        forceExecuteAllCallbacks
+        forceExecuteAllCallbacks,
       );
       commonjsGlobal.removeEventListener("message", openConnectionWithParent);
     }
@@ -610,7 +610,7 @@ var Visitor = (function() {
         messageParent(MESSAGES$3.HANDSHAKE);
         childVisitor._handshakeTimeout = setTimeout(
           onHandShakeFailure,
-          HANDSHAKE_EXPIRY
+          HANDSHAKE_EXPIRY,
         );
       } else {
         onHandShakeFailure();
@@ -636,7 +636,7 @@ var Visitor = (function() {
           apiName.indexOf("_") !== 0 &&
           typeof visitor[apiName] === "function"
         ) {
-          childVisitor[apiName] = function() {};
+          childVisitor[apiName] = function () {};
         }
       } // Set all APIs on Child Visitor as noop.
 
@@ -644,12 +644,12 @@ var Visitor = (function() {
 
       childVisitor.getSupplementalDataID = visitor.getSupplementalDataID; // isAllowed is always true in a Child Visitor since it can't create cookies already.
 
-      childVisitor.isAllowed = function() {
+      childVisitor.isAllowed = function () {
         return true;
       };
     }
 
-    childVisitor.init = function() {
+    childVisitor.init = function () {
       memoizeInstance(); // Store instance in `s_c_il`.
 
       implementAPI(); // Implement the Visitor public APIs as noop for now.
@@ -659,7 +659,7 @@ var Visitor = (function() {
       triggerHandshake(); // Check if there's a Visitor on parent page.
     };
 
-    childVisitor.findField = function(key, callback) {
+    childVisitor.findField = function (key, callback) {
       if (childVisitor.state[key] !== undefined) {
         callback(childVisitor.state[key]);
         return childVisitor.state[key];
@@ -677,11 +677,11 @@ var Visitor = (function() {
 
   var makeChildMessageListener = function makeChildMessageListener(
     visitor,
-    message
+    message,
   ) {
     function getNonEmptyFields() {
       var state = {};
-      Object.keys(ALL_APIS$1).forEach(function(key) {
+      Object.keys(ALL_APIS$1).forEach(function (key) {
         var methodName = ALL_APIS$1[key];
         var value = visitor[methodName]();
 
@@ -696,7 +696,7 @@ var Visitor = (function() {
       var pendingCalls = [];
 
       if (visitor._loading) {
-        Object.keys(visitor._loading).forEach(function(fieldGroup) {
+        Object.keys(visitor._loading).forEach(function (fieldGroup) {
           if (visitor._loading[fieldGroup]) {
             // fieldGroup: MC, A or AAM.
             var fieldKey = FIELDGROUP_TO_FIELD$1[fieldGroup];
@@ -736,7 +736,7 @@ var Visitor = (function() {
       var checkForPendingCalls = makePendingCallsChecker(
         function onCallsResolved() {
           replyMessage(target, MESSAGES$4.PARENTSTATE);
-        }
+        },
       );
       checkForPendingCalls(); // Once all pending calls have resolved, get state and Post it to Child. (onCallsResolved)
     }
@@ -747,7 +747,7 @@ var Visitor = (function() {
       function setCustomerIDs(customerIDs) {
         originalSetCustomerIDs.call(visitor, customerIDs);
         message.send(target, MESSAGES$4.PARENTSTATE, {
-          CUSTOMERIDS: visitor.getCustomerIDs()
+          CUSTOMERIDS: visitor.getCustomerIDs(),
         });
       }
 
@@ -768,14 +768,14 @@ var Visitor = (function() {
 
   var asyncParallelApply = function asyncParallelApply(
     asyncFnsMetadata,
-    finalCallback
+    finalCallback,
   ) {
     var results = {};
     var responses = 0;
     var numberOfAsyncFns = Object.keys(asyncFnsMetadata).length;
 
     function makeCallback(prefix) {
-      return function(result) {
+      return function (result) {
         results[prefix] = result;
         responses++;
         var isLastFn = responses === numberOfAsyncFns;
@@ -786,7 +786,7 @@ var Visitor = (function() {
       };
     }
 
-    Object.keys(asyncFnsMetadata).forEach(function(key) {
+    Object.keys(asyncFnsMetadata).forEach(function (key) {
       var metadata = asyncFnsMetadata[key];
 
       if (metadata.fn) {
@@ -815,7 +815,7 @@ var Visitor = (function() {
       return i < 0
         ? ""
         : decodeURIComponent(
-            c.substring(i + 2 + name.length, e < 0 ? c.length : e)
+            c.substring(i + 2 + name.length, e < 0 ? c.length : e),
           );
     },
     set: function set(name, value, options) {
@@ -861,7 +861,7 @@ var Visitor = (function() {
         encodeURIComponent(name) +
         "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;" +
         domain;
-    }
+    },
   };
 
   /*********************************************************************
@@ -890,11 +890,11 @@ var Visitor = (function() {
 
       if (
         cookies.set(cookieName, "cookie", {
-          domain: domain
+          domain: domain,
         })
       ) {
         cookies.remove(cookieName, {
-          domain: domain
+          domain: domain,
         });
         return domain;
       }
@@ -984,7 +984,7 @@ var Visitor = (function() {
     },
     isEqual: function isEqual(v1, v2) {
       return compareVersions(v1, v2) === 0;
-    }
+    },
   };
 
   /*
@@ -1028,7 +1028,7 @@ var Visitor = (function() {
         // set appropriately, based on the target_url parameter.
         target.postMessage(
           message,
-          target_url.replace(/([^:]+:\/\/[^\/]+).*/, "$1")
+          target_url.replace(/([^:]+:\/\/[^\/]+).*/, "$1"),
         );
       } else if (target_url) {
         // the browser does not support window.postMessage, so set the location
@@ -1081,17 +1081,17 @@ var Visitor = (function() {
           } else {
             commonjsGlobal[callback ? "attachEvent" : "detachEvent"](
               "onmessage",
-              attached_callback
+              attached_callback,
             );
           }
         }
       } catch (__Error__) {
         // Fail silently.
       }
-    }
+    },
   };
 
-  var generateRandomID = function(b) {
+  var generateRandomID = function (b) {
     var c = "0123456789",
       d = "",
       e = "",
@@ -1120,15 +1120,15 @@ var Visitor = (function() {
         0 === f && 9 == g
           ? (i = 3)
           : (1 == f || 2 == f) && 10 != i && 2 > g
-          ? (i = 10)
-          : 2 < f && (i = 10),
+            ? (i = 10)
+            : 2 < f && (i = 10),
         (g = Math.floor(Math.random() * j)),
         (e += c.substring(g, g + 1)),
         0 === f && 9 == g
           ? (j = 3)
           : (1 == f || 2 == f) && 10 != j && 2 > g
-          ? (j = 10)
-          : 2 < f && (j = 10);
+            ? (j = 10)
+            : 2 < f && (j = 10);
     return d + e;
   };
 
@@ -1138,7 +1138,7 @@ var Visitor = (function() {
     return {
       // CORS is for cross-domain AJAX in browsers that support it
       // 'withCredentials' needs to be a supported property for cookies to be enabled
-      corsMetadata: (function() {
+      corsMetadata: (function () {
         var corsType = "none",
           corsCookiesEnabled = true;
 
@@ -1169,7 +1169,7 @@ var Visitor = (function() {
 
         return {
           corsType: corsType,
-          corsCookiesEnabled: corsCookiesEnabled
+          corsCookiesEnabled: corsCookiesEnabled,
         };
       })(),
 
@@ -1211,7 +1211,7 @@ var Visitor = (function() {
             self.handleCORSError(
               corsData,
               error,
-              "Error parsing response as JSON"
+              "Error parsing response as JSON",
             );
             return;
           }
@@ -1229,7 +1229,7 @@ var Visitor = (function() {
             self.handleCORSError(
               corsData,
               error,
-              "Error forming callback function"
+              "Error forming callback function",
             );
           }
         }
@@ -1239,7 +1239,7 @@ var Visitor = (function() {
           corsInstance.open(
             "get",
             corsData.corsUrl + "&ts=" + new Date().getTime(),
-            true
+            true,
           );
 
           if (this.corsMetadata.corsType === "XMLHttpRequest") {
@@ -1250,10 +1250,10 @@ var Visitor = (function() {
 
             corsInstance.setRequestHeader(
               "Content-Type",
-              "application/x-www-form-urlencoded"
+              "application/x-www-form-urlencoded",
             );
 
-            corsInstance.onreadystatechange = function() {
+            corsInstance.onreadystatechange = function () {
               if (this.readyState === 4) {
                 if (this.status === 200) {
                   handleCORSResponse(this.responseText);
@@ -1262,12 +1262,12 @@ var Visitor = (function() {
             };
           }
 
-          corsInstance.onerror = function(error) {
+          corsInstance.onerror = function (error) {
             // One possible error is if the proper CORS response headers are not returned
             self.handleCORSError(corsData, error, "onerror");
           };
 
-          corsInstance.ontimeout = function(error) {
+          corsInstance.ontimeout = function (error) {
             self.handleCORSError(corsData, error, "ontimeout");
           };
 
@@ -1279,7 +1279,7 @@ var Visitor = (function() {
               url: corsData.corsUrl,
               d_visid_stg_timeout_captured: corsInstance.timeout,
               d_settimeout_overriden: timeoutMetrics.getSetTimeoutOverriden(),
-              d_visid_cors: 1
+              d_visid_cors: 1,
             };
           } // Log the request
 
@@ -1299,7 +1299,7 @@ var Visitor = (function() {
         visitor.CORSErrors.push({
           corsData: corsData,
           error: error,
-          description: description
+          description: description,
         });
 
         if (corsData.loadErrorHandler) {
@@ -1309,7 +1309,7 @@ var Visitor = (function() {
             corsData.loadErrorHandler(false);
           }
         }
-      }
+      },
     };
   };
 
@@ -1322,7 +1322,7 @@ var Visitor = (function() {
     VALID_VISITOR_ID_REGEX: /^[0-9a-fA-F\-]+$/,
     ADOBE_MC_TTL_IN_MIN: 5,
     VERSION_REGEX: /vVersion\|((\d+\.)?(\d+\.)?(\*|\d+))(?=$|\|)/,
-    FIRST_PARTY_SERVER_COOKIE: "s_ecid"
+    FIRST_PARTY_SERVER_COOKIE: "s_ecid",
   };
 
   var MCSYNCSOP = "MCSYNCSOP"; // fieldMarketingCloudSyncsOnPage
@@ -1335,7 +1335,7 @@ var Visitor = (function() {
 
   var makeDestinationPublishing = function makeDestinationPublishing(
     visitor,
-    thisClass
+    thisClass,
   ) {
     var d = commonjsGlobal.document;
     return {
@@ -1447,15 +1447,16 @@ var Visitor = (function() {
       jsonProcessed: [],
       canSetThirdPartyCookies: true,
       receivedThirdPartyCookiesNotification: false,
-      readyToAttachIframePreliminary: function readyToAttachIframePreliminary() {
-        return (
-          !visitor.idSyncDisableSyncs &&
-          !visitor.disableIdSyncs &&
-          !visitor.idSyncDisable3rdPartySyncing &&
-          !visitor.disableThirdPartyCookies &&
-          !visitor.disableThirdPartyCalls
-        );
-      },
+      readyToAttachIframePreliminary:
+        function readyToAttachIframePreliminary() {
+          return (
+            !visitor.idSyncDisableSyncs &&
+            !visitor.disableIdSyncs &&
+            !visitor.idSyncDisable3rdPartySyncing &&
+            !visitor.disableThirdPartyCookies &&
+            !visitor.disableThirdPartyCalls
+          );
+        },
 
       /*********************************************************************
        * Function readyToAttachIframe(): check if iframe is ready to be attached
@@ -1495,14 +1496,14 @@ var Visitor = (function() {
           if (iframe.className !== "aamIframeLoaded") {
             this.originalIframeHasLoadedAlready = false;
             addLoadListener(
-              "The destination publishing iframe already exists from a different library, but hadn't loaded yet."
+              "The destination publishing iframe already exists from a different library, but hadn't loaded yet.",
             );
           } else {
             this.originalIframeHasLoadedAlready = true;
             this.iframeHasLoaded = true;
             this.iframe = iframe;
             this.fireIframeLoadedCallbacks(
-              "The destination publishing iframe already exists from a different library, and had loaded alresady."
+              "The destination publishing iframe already exists from a different library, and had loaded alresady.",
             );
             this.requestToProcess();
           }
@@ -1522,7 +1523,7 @@ var Visitor = (function() {
         }
 
         function addLoadListener(message) {
-          iframe.addEventListener("load", function() {
+          iframe.addEventListener("load", function () {
             iframe.className = "aamIframeLoaded";
             self.iframeHasLoaded = true;
             self.fireIframeLoadedCallbacks(message);
@@ -1533,12 +1534,12 @@ var Visitor = (function() {
         this.iframe = iframe;
       },
       fireIframeLoadedCallbacks: function fireIframeLoadedCallbacks(message) {
-        this.iframeLoadedCallbacks.forEach(function(callback) {
+        this.iframeLoadedCallbacks.forEach(function (callback) {
           if (typeof callback === "function") {
             callback({
               message:
                 message ||
-                "The destination publishing iframe was attached and loaded successfully."
+                "The destination publishing iframe was attached and loaded successfully.",
             });
           }
         });
@@ -1610,7 +1611,7 @@ var Visitor = (function() {
           // TODO Deprecate idSyncDisableSyncs.
           if (!this.throttleTimerSet) {
             this.throttleTimerSet = true;
-            setTimeout(function() {
+            setTimeout(function () {
               self.messageSendingInterval = constants.POST_MESSAGE_ENABLED
                 ? null
                 : 150; // 150 ms for IE6/7, not used for all other major modern browsers
@@ -1623,7 +1624,7 @@ var Visitor = (function() {
       },
       getRegionAndCheckIfChanged: function getRegionAndCheckIfChanged(
         data,
-        ttl
+        ttl,
       ) {
         var aamLH = visitor._getField(MCAAMLH);
 
@@ -1712,7 +1713,7 @@ var Visitor = (function() {
               f(k["ttl"] || ""),
               "",
               declaredIdString,
-              k["fireURLSync"] ? "true" : "false"
+              k["fireURLSync"] ? "true" : "false",
             ];
 
             if (k["syncOnPage"]) {
@@ -1741,7 +1742,7 @@ var Visitor = (function() {
       checkFirstPartyCookie: function checkFirstPartyCookie(
         config,
         message,
-        idSyncType
+        idSyncType,
       ) {
         var onPage = idSyncType === "syncOnPage" ? true : false,
           field = onPage ? MCSYNCSOP : MCSYNCS;
@@ -1811,7 +1812,7 @@ var Visitor = (function() {
 
         return {
           dataPresent: dataPresent,
-          dataValid: dataValid
+          dataValid: dataValid,
         };
       },
 
@@ -1823,7 +1824,7 @@ var Visitor = (function() {
        *********************************************************************/
       manageSyncsSize: function manageSyncsSize(data) {
         if (data.join("*").length > this.MAX_SYNCS_LENGTH) {
-          data.sort(function(a, b) {
+          data.sort(function (a, b) {
             return (
               parseInt(a.split("-")[1], 10) - parseInt(b.split("-")[1], 10)
             );
@@ -1864,8 +1865,8 @@ var Visitor = (function() {
               var img = new Image();
               img.addEventListener(
                 "load",
-                (function(index, syncConfig, syncField, syncNow) {
-                  return function() {
+                (function (index, syncConfig, syncField, syncNow) {
+                  return function () {
                     self.onPagePixels[index] = null;
 
                     visitor._readVisitor();
@@ -1891,10 +1892,10 @@ var Visitor = (function() {
                       syncsData,
                       syncConfig,
                       syncField,
-                      syncNow
+                      syncNow,
                     );
                   };
-                })(this.onPagePixels.length, config, field, now)
+                })(this.onPagePixels.length, config, field, now),
               );
               img.src = (protocolIsPrependable ? protocol : "") + url;
               this.onPagePixels.push(img);
@@ -1918,7 +1919,7 @@ var Visitor = (function() {
             ? f("---destpub-debug---")
             : f("---destpub---");
         this.messages.push(
-          (constants.POST_MESSAGE_ENABLED ? "" : identifier) + m
+          (constants.POST_MESSAGE_ENABLED ? "" : identifier) + m,
         );
       },
 
@@ -1935,10 +1936,10 @@ var Visitor = (function() {
         data,
         config,
         field,
-        now
+        now,
       ) {
         data.push(
-          config["id"] + "-" + (now + Math.ceil(config["ttl"] / 60 / 24))
+          config["id"] + "-" + (now + Math.ceil(config["ttl"] / 60 / 24)),
         );
         this.manageSyncsSize(data);
 
@@ -1971,7 +1972,7 @@ var Visitor = (function() {
           } else {
             message = this.messages.shift();
             this.postMessage(prefix + message);
-            setTimeout(function() {
+            setTimeout(function () {
               self.sendMessages();
             }, this.messageSendingInterval);
           }
@@ -2092,7 +2093,7 @@ var Visitor = (function() {
         }
 
         tryToAttachIframe();
-      }
+      },
     };
   };
 
@@ -2136,7 +2137,7 @@ var Visitor = (function() {
     trackingServer: {},
     trackingServerSecure: {},
     whitelistIframeDomains: {},
-    whitelistParentDomain: {}
+    whitelistParentDomain: {},
   };
   var visitorConfig = {
     getConfigNames: function getConfigNames() {
@@ -2147,13 +2148,13 @@ var Visitor = (function() {
     },
     normalizeConfig: function normalizeConfig(config) {
       return typeof config !== "function" ? config : config();
-    }
+    },
   };
 
   var makeEmitter = function makeEmitter(target) {
     var events = {};
 
-    target.on = function(eventName, callback, context) {
+    target.on = function (eventName, callback, context) {
       if (!callback || typeof callback !== "function") {
         throw new Error("[ON] Callback should be a function.");
       }
@@ -2165,9 +2166,9 @@ var Visitor = (function() {
       var subscriptionIndex =
         events[eventName].push({
           callback: callback,
-          context: context
+          context: context,
         }) - 1;
-      return function() {
+      return function () {
         events[eventName].splice(subscriptionIndex, 1);
 
         if (!events[eventName].length) {
@@ -2176,9 +2177,9 @@ var Visitor = (function() {
       };
     };
 
-    target.off = function(eventName, callback) {
+    target.off = function (eventName, callback) {
       if (events.hasOwnProperty(eventName)) {
-        events[eventName] = events[eventName].filter(function(eventMetadata) {
+        events[eventName] = events[eventName].filter(function (eventMetadata) {
           if (eventMetadata.callback !== callback) {
             return eventMetadata;
           }
@@ -2186,7 +2187,7 @@ var Visitor = (function() {
       }
     };
 
-    target.publish = function(eventName) {
+    target.publish = function (eventName) {
       if (!events.hasOwnProperty(eventName)) {
         return;
       }
@@ -2194,7 +2195,7 @@ var Visitor = (function() {
       var data = [].slice.call(arguments, 1); // Note: We clone the callbacks array because a callback might unsubscribe,
       // which will change the length of the array and break this for loop.
 
-      events[eventName].slice(0).forEach(function(eventMetadata) {
+      events[eventName].slice(0).forEach(function (eventMetadata) {
         eventMetadata.callback.apply(eventMetadata.context, data);
       });
     };
@@ -2207,7 +2208,7 @@ var Visitor = (function() {
   // TODO Move this helper to utils and inject CATEGORIES_VALUES into areValidCategories
   // on demand. We currently have a circular dependency if we import utils here.
   var getValues = function getValues(obj) {
-    return Object.keys(obj).map(function(key) {
+    return Object.keys(obj).map(function (key) {
       return obj[key];
     });
   };
@@ -2215,7 +2216,7 @@ var Visitor = (function() {
   var STATUS = {
     PENDING: "pending",
     CHANGED: "changed",
-    COMPLETE: "complete"
+    COMPLETE: "complete",
   }; // TODO Convert the values to objects to be able to be more
   // granular when choosing categories.
   // e.g: ANALYTICS: { name: "analytics", useEcid: false }
@@ -2228,7 +2229,7 @@ var Visitor = (function() {
     ECID: "ecid",
     LIVEFYRE: "livefyre",
     TARGET: "target",
-    MEDIA_ANALYTICS: "mediaaa"
+    MEDIA_ANALYTICS: "mediaaa",
   };
   var VENDOR_IDS =
     ((_VENDOR_IDS = {}),
@@ -2258,21 +2259,21 @@ var Visitor = (function() {
     var registry = {};
     registry.callbacks = Object.create(null);
 
-    registry.add = function(key, callback) {
+    registry.add = function (key, callback) {
       if (!isCallbackValid(callback)) {
         throw new Error(
-          "[callbackRegistryFactory] Make sure callback is a function or an array of functions."
+          "[callbackRegistryFactory] Make sure callback is a function or an array of functions.",
         );
       }
 
       registry.callbacks[key] = registry.callbacks[key] || [];
       var index = registry.callbacks[key].push(callback) - 1;
-      return function() {
+      return function () {
         registry.callbacks[key].splice(index, 1);
       };
     };
 
-    registry.execute = function(key, args) {
+    registry.execute = function (key, args) {
       if (registry.callbacks[key]) {
         args = typeof args === "undefined" ? [] : args;
         args = args instanceof Array ? args : [args];
@@ -2295,18 +2296,18 @@ var Visitor = (function() {
       }
     };
 
-    registry.executeAll = function(paramsMap, forceExecute) {
+    registry.executeAll = function (paramsMap, forceExecute) {
       if (!forceExecute && (!paramsMap || isObjectEmpty(paramsMap))) {
         return;
       }
 
-      Object.keys(registry.callbacks).forEach(function(key) {
+      Object.keys(registry.callbacks).forEach(function (key) {
         var value = paramsMap[key] !== undefined ? paramsMap[key] : "";
         registry.execute(key, value);
       }, registry);
     };
 
-    registry.hasCallbacks = function() {
+    registry.hasCallbacks = function () {
       return Boolean(Object.keys(registry.callbacks).length);
     };
 
@@ -2323,7 +2324,7 @@ var Visitor = (function() {
 
   var makeAction = function makeAction(action, prefix, predicate) {
     return predicate()
-      ? function() {
+      ? function () {
           if (isConsoleAvailable(action)) {
             for (
               var _len = arguments.length, args = new Array(_len), _key = 0;
@@ -2345,7 +2346,7 @@ var Visitor = (function() {
     var predicate =
       arguments.length > 1 && arguments[1] !== undefined
         ? arguments[1]
-        : function() {
+        : function () {
             return true;
           };
     this.log = makeAction("log", prefix, predicate);
@@ -2366,7 +2367,7 @@ var Visitor = (function() {
 	  The polynomial used in calculation is 0xedb88320. 
 	  This polynomial is used in Ethernet, Gzip, PNG, SATA and many other technologies.
 	*/
-  var crc32 = (function() {
+  var crc32 = (function () {
     var table = [];
 
     for (var i = 0; i < 256; i++) {
@@ -2379,7 +2380,7 @@ var Visitor = (function() {
       table.push(c);
     }
 
-    return function(str, crc) {
+    return function (str, crc) {
       str = unescape(encodeURIComponent(str));
       if (!crc) crc = 0;
       crc = crc ^ -1;
@@ -2414,7 +2415,7 @@ var Visitor = (function() {
     var keys = Object.keys(obj);
     return !keys.length
       ? false
-      : keys.every(function(key) {
+      : keys.every(function (key) {
           return obj[key] === true;
         });
   };
@@ -2429,7 +2430,7 @@ var Visitor = (function() {
     } //**Hacky McHackFace for backwards compatability and to allow storing the consent hash in the cookie.**
     //The "magic categories" are okay if exceptions are allowed, even though they aren't real categories
 
-    return toArray(catKeys).every(function(cat) {
+    return toArray(catKeys).every(function (cat) {
       return (
         CATEGORIES_VALUES.indexOf(cat) > -1 ||
         (allowExceptions && MAGIC_CATEGORIES.indexOf(cat) > -1)
@@ -2438,7 +2439,7 @@ var Visitor = (function() {
   };
 
   var toObject = function toObject(list, value) {
-    return list.reduce(function(result, item) {
+    return list.reduce(function (result, item) {
       result[item] = value;
       return result;
     }, {});
@@ -2502,7 +2503,7 @@ var Visitor = (function() {
 
   var handleInvalidPermissions = function handleInvalidPermissions(
     permissions,
-    errorMsg
+    errorMsg,
   ) {
     if (!areValidPermissions(permissions)) {
       logger$1.error("".concat(errorMsg));
@@ -2510,13 +2511,13 @@ var Visitor = (function() {
   };
 
   var getValues$1 = function getValues(obj) {
-    return Object.keys(obj).map(function(key) {
+    return Object.keys(obj).map(function (key) {
       return obj[key];
     });
   };
 
   var getUniqueValues = function getUniqueValues(obj) {
-    return getValues$1(obj).filter(function(v, i, arr) {
+    return getValues$1(obj).filter(function (v, i, arr) {
       return arr.indexOf(v) === i;
     });
   };
@@ -2534,7 +2535,7 @@ var Visitor = (function() {
       return {
         get: noop$1,
         set: noop$1,
-        remove: noop$1
+        remove: noop$1,
       };
     }
 
@@ -2565,9 +2566,9 @@ var Visitor = (function() {
           domain: config.optInCookieDomain || "",
           cookieLifetime: config.optInStorageExpiry || 34190000,
           // Default is 13 months in seconds
-          expires: true
+          expires: true,
         });
-      }
+      },
     };
     return storage;
   }
@@ -2577,7 +2578,7 @@ var Visitor = (function() {
   // clients don't have to change their implementations, or update their Launch extensions.
 
   var makeCommand = function makeCommand(plugins) {
-    return function() {
+    return function () {
       var _ref =
           arguments.length > 0 && arguments[0] !== undefined
             ? arguments[0]
@@ -2602,7 +2603,7 @@ var Visitor = (function() {
         }
 
         var args = Object.assign(params, {
-          callback: callback
+          callback: callback,
         });
         plugin[apiName].call(plugin, args);
       } catch (ex) {
@@ -2647,16 +2648,16 @@ var Visitor = (function() {
 
     handleInvalidPermissions(
       previousPermissionsValue,
-      "Invalid `previousPermissions`!"
+      "Invalid `previousPermissions`!",
     );
     handleInvalidPermissions(preOptInApprovals, "Invalid `preOptInApprovals`!");
     var storage = makeStorage(
       {
-        cookieName: "adobeujs-optin"
+        cookieName: "adobeujs-optin",
       },
       {
-        cookies: cookies
-      }
+        cookies: cookies,
+      },
     );
     var self = this;
     var publish = makeEmitter(self);
@@ -2670,7 +2671,7 @@ var Visitor = (function() {
     var permissions = initializePermissions(
       preOptInApprovalsObj,
       previousPermissionsObj,
-      cookieApprovalsObj
+      cookieApprovalsObj,
     ); // preCompletePermissions: Used as intermediary permissions between pending and complete statuses.
 
     var preCompletePermissions = clone(permissions);
@@ -2688,17 +2689,17 @@ var Visitor = (function() {
     self.denyAll = self.deny.bind(self, CATEGORIES_VALUES);
     self.approveAll = self.approve.bind(self, CATEGORIES_VALUES);
 
-    self.isApproved = function(categories) {
+    self.isApproved = function (categories) {
       return checkForApproval(categories, self.permissions);
     };
 
-    self.isPreApproved = function(categories) {
+    self.isPreApproved = function (categories) {
       return checkForApproval(categories, preOptInApprovalsObj);
     }; // Returns a function:
     // - 'shouldAutoSubscribe' = false: noop
     // - 'shouldAutoSubscribe' = true: optIn.off (To unsubscribe)
 
-    self.fetchPermissions = function(callback) {
+    self.fetchPermissions = function (callback) {
       var shouldAutoSubscribe =
         arguments.length > 1 && arguments[1] !== undefined
           ? arguments[1]
@@ -2714,7 +2715,7 @@ var Visitor = (function() {
       if (hasPermissions) {
         callback(self.permissions);
       } else if (!shouldAutoSubscribe) {
-        registry.add(REGISTRY_KEY, function() {
+        registry.add(REGISTRY_KEY, function () {
           return callback(self.permissions);
         });
       }
@@ -2722,13 +2723,13 @@ var Visitor = (function() {
       return result;
     };
 
-    self.complete = function() {
+    self.complete = function () {
       if (self.status === STATUS.CHANGED) {
         completeAndPublish();
       }
     };
 
-    self.registerPlugin = function(plugin) {
+    self.registerPlugin = function (plugin) {
       if (!plugin || !plugin.name || typeof plugin.onRegister !== "function") {
         throw new Error(REGISTER_ERROR);
       }
@@ -2743,16 +2744,16 @@ var Visitor = (function() {
 
     self.execute = makeCommand(plugins);
 
-    self.memoizeContent = function(content) {
+    self.memoizeContent = function (content) {
       if (isObject(content)) {
         storage.set(content, {
           optInCookieDomain: optInCookieDomain,
-          optInStorageExpiry: optInStorageExpiry
+          optInStorageExpiry: optInStorageExpiry,
         });
       }
     };
 
-    self.getMemoizedContent = function(key) {
+    self.getMemoizedContent = function (key) {
       var cookieContent = storage.get();
 
       if (cookieContent) {
@@ -2764,50 +2765,50 @@ var Visitor = (function() {
       permissions: {
         get: function get() {
           return permissions;
-        }
+        },
       },
       status: {
         get: function get() {
           return status;
-        }
+        },
       },
       Categories: {
         get: function get() {
           return CATEGORIES;
-        }
+        },
       },
       doesOptInApply: {
         get: function get() {
           return !!doesOptInApply;
-        }
+        },
       },
       isPending: {
         get: function get() {
           return self.status === STATUS.PENDING;
-        }
+        },
       },
       isComplete: {
         get: function get() {
           return self.status === STATUS.COMPLETE;
-        }
+        },
       },
       __plugins: {
         get: function get() {
           return Object.keys(plugins);
-        }
+        },
       },
       isIabContext: {
         get: function get() {
           return isIabContext;
-        }
-      }
+        },
+      },
     });
 
     function checkForApproval(categories, permissionsSource) {
       var categoryList = toArray(categories);
       return !categoryList.length
         ? areAllValuesTrue(permissionsSource)
-        : categoryList.every(function(category) {
+        : categoryList.every(function (category) {
             return !!permissionsSource[category];
           });
     }
@@ -2822,7 +2823,7 @@ var Visitor = (function() {
     function initializePermissions(
       preOptInApprovalsObj,
       previousPermissionsObj,
-      cookieApprovalsObj
+      cookieApprovalsObj,
     ) {
       // If `doesOptInApply` is true, default all permissions to false; otherwise default to true.
       var defaultPermissions = toObject(CATEGORIES_VALUES, !doesOptInApply); // If `doesOptInApply` is false, always return default permissions. Otherwise assign in priority order
@@ -2834,7 +2835,7 @@ var Visitor = (function() {
             defaultPermissions,
             preOptInApprovalsObj,
             previousPermissionsObj,
-            cookieApprovalsObj
+            cookieApprovalsObj,
           );
     }
 
@@ -2846,7 +2847,7 @@ var Visitor = (function() {
       if (isOptInStorageEnabled) {
         storage.set(self.permissions, {
           optInCookieDomain: optInCookieDomain,
-          optInStorageExpiry: optInStorageExpiry
+          optInStorageExpiry: optInStorageExpiry,
         });
       }
 
@@ -2854,17 +2855,17 @@ var Visitor = (function() {
     }
 
     function updatePermissions(isApproved) {
-      return function(categories, shouldWaitForComplete) {
+      return function (categories, shouldWaitForComplete) {
         if (!areValidCategories(categories)) {
           throw new Error(
-            "[OptIn] Invalid category(-ies). Please use the `OptIn.Categories` enum."
+            "[OptIn] Invalid category(-ies). Please use the `OptIn.Categories` enum.",
           );
         }
 
         setStatus(STATUS.CHANGED);
         Object.assign(
           preCompletePermissions,
-          toObject(toArray(categories), isApproved)
+          toObject(toArray(categories), isApproved),
         );
 
         if (!shouldWaitForComplete) {
@@ -2891,7 +2892,7 @@ var Visitor = (function() {
       timer = null;
       originalCallback.call(
         originalCallback,
-        new TimeoutError("The call took longer than you wanted!")
+        new TimeoutError("The call took longer than you wanted!"),
       );
     }
 
@@ -2942,15 +2943,15 @@ var Visitor = (function() {
 
     var cmpCallbacks = {};
 
-    window.__tcfapi = function(cmd, version, callback, arg) {
+    window.__tcfapi = function (cmd, version, callback, arg) {
       var callId = Math.random() + "";
       var msg = {
         __tcfapiCall: {
           command: cmd,
           parameter: arg,
           version: version,
-          callId: callId
-        }
+          callId: callId,
+        },
       };
       cmpCallbacks[callId] = callback;
       cmpFrame.postMessage(msg, "*");
@@ -2958,7 +2959,7 @@ var Visitor = (function() {
 
     window.addEventListener(
       "message",
-      function(event) {
+      function (event) {
         var json = event.data;
 
         if (typeof json === "string") {
@@ -2978,7 +2979,7 @@ var Visitor = (function() {
           }
         }
       },
-      false
+      false,
     );
     return window.__tcfapi;
   }
@@ -2987,7 +2988,7 @@ var Visitor = (function() {
     var purposes =
       arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
     var isVendorApproved = tcData["vendor"]["consents"][vendorId] === true;
-    var arePurposesApproved = purposes.every(function(purpose) {
+    var arePurposesApproved = purposes.every(function (purpose) {
       return tcData["purpose"]["consents"][purpose] === true;
     });
     return isVendorApproved && arePurposesApproved;
@@ -3002,7 +3003,7 @@ var Visitor = (function() {
     var TCF_VERSION = 2;
     var registry = callbackRegistryFactory$1();
     var state = {
-      transparencyAndConsentData: null //TCData array returned from call to __tcfapi
+      transparencyAndConsentData: null, //TCData array returned from call to __tcfapi
     };
 
     var setState = function setState(key) {
@@ -3011,16 +3012,16 @@ var Visitor = (function() {
       return (state[key] = value);
     };
 
-    self.fetchConsentData = function(_ref) {
+    self.fetchConsentData = function (_ref) {
       var callback = _ref.callback,
         timeout = _ref.timeout;
       var callbackWithTimer = makeTimedCallback(callback, timeout);
       fetchConsentData({
-        callback: callbackWithTimer
+        callback: callbackWithTimer,
       });
     };
 
-    self.isApproved = function(_ref2) {
+    self.isApproved = function (_ref2) {
       var callback = _ref2.callback,
         category = _ref2.category,
         timeout = _ref2.timeout;
@@ -3031,28 +3032,28 @@ var Visitor = (function() {
           isCategoryApproved(
             state.transparencyAndConsentData,
             VENDOR_IDS[category],
-            CATEGORY_PURPOSES[category]
-          )
+            CATEGORY_PURPOSES[category],
+          ),
         );
       }
 
-      var callbackWithTimer = makeTimedCallback(function(error, tcData) {
+      var callbackWithTimer = makeTimedCallback(function (error, tcData) {
         callback(
           error,
           isCategoryApproved(
             tcData,
             VENDOR_IDS[category],
-            CATEGORY_PURPOSES[category]
-          )
+            CATEGORY_PURPOSES[category],
+          ),
         );
       }, timeout);
       fetchConsentData({
         category: category,
-        callback: callbackWithTimer
+        callback: callbackWithTimer,
       });
     };
 
-    self.onRegister = function(optIn) {
+    self.onRegister = function (optIn) {
       localOptIn = optIn; // On register, retrieve IAB vendor consents for all current vendors with IDs.
       // If consent was found, set that approval status for those vendors in OptIn.
 
@@ -3060,11 +3061,11 @@ var Visitor = (function() {
 
       var callback = function callback(error, tcData) {
         if (!error && tcData) {
-          allCategories.forEach(function(category) {
+          allCategories.forEach(function (category) {
             var isVendorApproved = isCategoryApproved(
               tcData,
               VENDOR_IDS[category],
-              CATEGORY_PURPOSES[category]
+              CATEGORY_PURPOSES[category],
             );
             var action = isVendorApproved ? "approve" : "deny";
             optIn[action](category, true);
@@ -3074,7 +3075,7 @@ var Visitor = (function() {
       };
 
       self.fetchConsentData({
-        callback: callback
+        callback: callback,
       });
     };
 
@@ -3091,11 +3092,10 @@ var Visitor = (function() {
         if (success) {
           // Check if the new consent string matches the one we memoized.
           var clonedTcData = clone(tcData);
-          var memoizedIabConsentHash = localOptIn.getMemoizedContent(
-            "iabConsentHash"
-          );
+          var memoizedIabConsentHash =
+            localOptIn.getMemoizedContent("iabConsentHash");
           var currentIabConsentHash = crc32(clonedTcData["tcString"]).toString(
-            32
+            32,
           ); // Adding the `consentString` property so we won't break the contracts with
           // existing libraries like DIL and AppMeasurement.
           // It basically clones the full object returns by the IAB framework 2.0, and adds
@@ -3107,13 +3107,13 @@ var Visitor = (function() {
           setState("transparencyAndConsentData", clonedTcData); // Memoize the consent string for future changes checks.
 
           localOptIn.memoizeContent({
-            iabConsentHash: currentIabConsentHash
+            iabConsentHash: currentIabConsentHash,
           });
         }
 
         registry.execute(FETCH_CONSENT_KEY, [
           null,
-          state.transparencyAndConsentData
+          state.transparencyAndConsentData,
         ]);
       };
 
@@ -3133,16 +3133,16 @@ var Visitor = (function() {
 
   var optIn = /*#__PURE__*/ Object.freeze({
     OptIn: OptIn,
-    IabPlugin: IAB
+    IabPlugin: IAB,
   });
 
   var makePublishDestinations = function makePublishDestinations(
     visitor,
-    destinationPublishing
+    destinationPublishing,
   ) {
     var MCMID = "MCMID"; // fieldMarketingCloudVisitorID
 
-    visitor.publishDestinations = function(subdomain) {
+    visitor.publishDestinations = function (subdomain) {
       var messages = arguments[1],
         callback = arguments[2];
 
@@ -3160,7 +3160,7 @@ var Visitor = (function() {
       if (!dp.readyToAttachIframePreliminary()) {
         callback({
           error:
-            "The destination publishing iframe is disabled in the Visitor library."
+            "The destination publishing iframe is disabled in the Visitor library.",
         });
         return;
       }
@@ -3169,20 +3169,20 @@ var Visitor = (function() {
         // publishDestinations v1
         if (!subdomain.length) {
           callback({
-            error: "subdomain is not a populated string."
+            error: "subdomain is not a populated string.",
           });
           return;
         }
 
         if (!(messages instanceof Array && messages.length)) {
           callback({
-            error: "messages is not a populated array."
+            error: "messages is not a populated array.",
           });
           return;
         }
 
         var addedAtLeastOneMessage = false;
-        messages.forEach(function(msg) {
+        messages.forEach(function (msg) {
           if (typeof msg === "string" && msg.length) {
             dp.addMessage(msg);
             addedAtLeastOneMessage = true;
@@ -3191,7 +3191,7 @@ var Visitor = (function() {
 
         if (!addedAtLeastOneMessage) {
           callback({
-            error: "None of the messages are populated strings."
+            error: "None of the messages are populated strings.",
           });
           return;
         }
@@ -3202,7 +3202,7 @@ var Visitor = (function() {
 
         if (!(typeof subdomain === "string" && subdomain.length)) {
           callback({
-            error: "config.subdomain is not a populated string."
+            error: "config.subdomain is not a populated string.",
           });
           return;
         }
@@ -3211,13 +3211,13 @@ var Visitor = (function() {
 
         if (!(destinations instanceof Array && destinations.length)) {
           callback({
-            error: "config.urlDestinations is not a populated array."
+            error: "config.urlDestinations is not a populated array.",
           });
           return;
         }
 
         var onPageDestinations = [];
-        destinations.forEach(function(destination) {
+        destinations.forEach(function (destination) {
           if (utils.isObject(destination)) {
             if (destination.hideReferrer) {
               // Send to iframe
@@ -3232,7 +3232,7 @@ var Visitor = (function() {
 
         var processOnPageDestinations = function processOnPageDestinations() {
           if (onPageDestinations.length) {
-            setTimeout(function() {
+            setTimeout(function () {
               var img = new Image(),
                 destination = onPageDestinations.shift();
               img.src = destination.url;
@@ -3245,7 +3245,7 @@ var Visitor = (function() {
         processOnPageDestinations();
       } else {
         callback({
-          error: "Invalid parameters passed."
+          error: "Invalid parameters passed.",
         });
         return;
       }
@@ -3253,7 +3253,7 @@ var Visitor = (function() {
       if (dp.iframe) {
         callback({
           message:
-            "The destination publishing iframe is already attached and loaded."
+            "The destination publishing iframe is already attached and loaded.",
         });
         dp.requestToProcess();
       } else {
@@ -3264,26 +3264,26 @@ var Visitor = (function() {
           dp.url = dp.getUrl();
 
           if (dp.readyToAttachIframe()) {
-            dp.iframeLoadedCallbacks.push(function(data) {
+            dp.iframeLoadedCallbacks.push(function (data) {
               callback({
                 message:
                   "Attempted to attach and load the destination publishing iframe through this API call. Result: " +
-                  (data.message || "no result")
+                  (data.message || "no result"),
               });
             });
             dp.attachIframe();
           } else {
             callback({
               error:
-                "Encountered a problem in attempting to attach and load the destination publishing iframe through this API call."
+                "Encountered a problem in attempting to attach and load the destination publishing iframe through this API call.",
             });
           }
         } else {
-          dp.iframeLoadedCallbacks.push(function(data) {
+          dp.iframeLoadedCallbacks.push(function (data) {
             callback({
               message:
                 "Attempted to attach and load the destination publishing iframe through normal Visitor API processing. Result: " +
-                (data.message || "no result")
+                (data.message || "no result"),
             });
           });
         }
@@ -3383,7 +3383,7 @@ var Visitor = (function() {
             i < 16
               ? w[i]
               : (w[i - 16] +
-                (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3)) + // s0
+                  (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3)) + // s0
                   w[i - 7] +
                   (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))) | // s1
                 0); // This is only used once, so *could* be moved below, but it only saves 4 bytes and makes things unreadble
@@ -3441,9 +3441,7 @@ var Visitor = (function() {
    *     normalized data
    *********************************************************************/
   var trimAndLowercase = function trimAndLowercase(data) {
-    return String(data)
-      .trim()
-      .toLowerCase();
+    return String(data).trim().toLowerCase();
   };
 
   /*global VISITOR_DEBUG*/
@@ -3465,17 +3463,14 @@ var Visitor = (function() {
   var Visitor = function Visitor(
     marketingCloudOrgID,
     initConfig,
-    instantiationKey
+    instantiationKey,
   ) {
     if (
       !instantiationKey ||
-      instantiationKey
-        .split("")
-        .reverse()
-        .join("") !== marketingCloudOrgID
+      instantiationKey.split("").reverse().join("") !== marketingCloudOrgID
     ) {
       throw new Error(
-        "Please use `Visitor.getInstance` to instantiate Visitor."
+        "Please use `Visitor.getInstance` to instantiate Visitor.",
       );
     }
 
@@ -3504,7 +3499,7 @@ var Visitor = (function() {
     w.s_c_in++;
     visitor._instanceType = "regular";
     visitor._log = {
-      requests: []
+      requests: [],
     }; // Set Defaults to public properties.
     // TODO Extract this stuff into a meaningful function.
 
@@ -3576,7 +3571,7 @@ var Visitor = (function() {
      *     Value of k in cookies if found, blank if not
      *********************************************************************/
 
-    visitor.cookieRead = function(k) {
+    visitor.cookieRead = function (k) {
       return cookies.get(k);
     };
     /*********************************************************************
@@ -3590,7 +3585,7 @@ var Visitor = (function() {
      *     True if value was successfuly written and false if it was not
      *********************************************************************/
 
-    visitor.cookieWrite = function(k, v, e) {
+    visitor.cookieWrite = function (k, v, e) {
       var lifetime = visitor.cookieLifetime
         ? ("" + visitor.cookieLifetime).toUpperCase()
         : "";
@@ -3608,7 +3603,7 @@ var Visitor = (function() {
         expires: e,
         domain: visitor.cookieDomain,
         cookieLifetime: lifetime,
-        secure: secure
+        secure: secure,
       });
     };
     /*********************************************************************
@@ -3625,7 +3620,7 @@ var Visitor = (function() {
      * Returns: Nothing
      *********************************************************************/
 
-    visitor.resetState = function(serverState) {
+    visitor.resetState = function (serverState) {
       if (serverState) {
         // Reset SDID and set new customer IDs if exists.
         visitor._mergeServerState(serverState);
@@ -3644,7 +3639,7 @@ var Visitor = (function() {
     visitor._isAllowedDone = false;
     visitor._isAllowedFlag = false;
 
-    visitor.isAllowed = function() {
+    visitor.isAllowed = function () {
       if (!visitor._isAllowedDone) {
         visitor._isAllowedDone = true;
 
@@ -3671,7 +3666,7 @@ var Visitor = (function() {
      *     See _setMarketingCloudFields
      *********************************************************************/
 
-    visitor.setMarketingCloudVisitorID = function(marketingCloudVisitorID) {
+    visitor.setMarketingCloudVisitorID = function (marketingCloudVisitorID) {
       visitor._setMarketingCloudFields(marketingCloudVisitorID);
     };
     /*********************************************************************
@@ -3689,7 +3684,10 @@ var Visitor = (function() {
 
     visitor._use1stPartyMarketingCloudServer = false;
 
-    visitor.getMarketingCloudVisitorID = function(callback, forceCallCallback) {
+    visitor.getMarketingCloudVisitorID = function (
+      callback,
+      forceCallCallback,
+    ) {
       if (
         visitor.marketingCloudServer &&
         visitor.marketingCloudServer.indexOf(".demdex.net") < 0
@@ -3698,7 +3696,7 @@ var Visitor = (function() {
       }
 
       var corsData = visitor._getAudienceManagerURLData(
-          "_setMarketingCloudFields"
+          "_setMarketingCloudFields",
         ),
         url = corsData.url;
 
@@ -3707,28 +3705,28 @@ var Visitor = (function() {
         url,
         callback,
         forceCallCallback,
-        corsData
+        corsData,
       );
     };
 
     var getVisitorValuesSooner = function getVisitorValuesSooner(
       callback,
-      fields
+      fields,
     ) {
       var ret = {};
-      visitor.getMarketingCloudVisitorID(function() {
-        fields.forEach(function(field) {
+      visitor.getMarketingCloudVisitorID(function () {
+        fields.forEach(function (field) {
           ret[field] = visitor._getField(field, true);
         });
 
         if (fields.indexOf(MCOPTOUT) !== -1) {
           visitor.isOptedOut(
-            function(value) {
+            function (value) {
               ret[MCOPTOUT] = value;
               callback(ret);
             },
             null,
-            true
+            true,
           );
         } else {
           callback(ret);
@@ -3746,33 +3744,33 @@ var Visitor = (function() {
 	  *       Example: getVisitorValues(callback, [visitor.FIELDS.MCMID, visitor.FIELDS.MCAID])
 	  *********************************************************************/
 
-    visitor.getVisitorValues = function(callback, fields) {
+    visitor.getVisitorValues = function (callback, fields) {
       var defaultMetadata = {
         MCMID: {
           fn: visitor.getMarketingCloudVisitorID,
           args: [true],
-          context: visitor
+          context: visitor,
         },
         MCOPTOUT: {
           fn: visitor.isOptedOut,
           args: [undefined, true],
-          context: visitor
+          context: visitor,
         },
         MCAID: {
           fn: visitor.getAnalyticsVisitorID,
           args: [true],
-          context: visitor
+          context: visitor,
         },
         MCAAMLH: {
           fn: visitor.getAudienceManagerLocationHint,
           args: [true],
-          context: visitor
+          context: visitor,
         },
         MCAAMB: {
           fn: visitor.getAudienceManagerBlob,
           args: [true],
-          context: visitor
-        }
+          context: visitor,
+        },
       };
       var metadata =
         !fields || !fields.length
@@ -3797,7 +3795,7 @@ var Visitor = (function() {
     visitor._customerIDsHashChanged = false;
     visitor._newCustomerIDsHash = "";
 
-    visitor.setCustomerIDs = function(customerIDs, hashType) {
+    visitor.setCustomerIDs = function (customerIDs, hashType) {
       // If opted out, won't set customer IDs
       if (visitor.isOptedOut()) {
         return;
@@ -3858,11 +3856,11 @@ var Visitor = (function() {
 
                   visitor._currentCustomerIDs[cidt] = {
                     id: hashedId,
-                    hashType: hashType
+                    hashType: hashType,
                   };
                 } else {
                   visitor._currentCustomerIDs[cidt] = {
-                    id: cid
+                    id: cid,
                   };
                 }
               }
@@ -3891,7 +3889,7 @@ var Visitor = (function() {
         }
 
         visitor._newCustomerIDsHash = String(
-          visitor._hash(customerIDsSerialized)
+          visitor._hash(customerIDsSerialized),
         );
 
         if (visitor._newCustomerIDsHash !== customerIDsHash) {
@@ -3922,7 +3920,7 @@ var Visitor = (function() {
      *     }
      *********************************************************************/
 
-    visitor.getCustomerIDs = function() {
+    visitor.getCustomerIDs = function () {
       visitor._readVisitor();
 
       var customerIDs = {},
@@ -3965,7 +3963,7 @@ var Visitor = (function() {
      *     See _setAnalyticsFields
      *********************************************************************/
 
-    visitor.setAnalyticsVisitorID = function(analyticsVisitorID) {
+    visitor.setAnalyticsVisitorID = function (analyticsVisitorID) {
       visitor._setAnalyticsFields(analyticsVisitorID);
     };
     /*********************************************************************
@@ -3980,10 +3978,10 @@ var Visitor = (function() {
      *     See _getRemoteField
      *********************************************************************/
 
-    visitor.getAnalyticsVisitorID = function(
+    visitor.getAnalyticsVisitorID = function (
       callback,
       forceCallCallback,
-      gettingMarketingCloudVisitorID
+      gettingMarketingCloudVisitorID,
     ) {
       // Short-circuit if no tracking server - https://jira.corp.adobe.com/browse/MCID-237
       // Add && !gettingMarketingCloudVisitorID so we don't break using using 1st party data collection server to
@@ -4000,11 +3998,11 @@ var Visitor = (function() {
       var marketingCloudVisitorID = "";
 
       if (!gettingMarketingCloudVisitorID) {
-        marketingCloudVisitorID = visitor.getMarketingCloudVisitorID(function(
-          newMarketingCloudVisitorID
-        ) {
-          visitor.getAnalyticsVisitorID(callback, true);
-        });
+        marketingCloudVisitorID = visitor.getMarketingCloudVisitorID(
+          function (newMarketingCloudVisitorID) {
+            visitor.getAnalyticsVisitorID(callback, true);
+          },
+        );
       }
 
       if (marketingCloudVisitorID || gettingMarketingCloudVisitorID) {
@@ -4047,7 +4045,7 @@ var Visitor = (function() {
               (gettingMarketingCloudVisitorID
                 ? "MarketingCloud"
                 : "Analytics") +
-              "Fields"
+              "Fields",
           ];
           url =
             baseUrl +
@@ -4068,7 +4066,7 @@ var Visitor = (function() {
           url,
           callback,
           forceCallCallback,
-          corsData
+          corsData,
         );
       }
 
@@ -4086,25 +4084,25 @@ var Visitor = (function() {
      *     See _getRemoteField
      *********************************************************************/
 
-    visitor.getAudienceManagerLocationHint = function(
+    visitor.getAudienceManagerLocationHint = function (
       callback,
-      forceCallCallback
+      forceCallCallback,
     ) {
-      var marketingCloudVisitorID = visitor.getMarketingCloudVisitorID(function(
-        newMarketingCloudVisitorID
-      ) {
-        visitor.getAudienceManagerLocationHint(callback, true);
-      });
+      var marketingCloudVisitorID = visitor.getMarketingCloudVisitorID(
+        function (newMarketingCloudVisitorID) {
+          visitor.getAudienceManagerLocationHint(callback, true);
+        },
+      );
 
       if (marketingCloudVisitorID) {
         var analyticsVisitorID = visitor._getField(MCAID);
 
         if (!analyticsVisitorID && helpers.isTrackingServerPopulated()) {
-          analyticsVisitorID = visitor.getAnalyticsVisitorID(function(
-            newAnalyticsVisitorID
-          ) {
-            visitor.getAudienceManagerLocationHint(callback, true);
-          });
+          analyticsVisitorID = visitor.getAnalyticsVisitorID(
+            function (newAnalyticsVisitorID) {
+              visitor.getAudienceManagerLocationHint(callback, true);
+            },
+          );
         }
 
         if (analyticsVisitorID || !helpers.isTrackingServerPopulated()) {
@@ -4116,7 +4114,7 @@ var Visitor = (function() {
             url,
             callback,
             forceCallCallback,
-            corsData
+            corsData,
           );
         }
       }
@@ -4140,22 +4138,22 @@ var Visitor = (function() {
      *     See _getRemoteField
      *********************************************************************/
 
-    visitor.getAudienceManagerBlob = function(callback, forceCallCallback) {
-      var marketingCloudVisitorID = visitor.getMarketingCloudVisitorID(function(
-        newMarketingCloudVisitorID
-      ) {
-        visitor.getAudienceManagerBlob(callback, true);
-      });
+    visitor.getAudienceManagerBlob = function (callback, forceCallCallback) {
+      var marketingCloudVisitorID = visitor.getMarketingCloudVisitorID(
+        function (newMarketingCloudVisitorID) {
+          visitor.getAudienceManagerBlob(callback, true);
+        },
+      );
 
       if (marketingCloudVisitorID) {
         var analyticsVisitorID = visitor._getField(MCAID);
 
         if (!analyticsVisitorID && helpers.isTrackingServerPopulated()) {
-          analyticsVisitorID = visitor.getAnalyticsVisitorID(function(
-            newAnalyticsVisitorID
-          ) {
-            visitor.getAudienceManagerBlob(callback, true);
-          });
+          analyticsVisitorID = visitor.getAnalyticsVisitorID(
+            function (newAnalyticsVisitorID) {
+              visitor.getAudienceManagerBlob(callback, true);
+            },
+          );
         }
 
         if (analyticsVisitorID || !helpers.isTrackingServerPopulated()) {
@@ -4171,7 +4169,7 @@ var Visitor = (function() {
             url,
             callback,
             forceCallCallback,
-            corsData
+            corsData,
           );
         }
       }
@@ -4191,7 +4189,7 @@ var Visitor = (function() {
     visitor._supplementalDataIDLast = "";
     visitor._supplementalDataIDLastConsumed = {};
 
-    visitor.getSupplementalDataID = function(consumerID, noGenerate) {
+    visitor.getSupplementalDataID = function (consumerID, noGenerate) {
       // If we don't have a current supplemental-data ID generate one if needed
       if (!visitor._supplementalDataIDCurrent && !noGenerate) {
         visitor._supplementalDataIDCurrent = visitor._generateID(1);
@@ -4238,9 +4236,9 @@ var Visitor = (function() {
 	       '' - unknown and you need to wait for the callback to be called
 	  */
 
-    visitor.getOptOut = function(callback, forceCallCallback) {
+    visitor.getOptOut = function (callback, forceCallCallback) {
       var corsData = visitor._getAudienceManagerURLData(
-          "_setMarketingCloudFields"
+          "_setMarketingCloudFields",
         ),
         url = corsData.url;
 
@@ -4249,7 +4247,7 @@ var Visitor = (function() {
 
         if (visitor._liberatedOptOut !== null) {
           visitor._callAllCallbacks("liberatedOptOut", [
-            visitor._liberatedOptOut
+            visitor._liberatedOptOut,
           ]);
 
           isGettingLiberatedOptOut = false;
@@ -4265,11 +4263,11 @@ var Visitor = (function() {
         var cb = "liberatedGetOptOut";
         corsData.corsUrl = corsData.corsUrl.replace(
           /\.demdex\.net\/id\?/,
-          ".demdex.net/optOutStatus?"
+          ".demdex.net/optOutStatus?",
         );
         corsData.callback = [cb];
 
-        commonjsGlobal[cb] = function(data) {
+        commonjsGlobal[cb] = function (data) {
           // Handle opt out
           if (data === Object(data)) {
             var optOut, d_ottl;
@@ -4278,7 +4276,7 @@ var Visitor = (function() {
             d_ottl = parsed.d_ottl * 1000; // in seconds
 
             visitor._liberatedOptOut = optOut;
-            setTimeout(function() {
+            setTimeout(function () {
               visitor._liberatedOptOut = null;
             }, d_ottl);
           }
@@ -4296,7 +4294,7 @@ var Visitor = (function() {
           url,
           callback,
           forceCallCallback,
-          corsData
+          corsData,
         );
       }
     };
@@ -4307,13 +4305,13 @@ var Visitor = (function() {
 	   null - unknown and you need to wait for the callback to be called
 	   */
 
-    visitor.isOptedOut = function(callback, optOutType, forceCallCallback) {
+    visitor.isOptedOut = function (callback, optOutType, forceCallCallback) {
       // Default to optOutType global
       if (!optOutType) {
         optOutType = thisClass["OptOut"]["GLOBAL"];
       }
 
-      var optOut = visitor.getOptOut(function(optOut) {
+      var optOut = visitor.getOptOut(function (optOut) {
         var isOptedOut =
           optOut === thisClass["OptOut"]["GLOBAL"] ||
           optOut.indexOf(optOutType) >= 0;
@@ -4341,7 +4339,7 @@ var Visitor = (function() {
      *     Hash
      *********************************************************************/
 
-    visitor._hash = function(str) {
+    visitor._hash = function (str) {
       var hash = 0,
         pos,
         ch;
@@ -4367,7 +4365,7 @@ var Visitor = (function() {
 
     visitor._generateID = generateRandomID; // Wrap generate ID for MIDs because we want to track it in the state.
 
-    visitor._generateLocalMID = function() {
+    visitor._generateLocalMID = function () {
       var mid = visitor._generateID(0);
 
       _callStateTracker.isClientSideMarketingCloudVisitorID = true;
@@ -4386,7 +4384,7 @@ var Visitor = (function() {
 
     visitor._callbackList = null;
 
-    visitor._callCallback = function(callback, args) {
+    visitor._callCallback = function (callback, args) {
       try {
         if (typeof callback === "function") {
           callback.apply(w, args);
@@ -4405,7 +4403,7 @@ var Visitor = (function() {
      *     Nothing
      *********************************************************************/
 
-    visitor._registerCallback = function(field, callback) {
+    visitor._registerCallback = function (field, callback) {
       if (callback) {
         if (visitor._callbackList == null) {
           // eslint-disable-line eqeqeq
@@ -4428,7 +4426,7 @@ var Visitor = (function() {
      *     Nothing
      *********************************************************************/
 
-    visitor._callAllCallbacks = function(field, args) {
+    visitor._callAllCallbacks = function (field, args) {
       if (visitor._callbackList != null) {
         // eslint-disable-line eqeqeq
         // Call all of the callbacks
@@ -4452,7 +4450,7 @@ var Visitor = (function() {
      *     url with param added to querystring
      *********************************************************************/
 
-    visitor._addQuerystringParam = function(url, key, value, location) {
+    visitor._addQuerystringParam = function (url, key, value, location) {
       var param = encodeURIComponent(key) + "=" + encodeURIComponent(value); // Preserve any existing hashes.
 
       var hash = helpers.parseHash(url);
@@ -4469,7 +4467,7 @@ var Visitor = (function() {
       var params = helpers.addQueryParamAtLocation(
         querystring,
         param,
-        location
+        location,
       );
       return host + params + hash;
     };
@@ -4482,7 +4480,7 @@ var Visitor = (function() {
      *     URL Decoded value of the query paramater. undefined if not found.
      *********************************************************************/
 
-    visitor._extractParamFromUri = function(url, paramName) {
+    visitor._extractParamFromUri = function (url, paramName) {
       var re = new RegExp("[\\?&#]" + paramName + "=([^&#]*)");
       var results = re.exec(url);
 
@@ -4503,7 +4501,7 @@ var Visitor = (function() {
       // NOTE: This is necessary because on IE8, the closure function won't have access to the param
       // being passed in to the parent function. So no access to `paramArg`. :(
       var param = paramArg;
-      return function(url) {
+      return function (url) {
         var querystring = url || w.location.href;
 
         try {
@@ -4520,7 +4518,7 @@ var Visitor = (function() {
 
     visitor._parseAdobeMcFromUrl = parseParamFromUrl(constants.ADOBE_MC);
     visitor._parseAdobeMcSdidFromUrl = parseParamFromUrl(
-      constants.ADOBE_MC_SDID
+      constants.ADOBE_MC_SDID,
     );
     /*
      * '_attemptToPopulateSdidFromUrl' will get called before the initConfig instantiation,
@@ -4532,7 +4530,7 @@ var Visitor = (function() {
      * This will be overwritten by any `serverState` configs passed in!
      */
 
-    visitor._attemptToPopulateSdidFromUrl = function(url) {
+    visitor._attemptToPopulateSdidFromUrl = function (url) {
       var sdidParam = visitor._parseAdobeMcSdidFromUrl(url);
 
       var secondsElapsed = 1000000000; // expired
@@ -4573,7 +4571,7 @@ var Visitor = (function() {
       setIdIfValid(
         adobeMcParam[MCMID],
         visitor.setMarketingCloudVisitorID,
-        MCMID
+        MCMID,
       );
 
       visitor._setFieldExpire(MCAAMB, -1);
@@ -4581,7 +4579,7 @@ var Visitor = (function() {
       setIdIfValid(adobeMcParam[MCAID], visitor.setAnalyticsVisitorID);
     }
 
-    visitor._attemptToPopulateIdsFromUrl = function() {
+    visitor._attemptToPopulateIdsFromUrl = function () {
       var adobeMcParam = visitor._parseAdobeMcFromUrl();
 
       if (adobeMcParam && adobeMcParam["TS"]) {
@@ -4623,7 +4621,7 @@ var Visitor = (function() {
      * Returns: Nothing
      *********************************************************************/
 
-    visitor._mergeServerState = function(serverState) {
+    visitor._mergeServerState = function (serverState) {
       if (!serverState) {
         return;
       }
@@ -4663,25 +4661,25 @@ var Visitor = (function() {
 
     visitor._timeout = null;
 
-    visitor._loadData = function(fieldGroup, url, loadErrorHandler, corsData) {
+    visitor._loadData = function (fieldGroup, url, loadErrorHandler, corsData) {
       var fieldGroupParamKey = "d_fieldgroup";
       url = visitor._addQuerystringParam(
         url,
         fieldGroupParamKey,
         fieldGroup,
-        1
+        1,
       );
       corsData.url = visitor._addQuerystringParam(
         corsData.url,
         fieldGroupParamKey,
         fieldGroup,
-        1
+        1,
       );
       corsData.corsUrl = visitor._addQuerystringParam(
         corsData.corsUrl,
         fieldGroupParamKey,
         fieldGroup,
-        1
+        1,
       );
       _callStateTracker.fieldGroupObj[fieldGroup] = true;
 
@@ -4700,7 +4698,7 @@ var Visitor = (function() {
      *     Nothing
      *********************************************************************/
 
-    visitor._clearTimeout = function(fieldGroup) {
+    visitor._clearTimeout = function (fieldGroup) {
       // Clear timeout
       if (
         visitor._timeout != null && // eslint-disable-line eqeqeq
@@ -4718,7 +4716,7 @@ var Visitor = (function() {
 
     visitor._settingsDigest = 0;
 
-    visitor._getSettingsDigest = function() {
+    visitor._getSettingsDigest = function () {
       if (!visitor._settingsDigest) {
         var settings = visitor.version;
 
@@ -4743,7 +4741,7 @@ var Visitor = (function() {
 
     visitor._readVisitorDone = false;
 
-    visitor._readVisitor = function() {
+    visitor._readVisitor = function () {
       if (!visitor._readVisitorDone) {
         visitor._readVisitorDone = true;
 
@@ -4860,7 +4858,7 @@ var Visitor = (function() {
      *     Nothing
      *********************************************************************/
 
-    visitor._appendVersionTo = function(amcvData) {
+    visitor._appendVersionTo = function (amcvData) {
       var versionKeyValue = "vVersion|" + visitor.version;
       var versionInAmcvData = amcvData
         ? visitor._getCookieVersion(amcvData)
@@ -4877,7 +4875,7 @@ var Visitor = (function() {
       return amcvData;
     };
 
-    visitor._writeVisitor = function() {
+    visitor._writeVisitor = function () {
       var data = visitor._getSettingsDigest(),
         // The first thing in the cookie is the settings digest
         field,
@@ -4912,7 +4910,7 @@ var Visitor = (function() {
      *     Field value
      *********************************************************************/
 
-    visitor._getField = function(field, getExpired) {
+    visitor._getField = function (field, getExpired) {
       if (
         visitor._fields != null &&
         (getExpired ||
@@ -4934,7 +4932,7 @@ var Visitor = (function() {
      *     Nothing
      *********************************************************************/
 
-    visitor._setField = function(field, value, noSave) {
+    visitor._setField = function (field, value, noSave) {
       if (visitor._fields == null) {
         // eslint-disable-line eqeqeq
         visitor._fields = {};
@@ -4954,7 +4952,7 @@ var Visitor = (function() {
      *     Field list value
      *********************************************************************/
 
-    visitor._getFieldList = function(field, getExpired) {
+    visitor._getFieldList = function (field, getExpired) {
       var value = visitor._getField(field, getExpired);
 
       if (value) {
@@ -4972,7 +4970,7 @@ var Visitor = (function() {
      *     Nothing
      *********************************************************************/
 
-    visitor._setFieldList = function(field, listValue, noSave) {
+    visitor._setFieldList = function (field, listValue, noSave) {
       visitor._setField(field, listValue ? listValue.join("*") : "", noSave);
     };
     /*********************************************************************
@@ -4983,7 +4981,7 @@ var Visitor = (function() {
      *     Field list value
      *********************************************************************/
 
-    visitor._getFieldMap = function(field, getExpired) {
+    visitor._getFieldMap = function (field, getExpired) {
       var listValue = visitor._getFieldList(field, getExpired);
 
       if (listValue) {
@@ -5008,7 +5006,7 @@ var Visitor = (function() {
      *     Nothing
      *********************************************************************/
 
-    visitor._setFieldMap = function(field, mapValue, noSave) {
+    visitor._setFieldMap = function (field, mapValue, noSave) {
       var listValue = null,
         m;
 
@@ -5034,7 +5032,7 @@ var Visitor = (function() {
 	  *     Nothing
 	  *********************************************************************/
 
-    visitor._setFieldExpire = function(field, ttl, expireOnSession) {
+    visitor._setFieldExpire = function (field, ttl, expireOnSession) {
       var now = new Date();
       now.setTime(now.getTime() + ttl * 1000);
 
@@ -5069,7 +5067,7 @@ var Visitor = (function() {
      *     Visitor ID
      *********************************************************************/
 
-    visitor._findVisitorID = function(visitorID) {
+    visitor._findVisitorID = function (visitorID) {
       if (visitorID) {
         // Get the visitor ID
         if (_typeof(visitorID) === "object") {
@@ -5114,7 +5112,7 @@ var Visitor = (function() {
      *     Nothing
      *********************************************************************/
 
-    visitor._setFields = function(fieldGroup, data) {
+    visitor._setFields = function (fieldGroup, data) {
       // Clear the timeout and loading flag
       visitor._clearTimeout(fieldGroup);
 
@@ -5125,9 +5123,8 @@ var Visitor = (function() {
 
       if (VISITOR_DEBUG) {
         if (_timeoutMetrics.fieldGroupObj[fieldGroup]) {
-          _timeoutMetrics.fieldGroupObj[
-            fieldGroup
-          ].requestEnd = _timeoutMetrics.millis();
+          _timeoutMetrics.fieldGroupObj[fieldGroup].requestEnd =
+            _timeoutMetrics.millis();
 
           _timeoutMetrics.process(fieldGroup);
         }
@@ -5192,7 +5189,7 @@ var Visitor = (function() {
 
           if (visitor._use1stPartyMarketingCloudServer && data["mid"]) {
             visitor._setFields(A, {
-              id: data["id"]
+              id: data["id"],
             });
           }
         } // Call any Marketing Cloud Visitor ID Callbacks
@@ -5291,7 +5288,7 @@ var Visitor = (function() {
         visitor._setFieldExpire(
           MCOPTOUT,
           d_ottl,
-          true
+          true,
           /* expireOnSession */
         );
 
@@ -5314,21 +5311,20 @@ var Visitor = (function() {
 
     visitor._loading = null;
 
-    visitor._getRemoteField = function(
+    visitor._getRemoteField = function (
       field,
       url,
       callback,
       forceCallCallback,
-      corsData
+      corsData,
     ) {
       var fieldValue = "",
         fieldGroup,
-        isFirstPartyAnalyticsVisitorIDCall = helpers.isFirstPartyAnalyticsVisitorIDCall(
-          field
-        );
+        isFirstPartyAnalyticsVisitorIDCall =
+          helpers.isFirstPartyAnalyticsVisitorIDCall(field);
       var fieldsNonBlockingExpiration = {
         MCAAMLH: true,
-        MCAAMB: true
+        MCAAMB: true,
       }; // Make sure we can actually support this
 
       if (isOptInSafe() && visitor.isAllowed()) {
@@ -5337,7 +5333,7 @@ var Visitor = (function() {
 
         fieldValue = visitor._getField(
           field,
-          fieldsNonBlockingExpiration[field] === true
+          fieldsNonBlockingExpiration[field] === true,
         );
 
         var shouldCallServer = function shouldCallServer() {
@@ -5376,13 +5372,12 @@ var Visitor = (function() {
               visitor._loadData(
                 fieldGroup,
                 url,
-                function(isActualTimeout) {
+                function (isActualTimeout) {
                   if (!visitor._getField(field)) {
                     if (VISITOR_DEBUG) {
                       if (_timeoutMetrics.fieldGroupObj[fieldGroup]) {
-                        _timeoutMetrics.fieldGroupObj[
-                          fieldGroup
-                        ].timeout = _timeoutMetrics.millis();
+                        _timeoutMetrics.fieldGroupObj[fieldGroup].timeout =
+                          _timeoutMetrics.millis();
                         _timeoutMetrics.fieldGroupObj[
                           fieldGroup
                         ].isActualTimeout = !!isActualTimeout;
@@ -5402,14 +5397,14 @@ var Visitor = (function() {
                     } else if (fieldGroup === AAM) {
                       // IMPORTANT: For the AAM group the value must always be an object and we include a timeout error so we will try again on the next page
                       fallbackValue = {
-                        error_msg: "timeout"
+                        error_msg: "timeout",
                       };
                     }
 
                     visitor._setFields(fieldGroup, fallbackValue);
                   }
                 },
-                corsData
+                corsData,
               );
             }
 
@@ -5421,7 +5416,7 @@ var Visitor = (function() {
 
             if (!url) {
               visitor._setFields(fieldGroup, {
-                id: NONE
+                id: NONE,
               });
             }
 
@@ -5465,7 +5460,7 @@ var Visitor = (function() {
      *     See _setFields
      *********************************************************************/
 
-    visitor._setMarketingCloudFields = function(marketingCloudData) {
+    visitor._setMarketingCloudFields = function (marketingCloudData) {
       visitor._readVisitor();
 
       visitor._setFields(MC, marketingCloudData);
@@ -5476,7 +5471,7 @@ var Visitor = (function() {
      *     Nothing
      *********************************************************************/
 
-    visitor._mapCustomerIDs = function(callback) {
+    visitor._mapCustomerIDs = function (callback) {
       /*
        * We using the Audience Manager /id service for the Customer ID mapping and the AAM blob isd
        * already tied to the Customer ID hash changing so mapping is triggered by simply asking for
@@ -5493,7 +5488,7 @@ var Visitor = (function() {
      *     See _setFields
      *********************************************************************/
 
-    visitor._setAnalyticsFields = function(analyticsData) {
+    visitor._setAnalyticsFields = function (analyticsData) {
       visitor._readVisitor();
 
       visitor._setFields(A, analyticsData);
@@ -5507,7 +5502,7 @@ var Visitor = (function() {
      *     See _setFields
      *********************************************************************/
 
-    visitor._setAudienceManagerFields = function(audienceManagerData) {
+    visitor._setAudienceManagerFields = function (audienceManagerData) {
       visitor._readVisitor();
 
       visitor._setFields(AAM, audienceManagerData);
@@ -5519,7 +5514,7 @@ var Visitor = (function() {
      *     AAM Request URL Data
      *********************************************************************/
 
-    visitor._getAudienceManagerURLData = function(jsonpCallback) {
+    visitor._getAudienceManagerURLData = function (jsonpCallback) {
       var server = visitor.audienceManagerServer,
         url = "",
         marketingCloudVisitorID = visitor._getField(MCMID),
@@ -5587,8 +5582,8 @@ var Visitor = (function() {
           (isCoopSafe === true
             ? "&d_coop_safe=1"
             : isCoopSafe === false
-            ? "&d_coop_unsafe=1"
-            : "") +
+              ? "&d_coop_unsafe=1"
+              : "") +
           (blob ? "&d_blob=" + encodeURIComponent(blob) : "") +
           customerIDs;
         CONSENT_FLAG = 0;
@@ -5604,12 +5599,12 @@ var Visitor = (function() {
         return {
           url: url,
           corsUrl: baseUrl + "?" + queryData,
-          callback: callbackInfo
+          callback: callbackInfo,
         };
       }
 
       return {
-        url: url
+        url: url,
       };
     };
 
@@ -5654,17 +5649,17 @@ var Visitor = (function() {
      *     URL with `adobe_mc` param added to it if the IDs were found, otherwise url as is.
      *********************************************************************/
 
-    visitor.appendVisitorIDsTo = function(url) {
+    visitor.appendVisitorIDsTo = function (url) {
       try {
         var fields = [
           [MCMID, visitor._getField(MCMID)],
           [MCAID, visitor._getField(MCAID)],
-          [MCORGID, visitor.marketingCloudOrgID]
+          [MCORGID, visitor.marketingCloudOrgID],
         ];
         return visitor._addQuerystringParam(
           url,
           constants.ADOBE_MC,
-          generateAdobeMcParam(fields)
+          generateAdobeMcParam(fields),
         );
       } catch (ex) {
         return url;
@@ -5680,7 +5675,7 @@ var Visitor = (function() {
      *     URL with `adobe_mc` param added to it if the IDs were found, otherwise url as is.
      *********************************************************************/
 
-    visitor.appendSupplementalDataIDTo = function(url, sdid) {
+    visitor.appendSupplementalDataIDTo = function (url, sdid) {
       sdid =
         sdid ||
         visitor.getSupplementalDataID(helpers.generateRandomString(), true);
@@ -5692,12 +5687,12 @@ var Visitor = (function() {
       try {
         var adobeMcSdidValue = generateAdobeMcParam([
           ["SDID", sdid],
-          [MCORGID, visitor.marketingCloudOrgID]
+          [MCORGID, visitor.marketingCloudOrgID],
         ]);
         return visitor._addQuerystringParam(
           url,
           constants.ADOBE_MC_SDID,
-          adobeMcSdidValue
+          adobeMcSdidValue,
         );
       } catch (ex) {
         return url;
@@ -5717,7 +5712,7 @@ var Visitor = (function() {
       addQueryParamAtLocation: function addQueryParamAtLocation(
         querystring,
         param,
-        location
+        location,
       ) {
         var params = querystring.split("&");
         location = location != null ? location : params.length; // eslint-disable-line eqeqeq
@@ -5732,45 +5727,46 @@ var Visitor = (function() {
        * Returns:
        *     boolean - is Analytics Visitor ID field and server is considered first party
        *********************************************************************/
-      isFirstPartyAnalyticsVisitorIDCall: function isFirstPartyAnalyticsVisitorIDCall(
-        field,
-        trackingServer,
-        trackingServerSecure
-      ) {
-        if (field !== MCAID) {
+      isFirstPartyAnalyticsVisitorIDCall:
+        function isFirstPartyAnalyticsVisitorIDCall(
+          field,
+          trackingServer,
+          trackingServerSecure,
+        ) {
+          if (field !== MCAID) {
+            return false;
+          }
+
+          var server;
+
+          if (!trackingServer) {
+            trackingServer = visitor.trackingServer;
+          }
+
+          if (!trackingServerSecure) {
+            trackingServerSecure = visitor.trackingServerSecure;
+          }
+
+          if (visitor.loadSSL) {
+            server = trackingServerSecure;
+          } else {
+            server = trackingServer;
+          }
+
+          if (typeof server === "string" && server.length) {
+            return (
+              server.indexOf("2o7.net") < 0 && server.indexOf("omtrdc.net") < 0
+            );
+          }
+
           return false;
-        }
-
-        var server;
-
-        if (!trackingServer) {
-          trackingServer = visitor.trackingServer;
-        }
-
-        if (!trackingServerSecure) {
-          trackingServerSecure = visitor.trackingServerSecure;
-        }
-
-        if (visitor.loadSSL) {
-          server = trackingServerSecure;
-        } else {
-          server = trackingServer;
-        }
-
-        if (typeof server === "string" && server.length) {
-          return (
-            server.indexOf("2o7.net") < 0 && server.indexOf("omtrdc.net") < 0
-          );
-        }
-
-        return false;
-      },
+        },
       isObject: function isObject(val) {
         return Boolean(val && val === Object(val));
       },
       removeCookie: function removeCookie(name) {
         cookies.remove(name, {
-          domain: visitor.cookieDomain
+          domain: visitor.cookieDomain,
         });
       },
       isTrackingServerPopulated: function isTrackingServerPopulated() {
@@ -5782,7 +5778,7 @@ var Visitor = (function() {
       parsePipeDelimetedKeyValues: function parsePipeDelimetedKeyValues(piped) {
         // Parse '|' delimited k=v pairs into an object.
         var keyValuePairs = piped.split("|");
-        return keyValuePairs.reduce(function(obj, keyValue) {
+        return keyValuePairs.reduce(function (obj, keyValue) {
           var tokens = keyValue.split("=");
           obj[tokens[0]] = decodeURIComponent(tokens[1]);
           return obj;
@@ -5829,7 +5825,7 @@ var Visitor = (function() {
         }
 
         return obj;
-      }
+      },
     };
     visitor._helpers = helpers;
     var destinationPublishing = makeDestinationPublishing(visitor, thisClass);
@@ -5952,7 +5948,7 @@ var Visitor = (function() {
           }
 
           return -1;
-        }
+        },
       };
       visitor._timeoutMetrics = _timeoutMetrics;
     }
@@ -5998,7 +5994,7 @@ var Visitor = (function() {
 
             break;
         }
-      }
+      },
     };
     /*********************************************************************
      * Function isClientSideMarketingCloudVisitorID()
@@ -6006,7 +6002,7 @@ var Visitor = (function() {
      *     boolean or null if the MC /id call hasn't been made yet
      *********************************************************************/
 
-    visitor.isClientSideMarketingCloudVisitorID = function() {
+    visitor.isClientSideMarketingCloudVisitorID = function () {
       return _callStateTracker.isClientSideMarketingCloudVisitorID;
     };
     /*********************************************************************
@@ -6015,7 +6011,7 @@ var Visitor = (function() {
      *     boolean or null if the call hasn't been made yet
      *********************************************************************/
 
-    visitor.MCIDCallTimedOut = function() {
+    visitor.MCIDCallTimedOut = function () {
       return _callStateTracker.MCIDCallTimedOut;
     };
     /*********************************************************************
@@ -6024,7 +6020,7 @@ var Visitor = (function() {
      *     boolean or null if the call hasn't been made yet
      *********************************************************************/
 
-    visitor.AnalyticsIDCallTimedOut = function() {
+    visitor.AnalyticsIDCallTimedOut = function () {
       return _callStateTracker.AnalyticsIDCallTimedOut;
     };
     /*********************************************************************
@@ -6033,7 +6029,7 @@ var Visitor = (function() {
      *     boolean or null if the call hasn't been made yet
      *********************************************************************/
 
-    visitor.AAMIDCallTimedOut = function() {
+    visitor.AAMIDCallTimedOut = function () {
       return _callStateTracker.AAMIDCallTimedOut;
     };
     /*********************************************************************
@@ -6042,7 +6038,7 @@ var Visitor = (function() {
      *     string
      *********************************************************************/
 
-    visitor.idSyncGetOnPageSyncInfo = function() {
+    visitor.idSyncGetOnPageSyncInfo = function () {
       visitor._readVisitor();
 
       return visitor._getField(MCSYNCSOP);
@@ -6058,7 +6054,7 @@ var Visitor = (function() {
      *     string
      *********************************************************************/
 
-    visitor.idSyncByURL = function(config) {
+    visitor.idSyncByURL = function (config) {
       // If opted out, won't fire id sync
       if (visitor.isOptedOut()) {
         return;
@@ -6079,7 +6075,7 @@ var Visitor = (function() {
 
       declaredIdString = utils.encodeAndBuildRequest(
         ["", config["dpid"], config["dpuuid"] || ""],
-        ","
+        ",",
       );
       a = [
         "ibs",
@@ -6088,7 +6084,7 @@ var Visitor = (function() {
         f(url),
         validation["ttl"],
         "",
-        declaredIdString
+        declaredIdString,
       ];
       dp.addMessage(a.join("|"));
       dp.requestToProcess();
@@ -6128,7 +6124,7 @@ var Visitor = (function() {
 
       return {
         error: error,
-        ttl: ttl
+        ttl: ttl,
       };
     }
     /*********************************************************************
@@ -6142,7 +6138,7 @@ var Visitor = (function() {
      *     string
      *********************************************************************/
 
-    visitor.idSyncByDataSource = function(config) {
+    visitor.idSyncByDataSource = function (config) {
       // If opted out, won't fire id sync
       if (visitor.isOptedOut()) {
         return;
@@ -6166,7 +6162,7 @@ var Visitor = (function() {
 
     makePublishDestinations(visitor, destinationPublishing);
 
-    visitor._getCookieVersion = function(amcvCookie) {
+    visitor._getCookieVersion = function (amcvCookie) {
       amcvCookie = amcvCookie || visitor.cookieRead(visitor.cookieName);
       var versionMatches = constants.VERSION_REGEX.exec(amcvCookie);
       var vVersion =
@@ -6174,7 +6170,7 @@ var Visitor = (function() {
       return vVersion;
     };
 
-    visitor._resetAmcvCookie = function(beforeVersion) {
+    visitor._resetAmcvCookie = function (beforeVersion) {
       var vVersion = visitor._getCookieVersion();
 
       if (!vVersion || version.isLessThan(vVersion, beforeVersion)) {
@@ -6182,11 +6178,11 @@ var Visitor = (function() {
       }
     };
 
-    visitor.setAsCoopSafe = function() {
+    visitor.setAsCoopSafe = function () {
       isCoopSafe = true;
     };
 
-    visitor.setAsCoopUnsafe = function() {
+    visitor.setAsCoopUnsafe = function () {
       isCoopSafe = false;
     };
 
@@ -6229,13 +6225,13 @@ var Visitor = (function() {
         ["getAnalyticsVisitorID"],
         ["getAudienceManagerLocationHint"],
         ["getLocationHint"],
-        ["getAudienceManagerBlob"]
-      ].forEach(function(tuple) {
+        ["getAudienceManagerBlob"],
+      ].forEach(function (tuple) {
         var apiName = tuple[0];
         var valueToReturn = tuple.length === 2 ? tuple[1] : "";
         var originalApi = visitor[apiName];
 
-        visitor[apiName] = function(callback) {
+        visitor[apiName] = function (callback) {
           if (!isOptInSafe() || !visitor.isAllowed()) {
             if (typeof callback === "function") {
               visitor._callCallback(callback, [valueToReturn]);
@@ -6291,7 +6287,7 @@ var Visitor = (function() {
             // Retrieve `gdpr` and `gdpr_consent` from plugin:
             adobe.optIn.execute({
               command: "iabPlugin.fetchConsentData",
-              callback: fetchConsentCallback
+              callback: fetchConsentCallback,
             });
           } else {
             visitor.init();
@@ -6301,7 +6297,7 @@ var Visitor = (function() {
           // Retrieve `gdpr` and `gdpr_consent` from plugin:
           adobe.optIn.execute({
             command: "iabPlugin.fetchConsentData",
-            callback: fetchRejectedConsentCallback
+            callback: fetchRejectedConsentCallback,
           });
         } else {
           guardApis();
@@ -6322,7 +6318,7 @@ var Visitor = (function() {
     var ranConfig;
     /* Init */
 
-    visitor.init = function() {
+    visitor.init = function () {
       // Short circuit if need to wait for OptIn:
       if (shouldWaitForOptIn()) {
         adobe.optIn.fetchPermissions(fetchPermissionsCallback, true);
@@ -6397,7 +6393,7 @@ var Visitor = (function() {
             }
           };
 
-          w.addEventListener("load", function() {
+          w.addEventListener("load", function () {
             thisClass.windowLoaded = true;
 
             if (VISITOR_DEBUG) {
@@ -6410,7 +6406,7 @@ var Visitor = (function() {
           });
 
           try {
-            crossDomain.receiveMessage(function(message) {
+            crossDomain.receiveMessage(function (message) {
               destinationPublishing.receiveMessage(message.data);
             }, destinationPublishing.iframeHost);
           } catch (__Error__) {
@@ -6430,11 +6426,11 @@ var Visitor = (function() {
               ? visitor.whitelistIframeDomains
               : [visitor.whitelistIframeDomains]; // We can use forEach since PostMessage is supported over here.
 
-          visitor.whitelistIframeDomains.forEach(function(domain) {
+          visitor.whitelistIframeDomains.forEach(function (domain) {
             var message = new Message(marketingCloudOrgID, domain);
             var onMessageFromParent = makeChildMessageListener(
               visitor,
-              message
+              message,
             );
             crossDomain.receiveMessage(onMessageFromParent, domain);
           });
@@ -6454,10 +6450,10 @@ var Visitor = (function() {
     }
 
     return Object.keys(initConfig)
-      .filter(function(key) {
+      .filter(function (key) {
         return initConfig[key] !== "";
       })
-      .reduce(function(configs, key) {
+      .reduce(function (configs, key) {
         // TODO: Clean this up by adding a normalize to configs items in visitorConfig.
         var normalized = visitorConfig.normalizeConfig(initConfig[key]);
         var normalizeForBoolean = utils.normalizeBoolean(normalized);
@@ -6477,7 +6473,7 @@ var Visitor = (function() {
    *     Instance
    *********************************************************************/
 
-  Visitor_1.getInstance = function(marketingCloudOrgID, initConfig) {
+  Visitor_1.getInstance = function (marketingCloudOrgID, initConfig) {
     if (!marketingCloudOrgID) {
       throw new Error("Visitor requires Adobe Marketing Cloud Org ID.");
     }
@@ -6550,7 +6546,7 @@ var Visitor = (function() {
           "preOptInApprovals",
           "isOptInStorageEnabled",
           "optInStorageExpiry",
-          "isIabContext"
+          "isIabContext",
         ]);
         var optInCookieDomain =
           configs.optInCookieDomain || configs.cookieDomain;
@@ -6561,7 +6557,7 @@ var Visitor = (function() {
             : optInCookieDomain;
         optInConfig.optInCookieDomain = optInCookieDomain;
         var optIn$$1 = new OptIn$2(optInConfig, {
-          cookies: cookies
+          cookies: cookies,
         });
 
         if (optInConfig.isIabContext && optInConfig.doesOptInApply) {
@@ -6603,7 +6599,7 @@ var Visitor = (function() {
       // Short circuit because we don't support IE 6, 7, 8, 9, Quirks Mode. Don't init Visitor.
       return tempVisitor._helpers.replaceMethodsWithFunction(
         tempVisitor,
-        function() {}
+        function () {},
       );
     }
 
@@ -6613,12 +6609,12 @@ var Visitor = (function() {
             marketingCloudOrgID,
             normalizedInitConfig,
             tempVisitor,
-            commonjsGlobal.parent
+            commonjsGlobal.parent,
           )
         : new Visitor_1(
             marketingCloudOrgID,
             normalizedInitConfig,
-            reversedOrgId
+            reversedOrgId,
           );
     tempVisitor = null;
     visitor.init();

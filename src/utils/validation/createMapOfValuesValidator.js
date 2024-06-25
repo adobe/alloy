@@ -10,16 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isObject from "../isObject";
-import { assertValid } from "./utils";
+import isObject from "../isObject.js";
+import { assertValid } from "./utils.js";
 
-export default valueValidator =>
+export default (valueValidator) =>
   function mapOfValues(value, path) {
     assertValid(isObject(value), value, path, "an object");
 
     const errors = [];
     const validatedObject = {};
-    Object.keys(value).forEach(subKey => {
+    Object.keys(value).forEach((subKey) => {
       const subValue = value[subKey];
       const subPath = path ? `${path}.${subKey}` : subKey;
       try {

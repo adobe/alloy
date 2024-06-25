@@ -9,13 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import handleRequestFailure from "../../../../../src/core/edgeNetwork/handleRequestFailure";
+import handleRequestFailure from "../../../../../src/core/edgeNetwork/handleRequestFailure.js";
 
 describe("handleRequestFailure", () => {
   it("works", () => {
     const onRequestFailureCallbackAggregator = jasmine.createSpyObj(
       "onRequestFailureCallbackAggregator",
-      ["add", "call"]
+      ["add", "call"],
     );
 
     onRequestFailureCallbackAggregator.call.and.returnValue(Promise.resolve());
@@ -23,12 +23,12 @@ describe("handleRequestFailure", () => {
     const error = new Error("woopsie");
 
     handleRequestFailure(onRequestFailureCallbackAggregator)(error).catch(
-      err => {
+      (err) => {
         expect(onRequestFailureCallbackAggregator.call).toHaveBeenCalledWith({
-          error
+          error,
         });
         expect(err).toEqual(error);
-      }
+      },
     );
   });
 });

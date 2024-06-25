@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createRandomEcid from "./createRandomEcid";
-import { orgMainConfigMain } from "./constants/configParts";
+import createRandomEcid from "./createRandomEcid.js";
+import { orgMainConfigMain } from "./constants/configParts/index.js";
 
 export default ({ timestamp, id, orgId } = {}) => {
   const ts = timestamp || new Date().getTime() / 1000;

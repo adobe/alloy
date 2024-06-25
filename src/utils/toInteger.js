@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNumber from "./isNumber";
-import isString from "./isString";
+import isNumber from "./isNumber.js";
+import isString from "./isString.js";
 
 /*
  * coerce `value` to a number or return `defaultValue` if it cannot be.

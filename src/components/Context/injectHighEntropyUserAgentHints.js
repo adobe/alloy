@@ -10,22 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { deepAssign, noop } from "../../utils";
-import highEntropyUserAgentHints from "../../constants/highEntropyUserAgentClientHints";
+import { deepAssign, noop } from "../../utils/index.js";
+import highEntropyUserAgentHints from "../../constants/highEntropyUserAgentClientHints.js";
 
-const browserSupportsUserAgentClientHints = navigator => {
+const browserSupportsUserAgentClientHints = (navigator) => {
   return typeof navigator.userAgentData !== "undefined";
 };
 
-export default navigator => {
+export default (navigator) => {
   if (!browserSupportsUserAgentClientHints(navigator)) {
     return noop;
   }
   return (xdm, logger) => {
     try {
       return navigator.userAgentData
-        .getHighEntropyValues(highEntropyUserAgentHints.map(hint => hint[0]))
-        .then(hints => {
+        .getHighEntropyValues(highEntropyUserAgentHints.map((hint) => hint[0]))
+        .then((hints) => {
           const userAgentClientHints = {};
           highEntropyUserAgentHints.forEach(([hintName, hintType]) => {
             if (
@@ -39,14 +39,14 @@ export default navigator => {
           deepAssign(xdm, {
             environment: {
               browserDetails: {
-                userAgentClientHints
-              }
-            }
+                userAgentClientHints,
+              },
+            },
           });
         });
     } catch (error) {
       logger.warn(
-        `Unable to collect user-agent client hints. ${error.message}`
+        `Unable to collect user-agent client hints. ${error.message}`,
       );
       return noop;
     }

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isString from "../../../../src/utils/isString";
+import isString from "../../../../src/utils/isString.js";
 
 const nonStrings = [{}, [], new Date(), /abc/, true, false, 123];
 
@@ -20,7 +20,7 @@ describe("isString", () => {
   });
 
   it("returns false if the value is not a string", () => {
-    nonStrings.forEach(str => {
+    nonStrings.forEach((str) => {
       expect(isString(str)).toBe(false);
     });
   });

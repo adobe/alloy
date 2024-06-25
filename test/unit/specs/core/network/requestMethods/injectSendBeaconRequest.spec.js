@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectSendBeaconRequest from "../../../../../../src/core/network/requestMethods/injectSendBeaconRequest";
+import injectSendBeaconRequest from "../../../../../../src/core/network/requestMethods/injectSendBeaconRequest.js";
 
 // When running these tests in IE 11, they fail because IE doesn't like the
 // way the blob is constructed (see
@@ -18,7 +18,7 @@ import injectSendBeaconRequest from "../../../../../../src/core/network/requestM
 // Fortunately, if navigator.sendBeacon doesn't exist (IE 11), injectSendBeaconRequest
 // should never be used (see injectNetworkStrategy.js), so we can skip
 // these tests altogether.
-const guardForSendBeaconAvailability = spec => {
+const guardForSendBeaconAvailability = (spec) => {
   return window.navigator.sendBeacon
     ? spec
     : () => pending("No sendBeacon API available.");
@@ -37,23 +37,23 @@ describe("injectSendBeaconRequest", () => {
       const sendBeaconRequest = injectSendBeaconRequest({
         sendBeacon,
         sendFetchRequest,
-        logger
+        logger,
       });
       const body = { a: "b" };
       const result = sendBeaconRequest("https://example.com/endpoint", body);
       expect(sendBeacon).toHaveBeenCalledWith(
         "https://example.com/endpoint",
-        jasmine.any(Object)
+        jasmine.any(Object),
       );
       expect(sendFetchRequest).toHaveBeenCalledWith(
         "https://example.com/endpoint",
-        body
+        body,
       );
       expect(logger.info).toHaveBeenCalledWith(
-        jasmine.stringMatching("falling back to")
+        jasmine.stringMatching("falling back to"),
       );
       expect(result).toBe(sendFetchRequestPromise);
-    })
+    }),
   );
 
   it(
@@ -64,17 +64,17 @@ describe("injectSendBeaconRequest", () => {
       const sendFetchRequest = jasmine.createSpy();
       const sendBeaconRequest = injectSendBeaconRequest({
         sendBeacon,
-        sendFetchRequest
+        sendFetchRequest,
       });
       // eslint-disable-next-line consistent-return
       return sendBeaconRequest("https://example.com/endpoint", body).then(
-        result => {
+        (result) => {
           expect(sendFetchRequest).not.toHaveBeenCalled();
           expect(result.statusCode).toBe(204);
           expect(result.getHeader("Content-Type")).toBeNull();
           expect(result.body).toBe("");
-        }
+        },
       );
-    })
+    }),
   );
 });

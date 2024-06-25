@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import validateConfigOverride from "../../../../src/utils/validateConfigOverride";
-import describeValidation from "../../helpers/describeValidation";
+import validateConfigOverride from "../../../../src/utils/validateConfigOverride.js";
+import describeValidation from "../../helpers/describeValidation.js";
 
 describeValidation("utils:validateConfigOverride", validateConfigOverride, [
   // empty configuration
@@ -22,19 +22,19 @@ describeValidation("utils:validateConfigOverride", validateConfigOverride, [
       experience_platform: {
         datasets: {
           event: "werewr",
-          profile: "www"
-        }
+          profile: "www",
+        },
       },
       analytics: {
-        reportSuites: ["sdfsfd"]
+        reportSuites: ["sdfsfd"],
       },
       identity: {
-        idSyncContainerId: "rrr"
+        idSyncContainerId: "rrr",
       },
       target: {
-        propertyToken: "rrr"
-      }
-    }
+        propertyToken: "rrr",
+      },
+    },
   },
   // arbitrarily nested objects
   {
@@ -44,25 +44,25 @@ describeValidation("utils:validateConfigOverride", validateConfigOverride, [
           event: {
             morning: {
               first: {
-                withoutAction: "222"
-              }
-            }
-          }
-        }
-      }
-    }
+                withoutAction: "222",
+              },
+            },
+          },
+        },
+      },
+    },
   },
   // non-object top level keys are valid
   {
     value: {
       foo: "bar",
-      biz: {}
-    }
+      biz: {},
+    },
   },
   // value must be an object
   { value: true, error: true },
   { value: false, error: true },
   { value: "", error: true },
   { value: [], error: true },
-  { value: 123, error: true }
+  { value: 123, error: true },
 ]);

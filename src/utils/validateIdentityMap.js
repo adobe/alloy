@@ -16,13 +16,13 @@ import {
   boolean,
   arrayOf,
   enumOf,
-  mapOfValues
-} from "./validation/index";
+  mapOfValues,
+} from "./validation/index.js";
 import {
   AMBIGUOUS,
   AUTHENTICATED,
-  LOGGED_OUT
-} from "../constants/identityMapAuthenticatedState";
+  LOGGED_OUT,
+} from "../constants/identityMapAuthenticatedState.js";
 
 export default mapOfValues(
   arrayOf(
@@ -30,10 +30,10 @@ export default mapOfValues(
       authenticatedState: enumOf(AMBIGUOUS, AUTHENTICATED, LOGGED_OUT),
       id: string(),
       namespace: objectOf({
-        code: string()
+        code: string(),
       }).noUnknownFields(),
       primary: boolean(),
-      xid: string()
-    }).noUnknownFields()
-  ).required()
+      xid: string(),
+    }).noUnknownFields(),
+  ).required(),
 );

@@ -26,7 +26,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
   const supportedLinkElement = {
     tagName: "A",
     href: "index.html",
-    nodeType: 1
+    nodeType: 1,
   };
 
   let getLinkName;
@@ -40,7 +40,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     getLinkName = jasmine.createSpy("getLinkName");
     getLinkRegion = jasmine.createSpy("getLinkRegion");
     getAbsoluteUrlFromAnchorElement = jasmine.createSpy(
-      "getAbsoluteUrlFromAnchorElement"
+      "getAbsoluteUrlFromAnchorElement",
     );
     findClickableElement = jasmine.createSpy("findClickableElement");
     determineLinkType = jasmine.createSpy("determineLinkType");
@@ -56,7 +56,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
 
   it("Returns complete linkDetails when it is a supported anchor element", () => {
     const config = {
-      onBeforeLinkClickSend: options => {
+      onBeforeLinkClickSend: (options) => {
         options.data.custom = "test data field";
         return true;
       },
@@ -76,7 +76,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       getAbsoluteUrlFromAnchorElement,
       findClickableElement,
       determineLinkType,
-      window: mockWindow
+      window: mockWindow,
     });
 
     const result = getClickedElementProperties({
@@ -98,10 +98,10 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
             type: "exit",
             URL: "http://blah.com",
             linkClicks: {
-              value: 1
-            }
-          }
-        }
+              value: 1,
+            },
+          },
+        },
       },
       data: {
         __adobe: {
@@ -120,7 +120,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
         },
         custom: "test data field"
       },
-      clickedElement: {}
+      clickedElement: {},
     });
   });
 
@@ -145,7 +145,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       getAbsoluteUrlFromAnchorElement,
       findClickableElement,
       determineLinkType,
-      window: mockWindow
+      window: mockWindow,
     });
 
     const result = getClickedElementProperties({
@@ -178,7 +178,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       getAbsoluteUrlFromAnchorElement,
       findClickableElement,
       determineLinkType,
-      window: mockWindow
+      window: mockWindow,
     });
 
     const result = getClickedElementProperties({
@@ -211,7 +211,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       getAbsoluteUrlFromAnchorElement,
       findClickableElement,
       determineLinkType,
-      window: mockWindow
+      window: mockWindow,
     });
 
     const result = getClickedElementProperties({
@@ -262,7 +262,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       getAbsoluteUrlFromAnchorElement,
       findClickableElement,
       determineLinkType,
-      window: mockWindow
+      window: mockWindow,
     });
 
     const result = getClickedElementProperties({

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import updateErrorMessage from "../../../../src/utils/updateErrorMessage";
+import updateErrorMessage from "../../../../src/utils/updateErrorMessage.js";
 
 describe("updateErrorMessage", () => {
   it("updates error message if the message property is writeable", () => {

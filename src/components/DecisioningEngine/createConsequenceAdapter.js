@@ -9,19 +9,19 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import inAppMessageConsequenceAdapter from "./consequenceAdapters/inAppMessageConsequenceAdapter";
-import schemaTypeConsequenceAdapter from "./consequenceAdapters/schemaTypeConsequenceAdapter";
+import inAppMessageConsequenceAdapter from "./consequenceAdapters/inAppMessageConsequenceAdapter.js";
+import schemaTypeConsequenceAdapter from "./consequenceAdapters/schemaTypeConsequenceAdapter.js";
 
 const CJM_IN_APP_MESSAGE_TYPE = "cjmiam";
 const SCHEMA = "schema";
 
 const adapters = {
   [CJM_IN_APP_MESSAGE_TYPE]: inAppMessageConsequenceAdapter,
-  [SCHEMA]: schemaTypeConsequenceAdapter
+  [SCHEMA]: schemaTypeConsequenceAdapter,
 };
 
 export default () => {
-  return consequence => {
+  return (consequence) => {
     const { id, type, detail } = consequence;
 
     return typeof adapters[type] === "function"

@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import querySelectorAll from "./querySelectorAll";
-import selectNodesWithShadow from "./selectNodesWithShadow";
-import isShadowSelector from "./isShadowSelector";
+import querySelectorAll from "./querySelectorAll.js";
+import selectNodesWithShadow from "./selectNodesWithShadow.js";
+import isShadowSelector from "./isShadowSelector.js";
 
 /**
  * Returns an array of matched DOM nodes.

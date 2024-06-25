@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { noop } from "../../utils";
+import { noop } from "../../utils/index.js";
 
 export default ({ targetMigrationEnabled }) => {
   if (targetMigrationEnabled) {
-    return request => {
+    return (request) => {
       request.getPayload().mergeMeta({ target: { migration: true } });
     };
   }

@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "../../../../../src/utils/validation";
-import describeValidation from "../../../helpers/describeValidation";
+import { string } from "../../../../../src/utils/validation/index.js";
+import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::regexp", () => {
   describeValidation("optional regexp", string().regexp(), [
@@ -21,30 +21,18 @@ describe("validation::regexp", () => {
     { value: "[", error: true },
     { value: "*", error: true },
     { value: null },
-    { value: undefined }
+    { value: undefined },
   ]);
 
-  describeValidation(
-    "required regexp",
-    string()
-      .regexp()
-      .required(),
-    [
-      { value: null, error: true },
-      { value: undefined, error: true },
-      { value: "" }
-    ]
-  );
+  describeValidation("required regexp", string().regexp().required(), [
+    { value: null, error: true },
+    { value: undefined, error: true },
+    { value: "" },
+  ]);
 
-  describeValidation(
-    "default regexp",
-    string()
-      .regexp()
-      .default("/default/"),
-    [
-      { value: null, expected: "/default/" },
-      { value: undefined, expected: "/default/" },
-      { value: "a" }
-    ]
-  );
+  describeValidation("default regexp", string().regexp().default("/default/"), [
+    { value: null, expected: "/default/" },
+    { value: undefined, expected: "/default/" },
+    { value: "a" },
+  ]);
 });

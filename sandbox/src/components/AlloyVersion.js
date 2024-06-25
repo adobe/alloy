@@ -17,7 +17,7 @@ const useAlloyVersion = (instanceName = "alloy") => {
     window[instanceName]("getLibraryInfo").then(
       ({ libraryInfo: { version: v } }) => {
         setVersion(v);
-      }
+      },
     );
   }, [instanceName]);
   return version;
@@ -40,7 +40,7 @@ export default () => {
         position: "fixed",
         right: 0,
         size: "0.8rem",
-        userSelect: "none"
+        userSelect: "none",
       }}
     >
       {alloyVersion}

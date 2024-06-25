@@ -9,9 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { defer } from "../../../../../../src/utils";
-import flushPromiseChains from "../../../../helpers/flushPromiseChains";
-import createProcessRedirect from "../../../../../../src/components/Personalization/handlers/createProcessRedirect";
+import { defer } from "../../../../../../src/utils/index.js";
+import flushPromiseChains from "../../../../helpers/flushPromiseChains.js";
+import createProcessRedirect from "../../../../../../src/components/Personalization/handlers/createProcessRedirect.js";
 
 describe("createProcessRedirect", () => {
   let logger;
@@ -35,7 +35,7 @@ describe("createProcessRedirect", () => {
     proposition = {
       getNotification() {
         return meta;
-      }
+      },
     };
     item = {
       getData() {
@@ -43,13 +43,13 @@ describe("createProcessRedirect", () => {
       },
       getProposition() {
         return proposition;
-      }
+      },
     };
 
     processRedirect = createProcessRedirect({
       logger,
       executeRedirect,
-      collect
+      collect,
     });
   });
 
@@ -58,7 +58,7 @@ describe("createProcessRedirect", () => {
     expect(processRedirect(item)).toEqual({});
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid Redirect data",
-      undefined
+      undefined,
     );
   });
 
@@ -75,7 +75,7 @@ describe("createProcessRedirect", () => {
     expect(result).toEqual({
       render: jasmine.any(Function),
       setRenderAttempted: true,
-      onlyRenderThis: true
+      onlyRenderThis: true,
     });
     expect(collect).not.toHaveBeenCalled();
     expect(executeRedirect).not.toHaveBeenCalled();
@@ -83,7 +83,7 @@ describe("createProcessRedirect", () => {
     await flushPromiseChains();
     expect(collect).toHaveBeenCalledWith({
       decisionsMeta: ["mymetavalue"],
-      documentMayUnload: true
+      documentMayUnload: true,
     });
     expect(executeRedirect).not.toHaveBeenCalled();
     collectDefer.resolve();

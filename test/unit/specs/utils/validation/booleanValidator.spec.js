@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean } from "../../../../../src/utils/validation";
-import describeValidation from "../../../helpers/describeValidation";
+import { boolean } from "../../../../../src/utils/validation/index.js";
+import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::boolean", () => {
   describeValidation("optional boolean", boolean(), [
@@ -24,20 +24,20 @@ describe("validation::boolean", () => {
     { value: true },
     { value: false },
     { value: null },
-    { value: undefined }
+    { value: undefined },
   ]);
 
   describeValidation("required boolean", boolean().required(), [
     { value: true },
     { value: false },
     { value: null, error: true },
-    { value: undefined, error: true }
+    { value: undefined, error: true },
   ]);
 
   describeValidation("default true boolean", boolean().default(true), [
     { value: null, expected: true },
     { value: undefined, expected: true },
     { value: true },
-    { value: false }
+    { value: false },
   ]);
 });

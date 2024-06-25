@@ -10,36 +10,36 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createFixture from "../../helpers/createFixture";
-import getVisitorEcid from "../../helpers/visitorService/getVisitorEcid";
-import createMockOptIn from "../../helpers/optIn/createMockOptIn";
+import createFixture from "../../helpers/createFixture/index.js";
+import getVisitorEcid from "../../helpers/visitorService/getVisitorEcid.js";
+import createMockOptIn from "../../helpers/optIn/createMockOptIn.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
   migrationDisabled,
-  consentPending
-} from "../../helpers/constants/configParts";
-import { CONSENT_IN } from "../../helpers/constants/consent";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+  consentPending,
+} from "../../helpers/constants/configParts/index.js";
+import { CONSENT_IN } from "../../helpers/constants/consent.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 createFixture({
   title:
     "C36909 When ID migration is disabled and Visitor and Alloy are both awaiting consent, when Visitor is denied and Alloy is approved, Alloy goes ahead with getting an ECID.",
-  includeVisitorLibrary: true
+  includeVisitorLibrary: true,
 });
 
 test.meta({
   ID: "C35448",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const config = compose(
   orgMainConfigMain,
   debugEnabled,
   migrationDisabled,
-  consentPending
+  consentPending,
 );
 
 test("C36909 When ID migration is disabled and Visitor and Alloy are both awaiting consent, when Visitor is denied and Alloy is approved, Alloy goes ahead with getting an ECID", async () => {

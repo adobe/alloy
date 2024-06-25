@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import injectProcessDestinations from "../../../../../src/components/Audiences/injectProcessDestinations";
+import injectProcessDestinations from "../../../../../src/components/Audiences/injectProcessDestinations.js";
 
 describe("Audiences::injectProcessDestinations", () => {
   let fireReferrerHideableImage;
@@ -32,7 +32,7 @@ describe("Audiences::injectProcessDestinations", () => {
       fireReferrerHideableImage,
       logger,
       cookieJar,
-      isPageSsl
+      isPageSsl,
     });
   };
 
@@ -42,15 +42,15 @@ describe("Audiences::injectProcessDestinations", () => {
       id: 2097728,
       spec: {
         url: "http://test.abc",
-        hideReferrer: true
-      }
+        hideReferrer: true,
+      },
     },
     {
       type: "cookie",
       spec: {
         name: "audlabcookie",
-        value: "dgtest\u003ddevicegraphtestdestination1"
-      }
+        value: "dgtest\u003ddevicegraphtestdestination1",
+      },
     },
     {
       type: "cookie",
@@ -58,9 +58,9 @@ describe("Audiences::injectProcessDestinations", () => {
         name: "testCookieDestination",
         value: "destination\u003ds2",
         domain: "adobe.com",
-        ttlDays: 30
-      }
-    }
+        ttlDays: 30,
+      },
+    },
   ];
 
   it("sets cookie destinations", () => {
@@ -73,8 +73,8 @@ describe("Audiences::injectProcessDestinations", () => {
           domain: "",
           expires: 10,
           sameSite: "none",
-          secure: true
-        }
+          secure: true,
+        },
       );
       expect(cookieJar.set).toHaveBeenCalledWith(
         "testCookieDestination",
@@ -83,8 +83,8 @@ describe("Audiences::injectProcessDestinations", () => {
           domain: "adobe.com",
           expires: 30,
           sameSite: "none",
-          secure: true
-        }
+          secure: true,
+        },
       );
     });
   });
@@ -98,16 +98,16 @@ describe("Audiences::injectProcessDestinations", () => {
         "dgtest\u003ddevicegraphtestdestination1",
         {
           domain: "",
-          expires: 10
-        }
+          expires: 10,
+        },
       );
       expect(cookieJar.set).toHaveBeenCalledWith(
         "testCookieDestination",
         "destination\u003ds2",
         {
           domain: "adobe.com",
-          expires: 30
-        }
+          expires: 30,
+        },
       );
     });
   });
@@ -123,8 +123,8 @@ describe("Audiences::injectProcessDestinations", () => {
         id: 2097728,
         spec: {
           url: "http://test.abc",
-          hideReferrer: true
-        }
+          hideReferrer: true,
+        },
       },
       {
         type: "cookie",
@@ -132,28 +132,28 @@ describe("Audiences::injectProcessDestinations", () => {
           name: "testCookieDestination",
           value: "destination\u003ds2",
           domain: "",
-          ttlDays: 30
-        }
+          ttlDays: 30,
+        },
       },
       {
         type: "url",
         id: 2097729,
         spec: {
           url: "http://test.zyx",
-          hideReferrer: false
-        }
-      }
+          hideReferrer: false,
+        },
+      },
     ]).then(() => {
       expect(fireReferrerHideableImage).toHaveBeenCalledWith({
         url: "http://test.abc",
-        hideReferrer: true
+        hideReferrer: true,
       });
       expect(fireReferrerHideableImage).toHaveBeenCalledWith({
         url: "http://test.zyx",
-        hideReferrer: false
+        hideReferrer: false,
       });
       expect(logger.info).toHaveBeenCalledWith(
-        "URL destination succeeded: http://test.zyx"
+        "URL destination succeeded: http://test.zyx",
       );
     });
   });
@@ -165,12 +165,12 @@ describe("Audiences::injectProcessDestinations", () => {
         id: 2097728,
         spec: {
           url: "http://test.abc",
-          hideReferrer: true
-        }
-      }
+          hideReferrer: true,
+        },
+      },
     ];
     return expectAsync(processDestinations(destinations)).toBeResolvedTo(
-      undefined
+      undefined,
     );
   });
 });

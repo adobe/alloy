@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import buildAndValidateConfig from "../../../../src/core/buildAndValidateConfig";
-import createConfig from "../../../../src/core/config/createConfig";
-import { boolean, objectOf } from "../../../../src/utils/validation";
+import buildAndValidateConfig from "../../../../src/core/buildAndValidateConfig.js";
+import createConfig from "../../../../src/core/config/createConfig.js";
+import { boolean, objectOf } from "../../../../src/utils/validation/index.js";
 
 describe("buildAndValidateConfig", () => {
   let options;
@@ -25,12 +25,12 @@ describe("buildAndValidateConfig", () => {
     options = {};
     const componentCreator = () => {};
     componentCreator.configValidators = objectOf({
-      idSyncEnabled: boolean().default(true)
+      idSyncEnabled: boolean().default(true),
     });
     componentCreators = [componentCreator];
     coreConfigValidators = objectOf({
       debugEnabled: boolean().default(false),
-      errorsEnabled: boolean()
+      errorsEnabled: boolean(),
     })
       .noUnknownFields()
       .required();
@@ -38,7 +38,7 @@ describe("buildAndValidateConfig", () => {
       enabled: false,
       info: jasmine.createSpy(),
       logOnBeforeCommand: jasmine.createSpy(),
-      logOnInstanceConfigured: jasmine.createSpy()
+      logOnInstanceConfigured: jasmine.createSpy(),
     };
     setDebugEnabled = jasmine.createSpy();
   });
@@ -51,7 +51,7 @@ describe("buildAndValidateConfig", () => {
         coreConfigValidators,
         createConfig,
         logger,
-        setDebugEnabled
+        setDebugEnabled,
       });
     }).toThrowError();
   });
@@ -64,7 +64,7 @@ describe("buildAndValidateConfig", () => {
       coreConfigValidators,
       createConfig,
       logger,
-      setDebugEnabled
+      setDebugEnabled,
     });
     expect(setDebugEnabled).toHaveBeenCalledWith(true, { fromConfig: true });
   });
@@ -77,13 +77,13 @@ describe("buildAndValidateConfig", () => {
       coreConfigValidators,
       createConfig,
       logger,
-      setDebugEnabled
+      setDebugEnabled,
     });
     expect(logger.logOnInstanceConfigured).toHaveBeenCalledWith({
       config: {
         debugEnabled: false,
-        idSyncEnabled: true
-      }
+        idSyncEnabled: true,
+      },
     });
   });
 
@@ -97,8 +97,8 @@ describe("buildAndValidateConfig", () => {
         coreConfigValidators,
         createConfig,
         logger,
-        setDebugEnabled
-      })
+        setDebugEnabled,
+      }),
     ).toThrowError();
   });
 
@@ -109,7 +109,7 @@ describe("buildAndValidateConfig", () => {
       coreConfigValidators,
       createConfig,
       logger,
-      setDebugEnabled
+      setDebugEnabled,
     });
     expect(result).toEqual({ idSyncEnabled: true, debugEnabled: false });
   });

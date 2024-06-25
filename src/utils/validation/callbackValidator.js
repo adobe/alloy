@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import isFunction from "../isFunction";
-import { assertValid } from "./utils";
+import isFunction from "../isFunction.js";
+import { assertValid } from "./utils.js";
 
 export default (value, path) => {
   assertValid(isFunction(value), value, path, "a function");

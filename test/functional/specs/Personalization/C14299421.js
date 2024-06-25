@@ -10,30 +10,30 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t, Selector } from "testcafe";
-import createFixture from "../../helpers/createFixture";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import addHtmlToHeader from "../../helpers/dom/addHtmlToHeader";
-import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
-import createConsoleLogger from "../../helpers/consoleLogger";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import addHtmlToHeader from "../../helpers/dom/addHtmlToHeader.js";
+import addHtmlToBody from "../../helpers/dom/addHtmlToBody.js";
+import createConsoleLogger from "../../helpers/consoleLogger/index.js";
 
 const config = compose(orgMainConfigMain, debugEnabled);
 
 createFixture({
   title:
     "C14299421: Prehiding style is removed when there is a problem rendering",
-  url: `${TEST_PAGE_URL}?test=C14299421`
+  url: `${TEST_PAGE_URL}?test=C14299421`,
 });
 
 test.meta({
   ID: "C14299421",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C14299421: Prehiding style is removed when there is a problem rendering", async () => {
@@ -45,7 +45,7 @@ test("Test C14299421: Prehiding style is removed when there is a problem renderi
   });
   await addHtmlToBody(`<div>Test C14299421 with missing heading</div>`);
   await addHtmlToHeader(
-    `<style id="alloy-prehiding">body { visibility: hidden; }</style`
+    `<style id="alloy-prehiding">body { visibility: hidden; }</style`,
   );
 
   const alloy = createAlloyProxy();
@@ -54,6 +54,8 @@ test("Test C14299421: Prehiding style is removed when there is a problem renderi
 
   await t.expect(Selector("#alloy-prehiding").exists).notOk();
   // wait for the rendering to timeout
-  await new Promise(resolve => setTimeout(resolve, 5000));
+  await new Promise((resolve) => {
+    setTimeout(resolve, 5000);
+  });
   await logger.warn.expectMessageMatching(/Failed to execute action/);
 });

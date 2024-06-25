@@ -16,7 +16,7 @@ const mock = ClientFunction(() => {
   const nativeSendBeacon = window.navigator.sendBeacon.bind(window.navigator);
   window.navigator.sendBeacon = (...args) => {
     const sendBeaconCallCount = Number(
-      sessionStorage.getItem("sendBeaconCallCount") || 0
+      sessionStorage.getItem("sendBeaconCallCount") || 0,
     );
     sessionStorage.setItem("sendBeaconCallCount", sendBeaconCallCount + 1);
     return nativeSendBeacon(...args);
@@ -44,5 +44,5 @@ const reset = ClientFunction(() => {
 export default {
   mock,
   getCallCount,
-  reset
+  reset,
 };

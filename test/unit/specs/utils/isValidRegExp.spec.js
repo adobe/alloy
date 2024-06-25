@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isValidRegExp from "../../../../src/utils/isValidRegExp";
+import isValidRegExp from "../../../../src/utils/isValidRegExp.js";
 
 describe("isValidRegExp", () => {
-  ["steel|bronze", "/a/", "/^[a-z0-9+]:///i"].forEach(value => {
+  ["steel|bronze", "/a/", "/^[a-z0-9+]:///i"].forEach((value) => {
     it(`validates ${value}`, () => {
       expect(isValidRegExp(value)).toBe(true);
     });
   });
-  ["[", "*"].forEach(value => {
+  ["[", "*"].forEach((value) => {
     it(`rejects ${value}`, () => {
       expect(isValidRegExp(value)).toBe(false);
     });

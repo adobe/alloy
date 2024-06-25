@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createDataCollectionRequest } from "../../../../../src/utils/request";
-import describeRequest from "../../../helpers/describeRequest";
+import { createDataCollectionRequest } from "../../../../../src/utils/request/index.js";
+import describeRequest from "../../../helpers/describeRequest.js";
 
 describe("createDataCollectionRequest", () => {
   describeRequest(createDataCollectionRequest);
@@ -20,7 +20,7 @@ describe("createDataCollectionRequest", () => {
     const payload = {
       getDocumentMayUnload() {
         return true;
-      }
+      },
     };
     const request = createDataCollectionRequest({ payload });
     request.setIsIdentityEstablished();
@@ -32,7 +32,7 @@ describe("createDataCollectionRequest", () => {
     const payload = {
       getDocumentMayUnload() {
         return true;
-      }
+      },
     };
     const request = createDataCollectionRequest({ payload });
     expect(request.getAction()).toBe("interact");
@@ -43,7 +43,7 @@ describe("createDataCollectionRequest", () => {
     const payload = {
       getDocumentMayUnload() {
         return false;
-      }
+      },
     };
     const request = createDataCollectionRequest({ payload });
     request.setIsIdentityEstablished();
@@ -55,7 +55,7 @@ describe("createDataCollectionRequest", () => {
     const payload = {
       getDocumentMayUnload() {
         return false;
-      }
+      },
     };
     const request = createDataCollectionRequest({ payload });
     expect(request.getAction()).toBe("interact");
@@ -67,7 +67,7 @@ describe("createDataCollectionRequest", () => {
     const datastreamIdOverride = "my-edge-config-id-override";
     const request = createDataCollectionRequest({
       payload,
-      datastreamIdOverride
+      datastreamIdOverride,
     });
     expect(request.getDatastreamIdOverride()).toBe(datastreamIdOverride);
   });

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectAwaitIdentityCookie from "../../../../../src/components/Identity/injectAwaitIdentityCookie";
+import injectAwaitIdentityCookie from "../../../../../src/components/Identity/injectAwaitIdentityCookie.js";
 
 describe("Identity::injectAwaitIdentityCookie", () => {
   let identityCookieExists;
@@ -25,23 +25,23 @@ describe("Identity::injectAwaitIdentityCookie", () => {
     identityCookieExists = true;
     const onResponseCallbacks = [];
     runOnResponseCallbacks = () => {
-      onResponseCallbacks.forEach(callback => {
+      onResponseCallbacks.forEach((callback) => {
         callback();
       });
     };
-    onResponse = callback => onResponseCallbacks.push(callback);
+    onResponse = (callback) => onResponseCallbacks.push(callback);
     const onRequestFailureCallbacks = [];
     runOnRequestFailureCallbacks = () => {
-      onRequestFailureCallbacks.forEach(callback => {
+      onRequestFailureCallbacks.forEach((callback) => {
         callback();
       });
     };
-    onRequestFailure = callback => onRequestFailureCallbacks.push(callback);
+    onRequestFailure = (callback) => onRequestFailureCallbacks.push(callback);
     logger = jasmine.createSpyObj("logger", ["warn"]);
     awaitIdentityCookie = injectAwaitIdentityCookie({
       orgId: "org@adobe",
       doesIdentityCookieExist: () => identityCookieExists,
-      logger
+      logger,
     });
   });
 
@@ -58,7 +58,7 @@ describe("Identity::injectAwaitIdentityCookie", () => {
     runOnResponseCallbacks();
     expect(logger.warn).toHaveBeenCalled();
     return expectAsync(promise).toBeRejectedWithError(
-      /Identity cookie not found/i
+      /Identity cookie not found/i,
     );
   });
 
@@ -75,7 +75,7 @@ describe("Identity::injectAwaitIdentityCookie", () => {
     runOnRequestFailureCallbacks();
     expect(logger.warn).not.toHaveBeenCalled();
     return expectAsync(promise).toBeRejectedWithError(
-      /Identity cookie not found/i
+      /Identity cookie not found/i,
     );
   });
 });

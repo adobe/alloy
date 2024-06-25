@@ -18,7 +18,7 @@ function AppMeasurement_Module_ActivityMap(k) {
       var a = k.d.querySelector && k.d.querySelector(e.scrollReachSelector);
       a
         ? ((g = a.scrollTop || 0),
-          a.addEventListener("scroll", function() {
+          a.addEventListener("scroll", function () {
             var d;
             (d = (a && a.scrollTop + a.clientHeight) || 0) > g && (g = d);
           }))
@@ -81,10 +81,10 @@ function AppMeasurement_Module_ActivityMap(k) {
         ((c = a.getAttribute("alt"))
           ? (b.a = c)
           : (c = a.getAttribute("title"))
-          ? (b.t = c)
-          : "IMG" == ("" + a.nodeName).toUpperCase() &&
-            (c = a.getAttribute("src") || a.src) &&
-            (b.s = c)),
+            ? (b.t = c)
+            : "IMG" == ("" + a.nodeName).toUpperCase() &&
+              (c = a.getAttribute("src") || a.src) &&
+              (b.s = c)),
       (c = a.childNodes) && c.length)
     )
       for (a = 0; a < c.length; a++) t(c[a], d, b);
@@ -96,23 +96,23 @@ function AppMeasurement_Module_ActivityMap(k) {
         .replace(
           RegExp(
             "^[\\s\\n\\f\\r\\t\t-\r \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u205f\u3000\ufeff]+",
-            "mg"
+            "mg",
           ),
-          ""
+          "",
         )
         .replace(
           RegExp(
             "[\\s\\n\\f\\r\\t\t-\r \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u205f\u3000\ufeff]+$",
-            "mg"
+            "mg",
           ),
-          ""
+          "",
         )
         .replace(
           RegExp(
             "[\\s\\n\\f\\r\\t\t-\r \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u205f\u3000\ufeff]{1,}",
-            "mg"
+            "mg",
           ),
-          " "
+          " ",
         )
         .substring(0, 254);
     } catch (d) {}
@@ -131,7 +131,7 @@ function AppMeasurement_Module_ActivityMap(k) {
     v = 60;
   e.c = {};
   var w = { SCRIPT: 1, STYLE: 1, LINK: 1, CANVAS: 1 };
-  e._g = function() {
+  e._g = function () {
     var a,
       d,
       b,
@@ -146,7 +146,7 @@ function AppMeasurement_Module_ActivityMap(k) {
       0 < g && (c["a.activitymap.xy"] = 10 * Math.floor(g / 10)),
       (c["a.activitymap.pageIDType"] = k.pageName ? 1 : 0));
   };
-  e._d = function() {
+  e._d = function () {
     e.trackScrollReach &&
       !u &&
       (e.scrollReachSelector
@@ -154,7 +154,7 @@ function AppMeasurement_Module_ActivityMap(k) {
         : (p(), f.addEventListener && f.addEventListener("scroll", p, !1)),
       (u = !0));
   };
-  e.link = function(a, d) {
+  e.link = function (a, d) {
     var b;
     if (d) b = l(m(d), e.linkExclusions);
     else if (
@@ -174,7 +174,7 @@ function AppMeasurement_Module_ActivityMap(k) {
     }
     return b;
   };
-  e.region = function(a) {
+  e.region = function (a) {
     for (var d, b = e.regionIDAttribute || "id"; a && (a = a.parentNode); ) {
       if ((d = r(a, b, b, b))) return d;
       if ("BODY" == a.nodeName) return "BODY";
@@ -218,18 +218,18 @@ function AppMeasurement(r) {
     )
       (p = m), (m = p.parent);
   } catch (u) {}
-  a.log = function(a) {
+  a.log = function (a) {
     try {
       console.log(a);
     } catch (b) {}
   };
-  a.Qa = function(a) {
+  a.Qa = function (a) {
     return "" + parseInt(a) == "" + a;
   };
-  a.replace = function(a, b, d) {
+  a.replace = function (a, b, d) {
     return !a || 0 > a.indexOf(b) ? a : a.split(b).join(d);
   };
-  a.escape = function(c) {
+  a.escape = function (c) {
     var b, d;
     if (!c) return c;
     c = encodeURIComponent(c);
@@ -239,15 +239,11 @@ function AppMeasurement(r) {
           (c = a.replace(
             c,
             d,
-            "%" +
-              d
-                .charCodeAt(0)
-                .toString(16)
-                .toUpperCase()
+            "%" + d.charCodeAt(0).toString(16).toUpperCase(),
           ));
     return c;
   };
-  a.unescape = function(c) {
+  a.unescape = function (c) {
     if (!c) return c;
     c = 0 <= c.indexOf("+") ? a.replace(c, "+", " ") : c;
     try {
@@ -255,7 +251,7 @@ function AppMeasurement(r) {
     } catch (b) {}
     return unescape(c);
   };
-  a.Mb = function() {
+  a.Mb = function () {
     var c = h.location.hostname,
       b = a.fpCookieDomainPeriods,
       d;
@@ -274,7 +270,7 @@ function AppMeasurement(r) {
     }
     return a.Ja;
   };
-  a.c_r = a.cookieRead = function(c) {
+  a.c_r = a.cookieRead = function (c) {
     c = a.escape(c);
     var b = " " + a.d.cookie,
       d = b.indexOf(" " + c + "="),
@@ -285,7 +281,7 @@ function AppMeasurement(r) {
         : a.unescape(b.substring(d + 2 + c.length, 0 > f ? b.length : f));
     return "[[B]]" != c ? c : "";
   };
-  a.c_w = a.cookieWrite = function(c, b, d) {
+  a.c_w = a.cookieWrite = function (c, b, d) {
     var f = a.Mb(),
       e = a.cookieLifetime,
       g;
@@ -312,13 +308,13 @@ function AppMeasurement(r) {
         a.cookieRead(c) == b)
       : 0;
   };
-  a.Jb = function() {
+  a.Jb = function () {
     var c = a.Util.getIeVersion();
     "number" === typeof c &&
       10 > c &&
-      ((a.unsupportedBrowser = !0), a.wb(a, function() {}));
+      ((a.unsupportedBrowser = !0), a.wb(a, function () {}));
   };
-  a.xa = function() {
+  a.xa = function () {
     var a = navigator.userAgent;
     return "Microsoft Internet Explorer" === navigator.appName ||
       0 <= a.indexOf("MSIE ") ||
@@ -326,14 +322,14 @@ function AppMeasurement(r) {
       ? !0
       : !1;
   };
-  a.wb = function(a, b) {
+  a.wb = function (a, b) {
     for (var d in a)
       Object.prototype.hasOwnProperty.call(a, d) &&
         "function" === typeof a[d] &&
         (a[d] = b);
   };
   a.J = [];
-  a.ea = function(c, b, d) {
+  a.ea = function (c, b, d) {
     if (a.Ka) return 0;
     a.maxDelay || (a.maxDelay = 250);
     var f = 0,
@@ -344,7 +340,7 @@ function AppMeasurement(r) {
     if (g && "prerender" == g) {
       if (!a.fa)
         for (a.fa = 1, d = 0; d < k.length; d++)
-          a.d.addEventListener(k[d], function() {
+          a.d.addEventListener(k[d], function () {
             var c = a.d.visibilityState;
             c || (c = a.d.webkitVisibilityState);
             "visible" == c && ((a.fa = 0), a.delayReady());
@@ -357,7 +353,7 @@ function AppMeasurement(r) {
       a.fa || setTimeout(a.delayReady, a.maxDelay));
     return f;
   };
-  a.delayReady = function() {
+  a.delayReady = function () {
     var c = new Date().getTime(),
       b = 0,
       d;
@@ -373,7 +369,7 @@ function AppMeasurement(r) {
       a.Ka = 0;
     }
   };
-  a.setAccount = a.sa = function(c) {
+  a.setAccount = a.sa = function (c) {
     var b, d;
     if (!a.ea("setAccount", arguments))
       if (((a.account = c), a.allAccounts))
@@ -388,7 +384,7 @@ function AppMeasurement(r) {
           (0 != d && b[d - 1] == b[d]) || a.allAccounts.push(b[d]);
       else a.allAccounts = c.split(",");
   };
-  a.foreachVar = function(c, b) {
+  a.foreachVar = function (c, b) {
     var d,
       f,
       e,
@@ -417,7 +413,7 @@ function AppMeasurement(r) {
           (!b || 0 <= b.indexOf("," + e + ",")) &&
           c(e, g);
   };
-  a.o = function(c, b, d, f, e) {
+  a.o = function (c, b, d, f, e) {
     var g = "",
       k,
       l,
@@ -469,11 +465,11 @@ function AppMeasurement(r) {
                       ("prop" == h
                         ? (k = "c" + n)
                         : "eVar" == h
-                        ? (k = "v" + n)
-                        : "list" == h
-                        ? (k = "l" + n)
-                        : "hier" == h &&
-                          ((k = "h" + n), (l = l.substring(0, 255))));
+                          ? (k = "v" + n)
+                          : "list" == h
+                            ? (k = "l" + n)
+                            : "hier" == h &&
+                              ((k = "h" + n), (l = l.substring(0, 255))));
                 }
               g += "&" + a.escape(k) + "=" + a.escape(l);
             }
@@ -483,7 +479,7 @@ function AppMeasurement(r) {
     return g;
   };
   a.usePostbacks = 0;
-  a.Pb = function() {
+  a.Pb = function () {
     var c = "",
       b,
       d,
@@ -701,10 +697,11 @@ function AppMeasurement(r) {
               ("prop" == f
                 ? (e = "c" + k)
                 : "eVar" == f
-                ? (e = "v" + k)
-                : "list" == f
-                ? (e = "l" + k)
-                : "hier" == f && ((e = "h" + k), (g = g.substring(0, 255))));
+                  ? (e = "v" + k)
+                  : "list" == f
+                    ? (e = "l" + k)
+                    : "hier" == f &&
+                      ((e = "h" + k), (g = g.substring(0, 255))));
         }
         g &&
           (c += "&" + e + "=" + ("pev" != e.substring(0, 3) ? a.escape(g) : g));
@@ -714,7 +711,7 @@ function AppMeasurement(r) {
     a.ja && ((c += "&lrt=" + a.ja), (a.ja = null));
     return c;
   };
-  a.B = function(a) {
+  a.B = function (a) {
     var b = a.tagName;
     if (
       "undefined" != "" + a.kc ||
@@ -729,7 +726,7 @@ function AppMeasurement(r) {
         : !b && a.href && (b = "A"));
     return b;
   };
-  a.Ma = function(a) {
+  a.Ma = function (a) {
     var b = h.location,
       d = a.href ? a.href : "",
       f,
@@ -745,8 +742,8 @@ function AppMeasurement(r) {
         a.protocol && 1 < a.protocol.length
           ? a.protocol
           : b.protocol
-          ? b.protocol
-          : ""),
+            ? b.protocol
+            : ""),
       (f = b.pathname.lastIndexOf("/")),
       (d =
         (e ? e + "//" : "") +
@@ -757,7 +754,7 @@ function AppMeasurement(r) {
         d));
     return d;
   };
-  a.K = function(c) {
+  a.K = function (c) {
     var b = a.B(c),
       d,
       f,
@@ -774,26 +771,26 @@ function AppMeasurement(r) {
               a.replace(
                 a.replace(a.replace("" + f, "\r", ""), "\n", ""),
                 "\t",
-                ""
+                "",
               ),
               " ",
-              ""
+              "",
             )),
             (g = 2))
           : "INPUT" == b || "SUBMIT" == b
-          ? (c.value
-              ? (e = c.value)
-              : c.innerText
-              ? (e = c.innerText)
-              : c.textContent && (e = c.textContent),
-            (g = 3))
-          : "IMAGE" == b && c.src && (e = c.src)
+            ? (c.value
+                ? (e = c.value)
+                : c.innerText
+                  ? (e = c.innerText)
+                  : c.textContent && (e = c.textContent),
+              (g = 3))
+            : "IMAGE" == b && c.src && (e = c.src)
         : (e = a.Ma(c)),
       e)
       ? { id: e.substring(0, 100), type: g }
       : 0;
   };
-  a.ic = function(c) {
+  a.ic = function (c) {
     for (var b = a.B(c), d = a.K(c); c && !d && "BODY" != b; )
       if ((c = c.parentElement ? c.parentElement : c.parentNode))
         (b = a.B(c)), (d = a.K(c));
@@ -804,7 +801,7 @@ function AppMeasurement(r) {
       (c = 0);
     return c;
   };
-  a.Xb = function() {
+  a.Xb = function () {
     var c,
       b,
       d = a.linkObject,
@@ -892,7 +889,7 @@ function AppMeasurement(r) {
               c +
               (d ? "&oi=" + d : "")));
   };
-  a.Qb = function() {
+  a.Qb = function () {
     var c = a.la,
       b = a.linkType,
       d = a.linkURL,
@@ -976,20 +973,20 @@ function AppMeasurement(r) {
     }
     return c;
   };
-  a.qb = function() {
+  a.qb = function () {
     if (a.useLinkTrackSessionStorage) {
       if (a.Da()) return h.sessionStorage.getItem(a.O);
     } else return a.cookieRead(a.O);
   };
-  a.Da = function() {
+  a.Da = function () {
     return h.sessionStorage ? !0 : !1;
   };
-  a.yb = function(c) {
+  a.yb = function (c) {
     a.useLinkTrackSessionStorage
       ? a.Da() && h.sessionStorage.setItem(a.O, c)
       : a.cookieWrite(a.O, c);
   };
-  a.Rb = function() {
+  a.Rb = function () {
     if (!a.ac) {
       var c = new Date(),
         b = p.location,
@@ -1045,17 +1042,17 @@ function AppMeasurement(r) {
     }
   };
   a.P = {};
-  a.loadModule = function(c, b) {
+  a.loadModule = function (c, b) {
     var d = a.P[c];
     if (!d) {
       d = h["AppMeasurement_Module_" + c]
         ? new h["AppMeasurement_Module_" + c](a)
         : {};
       a.P[c] = a[c] = d;
-      d.jb = function() {
+      d.jb = function () {
         return d.tb;
       };
-      d.zb = function(b) {
+      d.zb = function (b) {
         if ((d.tb = b))
           (a[c + "_onLoad"] = b), a.ea(c + "_onLoad", [a, d], 1) || b(a, d);
       };
@@ -1069,7 +1066,7 @@ function AppMeasurement(r) {
     }
     b && ((a[c + "_onLoad"] = b), a.ea(c + "_onLoad", [a, d], 1) || b(a, d));
   };
-  a.u = function(c) {
+  a.u = function (c) {
     var b, d;
     for (b in a.P)
       if (
@@ -1080,10 +1077,10 @@ function AppMeasurement(r) {
         return 1;
     return 0;
   };
-  a.Tb = function() {
+  a.Tb = function () {
     return a.ActivityMap && a.ActivityMap._c ? !0 : !1;
   };
-  a.Ub = function() {
+  a.Ub = function () {
     var c = Math.floor(1e13 * Math.random()),
       b = a.visitorSampling,
       d = a.visitorSamplingGroup,
@@ -1103,7 +1100,7 @@ function AppMeasurement(r) {
     }
     return 1;
   };
-  a.R = function(c, b) {
+  a.R = function (c, b) {
     var d, f, e, g, k, h, m;
     m = {};
     for (d = 0; 2 > d; d++)
@@ -1122,7 +1119,7 @@ function AppMeasurement(r) {
         }
     return m;
   };
-  a.gc = function(c) {
+  a.gc = function (c) {
     var b, d, f, e;
     for (b = 0; 2 > b; b++)
       for (d = 0 < b ? a.Fa : a.g, f = 0; f < d.length; f++)
@@ -1162,7 +1159,7 @@ function AppMeasurement(r) {
               "bodyClickFunction" !== e) ||
             (c["!" + e] = 1);
   };
-  a.Lb = function(a) {
+  a.Lb = function (a) {
     var b,
       d,
       f,
@@ -1193,8 +1190,8 @@ function AppMeasurement(r) {
           0 <= e.indexOf("google")
             ? (k = ",q,ie,start,search_key,word,kw,cd,")
             : 0 <= e.indexOf("yahoo.co")
-            ? (k = ",p,ei,")
-            : 0 <= e.indexOf("baidu.") && (k = ",wd,word,"),
+              ? (k = ",p,ei,")
+              : 0 <= e.indexOf("baidu.") && (k = ",wd,word,"),
           k && h)))
     ) {
       if ((a = h.split("&")) && 1 < a.length) {
@@ -1211,14 +1208,14 @@ function AppMeasurement(r) {
     }
     return a;
   };
-  a.cb = function(c) {
+  a.cb = function (c) {
     var b = a.d.visibilityState,
       d = ["webkitvisibilitychange", "visibilitychange"];
     b || (b = a.d.webkitVisibilityState);
     if (b && "prerender" == b) {
       if (c)
         for (b = 0; b < d.length; b++)
-          a.d.addEventListener(d[b], function() {
+          a.d.addEventListener(d[b], function () {
             var b = a.d.visibilityState;
             b || (b = a.d.webkitVisibilityState);
             "visible" == b && c();
@@ -1229,12 +1226,12 @@ function AppMeasurement(r) {
   };
   a.ba = !1;
   a.G = !1;
-  a.Bb = function() {
+  a.Bb = function () {
     a.G = !0;
     a.p();
   };
   a.H = !1;
-  a.Cb = function(c) {
+  a.Cb = function (c) {
     a.marketingCloudVisitorID = c.MCMID;
     a.visitorOptedOut = c.MCOPTOUT;
     a.analyticsVisitorID = c.MCAID;
@@ -1243,11 +1240,11 @@ function AppMeasurement(r) {
     a.H = !1;
     a.p();
   };
-  a.bb = function(c) {
+  a.bb = function (c) {
     a.maxDelay || (a.maxDelay = 250);
     return a.u("_d")
       ? (c &&
-          setTimeout(function() {
+          setTimeout(function () {
             c();
           }, a.maxDelay),
         !1)
@@ -1255,22 +1252,22 @@ function AppMeasurement(r) {
   };
   a.Z = !1;
   a.F = !1;
-  a.za = function() {
+  a.za = function () {
     a.F = !0;
     a.p();
   };
-  a.isReadyToTrack = function() {
+  a.isReadyToTrack = function () {
     var c = !0;
     if (!a.nb() || !a.lb()) return !1;
     a.pb() || (c = !1);
     a.sb() || (c = !1);
     return c;
   };
-  a.nb = function() {
+  a.nb = function () {
     a.ba || a.G || (a.cb(a.Bb) ? (a.G = !0) : (a.ba = !0));
     return a.ba && !a.G ? !1 : !0;
   };
-  a.lb = function() {
+  a.lb = function () {
     var c = a.va();
     if (c)
       if (a.ra || a.aa)
@@ -1280,37 +1277,37 @@ function AppMeasurement(r) {
       else return c.fetchPermissions(a.ub, !0), (a.aa = !0), !1;
     return !0;
   };
-  a.U = function(c) {
+  a.U = function (c) {
     var b = a.va();
     return b && !b.isApproved(b.Categories[c]) ? !1 : !0;
   };
-  a.va = function() {
+  a.va = function () {
     return h.adobe && h.adobe.optIn ? h.adobe.optIn : null;
   };
   a.X = !0;
-  a.pb = function() {
+  a.pb = function () {
     var c = a.S();
     if (!c || !c.getVisitorValues) return !0;
     a.X && ((a.X = !1), a.H || ((a.H = !0), c.getVisitorValues(a.Cb)));
     return !a.H;
   };
-  a.S = function() {
+  a.S = function () {
     var c = a.visitor;
     c && !c.isAllowed() && (c = null);
     return c;
   };
-  a.sb = function() {
+  a.sb = function () {
     a.Z || a.F || (a.bb(a.za) ? (a.F = !0) : (a.Z = !0));
     return a.Z && !a.F ? !1 : !0;
   };
   a.aa = !1;
-  a.ub = function() {
+  a.ub = function () {
     a.aa = !1;
     a.ra = !0;
   };
   a.j = q;
   a.q = 0;
-  a.callbackWhenReadyToTrack = function(c, b, d) {
+  a.callbackWhenReadyToTrack = function (c, b, d) {
     var f;
     f = {};
     f.Gb = c;
@@ -1320,15 +1317,15 @@ function AppMeasurement(r) {
     a.j.push(f);
     0 == a.q && (a.q = setInterval(a.p, 100));
   };
-  a.p = function() {
+  a.p = function () {
     var c;
     if (a.isReadyToTrack() && (a.Ab(), a.j != q))
       for (; 0 < a.j.length; ) (c = a.j.shift()), c.Fb.apply(c.Gb, c.Db);
   };
-  a.Ab = function() {
+  a.Ab = function () {
     a.q && (clearInterval(a.q), (a.q = 0));
   };
-  a.ta = function(c) {
+  a.ta = function (c) {
     var b,
       d = {};
     a.gc(d);
@@ -1336,7 +1333,7 @@ function AppMeasurement(r) {
     a.callbackWhenReadyToTrack(a, a.Ea, [d]);
     a.Ca();
   };
-  a.Nb = function() {
+  a.Nb = function () {
     var c = a.cookieRead("s_fid"),
       b = "",
       d = "",
@@ -1355,7 +1352,7 @@ function AppMeasurement(r) {
     a.cookieWrite("s_fid", c, 1) || (c = 0);
     return c;
   };
-  a.Ea = function(c) {
+  a.Ea = function (c) {
     var b = new Date(),
       d =
         "s" +
@@ -1379,7 +1376,7 @@ function AppMeasurement(r) {
             " " +
             b.getDay() +
             " " +
-            b.getTimezoneOffset()
+            b.getTimezoneOffset(),
         ),
       e = a.S(),
       g;
@@ -1418,7 +1415,7 @@ function AppMeasurement(r) {
             e.getSupplementalDataID &&
             (a.supplementalDataID = e.getSupplementalDataID(
               "AppMeasurement:" + a._in,
-              a.expectSupplementalData ? !1 : !0
+              a.expectSupplementalData ? !1 : !0,
             )),
           a.U("AAM") || (a.contextData["cm.ssf"] = 1),
           a.Rb(),
@@ -1431,7 +1428,7 @@ function AppMeasurement(r) {
     a.Ca();
     g && a.R(g, 1);
   };
-  a.t = a.track = function(c, b) {
+  a.t = a.track = function (c, b) {
     b && a.R(b);
     a.X = !0;
     a.isReadyToTrack()
@@ -1440,42 +1437,60 @@ function AppMeasurement(r) {
         : a.Ea(c)
       : a.ta(c);
   };
-  a.vb = function() {
+  a.vb = function () {
     a.writeSecureCookies && !a.ssl && a.$a();
   };
-  a.$a = function() {
+  a.$a = function () {
     a.contextData.excCodes = a.contextData.excCodes
       ? a.contextData.excCodes
       : [];
     a.contextData.excCodes.push(1);
   };
-  a.Ca = function() {
-    a.abort = a.supplementalDataID = a.timestamp = a.pageURLRest = a.linkObject = a.clickObject = a.linkURL = a.linkName = a.linkType = h.s_objectID = a.pe = a.pev1 = a.pev2 = a.pev3 = a.e = a.lightProfileID = a.useBeacon = a.referrer = 0;
+  a.Ca = function () {
+    a.abort =
+      a.supplementalDataID =
+      a.timestamp =
+      a.pageURLRest =
+      a.linkObject =
+      a.clickObject =
+      a.linkURL =
+      a.linkName =
+      a.linkType =
+      h.s_objectID =
+      a.pe =
+      a.pev1 =
+      a.pev2 =
+      a.pev3 =
+      a.e =
+      a.lightProfileID =
+      a.useBeacon =
+      a.referrer =
+        0;
     a.contextData && a.contextData.excCodes && (a.contextData.excCodes = 0);
   };
   a.Ba = [];
-  a.registerPreTrackCallback = function(c) {
+  a.registerPreTrackCallback = function (c) {
     for (var b = [], d = 1; d < arguments.length; d++) b.push(arguments[d]);
     "function" == typeof c
       ? a.Ba.push([c, b])
       : a.debugTracking &&
         a.log("Warning, Non function type passed to registerPreTrackCallback");
   };
-  a.gb = function(c) {
+  a.gb = function (c) {
     a.ua(a.Ba, c);
   };
   a.Aa = [];
-  a.registerPostTrackCallback = function(c) {
+  a.registerPostTrackCallback = function (c) {
     for (var b = [], d = 1; d < arguments.length; d++) b.push(arguments[d]);
     "function" == typeof c
       ? a.Aa.push([c, b])
       : a.debugTracking &&
         a.log("Warning, Non function type passed to registerPostTrackCallback");
   };
-  a.fb = function(c) {
+  a.fb = function (c) {
     a.ua(a.Aa, c);
   };
-  a.ua = function(c, b) {
+  a.ua = function (c, b) {
     if ("object" == typeof c)
       for (var d = 0; d < c.length; d++) {
         var f = c[d][0],
@@ -1489,20 +1504,20 @@ function AppMeasurement(r) {
           }
       }
   };
-  a.tl = a.trackLink = function(c, b, d, f, e) {
+  a.tl = a.trackLink = function (c, b, d, f, e) {
     a.linkObject = c;
     a.linkType = b;
     a.linkName = d;
     e && ((a.bodyClickTarget = c), (a.bodyClickFunction = e));
     return a.track(f);
   };
-  a.trackLight = function(c, b, d, f) {
+  a.trackLight = function (c, b, d, f) {
     a.lightProfileID = c;
     a.lightStoreForSeconds = b;
     a.lightIncrementBy = d;
     return a.track(f);
   };
-  a.clearVars = function() {
+  a.clearVars = function () {
     var c, b;
     for (c = 0; c < a.g.length; c++)
       if (
@@ -1525,7 +1540,7 @@ function AppMeasurement(r) {
         a[b] = void 0;
   };
   a.tagContainerMarker = "";
-  a.rb = function(c, b) {
+  a.rb = function (c, b) {
     var d =
       a.hb() +
       "/" +
@@ -1538,7 +1553,7 @@ function AppMeasurement(r) {
     a.eb(d);
     a.T();
   };
-  a.hb = function() {
+  a.hb = function () {
     var c = a.ib();
     return (
       "http" +
@@ -1556,13 +1571,13 @@ function AppMeasurement(r) {
       (a.tagContainerMarker ? "-" + a.tagContainerMarker : "")
     );
   };
-  a.ya = function() {
+  a.ya = function () {
     return (
       (a.AudienceManagement && a.AudienceManagement.isReady()) ||
       0 != a.usePostbacks
     );
   };
-  a.ib = function() {
+  a.ib = function () {
     var c = a.dc,
       b = a.trackingServer;
     b
@@ -1572,14 +1587,14 @@ function AppMeasurement(r) {
         (b = a.kb() + "." + c + ".2o7.net"));
     return b;
   };
-  a.kb = function() {
+  a.kb = function () {
     var c = a.visitorNamespace;
     c || ((c = a.account.split(",")[0]), (c = c.replace(/[^0-9a-z]/gi, "")));
     return c;
   };
   a.Ya = /{(%?)(.*?)(%?)}/;
   a.fc = RegExp(a.Ya.source, "g");
-  a.Kb = function(c) {
+  a.Kb = function (c) {
     if ("object" == typeof c.dests)
       for (var b = 0; b < c.dests.length; ++b) {
         var d = c.dests[b];
@@ -1595,7 +1610,7 @@ function AppMeasurement(r) {
           }
       }
   };
-  a.Ob = function() {
+  a.Ob = function () {
     var c = new Date(),
       b = new Date(6e4 * Math.abs(c.getTimezoneOffset()));
     return (
@@ -1616,11 +1631,11 @@ function AppMeasurement(r) {
       a.k(2, b.getUTCMinutes())
     );
   };
-  a.k = function(a, b) {
+  a.k = function (a, b) {
     return (Array(a + 1).join(0) + b).slice(-a);
   };
   a.pa = {};
-  a.doPostbacks = function(c) {
+  a.doPostbacks = function (c) {
     if ("object" == typeof c)
       if (
         (a.Kb(c),
@@ -1642,17 +1657,17 @@ function AppMeasurement(r) {
             (a.pa[d.id].src = d.c));
         }
   };
-  a.eb = function(c) {
+  a.eb = function (c) {
     a.i || a.Sb();
     a.i.push(c);
     a.ia = a.A();
     a.Xa();
   };
-  a.Sb = function() {
+  a.Sb = function () {
     a.i = a.Vb();
     a.i || (a.i = []);
   };
-  a.Vb = function() {
+  a.Vb = function () {
     var c, b;
     if (a.oa()) {
       try {
@@ -1661,19 +1676,19 @@ function AppMeasurement(r) {
       return c;
     }
   };
-  a.oa = function() {
+  a.oa = function () {
     var c = !0;
     (a.trackOffline && a.offlineFilename && h.localStorage && h.JSON) ||
       (c = !1);
     return c;
   };
-  a.Na = function() {
+  a.Na = function () {
     var c = 0;
     a.i && (c = a.i.length);
     a.l && c++;
     return c;
   };
-  a.T = function() {
+  a.T = function () {
     if (a.l && (a.v && a.v.complete && a.v.C && a.v.Q(), a.l)) return;
     a.Oa = q;
     if (a.na) a.ia > a.M && a.Va(a.i), a.qa(500);
@@ -1683,19 +1698,19 @@ function AppMeasurement(r) {
       else if ((c = a.La())) (a.l = 1), a.Wb(c), a.Zb(c);
     }
   };
-  a.qa = function(c) {
+  a.qa = function (c) {
     a.Oa || (c || (c = 0), (a.Oa = setTimeout(a.T, c)));
   };
-  a.Eb = function() {
+  a.Eb = function () {
     var c;
     if (!a.trackOffline || 0 >= a.offlineThrottleDelay) return 0;
     c = a.A() - a.Ta;
     return a.offlineThrottleDelay < c ? 0 : a.offlineThrottleDelay - c;
   };
-  a.La = function() {
+  a.La = function () {
     if (0 < a.i.length) return a.i.shift();
   };
-  a.Wb = function(c) {
+  a.Wb = function (c) {
     if (a.debugTracking) {
       var b = "AppMeasurement Debug: " + c;
       c = c.split("&");
@@ -1704,7 +1719,7 @@ function AppMeasurement(r) {
       a.log(b);
     }
   };
-  a.wa = function() {
+  a.wa = function () {
     return a.marketingCloudVisitorID || a.analyticsVisitorID;
   };
   a.W = !1;
@@ -1716,26 +1731,26 @@ function AppMeasurement(r) {
   }
   t && "y" == t.x
     ? ((a.W = !0),
-      (a.V = function(a) {
+      (a.V = function (a) {
         return JSON.parse(a);
       }))
     : h.$ && h.$.parseJSON
-    ? ((a.V = function(a) {
-        return h.$.parseJSON(a);
-      }),
-      (a.W = !0))
-    : (a.V = function() {
-        return null;
-      });
-  a.Zb = function(c) {
+      ? ((a.V = function (a) {
+          return h.$.parseJSON(a);
+        }),
+        (a.W = !0))
+      : (a.V = function () {
+          return null;
+        });
+  a.Zb = function (c) {
     var b, d, f;
     a.mb(c) &&
       ((d = 1),
       (b = {
-        send: function(c) {
+        send: function (c) {
           a.useBeacon = !1;
           navigator.sendBeacon(c) ? b.Q() : b.ga();
-        }
+        },
       }));
     !b &&
       a.wa() &&
@@ -1762,16 +1777,16 @@ function AppMeasurement(r) {
       (b.alt = ""),
       b.abort ||
         "undefined" === typeof h.InstallTrigger ||
-        (b.abort = function() {
+        (b.abort = function () {
           b.src = q;
         }));
     b.Ua = Date.now();
-    b.Ia = function() {
+    b.Ia = function () {
       try {
         b.C && (clearTimeout(b.C), (b.C = 0));
       } catch (a) {}
     };
-    b.onload = b.Q = function() {
+    b.onload = b.Q = function () {
       b.Ua && (a.ja = Date.now() - b.Ua);
       a.fb(c);
       b.Ia();
@@ -1786,15 +1801,18 @@ function AppMeasurement(r) {
         } catch (d) {}
       }
     };
-    b.onabort = b.onerror = b.ga = function() {
-      b.Ia();
-      (a.trackOffline || a.na) && a.l && a.i.unshift(a.Hb);
-      a.l = 0;
-      a.ia > a.M && a.Va(a.i);
-      a.ca();
-      a.qa(500);
-    };
-    b.onreadystatechange = function() {
+    b.onabort =
+      b.onerror =
+      b.ga =
+        function () {
+          b.Ia();
+          (a.trackOffline || a.na) && a.l && a.i.unshift(a.Hb);
+          a.l = 0;
+          a.ia > a.M && a.Va(a.i);
+          a.ca();
+          a.qa(500);
+        };
+    b.onreadystatechange = function () {
       4 == b.readyState && (200 == b.status ? b.Q() : b.ga());
     };
     a.Ta = a.A();
@@ -1815,7 +1833,7 @@ function AppMeasurement(r) {
       f.firstChild ? f.insertBefore(b, f.firstChild) : f.appendChild(b);
       a.Ra = a.v;
     }
-    b.C = setTimeout(function() {
+    b.C = setTimeout(function () {
       b.C &&
         (b.complete ? b.Q() : (a.trackOffline && b.abort && b.abort(), b.ga()));
     }, 5e3);
@@ -1825,31 +1843,31 @@ function AppMeasurement(r) {
       a.forcedLinkTrackingTimeout || (a.forcedLinkTrackingTimeout = 250),
         (a.da = setTimeout(a.ca, a.forcedLinkTrackingTimeout));
   };
-  a.mb = function(c) {
+  a.mb = function (c) {
     var b = !1;
     navigator.sendBeacon && (a.ob(c) ? (b = !0) : a.useBeacon && (b = !0));
     a.xb(c) && (b = !1);
     return b;
   };
-  a.ob = function(a) {
+  a.ob = function (a) {
     return a && 0 < a.indexOf("pe=lnk_e") ? !0 : !1;
   };
-  a.xb = function(a) {
+  a.xb = function (a) {
     return 64e3 <= a.length;
   };
-  a.ab = function() {
+  a.ab = function () {
     return "undefined" !== typeof XMLHttpRequest &&
       "withCredentials" in new XMLHttpRequest()
       ? !0
       : !1;
   };
-  a.Ib = function() {
+  a.Ib = function () {
     if (a.oa() && !(a.Sa > a.M))
       try {
         h.localStorage.removeItem(a.ma()), (a.Sa = a.A());
       } catch (c) {}
   };
-  a.Va = function(c) {
+  a.Va = function (c) {
     if (a.oa()) {
       a.Xa();
       try {
@@ -1857,25 +1875,25 @@ function AppMeasurement(r) {
       } catch (b) {}
     }
   };
-  a.Xa = function() {
+  a.Xa = function () {
     if (a.trackOffline) {
       if (!a.offlineLimit || 0 >= a.offlineLimit) a.offlineLimit = 10;
       for (; a.i.length > a.offlineLimit; ) a.La();
     }
   };
-  a.forceOffline = function() {
+  a.forceOffline = function () {
     a.na = !0;
   };
-  a.forceOnline = function() {
+  a.forceOnline = function () {
     a.na = !1;
   };
-  a.ma = function() {
+  a.ma = function () {
     return a.offlineFilename + "-" + a.visitorNamespace + a.account;
   };
-  a.A = function() {
+  a.A = function () {
     return new Date().getTime();
   };
-  a.Pa = function(a) {
+  a.Pa = function (a) {
     a = a.toLowerCase();
     return 0 != a.indexOf("#") &&
       0 != a.indexOf("about:") &&
@@ -1884,7 +1902,7 @@ function AppMeasurement(r) {
       ? !0
       : !1;
   };
-  a.setTagContainer = function(c) {
+  a.setTagContainer = function (c) {
     var b, d, f;
     a.$b = c;
     for (b = 0; b < a._il.length; b++)
@@ -1918,7 +1936,7 @@ function AppMeasurement(r) {
     urlDecode: a.unescape,
     cookieRead: a.cookieRead,
     cookieWrite: a.cookieWrite,
-    getQueryParam: function(c, b, d, f) {
+    getQueryParam: function (c, b, d, f) {
       var e,
         g = "";
       b || (b = a.pageURL ? a.pageURL : h.location);
@@ -1943,34 +1961,38 @@ function AppMeasurement(r) {
         return g;
       }
     },
-    getIeVersion: function() {
+    getIeVersion: function () {
       return document.documentMode ? document.documentMode : a.xa() ? 7 : null;
-    }
+    },
   };
-  a.D = "supplementalDataID timestamp dynamicVariablePrefix visitorID marketingCloudVisitorID analyticsVisitorID audienceManagerLocationHint authState fid vmk visitorMigrationKey visitorMigrationServer visitorMigrationServerSecure charSet visitorNamespace cookieDomainPeriods fpCookieDomainPeriods cookieLifetime pageName pageURL customerPerspective referrer contextData contextData.cm.ssf contextData.opt.dmp contextData.opt.sell currencyCode lightProfileID lightStoreForSeconds lightIncrementBy retrieveLightProfiles deleteLightProfiles retrieveLightData".split(
-    " "
-  );
+  a.D =
+    "supplementalDataID timestamp dynamicVariablePrefix visitorID marketingCloudVisitorID analyticsVisitorID audienceManagerLocationHint authState fid vmk visitorMigrationKey visitorMigrationServer visitorMigrationServerSecure charSet visitorNamespace cookieDomainPeriods fpCookieDomainPeriods cookieLifetime pageName pageURL customerPerspective referrer contextData contextData.cm.ssf contextData.opt.dmp contextData.opt.sell currencyCode lightProfileID lightStoreForSeconds lightIncrementBy retrieveLightProfiles deleteLightProfiles retrieveLightData".split(
+      " ",
+    );
   a.g = a.D.concat(
     "purchaseID variableProvider channel server pageType transactionID campaign state zip events events2 products audienceManagerBlob tnt".split(
-      " "
-    )
+      " ",
+    ),
   );
-  a.ka = "timestamp charSet visitorNamespace cookieDomainPeriods cookieLifetime contextData lightProfileID lightStoreForSeconds lightIncrementBy".split(
-    " "
-  );
+  a.ka =
+    "timestamp charSet visitorNamespace cookieDomainPeriods cookieLifetime contextData lightProfileID lightStoreForSeconds lightIncrementBy".split(
+      " ",
+    );
   a.N = a.ka.slice(0);
-  a.Fa = "account allAccounts debugTracking visitor visitorOptedOut trackOffline offlineLimit offlineThrottleDelay offlineFilename usePlugins doPlugins configURL visitorSampling visitorSamplingGroup linkObject clickObject linkURL linkName linkType trackDownloadLinks trackExternalLinks trackClickMap trackInlineStats linkLeaveQueryString linkTrackVars linkTrackEvents linkDownloadFileTypes linkExternalFilters linkInternalFilters useForcedLinkTracking forcedLinkTrackingTimeout writeSecureCookies useLinkTrackSessionStorage trackingServer trackingServerSecure ssl abort mobile dc lightTrackVars maxDelay expectSupplementalData useBeacon usePostbacks registerPreTrackCallback registerPostTrackCallback bodyClickTarget bodyClickFunction AudienceManagement".split(
-    " "
-  );
+  a.Fa =
+    "account allAccounts debugTracking visitor visitorOptedOut trackOffline offlineLimit offlineThrottleDelay offlineFilename usePlugins doPlugins configURL visitorSampling visitorSamplingGroup linkObject clickObject linkURL linkName linkType trackDownloadLinks trackExternalLinks trackClickMap trackInlineStats linkLeaveQueryString linkTrackVars linkTrackEvents linkDownloadFileTypes linkExternalFilters linkInternalFilters useForcedLinkTracking forcedLinkTrackingTimeout writeSecureCookies useLinkTrackSessionStorage trackingServer trackingServerSecure ssl abort mobile dc lightTrackVars maxDelay expectSupplementalData useBeacon usePostbacks registerPreTrackCallback registerPostTrackCallback bodyClickTarget bodyClickFunction AudienceManagement".split(
+      " ",
+    );
   for (m = 0; 250 >= m; m++)
     76 > m && (a.g.push("prop" + m), a.N.push("prop" + m)),
       a.g.push("eVar" + m),
       a.N.push("eVar" + m),
       6 > m && a.g.push("hier" + m),
       4 > m && a.g.push("list" + m);
-  m = "pe pev1 pev2 pev3 latitude longitude resolution colorDepth javascriptVersion javaEnabled cookiesEnabled browserWidth browserHeight connectionType homepage pageURLRest marketingCloudOrgID ms_a".split(
-    " "
-  );
+  m =
+    "pe pev1 pev2 pev3 latitude longitude resolution colorDepth javascriptVersion javaEnabled cookiesEnabled browserWidth browserHeight connectionType homepage pageURLRest marketingCloudOrgID ms_a".split(
+      " ",
+    );
   a.g = a.g.concat(m);
   a.D = a.D.concat(m);
   a.ssl = 0 <= h.location.protocol.toLowerCase().indexOf("https");
@@ -1988,7 +2010,7 @@ function AppMeasurement(r) {
     "exe,zip,wav,mp3,mov,mpg,avi,wmv,pdf,doc,docx,xls,xlsx,ppt,pptx";
   a.w = h;
   a.d = h.document;
-  a.ca = function() {
+  a.ca = function () {
     a.da && (h.clearTimeout(a.da), (a.da = q));
     a.bodyClickTarget && a.I && a.bodyClickTarget.dispatchEvent(a.I);
     a.bodyClickFunction &&
@@ -1999,10 +2021,10 @@ function AppMeasurement(r) {
           (a.d.location = a.bodyClickTarget.href));
     a.bodyClickTarget = a.I = a.bodyClickFunction = 0;
   };
-  a.Wa = function() {
+  a.Wa = function () {
     a.b = a.d.body;
     a.b
-      ? ((a.r = function(c) {
+      ? ((a.r = function (c) {
           var b, d, f, e, g;
           if (
             !(
@@ -2034,7 +2056,7 @@ function AppMeasurement(r) {
               else {
                 var k = (a.L = a.clickObject);
                 a.ha && (clearTimeout(a.ha), (a.ha = 0));
-                a.ha = setTimeout(function() {
+                a.ha = setTimeout(function () {
                   a.L == k && (a.L = 0);
                 }, 1e4);
                 f = a.Na();
@@ -2084,7 +2106,7 @@ function AppMeasurement(r) {
                           c.shiftKey,
                           c.metaKey,
                           c.button,
-                          c.relatedTarget
+                          c.relatedTarget,
                         );
                       } catch (m) {
                         b = 0;
@@ -2127,7 +2149,7 @@ function AppMeasurement(r) {
     (r
       ? a.setAccount(r)
       : a.log(
-          "Error, missing Report Suite ID in AppMeasurement initialization"
+          "Error, missing Report Suite ID in AppMeasurement initialization",
         ),
     a.Wa(),
     a.loadModule("ActivityMap"));

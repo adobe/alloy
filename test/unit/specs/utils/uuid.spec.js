@@ -11,4 +11,4 @@ governing permissions and limitations under the License.
 */
 
 // eslint-disable-next-line no-unused-vars
-import uuid from "../../../../src/utils/uuid";
+import uuid from "../../../../src/utils/uuid.js";

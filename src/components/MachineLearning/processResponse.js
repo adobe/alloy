@@ -11,6 +11,6 @@ governing permissions and limitations under the License.
 
 export default ({ response }) => {
   return {
-    inferences: response.getPayloadsByType("rtml:inferences")
+    inferences: response.getPayloadsByType("rtml:inferences"),
   };
 };

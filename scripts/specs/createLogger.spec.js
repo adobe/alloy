@@ -1,5 +1,16 @@
-const chalk = require("chalk");
-const createLogger = require("../helpers/createLogger");
+/*
+Copyright 2024 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+import chalk from "chalk";
+import createLogger from "../helpers/createLogger.js";
 
 describe("createLogger", () => {
   let myConsole;
@@ -11,7 +22,7 @@ describe("createLogger", () => {
       "log",
       "info",
       "warn",
-      "error"
+      "error",
     ]);
     logger = createLogger(myConsole, () => now);
   });
@@ -30,13 +41,13 @@ describe("createLogger", () => {
   it("logs warnings yellow", () => {
     logger.warn("mywarn");
     expect(myConsole.warn).toHaveBeenCalledOnceWith(
-      `${prefix} ${chalk.yellow("mywarn")}`
+      `${prefix} ${chalk.yellow("mywarn")}`,
     );
   });
   it("logs errors red", () => {
     logger.error("myerror");
     expect(myConsole.error).toHaveBeenCalledOnceWith(
-      `${prefix} ${chalk.red("myerror")}`
+      `${prefix} ${chalk.red("myerror")}`,
     );
   });
   it("logs additional parameters", () => {

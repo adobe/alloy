@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { assign } from "../utils";
+import { assign } from "../utils/index.js";
 
 const CONFIG_DOC_URI = "https://adobe.ly/3sHh553";
 
@@ -22,8 +22,8 @@ const transformOptions = ({ combinedConfigValidator, options, logger }) => {
       `Resolve these configuration problems:\n\t - ${e.message
         .split("\n")
         .join(
-          "\n\t - "
-        )}\nFor configuration documentation see: ${CONFIG_DOC_URI}`
+          "\n\t - ",
+        )}\nFor configuration documentation see: ${CONFIG_DOC_URI}`,
     );
   }
 };
@@ -31,7 +31,7 @@ const transformOptions = ({ combinedConfigValidator, options, logger }) => {
 const buildAllOnInstanceConfiguredExtraParams = (
   config,
   logger,
-  componentCreators
+  componentCreators,
 ) => {
   return componentCreators.reduce(
     (memo, { buildOnInstanceConfiguredExtraParams }) => {
@@ -40,11 +40,11 @@ const buildAllOnInstanceConfiguredExtraParams = (
       }
       return memo;
     },
-    {}
+    {},
   );
 };
 
-const wrapLoggerInQueue = logger => {
+const wrapLoggerInQueue = (logger) => {
   const queue = [];
   const queuedLogger = {
     get enabled() {
@@ -52,11 +52,11 @@ const wrapLoggerInQueue = logger => {
     },
     flush() {
       queue.forEach(({ method, args }) => logger[method](...args));
-    }
+    },
   };
   Object.keys(logger)
-    .filter(key => typeof logger[key] === "function")
-    .forEach(method => {
+    .filter((key) => typeof logger[key] === "function")
+    .forEach((method) => {
       queuedLogger[method] = (...args) => {
         queue.push({ method, args });
       };
@@ -70,20 +70,24 @@ export default ({
   coreConfigValidators,
   createConfig,
   logger,
-  setDebugEnabled
+  setDebugEnabled,
 }) => {
   // We wrap the logger in a queue in case debugEnabled is set in the config
   // but we need to log something before the config is created.
   const queuedLogger = wrapLoggerInQueue(logger);
   const combinedConfigValidator = componentCreators
     .map(({ configValidators }) => configValidators)
-    .filter(configValidators => configValidators)
+    .filter((configValidators) => configValidators)
     .reduce(
       (validator, configValidators) => validator.concat(configValidators),
-      coreConfigValidators
+      coreConfigValidators,
     );
   const config = createConfig(
-    transformOptions({ combinedConfigValidator, options, logger: queuedLogger })
+    transformOptions({
+      combinedConfigValidator,
+      options,
+      logger: queuedLogger,
+    }),
   );
   setDebugEnabled(config.debugEnabled, { fromConfig: true });
   queuedLogger.flush();
@@ -91,7 +95,7 @@ export default ({
   const extraParams = buildAllOnInstanceConfiguredExtraParams(
     config,
     logger,
-    componentCreators
+    componentCreators,
   );
   logger.logOnInstanceConfigured({ ...extraParams, config });
   return config;

@@ -9,14 +9,14 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition";
+import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition.js";
 
 describe("injectCreateProposition", () => {
-  const preprocess = data => `preprocessed ${data}`;
-  const isPageWideSurface = scope => scope === "__surface__";
+  const preprocess = (data) => `preprocessed ${data}`;
+  const isPageWideSurface = (scope) => scope === "__surface__";
   const createProposition = injectCreateProposition({
     preprocess,
-    isPageWideSurface
+    isPageWideSurface,
   });
 
   it("creates a proposition from nothing", () => {
@@ -28,7 +28,7 @@ describe("injectCreateProposition", () => {
     expect(proposition.getNotification()).toEqual({
       id: undefined,
       scope: undefined,
-      scopeDetails: undefined
+      scopeDetails: undefined,
     });
     expect(proposition.toJSON()).toEqual({});
   });
@@ -42,9 +42,9 @@ describe("injectCreateProposition", () => {
         {
           schema: "schema",
           data: "data",
-          characteristics: { trackingLabel: "trackingLabel" }
-        }
-      ]
+          characteristics: { trackingLabel: "trackingLabel" },
+        },
+      ],
     });
 
     expect(proposition.getScope()).toEqual("scope");
@@ -57,25 +57,25 @@ describe("injectCreateProposition", () => {
     expect(item.getOriginalItem()).toEqual({
       schema: "schema",
       data: "data",
-      characteristics: { trackingLabel: "trackingLabel" }
+      characteristics: { trackingLabel: "trackingLabel" },
     });
     expect(proposition.getNotification()).toEqual({
       id: "id",
       scope: "scope",
-      scopeDetails: { characteristics: { scopeType: "view" } }
+      scopeDetails: { characteristics: { scopeType: "view" } },
     });
   });
 
   it("creates a page wide surface proposition", () => {
     const proposition = createProposition({
-      scope: "__surface__"
+      scope: "__surface__",
     });
     expect(proposition.getScopeType()).toEqual("page");
   });
 
   it("creates a page wide scope proposition", () => {
     const proposition = createProposition({
-      scope: "__view__"
+      scope: "__view__",
     });
     expect(proposition.getScopeType()).toEqual("page");
   });

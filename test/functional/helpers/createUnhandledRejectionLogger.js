@@ -12,10 +12,10 @@ governing permissions and limitations under the License.
 import { t } from "testcafe";
 
 const containsMessageMatchingRegex = (messages, messageRegex) => {
-  return messages.find(message => messageRegex.test(message)) !== undefined;
+  return messages.find((message) => messageRegex.test(message)) !== undefined;
 };
 
-const formatFoundMessages = messages => {
+const formatFoundMessages = (messages) => {
   if (!messages.length) {
     return "No messages found.";
   }
@@ -53,31 +53,31 @@ export default async () => {
     });
   };
 
-  const expectMessageMatching = async messageRegex => {
+  const expectMessageMatching = async (messageRegex) => {
     const messages = await getMessagesSinceReset();
     await t
       .expect(containsMessageMatchingRegex(messages, messageRegex))
       .ok(
         `No unhandled rejection message was found matching ${messageRegex}. ${formatFoundMessages(
-          messages
-        )}`
+          messages,
+        )}`,
       );
   };
 
-  const expectNoMessageMatching = async messageRegex => {
+  const expectNoMessageMatching = async (messageRegex) => {
     const messages = await getMessagesSinceReset();
     await t
       .expect(containsMessageMatchingRegex(messages, messageRegex))
       .notOk(
         `An unhandled rejection message was found matching ${messageRegex} when none was expected. ${formatFoundMessages(
-          messages
-        )}`
+          messages,
+        )}`,
       );
   };
 
   return {
     reset,
     expectMessageMatching,
-    expectNoMessageMatching
+    expectNoMessageMatching,
   };
 };

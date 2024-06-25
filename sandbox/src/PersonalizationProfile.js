@@ -7,10 +7,10 @@ export default function Personalization() {
     data: {
       __adobe: {
         target: {
-          "profile.favoriteColor": "Black"
-        }
-      }
-    }
+          "profile.favoriteColor": "Black",
+        },
+      },
+    },
   });
 
   return (

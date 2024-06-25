@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNumber from "./isNumber";
+import isNumber from "./isNumber.js";
 
 /**
  * Returns whether the value is an integer.
  * @param {*} value
  * @returns {boolean}
  */
-export default value => {
+export default (value) => {
   const parsed = parseInt(value, 10);
 
   return isNumber(parsed) && value === parsed;

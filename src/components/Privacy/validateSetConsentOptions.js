@@ -9,15 +9,16 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { objectOf, anything, arrayOf } from "../../utils/validation";
-import { validateIdentityMap, validateConfigOverride } from "../../utils";
+import { objectOf, anything, arrayOf } from "../../utils/validation/index.js";
+import {
+  validateIdentityMap,
+  validateConfigOverride,
+} from "../../utils/index.js";
 
 export default objectOf({
-  consent: arrayOf(anything())
-    .required()
-    .nonEmpty(),
+  consent: arrayOf(anything()).required().nonEmpty(),
   identityMap: validateIdentityMap,
-  edgeConfigOverrides: validateConfigOverride
+  edgeConfigOverrides: validateConfigOverride,
 })
   .noUnknownFields()
   .required();

@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import inAppMessageConsequenceAdapter from "../../../../../../src/components/DecisioningEngine/consequenceAdapters/inAppMessageConsequenceAdapter";
-import { TEXT_HTML } from "../../../../../../src/constants/contentType";
+import inAppMessageConsequenceAdapter from "../../../../../../src/components/DecisioningEngine/consequenceAdapters/inAppMessageConsequenceAdapter.js";
+import { TEXT_HTML } from "../../../../../../src/constants/contentType.js";
 
 describe("DecisioningEngine:inAppMessageConsequenceAdapter", () => {
   it("handles cjmiam", () => {
@@ -31,11 +31,11 @@ describe("DecisioningEngine:inAppMessageConsequenceAdapter", () => {
             width: 80,
             displayAnimation: "top",
             backdropColor: "#000000",
-            height: 60
+            height: 60,
           },
-          html: "<!doctype html></html>"
-        }
-      )
+          html: "<!doctype html></html>",
+        },
+      ),
     ).toEqual({
       schema: "https://ns.adobe.com/personalization/message/in-app",
       data: {
@@ -51,13 +51,13 @@ describe("DecisioningEngine:inAppMessageConsequenceAdapter", () => {
           width: 80,
           displayAnimation: "top",
           backdropColor: "#000000",
-          height: 60
+          height: 60,
         },
         webParameters: jasmine.any(Object),
         content: "<!doctype html></html>",
-        contentType: TEXT_HTML
+        contentType: TEXT_HTML,
       },
-      id: "72042c7c-4e34-44f6-af95-1072ae117424"
+      id: "72042c7c-4e34-44f6-af95-1072ae117424",
     });
   });
 });

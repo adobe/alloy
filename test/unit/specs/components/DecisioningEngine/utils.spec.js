@@ -14,8 +14,8 @@ import {
   createRestoreStorage,
   createSaveStorage,
   getActivityId,
-  getExpirationDate
-} from "../../../../../src/components/DecisioningEngine/utils";
+  getExpirationDate,
+} from "../../../../../src/components/DecisioningEngine/utils.js";
 
 describe("DecisioningEngine:utils", () => {
   let storage;
@@ -28,14 +28,14 @@ describe("DecisioningEngine:utils", () => {
 
   it("restores from storage", () => {
     storage.getItem.and.returnValue(
-      '{ "something": true, "color": "orange", "person": { "height": 5.83 } }'
+      '{ "something": true, "color": "orange", "person": { "height": 5.83 } }',
     );
     const restore = createRestoreStorage(storage, "zoink");
 
     expect(restore({ good: true })).toEqual({
       something: true,
       color: "orange",
-      person: { height: 5.83 }
+      person: { height: 5.83 },
     });
 
     expect(storage.getItem).toHaveBeenCalledWith("zoink");
@@ -50,22 +50,22 @@ describe("DecisioningEngine:utils", () => {
     expect(storage.getItem).toHaveBeenCalledWith("zoink");
   });
 
-  it("saves to storage", done => {
+  it("saves to storage", (done) => {
     storage.getItem.and.returnValue(
-      '{ "something": true, "color": "orange", "person": { "height": 5.83 } }'
+      '{ "something": true, "color": "orange", "person": { "height": 5.83 } }',
     );
     const save = createSaveStorage(storage, "zoink");
 
     save({
       something: true,
       color: "orange",
-      person: { height: 5.83 }
+      person: { height: 5.83 },
     });
 
     setTimeout(() => {
       expect(storage.setItem).toHaveBeenCalledWith(
         "zoink",
-        '{"something":true,"color":"orange","person":{"height":5.83}}'
+        '{"something":true,"color":"orange","person":{"height":5.83}}',
       );
 
       done();
@@ -89,19 +89,18 @@ describe("DecisioningEngine:utils", () => {
       scopeDetails: {
         decisionProvider: "AJO",
         characteristics: {
-          eventToken: "abc"
+          eventToken: "abc",
         },
         strategies: [
           {
             strategyID: "3VQe3oIqiYq2RAsYzmDTSf",
-            treatmentID: "yu7rkogezumca7i0i44v"
-          }
+            treatmentID: "yu7rkogezumca7i0i44v",
+          },
         ],
         activity: {
-          id:
-            "39ae8d4b-b55e-43dc-a143-77f50195b487#b47fde8b-57c1-4bbe-ae22-64d5b782d183"
+          id: "39ae8d4b-b55e-43dc-a143-77f50195b487#b47fde8b-57c1-4bbe-ae22-64d5b782d183",
         },
-        correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503"
+        correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503",
       },
       items: [
         {
@@ -121,27 +120,27 @@ describe("DecisioningEngine:utils", () => {
                               definition: {
                                 key: "color",
                                 matcher: "eq",
-                                values: ["orange", "blue"]
+                                values: ["orange", "blue"],
                               },
-                              type: "matcher"
+                              type: "matcher",
                             },
                             {
                               definition: {
                                 key: "action",
                                 matcher: "eq",
-                                values: ["lipstick"]
+                                values: ["lipstick"],
                               },
-                              type: "matcher"
-                            }
+                              type: "matcher",
+                            },
                           ],
-                          logic: "and"
+                          logic: "and",
                         },
-                        type: "group"
-                      }
+                        type: "group",
+                      },
                     ],
-                    logic: "and"
+                    logic: "and",
                   },
-                  type: "group"
+                  type: "group",
                 },
                 consequences: [
                   {
@@ -153,24 +152,24 @@ describe("DecisioningEngine:utils", () => {
                           "HTML > BODY > DIV.offer:eq(0) > IMG:nth-of-type(1)",
                         type: "setAttribute",
                         content: {
-                          src: "img/demo-marketing-offer1-exp-A.png"
+                          src: "img/demo-marketing-offer1-exp-A.png",
                         },
                         prehidingSelector:
-                          "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)"
+                          "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
                       },
-                      id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
+                      id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
                     },
-                    id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
-                  }
-                ]
-              }
-            ]
-          }
-        }
-      ]
+                    id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      ],
     };
     expect(getActivityId(proposition)).toEqual(
-      "39ae8d4b-b55e-43dc-a143-77f50195b487#b47fde8b-57c1-4bbe-ae22-64d5b782d183"
+      "39ae8d4b-b55e-43dc-a143-77f50195b487#b47fde8b-57c1-4bbe-ae22-64d5b782d183",
     );
   });
 
@@ -181,16 +180,16 @@ describe("DecisioningEngine:utils", () => {
       scopeDetails: {
         decisionProvider: "AJO",
         characteristics: {
-          eventToken: "abc"
+          eventToken: "abc",
         },
         strategies: [
           {
             strategyID: "3VQe3oIqiYq2RAsYzmDTSf",
-            treatmentID: "yu7rkogezumca7i0i44v"
-          }
+            treatmentID: "yu7rkogezumca7i0i44v",
+          },
         ],
-        correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503"
-      }
+        correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503",
+      },
     };
     expect(getActivityId(proposition)).toEqual(undefined);
   });

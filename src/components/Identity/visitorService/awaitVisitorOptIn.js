@@ -10,19 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isObject } from "../../../utils";
+import { isObject } from "../../../utils/index.js";
 
 export default ({ logger }) => {
   return new Promise((resolve, reject) => {
     if (isObject(window.adobe) && isObject(window.adobe.optIn)) {
       const optInOld = window.adobe.optIn;
       logger.info(
-        "Delaying request while waiting for legacy opt-in to let Visitor retrieve ECID from server."
+        "Delaying request while waiting for legacy opt-in to let Visitor retrieve ECID from server.",
       );
       optInOld.fetchPermissions(() => {
         if (optInOld.isApproved([optInOld.Categories.ECID])) {
           logger.info(
-            "Received legacy opt-in approval to let Visitor retrieve ECID from server."
+            "Received legacy opt-in approval to let Visitor retrieve ECID from server.",
           );
           resolve();
         } else {

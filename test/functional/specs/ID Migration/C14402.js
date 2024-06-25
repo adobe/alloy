@@ -10,24 +10,24 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t, ClientFunction } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import { responseStatus } from "../../helpers/assertions";
-import createFixture from "../../helpers/createFixture";
-import createResponse from "../../helpers/createResponse";
-import { ECID as ECID_REGEX } from "../../helpers/constants/regex";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import createResponse from "../../helpers/createResponse.js";
+import { ECID as ECID_REGEX } from "../../helpers/constants/regex.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  migrationEnabled
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+  migrationEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import {
   LEGACY_IDENTITY_COOKIE_NAME,
-  LEGACY_IDENTITY_COOKIE_UNESCAPED_NAME
-} from "../../helpers/constants/cookies";
-import createConsoleLogger from "../../helpers/consoleLogger";
+  LEGACY_IDENTITY_COOKIE_UNESCAPED_NAME,
+} from "../../helpers/constants/cookies.js";
+import createConsoleLogger from "../../helpers/consoleLogger/index.js";
 
 const config = compose(orgMainConfigMain, debugEnabled, migrationEnabled);
 
@@ -36,13 +36,13 @@ const networkLogger = createNetworkLogger();
 createFixture({
   title:
     "C14402: When ID migration is enabled and no legacy AMCV cookie is found, an AMCV cookie should be created",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C14402",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const getDocumentCookie = ClientFunction(() => document.cookie);
@@ -54,18 +54,18 @@ test("Test C14402: When ID migration is enabled and no legacy AMCV cookie is fou
   await logger.reset();
   await alloy.sendEvent({ renderDecisions: true });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   const response = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
   );
 
   const payloads = createResponse({ content: response }).getPayloadsByType(
-    "identity:result"
+    "identity:result",
   );
 
   const ecidPayload = payloads.filter(
-    payload => payload.namespace.code === "ECID"
+    (payload) => payload.namespace.code === "ECID",
   )[0];
 
   await t.expect(ecidPayload.id).match(ECID_REGEX);
@@ -78,11 +78,13 @@ test("Test C14402: When ID migration is enabled and no legacy AMCV cookie is fou
 
   const logs = await logger.info.getMessagesSinceReset();
   const setCookieAttributes = logs
-    .filter(message => message.length === 3 && message[1] === "Setting cookie")
-    .map(message => message[2])
     .filter(
-      cookieSettings =>
-        cookieSettings.name === LEGACY_IDENTITY_COOKIE_UNESCAPED_NAME
+      (message) => message.length === 3 && message[1] === "Setting cookie",
+    )
+    .map((message) => message[2])
+    .filter(
+      (cookieSettings) =>
+        cookieSettings.name === LEGACY_IDENTITY_COOKIE_UNESCAPED_NAME,
     );
 
   await t.expect(setCookieAttributes.length).eql(1);

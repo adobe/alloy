@@ -18,7 +18,7 @@ import { ClientFunction } from "testcafe";
  * occur as a user navigates away from the page.
  */
 export default ClientFunction(() => {
-  document.addEventListener("click", event => {
+  document.addEventListener("click", (event) => {
     event.preventDefault();
   });
 });

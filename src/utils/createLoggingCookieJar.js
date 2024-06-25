@@ -16,6 +16,6 @@ export default ({ logger, cookieJar }) => {
     set(key, value, options) {
       logger.info("Setting cookie", { name: key, value, ...options });
       cookieJar.set(key, value, options);
-    }
+    },
   };
 };

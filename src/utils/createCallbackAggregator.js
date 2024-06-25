@@ -25,7 +25,7 @@ export default () => {
       // Promise.all, it's currently useful everywhere this is used and
       // reduces repetitive code. We can factor it out later if we want
       // to make this utility more "pure".
-      return Promise.all(callbacks.map(callback => callback(...args)));
-    }
+      return Promise.all(callbacks.map((callback) => callback(...args)));
+    },
   };
 };

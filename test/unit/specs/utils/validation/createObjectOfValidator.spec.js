@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { objectOf, string } from "../../../../../src/utils/validation";
-import describeValidation from "../../../helpers/describeValidation";
+import { objectOf, string } from "../../../../../src/utils/validation/index.js";
+import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::objectOf", () => {
   describeValidation(
@@ -19,7 +19,7 @@ describe("validation::objectOf", () => {
     objectOf({
       a: string().required(),
       b: string().default("b default"),
-      c: string()
+      c: string(),
     }),
     [
       { value: {}, error: true },
@@ -28,38 +28,38 @@ describe("validation::objectOf", () => {
       { value: undefined },
       { value: null },
       { value: { a: 123 }, error: true },
-      { value: 123, error: true }
-    ]
+      { value: 123, error: true },
+    ],
   );
 
   describeValidation(
     "nested object",
     objectOf({
       a: objectOf({
-        aa: string().required()
-      }).required()
+        aa: string().required(),
+      }).required(),
     }),
     [
       { value: {}, error: true },
       { value: { a: {} }, error: true },
-      { value: { a: { aa: "11" } } }
-    ]
+      { value: { a: { aa: "11" } } },
+    ],
   );
 
   describeValidation(
     "concat",
     objectOf({
-      a: string().required()
+      a: string().required(),
     })
       .concat(
         objectOf({
-          b: string().default("b default")
-        })
+          b: string().default("b default"),
+        }),
       )
       .concat(
         objectOf({
-          c: string()
-        })
+          c: string(),
+        }),
       ),
     [
       { value: {}, error: true },
@@ -68,7 +68,7 @@ describe("validation::objectOf", () => {
       { value: undefined },
       { value: null },
       { value: { a: 123 }, error: true },
-      { value: 123, error: true }
-    ]
+      { value: 123, error: true },
+    ],
   );
 });

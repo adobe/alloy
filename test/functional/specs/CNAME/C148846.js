@@ -11,36 +11,36 @@ governing permissions and limitations under the License.
 */
 
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   edgeDomainFirstParty,
-  orgMainConfigMain
-} from "../../helpers/constants/configParts";
-import { FIRST_PARTY_DOMAIN } from "../../helpers/constants/domain";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../helpers/createResponse";
-import areThirdPartyCookiesSupported from "../../helpers/areThirdPartyCookiesSupported";
-import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+  orgMainConfigMain,
+} from "../../helpers/constants/configParts/index.js";
+import { FIRST_PARTY_DOMAIN } from "../../helpers/constants/domain.js";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
+import createResponse from "../../helpers/createResponse.js";
+import areThirdPartyCookiesSupported from "../../helpers/areThirdPartyCookiesSupported.js";
+import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
-const demdexHostRegex = /\.demdex\.net/;
+const demdexUrlRegex = /\.demdex\.net/;
 
-const getHostFor = requestLogger => requestLogger.request.headers.host;
+const getUrlFor = (requestLogger) => requestLogger.request.url;
 
 const config = compose(orgMainConfigMain, edgeDomainFirstParty);
 
 test.meta({
   ID: "C148846",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const networkLogger = createNetworkLogger();
 createFixture({
   title: "C148846 - Setting edgeDomain to CNAME",
-  requestHooks: [networkLogger.edgeInteractEndpointLogs]
+  requestHooks: [networkLogger.edgeInteractEndpointLogs],
 });
 
 test("C148846 - Setting edgeDomain to CNAME results in server calls to this CNAME", async () => {
@@ -56,24 +56,23 @@ test("C148846 - Setting edgeDomain to CNAME results in server calls to this CNAM
   // const responseForCnameRequest = JSON.parse(getResponseBody(secondRequest));
 
   const alloyDemdexResponse = createResponse({
-    content: responseForDemdexRequest
+    content: responseForDemdexRequest,
   });
-  const demdexStateHandle = alloyDemdexResponse.getPayloadsByType(
-    "state:store"
-  );
+  const demdexStateHandle =
+    alloyDemdexResponse.getPayloadsByType("state:store");
 
   // const alloyCnameResponse = createResponse({ content: responseForCnameRequest });
   // const cnameStateHandle = alloyCnameResponse.getPayloadsByType("state:store");
 
-  const demdexResponseContainsIdentityCookie = demdexStateHandle.find(h => {
-    return h.key.includes(MAIN_IDENTITY_COOKIE_NAME);
-  });
+  const demdexResponseContainsIdentityCookie = demdexStateHandle.find((h) =>
+    h.key.includes(MAIN_IDENTITY_COOKIE_NAME),
+  );
 
-  const hostForFirstRequest = getHostFor(firstRequest);
+  const urlForFirstRequest = getUrlFor(firstRequest);
   // const hostForSecondRequest = getHostFor(secondRequest);
 
   if (areThirdPartyCookiesSupported()) {
-    await t.expect(hostForFirstRequest).match(demdexHostRegex);
+    await t.expect(urlForFirstRequest).match(demdexUrlRegex);
     // await t.expect(hostForSecondRequest).contains(FIRST_PARTY_DOMAIN);
 
     // Expects the demdex response to contain Konductor state.
@@ -81,7 +80,7 @@ test("C148846 - Setting edgeDomain to CNAME results in server calls to this CNAM
     await t.expect(demdexStateHandle.length).gte(0);
     await t.expect(demdexResponseContainsIdentityCookie).ok();
   } else {
-    await t.expect(hostForFirstRequest).contains(FIRST_PARTY_DOMAIN);
+    await t.expect(urlForFirstRequest).contains(FIRST_PARTY_DOMAIN);
     // await t.expect(hostForSecondRequest).contains(FIRST_PARTY_DOMAIN);
   }
 

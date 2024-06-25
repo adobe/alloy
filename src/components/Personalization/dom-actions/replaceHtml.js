@@ -10,10 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { removeNode } from "../../../utils/dom";
-import insertHtmlBefore from "./insertHtmlBefore";
+import { removeNode } from "../../../utils/dom/index.js";
+import insertHtmlBefore from "./insertHtmlBefore.js";
 
-export default (container, html) => {
-  insertHtmlBefore(container, html);
-  removeNode(container);
+export default (container, html, decorateProposition) => {
+  return insertHtmlBefore(container, html, decorateProposition).then(() => {
+    removeNode(container);
+  });
 };

@@ -12,6 +12,6 @@ governing permissions and limitations under the License.
 
 // This file is used by rollup to create a base code example
 
-import baseCode from "./baseCode/index";
+import baseCode from "./baseCode/index.js";
 
 baseCode(window, ["alloy"]);

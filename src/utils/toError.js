@@ -16,6 +16,6 @@ governing permissions and limitations under the License.
  * @param {*} value
  * @returns {Error}
  */
-export default value => {
+export default (value) => {
   return value instanceof Error ? value : new Error(value);
 };

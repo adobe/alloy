@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { deepAssign } from "../../utils";
+import { deepAssign } from "../../utils/index.js";
 
-export default dateProvider => {
-  return xdm => {
+export default (dateProvider) => {
+  return (xdm) => {
     const timestamp = dateProvider().toISOString();
     deepAssign(xdm, { timestamp });
   };

@@ -11,24 +11,24 @@ governing permissions and limitations under the License.
 */
 
 import { t } from "testcafe";
-import createFixture from "../../helpers/createFixture";
-import { SECONDARY_TEST_PAGE } from "../../helpers/constants/url";
+import createFixture from "../../helpers/createFixture/index.js";
+import { SECONDARY_TEST_PAGE } from "../../helpers/constants/url.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  thirdPartyCookiesDisabled
-} from "../../helpers/constants/configParts";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid";
+  thirdPartyCookiesDisabled,
+} from "../../helpers/constants/configParts/index.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid.js";
 
 // We disable third party cookies so that the domains don't share identities
 // through the demdex cookies.
 const config = compose(
   orgMainConfigMain,
   debugEnabled,
-  thirdPartyCookiesDisabled
+  thirdPartyCookiesDisabled,
 );
 
 const networkLogger = createNetworkLogger();
@@ -36,13 +36,13 @@ const networkLogger = createNetworkLogger();
 createFixture({
   title:
     "C5594865: Identity can be maintained across domains via the adobe_mc query string parameter",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C5594865",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("C5594865: Identity can be maintained across domains via the adobe_mc query string parameter", async () => {
@@ -50,16 +50,15 @@ test("C5594865: Identity can be maintained across domains via the adobe_mc query
   await alloy.configure(config);
   await alloy.sendEvent({});
   const { url: newUrl } = await alloy.appendIdentityToUrl({
-    url: SECONDARY_TEST_PAGE
+    url: SECONDARY_TEST_PAGE,
   });
 
   await t.navigateTo(newUrl);
   await alloy.configure(config);
   await alloy.sendEvent({});
 
-  const [originalEcid, newEcid] = networkLogger.edgeEndpointLogs.requests.map(
-    getReturnedEcid
-  );
+  const [originalEcid, newEcid] =
+    networkLogger.edgeEndpointLogs.requests.map(getReturnedEcid);
   await t.expect(newEcid).eql(originalEcid);
 
   const { identity } = await alloy.getIdentity();

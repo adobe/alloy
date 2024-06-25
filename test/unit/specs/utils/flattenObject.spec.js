@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import flattenObject from "../../../../src/utils/flattenObject";
+import flattenObject from "../../../../src/utils/flattenObject.js";
 
 describe("flattenObject", () => {
   it("flattens event object", () => {
@@ -19,23 +19,23 @@ describe("flattenObject", () => {
           web: {
             webPageDetails: {
               viewName: "contact",
-              URL: "https://localhost/aep.html#contact"
+              URL: "https://localhost/aep.html#contact",
             },
             webReferrer: {
-              URL: "https://google.com"
-            }
+              URL: "https://google.com",
+            },
           },
           timestamp: "2023-04-12T17:37:56.519Z",
           implementationDetails: {
             name: "https://ns.adobe.com/experience/alloy",
             version: "2.15.0",
-            environment: "browser"
-          }
+            environment: "browser",
+          },
         },
         data: {
-          moo: "woof"
-        }
-      })
+          moo: "woof",
+        },
+      }),
     ).toEqual({
       "xdm.web.webPageDetails.viewName": "contact",
       "xdm.web.webPageDetails.URL": "https://localhost/aep.html#contact",
@@ -44,7 +44,7 @@ describe("flattenObject", () => {
       "xdm.implementationDetails.name": "https://ns.adobe.com/experience/alloy",
       "xdm.implementationDetails.version": "2.15.0",
       "xdm.implementationDetails.environment": "browser",
-      "data.moo": "woof"
+      "data.moo": "woof",
     });
   });
 
@@ -63,26 +63,26 @@ describe("flattenObject", () => {
               "fred",
               {
                 cool: "beans",
-                lets: "go"
-              }
-            ]
-          }
+                lets: "go",
+              },
+            ],
+          },
         },
         b: {
           one: 1,
           two: 2,
           three: {
-            poo: true
-          }
+            poo: true,
+          },
         },
         c: {
           uno: true,
           dos: false,
           tres: {
-            value: "yeah ok"
-          }
-        }
-      })
+            value: "yeah ok",
+          },
+        },
+      }),
     ).toEqual({
       pre: true,
       "a.one": 1,
@@ -98,7 +98,7 @@ describe("flattenObject", () => {
       "b.three.poo": true,
       "c.uno": true,
       "c.dos": false,
-      "c.tres.value": "yeah ok"
+      "c.tres.value": "yeah ok",
     });
   });
 

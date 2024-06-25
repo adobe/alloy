@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createLogger from "../../../../src/core/createLogger";
+import createLogger from "../../../../src/core/createLogger.js";
 
 const logMethods = ["info", "warn", "error"];
 const monitorMethods = [
@@ -21,7 +21,7 @@ const monitorMethods = [
   "onCommandRejected",
   "onBeforeNetworkRequest",
   "onNetworkResponse",
-  "onNetworkError"
+  "onNetworkError",
 ];
 
 const message = "test message";
@@ -47,11 +47,11 @@ describe("createLogger", () => {
       console,
       getDebugEnabled,
       context,
-      getMonitors
+      getMonitors,
     });
   };
 
-  logMethods.forEach(logMethod => {
+  logMethods.forEach((logMethod) => {
     it(`logs message if debugging is enabled and ${logMethod} is called`, () => {
       logEnabled = true;
       build();
@@ -94,7 +94,7 @@ describe("createLogger", () => {
     logger.logOnInstanceCreated({ b: "2" });
   });
 
-  monitorMethods.forEach(monitorMethod => {
+  monitorMethods.forEach((monitorMethod) => {
     it(`calls the monitor method ${monitorMethod}`, () => {
       const loggerMethod = `log${monitorMethod
         .charAt(0)
@@ -102,7 +102,7 @@ describe("createLogger", () => {
       context = { a: "1" };
       const monitor1 = jasmine.createSpyObj("monitor1", [
         monitorMethod,
-        "onBeforeLog"
+        "onBeforeLog",
       ]);
       const monitor2 = jasmine.createSpyObj("monitor2", [monitorMethod]);
       getMonitors = () => [monitor1, monitor2];
@@ -120,7 +120,7 @@ describe("createLogger", () => {
     logger.logOnInstanceCreated({});
     expect(console.info).toHaveBeenCalledWith(
       "[myinstance]",
-      "Instance initialized."
+      "Instance initialized.",
     );
   });
 
@@ -131,7 +131,7 @@ describe("createLogger", () => {
     expect(console.info).toHaveBeenCalledWith(
       "[myinstance]",
       "Instance configured. Computed configuration:",
-      { a: "1" }
+      { a: "1" },
     );
   });
 
@@ -140,12 +140,12 @@ describe("createLogger", () => {
     build();
     logger.logOnBeforeCommand({
       commandName: "mycommand",
-      options: { a: "1" }
+      options: { a: "1" },
     });
     expect(console.info).toHaveBeenCalledWith(
       "[myinstance]",
       "Executing mycommand command. Options:",
-      { a: "1" }
+      { a: "1" },
     );
   });
 
@@ -155,12 +155,12 @@ describe("createLogger", () => {
     logger.logOnCommandResolved({
       commandName: "mycommand",
       options: { a: "1" },
-      result: { b: "2" }
+      result: { b: "2" },
     });
     expect(console.info).toHaveBeenCalledWith(
       "[myinstance]",
       "mycommand command resolved. Result:",
-      { b: "2" }
+      { b: "2" },
     );
   });
 
@@ -171,12 +171,12 @@ describe("createLogger", () => {
     logger.logOnCommandRejected({
       commandName: "mycommand",
       options: { a: "1" },
-      error
+      error,
     });
     expect(console.error).toHaveBeenCalledWith(
       "[myinstance]",
       "mycommand command was rejected. Error:",
-      error
+      error,
     );
   });
 
@@ -185,12 +185,12 @@ describe("createLogger", () => {
     build();
     logger.logOnBeforeNetworkRequest({
       requestId: "abc123",
-      payload: { a: "1" }
+      payload: { a: "1" },
     });
     expect(console.info).toHaveBeenCalledWith(
       "[myinstance]",
       "Request abc123: Sending request.",
-      { a: "1" }
+      { a: "1" },
     );
   });
 
@@ -201,12 +201,12 @@ describe("createLogger", () => {
       parsedBody: { a: "1" },
       body: "thebody",
       requestId: "abc123",
-      statusCode: 200
+      statusCode: 200,
     });
     expect(console.info).toHaveBeenCalledWith(
       "[myinstance]",
       "Request abc123: Received response with status code 200 and response body:",
-      { a: "1" }
+      { a: "1" },
     );
   });
 
@@ -216,12 +216,12 @@ describe("createLogger", () => {
     logger.logOnNetworkResponse({
       body: "thebody",
       requestId: "abc123",
-      statusCode: 200
+      statusCode: 200,
     });
     expect(console.info).toHaveBeenCalledWith(
       "[myinstance]",
       "Request abc123: Received response with status code 200 and response body:",
-      "thebody"
+      "thebody",
     );
   });
 
@@ -231,12 +231,12 @@ describe("createLogger", () => {
     logger.logOnNetworkResponse({
       body: "",
       requestId: "abc123",
-      statusCode: 200
+      statusCode: 200,
     });
     expect(console.info).toHaveBeenCalledWith(
       "[myinstance]",
       "Request abc123: Received response with status code 200 and no response body.",
-      ""
+      "",
     );
   });
 
@@ -247,7 +247,7 @@ describe("createLogger", () => {
     expect(console.error).toHaveBeenCalledWith(
       "[myinstance]",
       "Request abc123: Network request failed.",
-      "myerror"
+      "myerror",
     );
   });
 });

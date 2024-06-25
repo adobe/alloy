@@ -18,13 +18,13 @@ export default ({ processDestinations }) => {
 
   const retrievePullDestinations = ({ response }) => {
     return {
-      destinations: response.getPayloadsByType("activation:pull")
+      destinations: response.getPayloadsByType("activation:pull"),
     };
   };
 
   return ({ response }) => {
     return processPushDestinations({ response }).then(() =>
-      retrievePullDestinations({ response })
+      retrievePullDestinations({ response }),
     );
   };
 };

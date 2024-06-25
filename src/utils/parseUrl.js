@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import parseUri from "parse-uri";
-import isString from "./isString";
+import isString from "./isString.js";
 
-const parseDomainBasic = host => {
+const parseDomainBasic = (host) => {
   const result = {};
   const domainParts = host.split(".");
 
@@ -57,7 +57,7 @@ const parseUrl = (url, parseDomain = parseDomainBasic) => {
     path,
     query,
     fragment: anchor,
-    ...parseDomain(host)
+    ...parseDomain(host),
   };
 };
 

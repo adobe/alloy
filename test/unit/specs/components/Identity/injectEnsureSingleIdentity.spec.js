@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectEnsureSingleIdentity from "../../../../../src/components/Identity/injectEnsureSingleIdentity";
-import { defer } from "../../../../../src/utils";
-import flushPromiseChains from "../../../helpers/flushPromiseChains";
+import injectEnsureSingleIdentity from "../../../../../src/components/Identity/injectEnsureSingleIdentity.js";
+import { defer } from "../../../../../src/utils/index.js";
+import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 describe("Identity::injectEnsureSingleIdentity", () => {
   let doesIdentityCookieExist;
@@ -41,10 +41,10 @@ describe("Identity::injectEnsureSingleIdentity", () => {
     awaitIdentityDeferreds = [];
     doesIdentityCookieExistBoolean = false;
 
-    setDomainForInitialIdentityPayload = request => {
+    setDomainForInitialIdentityPayload = (request) => {
       request.setUseIdThirdPartyDomain();
     };
-    addLegacyEcidToPayload = payload => {
+    addLegacyEcidToPayload = (payload) => {
       payload.addIdentity("ECID", { id: "ABC123" });
       return Promise.resolve();
     };
@@ -62,18 +62,18 @@ describe("Identity::injectEnsureSingleIdentity", () => {
       setDomainForInitialIdentityPayload,
       addLegacyEcidToPayload,
       awaitIdentityCookie,
-      logger
+      logger,
     });
   };
 
   const sendRequest = () => {
     const requestPayload = jasmine.createSpyObj("requestPayload", [
-      "addIdentity"
+      "addIdentity",
     ]);
     const request = jasmine.createSpyObj("request", {
       getPayload: requestPayload,
       setIsIdentityEstablished: undefined,
-      setUseIdThirdPartyDomain: undefined
+      setUseIdThirdPartyDomain: undefined,
     });
     requests.push(request);
     onResponse = jasmine.createSpy("onResponse");
@@ -83,7 +83,7 @@ describe("Identity::injectEnsureSingleIdentity", () => {
     ensureSingleIdentity({
       request,
       onResponse,
-      onRequestFailure
+      onRequestFailure,
     }).then(() => {
       requestSentStatusByIndex[i] = true;
     });
@@ -179,14 +179,14 @@ describe("Identity::injectEnsureSingleIdentity", () => {
       })
       .then(() => {
         expect(logger.info).toHaveBeenCalledWith(
-          "Delaying request while retrieving ECID from server."
+          "Delaying request while retrieving ECID from server.",
         );
         simulateResponseWithIdentity();
         return flushPromiseChains();
       })
       .then(() => {
         expect(logger.info).toHaveBeenCalledWith(
-          "Resuming previously delayed request."
+          "Resuming previously delayed request.",
         );
       });
   });
@@ -213,7 +213,7 @@ describe("Identity::injectEnsureSingleIdentity", () => {
     sendRequest();
     expect(awaitIdentityCookie).toHaveBeenCalledWith({
       onResponse,
-      onRequestFailure
+      onRequestFailure,
     });
   });
 });

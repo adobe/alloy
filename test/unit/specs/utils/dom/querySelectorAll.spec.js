@@ -14,9 +14,9 @@ import {
   appendNode,
   createNode,
   removeNode,
-  selectNodes
-} from "../../../../../src/utils/dom";
-import querySelectorAll from "../../../../../src/utils/dom/querySelectorAll";
+  selectNodes,
+} from "../../../../../src/utils/dom/index.js";
+import querySelectorAll from "../../../../../src/utils/dom/querySelectorAll.js";
 
 describe("Personalization::DOM::querySelectorAll", () => {
   afterEach(() => {
@@ -28,8 +28,8 @@ describe("Personalization::DOM::querySelectorAll", () => {
       "DIV",
       { id: "abc", class: "qsa" },
       {
-        innerHTML: `<div class="test">Test</div>`
-      }
+        innerHTML: `<div class="test">Test</div>`,
+      },
     );
 
     appendNode(document.body, node);

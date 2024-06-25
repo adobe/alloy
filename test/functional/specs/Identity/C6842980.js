@@ -16,35 +16,35 @@ import {
   orgMainConfigMain,
   debugEnabled,
   thirdPartyCookiesDisabled,
-  migrationDisabled
-} from "../../helpers/constants/configParts";
-import { TEST_PAGE } from "../../helpers/constants/url";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid";
-import createFixture from "../../helpers/createFixture";
-import reloadPage from "../../helpers/reloadPage";
-import cookies from "../../helpers/cookies";
-import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
+  migrationDisabled,
+} from "../../helpers/constants/configParts/index.js";
+import { TEST_PAGE } from "../../helpers/constants/url.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import reloadPage from "../../helpers/reloadPage.js";
+import cookies from "../../helpers/cookies.js";
+import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(
   orgMainConfigMain,
   debugEnabled,
   thirdPartyCookiesDisabled,
-  migrationDisabled
+  migrationDisabled,
 );
 
 createFixture({
   url: TEST_PAGE,
   title: "C6842980: FPID from the identityMap is used to generate an ECID",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C6842980",
   SEVERTIY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const fpid = {
@@ -52,11 +52,11 @@ const fpid = {
     identityMap: {
       FPID: [
         {
-          id: "UUID"
-        }
-      ]
-    }
-  }
+          id: "UUID",
+        },
+      ],
+    },
+  },
 };
 
 test("C6842980: FPID from the identityMap generates ECID", async () => {
@@ -71,7 +71,7 @@ test("C6842980: FPID from the identityMap generates ECID", async () => {
   await alloy.configure(config);
   await alloy.sendEvent(fpid);
   const ecidCompare = getReturnedEcid(
-    networkLogger.edgeEndpointLogs.requests[1]
+    networkLogger.edgeEndpointLogs.requests[1],
   );
   await t.expect(ecid).eql(ecidCompare);
 });

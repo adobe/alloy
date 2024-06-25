@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectSetDomainForInitialIdentityPayload from "../../../../../src/components/Identity/injectSetDomainForInitialIdentityPayload";
+import injectSetDomainForInitialIdentityPayload from "../../../../../src/components/Identity/injectSetDomainForInitialIdentityPayload.js";
 
 describe("Identity::injectSetDomainForInitialIdentityPayload", () => {
   let request;
@@ -19,18 +19,17 @@ describe("Identity::injectSetDomainForInitialIdentityPayload", () => {
   let setDomainForInitialIdentityPayload;
 
   const build = () => {
-    setDomainForInitialIdentityPayload = injectSetDomainForInitialIdentityPayload(
-      {
+    setDomainForInitialIdentityPayload =
+      injectSetDomainForInitialIdentityPayload({
         thirdPartyCookiesEnabled,
-        areThirdPartyCookiesSupportedByDefault
-      }
-    );
+        areThirdPartyCookiesSupportedByDefault,
+      });
   };
 
   beforeEach(() => {
     request = jasmine.createSpyObj("request", ["setUseIdThirdPartyDomain"]);
     areThirdPartyCookiesSupportedByDefault = jasmine.createSpy(
-      "areThirdPartyCookiesSupportedByDefault"
+      "areThirdPartyCookiesSupportedByDefault",
     );
   });
 
@@ -48,7 +47,7 @@ describe("Identity::injectSetDomainForInitialIdentityPayload", () => {
     build();
     setDomainForInitialIdentityPayload(request);
     expect(areThirdPartyCookiesSupportedByDefault).toHaveBeenCalledWith(
-      jasmine.any(String)
+      jasmine.any(String),
     );
     expect(request.setUseIdThirdPartyDomain).not.toHaveBeenCalled();
   });
@@ -59,7 +58,7 @@ describe("Identity::injectSetDomainForInitialIdentityPayload", () => {
     build();
     setDomainForInitialIdentityPayload(request);
     expect(areThirdPartyCookiesSupportedByDefault).toHaveBeenCalledWith(
-      jasmine.any(String)
+      jasmine.any(String),
     );
     expect(request.setUseIdThirdPartyDomain).toHaveBeenCalled();
   });

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -50,7 +50,7 @@
         orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
         debugEnabled: true,
         prehidingStyle: ".personalization-container { opacity: 0 !important }",
-        onBeforeEventSend: function(options) {
+        onBeforeEventSend: function (options) {
           const xdm = options.xdm;
           const data = options.data;
           const titleParam = getUrlParameter("title");
@@ -61,7 +61,7 @@
           if (campaignParam) {
             data.campaign = campaignParam;
           }
-        }
+        },
       });
 
       alloy("event", {
@@ -70,10 +70,10 @@
         xdm: {
           // Demonstrates overriding automatically collected data
           device: {
-            screenHeight: 1
-          }
-        }
-      }).then(function(data) {
+            screenHeight: 1,
+          },
+        },
+      }).then(function (data) {
         console.log("Sandbox: View start event has completed.", data);
       });
     </script>

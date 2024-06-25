@@ -13,31 +13,31 @@ governing permissions and limitations under the License.
 import { ClientFunction } from "testcafe";
 import {
   compose,
-  orgMainConfigMain
-} from "../../helpers/constants/configParts";
-import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
+  orgMainConfigMain,
+} from "../../helpers/constants/configParts/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import configureAlloyInstance from "../../helpers/configureAlloyInstance/index.js";
 
 const config = compose(orgMainConfigMain, {
-  datastreamId: "BOGUS"
+  datastreamId: "BOGUS",
 });
 
 createFixture({
   title:
-    "C13819: Sending invalid config ID rejects command promise with useful error"
+    "C13819: Sending invalid config ID rejects command promise with useful error",
 });
 
 test.meta({
   ID: "C13819",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const sendEvent = ClientFunction(() => {
-  return window.alloy("sendEvent").catch(e => e.message);
+  return window.alloy("sendEvent").catch((e) => e.message);
 });
 
-test("Test C13819: Sending invalid config ID rejects command promise with useful error", async t => {
+test("Test C13819: Sending invalid config ID rejects command promise with useful error", async (t) => {
   await configureAlloyInstance("alloy", config);
   const errorMessage = await sendEvent();
   await t

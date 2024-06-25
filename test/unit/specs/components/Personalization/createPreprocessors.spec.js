@@ -9,20 +9,20 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { DOM_ACTION } from "../../../../../src/constants/schema";
-import createPreprocessors from "../../../../../src/components/Personalization/createPreprocessors";
+import { DOM_ACTION } from "../../../../../src/constants/schema.js";
+import createPreprocessors from "../../../../../src/components/Personalization/createPreprocessors.js";
 
 describe("Personalization::createPreprocessors", () => {
   it("has dom-action preprocessors", () => {
     const preprocessors = createPreprocessors();
 
     expect(preprocessors).toEqual({
-      [DOM_ACTION]: jasmine.any(Array)
+      [DOM_ACTION]: jasmine.any(Array),
     });
 
     expect(preprocessors[DOM_ACTION].length).toEqual(2);
 
-    preprocessors[DOM_ACTION].forEach(preprocessor => {
+    preprocessors[DOM_ACTION].forEach((preprocessor) => {
       expect(preprocessor).toEqual(jasmine.any(Function));
     });
   });
@@ -30,15 +30,15 @@ describe("Personalization::createPreprocessors", () => {
   it("is structured correctly", () => {
     const preprocessors = createPreprocessors();
 
-    Object.keys(preprocessors).forEach(key => {
+    Object.keys(preprocessors).forEach((key) => {
       expect(
-        key.startsWith("https://ns.adobe.com/personalization/")
+        key.startsWith("https://ns.adobe.com/personalization/"),
       ).toBeTrue();
     });
 
-    Object.values(preprocessors).forEach(list => {
+    Object.values(preprocessors).forEach((list) => {
       expect(list instanceof Array).toBeTrue();
-      list.forEach(preprocessor => {
+      list.forEach((preprocessor) => {
         expect(preprocessor).toEqual(jasmine.any(Function));
       });
     });

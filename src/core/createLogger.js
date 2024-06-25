@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign } from "../utils";
+import { assign } from "../utils/index.js";
 
 export default ({ getDebugEnabled, console, getMonitors, context }) => {
   let prefix = `[${context.instanceName}]`;
@@ -22,7 +22,7 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
     const monitors = getMonitors();
     if (monitors.length > 0) {
       const dataWithContext = assign({}, context, data);
-      monitors.forEach(monitor => {
+      monitors.forEach((monitor) => {
         if (monitor[method]) {
           monitor[method](dataWithContext);
         }
@@ -54,7 +54,7 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
       log(
         "info",
         `Executing ${data.commandName} command. Options:`,
-        data.options
+        data.options,
       );
     },
     logOnCommandResolved(data) {
@@ -66,7 +66,7 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
       log(
         "error",
         `${data.commandName} command was rejected. Error:`,
-        data.error
+        data.error,
       );
     },
     logOnBeforeNetworkRequest(data) {
@@ -80,7 +80,7 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
       log(
         "info",
         `Request ${data.requestId}: Received response with status code ${data.statusCode} and ${messagesSuffix}`,
-        data.parsedBody || data.body
+        data.parsedBody || data.body,
       );
     },
     logOnNetworkError(data) {
@@ -88,7 +88,7 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
       log(
         "error",
         `Request ${data.requestId}: Network request failed.`,
-        data.error
+        data.error,
       );
     },
     /**
@@ -107,6 +107,6 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
      * Outputs an error message to the web console.
      * @param {...*} arg Any argument to be logged.
      */
-    error: log.bind(null, "error")
+    error: log.bind(null, "error"),
   };
 };

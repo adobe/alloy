@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getRequestRetryDelay from "../../../../../src/core/network/getRequestRetryDelay";
+import getRequestRetryDelay from "../../../../../src/core/network/getRequestRetryDelay.js";
 
 describe("getRequestRetryDelay", () => {
   beforeEach(() => {
@@ -24,11 +24,11 @@ describe("getRequestRetryDelay", () => {
 
   it("returns value derived from retry-after header in delay-seconds format", () => {
     const response = jasmine.createSpyObj("request", {
-      getHeader: "123"
+      getHeader: "123",
     });
     const delay = getRequestRetryDelay({
       response,
-      retriesAttempted: 0
+      retriesAttempted: 0,
     });
     expect(delay).toBe(123000);
     expect(response.getHeader).toHaveBeenCalledWith("Retry-After");
@@ -36,11 +36,11 @@ describe("getRequestRetryDelay", () => {
 
   it("returns value derived from retry-after header in http-date format in the future", () => {
     const response = jasmine.createSpyObj("request", {
-      getHeader: "Thu, 01 Jan 1970 00:00:09 GMT"
+      getHeader: "Thu, 01 Jan 1970 00:00:09 GMT",
     });
     const delay = getRequestRetryDelay({
       response,
-      retriesAttempted: 0
+      retriesAttempted: 0,
     });
     expect(delay).toBe(9000);
     expect(response.getHeader).toHaveBeenCalledWith("Retry-After");
@@ -48,11 +48,11 @@ describe("getRequestRetryDelay", () => {
 
   it("returns value derived from retry-after header exists in http-date format in the past", () => {
     const response = jasmine.createSpyObj("request", {
-      getHeader: "Thu, 01 Jan 1969 11:59:51 GMT"
+      getHeader: "Thu, 01 Jan 1969 11:59:51 GMT",
     });
     const delay = getRequestRetryDelay({
       response,
-      retriesAttempted: 0
+      retriesAttempted: 0,
     });
     expect(delay).toBe(0);
     expect(response.getHeader).toHaveBeenCalledWith("Retry-After");
@@ -62,26 +62,26 @@ describe("getRequestRetryDelay", () => {
     {
       retriesAttempted: 0,
       lowDelay: 700,
-      highDelay: 1300
+      highDelay: 1300,
     },
     {
       retriesAttempted: 1,
       lowDelay: 1400,
-      highDelay: 2600
+      highDelay: 2600,
     },
     {
       retriesAttempted: 2,
       lowDelay: 2100,
-      highDelay: 3900
+      highDelay: 3900,
     },
     {
       retriesAttempted: 3,
       lowDelay: 2800,
-      highDelay: 5200
-    }
+      highDelay: 5200,
+    },
   ];
 
-  retriesAttemptedScenarios.forEach(scenario => {
+  retriesAttemptedScenarios.forEach((scenario) => {
     it(`returns randomized, incremental value based on ${scenario.retriesAttempted} retries attempted`, () => {
       spyOn(Math, "random");
       const response = jasmine.createSpyObj("request", ["getHeader"]);
@@ -89,14 +89,14 @@ describe("getRequestRetryDelay", () => {
       Math.random.and.returnValue(0);
       const lowDelay = getRequestRetryDelay({
         response,
-        retriesAttempted: scenario.retriesAttempted
+        retriesAttempted: scenario.retriesAttempted,
       });
       expect(lowDelay).toBe(scenario.lowDelay);
 
       Math.random.and.returnValue(0.999999999999);
       const highDelay = getRequestRetryDelay({
         response,
-        retriesAttempted: scenario.retriesAttempted
+        retriesAttempted: scenario.retriesAttempted,
       });
       expect(highDelay).toBe(scenario.highDelay);
     });

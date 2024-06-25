@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import sanitizeOrgIdForCookieName from "../../../../src/utils/sanitizeOrgIdForCookieName";
+import sanitizeOrgIdForCookieName from "../../../../src/utils/sanitizeOrgIdForCookieName.js";
 
 describe("sanitizeOrgIdForCookieName", () => {
   it("replaces @ with _", () => {

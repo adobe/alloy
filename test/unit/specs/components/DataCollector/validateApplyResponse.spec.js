@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import validateApplyResponse from "../../../../../src/components/DataCollector/validateApplyResponse";
+import validateApplyResponse from "../../../../../src/components/DataCollector/validateApplyResponse.js";
 
 describe("DataCollector::validateApplyResponse", () => {
   it("does not throw error for valid options", () => {
@@ -20,11 +20,11 @@ describe("DataCollector::validateApplyResponse", () => {
             handle: [
               {
                 type: "something:special",
-                payload: {}
-              }
-            ]
-          }
-        }
+                payload: {},
+              },
+            ],
+          },
+        },
       });
     }).not.toThrowError();
   });
@@ -33,8 +33,8 @@ describe("DataCollector::validateApplyResponse", () => {
     expect(() => {
       validateApplyResponse({
         options: {
-          who_dis: true
-        }
+          who_dis: true,
+        },
       });
     }).toThrowError();
   });

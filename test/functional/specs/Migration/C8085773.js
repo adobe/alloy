@@ -10,25 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  targetMigrationEnabled
-} from "../../helpers/constants/configParts";
-import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url";
+  targetMigrationEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url.js";
 import {
   MBOX_EDGE_CLUSTER,
-  MBOX
-} from "../../../../src/constants/legacyCookies";
+  MBOX,
+} from "../../../../src/constants/legacyCookies.js";
 import {
   assertKonductorReturnsCookieAndCookieIsSet,
   assertSameLocationHintIsUsed,
-  assertTargetMigrationEnabledIsSent
-} from "./helper";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+  assertTargetMigrationEnabledIsSent,
+} from "./helper.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled, targetMigrationEnabled);
@@ -39,16 +39,16 @@ createFixture({
     "interact and delivery API",
   requestHooks: [
     networkLogger.edgeEndpointLogs,
-    networkLogger.targetMboxJsonEndpointLogs
+    networkLogger.targetMboxJsonEndpointLogs,
   ],
   url: TEST_PAGE,
-  includeAlloyLibrary: true
+  includeAlloyLibrary: true,
 });
 
 test.meta({
   ID: "C8085773",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test(
@@ -68,14 +68,15 @@ test(
     // Check that mbox cookie is present in the response from Konductor
     const mboxCookie = await assertKonductorReturnsCookieAndCookieIsSet(
       MBOX,
-      sendEventRequest
+      sendEventRequest,
     );
 
     // Check that mboxEdgeCluster cookie is present in the response from Konductor
-    const mboxEdgeClusterCookie = await assertKonductorReturnsCookieAndCookieIsSet(
-      MBOX_EDGE_CLUSTER,
-      sendEventRequest
-    );
+    const mboxEdgeClusterCookie =
+      await assertKonductorReturnsCookieAndCookieIsSet(
+        MBOX_EDGE_CLUSTER,
+        sendEventRequest,
+      );
 
     // NAVIGATE to clean page
     await t.navigateTo(TEST_PAGE_AT_JS_ONE);
@@ -94,10 +95,10 @@ test(
       .expect(mboxCookie)
       .contains(
         `#${sessionIdFromMboxJsonRequest}#`,
-        "Session ID returned from Target Upstream does not match the session ID sent in the request to Target"
+        "Session ID returned from Target Upstream does not match the session ID sent in the request to Target",
       );
 
     // assert the same cluster is used
     await assertSameLocationHintIsUsed(hostname, mboxEdgeClusterCookie);
-  }
+  },
 );

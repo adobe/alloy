@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import includes from "../../../../src/utils/includes";
+import includes from "../../../../src/utils/includes.js";
 
 const items = ["a", "b", "c"];
 

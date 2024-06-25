@@ -10,23 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { appendNode } from "../../../utils/dom";
+import { appendNode } from "../../../utils/dom/index.js";
 import {
   createFragment,
   getChildNodes,
   getFirstChild,
-  insertBefore
-} from "./dom";
-import { loadImages } from "./images";
-import addNonceToInlineStyleElements from "./addNonceToInlineStyleElements";
+  insertBefore,
+} from "./dom/index.js";
+import { loadImages } from "./images.js";
+import addNonceToInlineStyleElements from "./addNonceToInlineStyleElements.js";
 import {
+  executeInlineScripts,
+  executeRemoteScripts,
   getInlineScripts,
   getRemoteScriptsUrls,
-  executeInlineScripts,
-  executeRemoteScripts
-} from "./scripts";
+} from "./scripts.js";
 
-export default (container, html) => {
+export default (container, html, decorateProposition) => {
   const fragment = createFragment(html);
   addNonceToInlineStyleElements(fragment);
   const elements = getChildNodes(fragment);
@@ -41,6 +41,8 @@ export default (container, html) => {
   // We are inserting elements in reverse order
   while (i >= 0) {
     const element = elements[i];
+    decorateProposition(element);
+
     const firstChild = getFirstChild(container);
 
     if (firstChild) {

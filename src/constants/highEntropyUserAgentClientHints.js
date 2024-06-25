@@ -15,5 +15,5 @@ export default [
   ["bitness", "string"],
   ["model", "string"],
   ["platformVersion", "string"],
-  ["wow64", "boolean"]
+  ["wow64", "boolean"],
 ];

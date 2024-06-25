@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isString from "./isString";
+import isString from "./isString.js";
 
 /**
  * Returns whether the value is a populated string.
  * @param {*} value
  * @returns {boolean}
  */
-export default value => isString(value) && value.length > 0;
+export default (value) => isString(value) && value.length > 0;

@@ -9,18 +9,18 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createFixture from "../../helpers/createFixture";
-import createNetworkLogger from "../../helpers/networkLogger";
+import createFixture from "../../helpers/createFixture/index.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
 import {
   compose,
   orgMainConfigMain,
   consentPending,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import createConsoleLogger from "../../helpers/consoleLogger";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import createConsoleLogger from "../../helpers/consoleLogger/index.js";
 
-import { CONSENT_OUT } from "../../helpers/constants/consent";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+import { CONSENT_OUT } from "../../helpers/constants/consent.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const config = compose(orgMainConfigMain, consentPending, debugEnabled);
 
@@ -28,16 +28,16 @@ const networkLogger = createNetworkLogger();
 
 createFixture({
   title: "C14406: Unidentified user can consent to no purposes",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C14406",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
-test("Test C14406: Unidentified user can consent to no purposes", async t => {
+test("Test C14406: Unidentified user can consent to no purposes", async (t) => {
   const logger = await createConsoleLogger();
   const alloy = createAlloyProxy();
   await alloy.configure(config);

@@ -9,42 +9,54 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createEvent from "../../../../../../src/core/createEvent";
-import createResponse from "../../../../../functional/helpers/createResponse";
+import createEvent from "../../../../../../src/core/createEvent.js";
+import createResponse from "../../../../../functional/helpers/createResponse.js";
+import {
+  ADOBE_JOURNEY_OPTIMIZER,
+  ADOBE_TARGET,
+} from "../../../../../../src/constants/decisionProvider.js";
+import {
+  ALWAYS,
+  NEVER,
+} from "../../../../../../src/constants/propositionInteractionType.js";
 
-export default decisions => {
+export default (decisions) => {
   const response = createResponse({
     content: {
-      handle: decisions.map(payload => ({
+      handle: decisions.map((payload) => ({
         type: "personalization:decisions",
-        payload
-      }))
-    }
+        payload,
+      })),
+    },
   });
 
-  const actions = jasmine.createSpyObj("actions", [
-    "createAction",
-    "setHtml",
-    "setText",
-    "setAttributes",
-    "swapImage",
-    "setStyles",
-    "rearrangeChildren",
-    "removeNode",
-    "replaceHtml",
-    "appendHtml",
-    "prependHtml",
-    "insertHtmlAfter",
-    "insertHtmlBefore"
-  ]);
+  const actions = jasmine.createSpyObj("actions", {
+    setHtml: () => Promise.resolve(),
+    setText: () => Promise.resolve(),
+    setAttributes: () => Promise.resolve(),
+    swapImage: () => Promise.resolve(),
+    setStyles: () => Promise.resolve(),
+    rearrangeChildren: () => Promise.resolve(),
+    removeNode: () => Promise.resolve(),
+    replaceHtml: () => Promise.resolve(),
+    appendHtml: () => Promise.resolve(),
+    prependHtml: () => Promise.resolve(),
+    insertHtmlAfter: () => Promise.resolve(),
+    insertHtmlBefore: () => Promise.resolve(),
+    click: () => Promise.resolve(),
+  });
 
   const config = {
     targetMigrationEnabled: true,
-    prehidingStyle: "myprehidingstyle"
+    prehidingStyle: "myprehidingstyle",
+    autoCollectPropositionInteractions: {
+      [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
+      [ADOBE_TARGET]: NEVER,
+    },
   };
   const logger = {
     warn: spyOn(console, "warn").and.callThrough(),
-    error: spyOn(console, "error").and.callThrough()
+    error: spyOn(console, "error").and.callThrough(),
   };
   const sendEvent = jasmine.createSpy("sendEvent");
   const eventManager = {
@@ -53,11 +65,11 @@ export default decisions => {
       event.finalize();
       sendEvent(event.toJSON());
       return Promise.resolve();
-    }
+    },
   };
   const getPageLocation = () => new URL("http://example.com/home");
   const window = {
-    location: jasmine.createSpyObj("location", ["replace"])
+    location: jasmine.createSpyObj("location", ["replace"]),
   };
   const hideContainers = jasmine.createSpy("hideContainers");
   const showContainers = jasmine.createSpy("showContainers");
@@ -72,6 +84,6 @@ export default decisions => {
     window,
     hideContainers,
     showContainers,
-    response
+    response,
   };
 };

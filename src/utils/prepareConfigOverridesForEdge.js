@@ -9,23 +9,23 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import isNil from "./isNil";
-import filterObject from "./filterObject";
-import isEmptyObject from "./isEmptyObject";
-import isNonEmptyArray from "./isNonEmptyArray";
-import isNonEmptyString from "./isNonEmptyString";
-import isNumber from "./isNumber";
-import isBoolean from "./isBoolean";
+import isNil from "./isNil.js";
+import filterObject from "./filterObject.js";
+import isEmptyObject from "./isEmptyObject.js";
+import isNonEmptyArray from "./isNonEmptyArray.js";
+import isNonEmptyString from "./isNonEmptyString.js";
+import isNumber from "./isNumber.js";
+import isBoolean from "./isBoolean.js";
 
 // We want to avoid mapping between specific keys because we want Konductor
 // to be able to add overrides in the future without us needing to make
 // any changes to the Web SDK
-export default configuration => {
+export default (configuration) => {
   if (isNil(configuration) || typeof configuration !== "object") {
     return null;
   }
   // remove entries that are empty strings or arrays
-  const configOverrides = filterObject(configuration, value => {
+  const configOverrides = filterObject(configuration, (value) => {
     if (isNil(value)) {
       return false;
     }

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isBoolean from "../../../../src/utils/isBoolean";
+import isBoolean from "../../../../src/utils/isBoolean.js";
 
 const nonBooleans = [{}, [], new Date(), /abc/, "foo", 123];
 
@@ -21,7 +21,7 @@ describe("isString", () => {
   });
 
   it("returns false if the value is not a boolean", () => {
-    nonBooleans.forEach(value => {
+    nonBooleans.forEach((value) => {
       expect(isBoolean(value)).toBe(false);
     });
   });

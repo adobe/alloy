@@ -8,7 +8,7 @@ const LEGACY_IDENTITY_COOKIE = "AMCV_5BFE274A5F6980A50A495C08%40AdobeOrg";
 let cookies;
 const refreshCookies = () => {
   cookies = {};
-  document.cookie.split(";").forEach(function(c) {
+  document.cookie.split(";").forEach(function (c) {
     const ct = c.trim();
     const index = ct.indexOf("=");
     const key = ct.slice(0, index);
@@ -43,11 +43,11 @@ window.__alloyMonitors.push(monitor);
 export default () => {
   const [consent, setConsent] = useState(originalConsentCookie);
   const [hasConsentCheck, setHasConsentCheck] = useState(
-    originalHasConsentCheckCookie
+    originalHasConsentCheckCookie,
   );
   const [hasIdentity, setHasIdentity] = useState(originalHasIdentityCookie);
   const [hasLegacyIdentity, setHasLegacyIdentity] = useState(
-    originalHasLegacyIdentityCookie
+    originalHasLegacyIdentityCookie,
   );
 
   const refreshCookieState = () => {
@@ -63,7 +63,7 @@ export default () => {
     monitor.onCommandRejected = refreshCookieState;
   });
 
-  const clearCookie = key => () => {
+  const clearCookie = (key) => () => {
     document.cookie = `${key}=;expires=Thu, 01 Jan 1970 00:00:00 GMT`;
     refreshCookieState();
   };

@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isEmptyObject from "./isEmptyObject";
-import isNil from "./isNil";
-import isObject from "./isObject";
+import isEmptyObject from "./isEmptyObject.js";
+import isNil from "./isNil.js";
+import isObject from "./isObject.js";
 
 /**
  * Given an object and a function that takes a value and returns a predicate, filter out

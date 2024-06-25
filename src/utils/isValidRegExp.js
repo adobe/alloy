@@ -15,9 +15,9 @@ governing permissions and limitations under the License.
  * @param {*} value
  * @returns {boolean}
  */
-export default value => {
+export default (value) => {
   try {
-    return new RegExp(value) !== null;
+    return RegExp(value) !== null;
   } catch (e) {
     return false;
   }

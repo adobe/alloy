@@ -12,8 +12,8 @@ governing permissions and limitations under the License.
 import {
   mockWindow,
   setupResponseHandler,
-  proposition
-} from "./contextTestUtils";
+  proposition,
+} from "./contextTestUtils.js";
 
 let mockedTimestamp;
 describe("DecisioningEngine:globalContext:timeContext", () => {
@@ -33,15 +33,15 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "pageLoadTimestamp",
         matcher: "eq",
-        values: [mockedTimestamp.getTime()]
+        values: [mockedTimestamp.getTime()],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -50,15 +50,15 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "pageLoadTimestamp",
         matcher: "eq",
-        values: [mockedTimestamp.getTime() + 1]
+        values: [mockedTimestamp.getTime() + 1],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -67,15 +67,15 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "currentTimestamp",
         matcher: "eq",
-        values: [mockedTimestamp.getTime()]
+        values: [mockedTimestamp.getTime()],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -84,15 +84,15 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "currentTimestamp",
         matcher: "eq",
-        values: [mockedTimestamp.getTime() + 1]
+        values: [mockedTimestamp.getTime() + 1],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -101,15 +101,15 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "currentDate",
         matcher: "eq",
-        values: [mockedTimestamp.getDate()]
+        values: [mockedTimestamp.getDate()],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -118,15 +118,15 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "currentDate",
         matcher: "eq",
-        values: [mockedTimestamp.getDate() + 1]
+        values: [mockedTimestamp.getDate() + 1],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -135,15 +135,15 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "~state.com.adobe.module.lifecycle/lifecyclecontextdata.dayofweek",
         matcher: "eq",
-        values: [mockedTimestamp.getDay() + 1]
+        values: [mockedTimestamp.getDay() + 1],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -152,15 +152,15 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "~state.com.adobe.module.lifecycle/lifecyclecontextdata.dayofweek",
         matcher: "eq",
-        values: [mockedTimestamp.getDay()]
+        values: [mockedTimestamp.getDay()],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -169,15 +169,15 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "~state.com.adobe.module.lifecycle/lifecyclecontextdata.hourofday",
         matcher: "eq",
-        values: [mockedTimestamp.getHours()]
+        values: [mockedTimestamp.getHours()],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -186,15 +186,15 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "~state.com.adobe.module.lifecycle/lifecyclecontextdata.hourofday",
         matcher: "eq",
-        values: [mockedTimestamp.getHours() + 1]
+        values: [mockedTimestamp.getHours() + 1],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -203,15 +203,15 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "currentMinute",
         matcher: "eq",
-        values: [mockedTimestamp.getMinutes()]
+        values: [mockedTimestamp.getMinutes()],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -220,15 +220,15 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "currentMinute",
         matcher: "eq",
-        values: [mockedTimestamp.getMinutes() + 1]
+        values: [mockedTimestamp.getMinutes() + 1],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -237,15 +237,15 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "currentMonth",
         matcher: "eq",
-        values: [mockedTimestamp.getMonth()]
+        values: [mockedTimestamp.getMonth()],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -254,15 +254,15 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "currentMonth",
         matcher: "eq",
-        values: [mockedTimestamp.getMonth() + 1]
+        values: [mockedTimestamp.getMonth() + 1],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -271,15 +271,15 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "currentYear",
         matcher: "eq",
-        values: [mockedTimestamp.getFullYear()]
+        values: [mockedTimestamp.getFullYear()],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -288,15 +288,15 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "currentYear",
         matcher: "eq",
-        values: [mockedTimestamp.getFullYear() + 1]
+        values: [mockedTimestamp.getFullYear() + 1],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -305,14 +305,14 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "pageVisitDuration",
         matcher: "eq",
-        values: [0]
+        values: [0],
       },
-      type: "matcher"
+      type: "matcher",
     });
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -321,14 +321,14 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "pageVisitDuration",
         matcher: "eq",
-        values: [1]
+        values: [1],
       },
-      type: "matcher"
+      type: "matcher",
     });
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
   it("satisfies rule based on matched ~timestampu", () => {
@@ -336,15 +336,15 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "~timestampu",
         matcher: "eq",
-        values: [mockedTimestamp.getTime() / 1000]
+        values: [mockedTimestamp.getTime() / 1000],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -353,15 +353,15 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       definition: {
         key: "~timestampz",
         matcher: "eq",
-        values: [mockedTimestamp.toISOString()]
+        values: [mockedTimestamp.toISOString()],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 });

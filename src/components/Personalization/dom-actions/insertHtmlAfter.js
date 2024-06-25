@@ -10,17 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createFragment, getChildNodes, insertAfter } from "./dom";
-import { loadImages } from "./images";
-import addNonceToInlineStyleElements from "./addNonceToInlineStyleElements";
+import { createFragment, getChildNodes, insertAfter } from "./dom/index.js";
+import { loadImages } from "./images.js";
+import addNonceToInlineStyleElements from "./addNonceToInlineStyleElements.js";
 import {
   getInlineScripts,
   getRemoteScriptsUrls,
   executeInlineScripts,
-  executeRemoteScripts
-} from "./scripts";
+  executeRemoteScripts,
+} from "./scripts.js";
 
-export default (container, html) => {
+export default (container, html, decorateProposition) => {
   const fragment = createFragment(html);
   addNonceToInlineStyleElements(fragment);
   const elements = getChildNodes(fragment);
@@ -29,8 +29,12 @@ export default (container, html) => {
 
   loadImages(fragment);
 
-  elements.forEach(element => {
-    insertAfter(container, element);
+  let insertionPoint = container;
+
+  elements.forEach((element) => {
+    decorateProposition(element);
+    insertAfter(insertionPoint, element);
+    insertionPoint = element;
   });
 
   executeInlineScripts(container, scripts);

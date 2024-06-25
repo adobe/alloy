@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, groupBy } from "../../utils";
-import defer from "../../utils/defer";
-import { DEFAULT_CONTENT_ITEM } from "../../constants/schema";
-import { VIEW_SCOPE_TYPE } from "./constants/scopeType";
+import { assign, groupBy } from "../../utils/index.js";
+import defer from "../../utils/defer.js";
+import { DEFAULT_CONTENT_ITEM } from "../../constants/schema.js";
+import { VIEW_SCOPE_TYPE } from "./constants/scopeType.js";
 
 export default ({ createProposition }) => {
   let cacheUpdateCreatedAtLeastOnce = false;
@@ -30,22 +30,22 @@ export default ({ createProposition }) => {
         scope: viewName,
         scopeDetails: {
           characteristics: {
-            scopeType: VIEW_SCOPE_TYPE
-          }
+            scopeType: VIEW_SCOPE_TYPE,
+          },
         },
         items: [
           {
-            schema: DEFAULT_CONTENT_ITEM
-          }
-        ]
+            schema: DEFAULT_CONTENT_ITEM,
+          },
+        ],
       },
-      false
+      false,
     );
     return [emptyViewProposition];
   };
 
   // This should be called before making the request to experience edge.
-  const createCacheUpdate = viewName => {
+  const createCacheUpdate = (viewName) => {
     const updateCacheDeferred = defer();
 
     cacheUpdateCreatedAtLeastOnce = true;
@@ -54,9 +54,9 @@ export default ({ createProposition }) => {
     // i.e. if there are new "cart" view propositions they will overwrite the
     // old "cart" view propositions, but if there are no new "cart" view
     // propositions the old "cart" view propositions will remain.
-    viewStoragePromise = viewStoragePromise.then(oldViewStorage => {
+    viewStoragePromise = viewStoragePromise.then((oldViewStorage) => {
       return updateCacheDeferred.promise
-        .then(newViewStorage => {
+        .then((newViewStorage) => {
           return assign({}, oldViewStorage, newViewStorage);
         })
         .catch(() => oldViewStorage);
@@ -64,11 +64,12 @@ export default ({ createProposition }) => {
 
     return {
       update(viewPropositions) {
-        const viewPropositionsWithScope = viewPropositions.filter(proposition =>
-          proposition.getScope()
+        const viewPropositionsWithScope = viewPropositions.filter(
+          (proposition) => proposition.getScope(),
         );
-        const newViewStorage = groupBy(viewPropositionsWithScope, proposition =>
-          proposition.getScope().toLowerCase()
+        const newViewStorage = groupBy(
+          viewPropositionsWithScope,
+          (proposition) => proposition.getScope().toLowerCase(),
         );
         updateCacheDeferred.resolve(newViewStorage);
         if (viewName) {
@@ -78,13 +79,13 @@ export default ({ createProposition }) => {
       },
       cancel() {
         updateCacheDeferred.reject();
-      }
+      },
     };
   };
 
-  const getView = viewName => {
-    return viewStoragePromise.then(viewStorage =>
-      getViewPropositions(viewStorage, viewName)
+  const getView = (viewName) => {
+    return viewStoragePromise.then((viewStorage) =>
+      getViewPropositions(viewStorage, viewName),
     );
   };
 
@@ -95,6 +96,6 @@ export default ({ createProposition }) => {
   return {
     createCacheUpdate,
     getView,
-    isInitialized
+    isInitialized,
   };
 };

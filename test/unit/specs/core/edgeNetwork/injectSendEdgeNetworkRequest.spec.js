@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectSendEdgeNetworkRequest from "../../../../../src/core/edgeNetwork/injectSendEdgeNetworkRequest";
-import createConfig from "../../../../../src/core/config/createConfig";
-import { defer } from "../../../../../src/utils";
-import flushPromiseChains from "../../../helpers/flushPromiseChains";
-import assertFunctionCallOrder from "../../../helpers/assertFunctionCallOrder";
+import injectSendEdgeNetworkRequest from "../../../../../src/core/edgeNetwork/injectSendEdgeNetworkRequest.js";
+import createConfig from "../../../../../src/core/config/createConfig.js";
+import { defer } from "../../../../../src/utils/index.js";
+import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
+import assertFunctionCallOrder from "../../../helpers/assertFunctionCallOrder.js";
 
 describe("injectSendEdgeNetworkRequest", () => {
   let config;
@@ -36,7 +36,7 @@ describe("injectSendEdgeNetworkRequest", () => {
   // their interplay with lifecycle hooks.
   const testRequestFailureHandling = ({
     runOnRequestFailureCallbacks,
-    assertLifecycleCall
+    assertLifecycleCall,
   }) => {
     const error = new Error("no connection");
     sendNetworkRequest.and.returnValue(Promise.reject(error));
@@ -60,7 +60,7 @@ describe("injectSendEdgeNetworkRequest", () => {
 
   const testResponseFailureHandling = ({
     runOnRequestFailureCallbacks,
-    assertLifecycleCall
+    assertLifecycleCall,
   }) => {
     const error = new Error("Unexpected response.");
     processWarningsAndErrors.and.throwError(error);
@@ -83,11 +83,11 @@ describe("injectSendEdgeNetworkRequest", () => {
   // their interplay with lifecycle hooks.
   const testResponseSuccessHandling = ({
     runOnResponseCallbacks,
-    assertLifecycleCall
+    assertLifecycleCall,
   }) => {
     const successHandler = jasmine.createSpy("successHandler");
     sendEdgeNetworkRequest({ request, runOnResponseCallbacks }).then(
-      successHandler
+      successHandler,
     );
     return flushPromiseChains()
       .then(() => {
@@ -105,10 +105,10 @@ describe("injectSendEdgeNetworkRequest", () => {
     config = createConfig({
       edgeDomain: "edge.example.com",
       edgeBasePath: "ee",
-      datastreamId: "myconfigId"
+      datastreamId: "myconfigId",
     });
     payload = jasmine.createSpyObj("payload", ["mergeMeta"], {
-      type: "payload"
+      type: "payload",
     });
     request = jasmine.createSpyObj("request", {
       getId: "RID123",
@@ -116,21 +116,22 @@ describe("injectSendEdgeNetworkRequest", () => {
       getPayload: payload,
       getUseIdThirdPartyDomain: false,
       getUseSendBeacon: false,
-      getDatastreamIdOverride: ""
+      getDatastreamIdOverride: "",
+      getEdgeSubPath: "",
     });
     logger = jasmine.createSpyObj("logger", ["info"]);
     lifecycle = jasmine.createSpyObj("lifecycle", {
       onBeforeRequest: Promise.resolve(),
       onRequestFailure: Promise.resolve(),
-      onResponse: Promise.resolve()
+      onResponse: Promise.resolve(),
     });
     cookieTransfer = jasmine.createSpyObj("cookieTransfer", [
       "cookiesToPayload",
-      "responseToCookies"
+      "responseToCookies",
     ]);
     networkResult = {
       parsedBody: { my: "parsedBody" },
-      getHeader: () => "myheader"
+      getHeader: () => "myheader",
     };
     sendNetworkRequest = jasmine
       .createSpy("sendNetworkRequest")
@@ -153,7 +154,7 @@ describe("injectSendEdgeNetworkRequest", () => {
       createResponse,
       processWarningsAndErrors,
       getLocationHint,
-      getAssuranceValidationTokenParams
+      getAssuranceValidationTokenParams,
     });
   });
 
@@ -161,7 +162,7 @@ describe("injectSendEdgeNetworkRequest", () => {
     return sendEdgeNetworkRequest({ request }).then(() => {
       expect(cookieTransfer.cookiesToPayload).toHaveBeenCalledWith(
         payload,
-        "edge.example.com"
+        "edge.example.com",
       );
     });
   });
@@ -176,7 +177,7 @@ describe("injectSendEdgeNetworkRequest", () => {
     return sendEdgeNetworkRequest({ request }).then(() => {
       expect(cookieTransfer.cookiesToPayload).toHaveBeenCalledWith(
         payload,
-        "adobedc.demdex.net"
+        "adobedc.demdex.net",
       );
     });
   });
@@ -185,10 +186,9 @@ describe("injectSendEdgeNetworkRequest", () => {
     return sendEdgeNetworkRequest({ request }).then(() => {
       expect(sendNetworkRequest).toHaveBeenCalledWith({
         requestId: "RID123",
-        url:
-          "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123",
+        url: "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123",
         payload,
-        useSendBeacon: false
+        useSendBeacon: false,
       });
     });
   });
@@ -203,10 +203,9 @@ describe("injectSendEdgeNetworkRequest", () => {
     return sendEdgeNetworkRequest({ request }).then(() => {
       expect(sendNetworkRequest).toHaveBeenCalledWith({
         requestId: "RID123",
-        url:
-          "https://adobedc.demdex.net/ee/v1/test-action?configId=myconfigId&requestId=RID123",
+        url: "https://adobedc.demdex.net/ee/v1/test-action?configId=myconfigId&requestId=RID123",
         payload,
-        useSendBeacon: false
+        useSendBeacon: false,
       });
     });
   });
@@ -221,10 +220,9 @@ describe("injectSendEdgeNetworkRequest", () => {
     return sendEdgeNetworkRequest({ request }).then(() => {
       expect(sendNetworkRequest).toHaveBeenCalledWith({
         requestId: "RID123",
-        url:
-          "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123",
+        url: "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123",
         payload,
-        useSendBeacon: true
+        useSendBeacon: true,
       });
     });
   });
@@ -239,7 +237,7 @@ describe("injectSendEdgeNetworkRequest", () => {
         expect(lifecycle.onBeforeRequest).toHaveBeenCalledWith({
           request,
           onResponse: jasmine.any(Function),
-          onRequestFailure: jasmine.any(Function)
+          onRequestFailure: jasmine.any(Function),
         });
         expect(sendNetworkRequest).not.toHaveBeenCalled();
         deferred.resolve();
@@ -261,7 +259,7 @@ describe("injectSendEdgeNetworkRequest", () => {
         // promise from sendEdgeNetworkRequest is still rejected with the
         // network error rather than the error coming from a component.
         deferred.reject();
-      }
+      },
     });
   });
 
@@ -283,7 +281,7 @@ describe("injectSendEdgeNetworkRequest", () => {
         // rejected with the network error rather than the error coming from
         // a component.
         deferred.reject();
-      }
+      },
     });
   });
 
@@ -301,7 +299,7 @@ describe("injectSendEdgeNetworkRequest", () => {
         // promise from sendEdgeNetworkRequest is still rejected with the
         // network error rather than the error coming from a component.
         deferred.reject();
-      }
+      },
     });
   });
 
@@ -317,7 +315,7 @@ describe("injectSendEdgeNetworkRequest", () => {
         // promise from sendEdgeNetworkRequest is still rejected with the
         // network error rather than the error coming from a component.
         deferred.reject();
-      }
+      },
     });
   });
 
@@ -339,7 +337,7 @@ describe("injectSendEdgeNetworkRequest", () => {
         // rejected with the network error rather than the error coming from
         // a component.
         deferred.reject();
-      }
+      },
     });
   });
 
@@ -357,7 +355,7 @@ describe("injectSendEdgeNetworkRequest", () => {
         // promise from sendEdgeNetworkRequest is still rejected with the
         // network error rather than the error coming from a component.
         deferred.reject();
-      }
+      },
     });
   });
 
@@ -368,7 +366,7 @@ describe("injectSendEdgeNetworkRequest", () => {
       assertLifecycleCall() {
         expect(lifecycle.onResponse).toHaveBeenCalledWith({ response });
         deferred.resolve();
-      }
+      },
     });
   });
 
@@ -385,7 +383,7 @@ describe("injectSendEdgeNetworkRequest", () => {
       assertLifecycleCall() {
         expect(responseCallback).toHaveBeenCalledWith({ response });
         deferred.resolve();
-      }
+      },
     });
   });
 
@@ -399,7 +397,7 @@ describe("injectSendEdgeNetworkRequest", () => {
       assertLifecycleCall() {
         expect(runOnResponseCallbacks).toHaveBeenCalledWith({ response });
         deferred.resolve();
-      }
+      },
     });
   });
 
@@ -408,7 +406,7 @@ describe("injectSendEdgeNetworkRequest", () => {
       expect(cookieTransfer.responseToCookies).toHaveBeenCalledWith(response);
       assertFunctionCallOrder([
         cookieTransfer.responseToCookies,
-        lifecycle.onResponse
+        lifecycle.onResponse,
       ]);
     });
   });
@@ -419,11 +417,11 @@ describe("injectSendEdgeNetworkRequest", () => {
       .and.returnValue(Promise.resolve([{ c: 2 }, { h: 9 }, undefined]));
 
     lifecycle.onResponse.and.returnValue(
-      Promise.resolve([{ a: 2 }, { b: 8 }, undefined])
+      Promise.resolve([{ a: 2 }, { b: 8 }, undefined]),
     );
 
     return expectAsync(
-      sendEdgeNetworkRequest({ request, runOnResponseCallbacks })
+      sendEdgeNetworkRequest({ request, runOnResponseCallbacks }),
     ).toBeResolvedTo({ c: 2, h: 9, a: 2, b: 8 });
   });
 
@@ -438,7 +436,7 @@ describe("injectSendEdgeNetworkRequest", () => {
     return expectAsync(sendEdgeNetworkRequest({ request })).toBeResolvedTo({
       a: 1,
       b: 1,
-      c: 2
+      c: 2,
     });
   });
 
@@ -446,7 +444,7 @@ describe("injectSendEdgeNetworkRequest", () => {
     return sendEdgeNetworkRequest({ request }).then(() => {
       expect(createResponse).toHaveBeenCalledWith({
         content: { my: "parsedBody" },
-        getHeader: networkResult.getHeader
+        getHeader: networkResult.getHeader,
       });
     });
   });
@@ -456,25 +454,23 @@ describe("injectSendEdgeNetworkRequest", () => {
     return sendEdgeNetworkRequest({ request }).then(() => {
       expect(sendNetworkRequest).toHaveBeenCalledWith({
         requestId: "RID123",
-        url:
-          "https://edge.example.com/ee/va6/v1/test-action?configId=myconfigId&requestId=RID123",
+        url: "https://edge.example.com/ee/va6/v1/test-action?configId=myconfigId&requestId=RID123",
         payload,
-        useSendBeacon: false
+        useSendBeacon: false,
       });
     });
   });
 
   it("sets validation token params", () => {
     getAssuranceValidationTokenParams.and.returnValue(
-      "&adobeAepValidationToken=abc-123"
+      "&adobeAepValidationToken=abc-123",
     );
     return sendEdgeNetworkRequest({ request }).then(() => {
       expect(sendNetworkRequest).toHaveBeenCalledWith({
         requestId: "RID123",
-        url:
-          "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123&adobeAepValidationToken=abc-123",
+        url: "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123&adobeAepValidationToken=abc-123",
         payload,
-        useSendBeacon: false
+        useSendBeacon: false,
       });
     });
   });
@@ -483,14 +479,13 @@ describe("injectSendEdgeNetworkRequest", () => {
     request.getDatastreamIdOverride.and.returnValue("myconfigIdOverride");
     return sendEdgeNetworkRequest({ request }).then(() => {
       expect(payload.mergeMeta).toHaveBeenCalledWith({
-        sdkConfig: { datastream: { original: "myconfigId" } }
+        sdkConfig: { datastream: { original: "myconfigId" } },
       });
       expect(sendNetworkRequest).toHaveBeenCalledWith({
         payload,
-        url:
-          "https://edge.example.com/ee/v1/test-action?configId=myconfigIdOverride&requestId=RID123",
+        url: "https://edge.example.com/ee/v1/test-action?configId=myconfigIdOverride&requestId=RID123",
         requestId: "RID123",
-        useSendBeacon: false
+        useSendBeacon: false,
       });
     });
   });

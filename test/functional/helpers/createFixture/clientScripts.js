@@ -14,8 +14,8 @@ import path from "path";
 import fs from "fs";
 import readCache from "read-cache";
 import { ClientFunction } from "testcafe";
-import { INTEGRATION, PRODUCTION } from "../constants/alloyEnvironment";
-import REMOTE_VISITOR_LIBRARY_URL from "../constants/remoteVisitorLibraryUrl";
+import { INTEGRATION, PRODUCTION } from "../constants/alloyEnvironment.js";
+import REMOTE_VISITOR_LIBRARY_URL from "../constants/remoteVisitorLibraryUrl.js";
 
 const alloyEnv = process.env.ALLOY_ENV || INTEGRATION;
 const alloyProdVersion = process.env.ALLOY_PROD_VERSION;
@@ -28,30 +28,30 @@ if (alloyEnv === PRODUCTION) {
     console.log(`ALLOY PROD VERSION: ${alloyProdVersion}`);
   } else {
     throw new Error(
-      "The ALLOY_PROD_VERSION environment variable must be provided when running against the production environment."
+      "The ALLOY_PROD_VERSION environment variable must be provided when running against the production environment.",
     );
   }
 }
 
 const localPromisePolyfillPath = path.join(
   __dirname,
-  "../promisePolyfill/promise-polyfill.min.js"
+  "../promisePolyfill/promise-polyfill.min.js",
 );
 const remotePromisePolyfillPath =
   "https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js";
 
 const baseCodePath = path.join(
   __dirname,
-  "../../../../distTest/baseCode.min.js"
+  "../../../../distTest/baseCode.min.js",
 );
 const localAlloyLibraryPath = path.join(__dirname, "../../../../dist/alloy.js");
 const localNpmLibraryPath = path.join(
   __dirname,
-  "../../../../distTest/npmPackageLocal.js"
+  "../../../../distTest/npmPackageLocal.js",
 );
 const prodNpmLibraryPath = path.join(
   __dirname,
-  "../../../../distTest/npmPackageProd.js"
+  "../../../../distTest/npmPackageProd.js",
 );
 const remoteAlloyLibraryUrl = `https://cdn1.adoberesources.net/alloy/${alloyProdVersion}/alloy.js`;
 
@@ -59,22 +59,18 @@ const remoteAlloyLibraryUrl = `https://cdn1.adoberesources.net/alloy/${alloyProd
 // the library code a single time up-front, because we want every run to be
 // using the latest library code. This is important when developing in watch
 // mode and making changes to source files.
-const getLocalAlloyCode = () => {
+const getLocalAlloyCode = () =>
   // readCache caches file content until the file is modified, at which
   // point it will retrieve fresh file content, cache it, and return it.
-  return readCache.sync(localAlloyLibraryPath, "utf8");
-};
+  readCache.sync(localAlloyLibraryPath, "utf8");
 // This is the javascript built from src/index.js which does not include the
 // baseCode, but exposes a createInstance function.
-const getLocalNpmLibraryCode = () => {
-  return readCache.sync(localNpmLibraryPath, "utf8");
-};
+const getLocalNpmLibraryCode = () =>
+  readCache.sync(localNpmLibraryPath, "utf8");
 // This is the javascript built from the production @adobe/alloy npm Library
-const getProdNpmLibraryCode = () => {
-  return readCache.sync(prodNpmLibraryPath, "utf8");
-};
+const getProdNpmLibraryCode = () => readCache.sync(prodNpmLibraryPath, "utf8");
 
-export const injectInlineScript = ClientFunction(code => {
+export const injectInlineScript = ClientFunction((code) => {
   const scriptElement = document.createElement("script");
   // eslint-disable-next-line no-undef
   scriptElement.innerHTML = code;
@@ -92,7 +88,7 @@ const addRemoteUrlClientScript = ({ clientScripts, url, async = false }) => {
   clientScripts.push({
     content: `document.write('<script src="${url}"${
       async ? " async" : ""
-    }></script>')`
+    }></script>')`,
   });
 };
 
@@ -100,12 +96,12 @@ const addRemoteUrlClientScript = ({ clientScripts, url, async = false }) => {
  * Produces an array of scripts that TestCafe should inject into the <head>
  * when testing Alloy int.
  */
-const getFixtureClientScriptsForInt = options => {
+const getFixtureClientScriptsForInt = (options) => {
   const clientScripts = [];
 
   if (options.monitoringHooksScript) {
     clientScripts.push({
-      content: options.monitoringHooksScript
+      content: options.monitoringHooksScript,
     });
   }
   // We load a promise polyfill because promises aren't supported in IE
@@ -114,19 +110,19 @@ const getFixtureClientScriptsForInt = options => {
   // We could load the Promise polyfill from a CDN, but it would slow down
   // our tests a bit since we would have to go over the wire to load it.
   clientScripts.push({
-    path: localPromisePolyfillPath
+    path: localPromisePolyfillPath,
   });
 
   // Useful for testing Alloy + Visitor interaction.
   if (options.includeVisitorLibrary) {
     addRemoteUrlClientScript({
       clientScripts,
-      url: REMOTE_VISITOR_LIBRARY_URL
+      url: REMOTE_VISITOR_LIBRARY_URL,
     });
   }
 
   clientScripts.push({
-    content: baseCodeWithCustomInstances
+    content: baseCodeWithCustomInstances,
   });
 
   // Typically the Alloy library should be loaded in head. For some tests,
@@ -140,13 +136,13 @@ const getFixtureClientScriptsForInt = options => {
     // like to simulate that. To do so, we'll wrap our Alloy code in a
     // setTimeout with a small arbitrary delay.
     clientScripts.push({
-      content: `setTimeout(function() {\n${getLocalAlloyCode()}\n}, 10);`
+      content: `setTimeout(function() {\n${getLocalAlloyCode()}\n}, 10);`,
     });
   }
 
   if (options.includeNpmLibrary) {
     clientScripts.push({
-      content: getLocalNpmLibraryCode()
+      content: getLocalNpmLibraryCode(),
     });
   }
 
@@ -157,30 +153,30 @@ const getFixtureClientScriptsForInt = options => {
  * Produces an array of scripts that TestCafe should inject into the <head>
  * when testing Alloy prod.
  */
-const getFixtureClientScriptsForProd = options => {
+const getFixtureClientScriptsForProd = (options) => {
   const clientScripts = [];
 
   if (options.monitoringHooksScript) {
     clientScripts.push({
-      content: options.monitoringHooksScript
+      content: options.monitoringHooksScript,
     });
   }
 
   addRemoteUrlClientScript({
     clientScripts,
-    url: remotePromisePolyfillPath
+    url: remotePromisePolyfillPath,
   });
 
   // Useful for testing Alloy + Visitor interaction.
   if (options.includeVisitorLibrary) {
     addRemoteUrlClientScript({
       clientScripts,
-      url: REMOTE_VISITOR_LIBRARY_URL
+      url: REMOTE_VISITOR_LIBRARY_URL,
     });
   }
 
   clientScripts.push({
-    content: baseCodeWithCustomInstances
+    content: baseCodeWithCustomInstances,
   });
 
   // Typically the Alloy library should be loaded in head. For some tests,
@@ -190,13 +186,13 @@ const getFixtureClientScriptsForProd = options => {
     addRemoteUrlClientScript({
       clientScripts,
       url: remoteAlloyLibraryUrl,
-      async: true
+      async: true,
     });
   }
 
   if (options.includeNpmLibrary) {
     clientScripts.push({
-      content: getProdNpmLibraryCode()
+      content: getProdNpmLibraryCode(),
     });
   }
   return clientScripts;
@@ -204,40 +200,38 @@ const getFixtureClientScriptsForProd = options => {
 
 const getFixtureClientScriptsByEnvironment = {
   int: getFixtureClientScriptsForInt,
-  prod: getFixtureClientScriptsForProd
+  prod: getFixtureClientScriptsForProd,
 };
 
 /**
  * Injects Alloy into the page while running a test against Alloy int.
  */
-const injectAlloyDuringTestForInt = () => {
-  return injectInlineScript(getLocalAlloyCode());
-};
+const injectAlloyDuringTestForInt = () =>
+  injectInlineScript(getLocalAlloyCode());
 
 /**
  * Injects Alloy into the page while running a test against Alloy prod.
  */
 const injectAlloyDuringTestForProd = ClientFunction(
-  () => {
-    return new Promise(resolve => {
+  () =>
+    new Promise((resolve) => {
       const scriptElement = document.createElement("script");
       scriptElement.src = remoteAlloyLibraryUrl;
       scriptElement.addEventListener("load", () => {
         resolve();
       });
       document.getElementsByTagName("head")[0].appendChild(scriptElement);
-    });
-  },
+    }),
   {
     dependencies: {
-      remoteAlloyLibraryUrl
-    }
-  }
+      remoteAlloyLibraryUrl,
+    },
+  },
 );
 
 const injectAlloyDuringTestByEnvironment = {
   [INTEGRATION]: injectAlloyDuringTestForInt,
-  [PRODUCTION]: injectAlloyDuringTestForProd
+  [PRODUCTION]: injectAlloyDuringTestForProd,
 };
 
 /**

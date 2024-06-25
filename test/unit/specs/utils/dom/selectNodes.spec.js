@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import selectNodes from "../../../../../src/utils/dom/selectNodes";
+import selectNodes from "../../../../../src/utils/dom/selectNodes.js";
 
 describe("DOM::selectNodes", () => {
   it("should return array when nodes are present", () => {

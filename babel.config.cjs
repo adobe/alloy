@@ -30,26 +30,30 @@ const targets = {
     "last 2 Firefox versions",
     "last 2 Safari versions",
     "last 2 Edge versions",
-    "Explorer >= 10"
-  ]
+    "Explorer >= 10",
+  ],
 };
 
 const transformTemplateLiteralsPlugin = [
   "@babel/plugin-transform-template-literals",
   {
-    loose: true
-  }
+    loose: true,
+  },
 ];
-const versionPlugin = "version";
+const versionPlugin = [
+  "./scripts/helpers/versionBabelPlugin",
+  { cwd: __dirname },
+];
+
 const transformModulesCommonjsPlugin = [
   "@babel/plugin-transform-modules-commonjs",
   {
     strict: true,
-    noInterop: true
-  }
+    noInterop: true,
+  },
 ];
 
-const npmIgnoreFiles = ["src/baseCode.js", "src/standalone.js"];
+const npmIgnoreFiles = ["src/baseCode.js"];
 
 module.exports = {
   env: {
@@ -59,31 +63,31 @@ module.exports = {
           "@babel/preset-env",
           {
             modules: false,
-            targets
-          }
-        ]
+            targets,
+          },
+        ],
       ],
-      plugins: [transformTemplateLiteralsPlugin, versionPlugin]
+      plugins: [transformTemplateLiteralsPlugin, versionPlugin],
     },
     npmEs5: {
       presets: [
         [
           "@babel/preset-env",
           {
-            targets
-          }
-        ]
+            targets,
+          },
+        ],
       ],
       ignore: npmIgnoreFiles,
       plugins: [
         transformTemplateLiteralsPlugin,
         versionPlugin,
-        transformModulesCommonjsPlugin
-      ]
+        transformModulesCommonjsPlugin,
+      ],
     },
     npmEs6: {
       ignore: npmIgnoreFiles,
-      plugins: [versionPlugin]
-    }
-  }
+      plugins: [versionPlugin],
+    },
+  },
 };

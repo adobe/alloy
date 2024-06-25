@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import memoize from "./memoize";
+import memoize from "./memoize.js";
 
 import {
   EDGE,
@@ -19,11 +19,11 @@ import {
   FIREFOX,
   IE,
   SAFARI,
-  UNKNOWN
-} from "../constants/browser";
+  UNKNOWN,
+} from "../constants/browser.js";
 
-const matchUserAgent = regexs => {
-  return userAgent => {
+const matchUserAgent = (regexs) => {
+  return (userAgent) => {
     const keys = Object.keys(regexs);
     for (let i = 0; i < keys.length; i += 1) {
       const key = keys[i];
@@ -36,7 +36,7 @@ const matchUserAgent = regexs => {
   };
 };
 
-export default memoize(window => {
+export default memoize((window) => {
   return matchUserAgent({
     /*
     The MIT License (MIT)
@@ -74,7 +74,7 @@ export default memoize(window => {
     [FIREFOX]: /Firefox\/([0-9\.]+)(?:\s|$)/,
     // This only covers version 11 of IE, but that's all we support.
     [IE]: /Trident\/7\.0.*rv\:([0-9\.]+).*\).*Gecko$/,
-    [SAFARI]: /Version\/([0-9\._]+).*Safari/
+    [SAFARI]: /Version\/([0-9\._]+).*Safari/,
     /* eslint-enable */
   })(window.navigator.userAgent);
 });

@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyString } from "../../../../utils";
+import { isNonEmptyString } from "../../../../utils/index.js";
 
 const EQ_START = ":eq(";
 const EQ_PATTERN = /:eq\((\d+)\)/g;
 
-export const isNotEqSelector = str => str.indexOf(EQ_START) === -1;
+export const isNotEqSelector = (str) => str.indexOf(EQ_START) === -1;
 
-export const splitWithEq = selector => {
+export const splitWithEq = (selector) => {
   return selector.split(EQ_PATTERN).filter(isNonEmptyString);
 };

@@ -10,13 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createFixture from "../../helpers/createFixture";
-import createNetworkLogger from "../../helpers/networkLogger";
-import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import reloadPage from "../../helpers/reloadPage";
-
-const { ADOBE2_IN, ADOBE2_OUT } = require("../../helpers/constants/consent");
+import createFixture from "../../helpers/createFixture/index.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import reloadPage from "../../helpers/reloadPage.js";
+import { ADOBE2_IN, ADOBE2_OUT } from "../../helpers/constants/consent.js";
 
 const networkLogger = createNetworkLogger();
 
@@ -24,19 +23,19 @@ createFixture({
   title: "C1472434: Set-consent is called when consent is different",
   requestHooks: [
     networkLogger.setConsentEndpointLogs,
-    networkLogger.edgeInteractEndpointLogs
-  ]
+    networkLogger.edgeInteractEndpointLogs,
+  ],
 });
 
 test.meta({
   ID: "C1472434",
   SEVERITY: "P0",
-  TEST_RUN: "REGRESSION"
+  TEST_RUN: "REGRESSION",
 });
 
 const configuration = {
   defaultConsent: "pending",
-  ...orgMainConfigMain
+  ...orgMainConfigMain,
 };
 
 test("C1472434: Set-consent is called when consent is different", async () => {

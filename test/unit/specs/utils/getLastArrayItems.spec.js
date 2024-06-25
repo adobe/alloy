@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getLastArrayItems from "../../../../src/utils/getLastArrayItems";
+import getLastArrayItems from "../../../../src/utils/getLastArrayItems.js";
 
 describe("getLastArrayItems", () => {
   const letters = ["a", "b", "c"];

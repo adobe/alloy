@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import describeRequest from "../../../helpers/describeRequest";
-import createConsentRequest from "../../../../../src/components/Privacy/createConsentRequest";
+import describeRequest from "../../../helpers/describeRequest.js";
+import createConsentRequest from "../../../../../src/components/Privacy/createConsentRequest.js";
 
 describe("createConsentRequest", () => {
   describeRequest(createConsentRequest);
@@ -33,7 +33,7 @@ describe("createConsentRequest", () => {
     const datastreamIdOverride = "my-edge-config-id-override";
     const request = createConsentRequest({
       payload,
-      datastreamIdOverride
+      datastreamIdOverride,
     });
     expect(request.getDatastreamIdOverride()).toBe(datastreamIdOverride);
   });

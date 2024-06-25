@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import querySelectorAll from "./querySelectorAll";
-import startsWith from "../startsWith";
-import SHADOW_SEPARATOR from "../../constants/shadowSeparator";
+import querySelectorAll from "./querySelectorAll.js";
+import startsWith from "../startsWith.js";
+import SHADOW_SEPARATOR from "../../constants/shadowSeparator.js";
 
-const splitWithShadow = selector => {
+const splitWithShadow = (selector) => {
   return selector.split(SHADOW_SEPARATOR);
 };
 

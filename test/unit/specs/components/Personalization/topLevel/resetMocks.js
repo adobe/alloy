@@ -15,9 +15,9 @@ export default ({
   sendEvent,
   window,
   hideContainers,
-  showContainers
+  showContainers,
 }) => {
-  Object.keys(actions).forEach(key => {
+  Object.keys(actions).forEach((key) => {
     actions[key].calls.reset();
   });
   logger.warn.calls.reset();

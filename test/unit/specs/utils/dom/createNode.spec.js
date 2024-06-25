@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createNode from "../../../../../src/utils/dom/createNode";
+import createNode from "../../../../../src/utils/dom/createNode.js";
 
 describe("DOM::createNode", () => {
   it("should createNode with tag only", () => {

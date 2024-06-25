@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -22,7 +22,7 @@
     <title>Alloy | Adobe Experience Platform Web SDK</title>
 
     <script>
-      !(function(e, a, n, t) {
+      !(function (e, a, n, t) {
         var i = e.head;
         if (i) {
           if (a) return;
@@ -30,7 +30,7 @@
           (o.id = "alloy-prehiding"),
             (o.innerText = n),
             i.appendChild(o),
-            setTimeout(function() {
+            setTimeout(function () {
               o.parentNode && o.parentNode.removeChild(o);
             }, t);
         }
@@ -38,7 +38,7 @@
         document,
         document.location.href.indexOf("mboxEdit") !== -1,
         ".personalization-container { opacity: 0 !important }",
-        3000
+        3000,
       );
     </script>
 

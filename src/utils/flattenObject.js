@@ -9,13 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const isPlainObject = obj =>
+const isPlainObject = (obj) =>
   obj !== null &&
   typeof obj === "object" &&
   Object.getPrototypeOf(obj) === Object.prototype;
 
 const flattenObject = (obj, result = {}, keys = []) => {
-  Object.keys(obj).forEach(key => {
+  Object.keys(obj).forEach((key) => {
     if (isPlainObject(obj[key]) || Array.isArray(obj[key])) {
       flattenObject(obj[key], result, [...keys, key]);
     } else {
@@ -26,7 +26,7 @@ const flattenObject = (obj, result = {}, keys = []) => {
   return result;
 };
 
-export default obj => {
+export default (obj) => {
   if (!isPlainObject(obj)) {
     return obj;
   }

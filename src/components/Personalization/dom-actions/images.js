@@ -10,21 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createNode, selectNodes } from "../../../utils/dom";
-import { IMG } from "../../../constants/tagName";
-import { SRC } from "../../../constants/elementAttribute";
-import { getAttribute } from "./dom";
+import { createNode, selectNodes } from "../../../utils/dom/index.js";
+import { IMG } from "../../../constants/tagName.js";
+import { SRC } from "../../../constants/elementAttribute.js";
+import { getAttribute } from "./dom/index.js";
 
-export const isImage = element => element.tagName === IMG;
+export const isImage = (element) => element.tagName === IMG;
 
-export const loadImage = url => {
+export const loadImage = (url) => {
   return createNode(IMG, { src: url });
 };
 
-export const loadImages = fragment => {
+export const loadImages = (fragment) => {
   const images = selectNodes(IMG, fragment);
 
-  images.forEach(image => {
+  images.forEach((image) => {
     const url = getAttribute(image, SRC);
 
     if (url) {

@@ -12,66 +12,66 @@ governing permissions and limitations under the License.
 import {
   appendNode,
   createNode,
-  selectNodes,
-  removeNode
-} from "../../../../../../src/utils/dom";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
+} from "../../../../../../src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import { DOM_ACTION_CUSTOM_CODE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::customCode", () => {
+  let decorateProposition;
+  let customCode;
+  let element;
+
   beforeEach(() => {
-    selectNodes(".customCode").forEach(removeNode);
+    cleanUpDomChanges("customCode");
     delete window.someEvar123;
+
+    decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_CUSTOM_CODE,
+    });
+
+    const modules = initDomActionsModules();
+    ({ customCode } = modules);
   });
 
   afterEach(() => {
-    selectNodes(".customCode").forEach(removeNode);
+    cleanUpDomChanges("customCode");
     delete window.someEvar123;
   });
 
-  it("should set content in container that has children", () => {
-    const modules = initDomActionsModules();
-    const { customCode } = modules;
-    const element = createNode("div", { class: "customCode" });
+  it("should set content in container that has children", async () => {
+    element = createNode("div", { id: "customCode", class: "customCode" });
     element.innerHTML = `<div id="inner1"></div><div id="inner2"></div>`;
-    const elements = [element];
-
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: ".customCode",
       prehidingSelector: ".customCode",
       content: "<p>Hola!</p>",
-      meta
+      meta: { a: 1 },
     };
-    const event = { elements };
 
-    return customCode(settings, event).then(() => {
-      expect(elements[0].innerHTML).toEqual(
-        `<p>Hola!</p><div id="inner1"></div><div id="inner2"></div>`
-      );
-    });
+    await customCode(settings, decorateProposition);
+    expect(element.innerHTML).toMatch(
+      /<p data-aep-interact-id="\d+" data-aep-click-label="trackingLabel">Hola!<\/p><div id="inner1"><\/div><div id="inner2"><\/div>/,
+    );
   });
 
-  it("should set content in container that has NO children", () => {
-    const modules = initDomActionsModules();
-    const { customCode } = modules;
-    const element = createNode("div", { class: "customCode" });
-    const elements = [element];
-
+  it("should set content in container that has NO children", async () => {
+    element = createNode("div", { id: "customCode", class: "customCode" });
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: ".customCode",
       prehidingSelector: ".customCode",
       content: "<p>Hola!</p><div>Hello</div>",
-      meta
+      meta: { a: 1 },
     };
-    const event = { elements };
 
-    return customCode(settings, event).then(() => {
-      expect(elements[0].innerHTML).toEqual(`<p>Hola!</p><div>Hello</div>`);
-    });
+    await customCode(settings, decorateProposition);
+    expect(element.innerHTML).toMatch(
+      /<p data-aep-interact-id="\d+" data-aep-click-label="trackingLabel">Hola!<\/p><div data-aep-interact-id="\d+" data-aep-click-label="trackingLabel">Hello<\/div>/,
+    );
   });
 });

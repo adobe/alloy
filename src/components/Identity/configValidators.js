@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, objectOf } from "../../utils/validation";
+import { boolean, objectOf } from "../../utils/validation/index.js";
 
 const configValidators = objectOf({
   thirdPartyCookiesEnabled: boolean().default(true),
-  idMigrationEnabled: boolean().default(true)
+  idMigrationEnabled: boolean().default(true),
 });
 
 export default configValidators;

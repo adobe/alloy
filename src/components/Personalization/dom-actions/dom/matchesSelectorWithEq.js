@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { matchesSelector } from "../../../../utils/dom";
-import { isNotEqSelector } from "./helperForEq";
-import { selectNodesWithEq } from "./selectNodesWithEq";
+import { matchesSelector } from "../../../../utils/dom/index.js";
+import { isNotEqSelector } from "./helperForEq.js";
+import { selectNodesWithEq } from "./selectNodesWithEq.js";
 
 export default (selector, element) => {
   if (isNotEqSelector(selector)) {

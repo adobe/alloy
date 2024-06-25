@@ -12,8 +12,8 @@ governing permissions and limitations under the License.
 import {
   mockWindow,
   setupResponseHandler,
-  proposition
-} from "./contextTestUtils";
+  proposition,
+} from "./contextTestUtils.js";
 
 describe("DecisioningEngine:globalContext:page", () => {
   let applyResponse;
@@ -25,22 +25,24 @@ describe("DecisioningEngine:globalContext:page", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home"
+        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home",
       }),
       {
         definition: {
           key: "page.url",
           matcher: "eq",
-          values: ["https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home"]
+          values: [
+            "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home",
+          ],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -48,22 +50,24 @@ describe("DecisioningEngine:globalContext:page", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home"
+        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home",
       }),
       {
         definition: {
           key: "page.url",
           matcher: "eq",
-          values: ["https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home"]
+          values: [
+            "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home",
+          ],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -71,22 +75,22 @@ describe("DecisioningEngine:globalContext:page", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home"
+        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home",
       }),
       {
         definition: {
           key: "page.domain",
           matcher: "eq",
-          values: ["pro.mywebsite.org"]
+          values: ["pro.mywebsite.org"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -94,22 +98,22 @@ describe("DecisioningEngine:globalContext:page", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home"
+        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home",
       }),
       {
         definition: {
           key: "page.domain",
           matcher: "eq",
-          values: ["pro.mywebsite.com"]
+          values: ["pro.mywebsite.com"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -117,22 +121,22 @@ describe("DecisioningEngine:globalContext:page", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home"
+        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home",
       }),
       {
         definition: {
           key: "page.subdomain",
           matcher: "eq",
-          values: ["pro"]
+          values: ["pro"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
   // Note that we have custom parse url [refer to implementation] which will give empty string in case of www
@@ -140,22 +144,22 @@ describe("DecisioningEngine:globalContext:page", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        url: "https://www.mywebsite.org:8080/about?m=1&t=5&name=bob#home"
+        url: "https://www.mywebsite.org:8080/about?m=1&t=5&name=bob#home",
       }),
       {
         definition: {
           key: "page.subdomain",
           matcher: "eq",
-          values: ["www"]
+          values: ["www"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -163,22 +167,22 @@ describe("DecisioningEngine:globalContext:page", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home"
+        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home",
       }),
       {
         definition: {
           key: "page.topLevelDomain",
           matcher: "eq",
-          values: ["org"]
+          values: ["org"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -186,22 +190,22 @@ describe("DecisioningEngine:globalContext:page", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home"
+        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home",
       }),
       {
         definition: {
           key: "page.topLevelDomain",
           matcher: "eq",
-          values: ["com"]
+          values: ["com"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -209,22 +213,22 @@ describe("DecisioningEngine:globalContext:page", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home"
+        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home",
       }),
       {
         definition: {
           key: "page.path",
           matcher: "eq",
-          values: ["/about"]
+          values: ["/about"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -232,22 +236,22 @@ describe("DecisioningEngine:globalContext:page", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home"
+        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home",
       }),
       {
         definition: {
           key: "page.path",
           matcher: "eq",
-          values: ["/home"]
+          values: ["/home"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -255,22 +259,22 @@ describe("DecisioningEngine:globalContext:page", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home"
+        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home",
       }),
       {
         definition: {
           key: "page.query",
           matcher: "co",
-          values: ["name=bob"]
+          values: ["name=bob"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -278,22 +282,22 @@ describe("DecisioningEngine:globalContext:page", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home"
+        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home",
       }),
       {
         definition: {
           key: "page.query",
           matcher: "co",
-          values: ["name=bob"]
+          values: ["name=bob"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -301,22 +305,22 @@ describe("DecisioningEngine:globalContext:page", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home"
+        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#home",
       }),
       {
         definition: {
           key: "page.fragment",
           matcher: "eq",
-          values: ["home"]
+          values: ["home"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -324,22 +328,22 @@ describe("DecisioningEngine:globalContext:page", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#about"
+        url: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#about",
       }),
       {
         definition: {
           key: "page.fragment",
           matcher: "eq",
-          values: ["home"]
+          values: ["home"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 });

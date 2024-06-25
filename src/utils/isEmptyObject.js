@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isObject from "./isObject";
+import isObject from "./isObject.js";
 
 /**
  * Returns whether the value is an empty object.
  * @param {*} value
  * @returns {boolean}
  */
-export default value => isObject(value) && Object.keys(value).length === 0;
+export default (value) => isObject(value) && Object.keys(value).length === 0;

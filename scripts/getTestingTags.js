@@ -12,8 +12,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { Octokit } = require("@octokit/rest");
-const semver = require("semver");
+import { Octokit } from "@octokit/rest";
+import semver from "semver";
 
 // Outputs the production version of Alloy. This is calculated
 // by looking up the latest release in Github that is neither
@@ -27,27 +27,26 @@ const octokit = new Octokit({
   // (15000/hr if we upgrade to a GitHub Enterprise Cloud account).
   // We'll use the Github token when it's available (when this script
   // is running as part of a Github workflow).
-  auth: process.env.GITHUB_TOKEN
+  auth: process.env.GITHUB_TOKEN,
 });
 
-module.exports = () => {
-  return octokit.paginate(
+export default () =>
+  octokit.paginate(
     octokit.repos.listReleases,
     {
       owner: "adobe",
-      repo: "alloy"
+      repo: "alloy",
     },
     ({ data: releases }, done) => {
       const prodReleases = releases
-        .filter(release => !release.draft && !release.prerelease)
-        .map(release => release.tag_name);
-      const prodReleasesToTest = prodReleases.filter(tag =>
-        semver.lte("2.12.0", semver.clean(tag))
+        .filter((release) => !release.draft && !release.prerelease)
+        .map((release) => release.tag_name);
+      const prodReleasesToTest = prodReleases.filter((tag) =>
+        semver.lte("2.12.0", semver.clean(tag)),
       );
       if (prodReleasesToTest.length < prodReleases.length) {
         done();
       }
       return prodReleasesToTest;
-    }
+    },
   );
-};

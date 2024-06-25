@@ -16,6 +16,6 @@ governing permissions and limitations under the License.
  * @param {Object} obj
  * @returns {Array}
  */
-export default obj => {
-  return Object.keys(obj).map(key => obj[key]);
+export default (obj) => {
+  return Object.keys(obj).map((key) => obj[key]);
 };

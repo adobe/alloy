@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createFixture from "../../helpers/createFixture";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createNetworkLogger from "../../helpers/networkLogger";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
 
 const config = compose(orgMainConfigMain, debugEnabled);
 
@@ -26,13 +26,13 @@ const networkLogger = createNetworkLogger();
 createFixture({
   title: "C15325239: Top and bottom of page",
   url: `${TEST_PAGE_URL}?test=C15325239`,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C15325239",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C15325239: Multiple top of page calls are supported.", async () => {
@@ -42,20 +42,20 @@ test("Test C15325239: Multiple top of page calls are supported.", async () => {
     renderDecisions: true,
     type: "decisioning.propositionFetch",
     personalization: {
-      sendDisplayEvent: false
-    }
+      sendDisplayEvent: false,
+    },
   });
   await alloy.sendEvent({
     type: "decisioning.propositionFetch",
     personalization: {
       decisionScopes: ["foo"],
-      sendDisplayEvent: false
-    }
+      sendDisplayEvent: false,
+    },
   });
   await alloy.sendEventAsync({
     personalization: {
-      includeRenderedPropositions: true
-    }
+      includeRenderedPropositions: true,
+    },
   });
 
   await t.expect(networkLogger.edgeEndpointLogs.count(() => true)).eql(3);

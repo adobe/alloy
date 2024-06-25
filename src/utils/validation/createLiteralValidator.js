@@ -9,9 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { assertValid } from "./utils";
+import { assertValid } from "./utils.js";
 
-export default literalValue => (value, path) => {
+export default (literalValue) => (value, path) => {
   assertValid(value === literalValue, value, path, `${literalValue}`);
   return value;
 };

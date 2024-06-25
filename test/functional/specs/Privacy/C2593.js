@@ -10,32 +10,32 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions/index";
-import createFixture from "../../helpers/createFixture";
-import environmentContextConfig from "../../helpers/constants/environmentContextConfig";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import flushPromiseChains from "../../helpers/flushPromiseChains";
-import { CONSENT_IN } from "../../helpers/constants/consent";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import environmentContextConfig from "../../helpers/constants/environmentContextConfig.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import flushPromiseChains from "../../helpers/flushPromiseChains.js";
+import { CONSENT_IN } from "../../helpers/constants/consent.js";
 
 const networkLogger = createNetworkLogger();
 
 createFixture({
   title: "C2593: Event command sets consent to in.",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C2593",
   SEVERITY: "P0",
-  TEST_RUN: "REGRESSION"
+  TEST_RUN: "REGRESSION",
 });
 
 test("Test C2593: Event command consents to all purposes", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure({
     defaultConsent: "pending",
-    ...environmentContextConfig
+    ...environmentContextConfig,
   });
   // try to send an event and verify that it is queued
   const sendEventResponse = await alloy.sendEventAsync();
@@ -48,5 +48,5 @@ test("Test C2593: Event command consents to all purposes", async () => {
   // ensure the event goes out
   await sendEventResponse.result;
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 });

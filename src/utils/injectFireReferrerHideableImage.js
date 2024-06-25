@@ -10,31 +10,31 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import fireImageInDocument from "./fireImage";
+import fireImageInDocument from "./fireImage.js";
 import {
   appendNode as appendNodeToDocument,
   awaitSelector as awaitSelectorInDocument,
-  createNode as createNodeInDocument
-} from "./dom";
-import { BODY, IFRAME } from "../constants/tagName";
+  createNode as createNodeInDocument,
+} from "./dom/index.js";
+import { BODY, IFRAME } from "../constants/tagName.js";
 
 const IFRAME_ATTRS = {
-  name: "Adobe Alloy"
+  name: "Adobe Alloy",
 };
 
 const IFRAME_PROPS = {
   style: {
     display: "none",
     width: 0,
-    height: 0
-  }
+    height: 0,
+  },
 };
 
 export default ({
   appendNode = appendNodeToDocument,
   awaitSelector = awaitSelectorInDocument,
   createNode = createNodeInDocument,
-  fireImage = fireImageInDocument
+  fireImage = fireImageInDocument,
 } = {}) => {
   const fireOnPage = fireImage;
 
@@ -51,13 +51,13 @@ export default ({
   };
 
   const fireInIframe = ({ src }) => {
-    return createIframe().then(iframe => {
+    return createIframe().then((iframe) => {
       const currentDocument = iframe.contentWindow.document;
       return fireImage({ src, currentDocument });
     });
   };
 
-  return request => {
+  return (request) => {
     const { hideReferrer, url } = request;
     return hideReferrer ? fireInIframe({ src: url }) : fireOnPage({ src: url });
   };

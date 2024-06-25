@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isAuthoringModeEnabled from "../../../../../../src/components/Personalization/utils/isAuthoringModeEnabled";
+import isAuthoringModeEnabled from "../../../../../../src/components/Personalization/utils/isAuthoringModeEnabled.js";
 
 describe("Personalization::isAuthoringModeEnabled", () => {
   it("returns true if authoring mode is enabled", () => {
     const doc = {
       location: {
-        href: "http://foo.com?adobe_authoring_enabled=1"
-      }
+        href: "http://foo.com?adobe_authoring_enabled=1",
+      },
     };
     expect(isAuthoringModeEnabled(doc)).toEqual(true);
   });
@@ -25,8 +25,8 @@ describe("Personalization::isAuthoringModeEnabled", () => {
   it("returns false if authoring mode is disabled", () => {
     const doc = {
       location: {
-        href: "http://foo.com"
-      }
+        href: "http://foo.com",
+      },
     };
     expect(isAuthoringModeEnabled(doc)).toEqual(false);
   });

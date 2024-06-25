@@ -15,4 +15,4 @@ governing permissions and limitations under the License.
  * @param {*} value
  * @returns {boolean}
  */
-export default value => value == null;
+export default (value) => value == null;

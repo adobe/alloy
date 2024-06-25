@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import RulesEngine from "@adobe/aep-rules-engine";
-import { JSON_CONTENT_ITEM, RULESET_ITEM } from "../../constants/schema";
-import { DISPLAY } from "../../constants/eventType";
-import { getActivityId } from "./utils";
+import { JSON_CONTENT_ITEM, RULESET_ITEM } from "../../constants/schema.js";
+import { DISPLAY } from "../../constants/eventType.js";
+import { getActivityId } from "./utils.js";
 
-import flattenArray from "../../utils/flattenArray";
-import createConsequenceAdapter from "./createConsequenceAdapter";
+import flattenArray from "../../utils/flattenArray.js";
+import createConsequenceAdapter from "./createConsequenceAdapter.js";
 
-const isRulesetItem = item => {
+const isRulesetItem = (item) => {
   const { schema, data } = item;
 
   if (schema === RULESET_ITEM) {
@@ -49,7 +49,7 @@ export default (payload, eventRegistry, decisionHistory) => {
   const activityId = getActivityId(payload);
   const items = [];
 
-  const addItem = item => {
+  const addItem = (item) => {
     const { data = {}, schema } = item;
 
     const content = schema === RULESET_ITEM ? data : data.content;
@@ -59,11 +59,11 @@ export default (payload, eventRegistry, decisionHistory) => {
     }
 
     items.push(
-      RulesEngine(typeof content === "string" ? JSON.parse(content) : content)
+      RulesEngine(typeof content === "string" ? JSON.parse(content) : content),
     );
   };
 
-  const evaluate = context => {
+  const evaluate = (context) => {
     const displayEvent = eventRegistry.getEvent(DISPLAY, activityId);
 
     const displayedDate = displayEvent
@@ -71,22 +71,22 @@ export default (payload, eventRegistry, decisionHistory) => {
       : undefined;
 
     const qualifyingItems = flattenArray(
-      items.map(item => item.execute(context))
+      items.map((item) => item.execute(context)),
     )
       .map(consequenceAdapter)
-      .map(item => {
+      .map((item) => {
         const { firstTimestamp: qualifiedDate } =
           decisionHistory.recordQualified(activityId) || {};
 
         return {
           ...item,
-          data: { ...item.data, qualifiedDate, displayedDate }
+          data: { ...item.data, qualifiedDate, displayedDate },
         };
       });
 
     return {
       ...payload,
-      items: qualifyingItems
+      items: qualifyingItems,
     };
   };
 
@@ -96,6 +96,6 @@ export default (payload, eventRegistry, decisionHistory) => {
 
   return {
     evaluate,
-    isEvaluable: items.length > 0
+    isEvaluable: items.length > 0,
   };
 };

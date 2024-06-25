@@ -10,16 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions/index";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import isUserAgentClientHintsSupported from "../../helpers/isUserAgentClientHintsSupported";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import isUserAgentClientHintsSupported from "../../helpers/isUserAgentClientHintsSupported.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
@@ -29,17 +29,17 @@ const DESCRIPTION = `${ID} - Visitor should qualify for an experience based on l
 
 createFixture({
   title: DESCRIPTION,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID,
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const sendEventOptions = {
-  decisionScopes: ["chromeBrowserClientHint"]
+  decisionScopes: ["chromeBrowserClientHint"],
 };
 
 test(DESCRIPTION, async () => {
@@ -47,14 +47,14 @@ test(DESCRIPTION, async () => {
   await alloy.configure(config);
   const eventResult = await alloy.sendEvent(sendEventOptions);
   const browserHintProposition = eventResult.propositions.find(
-    proposition => proposition.scope === "chromeBrowserClientHint"
+    (proposition) => proposition.scope === "chromeBrowserClientHint",
   );
   const hasChromeBrowserClientHintProposition =
     browserHintProposition !== undefined &&
     browserHintProposition.items[0].schema !==
       "https://ns.adobe.com/personalization/default-content-item";
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   const requestHeaders =

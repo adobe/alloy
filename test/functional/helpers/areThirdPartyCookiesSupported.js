@@ -14,14 +14,14 @@ import {
   CHROME,
   CHROMIUM,
   EDGE,
-  INTERNET_EXPLORER
-} from "./constants/browsers";
+  INTERNET_EXPLORER,
+} from "./constants/browsers.js";
 
 const browsersSupportingThirdPartyCookiesByDefault = [
   CHROME,
   CHROMIUM,
   EDGE,
-  INTERNET_EXPLORER
+  INTERNET_EXPLORER,
 ];
 
 // This must be a function called during the test, otherwise TestCafe will throw

@@ -11,24 +11,24 @@ governing permissions and limitations under the License.
 */
 
 import { t } from "testcafe";
-import createFixture from "../../helpers/createFixture";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createRandomEcid from "../../helpers/createRandomEcid";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
-import { CONSENT_IN } from "../../helpers/constants/consent";
-import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid";
-import createAdobeMC from "../../helpers/createAdobeMC";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createRandomEcid from "../../helpers/createRandomEcid.js";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
+import { CONSENT_IN } from "../../helpers/constants/consent.js";
+import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid.js";
+import createAdobeMC from "../../helpers/createAdobeMC.js";
 
 const config = compose(
   orgMainConfigMain,
   { defaultConsent: "pending" },
-  debugEnabled
+  debugEnabled,
 );
 
 const networkLogger = createNetworkLogger();
@@ -40,13 +40,13 @@ createFixture({
   url: `${TEST_PAGE_URL}?adobe_mc=${adobemc}`,
   title:
     "C5594870: Identity can be set via the adobe_mc query string parameter when calling set-consent",
-  requestHooks: [networkLogger.setConsentEndpointLogs]
+  requestHooks: [networkLogger.setConsentEndpointLogs],
 });
 
 test.meta({
   ID: "C5594870",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("C5594870: Identity can be set via the adobe_mc query string parameter when calling set-consent", async () => {
@@ -55,7 +55,7 @@ test("C5594870: Identity can be set via the adobe_mc query string parameter when
 
   await alloy.setConsent(CONSENT_IN);
   const ecid = getReturnedEcid(
-    networkLogger.setConsentEndpointLogs.requests[0]
+    networkLogger.setConsentEndpointLogs.requests[0],
   );
   await t.expect(ecid).eql(id);
 });

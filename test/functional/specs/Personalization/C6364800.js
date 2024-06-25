@@ -10,20 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t, ClientFunction, Selector } from "testcafe";
-import fetch from "node-fetch";
-import uuid from "uuid/v4";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
-import { compose, debugEnabled } from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import getBaseConfig from "../../helpers/getBaseConfig";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
-import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
+import { v4 as uuidv4 } from "uuid";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import {
+  compose,
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import getBaseConfig from "../../helpers/getBaseConfig.js";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
+import addHtmlToBody from "../../helpers/dom/addHtmlToBody.js";
 import {
   testPageBody,
-  testPageHead
-} from "../../fixtures/Personalization/C6364800";
-import addHtmlToHeader from "../../helpers/dom/addHtmlToHeader";
+  testPageHead,
+} from "../../fixtures/Personalization/C6364800.js";
+import addHtmlToHeader from "../../helpers/dom/addHtmlToHeader.js";
 
 const networkLogger = createNetworkLogger();
 const organizationId = "97D1F3F459CE0AD80A495CBE@AdobeOrg";
@@ -33,8 +35,8 @@ const testMboxName = "sample-json-offer";
 const orgMainConfigMain = getBaseConfig(organizationId, dataStreamId);
 const config = compose(orgMainConfigMain, debugEnabled);
 
-const convertHeadersToSimpleJson = res => {
-  const headersPromise = new Promise(resolve => {
+const convertHeadersToSimpleJson = (res) => {
+  const headersPromise = new Promise((resolve) => {
     const result = {};
     // eslint-disable-next-line no-restricted-syntax
     for (const pair of res.headers.entries()) {
@@ -46,25 +48,25 @@ const convertHeadersToSimpleJson = res => {
   return Promise.all([headersPromise, res.json()]);
 };
 
-const getAepEdgeResponse = async requestId => {
+const getAepEdgeResponse = async (requestId) => {
   const requestBody = {
     event: {
       xdm: {
         web: {
           webPageDetails: {
-            URL: "http://localhost/"
+            URL: "http://localhost/",
           },
           webReferrer: {
-            URL: ""
-          }
+            URL: "",
+          },
         },
-        timestamp: "2022-07-13T17:48:20.134Z"
+        timestamp: "2022-07-13T17:48:20.134Z",
       },
-      data: {}
+      data: {},
     },
     query: {
       identity: {
-        fetch: ["ECID"]
+        fetch: ["ECID"],
       },
       personalization: {
         schemas: [
@@ -72,10 +74,10 @@ const getAepEdgeResponse = async requestId => {
           "https://ns.adobe.com/personalization/html-content-item",
           "https://ns.adobe.com/personalization/json-content-item",
           "https://ns.adobe.com/personalization/redirect-item",
-          "https://ns.adobe.com/personalization/dom-action"
+          "https://ns.adobe.com/personalization/dom-action",
         ],
-        decisionScopes: ["__view__", testMboxName]
-      }
+        decisionScopes: ["__view__", testMboxName],
+      },
     },
     meta: {
       state: {
@@ -85,20 +87,20 @@ const getAepEdgeResponse = async requestId => {
           {
             key: "kndctr_97D1F3F459CE0AD80A495CBE_AdobeOrg_identity",
             value:
-              "CiY2MDgwODYyMjY3NzUyNDQ4NzE4NDE0NzEzMDExMzQyMTQ4NjY4MFIOCKy2hPOeMBgBKgNPUjLwAcKt2ZyfMA=="
+              "CiY2MDgwODYyMjY3NzUyNDQ4NzE4NDE0NzEzMDExMzQyMTQ4NjY4MFIOCKy2hPOeMBgBKgNPUjLwAcKt2ZyfMA==",
           },
           {
             key: "kndctr_97D1F3F459CE0AD80A495CBE_AdobeOrg_cluster",
-            value: "or2"
+            value: "or2",
           },
           {
             key: "at_qa_mode",
             value:
-              '{"token":"xFgbBknmbC1SwBodlfVLxgF5KVrsCNsY4g8dvHk0wA0","listedActivitiesOnly":true,"previewIndexes":[{"activityIndex":1,"experienceIndex":1}]}'
-          }
-        ]
-      }
-    }
+              '{"token":"xFgbBknmbC1SwBodlfVLxgF5KVrsCNsY4g8dvHk0wA0","listedActivitiesOnly":true,"previewIndexes":[{"activityIndex":1,"experienceIndex":1}]}',
+          },
+        ],
+      },
+    },
   };
 
   return fetch(
@@ -115,25 +117,25 @@ const getAepEdgeResponse = async requestId => {
         "sec-fetch-site": "cross-site",
         "sec-gpc": "1",
         "Referrer-Policy": "strict-origin-when-cross-origin",
-        Referer: "http://localhost/"
+        Referer: "http://localhost/",
       },
       body: JSON.stringify(requestBody),
-      method: "POST"
-    }
+      method: "POST",
+    },
   ).then(convertHeadersToSimpleJson);
 };
 
 test.meta({
   ID: "C6364800",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 createFixture({
   title:
     "C6364800 applyResponse accepts a response, updates DOM and returns decisions",
   url: `${TEST_PAGE_URL}?test=C6364800`,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 const getPageHeaderText = ClientFunction(() => {
@@ -154,11 +156,11 @@ const getAlertText = ClientFunction(() => {
   return element.innerText;
 });
 
-const getEdgeResponseDecision = responseBody => {
+const getEdgeResponseDecision = (responseBody) => {
   const { handle = [] } = responseBody;
 
   const personalization = handle.find(
-    h => h.type === "personalization:decisions"
+    (h) => h.type === "personalization:decisions",
   );
 
   if (!personalization) {
@@ -166,12 +168,12 @@ const getEdgeResponseDecision = responseBody => {
   }
 
   return personalization.payload.find(
-    decision => decision.scope === testMboxName
+    (decision) => decision.scope === testMboxName,
   );
 };
 
 test("C6364800 applyResponse accepts a response, updates DOM and returns decisions", async () => {
-  const [responseHeaders, responseBody] = await getAepEdgeResponse(uuid());
+  const [responseHeaders, responseBody] = await getAepEdgeResponse(uuidv4());
 
   await addHtmlToHeader(testPageHead);
   await addHtmlToBody(testPageBody, true);
@@ -181,13 +183,13 @@ test("C6364800 applyResponse accepts a response, updates DOM and returns decisio
   const { decisions } = await alloy.applyResponse({
     renderDecisions: true,
     responseHeaders,
-    responseBody
+    responseBody,
   });
 
   const edgeResponseDecision = getEdgeResponseDecision(responseBody);
 
   const alloyDecision = decisions.find(
-    decision => decision.scope === testMboxName
+    (decision) => decision.scope === testMboxName,
   );
 
   // validate the decision is found in the result for a target form-based activity
@@ -204,7 +206,7 @@ test("C6364800 applyResponse accepts a response, updates DOM and returns decisio
 });
 
 test("C6364800 applyResponse applies personalization when called after a sendEvent", async () => {
-  const [responseHeaders, responseBody] = await getAepEdgeResponse(uuid());
+  const [responseHeaders, responseBody] = await getAepEdgeResponse(uuidv4());
 
   await addHtmlToHeader(testPageHead);
   await addHtmlToBody(testPageBody, true);
@@ -215,13 +217,13 @@ test("C6364800 applyResponse applies personalization when called after a sendEve
   const { decisions } = await alloy.applyResponse({
     renderDecisions: true,
     responseHeaders,
-    responseBody
+    responseBody,
   });
 
   const edgeResponseDecision = getEdgeResponseDecision(responseBody);
 
   const alloyDecision = decisions.find(
-    decision => decision.scope === testMboxName
+    (decision) => decision.scope === testMboxName,
   );
 
   // validate the decision is found in the result for a target form-based activity

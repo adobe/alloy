@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createStoredConsent from "../../../../../src/components/Privacy/createStoredConsent";
+import createStoredConsent from "../../../../../src/components/Privacy/createStoredConsent.js";
 
 describe("Privacy:createStoredConsent", () => {
   let parseConsentCookie;
@@ -23,7 +23,7 @@ describe("Privacy:createStoredConsent", () => {
     storedConsent = createStoredConsent({
       parseConsentCookie,
       orgId,
-      cookieJar
+      cookieJar,
     });
   });
 
@@ -43,14 +43,14 @@ describe("Privacy:createStoredConsent", () => {
   it("uses the correct cookie name", () => {
     storedConsent.read();
     expect(cookieJar.get).toHaveBeenCalledWith(
-      "kndctr_myorgid_mycompany_consent"
+      "kndctr_myorgid_mycompany_consent",
     );
   });
 
   it("removes the cookie", () => {
     storedConsent.clear();
     expect(cookieJar.remove).toHaveBeenCalledWith(
-      "kndctr_myorgid_mycompany_consent"
+      "kndctr_myorgid_mycompany_consent",
     );
   });
 });

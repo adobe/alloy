@@ -10,36 +10,36 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createLoggingCookieJar, cookieJar } from "../../utils";
-import injectProcessDestinations from "./injectProcessDestinations";
-import injectProcessResponse from "./injectProcessResponse";
+import { createLoggingCookieJar, cookieJar } from "../../utils/index.js";
+import injectProcessDestinations from "./injectProcessDestinations.js";
+import injectProcessResponse from "./injectProcessResponse.js";
 
 const createAudiences = ({ logger, fireReferrerHideableImage }) => {
   // we override the js-cookie converter to encode the cookie value similar on how it is in DIL (PDCL-10238)
   const cookieJarWithEncoding = cookieJar.withConverter({
-    write: value => {
+    write: (value) => {
       return encodeURIComponent(value);
-    }
+    },
   });
   const loggingCookieJar = createLoggingCookieJar({
     logger,
-    cookieJar: cookieJarWithEncoding
+    cookieJar: cookieJarWithEncoding,
   });
 
   const processDestinations = injectProcessDestinations({
     fireReferrerHideableImage,
     logger,
     cookieJar: loggingCookieJar,
-    isPageSsl: window.location.protocol === "https:"
+    isPageSsl: window.location.protocol === "https:",
   });
 
   const processResponse = injectProcessResponse({ processDestinations });
 
   return {
     lifecycle: {
-      onResponse: processResponse
+      onResponse: processResponse,
     },
-    commands: {}
+    commands: {},
   };
 };
 

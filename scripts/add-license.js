@@ -11,12 +11,16 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const fs = require("fs");
-const path = require("path");
-const stagedGitFiles = require("staged-git-files");
-const Handlebars = require("handlebars");
+import fs from "fs";
+import path from "path";
+import stagedGitFiles from "staged-git-files";
+import Handlebars from "handlebars";
+import { fileURLToPath } from "url";
 
-const PROJECT_ROOT = path.resolve(__dirname, "../");
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
+
+const PROJECT_ROOT = path.resolve(dirname, "../");
 const SOURCE_TEMPLATE = "source-header.handlebars";
 
 const GIT_DELETED = "Deleted";
@@ -27,22 +31,22 @@ const IGNORE_PATTERNS = [
   /launch.+\.js/gi,
   /at\.js/gi,
   /\.min\.js/gi,
-  /AppMeasurement/gi
+  /AppMeasurement/gi,
 ];
 
 const walk = async (dir, matchesFilter) => {
   let files = fs.readdirSync(dir);
   files = await Promise.all(
     files
-      .filter(file => matchesFilter(file, dir))
-      .map(async file => {
+      .filter((file) => matchesFilter(file, dir))
+      .map(async (file) => {
         const filePath = path.join(dir, file);
         const stats = fs.statSync(filePath);
         if (stats.isDirectory()) {
           return walk(filePath, matchesFilter);
         }
         return filePath;
-      })
+      }),
   );
 
   return files.reduce((all, folderContents) => all.concat(folderContents), []);
@@ -50,7 +54,7 @@ const walk = async (dir, matchesFilter) => {
 
 const getStagedGitFiles = async () => {
   return (await stagedGitFiles())
-    .filter(detail => {
+    .filter((detail) => {
       const parts = detail.filename.split(".");
       return (
         detail.status !== GIT_DELETED &&
@@ -58,7 +62,7 @@ const getStagedGitFiles = async () => {
         SOURCE_FILE_EXTENSIONS.indexOf(parts[1]) > -1
       );
     })
-    .map(detail => path.join(PROJECT_ROOT, detail.filename));
+    .map((detail) => path.join(PROJECT_ROOT, detail.filename));
 };
 
 const getAllSourceFiles = async () => {
@@ -93,14 +97,14 @@ const run = async () => {
   const stagedOnly = typeof process.env.STAGED_ONLY !== "undefined";
 
   const template = fs.readFileSync(
-    path.resolve(__dirname, SOURCE_TEMPLATE),
-    "utf-8"
+    path.resolve(dirname, SOURCE_TEMPLATE),
+    "utf-8",
   );
 
   const renderTemplate = Handlebars.compile(template);
 
   const templateText = renderTemplate({
-    year: new Date().getFullYear()
+    year: new Date().getFullYear(),
   });
 
   const sourceFiles = stagedOnly
@@ -108,8 +112,8 @@ const run = async () => {
     : await getAllSourceFiles();
 
   sourceFiles
-    .filter(file => IGNORE_PATTERNS.every(pattern => !file.match(pattern)))
-    .forEach(file => {
+    .filter((file) => IGNORE_PATTERNS.every((pattern) => !file.match(pattern)))
+    .forEach((file) => {
       const contents = fs.readFileSync(path.resolve(file), "utf-8");
       if (templateText.slice(0, 2) !== contents.slice(0, 2)) {
         fs.writeFileSync(path.resolve(file), `${templateText}${contents}`);

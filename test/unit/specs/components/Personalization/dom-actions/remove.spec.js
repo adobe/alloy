@@ -10,16 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import {
-  selectNodes,
   appendNode,
-  createNode
-} from "../../../../../../src/utils/dom";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+  createNode,
+  selectNodes,
+} from "../../../../../../src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import { DOM_ACTION_REMOVE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::remove", () => {
+  let decorateProposition;
+
   beforeEach(() => {
     cleanUpDomChanges("remove");
+    decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_REMOVE,
+    });
   });
 
   afterEach(() => {
@@ -34,14 +41,13 @@ describe("Personalization::actions::remove", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#remove",
       prehidingSelector: "#remove",
-      meta
+      meta: { a: 1 },
     };
 
-    return remove(settings).then(() => {
+    return remove(settings, decorateProposition).then(() => {
       const result = selectNodes("#child");
 
       expect(result.length).toEqual(0);

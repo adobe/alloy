@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import intersection from "../../../../src/utils/intersection";
+import intersection from "../../../../src/utils/intersection.js";
 
 describe("intersection", () => {
   it("returns items that are found within both arrays", () => {

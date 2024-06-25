@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -44,7 +44,7 @@
         prehidingStyle: ".personalization-container { opacity: 0 !important }",
         idMigrationEnabled: !(
           location.href.indexOf("idMigrationEnabled=false") >= 0
-        )
+        ),
       });
 
       alloy("sendEvent", {
@@ -52,10 +52,10 @@
         xdm: {
           // Demonstrates overriding automatically collected data
           device: {
-            screenHeight: 1
-          }
-        }
-      }).then(function(data) {
+            screenHeight: 1,
+          },
+        },
+      }).then(function (data) {
         console.log("Sandbox: View start event has completed.", data);
       });
     </script>

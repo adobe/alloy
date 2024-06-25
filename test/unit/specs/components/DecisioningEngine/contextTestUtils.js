@@ -9,17 +9,17 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createContextProvider from "../../../../../src/components/DecisioningEngine/createContextProvider";
-import createOnResponseHandler from "../../../../../src/components/DecisioningEngine/createOnResponseHandler";
-import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
-import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider";
+import createContextProvider from "../../../../../src/components/DecisioningEngine/createContextProvider.js";
+import createOnResponseHandler from "../../../../../src/components/DecisioningEngine/createOnResponseHandler.js";
+import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry.js";
+import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider.js";
 
 export const proposition = {
   id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
   scopeDetails: {
     activity: {
-      id: "abc#xyz"
-    }
+      id: "abc#xyz",
+    },
   },
   items: [
     {
@@ -27,12 +27,12 @@ export const proposition = {
       data: {
         hello: "kitty",
         qualifiedDate: jasmine.any(Number),
-        displayedDate: undefined
+        displayedDate: undefined,
       },
-      id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
-    }
+      id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
+    },
   ],
-  scope: "web://mywebsite.com"
+  scope: "web://mywebsite.com",
 };
 
 export const mockWindow = ({
@@ -43,7 +43,7 @@ export const mockWindow = ({
   height = 100,
   scrollX = 0,
   scrollY = 10,
-  userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36"
+  userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36",
 }) => ({
   title,
   referrer,
@@ -53,17 +53,17 @@ export const mockWindow = ({
   scrollX,
   scrollY,
   navigator: {
-    userAgent
-  }
+    userAgent,
+  },
 });
 
-export const payloadWithCondition = condition => {
+export const payloadWithCondition = (condition) => {
   return {
     id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
     scopeDetails: {
       activity: {
-        id: "abc#xyz"
-      }
+        id: "abc#xyz",
+      },
     },
     items: [
       {
@@ -76,9 +76,9 @@ export const payloadWithCondition = condition => {
               condition: {
                 definition: {
                   conditions: [condition],
-                  logic: "and"
+                  logic: "and",
                 },
-                type: "group"
+                type: "group",
               },
               consequences: [
                 {
@@ -86,46 +86,46 @@ export const payloadWithCondition = condition => {
                   detail: {
                     schema: "https://ns.adobe.com/personalization/mock-action",
                     data: {
-                      hello: "kitty"
+                      hello: "kitty",
                     },
-                    id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
+                    id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
                   },
-                  id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
-                }
-              ]
-            }
-          ]
-        }
-      }
+                  id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
+                },
+              ],
+            },
+          ],
+        },
+      },
     ],
-    scope: "web://mywebsite.com"
+    scope: "web://mywebsite.com",
   };
 };
-export const mockRulesetResponseWithCondition = condition => {
+export const mockRulesetResponseWithCondition = (condition) => {
   return {
     getPayloadsByType: () => [
       payloadWithCondition({
         definition: {
           conditions: [condition],
-          logic: "and"
+          logic: "and",
         },
-        type: "group"
-      })
-    ]
+        type: "group",
+      }),
+    ],
   };
 };
 
 const mockEvent = {
   getContent: () => ({ query: {} }),
   hasQuery: () => true,
-  getViewName: () => undefined
+  getViewName: () => undefined,
 };
 
 export const setupResponseHandler = (applyResponse, window, condition) => {
   const storage = jasmine.createSpyObj("storage", [
     "getItem",
     "setItem",
-    "clear"
+    "clear",
   ]);
   const eventRegistry = createEventRegistry({ storage });
   const decisionProvider = createDecisionProvider({ eventRegistry });
@@ -136,10 +136,10 @@ export const setupResponseHandler = (applyResponse, window, condition) => {
     decisionProvider,
     applyResponse,
     event: mockEvent,
-    decisionContext: contextProvider.getContext()
+    decisionContext: contextProvider.getContext(),
   });
 
   onResponseHandler({
-    response: mockRulesetResponseWithCondition(condition)
+    response: mockRulesetResponseWithCondition(condition),
   });
 };

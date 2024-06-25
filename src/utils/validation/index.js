@@ -68,7 +68,11 @@ governing permissions and limitations under the License.
  * nullSafeChain allows you to chain a validator in a null-safe way.
  */
 
-import { chain, nullSafeChain, reverseNullSafeChainJoinErrors } from "./utils";
+import {
+  chain,
+  nullSafeChain,
+  reverseNullSafeChainJoinErrors,
+} from "./utils.js";
 
 import booleanValidator from "./booleanValidator";
 import callbackValidator from "./callbackValidator";
@@ -93,7 +97,7 @@ import requiredValidator from "./requiredValidator";
 import stringValidator from "./stringValidator";
 
 // The base validator does no validation and just returns the value unchanged
-const base = value => value;
+const base = (value) => value;
 
 // The 'default', 'required', and 'deprecated' methods are available after any
 // data-type method. Don't use the nullSafeChain on 'default' or 'required'
@@ -118,6 +122,9 @@ const minimumInteger = function minimumInteger(minValue) {
 const minimumNumber = function minimumNumber(minValue) {
   return nullSafeChain(this, createMinimumValidator("a number", minValue));
 };
+const maximumNumber = function maximumNumber(maxValue) {
+  return nullSafeChain(this, createMaximumValidator("a number", maxValue));
+};
 const integer = function integer() {
   return nullSafeChain(this, integerValidator, { minimum: minimumInteger });
 };
@@ -132,6 +139,9 @@ const nonEmptyObject = function nonEmptyObject() {
 };
 const regexp = function regexp() {
   return nullSafeChain(this, regexpValidator);
+};
+const matches = function matches(regexpPattern) {
+  return nullSafeChain(this, matchesRegexpValidator(regexpPattern));
 };
 const unique = function createUnique() {
   return nullSafeChain(this, createUniqueValidator());
@@ -152,7 +162,7 @@ const anything = function anything() {
 const arrayOf = function arrayOf(elementValidator) {
   return nullSafeChain(this, createArrayOfValidator(elementValidator), {
     nonEmpty: nonEmptyArray,
-    uniqueItems
+    uniqueItems,
   });
 };
 const boolean = function boolean() {
@@ -167,16 +177,17 @@ const literal = function literal(literalValue) {
 const number = function number() {
   return nullSafeChain(this, numberValidator, {
     minimum: minimumNumber,
+    maximum: maximumNumber,
     integer,
-    unique
+    unique,
   });
 };
 const mapOfValues = function mapOfValues(valuesValidator) {
   return nullSafeChain(this, createMapOfValuesValidator(valuesValidator), {
-    nonEmpty: nonEmptyObject
+    nonEmpty: nonEmptyObject,
   });
 };
-const createObjectOfAdditionalProperties = schema => ({
+const createObjectOfAdditionalProperties = (schema) => ({
   noUnknownFields: function noUnknownFields() {
     return nullSafeChain(this, createNoUnknownFieldsValidator(schema));
   },
@@ -187,7 +198,7 @@ const createObjectOfAdditionalProperties = schema => ({
     return nullSafeChain(
       this,
       otherObjectOfValidator,
-      createObjectOfAdditionalProperties(newSchema)
+      createObjectOfAdditionalProperties(newSchema),
     );
   },
   renamed: function renamed(oldField, oldSchema, newField) {
@@ -198,13 +209,13 @@ const createObjectOfAdditionalProperties = schema => ({
       createRenamedValidator(oldField, oldSchema, newField)
     );
   },
-  schema
+  schema,
 });
 const objectOf = function objectOf(schema) {
   return nullSafeChain(
     this,
     createObjectOfValidator(schema),
-    createObjectOfAdditionalProperties(schema)
+    createObjectOfAdditionalProperties(schema),
   );
 };
 const string = function string() {
@@ -212,7 +223,8 @@ const string = function string() {
     regexp,
     domain,
     nonEmpty: nonEmptyString,
-    unique
+    unique,
+    matches,
   });
 };
 
@@ -231,7 +243,7 @@ const boundString = string.bind(base);
 const boundEnumOf = function boundEnumOf(...values) {
   return boundAnyOf(
     values.map(boundLiteral),
-    `one of these values: [${JSON.stringify(values)}]`
+    `one of these values: [${JSON.stringify(values)}]`,
   );
 };
 
@@ -246,5 +258,5 @@ export {
   boundMapOfValues as mapOfValues,
   boundObjectOf as objectOf,
   boundString as string,
-  boundEnumOf as enumOf
+  boundEnumOf as enumOf,
 };

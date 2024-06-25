@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -89,7 +89,7 @@
         defaultConsent: "in",
         // Look for existing ECID Cookies set by the legacy Visitor.js library.
         // That means we need a cookie names: `AMCV_5BFE274A5F6980A50A495C08%40AdobeOrg: MCMID|76365103486713493572334524`
-        idMigrationEnabled: true
+        idMigrationEnabled: true,
       });
     </script>
   </head>
@@ -132,13 +132,13 @@
       var iabOptInBtn = document.querySelector(".iab-opt-in");
       var iabOptOutBtn = document.querySelector(".iab-opt-out");
       var iabStringFromQueryStringBtn = document.querySelector(
-        ".iab-in-query-string"
+        ".iab-in-query-string",
       );
       var optInViaOneTrustApi = document.querySelector(
-        ".iab-opt-in-onetrust-api"
+        ".iab-opt-in-onetrust-api",
       );
       var optOutViaOneTrustApi = document.querySelector(
-        ".iab-opt-out-onetrust-api"
+        ".iab-opt-out-onetrust-api",
       );
       var noGoogVendorBtn = document.querySelector(".no-goog-vendor");
       var optInGoogVendorBtn = document.querySelector(".in-goog-vendor");
@@ -146,34 +146,34 @@
       var getEcidButton = document.querySelector(".get-ecid");
       var createAmcvCookieBtn = document.querySelector(".create-amcv-cookie");
 
-      createAmcvCookieBtn.addEventListener("click", function() {
+      createAmcvCookieBtn.addEventListener("click", function () {
         const ecid = getUrlParameter("ECID");
         document.cookie = `AMCV_${encodeURIComponent(orgId)}=MCMID|${ecid}`;
       });
 
-      optInViaOneTrustApi.addEventListener("click", function() {
+      optInViaOneTrustApi.addEventListener("click", function () {
         OneTrust.AllowAll();
       });
 
-      optOutViaOneTrustApi.addEventListener("click", function() {
+      optOutViaOneTrustApi.addEventListener("click", function () {
         OneTrust.RejectAll();
       });
 
-      getEcidButton.addEventListener("click", function() {
+      getEcidButton.addEventListener("click", function () {
         alloy("getIdentity")
-          .then(function(result) {
+          .then(function (result) {
             window.ecid = result.identity.ECID;
             console.log("ECID is: " + window.ecid);
           })
-          .catch(function(error) {
+          .catch(function (error) {
             console.log("Get identity error:", error);
           });
       });
 
-      sendEventWithConsentBtn.addEventListener("click", function() {
+      sendEventWithConsentBtn.addEventListener("click", function () {
         if (!getUrlParameter("eventConsentString")) {
           console.error(
-            "You need to pass an `eventConsentString` query param."
+            "You need to pass an `eventConsentString` query param.",
           );
           return;
         }
@@ -186,17 +186,17 @@
               consentStandardVersion: "2.0",
               consentStringValue: getUrlParameter("eventConsentString"),
               gdprApplies: resolveBooleanQueryParam("gdprApplies", true),
-              containsPersonalData: false
-            }
-          ]
+              containsPersonalData: false,
+            },
+          ],
         };
 
         alloy("sendEvent", { type, xdm }).then(() =>
-          console.log("Event has been sent!!")
+          console.log("Event has been sent!!"),
         );
       });
 
-      optInGoogVendorBtn.addEventListener("click", function() {
+      optInGoogVendorBtn.addEventListener("click", function () {
         var optInToGoogConsentString =
           "CO2ISm8O2IbZcAVAMBFRACBsAIBAAAAgEIYgGPtjup3rYdY178JUkiCIFabBlBymqcio5Ao1cEACRNnQIUAIyhKBCQmaUqJBKhQRWBDAQtQwBCB06EBmgIQNUmkj1MQGQgCRKSF7BmQBEwQMCagoBDeRAAo-kIhkLCAAqO0E_AB4F5wAgEagLzAA";
         alloy("setConsent", {
@@ -205,13 +205,13 @@
               standard: "IAB TCF",
               version: "2.0",
               value: optInToGoogConsentString,
-              gdprApplies: resolveBooleanQueryParam("gdprApplies", true)
-            }
-          ]
+              gdprApplies: resolveBooleanQueryParam("gdprApplies", true),
+            },
+          ],
         });
       });
 
-      noGoogVendorBtn.addEventListener("click", function() {
+      noGoogVendorBtn.addEventListener("click", function () {
         var optOutOfGoogConsentString =
           "CO2IS8PO2IbuvAVAMBFRACBsAIBAAAAgEIYgGQBiNh14tYnCZ-5fXnRqprc2dYaErJs0dFpVJBA0ALi95QggwAQXEIa4JmghQMIEJASUkIIMEjHIgsJSyMEIAMIgjpJqrggEIFVAIIgPDKAULEQQkBQcCCC2mhZURCaVE0AVLMF0CNYAICNQAA==";
         alloy("setConsent", {
@@ -220,26 +220,26 @@
               standard: "IAB TCF",
               version: "2.0",
               value: optOutOfGoogConsentString,
-              gdprApplies: resolveBooleanQueryParam("gdprApplies", true)
-            }
-          ]
+              gdprApplies: resolveBooleanQueryParam("gdprApplies", true),
+            },
+          ],
         });
       });
 
-      iabStringFromQueryStringBtn.addEventListener("click", function() {
+      iabStringFromQueryStringBtn.addEventListener("click", function () {
         alloy("setConsent", {
           consent: [
             {
               standard: "IAB TCF",
               version: "2.0",
               value: getUrlParameter("iabConsentString"),
-              gdprApplies: resolveBooleanQueryParam("gdprApplies", true)
-            }
-          ]
+              gdprApplies: resolveBooleanQueryParam("gdprApplies", true),
+            },
+          ],
         });
       });
 
-      iabOptInBtn.addEventListener("click", function() {
+      iabOptInBtn.addEventListener("click", function () {
         var optedInConsentString =
           "CO1Z4yuO1Z4yuAcABBENArCsAP_AAH_AACiQGCNX_T5eb2vj-3Zdt_tkaYwf55y3o-wzhhaIse8NwIeH7BoGP2MwvBX4JiQCGBAkkiKBAQdtHGhcCQABgIhRiTKMYk2MjzNKJLJAilsbe0NYCD9mnsHT3ZCY70--u__7P3fAwQgkwVLwCRIWwgJJs0ohTABCOICpBwCUEIQEClhoACAnYFAR6gAAAIDAACAAAAEEEBAIABAAAkIgAAAEBAKACIBAACAEaAhAARIEAsAJEgCAAVA0JACKIIQBCDgwCjlACAoAAAAA.YAAAAAAAAAAA";
         alloy("setConsent", {
@@ -248,13 +248,13 @@
               standard: "IAB TCF",
               version: "2.0",
               value: optedInConsentString,
-              gdprApplies: resolveBooleanQueryParam("gdprApplies", true)
-            }
-          ]
+              gdprApplies: resolveBooleanQueryParam("gdprApplies", true),
+            },
+          ],
         });
       });
 
-      iabOptOutBtn.addEventListener("click", function() {
+      iabOptOutBtn.addEventListener("click", function () {
         var optedOutConsentString =
           "CO1Z5evO1Z5evAcABBENArCgAAAAAH_AACiQGCNX_T5eb2vj-3Zdt_tkaYwf55y3o-wzhhaIse8NwIeH7BoGP2MwvBX4JiQCGBAkkiKBAQdtHGhcCQABgIhRiTKMYk2MjzNKBLJAilsbe0NYCD9mnsHT3ZCY70--u__7P3fAwQgkwVLwCRIWwgJJs0ohTABCOICpBwCUEIQEClhoACAnYFAR6gAAAIDAACAAAAEEEBAIABAAAkIgAAAEBAKACIBAACAEaAhAARIEAsAJEgCAAVA0JACKIIQBCDgwCjlACAoAAAAA.YAAAAAAAAAAA";
         alloy("setConsent", {
@@ -263,9 +263,9 @@
               standard: "IAB TCF",
               version: "2.0",
               value: optedOutConsentString,
-              gdprApplies: resolveBooleanQueryParam("gdprApplies", true)
-            }
-          ]
+              gdprApplies: resolveBooleanQueryParam("gdprApplies", true),
+            },
+          ],
         });
       });
     </script>

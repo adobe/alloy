@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain";
-import apiVersion from "../../constants/apiVersion";
-import { createCallbackAggregator, noop } from "../../utils";
-import mergeLifecycleResponses from "./mergeLifecycleResponses";
-import handleRequestFailure from "./handleRequestFailure";
+import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain.js";
+import apiVersion from "../../constants/apiVersion.js";
+import { createCallbackAggregator, noop } from "../../utils/index.js";
+import mergeLifecycleResponses from "./mergeLifecycleResponses.js";
+import handleRequestFailure from "./handleRequestFailure.js";
 
 export default ({
   config,
@@ -24,7 +24,7 @@ export default ({
   createResponse,
   processWarningsAndErrors,
   getLocationHint,
-  getAssuranceValidationTokenParams
+  getAssuranceValidationTokenParams,
 }) => {
   const { edgeDomain, edgeBasePath, datastreamId } = config;
 
@@ -35,7 +35,7 @@ export default ({
   return ({
     request,
     runOnResponseCallbacks = noop,
-    runOnRequestFailureCallbacks = noop
+    runOnRequestFailureCallbacks = noop,
   }) => {
     const onResponseCallbackAggregator = createCallbackAggregator();
     onResponseCallbackAggregator.add(lifecycle.onResponse);
@@ -49,7 +49,7 @@ export default ({
       .onBeforeRequest({
         request,
         onResponse: onResponseCallbackAggregator.add,
-        onRequestFailure: onRequestFailureCallbackAggregator.add
+        onRequestFailure: onRequestFailureCallbackAggregator.add,
       })
       .then(() => {
         const endpointDomain = request.getUseIdThirdPartyDomain()
@@ -57,17 +57,17 @@ export default ({
           : edgeDomain;
         const locationHint = getLocationHint();
         const edgeBasePathWithLocationHint = locationHint
-          ? `${edgeBasePath}/${locationHint}`
-          : edgeBasePath;
+          ? `${edgeBasePath}/${locationHint}${request.getEdgeSubPath()}`
+          : `${edgeBasePath}${request.getEdgeSubPath()}`;
         const configId = request.getDatastreamIdOverride() || datastreamId;
         const payload = request.getPayload();
         if (configId !== datastreamId) {
           payload.mergeMeta({
             sdkConfig: {
               datastream: {
-                original: datastreamId
-              }
-            }
+                original: datastreamId,
+              },
+            },
           });
         }
         const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${configId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
@@ -76,10 +76,10 @@ export default ({
           requestId: request.getId(),
           url,
           payload,
-          useSendBeacon: request.getUseSendBeacon()
+          useSendBeacon: request.getUseSendBeacon(),
         });
       })
-      .then(networkResponse => {
+      .then((networkResponse) => {
         processWarningsAndErrors(networkResponse);
         return networkResponse;
       })
@@ -96,7 +96,7 @@ export default ({
         // Konductor plugin, for example).
         return onResponseCallbackAggregator
           .call({
-            response
+            response,
           })
           .then(mergeLifecycleResponses);
       });

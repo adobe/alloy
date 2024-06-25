@@ -10,16 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { deepAssign, toInteger } from "../../utils";
+import { deepAssign, toInteger } from "../../utils/index.js";
 
-export default window => {
-  return xdm => {
+export default (window) => {
+  return (xdm) => {
     const {
-      document: { documentElement: { clientWidth, clientHeight } = {} }
+      document: { documentElement: { clientWidth, clientHeight } = {} },
     } = window;
 
     const environment = {
-      type: "browser"
+      type: "browser",
     };
 
     const viewportWidth = toInteger(clientWidth);

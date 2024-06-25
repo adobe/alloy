@@ -15,4 +15,4 @@ governing permissions and limitations under the License.
  * @param {*} value
  * @returns {any}
  */
-export default value => JSON.parse(JSON.stringify(value));
+export default (value) => JSON.parse(JSON.stringify(value));

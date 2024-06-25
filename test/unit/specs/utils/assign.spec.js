@@ -11,4 +11,4 @@ governing permissions and limitations under the License.
 */
 
 // eslint-disable-next-line no-unused-vars
-import assign from "../../../../src/utils/assign";
+import assign from "../../../../src/utils/assign.js";

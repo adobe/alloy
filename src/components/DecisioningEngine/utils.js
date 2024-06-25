@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 export const createRestoreStorage = (storage, storageKey) => {
-  return defaultValue => {
+  return (defaultValue) => {
     const stored = storage.getItem(storageKey);
     if (!stored) {
       return defaultValue;
@@ -28,19 +28,19 @@ export const createRestoreStorage = (storage, storageKey) => {
 export const createSaveStorage = (
   storage,
   storageKey,
-  prepareFn = value => value
+  prepareFn = (value) => value,
 ) => {
-  return value => {
+  return (value) => {
     storage.setItem(storageKey, JSON.stringify(prepareFn(value)));
   };
 };
 
-export const getExpirationDate = retentionPeriod => {
+export const getExpirationDate = (retentionPeriod) => {
   const expirationDate = new Date();
   expirationDate.setDate(expirationDate.getDate() - retentionPeriod);
   return expirationDate;
 };
-export const getActivityId = proposition => {
+export const getActivityId = (proposition) => {
   const { scopeDetails = {} } = proposition;
   const { activity = {} } = scopeDetails;
   const { id } = activity;
@@ -50,19 +50,19 @@ export const getActivityId = proposition => {
 export const createInMemoryStorage = () => {
   const inMemoryStorage = {};
   return {
-    getItem: key => {
+    getItem: (key) => {
       return key in inMemoryStorage ? inMemoryStorage[key] : null;
     },
     setItem: (key, value) => {
       inMemoryStorage[key] = value;
-    }
+    },
   };
 };
-export const clearLocalStorage = storage => {
+export const clearLocalStorage = (storage) => {
   storage.clear();
 };
 
-export const hasExperienceData = xdm => {
+export const hasExperienceData = (xdm) => {
   const { eventType = "", _experience } = xdm;
 
   if (!eventType || eventType === "") {
@@ -76,7 +76,7 @@ export const hasExperienceData = xdm => {
   return true;
 };
 
-export const getDecisionProvider = proposition => {
+export const getDecisionProvider = (proposition) => {
   const { scopeDetails = {} } = proposition;
   const { decisionProvider } = scopeDetails;
   return decisionProvider;

@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectAddQueryStringIdentityToPayload from "../../../../../src/components/Identity/injectAddQueryStringIdentityToPayload";
-import createDataCollectionRequestPayload from "../../../../../src/utils/request/createDataCollectionRequestPayload";
-import createIdentityRequestPayload from "../../../../../src/components/Identity/getIdentity/createIdentityRequestPayload";
-import createConsentRequestPayload from "../../../../../src/components/Privacy/createConsentRequestPayload";
+import injectAddQueryStringIdentityToPayload from "../../../../../src/components/Identity/injectAddQueryStringIdentityToPayload.js";
+import createDataCollectionRequestPayload from "../../../../../src/utils/request/createDataCollectionRequestPayload.js";
+import createIdentityRequestPayload from "../../../../../src/components/Identity/getIdentity/createIdentityRequestPayload.js";
+import createConsentRequestPayload from "../../../../../src/components/Privacy/createConsentRequestPayload.js";
 
 describe("Identity::injectAddQueryStringIdentityToPayload", () => {
   let locationSearch;
@@ -37,7 +37,7 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
       locationSearch,
       dateProvider,
       orgId,
-      logger
+      logger,
     })(payload);
   };
 
@@ -45,10 +45,10 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
     [
       "DataCollection",
       createDataCollectionRequestPayload,
-      p => p.xdm.identityMap
+      (p) => p.xdm.identityMap,
     ],
-    ["Identity", createIdentityRequestPayload, p => p.xdm.identityMap],
-    ["Consent", createConsentRequestPayload, p => p.identityMap]
+    ["Identity", createIdentityRequestPayload, (p) => p.xdm.identityMap],
+    ["Consent", createConsentRequestPayload, (p) => p.identityMap],
   ].forEach(([type, createPayload, getIdentityMap]) => {
     describe(`with ${type} payload`, () => {
       beforeEach(() => {
@@ -60,9 +60,9 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
         expect(getIdentityMap(payload.toJSON())).toEqual({
           ECID: [
             {
-              id: "77094828402023918047117570965393734545"
-            }
-          ]
+              id: "77094828402023918047117570965393734545",
+            },
+          ],
         });
       });
 
@@ -72,9 +72,9 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
         expect(getIdentityMap(payload.toJSON())).toEqual({
           ECID: [
             {
-              id: "1234"
-            }
-          ]
+              id: "1234",
+            },
+          ],
         });
       });
     });
@@ -94,7 +94,7 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
 
     it("doesn't do anything when there is no TS parameter", () => {
       locationSearch = `?adobe_mc=${encodeURIComponent(
-        "MCMID=myid|MCORG=myorg"
+        "MCMID=myid|MCORG=myorg",
       )}`;
       run();
       expect(payload.addIdentity).not.toHaveBeenCalled();
@@ -136,19 +136,19 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
       "adobe_mc=a%3Db",
       "adobe_mc=%7C%7C",
       `adobe_mc=${encodeURIComponent(
-        "TS=foo|MCMID=12345|MCORGID=FAF554945B90342F0A495E2C@AdobeOrg"
+        "TS=foo|MCMID=12345|MCORGID=FAF554945B90342F0A495E2C@AdobeOrg",
       )}`,
       `adobe_mc=${encodeURIComponent(
-        "TS=1641432103|MCMID=|MCORGID=FAF554945B90342F0A495E2C@AdobeOrg"
+        "TS=1641432103|MCMID=|MCORGID=FAF554945B90342F0A495E2C@AdobeOrg",
       )}`,
-      `adobe_mc=${encodeURIComponent("TS|MCMID")}`
-    ].forEach(value => {
+      `adobe_mc=${encodeURIComponent("TS|MCMID")}`,
+    ].forEach((value) => {
       it(`handles garbage parameter value: ${value}`, () => {
         locationSearch = `?${value}`;
         run();
         expect(payload.addIdentity).not.toHaveBeenCalled();
         expect(logger.info).toHaveBeenCalledOnceWith(
-          jasmine.stringMatching(/invalid/)
+          jasmine.stringMatching(/invalid/),
         );
       });
     });
@@ -160,7 +160,7 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
       date = new Date(1653516560 * 1000);
       run();
       expect(payload.addIdentity).toHaveBeenCalledOnceWith("ECID", {
-        id: "06387190804794960331430905673364101813"
+        id: "06387190804794960331430905673364101813",
       });
     });
 
@@ -171,7 +171,7 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
       date = new Date(1653516560 * 1000);
       run();
       expect(payload.addIdentity).toHaveBeenCalledOnceWith("ECID", {
-        id: "second"
+        id: "second",
       });
       expect(logger.warn).toHaveBeenCalled();
     });

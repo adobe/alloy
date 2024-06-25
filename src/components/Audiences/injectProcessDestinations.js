@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { noop } from "../../utils";
+import { noop } from "../../utils/index.js";
 
 const createResultLogMessage = (urlDestination, success) => {
   return `URL destination ${success ? "succeeded" : "failed"}: ${
@@ -22,31 +22,31 @@ export default ({
   fireReferrerHideableImage,
   logger,
   cookieJar,
-  isPageSsl
+  isPageSsl,
 }) => {
   const extraCookieOptions = isPageSsl
     ? { sameSite: "none", secure: true }
     : {};
-  const processCookies = destinations => {
+  const processCookies = (destinations) => {
     const cookieDestinations = destinations.filter(
-      dest => dest.type === "cookie"
+      (dest) => dest.type === "cookie",
     );
 
-    cookieDestinations.forEach(dest => {
+    cookieDestinations.forEach((dest) => {
       const { name, value, domain, ttlDays } = dest.spec;
       cookieJar.set(name, value || "", {
         domain: domain || "",
         expires: ttlDays || 10, // days
-        ...extraCookieOptions
+        ...extraCookieOptions,
       });
     });
   };
 
-  const processUrls = destinations => {
-    const urlDestinations = destinations.filter(dest => dest.type === "url");
+  const processUrls = (destinations) => {
+    const urlDestinations = destinations.filter((dest) => dest.type === "url");
 
     return Promise.all(
-      urlDestinations.map(urlDestination => {
+      urlDestinations.map((urlDestination) => {
         return fireReferrerHideableImage(urlDestination.spec)
           .then(() => {
             logger.info(createResultLogMessage(urlDestination, true));
@@ -56,11 +56,11 @@ export default ({
             // consider it a non-critical failure and therefore do not want it to
             // reject the promise handed back to the customer.
           });
-      })
+      }),
     ).then(noop);
   };
 
-  return destinations => {
+  return (destinations) => {
     processCookies(destinations);
     return processUrls(destinations);
   };

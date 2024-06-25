@@ -28,7 +28,7 @@ export default ({ XMLHttpRequest }) => {
               getHeader(name) {
                 return request.getResponseHeader(name);
               },
-              body: request.responseText
+              body: request.responseText,
             });
           }
         }

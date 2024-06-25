@@ -10,20 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createComponent from "../../../../../src/components/Privacy/createComponent";
-import { createTaskQueue, defer } from "../../../../../src/utils";
-import flushPromiseChains from "../../../helpers/flushPromiseChains";
+import createComponent from "../../../../../src/components/Privacy/createComponent.js";
+import { createTaskQueue, defer } from "../../../../../src/utils/index.js";
+import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
-const createConsent = generalConsent => ({
+const createConsent = (generalConsent) => ({
   consent: [
     {
       standard: "Adobe",
       version: "1.0",
       value: {
-        general: generalConsent
-      }
-    }
-  ]
+        general: generalConsent,
+      },
+    },
+  ],
 });
 const CONSENT_IN = createConsent("in");
 const CONSENT_OUT = createConsent("out");
@@ -57,15 +57,15 @@ describe("privacy:createComponent", () => {
     consent = jasmine.createSpyObj("consent", [
       "initializeConsent",
       "setConsent",
-      "suspend"
+      "suspend",
     ]);
     sendSetConsentRequest = jasmine.createSpy("sendSetConsentRequest");
     validateSetConsentOptions = jasmine
       .createSpy("validateSetConsentOptions")
-      .and.callFake(options => options);
+      .and.callFake((options) => options);
     consentHashStore = jasmine.createSpyObj("consentHashStore", [
       "clear",
-      "lookup"
+      "lookup",
     ]);
     consentHashes = jasmine.createSpyObj("consentHashes", ["isNew", "save"]);
     doesIdentityCookieExist = jasmine.createSpy("doesIdentityCookieExist");
@@ -74,7 +74,7 @@ describe("privacy:createComponent", () => {
     consentHashes.isNew.and.returnValue(true);
     requestFailureError = new Error("Request for setting test consent failed.");
     config = {
-      edgeConfigOverrides: {}
+      edgeConfigOverrides: {},
     };
   });
 
@@ -88,7 +88,7 @@ describe("privacy:createComponent", () => {
       validateSetConsentOptions,
       consentHashStore,
       doesIdentityCookieExist,
-      config
+      config,
     });
   };
 
@@ -123,7 +123,7 @@ describe("privacy:createComponent", () => {
       },
       respondWithError() {
         deferred.reject(requestFailureError);
-      }
+      },
     };
   };
 
@@ -133,7 +133,7 @@ describe("privacy:createComponent", () => {
     build();
     expect(consent.initializeConsent).toHaveBeenCalledWith(
       { general: "mydefaultconsent" },
-      { general: "myinitialconsent" }
+      { general: "myinitialconsent" },
     );
   });
 
@@ -152,8 +152,8 @@ describe("privacy:createComponent", () => {
       expect(sendSetConsentRequest).toHaveBeenCalledWith(
         jasmine.objectContaining({
           consentOptions: CONSENT_IN.consent,
-          identityMap: { my: "map" }
-        })
+          identityMap: { my: "map" },
+        }),
       );
       expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
       expect(onResolved).toHaveBeenCalledWith(undefined);
@@ -171,10 +171,10 @@ describe("privacy:createComponent", () => {
         identityMap: { my: "map" },
         edgeConfigOverrides: {
           com_adobe_identity: {
-            idSyncContainerId: "1234"
-          }
+            idSyncContainerId: "1234",
+          },
         },
-        ...CONSENT_IN
+        ...CONSENT_IN,
       })
       .then(onResolved);
     expect(consent.suspend).toHaveBeenCalled();
@@ -185,9 +185,9 @@ describe("privacy:createComponent", () => {
         identityMap: { my: "map" },
         edgeConfigOverrides: {
           com_adobe_identity: {
-            idSyncContainerId: "1234"
-          }
-        }
+            idSyncContainerId: "1234",
+          },
+        },
       });
       expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
       expect(onResolved).toHaveBeenCalledWith(undefined);
@@ -219,8 +219,8 @@ describe("privacy:createComponent", () => {
       .then(() => {
         expect(sendSetConsentRequest).toHaveBeenCalledWith(
           jasmine.objectContaining({
-            consentOptions: CONSENT_IN.consent
-          })
+            consentOptions: CONSENT_IN.consent,
+          }),
         );
         expect(consent.setConsent).not.toHaveBeenCalledWith({ general: "in" });
         setConsentMock.respondWithIn();
@@ -243,8 +243,8 @@ describe("privacy:createComponent", () => {
       .then(() => {
         expect(sendSetConsentRequest).toHaveBeenCalledWith(
           jasmine.objectContaining({
-            consentOptions: CONSENT_IN.consent
-          })
+            consentOptions: CONSENT_IN.consent,
+          }),
         );
         setConsentMock2 = mockSetConsent();
         component.commands.setConsent.run(CONSENT_OUT);
@@ -254,8 +254,8 @@ describe("privacy:createComponent", () => {
       .then(() => {
         expect(sendSetConsentRequest).toHaveBeenCalledWith(
           jasmine.objectContaining({
-            consentOptions: CONSENT_OUT.consent
-          })
+            consentOptions: CONSENT_OUT.consent,
+          }),
         );
         setConsentMock2.respondWithOut();
         return flushPromiseChains();
@@ -291,7 +291,7 @@ describe("privacy:createComponent", () => {
     expect(storedConsent.clear).toHaveBeenCalled();
     expect(consent.initializeConsent).toHaveBeenCalledWith(
       { general: "in" },
-      {}
+      {},
     );
   });
 

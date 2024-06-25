@@ -13,9 +13,9 @@ export default () => {
   let latest = Promise.resolve([]);
   return {
     concat(promise) {
-      latest = latest.then(existingPropositions => {
+      latest = latest.then((existingPropositions) => {
         return promise
-          .then(newPropositions => {
+          .then((newPropositions) => {
             return existingPropositions.concat(newPropositions);
           })
           .catch(() => {
@@ -32,6 +32,6 @@ export default () => {
       const oldLatest = latest;
       latest = Promise.resolve([]);
       return oldLatest;
-    }
+    },
   };
 };

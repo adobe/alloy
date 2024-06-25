@@ -16,11 +16,11 @@ export default ({
   setDomainForInitialIdentityPayload,
   addLegacyEcidToPayload,
   awaitIdentityCookie,
-  logger
+  logger,
 }) => {
   let obtainedIdentityPromise;
 
-  const allowRequestToGoWithoutIdentity = request => {
+  const allowRequestToGoWithoutIdentity = (request) => {
     setDomainForInitialIdentityPayload(request);
     return addLegacyEcidToPayload(request.getPayload());
   };
@@ -87,7 +87,7 @@ export default ({
     // cookie
     obtainedIdentityPromise = awaitIdentityCookie({
       onResponse,
-      onRequestFailure
+      onRequestFailure,
     });
     // This prevents an un-caught promise in the console when the identity isn't set.
     obtainedIdentityPromise.catch(() => undefined);

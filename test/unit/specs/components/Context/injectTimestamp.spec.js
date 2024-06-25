@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectTimestamp from "../../../../../src/components/Context/injectTimestamp";
+import injectTimestamp from "../../../../../src/components/Context/injectTimestamp.js";
 
 describe("Context::injectTimestamp", () => {
   let dateProvider;
@@ -26,7 +26,7 @@ describe("Context::injectTimestamp", () => {
     const xdm = {};
     injectTimestamp(dateProvider)(xdm);
     expect(xdm).toEqual({
-      timestamp: "2019-11-25T10:09:42.000Z"
+      timestamp: "2019-11-25T10:09:42.000Z",
     });
   });
 });

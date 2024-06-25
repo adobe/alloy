@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import areThirdPartyCookiesSupportedByDefault from "../../../../src/utils/areThirdPartyCookiesSupportedByDefault";
+import areThirdPartyCookiesSupportedByDefault from "../../../../src/utils/areThirdPartyCookiesSupportedByDefault.js";
 import {
   CHROME,
   EDGE,
@@ -18,20 +18,20 @@ import {
   FIREFOX,
   IE,
   SAFARI,
-  UNKNOWN
-} from "../../../../src/constants/browser";
+  UNKNOWN,
+} from "../../../../src/constants/browser.js";
 
 const browsersWithSupport = [CHROME, EDGE, EDGE_CHROMIUM, IE, UNKNOWN];
 const browsersWithoutSupport = [FIREFOX, SAFARI];
 
 describe("areThirdPartyCookiesSupportedByDefault", () => {
-  browsersWithSupport.forEach(browser => {
+  browsersWithSupport.forEach((browser) => {
     it(`reports true for ${browser}`, () => {
       expect(areThirdPartyCookiesSupportedByDefault(browser)).toBeTrue();
     });
   });
 
-  browsersWithoutSupport.forEach(browser => {
+  browsersWithoutSupport.forEach((browser) => {
     it(`reports false for ${browser}`, () => {
       expect(areThirdPartyCookiesSupportedByDefault(browser)).toBeFalse();
     });

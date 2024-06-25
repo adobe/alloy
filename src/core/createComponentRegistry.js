@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { intersection, stackError } from "../utils";
+import { intersection, stackError } from "../utils/index.js";
 
 const wrapForErrorHandling = (fn, stackMessage) => {
   return (...args) => {
@@ -23,7 +23,7 @@ const wrapForErrorHandling = (fn, stackMessage) => {
     }
 
     if (result instanceof Promise) {
-      result = result.catch(error => {
+      result = result.catch((error) => {
         throw stackError({ error, message: stackMessage });
       });
     }
@@ -40,28 +40,28 @@ export default () => {
 
   const registerComponentCommands = (
     namespace,
-    componentCommandsByName = {}
+    componentCommandsByName = {},
   ) => {
     const conflictingCommandNames = intersection(
       Object.keys(commandsByName),
-      Object.keys(componentCommandsByName)
+      Object.keys(componentCommandsByName),
     );
 
     if (conflictingCommandNames.length) {
       throw new Error(
         `[ComponentRegistry] Could not register ${namespace} ` +
           `because it has existing command(s): ${conflictingCommandNames.join(
-            ","
-          )}`
+            ",",
+          )}`,
       );
     }
 
-    Object.keys(componentCommandsByName).forEach(commandName => {
+    Object.keys(componentCommandsByName).forEach((commandName) => {
       const command = componentCommandsByName[commandName];
       command.commandName = commandName;
       command.run = wrapForErrorHandling(
         command.run,
-        `[${namespace}] An error occurred while executing the ${commandName} command.`
+        `[${namespace}] An error occurred while executing the ${commandName} command.`,
       );
       commandsByName[commandName] = command;
     });
@@ -69,17 +69,17 @@ export default () => {
 
   const registerLifecycleCallbacks = (
     namespace,
-    componentLifecycleCallbacksByName = {}
+    componentLifecycleCallbacksByName = {},
   ) => {
-    Object.keys(componentLifecycleCallbacksByName).forEach(hookName => {
+    Object.keys(componentLifecycleCallbacksByName).forEach((hookName) => {
       lifecycleCallbacksByName[hookName] =
         lifecycleCallbacksByName[hookName] || [];
 
       lifecycleCallbacksByName[hookName].push(
         wrapForErrorHandling(
           componentLifecycleCallbacksByName[hookName],
-          `[${namespace}] An error occurred while executing the ${hookName} lifecycle hook.`
-        )
+          `[${namespace}] An error occurred while executing the ${hookName} lifecycle hook.`,
+        ),
       );
     });
   };
@@ -102,6 +102,6 @@ export default () => {
     },
     getComponentNames() {
       return Object.keys(componentsByNamespace);
-    }
+    },
   };
 };

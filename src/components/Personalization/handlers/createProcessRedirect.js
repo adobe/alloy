@@ -9,26 +9,27 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-export default ({ logger, executeRedirect, collect }) => item => {
-  const { content } = item.getData() || {};
+export default ({ logger, executeRedirect, collect }) =>
+  (item) => {
+    const { content } = item.getData() || {};
 
-  if (!content) {
-    logger.warn("Invalid Redirect data", item.getData());
-    return {};
-  }
+    if (!content) {
+      logger.warn("Invalid Redirect data", item.getData());
+      return {};
+    }
 
-  const render = () => {
-    return collect({
-      decisionsMeta: [item.getProposition().getNotification()],
-      documentMayUnload: true
-    }).then(() => {
-      return executeRedirect(content);
-      // Execute redirect will never resolve. If there are bottom of page events that are waiting
-      // for display notifications from this request, they will never run because this promise will
-      // not resolve. This is intentional because we don't want to run bottom of page events if
-      // there is a redirect.
-    });
+    const render = () => {
+      return collect({
+        decisionsMeta: [item.getProposition().getNotification()],
+        documentMayUnload: true,
+      }).then(() => {
+        return executeRedirect(content);
+        // Execute redirect will never resolve. If there are bottom of page events that are waiting
+        // for display notifications from this request, they will never run because this promise will
+        // not resolve. This is intentional because we don't want to run bottom of page events if
+        // there is a redirect.
+      });
+    };
+
+    return { render, setRenderAttempted: true, onlyRenderThis: true };
   };
-
-  return { render, setRenderAttempted: true, onlyRenderThis: true };
-};

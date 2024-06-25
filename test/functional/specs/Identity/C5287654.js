@@ -11,31 +11,31 @@ governing permissions and limitations under the License.
 */
 
 import { t } from "testcafe";
-import createFixture from "../../helpers/createFixture";
-import cookies from "../../helpers/cookies";
+import createFixture from "../../helpers/createFixture/index.js";
+import cookies from "../../helpers/cookies.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createNetworkLogger from "../../helpers/networkLogger";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createConsoleLogger from "../../helpers/consoleLogger";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
+import createConsoleLogger from "../../helpers/consoleLogger/index.js";
 
 const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled);
 const networkLogger = createNetworkLogger();
 
 createFixture({
   title: "C5287654: Cookies are set with sameSite=none",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C2581",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C5287654: Cookies are set with sameSite=none", async () => {
@@ -53,24 +53,26 @@ test("Test C5287654: Cookies are set with sameSite=none", async () => {
 
   // make sure the ecid was sent with sameSite = none
   const response = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
   );
 
   const stateStoreHandle = response.handle.find(
-    handle => handle.type === "state:store"
+    (handle) => handle.type === "state:store",
   );
-  const identityCookie = stateStoreHandle.payload.find(cookie =>
-    cookie.key.endsWith("identity")
+  const identityCookie = stateStoreHandle.payload.find((cookie) =>
+    cookie.key.endsWith("identity"),
   );
   await t.expect(identityCookie.attrs).ok();
   await t.expect(identityCookie.attrs.SameSite).eql("None");
 
   const logs = await logger.info.getMessagesSinceReset();
   const setCookieAttributes = logs
-    .filter(message => message.length === 3 && message[1] === "Setting cookie")
-    .map(message => message[2])
     .filter(
-      cookieSettings => cookieSettings.name === MAIN_IDENTITY_COOKIE_NAME
+      (message) => message.length === 3 && message[1] === "Setting cookie",
+    )
+    .map((message) => message[2])
+    .filter(
+      (cookieSettings) => cookieSettings.name === MAIN_IDENTITY_COOKIE_NAME,
     );
 
   await t.expect(setCookieAttributes.length).eql(1);

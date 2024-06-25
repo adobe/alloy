@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getParent from "../../../../../../../src/components/Personalization/dom-actions/dom/getParent";
+import getParent from "../../../../../../../src/components/Personalization/dom-actions/dom/getParent.js";
 import {
   selectNodes,
   removeNode,
   appendNode,
-  createNode
-} from "../../../../../../../src/utils/dom";
-import { getElementById } from "../../../../../../../src/components/Personalization/dom-actions/dom";
+  createNode,
+} from "../../../../../../../src/utils/dom/index.js";
+import { getElementById } from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 
 describe("Personalization::DOM::getParent", () => {
   afterEach(() => {

@@ -10,18 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import startsWith from "../../../../src/utils/startsWith";
+import startsWith from "../../../../src/utils/startsWith.js";
 
 const str = "The quick brown fox.";
 
 describe("startsWith", () => {
-  ["The quick brown fox.", "The"].forEach(prefix => {
+  ["The quick brown fox.", "The"].forEach((prefix) => {
     it(`returns true when prefix is ${prefix}`, () => {
       expect(startsWith(str, prefix)).toBeTrue();
     });
   });
 
-  ["The quick brown fox. Extra", "bogus."].forEach(prefix => {
+  ["The quick brown fox. Extra", "bogus."].forEach((prefix) => {
     it(`returns false when prefix is ${prefix}`, () => {
       expect(startsWith(str, prefix)).toBeFalse();
     });

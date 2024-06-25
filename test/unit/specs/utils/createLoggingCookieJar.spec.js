@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createLoggingCookieJar from "../../../../src/utils/createLoggingCookieJar";
+import createLoggingCookieJar from "../../../../src/utils/createLoggingCookieJar.js";
 
 describe("loggingCookieJar", () => {
   let cookieJar;
@@ -28,14 +28,14 @@ describe("loggingCookieJar", () => {
     expect(logger.info).toHaveBeenCalledOnceWith("Setting cookie", {
       name: "mykey",
       value: "myvalue",
-      myoption: "myoptionvalue"
+      myoption: "myoptionvalue",
     });
   });
 
   it("calls set", () => {
     loggingCookieJar.set("mykey", "myvalue", { myoption: "myoptionvalue" });
     expect(cookieJar.set).toHaveBeenCalledOnceWith("mykey", "myvalue", {
-      myoption: "myoptionvalue"
+      myoption: "myoptionvalue",
     });
   });
 

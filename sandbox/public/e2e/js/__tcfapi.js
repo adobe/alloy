@@ -48,7 +48,7 @@ __tcfapi.PingReturn = {
   cmpLoaded: true,
   cmpStatus: "loaded",
   apiVersion: "2.0",
-  cmpVersion: "0.0.0.0"
+  cmpVersion: "0.0.0.0",
 };
 
 __tcfapi.refreshTCData = () => {
@@ -67,51 +67,51 @@ __tcfapi.refreshTCData = () => {
     purposeOneTreatment: false,
     outofBand: {
       allowVendors: {},
-      disclosedVendors: { 565: true }
+      disclosedVendors: { 565: true },
     },
     purpose: {
       consents: {
         1: __tcfapi.purpose1,
-        10: __tcfapi.purpose10
+        10: __tcfapi.purpose10,
       },
-      legitimateInterests: {}
+      legitimateInterests: {},
     },
     vendor: {
       consents: {
-        565: __tcfapi.vendorConsent
+        565: __tcfapi.vendorConsent,
       },
-      legitimateInterests: {}
-    }
+      legitimateInterests: {},
+    },
   };
 };
 
 __tcfapi.TCData = __tcfapi.refreshTCData();
 
 __tcfapi.configure = (paramObject = {}) => {
-  Object.keys(paramObject).forEach(param => {
+  Object.keys(paramObject).forEach((param) => {
     __tcfapi[param] = paramObject[param];
   });
 };
 
-__tcfapi.getTCData = function(callback, parameter) {
+__tcfapi.getTCData = function (callback, parameter) {
   setTimeout(() => {
     callback(__tcfapi.refreshTCData(), true);
   }, __tcfapi.latency);
 };
 
-__tcfapi.ping = function(callback, parameter) {
+__tcfapi.ping = function (callback, parameter) {
   setTimeout(() => {
     callback(__tcfapi.PingReturn);
   }, __tcfapi.latency);
 };
 
-__tcfapi.addEventListener = function(callback, parameter) {
+__tcfapi.addEventListener = function (callback, parameter) {
   setTimeout(() => {
     callback(__tcfapi.TCData, true);
   }, __tcfapi.latency);
 };
 
-__tcfapi.removeEventListener = function(callback, parameter) {
+__tcfapi.removeEventListener = function (callback, parameter) {
   setTimeout(() => {
     callback(true);
   }, __tcfapi.latency);

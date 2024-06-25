@@ -12,8 +12,8 @@ governing permissions and limitations under the License.
 
 import {
   isNotEqSelector,
-  splitWithEq
-} from "../../../../../../../src/components/Personalization/dom-actions/dom/helperForEq";
+  splitWithEq,
+} from "../../../../../../../src/components/Personalization/dom-actions/dom/helperForEq.js";
 
 describe("Personalization::DOM::helperForEq::isNotEqSelector", () => {
   it("should match when no eq", () => {

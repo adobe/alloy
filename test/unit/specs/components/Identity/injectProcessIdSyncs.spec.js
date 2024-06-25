@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import injectProcessIdSyncs from "../../../../../src/components/Identity/injectProcessIdSyncs";
+import injectProcessIdSyncs from "../../../../../src/components/Identity/injectProcessIdSyncs.js";
 
 describe("Identity::injectProcessIdSyncs", () => {
   let fireReferrerHideableImage;
@@ -23,7 +23,7 @@ describe("Identity::injectProcessIdSyncs", () => {
     logger = jasmine.createSpyObj("logger", ["info", "error"]);
     processIdSyncs = injectProcessIdSyncs({
       fireReferrerHideableImage,
-      logger
+      logger,
     });
   });
 
@@ -44,8 +44,8 @@ describe("Identity::injectProcessIdSyncs", () => {
         id: 2097728,
         spec: {
           url: "http://test.abc",
-          hideReferrer: true
-        }
+          hideReferrer: true,
+        },
       },
       {
         type: "cookie",
@@ -53,33 +53,33 @@ describe("Identity::injectProcessIdSyncs", () => {
           name: "testCookieIdSync",
           value: "id\u003ds2",
           domain: "",
-          ttl: 30
-        }
+          ttl: 30,
+        },
       },
       {
         type: "url",
         id: 2097729,
         spec: {
           url: "http://test.zyx",
-          hideReferrer: false
-        }
-      }
+          hideReferrer: false,
+        },
+      },
     ];
 
     return processIdSyncs(identities).then(() => {
       expect(fireReferrerHideableImage).toHaveBeenCalledWith({
         url: "http://test.abc",
-        hideReferrer: true
+        hideReferrer: true,
       });
       expect(fireReferrerHideableImage).toHaveBeenCalledWith({
         url: "http://test.zyx",
-        hideReferrer: false
+        hideReferrer: false,
       });
       expect(logger.info).toHaveBeenCalledWith(
-        "ID sync succeeded: http://test.zyx"
+        "ID sync succeeded: http://test.zyx",
       );
       expect(logger.error).toHaveBeenCalledWith(
-        "ID sync failed: http://test.abc"
+        "ID sync failed: http://test.abc",
       );
     });
   });

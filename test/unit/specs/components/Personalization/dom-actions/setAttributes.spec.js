@@ -9,13 +9,28 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import {
+  appendNode,
+  createNode,
+} from "../../../../../../src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
+import {
+  CLICK_LABEL_DATA_ATTRIBUTE,
+  INTERACT_ID_DATA_ATTRIBUTE,
+} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import { DOM_ACTION_SET_ATTRIBUTE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::setAttribute", () => {
+  let decorateProposition;
+
   beforeEach(() => {
     cleanUpDomChanges("setAttribute");
+    decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_SET_ATTRIBUTE,
+    });
   });
 
   afterEach(() => {
@@ -26,20 +41,23 @@ describe("Personalization::actions::setAttribute", () => {
     const modules = initDomActionsModules();
     const { setAttribute } = modules;
     const element = createNode("div", { id: "setAttribute" });
-    const elements = [element];
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#setAttribute",
       prehidingSelector: "#setAttribute",
       content: { "data-test": "bar" },
-      meta
+      meta: { a: 1 },
     };
 
-    return setAttribute(settings).then(() => {
-      expect(elements[0].getAttribute("data-test")).toEqual("bar");
+    return setAttribute(settings, decorateProposition).then(() => {
+      expect(element.getAttribute("data-test")).toEqual("bar");
+
+      expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+        "trackingLabel",
+      );
+      expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
     });
   });
 });

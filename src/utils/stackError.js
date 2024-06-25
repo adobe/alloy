@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import toError from "./toError";
-import updateErrorMessage from "./updateErrorMessage";
+import toError from "./toError.js";
+import updateErrorMessage from "./updateErrorMessage.js";
 
 /**
  * Augments an error's message with additional context as it bubbles up the call stack.
@@ -25,7 +25,7 @@ export default ({ error, message }) => {
   const newMessage = `${message}\nCaused by: ${errorToStack.message}`;
   updateErrorMessage({
     error: errorToStack,
-    message: newMessage
+    message: newMessage,
   });
   return errorToStack;
 };

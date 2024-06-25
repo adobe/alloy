@@ -12,8 +12,8 @@ governing permissions and limitations under the License.
 import {
   mockWindow,
   setupResponseHandler,
-  proposition
-} from "./contextTestUtils";
+  proposition,
+} from "./contextTestUtils.js";
 
 describe("DecisioningEngine:globalContext:browser", () => {
   let applyResponse;
@@ -25,15 +25,15 @@ describe("DecisioningEngine:globalContext:browser", () => {
       definition: {
         key: "browser.name",
         matcher: "eq",
-        values: ["chrome"]
+        values: ["chrome"],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -42,15 +42,15 @@ describe("DecisioningEngine:globalContext:browser", () => {
       definition: {
         key: "browser.name",
         matcher: "co",
-        values: ["Edge"]
+        values: ["Edge"],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 });

@@ -10,14 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { ClientFunction, t } from "testcafe";
-import fetch from "node-fetch";
-import uuid from "uuid/v4";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import getBaseConfig from "../../helpers/getBaseConfig";
-import { compose, debugEnabled } from "../../helpers/constants/configParts";
+import { v4 as uuidv4 } from "uuid";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import getBaseConfig from "../../helpers/getBaseConfig.js";
+import {
+  compose,
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
 
 const networkLogger = createNetworkLogger();
 const organizationId = "5BFE274A5F6980A50A495C08@AdobeOrg";
@@ -28,62 +30,62 @@ const config = compose(orgMainConfigMain, debugEnabled);
 createFixture({
   title: "Test C13405889: Verify DOM action using the evaluateRulesets command",
   requestHooks: [networkLogger.edgeEndpointLogs],
-  url: `${TEST_PAGE_URL}?test=C13348429`
+  url: `${TEST_PAGE_URL}?test=C13348429`,
 });
 
 test.meta({
   ID: "C13405889",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const getIframeContainer = ClientFunction(() => {
   const element = document.querySelector("#alloy-messaging-container");
   return element ? element.innerHTML : "";
 });
-const getAepEdgeResponse = async requestId => {
+const getAepEdgeResponse = async (requestId) => {
   const requestBody = {
     events: [
       {
         query: {
           personalization: {
-            surfaces: ["web://alloyio.com/functional-test/testPage.html"]
-          }
+            surfaces: ["web://alloyio.com/functional-test/testPage.html"],
+          },
         },
         xdm: {
           timestamp: new Date().toISOString(),
-          implementationDetails: {}
-        }
-      }
-    ]
+          implementationDetails: {},
+        },
+      },
+    ],
   };
   const res = await fetch(
     `https://edge.adobedc.net/ee/or2/v1/interact?configId=${dataStreamId}&requestId=${requestId}`,
     {
       body: JSON.stringify(requestBody),
-      method: "POST"
-    }
+      method: "POST",
+    },
   );
   return res.json();
 };
 
 test.skip("Test C13405889: Verify DOM action using the evaluateRulesets command", async () => {
-  const realResponse = await getAepEdgeResponse(uuid());
+  const realResponse = await getAepEdgeResponse(uuidv4());
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({});
 
   await alloy.applyResponse({
     renderDecisions: false,
-    responseBody: realResponse
+    responseBody: realResponse,
   });
   await alloy.evaluateRulesets({
     renderDecisions: true,
     personalization: {
       decisionContext: {
-        user: "alloy"
-      }
-    }
+        user: "alloy",
+      },
+    },
   });
   const containerElement = await getIframeContainer();
   await t.expect(containerElement).contains("alloy-content-iframe");

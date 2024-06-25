@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 /**
  * Tests the base methods that all types of request payloads share.
  */
-export default createPayload => {
+export default (createPayload) => {
   describe("base request payload functionality", () => {
     let payload;
 
@@ -24,20 +24,20 @@ export default createPayload => {
     it("merges state", () => {
       payload.mergeState({
         fruit: {
-          name: "banana"
+          name: "banana",
         },
         vegetable: {
-          name: "carrot"
-        }
+          name: "carrot",
+        },
       });
       payload.mergeState({
         fruit: {
           name: "apple",
-          calories: 105
+          calories: 105,
         },
         vegetable: {
-          calories: 25
-        }
+          calories: 25,
+        },
       });
 
       // We don't evaluate the entire `state` object because the request
@@ -47,31 +47,31 @@ export default createPayload => {
       const postSerializationPayload = JSON.parse(JSON.stringify(payload));
       expect(postSerializationPayload.meta.state.fruit).toEqual({
         name: "apple",
-        calories: 105
+        calories: 105,
       });
       expect(postSerializationPayload.meta.state.vegetable).toEqual({
         name: "carrot",
-        calories: 25
+        calories: 25,
       });
     });
 
     it("merges query", () => {
       payload.mergeQuery({
         fruit: {
-          name: "banana"
+          name: "banana",
         },
         vegetable: {
-          name: "carrot"
-        }
+          name: "carrot",
+        },
       });
       payload.mergeQuery({
         fruit: {
           name: "apple",
-          calories: 105
+          calories: 105,
         },
         vegetable: {
-          calories: 25
-        }
+          calories: 25,
+        },
       });
       // We don't evaluate the entire `query` object because the request
       // modules that leverage this base request may have added other things
@@ -80,11 +80,11 @@ export default createPayload => {
       const postSerializationPayload = JSON.parse(JSON.stringify(payload));
       expect(postSerializationPayload.query.fruit).toEqual({
         name: "apple",
-        calories: 105
+        calories: 105,
       });
       expect(postSerializationPayload.query.vegetable).toEqual({
         name: "carrot",
-        calories: 25
+        calories: 25,
       });
     });
   });

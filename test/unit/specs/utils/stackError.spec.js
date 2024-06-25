@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import stackError from "../../../../src/utils/stackError";
+import stackError from "../../../../src/utils/stackError.js";
 
 describe("stackError", () => {
   it("stacks message onto error instance", () => {
@@ -18,7 +18,7 @@ describe("stackError", () => {
     const result = stackError({ error, message: "Predicament discovered." });
     expect(result).toEqual(jasmine.any(Error));
     expect(result.message).toBe(
-      "Predicament discovered.\nCaused by: Conundrum encountered."
+      "Predicament discovered.\nCaused by: Conundrum encountered.",
     );
   });
 
@@ -27,7 +27,7 @@ describe("stackError", () => {
     const result = stackError({ error, message: "Predicament discovered." });
     expect(result).toEqual(jasmine.any(Error));
     expect(result.message).toBe(
-      "Predicament discovered.\nCaused by: Conundrum encountered."
+      "Predicament discovered.\nCaused by: Conundrum encountered.",
     );
   });
 });

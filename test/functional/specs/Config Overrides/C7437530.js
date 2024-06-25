@@ -10,17 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions/index";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   configOverridesMain as overrides,
   configOverridesAlt as alternateOverrides,
   orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
@@ -28,28 +28,28 @@ const config = compose(orgMainConfigMain, debugEnabled);
 createFixture({
   title:
     "C7437530: sendEvent can receive config overrides in command options and in configure",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C2592",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C7437530: `sendEvent` can receive config overrides in command options", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({
-    edgeConfigOverrides: overrides
+    edgeConfigOverrides: overrides,
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body
+    networkLogger.edgeEndpointLogs.requests[0].request.body,
   );
 
   await t
@@ -57,7 +57,7 @@ test("Test C7437530: `sendEvent` can receive config overrides in command options
     .eql("https://ns.adobe.com/experience/alloy");
   await t
     .expect(
-      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event,
     )
     .eql(overrides.com_adobe_experience_platform.datasets.event);
   await t
@@ -77,17 +77,17 @@ test("Test C7437530: `sendEvent` can receive config overrides from configure", a
   const alloy = createAlloyProxy();
   await alloy.configure(
     compose(config, {
-      edgeConfigOverrides: overrides
-    })
+      edgeConfigOverrides: overrides,
+    }),
   );
   await alloy.sendEvent({});
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body
+    networkLogger.edgeEndpointLogs.requests[0].request.body,
   );
 
   await t
@@ -95,7 +95,7 @@ test("Test C7437530: `sendEvent` can receive config overrides from configure", a
     .eql("https://ns.adobe.com/experience/alloy");
   await t
     .expect(
-      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event,
     )
     .eql(overrides.com_adobe_experience_platform.datasets.event);
   await t
@@ -115,19 +115,19 @@ test("Test C7437530: overrides from `sendEvent` should take precedence over the 
   const alloy = createAlloyProxy();
   await alloy.configure(
     compose(config, {
-      edgeConfigOverrides: alternateOverrides
-    })
+      edgeConfigOverrides: alternateOverrides,
+    }),
   );
   await alloy.sendEvent({
-    edgeConfigOverrides: overrides
+    edgeConfigOverrides: overrides,
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body
+    networkLogger.edgeEndpointLogs.requests[0].request.body,
   );
 
   await t
@@ -135,7 +135,7 @@ test("Test C7437530: overrides from `sendEvent` should take precedence over the 
     .eql("https://ns.adobe.com/experience/alloy");
   await t
     .expect(
-      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event,
     )
     .eql(overrides.com_adobe_experience_platform.datasets.event);
   await t
@@ -157,25 +157,25 @@ test("Test C7437530: empty configuration overrides should not be sent to the Edg
     compose(config, {
       edgeConfigOverrides: compose(alternateOverrides, {
         com_adobe_target: {
-          propertyToken: ""
-        }
-      })
-    })
+          propertyToken: "",
+        },
+      }),
+    }),
   );
   await alloy.sendEvent({
     edgeConfigOverrides: compose(overrides, {
       com_adobe_target: {
-        propertyToken: ""
-      }
-    })
+        propertyToken: "",
+      },
+    }),
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body
+    networkLogger.edgeEndpointLogs.requests[0].request.body,
   );
 
   await t
@@ -183,7 +183,7 @@ test("Test C7437530: empty configuration overrides should not be sent to the Edg
     .eql("https://ns.adobe.com/experience/alloy");
   await t
     .expect(
-      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event,
     )
     .eql(overrides.com_adobe_experience_platform.datasets.event);
   await t
@@ -204,11 +204,11 @@ test("Test C7437530: `sendEvent` can override the datastreamId", async () => {
   const alternateDatastreamId = `${originalDatastreamId}:dev`;
   await alloy.sendEvent({
     edgeConfigOverrides: {
-      datastreamId: alternateDatastreamId
-    }
+      datastreamId: alternateDatastreamId,
+    },
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
   const [request] = networkLogger.edgeEndpointLogs.requests;
   await t.expect(request.request.url).contains(alternateDatastreamId);

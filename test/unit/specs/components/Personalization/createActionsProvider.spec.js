@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createActionsProvider from "../../../../../src/components/Personalization/createActionsProvider";
+import createActionsProvider from "../../../../../src/components/Personalization/createActionsProvider.js";
 
 describe("createActionsProvider", () => {
   let actionsProvider;
@@ -24,70 +24,74 @@ describe("createActionsProvider", () => {
         something: {
           eat: () => Promise.resolve("yum"),
           sleep: () => Promise.resolve(),
-          exercise: () => Promise.resolve()
-        }
+          exercise: () => Promise.resolve(),
+        },
       },
       preprocessors: {
-        something: [action => action],
-        superfluous: [action => action, action => action, action => action]
+        something: [(action) => action],
+        superfluous: [
+          (action) => action,
+          (action) => action,
+          (action) => action,
+        ],
       },
-      logger
+      logger,
     });
   });
 
-  it("executes appropriate action", done => {
+  it("executes appropriate action", (done) => {
     const actionDetails = {
       schema: "something",
       type: "eat",
-      itWorked: true
+      itWorked: true,
     };
 
-    actionsProvider.executeAction(actionDetails).then(result => {
+    actionsProvider.executeAction(actionDetails).then((result) => {
       expect(result).toEqual("yum");
       expect(logger.info).toHaveBeenCalledOnceWith(
         jasmine.stringContaining(
-          `Action ${JSON.stringify(actionDetails)} executed.`
-        )
+          `Action ${JSON.stringify(actionDetails)} executed.`,
+        ),
       );
       done();
     });
   });
 
-  it("throws error if missing schema", done => {
+  it("throws error if missing schema", (done) => {
     const actionDetails = {
       schema: "hidden-valley",
       type: "truckee",
-      itWorked: true
+      itWorked: true,
     };
 
-    actionsProvider.executeAction(actionDetails).catch(error => {
+    actionsProvider.executeAction(actionDetails).catch((error) => {
       expect(error.message).toEqual(
-        `Action "truckee" not found for schema "hidden-valley"`
+        `Action "truckee" not found for schema "hidden-valley"`,
       );
       expect(logger.warn).toHaveBeenCalledOnceWith(
         jasmine.stringContaining(
-          `Failed to execute action ${JSON.stringify(actionDetails)}.`
-        )
+          `Failed to execute action ${JSON.stringify(actionDetails)}.`,
+        ),
       );
       done();
     });
   });
 
-  it("throws error if missing action", done => {
+  it("throws error if missing action", (done) => {
     const actionDetails = {
       schema: "something",
       type: "truckee",
-      itWorked: true
+      itWorked: true,
     };
 
-    actionsProvider.executeAction(actionDetails).catch(error => {
+    actionsProvider.executeAction(actionDetails).catch((error) => {
       expect(error.message).toEqual(
-        `Action "truckee" not found for schema "something"`
+        `Action "truckee" not found for schema "something"`,
       );
       expect(logger.warn).toHaveBeenCalledOnceWith(
         jasmine.stringContaining(
-          `Failed to execute action ${JSON.stringify(actionDetails)}.`
-        )
+          `Failed to execute action ${JSON.stringify(actionDetails)}.`,
+        ),
       );
       done();
     });
