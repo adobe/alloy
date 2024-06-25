@@ -50,7 +50,6 @@ const getLinkDetails = ClientFunction(selector => {
   const linkElement = document.getElementById(selector);
   // eslint-disable-next-line no-underscore-dangle
   const result = window.___getLinkDetails(linkElement);
-  console.log(result);
   if (!result) {
     return result;
   }
@@ -59,8 +58,7 @@ const getLinkDetails = ClientFunction(selector => {
     linkName: result.linkName,
     linkRegion: result.linkRegion,
     linkType: result.linkType,
-    linkUrl: result.linkUrl,
-    elementId: result.clickedElement ? result.clickedElement.id : undefined
+    linkUrl: result.linkUrl
   };
 });
 
@@ -80,7 +78,6 @@ test("Test C81183: Verify that it returns the object augmented by onBeforeLinkCl
     }
   });
   const expectedLinkDetails = {
-    elementId: "alloy-link-test",
     linkName: "Test Link",
     linkRegion: "BODY",
     linkType: "other",
@@ -114,7 +111,6 @@ test("Test C81183: Verify that it returns undefined if onBeforeLinkClickSend ret
   const linkDetails = await getLinkDetails("cancel-alloy-link-test");
   await t.wait(10000);
   await t.expect(linkDetails).eql({
-    elementId: undefined,
     linkName: undefined,
     linkRegion: undefined,
     linkType: undefined,
@@ -131,7 +127,6 @@ test("Test C81183: Verify that it returns linkDetails irrespective on clickColle
   await alloy.configure(testConfig);
   await addLinksToBody();
   const expectedLinkDetails = {
-    elementId: "alloy-link-test",
     linkName: "Test Link",
     linkRegion: "BODY",
     linkType: "other",
@@ -140,7 +135,6 @@ test("Test C81183: Verify that it returns linkDetails irrespective on clickColle
   };
 
   await t.expect(getLinkDetails("cancel-alloy-link-test")).eql({
-    elementId: undefined,
     linkName: undefined,
     linkRegion: undefined,
     linkType: undefined,

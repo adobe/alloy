@@ -125,8 +125,7 @@ export default ({ properties, logger } = {}) => {
         linkRegion: props.linkRegion,
         linkType: props.linkType,
         linkUrl: props.linkUrl,
-        pageIDType: props.pageIDType,
-        clickedElement: props.clickedElement
+        pageIDType: props.pageIDType
       };
     },
     isValidLink() {
