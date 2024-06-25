@@ -20,7 +20,7 @@ describe("ActivityCollector::createClickActivityStorage", () => {
     storage = jasmine.createSpyObj("storage", [
       "getItem",
       "setItem",
-      "removeItem"
+      "removeItem",
     ]);
     clickActivityStorage = createClickActivityStorage({ storage });
   });
@@ -29,7 +29,7 @@ describe("ActivityCollector::createClickActivityStorage", () => {
     clickActivityStorage.save({ key: "value" });
     expect(storage.setItem).toHaveBeenCalledWith(
       CLICK_ACTIVITY_DATA,
-      '{"key":"value"}'
+      '{"key":"value"}',
     );
   });
 

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default event => {
+export default (event) => {
   const content = event.getContent();
   return (
     content.xdm !== undefined &&

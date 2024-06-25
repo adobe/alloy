@@ -19,7 +19,7 @@ describe("ActivityCollector::extractDomain", () => {
     expect(extractDomain("https://www.example.com")).toBe("www.example.com");
     expect(extractDomain("https://www.example.com/")).toBe("www.example.com");
     expect(extractDomain("https://www.example.com/cool/page")).toBe(
-      "www.example.com"
+      "www.example.com",
     );
   });
 

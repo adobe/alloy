@@ -15,7 +15,7 @@ import elementHasClickHandler from "./elementHasClickHandler";
 import isInputSubmitElement from "./isInputSubmitElement";
 import isButtonSubmitElement from "./isButtonSubmitElement";
 
-export default element => {
+export default (element) => {
   let node = element;
   while (node) {
     if (

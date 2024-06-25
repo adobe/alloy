@@ -36,6 +36,6 @@ export default (oldField, oldSchema, newField) =>
     }
     return {
       [newField]: newValue || validatedOldValue,
-      ...otherValues
+      ...otherValues,
     };
   };

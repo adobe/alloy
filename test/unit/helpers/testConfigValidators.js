@@ -14,7 +14,7 @@ export default ({
   validConfigurations,
   invalidConfigurations,
   deprecatedConfigurations = [],
-  defaultValues
+  defaultValues,
 }) => {
   validConfigurations.forEach((cfg, i) => {
     it(`validates configuration (${i})`, () => {

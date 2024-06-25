@@ -36,12 +36,12 @@ describe("ActivityCollector config validators", () => {
     defaultValues: {
       clickCollectionEnabled: true,
       downloadLinkQualifier:
-        "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$"
+        "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$",
     },
     deprecatedConfigurations: [
       {
-        onBeforeLinkClickSend: () => undefined
-      }
-    ]
+        onBeforeLinkClickSend: () => undefined,
+      },
+    ],
   });
 });

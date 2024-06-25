@@ -19,10 +19,10 @@ describe("ActivityCollector::isDifferentDomains", () => {
 
   it("should return false if the domains are the same", () => {
     expect(
-      isDifferentDomains("https://www.example.com", "www.example.com")
+      isDifferentDomains("https://www.example.com", "www.example.com"),
     ).toBe(false);
     expect(isDifferentDomains("www.example.com", "www.example.com")).toBe(
-      false
+      false,
     );
   });
 });

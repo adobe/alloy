@@ -14,7 +14,7 @@ import { CLICK_ACTIVITY_DATA } from "../../constants/sessionDataKeys";
 
 export default ({ storage }) => {
   return {
-    save: data => {
+    save: (data) => {
       const jsonData = JSON.stringify(data);
       storage.setItem(CLICK_ACTIVITY_DATA, jsonData);
     },
@@ -28,6 +28,6 @@ export default ({ storage }) => {
     },
     remove: () => {
       storage.removeItem(CLICK_ACTIVITY_DATA);
-    }
+    },
   };
 };

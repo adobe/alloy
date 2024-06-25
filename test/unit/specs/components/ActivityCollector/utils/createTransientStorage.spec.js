@@ -18,7 +18,7 @@ describe("ActivityCollector::createTransientStorage", () => {
     expect(transientStorage).toEqual({
       setItem: jasmine.any(Function),
       getItem: jasmine.any(Function),
-      removeItem: jasmine.any(Function)
+      removeItem: jasmine.any(Function),
     });
   });
 

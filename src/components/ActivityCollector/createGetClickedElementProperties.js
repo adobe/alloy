@@ -18,12 +18,12 @@ export default ({
   getLinkRegion,
   getAbsoluteUrlFromAnchorElement,
   findClickableElement,
-  determineLinkType
+  determineLinkType,
 }) => {
   return ({ clickedElement, config, logger, clickActivityStorage }) => {
     const {
       onBeforeLinkClickSend: optionsFilter, // Deprecated
-      clickCollection
+      clickCollection,
     } = config;
     const { filterClickDetails: propertyFilter } = clickCollection;
     const elementProperties = createClickedElementProperties({ logger });
@@ -33,13 +33,13 @@ export default ({
         elementProperties.clickedElement = clickedElement;
         elementProperties.linkUrl = getAbsoluteUrlFromAnchorElement(
           window,
-          clickableElement
+          clickableElement,
         );
         elementProperties.linkType = determineLinkType(
           window,
           config,
           elementProperties.linkUrl,
-          clickableElement
+          clickableElement,
         );
         elementProperties.linkRegion = getLinkRegion(clickableElement);
         elementProperties.linkName = getLinkName(clickableElement);

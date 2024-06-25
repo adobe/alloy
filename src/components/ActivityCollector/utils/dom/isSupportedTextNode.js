@@ -17,7 +17,7 @@ const unsupportedNodeNames = /^(SCRIPT|STYLE|LINK|CANVAS|NOSCRIPT|#COMMENT)$/i;
  * @param {*} node Node to determine support for.
  * @returns {boolean}
  */
-export default node => {
+export default (node) => {
   if (node && node.nodeName) {
     if (node.nodeName.match(unsupportedNodeNames)) {
       return false;

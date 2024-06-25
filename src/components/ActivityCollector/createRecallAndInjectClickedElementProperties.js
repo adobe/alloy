@@ -14,7 +14,7 @@ import createClickedElementProperties from "./createClickedElementProperties";
 import activityMapExtensionEnabled from "./utils/activityMapExtensionEnabled";
 
 export default ({ clickActivityStorage }) => {
-  return event => {
+  return (event) => {
     // Avoid clicks to be collected for the ActivityMap interface
     if (activityMapExtensionEnabled()) {
       return;
@@ -38,7 +38,7 @@ export default ({ clickActivityStorage }) => {
       // keep a page-name for multiple link-clicks (e.g. downloads) on the same page.
       clickActivityStorage.save({
         pageName: elementProperties.pageName,
-        pageIDType: elementProperties.pageIDType
+        pageIDType: elementProperties.pageIDType,
       });
     }
   };

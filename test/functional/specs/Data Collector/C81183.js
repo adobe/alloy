@@ -46,7 +46,7 @@ const addLinksToBody = () => {
   );
 };
 
-const getLinkDetails = ClientFunction(selector => {
+const getLinkDetails = ClientFunction((selector) => {
   const linkElement = document.getElementById(selector);
   // eslint-disable-next-line no-underscore-dangle
   const result = window.___getLinkDetails(linkElement);
@@ -58,7 +58,7 @@ const getLinkDetails = ClientFunction(selector => {
     linkName: result.linkName,
     linkRegion: result.linkRegion,
     linkType: result.linkType,
-    linkUrl: result.linkUrl
+    linkUrl: result.linkUrl,
   };
 });
 
@@ -82,7 +82,7 @@ test("Test C81183: Verify that it returns the object augmented by onBeforeLinkCl
     linkRegion: "BODY",
     linkType: "other",
     linkUrl: "https://alloyio.com/functional-test/valid.html",
-    pageName: "https://alloyio.com/functional-test/testPage.html"
+    pageName: "https://alloyio.com/functional-test/testPage.html",
   };
   await alloy.configure(testConfig);
   await addLinksToBody();
@@ -115,7 +115,7 @@ test("Test C81183: Verify that it returns undefined if onBeforeLinkClickSend ret
     linkRegion: undefined,
     linkType: undefined,
     linkUrl: undefined,
-    pageName: undefined
+    pageName: undefined,
   });
 });
 
@@ -131,7 +131,7 @@ test("Test C81183: Verify that it returns linkDetails irrespective on clickColle
     linkRegion: "BODY",
     linkType: "other",
     linkUrl: "https://alloyio.com/functional-test/valid.html",
-    pageName: "https://alloyio.com/functional-test/testPage.html"
+    pageName: "https://alloyio.com/functional-test/testPage.html",
   };
 
   await t.expect(getLinkDetails("cancel-alloy-link-test")).eql({
@@ -139,7 +139,7 @@ test("Test C81183: Verify that it returns linkDetails irrespective on clickColle
     linkRegion: undefined,
     linkType: undefined,
     linkUrl: undefined,
-    pageName: undefined
+    pageName: undefined,
   });
   await t.expect(getLinkDetails("alloy-link-test")).eql(expectedLinkDetails);
 });

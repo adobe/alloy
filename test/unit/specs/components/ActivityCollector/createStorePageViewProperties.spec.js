@@ -16,35 +16,35 @@ describe("ActivityCollector::createStorePageViewProperties", () => {
   let clickActivityStorage;
   beforeEach(() => {
     clickActivityStorage = {
-      save: jasmine.createSpy()
+      save: jasmine.createSpy(),
     };
   });
 
   it("should return a function", () => {
     const storePageViewProperties = createStorePageViewProperties({
-      clickActivityStorage
+      clickActivityStorage,
     });
     expect(storePageViewProperties).toEqual(jasmine.any(Function));
   });
 
   it("stores page view properties when available in event", () => {
     const storePageViewProperties = createStorePageViewProperties({
-      clickActivityStorage
+      clickActivityStorage,
     });
     storePageViewProperties({
       getContent: () => ({
         xdm: {
           web: {
             webPageDetails: {
-              name: "testPageName"
-            }
-          }
-        }
-      })
+              name: "testPageName",
+            },
+          },
+        },
+      }),
     });
     expect(clickActivityStorage.save).toHaveBeenCalledWith({
       pageName: "testPageName",
-      pageIDType: 1
+      pageIDType: 1,
     });
   });
 });

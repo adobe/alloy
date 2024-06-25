@@ -62,7 +62,7 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
       eventGroupingEnabled: false,
       externalLinkEnabled: true,
       internalLinkEnabled: true,
-      sessionStorageEnabled: false
+      sessionStorageEnabled: false,
     },
     context: ["web", "device", "environment", "placeContext"],
     debugEnabled: true,

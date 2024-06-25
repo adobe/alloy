@@ -13,14 +13,14 @@ governing permissions and limitations under the License.
 export default () => {
   const storage = {};
   return {
-    getItem: key => {
+    getItem: (key) => {
       return storage[key];
     },
     setItem: (key, value) => {
       storage[key] = value;
     },
-    removeItem: key => {
+    removeItem: (key) => {
       delete storage[key];
-    }
+    },
   };
 };

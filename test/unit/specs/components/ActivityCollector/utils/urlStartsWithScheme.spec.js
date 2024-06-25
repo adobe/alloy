@@ -18,9 +18,9 @@ describe("ActivityCollector::urlStartsWithScheme", () => {
       "http://example.com",
       "https://example.com",
       "https://example.com:123/example?example=123",
-      "file://example.txt"
+      "file://example.txt",
     ];
-    urlsThatStartsWithScheme.forEach(url => {
+    urlsThatStartsWithScheme.forEach((url) => {
       expect(urlStartsWithScheme(url)).toBe(true);
     });
   });
@@ -32,9 +32,9 @@ describe("ActivityCollector::urlStartsWithScheme", () => {
       "//example.html",
       "",
       null,
-      undefined
+      undefined,
     ];
-    urlsThatDoesNotStartWithScheme.forEach(url => {
+    urlsThatDoesNotStartWithScheme.forEach((url) => {
       expect(urlStartsWithScheme(url)).toBe(false);
     });
   });

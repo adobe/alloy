@@ -31,5 +31,5 @@ export default () =>
     edgeBasePath: string().nonEmpty().default(EDGE_BASE_PATH),
     orgId: string().unique().required(),
     onBeforeEventSend: callback().default(noop),
-    edgeConfigOverrides: validateConfigOverride
+    edgeConfigOverrides: validateConfigOverride,
   }).renamed("edgeConfigId", string().unique(), "datastreamId");

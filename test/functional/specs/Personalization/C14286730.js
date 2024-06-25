@@ -17,7 +17,7 @@ import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  clickCollectionEventGroupingDisabled
+  clickCollectionEventGroupingDisabled,
 } from "../../helpers/constants/configParts";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
@@ -27,7 +27,7 @@ const networkLogger = createNetworkLogger();
 const config = compose(
   orgMainConfigMain,
   debugEnabled,
-  clickCollectionEventGroupingDisabled
+  clickCollectionEventGroupingDisabled,
 );
 
 createFixture({
@@ -69,10 +69,10 @@ test("Test C14286730: Target SPA click interaction includes viewName", async () 
   // await t.expect(networkLogger.edgeEndpointLogs.count(() => true)).eql(3);
 
   const displayNotification = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body
+    networkLogger.edgeEndpointLogs.requests[0].request.body,
   );
   const interactNotification = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[1].request.body
+    networkLogger.edgeEndpointLogs.requests[1].request.body,
   );
 
   // TODO: Testcafe no longer captures the request body for sendBeacon requests.

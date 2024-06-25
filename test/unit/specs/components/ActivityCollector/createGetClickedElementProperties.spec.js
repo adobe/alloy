@@ -20,8 +20,8 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       host: "example.com",
       hostname: "example.com",
       pathname: "/",
-      href: "https://example.com/"
-    }
+      href: "https://example.com/",
+    },
   };
   const supportedLinkElement = {
     tagName: "A",
@@ -49,8 +49,8 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       storage: {
         getItem: () => {},
         setItem: () => {},
-        removeItem: () => {}
-      }
+        removeItem: () => {},
+      },
     });
   });
 
@@ -61,8 +61,8 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
         return true;
       },
       clickCollection: {
-        externalLink: true
-      }
+        externalLink: true,
+      },
     };
     getLinkRegion.and.returnValue("root");
     getLinkName.and.returnValue("Go to cart");
@@ -83,7 +83,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       clickedElement: {},
       config,
       logger,
-      clickActivityStorage
+      clickActivityStorage,
     });
     // I have to set this manually because of passing in {} as the clickedElement
     result.pageIDType = 0;
@@ -112,13 +112,13 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
                   page: "https://example.com/",
                   link: "Go to cart",
                   region: "root",
-                  pageIDType: 0
-                }
-              }
-            }
-          }
+                  pageIDType: 0,
+                },
+              },
+            },
+          },
         },
-        custom: "test data field"
+        custom: "test data field",
       },
       clickedElement: {},
     });
@@ -130,8 +130,8 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
         return false;
       },
       clickCollection: {
-        externalLink: true
-      }
+        externalLink: true,
+      },
     };
     getLinkRegion.and.returnValue("root");
     getLinkName.and.returnValue("Go to cart");
@@ -152,7 +152,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       clickedElement: {},
       config,
       logger,
-      clickActivityStorage
+      clickActivityStorage,
     });
     expect(result.options).toEqual(undefined);
   });
@@ -163,8 +163,8 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
         return true;
       },
       clickCollection: {
-        externalLink: true
-      }
+        externalLink: true,
+      },
     };
     getLinkRegion.and.returnValue(undefined);
     getLinkName.and.returnValue("Go to cart");
@@ -185,7 +185,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       clickedElement: {},
       config,
       logger,
-      clickActivityStorage
+      clickActivityStorage,
     });
     expect(result.options).toEqual(undefined);
   });
@@ -196,8 +196,8 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
         return true;
       },
       clickCollection: {
-        externalLink: true
-      }
+        externalLink: true,
+      },
     };
     getLinkRegion.and.returnValue("root");
     getLinkName.and.returnValue("Go to cart");
@@ -218,7 +218,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       clickedElement: {},
       config,
       logger,
-      clickActivityStorage
+      clickActivityStorage,
     });
     // I have to set this manually because of passing in {} as the clickedElement
     result.pageIDType = 0;
@@ -232,14 +232,14 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
                   page: "https://example.com/",
                   link: "Go to cart",
                   region: "root",
-                  pageIDType: 0
-                }
-              }
-            }
-          }
-        }
+                  pageIDType: 0,
+                },
+              },
+            },
+          },
+        },
       },
-      clickedElement: {}
+      clickedElement: {},
     });
   });
 
@@ -247,8 +247,8 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     const config = {
       onBeforeLinkClickSend: () => {},
       clickCollection: {
-        externalLink: true
-      }
+        externalLink: true,
+      },
     };
     getLinkRegion.and.returnValue("root");
     getLinkName.and.returnValue("Go to cart");
@@ -269,7 +269,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       clickedElement: {},
       config,
       logger,
-      clickActivityStorage
+      clickActivityStorage,
     });
     expect(result).not.toBe(undefined);
   });

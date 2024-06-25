@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const buildXdmFromClickedElementProperties = props => {
+const buildXdmFromClickedElementProperties = (props) => {
   return {
     eventType: "web.webinteraction.linkClicks",
     web: {
@@ -20,14 +20,14 @@ const buildXdmFromClickedElementProperties = props => {
         type: props.linkType,
         URL: props.linkUrl,
         linkClicks: {
-          value: 1
-        }
-      }
-    }
+          value: 1,
+        },
+      },
+    },
   };
 };
 
-const buildDataFromClickedElementProperties = props => {
+const buildDataFromClickedElementProperties = (props) => {
   return {
     __adobe: {
       analytics: {
@@ -37,12 +37,12 @@ const buildDataFromClickedElementProperties = props => {
               page: props.pageName,
               link: props.linkName,
               region: props.linkRegion,
-              pageIDType: props.pageIDType
-            }
-          }
-        }
-      }
-    }
+              pageIDType: props.pageIDType,
+            },
+          },
+        },
+      },
+    },
   };
 };
 
@@ -125,7 +125,7 @@ export default ({ properties, logger } = {}) => {
         linkRegion: props.linkRegion,
         linkType: props.linkType,
         linkUrl: props.linkUrl,
-        pageIDType: props.pageIDType
+        pageIDType: props.pageIDType,
       };
     },
     isValidLink() {
@@ -166,8 +166,8 @@ export default ({ properties, logger } = {}) => {
             `Clicked element properties were rejected by filter function: ${JSON.stringify(
               this.properties,
               null,
-              2
-            )}`
+              2,
+            )}`,
           );
         }
         props = {};
@@ -183,8 +183,8 @@ export default ({ properties, logger } = {}) => {
               `Clicked element properties were rejected by filter function: ${JSON.stringify(
                 this.properties,
                 null,
-                2
-              )}`
+                2,
+              )}`,
             );
           }
           this.options = undefined;
@@ -218,7 +218,7 @@ export default ({ properties, logger } = {}) => {
       if (value) {
         populateClickedElementPropertiesFromOptions(value, props);
       }
-    }
+    },
   };
   return clickedElementProperties;
 };

@@ -40,7 +40,7 @@ describe("ActivityCollector::determineLinkType", () => {
   it("returns 'exit' if linkUrl is an exit link", () => {
     linkUrl = "https://adobe.com";
     window.location = {
-      hostname: "example.com"
+      hostname: "example.com",
     };
     const result = determineLinkType(window, config, linkUrl, clickedObj);
     expect(result).toBe("exit");
@@ -49,7 +49,7 @@ describe("ActivityCollector::determineLinkType", () => {
   it("returns 'other' if linkUrl is not a download or exit link", () => {
     linkUrl = "https://example.com";
     window.location = {
-      hostname: "example.com"
+      hostname: "example.com",
     };
     const result = determineLinkType(window, config, linkUrl, clickedObj);
     expect(result).toBe("other");

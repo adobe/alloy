@@ -19,11 +19,11 @@ describe("ActivityCollector::hasPageName", () => {
         xdm: {
           web: {
             webPageDetails: {
-              name: "test"
-            }
-          }
-        }
-      })
+              name: "test",
+            },
+          },
+        },
+      }),
     };
     expect(hasPageName(event)).toBe(true);
   });
@@ -32,9 +32,9 @@ describe("ActivityCollector::hasPageName", () => {
     const event = {
       getContent: () => ({
         xdm: {
-          web: {}
-        }
-      })
+          web: {},
+        },
+      }),
     };
     expect(hasPageName(event)).toBe(false);
   });

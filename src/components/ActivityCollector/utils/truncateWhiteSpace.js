@@ -17,6 +17,6 @@ governing permissions and limitations under the License.
  * @param {string} str String to be formatted.
  * @returns {string} Formatted string.
  */
-export default str => {
+export default (str) => {
   return str && str.replace(/\s+/g, " ").trim();
 };

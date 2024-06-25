@@ -32,7 +32,7 @@ const getClickedElementProperties = createGetClickedElementProperties({
   getLinkRegion,
   getAbsoluteUrlFromAnchorElement,
   findClickableElement,
-  determineLinkType
+  determineLinkType,
 });
 
 let clickActivityStorage;
@@ -56,15 +56,14 @@ const createActivityCollector = ({
     config,
     logger,
     clickActivityStorage,
-    getClickedElementProperties
+    getClickedElementProperties,
   });
-  const recallAndInjectClickedElementProperties = createRecallAndInjectClickedElementProperties(
-    {
-      clickActivityStorage
-    }
-  );
+  const recallAndInjectClickedElementProperties =
+    createRecallAndInjectClickedElementProperties({
+      clickActivityStorage,
+    });
   const storePageViewProperties = createStorePageViewProperties({
-    clickActivityStorage
+    clickActivityStorage,
   });
   return {
     lifecycle: {
@@ -80,7 +79,7 @@ const createActivityCollector = ({
       onClick({ event, clickedElement }) {
         injectClickedElementProperties({
           event,
-          clickedElement
+          clickedElement,
         });
       },
       onBeforeEvent({ event }) {
@@ -90,8 +89,8 @@ const createActivityCollector = ({
           }
           storePageViewProperties(event, logger, clickActivityStorage);
         }
-      }
-    }
+      },
+    },
   };
 };
 
@@ -102,14 +101,14 @@ createActivityCollector.buildOnInstanceConfiguredExtraParams = ({
   logger,
 }) => {
   return {
-    getLinkDetails: targetElement => {
+    getLinkDetails: (targetElement) => {
       return getClickedElementProperties({
         clickActivityStorage,
         clickedElement: targetElement,
         config,
-        logger
+        logger,
       }).properties;
-    }
+    },
   };
 };
 

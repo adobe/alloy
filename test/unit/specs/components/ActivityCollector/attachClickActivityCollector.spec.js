@@ -67,7 +67,7 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
   it("Does not publish onClick lifecycle events for AppMeasurement repropagated click-events", () => {
     build();
     const clickEvent = {
-      s_fe: 1
+      s_fe: 1,
     };
     clickHandler(clickEvent);
     expect(lifecycle.onClick).not.toHaveBeenCalled();

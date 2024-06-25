@@ -206,7 +206,7 @@ const createObjectOfAdditionalProperties = (schema) => ({
     // before the objectOf validator runs.
     return reverseNullSafeChainJoinErrors(
       this,
-      createRenamedValidator(oldField, oldSchema, newField)
+      createRenamedValidator(oldField, oldSchema, newField),
     );
   },
   schema,

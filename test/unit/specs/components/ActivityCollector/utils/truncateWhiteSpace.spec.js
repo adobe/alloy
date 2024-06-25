@@ -22,9 +22,9 @@ describe("ActivityCollector::truncateWhiteSpace", () => {
       ["  hello world", "hello world"],
       ["", ""],
       [" ", ""],
-      ["  ", ""]
+      ["  ", ""],
     ];
-    testCases.forEach(testCase => {
+    testCases.forEach((testCase) => {
       expect(truncateWhiteSpace(testCase[0])).toBe(testCase[1]);
     });
   });

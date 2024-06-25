@@ -11,6 +11,6 @@ governing permissions and limitations under the License.
 */
 export default {
   clickCollection: {
-    sessionStorageEnabled: false
-  }
+    sessionStorageEnabled: false,
+  },
 };

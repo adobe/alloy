@@ -16,25 +16,25 @@ describe("ActivityCollector::isExitLink", () => {
   it("Returns true if the link leads away from the current hostname", () => {
     const mockWindow = {
       location: {
-        hostname: "adobe.com"
-      }
+        hostname: "adobe.com",
+      },
     };
     const clickedLinks = [
       "https://example.com",
-      "http://example.com/index.html"
+      "http://example.com/index.html",
     ];
-    clickedLinks.forEach(clickedLink => {
+    clickedLinks.forEach((clickedLink) => {
       expect(isExitLink(mockWindow, clickedLink)).toBe(true);
     });
   });
   it("Returns false if the link leads to the current hostname", () => {
     const mockWindow = {
       location: {
-        hostname: "adobe.com"
-      }
+        hostname: "adobe.com",
+      },
     };
     const clickedLinks = ["https://adobe.com", "http://adobe.com/index.html"];
-    clickedLinks.forEach(clickedLink => {
+    clickedLinks.forEach((clickedLink) => {
       expect(isExitLink(mockWindow, clickedLink)).toBe(false);
     });
   });

@@ -19,7 +19,7 @@ describe("ActivityCollector::elementHasClickHandler", () => {
       { element: undefined },
       { element: {} },
       { element: { onclick: null } },
-      { element: { onclick: undefined } }
+      { element: { onclick: undefined } },
     ];
     invalidElements.forEach(({ element }) => {
       expect(elementHasClickHandler(element)).toBe(false);
@@ -29,7 +29,7 @@ describe("ActivityCollector::elementHasClickHandler", () => {
   it("should handle elements with click handlers", () => {
     const clickHandlerElements = [
       { element: { onclick: () => {} } },
-      { element: { onclick() {} } }
+      { element: { onclick() {} } },
     ];
     clickHandlerElements.forEach(({ element }) => {
       expect(elementHasClickHandler(element)).toBe(true);

@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 export default ({ clickActivityStorage }) => {
-  return event => {
+  return (event) => {
     clickActivityStorage.save({
       pageName: event.getContent().xdm.web.webPageDetails.name,
-      pageIDType: 1 // 1 = name, 0 = URL
+      pageIDType: 1, // 1 = name, 0 = URL
     });
   };
 };

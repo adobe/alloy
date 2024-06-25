@@ -17,14 +17,14 @@ describe("ActivityCollector::isSupportedAnchorElement", () => {
     const validAnchorElements = [
       {
         href: "http://example.com",
-        tagName: "A"
+        tagName: "A",
       },
       {
         href: "http://example.com",
-        tagName: "AREA"
-      }
+        tagName: "AREA",
+      },
     ];
-    validAnchorElements.forEach(element => {
+    validAnchorElements.forEach((element) => {
       expect(isSupportedAnchorElement(element)).toBe(true);
     });
   });
@@ -32,23 +32,23 @@ describe("ActivityCollector::isSupportedAnchorElement", () => {
     const invalidAnchorElements = [
       {},
       {
-        href: ""
-      },
-      {
-        href: "http://example.com"
+        href: "",
       },
       {
         href: "http://example.com",
-        tagName: "LINK"
+      },
+      {
+        href: "http://example.com",
+        tagName: "LINK",
       },
       {
         href: "http://example.com",
         tagName: "A",
         onclick: "example();",
-        protocol: " javascript:"
-      }
+        protocol: " javascript:",
+      },
     ];
-    invalidAnchorElements.forEach(element => {
+    invalidAnchorElements.forEach((element) => {
       expect(isSupportedAnchorElement(element)).toBe(false);
     });
   });

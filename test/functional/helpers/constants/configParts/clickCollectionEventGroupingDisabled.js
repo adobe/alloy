@@ -11,6 +11,6 @@ governing permissions and limitations under the License.
 */
 export default {
   clickCollection: {
-    eventGroupingEnabled: false
-  }
+    eventGroupingEnabled: false,
+  },
 };

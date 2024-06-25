@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { noop } from "../../utils/index.js";
 
 const createClickHandler = ({ eventManager, lifecycle, handleError }) => {
-  return clickEvent => {
+  return (clickEvent) => {
     // Ignore repropagated clicks from AppMeasurement
     if (clickEvent.s_fe) {
       return Promise.resolve();
