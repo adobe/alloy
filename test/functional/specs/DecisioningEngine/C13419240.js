@@ -10,12 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { ClientFunction, t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import getBaseConfig from "../../helpers/getBaseConfig";
-import { compose, debugEnabled } from "../../helpers/constants/configParts";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import getBaseConfig from "../../helpers/getBaseConfig.js";
+import {
+  compose,
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
 
 const networkLogger = createNetworkLogger();
 const organizationId = "5BFE274A5F6980A50A495C08@AdobeOrg";
@@ -27,13 +30,13 @@ const config = compose(orgMainConfigMain, debugEnabled);
 createFixture({
   title: "Test C13419240: Verify DOM action using the sendEvent command",
   requestHooks: [networkLogger.edgeEndpointLogs],
-  url: `${TEST_PAGE_URL}?test=C13348429`
+  url: `${TEST_PAGE_URL}?test=C13348429`,
 });
 
 test.meta({
   ID: "C13419240",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const getIframeContainer = ClientFunction(() => {
@@ -49,9 +52,9 @@ test.skip("Test C13419240: Verify DOM action using the sendEvent command", async
     renderDecisions: true,
     personalization: {
       decisionContext: {
-        user: "alloytest"
-      }
-    }
+        user: "alloytest",
+      },
+    },
   });
 
   const containerElement = await getIframeContainer();

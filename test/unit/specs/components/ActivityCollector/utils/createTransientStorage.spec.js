@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createTransientStorage from "../../../../../../src/components/ActivityCollector/utils/createTransientStorage";
+import createTransientStorage from "../../../../../../src/components/ActivityCollector/utils/createTransientStorage.js";
 
 describe("ActivityCollector::createTransientStorage", () => {
   it("should return an object with the expected methods", () => {
@@ -18,7 +18,7 @@ describe("ActivityCollector::createTransientStorage", () => {
     expect(transientStorage).toEqual({
       setItem: jasmine.any(Function),
       getItem: jasmine.any(Function),
-      removeItem: jasmine.any(Function)
+      removeItem: jasmine.any(Function),
     });
   });
 

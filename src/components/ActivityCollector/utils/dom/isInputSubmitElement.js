@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default element => {
+export default (element) => {
   if (element.tagName === "INPUT") {
     const type = element.getAttribute("type");
     if (type === "submit") {

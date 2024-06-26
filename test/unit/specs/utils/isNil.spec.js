@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNil from "../../../../src/utils/isNil";
+import isNil from "../../../../src/utils/isNil.js";
 
 describe("isNil", () => {
   it("returns true when null", () => {

@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { deduplicateArray } from "../../../../src/utils";
+import { deduplicateArray } from "../../../../src/utils/index.js";
 
 describe("deduplicateArray", () => {
   it("should return an empty array if input is empty", () => {

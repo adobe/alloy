@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { defer } from "../../utils";
+import { defer } from "../../utils/index.js";
 
 export const DECLINED_CONSENT = "The user declined consent.";
 export const DECLINED_CONSENT_ERROR_CODE = "declinedConsent";
@@ -18,7 +18,7 @@ export const CONSENT_SOURCE_DEFAULT = "default";
 export const CONSENT_SOURCE_INITIAL = "initial";
 export const CONSENT_SOURCE_NEW = "new";
 
-const createDeclinedConsentError = errorMessage => {
+const createDeclinedConsentError = (errorMessage) => {
   const error = new Error(errorMessage);
   error.code = DECLINED_CONSENT_ERROR_CODE;
   error.message = errorMessage;
@@ -47,11 +47,11 @@ export default ({ logger }) => {
   const awaitIn = () => Promise.resolve();
   const awaitOutDefault = () =>
     Promise.reject(
-      createDeclinedConsentError("No consent preferences have been set.")
+      createDeclinedConsentError("No consent preferences have been set."),
     );
   const awaitOut = () =>
     Promise.reject(createDeclinedConsentError("The user declined consent."));
-  const awaitPending = returnImmediately => {
+  const awaitPending = (returnImmediately) => {
     if (returnImmediately) {
       return Promise.reject(new Error("Consent is pending."));
     }
@@ -67,7 +67,7 @@ export default ({ logger }) => {
       } else {
         if (source === CONSENT_SOURCE_INITIAL) {
           logger.info(
-            "Loaded user consent preferences. The user previously consented."
+            "Loaded user consent preferences. The user previously consented.",
           );
         } else if (
           source === CONSENT_SOURCE_NEW &&
@@ -82,13 +82,13 @@ export default ({ logger }) => {
     out(source) {
       if (source === CONSENT_SOURCE_DEFAULT) {
         logger.warn(
-          "User consent preferences not found. Default consent of out will be used."
+          "User consent preferences not found. Default consent of out will be used.",
         );
         this.awaitConsent = awaitOutDefault;
       } else {
         if (source === CONSENT_SOURCE_INITIAL) {
           logger.warn(
-            "Loaded user consent preferences. The user previously declined consent."
+            "Loaded user consent preferences. The user previously declined consent.",
           );
         } else if (
           source === CONSENT_SOURCE_NEW &&
@@ -103,7 +103,7 @@ export default ({ logger }) => {
     pending(source) {
       if (source === CONSENT_SOURCE_DEFAULT) {
         logger.info(
-          "User consent preferences not found. Default consent of pending will be used. Some commands may be delayed."
+          "User consent preferences not found. Default consent of pending will be used. Some commands may be delayed.",
         );
       }
       this.awaitConsent = awaitPending;
@@ -111,6 +111,22 @@ export default ({ logger }) => {
     awaitConsent: awaitInitial,
     withConsent() {
       return this.awaitConsent(true);
-    }
+    },
+    current() {
+      switch (this.awaitConsent) {
+        case awaitInDefault:
+          return { state: "in", wasSet: false };
+        case awaitIn:
+          return { state: "in", wasSet: true };
+        case awaitOutDefault:
+          return { state: "out", wasSet: false };
+        case awaitOut:
+          return { state: "out", wasSet: true };
+        case awaitPending:
+          return { state: "pending", wasSet: false };
+        default:
+          return { state: "in", wasSet: false };
+      }
+    },
   };
 };

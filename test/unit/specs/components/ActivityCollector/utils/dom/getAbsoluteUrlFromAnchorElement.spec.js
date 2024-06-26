@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getAbsoluteUrlFromAnchorElement from "../../../../../../../src/components/ActivityCollector/utils/dom/getAbsoluteUrlFromAnchorElement";
+import getAbsoluteUrlFromAnchorElement from "../../../../../../../src/components/ActivityCollector/utils/dom/getAbsoluteUrlFromAnchorElement.js";
 
 const initAnchorState = (window, element, anchorState) => {
   element.href = anchorState["element.href"];
@@ -27,12 +27,12 @@ describe("ActivityCollector::getAbsoluteUrlFromAnchorElement", () => {
       location: {
         protocol: "",
         host: "",
-        pathname: ""
-      }
+        pathname: "",
+      },
     };
     const element = {
       protocol: "",
-      host: ""
+      host: "",
     };
     const anchorStates = [
       {
@@ -42,7 +42,7 @@ describe("ActivityCollector::getAbsoluteUrlFromAnchorElement", () => {
         "window.location.protocol": "http:",
         "window.location.host": "example.com",
         "window.location.pathname": "/",
-        expectedResult: "http://example.com/example.html"
+        expectedResult: "http://example.com/example.html",
       },
       {
         "element.href": "example.html",
@@ -51,13 +51,13 @@ describe("ActivityCollector::getAbsoluteUrlFromAnchorElement", () => {
         "window.location.protocol": "https:",
         "window.location.host": "example.com",
         "window.location.pathname": "/",
-        expectedResult: "https://example.com/example.html"
-      }
+        expectedResult: "https://example.com/example.html",
+      },
     ];
-    anchorStates.forEach(anchorState => {
+    anchorStates.forEach((anchorState) => {
       initAnchorState(window, element, anchorState);
       expect(getAbsoluteUrlFromAnchorElement(window, element)).toBe(
-        anchorState.expectedResult
+        anchorState.expectedResult,
       );
     });
   });

@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import truncateWhiteSpace from "./utils/truncateWhiteSpace";
-import { isNonEmptyString } from "../../utils";
+import truncateWhiteSpace from "./utils/truncateWhiteSpace.js";
+import { isNonEmptyString } from "../../utils/index.js";
 
 const semanticElements = /^(HEADER|MAIN|FOOTER|NAV)$/i;
 
-const getAriaRegionLabel = node => {
+const getAriaRegionLabel = (node) => {
   let regionLabel;
   if (node.role === "region" && isNonEmptyString(node["aria-label"])) {
     regionLabel = node["aria-label"];
@@ -23,7 +23,7 @@ const getAriaRegionLabel = node => {
   return regionLabel;
 };
 
-const getSectionNodeName = node => {
+const getSectionNodeName = (node) => {
   let nodeName;
   if (node && node.nodeName) {
     if (node.nodeName.match(semanticElements)) {
@@ -47,14 +47,14 @@ const getSectionNodeName = node => {
  * @param {*} node The node to find link region for.
  * @returns {string} link-region.
  */
-export default node => {
+export default (node) => {
   let linkParentNode = node.parentNode;
   let regionName;
   while (linkParentNode) {
     regionName = truncateWhiteSpace(
       linkParentNode.id ||
         getAriaRegionLabel(linkParentNode) ||
-        getSectionNodeName(linkParentNode)
+        getSectionNodeName(linkParentNode),
     );
     if (regionName) {
       return regionName;

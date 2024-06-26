@@ -1,5 +1,5 @@
 /*
-Copyright 2019 Adobe. All rights reserved.
+Copyright 2024 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -14,9 +14,9 @@ import {
   createNode,
   appendNode,
   selectNodes,
-  removeNode
-} from "../../../../../../../src/utils/dom";
-import collectClicks from "../../../../../../../src/components/Personalization/dom-actions/clicks/collectClicks";
+  removeNode,
+} from "../../../../../../../src/utils/dom/index.js";
+import collectClicks from "../../../../../../../src/components/Personalization/dom-actions/clicks/collectClicks.js";
 
 describe("Personalization::tracking::clicks", () => {
   afterEach(() => {
@@ -27,25 +27,25 @@ describe("Personalization::tracking::clicks", () => {
     const meta = [
       {
         id: "AT:1234",
-        scope: "example_scope"
-      }
+        scope: "example_scope",
+      },
     ];
-    const getClickMetasBySelector = jasmine
-      .createSpy("getClickMetasBySelector")
+    const getClickMetas = jasmine
+      .createSpy("getClickMetas")
       .and.returnValue(meta);
     const content = `
       <div class="b">
         <div id="one" class="c">first</div>
 
         <div id="two" class="c">second</div>
-        
+
         <div id="three" class="c">third</div>
       </div>
     `;
     const node = createNode(
       "DIV",
       { id: "abc", class: "eq" },
-      { innerHTML: content }
+      { innerHTML: content },
     );
 
     appendNode(document.body, node);
@@ -53,51 +53,51 @@ describe("Personalization::tracking::clicks", () => {
     const selectors = ["#abc:eq(0) > div.b:eq(0) > div.c"];
 
     const element = document.getElementById("one");
-    const { decisionsMeta, eventLabel } = collectClicks(
+    const { decisionsMeta, propositionActionLabel } = collectClicks(
       element,
       selectors,
-      getClickMetasBySelector
+      getClickMetas,
     );
 
     expect(decisionsMeta).toEqual(meta);
-    expect(eventLabel).toEqual("");
+    expect(propositionActionLabel).toEqual("");
   });
 
-  it("should collect and dedup clicks with labels", () => {
+  it("should collect and dedupe clicks with labels", () => {
     const metaOuter = [
       {
         id: "AT:outer-id-1",
-        scope: "outer-scope1"
+        scope: "outer-scope1",
       },
       {
         id: "AJO:inner-id-2",
         scope: "inner-scope2",
-        trackingLabel: "outer-label-2"
+        trackingLabel: "outer-label-2",
       },
       {
         id: "AJO:outer-id-3",
         scope: "outer-scope3",
-        trackingLabel: "outer-label-3"
-      }
+        trackingLabel: "outer-label-3",
+      },
     ];
     const metaInner = [
       {
         id: "AT:inner-id-1",
-        scope: "inner-scope1"
+        scope: "inner-scope1",
       },
       {
         id: "AJO:inner-id-2",
         scope: "inner-scope2",
-        trackingLabel: "inner-label-2"
+        trackingLabel: "inner-label-2",
       },
       {
         id: "AJO:inner-id-3",
         scope: "inner-scope3",
-        trackingLabel: "inner-label-3"
-      }
+        trackingLabel: "inner-label-3",
+      },
     ];
-    const getClickMetasBySelector = jasmine
-      .createSpy("getClickMetasBySelector")
+    const getClickMetas = jasmine
+      .createSpy("getClickMetas")
       .withArgs("#abc:eq(0) > div.b:eq(0)")
       .and.returnValue(metaOuter)
       .withArgs("#abc:eq(0) > div.b:eq(0) > div.c")
@@ -107,52 +107,52 @@ describe("Personalization::tracking::clicks", () => {
         <div id="one" class="c">first</div>
 
         <div id="two" class="c">second</div>
-        
+
         <div id="three" class="c">third</div>
       </div>
     `;
     const node = createNode(
       "DIV",
       { id: "abc", class: "eq" },
-      { innerHTML: content }
+      { innerHTML: content },
     );
 
     appendNode(document.body, node);
 
     const selectors = [
       "#abc:eq(0) > div.b:eq(0)",
-      "#abc:eq(0) > div.b:eq(0) > div.c"
+      "#abc:eq(0) > div.b:eq(0) > div.c",
     ];
 
     const element = document.getElementById("one");
-    const { decisionsMeta, eventLabel } = collectClicks(
+    const { decisionsMeta, propositionActionLabel } = collectClicks(
       element,
       selectors,
-      getClickMetasBySelector
+      getClickMetas,
     );
 
     expect(decisionsMeta).toEqual([
       {
         id: "AT:outer-id-1",
-        scope: "outer-scope1"
+        scope: "outer-scope1",
       },
       {
         id: "AJO:inner-id-2",
-        scope: "inner-scope2"
+        scope: "inner-scope2",
       },
       {
         id: "AJO:outer-id-3",
-        scope: "outer-scope3"
+        scope: "outer-scope3",
       },
       {
         id: "AT:inner-id-1",
-        scope: "inner-scope1"
+        scope: "inner-scope1",
       },
       {
         id: "AJO:inner-id-3",
-        scope: "inner-scope3"
-      }
+        scope: "inner-scope3",
+      },
     ]);
-    expect(eventLabel).toEqual("inner-label-2");
+    expect(propositionActionLabel).toEqual("inner-label-2");
   });
 });

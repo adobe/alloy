@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { string } from "../../../../../src/utils/validation";
-import describeValidation from "../../../helpers/describeValidation";
+import { string } from "../../../../../src/utils/validation/index.js";
+import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::string", () => {
   describeValidation("optional string", string(), [
@@ -19,19 +19,19 @@ describe("validation::string", () => {
     { value: [], error: true },
     { value: () => {}, error: true },
     { value: null },
-    { value: undefined }
+    { value: undefined },
   ]);
 
   describeValidation("required string", string().required(), [
     { value: null, error: true },
     { value: undefined, error: true },
     { value: "" },
-    { value: "hello" }
+    { value: "hello" },
   ]);
 
   describeValidation("default string", string().default("default"), [
     { value: null, expected: "default" },
     { value: undefined, expected: "default" },
-    { value: "hello" }
+    { value: "hello" },
   ]);
 });

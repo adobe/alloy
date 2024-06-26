@@ -10,31 +10,31 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isExitLink from "../../../../../../../src/components/ActivityCollector/utils/dom/isExitLink";
+import isExitLink from "../../../../../../../src/components/ActivityCollector/utils/dom/isExitLink.js";
 
 describe("ActivityCollector::isExitLink", () => {
   it("Returns true if the link leads away from the current hostname", () => {
     const mockWindow = {
       location: {
-        hostname: "adobe.com"
-      }
+        hostname: "adobe.com",
+      },
     };
     const clickedLinks = [
       "https://example.com",
-      "http://example.com/index.html"
+      "http://example.com/index.html",
     ];
-    clickedLinks.forEach(clickedLink => {
+    clickedLinks.forEach((clickedLink) => {
       expect(isExitLink(mockWindow, clickedLink)).toBe(true);
     });
   });
   it("Returns false if the link leads to the current hostname", () => {
     const mockWindow = {
       location: {
-        hostname: "adobe.com"
-      }
+        hostname: "adobe.com",
+      },
     };
     const clickedLinks = ["https://adobe.com", "http://adobe.com/index.html"];
-    clickedLinks.forEach(clickedLink => {
+    clickedLinks.forEach((clickedLink) => {
       expect(isExitLink(mockWindow, clickedLink)).toBe(false);
     });
   });

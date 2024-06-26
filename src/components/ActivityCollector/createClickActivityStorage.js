@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { CLICK_ACTIVITY_DATA } from "../../constants/sessionDataKeys";
+import { CLICK_ACTIVITY_DATA } from "../../constants/sessionDataKeys.js";
 
 export default ({ storage }) => {
   return {
-    save: data => {
+    save: (data) => {
       const jsonData = JSON.stringify(data);
       storage.setItem(CLICK_ACTIVITY_DATA, jsonData);
     },
@@ -28,6 +28,6 @@ export default ({ storage }) => {
     },
     remove: () => {
       storage.removeItem(CLICK_ACTIVITY_DATA);
-    }
+    },
   };
 };

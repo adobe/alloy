@@ -10,17 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../helpers/createResponse";
-import { TEST_PAGE_WITH_CSP as TEST_PAGE_WITH_CSP_URL } from "../../helpers/constants/url";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
+import createResponse from "../../helpers/createResponse.js";
+import { TEST_PAGE_WITH_CSP as TEST_PAGE_WITH_CSP_URL } from "../../helpers/constants/url.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
@@ -29,30 +29,30 @@ const PAGE_WIDE_SCOPE = "__view__";
 createFixture({
   title: "C782719 SPA support with auto-rendering disabled",
   url: `${TEST_PAGE_WITH_CSP_URL}?spaImplementationTest=true`,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C782719",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
-const simulatePageLoad = async alloy => {
+const simulatePageLoad = async (alloy) => {
   const resultingObject = await alloy.sendEvent({
     renderDecisions: false,
     xdm: {
       web: {
         webPageDetails: {
-          viewName: "products"
-        }
-      }
-    }
+          viewName: "products",
+        },
+      },
+    },
   });
 
   // assert we get in sendEvent promise decisions for "__view__" and "products"
-  const assertScope = resultingObject.propositions.every(proposition =>
-    ["__view__", "products"].includes(proposition.scope)
+  const assertScope = resultingObject.propositions.every((proposition) =>
+    ["__view__", "products"].includes(proposition.scope),
   );
   await t.expect(assertScope).eql(true);
 
@@ -73,39 +73,39 @@ const simulatePageLoad = async alloy => {
     "https://ns.adobe.com/personalization/dom-action",
     "https://ns.adobe.com/personalization/html-content-item",
     "https://ns.adobe.com/personalization/json-content-item",
-    "https://ns.adobe.com/personalization/redirect-item"
-  ].every(schema => personalizationSchemas.includes(schema));
+    "https://ns.adobe.com/personalization/redirect-item",
+  ].every((schema) => personalizationSchemas.includes(schema));
 
   await t.expect(result).eql(true);
 
   const response = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
   );
   const personalizationPayload = createResponse({
-    content: response
+    content: response,
   }).getPayloadsByType("personalization:decisions");
 
   await t.expect(personalizationPayload.length).eql(3);
 
   const noPropositionsWereRendered = resultingObject.propositions.every(
-    proposition => !proposition.renderAttempted
+    (proposition) => !proposition.renderAttempted,
   );
   await t.expect(noPropositionsWereRendered).eql(true);
 
   return personalizationPayload;
 };
 
-const simulateViewChange = async alloy => {
+const simulateViewChange = async (alloy) => {
   // sendEvent at a view change, this shouldn't request any target data, it should use the existing cache
   const resultingObject = await alloy.sendEvent({
     renderDecisions: false,
     xdm: {
       web: {
         webPageDetails: {
-          viewName: "cart"
-        }
-      }
-    }
+          viewName: "cart",
+        },
+      },
+    },
   });
   const viewChangeRequest = networkLogger.edgeEndpointLogs.requests[1];
   const viewChangeRequestBody = JSON.parse(viewChangeRequest.request.body);
@@ -114,27 +114,27 @@ const simulateViewChange = async alloy => {
 
   // assert we return the renderAttempted flag set to false
   const noPropositionsWereRendered = resultingObject.propositions.every(
-    proposition => !proposition.renderAttempted
+    (proposition) => !proposition.renderAttempted,
   );
   await t.expect(noPropositionsWereRendered).eql(true);
 };
 
-const simulateViewChangeForNonExistingView = async alloy => {
+const simulateViewChangeForNonExistingView = async (alloy) => {
   // no decisions in cache for this specific view should return empty array
   const resultingObject = await alloy.sendEvent({
     renderDecisions: true,
     xdm: {
       web: {
         webPageDetails: {
-          viewName: "noView"
-        }
-      }
-    }
+          viewName: "noView",
+        },
+      },
+    },
   });
 
   const noViewViewChangeRequest = networkLogger.edgeEndpointLogs.requests[2];
   const noViewViewChangeRequestBody = JSON.parse(
-    noViewViewChangeRequest.request.body
+    noViewViewChangeRequest.request.body,
   );
   // assert that no personalization query was attached to the request
   await t.expect(noViewViewChangeRequestBody.events[0].query).eql(undefined);

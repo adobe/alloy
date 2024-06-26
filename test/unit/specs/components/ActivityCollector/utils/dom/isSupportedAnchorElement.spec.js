@@ -10,21 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isSupportedAnchorElement from "../../../../../../../src/components/ActivityCollector/utils/dom/isSupportedAnchorElement";
+import isSupportedAnchorElement from "../../../../../../../src/components/ActivityCollector/utils/dom/isSupportedAnchorElement.js";
 
 describe("ActivityCollector::isSupportedAnchorElement", () => {
   it("Returns true for supported anchor elements", () => {
     const validAnchorElements = [
       {
         href: "http://example.com",
-        tagName: "A"
+        tagName: "A",
       },
       {
         href: "http://example.com",
-        tagName: "AREA"
-      }
+        tagName: "AREA",
+      },
     ];
-    validAnchorElements.forEach(element => {
+    validAnchorElements.forEach((element) => {
       expect(isSupportedAnchorElement(element)).toBe(true);
     });
   });
@@ -32,23 +32,23 @@ describe("ActivityCollector::isSupportedAnchorElement", () => {
     const invalidAnchorElements = [
       {},
       {
-        href: ""
-      },
-      {
-        href: "http://example.com"
+        href: "",
       },
       {
         href: "http://example.com",
-        tagName: "LINK"
+      },
+      {
+        href: "http://example.com",
+        tagName: "LINK",
       },
       {
         href: "http://example.com",
         tagName: "A",
         onclick: "example();",
-        protocol: " javascript:"
-      }
+        protocol: " javascript:",
+      },
     ];
-    invalidAnchorElements.forEach(element => {
+    invalidAnchorElements.forEach((element) => {
       expect(isSupportedAnchorElement(element)).toBe(false);
     });
   });

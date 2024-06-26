@@ -10,43 +10,43 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t, Selector } from "testcafe";
-import createFixture from "../../helpers/createFixture";
-import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
+import createFixture from "../../helpers/createFixture/index.js";
+import addHtmlToBody from "../../helpers/dom/addHtmlToBody.js";
 import {
   compose,
   orgMainConfigMain,
   clickCollectionEnabled,
-  clickCollectionEventGroupingDisabled
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import preventLinkNavigation from "../../helpers/preventLinkNavigation";
-import createCollectEndpointAsserter from "../../helpers/createCollectEndpointAsserter";
+  clickCollectionEventGroupingDisabled,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import preventLinkNavigation from "../../helpers/preventLinkNavigation.js";
+import createCollectEndpointAsserter from "../../helpers/createCollectEndpointAsserter.js";
 
 createFixture({
-  title: "C81181: Test onBeforeLinkClickSend callback"
+  title: "C81181: Test onBeforeLinkClickSend callback",
 });
 
 test.meta({
   ID: "C81181",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const addLinksToBody = () => {
   return addHtmlToBody(
     `<a href="valid.html"><span id="alloy-link-test">Test Link</span></a>
-    <a href="canceled.html"><span id="canceled-alloy-link-test">Link Click that is canceled</span></a>`
+    <a href="canceled.html"><span id="canceled-alloy-link-test">Link Click that is canceled</span></a>`,
   );
 };
 
-const clickLink = async selector => {
+const clickLink = async (selector) => {
   await t.click(Selector(selector));
 };
 
 const assertRequestXdm = async (
   request,
   expectedXdmWebInteraction,
-  expectedData
+  expectedData,
 ) => {
   const requestBody = JSON.parse(request.request.body);
   const eventXdm = requestBody.events[0].xdm;
@@ -66,7 +66,7 @@ test("Test C81181: Verify that onBeforeLinkClickSend cancels a request", async (
   const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
     onBeforeLinkClickSend: () => {
       return false;
-    }
+    },
   });
   await alloy.configure(testConfig);
   await addLinksToBody();
@@ -82,8 +82,8 @@ test("Test C81181: Verify that filterClickDetails can cancel a request", async (
     clickCollection: {
       filterClickDetails: () => {
         return false;
-      }
-    }
+      },
+    },
   });
   await alloy.configure(testConfig);
   await addLinksToBody();
@@ -98,7 +98,7 @@ test("Test C81181: Verify that if onBeforeLinkClickSend not defined and clickCol
   const testConfig = compose(
     orgMainConfigMain,
     clickCollectionEnabled,
-    clickCollectionEventGroupingDisabled
+    clickCollectionEventGroupingDisabled,
   );
   await alloy.configure(testConfig);
   await addLinksToBody();
@@ -110,7 +110,7 @@ test("Test C81181: Verify that if onBeforeLinkClickSend not defined and clickCol
     region: "BODY",
     type: "other",
     URL: "https://alloyio.com/functional-test/valid.html",
-    linkClicks: { value: 1 }
+    linkClicks: { value: 1 },
   };
   await assertRequestXdm(interactRequest, expectedXdm);
 });
@@ -125,11 +125,11 @@ test("Test C81181: Verify that onBeforeLinkClickSend cancels a request based on 
     clickCollectionEnabled,
     clickCollectionEventGroupingDisabled,
     {
-      onBeforeLinkClickSend: options => {
+      onBeforeLinkClickSend: (options) => {
         const { clickedElement } = options;
         return clickedElement.id !== "canceled-alloy-link-test";
-      }
-    }
+      },
+    },
   );
   await alloy.configure(testConfig);
   await addLinksToBody();
@@ -143,7 +143,7 @@ test("Test C81181: Verify that onBeforeLinkClickSend cancels a request based on 
     region: "BODY",
     type: "other",
     URL: "https://alloyio.com/functional-test/valid.html",
-    linkClicks: { value: 1 }
+    linkClicks: { value: 1 },
   };
   await assertRequestXdm(interactRequest, expectedXdm);
 });
@@ -156,10 +156,10 @@ test("Test C81181: Verify that filterClickDetails can cancels a request based on
   const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
     clickCollection: {
       eventGroupingEnabled: false,
-      filterClickDetails: props => {
+      filterClickDetails: (props) => {
         return props.clickedElement.id !== "canceled-alloy-link-test";
-      }
-    }
+      },
+    },
   });
   await alloy.configure(testConfig);
   await addLinksToBody();
@@ -173,7 +173,7 @@ test("Test C81181: Verify that filterClickDetails can cancels a request based on
     region: "BODY",
     type: "other",
     URL: "https://alloyio.com/functional-test/valid.html",
-    linkClicks: { value: 1 }
+    linkClicks: { value: 1 },
   };
   await assertRequestXdm(interactRequest, expectedXdm);
 });
@@ -189,7 +189,7 @@ test("Test C81181: Verify that onBeforeLinkClickSend augments a request", async 
     clickCollectionEventGroupingDisabled,
     {
       // eslint-disable-next-line consistent-return
-      onBeforeLinkClickSend: options => {
+      onBeforeLinkClickSend: (options) => {
         const { xdm, data, clickedElement } = options;
 
         if (clickedElement.id === "alloy-link-test") {
@@ -199,8 +199,8 @@ test("Test C81181: Verify that onBeforeLinkClickSend augments a request", async 
           return true;
         }
         return false;
-      }
-    }
+      },
+    },
   );
 
   await alloy.configure(testConfig);
@@ -216,7 +216,7 @@ test("Test C81181: Verify that onBeforeLinkClickSend augments a request", async 
     region: "BODY",
     type: "other",
     URL: "https://alloyio.com/functional-test/valid.html",
-    linkClicks: { value: 1 }
+    linkClicks: { value: 1 },
   };
 
   const expectedData = {
@@ -228,19 +228,19 @@ test("Test C81181: Verify that onBeforeLinkClickSend augments a request", async 
               link: "Test Link",
               page: "https://alloyio.com/functional-test/testPage.html",
               pageIDType: 0,
-              region: "BODY"
-            }
-          }
-        }
-      }
+              region: "BODY",
+            },
+          },
+        },
+      },
     },
-    customField: "test123"
+    customField: "test123",
   };
 
   await assertRequestXdm(
     interactRequest,
     expectedXdmWebInteraction,
-    expectedData
+    expectedData,
   );
 });
 
@@ -252,14 +252,14 @@ test("Test C81181: Verify that filterClickDetails can augment a request", async 
   const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
     clickCollection: {
       eventGroupingEnabled: false,
-      filterClickDetails: props => {
+      filterClickDetails: (props) => {
         if (props.clickedElement.id === "alloy-link-test") {
           props.linkName = "Augmented name";
           return true;
         }
         return false;
-      }
-    }
+      },
+    },
   });
 
   await alloy.configure(testConfig);
@@ -275,7 +275,7 @@ test("Test C81181: Verify that filterClickDetails can augment a request", async 
     region: "BODY",
     type: "other",
     URL: "https://alloyio.com/functional-test/valid.html",
-    linkClicks: { value: 1 }
+    linkClicks: { value: 1 },
   };
 
   const expectedData = {
@@ -287,17 +287,17 @@ test("Test C81181: Verify that filterClickDetails can augment a request", async 
               link: "Augmented name",
               page: "https://alloyio.com/functional-test/testPage.html",
               pageIDType: 0,
-              region: "BODY"
-            }
-          }
-        }
-      }
-    }
+              region: "BODY",
+            },
+          },
+        },
+      },
+    },
   };
 
   await assertRequestXdm(
     interactRequest,
     expectedXdmWebInteraction,
-    expectedData
+    expectedData,
   );
 });

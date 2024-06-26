@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import assign from "./assign";
-import isObject from "./isObject";
+import assign from "./assign.js";
+import isObject from "./isObject.js";
 
 export default (...values) => {
   if (values.length < 2) {
@@ -19,7 +19,7 @@ export default (...values) => {
   }
   return values.reduce((accumulator, currentValue) => {
     if (isObject(currentValue)) {
-      Object.keys(currentValue).forEach(key => {
+      Object.keys(currentValue).forEach((key) => {
         if (Array.isArray(currentValue[key])) {
           if (Array.isArray(accumulator[key])) {
             accumulator[key].push(...currentValue[key]);

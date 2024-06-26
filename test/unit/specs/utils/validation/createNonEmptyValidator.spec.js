@@ -10,36 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "../../../../../src/utils/validation";
-import describeValidation from "../../../helpers/describeValidation";
+import { string } from "../../../../../src/utils/validation/index.js";
+import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::nonEmpty", () => {
   describeValidation("optional nonEmpty", string().nonEmpty(), [
     { value: "key" },
     { value: "", error: true },
     { value: null },
-    { value: undefined }
+    { value: undefined },
+  ]);
+  describeValidation("required nonEmpty", string().nonEmpty().required(), [
+    { value: "abc" },
+    { value: null, error: true },
+    { value: undefined, error: true },
   ]);
   describeValidation(
-    "required nonEmpty",
-    string()
-      .nonEmpty()
-      .required(),
-    [
-      { value: "abc" },
-      { value: null, error: true },
-      { value: undefined, error: true }
-    ]
-  );
-  describeValidation(
     "default nonEmpty",
-    string()
-      .nonEmpty()
-      .default("mydefault"),
+    string().nonEmpty().default("mydefault"),
     [
       { value: null, expected: "mydefault" },
       { value: undefined, expected: "mydefault" },
-      { value: "abc" }
-    ]
+      { value: "abc" },
+    ],
   );
 });

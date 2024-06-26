@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import attachClickActivityCollector from "../../../../../src/components/ActivityCollector/attachClickActivityCollector";
-import flushPromiseChains from "../../../helpers/flushPromiseChains";
+import attachClickActivityCollector from "../../../../../src/components/ActivityCollector/attachClickActivityCollector.js";
+import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 describe("ActivityCollector::attachClickActivityCollector", () => {
   const config = {};
@@ -24,12 +24,12 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
     eventManager = jasmine.createSpyObj("eventManager", {
       createEvent: {
         isEmpty: () => false,
-        documentMayUnload: () => false
+        documentMayUnload: () => false,
       },
-      sendEvent: Promise.resolve()
+      sendEvent: Promise.resolve(),
     });
     lifecycle = jasmine.createSpyObj("lifecycle", {
-      onClick: Promise.resolve()
+      onClick: Promise.resolve(),
     });
     // eslint-disable-next-line no-unused-vars
     spyOn(document, "addEventListener").and.callFake((name, handler, type) => {
@@ -43,7 +43,7 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
       config,
       eventManager,
       lifecycle,
-      handleError
+      handleError,
     });
   };
 
@@ -67,7 +67,7 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
   it("Does not publish onClick lifecycle events for AppMeasurement repropagated click-events", () => {
     build();
     const clickEvent = {
-      s_fe: 1
+      s_fe: 1,
     };
     clickHandler(clickEvent);
     expect(lifecycle.onClick).not.toHaveBeenCalled();
@@ -100,7 +100,7 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
   it("Does not send empty events", () => {
     eventManager.createEvent.and.returnValue({
       isEmpty: () => true,
-      documentMayUnload: () => false
+      documentMayUnload: () => false,
     });
     build();
     return clickHandler({})

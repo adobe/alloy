@@ -15,29 +15,21 @@ import {
   string,
   callback,
   enumOf,
-  objectOf
-} from "../../utils/validation";
-import { noop, validateConfigOverride } from "../../utils";
-import { EDGE as EDGE_DOMAIN } from "../../constants/domain";
-import EDGE_BASE_PATH from "../../constants/edgeBasePath";
-import { IN, OUT, PENDING } from "../../constants/consentStatus";
+  objectOf,
+} from "../../utils/validation/index.js";
+import { noop, validateConfigOverride } from "../../utils/index.js";
+import { EDGE as EDGE_DOMAIN } from "../../constants/domain.js";
+import EDGE_BASE_PATH from "../../constants/edgeBasePath.js";
+import { IN, OUT, PENDING } from "../../constants/consentStatus.js";
 
 export default () =>
   objectOf({
     debugEnabled: boolean().default(false),
     defaultConsent: enumOf(IN, OUT, PENDING).default(IN),
-    datastreamId: string()
-      .unique()
-      .required(),
-    edgeDomain: string()
-      .domain()
-      .default(EDGE_DOMAIN),
-    edgeBasePath: string()
-      .nonEmpty()
-      .default(EDGE_BASE_PATH),
-    orgId: string()
-      .unique()
-      .required(),
+    datastreamId: string().unique().required(),
+    edgeDomain: string().domain().default(EDGE_DOMAIN),
+    edgeBasePath: string().nonEmpty().default(EDGE_BASE_PATH),
+    orgId: string().unique().required(),
     onBeforeEventSend: callback().default(noop),
-    edgeConfigOverrides: validateConfigOverride
+    edgeConfigOverrides: validateConfigOverride,
   }).renamed("edgeConfigId", string().unique(), "datastreamId");

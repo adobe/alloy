@@ -7,7 +7,7 @@ export default function RedirectedNewPage() {
   useEffect(() => {
     window
       .alloy("sendEvent", {
-        renderDecisions: true
+        renderDecisions: true,
       })
       .then(({ decisions = [] }) => {
         console.log("personalized decisions on the redirected view", decisions);

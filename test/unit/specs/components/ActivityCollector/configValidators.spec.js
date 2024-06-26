@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import configValidators from "../../../../../src/components/ActivityCollector/configValidators";
-import testConfigValidators from "../../../helpers/testConfigValidators";
+import configValidators from "../../../../../src/components/ActivityCollector/configValidators.js";
+import testConfigValidators from "../../../helpers/testConfigValidators.js";
 
 describe("ActivityCollector config validators", () => {
   testConfigValidators({
@@ -19,29 +19,29 @@ describe("ActivityCollector config validators", () => {
     validConfigurations: [
       {},
       {
-        clickCollectionEnabled: false
+        clickCollectionEnabled: false,
       },
       {
         clickCollectionEnabled: false,
-        downloadLinkQualifier: ""
-      }
+        downloadLinkQualifier: "",
+      },
     ],
     invalidConfigurations: [
       { clickCollectionEnabled: "" },
       {
         clickCollectionEnabled: true,
-        downloadLinkQualifier: "["
-      }
+        downloadLinkQualifier: "[",
+      },
     ],
     defaultValues: {
       clickCollectionEnabled: true,
       downloadLinkQualifier:
-        "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$"
+        "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$",
     },
     deprecatedConfigurations: [
       {
-        onBeforeLinkClickSend: () => undefined
-      }
-    ]
+        onBeforeLinkClickSend: () => undefined,
+      },
+    ],
   });
 });

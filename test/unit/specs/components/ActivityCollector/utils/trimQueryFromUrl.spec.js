@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import trimQueryFromUrl from "../../../../../../src/components/ActivityCollector/utils/trimQueryFromUrl";
+import trimQueryFromUrl from "../../../../../../src/components/ActivityCollector/utils/trimQueryFromUrl.js";
 
 describe("ActivityCollector::trimQueryFromUrl", () => {
   it("Removes query portion from URL", () => {
@@ -18,13 +18,13 @@ describe("ActivityCollector::trimQueryFromUrl", () => {
       ["http://example.com", "http://example.com"],
       [
         "https://example.com:123/example?example=123",
-        "https://example.com:123/example"
+        "https://example.com:123/example",
       ],
       ["file://example.txt", "file://example.txt"],
       ["http://example.com/?example=123", "http://example.com/"],
-      ["http://example.com/#example", "http://example.com/"]
+      ["http://example.com/#example", "http://example.com/"],
     ];
-    urls.forEach(url => {
+    urls.forEach((url) => {
       expect(trimQueryFromUrl(url[0])).toBe(url[1]);
     });
   });

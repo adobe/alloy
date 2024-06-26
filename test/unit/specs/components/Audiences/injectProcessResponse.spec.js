@@ -9,7 +9,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectProcessResponse from "../../../../../src/components/Audiences/injectProcessResponse";
+import injectProcessResponse from "../../../../../src/components/Audiences/injectProcessResponse.js";
 
 describe("injectProcessResponse", () => {
   let response;
@@ -23,29 +23,29 @@ describe("injectProcessResponse", () => {
     processResponse = injectProcessResponse({ processDestinations });
 
     response = jasmine.createSpyObj("response", {
-      getPayloadsByType: ["An Edge Destination"]
+      getPayloadsByType: ["An Edge Destination"],
     });
   });
 
   it("fetches destinations from the response", () => {
-    return processResponse({ response }).then(result => {
+    return processResponse({ response }).then((result) => {
       expect(processDestinations).toHaveBeenCalled();
       expect(result).toEqual({
-        destinations: ["An Edge Destination"]
+        destinations: ["An Edge Destination"],
       });
     });
   });
 
   it("returns [] if no destinations were found", () => {
     const responseWithNoDestinations = jasmine.createSpyObj("response", {
-      getPayloadsByType: []
+      getPayloadsByType: [],
     });
     return processResponse({ response: responseWithNoDestinations }).then(
-      result => {
+      (result) => {
         expect(result).toEqual({
-          destinations: []
+          destinations: [],
         });
-      }
+      },
     );
   });
 });

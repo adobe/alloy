@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createClickedElementProperties from "../../../../../src/components/ActivityCollector/createClickedElementProperties";
+import createClickedElementProperties from "../../../../../src/components/ActivityCollector/createClickedElementProperties.js";
 
 describe("ActivityCollector::createClickedElementProperties", () => {
   let properties;
@@ -21,7 +21,7 @@ describe("ActivityCollector::createClickedElementProperties", () => {
       linkRegion: "testLinkRegion",
       linkType: "testLinkType",
       linkUrl: "testLinkUrl",
-      pageIDType: 0
+      pageIDType: 0,
     };
   });
   it("Should return object with the init properties", () => {
@@ -63,12 +63,12 @@ describe("ActivityCollector::createClickedElementProperties", () => {
                 page: "testPageName",
                 link: "testLinkName",
                 region: "testLinkRegion",
-                pageIDType: 0
-              }
-            }
-          }
-        }
-      }
+                pageIDType: 0,
+              },
+            },
+          },
+        },
+      },
     });
   });
   it("Can convert properties to a populated XDM Analytics schema with ActivityMap data", () => {
@@ -83,10 +83,10 @@ describe("ActivityCollector::createClickedElementProperties", () => {
           type: "testLinkType",
           URL: "testLinkUrl",
           linkClicks: {
-            value: 1
-          }
-        }
-      }
+            value: 1,
+          },
+        },
+      },
     });
   });
   it("Can populate properties from options", () => {
@@ -100,10 +100,10 @@ describe("ActivityCollector::createClickedElementProperties", () => {
             type: "xdmType",
             URL: "xdmUrl",
             linkClicks: {
-              value: 2
-            }
-          }
-        }
+              value: 2,
+            },
+          },
+        },
       },
       data: {
         __adobe: {
@@ -114,14 +114,14 @@ describe("ActivityCollector::createClickedElementProperties", () => {
                   page: "dataPage",
                   link: "dataLink",
                   region: "dataRegion",
-                  pageIDType: 1
-                }
-              }
-            }
-          }
-        }
+                  pageIDType: 1,
+                },
+              },
+            },
+          },
+        },
       },
-      clickedElement: {}
+      clickedElement: {},
     };
     props.options = options;
     // The DATA portion takes priority
@@ -131,14 +131,14 @@ describe("ActivityCollector::createClickedElementProperties", () => {
       linkRegion: "dataRegion",
       linkType: "xdmType",
       linkUrl: "xdmUrl",
-      pageIDType: 1
+      pageIDType: 1,
     });
   });
   it("Can apply a property filter", () => {
     const props = createClickedElementProperties({ properties });
     // Need a clickedElement for the filter to be executed
     props.clickedElement = {};
-    const filter = p => {
+    const filter = (p) => {
       p.linkType = "filtered";
     };
     props.applyPropertyFilter(filter);
@@ -149,21 +149,21 @@ describe("ActivityCollector::createClickedElementProperties", () => {
     const props = createClickedElementProperties({ properties, logger });
     // Need a clickedElement for the filter to be executed
     props.clickedElement = {};
-    const filter = p => {
+    const filter = (p) => {
       p.linkType = "filtered";
       return false;
     };
     props.applyPropertyFilter(filter);
     expect(logger.info).toHaveBeenCalledWith(
       jasmine.stringMatching(
-        /^Clicked element properties were rejected by filter function/
-      )
+        /^Clicked element properties were rejected by filter function/,
+      ),
     );
   });
   it("Can apply a property filter for all properties", () => {
     const props = createClickedElementProperties({ properties });
     props.clickedElement = {};
-    const filter = p => {
+    const filter = (p) => {
       p.pageName = "filtered";
       p.linkName = "filtered";
       p.linkRegion = "filtered";
@@ -179,7 +179,7 @@ describe("ActivityCollector::createClickedElementProperties", () => {
     const props = createClickedElementProperties({ properties });
     // Need a clickedElement for the filter to be executed
     props.clickedElement = {};
-    const filter = options => {
+    const filter = (options) => {
       options.xdm.web.webInteraction.type = "filtered";
     };
     props.applyOptionsFilter(filter);
@@ -188,7 +188,7 @@ describe("ActivityCollector::createClickedElementProperties", () => {
   it("Can apply an options property filter for all properties", () => {
     const props = createClickedElementProperties({ properties });
     props.clickedElement = {};
-    const filter = options => {
+    const filter = (options) => {
       if (
         options &&
         options.xdm &&

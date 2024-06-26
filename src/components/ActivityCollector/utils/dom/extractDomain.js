@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default uri => {
+export default (uri) => {
   let fullUrl = uri;
   if (!/^https?:\/\//i.test(fullUrl)) {
     fullUrl = `${window.location.protocol}//${uri}`;

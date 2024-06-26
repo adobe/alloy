@@ -9,38 +9,38 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createFixture from "../../helpers/createFixture";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import { CONSENT_IN } from "../../helpers/constants/consent";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createNetworkLogger from "../../helpers/networkLogger";
-import flushPromiseChains from "../../../unit/helpers/flushPromiseChains";
-import createConsoleLogger from "../../helpers/consoleLogger";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import { CONSENT_IN } from "../../helpers/constants/consent.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import flushPromiseChains from "../../../unit/helpers/flushPromiseChains.js";
+import createConsoleLogger from "../../helpers/consoleLogger/index.js";
 
 const config = compose(
   orgMainConfigMain,
   { defaultConsent: "out" },
-  debugEnabled
+  debugEnabled,
 );
 
 const networkLogger = createNetworkLogger();
 
 createFixture({
   title: "C1631712: Requests are dropped when default consent is out",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C1631712",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
-test("Test C1631712: Requests are dropped when default consent is out", async t => {
+test("Test C1631712: Requests are dropped when default consent is out", async (t) => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const logger = await createConsoleLogger();
@@ -48,7 +48,7 @@ test("Test C1631712: Requests are dropped when default consent is out", async t 
   const result = await alloy.sendEvent();
   await t.expect(result).eql({});
   await logger.warn.expectMessageMatching(
-    /No consent preferences have been set./
+    /No consent preferences have been set./,
   );
 
   await alloy.setConsent(CONSENT_IN);

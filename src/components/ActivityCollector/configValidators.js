@@ -10,12 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, callback, objectOf, string } from "../../utils/validation";
+import {
+  boolean,
+  callback,
+  objectOf,
+  string,
+} from "../../utils/validation/index.js";
 
 export const downloadLinkQualifier = string()
   .regexp()
   .default(
-    "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$"
+    "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$",
   );
 
 export default objectOf({
@@ -27,16 +32,16 @@ export default objectOf({
     // TODO: Consider moving downloadLinkQualifier here.
     sessionStorageEnabled: boolean().default(false),
     eventGroupingEnabled: boolean().default(false),
-    filterClickProperties: callback()
+    filterClickProperties: callback(),
   }).default({
     internalLinkEnabled: true,
     externalLinkEnabled: true,
     downloadLinkEnabled: true,
     sessionStorageEnabled: false,
-    eventGroupingEnabled: false
+    eventGroupingEnabled: false,
   }),
   downloadLinkQualifier,
   onBeforeLinkClickSend: callback().deprecated(
-    'The field "onBeforeLinkClickSend" has been deprecated. Use "clickCollection.filterClickDetails" instead.'
-  )
+    'The field "onBeforeLinkClickSend" has been deprecated. Use "clickCollection.filterClickDetails" instead.',
+  ),
 });

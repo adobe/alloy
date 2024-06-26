@@ -16,23 +16,23 @@ governing permissions and limitations under the License.
  * Offer content should also be filtered, so that only tags allowed in HEAD are preserved.
  */
 
-import { selectNodes } from "../../../utils/dom";
-import { is } from "./scripts";
-import { createFragment, selectNodesWithEq } from "./dom";
-import { assign } from "../../../utils";
-import isBlankString from "../../../utils/isBlankString";
-import { HEAD } from "../../../constants/tagName";
+import { selectNodes } from "../../../utils/dom/index.js";
+import { is } from "./scripts.js";
+import { createFragment, selectNodesWithEq } from "./dom/index.js";
+import { assign } from "../../../utils/index.js";
+import isBlankString from "../../../utils/isBlankString.js";
+import { HEAD } from "../../../constants/tagName.js";
+import { DOM_ACTION_APPEND_HTML } from "./initDomActionsModules.js";
 
-const APPEND_HTML = "appendHtml";
 const HEAD_TAGS_SELECTOR = "SCRIPT,LINK,STYLE";
 
-const filterHeadContent = content => {
+const filterHeadContent = (content) => {
   const container = createFragment(content);
   const headNodes = selectNodes(HEAD_TAGS_SELECTOR, container);
-  return headNodes.map(node => node.outerHTML).join("");
+  return headNodes.map((node) => node.outerHTML).join("");
 };
 
-export default action => {
+export default (action) => {
   const result = assign({}, action);
   const { content, selector } = result;
 
@@ -49,7 +49,7 @@ export default action => {
     return result;
   }
 
-  result.type = APPEND_HTML;
+  result.type = DOM_ACTION_APPEND_HTML;
   result.content = filterHeadContent(content);
 
   return result;

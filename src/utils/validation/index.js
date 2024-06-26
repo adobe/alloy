@@ -68,32 +68,38 @@ governing permissions and limitations under the License.
  * nullSafeChain allows you to chain a validator in a null-safe way.
  */
 
-import { chain, nullSafeChain, reverseNullSafeChainJoinErrors } from "./utils";
+import {
+  chain,
+  nullSafeChain,
+  reverseNullSafeChainJoinErrors,
+} from "./utils.js";
 
-import booleanValidator from "./booleanValidator";
-import callbackValidator from "./callbackValidator";
-import createAnyOfValidator from "./createAnyOfValidator";
-import createArrayOfValidator from "./createArrayOfValidator";
-import createDefaultValidator from "./createDefaultValidator";
-import createDeprecatedValidator from "./createDeprecatedValidator";
-import createLiteralValidator from "./createLiteralValidator";
-import createMapOfValuesValidator from "./createMapOfValuesValidator";
-import createMinimumValidator from "./createMinimumValidator";
-import createNoUnknownFieldsValidator from "./createNoUnknownFieldsValidator";
-import createNonEmptyValidator from "./createNonEmptyValidator";
-import createObjectOfValidator from "./createObjectOfValidator";
-import createRenamedValidator from "./createRenamedValidator";
-import createUniqueValidator from "./createUniqueValidator";
-import createUniqueItemsValidator from "./createUniqueItemsValidator";
-import domainValidator from "./domainValidator";
-import integerValidator from "./integerValidator";
-import numberValidator from "./numberValidator";
-import regexpValidator from "./regexpValidator";
-import requiredValidator from "./requiredValidator";
-import stringValidator from "./stringValidator";
+import booleanValidator from "./booleanValidator.js";
+import callbackValidator from "./callbackValidator.js";
+import createAnyOfValidator from "./createAnyOfValidator.js";
+import createArrayOfValidator from "./createArrayOfValidator.js";
+import createDefaultValidator from "./createDefaultValidator.js";
+import createDeprecatedValidator from "./createDeprecatedValidator.js";
+import createLiteralValidator from "./createLiteralValidator.js";
+import createMapOfValuesValidator from "./createMapOfValuesValidator.js";
+import createMinimumValidator from "./createMinimumValidator.js";
+import createMaximumValidator from "./createMaximumValidator.js";
+import createNoUnknownFieldsValidator from "./createNoUnknownFieldsValidator.js";
+import createNonEmptyValidator from "./createNonEmptyValidator.js";
+import createObjectOfValidator from "./createObjectOfValidator.js";
+import createRenamedValidator from "./createRenamedValidator.js";
+import createUniqueValidator from "./createUniqueValidator.js";
+import createUniqueItemsValidator from "./createUniqueItemsValidator.js";
+import domainValidator from "./domainValidator.js";
+import integerValidator from "./integerValidator.js";
+import numberValidator from "./numberValidator.js";
+import regexpValidator from "./regexpValidator.js";
+import requiredValidator from "./requiredValidator.js";
+import stringValidator from "./stringValidator.js";
+import matchesRegexpValidator from "./matchesRegexpValidator.js";
 
 // The base validator does no validation and just returns the value unchanged
-const base = value => value;
+const base = (value) => value;
 
 // The 'default', 'required', and 'deprecated' methods are available after any
 // data-type method. Don't use the nullSafeChain on 'default' or 'required'
@@ -118,6 +124,9 @@ const minimumInteger = function minimumInteger(minValue) {
 const minimumNumber = function minimumNumber(minValue) {
   return nullSafeChain(this, createMinimumValidator("a number", minValue));
 };
+const maximumNumber = function maximumNumber(maxValue) {
+  return nullSafeChain(this, createMaximumValidator("a number", maxValue));
+};
 const integer = function integer() {
   return nullSafeChain(this, integerValidator, { minimum: minimumInteger });
 };
@@ -132,6 +141,9 @@ const nonEmptyObject = function nonEmptyObject() {
 };
 const regexp = function regexp() {
   return nullSafeChain(this, regexpValidator);
+};
+const matches = function matches(regexpPattern) {
+  return nullSafeChain(this, matchesRegexpValidator(regexpPattern));
 };
 const unique = function createUnique() {
   return nullSafeChain(this, createUniqueValidator());
@@ -152,7 +164,7 @@ const anything = function anything() {
 const arrayOf = function arrayOf(elementValidator) {
   return nullSafeChain(this, createArrayOfValidator(elementValidator), {
     nonEmpty: nonEmptyArray,
-    uniqueItems
+    uniqueItems,
   });
 };
 const boolean = function boolean() {
@@ -167,16 +179,17 @@ const literal = function literal(literalValue) {
 const number = function number() {
   return nullSafeChain(this, numberValidator, {
     minimum: minimumNumber,
+    maximum: maximumNumber,
     integer,
-    unique
+    unique,
   });
 };
 const mapOfValues = function mapOfValues(valuesValidator) {
   return nullSafeChain(this, createMapOfValuesValidator(valuesValidator), {
-    nonEmpty: nonEmptyObject
+    nonEmpty: nonEmptyObject,
   });
 };
-const createObjectOfAdditionalProperties = schema => ({
+const createObjectOfAdditionalProperties = (schema) => ({
   noUnknownFields: function noUnknownFields() {
     return nullSafeChain(this, createNoUnknownFieldsValidator(schema));
   },
@@ -187,7 +200,7 @@ const createObjectOfAdditionalProperties = schema => ({
     return nullSafeChain(
       this,
       otherObjectOfValidator,
-      createObjectOfAdditionalProperties(newSchema)
+      createObjectOfAdditionalProperties(newSchema),
     );
   },
   renamed: function renamed(oldField, oldSchema, newField) {
@@ -195,16 +208,16 @@ const createObjectOfAdditionalProperties = schema => ({
     // before the objectOf validator runs.
     return reverseNullSafeChainJoinErrors(
       this,
-      createRenamedValidator(oldField, oldSchema, newField)
+      createRenamedValidator(oldField, oldSchema, newField),
     );
   },
-  schema
+  schema,
 });
 const objectOf = function objectOf(schema) {
   return nullSafeChain(
     this,
     createObjectOfValidator(schema),
-    createObjectOfAdditionalProperties(schema)
+    createObjectOfAdditionalProperties(schema),
   );
 };
 const string = function string() {
@@ -212,7 +225,8 @@ const string = function string() {
     regexp,
     domain,
     nonEmpty: nonEmptyString,
-    unique
+    unique,
+    matches,
   });
 };
 
@@ -231,7 +245,7 @@ const boundString = string.bind(base);
 const boundEnumOf = function boundEnumOf(...values) {
   return boundAnyOf(
     values.map(boundLiteral),
-    `one of these values: [${JSON.stringify(values)}]`
+    `one of these values: [${JSON.stringify(values)}]`,
   );
 };
 
@@ -246,5 +260,5 @@ export {
   boundMapOfValues as mapOfValues,
   boundObjectOf as objectOf,
   boundString as string,
-  boundEnumOf as enumOf
+  boundEnumOf as enumOf,
 };

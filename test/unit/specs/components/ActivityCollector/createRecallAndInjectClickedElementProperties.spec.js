@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createRecallAndInjectClickedElementProperties from "../../../../../src/components/ActivityCollector/createRecallAndInjectClickedElementProperties";
+import createRecallAndInjectClickedElementProperties from "../../../../../src/components/ActivityCollector/createRecallAndInjectClickedElementProperties.js";
 
 describe("ActivityCollector::createRecallAndInjectClickedElementProperties", () => {
   let props;
@@ -21,27 +21,25 @@ describe("ActivityCollector::createRecallAndInjectClickedElementProperties", () 
     props = {};
     clickActivityStorage = {
       load: jasmine.createSpy().and.returnValue(props),
-      save: jasmine.createSpy()
+      save: jasmine.createSpy(),
     };
     event = {
       mergeXdm: jasmine.createSpy(),
-      setUserData: jasmine.createSpy()
+      setUserData: jasmine.createSpy(),
     };
   });
 
   it("should return a function", () => {
-    const recallAndInjectClickedElementProperties = createRecallAndInjectClickedElementProperties(
-      { clickActivityStorage }
-    );
+    const recallAndInjectClickedElementProperties =
+      createRecallAndInjectClickedElementProperties({ clickActivityStorage });
     expect(recallAndInjectClickedElementProperties).toEqual(
-      jasmine.any(Function)
+      jasmine.any(Function),
     );
   });
 
   it("should merge stored clicked element properties to event XDM and DATA", () => {
-    const recallClickElementProperties = createRecallAndInjectClickedElementProperties(
-      { clickActivityStorage }
-    );
+    const recallClickElementProperties =
+      createRecallAndInjectClickedElementProperties({ clickActivityStorage });
     props.pageName = "examplePage";
     props.linkName = "example";
     props.linkRegion = "exampleRegion";
@@ -57,10 +55,10 @@ describe("ActivityCollector::createRecallAndInjectClickedElementProperties", () 
           type: "external",
           URL: "https://example.com",
           linkClicks: {
-            value: 1
-          }
-        }
-      }
+            value: 1,
+          },
+        },
+      },
     });
     expect(event.setUserData).toHaveBeenCalledWith({
       __adobe: {
@@ -71,16 +69,16 @@ describe("ActivityCollector::createRecallAndInjectClickedElementProperties", () 
                 page: "examplePage",
                 link: "example",
                 region: "exampleRegion",
-                pageIDType: 1
-              }
-            }
-          }
-        }
-      }
+                pageIDType: 1,
+              },
+            },
+          },
+        },
+      },
     });
     expect(clickActivityStorage.save).toHaveBeenCalledWith({
       pageName: "examplePage",
-      pageIDType: 1
+      pageIDType: 1,
     });
   });
 });

@@ -10,23 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t, ClientFunction } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
-import { orgMainConfigMain } from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import { orgMainConfigMain } from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const networkLogger = createNetworkLogger();
 
 createFixture({
   title:
     "C75372 - XDM and data objects passed into event command should not be modified",
-  requestHooks: [networkLogger.setConsentEndpointLogs]
+  requestHooks: [networkLogger.setConsentEndpointLogs],
 });
 
 test.meta({
   ID: "C75372",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const sendEvent = ClientFunction(() => {
@@ -38,12 +38,12 @@ const sendEvent = ClientFunction(() => {
     .alloy("sendEvent", {
       xdm: xdmDataLayer,
       data: nonXdmDataLayer,
-      mergeId: "abc"
+      mergeId: "abc",
     })
     .then(() => {
       return {
         xdmDataLayer,
-        nonXdmDataLayer
+        nonXdmDataLayer,
       };
     });
 });

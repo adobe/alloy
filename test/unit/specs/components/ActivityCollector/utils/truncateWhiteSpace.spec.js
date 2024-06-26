@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import truncateWhiteSpace from "../../../../../../src/components/ActivityCollector/utils/truncateWhiteSpace";
+import truncateWhiteSpace from "../../../../../../src/components/ActivityCollector/utils/truncateWhiteSpace.js";
 
 describe("ActivityCollector::truncateWhiteSpace", () => {
   it("it trims leading and trailing white spaces and limits contained white space to one character", () => {
@@ -22,9 +22,9 @@ describe("ActivityCollector::truncateWhiteSpace", () => {
       ["  hello world", "hello world"],
       ["", ""],
       [" ", ""],
-      ["  ", ""]
+      ["  ", ""],
     ];
-    testCases.forEach(testCase => {
+    testCases.forEach((testCase) => {
       expect(truncateWhiteSpace(testCase[0])).toBe(testCase[1]);
     });
   });

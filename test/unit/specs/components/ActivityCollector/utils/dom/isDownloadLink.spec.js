@@ -10,36 +10,36 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isDownloadLink from "../../../../../../../src/components/ActivityCollector/utils/dom/isDownloadLink";
-import { downloadLinkQualifier } from "../../../../../../../src/components/ActivityCollector/configValidators";
+import isDownloadLink from "../../../../../../../src/components/ActivityCollector/utils/dom/isDownloadLink.js";
+import { downloadLinkQualifier } from "../../../../../../../src/components/ActivityCollector/configValidators.js";
 
 describe("ActivityCollector::isDownloadLink", () => {
   it("Returns true if the clicked element has a download attribute", () => {
     const clickedElement = {
-      download: "filename"
+      download: "filename",
     };
     expect(isDownloadLink(null, "https://example.com/", clickedElement)).toBe(
-      true
+      true,
     );
   });
   it("Returns true if the link matches the download link qualifying regular expression", () => {
     const downloadLinks = [
       "download.pdf",
       "http://example.com/download.zip",
-      "https://example.com/download.docx"
+      "https://example.com/download.docx",
     ];
     // this runs the validator with undefined input which returns the default regex
-    downloadLinks.forEach(downloadLink => {
+    downloadLinks.forEach((downloadLink) => {
       expect(isDownloadLink(downloadLinkQualifier(), downloadLink, {})).toBe(
-        true
+        true,
       );
     });
   });
   it("Returns false if the link does not match the download link qualifying regular expression", () => {
     const downloadLinks = ["download.mod", "http://example.com/download.png"];
-    downloadLinks.forEach(downloadLink => {
+    downloadLinks.forEach((downloadLink) => {
       expect(isDownloadLink(downloadLinkQualifier(), downloadLink, {})).toBe(
-        false
+        false,
       );
     });
   });

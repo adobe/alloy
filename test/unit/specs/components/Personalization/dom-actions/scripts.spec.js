@@ -13,12 +13,12 @@ governing permissions and limitations under the License.
 import {
   getInlineScripts,
   getRemoteScriptsUrls,
-  executeInlineScripts
-} from "../../../../../../src/components/Personalization/dom-actions/scripts";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
-import { createFragment } from "../../../../../../src/components/Personalization/dom-actions/dom";
-import { DIV } from "../../../../../../src/constants/tagName";
-import { createNode } from "../../../../../../src/utils/dom";
+  executeInlineScripts,
+} from "../../../../../../src/components/Personalization/dom-actions/scripts.js";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
+import { createFragment } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+import { DIV } from "../../../../../../src/constants/tagName.js";
+import { createNode } from "../../../../../../src/utils/dom/index.js";
 
 describe("Personalization::helper::scripts", () => {
   beforeEach(() => {

@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createGetClickedElementProperties from "../../../../../src/components/ActivityCollector/createGetClickedElementProperties";
-import createClickActivityStorage from "../../../../../src/components/ActivityCollector/createClickActivityStorage";
+import createGetClickedElementProperties from "../../../../../src/components/ActivityCollector/createGetClickedElementProperties.js";
+import createClickActivityStorage from "../../../../../src/components/ActivityCollector/createClickActivityStorage.js";
 
 describe("ActivityCollector::createGetClickedElementProperties", () => {
   const mockWindow = {
@@ -20,13 +20,13 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       host: "example.com",
       hostname: "example.com",
       pathname: "/",
-      href: "https://example.com/"
-    }
+      href: "https://example.com/",
+    },
   };
   const supportedLinkElement = {
     tagName: "A",
     href: "index.html",
-    nodeType: 1
+    nodeType: 1,
   };
 
   let getLinkName;
@@ -40,7 +40,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     getLinkName = jasmine.createSpy("getLinkName");
     getLinkRegion = jasmine.createSpy("getLinkRegion");
     getAbsoluteUrlFromAnchorElement = jasmine.createSpy(
-      "getAbsoluteUrlFromAnchorElement"
+      "getAbsoluteUrlFromAnchorElement",
     );
     findClickableElement = jasmine.createSpy("findClickableElement");
     determineLinkType = jasmine.createSpy("determineLinkType");
@@ -49,20 +49,20 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       storage: {
         getItem: () => {},
         setItem: () => {},
-        removeItem: () => {}
-      }
+        removeItem: () => {},
+      },
     });
   });
 
   it("Returns complete linkDetails when it is a supported anchor element", () => {
     const config = {
-      onBeforeLinkClickSend: options => {
+      onBeforeLinkClickSend: (options) => {
         options.data.custom = "test data field";
         return true;
       },
       clickCollection: {
-        externalLink: true
-      }
+        externalLink: true,
+      },
     };
     getLinkRegion.and.returnValue("root");
     getLinkName.and.returnValue("Go to cart");
@@ -76,14 +76,14 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       getAbsoluteUrlFromAnchorElement,
       findClickableElement,
       determineLinkType,
-      window: mockWindow
+      window: mockWindow,
     });
 
     const result = getClickedElementProperties({
       clickedElement: {},
       config,
       logger,
-      clickActivityStorage
+      clickActivityStorage,
     });
     // I have to set this manually because of passing in {} as the clickedElement
     result.pageIDType = 0;
@@ -98,10 +98,10 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
             type: "exit",
             URL: "http://blah.com",
             linkClicks: {
-              value: 1
-            }
-          }
-        }
+              value: 1,
+            },
+          },
+        },
       },
       data: {
         __adobe: {
@@ -112,15 +112,15 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
                   page: "https://example.com/",
                   link: "Go to cart",
                   region: "root",
-                  pageIDType: 0
-                }
-              }
-            }
-          }
+                  pageIDType: 0,
+                },
+              },
+            },
+          },
         },
-        custom: "test data field"
+        custom: "test data field",
       },
-      clickedElement: {}
+      clickedElement: {},
     });
   });
 
@@ -130,8 +130,8 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
         return false;
       },
       clickCollection: {
-        externalLink: true
-      }
+        externalLink: true,
+      },
     };
     getLinkRegion.and.returnValue("root");
     getLinkName.and.returnValue("Go to cart");
@@ -145,14 +145,14 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       getAbsoluteUrlFromAnchorElement,
       findClickableElement,
       determineLinkType,
-      window: mockWindow
+      window: mockWindow,
     });
 
     const result = getClickedElementProperties({
       clickedElement: {},
       config,
       logger,
-      clickActivityStorage
+      clickActivityStorage,
     });
     expect(result.options).toEqual(undefined);
   });
@@ -163,8 +163,8 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
         return true;
       },
       clickCollection: {
-        externalLink: true
-      }
+        externalLink: true,
+      },
     };
     getLinkRegion.and.returnValue(undefined);
     getLinkName.and.returnValue("Go to cart");
@@ -178,14 +178,14 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       getAbsoluteUrlFromAnchorElement,
       findClickableElement,
       determineLinkType,
-      window: mockWindow
+      window: mockWindow,
     });
 
     const result = getClickedElementProperties({
       clickedElement: {},
       config,
       logger,
-      clickActivityStorage
+      clickActivityStorage,
     });
     expect(result.options).toEqual(undefined);
   });
@@ -196,8 +196,8 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
         return true;
       },
       clickCollection: {
-        externalLink: true
-      }
+        externalLink: true,
+      },
     };
     getLinkRegion.and.returnValue("root");
     getLinkName.and.returnValue("Go to cart");
@@ -211,14 +211,14 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       getAbsoluteUrlFromAnchorElement,
       findClickableElement,
       determineLinkType,
-      window: mockWindow
+      window: mockWindow,
     });
 
     const result = getClickedElementProperties({
       clickedElement: {},
       config,
       logger,
-      clickActivityStorage
+      clickActivityStorage,
     });
     // I have to set this manually because of passing in {} as the clickedElement
     result.pageIDType = 0;
@@ -232,14 +232,14 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
                   page: "https://example.com/",
                   link: "Go to cart",
                   region: "root",
-                  pageIDType: 0
-                }
-              }
-            }
-          }
-        }
+                  pageIDType: 0,
+                },
+              },
+            },
+          },
+        },
       },
-      clickedElement: {}
+      clickedElement: {},
     });
   });
 
@@ -247,8 +247,8 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     const config = {
       onBeforeLinkClickSend: () => {},
       clickCollection: {
-        externalLink: true
-      }
+        externalLink: true,
+      },
     };
     getLinkRegion.and.returnValue("root");
     getLinkName.and.returnValue("Go to cart");
@@ -262,14 +262,14 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       getAbsoluteUrlFromAnchorElement,
       findClickableElement,
       determineLinkType,
-      window: mockWindow
+      window: mockWindow,
     });
 
     const result = getClickedElementProperties({
       clickedElement: {},
       config,
       logger,
-      clickActivityStorage
+      clickActivityStorage,
     });
     expect(result).not.toBe(undefined);
   });

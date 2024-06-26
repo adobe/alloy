@@ -10,28 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { objectOf, string } from "../../../../../src/utils/validation";
-import describeValidation from "../../../helpers/describeValidation";
+import { objectOf, string } from "../../../../../src/utils/validation/index.js";
+import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::noUnknownFields", () => {
   describeValidation("optional", objectOf({ a: string() }).noUnknownFields(), [
     { value: { b: "world" }, error: true },
     { value: { a: "hello", b: "world" }, error: true },
     { value: { a: "hello" }, error: false },
-    { value: {}, error: false }
+    { value: {}, error: false },
   ]);
 
   describeValidation(
     "required",
-    objectOf({ a: string().required() })
-      .noUnknownFields()
-      .required(),
+    objectOf({ a: string().required() }).noUnknownFields().required(),
     [
       { value: null, error: true },
       { value: undefined, error: true },
       { value: {}, error: true },
-      { value: { a: "Hello" }, error: false }
-    ]
+      { value: { a: "Hello" }, error: false },
+    ],
   );
 
   describeValidation(
@@ -43,7 +41,7 @@ describe("validation::noUnknownFields", () => {
       { value: null, expected: { a: "world" } },
       { value: undefined, expected: { a: "world" } },
       { value: {}, expected: { a: "hello" } },
-      { value: { b: "goodbye" }, error: true }
-    ]
+      { value: { b: "goodbye" }, error: true },
+    ],
   );
 });

@@ -9,10 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { SCOPES_FOO1_FOO2_DECISIONS } from "../responsesMock/eventResponses";
+import { SCOPES_FOO1_FOO2_DECISIONS } from "../responsesMock/eventResponses.js";
 
-import buildMocks from "./buildMocks";
-import buildAlloy from "./buildAlloy";
+import buildMocks from "./buildMocks.js";
+import buildAlloy from "./buildAlloy.js";
 
 describe("PersonalizationComponent", () => {
   it("SCOPES_FOO1_FOO2_DECISIONS", async () => {
@@ -20,9 +20,9 @@ describe("PersonalizationComponent", () => {
     const alloy = buildAlloy(mocks);
     const { event, result } = await alloy.sendEvent(
       {
-        renderDecisions: true
+        renderDecisions: true,
       },
-      SCOPES_FOO1_FOO2_DECISIONS
+      SCOPES_FOO1_FOO2_DECISIONS,
     );
     expect(event.toJSON()).toEqual({
       query: {
@@ -35,12 +35,12 @@ describe("PersonalizationComponent", () => {
             "https://ns.adobe.com/personalization/ruleset-item",
             "https://ns.adobe.com/personalization/message/in-app",
             "https://ns.adobe.com/personalization/message/feed-item",
-            "https://ns.adobe.com/personalization/dom-action"
+            "https://ns.adobe.com/personalization/dom-action",
           ],
           decisionScopes: ["__view__"],
-          surfaces: ["web://example.com/home"]
-        }
-      }
+          surfaces: ["web://example.com/home"],
+        },
+      },
     });
 
     expect(result).toEqual({
@@ -55,29 +55,29 @@ describe("PersonalizationComponent", () => {
               data: {
                 id: "1",
                 url: "https://foo.com/article/1",
-                thumbnailUrl: "https://foo.com/image/1?size=400x300"
-              }
+                thumbnailUrl: "https://foo.com/image/1?size=400x300",
+              },
             },
             {
               schema: "https://ns.adove.com/experience/item-article",
               data: {
                 id: "2",
                 url: "https://foo.com/article/2",
-                thumbnailUrl: "https://foo.com/image/2?size=400x300"
-              }
+                thumbnailUrl: "https://foo.com/image/2?size=400x300",
+              },
             },
             {
               schema: "https://ns.adove.com/experience/item-article",
               data: {
                 id: "3",
                 url: "https://foo.com/article/3",
-                thumbnailUrl: "https://foo.com/image/3?size=400x300"
-              }
-            }
+                thumbnailUrl: "https://foo.com/image/3?size=400x300",
+              },
+            },
           ],
           scopeDetails: {
-            blah: "test"
-          }
+            blah: "test",
+          },
         },
         {
           renderAttempted: false,
@@ -88,11 +88,11 @@ describe("PersonalizationComponent", () => {
               schema: "https://ns.adove.com/experience/item",
               data: {
                 id: "A",
-                content: "Banner A ...."
-              }
-            }
-          ]
-        }
+                content: "Banner A ....",
+              },
+            },
+          ],
+        },
       ],
       decisions: [
         {
@@ -104,29 +104,29 @@ describe("PersonalizationComponent", () => {
               data: {
                 id: "1",
                 url: "https://foo.com/article/1",
-                thumbnailUrl: "https://foo.com/image/1?size=400x300"
-              }
+                thumbnailUrl: "https://foo.com/image/1?size=400x300",
+              },
             },
             {
               schema: "https://ns.adove.com/experience/item-article",
               data: {
                 id: "2",
                 url: "https://foo.com/article/2",
-                thumbnailUrl: "https://foo.com/image/2?size=400x300"
-              }
+                thumbnailUrl: "https://foo.com/image/2?size=400x300",
+              },
             },
             {
               schema: "https://ns.adove.com/experience/item-article",
               data: {
                 id: "3",
                 url: "https://foo.com/article/3",
-                thumbnailUrl: "https://foo.com/image/3?size=400x300"
-              }
-            }
+                thumbnailUrl: "https://foo.com/image/3?size=400x300",
+              },
+            },
           ],
           scopeDetails: {
-            blah: "test"
-          }
+            blah: "test",
+          },
         },
         {
           id: "TNT:ABC:A",
@@ -136,12 +136,12 @@ describe("PersonalizationComponent", () => {
               schema: "https://ns.adove.com/experience/item",
               data: {
                 id: "A",
-                content: "Banner A ...."
-              }
-            }
-          ]
-        }
-      ]
+                content: "Banner A ....",
+              },
+            },
+          ],
+        },
+      ],
     });
     expect(mocks.sendEvent).not.toHaveBeenCalled();
 

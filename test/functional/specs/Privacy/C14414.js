@@ -9,17 +9,17 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createFixture from "../../helpers/createFixture";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   consentPending,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import { CONSENT_IN, CONSENT_OUT } from "../../helpers/constants/consent";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createNetworkLogger from "../../helpers/networkLogger";
-import SequentialHook from "../../helpers/requestHooks/sequentialHook";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import { CONSENT_IN, CONSENT_OUT } from "../../helpers/constants/consent.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import SequentialHook from "../../helpers/requestHooks/sequentialHook.js";
 
 const config = compose(orgMainConfigMain, consentPending, debugEnabled);
 
@@ -27,26 +27,26 @@ const networkLogger = createNetworkLogger();
 
 createFixture({
   title: "C14414: Requests are queued while consent changes are pending",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C14414",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test
-  .before(async t => {
+  .before(async (t) => {
     // Create the hook here so that it is only used for one test run.
     t.ctx.setConsentHook = new SequentialHook(/v1\/privacy\/set-consent\?/);
     await t.addRequestHooks(t.ctx.setConsentHook);
   })
-  .after(async t => {
+  .after(async (t) => {
     await t.removeRequestHooks(t.ctx.setConsentHook);
   })(
   "Test C14414: Requests are queued while consent changes are pending",
-  async t => {
+  async (t) => {
     const alloy = createAlloyProxy();
     await alloy.configure(config);
     const setConsentResponse1 = await alloy.setConsentAsync(CONSENT_IN);
@@ -64,5 +64,5 @@ test
       .expect(t.ctx.setConsentHook.haveRequestsBeenSequential())
       .ok("Set-consent requests were not sequential");
     await t.expect(t.ctx.setConsentHook.getNumRequests()).eql(2);
-  }
+  },
 );

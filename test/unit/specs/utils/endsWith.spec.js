@@ -10,18 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import endsWith from "../../../../src/utils/endsWith";
+import endsWith from "../../../../src/utils/endsWith.js";
 
 const str = "The quick brown fox.";
 
 describe("endsWith", () => {
-  ["The quick brown fox.", "fox."].forEach(suffix => {
+  ["The quick brown fox.", "fox."].forEach((suffix) => {
     it(`returns true when suffix is ${suffix}`, () => {
       expect(endsWith(str, suffix)).toBeTrue();
     });
   });
 
-  ["Extra The quick brown fox.", "bogus."].forEach(suffix => {
+  ["Extra The quick brown fox.", "bogus."].forEach((suffix) => {
     it(`returns false when suffix is ${suffix}`, () => {
       expect(endsWith(str, suffix)).toBeFalse();
     });

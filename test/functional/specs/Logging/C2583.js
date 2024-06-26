@@ -9,30 +9,30 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createFixture from "../../helpers/createFixture";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  debugDisabled
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+  debugDisabled,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled);
 
 const debugDisabledConfig = compose(orgMainConfigMain, debugDisabled);
 
 createFixture({
-  title: "C2583: Toggle logging through configuration"
+  title: "C2583: Toggle logging through configuration",
 });
 
 test.meta({
   ID: "C2583",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
-test("Test C2583: Set the log option to true. Load the page. Execute a sendEvent command.", async t => {
+test("Test C2583: Set the log option to true. Load the page. Execute a sendEvent command.", async (t) => {
   const alloy = createAlloyProxy();
   await alloy.configure(debugEnabledConfig);
   await alloy.sendEvent();
@@ -42,7 +42,7 @@ test("Test C2583: Set the log option to true. Load the page. Execute a sendEvent
   await t.expect(info).match(/\[alloy] Executing sendEvent command./);
 });
 
-test("Test C2583: Set the log option in the configuration to false. Refresh the browser. Execute a sendEvent command.", async t => {
+test("Test C2583: Set the log option in the configuration to false. Refresh the browser. Execute a sendEvent command.", async (t) => {
   const alloy = createAlloyProxy();
   await alloy.configure(debugDisabledConfig);
   await alloy.sendEvent();

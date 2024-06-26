@@ -37,7 +37,7 @@ export default () => {
 
       lastPromiseInQueue = lastPromiseInQueue.then(
         lastPromiseFulfilledHandler,
-        lastPromiseFulfilledHandler
+        lastPromiseFulfilledHandler,
       );
       return lastPromiseInQueue;
     },
@@ -48,6 +48,6 @@ export default () => {
      */
     get length() {
       return queueLength;
-    }
+    },
   };
 };

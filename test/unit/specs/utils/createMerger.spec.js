@@ -10,21 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createMerger from "../../../../src/utils/createMerger";
+import createMerger from "../../../../src/utils/createMerger.js";
 
 describe("createMerger", () => {
   it("populates key if key doesn't exist", () => {
     const content = {};
     createMerger(
       content,
-      "fruit"
+      "fruit",
     )({
-      type: "apple"
+      type: "apple",
     });
     expect(content).toEqual({
       fruit: {
-        type: "apple"
-      }
+        type: "apple",
+      },
     });
   });
 
@@ -33,41 +33,41 @@ describe("createMerger", () => {
       foods: {
         fruits: {
           apple: {
-            calories: 95
+            calories: 95,
           },
           banana: {
-            calories: 105
-          }
-        }
-      }
+            calories: 105,
+          },
+        },
+      },
     };
     createMerger(
       content,
-      "foods"
+      "foods",
     )({
       fruits: {
         banana: {
-          calories: 110
+          calories: 110,
         },
         cherry: {
-          calories: 77
-        }
-      }
+          calories: 77,
+        },
+      },
     });
     expect(content).toEqual({
       foods: {
         fruits: {
           apple: {
-            calories: 95
+            calories: 95,
           },
           banana: {
-            calories: 110
+            calories: 110,
           },
           cherry: {
-            calories: 77
-          }
-        }
-      }
+            calories: 77,
+          },
+        },
+      },
     });
   });
 });

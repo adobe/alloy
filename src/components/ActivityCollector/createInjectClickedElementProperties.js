@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import activityMapExtensionEnabled from "./utils/activityMapExtensionEnabled";
-import isDifferentDomains from "./utils/isDifferentDomains";
+import activityMapExtensionEnabled from "./utils/activityMapExtensionEnabled.js";
+import isDifferentDomains from "./utils/isDifferentDomains.js";
 
 const isDissallowedLinkType = (clickCollection, linkType) => {
   return (
@@ -26,7 +26,7 @@ export default ({
   config,
   logger,
   getClickedElementProperties,
-  clickActivityStorage
+  clickActivityStorage,
 }) => {
   const { clickCollectionEnabled, clickCollection } = config;
   if (!clickCollectionEnabled) {
@@ -38,7 +38,7 @@ export default ({
       clickActivityStorage,
       clickedElement,
       config,
-      logger
+      logger,
     });
     const linkType = elementProperties.linkType;
     // Avoid clicks to be collected for the ActivityMap interface
@@ -50,7 +50,7 @@ export default ({
       isDissallowedLinkType(clickCollection, linkType)
     ) {
       logger.info(
-        `Cancelling link click event due to clickCollection.${linkType}LinkEnabled = false.`
+        `Cancelling link click event due to clickCollection.${linkType}LinkEnabled = false.`,
       );
     } else if (
       // Determine if element properties should be sent with event now, or be saved
@@ -71,7 +71,7 @@ export default ({
       event.setUserData(elementProperties.data);
       clickActivityStorage.save({
         pageName: elementProperties.pageName,
-        pageIDType: elementProperties.pageIDType
+        pageIDType: elementProperties.pageIDType,
       });
     } else if (elementProperties.isValidActivityMapData()) {
       clickActivityStorage.save(elementProperties.properties);

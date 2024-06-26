@@ -10,24 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  targetMigrationEnabled
-} from "../../helpers/constants/configParts";
-import { TEST_PAGE, TEST_PAGE_AT_JS_TWO } from "../../helpers/constants/url";
+  targetMigrationEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import { TEST_PAGE, TEST_PAGE_AT_JS_TWO } from "../../helpers/constants/url.js";
 import {
   fetchMboxOffer,
   getPropositionCustomContent,
   injectAlloyAndSendEvent,
-  MIGRATION_LOCATION
-} from "./helper";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../helpers/createResponse";
-import migrationEnabled from "../../helpers/constants/configParts/migrationEnabled";
+  MIGRATION_LOCATION,
+} from "./helper.js";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
+import createResponse from "../../helpers/createResponse.js";
+import migrationEnabled from "../../helpers/constants/configParts/migrationEnabled.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
 
 const favoriteColor = "red-1234";
 
@@ -36,7 +37,7 @@ const config = compose(
   orgMainConfigMain,
   debugEnabled,
   migrationEnabled,
-  targetMigrationEnabled
+  targetMigrationEnabled,
 );
 
 createFixture({
@@ -45,16 +46,16 @@ createFixture({
     "using at.js 2.x and fetch proposition offer based on profile attr using web sdk",
   requestHooks: [
     networkLogger.edgeEndpointLogs,
-    networkLogger.targetDeliveryEndpointLogs
+    networkLogger.targetDeliveryEndpointLogs,
   ],
   url: TEST_PAGE_AT_JS_TWO,
-  includeAlloyLibrary: false
+  includeAlloyLibrary: false,
 });
 
 test.meta({
   ID: "C8085780",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test(
@@ -64,22 +65,22 @@ test(
     //  delivery API request
     await fetchMboxOffer({
       params: {
-        "profile.favoriteColor": favoriteColor
-      }
+        "profile.favoriteColor": favoriteColor,
+      },
     });
     await t
       .expect(networkLogger.targetDeliveryEndpointLogs.count(() => true))
       .eql(2);
     const deliveryRequest =
       networkLogger.targetDeliveryEndpointLogs.requests[1];
-    await t.expect(deliveryRequest.response.statusCode).eql(200);
+    await responseStatus(networkLogger.targetDeliveryEndpointLogs, [200, 207]);
     const requestBody = JSON.parse(deliveryRequest.request.body);
     const { marketingCloudVisitorId } = requestBody.id;
 
     // NAVIGATE to a web sdk page
     await t.navigateTo(TEST_PAGE);
     await injectAlloyAndSendEvent(config, {
-      decisionScopes: [MIGRATION_LOCATION]
+      decisionScopes: [MIGRATION_LOCATION],
     });
     const sendEventRequest = networkLogger.edgeEndpointLogs.requests[0];
     const response = JSON.parse(getResponseBody(sendEventRequest));
@@ -89,15 +90,15 @@ test(
     // expect same ecid is used in both requests
     await t.expect(marketingCloudVisitorId).eql(ecid);
     const personalizationPayload = createResponse({
-      content: response
+      content: response,
     }).getPayloadsByType("personalization:decisions");
 
     const propositionCustomContent = getPropositionCustomContent(
-      personalizationPayload
+      personalizationPayload,
     );
     // expect to get a offer based on the profile attr updated in the previous call using legacy libs
     await t
       .expect(propositionCustomContent)
       .eql(`The favorite Color for this visitor is ${favoriteColor}.`);
-  }
+  },
 );

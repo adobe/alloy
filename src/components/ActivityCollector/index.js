@@ -10,21 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import attachClickActivityCollector from "./attachClickActivityCollector";
-import configValidators from "./configValidators";
-import createInjectClickedElementProperties from "./createInjectClickedElementProperties";
-import createRecallAndInjectClickedElementProperties from "./createRecallAndInjectClickedElementProperties";
-import createGetClickedElementProperties from "./createGetClickedElementProperties";
-import createClickActivityStorage from "./createClickActivityStorage";
-import createStorePageViewProperties from "./createStorePageViewProperties";
-import getLinkName from "./getLinkName";
-import getLinkRegion from "./getLinkRegion";
-import getAbsoluteUrlFromAnchorElement from "./utils/dom/getAbsoluteUrlFromAnchorElement";
-import findClickableElement from "./utils/dom/findClickableElement";
-import determineLinkType from "./utils/determineLinkType";
-import hasPageName from "./utils/hasPageName";
-import createTransientStorage from "./utils/createTransientStorage";
-import { injectStorage } from "../../utils";
+import attachClickActivityCollector from "./attachClickActivityCollector.js";
+import configValidators from "./configValidators.js";
+import createInjectClickedElementProperties from "./createInjectClickedElementProperties.js";
+import createRecallAndInjectClickedElementProperties from "./createRecallAndInjectClickedElementProperties.js";
+import createGetClickedElementProperties from "./createGetClickedElementProperties.js";
+import createClickActivityStorage from "./createClickActivityStorage.js";
+import createStorePageViewProperties from "./createStorePageViewProperties.js";
+import getLinkName from "./getLinkName.js";
+import getLinkRegion from "./getLinkRegion.js";
+import getAbsoluteUrlFromAnchorElement from "./utils/dom/getAbsoluteUrlFromAnchorElement.js";
+import findClickableElement from "./utils/dom/findClickableElement.js";
+import determineLinkType from "./utils/determineLinkType.js";
+import hasPageName from "./utils/hasPageName.js";
+import createTransientStorage from "./utils/createTransientStorage.js";
+import { injectStorage } from "../../utils/index.js";
 
 const getClickedElementProperties = createGetClickedElementProperties({
   window,
@@ -32,7 +32,7 @@ const getClickedElementProperties = createGetClickedElementProperties({
   getLinkRegion,
   getAbsoluteUrlFromAnchorElement,
   findClickableElement,
-  determineLinkType
+  determineLinkType,
 });
 
 let clickActivityStorage;
@@ -41,7 +41,7 @@ const createActivityCollector = ({
   config,
   eventManager,
   handleError,
-  logger
+  logger,
 }) => {
   const clickCollection = config.clickCollection;
   const createNamespacedStorage = injectStorage(window);
@@ -56,15 +56,14 @@ const createActivityCollector = ({
     config,
     logger,
     clickActivityStorage,
-    getClickedElementProperties
+    getClickedElementProperties,
   });
-  const recallAndInjectClickedElementProperties = createRecallAndInjectClickedElementProperties(
-    {
-      clickActivityStorage
-    }
-  );
+  const recallAndInjectClickedElementProperties =
+    createRecallAndInjectClickedElementProperties({
+      clickActivityStorage,
+    });
   const storePageViewProperties = createStorePageViewProperties({
-    clickActivityStorage
+    clickActivityStorage,
   });
   return {
     lifecycle: {
@@ -73,14 +72,14 @@ const createActivityCollector = ({
         attachClickActivityCollector({
           eventManager,
           lifecycle,
-          handleError
+          handleError,
         });
         // TODO: createScrollActivityCollector ...
       },
       onClick({ event, clickedElement }) {
         injectClickedElementProperties({
           event,
-          clickedElement
+          clickedElement,
         });
       },
       onBeforeEvent({ event }) {
@@ -90,8 +89,8 @@ const createActivityCollector = ({
           }
           storePageViewProperties(event, logger, clickActivityStorage);
         }
-      }
-    }
+      },
+    },
   };
 };
 
@@ -99,17 +98,17 @@ createActivityCollector.namespace = "ActivityCollector";
 createActivityCollector.configValidators = configValidators;
 createActivityCollector.buildOnInstanceConfiguredExtraParams = ({
   config,
-  logger
+  logger,
 }) => {
   return {
-    getLinkDetails: targetElement => {
+    getLinkDetails: (targetElement) => {
       return getClickedElementProperties({
         clickActivityStorage,
         clickedElement: targetElement,
         config,
-        logger
+        logger,
       }).properties;
-    }
+    },
   };
 };
 

@@ -14,35 +14,35 @@ import {
   objectOf,
   callback,
   string,
-  boolean
-} from "../../../../../src/utils/validation";
-import describeValidation from "../../../helpers/describeValidation";
+  boolean,
+} from "../../../../../src/utils/validation/index.js";
+import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::deprecated", () => {
   describeValidation(
     "works for a string field",
     objectOf({
       old: string().deprecated(),
-      new: string()
+      new: string(),
     }),
     [
       { value: { old: "a" }, expected: { old: "a" }, warning: true },
       { value: {}, expected: {}, warning: false },
-      { value: { new: "b" }, expected: { new: "b" }, warning: false }
-    ]
+      { value: { new: "b" }, expected: { new: "b" }, warning: false },
+    ],
   );
 
   describeValidation(
     "works for a boolean field",
     objectOf({
       old: boolean().deprecated(),
-      new: boolean()
+      new: boolean(),
     }),
     [
       { value: { old: true }, expected: { old: true }, warning: true },
       { value: {}, expected: {}, warning: false },
-      { value: { new: false }, expected: { new: false }, warning: false }
-    ]
+      { value: { new: false }, expected: { new: false }, warning: false },
+    ],
   );
 
   const noop = () => undefined;
@@ -50,16 +50,16 @@ describe("validation::deprecated", () => {
     "works for a callback field",
     objectOf({
       old: callback().deprecated(),
-      new: callback()
+      new: callback(),
     }),
     [
       {
         value: { old: noop, new: noop },
         expected: { old: noop, new: noop },
-        warning: true
+        warning: true,
       },
       { value: {}, expected: {}, warning: false },
-      { value: { new: noop }, expected: { new: noop }, warning: false }
-    ]
+      { value: { new: noop }, expected: { new: noop }, warning: false },
+    ],
   );
 });

@@ -10,22 +10,30 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import PAGE_WIDE_SCOPE from "../../../constants/pageWideScope";
+import PAGE_WIDE_SCOPE from "../../../constants/pageWideScope.js";
 import {
-  VIEW_SCOPE_TYPE,
   PAGE_SCOPE_TYPE,
-  PROPOSITION_SCOPE_TYPE
-} from "../constants/scopeType";
+  PROPOSITION_SCOPE_TYPE,
+  VIEW_SCOPE_TYPE,
+} from "../constants/scopeType.js";
 
 export default ({ preprocess, isPageWideSurface }) => {
   const createItem = (item, proposition) => {
-    const { schema, data, characteristics: { trackingLabel } = {} } = item;
+    const { id, schema, data, characteristics: { trackingLabel } = {} } = item;
+
+    const schemaType = data ? data.type : undefined;
 
     const processedData = preprocess(data);
 
     return {
+      getId() {
+        return id;
+      },
       getSchema() {
         return schema;
+      },
+      getSchemaType() {
+        return schemaType;
       },
       getData() {
         return processedData;
@@ -44,7 +52,7 @@ export default ({ preprocess, isPageWideSurface }) => {
       },
       toJSON() {
         return item;
-      }
+      },
     };
   };
 
@@ -69,10 +77,13 @@ export default ({ preprocess, isPageWideSurface }) => {
         return PROPOSITION_SCOPE_TYPE;
       },
       getItems() {
-        return items.map(item => createItem(item, this));
+        return items.map((item) => createItem(item, this));
       },
       getNotification() {
         return { id, scope, scopeDetails };
+      },
+      getId() {
+        return id;
       },
       toJSON() {
         return payload;
@@ -81,22 +92,22 @@ export default ({ preprocess, isPageWideSurface }) => {
         propositions,
         decisions,
         includedItems,
-        renderAttempted
+        renderAttempted,
       ) {
         if (visibleInReturnedItems) {
           propositions.push({
             ...payload,
-            items: includedItems.map(i => i.getOriginalItem()),
-            renderAttempted
+            items: includedItems.map((i) => i.getOriginalItem()),
+            renderAttempted,
           });
           if (!renderAttempted) {
             decisions.push({
               ...payload,
-              items: includedItems.map(i => i.getOriginalItem())
+              items: includedItems.map((i) => i.getOriginalItem()),
             });
           }
         }
-      }
+      },
     };
   };
 };

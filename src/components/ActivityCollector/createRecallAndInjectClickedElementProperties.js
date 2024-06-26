@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createClickedElementProperties from "./createClickedElementProperties";
-import activityMapExtensionEnabled from "./utils/activityMapExtensionEnabled";
+import createClickedElementProperties from "./createClickedElementProperties.js";
+import activityMapExtensionEnabled from "./utils/activityMapExtensionEnabled.js";
 
 export default ({ clickActivityStorage }) => {
-  return event => {
+  return (event) => {
     // Avoid clicks to be collected for the ActivityMap interface
     if (activityMapExtensionEnabled()) {
       return;
@@ -38,7 +38,7 @@ export default ({ clickActivityStorage }) => {
       // keep a page-name for multiple link-clicks (e.g. downloads) on the same page.
       clickActivityStorage.save({
         pageName: elementProperties.pageName,
-        pageIDType: elementProperties.pageIDType
+        pageIDType: elementProperties.pageIDType,
       });
     }
   };

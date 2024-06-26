@@ -9,8 +9,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createDataCollector from "../../../../../src/components/DataCollector/index";
-import { noop } from "../../../../../src/utils";
+import createDataCollector from "../../../../../src/components/DataCollector/index.js";
+import { noop } from "../../../../../src/utils/index.js";
 
 describe("Event Command", () => {
   let event;
@@ -24,7 +24,7 @@ describe("Event Command", () => {
       "setUserXdm",
       "mergeXdm",
       "mergeMeta",
-      "mergeConfigOverride"
+      "mergeConfigOverride",
     ]);
     logger = jasmine.createSpyObj("logger", ["warn"]);
 
@@ -37,12 +37,12 @@ describe("Event Command", () => {
         .and.callFake((_event, { applyUserProvidedData = noop }) => {
           applyUserProvidedData();
           return Promise.resolve("sendEventResult");
-        })
+        }),
     };
 
     const dataCollector = createDataCollector({
       eventManager,
-      logger
+      logger,
     });
     sendEventCommand = dataCollector.commands.sendEvent;
   });
@@ -55,15 +55,15 @@ describe("Event Command", () => {
       type: "test",
       xdm,
       data,
-      documentUnloading: true
+      documentUnloading: true,
     };
 
-    return sendEventCommand.run(options).then(result => {
+    return sendEventCommand.run(options).then((result) => {
       expect(event.documentMayUnload).toHaveBeenCalled();
       expect(event.setUserXdm).toHaveBeenCalledWith(xdm);
       expect(event.setUserData).toHaveBeenCalledWith(data);
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
-        otherSetting: "foo"
+        otherSetting: "foo",
       });
       expect(result).toEqual("sendEventResult");
     });
@@ -74,17 +74,17 @@ describe("Event Command", () => {
       renderDecisions: true,
       decisionScopes: ["Foo1"],
       personalization: {
-        decisionScopes: ["Foo2"]
-      }
+        decisionScopes: ["Foo2"],
+      },
     };
 
-    return sendEventCommand.run(options).then(result => {
+    return sendEventCommand.run(options).then((result) => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: true,
         decisionScopes: ["Foo1"],
         personalization: {
-          decisionScopes: ["Foo2"]
-        }
+          decisionScopes: ["Foo2"],
+        },
       });
       expect(result).toEqual("sendEventResult");
     });
@@ -94,16 +94,16 @@ describe("Event Command", () => {
     const options = {
       renderDecisions: true,
       personalization: {
-        surfaces: ["Foo1", "Foo2"]
-      }
+        surfaces: ["Foo1", "Foo2"],
+      },
     };
 
-    return sendEventCommand.run(options).then(result => {
+    return sendEventCommand.run(options).then((result) => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: true,
         personalization: {
-          surfaces: ["Foo1", "Foo2"]
-        }
+          surfaces: ["Foo1", "Foo2"],
+        },
       });
       expect(result).toEqual("sendEventResult");
     });
@@ -118,11 +118,11 @@ describe("Event Command", () => {
   it("merges eventType", () => {
     return sendEventCommand
       .run({
-        type: "mytype"
+        type: "mytype",
       })
       .then(() => {
         expect(event.mergeXdm).toHaveBeenCalledWith({
-          eventType: "mytype"
+          eventType: "mytype",
         });
       });
   });
@@ -130,11 +130,11 @@ describe("Event Command", () => {
   it("merges eventMergeID", () => {
     return sendEventCommand
       .run({
-        mergeId: "mymergeid"
+        mergeId: "mymergeid",
       })
       .then(() => {
         expect(event.mergeXdm).toHaveBeenCalledWith({
-          eventMergeId: "mymergeid"
+          eventMergeId: "mymergeid",
         });
       });
   });
@@ -143,7 +143,7 @@ describe("Event Command", () => {
     const datasetId = "mydatasetId";
     return sendEventCommand
       .run({
-        datasetId
+        datasetId,
       })
       .then(() => {
         expect(eventManager.sendEvent).toHaveBeenCalledWith(
@@ -152,11 +152,11 @@ describe("Event Command", () => {
             edgeConfigOverrides: {
               com_adobe_experience_platform: {
                 datasets: {
-                  event: { datasetId }
-                }
-              }
-            }
-          }
+                  event: { datasetId },
+                },
+              },
+            },
+          },
         );
         expect(logger.warn).toHaveBeenCalled();
       });
@@ -168,9 +168,9 @@ describe("Event Command", () => {
         renderDecisions: true,
         edgeConfigOverrides: {
           target: {
-            propertyToken: "hello"
-          }
-        }
+            propertyToken: "hello",
+          },
+        },
       })
       .then(() => {
         expect(eventManager.sendEvent).toHaveBeenCalledWith(
@@ -179,10 +179,10 @@ describe("Event Command", () => {
             renderDecisions: true,
             edgeConfigOverrides: {
               target: {
-                propertyToken: "hello"
-              }
-            }
-          }
+                propertyToken: "hello",
+              },
+            },
+          },
         );
       });
   });

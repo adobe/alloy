@@ -10,9 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { includes, isNonEmptyString, isNonEmptyArray } from "../../utils";
-import { buildPageSurface, normalizeSurfaces } from "./utils/surfaceUtils";
-import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
+import {
+  includes,
+  isNonEmptyString,
+  isNonEmptyArray,
+} from "../../utils/index.js";
+import { buildPageSurface, normalizeSurfaces } from "./utils/surfaceUtils.js";
+import PAGE_WIDE_SCOPE from "../../constants/pageWideScope.js";
 import {
   DEFAULT_CONTENT_ITEM,
   DOM_ACTION,
@@ -21,10 +25,10 @@ import {
   JSON_CONTENT_ITEM,
   REDIRECT_ITEM,
   RULESET_ITEM,
-  MESSAGE_FEED_ITEM
-} from "../../constants/schema";
+  MESSAGE_FEED_ITEM,
+} from "../../constants/schema.js";
 
-const addPageWideScope = scopes => {
+const addPageWideScope = (scopes) => {
   if (!includes(scopes, PAGE_WIDE_SCOPE)) {
     scopes.push(PAGE_WIDE_SCOPE);
   }
@@ -37,7 +41,7 @@ const addPageSurface = (surfaces, getPageLocation) => {
   }
 };
 
-const dedupe = array =>
+const dedupe = (array) =>
   array.filter((item, pos) => array.indexOf(item) === pos);
 
 export default ({
@@ -47,7 +51,7 @@ export default ({
   personalization,
   event,
   isCacheInitialized,
-  logger
+  logger,
 }) => {
   const viewName = event.getViewName();
   return {
@@ -83,7 +87,7 @@ export default ({
       const eventSurfaces = normalizeSurfaces(
         personalization.surfaces,
         getPageLocation,
-        logger
+        logger,
       );
 
       if (this.shouldRequestDefaultPersonalization()) {
@@ -98,7 +102,7 @@ export default ({
         REDIRECT_ITEM,
         RULESET_ITEM,
         MESSAGE_IN_APP,
-        MESSAGE_FEED_ITEM
+        MESSAGE_FEED_ITEM,
       ];
 
       if (includes(scopes, PAGE_WIDE_SCOPE)) {
@@ -108,7 +112,7 @@ export default ({
       return {
         schemas,
         decisionScopes: dedupe(scopes),
-        surfaces: dedupe(eventSurfaces)
+        surfaces: dedupe(eventSurfaces),
       };
     },
     isCacheInitialized() {
@@ -130,6 +134,6 @@ export default ({
         (!this.isCacheInitialized() &&
           personalization.defaultPersonalizationEnabled !== false)
       );
-    }
+    },
   };
 };

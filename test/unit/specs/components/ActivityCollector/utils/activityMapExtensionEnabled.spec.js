@@ -10,28 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import activityMapExtensionEnabled from "../../../../../../src/components/ActivityCollector/utils/activityMapExtensionEnabled";
+import activityMapExtensionEnabled from "../../../../../../src/components/ActivityCollector/utils/activityMapExtensionEnabled.js";
 
 const ACTIVITY_MAP_EXTENSION_ID = "cppXYctnr";
 
 describe("ActivityCollector::activityMapExtensionEnabled", () => {
   it("should return true if the activity map extension is enabled", () => {
     const context = {
-      getElementById: jasmine.createSpy().and.returnValue({})
+      getElementById: jasmine.createSpy().and.returnValue({}),
     };
     expect(activityMapExtensionEnabled(context)).toBeTrue();
     expect(context.getElementById).toHaveBeenCalledWith(
-      ACTIVITY_MAP_EXTENSION_ID
+      ACTIVITY_MAP_EXTENSION_ID,
     );
   });
 
   it("should return false if the activity map extension is not enabled", () => {
     const context = {
-      getElementById: jasmine.createSpy().and.returnValue(null)
+      getElementById: jasmine.createSpy().and.returnValue(null),
     };
     expect(activityMapExtensionEnabled(context)).toBeFalse();
     expect(context.getElementById).toHaveBeenCalledWith(
-      ACTIVITY_MAP_EXTENSION_ID
+      ACTIVITY_MAP_EXTENSION_ID,
     );
   });
 });

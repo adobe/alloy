@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -115,7 +115,7 @@
 
       function readCookies() {
         const cookies = {};
-        document.cookie.split(";").forEach(function(c) {
+        document.cookie.split(";").forEach(function (c) {
           const ct = c.trim();
           const index = ct.indexOf("=");
           const key = ct.slice(0, index);
@@ -142,45 +142,40 @@
         return parts[i + 1];
       }
 
-      document.getElementById("initializeButton").onclick = function() {
+      document.getElementById("initializeButton").onclick = function () {
         var rsid = getUrlParameter("rsid") || "alloy";
         window.s = s_gi(rsid);
         s.trackingServer = "alloy.sc.omtrdc.net";
         s.visitor = Visitor.getInstance("5BFE274A5F6980A50A495C08@AdobeOrg", {
-          overwriteCrossDomainMCIDAndAID: true
+          overwriteCrossDomainMCIDAndAID: true,
         });
         s.eVar1 = "alloy1";
         document.getElementById("getVisitorValuesButton").disabled = false;
         document.getElementById("trackButton").disabled = false;
         document.getElementById("initializeButton").disabled = true;
-        document.getElementById(
-          "currentAMCVIdentity"
-        ).innerText = readIdentityCookie();
+        document.getElementById("currentAMCVIdentity").innerText =
+          readIdentityCookie();
       };
 
       function getVisitorValues() {
-        s.visitor.getVisitorValues(values => {
+        s.visitor.getVisitorValues((values) => {
           document.getElementById("visitorIdentity").innerText = values.MCMID;
-          document.getElementById(
-            "currentAMCVIdentity"
-          ).innerText = readIdentityCookie();
+          document.getElementById("currentAMCVIdentity").innerText =
+            readIdentityCookie();
         });
       }
 
-      document.getElementById(
-        "getVisitorValuesButton"
-      ).onclick = getVisitorValues;
+      document.getElementById("getVisitorValuesButton").onclick =
+        getVisitorValues;
       document.getElementById("trackButton").onclick = () => {
         s.t();
         setTimeout(getVisitorValues, 500);
       };
 
-      document.getElementById(
-        "originalAMCVIdentity"
-      ).innerText = readIdentityCookie();
-      document.getElementById(
-        "currentAMCVIdentity"
-      ).innerText = readIdentityCookie();
+      document.getElementById("originalAMCVIdentity").innerText =
+        readIdentityCookie();
+      document.getElementById("currentAMCVIdentity").innerText =
+        readIdentityCookie();
 
       var searchWithoutAdobeMc = removeUrlParameter("adobe_mc");
       var otherHost =
@@ -193,12 +188,12 @@
       legacyLink.href = "/legacy.html" + searchWithoutAdobeMc;
 
       var webSdkCrossDomainLink = document.getElementById(
-        "webSdkCrossDomainLink"
+        "webSdkCrossDomainLink",
       );
       webSdkCrossDomainLink.href =
         "https://" + otherHost + "/identity" + searchWithoutAdobeMc;
       var legacyCrossDomainLink = document.getElementById(
-        "legacyCrossDomainLink"
+        "legacyCrossDomainLink",
       );
       legacyCrossDomainLink.href =
         "https://" + otherHost + "/legacy.html" + searchWithoutAdobeMc;

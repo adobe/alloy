@@ -9,29 +9,37 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { t, ClientFunction } from "testcafe";
-import createFixture from "../../helpers/createFixture";
+import { ClientFunction, t } from "testcafe";
+import createFixture from "../../helpers/createFixture/index.js";
 
 import {
   compose,
+  debugEnabled,
   orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
+} from "../../helpers/constants/configParts/index.js";
 
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import {
+  ADOBE_JOURNEY_OPTIMIZER,
+  ADOBE_TARGET,
+} from "../../../../src/constants/decisionProvider.js";
+import {
+  ALWAYS,
+  NEVER,
+} from "../../../../src/constants/propositionInteractionType.js";
 
 const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled, {
-  onBeforeEventSend: () => {}
+  onBeforeEventSend: () => {},
 });
 
 createFixture({
-  title: "C2589: getLibraryInfo command returns library information"
+  title: "C2589: getLibraryInfo command returns library information",
 });
 
 test.meta({
   ID: "C2589",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("C2589: getLibraryInfo command returns library information.", async () => {
@@ -45,7 +53,7 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
     "getIdentity",
     "sendEvent",
     "setConsent",
-    "setDebug"
+    "setDebug",
   ];
   const currentConfigs = {
     clickCollectionEnabled: true,
@@ -54,7 +62,7 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
       eventGroupingEnabled: false,
       externalLinkEnabled: true,
       internalLinkEnabled: true,
-      sessionStorageEnabled: false
+      sessionStorageEnabled: false,
     },
     context: ["web", "device", "environment", "placeContext"],
     debugEnabled: true,
@@ -68,7 +76,11 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
     orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
     thirdPartyCookiesEnabled: true,
     targetMigrationEnabled: false,
-    personalizationStorageEnabled: false
+    personalizationStorageEnabled: false,
+    autoCollectPropositionInteractions: {
+      [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
+      [ADOBE_TARGET]: NEVER,
+    },
   };
 
   const alloy = createAlloyProxy();
@@ -97,7 +109,7 @@ test("C2589: libraryInfo can be marshaled to postMessage", async () => {
         window.postMessage(libraryInfo, "*");
       });
     },
-    { dependencies: { instanceName } }
+    { dependencies: { instanceName } },
   );
   const result = await postLibraryInfo();
   // This is really just asserting that we got this far. If libraryInfo cannot be

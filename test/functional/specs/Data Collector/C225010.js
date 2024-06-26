@@ -10,29 +10,29 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t, Selector, ClientFunction } from "testcafe";
-import createFixture from "../../helpers/createFixture";
-import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
-import createConsoleLogger from "../../helpers/consoleLogger";
-import createUnhandledRejectionLogger from "../../helpers/createUnhandledRejectionLogger";
+import createFixture from "../../helpers/createFixture/index.js";
+import addHtmlToBody from "../../helpers/dom/addHtmlToBody.js";
+import createConsoleLogger from "../../helpers/consoleLogger/index.js";
+import createUnhandledRejectionLogger from "../../helpers/createUnhandledRejectionLogger.js";
 import {
   compose,
   orgMainConfigMain,
   consentPending,
   debugEnabled,
   clickCollectionEnabled,
-  clickCollectionEventGroupingDisabled
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import { CONSENT_OUT } from "../../helpers/constants/consent";
+  clickCollectionEventGroupingDisabled,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import { CONSENT_OUT } from "../../helpers/constants/consent.js";
 
 createFixture({
-  title: "C225010: Click collection handles errors when user declines consent"
+  title: "C225010: Click collection handles errors when user declines consent",
 });
 
 test.meta({
   ID: "C8118",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C225010: Click collection handles errors when user declines consent", async () => {
@@ -43,7 +43,7 @@ test("Test C225010: Click collection handles errors when user declines consent",
     consentPending,
     debugEnabled,
     clickCollectionEnabled,
-    clickCollectionEventGroupingDisabled
+    clickCollectionEventGroupingDisabled,
   );
   await alloy.configure(testConfig);
   await alloy.setConsent(CONSENT_OUT);
@@ -55,7 +55,7 @@ test("Test C225010: Click collection handles errors when user declines consent",
   await t.click(Selector("#alloy-link-test"));
   await t.expect(getLocation()).contains("#foo");
   await consoleLogger.warn.expectMessageMatching(
-    /The click collection could not fully complete. The user declined consent./
+    /The click collection could not fully complete. The user declined consent./,
   );
   await unhandledRejectionLogger.expectNoMessageMatching(/.*/);
 });

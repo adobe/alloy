@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import elementHasClickHandler from "../../../../../../../src/components/ActivityCollector/utils/dom/elementHasClickHandler";
+import elementHasClickHandler from "../../../../../../../src/components/ActivityCollector/utils/dom/elementHasClickHandler.js";
 
 describe("ActivityCollector::elementHasClickHandler", () => {
   it("should handle invalid elements", () => {
@@ -19,7 +19,7 @@ describe("ActivityCollector::elementHasClickHandler", () => {
       { element: undefined },
       { element: {} },
       { element: { onclick: null } },
-      { element: { onclick: undefined } }
+      { element: { onclick: undefined } },
     ];
     invalidElements.forEach(({ element }) => {
       expect(elementHasClickHandler(element)).toBe(false);
@@ -29,7 +29,7 @@ describe("ActivityCollector::elementHasClickHandler", () => {
   it("should handle elements with click handlers", () => {
     const clickHandlerElements = [
       { element: { onclick: () => {} } },
-      { element: { onclick() {} } }
+      { element: { onclick() {} } },
     ];
     clickHandlerElements.forEach(({ element }) => {
       expect(elementHasClickHandler(element)).toBe(true);

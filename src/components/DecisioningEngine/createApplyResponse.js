@@ -9,19 +9,19 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-export default lifecycle => {
+export default (lifecycle) => {
   return ({
     renderDecisions = false,
     propositions = [],
     event,
-    personalization
+    personalization,
   }) => {
     if (propositions.length > 0 && lifecycle) {
       lifecycle.onDecision({
         renderDecisions,
         propositions,
         event,
-        personalization
+        personalization,
       });
     }
     return { propositions };

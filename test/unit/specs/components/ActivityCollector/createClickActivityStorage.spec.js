@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createClickActivityStorage from "../../../../../src/components/ActivityCollector/createClickActivityStorage";
-import { CLICK_ACTIVITY_DATA } from "../../../../../src/constants/sessionDataKeys";
+import createClickActivityStorage from "../../../../../src/components/ActivityCollector/createClickActivityStorage.js";
+import { CLICK_ACTIVITY_DATA } from "../../../../../src/constants/sessionDataKeys.js";
 
 describe("ActivityCollector::createClickActivityStorage", () => {
   let storage;
@@ -20,7 +20,7 @@ describe("ActivityCollector::createClickActivityStorage", () => {
     storage = jasmine.createSpyObj("storage", [
       "getItem",
       "setItem",
-      "removeItem"
+      "removeItem",
     ]);
     clickActivityStorage = createClickActivityStorage({ storage });
   });
@@ -29,7 +29,7 @@ describe("ActivityCollector::createClickActivityStorage", () => {
     clickActivityStorage.save({ key: "value" });
     expect(storage.setItem).toHaveBeenCalledWith(
       CLICK_ACTIVITY_DATA,
-      '{"key":"value"}'
+      '{"key":"value"}',
     );
   });
 

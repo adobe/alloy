@@ -10,30 +10,30 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectSendFetchRequest from "../../../../../../src/core/network/requestMethods/injectSendFetchRequest";
+import injectSendFetchRequest from "../../../../../../src/core/network/requestMethods/injectSendFetchRequest.js";
 
 describe("injectSendFetchRequest", () => {
   it("resolves returned promise upon network success", () => {
     const fetchResult = {
       status: 999,
       headers: jasmine.createSpyObj("headers", {
-        get: "headervalue"
+        get: "headervalue",
       }),
       text() {
         return Promise.resolve("content");
-      }
+      },
     };
     const fetch = jasmine
       .createSpy()
       .and.returnValue(Promise.resolve(fetchResult));
     const sendFetchRequest = injectSendFetchRequest({ fetch });
     return sendFetchRequest("http://example.com/endpoint", { a: "b" }).then(
-      result => {
+      (result) => {
         expect(result.statusCode).toBe(999);
         expect(result.getHeader("Content-Type")).toBe("headervalue");
         expect(result.body).toBe("content");
         expect(fetchResult.headers.get).toHaveBeenCalledWith("Content-Type");
-      }
+      },
     );
   });
 
@@ -44,7 +44,7 @@ describe("injectSendFetchRequest", () => {
     const sendFetchRequest = injectSendFetchRequest({ fetch });
     return sendFetchRequest("http://example.com/endpoint", { a: "b" })
       .then(fail)
-      .catch(error => {
+      .catch((error) => {
         expect(error.message).toBe("No connection");
       });
   });

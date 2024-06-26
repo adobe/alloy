@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import addEcidQueryToPayload from "../../../../../src/components/Identity/addEcidQueryToPayload";
+import addEcidQueryToPayload from "../../../../../src/components/Identity/addEcidQueryToPayload.js";
 
 describe("Identity::addEcidQueryToPayload", () => {
   it("adds an ECID query to the event", () => {
@@ -18,8 +18,8 @@ describe("Identity::addEcidQueryToPayload", () => {
     addEcidQueryToPayload(payload);
     expect(payload.mergeQuery).toHaveBeenCalledWith({
       identity: {
-        fetch: ["ECID"]
-      }
+        fetch: ["ECID"],
+      },
     });
   });
 });

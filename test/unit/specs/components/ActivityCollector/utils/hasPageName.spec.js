@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import hasPageName from "../../../../../../src/components/ActivityCollector/utils/hasPageName";
+import hasPageName from "../../../../../../src/components/ActivityCollector/utils/hasPageName.js";
 
 describe("ActivityCollector::hasPageName", () => {
   it("should return true if event has page name", () => {
@@ -19,11 +19,11 @@ describe("ActivityCollector::hasPageName", () => {
         xdm: {
           web: {
             webPageDetails: {
-              name: "test"
-            }
-          }
-        }
-      })
+              name: "test",
+            },
+          },
+        },
+      }),
     };
     expect(hasPageName(event)).toBe(true);
   });
@@ -32,9 +32,9 @@ describe("ActivityCollector::hasPageName", () => {
     const event = {
       getContent: () => ({
         xdm: {
-          web: {}
-        }
-      })
+          web: {},
+        },
+      }),
     };
     expect(hasPageName(event)).toBe(false);
   });

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import extractDomain from "../../../../../../../src/components/ActivityCollector/utils/dom/extractDomain";
+import extractDomain from "../../../../../../../src/components/ActivityCollector/utils/dom/extractDomain.js";
 
 describe("ActivityCollector::extractDomain", () => {
   it("should extract the domain from a URL", () => {
@@ -19,7 +19,7 @@ describe("ActivityCollector::extractDomain", () => {
     expect(extractDomain("https://www.example.com")).toBe("www.example.com");
     expect(extractDomain("https://www.example.com/")).toBe("www.example.com");
     expect(extractDomain("https://www.example.com/cool/page")).toBe(
-      "www.example.com"
+      "www.example.com",
     );
   });
 
