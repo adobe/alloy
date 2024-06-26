@@ -52,9 +52,6 @@ module.exports = {
     name: "alloy",
     sourcemap: "inline",
     format: "iife",
-    // Warn the user if they are using an unsupported browser.
-    intro:
-      "if (document.documentMode) { console.warn('The Adobe Experience Cloud Web SDK does not support Internet Explorer.'); return; }",
   },
   plugins,
 };

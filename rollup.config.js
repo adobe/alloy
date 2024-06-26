@@ -116,11 +116,6 @@ export const buildConfig = ({
         {
           file: file || `${destDirectory}alloy${minifiedExtension}.js`,
           format: "iife",
-          intro:
-            "if (document.documentMode) {\n" +
-            "  console.warn('The Adobe Experience Cloud Web SDK does not support Internet Explorer');\n" +
-            "  return;\n" +
-            "}\n",
           sourcemap: variant === SANDBOX,
         },
       ],
