@@ -21,8 +21,7 @@ import isString from "./isString.js";
 export default (value, defaultValue) => {
   if (isNumber(value) || isString(value)) {
     const n = Math.round(Number(value));
-    // eslint-disable-next-line no-restricted-globals
-    if (!isNaN(n)) {
+    if (!Number.isNaN(n)) {
       return n;
     }
   }
