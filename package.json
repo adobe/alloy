@@ -74,7 +74,6 @@
   "dependencies": {
     "@adobe/aep-rules-engine": "^2.0.2",
     "@adobe/reactor-cookie": "^1.1.0",
-    "@adobe/reactor-load-script": "^1.1.1",
     "@adobe/reactor-query-string": "^1.0.0",
     "@babel/core": "^7.24.7",
     "@babel/eslint-parser": "^7.24.7",
