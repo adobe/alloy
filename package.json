@@ -133,7 +133,6 @@
     "karma-spec-reporter": "0.0.36",
     "lint-staged": "^15.2.7",
     "prettier": "^3.3.2",
-    "promise-polyfill": "^8.3.0",
     "read-cache": "^1.0.0",
     "recursive-readdir": "^2.2.3",
     "request": "^2.88.0",

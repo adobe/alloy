@@ -33,13 +33,6 @@ if (alloyEnv === PRODUCTION) {
   }
 }
 
-const localPromisePolyfillPath = path.join(
-  __dirname,
-  "../promisePolyfill/promise-polyfill.min.js",
-);
-const remotePromisePolyfillPath =
-  "https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js";
-
 const baseCodePath = path.join(
   __dirname,
   "../../../../distTest/baseCode.min.js",
@@ -104,14 +97,6 @@ const getFixtureClientScriptsForInt = (options) => {
       content: options.monitoringHooksScript,
     });
   }
-  // We load a promise polyfill because promises aren't supported in IE
-  // and that's what customers supporting IE will need to do as part
-  // of installing Alloy.
-  // We could load the Promise polyfill from a CDN, but it would slow down
-  // our tests a bit since we would have to go over the wire to load it.
-  clientScripts.push({
-    path: localPromisePolyfillPath,
-  });
 
   // Useful for testing Alloy + Visitor interaction.
   if (options.includeVisitorLibrary) {
@@ -161,11 +146,6 @@ const getFixtureClientScriptsForProd = (options) => {
       content: options.monitoringHooksScript,
     });
   }
-
-  addRemoteUrlClientScript({
-    clientScripts,
-    url: remotePromisePolyfillPath,
-  });
 
   // Useful for testing Alloy + Visitor interaction.
   if (options.includeVisitorLibrary) {
