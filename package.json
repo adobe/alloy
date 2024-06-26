@@ -20,8 +20,8 @@
   },
   "scripts": {
     "clean": "rimraf dist distTest libEs5 libEs6",
-    "lint": "eslint --cache --fix \"*.js\" \"{src,test,scripts}/**/*.js\"",
-    "format": "prettier --write \"*.{html,js}\" \"{sandbox,src,test,scripts}/**/*.{html,js}\"",
+    "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{src,test,scripts}/**/*.{js,cjs,mjs,jsx}\"",
+    "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandbox,src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
     "test": "npm run test:unit && npm run test:scripts && npm run test:functional",
     "test:unit": "karma start karma.conf.cjs --single-run",
     "test:unit:debug": "karma start --browsers=Chrome --single-run=false --debug",
@@ -47,16 +47,16 @@
     "preinstall": "npx force-resolutions"
   },
   "lint-staged": {
-    "./*.js": [
+    "./*.{cjs,mjs,js,jsx}": [
       "eslint --cache --fix"
     ],
-    "./{src,test,scripts}/**/*.js": [
+    "./{src,test,scripts}/**/*.{cjs,mjs,js,jsx}": [
       "eslint --cache --fix"
     ],
-    "./*.{html,js}": [
+    "./*.{html,js,cjs,mjs,jsx}": [
       "prettier --write"
     ],
-    "./{sandbox,src,test,scripts}/**/*.{html,js}": [
+    "./{sandbox,src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}": [
       "prettier --write"
     ]
   },

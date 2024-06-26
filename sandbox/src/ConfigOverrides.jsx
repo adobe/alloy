@@ -7,33 +7,33 @@ const defaultOverrides = {
   com_adobe_experience_platform: {
     datasets: {
       event: {
-        datasetId: ""
+        datasetId: "",
       },
       profile: {
-        datasetId: ""
-      }
-    }
+        datasetId: "",
+      },
+    },
   },
   com_adobe_analytics: {
-    reportSuites: []
+    reportSuites: [],
   },
   com_adobe_identity: {
-    idSyncContainerId: ""
+    idSyncContainerId: "",
   },
   com_adobe_target: {
-    propertyToken: ""
-  }
+    propertyToken: "",
+  },
 };
 
-const sendEvent = edgeConfigOverrides => {
+const sendEvent = (edgeConfigOverrides) => {
   return window.alloy("sendEvent", {
     renderDecisions: true,
     edgeConfigOverrides: {
-      ...edgeConfigOverrides
-    }
+      ...edgeConfigOverrides,
+    },
   });
 };
-const setConsent = edgeConfigOverrides => {
+const setConsent = (edgeConfigOverrides) => {
   return window.alloy("setConsent", {
     consent: [
       {
@@ -41,41 +41,41 @@ const setConsent = edgeConfigOverrides => {
         version: "2.0",
         value: {
           collect: {
-            val: "in"
-          }
-        }
-      }
+            val: "in",
+          },
+        },
+      },
     ],
     edgeConfigOverrides: {
-      ...edgeConfigOverrides
-    }
+      ...edgeConfigOverrides,
+    },
   });
 };
-const getIdentity = edgeConfigOverrides => {
+const getIdentity = (edgeConfigOverrides) => {
   return window.alloy("getIdentity", {
     namespaces: ["ECID"],
     edgeConfigOverrides: {
-      ...edgeConfigOverrides
-    }
+      ...edgeConfigOverrides,
+    },
   });
 };
 
-const appendIdentityToUrl = edgeConfigOverrides => {
+const appendIdentityToUrl = (edgeConfigOverrides) => {
   return window
     .alloy("appendIdentityToUrl", {
       url: "https://example.com",
       edgeConfigOverrides: {
-        ...edgeConfigOverrides
-      }
+        ...edgeConfigOverrides,
+      },
     })
-    .then(url => console.log("URL with appended identity: ", url));
+    .then((url) => console.log("URL with appended identity: ", url));
 };
 
 export default function ConfigOverrides() {
   const [error, setError] = useState("");
   const [overrides, setOverrides] = useState({ ...defaultOverrides });
   const overridesString = JSON.stringify(overrides, null, 2);
-  const onTextareaChange = event => {
+  const onTextareaChange = (event) => {
     try {
       const newOverrides = JSON.parse(event.target.value);
       setOverrides(newOverrides);
@@ -83,7 +83,7 @@ export default function ConfigOverrides() {
     } catch (err) {
       console.error(err);
       setError(
-        `The text you just entered is not valid JSON. Try again.\n${err}`
+        `The text you just entered is not valid JSON. Try again.\n${err}`,
       );
     }
   };
@@ -96,16 +96,16 @@ export default function ConfigOverrides() {
         analyticsReportSuites: [
           ...((overrides.com_adobe_analytics || {}).analyticsReportSuites ||
             []),
-          ""
-        ]
-      }
+          "",
+        ],
+      },
     });
   };
   const resetOverrides = () => {
     setOverrides({ ...defaultOverrides });
   };
-  const callWithOverrides = callback => () =>
-    callback(overrides).catch(err => {
+  const callWithOverrides = (callback) => () =>
+    callback(overrides).catch((err) => {
       console.error(err);
       setError(`The request failed.\n${err.toString()}`);
     });
@@ -118,7 +118,7 @@ export default function ConfigOverrides() {
             margin: "8px",
             border: "1px solid red",
             borderRadius: "8px",
-            padding: "8px"
+            padding: "8px",
           }}
         >
           <span
@@ -144,13 +144,13 @@ export default function ConfigOverrides() {
           flexDirection: "row",
           justifyContent: "space-around",
           flexWrap: "wrap-reverse",
-          maxWidth: "875px"
+          maxWidth: "875px",
         }}
       >
         <textarea
           style={{
             fontFamily: "monospace",
-            boxSizing: "border-box"
+            boxSizing: "border-box",
           }}
           name="overrideEditor"
           id="overrideEditor"
@@ -165,7 +165,7 @@ export default function ConfigOverrides() {
             {JSON.stringify(
               { renderDecisions: true, edgeConfigOverrides: overrides },
               null,
-              2
+              2,
             )}
             )
           </code>
