@@ -30,7 +30,6 @@ const targets = {
     "last 2 Firefox versions",
     "last 2 Safari versions",
     "last 2 Edge versions",
-    "Explorer >= 10",
   ],
 };
 
