@@ -76,6 +76,7 @@ import {
 
 import booleanValidator from "./booleanValidator.js";
 import callbackValidator from "./callbackValidator.js";
+import createAnyOfValidator from "./createAnyOfValidator.js";
 import createArrayOfValidator from "./createArrayOfValidator.js";
 import createDefaultValidator from "./createDefaultValidator.js";
 import createDeprecatedValidator from "./createDeprecatedValidator.js";
@@ -86,7 +87,7 @@ import createMaximumValidator from "./createMaximumValidator.js";
 import createNoUnknownFieldsValidator from "./createNoUnknownFieldsValidator.js";
 import createNonEmptyValidator from "./createNonEmptyValidator.js";
 import createObjectOfValidator from "./createObjectOfValidator.js";
-import createAnyOfValidator from "./createAnyOfValidator.js";
+import createRenamedValidator from "./createRenamedValidator.js";
 import createUniqueValidator from "./createUniqueValidator.js";
 import createUniqueItemsValidator from "./createUniqueItemsValidator.js";
 import domainValidator from "./domainValidator.js";
@@ -108,6 +109,9 @@ base.default = function _default(defaultValue) {
 };
 base.required = function required() {
   return chain(this, requiredValidator);
+};
+base.deprecated = function deprecated(message) {
+  return chain(this, createDeprecatedValidator(message));
 };
 
 // helper validators
@@ -199,12 +203,12 @@ const createObjectOfAdditionalProperties = (schema) => ({
       createObjectOfAdditionalProperties(newSchema),
     );
   },
-  deprecated: function deprecated(oldField, oldSchema, newField) {
+  renamed: function renamed(oldField, oldSchema, newField) {
     // Run the deprecated validator first so that the deprecated field is removed
     // before the objectOf validator runs.
     return reverseNullSafeChainJoinErrors(
       this,
-      createDeprecatedValidator(oldField, oldSchema, newField),
+      createRenamedValidator(oldField, oldSchema, newField),
     );
   },
   schema,

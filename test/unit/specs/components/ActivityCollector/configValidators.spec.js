@@ -38,5 +38,10 @@ describe("ActivityCollector config validators", () => {
       downloadLinkQualifier:
         "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$",
     },
+    deprecatedConfigurations: [
+      {
+        onBeforeLinkClickSend: () => undefined,
+      },
+    ],
   });
 });

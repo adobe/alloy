@@ -13,6 +13,7 @@ export default ({
   configValidators,
   validConfigurations,
   invalidConfigurations,
+  deprecatedConfigurations = [],
   defaultValues,
 }) => {
   validConfigurations.forEach((cfg, i) => {
@@ -33,6 +34,14 @@ export default ({
     const config = configValidators({});
     Object.keys(defaultValues).forEach((key) => {
       expect(config[key]).toBe(defaultValues[key]);
+    });
+  });
+
+  deprecatedConfigurations.forEach((cfg, i) => {
+    it(`outputs messages for deprecated fields (${i})`, () => {
+      const logger = jasmine.createSpyObj("logger", ["warn"]);
+      configValidators.call({ logger }, cfg);
+      expect(logger.warn).toHaveBeenCalled();
     });
   });
 };
