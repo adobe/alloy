@@ -52,11 +52,9 @@ module.exports = {
     name: "alloy",
     sourcemap: "inline",
     format: "iife",
-    // Allow non-IE browsers and IE11
-    // document.documentMode was added in IE8, and is specific to IE.
-    // IE7 and lower are not ES5 compatible so will get a parse error loading the library.
+    // Warn the user if they are using an unsupported browser.
     intro:
-      "if (document.documentMode && document.documentMode < 11) { console.warn('The Adobe Experience Cloud Web SDK does not support IE 10 and below.'); return; }",
+      "if (document.documentMode) { console.warn('The Adobe Experience Cloud Web SDK does not support Internet Explorer.'); return; }",
   },
   plugins,
 };
