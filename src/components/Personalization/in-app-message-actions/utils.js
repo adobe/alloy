@@ -9,11 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import {
-  isNonEmptyArray,
-  queryString,
-  startsWith,
-} from "../../../utils/index.js";
+import { isNonEmptyArray, queryString } from "../../../utils/index.js";
 import { removeNode, selectNodes } from "../../../utils/dom/index.js";
 
 export const removeElementById = (id) => {
@@ -30,7 +26,7 @@ export const parseAnchor = (anchor) => {
   }
 
   const { href } = anchor;
-  if (!href || !startsWith(href, "adbinapp://")) {
+  if (!href || !href.startsWith("adbinapp://")) {
     return nothing;
   }
 

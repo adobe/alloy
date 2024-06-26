@@ -24,7 +24,6 @@ export { default as crc32 } from "./crc32.js";
 export { default as defer } from "./defer.js";
 export { default as deduplicateArray } from "./deduplicateArray.js";
 export { default as deepAssign } from "./deepAssign.js";
-export { default as endsWith } from "./endsWith.js";
 export { default as fireImage } from "./fireImage.js";
 export { default as injectFireReferrerHideableImage } from "./injectFireReferrerHideableImage.js";
 export { default as filterObject } from "./filterObject.js";
@@ -55,7 +54,6 @@ export { default as prepareConfigOverridesForEdge } from "./prepareConfigOverrid
 export { default as queryString } from "./querystring.js";
 export { default as sanitizeOrgIdForCookieName } from "./sanitizeOrgIdForCookieName.js";
 export { default as stackError } from "./stackError.js";
-export { default as startsWith } from "./startsWith.js";
 export { default as stringToBoolean } from "./stringToBoolean.js";
 export { default as toArray } from "./toArray.js";
 export { default as toError } from "./toError.js";

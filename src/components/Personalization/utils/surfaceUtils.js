@@ -16,7 +16,7 @@ import {
   SURFACE_TYPE_DELIMITER,
   FRAGMENT_DELIMITER,
 } from "../constants/surface.js";
-import { startsWith, isNil, isNonEmptyString } from "../../../utils/index.js";
+import { isNil, isNonEmptyString } from "../../../utils/index.js";
 
 const SURFACE_REGEX = /^(\w+):\/\/([^/#]+)(\/[^#]*)?(#.*)?$/;
 const AUTHORITY_REGEX =
@@ -66,7 +66,7 @@ export const buildPageSurface = (getPageLocation) => {
 };
 
 const expandFragmentSurface = (surface, getPageLocation) =>
-  startsWith(surface, FRAGMENT_DELIMITER)
+  surface.startsWith(FRAGMENT_DELIMITER)
     ? buildPageSurface(getPageLocation) + surface
     : surface;
 

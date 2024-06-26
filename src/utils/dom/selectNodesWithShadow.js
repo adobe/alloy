@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import querySelectorAll from "./querySelectorAll.js";
-import startsWith from "../startsWith.js";
 import SHADOW_SEPARATOR from "../../constants/shadowSeparator.js";
 
 const splitWithShadow = (selector) => {
@@ -20,7 +19,7 @@ const splitWithShadow = (selector) => {
 
 const transformPrefix = (parent, selector) => {
   const result = selector;
-  const hasChildCombinatorPrefix = startsWith(result, ">");
+  const hasChildCombinatorPrefix = result.startsWith(">");
   if (!hasChildCombinatorPrefix) {
     return result;
   }
