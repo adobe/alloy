@@ -25,11 +25,6 @@ const transformPrefix = (parent, selector) => {
     return result;
   }
 
-  // IE doesn't support :scope
-  if (window.document.documentMode) {
-    return result.substring(1).trim();
-  }
-
   const prefix =
     parent instanceof Element || parent instanceof HTMLDocument
       ? ":scope"
@@ -39,11 +34,6 @@ const transformPrefix = (parent, selector) => {
 };
 
 export default (context, selector) => {
-  // Shadow DOM should be supported
-  if (!window.document.documentElement.attachShadow) {
-    return querySelectorAll(context, selector.replace(SHADOW_SEPARATOR, ""));
-  }
-
   const parts = splitWithShadow(selector);
 
   if (parts.length < 2) {
