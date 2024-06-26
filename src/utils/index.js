@@ -25,7 +25,6 @@ export { default as defer } from "./defer.js";
 export { default as deduplicateArray } from "./deduplicateArray.js";
 export { default as deepAssign } from "./deepAssign.js";
 export { default as endsWith } from "./endsWith.js";
-export { default as find } from "./find.js";
 export { default as fireImage } from "./fireImage.js";
 export { default as injectFireReferrerHideableImage } from "./injectFireReferrerHideableImage.js";
 export { default as filterObject } from "./filterObject.js";
