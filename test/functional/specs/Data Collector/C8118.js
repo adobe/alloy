@@ -35,7 +35,7 @@ test.meta({
 const INTERNAL_LINK_ANCHOR_1 = `<a href="blank.html"><span id="alloy-link-test">Test Link</span></a>`;
 const INTERNAL_LINK_ANCHOR_2 = `<a href="blank.html" id="alloy-link-test">Internal Link</a>`;
 const DOWNLOAD_LINK_ANCHOR = `<a href="example.zip" id="alloy-link-test" download>Download Zip File</a>`;
-const EXTERNAL_LINK_ANCHOR = `<a href="https://example.com" id="alloy-link-test">External Link</a>`;
+const EXTERNAL_LINK_ANCHOR = `<a href="https://example.com/" id="alloy-link-test">External Link</a>`;
 
 const addLinkToBody = (link) => {
   return addHtmlToBody(`${link}`);
