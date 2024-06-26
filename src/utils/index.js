@@ -65,4 +65,3 @@ export { default as uuid } from "./uuid.js";
 export { default as updateErrorMessage } from "./updateErrorMessage.js";
 export { default as validateIdentityMap } from "./validateIdentityMap.js";
 export { default as validateConfigOverride } from "./validateConfigOverride.js";
-export { default as values } from "./values.js";

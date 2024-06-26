@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { getNonce } from "../../dom-actions/dom/index.js";
 import { parseAnchor, removeElementById } from "../utils.js";
 import { TEXT_HTML } from "../../../../constants/contentType.js";
-import { isNonEmptyString, values } from "../../../../utils/index.js";
+import { isNonEmptyString } from "../../../../utils/index.js";
 import { createNode } from "../../../../utils/dom/index.js";
 import { objectOf } from "../../../../utils/validation/index.js";
 import { PropositionEventType } from "../../../../constants/propositionEventType.js";
@@ -196,7 +196,7 @@ const isValidWebParameters = (webParameters) => {
     return false;
   }
 
-  const valuesArray = values(webParameters);
+  const valuesArray = Object.values(webParameters);
 
   for (let i = 0; i < valuesArray.length; i += 1) {
     if (!objectOf(valuesArray[i], "style")) {
