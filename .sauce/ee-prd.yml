@@ -19,15 +19,12 @@ pageLoadTimeout: 3000
 disablePageCaching: true
 timeZone: New_York
 npm:
-  dependencies:
-    - parse-uri
+  dependencies:cs
     - js-cookie
     - read-cache
     - uuid
-    - "@adobe/reactor-load-script"
     - "@adobe/reactor-cookie"
     - "@adobe/reactor-query-string"
-    - "@adobe/reactor-promise"
 suites:
   - name: "Edge"
     browserName: "microsoftedge"
