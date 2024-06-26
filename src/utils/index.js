@@ -27,7 +27,6 @@ export { default as deepAssign } from "./deepAssign.js";
 export { default as fireImage } from "./fireImage.js";
 export { default as injectFireReferrerHideableImage } from "./injectFireReferrerHideableImage.js";
 export { default as filterObject } from "./filterObject.js";
-export { default as flatMap } from "./flatMap.js";
 export { default as getApexDomain } from "./getApexDomain.js";
 export { default as getLastArrayItems } from "./getLastArrayItems.js";
 export { default as getNamespacedCookieName } from "./getNamespacedCookieName.js";

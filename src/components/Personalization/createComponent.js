@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { noop, flatMap, isNonEmptyArray } from "../../utils/index.js";
+import { noop, isNonEmptyArray } from "../../utils/index.js";
 import createPersonalizationDetails from "./createPersonalizationDetails.js";
 import { AUTHORING_ENABLED } from "./constants/loggerMessage.js";
 import { PropositionEventType } from "../../constants/propositionEventType.js";
@@ -108,7 +108,7 @@ export default ({
         return Promise.all(decisionsMetaPromises).then((decisionsMetas) => {
           // We only want to call mergeDecisionsMeta once, but we can get the propositions
           // from two places: the pending display notifications and the view change handler.
-          const decisionsMeta = flatMap(decisionsMetas, (dms) => dms);
+          const decisionsMeta = decisionsMetas.flatMap((dms) => dms);
           if (isNonEmptyArray(decisionsMeta)) {
             mergeDecisionsMeta(event, decisionsMeta, [
               PropositionEventType.DISPLAY,
