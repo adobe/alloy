@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { getAttribute, setAttribute } from "../dom-actions/dom/index.js";
-import { includes, noop } from "../../../utils/index.js";
+import { noop } from "../../../utils/index.js";
 import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules.js";
 import {
   ALWAYS,
@@ -44,8 +44,7 @@ const interactionTrackingSupported = (
     return false;
   }
 
-  return includes(
-    [ALWAYS, DECORATED_ELEMENTS_ONLY],
+  return [ALWAYS, DECORATED_ELEMENTS_ONLY].includes(
     autoCollectPropositionInteractions[decisionProvider],
   );
 };

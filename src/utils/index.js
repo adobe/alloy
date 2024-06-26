@@ -33,7 +33,6 @@ export { default as getApexDomain } from "./getApexDomain.js";
 export { default as getLastArrayItems } from "./getLastArrayItems.js";
 export { default as getNamespacedCookieName } from "./getNamespacedCookieName.js";
 export { default as groupBy } from "./groupBy.js";
-export { default as includes } from "./includes.js";
 export { default as injectDoesIdentityCookieExist } from "./injectDoesIdentityCookieExist.js";
 export { default as injectStorage } from "./injectStorage.js";
 export { default as intersection } from "./intersection.js";
