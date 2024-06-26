@@ -25,7 +25,6 @@ npm:
     - read-cache
     - uuid
     - css.escape
-    - "@adobe/reactor-object-assign"
     - "@adobe/reactor-load-script"
     - "@adobe/reactor-cookie"
     - "@adobe/reactor-query-string"
