@@ -10,8 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign } from "../utils/index.js";
-
 export default ({ getDebugEnabled, console, getMonitors, context }) => {
   let prefix = `[${context.instanceName}]`;
   if (context.componentName) {
@@ -21,7 +19,7 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
   const notifyMonitors = (method, data) => {
     const monitors = getMonitors();
     if (monitors.length > 0) {
-      const dataWithContext = assign({}, context, data);
+      const dataWithContext = { ...context, ...data };
       monitors.forEach((monitor) => {
         if (monitor[method]) {
           monitor[method](dataWithContext);

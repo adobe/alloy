@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createPreprocessors from "./createPreprocessors.js";
-import { assign } from "../../utils/index.js";
 
 export default ({ modules, preprocessors = createPreprocessors(), logger }) => {
   const logActionError = (action, error) => {
@@ -58,7 +57,7 @@ export default ({ modules, preprocessors = createPreprocessors(), logger }) => {
     }
 
     return preprocessorsList.reduce(
-      (processed, fn) => assign(processed, fn(processed)),
+      (processed, fn) => ({ ...processed, ...fn(processed) }),
       action,
     );
   };

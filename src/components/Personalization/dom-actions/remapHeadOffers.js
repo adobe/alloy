@@ -19,7 +19,6 @@ governing permissions and limitations under the License.
 import { selectNodes } from "../../../utils/dom/index.js";
 import { is } from "./scripts.js";
 import { createFragment, selectNodesWithEq } from "./dom/index.js";
-import { assign } from "../../../utils/index.js";
 import isBlankString from "../../../utils/isBlankString.js";
 import { HEAD } from "../../../constants/tagName.js";
 import { DOM_ACTION_APPEND_HTML } from "./initDomActionsModules.js";
@@ -33,7 +32,7 @@ const filterHeadContent = (content) => {
 };
 
 export default (action) => {
-  const result = assign({}, action);
+  const result = { ...action };
   const { content, selector } = result;
 
   if (isBlankString(content)) {

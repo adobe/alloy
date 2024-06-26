@@ -13,12 +13,7 @@ governing permissions and limitations under the License.
 import { getNonce } from "../../dom-actions/dom/index.js";
 import { parseAnchor, removeElementById } from "../utils.js";
 import { TEXT_HTML } from "../../../../constants/contentType.js";
-import {
-  assign,
-  includes,
-  isNonEmptyString,
-  values,
-} from "../../../../utils/index.js";
+import { includes, isNonEmptyString, values } from "../../../../utils/index.js";
 import { createNode } from "../../../../utils/dom/index.js";
 import { objectOf } from "../../../../utils/validation/index.js";
 import { PropositionEventType } from "../../../../constants/propositionEventType.js";
@@ -99,7 +94,7 @@ const renderMessage = (iframe, webParameters, container, overlay) => {
   ].forEach(({ id, element }) => {
     const { style = {}, params = {} } = webParameters[id];
 
-    assign(element.style, style);
+    element.style = { ...element.style, ...style };
 
     const {
       parentElement = "body",
