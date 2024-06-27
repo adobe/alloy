@@ -77,7 +77,7 @@
     "@adobe/reactor-cookie": "^1.1.0",
     "@adobe/reactor-load-script": "^1.1.1",
     "@adobe/reactor-object-assign": "^1.0.0",
-    "@adobe/reactor-query-string": "^1.0.0",
+    "@adobe/reactor-query-string": "^2.0.0",
     "@babel/core": "^7.24.7",
     "@babel/eslint-parser": "^7.24.7",
     "@babel/plugin-transform-template-literals": "^7.24.7",
@@ -94,7 +94,7 @@
     "rollup": "^4.18.0",
     "rollup-plugin-glob-import": "^0.5.0",
     "rollup-plugin-istanbul": "^5.0.0",
-    "rollup-plugin-license": "^3.5.0",
+    "rollup-plugin-license": "^3.5.1",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
