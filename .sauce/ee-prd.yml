@@ -19,7 +19,8 @@ pageLoadTimeout: 3000
 disablePageCaching: true
 timeZone: New_York
 npm:
-  dependencies:cs
+  dependencies:
+    - parse-uri
     - js-cookie
     - read-cache
     - uuid
