@@ -31,7 +31,7 @@ const buildDataFromClickedElementProperties = (props) => {
   return {
     __adobe: {
       analytics: {
-        c: {
+        contextData: {
           a: {
             activitymap: {
               page: props.pageName,
@@ -59,10 +59,10 @@ const populateClickedElementPropertiesFromOptions = (options, props) => {
   // DATA has priority over XDM
   /* eslint no-underscore-dangle: 0 */
   if (data && data.__adobe && data.__adobe.analytics) {
-    const { c } = data.__adobe.analytics;
-    if (c && c.a && c.a.activitymap) {
+    const { contextData } = data.__adobe.analytics;
+    if (contextData && contextData.a && contextData.a.activitymap) {
       // Set the properties if they exists
-      const { page, link, region, pageIDType } = c.a.activitymap;
+      const { page, link, region, pageIDType } = contextData.a.activitymap;
       props.pageName = page || props.pageName;
       props.linkName = link || props.linkName;
       props.linkRegion = region || props.linkRegion;

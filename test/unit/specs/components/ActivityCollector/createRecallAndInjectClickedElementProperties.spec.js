@@ -63,7 +63,7 @@ describe("ActivityCollector::createRecallAndInjectClickedElementProperties", () 
     expect(event.mergeData).toHaveBeenCalledWith({
       __adobe: {
         analytics: {
-          c: {
+          contextData: {
             a: {
               activitymap: {
                 page: "examplePage",

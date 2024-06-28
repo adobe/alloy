@@ -63,7 +63,7 @@ const getXdmFromRequest = (req) => {
 /* eslint no-underscore-dangle: 0 */
 const getActivityMapDataFromRequest = (req) => {
   const bodyJson = JSON.parse(req.request.body);
-  return bodyJson.events[0].data.__adobe.analytics.c.a.activitymap;
+  return bodyJson.events[0].data.__adobe.analytics.contextData.a.activitymap;
 };
 
 const assertRequestXdm = async (req) => {

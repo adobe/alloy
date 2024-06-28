@@ -57,7 +57,7 @@ describe("ActivityCollector::createClickedElementProperties", () => {
     expect(data).toEqual({
       __adobe: {
         analytics: {
-          c: {
+          contextData: {
             a: {
               activitymap: {
                 page: "testPageName",
@@ -108,7 +108,7 @@ describe("ActivityCollector::createClickedElementProperties", () => {
       data: {
         __adobe: {
           analytics: {
-            c: {
+            contextData: {
               a: {
                 activitymap: {
                   page: "dataPage",
@@ -208,9 +208,9 @@ describe("ActivityCollector::createClickedElementProperties", () => {
         options.data.__adobe &&
         options.data.__adobe.analytics
       ) {
-        const { c } = options.data.__adobe.analytics;
-        if (c && c.a && c.a.activitymap) {
-          const activitymap = c.a.activitymap;
+        const { contextData } = options.data.__adobe.analytics;
+        if (contextData && contextData.a && contextData.a.activitymap) {
+          const activitymap = contextData.a.activitymap;
           activitymap.page = "filtered"; // Page name
           activitymap.link = "filtered"; // Link name
           activitymap.region = "filtered"; // Link region

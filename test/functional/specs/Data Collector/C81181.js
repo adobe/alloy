@@ -222,7 +222,7 @@ test("Test C81181: Verify that onBeforeLinkClickSend augments a request", async 
   const expectedData = {
     __adobe: {
       analytics: {
-        c: {
+        contextData: {
           a: {
             activitymap: {
               link: "Test Link",
@@ -281,7 +281,7 @@ test("Test C81181: Verify that filterClickDetails can augment a request", async 
   const expectedData = {
     __adobe: {
       analytics: {
-        c: {
+        contextData: {
           a: {
             activitymap: {
               link: "Augmented name",

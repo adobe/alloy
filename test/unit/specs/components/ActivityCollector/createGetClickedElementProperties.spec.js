@@ -106,7 +106,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       data: {
         __adobe: {
           analytics: {
-            c: {
+            contextData: {
               a: {
                 activitymap: {
                   page: "https://example.com/",
@@ -226,7 +226,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       data: {
         __adobe: {
           analytics: {
-            c: {
+            contextData: {
               a: {
                 activitymap: {
                   page: "https://example.com/",
