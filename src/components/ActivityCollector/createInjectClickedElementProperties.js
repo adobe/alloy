@@ -68,7 +68,7 @@ export default ({
     } else if (elementProperties.isValidLink()) {
       // Event will be sent
       event.mergeXdm(elementProperties.xdm);
-      event.setUserData(elementProperties.data);
+      event.mergeData(elementProperties.data);
       clickActivityStorage.save({
         pageName: elementProperties.pageName,
         pageIDType: elementProperties.pageIDType,

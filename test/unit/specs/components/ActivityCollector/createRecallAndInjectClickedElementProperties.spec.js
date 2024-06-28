@@ -25,7 +25,7 @@ describe("ActivityCollector::createRecallAndInjectClickedElementProperties", () 
     };
     event = {
       mergeXdm: jasmine.createSpy(),
-      setUserData: jasmine.createSpy(),
+      mergeData: jasmine.createSpy(),
     };
   });
 
@@ -60,10 +60,10 @@ describe("ActivityCollector::createRecallAndInjectClickedElementProperties", () 
         },
       },
     });
-    expect(event.setUserData).toHaveBeenCalledWith({
+    expect(event.mergeData).toHaveBeenCalledWith({
       __adobe: {
         analytics: {
-          c: {
+          contextData: {
             a: {
               activitymap: {
                 page: "examplePage",
