@@ -17,13 +17,7 @@ export default ({ logger }) =>
       if (headerParts.length >= 2 && headerParts[1].length > 0) {
         try {
           const regionId = parseInt(headerParts[1], 10);
-          // eslint recommends using Number.isNaN instead, but this function is
-          // not available in Internet Explorer. Number.isNaN is more robust to
-          // non-numeric parameters. Since we already know regionId will be an
-          // integer, using isNaN is okay.
-          // https://github.com/airbnb/javascript#standard-library--isnan
-          // eslint-disable-next-line no-restricted-globals
-          if (!isNaN(regionId)) {
+          if (!Number.isNaN(regionId)) {
             return { regionId };
           }
         } catch (e) {

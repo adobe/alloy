@@ -9,12 +9,29 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-import loadScript from "@adobe/reactor-load-script";
 import { selectNodes, createNode } from "../../../utils/dom/index.js";
 import { SCRIPT } from "../../../constants/tagName.js";
 import { SRC } from "../../../constants/elementAttribute.js";
 import { getAttribute, getNonce } from "./dom/index.js";
+
+const getPromise = (url, script) => {
+  return new Promise((resolve, reject) => {
+    script.onload = () => {
+      resolve(script);
+    };
+    script.onerror = () => {
+      reject(new Error(`Failed to load script: ${url}`));
+    };
+  });
+};
+const loadScript = (url) => {
+  const script = document.createElement("script");
+  script.src = url;
+  script.async = true;
+  const promise = getPromise(url, script);
+  document.head.appendChild(script);
+  return promise;
+};
 
 export const is = (element, tagName) =>
   !!element && element.tagName === tagName;

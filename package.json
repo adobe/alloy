@@ -20,8 +20,8 @@
   },
   "scripts": {
     "clean": "rimraf dist distTest libEs5 libEs6",
-    "lint": "eslint --cache --fix \"*.js\" \"{src,test,scripts}/**/*.js\"",
-    "format": "prettier --write \"*.{html,js}\" \"{sandbox,src,test,scripts}/**/*.{html,js}\"",
+    "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{src,test,scripts}/**/*.{js,cjs,mjs,jsx}\"",
+    "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandbox,src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
     "test": "npm run test:unit && npm run test:scripts && npm run test:functional",
     "test:unit": "karma start karma.conf.cjs --single-run",
     "test:unit:debug": "karma start --browsers=Chrome --single-run=false --debug",
@@ -48,16 +48,16 @@
     "preinstall": "npx force-resolutions"
   },
   "lint-staged": {
-    "./*.js": [
+    "./*.{cjs,mjs,js,jsx}": [
       "eslint --cache --fix"
     ],
-    "./{src,test,scripts}/**/*.js": [
+    "./{src,test,scripts}/**/*.{cjs,mjs,js,jsx}": [
       "eslint --cache --fix"
     ],
-    "./*.{html,js}": [
+    "./*.{html,js,cjs,mjs,jsx}": [
       "prettier --write"
     ],
-    "./{sandbox,src,test,scripts}/**/*.{html,js}": [
+    "./{sandbox,src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}": [
       "prettier --write"
     ]
   },
@@ -75,8 +75,6 @@
   "dependencies": {
     "@adobe/aep-rules-engine": "^2.0.2",
     "@adobe/reactor-cookie": "^1.1.0",
-    "@adobe/reactor-load-script": "^1.1.1",
-    "@adobe/reactor-object-assign": "^1.0.0",
     "@adobe/reactor-query-string": "^1.0.0",
     "@babel/core": "^7.24.7",
     "@babel/eslint-parser": "^7.24.7",
@@ -87,7 +85,6 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
     "commander": "^12.1.0",
-    "css.escape": "^1.5.1",
     "inquirer": "^9.2.23",
     "js-cookie": "3.0.5",
     "parse-uri": "^1.0.9",
@@ -137,7 +134,6 @@
     "karma-spec-reporter": "0.0.36",
     "lint-staged": "^15.2.7",
     "prettier": "^3.3.2",
-    "promise-polyfill": "^8.3.0",
     "read-cache": "^1.0.0",
     "recursive-readdir": "^2.2.3",
     "request": "^2.88.0",
@@ -149,8 +145,7 @@
     "testcafe-browser-provider-saucelabs": "^3.0.0",
     "testcafe-reporter-junit": "^3.0.2",
     "testcafe-reporter-saucelabs": "^3.2.0",
-    "url-exists-nodejs": "^0.2.4",
-    "url-parse": "^1.5.10"
+    "url-exists-nodejs": "^0.2.4"
   },
   "overrides": {
     "karma-sauce-launcher": {

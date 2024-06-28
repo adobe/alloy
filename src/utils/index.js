@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 // Please keep in alphabetical order.
 export { default as areThirdPartyCookiesSupportedByDefault } from "./areThirdPartyCookiesSupportedByDefault.js";
-export { default as assign } from "./assign.js";
 export { default as assignConcatArrayValues } from "./assignConcatArrayValues.js";
 export { default as assignIf } from "./assignIf.js";
 export { default as clone } from "./clone.js";
@@ -25,17 +24,13 @@ export { default as crc32 } from "./crc32.js";
 export { default as defer } from "./defer.js";
 export { default as deduplicateArray } from "./deduplicateArray.js";
 export { default as deepAssign } from "./deepAssign.js";
-export { default as endsWith } from "./endsWith.js";
-export { default as find } from "./find.js";
 export { default as fireImage } from "./fireImage.js";
 export { default as injectFireReferrerHideableImage } from "./injectFireReferrerHideableImage.js";
 export { default as filterObject } from "./filterObject.js";
-export { default as flatMap } from "./flatMap.js";
 export { default as getApexDomain } from "./getApexDomain.js";
 export { default as getLastArrayItems } from "./getLastArrayItems.js";
 export { default as getNamespacedCookieName } from "./getNamespacedCookieName.js";
 export { default as groupBy } from "./groupBy.js";
-export { default as includes } from "./includes.js";
 export { default as injectDoesIdentityCookieExist } from "./injectDoesIdentityCookieExist.js";
 export { default as injectStorage } from "./injectStorage.js";
 export { default as intersection } from "./intersection.js";
@@ -58,7 +53,6 @@ export { default as prepareConfigOverridesForEdge } from "./prepareConfigOverrid
 export { default as queryString } from "./querystring.js";
 export { default as sanitizeOrgIdForCookieName } from "./sanitizeOrgIdForCookieName.js";
 export { default as stackError } from "./stackError.js";
-export { default as startsWith } from "./startsWith.js";
 export { default as stringToBoolean } from "./stringToBoolean.js";
 export { default as toArray } from "./toArray.js";
 export { default as toError } from "./toError.js";
@@ -68,4 +62,3 @@ export { default as uuid } from "./uuid.js";
 export { default as updateErrorMessage } from "./updateErrorMessage.js";
 export { default as validateIdentityMap } from "./validateIdentityMap.js";
 export { default as validateConfigOverride } from "./validateConfigOverride.js";
-export { default as values } from "./values.js";

@@ -27,9 +27,11 @@ describe("sendXhrRequest", () => {
       "onloadstart",
       "getResponseHeader",
     ]);
-    XMLHttpRequest = () => {
+    // use non-arrow function because we need to use `this`
+    XMLHttpRequest = function constructXMLHttpRequest() {
       return request;
     };
+
     sendXhrRequest = injectSendXhrRequest({ XMLHttpRequest });
     body = { a: "b" };
   });

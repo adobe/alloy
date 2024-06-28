@@ -16,7 +16,6 @@ import {
   BAD_GATEWAY,
   GATEWAY_TIMEOUT,
 } from "../../constants/httpStatusCode.js";
-import { includes } from "../../utils/index.js";
 
 const MAX_RETRIES = 3;
 
@@ -32,6 +31,6 @@ const RETRYABLE_STATUS_CODES = [
 export default ({ response, retriesAttempted }) => {
   return (
     retriesAttempted < MAX_RETRIES &&
-    includes(RETRYABLE_STATUS_CODES, response.statusCode)
+    RETRYABLE_STATUS_CODES.includes(response.statusCode)
   );
 };

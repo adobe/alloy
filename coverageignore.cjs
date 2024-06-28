@@ -19,5 +19,5 @@ module.exports = [
   "**/constants/**",
   "**/index.js",
   "baseCode.js",
-  "standalone.js"
+  "standalone.js",
 ];
