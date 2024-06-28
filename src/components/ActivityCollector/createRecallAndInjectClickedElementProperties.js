@@ -32,7 +32,7 @@ export default ({ clickActivityStorage }) => {
         event.mergeXdm(xdm);
       }
       if (elementProperties.isValidActivityMapData()) {
-        event.setUserData(elementProperties.data);
+        event.mergeData(elementProperties.data);
       }
       // NOTE: We can't clear out all the storage here because we might still need to
       // keep a page-name for multiple link-clicks (e.g. downloads) on the same page.
