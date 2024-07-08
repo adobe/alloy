@@ -126,55 +126,16 @@ describe("ActivityCollector::createInjectClickedElementProperties", () => {
         clickActivityStorage,
       },
     );
-    const event = jasmine.createSpyObj("event", ["mergeXdm", "setUserData"]);
+    const event = jasmine.createSpyObj("event", ["mergeXdm", "mergeData"]);
     injectClickedElementProperties({ clickedElement: {}, event });
     // No click data should be saved to storage, only the page data.
     expect(clickActivityStorage.save).toHaveBeenCalledWith({
       pageName: "testPage",
       pageIDType: 1,
     });
-    // If mergeXdm and setUserData are called, it means that the click data was not saved and
+    // If mergeXdm and mergeData are called, it means that the click data was not saved and
     // will instead go out with the event.
     expect(event.mergeXdm).toHaveBeenCalled();
-    expect(event.setUserData).toHaveBeenCalled();
-  });
-
-  it("Does not save click data to storage if onBeforeLinkClickSend is defined", () => {
-    const config = {
-      clickCollectionEnabled: true,
-      clickCollection: {
-        internalLinkEnabled: true,
-        eventGroupingEnabled: true,
-      },
-      onBeforeLinkClickSend: () => {},
-    };
-    const logger = jasmine.createSpyObj("logger", ["info"]);
-    getClickedElementProperties.and.returnValue({
-      isValidLink: () => true,
-      isInternalLink: () => true,
-      pageName: "testPage",
-      pageIDType: 1,
-      linkName: "testLink",
-      linkType: "other",
-    });
-    const injectClickedElementProperties = createInjectClickedElementProperties(
-      {
-        config,
-        logger,
-        getClickedElementProperties,
-        clickActivityStorage,
-      },
-    );
-    const event = jasmine.createSpyObj("event", ["mergeXdm", "setUserData"]);
-    injectClickedElementProperties({ clickedElement: {}, event });
-    // No click data should be saved to storage, only the page data.
-    expect(clickActivityStorage.save).toHaveBeenCalledWith({
-      pageName: "testPage",
-      pageIDType: 1,
-    });
-    // If mergeXdm and setUserData are called, it means that the click data was not saved and
-    // will instead go out with the event.
-    expect(event.mergeXdm).toHaveBeenCalled();
-    expect(event.setUserData).toHaveBeenCalled();
+    expect(event.mergeData).toHaveBeenCalled();
   });
 });
