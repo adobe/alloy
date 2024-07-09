@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 // Please keep in alphabetical order.
 export { default as areThirdPartyCookiesSupportedByDefault } from "./areThirdPartyCookiesSupportedByDefault.js";
 export { default as assignConcatArrayValues } from "./assignConcatArrayValues.js";
-export { default as assignIf } from "./assignIf.js";
 export { default as clone } from "./clone.js";
 export { default as cookieJar } from "./cookieJar.js";
 export { default as createMerger } from "./createMerger.js";
