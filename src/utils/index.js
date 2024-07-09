@@ -46,7 +46,6 @@ export { default as isObject } from "./isObject.js";
 export { default as isString } from "./isString.js";
 export { default as memoize } from "./memoize.js";
 export { default as noop } from "./noop.js";
-export { default as padStart } from "./padStart.js";
 export { default as parseUrl } from "./parseUrl.js";
 export { default as prepareConfigOverridesForEdge } from "./prepareConfigOverridesForEdge.js";
 export { default as queryString } from "./querystring.js";
