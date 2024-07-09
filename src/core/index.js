@@ -37,6 +37,7 @@ import createConfig from "./config/createConfig.js";
 import createCoreConfigs from "./config/createCoreConfigs.js";
 import injectHandleError from "./injectHandleError.js";
 import injectSendFetchRequest from "./network/requestMethods/injectSendFetchRequest.js";
+import injectSendXhrRequest from "./network/requestMethods/injectSendXhrRequest.js";
 import injectSendBeaconRequest from "./network/requestMethods/injectSendBeaconRequest.js";
 import createLogger from "./createLogger.js";
 import createEventManager from "./createEventManager.js";
@@ -56,7 +57,7 @@ import injectApplyResponse from "./edgeNetwork/injectApplyResponse.js";
 
 const createNamespacedStorage = injectStorage(window);
 
-const { console, fetch, navigator } = window;
+const { console, fetch, navigator, XMLHttpRequest } = window;
 
 // set this up as a function so that monitors can be added at anytime
 // eslint-disable-next-line no-underscore-dangle
@@ -64,7 +65,9 @@ const getMonitors = () => window.__alloyMonitors || [];
 
 const coreConfigValidators = createCoreConfigs();
 const apexDomain = getApexDomain(window, cookieJar);
-const sendFetchRequest = injectSendFetchRequest({ fetch });
+const sendFetchRequest = isFunction(fetch)
+  ? injectSendFetchRequest({ fetch })
+  : injectSendXhrRequest({ XMLHttpRequest });
 const fireReferrerHideableImage = injectFireReferrerHideableImage();
 const getAssuranceValidationTokenParams =
   createGetAssuranceValidationTokenParams({ window, createNamespacedStorage });
