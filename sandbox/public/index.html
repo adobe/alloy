@@ -16,13 +16,17 @@
     <script>
       window.__alloyMonitors = window.__alloyMonitors || [];
       window.__alloyMonitors.push({
+        onContentRendering(data) {
+          console.log("Alloy Content Rendering");
+          console.log("data", data);
+        },
         onInstanceCreated(data) {
           console.log("Alloy Instance Created");
           console.log(data.instanceName);
           console.log(data.instance);
         },
         onInstanceConfigured(data) {
-          console.log("Alloy Instance Configured");
+          /*console.log("Alloy Instance Configured");
           console.log(JSON.stringify(data.config, null, 2));
           const { getLinkDetails } = data;
 
@@ -31,7 +35,7 @@
           for (var i = 0; i < listOfLinks.length; i++) {
             const linkDetails = getLinkDetails(listOfLinks[i]);
             console.log("link details", linkDetails);
-          }
+          }*/
         },
       });
     </script>

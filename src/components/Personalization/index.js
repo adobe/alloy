@@ -133,6 +133,7 @@ const createPersonalization = ({ config, logger, eventManager, consent }) => {
     createProposition,
     notificationHandler,
     consent,
+    logger,
   });
 
   const onClickHandler = createOnClickHandler({

@@ -91,6 +91,18 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
         data.error,
       );
     },
+    logOnContentHiding(data) {
+      notifyMonitors("onContentHiding", data);
+      log(data.logLevel, data.message);
+    },
+    logOnContentRendering(data) {
+      notifyMonitors("onContentRendering", {
+        rendered: data.rendered,
+        propositionDetails: data.propositionDetails,
+        item: data.item,
+      });
+      log(data.logLevel, data.message);
+    },
     /**
      * Outputs informational message to the web console. In some
      * browsers a small "i" icon is displayed next to these items

@@ -15,17 +15,32 @@ export default ({ schemaProcessors, logger }) => {
     return Promise.resolve()
       .then(render)
       .then(() => {
-        if (logger.enabled) {
-          logger.info(`Action ${item.toString()} executed.`);
-        }
+        logger.logOnContentRendering({
+          status: "rendering-succeeded",
+          payload: {
+            propositionDetails: item.getProposition().getNotification(),
+            item: item.toJSON()
+          },
+          message: `Action ${item.toString()} executed.`,
+          logLevel: "info",
+        });
+
         return true;
       })
       .catch((error) => {
-        if (logger.enabled) {
-          const { message, stack } = error;
-          const warning = `Failed to execute action ${item.toString()}. ${message} ${stack}`;
-          logger.warn(warning);
-        }
+        const { message, stack } = error;
+        const warning = `Failed to execute action ${item.toString()}. ${message} ${stack}`;
+        logger.logOnContentRendering({
+          status: "rendering-failed",
+          payload: {
+            propositionDetails: item.getProposition().getNotification(),
+            item: item.toJSON()
+          },
+          error,
+          message: warning,
+          logLevel: "warn",
+        });
+
         return false;
       });
   };
@@ -184,6 +199,7 @@ export default ({ schemaProcessors, logger }) => {
         false,
       );
     });
+    console.log("renderers", renderPropositions);
     const render = () => {
       return Promise.all(renderers.map((renderer) => renderer())).then(
         (metas) => metas.filter((meta) => meta),

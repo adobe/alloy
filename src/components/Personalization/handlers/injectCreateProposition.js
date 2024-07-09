@@ -62,9 +62,6 @@ export default ({ preprocess, isPageWideSurface }) => {
 
     return {
       getScope() {
-        if (!scope) {
-          return scope;
-        }
         return scope;
       },
       getScopeType() {

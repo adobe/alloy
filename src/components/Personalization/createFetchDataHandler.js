@@ -9,11 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { groupBy } from "../../utils/index.js";
+import {groupBy, isNonEmptyArray} from "../../utils/index.js";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 
 export default ({
+  logger,
   prehidingStyle,
   showContainers,
   hideContainers,
@@ -44,6 +45,14 @@ export default ({
 
     onResponse(({ response }) => {
       const handles = response.getPayloadsByType(DECISIONS_HANDLE);
+      if(!isNonEmptyArray(handles)){
+        logger.logOnContentRendering({
+          status: "no-offers",
+          message: "No offers were returned.",
+          logLevel: "info"
+        });
+        console.log("hhh");
+      }
       const propositions = handles.map((handle) => createProposition(handle));
       const {
         page: pagePropositions = [],

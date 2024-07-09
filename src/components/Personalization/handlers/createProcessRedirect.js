@@ -23,6 +23,15 @@ export default ({ logger, executeRedirect, collect }) =>
         decisionsMeta: [item.getProposition().getNotification()],
         documentMayUnload: true,
       }).then(() => {
+        logger.logOnContentRendering({
+          status: "rendering-redirect",
+          payload: {
+            propositionDetails: item.getProposition().getNotification(),
+            item: item.toJSON()
+          },
+          message: `Action ${item.toString()} executed.`,
+          logLevel: "info",
+        });
         return executeRedirect(content);
         // Execute redirect will never resolve. If there are bottom of page events that are waiting
         // for display notifications from this request, they will never run because this promise will
