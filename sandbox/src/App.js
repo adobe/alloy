@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import React from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 
 import Home from "./Home";
 import Consent from "./Consent";
@@ -32,6 +32,9 @@ import Identity from "./Identity";
 import AlloyVersion from "./components/AlloyVersion";
 import ConfigOverrides from "./ConfigOverrides.jsx";
 import InAppMessages from "./components/InAppMessagesDemo/InAppMessages";
+import ActivityMapExtension from "./ActivityMapExtension";
+import ActivityMapIndex from "./ActivityMapIndex";
+import ActivityMapPageA from "./ActivityMapPageA";
 
 const BasicExample = () => {
   return (
@@ -100,36 +103,53 @@ const BasicExample = () => {
             <li>
               <Link to="/inAppMessages">In-app Messages</Link>
             </li>
+            <li>
+              <Link to="/activityMapExtension">Activity Map Extension</Link>
+            </li>
+            <li>
+              <Link to="/activityMapIndex">Activity Map Index</Link>
+            </li>
+            <li>
+              <Link to="/activityMapPageA">Activity Map Page A</Link>
+            </li>
           </ul>
-          <hr />
 
-          <Route exact path="/" component={Home} />
-          <Route path="/consent" component={Consent} />
-          <Route path="/personalization" component={Personalization} />
-          <Route path="/personalizationSpa" component={PersonalizationSpa} />
-          <Route path="/personalizationAjo" component={PersonalizationAjo} />
-          <Route
-            path="/personalizationA4TClientSide"
-            component={PersonalizationAnalyticsClientSide}
-          />
-          <Route
-            path="/personalizationProfile"
-            component={PersonalizationProfile}
-          />
-          <Route
-            path="/personalizationFormBased"
-            component={PersonalizationFormBased}
-          />
-          <Route path="/links" component={Links} />
-          <Route path="/eventMerge" component={EventMerge} />
-          <Route path="/largePayload" component={LargePayload} />
-          <Route path="/orgTwo" component={OrgTwo} />
-          <Route path="/dualTag" component={DualTag} />
-          <Route path="/redirectOffers" component={RedirectOffers} />
-          <Route path="/redirectedNewPage" component={RedirectedNewPage} />
-          <Route path="/identity" component={Identity} />
-          <Route path="/configOverrides" component={ConfigOverrides} />
-          <Route path="/inAppMessages" component={InAppMessages} />
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route path="/consent" component={Consent} />
+            <Route path="/personalization" component={Personalization} />
+            <Route path="/personalizationSpa" component={PersonalizationSpa} />
+            <Route path="/personalizationAjo" component={PersonalizationAjo} />
+            <Route
+              path="/personalizationA4TClientSide"
+              component={PersonalizationAnalyticsClientSide}
+            />
+            <Route
+              path="/personalizationProfile"
+              component={PersonalizationProfile}
+            />
+            <Route
+              path="/personalizationFormBased"
+              component={PersonalizationFormBased}
+            />
+            <Route path="/links" component={Links} />
+            <Route path="/eventMerge" component={EventMerge} />
+            <Route path="/largePayload" component={LargePayload} />
+            <Route path="/orgTwo" component={OrgTwo} />
+            <Route path="/dualTag" component={DualTag} />
+            <Route path="/redirectOffers" component={RedirectOffers} />
+            <Route path="/redirectedNewPage" component={RedirectedNewPage} />
+            <Route path="/identity" component={Identity} />
+            <Route path="/configOverrides" component={ConfigOverrides} />
+            <Route path="/inAppMessages" component={InAppMessages} />
+            <Route
+              path="/activityMapExtension"
+              component={ActivityMapExtension}
+            />
+            <Route path="/activityMapIndex" component={ActivityMapIndex} />
+            <Route path="/activityMapPageA" component={ActivityMapPageA} />
+            <hr />
+          </Switch>
         </div>
       </Router>
       <AlloyVersion />
