@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
-import withScript from "./components/withScript";
 
 function ActivityMapExtension() {
   useSendPageViewEvent();
@@ -147,4 +146,4 @@ function ActivityMapExtension() {
   );
 }
 
-export default withScript(ActivityMapExtension, "/s_code.js");
+export default ActivityMapExtension;

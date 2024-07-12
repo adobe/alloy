@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
-import withScript from "./components/withScript";
 
 function ActivityMapPageA() {
   useSendPageViewEvent();
@@ -52,4 +51,4 @@ function ActivityMapPageA() {
   );
 }
 
-export default withScript(ActivityMapPageA, "/s_code.js");
+export default ActivityMapPageA;

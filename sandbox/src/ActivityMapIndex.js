@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
-import withScript from "./components/withScript";
 
 function ActivityMapIndex() {
   useSendPageViewEvent();
@@ -142,4 +141,4 @@ function ActivityMapIndex() {
   );
 }
 
-export default withScript(ActivityMapIndex, "/s_code.js");
+export default ActivityMapIndex;
