@@ -17,7 +17,7 @@ export default ({ schemaProcessors, logger }) => {
       .then(() => {
         logger.logOnContentRendering({
           status: "rendering-succeeded",
-          payload: {
+          detail: {
             propositionDetails: item.getProposition().getNotification(),
             item: item.toJSON()
           },
@@ -32,7 +32,7 @@ export default ({ schemaProcessors, logger }) => {
         const warning = `Failed to execute action ${item.toString()}. ${message} ${stack}`;
         logger.logOnContentRendering({
           status: "rendering-failed",
-          payload: {
+          detail: {
             propositionDetails: item.getProposition().getNotification(),
             item: item.toJSON()
           },
@@ -199,7 +199,6 @@ export default ({ schemaProcessors, logger }) => {
         false,
       );
     });
-    console.log("renderers", renderPropositions);
     const render = () => {
       return Promise.all(renderers.map((renderer) => renderer())).then(
         (metas) => metas.filter((meta) => meta),

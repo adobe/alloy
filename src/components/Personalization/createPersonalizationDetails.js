@@ -135,5 +135,11 @@ export default ({
           personalization.defaultPersonalizationEnabled !== false)
       );
     },
+    getPersonalizationDetails() {
+      return {
+        surfaces: personalization.surfaces,
+        decisionScopes: personalization.decisionScopes
+      };
+    }
   };
 };

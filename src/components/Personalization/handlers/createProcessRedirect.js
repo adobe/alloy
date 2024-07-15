@@ -25,7 +25,7 @@ export default ({ logger, executeRedirect, collect }) =>
       }).then(() => {
         logger.logOnContentRendering({
           status: "rendering-redirect",
-          payload: {
+          detail: {
             propositionDetails: item.getProposition().getNotification(),
             item: item.toJSON()
           },

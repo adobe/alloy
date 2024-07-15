@@ -149,6 +149,7 @@ const createPersonalization = ({ config, logger, eventManager, consent }) => {
   const viewChangeHandler = createViewChangeHandler({
     processPropositions,
     viewCache,
+    logger,
   });
   const applyPropositions = createApplyPropositions({
     processPropositions,

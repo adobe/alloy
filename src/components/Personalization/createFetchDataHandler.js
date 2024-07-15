@@ -49,9 +49,11 @@ export default ({
         logger.logOnContentRendering({
           status: "no-offers",
           message: "No offers were returned.",
-          logLevel: "info"
+          logLevel: "info",
+          detail: {
+            query: personalizationDetails.getPersonalizationDetails()
+          }
         });
-        console.log("hhh");
       }
       const propositions = handles.map((handle) => createProposition(handle));
       const {
@@ -72,6 +74,29 @@ export default ({
             [...pagePropositions, ...currentViewPropositions],
             nonRenderedPropositions,
           ));
+
+        logger.logOnContentRendering({
+          status: "rendering-started",
+          message: "Rendering propositions started for page-wide scope.",
+          logLevel: "info",
+          detail: {
+            scope: "__view__",
+            propositions: pagePropositions.map(proposition => proposition.toJSON())
+          },
+        });
+
+        if (isNonEmptyArray(currentViewPropositions)) {
+          logger.logOnContentRendering({
+            status: "rendering-started",
+            message: "Rendering propositions started for view scope.",
+            logLevel: "info",
+            detail: {
+              scope: personalizationDetails.getViewName(),
+              propositions: currentViewPropositions.map(proposition => proposition.toJSON())
+            },
+          });
+        }
+
         render().then(handleNotifications);
 
         // Render could take a long time especially if one of the renders

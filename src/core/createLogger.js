@@ -97,9 +97,8 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
     },
     logOnContentRendering(data) {
       notifyMonitors("onContentRendering", {
-        rendered: data.rendered,
-        propositionDetails: data.propositionDetails,
-        item: data.item,
+        status: data.status,
+        payload: data.detail
       });
       log(data.logLevel, data.message);
     },

@@ -18,7 +18,7 @@
       window.__alloyMonitors.push({
         onContentRendering(data) {
           console.log("Alloy Content Rendering");
-          console.log("data", data);
+          console.log("data", data.status, data);
         },
         onInstanceCreated(data) {
           console.log("Alloy Instance Created");
