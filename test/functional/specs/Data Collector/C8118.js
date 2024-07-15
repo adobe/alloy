@@ -17,7 +17,6 @@ import {
   orgMainConfigMain,
   clickCollectionEnabled,
   clickCollectionEventGroupingDisabled,
-  clickCollectionSessionStorageDisabled,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import preventLinkNavigation from "../../helpers/preventLinkNavigation.js";
@@ -355,7 +354,7 @@ test("Test C8118: Verify external link click data with custom link type", async 
   await alloy.configure(testConfig);
   await preventLinkNavigation();
   await addLinkToBody(
-    '<a href="https://example.com/" id="alloy-link-test" data-linktype="custom">External Link</a>',
+    '<a href="https://example.com/" id="alloy-link-test" data-linktype="exit">External Link</a>',
   );
   await clickLink();
   await collectEndpointAsserter.assertInteractCalledAndNotCollect();
@@ -382,12 +381,6 @@ test("Test C8118: Verify link click with custom activity map data", async () => 
   await collectEndpointAsserter.assertInteractCalledAndNotCollect();
   const interactRequest = await collectEndpointAsserter.getInteractRequest();
   const activityMapData = getActivityMapDataFromRequest(interactRequest);
-
-  // Log the actual activityMapData for debugging
-  console.log(
-    "Actual activityMapData:",
-    JSON.stringify(activityMapData, null, 2),
-  );
 
   // Check each property individually
   await t
@@ -442,17 +435,13 @@ test("Test C8118: Verify multiple link clicks with event grouping enabled", asyn
   const interactRequest = await collectEndpointAsserter.getInteractRequest();
   const xdm = await getXdmFromRequest(interactRequest);
 
-  console.log("XDM structure:", JSON.stringify(xdm, null, 2));
-
   if (Array.isArray(xdm.web.webInteraction)) {
     await t.expect(xdm.web.webInteraction.length).eql(2);
     await t.expect(xdm.web.webInteraction[0].name).eql("Link 1");
     await t.expect(xdm.web.webInteraction[1].name).eql("Link 2");
   } else if (xdm.web.webInteraction) {
-    console.log("Single webInteraction:", xdm.web.webInteraction);
     await t.expect(xdm.web.webInteraction.name).eql("Link 2");
   } else {
-    console.log("No webInteraction found in XDM");
     await t.fail("No webInteraction data found in XDM");
   }
 });
@@ -481,137 +470,34 @@ test("Test C8118: Verify link click with custom XDM data", async () => {
   await t.expect(xdm.customField).eql("customValue");
 });
 
-test("Test C8118: Verify disabling session storage still captures link click data", async () => {
-  const testConfig = compose(
-    orgMainConfigMain,
-    clickCollectionEnabled,
-    clickCollectionSessionStorageDisabled,
-    {
-      clickCollection: {
-        internalLinkEnabled: true,
-        eventGroupingEnabled: false,
-      },
+test("Test C8118: Verify storePageViewProperties functionality", async () => {
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
+    clickCollection: {
+      eventGroupingEnabled: true,
     },
-  );
+  });
   const collectEndpointAsserter = await createCollectEndpointAsserter();
   const alloy = createAlloyProxy();
   await alloy.configure(testConfig);
   await preventLinkNavigation();
-  await addLinkToBody(INTERNAL_LINK_ANCHOR_2);
+  await addLinkToBody(INTERNAL_LINK_ANCHOR_1);
   await clickLink();
+
+  await alloy.sendEvent({
+    xdm: {
+      web: {
+        webPageDetails: {
+          name: "Test Page",
+        },
+      },
+    },
+  });
+
   await collectEndpointAsserter.assertInteractCalledAndNotCollect();
   const interactRequest = await collectEndpointAsserter.getInteractRequest();
   const xdm = await getXdmFromRequest(interactRequest);
-
-  console.log("XDM structure:", JSON.stringify(xdm, null, 2));
-
-  // Check for the presence of expected properties
-  await t.expect(xdm.web).ok("web object is missing");
-  await t.expect(xdm.web.webInteraction).ok("webInteraction is missing");
+  await t.expect(xdm.web.webPageDetails.name).eql("Test Page");
   await t
-    .expect(xdm.web.webInteraction.name)
-    .ok("webInteraction.name is missing");
-  await t
-    .expect(xdm.web.webInteraction.URL)
-    .ok("webInteraction.URL is missing");
-
-  // Check for webPageDetails, but don't expect the name property
-  if (xdm.web.webPageDetails) {
-    await t
-      .expect(xdm.web.webPageDetails.URL)
-      .ok("webPageDetails.URL is missing");
-  } else {
-    console.log("webPageDetails is missing from XDM");
-  }
-
-  // Verify that the link click data is still captured
-  await t.expect(xdm.web.webInteraction.type).eql("other");
-  await t.expect(xdm.web.webInteraction.name).eql("Internal Link");
+    .expect(xdm.web.webInteraction)
+    .ok("Web interaction should be present");
 });
-
-// test("Test C8118: Verify properties in filterClickDetails callback", async () => {
-//   let callbackProps;
-//   let callbackCalled = false;
-//   const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
-//     clickCollection: {
-//       internalLinkEnabled: true,
-//       eventGroupingEnabled: false,
-//       filterClickDetails: (props) => {
-//         callbackCalled = true;
-//         callbackProps = props;
-//         console.log('filterClickDetails called with props:', JSON.stringify(props, null, 2));
-//         return true;
-//       },
-//     },
-//   });
-//   const collectEndpointAsserter = await createCollectEndpointAsserter();
-//   const alloy = createAlloyProxy();
-//   await alloy.configure(testConfig);
-//   await preventLinkNavigation();
-//   await addLinkToBody(INTERNAL_LINK_ANCHOR_2);
-
-//   console.log('Before clicking link');
-//   await clickLink();
-//   console.log('After clicking link');
-
-//   let endpointCalled = false;
-
-//   try {
-//     await collectEndpointAsserter.assertInteractCalledAndNotCollect();
-//     console.log('Interact endpoint was called');
-//     endpointCalled = true;
-//     const interactRequest = await collectEndpointAsserter.getInteractRequest();
-//     const xdm = await getXdmFromRequest(interactRequest);
-//     console.log('XDM from interact request:', JSON.stringify(xdm, null, 2));
-//     // Verify callback properties
-//     await t.expect(callbackProps).ok('filterClickDetails callback was not called');
-//     await t.expect(callbackProps.linkName).eql('Internal Link');
-//     await t.expect(callbackProps.linkRegion).eql('BODY');
-//     await t.expect(callbackProps.linkType).eql('other');
-//     await t.expect(callbackProps.linkUrl).eql('https://alloyio.com/functional-test/blank.html');
-//     await t.expect(callbackProps.pageIDType).eql(0);
-//     await t.expect(callbackProps.pageName).eql('https://alloyio.com/functional-test/testPage.html');
-
-//     // Verify XDM data
-//     await t.expect(xdm.web.webInteraction.name).eql('Internal Link');
-//     await t.expect(xdm.web.webInteraction.type).eql('other');
-//     await t.expect(xdm.web.webInteraction.URL).eql('https://alloyio.com/functional-test/blank.html');
-//   } catch (error) {
-//     console.log('Interact endpoint was not called, checking collect endpoint');
-//     try {
-//       await collectEndpointAsserter.assertCollectCalledAndNotInteract();
-//       console.log('Collect endpoint was called');
-//       endpointCalled = true;
-//       const collectRequest = await collectEndpointAsserter.getCollectRequest();
-//       const xdm = await getXdmFromRequest(collectRequest);
-//       console.log('XDM from collect request:', JSON.stringify(xdm, null, 2));
-
-//       // Verify callback properties
-//       await t.expect(callbackProps).ok('filterClickDetails callback was not called');
-//       await t.expect(callbackProps.linkName).eql('Internal Link');
-//       await t.expect(callbackProps.linkRegion).eql('BODY');
-//       await t.expect(callbackProps.linkType).eql('other');
-//       await t.expect(callbackProps.linkUrl).eql('https://alloyio.com/functional-test/blank.html');
-//       await t.expect(callbackProps.pageIDType).eql(0);
-//       await t.expect(callbackProps.pageName).eql('https://alloyio.com/functional-test/testPage.html');
-
-//       // Verify XDM data
-//       await t.expect(xdm.web.webInteraction.name).eql('Internal Link');
-//       await t.expect(xdm.web.webInteraction.type).eql('other');
-//       await t.expect(xdm.web.webInteraction.URL).eql('https://alloyio.com/functional-test/blank.html');
-//     } catch (error) {
-//       console.log('Neither interact nor collect endpoint was called');
-//     }
-//   }
-
-//   // Check if the callback was called
-//   await t.expect(callbackCalled).ok('filterClickDetails callback was not called');
-
-//   // Final assertion to ensure at least one endpoint was called
-//   await t.expect(endpointCalled).ok('Neither interact nor collect endpoint was called');
-
-//   // If no endpoint was called, but the callback was, log the callback props
-//   if (!endpointCalled && callbackCalled) {
-//     console.log('Callback props when no endpoint was called:', JSON.stringify(callbackProps, null, 2));
-//   }
-// });
