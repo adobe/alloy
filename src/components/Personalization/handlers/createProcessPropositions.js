@@ -21,7 +21,7 @@ export default ({ schemaProcessors, logger }) => {
             propositionDetails: item.getProposition().getNotification(),
             item: item.toJSON()
           },
-          message: `Action ${item.toString()} executed.`,
+          message: `Action ${item.toString()} successfully executed.`,
           logLevel: "info",
         });
 

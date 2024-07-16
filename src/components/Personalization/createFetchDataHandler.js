@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import {groupBy, isNonEmptyArray} from "../../utils/index.js";
+import PAGE_WIDE_SCOPE from "../../constants/pageWideScope.js";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 
@@ -74,21 +75,22 @@ export default ({
             [...pagePropositions, ...currentViewPropositions],
             nonRenderedPropositions,
           ));
-
-        logger.logOnContentRendering({
-          status: "rendering-started",
-          message: "Rendering propositions started for page-wide scope.",
-          logLevel: "info",
-          detail: {
-            scope: "__view__",
-            propositions: pagePropositions.map(proposition => proposition.toJSON())
-          },
-        });
+        if (isNonEmptyArray(pagePropositions)) {
+          logger.logOnContentRendering({
+            status: "rendering-started",
+            message: "Started rendering propositions for page-wide scope.",
+            logLevel: "info",
+            detail: {
+              scope: PAGE_WIDE_SCOPE,
+              propositions: pagePropositions.map(proposition => proposition.toJSON())
+            },
+          });
+        }
 
         if (isNonEmptyArray(currentViewPropositions)) {
           logger.logOnContentRendering({
             status: "rendering-started",
-            message: "Rendering propositions started for view scope.",
+            message: "Rendering propositions started for a view scope.",
             logLevel: "info",
             detail: {
               scope: personalizationDetails.getViewName(),

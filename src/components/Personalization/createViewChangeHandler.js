@@ -31,7 +31,7 @@ export default ({ processPropositions, viewCache, logger }) => {
 
         logger.logOnContentRendering({
           status: "rendering-started",
-          message: "Rendering propositions started for view scope.",
+          message: "Started rendering propositions for view scope.",
           logLevel: "info",
           detail: {
             scope: personalizationDetails.getViewName(),
