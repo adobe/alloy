@@ -20,13 +20,17 @@
           console.log("Alloy Content Rendering");
           console.log("data", data.status, data);
         },
+        onContentHiding(data) {
+          console.log("Alloy Content Hiding");
+          console.log("data", data.status);
+        },
         onInstanceCreated(data) {
           console.log("Alloy Instance Created");
           console.log(data.instanceName);
           console.log(data.instance);
         },
         onInstanceConfigured(data) {
-          /*console.log("Alloy Instance Configured");
+         /* console.log("Alloy Instance Configured");
           console.log(JSON.stringify(data.config, null, 2));
           const { getLinkDetails } = data;
 
@@ -113,7 +117,7 @@
           getUrlParameter("edgeConfigId") ||
           "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
         orgId: "5BFE274A5F6980A50A495C08@AdobeOrg", // UnifiedJS QE Only
-        debugEnabled: true,
+        debugEnabled: false,
         idMigrationEnabled: !(
           getUrlParameter("idMigrationEnabled") === "false"
         ),

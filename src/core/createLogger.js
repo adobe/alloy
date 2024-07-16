@@ -92,7 +92,9 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
       );
     },
     logOnContentHiding(data) {
-      notifyMonitors("onContentHiding", data);
+      notifyMonitors("onContentHiding", {
+        status: data.status,
+      });
       log(data.logLevel, data.message);
     },
     logOnContentRendering(data) {

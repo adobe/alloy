@@ -20,7 +20,7 @@ import {
 import createComponent from "./createComponent.js";
 import { initDomActionsModules } from "./dom-actions/index.js";
 import createCollect from "./createCollect.js";
-import { hideContainers, showContainers } from "./flicker/index.js";
+import { createHideContainers, createShowContainers } from "./flicker/index.js";
 import createFetchDataHandler from "./createFetchDataHandler.js";
 import collectClicks from "./dom-actions/clicks/collectClicks.js";
 import isAuthoringModeEnabled from "./utils/isAuthoringModeEnabled.js";
@@ -69,6 +69,9 @@ const createPersonalization = ({ config, logger, eventManager, consent }) => {
     autoCollectPropositionInteractions,
   } = config;
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
+
+  const showContainers = createShowContainers(logger);
+  const hideContainers = createHideContainers(logger);
 
   const { storeInteractionMeta, getInteractionMetas } =
     createInteractionStorage();

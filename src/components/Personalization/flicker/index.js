@@ -56,36 +56,51 @@ export const showElements = (prehidingSelector) => {
   }
 };
 
-export const hideContainers = (prehidingStyle) => {
-  if (!prehidingStyle) {
-    return;
+export const createHideContainers = ( logger ) => {
+  return ( prehidingStyle ) => {
+    if (!prehidingStyle) {
+      return;
+    }
+
+    // If containers prehiding style has been added
+    // by customer's prehiding snippet we don't
+    // want to add the same node
+    const node = getElementById(PREHIDING_ID);
+
+    if (node) {
+      return;
+    }
+
+    const nonce = getNonce();
+    const attrs = { id: PREHIDING_ID, ...(nonce && { nonce }) };
+    const props = { textContent: prehidingStyle };
+    const styleNode = createNode(STYLE, attrs, props);
+
+    logger.logOnContentHiding({
+      status: "hide-containers",
+      message: "Prehiding style is applied to hide containers.",
+      logLevel: "info",
+    });
+
+    appendNode(document.head, styleNode);
+  };
+}
+
+export const createShowContainers = ( logger ) => {
+  return () => {
+    // If containers prehiding style exists
+    // we will remove it
+    const node = getElementById(PREHIDING_ID);
+
+    if (!node) {
+      return;
+    }
+
+    logger.logOnContentHiding({
+      status: "show-containers",
+      message: "Prehiding style is removed to show containers.",
+      logLevel: "info",
+    });
+    removeNode(node);
   }
-
-  // If containers prehiding style has been added
-  // by customer's prehiding snippet we don't
-  // want to add the same node
-  const node = getElementById(PREHIDING_ID);
-
-  if (node) {
-    return;
-  }
-
-  const nonce = getNonce();
-  const attrs = { id: PREHIDING_ID, ...(nonce && { nonce }) };
-  const props = { textContent: prehidingStyle };
-  const styleNode = createNode(STYLE, attrs, props);
-
-  appendNode(document.head, styleNode);
-};
-
-export const showContainers = () => {
-  // If containers prehiding style exists
-  // we will remove it
-  const node = getElementById(PREHIDING_ID);
-
-  if (!node) {
-    return;
-  }
-
-  removeNode(node);
 };

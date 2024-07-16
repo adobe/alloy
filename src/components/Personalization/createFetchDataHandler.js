@@ -99,12 +99,19 @@ export default ({
           });
         }
 
-        render().then(handleNotifications);
+        return render().then((result) => {
+          showContainers();
+          handleNotifications(result);
+          return {
+            propositions: returnedPropositions,
+            decisions: returnedDecisions,
+          };
+          });
 
         // Render could take a long time especially if one of the renders
         // is waiting for html to appear on the page. We show the containers
         // immediately, and whatever renders quickly will not have flicker.
-        showContainers();
+       // showContainers();
       } else {
         ({ returnedPropositions, returnedDecisions } = processPropositions(
           [],
@@ -115,11 +122,6 @@ export default ({
           ],
         ));
       }
-
-      return {
-        propositions: returnedPropositions,
-        decisions: returnedDecisions,
-      };
     });
   };
 };
