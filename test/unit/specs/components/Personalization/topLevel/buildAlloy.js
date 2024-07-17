@@ -12,14 +12,14 @@ governing permissions and limitations under the License.
 import createEvent from "../../../../../../src/core/createEvent.js";
 import flushPromiseChains from "../../../../helpers/flushPromiseChains.js";
 import createComponent from "../../../../../../src/components/Personalization/createComponent.js";
-import createCollect from "../../../../../../src/components/Personalization/createCollect.js";
+import createCollect from "../../../../../../src/utils/createCollect.js";
 import createFetchDataHandler from "../../../../../../src/components/Personalization/createFetchDataHandler.js";
 import collectInteractions from "../../../../../../src/components/Personalization/dom-actions/clicks/collectInteractions.js";
 import isAuthoringModeEnabled from "../../../../../../src/components/Personalization/utils/isAuthoringModeEnabled.js";
 import {
   mergeDecisionsMeta,
   mergeQuery,
-} from "../../../../../../src/components/Personalization/event.js";
+} from "../../../../../../src/utils/event.js";
 import createOnClickHandler from "../../../../../../src/components/Personalization/createOnClickHandler.js";
 import createViewCacheManager from "../../../../../../src/components/Personalization/createViewCacheManager.js";
 import createViewChangeHandler from "../../../../../../src/components/Personalization/createViewChangeHandler.js";
@@ -40,7 +40,6 @@ import createProcessHtmlContent from "../../../../../../src/components/Personali
 import createProcessRedirect from "../../../../../../src/components/Personalization/handlers/createProcessRedirect.js";
 import processDefaultContent from "../../../../../../src/components/Personalization/handlers/processDefaultContent.js";
 import { isPageWideSurface } from "../../../../../../src/components/Personalization/utils/surfaceUtils.js";
-import createSubscribeContentCards from "../../../../../../src/components/Personalization/createSubscribeContentCards.js";
 import createOnDecisionHandler from "../../../../../../src/components/Personalization/createOnDecisionHandler.js";
 import createNotificationHandler from "../../../../../../src/components/Personalization/createNotificationHandler.js";
 import {
@@ -194,15 +193,10 @@ const buildComponent = ({
     targetMigrationEnabled,
   });
 
-  const subscribeContentCards = createSubscribeContentCards({
-    collect,
-  });
-
   const onDecisionHandler = createOnDecisionHandler({
     processPropositions,
     createProposition,
     notificationHandler,
-    subscribeContentCards,
   });
 
   return createComponent({
@@ -220,7 +214,6 @@ const buildComponent = ({
     mergeDecisionsMeta,
     renderedPropositions,
     onDecisionHandler,
-    subscribeContentCards,
   });
 };
 

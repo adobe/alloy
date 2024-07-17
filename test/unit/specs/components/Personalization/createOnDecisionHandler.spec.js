@@ -182,7 +182,6 @@ describe("Personalization::createOnDecisionHandler", () => {
   let onDecisionHandler;
   let renderedPropositions;
   let notificationHandler;
-  let subscribeContentCards;
 
   beforeEach(() => {
     render = jasmine
@@ -207,15 +206,10 @@ describe("Personalization::createOnDecisionHandler", () => {
       renderedPropositions,
     );
 
-    subscribeContentCards = jasmine.createSpyObj("subscribeContentCards", [
-      "refresh",
-    ]);
-
     onDecisionHandler = createOnDecisionHandler({
       processPropositions,
       createProposition,
       notificationHandler,
-      subscribeContentCards,
     });
   });
 
@@ -226,9 +220,6 @@ describe("Personalization::createOnDecisionHandler", () => {
       propositions: PROPOSITIONS,
     });
 
-    expect(subscribeContentCards.refresh).toHaveBeenCalledOnceWith(
-      PROPOSITIONS,
-    );
     expect(render).not.toHaveBeenCalled();
   });
 
@@ -242,9 +233,6 @@ describe("Personalization::createOnDecisionHandler", () => {
     });
 
     expect(propositions).toEqual(PROPOSITIONS);
-    expect(subscribeContentCards.refresh).toHaveBeenCalledOnceWith(
-      PROPOSITIONS,
-    );
 
     expect(render).toHaveBeenCalledTimes(1);
 

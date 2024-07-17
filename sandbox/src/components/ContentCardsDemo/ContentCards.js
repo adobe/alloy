@@ -556,30 +556,86 @@ const prettyDate = (value) => {
   return output;
 };
 
+const createContentCard = (proposition, item) => {
+  const { data = {} } = item;
+  const {
+    content = {},
+    meta = {},
+    publishedDate,
+    qualifiedDate,
+    displayedDate,
+  } = data;
+
+  return {
+    ...content,
+    meta,
+    qualifiedDate,
+    displayedDate,
+    publishedDate,
+    getProposition: () => proposition,
+  };
+};
+
+const extractContentCards = (propositions) =>
+  propositions
+    .reduce((allItems, proposition) => {
+      const { items = [] } = proposition;
+
+      return [
+        ...allItems,
+        ...items.map((item) => createContentCard(proposition, item)),
+      ];
+    }, [])
+    .sort(
+      (a, b) =>
+        b.qualifiedDate - a.qualifiedDate || b.publishedDate - a.publishedDate,
+    );
+
 export default function ContentCards() {
   const [clickHandler, setClickHandler] = useState(() => () => {});
   const [dismissHandler, setDismissHandler] = useState(() => () => {});
 
   const [contentCards, setContentCards] = useState([]);
+  let alreadySubscribed = false;
+
+  const subscribeRulesetItems = () => {
+    return alreadySubscribed
+      ? Promise.resolve()
+      : alloyInstance("subscribeRulesetItems", {
+          surfaces: [surface],
+          schemas: [
+            "https://ns.adobe.com/personalization/message/content-card",
+          ],
+          callback: (result, collectEvent) => {
+            const { propositions = [] } = result;
+            const contentCards = extractContentCards(propositions);
+
+            const dismiss = (items) => {
+              collectEvent(
+                "dismiss",
+                items.map((item) => item.getProposition()),
+              );
+            };
+
+            setClickHandler(
+              () => (items) =>
+                collectEvent(
+                  "interact",
+                  items.map((item) => item.getProposition()),
+                ),
+            );
+
+            setDismissHandler(() => (items) => dismiss(items, collectEvent));
+
+            collectEvent("display", propositions);
+            setContentCards(contentCards);
+          },
+        });
+  };
 
   useEffect(() => {
     const startupPromises = Promise.all([
-      alloyInstance("subscribeRulesetItems", {
-        surfaces: [surface],
-        callback: (result) => {
-          console.log("subscribeRulesetItems", result);
-        },
-      }),
-      alloyInstance("subscribeContentCards", {
-        surface,
-        callback: ({ items = [], rendered, clicked, dismissed }) => {
-          console.log("subscribeContentCards", items);
-          setClickHandler(() => clicked);
-          setDismissHandler(() => dismissed);
-          setContentCards(items);
-          rendered(items);
-        },
-      }),
+      subscribeRulesetItems(),
       responseSource === "edge"
         ? alloyInstance("sendEvent", {
             renderDecisions: true,
@@ -649,30 +705,6 @@ export default function ContentCards() {
     });
   };
 
-  const renderContentCards = () => {
-    Promise.all([
-      alloyInstance("subscribeContentCards", {
-        surface,
-        callback: ({ items = [], rendered, clicked, dismissed }) => {
-          setClickHandler(() => clicked);
-          setDismissHandler(() => dismissed);
-          setContentCards(items);
-          rendered(items);
-        },
-      }),
-      // alloyInstance("evaluateRulesets")
-      // alloyInstance("sendEvent", {
-      //   renderDecisions: true,
-      //   type: "decisioning.propositionFetch",
-      //   personalization: {
-      //     surfaces: [surface],
-      //     decisionContext: { ...decisionContext },
-      //     sendDisplayEvent: false
-      //   }
-      // })
-    ]);
-  };
-
   const resetPersistentData = () => {
     deleteAllCookies();
     localStorage.clear();
@@ -712,9 +744,6 @@ export default function ContentCards() {
         </button>
         <button id="deposit-funds" onClick={() => depositFunds()}>
           Deposit funds
-        </button>
-        <button id="reset" onClick={() => renderContentCards()}>
-          Render Content Cards
         </button>
         <button id="reset" onClick={() => resetPersistentData()}>
           Reset

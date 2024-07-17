@@ -19,12 +19,12 @@ import {
 } from "../../utils/validation/index.js";
 import createComponent from "./createComponent.js";
 import { initDomActionsModules } from "./dom-actions/index.js";
-import createCollect from "./createCollect.js";
+import createCollect from "../../utils/createCollect.js";
 import { hideContainers, showContainers } from "./flicker/index.js";
 import createFetchDataHandler from "./createFetchDataHandler.js";
 import collectClicks from "./dom-actions/clicks/collectClicks.js";
 import isAuthoringModeEnabled from "./utils/isAuthoringModeEnabled.js";
-import { mergeDecisionsMeta, mergeQuery } from "./event.js";
+import { mergeDecisionsMeta, mergeQuery } from "../../utils/event.js";
 import createOnClickHandler from "./createOnClickHandler.js";
 import createViewCacheManager from "./createViewCacheManager.js";
 import createViewChangeHandler from "./createViewChangeHandler.js";
@@ -51,7 +51,6 @@ import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMe
 import createRedirect from "./dom-actions/createRedirect.js";
 import createNotificationHandler from "./createNotificationHandler.js";
 import createHandleConsentFlicker from "./createHandleConsentFlicker.js";
-import createSubscribeContentCards from "./createSubscribeContentCards.js";
 import collectInteractions from "./dom-actions/clicks/collectInteractions.js";
 import {
   ALWAYS,
@@ -160,13 +159,10 @@ const createPersonalization = ({ config, logger, eventManager, consent }) => {
     targetMigrationEnabled,
   });
 
-  const subscribeContentCards = createSubscribeContentCards({ collect });
-
   const onDecisionHandler = createOnDecisionHandler({
     processPropositions,
     createProposition,
     notificationHandler,
-    subscribeContentCards,
   });
 
   const handleConsentFlicker = createHandleConsentFlicker({
@@ -190,7 +186,6 @@ const createPersonalization = ({ config, logger, eventManager, consent }) => {
     renderedPropositions,
     onDecisionHandler,
     handleConsentFlicker,
-    subscribeContentCards,
   });
 };
 

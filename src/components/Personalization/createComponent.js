@@ -32,7 +32,6 @@ export default ({
   renderedPropositions,
   onDecisionHandler,
   handleConsentFlicker,
-  subscribeContentCards,
 }) => {
   return {
     lifecycle: {
@@ -127,7 +126,6 @@ export default ({
           validateApplyPropositionsOptions({ logger, options }),
         run: applyPropositions,
       },
-      subscribeContentCards: subscribeContentCards.command,
     },
   };
 };

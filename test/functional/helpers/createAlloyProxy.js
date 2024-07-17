@@ -92,7 +92,6 @@ const commands = [
   "appendIdentityToUrl",
   "applyPropositions",
   "subscribeRulesetItems",
-  "subscribeContentCards",
   "evaluateRulesets",
   "createMediaSession",
   "sendMediaEvent",

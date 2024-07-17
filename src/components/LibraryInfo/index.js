@@ -37,13 +37,12 @@ const prepareLibraryInfo = ({ config, componentRegistry }) => {
 };
 
 const createLibraryInfo = ({ config, componentRegistry }) => {
-  const libraryInfo = prepareLibraryInfo({ config, componentRegistry });
   return {
     commands: {
       getLibraryInfo: {
         run: () => {
           return {
-            libraryInfo,
+            libraryInfo: prepareLibraryInfo({ config, componentRegistry }),
           };
         },
       },

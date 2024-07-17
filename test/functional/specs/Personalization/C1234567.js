@@ -1,3 +1,4 @@
+/* eslint-disable func-style, prefer-object-spread */
 /*
 Copyright 2023 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -116,8 +117,8 @@ const getHistoricEventFromLocalStorage = ClientFunction(
 test("Test C1234567: Subscribes content cards", async () => {
   const surface = "web://mywebsite.com/#my-cards";
 
-  const publishedDate = Math.ceil(new Date().getTime() / 1000) - 864000;
-  const expiryDate = Math.ceil(new Date().getTime() / 1000) + 864000;
+  const mockPublishedDate = Math.ceil(new Date().getTime() / 1000) - 864000;
+  const mockExpiryDate = Math.ceil(new Date().getTime() / 1000) + 864000;
 
   const activityId = uuid();
   const propositionId = uuid();
@@ -142,7 +143,7 @@ test("Test C1234567: Subscribes content cards", async () => {
                       definition: {
                         key: "~timestampu",
                         matcher: "le",
-                        values: [expiryDate],
+                        values: [mockExpiryDate],
                       },
                       type: "matcher",
                     },
@@ -195,8 +196,8 @@ test("Test C1234567: Subscribes content cards", async () => {
                     schema:
                       "https://ns.adobe.com/personalization/message/content-card",
                     data: {
-                      expiryDate,
-                      publishedDate,
+                      expiryDate: mockExpiryDate,
+                      publishedDate: mockPublishedDate,
                       meta: {
                         surface,
                       },
@@ -232,23 +233,70 @@ test("Test C1234567: Subscribes content cards", async () => {
     responseBody,
   });
 
-  await alloy.subscribeContentCards({
-    surface,
-    // eslint-disable-next-line no-unused-vars
-    callback: ({ items = [], rendered, clicked, dismissed }) => {
+  await alloy.subscribeRulesetItems({
+    surfaces: [surface],
+    schemas: ["https://ns.adobe.com/personalization/message/content-card"],
+    callback: (result, collectEvent) => {
+      function createContentCard(proposition, item) {
+        const { data = {} } = item;
+        const {
+          content = {},
+          meta = {},
+          publishedDate,
+          qualifiedDate,
+          displayedDate,
+        } = data;
+
+        return Object.assign({}, content, {
+          meta,
+          qualifiedDate,
+          displayedDate,
+          publishedDate,
+          getProposition: () => proposition,
+        });
+      }
+
+      function extractContentCards(propositions) {
+        return propositions
+          .reduce((allItems, proposition) => {
+            const { items = [] } = proposition;
+
+            return allItems.concat(
+              items.map((item) => createContentCard(proposition, item)),
+            );
+          }, [])
+          .sort(
+            (a, b) =>
+              b.qualifiedDate - a.qualifiedDate ||
+              b.publishedDate - a.publishedDate,
+          );
+      }
+
+      const { propositions = [] } = result;
+
+      if (propositions.length === 0) {
+        return;
+      }
+
+      const contentCards = extractContentCards(propositions);
+
       const ul = document.getElementById("content-cards");
       let html = "";
-      items.forEach((item, idx) => {
-        html += `<li id="content-card-${idx}" data-idx="${idx}"><img src=${item.imageUrl} alt="Item Image" /><h6>${item.title}</h6><p>${item.body}</p></li>`;
+      contentCards.forEach((contentCard, idx) => {
+        html += `<li id="content-card-${idx}" data-idx="${idx}"><img src="${contentCard.imageUrl}" alt="Item Image" /><h6>${contentCard.title}</h6><p>${contentCard.body}</p></li>`;
       });
       ul.innerHTML = html;
 
-      rendered(items);
+      collectEvent("display", propositions);
 
       ul.addEventListener("click", (evt) => {
         const li = evt.target.closest("li");
-
-        clicked([items[li.dataset.idx]]);
+        if (!li) {
+          return;
+        }
+        collectEvent("interact", [
+          contentCards[li.dataset.idx].getProposition(),
+        ]);
       });
     },
   });

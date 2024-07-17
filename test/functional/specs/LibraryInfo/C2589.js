@@ -50,11 +50,16 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
     "applyResponse",
     "configure",
     "createEventMergeId",
+    "createMediaSession",
+    "evaluateRulesets",
     "getIdentity",
+    "getLibraryInfo",
+    "getMediaAnalyticsTracker",
     "sendEvent",
+    "sendMediaEvent",
     "setConsent",
     "setDebug",
-    "subscribeContentCards",
+    "subscribeRulesetItems",
   ];
   const currentConfigs = {
     clickCollectionEnabled: true,

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createOnClickHandler from "../../../../../src/components/Personalization/createOnClickHandler.js";
-import { mergeDecisionsMeta } from "../../../../../src/components/Personalization/event.js";
+import { mergeDecisionsMeta } from "../../../../../src/utils/event.js";
 import createEvent from "../../../../../src/core/createEvent.js";
 import { createNode } from "../../../../../src/utils/dom/index.js";
 
