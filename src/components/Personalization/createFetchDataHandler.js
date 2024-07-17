@@ -52,7 +52,7 @@ export default ({
           message: "No offers were returned.",
           logLevel: "info",
           detail: {
-            query: personalizationDetails.getPersonalizationDetails()
+            query: personalizationDetails.createQueryDetails()
           }
         });
       }

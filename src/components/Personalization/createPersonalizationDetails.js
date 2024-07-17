@@ -134,12 +134,6 @@ export default ({
         (!this.isCacheInitialized() &&
           personalization.defaultPersonalizationEnabled !== false)
       );
-    },
-    getPersonalizationDetails() {
-      return {
-        surfaces: personalization.surfaces,
-        decisionScopes: personalization.decisionScopes
-      };
     }
   };
 };
