@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import findClickableElement from "../../../../../../../src/components/ActivityCollector/utils/dom/findClickableElement";
+import findClickableElement from "../../../../../../../src/components/ActivityCollector/utils/dom/findClickableElement.js";
 
 describe("ActivityCollector::findClickableElement", () => {
   it("returns null if no clickable element is found", () => {
