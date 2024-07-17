@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import trimQueryFromUrl from "../trimQueryFromUrl";
+import trimQueryFromUrl from "../trimQueryFromUrl.js";
 
 export default (downloadLinkQualifier, linkUrl, clickedObj) => {
   let result = false;

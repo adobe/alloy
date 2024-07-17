@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import extractDomain from "./dom/extractDomain";
+import extractDomain from "./dom/extractDomain.js";
 
 export default (uri1, uri2) => {
   const domain1 = extractDomain(uri1);
