@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import urlStartsWithScheme from "../urlStartsWithScheme";
+import urlStartsWithScheme from "../urlStartsWithScheme.js";
 
 export default (window, element) => {
   const loc = window.location;

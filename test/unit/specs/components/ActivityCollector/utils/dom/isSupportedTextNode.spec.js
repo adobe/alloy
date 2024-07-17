@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isSupportedTextNode from "../../../../../../../src/components/ActivityCollector/utils/dom/isSupportedTextNode";
+import isSupportedTextNode from "../../../../../../../src/components/ActivityCollector/utils/dom/isSupportedTextNode.js";
 
 describe("ActivityCollector::isSupportedTextNode", () => {
   it("should return true for text node", () => {

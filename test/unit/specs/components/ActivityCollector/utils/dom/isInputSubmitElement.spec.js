@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isInputSubmitElement from "../../../../../../../src/components/ActivityCollector/utils/dom/isInputSubmitElement";
+import isInputSubmitElement from "../../../../../../../src/components/ActivityCollector/utils/dom/isInputSubmitElement.js";
 
 describe("ActivityCollector::isInputSubmitElement", () => {
   it("should return true for submit input", () => {
