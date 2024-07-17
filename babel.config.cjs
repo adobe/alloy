@@ -40,7 +40,11 @@ const transformTemplateLiteralsPlugin = [
     loose: true,
   },
 ];
-const versionPlugin = "version";
+const versionPlugin = [
+  "./scripts/helpers/versionBabelPlugin",
+  { cwd: __dirname },
+];
+
 const transformModulesCommonjsPlugin = [
   "@babel/plugin-transform-modules-commonjs",
   {
@@ -49,7 +53,7 @@ const transformModulesCommonjsPlugin = [
   },
 ];
 
-const npmIgnoreFiles = ["src/baseCode.js", "src/standalone.js"];
+const npmIgnoreFiles = ["src/baseCode.js"];
 
 module.exports = {
   env: {

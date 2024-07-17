@@ -15,17 +15,30 @@ governing permissions and limitations under the License.
 import path from "path";
 import { watch } from "rollup";
 import createTestCafe from "testcafe";
-import yargs from "yargs/yargs";
 import { loadConfigFile } from "rollup/dist/loadConfigFile.js";
-// eslint-disable-next-line import/extensions
-import { hideBin } from "yargs/helpers";
+import { Command, Option } from "commander";
 
 const dirname = import.meta.dirname;
 
-const argv = yargs(hideBin(process.argv)).option("browsers", {
-  type: "array",
-  default: ["chrome"],
-}).argv;
+const program = new Command();
+
+program
+  .name("watchFunctionalTests")
+  .description("Script for running functional test in watch mode.")
+  .version("0.0.1");
+
+program.addOption(
+  new Option(
+    "-b, --browsers <browsers...>",
+    "the browser used to run the tests",
+  )
+    .choices(["chrome", "firefox", "safari"])
+    .default("chrome"),
+);
+
+program.parse();
+
+const argv = program.opts();
 
 /**
  * This script produces a build of Alloy from the source, then starts functional

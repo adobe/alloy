@@ -63,6 +63,13 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
   ];
   const currentConfigs = {
     clickCollectionEnabled: true,
+    clickCollection: {
+      downloadLinkEnabled: true,
+      eventGroupingEnabled: false,
+      externalLinkEnabled: true,
+      internalLinkEnabled: true,
+      sessionStorageEnabled: false,
+    },
     context: ["web", "device", "environment", "placeContext"],
     debugEnabled: true,
     defaultConsent: "in",

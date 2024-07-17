@@ -28,7 +28,10 @@ import createAudiences from "../components/Audiences/index.js";
 /* @skipwhen ENV.alloy_personalization === false */
 import createPersonalization from "../components/Personalization/index.js";
 
+/* @skipwhen ENV.alloy_context === false */
 import createContext from "../components/Context/index.js";
+
+/* @skipwhen ENV.alloy_privacy === false */
 import createPrivacy from "../components/Privacy/index.js";
 
 /* @skipwhen ENV.alloy_eventmerge === false */
@@ -41,7 +44,11 @@ import createDecisioningEngine from "../components/DecisioningEngine/index.js";
 
 /* @skipwhen ENV.alloy_machinelearning === false */
 import createMachineLearning from "../components/MachineLearning/index.js";
+
+/* @skipwhen ENV.alloy_streamingmedia === false */
 import createStreamingMedia from "../components/StreamingMedia/index.js";
+
+/* @skipwhen ENV.alloy_legacymediaanalytics === false */
 import createLegacyMediaAnalytics from "../components/LegacyMediaAnalytics/index.js";
 
 // TODO: Register the Components here statically for now. They might be registered differently.

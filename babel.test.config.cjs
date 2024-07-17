@@ -22,16 +22,16 @@ const targets = {
     "last 2 Firefox versions",
     "last 2 Safari versions",
     "last 2 Edge versions",
-    "Explorer >= 10"
-  ]
+    "Explorer >= 10",
+  ],
 };
 
 const transformRuntime = ["@babel/transform-runtime"];
 const transformTemplateLiteralsPlugin = [
   "@babel/plugin-transform-template-literals",
   {
-    loose: true
-  }
+    loose: true,
+  },
 ];
 
 module.exports = {
@@ -42,11 +42,11 @@ module.exports = {
           "@babel/preset-env",
           {
             modules: false,
-            targets
-          }
-        ]
+            targets,
+          },
+        ],
       ],
-      plugins: [transformRuntime, transformTemplateLiteralsPlugin]
-    }
-  }
+      plugins: [transformRuntime, transformTemplateLiteralsPlugin],
+    },
+  },
 };

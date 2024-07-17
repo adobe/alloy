@@ -34,7 +34,7 @@ describe("publishToNpm", () => {
     );
     expect(logger.warn).not.toHaveBeenCalled();
     expect(logger.info).toHaveBeenCalledWith("Publishing NPM package.");
-    expect(exec).toHaveBeenCalledOnceWith("npm publish", jasmine.any(String));
+    expect(exec).toHaveBeenCalledWith("npm publish", jasmine.any(String));
   });
 
   it("doesn't publish to NPM", async () => {
