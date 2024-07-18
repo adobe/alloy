@@ -22,7 +22,7 @@ jobs:
           version: ${{ github.event.inputs.version }}
   release:
     name: "Release"
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     needs: validate
     # this environment requires manual approval
     environment: Production
@@ -51,7 +51,7 @@ jobs:
             ./dist/alloy.min.js
   prerelease:
     name: "Prerelease"
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     needs: validate
     # prerelease versions contain '-'
     if: ${{ contains(github.event.inputs.version, '-') }}
