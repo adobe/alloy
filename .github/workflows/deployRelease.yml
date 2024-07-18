@@ -32,13 +32,19 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 22.4.x
       - uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: |
             ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
             ${{ secrets.CDN_PRIVATE_KEY }}
+      - uses: actions/cache@v4
+        id: npm-cache
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }} # increment NPM_CACHE_VERSION secret to force cache reset
       - name: Install dependencies
+        if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
       - run: ./scripts/deploy.js ${{ github.event.inputs.version }} latest
         env:
@@ -59,12 +65,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 22.4.x
       - uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: |
             ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
             ${{ secrets.CDN_PRIVATE_KEY }}
+      - uses: actions/cache@v2
+        id: npm-cache
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }} # increment NPM_CACHE_VERSION secret to force cache reset
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
