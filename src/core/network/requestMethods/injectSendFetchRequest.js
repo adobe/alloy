@@ -26,8 +26,7 @@ export default ({ fetch }) => {
         statusCode: response.status,
         // We expose headers through a function instead of creating an object
         // with all the headers up front largely because the native
-        // request.getResponseHeader method is case-insensitive but also because it prevents
-        // us from having to add header parsing logic when using XHR to make requests.
+        // request.getResponseHeader method is case-insensitive.
         getHeader(name) {
           return response.headers.get(name);
         },
