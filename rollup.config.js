@@ -72,7 +72,7 @@ const bundleSizePlugin = (_options = {}) => {
        * @param {import("rollup").OutputBundle} bundle
        * @returns {Promise<void>}
        */
-      async handle(rollupOptions, bundle) {
+      async handler(rollupOptions, bundle) {
         // keep sizes in bytes until displaying them
         const sizes = await Promise.all(
           Object.values(bundle)
