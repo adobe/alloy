@@ -19,6 +19,8 @@ import edgeDomainFirstParty from "./edgeDomainFirstParty.js";
 import edgeDomainThirdParty from "./edgeDomainThirdParty.js";
 import clickCollectionEnabled from "./clickCollectionEnabled.js";
 import clickCollectionDisabled from "./clickCollectionDisabled.js";
+import clickCollectionSessionStorageDisabled from "./clickCollectionSessionStorageDisabled.js";
+import clickCollectionEventGroupingDisabled from "./clickCollectionEventGroupingDisabled.js";
 import migrationEnabled from "./migrationEnabled.js";
 import targetMigrationEnabled from "./targetMigrationEnabled.js";
 import migrationDisabled from "./migrationDisabled.js";
@@ -42,6 +44,8 @@ export {
   edgeDomainThirdParty,
   clickCollectionEnabled,
   clickCollectionDisabled,
+  clickCollectionSessionStorageDisabled,
+  clickCollectionEventGroupingDisabled,
   migrationEnabled,
   migrationDisabled,
   consentIn,

@@ -12,24 +12,30 @@ governing permissions and limitations under the License.
 
 import attachClickActivityCollector from "./attachClickActivityCollector.js";
 import configValidators from "./configValidators.js";
-import createLinkClick from "./createLinkClick.js";
-import createGetLinkDetails from "./createGetLinkDetails.js";
+import createInjectClickedElementProperties from "./createInjectClickedElementProperties.js";
+import createRecallAndInjectClickedElementProperties from "./createRecallAndInjectClickedElementProperties.js";
+import createGetClickedElementProperties from "./createGetClickedElementProperties.js";
+import createClickActivityStorage from "./createClickActivityStorage.js";
+import createStorePageViewProperties from "./createStorePageViewProperties.js";
 import getLinkName from "./getLinkName.js";
 import getLinkRegion from "./getLinkRegion.js";
-import {
-  determineLinkType,
-  findSupportedAnchorElement,
-  getAbsoluteUrlFromAnchorElement,
-} from "./utils.js";
+import getAbsoluteUrlFromAnchorElement from "./utils/dom/getAbsoluteUrlFromAnchorElement.js";
+import findClickableElement from "./utils/dom/findClickableElement.js";
+import determineLinkType from "./utils/determineLinkType.js";
+import hasPageName from "./utils/hasPageName.js";
+import createTransientStorage from "./utils/createTransientStorage.js";
+import { injectStorage } from "../../utils/index.js";
 
-const getLinkDetails = createGetLinkDetails({
+const getClickedElementProperties = createGetClickedElementProperties({
   window,
   getLinkName,
   getLinkRegion,
   getAbsoluteUrlFromAnchorElement,
-  findSupportedAnchorElement,
+  findClickableElement,
   determineLinkType,
 });
+
+let clickActivityStorage;
 
 const createActivityCollector = ({
   config,
@@ -37,8 +43,28 @@ const createActivityCollector = ({
   handleError,
   logger,
 }) => {
-  const linkClick = createLinkClick({ getLinkDetails, config, logger });
-
+  const clickCollection = config.clickCollection;
+  const createNamespacedStorage = injectStorage(window);
+  const nameSpacedStorage = createNamespacedStorage(config.orgId || "");
+  // Use transient in-memory if sessionStorage is disabled
+  const transientStorage = createTransientStorage();
+  const storage = clickCollection.sessionStorageEnabled
+    ? nameSpacedStorage.session
+    : transientStorage;
+  clickActivityStorage = createClickActivityStorage({ storage });
+  const injectClickedElementProperties = createInjectClickedElementProperties({
+    config,
+    logger,
+    clickActivityStorage,
+    getClickedElementProperties,
+  });
+  const recallAndInjectClickedElementProperties =
+    createRecallAndInjectClickedElementProperties({
+      clickActivityStorage,
+    });
+  const storePageViewProperties = createStorePageViewProperties({
+    clickActivityStorage,
+  });
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
@@ -51,7 +77,18 @@ const createActivityCollector = ({
         // TODO: createScrollActivityCollector ...
       },
       onClick({ event, clickedElement }) {
-        linkClick({ targetElement: clickedElement, event });
+        injectClickedElementProperties({
+          event,
+          clickedElement,
+        });
+      },
+      onBeforeEvent({ event }) {
+        if (hasPageName(event)) {
+          if (clickCollection.eventGroupingEnabled) {
+            recallAndInjectClickedElementProperties(event);
+          }
+          storePageViewProperties(event, logger, clickActivityStorage);
+        }
       },
     },
   };
@@ -65,7 +102,12 @@ createActivityCollector.buildOnInstanceConfiguredExtraParams = ({
 }) => {
   return {
     getLinkDetails: (targetElement) => {
-      return getLinkDetails({ targetElement, config, logger });
+      return getClickedElementProperties({
+        clickActivityStorage,
+        clickedElement: targetElement,
+        config,
+        logger,
+      }).properties;
     },
   };
 };
