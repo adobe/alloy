@@ -10,20 +10,37 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import path from "path";
+import path from "node:path";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import babel from "@rollup/plugin-babel";
 import terser from "@rollup/plugin-terser";
 import license from "rollup-plugin-license";
 import { fileURLToPath } from "url";
-import { gzip, brotliCompress as br } from "node:zlib";
+import {
+  gzip,
+  brotliCompress as br,
+  constants as zlibConstants,
+} from "node:zlib";
 import { promisify } from "node:util";
+import { readFile, writeFile } from "node:fs/promises";
 
 /**
+ * @param {Object} options
+ * @param {string} [options.outputFile] Filepath to output the bundle size report.
+ * @param {boolean} [options.reportToConsole] Whether to log the bundle size report to the console in addition to writing it to a file.
+ * @param {number} [options.gzipCompressionLevel] The compression level to use when gzipping the bundle.
+ * @param {number} [options.brotliCompressionLevel] The compression level to use when brotli-compressing the bundle.
  * @returns {Partial<import("rollup").PluginHooks>}
  */
-const bundleSizePlugin = () => {
+const bundleSizePlugin = (_options = {}) => {
+  const defaultOptions = {
+    outputFile: "bundlesize.json",
+    reportToConsole: false,
+    gzipCompressionLevel: zlibConstants.Z_DEFAULT_COMPRESSION,
+    brotliCompressionLevel: zlibConstants.BROTLI_DEFAULT_QUALITY,
+  };
+  const options = { ...defaultOptions, ..._options };
   const gzipCompress = promisify(gzip);
   const brotliCompress = promisify(br);
   /**
@@ -31,8 +48,8 @@ const bundleSizePlugin = () => {
    * @param {import("node:zlib").ZlibOptions={}} options
    * @returns {number} size in bytes
    */
-  const getGzippedSize = async (source, options = {}) => {
-    const compressed = await gzipCompress(source, options);
+  const getGzippedSize = async (source, opts = {}) => {
+    const compressed = await gzipCompress(source, opts);
     const byteSize = Number.parseInt(compressed.byteLength, 10);
     return byteSize;
   };
@@ -41,33 +58,57 @@ const bundleSizePlugin = () => {
    * @param {import("node:zlib").BrotliOptions={}} options
    * @returns {number} size in bytes
    */
-  const getBrotiliSize = async (source, options = {}) => {
-    const compressed = await brotliCompress(source, options);
+  const getBrotiliSize = async (source, opts = {}) => {
+    const compressed = await brotliCompress(source, opts);
     const byteSize = Number.parseInt(compressed.byteLength, 10);
     return byteSize;
   };
   return {
     name: "bundle-size",
-    async generateBundle(_rollupOptions, bundle) {
+    async generateBundle(rollupOptions, bundle) {
       // keep sizes in bytes until displaying them
       const sizes = await Promise.all(
         Object.values(bundle)
           .filter((outputFile) => outputFile.type === "chunk")
           .map(async (chunk) => ({
-            fileName: chunk.fileName,
+            fileName: rollupOptions.file,
             uncompressedSize: Buffer.from(chunk.code).byteLength,
-            gzippedSize: await getGzippedSize(chunk.code),
-            brotiliSize: await getBrotiliSize(chunk.code),
+            gzippedSize: await getGzippedSize(chunk.code, {
+              level: options.gzipCompressionLevel,
+            }),
+            brotiliSize: await getBrotiliSize(chunk.code, {
+              params: {
+                [zlibConstants.BROTLI_PARAM_QUALITY]:
+                  options.brotliCompressionLevel,
+              },
+            }),
           })),
       );
-      console.table({
-        ...sizes.map((size) => ({
-          ...size,
-          uncompressedSize: size.uncompressedSize / 1024,
-          gzippedSize: size.gzippedSize / 1024,
-          brotiliSize: size.brotiliSize / 1024,
-        })),
-      });
+      if (options.reportToConsole) {
+        console.table(sizes);
+      }
+      // check if the output file exists, create it if it does not exist
+      let report = {};
+      try {
+        const outputFile = readFile(path.resolve(options.outputFile));
+        report = JSON.parse(await outputFile);
+      } catch {
+        // ignore errors. They are probably due to the file not existing
+      }
+      // update the report with the new sizes
+      sizes
+        // stable sort the report by filename
+        .sort(({ fileName: a }, { fileName: b }) => a.localeCompare(b))
+        .forEach((size) => {
+          const { fileName } = size;
+          delete size.fileName;
+          report[fileName] = size;
+        });
+      // write the report to the file
+      await writeFile(
+        path.resolve(options.outputFile),
+        JSON.stringify(report, null, 2),
+      );
     },
   };
 };
@@ -101,7 +142,9 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
       configFile: path.resolve(dirname, "babel.config.cjs"),
       plugins: babelPlugins,
     }),
-    bundleSizePlugin(),
+    bundleSizePlugin({
+      output: "bundlesize.json",
+    }),
   ];
 
   if (minify) {

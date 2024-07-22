@@ -1,0 +1,17 @@
+{
+  "distTest/baseCode.min.js": {
+    "uncompressedSize": 204,
+    "gzippedSize": 165,
+    "brotiliSize": 134
+  },
+  "dist/alloy.js": {
+    "uncompressedSize": 632866,
+    "gzippedSize": 100906,
+    "brotiliSize": 78312
+  },
+  "dist/alloy.min.js": {
+    "uncompressedSize": 145428,
+    "gzippedSize": 44865,
+    "brotiliSize": 38629
+  }
+}
