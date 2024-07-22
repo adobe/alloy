@@ -65,50 +65,58 @@ const bundleSizePlugin = (_options = {}) => {
   };
   return {
     name: "bundle-size",
-    async generateBundle(rollupOptions, bundle) {
-      // keep sizes in bytes until displaying them
-      const sizes = await Promise.all(
-        Object.values(bundle)
-          .filter((outputFile) => outputFile.type === "chunk")
-          .map(async (chunk) => ({
-            fileName: rollupOptions.file,
-            uncompressedSize: Buffer.from(chunk.code).byteLength,
-            gzippedSize: await getGzippedSize(chunk.code, {
-              level: options.gzipCompressionLevel,
-            }),
-            brotiliSize: await getBrotiliSize(chunk.code, {
-              params: {
-                [zlibConstants.BROTLI_PARAM_QUALITY]:
-                  options.brotliCompressionLevel,
-              },
-            }),
-          })),
-      );
-      if (options.reportToConsole) {
-        console.table(sizes);
-      }
-      // check if the output file exists, create it if it does not exist
-      let report = {};
-      try {
-        const outputFile = readFile(path.resolve(options.outputFile));
-        report = JSON.parse(await outputFile);
-      } catch {
-        // ignore errors. They are probably due to the file not existing
-      }
-      // update the report with the new sizes
-      sizes
-        // stable sort the report by filename
-        .sort(({ fileName: a }, { fileName: b }) => a.localeCompare(b))
-        .forEach((size) => {
-          const { fileName } = size;
-          delete size.fileName;
-          report[fileName] = size;
-        });
-      // write the report to the file
-      await writeFile(
-        path.resolve(options.outputFile),
-        JSON.stringify(report, null, 2),
-      );
+    generateBundle: {
+      order: "post",
+      /**
+       * @param {import("rollup").NormalizedOutputOptions} rollupOptions
+       * @param {import("rollup").OutputBundle} bundle
+       * @returns {Promise<void>}
+       */
+      async handle(rollupOptions, bundle) {
+        // keep sizes in bytes until displaying them
+        const sizes = await Promise.all(
+          Object.values(bundle)
+            .filter((outputFile) => outputFile.type === "chunk")
+            .map(async (chunk) => ({
+              fileName: rollupOptions.file,
+              uncompressedSize: Buffer.from(chunk.code).byteLength,
+              gzippedSize: await getGzippedSize(chunk.code, {
+                level: options.gzipCompressionLevel,
+              }),
+              brotiliSize: await getBrotiliSize(chunk.code, {
+                params: {
+                  [zlibConstants.BROTLI_PARAM_QUALITY]:
+                    options.brotliCompressionLevel,
+                },
+              }),
+            })),
+        );
+        if (options.reportToConsole) {
+          console.table(sizes);
+        }
+        // check if the output file exists, create it if it does not exist
+        let report = {};
+        try {
+          const outputFile = readFile(path.resolve(options.outputFile));
+          report = JSON.parse(await outputFile);
+        } catch {
+          // ignore errors. They are probably due to the file not existing
+        }
+        // update the report with the new sizes
+        sizes
+          // stable sort the report by filename
+          .sort(({ fileName: a }, { fileName: b }) => a.localeCompare(b))
+          .forEach((size) => {
+            const { fileName } = size;
+            delete size.fileName;
+            report[fileName] = size;
+          });
+        // write the report to the file
+        await writeFile(
+          path.resolve(options.outputFile),
+          JSON.stringify(report, null, 2),
+        );
+      },
     },
   };
 };
