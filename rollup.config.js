@@ -17,7 +17,60 @@ import babel from "@rollup/plugin-babel";
 import terser from "@rollup/plugin-terser";
 import license from "rollup-plugin-license";
 import { fileURLToPath } from "url";
+import { gzip, brotliCompress as br } from "node:zlib";
+import { promisify } from "node:util";
 
+/**
+ * @returns {Partial<import("rollup").PluginHooks>}
+ */
+const bundleSizePlugin = () => {
+  const gzipCompress = promisify(gzip);
+  const brotliCompress = promisify(br);
+  /**
+   * @param {import("node:zlib").InputType} source the source code to compress
+   * @param {import("node:zlib").ZlibOptions={}} options
+   * @returns {number} size in bytes
+   */
+  const getGzippedSize = async (source, options = {}) => {
+    const compressed = await gzipCompress(source, options);
+    const byteSize = Number.parseInt(compressed.byteLength, 10);
+    return byteSize;
+  };
+  /**
+   * @param {import("node:zlib").InputType} source the source code to compress
+   * @param {import("node:zlib").BrotliOptions={}} options
+   * @returns {number} size in bytes
+   */
+  const getBrotiliSize = async (source, options = {}) => {
+    const compressed = await brotliCompress(source, options);
+    const byteSize = Number.parseInt(compressed.byteLength, 10);
+    return byteSize;
+  };
+  return {
+    name: "bundle-size",
+    async generateBundle(_rollupOptions, bundle) {
+      // keep sizes in bytes until displaying them
+      const sizes = await Promise.all(
+        Object.values(bundle)
+          .filter((outputFile) => outputFile.type === "chunk")
+          .map(async (chunk) => ({
+            fileName: chunk.fileName,
+            uncompressedSize: Buffer.from(chunk.code).byteLength,
+            gzippedSize: await getGzippedSize(chunk.code),
+            brotiliSize: await getBrotiliSize(chunk.code),
+          })),
+      );
+      console.table({
+        ...sizes.map((size) => ({
+          ...size,
+          uncompressedSize: size.uncompressedSize / 1024,
+          gzippedSize: size.gzippedSize / 1024,
+          brotiliSize: size.brotiliSize / 1024,
+        })),
+      });
+    },
+  };
+};
 // Set these boolean environment options to control which files are built:
 // build the snippet that must be add to the page
 const BASE_CODE = "BASE_CODE";
@@ -48,6 +101,7 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
       configFile: path.resolve(dirname, "babel.config.cjs"),
       plugins: babelPlugins,
     }),
+    bundleSizePlugin(),
   ];
 
   if (minify) {
