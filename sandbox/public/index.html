@@ -140,14 +140,14 @@
           xdm._unifiedjsqeonly = _unifiedjsqeonly;
           return true;
         },
-        onBeforeLinkClickSend: function (options) {
-          console.log("options", options);
-          // options.linkElement
-          // options.xdm
-          // options.data
+        filterClickDetails: function (content) {
+          console.log("content", content);
+          // content.clickedElement
+          // content.xdm
+          // content.data
 
-          const xdm = options.xdm;
-          const data = options.data;
+          const xdm = content.xdm;
+          const data = content.data;
           const { webInteraction } = xdm.web;
 
           if (webInteraction.name === "Large Payload") {
@@ -223,16 +223,16 @@
         datastreamId: "76d1c882-2642-44ff-ad8e-ce32050d13d4",
         orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
         debugEnabled: true,
-        onBeforeLinkClickSend: function (options) {
-          const xdm = options.xdm;
-          const data = options.data;
+        filterClickDetails: function (content) {
+          const xdm = content.xdm;
+          const data = content.data;
           console.log(
-            ">>>>> Here is the options passed to onBeforeLinkClickSend:\n",
-            JSON.stringify(options, null, 2),
+            ">>>>> Here is the content passed to filterClickDetails:\n",
+            JSON.stringify(content, null, 2),
           );
           console.log(
-            "options.clickedElement: " +
-              JSON.stringify(options.clickedElement, null, 2),
+            "content.clickedElement: " +
+              JSON.stringify(content.clickedElement, null, 2),
           );
         },
       });
