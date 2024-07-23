@@ -34,13 +34,13 @@ function ActivityMapExtension() {
       if (countingButtonRef.current) {
         countingButtonRef.current.removeEventListener(
           "click",
-          changeButtonText,
+          changeButtonText
         );
       }
       if (navigateToAdobeRef.current) {
         navigateToAdobeRef.current.removeEventListener(
           "click",
-          navigateToAdobe,
+          navigateToAdobe
         );
       }
     };

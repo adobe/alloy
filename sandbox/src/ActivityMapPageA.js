@@ -24,7 +24,7 @@ function ActivityMapPageA() {
       if (countingButtonRef.current) {
         countingButtonRef.current.removeEventListener(
           "click",
-          changeButtonText,
+          changeButtonText
         );
       }
     };
