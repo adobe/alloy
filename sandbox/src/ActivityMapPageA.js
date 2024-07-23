@@ -36,7 +36,7 @@ function ActivityMapPageA() {
       <h1>ActivityMap Test Page A</h1>
       <h2>Internal Links</h2>
       <p>
-        <a href="index.html">Test Page</a>
+        <a href="/activityMapIndex">ActivityMap Index</a>
       </p>
       <p>
         <button
