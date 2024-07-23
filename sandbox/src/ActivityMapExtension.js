@@ -62,11 +62,7 @@ function ActivityMapExtension() {
         </span>
       </a>
       <p>
-        This page includes
-        <a href="https://experienceleague.adobe.com/docs/analytics/implementation/appmeasurement-updates.html?lang=en">
-          AppMeasurement version
-        </a>
-        2.23.0.
+        This page includes the Web SDK with ActivityMap click tracking support and event grouping enabled.
       </p>
       <h2>Internal Links</h2>
       <p>
