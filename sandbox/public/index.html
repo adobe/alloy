@@ -40,22 +40,31 @@
 
     <!-- prettier-ignore -->
     <script nonce="%REACT_APP_NONCE%">
-      !function(e,a,n,t){var i=e.head;if(i){
-      if (a) return;
-      var o=e.createElement("style");
-      o.setAttribute("nonce", "%REACT_APP_NONCE%");
-      o.id="alloy-prehiding",o.innerText=n,i.appendChild(o),
-      setTimeout(function(){o.parentNode&&o.parentNode.removeChild(o)},t)}}
+    !function (e, a, n, t) {
+      var i = e.head; if (i) {
+        if (a) return;
+        var o = e.createElement("style");
+        o.setAttribute("nonce", "%REACT_APP_NONCE%");
+        o.id = "alloy-prehiding", o.innerText = n, i.appendChild(o),
+          setTimeout(function () { o.parentNode && o.parentNode.removeChild(o) }, t)
+      }
+    }
       (document, document.location.href.indexOf("mboxEdit") !== -1, ".personalization-container { opacity: 0 !important }", 3000);
-    </script>
+  </script>
 
     <!-- prettier-ignore -->
     <script nonce="%REACT_APP_NONCE%">
-      !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
-      []).push(o),n[o]=function(){var u=arguments;return new Promise(
-      function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
-      (window,["alloy", "organizationTwo", "cjmProd", 'iamAlloy']);
-    </script>
+    !function (n, o) {
+      o.forEach(function (o) {
+        n[o] || ((n.__alloyNS = n.__alloyNS ||
+          []).push(o), n[o] = function () {
+            var u = arguments; return new Promise(
+              function (i, l) { n[o].q.push([i, l, u]) })
+          }, n[o].q = [])
+      })
+    }
+      (window, ["alloy", "organizationTwo", "cjmProd", 'iamAlloy']);
+  </script>
 
     <script nonce="%REACT_APP_NONCE%">
       function getUrlParameter(name) {
@@ -200,7 +209,36 @@
         clickCollectionEnabled: false,
       });
     </script>
+
+    <script nonce="%REACT_APP_NONCE%">
+      alloy("configure", {
+        clickCollectionEnabled: true,
+        clickCollection: {
+          internalLinkEnabled: true,
+          externalLinkEnabled: true,
+          downloadLinkEnabled: true,
+          sessionStorageEnabled: false,
+          eventGroupingEnabled: false,
+        },
+        datastreamId: "76d1c882-2642-44ff-ad8e-ce32050d13d4",
+        orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
+        debugEnabled: true,
+        onBeforeLinkClickSend: function (options) {
+          const xdm = options.xdm;
+          const data = options.data;
+          console.log(
+            ">>>>> Here is the options passed to onBeforeLinkClickSend:\n",
+            JSON.stringify(options, null, 2),
+          );
+          console.log(
+            "options.clickedElement: " +
+              JSON.stringify(options.clickedElement, null, 2),
+          );
+        },
+      });
+    </script>
   </head>
+
   <body>
     <div id="root"></div>
   </body>
