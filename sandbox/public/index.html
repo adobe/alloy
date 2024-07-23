@@ -40,22 +40,31 @@
 
     <!-- prettier-ignore -->
     <script nonce="%REACT_APP_NONCE%">
-      !function(e,a,n,t){var i=e.head;if(i){
-      if (a) return;
-      var o=e.createElement("style");
-      o.setAttribute("nonce", "%REACT_APP_NONCE%");
-      o.id="alloy-prehiding",o.innerText=n,i.appendChild(o),
-      setTimeout(function(){o.parentNode&&o.parentNode.removeChild(o)},t)}}
+    !function (e, a, n, t) {
+      var i = e.head; if (i) {
+        if (a) return;
+        var o = e.createElement("style");
+        o.setAttribute("nonce", "%REACT_APP_NONCE%");
+        o.id = "alloy-prehiding", o.innerText = n, i.appendChild(o),
+          setTimeout(function () { o.parentNode && o.parentNode.removeChild(o) }, t)
+      }
+    }
       (document, document.location.href.indexOf("mboxEdit") !== -1, ".personalization-container { opacity: 0 !important }", 3000);
-    </script>
+  </script>
 
     <!-- prettier-ignore -->
     <script nonce="%REACT_APP_NONCE%">
-      !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
-      []).push(o),n[o]=function(){var u=arguments;return new Promise(
-      function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
-      (window,["alloy", "organizationTwo", "cjmProd", 'iamAlloy']);
-    </script>
+    !function (n, o) {
+      o.forEach(function (o) {
+        n[o] || ((n.__alloyNS = n.__alloyNS ||
+          []).push(o), n[o] = function () {
+            var u = arguments; return new Promise(
+              function (i, l) { n[o].q.push([i, l, u]) })
+          }, n[o].q = [])
+      })
+    }
+      (window, ["alloy", "organizationTwo", "cjmProd", 'iamAlloy']);
+  </script>
 
     <script nonce="%REACT_APP_NONCE%">
       function getUrlParameter(name) {
@@ -209,10 +218,7 @@
           externalLinkEnabled: true,
           downloadLinkEnabled: true,
           sessionStorageEnabled: false,
-          eventGroupingEnabled: true,
-          filterClickDetails: (props) => {
-            console.log("filterClickDetails", props);
-          },
+          eventGroupingEnabled: false,
         },
         datastreamId: "76d1c882-2642-44ff-ad8e-ce32050d13d4",
         orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
@@ -229,31 +235,10 @@
               JSON.stringify(options.clickedElement, null, 2),
           );
         },
-        onBeforeEventSend: function (options) {
-          // const xdm = options.xdm;
-          // const data = options.data;
-          // console.log("onBeforeEventSend ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️");
-          // // // TODO: Remove output to limit spam a bit
-          // console.log(`XDM: ${JSON.stringify(options.xdm, null, 2)}`);
-          // console.log(`DATA: ${JSON.stringify(options.data, null, 2)}`);
-          // console.log("onBeforeEventSend ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️ℹ️");
-          // // Augment the Web SDK data with a prefix to differentiate it from the AppMeasurement data
-          // const activitymap =
-          //   options?.data?.__adobe?.analytics?.c?.a?.activitymap;
-          // if (activitymap) {
-          //   activitymap.page = `Web SDK ${activitymap.page}`;
-          //   activitymap.link = `Web SDK ${activitymap.link}`;
-          //   activitymap.region = `Web SDK ${activitymap.region}`;
-          // }
-          // const webPageDetails = xdm?.web?.webPageDetails;
-          // if (webPageDetails && webPageDetails.name) {
-          //   webPageDetails.name = `Web SDK ${webPageDetails.name}`;
-          // }
-          // return true;
-        },
       });
     </script>
   </head>
+
   <body>
     <div id="root"></div>
   </body>
