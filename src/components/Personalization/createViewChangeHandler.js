@@ -31,10 +31,10 @@ export default ({ processPropositions, viewCache, logger }) => {
 
         logger.logOnContentRendering({
           status: "rendering-started",
-          message: "Started rendering propositions for view scope.",
+          message: `Started rendering propositions for view scope - ${viewName}.`,
           logLevel: "info",
           detail: {
-            scope: personalizationDetails.getViewName(),
+            scope: viewName,
             propositions: propositions.map(proposition => proposition.toJSON())
           },
         });

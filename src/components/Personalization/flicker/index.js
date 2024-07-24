@@ -78,7 +78,7 @@ export const createHideContainers = ( logger ) => {
 
     logger.logOnContentHiding({
       status: "hide-containers",
-      message: "Prehiding style is applied to hide containers.",
+      message: "Prehiding style applied to hide containers.",
       logLevel: "info",
     });
 
@@ -98,7 +98,7 @@ export const createShowContainers = ( logger ) => {
 
     logger.logOnContentHiding({
       status: "show-containers",
-      message: "Prehiding style is removed to show containers.",
+      message: "Prehiding style removed to show containers.",
       logLevel: "info",
     });
     removeNode(node);

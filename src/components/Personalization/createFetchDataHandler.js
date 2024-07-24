@@ -90,7 +90,7 @@ export default ({
         if (isNonEmptyArray(currentViewPropositions)) {
           logger.logOnContentRendering({
             status: "rendering-started",
-            message: "Rendering propositions started for a view scope.",
+            message: `Rendering propositions started for view scope - ${personalizationDetails.getViewName()}.`,
             logLevel: "info",
             detail: {
               scope: personalizationDetails.getViewName(),

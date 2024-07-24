@@ -29,7 +29,7 @@ export default ({ logger, executeRedirect, collect }) =>
             propositionDetails: item.getProposition().getNotification(),
             item: item.toJSON()
           },
-          message: `Action ${item.toString()} executed.`,
+          message: `Redirect action ${item.toString()} executed.`,
           logLevel: "info",
         });
         return executeRedirect(content);
