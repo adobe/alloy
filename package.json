@@ -32,7 +32,7 @@
     "test:functional:custom": "node scripts/helpers/runFunctionalTests.js",
     "test:functional:saucelabs:dev": "NPM_PACKAGE_VERSION=$(npm pkg get version | tr -d '\"') EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" saucectl run --config ./.sauce/dev.yml",
     "test:functional:watch": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ./scripts/watchFunctionalTests.js --browsers chrome",
-    "test:functional:debug": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe --esm --inspect-brk chrome",
+    "test:functional:debug": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe --inspect-brk chrome",
     "test:functional:build:int": "rollup -c --environment BASE_CODE_MIN,STANDALONE,NPM_PACKAGE_LOCAL",
     "test:functional:build:prod": "rollup -c --environment BASE_CODE_MIN,NPM_PACKAGE_PROD",
     "test:scripts": "jasmine --config=scripts/specs/jasmine.json",
