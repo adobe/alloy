@@ -13,8 +13,8 @@ governing permissions and limitations under the License.
 */
 
 // eslint-disable-next-line
-import { Octokit } from "@octokit/rest";
-import semver from "semver";
+const { Octokit } = require("@octokit/rest");
+const semver = require("semver");
 
 // Outputs the production version of Alloy. This is calculated
 // by looking up the latest release in Github that is neither
