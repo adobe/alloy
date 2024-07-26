@@ -18,18 +18,11 @@ import terser from "@rollup/plugin-terser";
 import license from "rollup-plugin-license";
 import { fileURLToPath } from "url";
 
-// Set these boolean environment options to control which files are built:
-// build the snippet that must be add to the page
 const BASE_CODE = "BASE_CODE";
-// build the standalone distribution
 const STANDALONE = "STANDALONE";
-// build the standalone distribution, but put it in the sandbox directory
 const SANDBOX = "SANDBOX";
-// build the npm package entrypoint (createInstance)
 const NPM_PACKAGE_LOCAL = "NPM_PACKAGE_LOCAL";
-// build from the published npm package
 const NPM_PACKAGE_PROD = "NPM_PACKAGE_PROD";
-// Add "_MIN" to the end of the option name to build the minified version
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -37,8 +30,6 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
   const plugins = [
     resolve({
       preferBuiltins: false,
-      // Support the browser field in dependencies' package.json.
-      // Useful for the uuid package.
       mainFields: ["module", "main", "browser"],
     }),
     commonjs(),
@@ -94,6 +85,12 @@ export const buildConfig = ({
   const plugins = buildPlugins({ variant, minify, babelPlugins });
   const minifiedExtension = minify ? ".min" : "";
 
+  console.log(`Building config for variant: ${variant}`);
+  console.log(`Input path: ${input}`);
+  console.log(
+    `Output file: ${file || `${variant === SANDBOX ? "sandbox/public/" : "dist/"}alloy${minifiedExtension}.js`}`,
+  );
+
   if (variant === BASE_CODE) {
     return {
       input: "src/baseCode.js",
@@ -128,7 +125,6 @@ export const buildConfig = ({
     };
   }
 
-  // NPM_PACKAGE_LOCAL or NPM_PACKAGE_PROD
   const filename =
     variant === NPM_PACKAGE_LOCAL ? "npmPackageLocal" : "npmPackageProd";
 
