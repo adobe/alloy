@@ -13,8 +13,8 @@ governing permissions and limitations under the License.
 */
 
 // eslint-disable-next-line
-const { Octokit } = require("@octokit/rest");
-const semver = require("semver");
+import { Octokit } from "@octokit/rest";
+import semver from "semver";
 
 // Outputs the production version of Alloy. This is calculated
 // by looking up the latest release in Github that is neither
@@ -31,7 +31,7 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
 });
 
-module.exports = async function getTestingTags() {
+export default async function getTestingTags() {
   return octokit.paginate(
     octokit.repos.listReleases,
     {
@@ -51,4 +51,4 @@ module.exports = async function getTestingTags() {
       return prodReleasesToTest;
     },
   );
-};
+}

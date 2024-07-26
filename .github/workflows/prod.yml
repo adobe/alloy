@@ -46,7 +46,10 @@ jobs:
         with:
           script: |
             const path = require('path');
-            const getTestingTags = require(path.resolve(process.env.GITHUB_WORKSPACE, 'scripts', 'getTestingTags.js'));
+            const { createRequire } = require('module');
+            const require = createRequire(import.meta.url);
+            const getTestingTagsPath = path.resolve(process.env.GITHUB_WORKSPACE, 'scripts', 'getTestingTags.js');
+            const { default: getTestingTags } = await import(getTestingTagsPath);
             const tagsToTest = await getTestingTags();
             const matrixInput = { include: tagsToTest.map(tag => ({tag})) };
             core.setOutput("matrixInput", JSON.stringify(matrixInput));
