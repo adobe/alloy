@@ -21,32 +21,31 @@ jobs:
     outputs:
       matrixInput: ${{ steps.list-tags.outputs.matrixInput }}
     steps:
-      - uses: actions/labeler@v5
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-        env:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: npm install @octokit/rest semver
-      - uses: actions/upload-artifact@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install @octokit/rest semver
+      - name: Upload sauce configs
+        uses: actions/upload-artifact@v4
         with:
           name: sauce-config
           path: .sauce
-      - uses: actions/upload-artifact@v4
+      - name: Upload sauce ignore
+        uses: actions/upload-artifact@v4
         with:
           name: sauce-ignore
           path: .sauceignore
-
       - name: Retrieve tags
         id: list-tags
         uses: actions/github-script@v7
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
-            import getTestingTags from './scripts/getTestingTags.js';
+            const { default: getTestingTags } = await import('./scripts/getTestingTags.js');
             const tagsToTest = await getTestingTags();
             const matrixInput = { include: tagsToTest.map(tag => ({tag})) }
             core.setOutput("matrixInput", JSON.stringify(matrixInput));
@@ -54,60 +53,48 @@ jobs:
 
   alloy-prod-e2e:
     name: Alloy Functional Test
-    strategy:
-      max-parallel: 14
-      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
     needs: get-testing-tags
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    strategy:
+      max-parallel: 14
+      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
     steps:
-      - name: Create a workflow dispatch event with ${{ matrix.tag }}
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: refs/heads/${{ matrix.tag }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Clear cache
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Cache dependencies
         uses: actions/cache@v4
         id: npm-cache
         with:
           path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }} # increment NPM_CACHE_VERSION secret to force cache reset
-
-      - name: Store Alloy version into env
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }}
+      - name: Install dependencies
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Store Alloy version
         uses: nyaa8/package-version@v1
-
-      - name: Download sauce config into tags
+      - name: Download sauce configs
         uses: actions/download-artifact@v4
         with:
           name: sauce-config
           path: .sauce
-
-      - name: Remove File
-        uses: JesseTG/rm@v1.0.3
-        with:
-          path: .sauceignore
-
-      - uses: actions/download-artifact@v4
+      - name: Download sauce ignore
+        uses: actions/download-artifact@v4
         with:
           name: sauce-ignore
           path: .
-
-      - name: NPM Install
-        run: npm install
-
-      - name: Install dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci
-
       - name: Build
         run: npm run test:functional:build:prod
         env:
           ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
-
-      - name: Chrome Functional Test
-        uses: saucelabs/saucectl-run-action@v4
+      - name: Run Functional Tests
+        uses: saucelabs/saucectl-run-action@v4.3.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -120,58 +107,9 @@ jobs:
             NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
             ALLOY_ENV=prod
           config-file: ./.sauce/prod.yml
-          select-suite: "Chrome"
-
-      - name: Edge Functional Test
-        uses: saucelabs/saucectl-run-action@v4
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          sauce-username: ${{ secrets.SAUCE_USERNAME }}
-          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          env: |
-            SAUCE_USERNAME=${{ secrets.SAUCE_USERNAME }}
-            SAUCE_ACCESS_KEY=${{ secrets.SAUCE_ACCESS_KEY }}
-            ALLOY_PROD_VERSION=${{ env.PACKAGE_VERSION }}
-            NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
-            ALLOY_ENV=prod
-          config-file: ./.sauce/prod.yml
-          select-suite: "Edge"
-
-      - name: Firefox Functional Test
-        uses: saucelabs/saucectl-run-action@v4
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          sauce-username: ${{ secrets.SAUCE_USERNAME }}
-          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          env: |
-            SAUCE_USERNAME=${{ secrets.SAUCE_USERNAME }}
-            SAUCE_ACCESS_KEY=${{ secrets.SAUCE_ACCESS_KEY }}
-            ALLOY_PROD_VERSION=${{ env.PACKAGE_VERSION }}
-            NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
-            ALLOY_ENV=prod
-          config-file: ./.sauce/prod.yml
-          select-suite: "Firefox"
-
-      - name: Safari Functional Test
-        uses: saucelabs/saucectl-run-action@v4
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          sauce-username: ${{ secrets.SAUCE_USERNAME }}
-          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          env: |
-            SAUCE_USERNAME=${{ secrets.SAUCE_USERNAME }}
-            SAUCE_ACCESS_KEY=${{ secrets.SAUCE_ACCESS_KEY }}
-            ALLOY_PROD_VERSION=${{ env.PACKAGE_VERSION }}
-            NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
-            ALLOY_ENV=prod
-          config-file: ./.sauce/prod.yml
-          select-suite: "Safari"
-
-      - uses: craftech-io/slack-action@v1
+      - name: Notify on failure
+        uses: craftech-io/slack-action@v1
+        if: failure()
         with:
           slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
           status: failure
-        if: failure()
