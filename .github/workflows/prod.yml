@@ -45,9 +45,10 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const { default: getTestingTags } = await import('./scripts/getTestingTags.js');
+            const path = require('path');
+            const getTestingTags = require(path.resolve(process.env.GITHUB_WORKSPACE, 'scripts', 'getTestingTags.js'));
             const tagsToTest = await getTestingTags();
-            const matrixInput = { include: tagsToTest.map(tag => ({tag})) }
+            const matrixInput = { include: tagsToTest.map(tag => ({tag})) };
             core.setOutput("matrixInput", JSON.stringify(matrixInput));
             console.log("matrixInput: ", matrixInput);
 
