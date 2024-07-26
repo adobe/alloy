@@ -10,20 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import path from "node:path";
+import path from "path";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import babel from "@rollup/plugin-babel";
 import terser from "@rollup/plugin-terser";
 import license from "rollup-plugin-license";
 import { fileURLToPath } from "url";
-import {
-  gzip,
-  brotliCompress as br,
-  constants as zlibConstants,
-} from "node:zlib";
-import { promisify } from "node:util";
-import { readFile, writeFile } from "node:fs/promises";
+import { gzip, brotliCompress as br, constants as zlibConstants } from "zlib";
+import { promisify } from "util";
+import { readFile, writeFile } from "fs/promises";
 
 /**
  * @param {Object} options
