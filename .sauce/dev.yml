@@ -12,6 +12,7 @@ env:
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
   version: 3.6.0
+nodeVersion: "22"
 speed: 1
 pageLoadTimeout: 3000
 disablePageCaching: true
@@ -65,7 +66,7 @@ suites:
     browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"
-    platformName: "macOS 13"
+    platformName: "Windows 11"
     excludedTestFiles: ["test/functional/specs/Privacy/C5594870.js"]
   - name: "Chrome"
     browserName: "chrome"
