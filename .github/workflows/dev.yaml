@@ -88,12 +88,6 @@ jobs:
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
 
-      - name: Install force-resolutions
-        run: npm install force-resolutions
-
-      - name: Run force-resolutions
-        run: npx force-resolutions
-
       - name: Build
         run: npm run test:functional:build:int
         env:
