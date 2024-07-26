@@ -29,8 +29,6 @@ npm:
     - "@adobe/reactor-cookie"
     - "@adobe/reactor-query-string"
     - "@adobe/reactor-promise"
-    - npx
-    - force-resolutions
 suites:
   - name: "Edge"
     browserName: "microsoftedge"
