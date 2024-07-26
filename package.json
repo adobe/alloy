@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy",
-  "version": "2.21.0",
+  "version": "2.21.1",
   "description": "Adobe Experience Platform Web SDK",
   "type": "module",
   "main": "libEs5/index.js",
@@ -98,7 +98,7 @@
     "uuid": "^10.0.0"
   },
   "devDependencies": {
-    "@adobe/alloy": "^2.21.0",
+    "@adobe/alloy": "^2.21.1",
     "@babel/cli": "^7.24.7",
     "@babel/plugin-transform-runtime": "^7.24.7",
     "@eslint/js": "^9.5.0",
