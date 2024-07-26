@@ -127,6 +127,8 @@ const SANDBOX = "SANDBOX";
 const NPM_PACKAGE_LOCAL = "NPM_PACKAGE_LOCAL";
 // build from the published npm package
 const NPM_PACKAGE_PROD = "NPM_PACKAGE_PROD";
+// build the standalone distrobution, but exclude some (specified) modules
+const CUSTOM_BUILD = "CUSTOM_BUILD";
 // Add "_MIN" to the end of the option name to build the minified version
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -145,9 +147,6 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
       babelHelpers: "bundled",
       configFile: path.resolve(dirname, "babel.config.cjs"),
       plugins: babelPlugins,
-    }),
-    bundleSizePlugin({
-      output: "bundlesize.json",
     }),
   ];
 
@@ -169,7 +168,7 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
       plugins.push(terser());
     }
   }
-  if (variant === STANDALONE) {
+  if (variant === STANDALONE || variant === CUSTOM_BUILD) {
     plugins.push(
       license({
         cwd: dirname,
@@ -178,6 +177,13 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
             file: path.join(dirname, "LICENSE_BANNER"),
           },
         },
+      }),
+    );
+  }
+  if (variant !== CUSTOM_BUILD) {
+    plugins.push(
+      bundleSizePlugin({
+        output: "bundlesize.json",
       }),
     );
   }
@@ -208,7 +214,11 @@ export const buildConfig = ({
       plugins,
     };
   }
-  if (variant === STANDALONE || variant === SANDBOX) {
+  if (
+    variant === STANDALONE ||
+    variant === SANDBOX ||
+    variant === CUSTOM_BUILD
+  ) {
     const destDirectory = variant === SANDBOX ? "sandbox/public/" : "dist/";
 
     return {

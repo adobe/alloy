@@ -71,6 +71,7 @@ const getFileSizeInKB = (filePath) => {
 const build = async (argv) => {
   const rollupConfig = buildConfig({
     input: `${sourceRootPath}/standalone.js`,
+    variant: "CUSTOM_BUILD",
     file: getFile(argv),
     minify: argv.minify,
     babelPlugins: [
