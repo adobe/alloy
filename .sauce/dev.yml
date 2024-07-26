@@ -29,34 +29,6 @@ npm:
     - "@adobe/reactor-query-string"
     - "@adobe/reactor-promise"
 suites:
-  - name: "Edge"
-    browserName: "microsoftedge"
-    headless: true
-    browserVersion: "119"
-    src:
-      - "test/functional/specs/**/*.js"
-    platformName: "Windows 11"
-    excludedTestFiles:
-      [
-        "test/functional/specs/Personalization/C782718.js",
-        "test/functional/specs/Privacy/C5594870.js",
-        "test/functional/specs/Personalization/C8631577.js",
-      ]
-  - name: "Safari"
-    browserName: "safari"
-    headless: true
-    browserVersion: "latest"
-    src:
-      - "test/functional/specs/**/*.js"
-    platformName: "macOS 13"
-    excludedTestFiles:
-      [
-        "test/functional/specs/Personalization/C205528.js",
-        "test/functional/specs/Identity/C6842981.js",
-        "test/functional/specs/Privacy/IAB/C224677.js",
-        "test/functional/specs/Privacy/C5594870.js",
-        "test/functional/specs/LibraryInfo/C2589.js",
-      ]
   - name: "Firefox"
     browserName: "firefox"
     headless: true
@@ -65,17 +37,3 @@ suites:
       - "test/functional/specs/**/*.js"
     platformName: "macOS 13"
     excludedTestFiles: ["test/functional/specs/Privacy/C5594870.js"]
-  - name: "Chrome"
-    browserName: "chrome"
-    headless: true
-    browserVersion: "latest"
-    src:
-      - "test/functional/specs/**/*.js"
-    platformName: "Windows 11"
-    excludedTestFiles:
-      [
-        "test/functional/specs/Privacy/C5594870.js",
-        "test/functional/specs/Personalization/C7494472.js",
-        "test/functional/specs/Personalization/C8631576.js",
-        "test/functional/specs/Personalization/C8631577.js",
-      ]

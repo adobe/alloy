@@ -89,7 +89,7 @@ jobs:
         run: npm ci
 
       - name: Install force-resolutions
-        run: npm install -g force-resolutions
+        run: npm install force-resolutions
 
       - name: Run force-resolutions
         run: npx force-resolutions
