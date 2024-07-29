@@ -97,6 +97,8 @@ jobs:
           npm run test:functional:build:prod
         env:
           ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
+          BASE_CODE_MIN: true
+          NPM_PACKAGE_PROD: true
       - name: Run Functional Tests
         uses: saucelabs/saucectl-run-action@v4.3.0
         env:
@@ -111,9 +113,9 @@ jobs:
             NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
             ALLOY_ENV=prod
           config-file: ./.sauce/prod.yml
-      - name: Notify on failure
-        uses: craftech-io/slack-action@v1
-        if: failure()
-        with:
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          status: failure
+      # - name: Notify on failure
+      #   uses: craftech-io/slack-action@v1
+      #   if: failure()
+      #   with:
+      #     slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #     status: failure
