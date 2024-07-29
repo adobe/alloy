@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
-      max-parallel: 1
+      max-parallel: 14
       matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
     steps:
       - name: Checkout code
@@ -69,7 +69,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
       - name: Cache dependencies
         uses: actions/cache@v4
         id: npm-cache
@@ -113,9 +113,17 @@ jobs:
             NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
             ALLOY_ENV=prod
           config-file: ./.sauce/prod.yml
-      # - name: Notify on failure
-      #   uses: craftech-io/slack-action@v1
-      #   if: failure()
-      #   with:
-      #     slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #     status: failure
+      - name: Capture Test Results
+        id: capture-results
+        run: |
+          mkdir -p test-results
+          cp -r ./test-results/* ./test-results/
+      - name: Notify on failure
+        if: failure()
+        uses: craftech-io/slack-action@v1
+        with:
+          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          status: failure
+          message: |
+            Tests failed:
+            ${{ steps.capture-results.outputs.test-results }}
