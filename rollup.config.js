@@ -21,24 +21,27 @@ import { gzip, brotliCompress as br, constants as zlibConstants } from "zlib";
 import { promisify } from "util";
 import { readFile, writeFile } from "fs/promises";
 
+// Set these boolean environment options to control which files are built:
+// build the snippet that must be add to the page
 const BASE_CODE = "BASE_CODE";
+// build the standalone distribution
 const STANDALONE = "STANDALONE";
+// build the standalone distribution, but put it in the sandbox directory
 const SANDBOX = "SANDBOX";
+// build the npm package entrypoint (createInstance)
 const NPM_PACKAGE_LOCAL = "NPM_PACKAGE_LOCAL";
+// build from the published npm package
 const NPM_PACKAGE_PROD = "NPM_PACKAGE_PROD";
+// Add "_MIN" to the end of the option name to build the minified version
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const buildPlugins = function ({ variant, minify, babelPlugins }) {
-  const paths = process.env.PATHS ? process.env.PATHS.split(",") : [];
-  if (!paths[0]) {
-    throw new Error(
-      'The "paths[0]" argument must be of type string. Received undefined',
-    );
-  }
+const buildPlugins = ({ variant, minify, babelPlugins }) => {
   const plugins = [
     resolve({
       preferBuiltins: false,
+      // Support the browser field in dependencies' package.json.
+      // Useful for the uuid package.
       mainFields: ["module", "main", "browser"],
     }),
     commonjs(),
@@ -102,15 +105,6 @@ export const buildConfig = ({
   const plugins = buildPlugins({ variant, minify, babelPlugins });
   const minifiedExtension = minify ? ".min" : "";
 
-  // eslint-disable-next-line no-console
-  console.log(`Building config for variant: ${variant}`);
-  // eslint-disable-next-line no-console
-  console.log(`Input path: ${input}`);
-  // eslint-disable-next-line no-console
-  console.log(
-    `Output file: ${file || `${variant === SANDBOX ? "sandbox/public/" : "dist/"}alloy${minifiedExtension}.js`}`,
-  );
-
   if (variant === BASE_CODE) {
     return {
       input: "src/baseCode.js",
@@ -144,6 +138,7 @@ export const buildConfig = ({
     };
   }
 
+  // NPM_PACKAGE_LOCAL or NPM_PACKAGE_PROD
   const filename =
     variant === NPM_PACKAGE_LOCAL ? "npmPackageLocal" : "npmPackageProd";
 
