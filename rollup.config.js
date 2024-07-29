@@ -26,7 +26,13 @@ const NPM_PACKAGE_PROD = "NPM_PACKAGE_PROD";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const buildPlugins = ({ variant, minify, babelPlugins }) => {
+const buildPlugins = function ({ variant, minify, babelPlugins }) {
+  const paths = process.env.PATHS ? process.env.PATHS.split(",") : [];
+  if (!paths[0]) {
+    throw new Error(
+      'The "paths[0]" argument must be of type string. Received undefined',
+    );
+  }
   const plugins = [
     resolve({
       preferBuiltins: false,
@@ -85,8 +91,11 @@ export const buildConfig = ({
   const plugins = buildPlugins({ variant, minify, babelPlugins });
   const minifiedExtension = minify ? ".min" : "";
 
+  // eslint-disable-next-line no-console
   console.log(`Building config for variant: ${variant}`);
+  // eslint-disable-next-line no-console
   console.log(`Input path: ${input}`);
+  // eslint-disable-next-line no-console
   console.log(
     `Output file: ${file || `${variant === SANDBOX ? "sandbox/public/" : "dist/"}alloy${minifiedExtension}.js`}`,
   );
