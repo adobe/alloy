@@ -134,6 +134,6 @@ export default ({
         (!this.isCacheInitialized() &&
           personalization.defaultPersonalizationEnabled !== false)
       );
-    },
+    }
   };
 };

@@ -16,13 +16,21 @@
     <script>
       window.__alloyMonitors = window.__alloyMonitors || [];
       window.__alloyMonitors.push({
+        onContentRendering(data) {
+          console.log("Alloy Content Rendering");
+          console.log("data", data.status, data);
+        },
+        onContentHiding(data) {
+          console.log("Alloy Content Hiding");
+          console.log("data", data.status);
+        },
         onInstanceCreated(data) {
           console.log("Alloy Instance Created");
           console.log(data.instanceName);
           console.log(data.instance);
         },
         onInstanceConfigured(data) {
-          console.log("Alloy Instance Configured");
+         /* console.log("Alloy Instance Configured");
           console.log(JSON.stringify(data.config, null, 2));
           const { getLinkDetails } = data;
 
@@ -31,7 +39,7 @@
           for (var i = 0; i < listOfLinks.length; i++) {
             const linkDetails = getLinkDetails(listOfLinks[i]);
             console.log("link details", linkDetails);
-          }
+          }*/
         },
       });
     </script>
@@ -109,7 +117,7 @@
           getUrlParameter("edgeConfigId") ||
           "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
         orgId: "5BFE274A5F6980A50A495C08@AdobeOrg", // UnifiedJS QE Only
-        debugEnabled: true,
+        debugEnabled: false,
         idMigrationEnabled: !(
           getUrlParameter("idMigrationEnabled") === "false"
         ),
@@ -164,7 +172,7 @@
 
       // For Testing multiple instances.
       // We use a different orgId and datastreamId.
-      organizationTwo("configure", {
+   /*   organizationTwo("configure", {
         datastreamId: "7984963a-6609-4e84-98d5-4e2ff8c0dd5e:prod",
         orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
         debugEnabled: true,
@@ -189,7 +197,7 @@
           }
         },
       });
-
+*/
       // For AJO testing in Prod.
       // We use a different orgId and datastreamId.
       cjmProd("configure", {
