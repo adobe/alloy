@@ -3,7 +3,6 @@ kind: testcafe
 showConsoleLog: true
 sauce:
   region: us-west-1
-  retries: 2
 metadata:
   name: Alloy Prod
 rootDir: ./
