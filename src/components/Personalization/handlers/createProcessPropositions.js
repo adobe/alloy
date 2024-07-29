@@ -10,21 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import {groupBy} from "../../../utils/index.js";
+
 export default ({ schemaProcessors, logger }) => {
   const wrapRenderWithLogging = (render, item) => () => {
     return Promise.resolve()
       .then(render)
       .then(() => {
-        logger.logOnContentRendering({
-          status: "rendering-succeeded",
-          detail: {
-            propositionDetails: item.getProposition().getNotification(),
-            item: item.toJSON()
-          },
-          message: `Action ${item.toString()} successfully executed.`,
-          logLevel: "info",
-        });
-
+        if (logger.enabled) {
+          logger.info(`Action ${item.toString()} executed.`);
+        }
         return true;
       })
       .catch((error) => {
@@ -201,7 +196,18 @@ export default ({ schemaProcessors, logger }) => {
     });
     const render = () => {
       return Promise.all(renderers.map((renderer) => renderer())).then(
-        (metas) => metas.filter((meta) => meta),
+        (metas) => {
+          const renderedPropositions = metas.filter((meta) => meta);
+          const propsByScope = groupBy(renderedPropositions, (p) => p.scope);
+          logger.logOnContentRendering({
+            status: "rendering-succeeded",
+            detail: {...propsByScope},
+            message: `Scopes: ${propsByScope} successfully executed.`,
+            logLevel: "info",
+          });
+
+          return renderedPropositions;
+        },
       );
     };
     return { returnedPropositions, returnedDecisions, render };

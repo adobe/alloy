@@ -26,7 +26,7 @@ describe("createProcessRedirect", () => {
   let processRedirect;
 
   beforeEach(() => {
-    logger = jasmine.createSpyObj("logger", ["warn"]);
+    logger = jasmine.createSpyObj("logger", ["warn", "logOnContentRendering"]);
     executeRedirect = jasmine.createSpy("executeRedirect");
     collectDefer = defer();
     collect = jasmine
