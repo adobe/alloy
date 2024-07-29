@@ -28,10 +28,15 @@
 
           const listOfLinks = document.links;
 
-          for (var i = 0; i < listOfLinks.length; i++) {
-            const linkDetails = getLinkDetails(listOfLinks[i]);
-            console.log("link details", linkDetails);
-          }
+          document.addEventListener("DOMContentLoaded", async function (event) {
+            console.log(
+              `Will now print link details for ${listOfLinks.length} links`,
+            );
+            for (var i = 0; i < listOfLinks.length; i++) {
+              const linkDetails = getLinkDetails(listOfLinks[i]);
+              console.log("link details", linkDetails);
+            }
+          });
         },
       });
     </script>
