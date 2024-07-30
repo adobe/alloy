@@ -10,35 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// This is the only place where core is allowed to import from components.
-// This makes sure that each component could be removed without breaking the library
-
-import createDataCollector from "../components/DataCollector/index.js";
-import createActivityCollector from "../components/ActivityCollector/index.js";
-import createIdentity from "../components/Identity/index.js";
-import createAudiences from "../components/Audiences/index.js";
-import createPersonalization from "../components/Personalization/index.js";
-import createContext from "../components/Context/index.js";
-import createPrivacy from "../components/Privacy/index.js";
-import createEventMerge from "../components/EventMerge/index.js";
-import createLibraryInfo from "../components/LibraryInfo/index.js";
-import createDecisioningEngine from "../components/DecisioningEngine/index.js";
-import createMachineLearning from "../components/MachineLearning/index.js";
-import createStreamingMedia from "../components/StreamingMedia/index.js";
-import createLegacyMediaAnalytics from "../components/LegacyMediaAnalytics/index.js";
-
-export {
-  createDataCollector,
-  createActivityCollector,
-  createIdentity,
-  createAudiences,
-  createPersonalization,
-  createContext,
-  createPrivacy,
-  createEventMerge,
-  createLibraryInfo,
-  createMachineLearning,
-  createDecisioningEngine,
-  createLegacyMediaAnalytics,
-  createStreamingMedia,
-};
+export { default as createActivityCollector } from "../components/ActivityCollector/index.js";
+export { default as createAudiences } from "../components/Audiences/index.js";
+export { default as createContext } from "../components/Context/index.js";
+export { default as createDataCollector } from "../components/DataCollector/index.js";
+export { default as createDecisioningEngine } from "../components/DecisioningEngine/index.js";
+export { default as createEventMerge } from "../components/EventMerge/index.js";
+export { default as createIdentity } from "../components/Identity/index.js";
+export { default as createLegacyMediaAnalytics } from "../components/LegacyMediaAnalytics/index.js";
+export { default as createLibraryInfo } from "../components/LibraryInfo/index.js";
+export { default as createMachineLearning } from "../components/MachineLearning/index.js";
+export { default as createPersonalization } from "../components/Personalization/index.js";
+export { default as createPrivacy } from "../components/Privacy/index.js";
+export { default as createStreamingMedia } from "../components/StreamingMedia/index.js";
