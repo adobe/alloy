@@ -30,7 +30,6 @@ import createEvent from "./createEvent.js";
 import injectCreateResponse from "./injectCreateResponse.js";
 import injectExecuteCommand from "./injectExecuteCommand.js";
 import validateCommandOptions from "./validateCommandOptions.js";
-import componentCreators from "./componentCreators.js";
 import buildAndValidateConfig from "./buildAndValidateConfig.js";
 import initializeComponents from "./initializeComponents.js";
 import createConfig from "./config/createConfig.js";
@@ -72,6 +71,7 @@ const getAssuranceValidationTokenParams =
 export const createExecuteCommand = ({
   instanceName,
   logController: { setDebugEnabled, logger, createComponentLogger },
+  componentCreators,
 }) => {
   const componentRegistry = createComponentRegistry();
   const lifecycle = createLifecycle(componentRegistry);
@@ -198,7 +198,7 @@ export const createExecuteCommand = ({
   return executeCommand;
 };
 
-export default () => {
+export default (componentCreators) => {
   // eslint-disable-next-line no-underscore-dangle
   const instanceNames = window.__alloyNS;
 
@@ -216,6 +216,7 @@ export default () => {
       const executeCommand = createExecuteCommand({
         instanceName,
         logController,
+        componentCreators,
       });
       const instance = createInstanceFunction(executeCommand);
 

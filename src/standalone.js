@@ -13,5 +13,37 @@ governing permissions and limitations under the License.
 // This file is used by rollup to create the browser version that is uploaded to cdn
 
 import core from "./core/index.js";
+import {
+  createDataCollector,
+  createActivityCollector,
+  createIdentity,
+  createAudiences,
+  createPersonalization,
+  createContext,
+  createPrivacy,
+  createEventMerge,
+  createLibraryInfo,
+  createMachineLearning,
+  createDecisioningEngine,
+  createLegacyMediaAnalytics,
+  createStreamingMedia,
+} from "./index.js";
 
-core();
+core([
+  createActivityCollector,
+  createAudiences,
+  createPersonalization,
+  createContext,
+  createPrivacy,
+  createEventMerge,
+  createMachineLearning,
+  createDecisioningEngine,
+  createLegacyMediaAnalytics,
+  createStreamingMedia,
+
+  // Currently, the following components
+  // cannot be removed from a build.
+  createDataCollector,
+  createIdentity,
+  createLibraryInfo,
+]);

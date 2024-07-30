@@ -17,8 +17,9 @@ import { rollup } from "rollup";
 import { Command, Option, InvalidOptionArgumentError } from "commander";
 import inquirer from "inquirer";
 import { fileURLToPath } from "url";
+import babel from "@babel/core";
 import { buildConfig } from "../rollup.config.js";
-import conditionalBuildBabelPlugin from "./helpers/conditionalBuildBabelPlugin.js";
+import entryPointGeneratorBabelPlugin from "./helpers/entryPointGeneratorBabelPlugin.js";
 import components from "./helpers/alloyComponents.js";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -29,28 +30,7 @@ if (!fs.existsSync(sourceRootPath)) {
 }
 
 const getOptionalComponents = (() => {
-  const componentCreatorsPath = `${sourceRootPath}/core/componentCreators.js`;
-
-  // Read componentCreators.js
-  const componentCreatorsContent = fs.readFileSync(
-    componentCreatorsPath,
-    "utf8",
-  );
-
-  // Extract optional components based on @skipwhen directive
-  const optionalComponents = componentCreatorsContent
-    .split("\n")
-    .filter((line) => line.trim().startsWith("/* @skipwhen"))
-    .map((line) => {
-      const match = line.match(/ENV\.alloy_([a-zA-Z0-9]+) === false/);
-      if (match) {
-        const [, componentName] = match;
-        return componentName.toLowerCase(); // Ensure this matches the expected format for exclusion
-      }
-      return null;
-    })
-    .filter(Boolean);
-
+  const optionalComponents = components.map((component) => component.parameter);
   return () => optionalComponents;
 })();
 
@@ -68,24 +48,43 @@ const getFileSizeInKB = (filePath) => {
   return `${(fileSizeInBytes / 1024).toFixed(2)} K`;
 };
 
+const generateInputEntryFile = ({
+  inputPath,
+  outputFile = "input.js",
+  excludedModules,
+}) => {
+  const code = fs.readFileSync(inputPath, "utf-8");
+
+  const output = babel.transformSync(code, {
+    plugins: [entryPointGeneratorBabelPlugin(excludedModules)],
+  }).code;
+
+  const destinationDirectory = path.dirname(inputPath);
+  const outputPath = path.join(destinationDirectory, outputFile);
+
+  fs.writeFileSync(outputPath, output);
+
+  return outputPath;
+};
+
 const build = async (argv) => {
+  const input = generateInputEntryFile({
+    inputPath: `${sourceRootPath}/standalone.js`,
+    excludedModules: argv.exclude,
+  });
+
   const rollupConfig = buildConfig({
-    input: `${sourceRootPath}/standalone.js`,
     variant: "CUSTOM_BUILD",
+    input,
     file: getFile(argv),
     minify: argv.minify,
-    babelPlugins: [
-      conditionalBuildBabelPlugin(
-        argv.exclude.reduce((acc, module) => {
-          acc[`alloy_${module}`] = "false";
-          return acc;
-        }, {}),
-      ),
-    ],
   });
 
   const bundle = await rollup(rollupConfig);
   await bundle.write(rollupConfig.output[0]);
+
+  fs.unlinkSync(input);
+
   console.log(
     `🎉 Wrote ${
       path.isAbsolute(argv.outputDir)
@@ -146,8 +145,13 @@ const getMakeBuildCommand = () =>
           return value.replace(new RegExp(`${path.sep}+$`, "g"), "");
         }),
     )
-    .action(async (opts) => {
-      await build(opts);
+    .action((opts) => {
+      const { exclude } = opts;
+      opts.exclude = components
+        .filter(({ parameter }) => exclude.includes(parameter))
+        .map(({ component }) => component);
+
+      return build(opts);
     });
 
 const getInteractiveBuildCommand = () =>
@@ -162,7 +166,11 @@ const getInteractiveBuildCommand = () =>
             type: "checkbox",
             name: "include",
             message: "What components should be included in your Alloy build?",
-            choices: components,
+            choices: components.map(({ name, parameter, checked = false }) => ({
+              name,
+              checked,
+              value: parameter,
+            })),
           },
           {
             type: "list",
@@ -183,8 +191,8 @@ const getInteractiveBuildCommand = () =>
         .then(async (opts) => {
           const { include } = opts;
           const exclude = components
-            .map((v) => v.value)
-            .filter((component) => !include.includes(component));
+            .filter(({ parameter }) => !include.includes(parameter))
+            .map(({ component }) => component);
 
           opts.exclude = exclude;
           delete opts.include;

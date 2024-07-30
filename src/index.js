@@ -18,7 +18,14 @@ import { createExecuteCommand } from "./core/index.js";
 import createLogger from "./core/createLogger.js";
 import createLogController from "./core/createLogController.js";
 import { injectStorage } from "./utils/index.js";
-import { arrayOf, objectOf, string } from "./utils/validation/index.js";
+import {
+  arrayOf,
+  objectOf,
+  string,
+  callback,
+} from "./utils/validation/index.js";
+
+export * from "./core/componentCreators.js";
 
 const { console } = window;
 const createNamespacedStorage = injectStorage(window);
@@ -27,12 +34,15 @@ export const createInstance = (options = {}) => {
   const eventOptionsValidator = objectOf({
     name: string().default("alloy"),
     monitors: arrayOf(objectOf({})).default([]),
+    componentCreators: arrayOf(callback()),
   }).noUnknownFields();
-  const { name, monitors } = eventOptionsValidator(options);
+
+  const { name, monitors, componentCreators } = eventOptionsValidator(options);
 
   // this is a function so that window.__alloyMonitors can be set or added to at any time
   // eslint-disable-next-line no-underscore-dangle
   const getMonitors = () => (window.__alloyMonitors || []).concat(monitors);
+
   const logController = createLogController({
     console,
     locationSearch: window.location.search,
@@ -41,7 +51,13 @@ export const createInstance = (options = {}) => {
     createNamespacedStorage,
     getMonitors,
   });
-  const instance = createExecuteCommand({ instanceName: name, logController });
+
+  const instance = createExecuteCommand({
+    instanceName: name,
+    logController,
+    componentCreators,
+  });
   logController.logger.logOnInstanceCreated({ instance });
+
   return instance;
 };
