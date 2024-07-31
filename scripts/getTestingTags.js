@@ -31,32 +31,20 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
 });
 
-const getPackageJson = async (tag) => {
-  const { data } = await octokit.repos.getContent({
-    owner: "adobe",
-    repo: "alloy",
-    path: "package.json",
-    ref: tag,
-  });
-  const content = Buffer.from(data.content, data.encoding).toString();
-  return JSON.parse(content);
-};
-
-const getTestingTags = async () => {
+export default async function getTestingTags() {
   return octokit.paginate(
     octokit.repos.listReleases,
     {
       owner: "adobe",
       repo: "alloy",
     },
-    async ({ data: releases }, done) => {
+    ({ data: releases }, done) => {
       const prodReleases = releases
         .filter((release) => !release.draft && !release.prerelease)
         .map((release) => release.tag_name);
       const prodReleasesToTest = prodReleases.filter((tag) =>
         semver.lte("2.16.0", semver.clean(tag)),
       );
-      console.log("Production releases to test:", prodReleasesToTest);
       if (prodReleasesToTest.length < prodReleases.length) {
         done();
       }
@@ -66,6 +54,4 @@ const getTestingTags = async () => {
       }));
     },
   );
-};
-
-export default getTestingTags;
+}
