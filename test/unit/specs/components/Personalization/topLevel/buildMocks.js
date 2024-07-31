@@ -57,7 +57,12 @@ export default (decisions) => {
   const logger = {
     warn: spyOn(console, "warn").and.callThrough(),
     error: spyOn(console, "error").and.callThrough(),
-    logOnContentRendering: spyOn(console, "info").and.callThrough()
+    logOnContentRendering: jasmine
+      .createSpy("logOnContentRendering")
+      .and.callThrough(),
+    logOnContentHiding: jasmine
+      .createSpy("logOnContentHiding")
+      .and.callThrough(),
   };
   const sendEvent = jasmine.createSpy("sendEvent");
   const eventManager = {

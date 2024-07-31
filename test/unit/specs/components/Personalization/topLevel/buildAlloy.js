@@ -161,6 +161,7 @@ const buildComponent = ({
   consent.current.and.returnValue({ state: "in", wasSet: false });
 
   const fetchDataHandler = createFetchDataHandler({
+    logger,
     prehidingStyle,
     showContainers,
     hideContainers,
@@ -180,6 +181,7 @@ const buildComponent = ({
   });
 
   const viewChangeHandler = createViewChangeHandler({
+    logger,
     processPropositions,
     viewCache,
   });

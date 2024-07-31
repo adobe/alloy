@@ -27,7 +27,7 @@ export default ({ logger, executeRedirect, collect }) =>
           status: "rendering-redirect",
           detail: {
             propositionDetails: item.getProposition().getNotification(),
-            item: item.toJSON()
+            redirect: content,
           },
           message: `Redirect action ${item.toString()} executed.`,
           logLevel: "info",
