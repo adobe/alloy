@@ -10,17 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (excludedModules) => ({
+export default (t, includedModules) => ({
   visitor: {
-    ArrayExpression(path) {
-      path.node.elements = path.node.elements.filter((element) => {
-        const componentName = element?.name;
-        if (componentName) {
-          return !excludedModules.includes(componentName);
-        }
+    CallExpression(path) {
+      if (path.node.callee.name === "core") {
+        path.replaceWith(
+          t.CallExpression(t.Identifier("core"), [
+            t.ArrayExpression(
+              includedModules.map((z) =>
+                t.MemberExpression(
+                  t.Identifier("componentCreators"),
+                  t.Identifier(z),
+                ),
+              ),
+            ),
+          ]),
+        );
 
-        return true;
-      });
+        path.stop();
+      }
     },
   },
 });

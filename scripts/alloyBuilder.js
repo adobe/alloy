@@ -20,18 +20,49 @@ import { fileURLToPath } from "url";
 import babel from "@babel/core";
 import { buildConfig } from "../rollup.config.js";
 import entryPointGeneratorBabelPlugin from "./helpers/entryPointGeneratorBabelPlugin.js";
-import components from "./helpers/alloyComponents.js";
+import optionalComponentsData from "./helpers/alloyOptionalComponents.js";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
+const arrayDifference = (arr1, arr2) => arr1.filter((x) => !arr2.includes(x));
+const getComponentsFromParameters = (parameters) =>
+  optionalComponentsData
+    .filter((c) => parameters.includes(c.parameter))
+    .map((c) => c.component);
 
 let sourceRootPath = `${dirname}/../src`;
 if (!fs.existsSync(sourceRootPath)) {
   sourceRootPath = `${dirname}/../libEs6`;
 }
 
+const getOptionalComponentsParameters = (() => {
+  const c = optionalComponentsData.map((a) => a.parameter);
+  return () => c;
+})();
+
 const getOptionalComponents = (() => {
-  const optionalComponents = components.map((component) => component.parameter);
-  return () => optionalComponents;
+  const c = optionalComponentsData.map((a) => a.component);
+  return () => c;
+})();
+
+const getRequiredComponents = (() => {
+  const code = fs.readFileSync(
+    `${sourceRootPath}/core/componentCreators.js`,
+    "utf-8",
+  );
+
+  const allComponents = [];
+  babel.traverse(babel.parse(code), {
+    Identifier(p) {
+      if (p.node.name !== "default") {
+        allComponents.push(p.node.name);
+      }
+    },
+  });
+
+  const optionalComponents = optionalComponentsData.map((c) => c.component);
+  const requiredComponents = arrayDifference(allComponents, optionalComponents);
+
+  return () => requiredComponents;
 })();
 
 const getDefaultPath = () => {
@@ -51,12 +82,12 @@ const getFileSizeInKB = (filePath) => {
 const generateInputEntryFile = ({
   inputPath,
   outputFile = "input.js",
-  excludedModules,
+  includedModules,
 }) => {
   const code = fs.readFileSync(inputPath, "utf-8");
 
   const output = babel.transformSync(code, {
-    plugins: [entryPointGeneratorBabelPlugin(excludedModules)],
+    plugins: [entryPointGeneratorBabelPlugin(babel.types, includedModules)],
   }).code;
 
   const destinationDirectory = path.dirname(inputPath);
@@ -70,7 +101,7 @@ const generateInputEntryFile = ({
 const build = async (argv) => {
   const input = generateInputEntryFile({
     inputPath: `${sourceRootPath}/standalone.js`,
-    excludedModules: argv.exclude,
+    includedModules: argv.include,
   });
 
   const rollupConfig = buildConfig({
@@ -102,15 +133,15 @@ const getMakeBuildCommand = () =>
         "-e, --exclude <modules...>",
         "optional components that can be excluded from the build",
       )
-        .choices(getOptionalComponents())
+        .choices(getOptionalComponentsParameters())
         .default([])
         .argParser((value) => {
           const modules = value.split(",");
 
           modules.forEach((module) => {
-            if (!getOptionalComponents().includes(module))
+            if (!getOptionalComponentsParameters().includes(module))
               throw new InvalidOptionArgumentError(
-                `Module "${module}" does not exists. Allowed choices are "${getOptionalComponents().join('", "')}".`,
+                `Module "${module}" does not exists. Allowed choices are "${getOptionalComponentsParameters().join('", "')}".`,
               );
           });
 
@@ -147,9 +178,13 @@ const getMakeBuildCommand = () =>
     )
     .action((opts) => {
       const { exclude } = opts;
-      opts.exclude = components
-        .filter(({ parameter }) => exclude.includes(parameter))
-        .map(({ component }) => component);
+      const optionalComponents = getOptionalComponents();
+      delete opts.exclude;
+
+      opts.include = arrayDifference(
+        optionalComponents,
+        getComponentsFromParameters(exclude),
+      ).concat(getRequiredComponents());
 
       return build(opts);
     });
@@ -166,11 +201,13 @@ const getInteractiveBuildCommand = () =>
             type: "checkbox",
             name: "include",
             message: "What components should be included in your Alloy build?",
-            choices: components.map(({ name, parameter, checked = false }) => ({
-              name,
-              checked,
-              value: parameter,
-            })),
+            choices: optionalComponentsData.map(
+              ({ name, parameter, checked = false }) => ({
+                name,
+                checked,
+                value: parameter,
+              }),
+            ),
           },
           {
             type: "list",
@@ -189,14 +226,10 @@ const getInteractiveBuildCommand = () =>
           },
         ])
         .then(async (opts) => {
-          const { include } = opts;
-          const exclude = components
-            .filter(({ parameter }) => !include.includes(parameter))
-            .map(({ component }) => component);
-
-          opts.exclude = exclude;
-          delete opts.include;
-
+          opts.include = optionalComponentsData
+            .filter(({ parameter }) => opts.include.includes(parameter))
+            .map(({ component }) => component)
+            .concat(getRequiredComponents());
           await build(opts);
         })
         .catch((error) => {
