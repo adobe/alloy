@@ -49,7 +49,7 @@ jobs:
             const getTestingTagsPath = path.resolve(process.env.GITHUB_WORKSPACE, 'scripts', 'getTestingTags.js');
             const { default: getTestingTags } = await import(getTestingTagsPath);
             const tagsToTest = await getTestingTags();
-            const matrixInput = { include: tagsToTest.map(tag => ({tag})) };
+            const matrixInput = { include: tagsToTest.map(tag => ({tag: tag.tag, nodeVersion: tag.nodeVersion, testcafeVersion: tag.testcafeVersion})) };
             core.setOutput("matrixInput", JSON.stringify(matrixInput));
             console.log("matrixInput: ", matrixInput);
 
@@ -69,7 +69,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ matrix.nodeVersion }}
       - name: Cache dependencies
         uses: actions/cache@v4
         id: npm-cache
@@ -99,6 +99,10 @@ jobs:
           ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
           BASE_CODE_MIN: true
           NPM_PACKAGE_PROD: true
+      - name: Update Sauce Config with Node and TestCafe Versions
+        run: |
+          sed -i 's/"$NODE_VERSION"/"${{ matrix.nodeVersion }}"/g' .sauce/prod.yml
+          sed -i 's/"$TESTCAFE_VERSION"/"${{ matrix.testcafeVersion }}"/g' .sauce/prod.yml
       - name: Run Functional Tests
         uses: saucelabs/saucectl-run-action@v4.3.0
         env:
