@@ -21,6 +21,8 @@ import { gzip, brotliCompress as br, constants as zlibConstants } from "zlib";
 import { promisify } from "util";
 import { readFile, writeFile } from "fs/promises";
 
+console.log("process.env.BUNDLESIZE", process.env.BUNDLESIZE);
+const INCLUDE_BUNDLESIZE = process.env.BUNDLESIZE === "true";
 /**
  * @param {Object} options
  * @param {string} [options.outputFile] Filepath to output the bundle size report.
@@ -150,6 +152,14 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
     }),
   ];
 
+  if (INCLUDE_BUNDLESIZE) {
+    plugins.push(
+      bundleSizePlugin({
+        output: "bundlesize.json",
+      }),
+    );
+  }
+
   if (minify) {
     if (variant === BASE_CODE) {
       plugins.push(
@@ -177,13 +187,6 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
             file: path.join(dirname, "LICENSE_BANNER"),
           },
         },
-      }),
-    );
-  }
-  if (variant !== CUSTOM_BUILD) {
-    plugins.push(
-      bundleSizePlugin({
-        output: "bundlesize.json",
       }),
     );
   }
