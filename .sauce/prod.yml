@@ -18,6 +18,7 @@ disablePageCaching: true
 timeZone: New_York
 npm:
   dependencies:
+    - node-fetch
     - parse-uri
     - js-cookie
     - read-cache
