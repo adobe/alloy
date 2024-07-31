@@ -31,14 +31,25 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
 });
 
-export default async function getTestingTags() {
+const getPackageJson = async (tag) => {
+  const { data } = await octokit.repos.getContent({
+    owner: "adobe",
+    repo: "alloy",
+    path: "package.json",
+    ref: tag,
+  });
+  const content = Buffer.from(data.content, data.encoding).toString();
+  return JSON.parse(content);
+};
+
+const getTestingTags = async () => {
   return octokit.paginate(
     octokit.repos.listReleases,
     {
       owner: "adobe",
       repo: "alloy",
     },
-    ({ data: releases }, done) => {
+    async ({ data: releases }, done) => {
       const prodReleases = releases
         .filter((release) => !release.draft && !release.prerelease)
         .map((release) => release.tag_name);
@@ -54,4 +65,6 @@ export default async function getTestingTags() {
       }));
     },
   );
-}
+};
+
+export default getTestingTags;
