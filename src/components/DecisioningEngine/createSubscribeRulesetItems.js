@@ -16,7 +16,6 @@ import {
   string,
 } from "../../utils/validation/index.js";
 import createSubscription from "../../utils/createSubscription.js";
-import { includes } from "../../utils/index.js";
 
 const validateOptions = ({ options }) => {
   const validator = objectOf({
@@ -34,14 +33,14 @@ const emissionPreprocessor = (params, propositions) => {
   const result = {
     propositions: propositions
       .filter((payload) =>
-        surfacesFilter ? includes(surfacesFilter, payload.scope) : true,
+        surfacesFilter ? surfacesFilter.includes(payload.scope) : true,
       )
       .map((payload) => {
         const { items = [] } = payload;
         return {
           ...payload,
           items: items.filter((item) =>
-            schemasFilter ? includes(schemasFilter, item.schema) : true,
+            schemasFilter ? schemasFilter.includes(item.schema) : true,
           ),
         };
       })

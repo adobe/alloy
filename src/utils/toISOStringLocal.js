@@ -9,8 +9,21 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import padStart from "./padStart.js";
 import toInteger from "./toInteger.js";
+
+/**
+ * Add padString to the start of the string until it reaches the target length
+ *
+ * Different from String.prototype.padStart because this function coerces the
+ * input to a string before padding.
+ * @param {any} string
+ * @param {number} targetLength
+ * @param {string} padString
+ * @returns {string}
+ */
+const padStart = (string, targetLength, padString) => {
+  return `${string}`.padStart(targetLength, padString);
+};
 
 /**
  * Formats the date into an ISO date-time string in the local timezone
