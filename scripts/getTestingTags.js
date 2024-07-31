@@ -31,48 +31,27 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
 });
 
-const getPackageJson = async (tag) => {
-  const { data } = await octokit.repos.getContent({
-    owner: "adobe",
-    repo: "alloy",
-    path: "package.json",
-    ref: tag,
-  });
-  const content = Buffer.from(data.content, data.encoding).toString();
-  return JSON.parse(content);
-};
-
-const getTestingTags = async () => {
+export default async function getTestingTags() {
   return octokit.paginate(
     octokit.repos.listReleases,
     {
       owner: "adobe",
       repo: "alloy",
     },
-    async ({ data: releases }, done) => {
+    ({ data: releases }, done) => {
       const prodReleases = releases
         .filter((release) => !release.draft && !release.prerelease)
         .map((release) => release.tag_name);
-      console.log("Filtered production releases:", prodReleases);
-      const prodReleasesToTest = await Promise.all(
-        prodReleases
-          .filter((tag) => semver.lte("2.12.0", semver.clean(tag)))
-          .map(async (tag) => {
-            const packageJson = await getPackageJson(tag);
-            return {
-              tag,
-              nodeVersion: semver.lt(semver.clean(tag), "2.20.0") ? "18" : "22",
-              testcafeVersion: packageJson.devDependencies.testcafe,
-            };
-          }),
+      const prodReleasesToTest = prodReleases.filter((tag) =>
+        semver.lte("2.12.0", semver.clean(tag)),
       );
-      console.log("Production releases to test:", prodReleasesToTest);
       if (prodReleasesToTest.length < prodReleases.length) {
         done();
       }
-      return prodReleasesToTest;
+      return prodReleasesToTest.map((tag) => ({
+        tag,
+        nodeVersion: semver.lt(tag, "2.20.0") ? "18" : "22",
+      }));
     },
   );
-};
-
-export default getTestingTags;
+}
