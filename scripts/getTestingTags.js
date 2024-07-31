@@ -53,6 +53,7 @@ const getTestingTags = async () => {
       const prodReleases = releases
         .filter((release) => !release.draft && !release.prerelease)
         .map((release) => release.tag_name);
+      console.log("Filtered production releases:", prodReleases);
       const prodReleasesToTest = await Promise.all(
         prodReleases
           .filter((tag) => semver.lte("2.12.0", semver.clean(tag)))
@@ -65,6 +66,7 @@ const getTestingTags = async () => {
             };
           }),
       );
+      console.log("Production releases to test:", prodReleasesToTest);
       if (prodReleasesToTest.length < prodReleases.length) {
         done();
       }

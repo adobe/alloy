@@ -49,6 +49,9 @@ jobs:
             const getTestingTagsPath = path.resolve(process.env.GITHUB_WORKSPACE, 'scripts', 'getTestingTags.js');
             const { default: getTestingTags } = await import(getTestingTagsPath);
             const tagsToTest = await getTestingTags();
+            if (tagsToTest.length === 0) {
+              throw new Error("No tags found to test.");
+            }
             const matrixInput = { include: tagsToTest.map(tag => ({tag: tag.tag, nodeVersion: tag.nodeVersion, testcafeVersion: tag.testcafeVersion})) };
             core.setOutput("matrixInput", JSON.stringify(matrixInput));
             console.log("matrixInput: ", matrixInput);
