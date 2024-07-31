@@ -56,6 +56,7 @@ const getTestingTags = async () => {
       const prodReleasesToTest = prodReleases.filter((tag) =>
         semver.lte("2.16.0", semver.clean(tag)),
       );
+      console.log("Production releases to test:", prodReleasesToTest);
       if (prodReleasesToTest.length < prodReleases.length) {
         done();
       }
