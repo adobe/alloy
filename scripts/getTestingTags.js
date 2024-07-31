@@ -50,7 +50,7 @@ export default async function getTestingTags() {
       }
       return prodReleasesToTest.map((tag) => ({
         tag,
-        nodeVersion: semver.lt(tag, "2.16.0") ? "18" : "22",
+        nodeVersion: semver.lt(tag, "2.20.0") ? "18" : "22",
       }));
     },
   );
