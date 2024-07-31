@@ -43,7 +43,7 @@ export default async function getTestingTags() {
         .filter((release) => !release.draft && !release.prerelease)
         .map((release) => release.tag_name);
       const prodReleasesToTest = prodReleases.filter((tag) =>
-        semver.lte("2.12.0", semver.clean(tag)),
+        semver.lte("2.16.0", semver.clean(tag)),
       );
       if (prodReleasesToTest.length < prodReleases.length) {
         done();
