@@ -10,7 +10,7 @@ env:
   ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
-  version: 3.6.2
+  version: "package.json"
 nodeVersion: "$NODE_VERSION"
 speed: 1
 pageLoadTimeout: 3000
