@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import querySelectorAll from "./querySelectorAll.js";
-import startsWith from "../startsWith.js";
 import SHADOW_SEPARATOR from "../../constants/shadowSeparator.js";
 
 const splitWithShadow = (selector) => {
@@ -20,18 +19,13 @@ const splitWithShadow = (selector) => {
 
 const transformPrefix = (parent, selector) => {
   const result = selector;
-  const hasChildCombinatorPrefix = startsWith(result, ">");
+  const hasChildCombinatorPrefix = result.startsWith(">");
   if (!hasChildCombinatorPrefix) {
     return result;
   }
 
-  // IE doesn't support :scope
-  if (window.document.documentMode) {
-    return result.substring(1).trim();
-  }
-
   const prefix =
-    parent instanceof Element || parent instanceof HTMLDocument
+    parent instanceof Element || parent instanceof Document
       ? ":scope"
       : ":host"; // see https://bugs.webkit.org/show_bug.cgi?id=233380
 
@@ -39,11 +33,6 @@ const transformPrefix = (parent, selector) => {
 };
 
 export default (context, selector) => {
-  // Shadow DOM should be supported
-  if (!window.document.documentElement.attachShadow) {
-    return querySelectorAll(context, selector.replace(SHADOW_SEPARATOR, ""));
-  }
-
   const parts = splitWithShadow(selector);
 
   if (parts.length < 2) {

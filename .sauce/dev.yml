@@ -23,12 +23,8 @@ npm:
     - js-cookie
     - read-cache
     - uuid
-    - css.escape
-    - "@adobe/reactor-object-assign"
-    - "@adobe/reactor-load-script"
     - "@adobe/reactor-cookie"
     - "@adobe/reactor-query-string"
-    - "@adobe/reactor-promise"
 suites:
   - name: "Edge"
     browserName: "microsoftedge"

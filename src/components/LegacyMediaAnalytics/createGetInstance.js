@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 import { EVENT, MEDIA_EVENTS_INTERNAL } from "./constants/constants.js";
 import {
-  includes,
   isEmptyObject,
   isNil,
   isNonEmptyArray,
@@ -200,7 +199,7 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
         logger.warn("The Media Session was completed.");
         return {};
       }
-      if (!includes(Object.values(EVENT), eventType)) {
+      if (!Object.values(EVENT).includes(eventType)) {
         logger.warn("Invalid event type");
         return {};
       }

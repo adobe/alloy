@@ -10,12 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { assertValid } from "./utils.js";
-import find from "../find.js";
 
 export default (validators, message) =>
   function anyOf(value, path) {
     let newValue;
-    const valid = find(validators, (validator) => {
+    const valid = validators.find((validator) => {
       try {
         newValue = validator.call(this, value, path);
         return true;

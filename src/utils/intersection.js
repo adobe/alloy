@@ -9,13 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-import includes from "./includes.js";
-
 /**
  * Returns items that are found within both arrays.
  * @param {Array} a
  * @param {Array} b
  * @returns {Array}
  */
-export default (a, b) => a.filter((x) => includes(b, x));
+export default (a, b) => a.filter((x) => b.includes(x));

@@ -17,7 +17,6 @@ import {
   IE,
   UNKNOWN,
 } from "../constants/browser.js";
-import includes from "./includes.js";
 
 // Users could have also disabled third-party cookies within these browsers, but
 // we don't know. We also assume "unknown" browsers support third-party cookies,
@@ -31,4 +30,4 @@ const browsersSupportingThirdPartyCookie = [
 ];
 
 export default (browser) =>
-  includes(browsersSupportingThirdPartyCookie, browser);
+  browsersSupportingThirdPartyCookie.includes(browser);

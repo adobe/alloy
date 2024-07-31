@@ -9,19 +9,18 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-import { flatMap } from "../../utils/index.js";
-
 export default (config, logger, optionalContexts, requiredContexts) => {
   const configuredContexts = config.context;
 
-  const contexts = flatMap(configuredContexts, (context, i) => {
-    if (optionalContexts[context]) {
-      return [optionalContexts[context]];
-    }
-    logger.warn(`Invalid context[${i}]: '${context}' is not available.`);
-    return [];
-  }).concat(requiredContexts);
+  const contexts = configuredContexts
+    .flatMap((context, i) => {
+      if (optionalContexts[context]) {
+        return [optionalContexts[context]];
+      }
+      logger.warn(`Invalid context[${i}]: '${context}' is not available.`);
+      return [];
+    })
+    .concat(requiredContexts);
 
   return {
     namespace: "Context",
