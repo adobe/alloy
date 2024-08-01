@@ -20,7 +20,6 @@ import { fileURLToPath } from "url";
 import babel from "@babel/core";
 import { buildConfig } from "../rollup.config.js";
 import entryPointGeneratorBabelPlugin from "./helpers/entryPointGeneratorBabelPlugin.js";
-import optionalComponentsData from "./helpers/alloyOptionalComponents.js";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 let sourceRootPath = `${dirname}/../src`;
@@ -30,32 +29,37 @@ if (!fs.existsSync(sourceRootPath)) {
 
 const arrayDifference = (arr1, arr2) => arr1.filter((x) => !arr2.includes(x));
 
-const getOptionalComponents = (() => {
-  const c = optionalComponentsData.map(({ component }) => component);
-  return () => c;
-})();
+const camelCaseToTitleCase = (str) => {
+  return str.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase());
+};
 
-const getRequiredComponents = (() => {
-  const code = fs.readFileSync(
-    `${sourceRootPath}/core/componentCreators.js`,
-    "utf-8",
-  );
-
-  const allComponents = [];
-  babel.traverse(babel.parse(code), {
-    Identifier(p) {
-      if (p.node.name !== "default") {
-        allComponents.push(p.node.name);
-      }
+const getComponents = (() => {
+  const components = {};
+  [
+    {
+      filePath: `${sourceRootPath}/core/componentCreators.js`,
+      key: "optional",
     },
+    {
+      filePath: `${sourceRootPath}/core/requiredComponentCreators.js`,
+      key: "required",
+    },
+  ].forEach(({ filePath, key }) => {
+    const code = fs.readFileSync(filePath, "utf-8");
+    const c = [];
+
+    babel.traverse(babel.parse(code), {
+      Identifier(p) {
+        if (p.node.name !== "default") {
+          c.push(p.node.name);
+        }
+      },
+    });
+
+    components[key] = c;
   });
 
-  const optionalComponents = optionalComponentsData.map(
-    ({ component }) => component,
-  );
-  const requiredComponents = arrayDifference(allComponents, optionalComponents);
-
-  return () => requiredComponents;
+  return () => components;
 })();
 
 const getDefaultPath = () => {
@@ -77,9 +81,7 @@ const generateInputEntryFile = ({
   outputFile = "input.js",
   includedModules,
 }) => {
-  const code = fs.readFileSync(inputPath, "utf-8");
-
-  const output = babel.transformSync(code, {
+  const output = babel.transformFileSync(inputPath, {
     plugins: [entryPointGeneratorBabelPlugin(babel.types, includedModules)],
   }).code;
 
@@ -119,7 +121,7 @@ const build = async (argv) => {
 };
 
 const getMakeBuildCommand = () => {
-  const optionalComponentsParameters = getOptionalComponents();
+  const optionalComponentsParameters = getComponents().optional;
   return new Command("build")
     .description("Build a custom version of the alloy.js library.")
     .addOption(
@@ -172,12 +174,10 @@ const getMakeBuildCommand = () => {
     )
     .action((opts) => {
       const { exclude } = opts;
-      const optionalComponents = getOptionalComponents();
+      const optionalComponents = getComponents().optional;
       delete opts.exclude;
 
-      opts.include = arrayDifference(optionalComponents, exclude).concat(
-        getRequiredComponents(),
-      );
+      opts.include = arrayDifference(optionalComponents, exclude);
       return build(opts);
     });
 };
@@ -194,13 +194,11 @@ const getInteractiveBuildCommand = () =>
             type: "checkbox",
             name: "include",
             message: "What components should be included in your Alloy build?",
-            choices: optionalComponentsData.map(
-              ({ name, component: value, checked = false }) => ({
-                name,
-                checked,
-                value,
-              }),
-            ),
+            choices: getComponents().optional.map((value) => ({
+              name: camelCaseToTitleCase(value),
+              checked: true,
+              value,
+            })),
           },
           {
             type: "list",
@@ -218,10 +216,7 @@ const getInteractiveBuildCommand = () =>
             default: process.cwd(),
           },
         ])
-        .then(async (opts) => {
-          opts.include = opts.include.concat(getRequiredComponents());
-          await build(opts);
-        })
+        .then(async (opts) => build(opts))
         .catch((error) => {
           if (error.isTtyError) {
             console.error(

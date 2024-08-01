@@ -11,7 +11,6 @@
     "LICENSE_BANNER",
     "babel.config.cjs",
     "rollup.config.js",
-    "scripts/helpers/alloyOptionalComponents.js",
     "scripts/helpers/entryPointGeneratorBabelPlugin.js",
     "scripts/helpers/versionBabelPlugin.js"
   ],

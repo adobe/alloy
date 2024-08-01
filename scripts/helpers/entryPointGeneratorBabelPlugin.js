@@ -16,14 +16,22 @@ export default (t, includedModules) => ({
       if (path.node.callee.name === "core") {
         path.replaceWith(
           t.CallExpression(t.Identifier("core"), [
-            t.ArrayExpression(
-              includedModules.map((z) =>
-                t.MemberExpression(
-                  t.Identifier("componentCreators"),
-                  t.Identifier(z),
+            t.ObjectExpression([
+              t.ObjectProperty(
+                t.Identifier("components"),
+                t.ObjectExpression(
+                  includedModules.map((z) =>
+                    t.ObjectProperty(
+                      t.identifier(z),
+                      t.MemberExpression(
+                        t.Identifier("components"),
+                        t.Identifier(z),
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ]),
           ]),
         );
 

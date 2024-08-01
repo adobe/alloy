@@ -52,6 +52,7 @@ import injectGetLocationHint from "./edgeNetwork/injectGetLocationHint.js";
 import isRequestRetryable from "./network/isRequestRetryable.js";
 import getRequestRetryDelay from "./network/getRequestRetryDelay.js";
 import injectApplyResponse from "./edgeNetwork/injectApplyResponse.js";
+import * as requiredComponents from "./requiredComponentCreators.js";
 
 const createNamespacedStorage = injectStorage(window);
 
@@ -71,10 +72,16 @@ const getAssuranceValidationTokenParams =
 export const createExecuteCommand = ({
   instanceName,
   logController: { setDebugEnabled, logger, createComponentLogger },
-  componentCreators,
+  components,
 }) => {
   const componentRegistry = createComponentRegistry();
   const lifecycle = createLifecycle(componentRegistry);
+
+  components = { ...components, ...requiredComponents };
+  const componentCreators = Object.keys(components).reduce((memo, key) => {
+    memo.push(components[key]);
+    return memo;
+  }, []);
 
   const setDebugCommand = (options) => {
     setDebugEnabled(options.enabled, { fromConfig: false });
@@ -198,7 +205,7 @@ export const createExecuteCommand = ({
   return executeCommand;
 };
 
-export default (componentCreators) => {
+export default ({ components }) => {
   // eslint-disable-next-line no-underscore-dangle
   const instanceNames = window.__alloyNS;
 
@@ -216,7 +223,7 @@ export default (componentCreators) => {
       const executeCommand = createExecuteCommand({
         instanceName,
         logController,
-        componentCreators,
+        components,
       });
       const instance = createInstanceFunction(executeCommand);
 

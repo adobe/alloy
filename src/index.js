@@ -18,13 +18,8 @@ import { createExecuteCommand } from "./core/index.js";
 import createLogger from "./core/createLogger.js";
 import createLogController from "./core/createLogController.js";
 import { injectStorage } from "./utils/index.js";
-import {
-  arrayOf,
-  objectOf,
-  string,
-  callback,
-} from "./utils/validation/index.js";
-import * as allComponentCreators from "./core/componentCreators.js";
+import { arrayOf, objectOf, string } from "./utils/validation/index.js";
+import * as optionalComponents from "./core/componentCreators.js";
 
 const { console } = window;
 const createNamespacedStorage = injectStorage(window);
@@ -33,10 +28,10 @@ export const createCustomInstance = (options = {}) => {
   const eventOptionsValidator = objectOf({
     name: string().default("alloy"),
     monitors: arrayOf(objectOf({})).default([]),
-    componentCreators: arrayOf(callback()),
+    components: objectOf({}),
   }).noUnknownFields();
 
-  const { name, monitors, componentCreators } = eventOptionsValidator(options);
+  const { name, monitors, components } = eventOptionsValidator(options);
 
   // this is a function so that window.__alloyMonitors can be set or added to at any time
   // eslint-disable-next-line no-underscore-dangle
@@ -54,7 +49,7 @@ export const createCustomInstance = (options = {}) => {
   const instance = createExecuteCommand({
     instanceName: name,
     logController,
-    componentCreators,
+    components,
   });
   logController.logger.logOnInstanceCreated({ instance });
 
@@ -69,13 +64,11 @@ export const createInstance = (options = {}) => {
 
   const { name, monitors } = eventOptionsValidator(options);
 
-  const componentCreators = Object.keys(allComponentCreators).reduce(
-    (acc, key) => {
-      acc.push(allComponentCreators[key]);
-      return acc;
-    },
-    [],
-  );
-
-  return createCustomInstance({ name, monitors, componentCreators });
+  return createCustomInstance({
+    name,
+    monitors,
+    components: optionalComponents,
+  });
 };
+
+export { optionalComponents as components };
