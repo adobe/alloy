@@ -10,6 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+// This file contains the optional components that can be included in an alloy build.
+// The exports names must have the camel case format. If you need to add a required
+// module, you should add it to the core/requiredComponentCreators.js file.
+
 export { default as activityCollector } from "../components/ActivityCollector/index.js";
 export { default as audiences } from "../components/Audiences/index.js";
 export { default as context } from "../components/Context/index.js";
