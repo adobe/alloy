@@ -10,16 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as createActivityCollector } from "../components/ActivityCollector/index.js";
-export { default as createAudiences } from "../components/Audiences/index.js";
-export { default as createContext } from "../components/Context/index.js";
-export { default as createDataCollector } from "../components/DataCollector/index.js";
-export { default as createDecisioningEngine } from "../components/DecisioningEngine/index.js";
-export { default as createEventMerge } from "../components/EventMerge/index.js";
-export { default as createIdentity } from "../components/Identity/index.js";
-export { default as createLegacyMediaAnalytics } from "../components/LegacyMediaAnalytics/index.js";
-export { default as createLibraryInfo } from "../components/LibraryInfo/index.js";
-export { default as createMachineLearning } from "../components/MachineLearning/index.js";
-export { default as createPersonalization } from "../components/Personalization/index.js";
-export { default as createPrivacy } from "../components/Privacy/index.js";
-export { default as createStreamingMedia } from "../components/StreamingMedia/index.js";
+export { default as activityCollector } from "../components/ActivityCollector/index.js";
+export { default as audiences } from "../components/Audiences/index.js";
+export { default as context } from "../components/Context/index.js";
+export { default as dataCollector } from "../components/DataCollector/index.js";
+export { default as decisioningEngine } from "../components/DecisioningEngine/index.js";
+export { default as eventMerge } from "../components/EventMerge/index.js";
+export { default as identity } from "../components/Identity/index.js";
+export { default as legacyMediaAnalytics } from "../components/LegacyMediaAnalytics/index.js";
+export { default as libraryInfo } from "../components/LibraryInfo/index.js";
+export { default as machineLearning } from "../components/MachineLearning/index.js";
+export { default as personalization } from "../components/Personalization/index.js";
+export { default as privacy } from "../components/Privacy/index.js";
+export { default as streamingMedia } from "../components/StreamingMedia/index.js";

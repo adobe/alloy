@@ -23,24 +23,15 @@ import entryPointGeneratorBabelPlugin from "./helpers/entryPointGeneratorBabelPl
 import optionalComponentsData from "./helpers/alloyOptionalComponents.js";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
-const arrayDifference = (arr1, arr2) => arr1.filter((x) => !arr2.includes(x));
-const getComponentsFromParameters = (parameters) =>
-  optionalComponentsData
-    .filter((c) => parameters.includes(c.parameter))
-    .map((c) => c.component);
-
 let sourceRootPath = `${dirname}/../src`;
 if (!fs.existsSync(sourceRootPath)) {
   sourceRootPath = `${dirname}/../libEs6`;
 }
 
-const getOptionalComponentsParameters = (() => {
-  const c = optionalComponentsData.map((a) => a.parameter);
-  return () => c;
-})();
+const arrayDifference = (arr1, arr2) => arr1.filter((x) => !arr2.includes(x));
 
 const getOptionalComponents = (() => {
-  const c = optionalComponentsData.map((a) => a.component);
+  const c = optionalComponentsData.map(({ component }) => component);
   return () => c;
 })();
 
@@ -59,7 +50,9 @@ const getRequiredComponents = (() => {
     },
   });
 
-  const optionalComponents = optionalComponentsData.map((c) => c.component);
+  const optionalComponents = optionalComponentsData.map(
+    ({ component }) => component,
+  );
   const requiredComponents = arrayDifference(allComponents, optionalComponents);
 
   return () => requiredComponents;
@@ -69,7 +62,7 @@ const getDefaultPath = () => {
   return process.cwd();
 };
 
-const getFile = (argv) => {
+const getOutputFilePath = (argv) => {
   return `${[argv.outputDir, `alloy${argv.minify ? ".min" : ""}.js`].join(path.sep)}`;
 };
 
@@ -107,7 +100,7 @@ const build = async (argv) => {
   const rollupConfig = buildConfig({
     variant: "CUSTOM_BUILD",
     input,
-    file: getFile(argv),
+    file: getOutputFilePath(argv),
     minify: argv.minify,
   });
 
@@ -125,23 +118,24 @@ const build = async (argv) => {
   );
 };
 
-const getMakeBuildCommand = () =>
-  new Command("build")
+const getMakeBuildCommand = () => {
+  const optionalComponentsParameters = getOptionalComponents();
+  return new Command("build")
     .description("Build a custom version of the alloy.js library.")
     .addOption(
       new Option(
         "-e, --exclude <modules...>",
         "optional components that can be excluded from the build",
       )
-        .choices(getOptionalComponentsParameters())
+        .choices(optionalComponentsParameters)
         .default([])
         .argParser((value) => {
           const modules = value.split(",");
 
           modules.forEach((module) => {
-            if (!getOptionalComponentsParameters().includes(module))
+            if (!optionalComponentsParameters.includes(module))
               throw new InvalidOptionArgumentError(
-                `Module "${module}" does not exists. Allowed choices are "${getOptionalComponentsParameters().join('", "')}".`,
+                `Module "${module}" does not exists. Allowed choices are "${optionalComponentsParameters.join('", "')}".`,
               );
           });
 
@@ -181,13 +175,12 @@ const getMakeBuildCommand = () =>
       const optionalComponents = getOptionalComponents();
       delete opts.exclude;
 
-      opts.include = arrayDifference(
-        optionalComponents,
-        getComponentsFromParameters(exclude),
-      ).concat(getRequiredComponents());
-
+      opts.include = arrayDifference(optionalComponents, exclude).concat(
+        getRequiredComponents(),
+      );
       return build(opts);
     });
+};
 
 const getInteractiveBuildCommand = () =>
   new Command("interactive-build")
@@ -202,10 +195,10 @@ const getInteractiveBuildCommand = () =>
             name: "include",
             message: "What components should be included in your Alloy build?",
             choices: optionalComponentsData.map(
-              ({ name, parameter, checked = false }) => ({
+              ({ name, component: value, checked = false }) => ({
                 name,
                 checked,
-                value: parameter,
+                value,
               }),
             ),
           },
@@ -226,10 +219,7 @@ const getInteractiveBuildCommand = () =>
           },
         ])
         .then(async (opts) => {
-          opts.include = optionalComponentsData
-            .filter(({ parameter }) => opts.include.includes(parameter))
-            .map(({ component }) => component)
-            .concat(getRequiredComponents());
+          opts.include = opts.include.concat(getRequiredComponents());
           await build(opts);
         })
         .catch((error) => {
@@ -250,7 +240,7 @@ program
   .description(
     "Tool for generating custom Adobe Experience Platform Web SDK builds.",
   )
-  .version("1.0.0");
+  .version("1.1.0");
 
 program.addCommand(getMakeBuildCommand());
 program.addCommand(getInteractiveBuildCommand(), { isDefault: true });

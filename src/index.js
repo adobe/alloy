@@ -24,13 +24,12 @@ import {
   string,
   callback,
 } from "./utils/validation/index.js";
-
-export * from "./core/componentCreators.js";
+import * as allComponentCreators from "./core/componentCreators.js";
 
 const { console } = window;
 const createNamespacedStorage = injectStorage(window);
 
-export const createInstance = (options = {}) => {
+export const createCustomInstance = (options = {}) => {
   const eventOptionsValidator = objectOf({
     name: string().default("alloy"),
     monitors: arrayOf(objectOf({})).default([]),
@@ -60,4 +59,23 @@ export const createInstance = (options = {}) => {
   logController.logger.logOnInstanceCreated({ instance });
 
   return instance;
+};
+
+export const createInstance = (options = {}) => {
+  const eventOptionsValidator = objectOf({
+    name: string().default("alloy"),
+    monitors: arrayOf(objectOf({})).default([]),
+  }).noUnknownFields();
+
+  const { name, monitors } = eventOptionsValidator(options);
+
+  const componentCreators = Object.keys(allComponentCreators).reduce(
+    (acc, key) => {
+      acc.push(allComponentCreators[key]);
+      return acc;
+    },
+    [],
+  );
+
+  return createCustomInstance({ name, monitors, componentCreators });
 };
