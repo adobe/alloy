@@ -9,8 +9,6 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-import { flatMap } from "../utils/index.js";
 import { ADOBE_EDGE } from "../constants/httpHeaderNames.js";
 
 /**
@@ -35,10 +33,9 @@ export default ({ extractEdgeInfo }) =>
        * getPayloadsByType("identity:persist")
        */
       getPayloadsByType(type) {
-        return flatMap(
-          handle.filter((fragment) => fragment.type === type),
-          (fragment) => fragment.payload,
-        );
+        return handle
+          .filter((fragment) => fragment.type === type)
+          .flatMap((fragment) => fragment.payload);
       },
       /**
        * Returns all errors.

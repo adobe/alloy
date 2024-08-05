@@ -82,7 +82,7 @@ jobs:
         env:
           ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
 
-      - uses: saucelabs/saucectl-run-action@v4
+      - uses: saucelabs/saucectl-run-action@v4.3.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:

@@ -16,7 +16,6 @@ import {
   string,
 } from "../../utils/validation/index.js";
 import createSubscription from "../../utils/createSubscription.js";
-import { includes } from "../../utils/index.js";
 import {
   getEventType,
   PropositionEventType,
@@ -43,8 +42,7 @@ export default ({ collect }) => {
   const collectedEventsThisSession = new Set();
 
   const shouldAlwaysCollect = (propositionEventType) =>
-    includes(
-      [PropositionEventType.INTERACT, PropositionEventType.DISMISS],
+    [PropositionEventType.INTERACT, PropositionEventType.DISMISS].includes(
       propositionEventType,
     );
 
@@ -71,7 +69,7 @@ export default ({ collect }) => {
       return Promise.resolve();
     }
 
-    if (!includes(Object.values(PropositionEventType), propositionEventType)) {
+    if (!Object.values(PropositionEventType).includes(propositionEventType)) {
       return Promise.resolve();
     }
 
@@ -111,14 +109,14 @@ export default ({ collect }) => {
     const result = {
       propositions: propositions
         .filter((payload) =>
-          surfacesFilter ? includes(surfacesFilter, payload.scope) : true,
+          surfacesFilter ? surfacesFilter.includes(payload.scope) : true,
         )
         .map((payload) => {
           const { items = [] } = payload;
           return {
             ...payload,
             items: items.filter((item) =>
-              schemasFilter ? includes(schemasFilter, item.schema) : true,
+              schemasFilter ? schemasFilter.includes(item.schema) : true,
             ),
           };
         })

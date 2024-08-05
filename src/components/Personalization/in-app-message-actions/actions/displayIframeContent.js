@@ -13,12 +13,7 @@ governing permissions and limitations under the License.
 import { getNonce } from "../../dom-actions/dom/index.js";
 import { parseAnchor, removeElementById } from "../utils.js";
 import { TEXT_HTML } from "../../../../constants/contentType.js";
-import {
-  assign,
-  includes,
-  isNonEmptyString,
-  values,
-} from "../../../../utils/index.js";
+import { isNonEmptyString } from "../../../../utils/index.js";
 import { createNode } from "../../../../utils/dom/index.js";
 import { objectOf } from "../../../../utils/validation/index.js";
 import { PropositionEventType } from "../../../../constants/propositionEventType.js";
@@ -99,7 +94,7 @@ const renderMessage = (iframe, webParameters, container, overlay) => {
   ].forEach(({ id, element }) => {
     const { style = {}, params = {} } = webParameters[id];
 
-    assign(element.style, style);
+    element.style = { ...element.style, ...style };
 
     const {
       parentElement = "body",
@@ -193,15 +188,15 @@ const isValidWebParameters = (webParameters) => {
 
   const ids = Object.keys(webParameters);
 
-  if (!includes(ids, MESSAGING_CONTAINER_ID)) {
+  if (!ids.includes(MESSAGING_CONTAINER_ID)) {
     return false;
   }
 
-  if (!includes(ids, OVERLAY_CONTAINER_ID)) {
+  if (!ids.includes(OVERLAY_CONTAINER_ID)) {
     return false;
   }
 
-  const valuesArray = values(webParameters);
+  const valuesArray = Object.values(webParameters);
 
   for (let i = 0; i < valuesArray.length; i += 1) {
     if (!objectOf(valuesArray[i], "style")) {
