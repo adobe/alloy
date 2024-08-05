@@ -16,6 +16,10 @@ import {
   string,
 } from "../../utils/validation/index.js";
 import createSubscription from "../../utils/createSubscription.js";
+import {
+  getEventType,
+  PropositionEventType,
+} from "../../constants/propositionEventType.js";
 
 const validateOptions = ({ options }) => {
   const validator = objectOf({
@@ -27,55 +31,125 @@ const validateOptions = ({ options }) => {
   return validator(options);
 };
 
-const emissionPreprocessor = (params, propositions) => {
-  const { surfacesFilter, schemasFilter } = params;
+const getAnalyticsDetail = (proposition) => {
+  const { id, scope, scopeDetails } = proposition;
+  return { id, scope, scopeDetails };
+};
 
-  const result = {
-    propositions: propositions
-      .filter((payload) =>
-        surfacesFilter ? surfacesFilter.includes(payload.scope) : true,
-      )
-      .map((payload) => {
-        const { items = [] } = payload;
-        return {
-          ...payload,
-          items: items.filter((item) =>
-            schemasFilter ? schemasFilter.includes(item.schema) : true,
-          ),
-        };
-      })
-      .filter((payload) => payload.items.length > 0),
+export default ({ collect }) => {
+  let emitPropositions = () => undefined;
+
+  const collectedEventsThisSession = new Set();
+
+  const shouldAlwaysCollect = (propositionEventType) =>
+    [PropositionEventType.INTERACT, PropositionEventType.DISMISS].includes(
+      propositionEventType,
+    );
+
+  const shouldCollect = (
+    propositionEventType,
+    analyticsMetaId,
+    collectedEventsThisRequest,
+  ) => {
+    const eventId = [propositionEventType, analyticsMetaId].join("-");
+
+    const result =
+      !collectedEventsThisRequest.has(eventId) &&
+      (shouldAlwaysCollect(propositionEventType) ||
+        !collectedEventsThisSession.has(eventId));
+
+    collectedEventsThisRequest.add(eventId);
+    collectedEventsThisSession.add(eventId);
+
+    return result;
   };
 
-  return [result];
-};
+  const collectEvent = (propositionEventType, propositions = []) => {
+    if (!(propositions instanceof Array)) {
+      return Promise.resolve();
+    }
 
-const emissionCondition = (params, result) => {
-  return result.propositions.length > 0;
-};
+    if (!Object.values(PropositionEventType).includes(propositionEventType)) {
+      return Promise.resolve();
+    }
 
-export default () => {
-  const subscription = createSubscription();
-  subscription.setEmissionPreprocessor(emissionPreprocessor);
-  subscription.setEmissionCondition(emissionCondition);
+    const decisionsMeta = [];
+
+    const collectedEventsThisRequest = new Set();
+
+    propositions.forEach((proposition) => {
+      const analyticsMeta = getAnalyticsDetail(proposition);
+      if (
+        !shouldCollect(
+          propositionEventType,
+          analyticsMeta.id,
+          collectedEventsThisRequest,
+        )
+      ) {
+        return;
+      }
+
+      decisionsMeta.push(analyticsMeta);
+    });
+
+    return decisionsMeta.length > 0
+      ? collect({
+          decisionsMeta,
+          eventType: getEventType(propositionEventType),
+          documentMayUnload: true,
+        })
+      : Promise.resolve();
+  };
+
+  const subscriptions = createSubscription();
+
+  const emissionPreprocessor = (params, propositions) => {
+    const { surfacesFilter, schemasFilter } = params;
+
+    const result = {
+      propositions: propositions
+        .filter((payload) =>
+          surfacesFilter ? surfacesFilter.includes(payload.scope) : true,
+        )
+        .map((payload) => {
+          const { items = [] } = payload;
+          return {
+            ...payload,
+            items: items.filter((item) =>
+              schemasFilter ? schemasFilter.includes(item.schema) : true,
+            ),
+          };
+        })
+        .filter((payload) => payload.items.length > 0),
+    };
+
+    return [result, collectEvent];
+  };
+
+  subscriptions.setEmissionPreprocessor(emissionPreprocessor);
 
   const run = ({ surfaces, schemas, callback }) => {
-    const unsubscribe = subscription.add(callback, {
+    const { id, unsubscribe } = subscriptions.add(callback, {
       surfacesFilter: surfaces instanceof Array ? surfaces : undefined,
       schemasFilter: schemas instanceof Array ? schemas : undefined,
     });
-
+    emitPropositions(id);
     return Promise.resolve({ unsubscribe });
   };
 
   const optionsValidator = (options) => validateOptions({ options });
 
   const refresh = (propositions) => {
-    if (!subscription.hasSubscriptions()) {
-      return;
-    }
+    emitPropositions = (subscriptionId) => {
+      if (subscriptionId) {
+        subscriptions.emitOne(subscriptionId, propositions);
+        return;
+      }
 
-    subscription.emit(propositions);
+      subscriptions.emit(propositions);
+    };
+
+    emitPropositions();
   };
 
   return {

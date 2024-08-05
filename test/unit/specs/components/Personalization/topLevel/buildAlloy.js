@@ -12,14 +12,14 @@ governing permissions and limitations under the License.
 import createEvent from "../../../../../../src/core/createEvent.js";
 import flushPromiseChains from "../../../../helpers/flushPromiseChains.js";
 import createComponent from "../../../../../../src/components/Personalization/createComponent.js";
-import createCollect from "../../../../../../src/components/Personalization/createCollect.js";
+import createCollect from "../../../../../../src/utils/createCollect.js";
 import createFetchDataHandler from "../../../../../../src/components/Personalization/createFetchDataHandler.js";
 import collectInteractions from "../../../../../../src/components/Personalization/dom-actions/clicks/collectInteractions.js";
 import isAuthoringModeEnabled from "../../../../../../src/components/Personalization/utils/isAuthoringModeEnabled.js";
 import {
   mergeDecisionsMeta,
   mergeQuery,
-} from "../../../../../../src/components/Personalization/event.js";
+} from "../../../../../../src/utils/event.js";
 import createOnClickHandler from "../../../../../../src/components/Personalization/createOnClickHandler.js";
 import createViewCacheManager from "../../../../../../src/components/Personalization/createViewCacheManager.js";
 import createViewChangeHandler from "../../../../../../src/components/Personalization/createViewChangeHandler.js";

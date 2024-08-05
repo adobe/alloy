@@ -10,13 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  mergeDecisionsMeta,
-  mergeQuery,
-} from "../../../../../src/components/Personalization/event.js";
-import { PropositionEventType } from "../../../../../src/constants/propositionEventType.js";
+import { mergeDecisionsMeta, mergeQuery } from "../../../../src/utils/event.js";
+import { PropositionEventType } from "../../../../src/constants/propositionEventType.js";
 
-describe("Personalization::event", () => {
+describe("Utils::event", () => {
   let event;
 
   beforeEach(() => {
