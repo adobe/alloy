@@ -12,7 +12,8 @@ env:
 testcafe:
   version: "package.json"
 nodeVersion: "$NODE_VERSION"
-speed: 1
+speed: 2
+concurrency: 2
 pageLoadTimeout: 3000
 disablePageCaching: true
 timeZone: New_York
