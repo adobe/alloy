@@ -63,6 +63,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
+      max-parallel: 10
+      fail-fast: false
       matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
     continue-on-error: true
     steps:
@@ -138,10 +140,12 @@ jobs:
 
   alloy-prod-e2e-firefox:
     name: Alloy Functional Test - Firefox
-    needs: get-testing-tags
+    needs: alloy-prod-e2e-safari
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
+      max-parallel: 10
+      fail-fast: false
       matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
     continue-on-error: true
     steps:
@@ -217,10 +221,12 @@ jobs:
 
   alloy-prod-e2e-chrome:
     name: Alloy Functional Test - Chrome
-    needs: get-testing-tags
+    needs: alloy-prod-e2e-firefox
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
+      max-parallel: 10
+      fail-fast: false
       matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
     continue-on-error: true
     steps:
