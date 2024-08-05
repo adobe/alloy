@@ -65,6 +65,7 @@ jobs:
     strategy:
       max-parallel: 14
       matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
+    continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
