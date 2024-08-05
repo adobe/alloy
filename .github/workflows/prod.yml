@@ -63,8 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
-      matrix:
-        tag: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
+      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
     continue-on-error: true
     steps:
       - name: Checkout code
@@ -127,15 +126,15 @@ jobs:
         run: |
           mkdir -p test-results
           cp -r ./test-results/* ./test-results/
-      - name: Notify on failure
-        if: failure()
-        uses: craftech-io/slack-action@v1
-        with:
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          status: failure
-          message: |
-            Tests failed:
-            ${{ steps.capture-results.outputs.test-results }}
+      # - name: Notify on failure
+      #   if: failure()
+      #   uses: craftech-io/slack-action@v1
+      #   with:
+      #     slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #     status: failure
+      #     message: |
+      #       Tests failed:
+      #       ${{ steps.capture-results.outputs.test-results }}
 
   alloy-prod-e2e-firefox:
     name: Alloy Functional Test - Firefox
@@ -143,8 +142,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
-      matrix:
-        tag: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
+      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
     continue-on-error: true
     steps:
       - name: Checkout code
@@ -207,15 +205,15 @@ jobs:
         run: |
           mkdir -p test-results
           cp -r ./test-results/* ./test-results/
-      - name: Notify on failure
-        if: failure()
-        uses: craftech-io/slack-action@v1
-        with:
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          status: failure
-          message: |
-            Tests failed:
-            ${{ steps.capture-results.outputs.test-results }}
+      # - name: Notify on failure
+      #   if: failure()
+      #   uses: craftech-io/slack-action@v1
+      #   with:
+      #     slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #     status: failure
+      #     message: |
+      #       Tests failed:
+      #       ${{ steps.capture-results.outputs.test-results }}
 
   alloy-prod-e2e-chrome:
     name: Alloy Functional Test - Chrome
@@ -223,8 +221,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
-      matrix:
-        tag: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
+      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
     continue-on-error: true
     steps:
       - name: Checkout code
