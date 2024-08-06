@@ -13,6 +13,7 @@ testcafe:
   version: "package.json"
 nodeVersion: "$NODE_VERSION"
 speed: 1
+concurrent: 2
 pageLoadTimeout: 3000
 disablePageCaching: true
 timeZone: New_York
