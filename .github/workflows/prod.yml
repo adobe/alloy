@@ -126,7 +126,11 @@ jobs:
         id: capture-results
         run: |
           mkdir -p test-results
-          cp -r ./test-results/* ./test-results/
+          if [ -d "./test-results" ] && [ "$(ls -A ./test-results)" ]; then
+            cp -r ./test-results/* ./test-results/
+          else
+            echo "No test results to copy."
+          fi
       # - name: Notify on failure
       #   if: failure()
       #   uses: craftech-io/slack-action@v1
@@ -206,7 +210,11 @@ jobs:
         id: capture-results
         run: |
           mkdir -p test-results
-          cp -r ./test-results/* ./test-results/
+          if [ -d "./test-results" ] && [ "$(ls -A ./test-results)" ]; then
+            cp -r ./test-results/* ./test-results/
+          else
+            echo "No test results to copy."
+          fi
       # - name: Notify on failure
       #   if: failure()
       #   uses: craftech-io/slack-action@v1
