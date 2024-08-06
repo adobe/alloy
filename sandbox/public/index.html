@@ -25,10 +25,8 @@
           console.log("Alloy Instance Configured");
           console.log(JSON.stringify(data.config, null, 2));
           const { getLinkDetails } = data;
-
           const listOfLinks = document.links;
-
-          document.addEventListener("DOMContentLoaded", async function (event) {
+          setTimeout(async function () {
             console.log(
               `Will now print link details for ${listOfLinks.length} links`,
             );
@@ -36,7 +34,7 @@
               const linkDetails = getLinkDetails(listOfLinks[i]);
               console.log("link details", linkDetails);
             }
-          });
+          }, 1000);
         },
       });
     </script>
