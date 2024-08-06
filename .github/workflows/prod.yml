@@ -143,7 +143,7 @@ jobs:
 
   alloy-prod-e2e-firefox:
     name: Alloy Functional Test - Firefox
-    needs: alloy-prod-e2e-safari
+    needs: get-testing-tags
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
@@ -227,7 +227,7 @@ jobs:
 
   alloy-prod-e2e-chrome:
     name: Alloy Functional Test - Chrome
-    needs: alloy-prod-e2e-firefox
+    needs: get-testing-tags
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
