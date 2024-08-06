@@ -18,7 +18,12 @@ import { createExecuteCommand } from "./core/index.js";
 import createLogger from "./core/createLogger.js";
 import createLogController from "./core/createLogController.js";
 import { injectStorage } from "./utils/index.js";
-import { arrayOf, objectOf, string } from "./utils/validation/index.js";
+import {
+  arrayOf,
+  objectOf,
+  string,
+  callback,
+} from "./utils/validation/index.js";
 import * as optionalComponents from "./core/componentCreators.js";
 
 const { console } = window;
@@ -28,7 +33,7 @@ export const createCustomInstance = (options = {}) => {
   const eventOptionsValidator = objectOf({
     name: string().default("alloy"),
     monitors: arrayOf(objectOf({})).default([]),
-    components: objectOf({}),
+    components: arrayOf(callback()),
   }).noUnknownFields();
 
   const { name, monitors, components } = eventOptionsValidator(options);
@@ -67,7 +72,7 @@ export const createInstance = (options = {}) => {
   return createCustomInstance({
     name,
     monitors,
-    components: optionalComponents,
+    components: Object.values(optionalComponents),
   });
 };
 

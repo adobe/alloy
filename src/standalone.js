@@ -17,4 +17,4 @@ import * as components from "./core/componentCreators.js";
 
 // If you change this line, check if the custom build script is still working.
 // You might need to change the babel plugin in scripts/helpers/entryPointGeneratorBabelPlugin.js.
-core({ components });
+core({ components: Object.values(components) });

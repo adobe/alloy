@@ -77,11 +77,9 @@ export const createExecuteCommand = ({
   const componentRegistry = createComponentRegistry();
   const lifecycle = createLifecycle(componentRegistry);
 
-  components = { ...components, ...requiredComponents };
-  const componentCreators = Object.keys(components).reduce((memo, key) => {
-    memo.push(components[key]);
-    return memo;
-  }, []);
+  const componentCreators = components.concat(
+    Object.values(requiredComponents),
+  );
 
   const setDebugCommand = (options) => {
     setDebugEnabled(options.enabled, { fromConfig: false });
