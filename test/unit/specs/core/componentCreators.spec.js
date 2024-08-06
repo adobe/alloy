@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import * as componentCreators from "../../../../src/core/componentCreators.js";
 
 describe("componentCreators", () => {
-  it("is an array of component creators", () => {
+  it("is an object of component creators", () => {
     const c = Object.keys(componentCreators).reduce((acc, key) => {
       acc.push(componentCreators[key]);
       return acc;

@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import * as requiredComponentCreators from "../../../../src/core/componentCreators.js";
+import * as requiredComponentCreators from "../../../../src/core/requiredComponentCreators.js";
 
-describe("componentCreators", () => {
-  it("is an array of component creators", () => {
+describe("requiredComponentCreators", () => {
+  it("is an object of component creators", () => {
     const c = Object.keys(requiredComponentCreators).reduce((acc, key) => {
       acc.push(requiredComponentCreators[key]);
       return acc;
