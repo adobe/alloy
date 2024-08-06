@@ -121,8 +121,7 @@ jobs:
             ALLOY_PROD_VERSION=${{ env.PACKAGE_VERSION }}
             NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
             ALLOY_ENV=prod
-          config-file: ./.sauce/prod.yml
-          browser: safari
+          config-file: ./.sauce/prod-safari.yml
       - name: Capture Test Results
         id: capture-results
         run: |
@@ -202,8 +201,7 @@ jobs:
             ALLOY_PROD_VERSION=${{ env.PACKAGE_VERSION }}
             NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
             ALLOY_ENV=prod
-          config-file: ./.sauce/prod.yml
-          browser: firefox
+          config-file: ./.sauce/prod-firefox.yml
       - name: Capture Test Results
         id: capture-results
         run: |
@@ -283,8 +281,7 @@ jobs:
             ALLOY_PROD_VERSION=${{ env.PACKAGE_VERSION }}
             NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
             ALLOY_ENV=prod
-          config-file: ./.sauce/prod.yml
-          browser: chrome
+          config-file: ./.sauce/prod-chrome.yml
       - name: Capture Test Results
         id: capture-results
         run: |
