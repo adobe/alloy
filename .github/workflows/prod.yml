@@ -71,7 +71,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: refs/heads/${{ matrix.tag.tag }}
+          ref: ${{ matrix.tag.tag }}
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -152,7 +152,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: refs/heads/${{ matrix.tag.tag }}
+          ref: ${{ matrix.tag.tag }}
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -233,7 +233,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: refs/heads/${{ matrix.tag.tag }}
+          ref: ${{ matrix.tag.tag }}
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
