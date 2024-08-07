@@ -19,6 +19,7 @@ timeZone: New_York
 preInstallCommands:
   - npm install -g npm@latest
   - npm install -g npx
+  - npx force-resolutions
 npm:
   dependencies:
     - node-fetch
