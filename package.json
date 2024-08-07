@@ -11,8 +11,7 @@
     "LICENSE_BANNER",
     "babel.config.cjs",
     "rollup.config.js",
-    "scripts/helpers/alloyComponents.js",
-    "scripts/helpers/conditionalBuildBabelPlugin.js",
+    "scripts/helpers/entryPointGeneratorBabelPlugin.js",
     "scripts/helpers/versionBabelPlugin.js"
   ],
   "bin": {

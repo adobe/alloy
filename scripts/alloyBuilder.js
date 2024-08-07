@@ -17,48 +17,63 @@ import { rollup } from "rollup";
 import { Command, Option, InvalidOptionArgumentError } from "commander";
 import inquirer from "inquirer";
 import { fileURLToPath } from "url";
+import babel from "@babel/core";
 import { buildConfig } from "../rollup.config.js";
-import conditionalBuildBabelPlugin from "./helpers/conditionalBuildBabelPlugin.js";
-import components from "./helpers/alloyComponents.js";
+import entryPointGeneratorBabelPlugin from "./helpers/entryPointGeneratorBabelPlugin.js";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const packageJsonContent = fs.readFileSync(
+  `${dirname}/../package.json`,
+  "utf8",
+);
+const { version } = JSON.parse(packageJsonContent);
 
 let sourceRootPath = `${dirname}/../src`;
 if (!fs.existsSync(sourceRootPath)) {
   sourceRootPath = `${dirname}/../libEs6`;
 }
 
-const getOptionalComponents = (() => {
-  const componentCreatorsPath = `${sourceRootPath}/core/componentCreators.js`;
+const arrayDifference = (arr1, arr2) => arr1.filter((x) => !arr2.includes(x));
 
-  // Read componentCreators.js
-  const componentCreatorsContent = fs.readFileSync(
-    componentCreatorsPath,
-    "utf8",
-  );
+const camelCaseToTitleCase = (str) => {
+  return str.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase());
+};
 
-  // Extract optional components based on @skipwhen directive
-  const optionalComponents = componentCreatorsContent
-    .split("\n")
-    .filter((line) => line.trim().startsWith("/* @skipwhen"))
-    .map((line) => {
-      const match = line.match(/ENV\.alloy_([a-zA-Z0-9]+) === false/);
-      if (match) {
-        const [, componentName] = match;
-        return componentName.toLowerCase(); // Ensure this matches the expected format for exclusion
-      }
-      return null;
-    })
-    .filter(Boolean);
+const getComponents = (() => {
+  const components = {};
+  [
+    {
+      filePath: `${sourceRootPath}/core/componentCreators.js`,
+      key: "optional",
+    },
+    {
+      filePath: `${sourceRootPath}/core/requiredComponentCreators.js`,
+      key: "required",
+    },
+  ].forEach(({ filePath, key }) => {
+    const code = fs.readFileSync(filePath, "utf-8");
+    const c = [];
 
-  return () => optionalComponents;
+    babel.traverse(babel.parse(code), {
+      Identifier(p) {
+        if (p.node.name !== "default") {
+          c.push(p.node.name);
+        }
+      },
+    });
+
+    components[key] = c;
+  });
+
+  return () => components;
 })();
 
 const getDefaultPath = () => {
   return process.cwd();
 };
 
-const getFile = (argv) => {
+const getOutputFilePath = (argv) => {
   return `${[argv.outputDir, `alloy${argv.minify ? ".min" : ""}.js`].join(path.sep)}`;
 };
 
@@ -68,24 +83,41 @@ const getFileSizeInKB = (filePath) => {
   return `${(fileSizeInBytes / 1024).toFixed(2)} K`;
 };
 
+const generateInputEntryFile = ({
+  inputPath,
+  outputFile = "input.js",
+  includedModules,
+}) => {
+  const output = babel.transformFileSync(inputPath, {
+    plugins: [entryPointGeneratorBabelPlugin(babel.types, includedModules)],
+  }).code;
+
+  const destinationDirectory = path.dirname(inputPath);
+  const outputPath = path.join(destinationDirectory, outputFile);
+
+  fs.writeFileSync(outputPath, output);
+
+  return outputPath;
+};
+
 const build = async (argv) => {
+  const input = generateInputEntryFile({
+    inputPath: `${sourceRootPath}/standalone.js`,
+    includedModules: argv.include,
+  });
+
   const rollupConfig = buildConfig({
-    input: `${sourceRootPath}/standalone.js`,
     variant: "CUSTOM_BUILD",
-    file: getFile(argv),
+    input,
+    file: getOutputFilePath(argv),
     minify: argv.minify,
-    babelPlugins: [
-      conditionalBuildBabelPlugin(
-        argv.exclude.reduce((acc, module) => {
-          acc[`alloy_${module}`] = "false";
-          return acc;
-        }, {}),
-      ),
-    ],
   });
 
   const bundle = await rollup(rollupConfig);
   await bundle.write(rollupConfig.output[0]);
+
+  fs.unlinkSync(input);
+
   console.log(
     `🎉 Wrote ${
       path.isAbsolute(argv.outputDir)
@@ -95,23 +127,24 @@ const build = async (argv) => {
   );
 };
 
-const getMakeBuildCommand = () =>
-  new Command("build")
+const getMakeBuildCommand = () => {
+  const optionalComponentsParameters = getComponents().optional;
+  return new Command("build")
     .description("Build a custom version of the alloy.js library.")
     .addOption(
       new Option(
         "-e, --exclude <modules...>",
         "optional components that can be excluded from the build",
       )
-        .choices(getOptionalComponents())
+        .choices(optionalComponentsParameters)
         .default([])
         .argParser((value) => {
           const modules = value.split(",");
 
           modules.forEach((module) => {
-            if (!getOptionalComponents().includes(module))
+            if (!optionalComponentsParameters.includes(module))
               throw new InvalidOptionArgumentError(
-                `Module "${module}" does not exists. Allowed choices are "${getOptionalComponents().join('", "')}".`,
+                `Module "${module}" does not exists. Allowed choices are "${optionalComponentsParameters.join('", "')}".`,
               );
           });
 
@@ -146,9 +179,15 @@ const getMakeBuildCommand = () =>
           return value.replace(new RegExp(`${path.sep}+$`, "g"), "");
         }),
     )
-    .action(async (opts) => {
-      await build(opts);
+    .action((opts) => {
+      const { exclude } = opts;
+      const optionalComponents = getComponents().optional;
+      delete opts.exclude;
+
+      opts.include = arrayDifference(optionalComponents, exclude);
+      return build(opts);
     });
+};
 
 const getInteractiveBuildCommand = () =>
   new Command("interactive-build")
@@ -162,7 +201,11 @@ const getInteractiveBuildCommand = () =>
             type: "checkbox",
             name: "include",
             message: "What components should be included in your Alloy build?",
-            choices: components,
+            choices: getComponents().optional.map((value) => ({
+              name: camelCaseToTitleCase(value),
+              checked: true,
+              value,
+            })),
           },
           {
             type: "list",
@@ -180,17 +223,7 @@ const getInteractiveBuildCommand = () =>
             default: process.cwd(),
           },
         ])
-        .then(async (opts) => {
-          const { include } = opts;
-          const exclude = components
-            .map((v) => v.value)
-            .filter((component) => !include.includes(component));
-
-          opts.exclude = exclude;
-          delete opts.include;
-
-          await build(opts);
-        })
+        .then(async (opts) => build(opts))
         .catch((error) => {
           if (error.isTtyError) {
             console.error(
@@ -209,7 +242,7 @@ program
   .description(
     "Tool for generating custom Adobe Experience Platform Web SDK builds.",
   )
-  .version("1.0.0");
+  .version(version);
 
 program.addCommand(getMakeBuildCommand());
 program.addCommand(getInteractiveBuildCommand(), { isDefault: true });

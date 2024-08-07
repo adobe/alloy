@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Adobe. All rights reserved.
+Copyright 2023 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,11 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// This file is used by rollup to create the browser version that is uploaded to cdn
-
-import core from "./core/index.js";
-import * as components from "./core/componentCreators.js";
-
-// If you change this line, check if the custom build script is still working.
-// You might need to change the babel plugin in scripts/helpers/entryPointGeneratorBabelPlugin.js.
-core({ components: Object.values(components) });
+export { default as dataCollector } from "../components/DataCollector/index.js";
+export { default as identity } from "../components/Identity/index.js";
+export { default as libraryInfo } from "../components/LibraryInfo/index.js";
