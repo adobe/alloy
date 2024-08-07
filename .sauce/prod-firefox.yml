@@ -37,7 +37,7 @@ suites:
   - name: "Firefox"
     browserName: "firefox"
     headless: true
-    browserVersion: "127"
+    browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"
     platformName: "macOS 13"
