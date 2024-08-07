@@ -22,6 +22,13 @@ import { buildConfig } from "../rollup.config.js";
 import entryPointGeneratorBabelPlugin from "./helpers/entryPointGeneratorBabelPlugin.js";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const packageJsonContent = fs.readFileSync(
+  `${dirname}/../package.json`,
+  "utf8",
+);
+const { version } = JSON.parse(packageJsonContent);
+
 let sourceRootPath = `${dirname}/../src`;
 if (!fs.existsSync(sourceRootPath)) {
   sourceRootPath = `${dirname}/../libEs6`;
@@ -235,7 +242,7 @@ program
   .description(
     "Tool for generating custom Adobe Experience Platform Web SDK builds.",
   )
-  .version("1.1.0");
+  .version(version);
 
 program.addCommand(getMakeBuildCommand());
 program.addCommand(getInteractiveBuildCommand(), { isDefault: true });
