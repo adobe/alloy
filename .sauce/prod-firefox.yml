@@ -36,7 +36,6 @@ preInstallCommands:
 suites:
   - name: "Firefox"
     browserName: "firefox"
-    headless: true
     browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"

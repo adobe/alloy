@@ -32,7 +32,6 @@ npm:
 suites:
   - name: "Chrome"
     browserName: "chrome"
-    headless: true
     browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"
