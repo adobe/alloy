@@ -36,7 +36,7 @@ preInstallCommands:
 suites:
   - name: "Firefox"
     browserName: "firefox"
-    browserVersion: "latest"
+    browserVersion: "126"
     src:
       - "test/functional/specs/**/*.js"
     platformName: "macOS 13"
