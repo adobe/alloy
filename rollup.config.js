@@ -21,7 +21,6 @@ import { gzip, brotliCompress as br, constants as zlibConstants } from "zlib";
 import { promisify } from "util";
 import { readFile, writeFile } from "fs/promises";
 
-console.log("process.env.BUNDLESIZE", process.env.BUNDLESIZE);
 const INCLUDE_BUNDLESIZE = process.env.BUNDLESIZE === "true";
 /**
  * @param {Object} options
