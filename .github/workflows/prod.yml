@@ -58,7 +58,7 @@ jobs:
             console.log("matrixInput: ", matrixInput);
 
   alloy-prod-e2e-safari:
-    name: Alloy Functional Test - Safari
+    name: Safari
     needs: get-testing-tags
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -109,6 +109,7 @@ jobs:
         run: |
           sed -i 's/"$NODE_VERSION"/"${{ matrix.tag.nodeVersion }}"/g' .sauce/prod.yml
       - name: Run Functional Tests
+        id: saucectl
         uses: saucelabs/saucectl-run-action@v4.3.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -122,27 +123,38 @@ jobs:
             NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
             ALLOY_ENV=prod
           config-file: ./.sauce/prod-safari.yml
-      - name: Capture Test Results
-        id: capture-results
+
+      - name: Get Saucelabs Test Results
+        if: failure()
+        id: saucelabs-results
+        env:
+          SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
         run: |
-          mkdir -p test-results
-          if [ -d "./test-results" ] && [ "$(ls -A ./test-results)" ]; then
-            cp -r ./test-results/* ./test-results/
-          else
-            echo "No test results to copy."
-          fi
-      # - name: Notify on failure
-      #   if: failure()
-      #   uses: craftech-io/slack-action@v1
-      #   with:
-      #     slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #     status: failure
-      #     message: |
-      #       Tests failed:
-      #       ${{ steps.capture-results.outputs.test-results }}
+          JOB_ID=$(cat ${{ steps.saucectl.outputs.jobId }})
+          RESULTS=$(curl -u "$SAUCE_USERNAME:$SAUCE_ACCESS_KEY" \
+            "https://api.us-west-1.saucelabs.com/rest/v1/$SAUCE_USERNAME/jobs/$JOB_ID")
+          echo "results=$RESULTS" >> $GITHUB_OUTPUT
+
+      - name: Notify Slack on Failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+          text: |
+            Alloy Prod Safari Tests Failed
+            Job ID: ${{ fromJson(steps.saucelabs-results.outputs.results).id }}
+            Build: ${{ fromJson(steps.saucelabs-results.outputs.results).build }}
+            Status: ${{ fromJson(steps.saucelabs-results.outputs.results).status }}
+            Error: ${{ fromJson(steps.saucelabs-results.outputs.results).error }}
+            Full Results: https://app.saucelabs.com/tests/${{ fromJson(steps.saucelabs-results.outputs.results).id }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   alloy-prod-e2e-firefox:
-    name: Alloy Functional Test - Firefox
+    name: Firefox
     needs: get-testing-tags
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -193,6 +205,7 @@ jobs:
         run: |
           sed -i 's/"$NODE_VERSION"/"${{ matrix.tag.nodeVersion }}"/g' .sauce/prod.yml
       - name: Run Functional Tests
+        id: saucectl
         uses: saucelabs/saucectl-run-action@v4.3.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -206,27 +219,38 @@ jobs:
             NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
             ALLOY_ENV=prod
           config-file: ./.sauce/prod-firefox.yml
-      - name: Capture Test Results
-        id: capture-results
+
+      - name: Get Saucelabs Test Results
+        if: failure()
+        id: saucelabs-results
+        env:
+          SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
         run: |
-          mkdir -p test-results
-          if [ -d "./test-results" ] && [ "$(ls -A ./test-results)" ]; then
-            cp -r ./test-results/* ./test-results/
-          else
-            echo "No test results to copy."
-          fi
-      # - name: Notify on failure
-      #   if: failure()
-      #   uses: craftech-io/slack-action@v1
-      #   with:
-      #     slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #     status: failure
-      #     message: |
-      #       Tests failed:
-      #       ${{ steps.capture-results.outputs.test-results }}
+          JOB_ID=$(cat ${{ steps.saucectl.outputs.jobId }})
+          RESULTS=$(curl -u "$SAUCE_USERNAME:$SAUCE_ACCESS_KEY" \
+            "https://api.us-west-1.saucelabs.com/rest/v1/$SAUCE_USERNAME/jobs/$JOB_ID")
+          echo "results=$RESULTS" >> $GITHUB_OUTPUT
+
+      - name: Notify Slack on Failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+          text: |
+            Alloy Prod Firefox Tests Failed
+            Job ID: ${{ fromJson(steps.saucelabs-results.outputs.results).id }}
+            Build: ${{ fromJson(steps.saucelabs-results.outputs.results).build }}
+            Status: ${{ fromJson(steps.saucelabs-results.outputs.results).status }}
+            Error: ${{ fromJson(steps.saucelabs-results.outputs.results).error }}
+            Full Results: https://app.saucelabs.com/tests/${{ fromJson(steps.saucelabs-results.outputs.results).id }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   alloy-prod-e2e-chrome:
-    name: Alloy Functional Test - Chrome
+    name: Chrome
     needs: get-testing-tags
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -277,6 +301,7 @@ jobs:
         run: |
           sed -i 's/"$NODE_VERSION"/"${{ matrix.tag.nodeVersion }}"/g' .sauce/prod.yml
       - name: Run Functional Tests
+        id: saucectl
         uses: saucelabs/saucectl-run-action@v4.3.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -290,8 +315,13 @@ jobs:
             NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
             ALLOY_ENV=prod
           config-file: ./.sauce/prod-chrome.yml
-      - name: Capture Test Results
-        id: capture-results
+
+      - name: Get Saucelabs Test Results
+        if: failure()
+        id: saucelabs-results
+        env:
+          SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
         run: |
           mkdir -p test-results
           cp -r ./test-results/* ./test-results/
