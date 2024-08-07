@@ -36,6 +36,7 @@ npm:
 suites:
   - name: "Firefox"
     browserName: "firefox"
+    browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"
     platformName: "macOS 13"
