@@ -13,10 +13,12 @@ testcafe:
   version: "package.json"
 nodeVersion: "$NODE_VERSION"
 speed: 1
-concurrent: 2
 pageLoadTimeout: 3000
 disablePageCaching: true
 timeZone: New_York
+preInstallCommands:
+  - npm install -g npm@latest
+  - npm install -g npx
 npm:
   dependencies:
     - node-fetch
@@ -30,13 +32,9 @@ npm:
     - "@adobe/reactor-query-string"
     - "@adobe/reactor-promise"
     - "@adobe/reactor-object-assign"
-preInstallCommands:
-  - npm install -g npm@latest
-  - npm install -g npx
 suites:
   - name: "Firefox"
     browserName: "firefox"
-    browserVersion: "126"
     src:
       - "test/functional/specs/**/*.js"
     platformName: "macOS 13"
