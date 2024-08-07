@@ -107,7 +107,7 @@ jobs:
           NPM_PACKAGE_PROD: true
       - name: Update Sauce Config with Node
         run: |
-          sed -i 's/"$NODE_VERSION"/"${{ matrix.tag.nodeVersion }}"/g' .sauce/prod.yml
+          sed -i 's/"$NODE_VERSION"/"${{ matrix.tag.nodeVersion }}"/g' .sauce/prod-safari.yml
       - name: Run Functional Tests
         id: saucectl
         uses: saucelabs/saucectl-run-action@v4.3.0
@@ -203,7 +203,7 @@ jobs:
           NPM_PACKAGE_PROD: true
       - name: Update Sauce Config with Node
         run: |
-          sed -i 's/"$NODE_VERSION"/"${{ matrix.tag.nodeVersion }}"/g' .sauce/prod.yml
+          sed -i 's/"$NODE_VERSION"/"${{ matrix.tag.nodeVersion }}"/g' .sauce/prod-firefox.yml
       - name: Run Functional Tests
         id: saucectl
         uses: saucelabs/saucectl-run-action@v4.3.0
@@ -299,7 +299,7 @@ jobs:
           NPM_PACKAGE_PROD: true
       - name: Update Sauce Config with Node
         run: |
-          sed -i 's/"$NODE_VERSION"/"${{ matrix.tag.nodeVersion }}"/g' .sauce/prod.yml
+          sed -i 's/"$NODE_VERSION"/"${{ matrix.tag.nodeVersion }}"/g' .sauce/prod-chrome.yml
       - name: Run Functional Tests
         id: saucectl
         uses: saucelabs/saucectl-run-action@v4.3.0
