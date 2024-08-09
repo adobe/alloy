@@ -75,7 +75,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.tag.nodeVersion }}
+          node-version: 22
       - name: Cache dependencies
         uses: actions/cache@v4
         id: npm-cache
@@ -171,7 +171,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.tag.nodeVersion }}
+          node-version: 22
       - name: Cache dependencies
         uses: actions/cache@v4
         id: npm-cache
@@ -267,7 +267,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.tag.nodeVersion }}
+          node-version: 22
       - name: Cache dependencies
         uses: actions/cache@v4
         id: npm-cache
