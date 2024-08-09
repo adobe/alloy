@@ -43,14 +43,14 @@ export default async function getTestingTags() {
         .filter((release) => !release.draft && !release.prerelease)
         .map((release) => release.tag_name);
       const prodReleasesToTest = prodReleases.filter((tag) =>
-        semver.lte("2.16.0", semver.clean(tag)),
+        semver.gte(semver.clean(tag), "2.16.0"),
       );
       if (prodReleasesToTest.length < prodReleases.length) {
         done();
       }
       return prodReleasesToTest.map((tag) => ({
         tag,
-        nodeVersion: semver.lt(tag, "2.20.0") ? "18" : "22",
+        nodeVersion: semver.lt(semver.clean(tag), "2.20.0") ? "18" : "22",
       }));
     },
   );
