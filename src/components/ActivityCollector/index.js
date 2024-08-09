@@ -36,6 +36,18 @@ const getClickedElementProperties = createGetClickedElementProperties({
 });
 
 let clickActivityStorage;
+const initClickActivityStorage = (config) => {
+  if (!clickActivityStorage) {
+    const createNamespacedStorage = injectStorage(window);
+    const nameSpacedStorage = createNamespacedStorage(config.orgId || "");
+    // Use transient in-memory if sessionStorage is disabled
+    const transientStorage = createTransientStorage();
+    const storage = config.clickCollection.sessionStorageEnabled
+      ? nameSpacedStorage.session
+      : transientStorage;
+    clickActivityStorage = createClickActivityStorage({ storage });
+  }
+};
 
 const createActivityCollector = ({
   config,
@@ -44,14 +56,9 @@ const createActivityCollector = ({
   logger,
 }) => {
   const clickCollection = config.clickCollection;
-  const createNamespacedStorage = injectStorage(window);
-  const nameSpacedStorage = createNamespacedStorage(config.orgId || "");
-  // Use transient in-memory if sessionStorage is disabled
-  const transientStorage = createTransientStorage();
-  const storage = clickCollection.sessionStorageEnabled
-    ? nameSpacedStorage.session
-    : transientStorage;
-  clickActivityStorage = createClickActivityStorage({ storage });
+  if (!clickActivityStorage) {
+    initClickActivityStorage(config);
+  }
   const injectClickedElementProperties = createInjectClickedElementProperties({
     config,
     logger,
@@ -100,6 +107,9 @@ createActivityCollector.buildOnInstanceConfiguredExtraParams = ({
   config,
   logger,
 }) => {
+  if (!clickActivityStorage) {
+    initClickActivityStorage(config);
+  }
   return {
     getLinkDetails: (targetElement) => {
       return getClickedElementProperties({
