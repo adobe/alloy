@@ -11,7 +11,7 @@ env:
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
   version: 3.6.0
-nodeVersion: 22
+nodeVersion: "22"
 speed: 1
 pageLoadTimeout: 3000
 disablePageCaching: true

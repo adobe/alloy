@@ -148,12 +148,12 @@ jobs:
           status: ${{ job.status }}
           fields: repo,message,commit,author,action,eventName,ref,workflow
           text: |
-            Alloy Prod Safari Tests Failed
-            Job ID: ${{ fromJson(steps.saucelabs-results.outputs.results).id }}
-            Build: ${{ fromJson(steps.saucelabs-results.outputs.results).build }}
-            Status: ${{ fromJson(steps.saucelabs-results.outputs.results).status }}
-            Error: ${{ fromJson(steps.saucelabs-results.outputs.results).error }}
-            Full Results: https://app.saucelabs.com/tests/${{ fromJson(steps.saucelabs-results.outputs.results).id }}
+            Alloy Prod Firefox Tests Failed
+            Job ID: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').id }}
+            Build: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').build }}
+            Status: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').status }}
+            Error: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').error }}
+            Full Results: https://app.saucelabs.com/tests/${{ fromJson(steps.saucelabs-results.outputs.results || '{}').id }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -250,11 +250,11 @@ jobs:
           fields: repo,message,commit,author,action,eventName,ref,workflow
           text: |
             Alloy Prod Firefox Tests Failed
-            Job ID: ${{ fromJson(steps.saucelabs-results.outputs.results).id }}
-            Build: ${{ fromJson(steps.saucelabs-results.outputs.results).build }}
-            Status: ${{ fromJson(steps.saucelabs-results.outputs.results).status }}
-            Error: ${{ fromJson(steps.saucelabs-results.outputs.results).error }}
-            Full Results: https://app.saucelabs.com/tests/${{ fromJson(steps.saucelabs-results.outputs.results).id }}
+            Job ID: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').id }}
+            Build: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').build }}
+            Status: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').status }}
+            Error: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').error }}
+            Full Results: https://app.saucelabs.com/tests/${{ fromJson(steps.saucelabs-results.outputs.results || '{}').id }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -326,29 +326,19 @@ jobs:
             ALLOY_ENV=prod
           config-file: ./.sauce/prod-chrome.yml
 
-      - name: Get Saucelabs Test Results
+      - name: Notify Slack on Failure
         if: failure()
-        id: saucelabs-results
-        env:
-          SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-        run: |
-          mkdir -p test-results
-          if [ -d "./test-results" ] && [ "$(ls -A ./test-results)" ]; then
-            cp -r ./test-results/* ./test-results/
-            echo "TEST_RESULTS<<EOF" >> $GITHUB_ENV
-            cat ./test-results/* >> $GITHUB_ENV
-            echo "EOF" >> $GITHUB_ENV
-          else
-            echo "TEST_RESULTS=No test results found in ./test-results/" >> $GITHUB_ENV
-          fi
-
-      - name: Notify on failure
-        if: failure()
-        uses: craftech-io/slack-action@v1
+        uses: 8398a7/action-slack@v3
         with:
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          status: failure
-          message: |
-            Tests failed:
-            ${{ steps.capture-results.outputs.test-results }}
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+          text: |
+            Alloy Prod Firefox Tests Failed
+            Job ID: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').id }}
+            Build: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').build }}
+            Status: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').status }}
+            Error: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').error }}
+            Full Results: https://app.saucelabs.com/tests/${{ fromJson(steps.saucelabs-results.outputs.results || '{}').id }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
