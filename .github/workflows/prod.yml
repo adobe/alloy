@@ -352,6 +352,3 @@ jobs:
           message: |
             Tests failed:
             ${{ steps.capture-results.outputs.test-results }}
-          message: |
-            Tests failed:
-            ${{ steps.capture-results.outputs.test-results }}
