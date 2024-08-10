@@ -131,10 +131,15 @@ jobs:
           SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
           SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
         run: |
-          JOB_ID=$(cat ${{ steps.saucectl.outputs.jobId }})
-          RESULTS=$(curl -u "$SAUCE_USERNAME:$SAUCE_ACCESS_KEY" \
-            "https://api.us-west-1.saucelabs.com/rest/v1/$SAUCE_USERNAME/jobs/$JOB_ID")
-          echo "results=$RESULTS" >> $GITHUB_OUTPUT
+          mkdir -p test-results
+          if [ -d "./test-results" ] && [ "$(ls -A ./test-results)" ]; then
+            cp -r ./test-results/* ./test-results/
+            echo "TEST_RESULTS<<EOF" >> $GITHUB_ENV
+            cat ./test-results/* >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          else
+            echo "TEST_RESULTS=No test results found in ./test-results/" >> $GITHUB_ENV
+          fi
 
       - name: Notify Slack on Failure
         if: failure()
@@ -227,10 +232,15 @@ jobs:
           SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
           SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
         run: |
-          JOB_ID=$(cat ${{ steps.saucectl.outputs.jobId }})
-          RESULTS=$(curl -u "$SAUCE_USERNAME:$SAUCE_ACCESS_KEY" \
-            "https://api.us-west-1.saucelabs.com/rest/v1/$SAUCE_USERNAME/jobs/$JOB_ID")
-          echo "results=$RESULTS" >> $GITHUB_OUTPUT
+          mkdir -p test-results
+          if [ -d "./test-results" ] && [ "$(ls -A ./test-results)" ]; then
+            cp -r ./test-results/* ./test-results/
+            echo "TEST_RESULTS<<EOF" >> $GITHUB_ENV
+            cat ./test-results/* >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          else
+            echo "TEST_RESULTS=No test results found in ./test-results/" >> $GITHUB_ENV
+          fi
 
       - name: Notify Slack on Failure
         if: failure()
@@ -324,13 +334,24 @@ jobs:
           SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
         run: |
           mkdir -p test-results
-          cp -r ./test-results/* ./test-results/
+          if [ -d "./test-results" ] && [ "$(ls -A ./test-results)" ]; then
+            cp -r ./test-results/* ./test-results/
+            echo "TEST_RESULTS<<EOF" >> $GITHUB_ENV
+            cat ./test-results/* >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          else
+            echo "TEST_RESULTS=No test results found in ./test-results/" >> $GITHUB_ENV
+          fi
+
       - name: Notify on failure
         if: failure()
         uses: craftech-io/slack-action@v1
         with:
           slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
           status: failure
+          message: |
+            Tests failed:
+            ${{ steps.capture-results.outputs.test-results }}
           message: |
             Tests failed:
             ${{ steps.capture-results.outputs.test-results }}
