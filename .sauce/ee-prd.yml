@@ -3,7 +3,6 @@ kind: testcafe
 showConsoleLog: true
 sauce:
   region: us-west-1
-  retries: 2
 metadata:
   name: Alloy SDK Prod ee
 rootDir: ./
@@ -69,4 +68,19 @@ suites:
         "test/functional/specs/Personalization/C7494472.js",
         "test/functional/specs/Personalization/C8631576.js",
         "test/functional/specs/Personalization/C8631577.js",
+      ]
+  - name: "Chrome"
+    browserName: "chrome"
+    browserVersion: "latest"
+    src:
+      - "test/functional/specs/**/*.js"
+    platformName: "Windows 11"
+    excludedTestFiles:
+      [
+        "test/functional/specs/Data Collector/C81182.js",
+        "test/functional/specs/Privacy/C5594870.js",
+        "test/functional/specs/Personalization/C7494472.js",
+        "test/functional/specs/Privacy/C1576777.js",
+        "test/functional/specs/Audiences/C12411.js",
+        "test/functional/specs/Audiences/C31436.js",
       ]
