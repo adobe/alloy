@@ -21,12 +21,17 @@ disablePageCaching: true
 timeZone: New_York
 npm:
   dependencies:
+    - node-fetch
     - parse-uri
     - js-cookie
     - read-cache
     - uuid
+    - css.escape
+    - "@adobe/reactor-load-script"
     - "@adobe/reactor-cookie"
     - "@adobe/reactor-query-string"
+    - "@adobe/reactor-promise"
+    - "@adobe/reactor-object-assign"
 suites:
   - name: "Safari"
     browserName: "safari"
