@@ -100,6 +100,7 @@ jobs:
       - uses: saucelabs/saucectl-run-action@v4.3.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          EDGE_BASE_PATH: ${{ github.event.inputs.edgeBasePath }}
         with:
           sauce-username: ${{ secrets.SAUCE_USERNAME }}
           sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
@@ -109,5 +110,5 @@ jobs:
             ALLOY_PROD_VERSION=${{ env.PACKAGE_VERSION }}
             NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
             ALLOY_ENV=prod
-            EDGE_BASE_PATH=${{ env.EDGE_BASE_PATH }}
+            EDGE_BASE_PATH=${{ github.event.inputs.edgeBasePath }}
           config-file: ./.sauce/ee-prd.yml
