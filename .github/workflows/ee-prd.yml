@@ -6,12 +6,16 @@ on:
         description: "Log level"
         required: true
         default: "warning"
+      edgeBasePath:
+        description: "Edge Base Path"
+        required: false
+        default: "ee"
 env:
   SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
   SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
   SAUCE_CAPABILITIES_OVERRIDES_PATH: "sauceLabsCapabilities.json"
   ALLOY_ENV: prod
-  EDGE_BASE_PATH: ee
+  EDGE_BASE_PATH: ${{ github.event.inputs.edgeBasePath }}
 
 jobs:
   store-sauce-configs:
@@ -60,7 +64,7 @@ jobs:
         id: npm-cache
         with:
           path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }} # increment NPM_CACHE_VERSION secret to force cache reset
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }}
 
       - name: Download sauce config into tags
         uses: actions/download-artifact@v4
@@ -105,4 +109,5 @@ jobs:
             ALLOY_PROD_VERSION=${{ env.PACKAGE_VERSION }}
             NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
             ALLOY_ENV=prod
+            EDGE_BASE_PATH=${{ env.EDGE_BASE_PATH }}
           config-file: ./.sauce/ee-prd.yml
