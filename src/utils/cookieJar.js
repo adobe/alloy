@@ -12,9 +12,10 @@ governing permissions and limitations under the License.
 
 import cookie from "js-cookie";
 
+
 export default {
-  get: cookie.get,
-  set: cookie.set,
-  remove: cookie.remove,
-  withConverter: cookie.withConverter
+  get: cookie.get.bind(cookie),
+  set: cookie.set.bind(cookie),
+  remove: cookie.remove.bind(cookie),
+  withConverter: cookie.withConverter.bind(cookie)
 };
