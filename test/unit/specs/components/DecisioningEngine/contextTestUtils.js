@@ -13,6 +13,7 @@ import createContextProvider from "../../../../../src/components/DecisioningEngi
 import createOnResponseHandler from "../../../../../src/components/DecisioningEngine/createOnResponseHandler.js";
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry.js";
 import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider.js";
+import { injectGetBrowser } from "../../../../../src/utils/index.js";
 
 export const proposition = {
   id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
@@ -129,7 +130,14 @@ export const setupResponseHandler = (applyResponse, window, condition) => {
   ]);
   const eventRegistry = createEventRegistry({ storage });
   const decisionProvider = createDecisionProvider({ eventRegistry });
-  const contextProvider = createContextProvider({ eventRegistry, window });
+  const getBrowser = injectGetBrowser({
+    userAgent: window.navigator.userAgent,
+  });
+  const contextProvider = createContextProvider({
+    eventRegistry,
+    window,
+    getBrowser,
+  });
 
   const onResponseHandler = createOnResponseHandler({
     renderDecisions: true,

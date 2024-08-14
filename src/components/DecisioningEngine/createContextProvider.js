@@ -9,16 +9,15 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import getBrowser from "../../utils/getBrowser.js";
 import parseUrl from "../../utils/parseUrl.js";
 import flattenObject from "../../utils/flattenObject.js";
 import libraryVersion from "../../constants/libraryVersion.js";
 
-export default ({ eventRegistry, window }) => {
+export default ({ eventRegistry, window, getBrowser }) => {
   const pageLoadTimestamp = new Date().getTime();
   const getBrowserContext = () => {
     return {
-      name: getBrowser(window),
+      name: getBrowser(),
     };
   };
   const getPageContext = () => {

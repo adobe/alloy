@@ -22,6 +22,7 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
   let onResponseHandler;
   let awaitConsentDeferred;
   let consent;
+  let getBrowser;
   let persistentStorage;
   let createNamespacedStorage;
 
@@ -31,6 +32,7 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
     consent = jasmine.createSpyObj("consent", {
       awaitConsent: awaitConsentDeferred.promise,
     });
+    getBrowser = jasmine.createSpy().and.returnValue("foo");
     window.referrer =
       "https://www.google.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer";
     persistentStorage = jasmine.createSpyObj("persistentStorage", [
@@ -58,6 +60,7 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
       config,
       createNamespacedStorage,
       consent,
+      getBrowser,
     });
     decisioningEngine.lifecycle.onComponentsRegistered(() => {});
     return decisioningEngine;

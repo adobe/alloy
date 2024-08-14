@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import areThirdPartyCookiesSupportedByDefault from "../../../../src/utils/areThirdPartyCookiesSupportedByDefault.js";
+import injectAreThirdPartyCookiesSupportedByDefault from "../../../../src/utils/injectAreThirdPartyCookiesSupportedByDefault.js";
 import {
   CHROME,
   EDGE,
@@ -25,15 +25,26 @@ const browsersWithSupport = [CHROME, EDGE, EDGE_CHROMIUM, IE, UNKNOWN];
 const browsersWithoutSupport = [FIREFOX, SAFARI];
 
 describe("areThirdPartyCookiesSupportedByDefault", () => {
+  let getBrowser;
+  let areThirdPartyCookiesSupportedByDefault;
+
+  beforeEach(() => {
+    getBrowser = jasmine.createSpy();
+    areThirdPartyCookiesSupportedByDefault =
+      injectAreThirdPartyCookiesSupportedByDefault({ getBrowser });
+  });
+
   browsersWithSupport.forEach((browser) => {
     it(`reports true for ${browser}`, () => {
-      expect(areThirdPartyCookiesSupportedByDefault(browser)).toBeTrue();
+      getBrowser.and.returnValue(browser);
+      expect(areThirdPartyCookiesSupportedByDefault()).toBeTrue();
     });
   });
 
   browsersWithoutSupport.forEach((browser) => {
     it(`reports false for ${browser}`, () => {
-      expect(areThirdPartyCookiesSupportedByDefault(browser)).toBeFalse();
+      getBrowser.and.returnValue(browser);
+      expect(areThirdPartyCookiesSupportedByDefault()).toBeFalse();
     });
   });
 });

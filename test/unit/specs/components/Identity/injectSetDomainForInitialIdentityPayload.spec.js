@@ -46,9 +46,7 @@ describe("Identity::injectSetDomainForInitialIdentityPayload", () => {
     areThirdPartyCookiesSupportedByDefault.and.returnValue(false);
     build();
     setDomainForInitialIdentityPayload(request);
-    expect(areThirdPartyCookiesSupportedByDefault).toHaveBeenCalledWith(
-      jasmine.any(String),
-    );
+    expect(areThirdPartyCookiesSupportedByDefault).toHaveBeenCalledWith();
     expect(request.setUseIdThirdPartyDomain).not.toHaveBeenCalled();
   });
 
@@ -57,9 +55,7 @@ describe("Identity::injectSetDomainForInitialIdentityPayload", () => {
     areThirdPartyCookiesSupportedByDefault.and.returnValue(true);
     build();
     setDomainForInitialIdentityPayload(request);
-    expect(areThirdPartyCookiesSupportedByDefault).toHaveBeenCalledWith(
-      jasmine.any(String),
-    );
+    expect(areThirdPartyCookiesSupportedByDefault).toHaveBeenCalledWith();
     expect(request.setUseIdThirdPartyDomain).toHaveBeenCalled();
   });
 });
