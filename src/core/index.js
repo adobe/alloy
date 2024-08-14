@@ -31,14 +31,12 @@ import createEvent from "./createEvent.js";
 import injectCreateResponse from "./injectCreateResponse.js";
 import injectExecuteCommand from "./injectExecuteCommand.js";
 import validateCommandOptions from "./validateCommandOptions.js";
-import componentCreators from "./componentCreators.js";
 import buildAndValidateConfig from "./buildAndValidateConfig.js";
 import initializeComponents from "./initializeComponents.js";
 import createConfig from "./config/createConfig.js";
 import createCoreConfigs from "./config/createCoreConfigs.js";
 import injectHandleError from "./injectHandleError.js";
 import injectSendFetchRequest from "./network/requestMethods/injectSendFetchRequest.js";
-import injectSendXhrRequest from "./network/requestMethods/injectSendXhrRequest.js";
 import injectSendBeaconRequest from "./network/requestMethods/injectSendBeaconRequest.js";
 import createLogger from "./createLogger.js";
 import createEventManager from "./createEventManager.js";
@@ -55,10 +53,11 @@ import injectGetLocationHint from "./edgeNetwork/injectGetLocationHint.js";
 import isRequestRetryable from "./network/isRequestRetryable.js";
 import getRequestRetryDelay from "./network/getRequestRetryDelay.js";
 import injectApplyResponse from "./edgeNetwork/injectApplyResponse.js";
+import * as requiredComponents from "./requiredComponentCreators.js";
 
 const createNamespacedStorage = injectStorage(window);
 
-const { console, fetch, navigator, XMLHttpRequest } = window;
+const { console, fetch, navigator } = window;
 
 // set this up as a function so that monitors can be added at anytime
 // eslint-disable-next-line no-underscore-dangle
@@ -66,9 +65,7 @@ const getMonitors = () => window.__alloyMonitors || [];
 
 const coreConfigValidators = createCoreConfigs();
 const apexDomain = getApexDomain(window, cookieJar);
-const sendFetchRequest = isFunction(fetch)
-  ? injectSendFetchRequest({ fetch })
-  : injectSendXhrRequest({ XMLHttpRequest });
+const sendFetchRequest = injectSendFetchRequest({ fetch });
 const fireReferrerHideableImage = injectFireReferrerHideableImage();
 const getAssuranceValidationTokenParams =
   createGetAssuranceValidationTokenParams({ window, createNamespacedStorage });
@@ -78,9 +75,14 @@ const getBrowser = injectGetBrowser({ userAgent: window.navigator.userAgent });
 export const createExecuteCommand = ({
   instanceName,
   logController: { setDebugEnabled, logger, createComponentLogger },
+  components,
 }) => {
   const componentRegistry = createComponentRegistry();
   const lifecycle = createLifecycle(componentRegistry);
+
+  const componentCreators = components.concat(
+    Object.values(requiredComponents),
+  );
 
   const setDebugCommand = (options) => {
     setDebugEnabled(options.enabled, { fromConfig: false });
@@ -205,7 +207,7 @@ export const createExecuteCommand = ({
   return executeCommand;
 };
 
-export default () => {
+export default ({ components }) => {
   // eslint-disable-next-line no-underscore-dangle
   const instanceNames = window.__alloyNS;
 
@@ -223,6 +225,7 @@ export default () => {
       const executeCommand = createExecuteCommand({
         instanceName,
         logController,
+        components,
       });
       const instance = createInstanceFunction(executeCommand);
 

@@ -28,7 +28,7 @@ describe("createSubscription", () => {
     const subscription = createSubscription();
     expect(subscription.hasSubscriptions()).toBeFalse();
 
-    const unsubscribe = subscription.add(callback1);
+    const { unsubscribe } = subscription.add(callback1);
 
     expect(subscription.hasSubscriptions()).toBeTrue();
 
@@ -48,9 +48,9 @@ describe("createSubscription", () => {
     const subscription = createSubscription();
     expect(subscription.hasSubscriptions()).toBeFalse();
 
-    const unsubsubscribe1 = subscription.add(callback1);
-    const unsubsubscribe2 = subscription.add(callback2);
-    const unsubsubscribe3 = subscription.add(callback3);
+    const { unsubscribe: unsubscribe1 } = subscription.add(callback1);
+    const { unsubscribe: unsubscribe2 } = subscription.add(callback2);
+    const { unsubscribe: unsubscribe3 } = subscription.add(callback3);
 
     expect(subscription.hasSubscriptions()).toBeTrue();
 
@@ -61,7 +61,7 @@ describe("createSubscription", () => {
     expect(callback3).toHaveBeenCalledOnceWith(value);
 
     // unsubscribe the first callback
-    unsubsubscribe1();
+    unsubscribe1();
 
     expect(subscription.hasSubscriptions()).toBeTrue();
 
@@ -72,7 +72,7 @@ describe("createSubscription", () => {
     expect(callback3).toHaveBeenCalledTimes(2);
 
     // unsubscribe the second callback
-    unsubsubscribe2();
+    unsubscribe2();
 
     expect(subscription.hasSubscriptions()).toBeTrue();
 
@@ -83,7 +83,7 @@ describe("createSubscription", () => {
     expect(callback3).toHaveBeenCalledTimes(3);
 
     // unsubscribe the third callback
-    unsubsubscribe3();
+    unsubscribe3();
 
     expect(subscription.hasSubscriptions()).toBeFalse();
 
@@ -102,15 +102,15 @@ describe("createSubscription", () => {
       return [`hello ${name}! The price is $${price}`];
     });
 
-    const unsubsubscribe1 = subscription.add(callback1, {
+    const { unsubscribe: unsubscribe1 } = subscription.add(callback1, {
       name: "jim",
       profitMargin: 3,
     });
-    const unsubsubscribe2 = subscription.add(callback2, {
+    const { unsubscribe: unsubscribe2 } = subscription.add(callback2, {
       name: "bob",
       profitMargin: 1.8,
     });
-    const unsubsubscribe3 = subscription.add(callback3, {
+    const { unsubscribe: unsubscribe3 } = subscription.add(callback3, {
       name: "tina",
       profitMargin: 1.1,
     });
@@ -121,9 +121,9 @@ describe("createSubscription", () => {
     expect(callback2).toHaveBeenCalledOnceWith("hello bob! The price is $18");
     expect(callback3).toHaveBeenCalledOnceWith("hello tina! The price is $11");
 
-    unsubsubscribe1();
-    unsubsubscribe2();
-    unsubsubscribe3();
+    unsubscribe1();
+    unsubscribe2();
+    unsubscribe3();
   });
 
   it("emits distinct values conditionally", () => {
@@ -141,15 +141,15 @@ describe("createSubscription", () => {
       return price < 20;
     });
 
-    const unsubsubscribe1 = subscription.add(callback1, {
+    const { unsubscribe: unsubscribe1 } = subscription.add(callback1, {
       name: "jim",
       profitMargin: 3,
     });
-    const unsubsubscribe2 = subscription.add(callback2, {
+    const { unsubscribe: unsubscribe2 } = subscription.add(callback2, {
       name: "bob",
       profitMargin: 1.8,
     });
-    const unsubsubscribe3 = subscription.add(callback3, {
+    const { unsubscribe: unsubscribe3 } = subscription.add(callback3, {
       name: "tina",
       profitMargin: 1.1,
     });
@@ -160,8 +160,8 @@ describe("createSubscription", () => {
     expect(callback2).toHaveBeenCalledOnceWith("hello bob! The price is $18");
     expect(callback3).toHaveBeenCalledOnceWith("hello tina! The price is $11");
 
-    unsubsubscribe1();
-    unsubsubscribe2();
-    unsubsubscribe3();
+    unsubscribe1();
+    unsubscribe2();
+    unsubscribe3();
   });
 });

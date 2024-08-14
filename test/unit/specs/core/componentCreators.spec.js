@@ -10,13 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import componentCreators from "../../../../src/core/componentCreators.js";
+import * as componentCreators from "../../../../src/core/componentCreators.js";
 
 describe("componentCreators", () => {
-  it("is an array of component creators", () => {
-    expect(componentCreators).toEqual(jasmine.any(Array));
+  it("is an object of component creators", () => {
+    const c = Object.keys(componentCreators).reduce((acc, key) => {
+      acc.push(componentCreators[key]);
+      return acc;
+    }, []);
 
-    componentCreators.forEach((componentCreator) => {
+    expect(c).toEqual(jasmine.any(Array));
+
+    c.forEach((componentCreator) => {
       expect(componentCreator).toEqual(jasmine.any(Function));
       expect(componentCreator.namespace).toEqual(jasmine.any(String));
 

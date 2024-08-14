@@ -17,6 +17,7 @@ import {
   orgMainConfigMain,
   clickCollectionEnabled,
   clickCollectionEventGroupingDisabled,
+  clickCollectionSessionStorageDisabled,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import preventLinkNavigation from "../../helpers/preventLinkNavigation.js";
@@ -300,4 +301,31 @@ test("Test C81181: Verify that filterClickDetails can augment a request", async 
     expectedXdmWebInteraction,
     expectedData,
   );
+});
+
+test("Test C81181: Verify disabling session storage still captures link click data", async () => {
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  await preventLinkNavigation();
+  const alloy = createAlloyProxy();
+
+  const testConfig = compose(
+    orgMainConfigMain,
+    clickCollectionEnabled,
+    clickCollectionEventGroupingDisabled,
+    clickCollectionSessionStorageDisabled,
+  );
+
+  await alloy.configure(testConfig);
+  await addLinksToBody();
+  await clickLink("#alloy-link-test");
+  await collectEndpointAsserter.assertInteractCalledAndNotCollect();
+  const interactRequest = collectEndpointAsserter.getInteractRequest();
+  const expectedXdm = {
+    name: "Test Link",
+    region: "BODY",
+    type: "other",
+    URL: "https://alloyio.com/functional-test/valid.html",
+    linkClicks: { value: 1 },
+  };
+  await assertRequestXdm(interactRequest, expectedXdm);
 });

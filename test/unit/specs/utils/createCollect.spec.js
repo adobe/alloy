@@ -9,10 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createCollect from "../../../../../src/components/Personalization/createCollect.js";
-import { PropositionEventType } from "../../../../../src/constants/propositionEventType.js";
+import createCollect from "../../../../src/utils/createCollect.js";
+import { PropositionEventType } from "../../../../src/constants/propositionEventType.js";
 
-describe("Personalization::createCollect", () => {
+describe("Utils::createCollect", () => {
   let eventManager;
   let mergeDecisionsMeta;
   const decisionsMeta = [

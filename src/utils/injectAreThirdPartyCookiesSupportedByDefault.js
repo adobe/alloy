@@ -17,7 +17,7 @@ import {
   IE,
   UNKNOWN,
 } from "../constants/browser.js";
-import includes from "./includes.js";
+
 import lazy from "./lazy.js";
 
 // Users could have also disabled third-party cookies within these browsers, but
@@ -32,4 +32,4 @@ const browsersSupportingThirdPartyCookie = [
 ];
 
 export default ({ getBrowser }) =>
-  lazy(() => includes(browsersSupportingThirdPartyCookie, getBrowser()));
+  lazy(() => browsersSupportingThirdPartyCookie.includes(getBrowser()));

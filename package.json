@@ -11,8 +11,7 @@
     "LICENSE_BANNER",
     "babel.config.cjs",
     "rollup.config.js",
-    "scripts/helpers/alloyComponents.js",
-    "scripts/helpers/conditionalBuildBabelPlugin.js",
+    "scripts/helpers/entryPointGeneratorBabelPlugin.js",
     "scripts/helpers/versionBabelPlugin.js"
   ],
   "bin": {
@@ -20,8 +19,8 @@
   },
   "scripts": {
     "clean": "rimraf dist distTest libEs5 libEs6",
-    "lint": "eslint --cache --fix \"*.js\" \"{src,test,scripts}/**/*.js\"",
-    "format": "prettier --write \"*.{html,js}\" \"{sandbox,src,test,scripts}/**/*.{html,js}\"",
+    "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{src,test,scripts}/**/*.{js,cjs,mjs,jsx}\"",
+    "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandbox,src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
     "test": "npm run test:unit && npm run test:scripts && npm run test:functional",
     "test:unit": "karma start karma.conf.cjs --single-run",
     "test:unit:debug": "karma start --browsers=Chrome --single-run=false --debug",
@@ -39,7 +38,7 @@
     "sandbox:build": "rollup -c --environment SANDBOX && cd sandbox && npm run build",
     "dev": "concurrently --names build,sandbox \"rollup -c -w --environment SANDBOX\" \"cd sandbox && export REACT_APP_NONCE=321 && npm start\"",
     "dev:standalone": "npm run clean && rollup -c -w --environment STANDALONE",
-    "build": "npm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN && echo \"Base Code:\" && cat distTest/baseCode.min.js",
+    "build": "npm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,BUNDLESIZE && echo \"Base Code:\" && cat distTest/baseCode.min.js",
     "build:cli": "node scripts/build-alloy.js",
     "prepare": "husky && cd sandbox && npm install",
     "prepack": "rimraf libEs5 libEs6 && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6",
@@ -48,16 +47,16 @@
     "preinstall": "npx force-resolutions"
   },
   "lint-staged": {
-    "./*.js": [
+    "./*.{cjs,mjs,js,jsx}": [
       "eslint --cache --fix"
     ],
-    "./{src,test,scripts}/**/*.js": [
+    "./{src,test,scripts}/**/*.{cjs,mjs,js,jsx}": [
       "eslint --cache --fix"
     ],
-    "./*.{html,js}": [
+    "./*.{html,js,cjs,mjs,jsx}": [
       "prettier --write"
     ],
-    "./{sandbox,src,test,scripts}/**/*.{html,js}": [
+    "./{sandbox,src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}": [
       "prettier --write"
     ]
   },
@@ -137,7 +136,6 @@
     "karma-spec-reporter": "0.0.36",
     "lint-staged": "^15.2.7",
     "prettier": "^3.3.3",
-    "promise-polyfill": "^8.3.0",
     "read-cache": "^1.0.0",
     "recursive-readdir": "^2.2.3",
     "request": "^2.88.0",

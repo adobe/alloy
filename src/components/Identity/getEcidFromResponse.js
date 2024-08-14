@@ -9,14 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-import { find } from "../../utils/index.js";
 import ecidNamespace from "../../constants/ecidNamespace.js";
 
 export default (response) => {
   const identityResultPayloads = response.getPayloadsByType("identity:result");
-  const ecidPayload = find(
-    identityResultPayloads,
+  const ecidPayload = identityResultPayloads.find(
     (payload) => payload.namespace && payload.namespace.code === ecidNamespace,
   );
   return ecidPayload ? ecidPayload.id : undefined;

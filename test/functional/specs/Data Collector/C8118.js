@@ -320,3 +320,184 @@ test("Test C8118: Verify cached internal link click data is sent on the next pag
     pageIDType: 0,
   });
 });
+
+test("Test C8118: Verify internal link click data with custom region", async () => {
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
+    clickCollection: {
+      internalLinkEnabled: true,
+      eventGroupingEnabled: false,
+    },
+  });
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  const alloy = createAlloyProxy();
+  await alloy.configure(testConfig);
+  await preventLinkNavigation();
+  await addHtmlToBody(
+    '<div id="custom-region"><a href="blank.html" id="alloy-link-test">Internal Link</a></div>',
+  );
+  await clickLink();
+  await collectEndpointAsserter.assertInteractCalledAndNotCollect();
+  const interactRequest = await collectEndpointAsserter.getInteractRequest();
+  const webInteraction = await getWebInteractionFromRequest(interactRequest);
+  await t.expect(webInteraction.region).eql("custom-region");
+});
+
+test("Test C8118: Verify external link click data with custom link type", async () => {
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
+    clickCollection: {
+      externalLinkEnabled: true,
+      eventGroupingEnabled: false,
+    },
+  });
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  const alloy = createAlloyProxy();
+  await alloy.configure(testConfig);
+  await preventLinkNavigation();
+  await addLinkToBody(
+    '<a href="https://example.com/" id="alloy-link-test" data-linktype="exit">External Link</a>',
+  );
+  await clickLink();
+  await collectEndpointAsserter.assertInteractCalledAndNotCollect();
+  const interactRequest = await collectEndpointAsserter.getInteractRequest();
+  const webInteraction = await getWebInteractionFromRequest(interactRequest);
+  await t.expect(webInteraction.type).eql("exit");
+});
+
+test("Test C8118: Verify link click with custom activity map data", async () => {
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
+    clickCollection: {
+      internalLinkEnabled: true,
+      eventGroupingEnabled: false,
+    },
+  });
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  const alloy = createAlloyProxy();
+  await alloy.configure(testConfig);
+  await preventLinkNavigation();
+  await addHtmlToBody(
+    '<div id="custom-region"><a href="blank.html" id="alloy-link-test" data-activitymap-region="custom-region" data-activitymap-link-id="custom-link">Custom Activity Map Link</a></div>',
+  );
+  await clickLink();
+  await collectEndpointAsserter.assertInteractCalledAndNotCollect();
+  const interactRequest = await collectEndpointAsserter.getInteractRequest();
+  const activityMapData = getActivityMapDataFromRequest(interactRequest);
+
+  // Check each property individually
+  await t
+    .expect(activityMapData.page)
+    .eql("https://alloyio.com/functional-test/testPage.html");
+  await t.expect(activityMapData.link).eql("Custom Activity Map Link");
+  await t.expect(activityMapData.region).eql("custom-region");
+  await t.expect(activityMapData.pageIDType).eql(0);
+
+  // If all individual checks pass, then do the full object comparison
+  await t.expect(activityMapData).eql({
+    page: "https://alloyio.com/functional-test/testPage.html",
+    link: "Custom Activity Map Link",
+    region: "custom-region",
+    pageIDType: 0,
+  });
+});
+
+test("Test C8118: Verify multiple link clicks with event grouping enabled", async () => {
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
+    clickCollection: {
+      internalLinkEnabled: true,
+      eventGroupingEnabled: true,
+    },
+  });
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  const alloy = createAlloyProxy();
+  await alloy.configure(testConfig);
+  await preventLinkNavigation();
+  await addLinkToBody('<a href="blank.html" id="alloy-link-test-1">Link 1</a>');
+  await addLinkToBody('<a href="blank.html" id="alloy-link-test-2">Link 2</a>');
+
+  await t.click(Selector("#alloy-link-test-1"));
+  await t.click(Selector("#alloy-link-test-2"));
+
+  await collectEndpointAsserter.assertNeitherCollectNorInteractCalled();
+  await collectEndpointAsserter.reset();
+
+  await alloy.sendEvent({
+    xdm: {
+      web: {
+        eventType: "web.webpagedetails.pageViews",
+        webPageDetails: {
+          name: "Test Page",
+          pageViews: { value: 1 },
+        },
+      },
+    },
+  });
+
+  await collectEndpointAsserter.assertInteractCalledAndNotCollect();
+  const interactRequest = await collectEndpointAsserter.getInteractRequest();
+  const xdm = await getXdmFromRequest(interactRequest);
+
+  if (Array.isArray(xdm.web.webInteraction)) {
+    await t.expect(xdm.web.webInteraction.length).eql(2);
+    await t.expect(xdm.web.webInteraction[0].name).eql("Link 1");
+    await t.expect(xdm.web.webInteraction[1].name).eql("Link 2");
+  } else if (xdm.web.webInteraction) {
+    await t.expect(xdm.web.webInteraction.name).eql("Link 2");
+  } else {
+    await t.fail("No webInteraction data found in XDM");
+  }
+});
+
+test("Test C8118: Verify link click with custom XDM data", async () => {
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
+    clickCollection: {
+      internalLinkEnabled: true,
+      eventGroupingEnabled: false,
+    },
+    onBeforeLinkClickSend: (options) => {
+      options.xdm.customField = "customValue";
+      return true;
+    },
+  });
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  const alloy = createAlloyProxy();
+  await alloy.configure(testConfig);
+  await preventLinkNavigation();
+  await addLinkToBody(INTERNAL_LINK_ANCHOR_2);
+
+  await clickLink();
+  await collectEndpointAsserter.assertInteractCalledAndNotCollect();
+  const interactRequest = await collectEndpointAsserter.getInteractRequest();
+  const xdm = await getXdmFromRequest(interactRequest);
+  await t.expect(xdm.customField).eql("customValue");
+});
+
+test("Test C8118: Verify storePageViewProperties functionality", async () => {
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
+    clickCollection: {
+      eventGroupingEnabled: true,
+    },
+  });
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  const alloy = createAlloyProxy();
+  await alloy.configure(testConfig);
+  await preventLinkNavigation();
+  await addLinkToBody(INTERNAL_LINK_ANCHOR_1);
+  await clickLink();
+
+  await alloy.sendEvent({
+    xdm: {
+      web: {
+        webPageDetails: {
+          name: "Test Page",
+        },
+      },
+    },
+  });
+
+  await collectEndpointAsserter.assertInteractCalledAndNotCollect();
+  const interactRequest = await collectEndpointAsserter.getInteractRequest();
+  const xdm = await getXdmFromRequest(interactRequest);
+  await t.expect(xdm.web.webPageDetails.name).eql("Test Page");
+  await t
+    .expect(xdm.web.webInteraction)
+    .ok("Web interaction should be present");
+});

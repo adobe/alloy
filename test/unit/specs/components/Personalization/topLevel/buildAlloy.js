@@ -12,14 +12,14 @@ governing permissions and limitations under the License.
 import createEvent from "../../../../../../src/core/createEvent.js";
 import flushPromiseChains from "../../../../helpers/flushPromiseChains.js";
 import createComponent from "../../../../../../src/components/Personalization/createComponent.js";
-import createCollect from "../../../../../../src/components/Personalization/createCollect.js";
+import createCollect from "../../../../../../src/utils/createCollect.js";
 import createFetchDataHandler from "../../../../../../src/components/Personalization/createFetchDataHandler.js";
 import collectInteractions from "../../../../../../src/components/Personalization/dom-actions/clicks/collectInteractions.js";
 import isAuthoringModeEnabled from "../../../../../../src/components/Personalization/utils/isAuthoringModeEnabled.js";
 import {
   mergeDecisionsMeta,
   mergeQuery,
-} from "../../../../../../src/components/Personalization/event.js";
+} from "../../../../../../src/utils/event.js";
 import createOnClickHandler from "../../../../../../src/components/Personalization/createOnClickHandler.js";
 import createViewCacheManager from "../../../../../../src/components/Personalization/createViewCacheManager.js";
 import createViewChangeHandler from "../../../../../../src/components/Personalization/createViewChangeHandler.js";
@@ -27,10 +27,7 @@ import createInteractionStorage from "../../../../../../src/components/Personali
 import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage.js";
 import createApplyPropositions from "../../../../../../src/components/Personalization/createApplyPropositions.js";
 import createSetTargetMigration from "../../../../../../src/components/Personalization/createSetTargetMigration.js";
-import {
-  assign,
-  createCallbackAggregator,
-} from "../../../../../../src/utils/index.js";
+import { createCallbackAggregator } from "../../../../../../src/utils/index.js";
 import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition.js";
 import createProcessPropositions from "../../../../../../src/components/Personalization/handlers/createProcessPropositions.js";
 import createAsyncArray from "../../../../../../src/components/Personalization/utils/createAsyncArray.js";
@@ -240,7 +237,7 @@ export default (mocks) => {
         onResponse: callbacks.add,
       });
       const results = await callbacks.call({ response });
-      const result = assign({}, ...results);
+      const result = Object.assign({}, ...results);
       await flushPromiseChains();
       event.finalize();
       return { event, result };

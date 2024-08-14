@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { EVENT_TYPE_TRUE } from "../../constants/eventType.js";
+import { EVENT_TYPE_TRUE } from "../constants/eventType.js";
 
 /* eslint-disable no-underscore-dangle */
 export const mergeDecisionsMeta = (
