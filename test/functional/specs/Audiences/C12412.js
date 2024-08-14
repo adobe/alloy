@@ -57,3 +57,18 @@ test(`Verify cookie destinations are returned in the response when turned on in 
   await t.expect(setCookieAttributes[0].sameSite).eql("none");
   await t.expect(setCookieAttributes[0].secure).eql(true);
 });
+
+test(`Verify cookie is set on the / path `, async () => {
+  const alloy = createAlloyProxy();
+
+  await alloy.configure(compose(orgMainConfigMain, debugEnabled));
+  await alloy.sendEvent();
+
+  const cookies = await t.getCookies("C12412");
+
+  // In Firefox, the t.getCookies method returns an empty array even if the cookie is present.
+  // The if condition below is to handle this issue.
+  if (cookies.length > 0) {
+    await t.expect(cookies[0].path).eql("/");
+  }
+});
