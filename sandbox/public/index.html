@@ -30,7 +30,7 @@
           console.log(data.instance);
         },
         onInstanceConfigured(data) {
-         /* console.log("Alloy Instance Configured");
+          console.log("Alloy Instance Configured");
           console.log(JSON.stringify(data.config, null, 2));
           const { getLinkDetails } = data;
 
@@ -39,7 +39,7 @@
           for (var i = 0; i < listOfLinks.length; i++) {
             const linkDetails = getLinkDetails(listOfLinks[i]);
             console.log("link details", linkDetails);
-          }*/
+          }
         },
       });
     </script>
@@ -172,7 +172,7 @@
 
       // For Testing multiple instances.
       // We use a different orgId and datastreamId.
-     organizationTwo("configure", {
+      organizationTwo("configure", {
         datastreamId: "7984963a-6609-4e84-98d5-4e2ff8c0dd5e:prod",
         orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
         debugEnabled: true,
