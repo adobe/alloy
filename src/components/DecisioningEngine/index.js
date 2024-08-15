@@ -24,13 +24,18 @@ import {
 import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand.js";
 import { clearLocalStorage, createInMemoryStorage } from "./utils.js";
 import { objectOf, boolean } from "../../utils/validation/index.js";
+import createCollect from "../../utils/createCollect.js";
+import { mergeDecisionsMeta } from "../../utils/event.js";
 
 const createDecisioningEngine = ({
   config,
+  eventManager,
   createNamespacedStorage,
   consent,
 }) => {
   const { orgId, personalizationStorageEnabled } = config;
+  const collect = createCollect({ eventManager, mergeDecisionsMeta });
+
   const storage = createNamespacedStorage(
     `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`,
   );
@@ -48,7 +53,7 @@ const createDecisioningEngine = ({
     contextProvider,
     decisionProvider,
   });
-  const subscribeRulesetItems = createSubscribeRulesetItems();
+  const subscribeRulesetItems = createSubscribeRulesetItems({ collect });
   let applyResponse;
 
   return {
@@ -93,8 +98,14 @@ const createDecisioningEngine = ({
             }),
           }),
         );
-
-        eventRegistry.addExperienceEdgeEvent(event);
+      },
+      onBeforeRequest({ request }) {
+        const payload = request.getPayload().toJSON();
+        const { events = [] } = payload;
+        if (events.length === 0) {
+          return;
+        }
+        events.forEach((event) => eventRegistry.addExperienceEdgeEvent(event));
       },
     },
     commands: {

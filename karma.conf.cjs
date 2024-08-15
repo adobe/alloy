@@ -20,7 +20,6 @@ module.exports = (config) => {
 
     // list of files / patterns to load in the browser
     files: [
-      "node_modules/promise-polyfill/dist/polyfill.js",
       {
         pattern: "test/unit/specs/karmaEntry.spec.cjs",
         watched: false, // The preprocessor will use its own watcher

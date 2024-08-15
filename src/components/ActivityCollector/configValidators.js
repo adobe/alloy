@@ -25,6 +25,23 @@ export const downloadLinkQualifier = string()
 
 export default objectOf({
   clickCollectionEnabled: boolean().default(true),
-  onBeforeLinkClickSend: callback(),
+  clickCollection: objectOf({
+    internalLinkEnabled: boolean().default(true),
+    externalLinkEnabled: boolean().default(true),
+    downloadLinkEnabled: boolean().default(true),
+    // TODO: Consider moving downloadLinkQualifier here.
+    sessionStorageEnabled: boolean().default(false),
+    eventGroupingEnabled: boolean().default(false),
+    filterClickProperties: callback(),
+  }).default({
+    internalLinkEnabled: true,
+    externalLinkEnabled: true,
+    downloadLinkEnabled: true,
+    sessionStorageEnabled: false,
+    eventGroupingEnabled: false,
+  }),
   downloadLinkQualifier,
+  onBeforeLinkClickSend: callback().deprecated(
+    'The field "onBeforeLinkClickSend" has been deprecated. Use "clickCollection.filterClickDetails" instead.',
+  ),
 });

@@ -12,6 +12,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+// eslint-disable-next-line
 import { Octokit } from "@octokit/rest";
 import semver from "semver";
 
@@ -30,8 +31,8 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
 });
 
-export default () =>
-  octokit.paginate(
+export default async function getTestingTags() {
+  return octokit.paginate(
     octokit.repos.listReleases,
     {
       owner: "adobe",
@@ -42,11 +43,15 @@ export default () =>
         .filter((release) => !release.draft && !release.prerelease)
         .map((release) => release.tag_name);
       const prodReleasesToTest = prodReleases.filter((tag) =>
-        semver.lte("2.12.0", semver.clean(tag)),
+        semver.lte("2.16.0", semver.clean(tag)),
       );
       if (prodReleasesToTest.length < prodReleases.length) {
         done();
       }
-      return prodReleasesToTest;
+      return prodReleasesToTest.map((tag) => ({
+        tag,
+        nodeVersion: semver.lt(tag, "2.20.0") ? "18" : "22",
+      }));
     },
   );
+}

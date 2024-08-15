@@ -14,6 +14,10 @@ import { noop } from "../../utils/index.js";
 
 const createClickHandler = ({ eventManager, lifecycle, handleError }) => {
   return (clickEvent) => {
+    // Ignore repropagated clicks from AppMeasurement
+    if (clickEvent.s_fe) {
+      return Promise.resolve();
+    }
     // TODO: Consider safeguarding from the same object being clicked multiple times in rapid succession?
     const clickedElement = clickEvent.target;
     const event = eventManager.createEvent();
@@ -26,7 +30,6 @@ const createClickHandler = ({ eventManager, lifecycle, handleError }) => {
           if (event.isEmpty()) {
             return Promise.resolve();
           }
-
           return eventManager.sendEvent(event);
         })
         // eventManager.sendEvent() will return a promise resolved to an
@@ -45,6 +48,5 @@ export default ({ eventManager, lifecycle, handleError }) => {
     lifecycle,
     handleError,
   });
-
   document.addEventListener("click", clickHandler, true);
 };

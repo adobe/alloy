@@ -64,6 +64,15 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
     expect(lifecycle.onClick).toHaveBeenCalled();
   });
 
+  it("Does not publish onClick lifecycle events for AppMeasurement repropagated click-events", () => {
+    build();
+    const clickEvent = {
+      s_fe: 1,
+    };
+    clickHandler(clickEvent);
+    expect(lifecycle.onClick).not.toHaveBeenCalled();
+  });
+
   it("Handles errors inside onClick lifecycle", () => {
     const error = new Error("Bad thing happened.");
     lifecycle.onClick.and.returnValue(Promise.reject(error));

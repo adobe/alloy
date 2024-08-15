@@ -88,7 +88,7 @@ const createConsoleLogger = async () => {
   const getMessagesSinceResetAsStrings = async (logLevel) => {
     const messages = await getMessagesSinceReset(logLevel);
     return messages.map((message) =>
-      message.map((part) => part.toString()).join(" "),
+      message.map((part) => part?.toString()).join(" "),
     );
   };
 
