@@ -229,7 +229,7 @@ const getInteractiveBuildCommand = () =>
             console.error(
               "Prompt couldn't be rendered in the current environment",
             );
-          } else {
+          } else if (error.name !== "ExitPromptError") {
             console.error("An error occurred: ", error);
           }
         });
