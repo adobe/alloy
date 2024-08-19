@@ -27,7 +27,7 @@ describe("Personalization::createFetchDataHandler", () => {
   let renderedPropositions;
   let notificationHandler;
   let consent;
-
+  let logger;
   let cacheUpdate;
   let personalizationDetails;
   let event;
@@ -36,6 +36,7 @@ describe("Personalization::createFetchDataHandler", () => {
   let response;
 
   beforeEach(() => {
+    logger = jasmine.createSpyObj("logger", ["logOnContentRendering"]);
     prehidingStyle = "myprehidingstyle";
     showContainers = jasmine.createSpy("showContainers");
     hideContainers = jasmine.createSpy("hideContainers");
@@ -80,6 +81,7 @@ describe("Personalization::createFetchDataHandler", () => {
       createProposition,
       notificationHandler,
       consent,
+      logger,
     });
     fetchDataHandler({
       cacheUpdate,

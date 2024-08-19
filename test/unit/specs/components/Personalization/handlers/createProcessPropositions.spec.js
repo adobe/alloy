@@ -49,7 +49,11 @@ describe("createProcessPropositions", () => {
     });
 
     schemaProcessors = { always, noNotification, never, noRender, redirect };
-    logger = jasmine.createSpyObj("logger", ["info", "error"]);
+    logger = jasmine.createSpyObj("logger", [
+      "info",
+      "error",
+      "logOnContentRendering",
+    ]);
     processPropositions = createProcessPropositions({
       schemaProcessors,
       logger,
@@ -67,6 +71,7 @@ describe("createProcessPropositions", () => {
       returnedPropositions: [],
       returnedDecisions: [],
     });
+    await expect(logger.logOnContentRendering).not.toHaveBeenCalled();
     await expectAsync(result.render()).toBeResolvedTo([]);
   });
 
@@ -91,6 +96,7 @@ describe("createProcessPropositions", () => {
       ],
       returnedDecisions: [],
     });
+    await expect(logger.logOnContentRendering).not.toHaveBeenCalled();
     expect(render).not.toHaveBeenCalled();
     await expectAsync(result.render()).toBeResolvedTo([
       {
@@ -123,6 +129,7 @@ describe("createProcessPropositions", () => {
       ],
       returnedDecisions: [],
     });
+    await expect(logger.logOnContentRendering).not.toHaveBeenCalled();
     expect(render).not.toHaveBeenCalled();
     await expectAsync(result.render()).toBeResolvedTo([]);
     expect(render).toHaveBeenCalledWith("mydata");
@@ -156,6 +163,7 @@ describe("createProcessPropositions", () => {
         },
       ],
     });
+    await expect(logger.logOnContentRendering).not.toHaveBeenCalled();
     await expectAsync(result.render()).toBeResolvedTo([]);
     expect(render).not.toHaveBeenCalled();
   });
@@ -181,6 +189,7 @@ describe("createProcessPropositions", () => {
       ],
       returnedDecisions: [],
     });
+    await expect(logger.logOnContentRendering).not.toHaveBeenCalled();
     await expectAsync(result.render()).toBeResolvedTo([
       {
         id: "noRender1",
@@ -212,6 +221,7 @@ describe("createProcessPropositions", () => {
       ],
       returnedDecisions: [],
     });
+    await expect(logger.logOnContentRendering).not.toHaveBeenCalled();
     expect(render).not.toHaveBeenCalled();
     await expectAsync(result.render()).toBeResolvedTo([]);
     expect(render).toHaveBeenCalledWith("mydata");
@@ -278,6 +288,7 @@ describe("createProcessPropositions", () => {
         },
       ],
     });
+    await expect(logger.logOnContentRendering).not.toHaveBeenCalled();
     expect(render).not.toHaveBeenCalled();
     await expectAsync(result.render()).toBeResolvedTo([]);
     expect(render).toHaveBeenCalledWith("mydata2");
@@ -311,6 +322,7 @@ describe("createProcessPropositions", () => {
         },
       ],
     });
+    await expect(logger.logOnContentRendering).not.toHaveBeenCalled();
     await expectAsync(result.render()).toBeResolvedTo([]);
     expect(render).not.toHaveBeenCalled();
   });

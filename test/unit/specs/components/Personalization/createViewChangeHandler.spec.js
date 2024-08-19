@@ -21,10 +21,11 @@ describe("Personalization::createViewChangeHandler", () => {
   let personalizationDetails;
   let event;
   let onResponse;
-
+  let logger;
   let createProposition;
 
   beforeEach(() => {
+    logger = jasmine.createSpyObj("logger", ["logOnContentRendering"]);
     processPropositions = jasmine.createSpy("processPropositions");
     viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
 
@@ -43,6 +44,7 @@ describe("Personalization::createViewChangeHandler", () => {
 
   const run = async () => {
     const viewChangeHandler = createViewChangeHandler({
+      logger,
       processPropositions,
       viewCache,
     });
@@ -69,6 +71,7 @@ describe("Personalization::createViewChangeHandler", () => {
 
     const { decisionsMeta, result } = await run();
 
+    expect(logger.logOnContentRendering).toHaveBeenCalledTimes(1);
     expect(processPropositions).toHaveBeenCalledTimes(1);
     expect(decisionsMeta).toEqual("decisionMeta");
 

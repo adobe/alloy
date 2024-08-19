@@ -9,11 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { groupBy } from "../../utils/index.js";
+import {groupBy, isNonEmptyArray} from "../../utils/index.js";
+import PAGE_WIDE_SCOPE from "../../constants/pageWideScope.js";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 
 export default ({
+  logger,
   prehidingStyle,
   showContainers,
   hideContainers,
@@ -44,6 +46,16 @@ export default ({
 
     onResponse(({ response }) => {
       const handles = response.getPayloadsByType(DECISIONS_HANDLE);
+      if(!isNonEmptyArray(handles)){
+        logger.logOnContentRendering({
+          status: "no-offers",
+          message: "No offers were returned.",
+          logLevel: "info",
+          detail: {
+            query: personalizationDetails.createQueryDetails()
+          }
+        });
+      }
       const propositions = handles.map((handle) => createProposition(handle));
       const {
         page: pagePropositions = [],
@@ -63,6 +75,30 @@ export default ({
             [...pagePropositions, ...currentViewPropositions],
             nonRenderedPropositions,
           ));
+        if (isNonEmptyArray(pagePropositions)) {
+          logger.logOnContentRendering({
+            status: "rendering-started",
+            message: "Started rendering propositions for page-wide scope.",
+            logLevel: "info",
+            detail: {
+              scope: PAGE_WIDE_SCOPE,
+              propositions: pagePropositions.map(proposition => proposition.toJSON())
+            },
+          });
+        }
+
+        if (isNonEmptyArray(currentViewPropositions)) {
+          logger.logOnContentRendering({
+            status: "rendering-started",
+            message: `Rendering propositions started for view scope - ${personalizationDetails.getViewName()}.`,
+            logLevel: "info",
+            detail: {
+              scope: personalizationDetails.getViewName(),
+              propositions: currentViewPropositions.map(proposition => proposition.toJSON())
+            },
+          });
+        }
+
         render().then(handleNotifications);
 
         // Render could take a long time especially if one of the renders

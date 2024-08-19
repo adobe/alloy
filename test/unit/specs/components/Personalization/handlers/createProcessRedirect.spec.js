@@ -26,7 +26,7 @@ describe("createProcessRedirect", () => {
   let processRedirect;
 
   beforeEach(() => {
-    logger = jasmine.createSpyObj("logger", ["warn"]);
+    logger = jasmine.createSpyObj("logger", ["warn", "logOnContentRendering"]);
     executeRedirect = jasmine.createSpy("executeRedirect");
     collectDefer = defer();
     collect = jasmine
@@ -65,6 +65,7 @@ describe("createProcessRedirect", () => {
   it("returns an empty object if the item has no content", () => {
     data = { a: 1 };
     expect(processRedirect(item)).toEqual({});
+    expect(logger.logOnContentRendering).not.toHaveBeenCalled();
     expect(logger.warn).toHaveBeenCalledWith("Invalid Redirect data", { a: 1 });
   });
 
@@ -88,6 +89,7 @@ describe("createProcessRedirect", () => {
     expect(executeRedirect).not.toHaveBeenCalled();
     collectDefer.resolve();
     await flushPromiseChains();
+    expect(logger.logOnContentRendering).toHaveBeenCalledTimes(1);
     expect(executeRedirect).toHaveBeenCalledWith("mycontent");
     expect(await renderPromise).toBeUndefined();
   });
@@ -98,6 +100,7 @@ describe("createProcessRedirect", () => {
     const result = processRedirect(item);
     const renderPromise = result.render();
     collectDefer.reject("myerror");
+    expect(logger.logOnContentRendering).not.toHaveBeenCalled();
     await expectAsync(renderPromise).toBeRejectedWith("myerror");
   });
 });
