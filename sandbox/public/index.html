@@ -15,6 +15,14 @@
     <script>
       window.__alloyMonitors = window.__alloyMonitors || [];
       window.__alloyMonitors.push({
+        onContentRendering(data) {
+          console.log("Alloy Content Rendering");
+          console.log("data", data.status, data);
+        },
+        onContentHiding(data) {
+          console.log("Alloy Content Hiding");
+          console.log("data", data.status);
+        },
         onInstanceCreated(data) {
           console.log("Alloy Instance Created");
           console.log(data.instanceName);
