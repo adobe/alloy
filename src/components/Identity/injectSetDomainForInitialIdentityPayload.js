@@ -10,17 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getBrowser from "../../utils/getBrowser.js";
-
 export default ({
   thirdPartyCookiesEnabled,
   areThirdPartyCookiesSupportedByDefault,
 }) => {
   return (request) => {
-    if (
-      thirdPartyCookiesEnabled &&
-      areThirdPartyCookiesSupportedByDefault(getBrowser(window))
-    ) {
+    if (thirdPartyCookiesEnabled && areThirdPartyCookiesSupportedByDefault()) {
       // If third-party cookies are enabled by the customer and
       // supported by the browser, we will send the request to a
       // a third-party identification domain that allows for more accurate

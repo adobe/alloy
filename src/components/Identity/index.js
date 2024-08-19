@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import {
-  areThirdPartyCookiesSupportedByDefault,
+  injectAreThirdPartyCookiesSupportedByDefault,
   injectDoesIdentityCookieExist,
   createLoggingCookieJar,
   cookieJar,
@@ -44,6 +44,7 @@ const createIdentity = ({
   fireReferrerHideableImage,
   sendEdgeNetworkRequest,
   apexDomain,
+  getBrowser,
 }) => {
   const {
     orgId,
@@ -71,6 +72,8 @@ const createIdentity = ({
     createIdentityRequest,
     globalConfigOverrides,
   });
+  const areThirdPartyCookiesSupportedByDefault =
+    injectAreThirdPartyCookiesSupportedByDefault({ getBrowser });
   const setDomainForInitialIdentityPayload =
     injectSetDomainForInitialIdentityPayload({
       thirdPartyCookiesEnabled,

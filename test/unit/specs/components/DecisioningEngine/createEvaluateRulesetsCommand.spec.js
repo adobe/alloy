@@ -14,12 +14,14 @@ import createContextProvider from "../../../../../src/components/DecisioningEngi
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry.js";
 import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider.js";
 import createApplyResponse from "../../../../../src/components/DecisioningEngine/createApplyResponse.js";
+import injectGetBrowser from "../../../../../src/utils/injectGetBrowser.js";
 
 describe("DecisioningEngine:evaluateRulesetsCommand", () => {
   let onDecision;
   let applyResponse;
   let storage;
   let eventRegistry;
+  let getBrowser;
   let contextProvider;
   let decisionProvider;
   let evaluateRulesetsCommand;
@@ -30,7 +32,12 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
 
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
     eventRegistry = createEventRegistry({ storage });
-    contextProvider = createContextProvider({ eventRegistry, window });
+    getBrowser = injectGetBrowser({ userAgent: window.navigator.userAgent });
+    contextProvider = createContextProvider({
+      eventRegistry,
+      window,
+      getBrowser,
+    });
     decisionProvider = createDecisionProvider({ eventRegistry });
 
     decisionProvider.addPayload({

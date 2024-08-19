@@ -18,6 +18,7 @@ import {
   isFunction,
   createLoggingCookieJar,
   injectFireReferrerHideableImage,
+  injectGetBrowser,
 } from "../utils/index.js";
 import createLogController from "./createLogController.js";
 import createLifecycle from "./createLifecycle.js";
@@ -68,6 +69,8 @@ const sendFetchRequest = injectSendFetchRequest({ fetch });
 const fireReferrerHideableImage = injectFireReferrerHideableImage();
 const getAssuranceValidationTokenParams =
   createGetAssuranceValidationTokenParams({ window, createNamespacedStorage });
+
+const getBrowser = injectGetBrowser({ userAgent: window.navigator.userAgent });
 
 export const createExecuteCommand = ({
   instanceName,
@@ -183,6 +186,7 @@ export const createExecuteCommand = ({
           }),
           createNamespacedStorage,
           apexDomain,
+          getBrowser,
         };
       },
     });

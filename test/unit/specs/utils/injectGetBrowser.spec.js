@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getBrowser from "../../../../src/utils/getBrowser.js";
+import injectGetBrowser from "../../../../src/utils/injectGetBrowser.js";
+
 import {
   EDGE,
   EDGE_CHROMIUM,
@@ -58,12 +59,7 @@ describe("getBrowser", () => {
     const userAgents = userAgentsByBrowser[browser];
     userAgents.forEach((userAgent) => {
       it(`reports ${browser} for ${userAgent}`, () => {
-        const window = {
-          navigator: {
-            userAgent,
-          },
-        };
-        expect(getBrowser(window)).toBe(browser);
+        expect(injectGetBrowser({ userAgent })()).toBe(browser);
       });
     });
   });

@@ -32,6 +32,7 @@ const createDecisioningEngine = ({
   eventManager,
   createNamespacedStorage,
   consent,
+  getBrowser,
 }) => {
   const { orgId, personalizationStorageEnabled } = config;
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
@@ -47,7 +48,11 @@ const createDecisioningEngine = ({
     storage: createInMemoryStorage(),
   });
   const decisionProvider = createDecisionProvider({ eventRegistry });
-  const contextProvider = createContextProvider({ eventRegistry, window });
+  const contextProvider = createContextProvider({
+    eventRegistry,
+    window,
+    getBrowser,
+  });
 
   const evaluateRulesetsCommand = createEvaluateRulesetsCommand({
     contextProvider,

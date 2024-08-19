@@ -18,6 +18,8 @@ import {
   UNKNOWN,
 } from "../constants/browser.js";
 
+import lazy from "./lazy.js";
+
 // Users could have also disabled third-party cookies within these browsers, but
 // we don't know. We also assume "unknown" browsers support third-party cookies,
 // though we don't really know that either. We're making best guesses.
@@ -29,5 +31,5 @@ const browsersSupportingThirdPartyCookie = [
   UNKNOWN,
 ];
 
-export default (browser) =>
-  browsersSupportingThirdPartyCookie.includes(browser);
+export default ({ getBrowser }) =>
+  lazy(() => browsersSupportingThirdPartyCookie.includes(getBrowser()));

@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 // Please keep in alphabetical order.
-export { default as areThirdPartyCookiesSupportedByDefault } from "./areThirdPartyCookiesSupportedByDefault.js";
 export { default as assignConcatArrayValues } from "./assignConcatArrayValues.js";
 export { default as clone } from "./clone.js";
 export { default as cookieJar } from "./cookieJar.js";
@@ -30,7 +29,9 @@ export { default as getApexDomain } from "./getApexDomain.js";
 export { default as getLastArrayItems } from "./getLastArrayItems.js";
 export { default as getNamespacedCookieName } from "./getNamespacedCookieName.js";
 export { default as groupBy } from "./groupBy.js";
+export { default as injectAreThirdPartyCookiesSupportedByDefault } from "./injectAreThirdPartyCookiesSupportedByDefault.js";
 export { default as injectDoesIdentityCookieExist } from "./injectDoesIdentityCookieExist.js";
+export { default as injectGetBrowser } from "./injectGetBrowser.js";
 export { default as injectStorage } from "./injectStorage.js";
 export { default as intersection } from "./intersection.js";
 export { default as isBoolean } from "./isBoolean.js";
@@ -44,7 +45,6 @@ export { default as isNil } from "./isNil.js";
 export { default as isNumber } from "./isNumber.js";
 export { default as isObject } from "./isObject.js";
 export { default as isString } from "./isString.js";
-export { default as memoize } from "./memoize.js";
 export { default as noop } from "./noop.js";
 export { default as parseUrl } from "./parseUrl.js";
 export { default as prepareConfigOverridesForEdge } from "./prepareConfigOverridesForEdge.js";
