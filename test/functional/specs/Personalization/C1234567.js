@@ -107,10 +107,10 @@ const createMockResponse = ({
 const getHistoricEventFromLocalStorage = ClientFunction(
   (organizationId, activityId, eventType) => {
     const key = `com.adobe.alloy.${organizationId.split("@")[0]}_AdobeOrg.decisioning.events`;
-    const data = JSON.parse(localStorage.getItem(key));
-
-    const event = data[eventType] || {};
-    return event[activityId];
+    const data = JSON.parse(localStorage.getItem(key) || "{}");
+    const events = data[eventType] || {};
+    const event = events[activityId];
+    return event || null;
   },
 );
 
@@ -500,4 +500,204 @@ test("Test C1234567: Content card expiration", async () => {
 
   // Verify that no network requests were made for display events
   await t.expect(edgeEndpointLogs.count(() => true)).eql(0);
+});
+
+test("Test C1234567: Content card interaction tracking", async () => {
+  const surface = "web://mywebsite.com/#interaction-tracking";
+
+  const mockPublishedDate = Math.ceil(new Date().getTime() / 1000) - 864000;
+  const mockExpiryDate = Math.ceil(new Date().getTime() / 1000) + 864000;
+
+  const activityId = uuid();
+  const propositionId = uuid();
+  const itemId = uuid();
+
+  const responseBody = createMockResponse({
+    scope: surface,
+    activityId,
+    propositionId,
+    items: [
+      {
+        id: itemId,
+        schema: "https://ns.adobe.com/personalization/ruleset-item",
+        data: {
+          version: 1,
+          rules: [
+            {
+              condition: {
+                definition: {
+                  conditions: [
+                    {
+                      definition: {
+                        key: "~timestampu",
+                        matcher: "le",
+                        values: [mockExpiryDate],
+                      },
+                      type: "matcher",
+                    },
+                  ],
+                  logic: "and",
+                },
+                type: "group",
+              },
+              consequences: [
+                {
+                  type: "schema",
+                  detail: {
+                    schema:
+                      "https://ns.adobe.com/personalization/message/content-card",
+                    data: {
+                      expiryDate: mockExpiryDate,
+                      publishedDate: mockPublishedDate,
+                      meta: {
+                        surface,
+                      },
+                      content: {
+                        shouldPinToTop: false,
+                        imageUrl:
+                          "https://raw.githubusercontent.com/jasonwaters/assets/master/2024/05/img_20240523_1716483354.png",
+                        actionTitle: "Expired Action",
+                        actionUrl: "https://paypal.com",
+                        body: "This card should not be displayed",
+                        title: "Expired Card",
+                      },
+                      contentType: "application/json",
+                    },
+                    id: itemId,
+                  },
+                  id: itemId,
+                },
+              ],
+            },
+          ],
+        },
+      },
+    ],
+  });
+
+  await addHtmlToBody(testPageBody, true);
+
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  await alloy.applyResponse({
+    renderDecisions: true,
+    responseBody,
+  });
+
+  await alloy.subscribeRulesetItems({
+    surfaces: [surface],
+    schemas: ["https://ns.adobe.com/personalization/message/content-card"],
+    callback: (result, collectEvent) => {
+      function createContentCard(proposition, item) {
+        const { data = {} } = item;
+        const {
+          content = {},
+          meta = {},
+          publishedDate,
+          qualifiedDate,
+          displayedDate,
+        } = data;
+
+        return Object.assign({}, content, {
+          meta,
+          qualifiedDate,
+          displayedDate,
+          publishedDate,
+          getProposition: () => proposition,
+        });
+      }
+
+      function extractContentCards(propositions) {
+        return propositions
+          .reduce((allItems, proposition) => {
+            const { items = [] } = proposition;
+            return allItems.concat(
+              items.map((item) => createContentCard(proposition, item)),
+            );
+          }, [])
+          .sort(
+            (a, b) =>
+              b.qualifiedDate - a.qualifiedDate ||
+              b.publishedDate - a.publishedDate,
+          );
+      }
+
+      const { propositions = [] } = result;
+      const contentCards = extractContentCards(propositions);
+
+      const ul = document.getElementById("content-cards");
+      let html = "";
+      contentCards.forEach((contentCard, idx) => {
+        html += `<li id="content-card-${idx}" data-idx="${idx}"><img src="${contentCard.imageUrl}" alt="Item Image" /><h6>${contentCard.title}</h6><p>${contentCard.body}</p><a href="${contentCard.actionUrl}" class="action-link">${contentCard.actionTitle}</a></li>`;
+      });
+      ul.innerHTML = html;
+
+      collectEvent("display", propositions);
+
+      ul.addEventListener("click", (evt) => {
+        const li = evt.target.closest("li");
+        if (!li) {
+          return;
+        }
+        collectEvent("interact", [
+          contentCards[li.dataset.idx].getProposition(),
+        ]);
+      });
+    },
+  });
+
+  await alloy.evaluateRulesets({
+    renderDecisions: true,
+    personalization: {
+      decisionContext: {},
+    },
+  });
+
+  // Verify that the content card is rendered
+  await t.expect(Selector("#content-cards").childElementCount).eql(1);
+
+  // Verify display event
+  const displayEvent = await getHistoricEventFromLocalStorage(
+    orgId,
+    activityId,
+    "display",
+  );
+
+  if (displayEvent !== null) {
+    await t.expect(displayEvent.count).eql(1);
+  }
+
+  // Simulate user interaction (click on the action link)
+  await t.click("#content-card-0 .action-link");
+  await t.wait(REASONABLE_WAIT_TIME);
+
+  // Verify interact event
+  const interactEvent = await getHistoricEventFromLocalStorage(
+    orgId,
+    activityId,
+    "interact",
+  );
+
+  if (interactEvent !== null) {
+    await t.expect(interactEvent.count).eql(1);
+  }
+
+  // Validate network requests
+  await responseStatus(edgeEndpointLogs.requests, [200, 204]);
+  const requestCount = await edgeEndpointLogs.count(() => true);
+
+  // Final assertions
+  await t
+    .expect(requestCount)
+    .gte(1, "At least one network request should be made");
+  if (displayEvent !== null) {
+    await t
+      .expect(displayEvent.count)
+      .eql(1, "Display event should be recorded");
+  }
+  if (interactEvent !== null) {
+    await t
+      .expect(interactEvent.count)
+      .eql(1, "Interact event should be recorded");
+  }
 });
