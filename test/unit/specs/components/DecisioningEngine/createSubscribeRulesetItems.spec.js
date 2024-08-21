@@ -1471,4 +1471,24 @@ describe("DecisioningEngine:subscribeRulesetItems", () => {
       documentMayUnload: true,
     });
   });
+
+  it("does not call collect event when there are no propositions", () => {
+    const { command, refresh } = subscribeRulesetItems;
+
+    const callback = jasmine.createSpy("callback");
+
+    command.run({
+      surfaces: ["web://mywebsite.com/my-cards"],
+      schemas: [MESSAGE_CONTENT_CARD],
+      callback,
+    });
+
+    refresh([]);
+
+    const [{ propositions = [] }, collectEvent] = callback.calls.first().args;
+
+    collectEvent(PropositionEventType.DISPLAY, propositions);
+
+    expect(collect).not.toHaveBeenCalled();
+  });
 });
