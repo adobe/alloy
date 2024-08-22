@@ -1,19 +1,20 @@
-import createGetEcidFromCookiefrom "../../../../../src/components/Identity/createGetEcidFromCookie";
+import createGetEcidFromCookie from "../../../../../src/components/Identity/createGetEcidFromCookie.js";
 
 describe("Identity::createGetEcidFromCookie", () => {
   let cookieValue;
   let cookieJar;
   let getEcidFromCookie;
   beforeEach(() => {
-    cookieValue = "CiYxNDAxNTI0NjEzODM4MjI2ODk1MTgwNTkyMTYxNjkxNTc0MzEyOFISCIelhf%5FOMRABGAEqA09SMjAA8AHX%5F4DZlzI%3D";
+    cookieValue =
+      "CiYxNDAxNTI0NjEzODM4MjI2ODk1MTgwNTkyMTYxNjkxNTc0MzEyOFISCIelhf%5FOMRABGAEqA09SMjAA8AHX%5F4DZlzI%3D";
     cookieJar = jasmine.createSpyObj("cookieJar", {
-      get: cookieValue
+      get: cookieValue,
     });
     getEcidFromCookie = createGetEcidFromCookie({
       config: {
-        orgId: "TEST_ORG"
+        orgId: "TEST_ORG",
       },
-      cookieJar
+      cookieJar,
     });
   });
 
@@ -21,4 +22,4 @@ describe("Identity::createGetEcidFromCookie", () => {
     const result = getEcidFromCookie();
     expect(result).toBe("14015246138382268951805921616915743128");
   });
-}); 
+});

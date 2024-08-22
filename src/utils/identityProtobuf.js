@@ -3,14 +3,10 @@
  * `npx --package "protobufjs-cli" --command "pbjs --target static-module --wrap es6 --es6 --no-create --no-encode --no-verify --no-convert --no-delimited --no-beautify --no-service ./kndctr.proto"
  */
 /* eslint-disable no-bitwise, max-classes-per-file */
-import * as $protobuf from "protobufjs/minimal";
-
-// Common aliases
-const $Reader = $protobuf.Reader;
-const $util = $protobuf.util;
+import { $Reader, $util, roots } from "protobufjs/minimal.js";
 
 // Exported root namespace
-const $root = $protobuf.roots.default || ($protobuf.roots.default = {});
+const $root = roots.default || (roots.default = {});
 export default $root;
 
 /**
@@ -35,7 +31,7 @@ export class Identity {
    */
   constructor(p) {
     if (p) {
-      for (let ks = Object.keys(p), i = 0; i < ks.length; ++i) {
+      for (let ks = Object.keys(p), i = 0; i < ks.length; i += 1) {
         if (p[ks[i]] != null) {
           this[ks[i]] = p[ks[i]];
         }
@@ -179,7 +175,7 @@ export class IdentityMetadata {
    */
   constructor(p) {
     if (p) {
-      for (let ks = Object.keys(p), i = 0; i < ks.length; ++i) {
+      for (let ks = Object.keys(p), i = 0; i < ks.length; i += 1) {
         if (p[ks[i]] != null) {
           this[ks[i]] = p[ks[i]];
         }
