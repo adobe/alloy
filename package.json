@@ -90,6 +90,7 @@
     "inquirer": "^10.1.8",
     "js-cookie": "3.0.5",
     "parse-uri": "^1.0.9",
+    "protobufjs": "^7.3.3",
     "rollup": "^4.21.0",
     "rollup-plugin-license": "^3.5.2",
     "uuid": "^10.0.0"

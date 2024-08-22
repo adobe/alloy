@@ -19,6 +19,7 @@ export default ({
   setLegacyEcid,
   handleResponseForIdSyncs,
   getEcidFromResponse,
+  getEcidFromCookie,
   getIdentity,
   consent,
   appendIdentityToUrl,
@@ -69,6 +70,11 @@ export default ({
                 edge,
               };
             });
+        },
+      },
+      getEcidFromCookie: {
+        run() {
+          return getEcidFromCookie();
         },
       },
       appendIdentityToUrl: {

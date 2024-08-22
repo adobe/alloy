@@ -36,6 +36,7 @@ import createGetIdentity from "./getIdentity/createGetIdentity.js";
 import createIdentityRequest from "./getIdentity/createIdentityRequest.js";
 import createIdentityRequestPayload from "./getIdentity/createIdentityRequestPayload.js";
 import injectAppendIdentityToUrl from "./appendIdentityToUrl/injectAppendIdentityToUrl.js";
+import createGetEcidFromCookie from "./createGetEcidFromCookie.js";
 
 const createIdentity = ({
   config,
@@ -64,6 +65,10 @@ const createIdentity = ({
     apexDomain,
     cookieJar: loggingCookieJar,
     isPageSsl: window.location.protocol === "https:",
+  });
+  const getEcidFromCookie = createGetEcidFromCookie({
+    config,
+    cookieJar,
   });
   const doesIdentityCookieExist = injectDoesIdentityCookieExist({ orgId });
   const getIdentity = createGetIdentity({
@@ -118,6 +123,7 @@ const createIdentity = ({
   return createComponent({
     addEcidQueryToPayload,
     addQueryStringIdentityToPayload,
+    getEcidFromCookie,
     ensureSingleIdentity,
     setLegacyEcid: legacyIdentity.setEcid,
     handleResponseForIdSyncs,
