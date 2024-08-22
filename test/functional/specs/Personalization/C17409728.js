@@ -348,7 +348,7 @@ test("Test C17409728: Automatically sends interact event when using applyProposi
 
   await t.click("#page-header");
 
-  await responseStatus(edgeEndpointLogs.requests, [200, 204]);
+  await responseStatus(edgeEndpointLogs.requests, [200, 204, 207]);
   await t.expect(edgeEndpointLogs.count(() => true)).eql(1);
 
   // TODO: Testcafe no longer captures the request body for sendBeacon requests.

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {groupBy} from "../../../utils/index.js";
+import { groupBy } from "../../../utils/index.js";
 
 export default ({ schemaProcessors, logger }) => {
   const wrapRenderWithLogging = (render, item) => () => {
@@ -29,7 +29,7 @@ export default ({ schemaProcessors, logger }) => {
           status: "rendering-failed",
           detail: {
             propositionDetails: item.getProposition().getNotification(),
-            item: item.toJSON()
+            item: item.toJSON(),
           },
           error,
           message: warning,
@@ -201,8 +201,8 @@ export default ({ schemaProcessors, logger }) => {
           const propsByScope = groupBy(renderedPropositions, (p) => p.scope);
           logger.logOnContentRendering({
             status: "rendering-succeeded",
-            detail: {...propsByScope},
-            message: `Scopes: ${propsByScope} successfully executed.`,
+            detail: { ...propsByScope },
+            message: `Scopes: ${JSON.stringify(propsByScope)} successfully executed.`,
             logLevel: "info",
           });
 

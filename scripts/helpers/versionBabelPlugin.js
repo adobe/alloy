@@ -21,9 +21,9 @@ export default (_ref) => {
       // __VERSION__
       ReferencedIdentifier(path, state) {
         const identifier = state.opts.identifier;
-        const transform = identifier === undefined ? true : identifier; // 默认转换
+        const transform = identifier === undefined ? true : identifier;
 
-        const define = state.opts.define || "__VERSION__"; // 默认值
+        const define = state.opts.define || "__VERSION__";
         if (transform && path.node.name === define) {
           path.replaceWith(t.valueToNode(getVersion(state)));
         }
