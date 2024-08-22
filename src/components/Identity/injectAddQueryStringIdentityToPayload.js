@@ -15,6 +15,7 @@ governing permissions and limitations under the License.
 import { queryString } from "../../utils/index.js";
 import queryStringIdentityParam from "../../constants/queryStringIdentityParam.js";
 import ecidNamespace from "../../constants/ecidNamespace.js";
+import decodeUriComponentSafely from "../../utils/decodeUriComponentSafely.js";
 
 const LINK_TTL_SECONDS = 300; // 5 minute link time to live
 
@@ -46,8 +47,7 @@ export default ({ locationSearch, dateProvider, orgId, logger }) =>
     // We are using MCMID and MCORGID to be compatible with Visitor.
     const ts = parseInt(properties.TS, 10);
     const mcmid = properties.MCMID;
-    const mcorgid = decodeURIComponent(properties.MCORGID);
-
+    const mcorgid = decodeUriComponentSafely(properties.MCORGID);
     if (
       // When TS is not specified or not a number, the following inequality returns false.
       // All inequalities with NaN variables are false.
