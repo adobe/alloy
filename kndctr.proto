@@ -1,3 +1,5 @@
+// From https://git.corp.adobe.com/pages/experience-edge/konductor/#/api/identifying-visitors?id=device-identifiers
+
 syntax = "proto3";
 
 // Device-level identity for Experience Edge
