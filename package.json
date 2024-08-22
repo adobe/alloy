@@ -43,8 +43,7 @@
     "prepare": "husky && cd sandbox && npm install",
     "prepack": "rimraf libEs5 libEs6 && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
-    "add-license": "./scripts/add-license.js",
-    "preinstall": "npx force-resolutions"
+    "add-license": "./scripts/add-license.js"
   },
   "lint-staged": {
     "./*.{cjs,mjs,js,jsx}": [
@@ -113,7 +112,6 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-testcafe": "^0.2.1",
-    "force-resolutions": "^1.0.11",
     "glob": "^11.0.0",
     "globals": "^15.9.0",
     "handlebars": "^4.7.8",
