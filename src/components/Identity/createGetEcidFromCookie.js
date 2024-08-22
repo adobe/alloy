@@ -15,8 +15,6 @@ export default ({ config, cookieJar }) => {
    */
   return () => {
     const cookie = cookieJar.get(kndctrCookieName);
-    // const cookie =
-    //   "CiYxNDAxNTI0NjEzODM4MjI2ODk1MTgwNTkyMTYxNjkxNTc0MzEyOFISCIelhf%5FOMRABGAEqA09SMjAA8AHX%5F4DZlzI%3D";
     if (!cookie) {
       return null;
     }
@@ -28,7 +26,6 @@ export default ({ config, cookieJar }) => {
 
     const cookieBytes = base64ToBytes(decodedCookie);
     const message = Identity.decode(cookieBytes);
-    console.log("CARTER - message", message);
     return message.ecid;
   };
 };
