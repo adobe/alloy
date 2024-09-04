@@ -30,19 +30,13 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: npm install @octokit/rest semver
-      - name: Verify sauce config directory
-        run: ls -la .sauce
       - name: Upload sauce configs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: sauce-config
           path: .sauce
-      - name: List uploaded artifacts
-        run: |
-          echo "Listing uploaded artifacts:"
-          gh api -H "Accept: application/vnd.github.v3+json" /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts
       - name: Upload sauce ignore
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: sauce-ignore
           path: .sauceignore
@@ -93,10 +87,6 @@ jobs:
         run: npm ci
       - name: Store Alloy version
         uses: nyaa8/package-version@v1
-      - name: List available artifacts
-        run: |
-          echo "Listing available artifacts:"
-          gh api -H "Accept: application/vnd.github.v3+json" /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts
       - name: Download sauce configs
         uses: actions/download-artifact@v4
         with:
@@ -198,10 +188,6 @@ jobs:
         run: npm ci
       - name: Store Alloy version
         uses: nyaa8/package-version@v1
-      - name: List available artifacts
-        run: |
-          echo "Listing available artifacts:"
-          gh api -H "Accept: application/vnd.github.v3+json" /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts
       - name: Download sauce configs
         uses: actions/download-artifact@v4
         with:
@@ -303,10 +289,6 @@ jobs:
         run: npm ci
       - name: Store Alloy version
         uses: nyaa8/package-version@v1
-      - name: List available artifacts
-        run: |
-          echo "Listing available artifacts:"
-          gh api -H "Accept: application/vnd.github.v3+json" /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts
       - name: Download sauce configs
         uses: actions/download-artifact@v4
         with:
