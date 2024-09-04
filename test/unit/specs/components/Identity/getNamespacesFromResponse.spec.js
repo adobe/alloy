@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getEcidFromResponse from "../../../../../src/components/Identity/getEcidFromResponse.js";
+import getNamespacesFromResponse from "../../../../../src/components/Identity/getNamespacesFromResponse.js";
 
 describe("Identity::getEcidFromResponse", () => {
   it("does not return ECID if ECID does not exist in response", () => {
@@ -25,7 +25,7 @@ describe("Identity::getEcidFromResponse", () => {
       ],
     });
 
-    expect(getEcidFromResponse(response)).toBeUndefined();
+    expect(getNamespacesFromResponse(response)).toEqual({ other: "user123" });
     expect(response.getPayloadsByType).toHaveBeenCalledWith("identity:result");
   });
 
@@ -47,7 +47,10 @@ describe("Identity::getEcidFromResponse", () => {
       ],
     });
 
-    expect(getEcidFromResponse(response)).toBe("user@adobe");
+    expect(getNamespacesFromResponse(response)).toEqual({
+      other: "user123",
+      ECID: "user@adobe",
+    });
     expect(response.getPayloadsByType).toHaveBeenCalledWith("identity:result");
   });
 });

@@ -15,5 +15,6 @@ import isUnique from "../isUnique.js";
 export default () => {
   return (value, path) => {
     assertValid(isUnique(value), value, path, "array values to be unique");
+    return value;
   };
 };

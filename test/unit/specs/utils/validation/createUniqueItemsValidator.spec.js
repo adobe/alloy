@@ -18,12 +18,12 @@ import {
 describe("validation::createUniqueItems", () => {
   it(`validates an empty array`, () => {
     const validator = arrayOf(string()).uniqueItems();
-    validator([]);
+    expect(validator([])).toEqual([]);
   });
 
   it(`validates an array of one item`, () => {
     const validator = arrayOf(string()).uniqueItems();
-    validator(["a"]);
+    expect(validator(["a"])).toEqual(["a"]);
   });
 
   it(`throws an error on an array with duplicate (string) items`, () => {
@@ -38,16 +38,16 @@ describe("validation::createUniqueItems", () => {
 
   it(`validates an array of enums`, () => {
     const validator = arrayOf(number()).uniqueItems();
-    validator([]);
+    expect(validator([])).toEqual([]);
   });
 
   it(`validates an array of null or undefined`, () => {
     const validator = arrayOf(string()).uniqueItems();
-    validator([null, undefined]);
+    expect(validator([null, undefined])).toEqual([null, undefined]);
   });
 
   it(`complains about required when null or undefined`, () => {
-    const validator = arrayOf(string()).uniqueItems().required();
+    const validator = arrayOf(string().required()).uniqueItems();
     expect(() => validator([null, undefined])).toThrowError();
   });
 });

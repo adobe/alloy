@@ -9,29 +9,37 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import getIdentityOptionsValidator from "../../../../../../src/components/Identity/getIdentity/getIdentityOptionsValidator.js";
+
+import createGetIdentityOptionsValidator from "../../../../../../src/components/Identity/getIdentity/createGetIdentityOptionsValidator.js";
 
 describe("Identity::getIdentityOptionsValidator", () => {
+  const thirdPartyValidator = createGetIdentityOptionsValidator({
+    thirdPartyCookiesEnabled: true,
+  });
+  const firstPartyValidator = createGetIdentityOptionsValidator({
+    thirdPartyCookiesEnabled: false,
+  });
+
   it("should throw an error when invalid options are passed", () => {
     expect(() => {
-      getIdentityOptionsValidator({ key: ["item1", "item2"] });
+      thirdPartyValidator({ key: ["item1", "item2"] });
     }).toThrow(new Error("'key': Unknown field."));
 
     expect(() => {
-      getIdentityOptionsValidator({
+      thirdPartyValidator({
         key1: ["item1", "item2"],
         key2: ["item1", "item2"],
       });
     }).toThrow(new Error("'key1': Unknown field.\n'key2': Unknown field."));
 
     expect(() => {
-      getIdentityOptionsValidator({ namespaces: [] });
+      thirdPartyValidator({ namespaces: [] });
     }).toThrow(
       new Error("'namespaces': Expected a non-empty array, but got []."),
     );
 
     expect(() => {
-      getIdentityOptionsValidator({ namespaces: ["ECID", "ECID"] });
+      thirdPartyValidator({ namespaces: ["ECID", "ECID"] });
     }).toThrow(
       new Error(
         `'namespaces': Expected array values to be unique, but got ["ECID","ECID"].`,
@@ -39,28 +47,32 @@ describe("Identity::getIdentityOptionsValidator", () => {
     );
 
     expect(() => {
-      getIdentityOptionsValidator({ namespaces: ["ACD"] });
-    }).toThrow(new Error(`'namespaces[0]': Expected ECID, but got "ACD".`));
+      thirdPartyValidator({ namespaces: ["ACD"] });
+    }).toThrow(
+      new Error(
+        `'namespaces[0]': Expected one of these values: ["ECID","CORE"], but got "ACD".`,
+      ),
+    );
   });
 
   it("should return valid options when no options are passed", () => {
     expect(() => {
-      getIdentityOptionsValidator();
+      thirdPartyValidator();
     }).not.toThrow();
-    const validatedIdentityOptions = getIdentityOptionsValidator();
+    const validatedIdentityOptions = thirdPartyValidator();
     expect(validatedIdentityOptions).toEqual({ namespaces: ["ECID"] });
   });
 
   it("should not throw when supported namespace options are passed", () => {
     const ECID = "ECID";
     expect(() => {
-      getIdentityOptionsValidator({ namespaces: [ECID] });
+      thirdPartyValidator({ namespaces: [ECID] });
     }).not.toThrow();
   });
 
   it("should return valid options when configuration is passed", () => {
     expect(() => {
-      getIdentityOptionsValidator({
+      thirdPartyValidator({
         edgeConfigOverrides: { identity: { idSyncContainerId: "123" } },
       });
     }).not.toThrow();
@@ -68,9 +80,25 @@ describe("Identity::getIdentityOptionsValidator", () => {
 
   it("should return valid options when an empty configuration is passed", () => {
     expect(() => {
-      getIdentityOptionsValidator({
+      thirdPartyValidator({
         edgeConfigOverrides: {},
       });
+    }).not.toThrow();
+  });
+
+  it("should throw an error when CORE is passed with third party cookies disabled", () => {
+    expect(() => {
+      firstPartyValidator({ namespaces: ["CORE"] });
+    }).toThrow(
+      new Error(
+        `namespaces: The CORE namespace cannot be requested when third-party cookies are disabled.`,
+      ),
+    );
+  });
+
+  it("should not throw when CORE is passed with third party cookies enabled", () => {
+    expect(() => {
+      thirdPartyValidator({ namespaces: ["CORE"] });
     }).not.toThrow();
   });
 });

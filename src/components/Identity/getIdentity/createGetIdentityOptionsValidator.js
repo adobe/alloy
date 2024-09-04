@@ -11,20 +11,39 @@ governing permissions and limitations under the License.
 */
 
 import { validateConfigOverride } from "../../../utils/index.js";
-import { objectOf, literal, arrayOf } from "../../../utils/validation/index.js";
+import { objectOf, enumOf, arrayOf } from "../../../utils/validation/index.js";
+import ecidNamespace from "../../../constants/ecidNamespace.js";
+import coreNamespace from "../../../constants/coreNamespace.js";
+
 /**
  * Verifies user provided event options.
  * @param {*} options The user event options to validate
  * @returns {*} Validated options
  */
-export default objectOf({
-  namespaces: arrayOf(literal("ECID"))
+
+const validator = objectOf({
+  namespaces: arrayOf(enumOf(ecidNamespace, coreNamespace))
     .nonEmpty()
     .uniqueItems()
-    .default(["ECID"]),
+    .default([ecidNamespace]),
   edgeConfigOverrides: validateConfigOverride,
 })
   .noUnknownFields()
   .default({
-    namespaces: ["ECID"],
+    namespaces: [ecidNamespace],
   });
+
+export default ({ thirdPartyCookiesEnabled }) => {
+  return (options) => {
+    const validatedOptions = validator(options);
+    if (
+      !thirdPartyCookiesEnabled &&
+      validatedOptions.namespaces.includes(coreNamespace)
+    ) {
+      throw new Error(
+        `namespaces: The ${coreNamespace} namespace cannot be requested when third-party cookies are disabled.`,
+      );
+    }
+    return validatedOptions;
+  };
+};

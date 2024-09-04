@@ -74,10 +74,9 @@ test("Test C224676: Passing a positive Consent in the sendEvent command", async 
   await t.expect(consentCookieValue).eql("general=in");
 
   // 2. The ECID should exist in the response payload as well, if queried
-  // TODO: We are seeing 2 `identity:result` handles. Bug logged on Konductor side:
-  // https://jira.corp.adobe.com/browse/EXEG-1960
   const identityHandle = response.getPayloadsByType("identity:result");
-  await t.expect(identityHandle.length).eql(1);
+  const returnedNamespaces = identityHandle.map((i) => i.namespace.code);
+  await t.expect(returnedNamespaces).contains("ECID");
 
   await alloy.sendEvent();
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);

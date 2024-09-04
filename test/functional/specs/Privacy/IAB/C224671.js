@@ -70,7 +70,8 @@ test.meta({
 
     // 2. The ECID should exist in the response payload as well, if queried
     const identityHandle = consentResponse.getPayloadsByType("identity:result");
-    await t.expect(identityHandle.length).eql(1);
+    const returnedNamespaces = identityHandle.map((i) => i.namespace.code);
+    await t.expect(returnedNamespaces).contains("ECID");
 
     await alloy.sendEvent();
     await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);
