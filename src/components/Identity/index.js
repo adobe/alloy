@@ -25,17 +25,18 @@ import awaitVisitorOptIn from "./visitorService/awaitVisitorOptIn.js";
 import injectGetEcidFromVisitor from "./visitorService/injectGetEcidFromVisitor.js";
 import injectHandleResponseForIdSyncs from "./injectHandleResponseForIdSyncs.js";
 import injectEnsureSingleIdentity from "./injectEnsureSingleIdentity.js";
-import addEcidQueryToPayload from "./addEcidQueryToPayload.js";
+import injectAddEcidQueryToPayload from "./injectAddEcidQueryToPayload.js";
 import injectSetDomainForInitialIdentityPayload from "./injectSetDomainForInitialIdentityPayload.js";
 import injectAddLegacyEcidToPayload from "./injectAddLegacyEcidToPayload.js";
 import injectAddQueryStringIdentityToPayload from "./injectAddQueryStringIdentityToPayload.js";
 import addEcidToPayload from "./addEcidToPayload.js";
 import injectAwaitIdentityCookie from "./injectAwaitIdentityCookie.js";
-import getEcidFromResponse from "./getEcidFromResponse.js";
+import getNamespacesFromResponse from "./getNamespacesFromResponse.js";
 import createGetIdentity from "./getIdentity/createGetIdentity.js";
 import createIdentityRequest from "./getIdentity/createIdentityRequest.js";
 import createIdentityRequestPayload from "./getIdentity/createIdentityRequestPayload.js";
 import injectAppendIdentityToUrl from "./appendIdentityToUrl/injectAppendIdentityToUrl.js";
+import createGetIdentityOptionsValidator from "./getIdentity/createGetIdentityOptionsValidator.js";
 
 const createIdentity = ({
   config,
@@ -115,18 +116,26 @@ const createIdentity = ({
     orgId,
     globalConfigOverrides,
   });
+  const getIdentityOptionsValidator = createGetIdentityOptionsValidator({
+    thirdPartyCookiesEnabled,
+  });
+  const addEcidQueryToPayload = injectAddEcidQueryToPayload({
+    thirdPartyCookiesEnabled,
+    areThirdPartyCookiesSupportedByDefault,
+  });
   return createComponent({
     addEcidQueryToPayload,
     addQueryStringIdentityToPayload,
     ensureSingleIdentity,
     setLegacyEcid: legacyIdentity.setEcid,
     handleResponseForIdSyncs,
-    getEcidFromResponse,
+    getNamespacesFromResponse,
     getIdentity,
     consent,
     appendIdentityToUrl,
     logger,
     config,
+    getIdentityOptionsValidator,
   });
 };
 

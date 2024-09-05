@@ -43,7 +43,7 @@ test("Test C14410: Configuring default consent to 'unknown' fails", async (t) =>
   await t
     .expect(errorMessage)
     .contains(
-      `Expected one of these values: [["in","out","pending"]], but got "unknown"`,
+      `Expected one of these values: ["in","out","pending"], but got "unknown"`,
     );
 });
 

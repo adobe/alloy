@@ -67,7 +67,6 @@ test("Test C224670: Opt in to IAB", async () => {
   // 2. The ECID should exist in the response payload as well, if queried
   const identityHandle = consentResponse.getPayloadsByType("identity:result");
   const returnedNamespaces = identityHandle.map((i) => i.namespace.code);
-  await t.expect(identityHandle.length).eql(1);
   await t.expect(returnedNamespaces).contains("ECID");
 
   await alloy.sendEvent();

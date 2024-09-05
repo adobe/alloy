@@ -10,16 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import addEcidQueryToPayload from "../../../../../src/components/Identity/addEcidQueryToPayload.js";
+import ecidNamespace from "../../constants/ecidNamespace.js";
+import coreNamespace from "../../constants/coreNamespace.js";
 
-describe("Identity::addEcidQueryToPayload", () => {
-  it("adds an ECID query to the event", () => {
-    const payload = jasmine.createSpyObj("payload", ["mergeQuery"]);
-    addEcidQueryToPayload(payload);
-    expect(payload.mergeQuery).toHaveBeenCalledWith({
-      identity: {
-        fetch: ["ECID"],
-      },
-    });
-  });
-});
+export default ({
+  thirdPartyCookiesEnabled,
+  areThirdPartyCookiesSupportedByDefault,
+}) => {
+  const query = {
+    identity: {
+      fetch: [ecidNamespace],
+    },
+  };
+  if (thirdPartyCookiesEnabled && areThirdPartyCookiesSupportedByDefault()) {
+    query.identity.fetch.push(coreNamespace);
+  }
+  return (payload) => {
+    payload.mergeQuery(query);
+  };
+};

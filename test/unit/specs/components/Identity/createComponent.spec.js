@@ -15,22 +15,22 @@ import { defer } from "../../../../../src/utils/index.js";
 import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 describe("Identity::createComponent", () => {
-  let ensureSingleIdentity;
   let addEcidQueryToPayload;
   let addQueryStringIdentityToPayload;
+  let ensureSingleIdentity;
   let setLegacyEcid;
   let handleResponseForIdSyncs;
-  let getEcidFromResponse;
-  let component;
+  let getNamespacesFromResponse;
   let getIdentity;
-  let awaitConsentDeferred;
-  let withConsentDeferred;
   let consent;
   let appendIdentityToUrl;
   let logger;
+  let getIdentityOptionsValidator;
+  let awaitConsentDeferred;
+  let withConsentDeferred;
   let getIdentityDeferred;
   let response;
-  let config;
+  let component;
 
   beforeEach(() => {
     ensureSingleIdentity = jasmine.createSpy("ensureSingleIdentity");
@@ -40,7 +40,7 @@ describe("Identity::createComponent", () => {
     );
     setLegacyEcid = jasmine.createSpy("setLegacyEcid");
     handleResponseForIdSyncs = jasmine.createSpy("handleResponseForIdSyncs");
-    getEcidFromResponse = jasmine.createSpy("getEcidFromResponse");
+    getNamespacesFromResponse = jasmine.createSpy("getNamespacesFromResponse");
     getIdentityDeferred = defer();
     awaitConsentDeferred = defer();
     withConsentDeferred = defer();
@@ -53,21 +53,19 @@ describe("Identity::createComponent", () => {
     getIdentity = jasmine
       .createSpy("getIdentity")
       .and.returnValue(getIdentityDeferred.promise);
-    config = {
-      edgeConfigOverrides: {},
-    };
+    getIdentityOptionsValidator = (options) => options;
     component = createComponent({
       ensureSingleIdentity,
       addEcidQueryToPayload,
       addQueryStringIdentityToPayload,
       setLegacyEcid,
       handleResponseForIdSyncs,
-      getEcidFromResponse,
+      getNamespacesFromResponse,
       getIdentity,
       consent,
       appendIdentityToUrl,
       logger,
-      config,
+      getIdentityOptionsValidator,
     });
     response = jasmine.createSpyObj("response", ["getEdge"]);
   });
@@ -123,20 +121,20 @@ describe("Identity::createComponent", () => {
     const idSyncsPromise = Promise.resolve();
     handleResponseForIdSyncs.and.returnValue(idSyncsPromise);
     component.lifecycle.onResponse({ response });
-    expect(getEcidFromResponse).toHaveBeenCalledWith(response);
+    expect(getNamespacesFromResponse).toHaveBeenCalledWith(response);
     expect(setLegacyEcid).not.toHaveBeenCalled();
   });
 
   it("creates legacy identity cookie if response contains ECID", () => {
     const idSyncsPromise = Promise.resolve();
     handleResponseForIdSyncs.and.returnValue(idSyncsPromise);
-    getEcidFromResponse.and.returnValue("user@adobe");
+    getNamespacesFromResponse.and.returnValue({ ECID: "user@adobe" });
     component.lifecycle.onResponse({ response });
-    expect(getEcidFromResponse).toHaveBeenCalledWith(response);
+    expect(getNamespacesFromResponse).toHaveBeenCalledWith(response);
     expect(setLegacyEcid).toHaveBeenCalledWith("user@adobe");
 
     component.lifecycle.onResponse({ response });
-    expect(getEcidFromResponse).toHaveBeenCalledTimes(1);
+    expect(getNamespacesFromResponse).toHaveBeenCalledTimes(2);
     expect(setLegacyEcid).toHaveBeenCalledTimes(1);
   });
 
@@ -152,6 +150,7 @@ describe("Identity::createComponent", () => {
     const idSyncsPromise = Promise.resolve();
     handleResponseForIdSyncs.and.returnValue(idSyncsPromise);
     const onResolved = jasmine.createSpy("onResolved");
+    const onResolved2 = jasmine.createSpy("onResolved2");
     response.getEdge.and.returnValue({ regionId: 42 });
     component.commands.getIdentity
       .run({ namespaces: ["ECID"] })
@@ -166,7 +165,11 @@ describe("Identity::createComponent", () => {
       })
       .then(() => {
         expect(getIdentity).toHaveBeenCalled();
-        getEcidFromResponse.and.returnValue("user@adobe");
+        // ECID and CORE are requested regardless of the namespaces passed in.
+        getNamespacesFromResponse.and.returnValue({
+          ECID: "user@adobe",
+          CORE: "mycoreid",
+        });
         component.lifecycle.onResponse({ response });
         getIdentityDeferred.resolve();
         return flushPromiseChains();
@@ -180,17 +183,38 @@ describe("Identity::createComponent", () => {
             regionId: 42,
           },
         });
+        getNamespacesFromResponse.and.returnValue({ CORE: "mycoreid" });
+        component.commands.getIdentity
+          .run({ namespaces: ["CORE"] })
+          .then(onResolved2);
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(getIdentity).toHaveBeenCalledTimes(1);
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(onResolved2).toHaveBeenCalledWith({
+          identity: {
+            CORE: "mycoreid",
+          },
+          edge: {
+            regionId: 42,
+          },
+        });
       });
   });
 
   it("getIdentity command should not make a request when ecid is available", () => {
     const idSyncsPromise = Promise.resolve();
     handleResponseForIdSyncs.and.returnValue(idSyncsPromise);
-    getEcidFromResponse.and.returnValue("user@adobe");
+    getNamespacesFromResponse.and.returnValue({ ECID: "user@adobe" });
     response.getEdge.and.returnValue({ regionId: 7 });
     component.lifecycle.onResponse({ response });
     const onResolved = jasmine.createSpy("onResolved");
-    component.commands.getIdentity.run().then(onResolved);
+    component.commands.getIdentity
+      .run({ namespaces: ["ECID"] })
+      .then(onResolved);
     return flushPromiseChains()
       .then(() => {
         expect(getIdentity).not.toHaveBeenCalled();
@@ -203,6 +227,39 @@ describe("Identity::createComponent", () => {
         expect(onResolved).toHaveBeenCalledWith({
           identity: {
             ECID: "user@adobe",
+          },
+          edge: {
+            regionId: 7,
+          },
+        });
+      });
+  });
+
+  it("getIdentity command should not make a request when CORE is available", () => {
+    const idSyncsPromise = Promise.resolve();
+    handleResponseForIdSyncs.and.returnValue(idSyncsPromise);
+    getNamespacesFromResponse.and.returnValue({
+      ECID: "user@adobe",
+      CORE: "mycoreid",
+    });
+    response.getEdge.and.returnValue({ regionId: 7 });
+    component.lifecycle.onResponse({ response });
+    const onResolved = jasmine.createSpy("onResolved");
+    component.commands.getIdentity
+      .run({ namespaces: ["CORE"] })
+      .then(onResolved);
+    return flushPromiseChains()
+      .then(() => {
+        expect(getIdentity).not.toHaveBeenCalled();
+        expect(onResolved).not.toHaveBeenCalled();
+        awaitConsentDeferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(getIdentity).not.toHaveBeenCalled();
+        expect(onResolved).toHaveBeenCalledWith({
+          identity: {
+            CORE: "mycoreid",
           },
           edge: {
             regionId: 7,
@@ -235,7 +292,7 @@ describe("Identity::createComponent", () => {
       })
       .then(() => {
         expect(getIdentity).toHaveBeenCalledWith(getIdentityOptions);
-        getEcidFromResponse.and.returnValue("user@adobe");
+        getNamespacesFromResponse.and.returnValue({ ECID: "user@adobe" });
         component.lifecycle.onResponse({ response });
         getIdentityDeferred.resolve();
         return flushPromiseChains();
@@ -305,7 +362,7 @@ describe("Identity::createComponent", () => {
         expect(getIdentity).toHaveBeenCalledWith(
           jasmine.objectContaining({ namespaces: ["ECID"] }),
         );
-        getEcidFromResponse.and.returnValue("user@adobe");
+        getNamespacesFromResponse.and.returnValue({ ECID: "user@adobe" });
         component.lifecycle.onResponse({ response });
         getIdentityDeferred.resolve();
         return flushPromiseChains();
@@ -323,7 +380,7 @@ describe("Identity::createComponent", () => {
     // set the ECID
     const idSyncsPromise = Promise.resolve();
     handleResponseForIdSyncs.and.returnValue(idSyncsPromise);
-    getEcidFromResponse.and.returnValue("user@adobe");
+    getNamespacesFromResponse.and.returnValue({ ECID: "user@adobe" });
     response.getEdge.and.returnValue({ regionId: 7 });
     component.lifecycle.onResponse({ response });
 
@@ -365,7 +422,7 @@ describe("Identity::createComponent", () => {
             edgeConfigOverrides,
           }),
         );
-        getEcidFromResponse.and.returnValue("user@adobe");
+        getNamespacesFromResponse.and.returnValue({ ECID: "user@adobe" });
         component.lifecycle.onResponse({ response });
         getIdentityDeferred.resolve();
         return flushPromiseChains();
