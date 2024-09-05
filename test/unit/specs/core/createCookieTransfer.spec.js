@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import createCookieTransfer from "../../../../src/core/createCookieTransfer.js";
 
 describe("createCookieTransfer", () => {
-  const apexDomain = "example.com";
+  let apexDomain;
   const endpointDomain = "thirdparty.com";
   let shouldTransferCookie;
   let payload;
@@ -23,20 +23,25 @@ describe("createCookieTransfer", () => {
   const dateProvider = () => date;
 
   beforeEach(() => {
+    apexDomain = "example.com";
     shouldTransferCookie = jasmine.createSpy("shouldTransferCookie");
     shouldTransferCookie.and.returnValue(false);
     payload = jasmine.createSpyObj("payload", ["mergeState"]);
     cookieJar = jasmine.createSpyObj("cookieJar", ["get", "set"]);
+  });
+
+  const build = () => {
     cookieTransfer = createCookieTransfer({
       cookieJar,
       shouldTransferCookie,
       apexDomain,
       dateProvider,
     });
-  });
+  };
 
   describe("cookiesToPayload", () => {
     it("does not transfer cookies to payload if endpoint is first-party", () => {
+      build();
       cookieTransfer.cookiesToPayload(payload, "edge.example.com");
       expect(payload.mergeState).toHaveBeenCalledWith({
         domain: apexDomain,
@@ -46,6 +51,7 @@ describe("createCookieTransfer", () => {
 
     it("does not set state.entries if there are no qualifying cookies", () => {
       cookieJar.get.and.returnValue({});
+      build();
       cookieTransfer.cookiesToPayload(payload, endpointDomain);
       expect(payload.mergeState).toHaveBeenCalledWith({
         domain: apexDomain,
@@ -53,34 +59,38 @@ describe("createCookieTransfer", () => {
       });
     });
 
-    it("transfers eligible cookies to payload", () => {
-      cookieJar.get.and.returnValue({
-        kndctr_ABC_CustomOrg_identity: "XYZ@CustomOrg",
-        ineligible_cookie: "foo",
-        kndctr_ABC_CustomOrg_optIn: "all",
-        at_qa_mode:
-          '{"token":"QATokenString","listedActivitiesOnly":true,"evaluateAsTrueAudienceIds":["2480042"],"previewIndexes":[{"activityIndex":1,"experienceIndex":1}]}',
-      });
-      shouldTransferCookie.and.returnValues(true, false, true, true);
-      cookieTransfer.cookiesToPayload(payload, endpointDomain);
-      expect(payload.mergeState).toHaveBeenCalledWith({
-        domain: apexDomain,
-        cookiesEnabled: true,
-        entries: [
-          {
-            key: "kndctr_ABC_CustomOrg_identity",
-            value: "XYZ@CustomOrg",
-          },
-          {
-            key: "kndctr_ABC_CustomOrg_optIn",
-            value: "all",
-          },
-          {
-            key: "at_qa_mode",
-            value:
-              '{"token":"QATokenString","listedActivitiesOnly":true,"evaluateAsTrueAudienceIds":["2480042"],"previewIndexes":[{"activityIndex":1,"experienceIndex":1}]}',
-          },
-        ],
+    ["example.com", ""].forEach((domain) => {
+      it(`transfers eligible cookies to payload with domain ${domain}`, () => {
+        apexDomain = domain;
+        build();
+        cookieJar.get.and.returnValue({
+          kndctr_ABC_CustomOrg_identity: "XYZ@CustomOrg",
+          ineligible_cookie: "foo",
+          kndctr_ABC_CustomOrg_optIn: "all",
+          at_qa_mode:
+            '{"token":"QATokenString","listedActivitiesOnly":true,"evaluateAsTrueAudienceIds":["2480042"],"previewIndexes":[{"activityIndex":1,"experienceIndex":1}]}',
+        });
+        shouldTransferCookie.and.returnValues(true, false, true, true);
+        cookieTransfer.cookiesToPayload(payload, endpointDomain);
+        expect(payload.mergeState).toHaveBeenCalledWith({
+          domain: apexDomain,
+          cookiesEnabled: true,
+          entries: [
+            {
+              key: "kndctr_ABC_CustomOrg_identity",
+              value: "XYZ@CustomOrg",
+            },
+            {
+              key: "kndctr_ABC_CustomOrg_optIn",
+              value: "all",
+            },
+            {
+              key: "at_qa_mode",
+              value:
+                '{"token":"QATokenString","listedActivitiesOnly":true,"evaluateAsTrueAudienceIds":["2480042"],"previewIndexes":[{"activityIndex":1,"experienceIndex":1}]}',
+            },
+          ],
+        });
       });
     });
   });
@@ -92,6 +102,7 @@ describe("createCookieTransfer", () => {
     });
 
     it("adds a cookie with the correct domain", () => {
+      build();
       response.getPayloadsByType.and.returnValue([
         {
           key: "mykey",
@@ -105,6 +116,7 @@ describe("createCookieTransfer", () => {
     });
 
     it("adds multiple cookies", () => {
+      build();
       response.getPayloadsByType.and.returnValue([
         {
           key: "mykey1",
@@ -129,6 +141,7 @@ describe("createCookieTransfer", () => {
     });
 
     it("sets the expires attribute", () => {
+      build();
       response.getPayloadsByType.and.returnValue([
         {
           key: "mykey",
@@ -143,6 +156,7 @@ describe("createCookieTransfer", () => {
     });
 
     it("adds a sameSite=none cookie with secure attribute", () => {
+      build();
       response.getPayloadsByType.and.returnValue([
         {
           key: "mykey",
@@ -156,6 +170,7 @@ describe("createCookieTransfer", () => {
     });
 
     it("adds a sameSite=strict cookie", () => {
+      build();
       response.getPayloadsByType.and.returnValue([
         {
           key: "mykey",

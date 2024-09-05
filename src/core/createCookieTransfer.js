@@ -24,8 +24,10 @@ export default ({
      * the request body so they can be read by the server.
      */
     cookiesToPayload(payload, endpointDomain) {
-      const isEndpointFirstParty = endpointDomain.endsWith(apexDomain);
-
+      // localhost is a special case where the apexDomain is ""
+      // We want to treat localhost as a third-party domain.
+      const isEndpointFirstParty =
+        apexDomain !== "" && endpointDomain.endsWith(apexDomain);
       const state = {
         domain: apexDomain,
         cookiesEnabled: true,
