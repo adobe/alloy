@@ -32,11 +32,13 @@ jobs:
         with:
           name: sauce-config
           path: .sauce
+          include-hidden-files: true
 
       - uses: actions/upload-artifact@v4
         with:
           name: sauce-ignore
           path: .sauceignore
+          include-hidden-files: true
 
   alloy-prod-e2e:
     name: "ee: Prod E2E Tests"
