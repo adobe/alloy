@@ -96,14 +96,14 @@ describe("createConsentStateMachine", () => {
       });
   });
 
-  it("rejects promises when it is not initialized", () => {
-    const onRejected = jasmine.createSpy("onRejected");
-    return subject
-      .awaitConsent()
-      .catch(onRejected)
-      .then(() => {
-        expect(onRejected).toHaveBeenCalled();
-      });
+  // This is what would happen when the privacy component is not included
+  it("resolves promises when it is not initialized", () => {
+    const onFulfilled = jasmine.createSpy("onFulfilled");
+    subject.awaitConsent().then(onFulfilled);
+
+    return flushPromiseChains().then(() => {
+      expect(onFulfilled).toHaveBeenCalled();
+    });
   });
 
   [

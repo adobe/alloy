@@ -11,11 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import createCoreConfigs from "../../../../../src/core/config/createCoreConfigs.js";
-import {
-  IN,
-  OUT,
-  PENDING,
-} from "../../../../../src/constants/consentStatus.js";
 
 describe("createCoreConfigs", () => {
   let validator;
@@ -50,47 +45,6 @@ describe("createCoreConfigs", () => {
       expect(() => {
         validator({ debugEnabled: 123, ...baseConfig });
       }).toThrowError();
-    });
-  });
-
-  describe("defaultConsent", () => {
-    it("validates defaultConsent=undefined", () => {
-      const config = validator(baseConfig);
-      expect(config.defaultConsent).toEqual(IN);
-    });
-    it("validates defaultConsent={}", () => {
-      expect(() => {
-        validator({
-          defaultConsent: {},
-          ...baseConfig,
-        });
-      }).toThrowError();
-    });
-    it("validates defaultConsent='in'", () => {
-      const config = validator({
-        defaultConsent: IN,
-        ...baseConfig,
-      });
-      expect(config.defaultConsent).toEqual(IN);
-    });
-    it("validates defaultConsent='pending'", () => {
-      const config = validator({
-        defaultConsent: PENDING,
-        ...baseConfig,
-      });
-      expect(config.defaultConsent).toEqual(PENDING);
-    });
-    it("validates defaultConsent=123", () => {
-      expect(() => {
-        validator({ defaultConsent: 123, ...baseConfig });
-      }).toThrowError();
-    });
-    it("validates defaultConsent='out'", () => {
-      const config = validator({
-        defaultConsent: OUT,
-        ...baseConfig,
-      });
-      expect(config.defaultConsent).toEqual(OUT);
     });
   });
 
