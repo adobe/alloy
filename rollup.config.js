@@ -89,6 +89,7 @@ const bundleSizePlugin = (_options = {}) => {
             })),
         );
         if (options.reportToConsole) {
+          // eslint-disable-next-line no-console
           console.table(sizes);
         }
         // check if the output file exists, create it if it does not exist
