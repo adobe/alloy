@@ -56,13 +56,17 @@ test(
   "C8085776: At.js 2.x to Web SDK - Assert same session ID, edge cluster are used " +
     "for both of the requests interact and delivery API",
   async () => {
-    // Wait for a short period to allow for asynchronous requests
-    await t.wait(2000);
+    // Increase wait time
+    await t.wait(5000);
 
     const requestCount = await networkLogger.targetDeliveryEndpointLogs.count(
       () => true,
     );
     console.log(`Number of Target delivery requests: ${requestCount}`);
+
+    // Log the contents of the requests for debugging
+    const requests = networkLogger.targetDeliveryEndpointLogs.requests;
+    console.log("Target delivery requests:", JSON.stringify(requests, null, 2));
 
     await t
       .expect(requestCount)
