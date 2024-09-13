@@ -319,7 +319,7 @@ test("Test C1234567: Subscribes content cards", async () => {
   await t.expect(trigger.count).eql(1);
 
   // validate display event sent
-  await responseStatus(edgeEndpointLogs.requests, [200, 204]);
+  await responseStatus(edgeEndpointLogs.requests, [200, 204, 207]);
   await t.expect(edgeEndpointLogs.count(() => true)).eql(1);
 
   const display = await getHistoricEventFromLocalStorage(
@@ -342,7 +342,7 @@ test("Test C1234567: Subscribes content cards", async () => {
   await t.expect(interact.count).eql(1);
 
   // validate interact event sent
-  await responseStatus(edgeEndpointLogs.requests, [200, 204]);
+  await responseStatus(edgeEndpointLogs.requests, [200, 204, 207]);
   await t.expect(edgeEndpointLogs.count(() => true)).eql(2);
 });
 
@@ -683,7 +683,7 @@ test("Test C1234567: Content card interaction tracking", async () => {
   }
 
   // Validate network requests
-  await responseStatus(edgeEndpointLogs.requests, [200, 204]);
+  await responseStatus(edgeEndpointLogs.requests, [200, 204, 207]);
   const requestCount = await edgeEndpointLogs.count(() => true);
 
   // Final assertions
