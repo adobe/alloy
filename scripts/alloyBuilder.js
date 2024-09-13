@@ -15,7 +15,7 @@ import fs from "fs";
 import path from "path";
 import { rollup } from "rollup";
 import { Command, Option, InvalidOptionArgumentError } from "commander";
-import inquirer from "inquirer";
+import { input, checkbox, select } from "@inquirer/prompts";
 import { fileURLToPath } from "url";
 import babel from "@babel/core";
 import { buildConfig } from "../rollup.config.js";
@@ -101,14 +101,14 @@ const generateInputEntryFile = ({
 };
 
 const build = async (argv) => {
-  const input = generateInputEntryFile({
+  const inputFile = generateInputEntryFile({
     inputPath: `${sourceRootPath}/standalone.js`,
     includedModules: argv.include,
   });
 
   const rollupConfig = buildConfig({
     variant: "CUSTOM_BUILD",
-    input,
+    input: inputFile,
     file: getOutputFilePath(argv),
     minify: argv.minify,
   });
@@ -116,7 +116,7 @@ const build = async (argv) => {
   const bundle = await rollup(rollupConfig);
   await bundle.write(rollupConfig.output[0]);
 
-  fs.unlinkSync(input);
+  fs.unlinkSync(inputFile);
 
   console.log(
     `🎉 Wrote ${
@@ -195,44 +195,39 @@ const getInteractiveBuildCommand = () =>
       "Interactive process that will ask a series of questions and then it will generate a build.",
     )
     .action(async () => {
-      await inquirer
-        .prompt([
-          {
-            type: "checkbox",
-            name: "include",
+      try {
+        const opts = {
+          include: await checkbox({
             message: "What components should be included in your Alloy build?",
             choices: getComponents().optional.map((value) => ({
               name: camelCaseToTitleCase(value),
               checked: true,
               value,
             })),
-          },
-          {
-            type: "list",
-            name: "minify",
+          }),
+          minify: await select({
             message: "How would you like your JavaScript to be?",
             choices: [
               { name: "Minified", value: true },
               { name: "Unminified", value: false },
             ],
-          },
-          {
-            type: "string",
-            name: "outputDir",
+          }),
+          outputDir: await input({
             message: "Where would you like to save the build?",
             default: process.cwd(),
-          },
-        ])
-        .then(async (opts) => build(opts))
-        .catch((error) => {
-          if (error.isTtyError) {
-            console.error(
-              "Prompt couldn't be rendered in the current environment",
-            );
-          } else if (error.name !== "ExitPromptError") {
-            console.error("An error occurred: ", error);
-          }
-        });
+          }),
+        };
+
+        build(opts);
+      } catch (error) {
+        if (error.isTtyError) {
+          console.error(
+            "Prompt couldn't be rendered in the current environment",
+          );
+        } else if (error.name !== "ExitPromptError") {
+          console.error("An error occurred: ", error);
+        }
+      }
     });
 
 const program = new Command();
