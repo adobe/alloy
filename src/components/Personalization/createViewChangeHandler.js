@@ -35,7 +35,9 @@ export default ({ processPropositions, viewCache, logger }) => {
           logLevel: "info",
           detail: {
             scope: viewName,
-            propositions: propositions.map(proposition => proposition.toJSON())
+            propositions: propositions.map((proposition) =>
+              proposition.toJSON(),
+            ),
           },
         });
 
