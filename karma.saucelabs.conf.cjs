@@ -19,28 +19,28 @@ module.exports = (config) => {
       base: "SauceLabs",
       browserName: "chrome",
       browserVersion: "latest",
-      platform: "Windows 11",
+      platformName: "Windows 11",
+      "sauce:options": {
+        headless: true,
+      },
     },
     sl_safariW3C: {
       base: "SauceLabs",
       browserName: "safari",
       browserVersion: "latest",
-      platform: "macOS 13",
+      platformName: "macOS 13",
+      "sauce:options": {
+        headless: true,
+      },
     },
     sl_firefoxW3C: {
       base: "SauceLabs",
       browserName: "firefox",
+      browserVersion: "latest",
       platformName: "Windows 11",
-      browserVersion: "latest",
       "sauce:options": {
-        geckodriverVersion: "0.34.0",
+        headless: true,
       },
-    },
-    sl_edgeW3C: {
-      base: "SauceLabs",
-      browserName: "microsoftedge",
-      browserVersion: "latest",
-      platform: "Windows 11",
     },
   };
 
