@@ -41,8 +41,7 @@ export default ({ logger }) => {
     }
   };
 
-  const awaitInitial = () =>
-    Promise.reject(new Error("Consent has not been initialized."));
+  const awaitInitial = () => Promise.resolve();
   const awaitInDefault = () => Promise.resolve();
   const awaitIn = () => Promise.resolve();
   const awaitOutDefault = () =>
