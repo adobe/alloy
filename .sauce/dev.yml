@@ -14,7 +14,7 @@ testcafe:
   version: 3.6.0
 nodeVersion: "22"
 speed: 1
-pageLoadTimeout: 3000
+pageLoadTimeout: 5000
 disablePageCaching: true
 timeZone: New_York
 npm:
@@ -28,7 +28,6 @@ npm:
 suites:
   - name: "Safari"
     browserName: "safari"
-    headless: true
     browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"
