@@ -9,6 +9,7 @@ env:
   SAUCE_CAPABILITIES_OVERRIDES_PATH: "sauceLabsCapabilities.json"
   EDGE_BASE_PATH: ee-pre-prd
   ALLOY_ENV: int
+  SAUCE_TUNNEL_ID: github-action-tunnel
 
 jobs:
   linting:
