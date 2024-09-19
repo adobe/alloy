@@ -21,6 +21,7 @@ module.exports = (config) => {
       browserVersion: "latest",
       platformName: "Windows 11",
       "sauce:options": {
+        tunnelIdentifier: process.env.SAUCE_TUNNEL_ID,
         headless: true,
       },
     },
@@ -30,6 +31,7 @@ module.exports = (config) => {
       browserVersion: "latest",
       platformName: "macOS 13",
       "sauce:options": {
+        tunnelIdentifier: process.env.SAUCE_TUNNEL_ID,
         headless: true,
       },
     },
@@ -39,6 +41,7 @@ module.exports = (config) => {
       browserVersion: "latest",
       platformName: "Windows 11",
       "sauce:options": {
+        tunnelIdentifier: process.env.SAUCE_TUNNEL_ID,
         headless: true,
       },
     },
@@ -50,9 +53,12 @@ module.exports = (config) => {
     concurrency: 10,
     colors: true,
     sauceLabs: {
-      screenResolution: "800x600",
+      testName: "Alloy Unit Tests",
       build: `GH #${process.env.BUILD_NUMBER} (${process.env.BUILD_ID})`,
-      tunnelIdentifier: process.env.JOB_NUMBER,
+      tunnelIdentifier: process.env.SAUCE_TUNNEL_ID,
+      screenResolution: "1280x1024",
+      recordVideo: false,
+      recordScreenshots: false,
     },
     plugins: [
       "karma-jasmine",
