@@ -45,8 +45,8 @@ export default ({ schemaProcessors, logger }) => {
       const successes = results.filter((result) => result);
       // as long as at least one renderer succeeds, we want to add the notification
       // to the display notifications
-      if (isNonEmptyArray(successes)) {
-        return { meta, successes };
+      if (meta && isNonEmptyArray(successes)) {
+        return { ...meta, items: successes };
       }
       return undefined;
     });
@@ -198,11 +198,7 @@ export default ({ schemaProcessors, logger }) => {
     const render = () => {
       return Promise.all(renderers.map((renderer) => renderer())).then(
         (metas) => {
-          const propositions = metas
-            .filter((meta) => meta)
-            .map((meta) => {
-              return { items: meta.successes, ...meta.meta };
-            });
+          const propositions = metas.filter((meta) => meta);
           const renderedPropositions = propositions.map((prop) => {
             const { id, scope, scopeDetails } = prop;
             return { id, scope, scopeDetails };
