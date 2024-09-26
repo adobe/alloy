@@ -14,9 +14,11 @@ testcafe:
   version: "package.json"
 nodeVersion: "$NODE_VERSION"
 speed: 0.5
-pageLoadTimeout: 10000
+pageLoadTimeout: 8000
 disablePageCaching: true
 timeZone: New_York
+quarantineMode: true
+retries: 3
 npm:
   dependencies:
     - node-fetch
