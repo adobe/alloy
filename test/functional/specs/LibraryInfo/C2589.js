@@ -89,9 +89,11 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
     },
   };
 
+  console.log("Current Version:", currentVersion); // Add this line for debugging
   const alloy = createAlloyProxy();
   await alloy.configure(debugEnabledConfig);
   const { libraryInfo } = await alloy.getLibraryInfo();
+  console.log("Library Info Version:", libraryInfo.version); // Add this line for debugging
   delete libraryInfo.configs.edgeBasePath;
   await t.expect(libraryInfo.version).eql(currentVersion);
   await t.expect(libraryInfo.commands).eql(currentCommand);
