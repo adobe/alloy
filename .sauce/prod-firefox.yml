@@ -36,7 +36,7 @@ suites:
     browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"
-    platformName: "macOS 13"
+    platformName: "Windows 11"
     excludedTestFiles:
       [
         "test/functional/specs/Data Collector/C81182.js",
