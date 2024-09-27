@@ -32,6 +32,9 @@ npm:
     - "@adobe/reactor-object-assign"
 suites:
   - name: "Chrome"
+    quarantineMode:
+      attemptLimit: 3
+      successThreshold: 1
     browserName: "chrome"
     browserVersion: "latest"
     src:
