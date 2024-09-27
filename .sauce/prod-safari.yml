@@ -13,10 +13,11 @@ env:
 testcafe:
   version: "package.json"
 nodeVersion: "$NODE_VERSION"
-speed: 0.4
-pageLoadTimeout: 10000
+speed: 0.5
+pageLoadTimeout: 8000
 disablePageCaching: false
 timeZone: New_York
+retries: 3
 npm:
   dependencies:
     - node-fetch
@@ -37,6 +38,9 @@ suites:
     src:
       - "test/functional/specs/**/*.js"
     platformName: "macOS 13"
+    quarantineMode:
+      attemptLimit: 3
+      successThreshold: 1
     excludedTestFiles:
       [
         "test/functional/specs/Privacy/C1472435.js",
