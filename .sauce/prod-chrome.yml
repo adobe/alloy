@@ -13,8 +13,8 @@ env:
 testcafe:
   version: "package.json"
 nodeVersion: "$NODE_VERSION"
-speed: 1
-pageLoadTimeout: 3000
+speed: 0.5
+pageLoadTimeout: 5000
 disablePageCaching: true
 timeZone: New_York
 npm:
@@ -32,9 +32,6 @@ npm:
     - "@adobe/reactor-object-assign"
 suites:
   - name: "Chrome"
-    quarantineMode:
-      attemptLimit: 3
-      successThreshold: 1
     browserName: "chrome"
     browserVersion: "latest"
     src:
