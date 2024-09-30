@@ -2,6 +2,7 @@ apiVersion: v1alpha
 kind: testcafe
 sauce:
   region: us-west-1
+  retries: 3
 metadata:
   name: Alloy Prod
 rootDir: ./
@@ -17,7 +18,6 @@ speed: 0.5
 pageLoadTimeout: 8000
 disablePageCaching: false
 timeZone: New_York
-retries: 3
 npm:
   dependencies:
     - node-fetch
@@ -33,14 +33,13 @@ npm:
     - "@adobe/reactor-object-assign"
 suites:
   - name: "Safari"
+    smartRetry:
+      failedOnly: true
     browserName: "safari"
     browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"
     platformName: "macOS 13"
-    quarantineMode:
-      attemptLimit: 3
-      successThreshold: 1
     excludedTestFiles:
       [
         "test/functional/specs/Privacy/C1472435.js",

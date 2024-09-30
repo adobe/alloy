@@ -2,6 +2,7 @@ apiVersion: v1alpha
 kind: testcafe
 sauce:
   region: us-west-1
+  retries: 3
 metadata:
   name: Alloy Prod
 rootDir: ./
@@ -32,6 +33,8 @@ npm:
     - "@adobe/reactor-object-assign"
 suites:
   - name: "Firefox"
+    smartRetry:
+      failedOnly: true
     browserName: "firefox"
     browserVersion: "latest"
     src:
