@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import {groupBy, isNonEmptyArray} from "../../utils/index.js";
+import { groupBy, isNonEmptyArray } from "../../utils/index.js";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope.js";
 
 const DECISIONS_HANDLE = "personalization:decisions";
@@ -46,14 +46,14 @@ export default ({
 
     onResponse(({ response }) => {
       const handles = response.getPayloadsByType(DECISIONS_HANDLE);
-      if(!isNonEmptyArray(handles)){
+      if (!isNonEmptyArray(handles)) {
         logger.logOnContentRendering({
           status: "no-offers",
           message: "No offers were returned.",
           logLevel: "info",
           detail: {
-            query: personalizationDetails.createQueryDetails()
-          }
+            query: personalizationDetails.createQueryDetails(),
+          },
         });
       }
       const propositions = handles.map((handle) => createProposition(handle));
@@ -82,7 +82,9 @@ export default ({
             logLevel: "info",
             detail: {
               scope: PAGE_WIDE_SCOPE,
-              propositions: pagePropositions.map(proposition => proposition.toJSON())
+              propositions: pagePropositions.map((proposition) =>
+                proposition.toJSON(),
+              ),
             },
           });
         }
@@ -94,7 +96,9 @@ export default ({
             logLevel: "info",
             detail: {
               scope: personalizationDetails.getViewName(),
-              propositions: currentViewPropositions.map(proposition => proposition.toJSON())
+              propositions: currentViewPropositions.map((proposition) =>
+                proposition.toJSON(),
+              ),
             },
           });
         }

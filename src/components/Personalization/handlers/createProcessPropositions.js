@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { groupBy } from "../../../utils/index.js";
+import { groupBy, isNonEmptyArray } from "../../../utils/index.js";
 
 export default ({ schemaProcessors, logger }) => {
   const wrapRenderWithLogging = (render, item) => () => {
@@ -20,7 +20,7 @@ export default ({ schemaProcessors, logger }) => {
         if (logger.enabled) {
           logger.info(`Action ${item.toString()} executed.`);
         }
-        return true;
+        return item.toJSON();
       })
       .catch((error) => {
         const { message, stack } = error;
@@ -36,18 +36,19 @@ export default ({ schemaProcessors, logger }) => {
           logLevel: "warn",
         });
 
-        return false;
+        return undefined;
       });
   };
 
   const renderItems = (renderers, meta) =>
-    Promise.all(renderers.map((renderer) => renderer())).then((successes) => {
+    Promise.all(renderers.map((renderer) => renderer())).then((results) => {
+      const successes = results.filter((result) => result);
       // as long as at least one renderer succeeds, we want to add the notification
       // to the display notifications
-      if (!successes.includes(true)) {
-        return undefined;
+      if (meta && isNonEmptyArray(successes)) {
+        return { ...meta, items: successes };
       }
-      return meta;
+      return undefined;
     });
 
   const processItem = (item) => {
@@ -197,15 +198,20 @@ export default ({ schemaProcessors, logger }) => {
     const render = () => {
       return Promise.all(renderers.map((renderer) => renderer())).then(
         (metas) => {
-          const renderedPropositions = metas.filter((meta) => meta);
-          const propsByScope = groupBy(renderedPropositions, (p) => p.scope);
-          logger.logOnContentRendering({
-            status: "rendering-succeeded",
-            detail: { ...propsByScope },
-            message: `Scopes: ${JSON.stringify(propsByScope)} successfully executed.`,
-            logLevel: "info",
+          const propositions = metas.filter((meta) => meta);
+          const renderedPropositions = propositions.map((prop) => {
+            const { id, scope, scopeDetails } = prop;
+            return { id, scope, scopeDetails };
           });
-
+          if (isNonEmptyArray(propositions)) {
+            const propsByScope = groupBy(propositions, (p) => p.scope);
+            logger.logOnContentRendering({
+              status: "rendering-succeeded",
+              detail: { ...propsByScope },
+              message: `Scopes: ${JSON.stringify(propsByScope)} successfully executed.`,
+              logLevel: "info",
+            });
+          }
           return renderedPropositions;
         },
       );

@@ -15,6 +15,7 @@ describe("processDefaultContent", () => {
   it("always renders the default content", () => {
     const result = processDefaultContent();
     expect(result).toEqual({
+      render: jasmine.any(Function),
       setRenderAttempted: true,
       includeInNotification: true,
     });
