@@ -47,7 +47,6 @@ const components = [
   "personalization",
   "eventmerge",
   "decisioningengine",
-  "machinelearning",
 ];
 
 // Run tests for all components

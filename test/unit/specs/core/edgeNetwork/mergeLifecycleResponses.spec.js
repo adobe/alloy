@@ -21,9 +21,6 @@ describe("mergeLifecycleResponses", () => {
             destinations: [],
           },
           null,
-          {
-            inferences: [],
-          },
         ],
         [
           {
@@ -76,7 +73,6 @@ describe("mergeLifecycleResponses", () => {
       ]),
     ).toEqual({
       destinations: [],
-      inferences: [],
       propositions: [
         {
           renderAttempted: true,

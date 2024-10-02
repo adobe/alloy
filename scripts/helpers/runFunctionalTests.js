@@ -49,7 +49,6 @@ fs.readFile("dist/alloy.js", "utf8", (readFileErr, alloyData) => {
     privacy: "Privacy",
     eventMerge: "EventMerge",
     libraryInfo: "LibraryInfo",
-    machineLearning: "MachineLearning",
     decisioningEngine: "DecisioningEngine",
   };
 
