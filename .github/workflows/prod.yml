@@ -143,22 +143,14 @@ jobs:
             echo "TEST_RESULTS=No test results found in ./test-results/" >> $GITHUB_ENV
           fi
 
-      - name: Notify Slack on Failure
+      - name: Handle Test Failures
         if: failure()
-        uses: 8398a7/action-slack@v3
+        uses: actions/github-script@v7
         with:
-          status: ${{ job.status }}
-          fields: repo,message,commit,author,action,eventName,ref,workflow
-          text: |
-            Alloy Prod Firefox Tests Failed
-            Job ID: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').id }}
-            Build: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').build }}
-            Status: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').status }}
-            Error: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').error }}
-            Full Results: https://app.saucelabs.com/tests/${{ fromJson(steps.saucelabs-results.outputs.results || '{}').id }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const handleTestFailures = require('./.github/scripts/handle-test-failures.js');
+            await handleTestFailures({ github, context, browser: 'safari' });
 
   alloy-prod-e2e-firefox:
     name: Firefox
@@ -244,22 +236,14 @@ jobs:
             echo "TEST_RESULTS=No test results found in ./test-results/" >> $GITHUB_ENV
           fi
 
-      - name: Notify Slack on Failure
+      - name: Handle Test Failures
         if: failure()
-        uses: 8398a7/action-slack@v3
+        uses: actions/github-script@v7
         with:
-          status: ${{ job.status }}
-          fields: repo,message,commit,author,action,eventName,ref,workflow
-          text: |
-            Alloy Prod Firefox Tests Failed
-            Job ID: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').id }}
-            Build: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').build }}
-            Status: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').status }}
-            Error: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').error }}
-            Full Results: https://app.saucelabs.com/tests/${{ fromJson(steps.saucelabs-results.outputs.results || '{}').id }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const handleTestFailures = require('./.github/scripts/handle-test-failures.js');
+            await handleTestFailures({ github, context, browser: 'firefox' });
 
   alloy-prod-e2e-chrome:
     name: Chrome
@@ -328,19 +312,11 @@ jobs:
             ALLOY_ENV=prod
           config-file: ./.sauce/prod-chrome.yml
 
-      - name: Notify Slack on Failure
+      - name: Handle Test Failures
         if: failure()
-        uses: 8398a7/action-slack@v3
+        uses: actions/github-script@v7
         with:
-          status: ${{ job.status }}
-          fields: repo,message,commit,author,action,eventName,ref,workflow
-          text: |
-            Alloy Prod Firefox Tests Failed
-            Job ID: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').id }}
-            Build: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').build }}
-            Status: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').status }}
-            Error: ${{ fromJson(steps.saucelabs-results.outputs.results || '{}').error }}
-            Full Results: https://app.saucelabs.com/tests/${{ fromJson(steps.saucelabs-results.outputs.results || '{}').id }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const handleTestFailures = require('./.github/scripts/handle-test-failures.js');
+            await handleTestFailures({ github, context, browser: 'chrome' });
