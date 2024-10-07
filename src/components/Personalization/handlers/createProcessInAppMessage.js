@@ -47,7 +47,7 @@ const isValidInAppMessage = (data, logger) => {
 };
 
 export default ({ modules, logger }) => {
-  return (item) => {
+  return (item, firstItemInBatch) => {
     const data = item.getData();
     const meta = { ...item.getProposition().getNotification() };
 
@@ -73,14 +73,16 @@ export default ({ modules, logger }) => {
     }
 
     return {
-      render: () => {
-        return modules[type]({
-          ...data,
-          meta,
-        });
-      },
-      setRenderAttempted: true,
-      includeInNotification: true,
+      render: firstItemInBatch
+        ? () =>
+            modules[type]({
+              ...data,
+              meta,
+            })
+        : null,
+      setRenderAttempted: firstItemInBatch,
+      setSuppressedDisplay: !firstItemInBatch,
+      includeInNotification: firstItemInBatch,
     };
   };
 };
