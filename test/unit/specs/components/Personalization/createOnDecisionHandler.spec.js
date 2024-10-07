@@ -186,7 +186,11 @@ describe("Personalization::createOnDecisionHandler", () => {
   beforeEach(() => {
     render = jasmine
       .createSpy("render")
-      .and.returnValue(Promise.resolve([{ hi: true }]));
+      .and.returnValue(
+        Promise.resolve([
+          { id: "1a3d874f-39ee-4310-bfa9-6559a10041a4", hi: true },
+        ]),
+      );
     collect = jasmine.createSpy("collect").and.returnValue(Promise.resolve());
     processPropositions = jasmine
       .createSpy("processPropositions")
@@ -237,7 +241,7 @@ describe("Personalization::createOnDecisionHandler", () => {
     expect(render).toHaveBeenCalledTimes(1);
 
     expect(collect).toHaveBeenCalledOnceWith({
-      decisionsMeta: [{ hi: true }],
+      decisionsMeta: [{ id: "1a3d874f-39ee-4310-bfa9-6559a10041a4", hi: true }],
       viewName: "blippi",
     });
     expect(renderedPropositions.concat).not.toHaveBeenCalled();

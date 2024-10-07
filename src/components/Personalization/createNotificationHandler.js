@@ -26,16 +26,26 @@ export default (collect, renderedPropositions) => {
     }
 
     return (decisionsMetaDisplay = [], decisionsMetaSuppressed = []) => {
-      collect({
-        decisionsMeta: decisionsMetaDisplay,
-        viewName,
-      });
+      if (
+        Array.isArray(decisionsMetaDisplay) &&
+        decisionsMetaDisplay.length > 0
+      ) {
+        collect({
+          decisionsMeta: decisionsMetaDisplay,
+          viewName,
+        });
+      }
 
-      collect({
-        decisionsMeta: decisionsMetaSuppressed,
-        eventType: SUPPRESS,
-        viewName,
-      });
+      if (
+        Array.isArray(decisionsMetaSuppressed) &&
+        decisionsMetaSuppressed.length > 0
+      ) {
+        collect({
+          decisionsMeta: decisionsMetaSuppressed,
+          eventType: SUPPRESS,
+          viewName,
+        });
+      }
     };
   };
 };
