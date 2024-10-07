@@ -23,6 +23,10 @@ export default ({ eventManager, mergeDecisionsMeta }) => {
     propositionEventTypes = [getPropositionEventType(eventType)],
     viewName,
   }) => {
+    if (!Array.isArray(decisionsMeta) || decisionsMeta.length === 0) {
+      return Promise.resolve();
+    }
+
     const event = eventManager.createEvent();
     const data = { eventType };
 

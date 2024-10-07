@@ -50,12 +50,12 @@ export default ({ schemaProcessors, logger }) => {
       return meta;
     });
 
-  const processItem = (item, firstItemInBatch) => {
+  const processItem = (item) => {
     const processor = schemaProcessors[item.getSchema()];
     if (!processor) {
       return {};
     }
-    return processor(item, firstItemInBatch);
+    return processor(item);
   };
 
   const processItems = ({
@@ -64,7 +64,6 @@ export default ({ schemaProcessors, logger }) => {
     returnedDecisions: existingReturnedDecisions,
     items,
     proposition,
-    firstItemInBatch = false,
   }) => {
     let renderers = [...existingRenderers];
     let returnedPropositions = [...existingReturnedPropositions];
@@ -75,7 +74,6 @@ export default ({ schemaProcessors, logger }) => {
     let atLeastOneWithNotification = false;
     let render;
     let setRenderAttempted;
-    let setSuppressedDisplay;
     let includeInNotification;
     let onlyRenderThis = false;
     let i = 0;
@@ -83,13 +81,8 @@ export default ({ schemaProcessors, logger }) => {
 
     while (items.length > i) {
       item = items[i];
-      ({
-        render,
-        setRenderAttempted,
-        setSuppressedDisplay,
-        includeInNotification,
-        onlyRenderThis,
-      } = processItem(item, firstItemInBatch));
+      ({ render, setRenderAttempted, includeInNotification, onlyRenderThis } =
+        processItem(item));
 
       if (onlyRenderThis) {
         returnedPropositions = [];
@@ -134,7 +127,6 @@ export default ({ schemaProcessors, logger }) => {
         returnedDecisions,
         renderedItems,
         true,
-        setSuppressedDisplay,
       );
     }
     if (nonRenderedItems.length > 0) {
@@ -143,11 +135,9 @@ export default ({ schemaProcessors, logger }) => {
         returnedDecisions,
         nonRenderedItems,
         false,
-        setSuppressedDisplay,
       );
     }
 
-    debugger;
     return {
       renderers,
       returnedPropositions,
@@ -175,7 +165,6 @@ export default ({ schemaProcessors, logger }) => {
           returnedDecisions,
           items,
           proposition,
-          firstItemInBatch: i === 0,
         }));
       if (onlyRenderThis) {
         break;

@@ -12,6 +12,11 @@ governing permissions and limitations under the License.
 import { defer } from "../../utils/index.js";
 import { SUPPRESS } from "../../constants/eventType.js";
 
+const notificationDetail = (meta) => {
+  const { id, scope, scopeDetails } = meta;
+  return { id, scope, scopeDetails };
+};
+
 export default (collect, renderedPropositions) => {
   return (isRenderDecisions, isSendDisplayEvent, viewName) => {
     if (!isRenderDecisions) {
@@ -25,29 +30,25 @@ export default (collect, renderedPropositions) => {
       return renderedPropositionsDeferred.resolve;
     }
 
-    return (suppressedPropositions, decisionsMeta) => {
-      if (decisionsMeta.length > 0) {
-        collect({
-          decisionsMeta,
-          viewName,
-        });
-      }
+    return (decisionsMeta) => {
+      const decisionsMetaDisplay = decisionsMeta
+        .filter((meta) => !meta.shouldSuppressDisplay)
+        .map(notificationDetail);
 
-      if (suppressedPropositions && suppressedPropositions.length > 0) {
-        const suppressedMeta = suppressedPropositions.map(
-          ({ id, scope, scopeDetails }) => ({
-            id,
-            scope,
-            scopeDetails,
-          }),
-        );
+      const decisionsMetaSuppressed = decisionsMeta
+        .filter((meta) => meta.shouldSuppressDisplay)
+        .map(notificationDetail);
 
-        collect({
-          decisionsMeta: suppressedMeta,
-          eventType: SUPPRESS,
-          viewName,
-        });
-      }
+      collect({
+        decisionsMeta: decisionsMetaDisplay,
+        viewName,
+      });
+
+      collect({
+        decisionsMeta: decisionsMetaSuppressed,
+        eventType: SUPPRESS,
+        viewName,
+      });
     };
   };
 };
