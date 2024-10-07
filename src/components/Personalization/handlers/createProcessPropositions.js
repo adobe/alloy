@@ -59,13 +59,6 @@ export default ({ schemaProcessors, logger }) => {
     return processor(item);
   };
 
-  const getNotification = (proposition) => {
-    return {
-      ...proposition.getNotification(),
-      shouldSuppressDisplay: proposition.shouldSuppressDisplay(),
-    };
-  };
-
   const processItems = ({
     renderers: existingRenderers,
     returnedPropositions: existingReturnedPropositions,
@@ -123,11 +116,11 @@ export default ({ schemaProcessors, logger }) => {
     }
     if (itemRenderers.length > 0) {
       const meta = atLeastOneWithNotification
-        ? getNotification(proposition)
+        ? proposition.getNotification()
         : undefined;
       renderers.push(() => renderItems(itemRenderers, meta));
     } else if (atLeastOneWithNotification) {
-      renderers.push(() => Promise.resolve(getNotification(proposition)));
+      renderers.push(() => Promise.resolve(proposition.getNotification()));
     }
     if (renderedItems.length > 0) {
       proposition.addToReturnValues(

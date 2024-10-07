@@ -55,7 +55,25 @@ export default ({
       viewName,
     );
 
-    render().then(handleNotifications);
+    const propositionsById = propositionsToExecute.reduce(
+      (tot, proposition) => {
+        tot[proposition.getId()] = proposition;
+        return tot;
+      },
+      {},
+    );
+
+    render().then((decisionsMeta) => {
+      const decisionsMetaDisplay = decisionsMeta.filter(
+        (meta) => !propositionsById[meta.id].shouldSuppressDisplay(),
+      );
+
+      const decisionsMetaSuppressed = decisionsMeta.filter((meta) =>
+        propositionsById[meta.id].shouldSuppressDisplay(),
+      );
+
+      handleNotifications(decisionsMetaDisplay, decisionsMetaSuppressed);
+    });
 
     return Promise.resolve({
       propositions: returnedPropositions,
