@@ -50,6 +50,7 @@ export default ({ modules, logger }) => {
   return (item) => {
     const data = item.getData();
     const meta = { ...item.getProposition().getNotification() };
+    const shouldSuppressDisplay = item.getProposition().shouldSuppressDisplay();
 
     if (!data) {
       logger.warn("Invalid in-app message data: undefined.", data);
@@ -73,11 +74,14 @@ export default ({ modules, logger }) => {
     }
 
     return {
-      render: () =>
-        modules[type]({
-          ...data,
-          meta,
-        }),
+      render: () => {
+        return shouldSuppressDisplay
+          ? Promise.resolve()
+          : modules[type]({
+              ...data,
+              meta,
+            });
+      },
       setRenderAttempted: true,
       includeInNotification: true,
     };

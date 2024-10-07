@@ -25,7 +25,10 @@ describe("Personalization::handlers::createProcessInAppMessage", () => {
         return data;
       },
       getProposition() {
-        return { getNotification: () => meta };
+        return {
+          getNotification: () => meta,
+          shouldSuppressDisplay: () => false,
+        };
       },
     };
     modules = {
