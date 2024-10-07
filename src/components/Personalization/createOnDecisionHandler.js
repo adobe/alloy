@@ -30,13 +30,19 @@ export default ({
     const { render, returnedPropositions } = processPropositions(
       propositionsToExecute,
     );
+    debugger;
 
     const handleNotifications = notificationHandler(
       renderDecisions,
       sendDisplayEvent,
       viewName,
     );
-    render().then(handleNotifications);
+    render().then(
+      handleNotifications.bind(
+        null,
+        returnedPropositions.filter((p) => p.isSuppressedDisplay),
+      ),
+    );
 
     return Promise.resolve({
       propositions: returnedPropositions,

@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { defer } from "../../utils/index.js";
+import { SUPPRESS } from "../../constants/eventType.js";
 
 export default (collect, renderedPropositions) => {
   return (isRenderDecisions, isSendDisplayEvent, viewName) => {
@@ -24,10 +25,26 @@ export default (collect, renderedPropositions) => {
       return renderedPropositionsDeferred.resolve;
     }
 
-    return (decisionsMeta) => {
+    return (suppressedPropositions, decisionsMeta) => {
       if (decisionsMeta.length > 0) {
         collect({
           decisionsMeta,
+          viewName,
+        });
+      }
+
+      if (suppressedPropositions && suppressedPropositions.length > 0) {
+        const suppressedMeta = suppressedPropositions.map(
+          ({ id, scope, scopeDetails }) => ({
+            id,
+            scope,
+            scopeDetails,
+          }),
+        );
+
+        collect({
+          decisionsMeta: suppressedMeta,
+          eventType: SUPPRESS,
           viewName,
         });
       }

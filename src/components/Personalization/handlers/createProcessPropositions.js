@@ -50,12 +50,12 @@ export default ({ schemaProcessors, logger }) => {
       return meta;
     });
 
-  const processItem = (item) => {
+  const processItem = (item, firstItemInBatch) => {
     const processor = schemaProcessors[item.getSchema()];
     if (!processor) {
       return {};
     }
-    return processor(item);
+    return processor(item, firstItemInBatch);
   };
 
   const processItems = ({
@@ -64,6 +64,7 @@ export default ({ schemaProcessors, logger }) => {
     returnedDecisions: existingReturnedDecisions,
     items,
     proposition,
+    firstItemInBatch = false,
   }) => {
     let renderers = [...existingRenderers];
     let returnedPropositions = [...existingReturnedPropositions];
@@ -74,6 +75,7 @@ export default ({ schemaProcessors, logger }) => {
     let atLeastOneWithNotification = false;
     let render;
     let setRenderAttempted;
+    let setSuppressedDisplay;
     let includeInNotification;
     let onlyRenderThis = false;
     let i = 0;
@@ -81,8 +83,14 @@ export default ({ schemaProcessors, logger }) => {
 
     while (items.length > i) {
       item = items[i];
-      ({ render, setRenderAttempted, includeInNotification, onlyRenderThis } =
-        processItem(item));
+      ({
+        render,
+        setRenderAttempted,
+        setSuppressedDisplay,
+        includeInNotification,
+        onlyRenderThis,
+      } = processItem(item, firstItemInBatch));
+
       if (onlyRenderThis) {
         returnedPropositions = [];
         returnedDecisions = [];
@@ -98,6 +106,7 @@ export default ({ schemaProcessors, logger }) => {
         atLeastOneWithNotification = includeInNotification;
         break;
       }
+
       if (render) {
         itemRenderers.push(wrapRenderWithLogging(render, item));
       }
@@ -125,6 +134,7 @@ export default ({ schemaProcessors, logger }) => {
         returnedDecisions,
         renderedItems,
         true,
+        setSuppressedDisplay,
       );
     }
     if (nonRenderedItems.length > 0) {
@@ -133,9 +143,11 @@ export default ({ schemaProcessors, logger }) => {
         returnedDecisions,
         nonRenderedItems,
         false,
+        setSuppressedDisplay,
       );
     }
 
+    debugger;
     return {
       renderers,
       returnedPropositions,
@@ -163,6 +175,7 @@ export default ({ schemaProcessors, logger }) => {
           returnedDecisions,
           items,
           proposition,
+          firstItemInBatch: i === 0,
         }));
       if (onlyRenderThis) {
         break;
@@ -194,6 +207,7 @@ export default ({ schemaProcessors, logger }) => {
         false,
       );
     });
+
     const render = () => {
       return Promise.all(renderers.map((renderer) => renderer())).then(
         (metas) => {

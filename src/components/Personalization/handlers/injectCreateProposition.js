@@ -90,12 +90,14 @@ export default ({ preprocess, isPageWideSurface }) => {
         decisions,
         includedItems,
         renderAttempted,
+        isSuppressedDisplay = false,
       ) {
         if (visibleInReturnedItems) {
           propositions.push({
             ...payload,
             items: includedItems.map((i) => i.getOriginalItem()),
             renderAttempted,
+            isSuppressedDisplay,
           });
           if (!renderAttempted) {
             decisions.push({
