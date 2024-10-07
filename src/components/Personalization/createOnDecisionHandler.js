@@ -10,6 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { MESSAGE_IN_APP } from "../../constants/schema.js";
+
+const createShouldSuppressDisplay = () => {
+  let count = 0;
+  return (proposition) => {
+    const { items = [] } = proposition;
+
+    if (!items.some((item) => item.schema === MESSAGE_IN_APP)) {
+      return false;
+    }
+    count += 1;
+
+    return count > 1;
+  };
+};
+
 export default ({
   processPropositions,
   createProposition,
@@ -23,26 +39,23 @@ export default ({
     const { sendDisplayEvent = true } = personalization;
     const viewName = event ? event.getViewName() : undefined;
 
+    const shouldSuppressDisplay = createShouldSuppressDisplay();
+
     const propositionsToExecute = propositions.map((proposition) =>
-      createProposition(proposition, true),
+      createProposition(proposition, true, shouldSuppressDisplay(proposition)),
     );
 
     const { render, returnedPropositions } = processPropositions(
       propositionsToExecute,
     );
-    debugger;
 
     const handleNotifications = notificationHandler(
       renderDecisions,
       sendDisplayEvent,
       viewName,
     );
-    render().then(
-      handleNotifications.bind(
-        null,
-        returnedPropositions.filter((p) => p.isSuppressedDisplay),
-      ),
-    );
+
+    render().then(handleNotifications);
 
     return Promise.resolve({
       propositions: returnedPropositions,
