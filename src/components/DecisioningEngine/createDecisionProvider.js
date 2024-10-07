@@ -38,7 +38,7 @@ export default ({ eventRegistry }) => {
   const evaluate = (context = {}) => {
     const sortedPayloadsBasedOnActivityId = Object.values(
       payloadsBasedOnActivityId,
-    ).sort(({ rank: rankA }, { rank: rankB }) => rankB - rankA);
+    ).sort(({ rank: rankA }, { rank: rankB }) => rankA - rankB);
 
     return sortedPayloadsBasedOnActivityId
       .map((payload) => payload.evaluate(context))
