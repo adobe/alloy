@@ -103,7 +103,6 @@ export default ({ preprocess, isPageWideSurface }) => {
             ...payload,
             items: includedItems.map((i) => i.getOriginalItem()),
             renderAttempted,
-            shouldSuppressDisplay,
           });
           if (!renderAttempted) {
             decisions.push({
