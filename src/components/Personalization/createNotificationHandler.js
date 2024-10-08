@@ -43,6 +43,7 @@ export default (collect, renderedPropositions) => {
         collect({
           decisionsMeta: decisionsMetaSuppressed,
           eventType: SUPPRESS,
+          propositionAction: { reason: "Conflict" },
           viewName,
         });
       }
