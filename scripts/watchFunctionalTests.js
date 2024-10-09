@@ -36,6 +36,13 @@ program.addOption(
     .default("chrome"),
 );
 
+program.addOption(
+  new Option(
+    "--specsPath <specsPath...>",
+    "configures the test runner to run tests from the specified files",
+  ),
+);
+
 program.parse();
 
 const argv = program.opts();
@@ -68,8 +75,14 @@ const effectByEventCode = {
     } else {
       firstBuildComplete = true;
       const testcafe = await createTestCafe();
-      const liveRunner = testcafe.createLiveModeRunner();
-      await liveRunner.browsers(argv.browsers).run();
+      let liveRunner = testcafe.createLiveModeRunner();
+      liveRunner = liveRunner.browsers(argv.browsers);
+
+      if (argv.specsPath) {
+        liveRunner = await liveRunner.src(argv.specsPath);
+      }
+
+      await liveRunner.run();
       await testcafe.close();
     }
   },
