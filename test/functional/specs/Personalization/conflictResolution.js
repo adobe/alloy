@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import { ClientFunction, RequestMock, t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger/index.js";
 import createFixture from "../../helpers/createFixture/index.js";
-import { inAppMessagesPropositions } from "../../fixtures/Personalization/conflictResolutions.js";
+import { inAppMessagesPropositions } from "../../fixtures/Personalization/conflictResolution.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import getBaseConfig from "../../helpers/getBaseConfig.js";
 import {
