@@ -35,10 +35,15 @@ export default ({ eventRegistry }) => {
     }
   };
 
-  const evaluate = (context = {}) =>
-    Object.values(payloadsBasedOnActivityId)
+  const evaluate = (context = {}) => {
+    const sortedPayloadsBasedOnActivityId = Object.values(
+      payloadsBasedOnActivityId,
+    ).sort(({ rank: rankA }, { rank: rankB }) => rankA - rankB);
+
+    return sortedPayloadsBasedOnActivityId
       .map((payload) => payload.evaluate(context))
       .filter((payload) => payload.items.length > 0);
+  };
 
   const addPayloads = (personalizationPayloads) => {
     personalizationPayloads.forEach(addPayload);

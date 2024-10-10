@@ -31,7 +31,7 @@ describe("updatePackageVersion", () => {
     expect(logger.info).toHaveBeenCalledOnceWith(
       "Updating package.json with version 1.2.3.",
     );
-    expect(exec).toHaveBeenCalledTimes(4);
+    expect(exec).toHaveBeenCalledTimes(5);
   });
 
   it("doesn't update the package version", async () => {

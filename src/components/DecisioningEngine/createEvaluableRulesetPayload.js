@@ -95,6 +95,7 @@ export default (payload, eventRegistry, decisionHistory) => {
   }
 
   return {
+    rank: payload?.scopeDetails?.rank || Infinity,
     evaluate,
     isEvaluable: items.length > 0,
   };

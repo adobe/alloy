@@ -14,4 +14,5 @@ export const DISPLAY = "decisioning.propositionDisplay";
 export const INTERACT = "decisioning.propositionInteract";
 export const TRIGGER = "decisioning.propositionTrigger";
 export const DISMISS = "decisioning.propositionDismiss";
+export const SUPPRESS = "decisioning.propositionSuppressDisplay";
 export const EVENT_TYPE_TRUE = 1;

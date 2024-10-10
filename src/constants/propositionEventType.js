@@ -10,13 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { DISPLAY, INTERACT, TRIGGER, DISMISS } from "./eventType.js";
+import { DISPLAY, INTERACT, TRIGGER, DISMISS, SUPPRESS } from "./eventType.js";
 
 export const PropositionEventType = {
   DISPLAY: "display",
   INTERACT: "interact",
   TRIGGER: "trigger",
   DISMISS: "dismiss",
+  SUPPRESS: "suppressDisplay",
 };
 
 const eventTypeToPropositionEventTypeMapping = {
@@ -24,12 +25,15 @@ const eventTypeToPropositionEventTypeMapping = {
   [INTERACT]: PropositionEventType.INTERACT,
   [TRIGGER]: PropositionEventType.TRIGGER,
   [DISMISS]: PropositionEventType.DISMISS,
+  [SUPPRESS]: PropositionEventType.SUPPRESS,
 };
+
 const propositionEventTypeToEventTypeMapping = {
   [PropositionEventType.DISPLAY]: DISPLAY,
   [PropositionEventType.INTERACT]: INTERACT,
   [PropositionEventType.TRIGGER]: TRIGGER,
   [PropositionEventType.DISMISS]: DISMISS,
+  [PropositionEventType.SUPPRESS]: SUPPRESS,
 };
 
 export const getPropositionEventType = (eventType) =>

@@ -56,7 +56,11 @@ export default ({ preprocess, isPageWideSurface }) => {
     };
   };
 
-  return (payload, visibleInReturnedItems = true) => {
+  return (
+    payload,
+    visibleInReturnedItems = true,
+    shouldSuppressDisplay = false,
+  ) => {
     const { id, scope, scopeDetails, items = [] } = payload;
     const { characteristics: { scopeType } = {} } = scopeDetails || {};
 
@@ -84,6 +88,9 @@ export default ({ preprocess, isPageWideSurface }) => {
       },
       toJSON() {
         return payload;
+      },
+      shouldSuppressDisplay() {
+        return shouldSuppressDisplay;
       },
       addToReturnValues(
         propositions,
