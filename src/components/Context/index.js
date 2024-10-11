@@ -14,6 +14,7 @@ import injectWeb from "./injectWeb.js";
 import injectDevice from "./injectDevice.js";
 import injectEnvironment from "./injectEnvironment.js";
 import injectPlaceContext from "./injectPlaceContext.js";
+import injectStructuredData from "./injectStructuredData.js";
 import injectTimestamp from "./injectTimestamp.js";
 import implementationDetails from "./implementationDetails.js";
 import createComponent from "./createComponent.js";
@@ -24,6 +25,7 @@ const web = injectWeb(window);
 const device = injectDevice(window);
 const environment = injectEnvironment(window);
 const placeContext = injectPlaceContext(() => new Date());
+const structuredData = injectStructuredData(window);
 const timestamp = injectTimestamp(() => new Date());
 const highEntropyUserAgentHints = injectHighEntropyUserAgentHints(navigator);
 
@@ -35,6 +37,7 @@ const defaultEnabledContexts = {
 };
 const defaultDisabledContexts = {
   highEntropyUserAgentHints,
+  structuredData,
 };
 const optionalContexts = {
   ...defaultEnabledContexts,

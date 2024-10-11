@@ -1,4 +1,4 @@
-import { objectOf, callback } from "../../utils/validation";
+import { objectOf, callback, boolean } from "../../utils/validation";
 import { COMPLETE, HASHCHANGE } from "./createAddEventHandler";
 
 export default ({ addEventHandler }) => {
@@ -16,10 +16,12 @@ export default ({ addEventHandler }) => {
 
   return objectOf({
     autoImplementation: objectOf({
+      autoPersonalizationEnabled: boolean().default(true),
       setupPersonalizationTrigger: callback().default(defaultSetupPersonalizationTrigger),
       setupStateTrigger: callback().default(defaultSetupStateTrigger),
       setupActionTrigger: callback().default(defaultSetupActionTrigger)
     }).default({
+      autoPersonalizationEnabled: true,
       setupPersonalizationTrigger: defaultSetupPersonalizationTrigger,
       setupStateTrigger: defaultSetupStateTrigger,
       setupActionTrigger: defaultSetupActionTrigger
