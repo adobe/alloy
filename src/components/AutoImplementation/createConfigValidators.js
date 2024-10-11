@@ -3,25 +3,26 @@ import { COMPLETE, HASHCHANGE } from "./createAddEventHandler";
 
 export default ({ addEventHandler }) => {
 
-  const defaultSetupTopOfPageTrigger = (trigger) =>
+  const defaultSetupPersonalizationTrigger = (trigger) =>
     trigger();
-  const defaultSetupBottomOfPageTrigger = (trigger) =>
+  const defaultSetupStateTrigger = (trigger) => {
     addEventHandler(COMPLETE, trigger);
-  const defaultSetupViewChangeTrigger = (trigger) =>
     addEventHandler(HASHCHANGE, (event) => {
       const viewName = new URL(event.newURL).hash;
-      trigger({ viewName });
+      trigger({ xdm: { web: { webPageDetails: { viewName } } } });
     });
+  };
+  const defaultSetupActionTrigger = () => undefined;
 
   return objectOf({
     autoImplementation: objectOf({
-      setupTopOfPageTrigger: callback().default(defaultSetupTopOfPageTrigger),
-      setupBottomOfPageTrigger: callback().default(defaultSetupBottomOfPageTrigger),
-      setupViewChangeTrigger: callback().default(defaultSetupViewChangeTrigger)
+      setupPersonalizationTrigger: callback().default(defaultSetupPersonalizationTrigger),
+      setupStateTrigger: callback().default(defaultSetupStateTrigger),
+      setupActionTrigger: callback().default(defaultSetupActionTrigger)
     }).default({
-      setupTopOfPageTrigger: defaultSetupTopOfPageTrigger,
-      setupBottomOfPageTrigger: defaultSetupBottomOfPageTrigger,
-      setupViewChangeTrigger: defaultSetupViewChangeTrigger
+      setupPersonalizationTrigger: defaultSetupPersonalizationTrigger,
+      setupStateTrigger: defaultSetupStateTrigger,
+      setupActionTrigger: defaultSetupActionTrigger
     })
   });
 };

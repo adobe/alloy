@@ -1,5 +1,5 @@
 
-const sendTopEvent = (eventManager, { xdm } = {}) => {
+const sendPersonalizationEvent = (eventManager, { xdm } = {}) => {
   // Top of page call
   const event = eventManager.createEvent();
   event.setUserXdm(xdm);
@@ -12,39 +12,32 @@ const sendTopEvent = (eventManager, { xdm } = {}) => {
   })
 };
 
-const sendBottomEvent = (eventManager, { xdm } = {}) => {
-  // Bottom of page call
+const sendStateEvent = (eventManager, { xdm } = {}) => {
+  // Bottom of page call or hash change call
   const event = eventManager.createEvent();
   event.setUserXdm(xdm);
   eventManager.sendEvent(event, {
+    renderDecisions: true,
     personalization: {
       includeRenderedPropositions: true
     }
   });
 }
 
-const sendViewChangeEvent = (eventManager, { viewName }) => {
-  // Hash change call
+const sendActionEvent = (eventManager, { xdm } = {}) => {
+  // user action call i.e. click event.
   const event = eventManager.createEvent();
-  event.mergeXdm({
-    web: {
-      webPageDetails: {
-        viewName
-      }
-    }
-  });
-  eventManager.sendEvent(event, {
-    renderDecisions: true,
-  })
+  event.setUserXdm(xdm);
+  eventManager.sendEvent(event);
 }
 
 
 export default () => ({ eventManager, config }) => {
   const {
     autoImplementation: {
-      setupTopOfPageTrigger,
-      setupBottomOfPageTrigger,
-      setupViewChangeTrigger
+      setupPersonalizationTrigger,
+      setupStateTrigger,
+      setupActionTrigger
     }
   } = config;
 
@@ -52,13 +45,13 @@ export default () => ({ eventManager, config }) => {
     namespace: "AutoImplementation",
     lifecycle: {
       onComponentsRegistered() {
-        setupTopOfPageTrigger((options) => {
-          sendTopEvent(eventManager, options);
-          setupBottomOfPageTrigger((options) => {
-            sendBottomEvent(eventManager, options);
+        setupPersonalizationTrigger((options) => {
+          sendPersonalizationEvent(eventManager, options);
+          setupStateTrigger((options) => {
+            sendStateEvent(eventManager, options);
           });
-          setupViewChangeTrigger((options) => {
-            sendViewChangeEvent(eventManager, options);
+          setupActionTrigger((options) => {
+            sendActionEvent(eventManager, options);
           });
         });
       }
