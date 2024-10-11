@@ -2,6 +2,7 @@ apiVersion: v1alpha
 kind: testcafe
 sauce:
   region: us-west-1
+  retries: 3
 metadata:
   name: Alloy Prod
 rootDir: ./
@@ -9,12 +10,13 @@ env:
   ALLOY_ENV: prod
   ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
+  PACKAGE_VERSION: $PACKAGE_VERSION
 testcafe:
   version: "package.json"
 nodeVersion: "$NODE_VERSION"
-speed: 1
-pageLoadTimeout: 3000
-disablePageCaching: true
+speed: 0.5
+pageLoadTimeout: 8000
+disablePageCaching: false
 timeZone: New_York
 npm:
   dependencies:
@@ -31,6 +33,8 @@ npm:
     - "@adobe/reactor-object-assign"
 suites:
   - name: "Safari"
+    smartRetry:
+      failedOnly: true
     browserName: "safari"
     browserVersion: "latest"
     src:
