@@ -16,6 +16,7 @@ governing permissions and limitations under the License.
 
 export { default as activityCollector } from "../components/ActivityCollector/index.js";
 export { default as audiences } from "../components/Audiences/index.js";
+export { default as autoImplementation } from "../components/AutoImplementation/index.js";
 export { default as context } from "../components/Context/index.js";
 export { default as decisioningEngine } from "../components/DecisioningEngine/index.js";
 export { default as eventMerge } from "../components/EventMerge/index.js";
