@@ -24,15 +24,19 @@ jobs:
         env:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload sauce configs
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: sauce-config
           path: .sauce
+          include-hidden-files: true
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload sauce ignore
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: sauce-ignore
           path: .sauceignore
+          include-hidden-files: true
 
   alloy-prod-e2e:
     name: "Pre Edge: Prod E2E Tests"
