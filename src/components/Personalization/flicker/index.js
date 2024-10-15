@@ -56,8 +56,8 @@ export const showElements = (prehidingSelector) => {
   }
 };
 
-export const createHideContainers = ( logger ) => {
-  return ( prehidingStyle ) => {
+export const createHideContainers = (logger) => {
+  return (prehidingStyle) => {
     if (!prehidingStyle) {
       return;
     }
@@ -84,9 +84,9 @@ export const createHideContainers = ( logger ) => {
 
     appendNode(document.head, styleNode);
   };
-}
+};
 
-export const createShowContainers = ( logger ) => {
+export const createShowContainers = (logger) => {
   return () => {
     // If containers prehiding style exists
     // we will remove it
@@ -102,5 +102,5 @@ export const createShowContainers = ( logger ) => {
       logLevel: "info",
     });
     removeNode(node);
-  }
+  };
 };
