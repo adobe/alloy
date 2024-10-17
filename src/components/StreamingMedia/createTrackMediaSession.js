@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import PlaybackState from "./constants/playbackState.js";
+import {isEmptyObject} from "../../utils/index.js";
 
 export default ({
   config,
@@ -22,7 +23,7 @@ export default ({
       return Promise.reject(new Error("Streaming media is not configured."));
     }
 
-    const { playerId, getPlayerDetails } = options;
+    const { playerId, getPlayerDetails, edgeConfigOverrides } = options;
     const event = mediaEventManager.createMediaSession(options);
 
     mediaEventManager.augmentMediaEvent({
@@ -38,6 +39,7 @@ export default ({
         getPlayerDetails,
         legacy,
       },
+      edgeConfigOverrides
     });
 
     mediaSessionCacheManager.storeSession({
