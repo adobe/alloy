@@ -149,8 +149,8 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const handleTestFailures = require('./.github/scripts/handle-test-failures.js');
-            await handleTestFailures({ github, context, browser: 'safari' });
+            const handleTestFailures = await import('./.github/scripts/handle-test-failures.js');
+            await handleTestFailures.default({ github, context, browser: 'safari' });
 
   alloy-prod-e2e-firefox:
     name: Firefox
@@ -242,8 +242,8 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const handleTestFailures = require('./.github/scripts/handle-test-failures.js');
-            await handleTestFailures({ github, context, browser: 'firefox' });
+            const handleTestFailures = await import('./.github/scripts/handle-test-failures.js');
+            await handleTestFailures.default({ github, context, browser: 'firefox' });
 
   alloy-prod-e2e-chrome:
     name: Chrome
@@ -318,5 +318,5 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const handleTestFailures = require('./.github/scripts/handle-test-failures.js');
-            await handleTestFailures({ github, context, browser: 'chrome' });
+            const handleTestFailures = await import('./.github/scripts/handle-test-failures.js');
+            await handleTestFailures.default({ github, context, browser: 'chrome' });
