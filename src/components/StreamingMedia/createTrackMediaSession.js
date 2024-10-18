@@ -22,7 +22,7 @@ export default ({
       return Promise.reject(new Error("Streaming media is not configured."));
     }
 
-    const { playerId, getPlayerDetails } = options;
+    const { playerId, getPlayerDetails, edgeConfigOverrides } = options;
     const event = mediaEventManager.createMediaSession(options);
 
     mediaEventManager.augmentMediaEvent({
@@ -38,6 +38,7 @@ export default ({
         getPlayerDetails,
         legacy,
       },
+      edgeConfigOverrides
     });
 
     mediaSessionCacheManager.storeSession({

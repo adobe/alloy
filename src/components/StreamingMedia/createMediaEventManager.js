@@ -76,8 +76,10 @@ export default ({
       });
       return event;
     },
-    trackMediaSession({ event, mediaOptions }) {
-      return eventManager.sendEvent(event, { mediaOptions });
+    trackMediaSession({ event, mediaOptions, edgeConfigOverrides }) {
+      const sendEventOptions = { mediaOptions, edgeConfigOverrides };
+
+      return eventManager.sendEvent(event, sendEventOptions);
     },
     trackMediaEvent({ event, action }) {
       const mediaRequestPayload = createDataCollectionRequestPayload();
