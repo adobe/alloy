@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import PlaybackState from "./constants/playbackState.js";
-import {isEmptyObject} from "../../utils/index.js";
 
 export default ({
   config,
