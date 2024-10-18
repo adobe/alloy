@@ -9,6 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import {isEmptyObject} from "../index.js";
+
 /**
  * @typedef {{ datastreamId: string, [k: string]: Object }} Override
  * @typedef {Object} RequestPayload
@@ -27,11 +29,11 @@ export default ({ localConfigOverrides, globalConfigOverrides, payload }) => {
     requestParams.datastreamIdOverride = datastreamId;
   }
 
-  if (globalConfigOverrides) {
+  if (globalConfigOverrides && !isEmptyObject(globalConfigOverrides)) {
     payload.mergeConfigOverride(globalConfigOverrides);
   }
 
-  if (localConfigOverrides) {
+  if (localConfigOverridesWithoutDatastreamId && !isEmptyObject(localConfigOverridesWithoutDatastreamId)) {
     payload.mergeConfigOverride(localConfigOverridesWithoutDatastreamId);
   }
   return requestParams;
