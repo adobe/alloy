@@ -73,6 +73,25 @@ test("Test C7437530: `sendEvent` can receive config overrides in command options
   await t.expect(request.meta.state.domain).ok();
 });
 
+test("Test C7437530: `sendEvent` doesn't contain empty configOverrides if edgeConfigOverrides are not in options", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  await alloy.sendEvent({});
+
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
+
+  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
+
+  const request = JSON.parse(
+    networkLogger.edgeEndpointLogs.requests[0].request.body,
+  );
+
+  await t
+    .expect(request.events[0].xdm.implementationDetails.name)
+    .eql("https://ns.adobe.com/experience/alloy");
+  await t.expect(request.meta.configOverrides).eql(undefined);
+});
+
 test("Test C7437530: `sendEvent` can receive config overrides from configure", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(
