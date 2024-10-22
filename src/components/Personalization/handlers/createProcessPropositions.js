@@ -84,6 +84,7 @@ export default ({ schemaProcessors, logger }) => {
       item = items[i];
       ({ render, setRenderAttempted, includeInNotification, onlyRenderThis } =
         processItem(item));
+
       if (onlyRenderThis) {
         returnedPropositions = [];
         returnedDecisions = [];
@@ -99,6 +100,7 @@ export default ({ schemaProcessors, logger }) => {
         atLeastOneWithNotification = includeInNotification;
         break;
       }
+
       if (render) {
         itemRenderers.push(wrapRenderWithLogging(render, item));
       }
@@ -195,6 +197,7 @@ export default ({ schemaProcessors, logger }) => {
         false,
       );
     });
+
     const render = () => {
       return Promise.all(renderers.map((renderer) => renderer())).then(
         (metas) => {
