@@ -30,7 +30,7 @@ const hookNames = [
   "onRequestFailure",
   // A user clicked on an element.
   "onClick",
-  // Called by DecisioningEngine when a ruleset is satisfied with a list of
+  // Called by RulesEngine when a ruleset is satisfied with a list of
   // propositions
   "onDecision",
 ];
