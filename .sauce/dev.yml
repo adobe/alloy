@@ -51,7 +51,7 @@ suites:
   - name: "Chrome"
     browserName: "chrome"
     headless: true
-    browserVersion: "latest"
+    browserVersion: "129"
     src:
       - "test/functional/specs/**/*.js"
     platformName: "Windows 11"
