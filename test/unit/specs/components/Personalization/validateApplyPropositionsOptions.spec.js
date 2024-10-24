@@ -176,8 +176,7 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
         ],
         errorMessage:
           "'propositions[0].items[0].id' is a required option\n" +
-          "'propositions[0].items[0].schema' is a required option\n" +
-          "'propositions[0].items[0].data' is a required option",
+          "'propositions[0].items[0].schema' is a required option",
       },
       {
         propositions: [
@@ -188,20 +187,7 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
             items: [{ id: "abc" }],
           },
         ],
-        errorMessage:
-          "'propositions[0].items[0].schema' is a required option\n" +
-          "'propositions[0].items[0].data' is a required option",
-      },
-      {
-        propositions: [
-          {
-            id: "abc",
-            scope: "web://aepdemo.com/",
-            scopeDetails,
-            items: [{ id: "abc", schema: DOM_ACTION }],
-          },
-        ],
-        errorMessage: "'propositions[0].items[0].data' is a required option",
+        errorMessage: "'propositions[0].items[0].schema' is a required option",
       },
     ];
 
