@@ -46,7 +46,7 @@ const components = [
   "audiences",
   "personalization",
   "eventmerge",
-  "decisioningengine",
+  "rulesengine",
 ];
 
 // Run tests for all components

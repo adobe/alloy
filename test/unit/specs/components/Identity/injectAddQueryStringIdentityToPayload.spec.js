@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import injectAddQueryStringIdentityToPayload from "../../../../../src/components/Identity/injectAddQueryStringIdentityToPayload.js";
 import createDataCollectionRequestPayload from "../../../../../src/utils/request/createDataCollectionRequestPayload.js";
 import createIdentityRequestPayload from "../../../../../src/components/Identity/getIdentity/createIdentityRequestPayload.js";
-import createConsentRequestPayload from "../../../../../src/components/Privacy/createConsentRequestPayload.js";
+import createConsentRequestPayload from "../../../../../src/components/Consent/createConsentRequestPayload.js";
 
 describe("Identity::injectAddQueryStringIdentityToPayload", () => {
   let locationSearch;
