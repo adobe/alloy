@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import { defer, isEmptyObject, isNonEmptyArray } from "../../utils/index.js";
 import {
+  DEFAULT_CONTENT_ITEM,
   DOM_ACTION,
   HTML_CONTENT_ITEM,
   JSON_CONTENT_ITEM,
@@ -29,6 +30,7 @@ const SUPPORTED_SCHEMAS = {
   [HTML_CONTENT_ITEM]: () => true,
   [JSON_CONTENT_ITEM]: isInteractionTrackingItem,
   [MESSAGE_IN_APP]: () => true,
+  [DEFAULT_CONTENT_ITEM]: () => true,
 };
 
 const filterItemsPredicate = (schema, actionType) =>
