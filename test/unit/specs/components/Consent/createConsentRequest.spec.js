@@ -19,7 +19,7 @@ describe("createConsentRequest", () => {
   it("provides the appropriate action", () => {
     const payload = {};
     const request = createConsentRequest({ payload });
-    expect(request.getAction()).toBe("consent/set-consent");
+    expect(request.getAction()).toBe("privacy/set-consent");
   });
 
   it("never uses sendBeacon", () => {

@@ -17,7 +17,7 @@ export default ({ payload, datastreamIdOverride }) => {
     payload,
     datastreamIdOverride,
     getAction() {
-      return "consent/set-consent";
+      return "privacy/set-consent";
     },
     getUseSendBeacon() {
       return false;
