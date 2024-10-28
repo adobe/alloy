@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 import { defer } from "../../utils/index.js";
 import { SUPPRESS } from "../../constants/eventType.js";
+import isNonEmptyArray from "../../utils/isNonEmptyArray.js";
 
 export default (collect, renderedPropositions) => {
   return (isRenderDecisions, isSendDisplayEvent, viewName) => {
@@ -26,20 +27,14 @@ export default (collect, renderedPropositions) => {
     }
 
     return (decisionsMetaDisplay = [], decisionsMetaSuppressed = []) => {
-      if (
-        Array.isArray(decisionsMetaDisplay) &&
-        decisionsMetaDisplay.length > 0
-      ) {
+      if (isNonEmptyArray(decisionsMetaDisplay)) {
         collect({
           decisionsMeta: decisionsMetaDisplay,
           viewName,
         });
       }
 
-      if (
-        Array.isArray(decisionsMetaSuppressed) &&
-        decisionsMetaSuppressed.length > 0
-      ) {
+      if (isNonEmptyArray(decisionsMetaSuppressed)) {
         collect({
           decisionsMeta: decisionsMetaSuppressed,
           eventType: SUPPRESS,
