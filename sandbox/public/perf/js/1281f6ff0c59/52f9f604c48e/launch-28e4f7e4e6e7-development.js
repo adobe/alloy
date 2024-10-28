@@ -7120,7 +7120,7 @@ module.exports = function (instanceNames) {
       governing permissions and limitations under the License.
       */
 
-      var createPrivacy = function createPrivacy(_ref) {
+      var createConsent = function createConsent(_ref) {
         var config = _ref.config,
             consent = _ref.consent,
             sendEdgeNetworkRequest = _ref.sendEdgeNetworkRequest;
@@ -7146,7 +7146,7 @@ module.exports = function (instanceNames) {
         });
       };
 
-      createPrivacy.namespace = "Privacy";
+      createConsent.namespace = "Consent";
       /*
       Copyright 2019 Adobe. All rights reserved.
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -7223,7 +7223,7 @@ module.exports = function (instanceNames) {
       */
       // TODO: Figure out how sub-components will be made available/registered
 
-      var componentCreators = [createDataCollector, createActivityCollector, createIdentity, createAudiences, createPersonalization, createContext, createPrivacy, createEventMerge, createLibraryInfo];
+      var componentCreators = [createDataCollector, createActivityCollector, createIdentity, createAudiences, createPersonalization, createContext, createConsent, createEventMerge, createLibraryInfo];
       /*
       Copyright 2019 Adobe. All rights reserved.
       This file is licensed to you under the Apache License, Version 2.0 (the "License");

@@ -46,10 +46,10 @@ fs.readFile("dist/alloy.js", "utf8", (readFileErr, alloyData) => {
     identity: "Identity",
     audiences: "Audiences",
     context: "Context",
-    privacy: "Privacy",
+    consent: "Consent",
     eventMerge: "EventMerge",
     libraryInfo: "LibraryInfo",
-    decisioningEngine: "DecisioningEngine",
+    rulesEngine: "RulesEngine",
   };
 
   // Adjust componentNames using the mapping

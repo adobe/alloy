@@ -17,9 +17,9 @@ governing permissions and limitations under the License.
 export { default as activityCollector } from "../components/ActivityCollector/index.js";
 export { default as audiences } from "../components/Audiences/index.js";
 export { default as context } from "../components/Context/index.js";
-export { default as decisioningEngine } from "../components/DecisioningEngine/index.js";
+export { default as rulesEngine } from "../components/RulesEngine/index.js";
 export { default as eventMerge } from "../components/EventMerge/index.js";
-export { default as legacyMediaAnalytics } from "../components/LegacyMediaAnalytics/index.js";
+export { default as mediaAnalyticsBridge } from "../components/MediaAnalyticsBridge/index.js";
 export { default as personalization } from "../components/Personalization/index.js";
-export { default as privacy } from "../components/Privacy/index.js";
+export { default as consent } from "../components/Consent/index.js";
 export { default as streamingMedia } from "../components/StreamingMedia/index.js";

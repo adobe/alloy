@@ -96,7 +96,7 @@ describe("createConsentStateMachine", () => {
       });
   });
 
-  // This is what would happen when the privacy component is not included
+  // This is what would happen when the consent component is not included
   it("resolves promises when it is not initialized", () => {
     const onFulfilled = jasmine.createSpy("onFulfilled");
     subject.awaitConsent().then(onFulfilled);
