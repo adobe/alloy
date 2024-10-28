@@ -49,7 +49,9 @@ const isValidInAppMessage = (data, logger) => {
 export default ({ modules, logger }) => {
   return (item) => {
     const data = item.getData();
-    const meta = { ...item.getProposition().getNotification() };
+    const proposition = item.getProposition();
+    const meta = { ...proposition.getNotification() };
+    const shouldSuppressDisplay = proposition.shouldSuppressDisplay();
 
     if (!data) {
       logger.warn("Invalid in-app message data: undefined.", data);
@@ -74,10 +76,12 @@ export default ({ modules, logger }) => {
 
     return {
       render: () => {
-        return modules[type]({
-          ...data,
-          meta,
-        });
+        return shouldSuppressDisplay
+          ? null
+          : modules[type]({
+              ...data,
+              meta,
+            });
       },
       setRenderAttempted: true,
       includeInNotification: true,
