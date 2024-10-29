@@ -130,6 +130,7 @@ describe("StreamingMedia::createMediaEventManager", () => {
     });
     expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
       mediaOptions,
+      edgeConfigOverrides: undefined,
     });
   });
 

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import createTrackMediaSession from "../../../../../src/components/StreamingMedia/createTrackMediaSession.js";
 import PlaybackState from "../../../../../src/components/StreamingMedia/constants/playbackState.js";
 
-describe("createTrackMediaEvent", () => {
+describe("createTrackMediaSession", () => {
   let trackMediaSession;
   let mediaEventManager;
   let mediaSessionCacheManager;
@@ -96,6 +96,7 @@ describe("createTrackMediaEvent", () => {
         getPlayerDetails,
         legacy: false,
       },
+      edgeConfigOverrides: undefined,
     });
 
     expect(mediaSessionCacheManager.storeSession).toHaveBeenCalledWith({
