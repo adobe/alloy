@@ -28,10 +28,10 @@ const getFileSizeInKB = (filePath) => {
 // Function to run the build excluding a component and log the size
 const testExcludeComponent = async (component) => {
   try {
-    await execAsync(`npm run build:custom -- --exclude ${component}`);
+    await execAsync(`npm run build:custom -- build --exclude ${component}`);
     // Assuming the output files are in the 'dist' directory
-    const size = getFileSizeInKB(`../../dist/alloy.js`);
-    const minSize = getFileSizeInKB(`../../dist/alloy.min.js`);
+    const size = getFileSizeInKB(`dist/alloy.js`);
+    const minSize = getFileSizeInKB(`dist/alloy.min.js`);
     console.log(
       `Build size excluding ${component}: ${size} KB, Minified: ${minSize} KB`,
     );
@@ -42,11 +42,15 @@ const testExcludeComponent = async (component) => {
 
 // Components to test
 const components = [
-  "activitycollector",
+  "activityCollector",
   "audiences",
+  "context",
+  "rulesEngine",
+  "eventMerge",
+  "mediaAnalyticsBridge",
   "personalization",
-  "eventmerge",
-  "rulesengine",
+  "consent",
+  "streamingMedia",
 ];
 
 // Run tests for all components
