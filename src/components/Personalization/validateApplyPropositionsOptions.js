@@ -31,7 +31,7 @@ export default ({ logger, options }) => {
           objectOf({
             id: string().required(),
             schema: string().required(),
-            data: anything().required(),
+            data: objectOf(anything()),
           }),
         )
           .nonEmpty()

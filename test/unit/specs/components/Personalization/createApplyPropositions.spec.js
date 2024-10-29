@@ -76,7 +76,7 @@ describe("Personalization::createApplyPropositions", () => {
     expect(processPropositions).toHaveBeenCalledOnceWith([]);
   });
 
-  it("it should apply user-provided dom-action schema propositions", async () => {
+  it("it should apply user-provided dom-action/default-content schema propositions", async () => {
     const expectedExecuteDecisionsPropositions = clone(
       PAGE_WIDE_SCOPE_DECISIONS,
     ).map((proposition) => {
@@ -99,7 +99,7 @@ describe("Personalization::createApplyPropositions", () => {
       expect(proposition.items).toEqual(
         jasmine.arrayContaining([jasmine.any(Object)]),
       );
-      expect(proposition.items.length).toEqual(2);
+      expect(proposition.items.length).toEqual(3);
     });
   });
 
