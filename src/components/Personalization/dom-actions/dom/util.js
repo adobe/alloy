@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 export const addPxIfMissing = (value) => {
-  const hasPx = value.endsWith("px");
+  const hasPx = ("" + value).endsWith("px");
 
   return hasPx ? value : `${value}px`;
 };
