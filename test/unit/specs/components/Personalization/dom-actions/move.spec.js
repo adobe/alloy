@@ -61,4 +61,29 @@ describe("Personalization::actions::move", () => {
       expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
     });
   });
+
+  it("should move personalized content even if coordinates are not properly formatted", () => {
+    const modules = initDomActionsModules();
+    const { move } = modules;
+    const element = createNode("div", { id: "move" });
+
+    appendNode(document.body, element);
+
+    const settings = {
+      selector: "#move",
+      prehidingSelector: "#move",
+      content: { left: "100", top: "100" },
+      meta: { a: 1 },
+    };
+
+    move(settings, decorateProposition).then(() => {
+      expect(element.style.left).toEqual("100px");
+      expect(element.style.top).toEqual("100px");
+
+      expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+        "trackingLabel",
+      );
+      expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
+    });
+  });
 });

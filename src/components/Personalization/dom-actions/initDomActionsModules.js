@@ -18,12 +18,14 @@ import setText from "./setText.js";
 import setAttributes from "./setAttributes.js";
 import swapImage from "./swapImage.js";
 import setStyles from "./setStyles.js";
+import move from "./move.js";
 import rearrangeChildren from "./rearrangeChildren.js";
 import insertHtmlAfter from "./insertHtmlAfter.js";
 import insertHtmlBefore from "./insertHtmlBefore.js";
 import replaceHtml from "./replaceHtml.js";
 import appendHtml from "./appendHtml.js";
 import collectInteractions from "./collectInteractions.js";
+import resize from "./resize.js";
 
 export const DOM_ACTION_SET_HTML = "setHtml";
 export const DOM_ACTION_CUSTOM_CODE = "customCode";
@@ -51,8 +53,8 @@ export default () => {
     [DOM_ACTION_SET_ATTRIBUTE]: createAction(setAttributes),
     [DOM_ACTION_SET_IMAGE_SOURCE]: createAction(swapImage),
     [DOM_ACTION_SET_STYLE]: createAction(setStyles),
-    [DOM_ACTION_MOVE]: createAction(setStyles),
-    [DOM_ACTION_RESIZE]: createAction(setStyles),
+    [DOM_ACTION_MOVE]: createAction(move),
+    [DOM_ACTION_RESIZE]: createAction(resize),
     [DOM_ACTION_REARRANGE]: createAction(rearrangeChildren),
     [DOM_ACTION_REMOVE]: createAction(removeNode),
     [DOM_ACTION_INSERT_AFTER]: createAction(insertHtmlAfter),
