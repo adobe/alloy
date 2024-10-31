@@ -61,4 +61,29 @@ describe("Personalization::actions::resize", () => {
       expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
     });
   });
+
+  it("should resize personalized content even if dimensions are not properly formatted", () => {
+    const modules = initDomActionsModules();
+    const { resize } = modules;
+    const element = createNode("div", { id: "resize" });
+
+    appendNode(document.body, element);
+
+    const settings = {
+      selector: "#resize",
+      prehidingSelector: "#resize",
+      content: { width: "100", height: "100" },
+      meta: { a: 1 },
+    };
+
+    return resize(settings, decorateProposition).then(() => {
+      expect(element.style.width).toEqual("100px");
+      expect(element.style.height).toEqual("100px");
+
+      expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+        "trackingLabel",
+      );
+      expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
+    });
+  });
 });
