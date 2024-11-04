@@ -15,14 +15,10 @@ import apiVersion from "../../constants/apiVersion.js";
 import { createCallbackAggregator, noop } from "../../utils/index.js";
 import mergeLifecycleResponses from "./mergeLifecycleResponses.js";
 import handleRequestFailure from "./handleRequestFailure.js";
+import { isNetworkError } from "../../utils/networkErrors.js";
 
 const isDemdexBlockedError = (error, request) => {
-  return (
-    request.getUseIdThirdPartyDomain() &&
-    (error.name === "TypeError" || // Failed to fetch
-      error.name === "NetworkError" || // Request failed
-      error.status === 0) // Request blocked
-  );
+  return request.getUseIdThirdPartyDomain() && isNetworkError(error);
 };
 
 export default ({
