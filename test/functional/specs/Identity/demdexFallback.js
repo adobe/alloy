@@ -18,28 +18,18 @@ import {
   thirdPartyCookiesEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import demdexBlockerMock from "../../helpers/requestHooks/demdexBlockerMock.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, thirdPartyCookiesEnabled);
 
 createFixture({
   title: "Demdex Fallback Behavior",
-  requestHooks: [networkLogger.edgeEndpointLogs],
+  requestHooks: [networkLogger.edgeEndpointLogs, demdexBlockerMock],
 });
 
 test("Continues collecting data when demdex is blocked", async () => {
   const alloy = createAlloyProxy();
-
-  // Block demdex.net
-  await t.eval(() => {
-    const originalFetch = window.fetch;
-    window.fetch = (url, ...args) => {
-      if (url.includes("demdex.net")) {
-        return Promise.reject(new TypeError("Failed to fetch"));
-      }
-      return originalFetch(url, ...args);
-    };
-  });
 
   await alloy.configure(config);
   await alloy.sendEvent();
