@@ -103,9 +103,27 @@ permutationsUsingDemdex.forEach((permutation) => {
 
     if (areThirdPartyCookiesSupported()) {
       await assertRequestWentToDemdex();
+
+      // Simulate demdex being blocked
+      networkLogger.edgeInteractEndpointLogs.requests = [];
+      const originalFetch = window.fetch;
+      window.fetch = (url) => {
+        if (url.includes("demdex.net")) {
+          return Promise.reject(new TypeError("Failed to fetch"));
+        }
+        return originalFetch(url);
+      };
+
+      await alloy.sendEvent();
+      // Should fallback to edge domain
+      await assertRequestDidNotGoToDemdex();
+
+      // Restore fetch
+      window.fetch = originalFetch;
     } else {
       await assertRequestDidNotGoToDemdex();
     }
+
     await networkLogger.clearLogs();
     await reloadPage();
     await alloy.configure(permutation.config);
