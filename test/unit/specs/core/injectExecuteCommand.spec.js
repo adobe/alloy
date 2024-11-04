@@ -215,11 +215,16 @@ describe("injectExecuteCommand", () => {
       .createSpy()
       .and.returnValue(Promise.resolve(componentRegistry));
     const setDebugCommand = jasmine.createSpy();
+    const validateCommandOptions = jasmine
+      .createSpy()
+      .and.returnValue({ enabled: true });
+
     const executeCommand = injectExecuteCommand({
       logger,
       configureCommand,
       setDebugCommand,
       handleError,
+      validateCommandOptions,
     });
 
     return Promise.all([
@@ -227,7 +232,7 @@ describe("injectExecuteCommand", () => {
       executeCommand("setDebug", { baz: "qux" }),
     ]).then(([configureResult, setDebugResult]) => {
       expect(configureCommand).toHaveBeenCalledWith({ foo: "bar" });
-      expect(setDebugCommand).toHaveBeenCalledWith({ baz: "qux" });
+      expect(setDebugCommand).toHaveBeenCalledWith({ enabled: true });
       expect(configureResult).toEqual({});
       expect(setDebugResult).toEqual({});
     });
