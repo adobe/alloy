@@ -34,7 +34,6 @@ export default ({
   processWarningsAndErrors,
   getLocationHint,
   getAssuranceValidationTokenParams,
-  logger,
 }) => {
   const { edgeDomain, edgeBasePath, datastreamId } = config;
   let hasDemdexFailed = false;
@@ -98,12 +97,6 @@ export default ({
       .catch((error) => {
         if (isDemdexBlockedError(error, request)) {
           hasDemdexFailed = true;
-          logger.warn(
-            "Third party endpoint appears to be blocked. " +
-              "Falling back to first party endpoint. " +
-              "This may impact cross-domain identification capabilities.",
-          );
-          // Retry with edge domain
           request.setUseIdThirdPartyDomain(false);
           return sendNetworkRequest({
             requestId: request.getId(),
