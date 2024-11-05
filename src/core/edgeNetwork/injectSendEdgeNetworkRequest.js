@@ -15,6 +15,11 @@ import apiVersion from "../../constants/apiVersion.js";
 import { createCallbackAggregator, noop } from "../../utils/index.js";
 import mergeLifecycleResponses from "./mergeLifecycleResponses.js";
 import handleRequestFailure from "./handleRequestFailure.js";
+import { isNetworkError } from "../../utils/networkErrors.js";
+
+const isDemdexBlockedError = (error, request) => {
+  return request.getUseIdThirdPartyDomain() && isNetworkError(error);
+};
 
 export default ({
   config,
@@ -27,6 +32,7 @@ export default ({
   getAssuranceValidationTokenParams,
 }) => {
   const { edgeDomain, edgeBasePath, datastreamId } = config;
+  let hasDemdexFailed = false;
 
   /**
    * Sends a network request that is aware of payload interfaces,
@@ -52,9 +58,10 @@ export default ({
         onRequestFailure: onRequestFailureCallbackAggregator.add,
       })
       .then(() => {
-        const endpointDomain = request.getUseIdThirdPartyDomain()
-          ? ID_THIRD_PARTY_DOMAIN
-          : edgeDomain;
+        const endpointDomain =
+          hasDemdexFailed || !request.getUseIdThirdPartyDomain()
+            ? edgeDomain
+            : ID_THIRD_PARTY_DOMAIN;
         const locationHint = getLocationHint();
         const edgeBasePathWithLocationHint = locationHint
           ? `${edgeBasePath}/${locationHint}${request.getEdgeSubPath()}`
@@ -83,7 +90,19 @@ export default ({
         processWarningsAndErrors(networkResponse);
         return networkResponse;
       })
-      .catch(handleRequestFailure(onRequestFailureCallbackAggregator))
+      .catch((error) => {
+        if (isDemdexBlockedError(error, request)) {
+          hasDemdexFailed = true;
+          request.setUseIdThirdPartyDomain(false);
+          return sendNetworkRequest({
+            requestId: request.getId(),
+            url: request.buildUrl(edgeDomain),
+            payload: request.getPayload(),
+            useSendBeacon: request.getUseSendBeacon(),
+          });
+        }
+        return handleRequestFailure(onRequestFailureCallbackAggregator)(error);
+      })
       .then(({ parsedBody, getHeader }) => {
         // Note that networkResponse.parsedBody may be undefined if it was a
         // 204 No Content response. That's fine.
