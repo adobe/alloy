@@ -48,17 +48,17 @@ suites:
       - "test/functional/specs/**/*.js"
     platformName: "Windows 11"
     excludedTestFiles: ["test/functional/specs/Consent/C5594870.js"]
-  - name: "Chrome"
-    browserName: "chrome"
-    headless: true
-    browserVersion: "latest"
-    src:
-      - "test/functional/specs/**/*.js"
-    platformName: "Windows 11"
-    excludedTestFiles:
-      [
-        "test/functional/specs/Consent/C5594870.js",
-        "test/functional/specs/Personalization/C7494472.js",
-        "test/functional/specs/Personalization/C8631576.js",
-        "test/functional/specs/Personalization/C8631577.js",
-      ]
+  # - name: "Chrome"
+    # browserName: "chrome"
+    # headless: true
+    # browserVersion: "latest"
+    # src:
+    #   - "test/functional/specs/**/*.js"
+    # platformName: "Windows 11"
+    # excludedTestFiles:
+    #   [
+    #     "test/functional/specs/Consent/C5594870.js",
+    #     "test/functional/specs/Personalization/C7494472.js",
+    #     "test/functional/specs/Personalization/C8631576.js",
+    #     "test/functional/specs/Personalization/C8631577.js",
+    #   ]

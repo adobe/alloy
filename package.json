@@ -141,7 +141,7 @@
     "semver": "^7.6.3",
     "staged-git-files": "^1.3.0",
     "start-server-and-test": "^2.0.8",
-    "testcafe": "^3.6.2",
+    "testcafe": "^3.7.0",
     "testcafe-browser-provider-saucelabs": "^3.0.0",
     "testcafe-reporter-junit": "^3.0.2",
     "testcafe-reporter-saucelabs": "^3.5.1",
