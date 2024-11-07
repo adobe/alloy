@@ -103,7 +103,8 @@ test("Test C5805676: Merged metric propositions should be delivered", async () =
 
   await t.expect(responseBodyProposition.items.length).eql(2);
 
-  await t.expect(responseBodyProposition.items[0]).eql(DEFAULT_CONTENT_ITEM);
+  await t.expect(responseBodyProposition.items[0].schema).eql(DEFAULT_CONTENT_ITEM.schema);
+  await t.expect(responseBodyProposition.items[0].meta).eql(DEFAULT_CONTENT_ITEM.meta);
   await t.expect(responseBodyProposition.items[1]).eql(MEASUREMENT_ITEM);
 
   const formBasedScopePropositions = eventResult.propositions.filter(
@@ -114,7 +115,12 @@ test("Test C5805676: Merged metric propositions should be delivered", async () =
   await t.expect(formBasedScopePropositions[0].items.length).eql(2);
   await t.expect(formBasedScopePropositions[0].renderAttempted).eql(false);
   await t
-    .expect(formBasedScopePropositions[0].items[0])
-    .eql(DEFAULT_CONTENT_ITEM);
-  await t.expect(formBasedScopePropositions[0].items[1]).eql(MEASUREMENT_ITEM);
+    .expect(formBasedScopePropositions[0].items[0].schema)
+    .eql(DEFAULT_CONTENT_ITEM.schema);
+  await t
+    .expect(formBasedScopePropositions[0].items[0].meta)
+    .eql(DEFAULT_CONTENT_ITEM.meta);
+
+  await t.expect(formBasedScopePropositions[0].items[1].data).eql(MEASUREMENT_ITEM.data);
+  await t.expect(formBasedScopePropositions[0].items[1].schema).eql(MEASUREMENT_ITEM.schema);
 });

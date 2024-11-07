@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import createDecorateProposition from "./createDecorateProposition.js";
 import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules.js";
+import createRenderedHandler from "./createRenderedHandler.js";
 
 export default ({
     modules,
@@ -64,9 +65,13 @@ export default ({
       item.getProposition().getNotification(),
       storeInteractionMeta,
     );
+    const renderedHandler = createRenderedHandler(
+      item.getProposition().getScopeType(),
+      item.getIdentifier()
+    );
 
     return {
-      render: () => modules[type](item.getData(), decorateProposition),
+      render: () => modules[type](item.getData(), decorateProposition, renderedHandler),
       setRenderAttempted: true,
       includeInNotification: true,
     };
