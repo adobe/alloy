@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 import { groupBy, isNonEmptyArray } from "../../utils/index.js";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope.js";
+import uuid from "../../utils/uuid.js";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 
@@ -56,7 +57,17 @@ export default ({
           },
         });
       }
-      const propositions = handles.map((handle) => createProposition(handle));
+      const propositions = handles.map(handle => {
+        const proposition = {
+          items: handle.items.map(item => {
+            item.id = (!item.id || item.id === "0" ) ? uuid() : item.id;
+            return item;
+          }),
+          ...handle
+        };
+        return createProposition(proposition);
+      });
+
       const {
         page: pagePropositions = [],
         view: viewPropositions = [],

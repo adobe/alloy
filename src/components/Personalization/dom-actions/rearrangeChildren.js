@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { getChildren, insertAfter, insertBefore } from "./dom/index.js";
 
-export default (container, { from, to }, decorateProposition) => {
+export default (container, { from, to }, decorateProposition, markRendered) => {
   const children = getChildren(container);
   const elementFrom = children[from];
   const elementTo = children[to];
@@ -31,4 +31,5 @@ export default (container, { from, to }, decorateProposition) => {
 
   decorateProposition(elementTo);
   decorateProposition(elementFrom);
+  markRendered(container);
 };

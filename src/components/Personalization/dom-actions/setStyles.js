@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { setStyle } from "./dom/index.js";
 
-export default (container, styles, decorateProposition) => {
+export default (container, styles, decorateProposition, markRendered) => {
   const { priority, ...style } = styles;
 
   Object.keys(style).forEach((key) => {
@@ -20,4 +20,5 @@ export default (container, styles, decorateProposition) => {
   });
 
   decorateProposition(container);
+  markRendered(container);
 };

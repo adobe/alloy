@@ -18,7 +18,7 @@ import {
 } from "../constants/scopeType.js";
 
 export default ({ preprocess, isPageWideSurface }) => {
-  const createItem = (item, proposition) => {
+  const createItem = (item, proposition, itemIdentifier) => {
     const { id, schema, data, characteristics: { trackingLabel } = {} } = item;
 
     const schemaType = data ? data.type : undefined;
@@ -28,6 +28,9 @@ export default ({ preprocess, isPageWideSurface }) => {
     return {
       getId() {
         return id;
+      },
+      getIdentifier() {
+        return itemIdentifier;
       },
       getSchema() {
         return schema;
@@ -63,6 +66,7 @@ export default ({ preprocess, isPageWideSurface }) => {
   ) => {
     const { id, scope, scopeDetails, items = [] } = payload;
     const { characteristics: { scopeType } = {} } = scopeDetails || {};
+    const keyedItems = items.map((item, index) => ({key: `alloy-${item.id}`, item}));
 
     return {
       getScope() {
@@ -78,7 +82,7 @@ export default ({ preprocess, isPageWideSurface }) => {
         return PROPOSITION_SCOPE_TYPE;
       },
       getItems() {
-        return items.map((item) => createItem(item, this));
+        return keyedItems.map((keyedItem) => createItem(keyedItem.item, this, keyedItem.key));
       },
       getNotification() {
         return { id, scope, scopeDetails };
