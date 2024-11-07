@@ -9,25 +9,21 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { noop } from "../../../utils/index.js";
 import hasCssClass from "../dom-actions/dom/hasCssClass.js";
 import addCssClass from "../dom-actions/dom/addCssClass.js";
 
-export default (
-  scopeType,
-  itemIdentifier,
-) => {
+export default (scopeType, itemIdentifier) => {
   return {
     shouldRender: (element) => {
       if (scopeType === "view") {
         return !hasCssClass(element, itemIdentifier);
       }
-     return true;
+      return true;
     },
     markAsRendered: (element) => {
       if (scopeType === "view") {
         addCssClass(element, itemIdentifier);
       }
-    }
+    },
   };
 };

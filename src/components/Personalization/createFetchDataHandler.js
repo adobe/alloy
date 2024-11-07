@@ -57,13 +57,13 @@ export default ({
           },
         });
       }
-      const propositions = handles.map(handle => {
+      const propositions = handles.map((handle) => {
         const proposition = {
-          items: handle.items.map(item => {
-            item.id = (!item.id || item.id === "0" ) ? uuid() : item.id;
+          items: handle.items.map((item) => {
+            item.id = !item.id || item.id === "0" ? uuid() : item.id;
             return item;
           }),
-          ...handle
+          ...handle,
         };
         return createProposition(proposition);
       });

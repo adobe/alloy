@@ -66,7 +66,10 @@ export default ({ preprocess, isPageWideSurface }) => {
   ) => {
     const { id, scope, scopeDetails, items = [] } = payload;
     const { characteristics: { scopeType } = {} } = scopeDetails || {};
-    const keyedItems = items.map((item, index) => ({key: `alloy-${item.id}`, item}));
+    const keyedItems = items.map((item) => ({
+      key: `alloy-${item.id}`,
+      item,
+    }));
 
     return {
       getScope() {
@@ -82,7 +85,9 @@ export default ({ preprocess, isPageWideSurface }) => {
         return PROPOSITION_SCOPE_TYPE;
       },
       getItems() {
-        return keyedItems.map((keyedItem) => createItem(keyedItem.item, this, keyedItem.key));
+        return keyedItems.map((keyedItem) =>
+          createItem(keyedItem.item, this, keyedItem.key),
+        );
       },
       getNotification() {
         return { id, scope, scopeDetails };

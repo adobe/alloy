@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { awaitSelector } from "../../../utils/dom/index.js";
 import { hideElements, showElements } from "../flicker/index.js";
-import { selectNodesWithEq} from "./dom/index.js";
+import { selectNodesWithEq } from "./dom/index.js";
 export { default as setText } from "./setText.js";
 export { default as setHtml } from "./setHtml.js";
 export { default as appendHtml } from "./appendHtml.js";
@@ -25,11 +25,18 @@ export { default as setAttributes } from "./setAttributes.js";
 export { default as swapImage } from "./swapImage.js";
 export { default as rearrangeChildren } from "./rearrangeChildren.js";
 
-const renderContent = (elements, content, decorateProposition, renderFunc, renderedHandler) => {
+const renderContent = (
+  elements,
+  content,
+  decorateProposition,
+  renderFunc,
+  renderedHandler,
+) => {
   const executions = elements.map((element) => {
     if(renderedHandler.shouldRender(element)) {
       return renderFunc(element, content, decorateProposition, renderedHandler.markAsRendered);
     }
+    return Promise.resolve();
   });
 
   return Promise.all(executions);
@@ -42,8 +49,14 @@ export const createAction = (renderFunc) => {
 
     return awaitSelector(selector, selectNodesWithEq)
       .then((elements) => {
-          return renderContent(elements, content, decorateProposition, renderFunc, renderedHandler);
-        })
+        return renderContent(
+          elements,
+          content,
+          decorateProposition,
+          renderFunc,
+          renderedHandler,
+        );
+      })
       .then(
         () => {
           // if everything is OK, show elements
