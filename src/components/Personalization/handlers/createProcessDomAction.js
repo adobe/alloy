@@ -67,11 +67,12 @@ export default ({
     );
     const renderedHandler = createRenderedHandler(
       item.getProposition().getScopeType(),
-      item.getIdentifier()
+      item.getIdentifier(),
     );
 
     return {
-      render: () => modules[type](item.getData(), decorateProposition, renderedHandler),
+      render: () =>
+        modules[type](item.getData(), decorateProposition, renderedHandler),
       setRenderAttempted: true,
       includeInNotification: true,
     };

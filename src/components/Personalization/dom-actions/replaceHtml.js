@@ -14,7 +14,12 @@ import { removeNode } from "../../../utils/dom/index.js";
 import insertHtmlBefore from "./insertHtmlBefore.js";
 
 export default (container, html, decorateProposition, markRendered) => {
-  return insertHtmlBefore(container, html, decorateProposition, markRendered).then(() => {
+  return insertHtmlBefore(
+    container,
+    html,
+    decorateProposition,
+    markRendered,
+  ).then(() => {
     removeNode(container);
   });
 };
