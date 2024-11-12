@@ -32,12 +32,7 @@ export default ({ createProposition }) => {
           characteristics: {
             scopeType: VIEW_SCOPE_TYPE,
           },
-        },
-        items: [
-          {
-            schema: DEFAULT_CONTENT_ITEM,
-          },
-        ],
+        }
       },
       false,
     );
