@@ -59,11 +59,11 @@ export default ({
       }
       const propositions = handles.map((handle) => {
         const proposition = {
+          ...handle,
           items: handle.items.map((item) => {
             item.id = !item.id || item.id === "0" ? uuid() : item.id;
             return item;
           }),
-          ...handle,
         };
         return createProposition(proposition);
       });
