@@ -23,3 +23,4 @@ export { default as mediaAnalyticsBridge } from "../components/MediaAnalyticsBri
 export { default as personalization } from "../components/Personalization/index.js";
 export { default as consent } from "../components/Consent/index.js";
 export { default as streamingMedia } from "../components/StreamingMedia/index.js";
+export { default as brandConcierge } from "../components/BrandConcierge/index.js";

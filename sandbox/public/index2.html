@@ -12,27 +12,8 @@
 
     <title>Mock website hosting Alloy</title>
 
-    <script>
-      window.__alloyMonitors = window.__alloyMonitors || [];
-      window.__alloyMonitors.push({
-        onContentRendering(data) {
-          console.log("Alloy Content Rendering");
-          console.log("data", data.status, data);
-        },
-        onContentHiding(data) {
-          console.log("Alloy Content Hiding");
-          console.log("data", data.status);
-        },
-        onInstanceCreated(data) {
-          console.log("Alloy Instance Created");
-          console.log(data.instanceName);
-          console.log(data.instance);
-        },
 
-      });
-    </script>
 
-    <script src="/onBeforeEventSentHelper.js"></script>
 
     <!-- prettier-ignore -->
     <script nonce="%REACT_APP_NONCE%">
@@ -156,44 +137,6 @@
         },
         targetMigrationEnabled: true,
         clickCollectionEnabled: true,
-      });
-
-      // For Testing multiple instances.
-      // We use a different orgId and datastreamId.
-      organizationTwo("configure", {
-        datastreamId: "7984963a-6609-4e84-98d5-4e2ff8c0dd5e:prod",
-        orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
-        debugEnabled: true,
-        clickCollectionEnabled: false,
-        onBeforeEventSend: function (options) {
-          const xdm = options.xdm;
-          const eventType = xdm.eventType;
-          if (eventType === "decisioning.propositionInteract") {
-            const analyticsPayloads = new Set();
-            const propositions = xdm._experience.decisioning.propositions;
-
-            for (var i = 0; i < propositions.length; i++) {
-              var proposition = propositions[i];
-              analyticsPayloads.add(getClickAnalyticsToken(proposition));
-            }
-
-            getECID("organizationTwo").then((visitorID) => {
-              const analyticsPayload =
-                concatenateAnalyticsPayloads(analyticsPayloads);
-              sendAnalyticsPayload({ analyticsPayload, visitorID });
-            });
-          }
-        },
-      });
-
-      // For AJO testing in Prod.
-      // We use a different orgId and datastreamId.
-      cjmProd("configure", {
-        datastreamId: "3e808bee-74f7-468f-be1d-99b498f36fa8:prod",
-        orgId: "4DA0571C5FDC4BF70A495FC2@AdobeOrg",
-        thirdPartyCookiesEnabled: false,
-        debugEnabled: true,
-        clickCollectionEnabled: false,
       });
     </script>
   </head>

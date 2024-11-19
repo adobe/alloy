@@ -77,7 +77,7 @@ export default ({
             },
           });
         }
-        const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${configId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
+        const url = `http://localhost:8080/v1/interact/`;
         cookieTransfer.cookiesToPayload(payload, endpointDomain);
         return sendNetworkRequest({
           requestId: request.getId(),
