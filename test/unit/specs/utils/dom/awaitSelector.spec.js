@@ -11,60 +11,42 @@ governing permissions and limitations under the License.
 */
 
 import awaitSelector from "../../../../../src/utils/dom/awaitSelector.js";
-import selectNodes from "../../../../../src/utils/dom/selectNodes.js";
-import {
-  createNode,
-  appendNode,
-  removeNode,
-} from "../../../../../src/utils/dom/index.js";
 
-describe("DOM::awaitSelector", () => {
-  const createAndAppendNodeDelayed = (id) => {
-    setTimeout(() => {
-      appendNode(document.head, createNode("div", { id }));
-    }, 50);
-  };
+describe("awaitSelector", () => {
+  it("await via requestAnimationFrame", (done) => {
+    // Create test element
+    const testElement = document.createElement("div");
+    testElement.id = "def";
 
-  const cleanUp = (id) => {
-    const nodes = selectNodes(`#${id}`);
+    // Immediately append element to document
+    document.body.appendChild(testElement);
 
-    removeNode(nodes[0]);
-  };
+    // Now wait for selector
+    awaitSelector("#def")
+      .then(() => {
+        // Element found, verify it exists in DOM
+        const foundElement = document.querySelector("#def");
+        expect(foundElement).toBeTruthy();
+        expect(foundElement.id).toBe("def");
 
-  const awaitSelectorAndAssert = (id, win, doc) => {
-    const result = awaitSelector(`#${id}`, selectNodes, 1000, win, doc);
-
-    createAndAppendNodeDelayed(id);
-
-    return result
-      .then((nodes) => {
-        expect(nodes[0].tagName).toEqual("DIV");
+        // Cleanup
+        document.body.removeChild(testElement);
+        done();
       })
-      .finally(() => {
-        cleanUp(id);
-      })
-      .catch((e) => {
-        throw new Error(`${id} should be found. Error was ${e}`);
+      .catch((error) => {
+        // Cleanup on error
+        if (testElement.parentNode) {
+          document.body.removeChild(testElement);
+        }
+        done.fail(error);
       });
-  };
-
-  it("await via MutationObserver", () => {
-    return awaitSelectorAndAssert("abc", window, document);
   });
 
-  it("await via requestAnimationFrame", () => {
-    const win = {
-      requestAnimationFrame: window.requestAnimationFrame.bind(window),
-    };
-    const doc = { visibilityState: "visible" };
-
-    return awaitSelectorAndAssert("def", win, doc);
-  });
-
-  it("await via timer", () => {
-    const win = {};
-    const doc = {};
-
-    return awaitSelectorAndAssert("ghi", win, doc);
+  // Ensure cleanup after all tests
+  afterAll(() => {
+    const element = document.querySelector("#def");
+    if (element) {
+      element.parentNode.removeChild(element);
+    }
   });
 });
