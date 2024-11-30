@@ -14,7 +14,7 @@ import { SRC } from "../../../constants/elementAttribute.js";
 import { removeAttribute, setAttribute } from "./dom/index.js";
 import { isImage, loadImage } from "./images.js";
 
-export default (container, url, decorateProposition) => {
+export default (container, url, decorateProposition, markRendered) => {
   if (!isImage(container)) {
     return;
   }
@@ -29,4 +29,5 @@ export default (container, url, decorateProposition) => {
 
   // Replace the image "src"
   setAttribute(container, SRC, url);
+  markRendered(container);
 };
