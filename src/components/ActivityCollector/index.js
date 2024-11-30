@@ -17,6 +17,7 @@ import createRecallAndInjectClickedElementProperties from "./createRecallAndInje
 import createGetClickedElementProperties from "./createGetClickedElementProperties.js";
 import createClickActivityStorage from "./createClickActivityStorage.js";
 import createStorePageViewProperties from "./createStorePageViewProperties.js";
+import validateClickCollectionConfig from "./validateClickCollectionConfig.js";
 import getLinkName from "./getLinkName.js";
 import getLinkRegion from "./getLinkRegion.js";
 import getAbsoluteUrlFromAnchorElement from "./utils/dom/getAbsoluteUrlFromAnchorElement.js";
@@ -55,23 +56,29 @@ const createActivityCollector = ({
   handleError,
   logger,
 }) => {
+  validateClickCollectionConfig(config, logger);
+
   const clickCollection = config.clickCollection;
   if (!clickActivityStorage) {
     initClickActivityStorage(config);
   }
+
   const injectClickedElementProperties = createInjectClickedElementProperties({
     config,
     logger,
     clickActivityStorage,
     getClickedElementProperties,
   });
+
   const recallAndInjectClickedElementProperties =
     createRecallAndInjectClickedElementProperties({
       clickActivityStorage,
     });
+
   const storePageViewProperties = createStorePageViewProperties({
     clickActivityStorage,
   });
+
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
