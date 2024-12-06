@@ -172,6 +172,7 @@ export const createExecuteCommand = ({
       getImmediatelyAvailableTools(componentName) {
         const componentLogger = createComponentLogger(componentName);
         return {
+          instanceName,
           config,
           componentRegistry,
           consent,

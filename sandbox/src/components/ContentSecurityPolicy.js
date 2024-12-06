@@ -21,11 +21,11 @@ export default function ContentSecurityPolicy() {
         // cdn.tt.omtrdc.net is necessary for Target VEC to function properly.
         // *.sc.omtrdc.net is necessary for Analytics Data Insertion API to function properly
         content={`default-src 'self' blob:;
-              script-src 'self' 'nonce-${process.env.REACT_APP_NONCE}' cdn.jsdelivr.net assets.adobedtm.com cdn.tt.omtrdc.net;
+              script-src 'self' 'nonce-${process.env.REACT_APP_NONCE}' cdn.jsdelivr.net assets.adobedtm.com cdn.tt.omtrdc.net localhost:8081;
               style-src 'self' 'unsafe-inline';
               img-src * data:;
               frame-src localhost:8081;
-              connect-src 'self' *.alloyio.com *.adobedc.net *.demdex.net *.sc.omtrdc.net localhost:8080, localhost:8081`}
+              connect-src 'self' *.alloyio.com *.adobedc.net *.adobe.net *.demdex.net *.sc.omtrdc.net localhost:8080, localhost:8081`}
       />
     </Helmet>
   );

@@ -9,12 +9,14 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import {createNode} from "../../utils/dom/index.js";
 import {isNonEmptyString} from "../../utils/index.js";
+import {executeRemoteScripts} from "../Personalization/dom-actions/scripts.js";
+import validateMessage from "./validateMessage.js";
 
 const BRAND_CONCIERGE_URL = "https://experience-platform-aep-gen-ai-assistant-exp86.corp.ethos12-stage-va7.ethos.adobe.net/copilot/chats?response_format=markdown";
 const fetch = window.fetch;
-const fetchResponse = (question) => {
+
+const fetchResponse = (message) => {
   return fetch(BRAND_CONCIERGE_URL, {
     method: "POST",
     headers: {
@@ -25,11 +27,7 @@ const fetchResponse = (question) => {
       "Content-Type": "application/vnd.adobe.copilot.v1+json",
       "Accept": "application/vnd.adobe.copilot.v1+json"
     },
-    body: JSON.stringify(getBody(question))
-  }).then((response) => {
-    return response.text().then((responseBody) => {
-      return responseBody;
-    });
+    body: JSON.stringify(getBody(message))
   });
 };
 
@@ -44,8 +42,21 @@ const getBody = (question) => {
   }
   return {};
 };
+const checkBCExists = () => {
+  const bcButton = document.querySelector("#adobe-bc-btn");
+  if(bcButton) {
+    return true;
+  }
+  return false;
+};
 
-const createBrandConcierge = ({eventManager}) => {
+const sendBrandConciergeEvent = (options) => {
+  return fetchResponse(options.message);
+};
+
+
+
+const createBrandConcierge = ({logger, eventManager, consent, config, instanceName}) => {
   window.addEventListener("message", (event) => {
     fetchResponse(event.data.question).then((response) => {
       const { interaction } = JSON.parse(response);
@@ -56,18 +67,21 @@ const createBrandConcierge = ({eventManager}) => {
     return {
       lifecycle: {
         onResponse: ({response}) => {
-          const iframe = document.getElementById("alloy-bc");
-          if(!iframe) {
-            const handles = response.getPayloadsByType("brandConcierge:configuration");
-            const element = createNode("iframe", {
-              src: handles[0].src,
-              id: "alloy-bc",
-              style: "background:beige;position:absolute;bottom: 0;right: 0;width: 535px; height:380px;z-index: 999;"
-            });
-            const parent = document.querySelector("BODY");
-            parent.appendChild(element);
-          }
+          const handles = response.getPayloadsByType("brandConcierge:configuration");
+           if(!checkBCExists) {
+             window.addEventListener("adobe-band-concierge-loaded", () => {
+               window.dispatchEvent(new CustomEvent("alloy-brand-concierge-instance", {detail: {type: "loaded", instanceName: instanceName}}));
+             });
+          const script = executeRemoteScripts([handles[0].src]);
+       }
         },
+      },
+      commands: {
+        sendBrandConciergeEvent: {
+          optionsValidator: (options) =>
+            validateMessage({ logger, options }),
+          run: sendBrandConciergeEvent,
+        }
       }
     };
 };
