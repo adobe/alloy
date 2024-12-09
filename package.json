@@ -20,7 +20,7 @@
   "scripts": {
     "clean": "rimraf dist distTest libEs5 libEs6",
     "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{src,test,scripts}/**/*.{js,cjs,mjs,jsx}\"",
-    "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandbox,src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
+    "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandbox,src,test,scripts,vtest}/**/*.{html,js,cjs,mjs,jsx}\"",
     "test": "npm run test:unit && npm run test:scripts && npm run test:functional",
     "test:unit": "karma start karma.conf.cjs --single-run",
     "test:unit:debug": "karma start karma.conf.cjs --browsers=Chrome --single-run=false --debug",
@@ -115,6 +115,7 @@
     "glob": "^11.0.0",
     "globals": "^15.12.0",
     "handlebars": "^4.7.8",
+    "happy-dom": "^15.11.1",
     "husky": "^9.1.6",
     "jasmine": "^5.4.0",
     "jasmine-core": "^5.4.0",
@@ -146,7 +147,8 @@
     "testcafe-reporter-junit": "^3.0.2",
     "testcafe-reporter-saucelabs": "^3.5.1",
     "url-exists-nodejs": "^0.2.4",
-    "url-parse": "^1.5.10"
+    "url-parse": "^1.5.10",
+    "vitest": "^2.1.4"
   },
   "overrides": {
     "karma-sauce-launcher": {
