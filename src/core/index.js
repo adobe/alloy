@@ -76,6 +76,7 @@ export const createExecuteCommand = ({
   instanceName,
   logController: { setDebugEnabled, logger, createComponentLogger },
   components,
+  env
 }) => {
   const componentRegistry = createComponentRegistry();
   const lifecycle = createLifecycle(componentRegistry);
@@ -111,12 +112,12 @@ export const createExecuteCommand = ({
     });
     const sendBeaconRequest = isFunction(navigator.sendBeacon)
       ? injectSendBeaconRequest({
-          // Without the bind(), the browser will complain about an
-          // illegal invocation.
-          sendBeacon: navigator.sendBeacon.bind(navigator),
-          sendFetchRequest,
-          logger,
-        })
+        // Without the bind(), the browser will complain about an
+        // illegal invocation.
+        sendBeacon: navigator.sendBeacon.bind(navigator),
+        sendFetchRequest,
+        logger,
+      })
       : sendFetchRequest;
     const sendNetworkRequest = injectSendNetworkRequest({
       logger,
@@ -187,6 +188,7 @@ export const createExecuteCommand = ({
           createNamespacedStorage,
           apexDomain,
           getBrowser,
+          env
         };
       },
     });

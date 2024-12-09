@@ -53,8 +53,8 @@ export default [
       ecmaVersion: 2021,
       globals: {
         ...globals.jasmine,
-        ...globals.browser,
-        ...globals.node,
+        /*...globals.browser,
+        ...globals.node,*/
         fixture: true,
         test: true,
         expectAsync: "readonly", // newer jasmine feature

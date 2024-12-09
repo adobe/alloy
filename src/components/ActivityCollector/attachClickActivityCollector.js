@@ -42,11 +42,11 @@ const createClickHandler = ({ eventManager, lifecycle, handleError }) => {
   };
 };
 
-export default ({ eventManager, lifecycle, handleError }) => {
+export default ({ eventManager, lifecycle, handleError, env }) => {
   const clickHandler = createClickHandler({
     eventManager,
     lifecycle,
     handleError,
   });
-  document.addEventListener("click", clickHandler, true);
+  env.addClickListener(clickHandler, true);
 };

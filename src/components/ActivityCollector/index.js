@@ -54,6 +54,7 @@ const createActivityCollector = ({
   eventManager,
   handleError,
   logger,
+  env
 }) => {
   const clickCollection = config.clickCollection;
   if (!clickActivityStorage) {
@@ -80,6 +81,7 @@ const createActivityCollector = ({
           eventManager,
           lifecycle,
           handleError,
+          env,
         });
         // TODO: createScrollActivityCollector ...
       },
