@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const createGetInstance = require("../../../../../src/components/MediaAnalyticsBridge/createGetInstance.js");
+import createGetInstance from "../../../../../src/components/MediaAnalyticsBridge/createGetInstance.js";
 
 describe("createGetInstance", () => {
   const logger = {

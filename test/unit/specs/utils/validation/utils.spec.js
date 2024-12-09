@@ -73,10 +73,9 @@ describe("validation::utils", () => {
       expect(() =>
         assertValid(false, "myValue", "myPath", "myMessage"),
       ).toThrowMatching((e) => {
-        expect(e.message).toEqual(
-          `'myPath': Expected myMessage, but got "myValue".`,
+        return /'myPath': Expected myMessage, but got "myValue"\./.test(
+          e.message,
         );
-        return true;
       });
     });
 
