@@ -101,6 +101,8 @@ describe("Personalization::tracking::clicks", () => {
       if (args[0] === "#abc > div.b > div.c") {
         return metaInner;
       }
+
+      return undefined;
     });
 
     const content = `
