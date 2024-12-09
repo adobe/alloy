@@ -94,12 +94,15 @@ describe("Personalization::tracking::clicks", () => {
         trackingLabel: "inner-label-3",
       },
     ];
-    const getClickMetas = vi
-      .fn()
-      .withArgs("#abc > div.b")
-      .mockReturnValue(metaOuter)
-      .withArgs("#abc > div.b > div.c")
-      .mockReturnValue(metaInner);
+    const getClickMetas = vi.fn((...args) => {
+      if (args[0] === "#abc > div.b") {
+        return metaOuter;
+      }
+      if (args[0] === "#abc > div.b > div.c") {
+        return metaInner;
+      }
+    });
+
     const content = `
       <div class="b">
         <div id="one" class="c">first</div>
