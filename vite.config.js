@@ -6,5 +6,7 @@ export default defineConfig({
     name: "happy-dom",
     include: ["vtest/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
     environment: "happy-dom",
+    isolate: false,
+    pool: "threads",
   },
 });

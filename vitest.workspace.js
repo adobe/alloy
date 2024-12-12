@@ -20,6 +20,8 @@ export default defineWorkspace([
     test: {
       name: "browser",
       include: filesForBrowser,
+      isolate: false,
+      pool: "threads",
       browser: {
         name: "chromium",
         enabled: true,
