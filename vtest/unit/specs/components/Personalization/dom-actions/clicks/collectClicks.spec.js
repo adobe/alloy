@@ -51,7 +51,7 @@ describe("Personalization::tracking::clicks", () => {
       },
     );
     appendNode(document.body, node);
-    const selectors = ["#abc > div.b > div.c"];
+    const selectors = ["#abc:eq(0) > div.b:eq(0) > div.c"];
     const element = document.getElementById("one");
     const { decisionsMeta, propositionActionLabel } = collectClicks(
       element,
@@ -95,10 +95,10 @@ describe("Personalization::tracking::clicks", () => {
       },
     ];
     const getClickMetas = vi.fn((...args) => {
-      if (args[0] === "#abc > div.b") {
+      if (args[0] === "#abc:eq(0) > div.b:eq(0)") {
         return metaOuter;
       }
-      if (args[0] === "#abc > div.b > div.c") {
+      if (args[0] === "#abc:eq(0) > div.b:eq(0) > div.c") {
         return metaInner;
       }
 
@@ -125,7 +125,10 @@ describe("Personalization::tracking::clicks", () => {
       },
     );
     appendNode(document.body, node);
-    const selectors = ["#abc > div.b", "#abc > div.b > div.c"];
+    const selectors = [
+      "#abc:eq(0) > div.b:eq(0)",
+      "#abc:eq(0) > div.b:eq(0) > div.c",
+    ];
     const element = document.getElementById("one");
     const { decisionsMeta, propositionActionLabel } = collectClicks(
       element,
