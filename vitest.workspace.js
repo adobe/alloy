@@ -4,6 +4,7 @@ import { defineWorkspace } from "vitest/config";
 const filesForBrowser = [
   "vtest/unit/specs/components/Personalization/dom-actions/dom/selectNodesWithEq.spec.js",
   "vtest/unit/specs/components/Personalization/dom-actions/dom/matchesSelectorWithEq.spec.js",
+  "vtest/unit/specs/components/Personalization/dom-actions/clicks/collectClicks.spec.js",
 ];
 
 // defineWorkspace provides a nice type hinting DX
@@ -22,6 +23,7 @@ export default defineWorkspace([
       browser: {
         name: "chromium",
         enabled: true,
+        headless: true,
         provider: "playwright",
       },
     },
