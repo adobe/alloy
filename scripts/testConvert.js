@@ -43,7 +43,7 @@ const addTopImport = (output) => {
 };
 
 const start = 0;
-const end = 135;
+const end = 155;
 
 exec("mkdir -p ./vtest/unit");
 // exec("rm -rf ./vtest/unit/*");
@@ -333,6 +333,8 @@ for (let fileIndex = start; fileIndex < f.length; fileIndex += 1) {
       ![
         "vtest/unit/specs/components/Personalization/dom-actions/action.spec.js",
         "vtest/unit/specs/components/Personalization/dom-actions/dom/insertBefore.spec.js",
+        "vtest/unit/specs/components/Personalization/dom-actions/swapImage.spec.js",
+        "vtest/unit/specs/components/Personalization/dom-actions/remapHeadOffers.spec.js",
       ].includes(newFilePath)
     ) {
       exec(`touch ${newFilePath}`);
