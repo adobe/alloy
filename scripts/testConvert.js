@@ -26,7 +26,6 @@ const addTopImport = (output) => {
     "describe",
     "it",
     "expect",
-    "expectAsync",
   ];
   const requiredImports = ["vi"];
 
@@ -43,7 +42,7 @@ const addTopImport = (output) => {
 };
 
 const start = 0;
-const end = 155;
+const end = 198;
 
 exec("mkdir -p ./vtest/unit");
 // exec("rm -rf ./vtest/unit/*");
@@ -63,7 +62,11 @@ getFilesRecursively("./vtest/unit/helpers", f);
 getFilesRecursively("./test/unit/specs", f);
 
 f.sort((a, b) => {
-  const z = ["responsesMock/eventResponses.js"];
+  const z = [
+    "responsesMock/eventResponses.js",
+    "resetMocks.js",
+    "functional/helpers/createResponse.js",
+  ];
 
   for (let i = 0; i < z.length; i += 1) {
     if (a.includes(z[i])) {
@@ -126,6 +129,7 @@ for (let fileIndex = start; fileIndex < f.length; fileIndex += 1) {
                 if (!v) {
                   return;
                 }
+
                 let command = "resolves.toBe";
                 if (
                   v
@@ -335,6 +339,7 @@ for (let fileIndex = start; fileIndex < f.length; fileIndex += 1) {
         "vtest/unit/specs/components/Personalization/dom-actions/dom/insertBefore.spec.js",
         "vtest/unit/specs/components/Personalization/dom-actions/swapImage.spec.js",
         "vtest/unit/specs/components/Personalization/dom-actions/remapHeadOffers.spec.js",
+        "vtest/unit/specs/components/RulesEngine/constants.spec.js",
       ].includes(newFilePath)
     ) {
       exec(`touch ${newFilePath}`);

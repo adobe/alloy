@@ -5,6 +5,7 @@ const filesForBrowser = [
   "vtest/unit/specs/components/Personalization/dom-actions/dom/selectNodesWithEq.spec.js",
   "vtest/unit/specs/components/Personalization/dom-actions/dom/matchesSelectorWithEq.spec.js",
   "vtest/unit/specs/components/Personalization/dom-actions/clicks/collectClicks.spec.js",
+  "vtest/unit/specs/components/Personalization/in-app-message-actions/actions/displayIframeContent.spec.js",
 ];
 
 // defineWorkspace provides a nice type hinting DX
