@@ -13,7 +13,7 @@ import {isNonEmptyString} from "../../utils/index.js";
 import {executeRemoteScripts} from "../Personalization/dom-actions/scripts.js";
 import validateMessage from "./validateMessage.js";
 
-const BRAND_CONCIERGE_URL = "https://experience-platform-aep-gen-ai-assistant-exp86.corp.ethos12-stage-va7.ethos.adobe.net/copilot/chats?response_format=markdown";
+const BRAND_CONCIERGE_URL = "https://experience-platform-aep-gen-ai-assistant-exp86.corp.ethos12-stage-va7.ethos.adobe.net/brand-concierge/chats?datastream_id=211312ed-d9ca-4f51-b09c-2de37a2a24d0&response_format=markdown";
 const fetch = window.fetch;
 
 const fetchResponse = (message) => {
@@ -68,7 +68,9 @@ const createBrandConcierge = ({logger, eventManager, consent, config, instanceNa
       lifecycle: {
         onResponse: ({response}) => {
           const handles = response.getPayloadsByType("brandConcierge:configuration");
-           if(!checkBCExists) {
+          const bcButton = document.querySelector("#adobe-bc-btn");
+
+           if(!bcButton) {
              window.addEventListener("adobe-band-concierge-loaded", () => {
                window.dispatchEvent(new CustomEvent("alloy-brand-concierge-instance", {detail: {type: "loaded", instanceName: instanceName}}));
              });
