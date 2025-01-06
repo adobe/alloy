@@ -43,7 +43,8 @@
     "prepare": "husky && cd sandbox && npm install",
     "prepack": "rimraf libEs5 libEs6 && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
-    "add-license": "./scripts/add-license.js"
+    "add-license": "./scripts/add-license.js",
+    "postinstall": "npx playwright install chromium"
   },
   "lint-staged": {
     "./*.{cjs,mjs,js,jsx}": [
