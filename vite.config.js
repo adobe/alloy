@@ -8,5 +8,8 @@ export default defineConfig({
     environment: "happy-dom",
     isolate: false,
     pool: "threads",
+    coverage: {
+      include: ["src/**/*"],
+    },
   },
 });

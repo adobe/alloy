@@ -27,9 +27,9 @@ export default defineWorkspace([
       pool: "threads",
       browser: {
         name: "chromium",
-        enabled: true,
-        headless: true,
         provider: "playwright",
+        headless: true,
+        enabled: true,
       },
     },
   },
