@@ -2,14 +2,6 @@ name: Alloy Dev
 on:
   pull_request:
   workflow_dispatch:
-env:
-  SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-  SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-  SAUCE_JOB: "Alloy Dev Workflow"
-  SAUCE_CAPABILITIES_OVERRIDES_PATH: "sauceLabsCapabilities.json"
-  EDGE_BASE_PATH: ee-pre-prd
-  ALLOY_ENV: int
-  SAUCE_TUNNEL_ID: github-action-tunnel
 
 jobs:
   linting:
@@ -55,4 +47,3 @@ jobs:
           BUILD_NUMBER: $GITHUB_RUN_NUMBER
           BUILD_ID: $GITHUB_RUN_ID
           JOB_NUMBER: $GITHUB_JOB
-
