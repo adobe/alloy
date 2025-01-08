@@ -414,7 +414,6 @@ test("Test C17409728: Includes rendered propositions as display notifications in
   await t.expect(edgeEndpointLogs.requests.length).eql(1);
   const sendEventRequest = edgeEndpointLogs.requests.at(-1);
   const sendEventRequestBody = JSON.parse(sendEventRequest.request.body);
-  // console.log(JSON.stringify(sendEventRequestBody, null, 2));
   const hasTargetDisplayNotifications = sendEventRequestBody.events.some(
     ({ xdm }) => xdm.eventType === "decisioning.propositionDisplay",
   );
