@@ -9,6 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+import { describe, it, expect } from "vitest";
 import ApplicationError from "../helpers/applicationError.js";
 
 describe("ApplicationError", () => {
@@ -19,11 +21,12 @@ describe("ApplicationError", () => {
       expect(e.name).toEqual("ApplicationError");
     }
   });
+
   it("works with instanceof", () => {
     try {
       throw new ApplicationError("foo");
     } catch (e) {
-      expect(e instanceof ApplicationError).toBeTrue();
+      expect(e instanceof ApplicationError).toBeTruthy();
     }
   });
 });

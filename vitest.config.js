@@ -6,7 +6,6 @@ export default defineProject({
     name: "unit-tests",
     include: ["vtest/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
     isolate: false,
-    pool: "threads",
     browser: {
       provider: "playwright",
       name: "chromium",

@@ -9,6 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+import { vi, describe, beforeEach, it, expect } from "vitest";
 import updatePackageVersion from "../helpers/updatePackageVersion.js";
 
 describe("updatePackageVersion", () => {
@@ -19,16 +21,16 @@ describe("updatePackageVersion", () => {
   let container;
 
   beforeEach(() => {
-    exec = jasmine.createSpy("exec");
-    exec.and.returnValue(Promise.resolve());
-    logger = jasmine.createSpyObj("logger", ["warn", "info"]);
+    exec = vi.fn().mockReturnValue(Promise.resolve());
+    logger = { warn: vi.fn(), info: vi.fn() };
     container = { exec, githubRef, logger, version };
   });
 
   it("updates the package version", async () => {
     await updatePackageVersion({ currentVersion: "1.2.2", ...container });
     expect(logger.warn).not.toHaveBeenCalled();
-    expect(logger.info).toHaveBeenCalledOnceWith(
+    expect(logger.info).toHaveBeenCalledTimes(1);
+    expect(logger.info).toHaveBeenCalledWith(
       "Updating package.json with version 1.2.3.",
     );
     expect(exec).toHaveBeenCalledTimes(5);
@@ -36,7 +38,9 @@ describe("updatePackageVersion", () => {
 
   it("doesn't update the package version", async () => {
     await updatePackageVersion({ currentVersion: "1.2.3", ...container });
-    expect(logger.warn).toHaveBeenCalledOnceWith(
+
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
       "Version in package.json is already 1.2.3.",
     );
     expect(logger.info).not.toHaveBeenCalled();
