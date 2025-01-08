@@ -1,13 +1,18 @@
 // eslint-disable-next-line import/no-unresolved
-import { defineConfig } from "vitest/config";
+import { defineProject } from "vitest/config";
 
-export default defineConfig({
+export default defineProject({
   test: {
-    name: "happy-dom",
+    name: "unit-tests",
     include: ["vtest/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
-    environment: "happy-dom",
     isolate: false,
     pool: "threads",
+    browser: {
+      provider: "playwright",
+      name: "chromium",
+      enabled: true,
+      headless: true,
+    },
     coverage: {
       include: ["src/**/*"],
     },
