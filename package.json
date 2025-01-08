@@ -19,8 +19,8 @@
   },
   "scripts": {
     "clean": "rimraf dist distTest libEs5 libEs6",
-    "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{src,test,vtest,scripts}/**/*.{js,cjs,mjs,jsx}\"",
-    "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandbox,src,test,scripts,vtest}/**/*.{html,js,cjs,mjs,jsx}\"",
+    "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{src,test,scripts}/**/*.{js,cjs,mjs,jsx}\"",
+    "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandbox,src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
     "test": "npm run test:unit && npm run test:scripts",
     "test:unit": "vitest run",
     "test:unit:debug": "vitest --no-file-parallelism --browser.headless=false",

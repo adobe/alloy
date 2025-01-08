@@ -4,7 +4,7 @@ import { defineProject } from "vitest/config";
 export default defineProject({
   test: {
     name: "unit-tests",
-    include: ["vtest/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
+    include: ["test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
     isolate: false,
     browser: {
       provider: "playwright",

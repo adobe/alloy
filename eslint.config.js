@@ -130,7 +130,7 @@ export default [
     },
   },
   {
-    files: ["{test,vtest}/**/*.{cjs,js}"],
+    files: ["test/**/*.{cjs,js}"],
     rules: {
       "import/extensions": [
         "error",
