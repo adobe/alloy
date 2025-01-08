@@ -370,8 +370,7 @@ test("Test C17409728: Automatically sends interact event when using applyProposi
   //   .eql(itemId);
 });
 
-// TODO: remove the .only when the ticket is complete
-test.only("Test C17409728: Includes rendered propositions as display notifications in sendEvent after using applyPropositions", async () => {
+test("Test C17409728: Includes rendered propositions as display notifications in sendEvent after using applyPropositions", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(compose(getBaseConfig(), debugEnabled));
 
@@ -417,10 +416,13 @@ test.only("Test C17409728: Includes rendered propositions as display notificatio
   const sendEventRequestBody = JSON.parse(sendEventRequest.request.body);
   // console.log(JSON.stringify(sendEventRequestBody, null, 2));
   const hasTargetDisplayNotifications = sendEventRequestBody.events.some(
-    ({ xdm }) => xdm.eventType === "decisioning.propositionDisplay"
+    ({ xdm }) => xdm.eventType === "decisioning.propositionDisplay",
   );
   const hasPlatformDisplayNotifications = sendEventRequestBody.events.some(
-    ({ xdm }) => xdm._experience?.decisioning?.propositionEventType?.display === 1
+    ({ xdm }) =>
+      xdm._experience?.decisioning?.propositionEventType?.display === 1,
   );
-  await t.expect(hasTargetDisplayNotifications || hasPlatformDisplayNotifications).eql(true);
+  await t
+    .expect(hasTargetDisplayNotifications || hasPlatformDisplayNotifications)
+    .eql(true);
 });
