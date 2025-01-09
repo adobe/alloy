@@ -35,9 +35,9 @@ describe("Personalization::DOM::isDomElement", () => {
     expect(isDomElement(document.getElementById(testElementId))).toBe(true);
   });
   it("validates not a dom element", () => {
-    expect(false);
-    expect(false);
-    expect(false);
-    expect(false);
+    expect(isDomElement({}).toBeFalse);
+    expect(isDomElement([]).toBeFalse);
+    expect(isDomElement(true).toBeFalse);
+    expect(isDomElement("something").toBeFalse);
   });
 });
