@@ -1,4 +1,4 @@
-[![Alloy Main Branch | Konductor Prod](https://github.com/adobe/alloy/actions/workflows/prod.yml/badge.svg)
+![Alloy Main Branch | Konductor Prod](https://github.com/adobe/alloy/actions/workflows/prod.yml/badge.svg)
 ![alloy](https://img.shields.io/bundlephobia/min/@adobe/alloy?logo=Adobe&style=for-the-badge)
 ![alloy](https://img.shields.io/bundlephobia/minzip/@adobe/alloy?logo=Adobe&style=for-the-badge)
 
