@@ -56,7 +56,8 @@ const createBrandConcierge = ({logger, eventManager, consent, config, instanceNa
           const handles = response.getPayloadsByType("brandConcierge:configuration");
 
            if(shouldInsertBtn()) {
-             window.addEventListener("adobe-band-concierge-loaded", () => {
+             window.addEventListener("adobe-brand-concierge-prompt-loaded", () => {
+               // in the next event payload we can add urls to the styles and scripts that the prompt needs
                window.dispatchEvent(new CustomEvent("alloy-brand-concierge-instance", {detail: {type: "loaded", instanceName: instanceName}}));
              });
           executeRemoteScripts([handles[0].src]);
