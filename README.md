@@ -1,4 +1,4 @@
-[![Alloy Main Branch | Konductor Prod](https://github.com/adobe/alloy/workflows/Pre-Deploy/badge.svg)](https://github.com/adobe/alloy/actions)
+[![Alloy Main Branch | Konductor Prod](https://github.com/adobe/alloy/actions/workflows/prod.yml/badge.svg)
 ![alloy](https://img.shields.io/bundlephobia/min/@adobe/alloy?logo=Adobe&style=for-the-badge)
 ![alloy](https://img.shields.io/bundlephobia/minzip/@adobe/alloy?logo=Adobe&style=for-the-badge)
 
@@ -6,7 +6,7 @@
 
 Alloy is the code name for the Adobe Experience Platform Web SDK. It allows for recording events into Adobe Experience Platform, syncing identities, personalizing content, and more.
 
-For documentation on how to use Alloy, please see the [user documentation](https://experienceleague.adobe.com/docs/experience-platform/edge/home.html).
+For documentation on how to use Alloy, please see the [user documentation](https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/home).
 
 
 ## Contribution
