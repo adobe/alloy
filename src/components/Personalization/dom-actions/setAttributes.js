@@ -12,10 +12,11 @@ governing permissions and limitations under the License.
 
 import { setAttribute } from "./dom/index.js";
 
-export default (container, attributes, decorateProposition) => {
+export default (container, attributes, decorateProposition, markRendered) => {
   Object.keys(attributes).forEach((key) => {
     setAttribute(container, key, attributes[key]);
   });
 
   decorateProposition(container);
+  markRendered(container);
 };

@@ -38,7 +38,7 @@ export default ({
         getPlayerDetails,
         legacy,
       },
-      edgeConfigOverrides
+      edgeConfigOverrides,
     });
 
     mediaSessionCacheManager.storeSession({
