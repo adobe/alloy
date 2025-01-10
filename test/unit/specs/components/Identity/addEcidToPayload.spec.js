@@ -10,11 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, describe, it, expect } from "vitest";
 import addEcidToPayload from "../../../../../src/components/Identity/addEcidToPayload.js";
 
 describe("Identity:addEcidToPayload", () => {
   it("adds ECID to payload", () => {
-    const payload = jasmine.createSpyObj("payload", ["addIdentity"]);
+    const payload = {
+      addIdentity: vi.fn(),
+    };
     addEcidToPayload(payload, "user@adobe");
     expect(payload.addIdentity).toHaveBeenCalledWith("ECID", {
       id: "user@adobe",

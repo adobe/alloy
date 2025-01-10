@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import PAGE_WIDE_SCOPE from "../../../../../src/constants/pageWideScope.js";
 import createPersonalizationDetails from "../../../../../src/components/Personalization/createPersonalizationDetails.js";
 import createGetPageLocation from "../../../../../src/components/Personalization/createGetPageLocation.js";
@@ -31,14 +32,20 @@ describe("Personalization::createPersonalizationDetails", () => {
       pathname: "/test/page/1/",
     },
   };
-  const getPageLocation = createGetPageLocation({ window });
-
+  const getPageLocation = createGetPageLocation({
+    window,
+  });
   let event;
   let logger;
-
   beforeEach(() => {
-    event = jasmine.createSpyObj("event", ["getViewName"]);
-    logger = jasmine.createSpyObj("logger", ["info", "warn", "error"]);
+    event = {
+      getViewName: vi.fn(),
+    };
+    logger = {
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    };
   });
 
   // s - has scopes or surfaces
@@ -46,26 +53,76 @@ describe("Personalization::createPersonalizationDetails", () => {
   // dp - defaultPersonalizationEnabled flag
   // fetch - should fetch data
   [
-    { s: false, i: false, dp: false, fetch: false },
-    { s: true, i: false, dp: false, fetch: true },
-    { s: false, i: true, dp: false, fetch: false },
-    { s: true, i: true, dp: false, fetch: true },
-
-    { s: false, i: false, dp: true, fetch: true },
-    { s: true, i: false, dp: true, fetch: true },
-    { s: false, i: true, dp: true, fetch: true },
-    { s: true, i: true, dp: true, fetch: true },
-
-    { s: false, i: false, fetch: true },
-    { s: true, i: false, fetch: true },
-    { s: false, i: true, fetch: false },
-    { s: true, i: true, fetch: true },
+    {
+      s: false,
+      i: false,
+      dp: false,
+      fetch: false,
+    },
+    {
+      s: true,
+      i: false,
+      dp: false,
+      fetch: true,
+    },
+    {
+      s: false,
+      i: true,
+      dp: false,
+      fetch: false,
+    },
+    {
+      s: true,
+      i: true,
+      dp: false,
+      fetch: true,
+    },
+    {
+      s: false,
+      i: false,
+      dp: true,
+      fetch: true,
+    },
+    {
+      s: true,
+      i: false,
+      dp: true,
+      fetch: true,
+    },
+    {
+      s: false,
+      i: true,
+      dp: true,
+      fetch: true,
+    },
+    {
+      s: true,
+      i: true,
+      dp: true,
+      fetch: true,
+    },
+    {
+      s: false,
+      i: false,
+      fetch: true,
+    },
+    {
+      s: true,
+      i: false,
+      fetch: true,
+    },
+    {
+      s: false,
+      i: true,
+      fetch: false,
+    },
+    {
+      s: true,
+      i: true,
+      fetch: true,
+    },
   ].forEach(({ s, i, dp, fetch }) => {
-    it(`should ${fetch ? "" : "not "}fetch data when ${
-      s ? "" : "no "
-    }scopes, the cache is ${
-      i ? "" : "not "
-    }initialized, and initializePersonalization is '${dp}'`, () => {
+    it(`should ${fetch ? "" : "not "}fetch data when ${s ? "" : "no "}scopes, the cache is ${i ? "" : "not "}initialized, and initializePersonalization is '${dp}'`, () => {
       const personalizationDetails = createPersonalizationDetails({
         getPageLocation,
         renderDecisions: true,
@@ -81,12 +138,11 @@ describe("Personalization::createPersonalizationDetails", () => {
       expect(personalizationDetails.shouldFetchData()).toEqual(fetch);
     });
   });
-
   it("should fetch data when no cache, renderDecisions is true, no viewName and decisionScopes/surfaces (in non SPA world)", () => {
     const decisionScopes = [];
     const personalization = {};
     const renderDecisions = true;
-    event.getViewName.and.returnValue(undefined);
+    event.getViewName.mockReturnValue(undefined);
     const personalizationDetails = createPersonalizationDetails({
       getPageLocation,
       renderDecisions,
@@ -112,7 +168,6 @@ describe("Personalization::createPersonalizationDetails", () => {
       surfaces: [TEST_SURFACE],
     };
     const queryDetails = personalizationDetails.createQueryDetails();
-
     expect(personalizationDetails.isRenderDecisions()).toEqual(true);
     expect(personalizationDetails.hasScopes()).toEqual(false);
     expect(personalizationDetails.hasSurfaces()).toEqual(false);
@@ -126,7 +181,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     const decisionScopes = [];
     const personalization = {};
     const renderDecisions = false;
-    event.getViewName.and.returnValue(undefined);
+    event.getViewName.mockReturnValue(undefined);
     const personalizationDetails = createPersonalizationDetails({
       getPageLocation,
       renderDecisions,
@@ -152,7 +207,6 @@ describe("Personalization::createPersonalizationDetails", () => {
       surfaces: [TEST_SURFACE],
     };
     const queryDetails = personalizationDetails.createQueryDetails();
-
     expect(personalizationDetails.isRenderDecisions()).toEqual(false);
     expect(personalizationDetails.hasScopes()).toEqual(false);
     expect(personalizationDetails.hasSurfaces()).toEqual(false);
@@ -166,7 +220,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     const decisionScopes = ["test1"];
     const personalization = {};
     const renderDecisions = false;
-    event.getViewName.and.returnValue(undefined);
+    event.getViewName.mockReturnValue(undefined);
     const personalizationDetails = createPersonalizationDetails({
       getPageLocation,
       renderDecisions,
@@ -192,7 +246,6 @@ describe("Personalization::createPersonalizationDetails", () => {
       surfaces: [TEST_SURFACE],
     };
     const queryDetails = personalizationDetails.createQueryDetails();
-
     expect(personalizationDetails.isRenderDecisions()).toEqual(false);
     expect(personalizationDetails.hasScopes()).toEqual(true);
     expect(personalizationDetails.hasSurfaces()).toEqual(false);
@@ -206,7 +259,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     const decisionScopes = ["test1"];
     const personalization = {};
     const renderDecisions = false;
-    event.getViewName.and.returnValue(undefined);
+    event.getViewName.mockReturnValue(undefined);
     const personalizationDetails = createPersonalizationDetails({
       getPageLocation,
       renderDecisions,
@@ -231,7 +284,6 @@ describe("Personalization::createPersonalizationDetails", () => {
       surfaces: [],
     };
     const queryDetails = personalizationDetails.createQueryDetails();
-
     expect(personalizationDetails.isRenderDecisions()).toEqual(false);
     expect(personalizationDetails.hasScopes()).toEqual(true);
     expect(personalizationDetails.hasSurfaces()).toEqual(false);
@@ -247,7 +299,7 @@ describe("Personalization::createPersonalizationDetails", () => {
       surfaces: ["web://test1.com"],
     };
     const renderDecisions = false;
-    event.getViewName.and.returnValue(undefined);
+    event.getViewName.mockReturnValue(undefined);
     const personalizationDetails = createPersonalizationDetails({
       getPageLocation,
       renderDecisions,
@@ -272,7 +324,6 @@ describe("Personalization::createPersonalizationDetails", () => {
       surfaces: ["web://test1.com/"],
     };
     const queryDetails = personalizationDetails.createQueryDetails();
-
     expect(personalizationDetails.isRenderDecisions()).toEqual(false);
     expect(personalizationDetails.hasScopes()).toEqual(false);
     expect(personalizationDetails.hasSurfaces()).toEqual(true);
@@ -283,7 +334,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     expect(personalizationDetails.shouldUseCachedData()).toEqual(false);
   });
   it("should fetch data when cache initialized, renderDecisions is true and decisionScopes is not empty and viewName exist", () => {
-    event.getViewName.and.returnValue("cart");
+    event.getViewName.mockReturnValue("cart");
     const decisionScopes = ["test1"];
     const personalization = {
       decisionScopes: ["test2"],
@@ -299,7 +350,6 @@ describe("Personalization::createPersonalizationDetails", () => {
       isCacheInitialized: true,
       logger,
     });
-
     const expectedDecisionScopes = ["test1", "test2"];
     const expectedQueryDetails = {
       schemas: [
@@ -315,7 +365,6 @@ describe("Personalization::createPersonalizationDetails", () => {
       surfaces: ["web://test1.com/"],
     };
     const queryDetails = personalizationDetails.createQueryDetails();
-
     expect(personalizationDetails.isRenderDecisions()).toEqual(true);
     expect(personalizationDetails.hasScopes()).toEqual(true);
     expect(personalizationDetails.hasSurfaces()).toEqual(true);
@@ -325,7 +374,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     expect(personalizationDetails.hasViewName()).toEqual(true);
   });
   it("should do nothing when cache is initialized, renderDecisions true, no viewName and decisionScopes is empty", () => {
-    event.getViewName.and.returnValue(undefined);
+    event.getViewName.mockReturnValue(undefined);
     const decisionScopes = [];
     const personalization = {};
     const renderDecisions = true;
@@ -338,7 +387,6 @@ describe("Personalization::createPersonalizationDetails", () => {
       isCacheInitialized: true,
       logger,
     });
-
     expect(personalizationDetails.isRenderDecisions()).toEqual(true);
     expect(personalizationDetails.hasScopes()).toEqual(false);
     expect(personalizationDetails.hasSurfaces()).toEqual(false);
@@ -348,7 +396,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     expect(personalizationDetails.shouldUseCachedData()).toEqual(false);
   });
   it("should do nothing when cache is initialized, renderDecisions false, no viewName and decisionScopes is empty", () => {
-    event.getViewName.and.returnValue(undefined);
+    event.getViewName.mockReturnValue(undefined);
     const decisionScopes = [];
     const personalization = {};
     const renderDecisions = false;
@@ -361,7 +409,6 @@ describe("Personalization::createPersonalizationDetails", () => {
       isCacheInitialized: true,
       logger,
     });
-
     expect(personalizationDetails.isRenderDecisions()).toEqual(false);
     expect(personalizationDetails.hasScopes()).toEqual(false);
     expect(personalizationDetails.hasSurfaces()).toEqual(false);
@@ -371,7 +418,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     expect(personalizationDetails.shouldUseCachedData()).toEqual(false);
   });
   it("should use cache when cache initialized, renderDecisions is true and decisionScopes is empty and viewName exist", () => {
-    event.getViewName.and.returnValue("cart");
+    event.getViewName.mockReturnValue("cart");
     const decisionScopes = [];
     const personalization = {};
     const renderDecisions = true;
@@ -384,7 +431,6 @@ describe("Personalization::createPersonalizationDetails", () => {
       isCacheInitialized: true,
       logger,
     });
-
     expect(personalizationDetails.isRenderDecisions()).toEqual(true);
     expect(personalizationDetails.hasScopes()).toEqual(false);
     expect(personalizationDetails.hasSurfaces()).toEqual(false);
@@ -394,7 +440,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     expect(personalizationDetails.shouldUseCachedData()).toEqual(true);
   });
   it("should use cache when cache initialized, renderDecisions is false and decisionScopes is empty and viewName exist", () => {
-    event.getViewName.and.returnValue("cart");
+    event.getViewName.mockReturnValue("cart");
     const decisionScopes = [];
     const personalization = {};
     const renderDecisions = false;
@@ -407,7 +453,6 @@ describe("Personalization::createPersonalizationDetails", () => {
       isCacheInitialized: true,
       logger,
     });
-
     expect(personalizationDetails.isRenderDecisions()).toEqual(false);
     expect(personalizationDetails.hasScopes()).toEqual(false);
     expect(personalizationDetails.hasSurfaces()).toEqual(false);
@@ -417,7 +462,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     expect(personalizationDetails.shouldUseCachedData()).toEqual(true);
   });
   it("should fetch data when cache initialized, renderDecisions is true and decisionScopes has __view__ and viewName exist", () => {
-    event.getViewName.and.returnValue("cart");
+    event.getViewName.mockReturnValue("cart");
     const decisionScopes = ["__view__"];
     const personalization = {
       surfaces: [TEST_SURFACE],
@@ -432,7 +477,6 @@ describe("Personalization::createPersonalizationDetails", () => {
       isCacheInitialized: true,
       logger,
     });
-
     const expectedDecisionScopes = ["__view__"];
     const expectedQueryDetails = {
       schemas: [
@@ -449,7 +493,6 @@ describe("Personalization::createPersonalizationDetails", () => {
       surfaces: [TEST_SURFACE],
     };
     const queryDetails = personalizationDetails.createQueryDetails();
-
     expect(personalizationDetails.isRenderDecisions()).toEqual(true);
     expect(personalizationDetails.hasScopes()).toEqual(true);
     expect(personalizationDetails.hasSurfaces()).toEqual(true);
@@ -462,7 +505,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     const decisionScopes = [];
     const personalization = {};
     const renderDecisions = true;
-    event.getViewName.and.returnValue("");
+    event.getViewName.mockReturnValue("");
     const personalizationDetails = createPersonalizationDetails({
       getPageLocation,
       renderDecisions,

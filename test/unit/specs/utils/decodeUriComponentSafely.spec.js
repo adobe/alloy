@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import decodeUriComponentSafely from "../../../../src/utils/decodeUriComponentSafely.js";
 
 describe("decodeUriComponentSafely", () => {
   it("decodes a uri encoded string", () => {
     expect(decodeUriComponentSafely("%3Fx%3Dtest")).toEqual("?x=test");
   });
-
   it("returns an empty string when an invalid encoded URI component is provided", () => {
     expect(
       decodeUriComponentSafely(

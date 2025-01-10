@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createEvaluateRulesetsCommand from "../../../../../src/components/RulesEngine/createEvaluateRulesetsCommand.js";
 import createContextProvider from "../../../../../src/components/RulesEngine/createContextProvider.js";
 import createEventRegistry from "../../../../../src/components/RulesEngine/createEventRegistry.js";
@@ -25,21 +26,30 @@ describe("RulesEngine:evaluateRulesetsCommand", () => {
   let contextProvider;
   let decisionProvider;
   let evaluateRulesetsCommand;
-
   beforeEach(() => {
-    onDecision = jasmine.createSpy();
-    applyResponse = createApplyResponse({ onDecision });
-
-    storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
-    eventRegistry = createEventRegistry({ storage });
-    getBrowser = injectGetBrowser({ userAgent: window.navigator.userAgent });
+    onDecision = vi.fn();
+    applyResponse = createApplyResponse({
+      onDecision,
+    });
+    storage = {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      clear: vi.fn(),
+    };
+    eventRegistry = createEventRegistry({
+      storage,
+    });
+    getBrowser = injectGetBrowser({
+      userAgent: window.navigator.userAgent,
+    });
     contextProvider = createContextProvider({
       eventRegistry,
       window,
       getBrowser,
     });
-    decisionProvider = createDecisionProvider({ eventRegistry });
-
+    decisionProvider = createDecisionProvider({
+      eventRegistry,
+    });
     decisionProvider.addPayload({
       id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
       scopeDetails: {
@@ -114,20 +124,20 @@ describe("RulesEngine:evaluateRulesetsCommand", () => {
       ],
       scope: "web://mywebsite.com",
     });
-
     evaluateRulesetsCommand = createEvaluateRulesetsCommand({
       contextProvider,
       decisionProvider,
     });
   });
-
   it("onDecisions receives renderDecisions=true", () => {
     const result = evaluateRulesetsCommand.run({
       renderDecisions: true,
-      decisionContext: { color: "orange", action: "greet" },
+      decisionContext: {
+        color: "orange",
+        action: "greet",
+      },
       applyResponse,
     });
-
     const expectedResult = {
       propositions: [
         {
@@ -148,7 +158,7 @@ describe("RulesEngine:evaluateRulesetsCommand", () => {
                 },
                 prehidingSelector:
                   "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
-                qualifiedDate: jasmine.any(Number),
+                qualifiedDate: expect.any(Number),
                 displayedDate: undefined,
               },
               id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
@@ -158,22 +168,22 @@ describe("RulesEngine:evaluateRulesetsCommand", () => {
         },
       ],
     };
-
     expect(result).toEqual(expectedResult);
-    expect(onDecision).toHaveBeenCalledOnceWith({
+    expect(onDecision).toHaveBeenNthCalledWith(1, {
       renderDecisions: true,
       event: undefined,
       personalization: undefined,
       ...expectedResult,
     });
   });
-
   it("onDecisions receives renderDecisions=false", () => {
     const result = evaluateRulesetsCommand.run({
-      decisionContext: { color: "orange", action: "greet" },
+      decisionContext: {
+        color: "orange",
+        action: "greet",
+      },
       applyResponse,
     });
-
     const expectedResult = {
       propositions: [
         {
@@ -194,7 +204,7 @@ describe("RulesEngine:evaluateRulesetsCommand", () => {
                 },
                 prehidingSelector:
                   "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
-                qualifiedDate: jasmine.any(Number),
+                qualifiedDate: expect.any(Number),
                 displayedDate: undefined,
               },
               id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
@@ -204,9 +214,8 @@ describe("RulesEngine:evaluateRulesetsCommand", () => {
         },
       ],
     };
-
     expect(result).toEqual(expectedResult);
-    expect(onDecision).toHaveBeenCalledOnceWith({
+    expect(onDecision).toHaveBeenNthCalledWith(1, {
       renderDecisions: false,
       event: undefined,
       personalization: undefined,

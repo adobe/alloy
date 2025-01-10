@@ -10,17 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import isNil from "../../../../src/utils/isNil.js";
 
 describe("isNil", () => {
   it("returns true when null", () => {
     expect(isNil(null)).toBe(true);
   });
-
   it("returns true when undefined", () => {
     expect(isNil(undefined)).toBe(true);
   });
-
   it("returns false when value", () => {
     expect(isNil(1)).toBe(false);
     expect(isNil({})).toBe(false);

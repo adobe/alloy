@@ -10,16 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import toError from "../../../../src/utils/toError.js";
 
 describe("toError", () => {
   it("returns an error if value is not an error", () => {
     const message = "Conundrum encountered.";
     const result = toError(message);
-    expect(result).toEqual(jasmine.any(Error));
+    expect(result).toEqual(expect.any(Error));
     expect(result.message).toBe("Conundrum encountered.");
   });
-
   it("returns the value unmodified if value is an error", () => {
     const error = new Error("Conundrum encountered.");
     const result = toError(error);

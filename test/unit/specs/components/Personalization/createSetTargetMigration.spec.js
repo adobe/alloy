@@ -10,28 +10,32 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createSetTargetMigration from "../../../../../src/components/Personalization/createSetTargetMigration.js";
 
 describe("Personalization::createSetTargetMigration", () => {
   let request;
   let payload;
-
   beforeEach(() => {
-    request = jasmine.createSpyObj("request", ["getPayload"]);
-    payload = jasmine.createSpyObj("payload", ["mergeMeta"]);
-    request.getPayload.and.returnValue(payload);
+    request = {
+      getPayload: vi.fn(),
+    };
+    payload = {
+      mergeMeta: vi.fn(),
+    };
+    request.getPayload.mockReturnValue(payload);
   });
-
   it("adds to request meta if targetMigrationEnabled=true is configured", () => {
     const setTargetMigration = createSetTargetMigration({
       targetMigrationEnabled: true,
     });
     setTargetMigration(request);
-    expect(payload.mergeMeta).toHaveBeenCalledOnceWith({
-      target: { migration: true },
+    expect(payload.mergeMeta).toHaveBeenNthCalledWith(1, {
+      target: {
+        migration: true,
+      },
     });
   });
-
   it("does not add to request meta if targetMigrationEnabled is not configured", () => {
     const setTargetMigration = createSetTargetMigration({
       targetMigrationEnabled: false,

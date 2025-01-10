@@ -9,41 +9,45 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { describe, it, expect } from "vitest";
 import createAsyncArray from "../../../../../../src/components/Personalization/utils/createAsyncArray.js";
 import { defer } from "../../../../../../src/utils/index.js";
 import flushPromiseChains from "../../../../helpers/flushPromiseChains.js";
+
+const isPending = (promise) => {
+  const t = {};
+  return Promise.race([promise, t]).then((v) => v === t);
+};
 
 describe("Personalization::utils::createAsyncArray", () => {
   it("should start with an empty array", async () => {
     const asyncArray = createAsyncArray();
     expect(await asyncArray.clear()).toEqual([]);
   });
-
   it("should add items to the array, and clear the items", async () => {
     const asyncArray = createAsyncArray();
     asyncArray.concat(Promise.resolve(["myitem1"]));
     expect(await asyncArray.clear()).toEqual(["myitem1"]);
     expect(await asyncArray.clear()).toEqual([]);
   });
-
   it("should add multiple arrays", async () => {
     const asyncArray = createAsyncArray();
     asyncArray.concat(Promise.resolve(["myitem1"]));
     asyncArray.concat(Promise.resolve(["myitem2"]));
     expect(await asyncArray.clear()).toEqual(["myitem1", "myitem2"]);
   });
-
   it("should wait for items while clearing the array", async () => {
     const asyncArray = createAsyncArray();
     const deferred = defer();
     asyncArray.concat(deferred.promise);
     const clearPromise = asyncArray.clear();
     await flushPromiseChains();
-    expectAsync(clearPromise).toBePending();
+
+    expect(await isPending(clearPromise)).toBe(true);
+
     deferred.resolve(["myitem1"]);
     expect(await clearPromise).toEqual(["myitem1"]);
   });
-
   it("should handle rejected promises", async () => {
     const asyncArray = createAsyncArray();
     asyncArray.concat(Promise.resolve([1, 2]));

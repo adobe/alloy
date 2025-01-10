@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import findClickableElement from "../../../../../../../src/components/ActivityCollector/utils/dom/findClickableElement.js";
 
 describe("ActivityCollector::findClickableElement", () => {
@@ -19,13 +20,11 @@ describe("ActivityCollector::findClickableElement", () => {
     parentElement.appendChild(element);
     expect(findClickableElement(element)).toBeNull();
   });
-
   it("returns the target element if it is clickable", () => {
     const element = document.createElement("a");
     element.href = "http://www.example.com";
     expect(findClickableElement(element)).toBe(element);
   });
-
   it("returns the target element's parent if it is not clickable", () => {
     const element = document.createElement("div");
     const parentElement = document.createElement("a");

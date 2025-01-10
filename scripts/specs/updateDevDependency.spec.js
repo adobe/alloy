@@ -9,6 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+import { vi, describe, beforeEach, it, expect } from "vitest";
 import updateDevDependency from "../helpers/updateDevDependency.js";
 
 describe("updateDevDependency", () => {
@@ -20,35 +22,39 @@ describe("updateDevDependency", () => {
   let container;
 
   beforeEach(() => {
-    exec = jasmine.createSpy("exec");
-    execSync = jasmine.createSpy("execSync");
-    logger = jasmine.createSpyObj("logger", ["warn", "info"]);
+    exec = vi.fn();
+    execSync = vi.fn();
+    logger = { warn: vi.fn(), info: vi.fn() };
     container = { exec, execSync, githubRef, logger, version };
   });
 
   it("installs the dev dependency", async () => {
-    execSync.and.returnValue(
+    execSync.mockReturnValue(
       JSON.stringify({
         dependencies: { "@adobe/alloy": { version: "1.2.2" } },
       }),
     );
-    exec.and.returnValue(Promise.resolve());
+    exec.mockReturnValue(Promise.resolve());
     await updateDevDependency(container);
     expect(logger.warn).not.toHaveBeenCalled();
-    expect(logger.info).toHaveBeenCalledOnceWith(
+
+    expect(logger.info).toHaveBeenCalledTimes(1);
+    expect(logger.info).toHaveBeenCalledWith(
       "Installing @adobe/alloy@1.2.3 as a dev dependency.",
     );
     expect(exec).toHaveBeenCalledTimes(4);
   });
 
   it("doesn't install the dev dependency", async () => {
-    execSync.and.returnValue(
+    execSync.mockReturnValue(
       JSON.stringify({
         dependencies: { "@adobe/alloy": { version: "1.2.3" } },
       }),
     );
     await updateDevDependency(container);
-    expect(logger.warn).toHaveBeenCalledOnceWith(
+
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
       "Dependency @adobe/alloy@1.2.3 already installed.",
     );
     expect(logger.info).not.toHaveBeenCalled();

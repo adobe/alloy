@@ -9,6 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+import { vi, describe, beforeEach, it, expect } from "vitest";
 import chalk from "chalk";
 import createLogger from "../helpers/createLogger.js";
 
@@ -18,40 +20,42 @@ describe("createLogger", () => {
   const now = new Date(2001, 2, 3, 4, 5, 6, 7);
   const prefix = chalk.white("[04:05:06.007]");
   beforeEach(() => {
-    myConsole = jasmine.createSpyObj("myConsole", [
-      "log",
-      "info",
-      "warn",
-      "error",
-    ]);
+    myConsole = { log: vi.fn(), warn: vi.fn(), error: vi.fn(), info: vi.fn() };
     logger = createLogger(myConsole, () => now);
   });
 
   it("adds a prefix", () => {
     logger.log("mylog");
-    expect(myConsole.log).toHaveBeenCalledOnceWith(`${prefix} mylog`);
+
+    expect(myConsole.log).toHaveBeenCalledTimes(1);
+    expect(myConsole.log).toHaveBeenCalledWith(`${prefix} mylog`);
   });
 
   it("leaves objects alone", () => {
     const err = new Error("myerror");
     logger.error(err);
-    expect(myConsole.error).toHaveBeenCalledOnceWith(err);
+
+    expect(myConsole.error).toHaveBeenCalledTimes(1);
+    expect(myConsole.error).toHaveBeenCalledWith(err);
   });
 
   it("logs warnings yellow", () => {
     logger.warn("mywarn");
-    expect(myConsole.warn).toHaveBeenCalledOnceWith(
+    expect(myConsole.warn).toHaveBeenCalledTimes(1);
+    expect(myConsole.warn).toHaveBeenCalledWith(
       `${prefix} ${chalk.yellow("mywarn")}`,
     );
   });
   it("logs errors red", () => {
     logger.error("myerror");
-    expect(myConsole.error).toHaveBeenCalledOnceWith(
+    expect(myConsole.error).toHaveBeenCalledWith(
       `${prefix} ${chalk.red("myerror")}`,
     );
   });
   it("logs additional parameters", () => {
     logger.info("a", "b");
-    expect(myConsole.info).toHaveBeenCalledOnceWith(`${prefix} a`, "b");
+
+    expect(myConsole.info).toHaveBeenCalledTimes(1);
+    expect(myConsole.info).toHaveBeenCalledWith(`${prefix} a`, "b");
   });
 });

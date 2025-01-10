@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import * as requiredComponentCreators from "../../../../src/core/requiredComponentCreators.js";
 
 describe("requiredComponentCreators", () => {
@@ -18,18 +19,13 @@ describe("requiredComponentCreators", () => {
       acc.push(requiredComponentCreators[key]);
       return acc;
     }, []);
-
-    expect(c).toEqual(jasmine.any(Array));
-
+    expect(c).toEqual(expect.any(Array));
     c.forEach((componentCreator) => {
-      expect(componentCreator).toEqual(jasmine.any(Function));
-      expect(componentCreator.namespace).toEqual(jasmine.any(String));
-
+      expect(componentCreator).toEqual(expect.any(Function));
+      expect(componentCreator.namespace).toEqual(expect.any(String));
       if (componentCreator.configValidators) {
         // should export a validator function
-        expect(componentCreator.configValidators).toEqual(
-          jasmine.any(Function),
-        );
+        expect(componentCreator.configValidators).toEqual(expect.any(Function));
       }
     });
   });

@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createComponent from "../../../../../src/components/Personalization/createComponent.js";
 
 describe("Personalization", () => {
@@ -27,7 +28,6 @@ describe("Personalization", () => {
   let mergeDecisionsMeta;
   let renderedPropositions;
   let cacheUpdate;
-
   const build = () => {
     personalizationComponent = createComponent({
       logger,
@@ -43,40 +43,41 @@ describe("Personalization", () => {
       renderedPropositions,
     });
   };
-
   beforeEach(() => {
-    event = jasmine.createSpyObj("event", ["mergeQuery", "getViewName"]);
-    event.getViewName.and.returnValue({});
-    logger = {
-      info: jasmine.createSpy("logger.info"),
-      warn: jasmine.createSpy("logger.warn"),
+    event = {
+      mergeQuery: vi.fn(),
+      getViewName: vi.fn(),
     };
-    isAuthoringModeEnabled = jasmine
-      .createSpy("isAuthoringModeEnabled")
-      .and.returnValue(false);
-    fetchDataHandler = jasmine.createSpy("fetchDataHandler");
-    viewChangeHandler = jasmine.createSpy("viewChangeHandler");
-    onClickHandler = jasmine.createSpy("onClickHandler");
-    showContainers = jasmine.createSpy("showContainers");
-    mergeQuery = jasmine.createSpy("mergeQuery");
-    viewCache = jasmine.createSpyObj("viewCache", [
-      "isInitialized",
-      "createCacheUpdate",
-    ]);
-    cacheUpdate = jasmine.createSpyObj("cacheUpdate", ["update", "cancel"]);
-    viewCache.createCacheUpdate.and.returnValue(cacheUpdate);
-    setTargetMigration = jasmine.createSpy("setTargetMigration");
-    mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
-    renderedPropositions = jasmine.createSpyObj("renderedPropositions", [
-      "clear",
-    ]);
-
+    event.getViewName.mockReturnValue({});
+    logger = {
+      info: vi.fn(),
+      warn: vi.fn(),
+    };
+    isAuthoringModeEnabled = vi.fn().mockReturnValue(false);
+    fetchDataHandler = vi.fn();
+    viewChangeHandler = vi.fn();
+    onClickHandler = vi.fn();
+    showContainers = vi.fn();
+    mergeQuery = vi.fn();
+    viewCache = {
+      isInitialized: vi.fn(),
+      createCacheUpdate: vi.fn(),
+    };
+    cacheUpdate = {
+      update: vi.fn(),
+      cancel: vi.fn(),
+    };
+    viewCache.createCacheUpdate.mockReturnValue(cacheUpdate);
+    setTargetMigration = vi.fn();
+    mergeDecisionsMeta = vi.fn();
+    renderedPropositions = {
+      clear: vi.fn(),
+    };
     build();
   });
-
   describe("onBeforeEvent", () => {
     it("shouldn't do anything since authoringMode is enabled", () => {
-      isAuthoringModeEnabled.and.returnValue(true);
+      isAuthoringModeEnabled.mockReturnValue(true);
       const renderDecisions = true;
       const personalization = {
         decisionScopes: ["foo"],
@@ -86,19 +87,19 @@ describe("Personalization", () => {
         renderDecisions,
         personalization,
       });
-
       expect(logger.warn).toHaveBeenCalledWith(
         "Rendering is disabled for authoring mode.",
       );
       expect(isAuthoringModeEnabled).toHaveBeenCalled();
-      expect(mergeQuery).toHaveBeenCalledWith(event, { enabled: false });
+      expect(mergeQuery).toHaveBeenCalledWith(event, {
+        enabled: false,
+      });
       expect(fetchDataHandler).not.toHaveBeenCalled();
       expect(viewChangeHandler).not.toHaveBeenCalled();
       expect(onClickHandler).not.toHaveBeenCalled();
       expect(showContainers).not.toHaveBeenCalled();
       expect(viewCache.createCacheUpdate).not.toHaveBeenCalled();
     });
-
     it("should trigger pageLoad if there are decisionScopes", () => {
       const renderDecisions = false;
       const personalization = {
@@ -109,7 +110,6 @@ describe("Personalization", () => {
         renderDecisions,
         personalization,
       });
-
       expect(isAuthoringModeEnabled).toHaveBeenCalled();
       expect(fetchDataHandler).toHaveBeenCalled();
       expect(viewChangeHandler).not.toHaveBeenCalled();
@@ -122,14 +122,12 @@ describe("Personalization", () => {
       const personalization = {
         decisionScopes: [],
       };
-      viewCache.isInitialized.and.returnValue(false);
-
+      viewCache.isInitialized.mockReturnValue(false);
       personalizationComponent.lifecycle.onBeforeEvent({
         event,
         renderDecisions,
         personalization,
       });
-
       expect(isAuthoringModeEnabled).toHaveBeenCalled();
       expect(fetchDataHandler).toHaveBeenCalled();
       expect(viewChangeHandler).not.toHaveBeenCalled();
@@ -142,15 +140,13 @@ describe("Personalization", () => {
       const personalization = {
         decisionScopes: [],
       };
-      viewCache.isInitialized.and.returnValue(true);
-      event.getViewName.and.returnValue("cart");
-
+      viewCache.isInitialized.mockReturnValue(true);
+      event.getViewName.mockReturnValue("cart");
       personalizationComponent.lifecycle.onBeforeEvent({
         event,
         renderDecisions,
         personalization,
       });
-
       expect(isAuthoringModeEnabled).toHaveBeenCalled();
       expect(fetchDataHandler).not.toHaveBeenCalled();
       expect(viewChangeHandler).toHaveBeenCalled();
@@ -159,34 +155,31 @@ describe("Personalization", () => {
       expect(viewCache.createCacheUpdate).not.toHaveBeenCalled();
     });
     it("should trigger onClickHandler at onClick", () => {
-      personalizationComponent.lifecycle.onClick({ event });
-
+      personalizationComponent.lifecycle.onClick({
+        event,
+      });
       expect(onClickHandler).toHaveBeenCalled();
     });
     it("should call showContainers() when a request fails", () => {
-      viewCache.isInitialized.and.returnValue(true);
-      const onRequestFailure = jasmine
-        .createSpy("onRequestFailure")
-        .and.callFake((func) => func());
-
+      viewCache.isInitialized.mockReturnValue(true);
+      const onRequestFailure = vi.fn().mockImplementation((func) => func());
       personalizationComponent.lifecycle.onBeforeEvent({
         event,
         onRequestFailure,
       });
-
       expect(onRequestFailure).toHaveBeenCalled();
       expect(showContainers).toHaveBeenCalled();
     });
   });
-
   describe("onBeforeRequest", () => {
     it("should always call setTargetMigration during onBeforeRequest", () => {
-      const request = jasmine.createSpyObj("request", ["getPayload"]);
+      const request = {
+        getPayload: vi.fn(),
+      };
       personalizationComponent.lifecycle.onBeforeRequest({
         request,
       });
-
-      expect(setTargetMigration).toHaveBeenCalledOnceWith(request);
+      expect(setTargetMigration).toHaveBeenNthCalledWith(1, request);
     });
   });
 });

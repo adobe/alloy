@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import isDifferentDomains from "../../../../../../src/components/ActivityCollector/utils/isDifferentDomains.js";
 
 describe("ActivityCollector::isDifferentDomains", () => {
   it("should return true if the domains are different", () => {
     expect(isDifferentDomains("www.example.com", "www.example.org")).toBe(true);
   });
-
   it("should return false if the domains are the same", () => {
     expect(
       isDifferentDomains("https://www.example.com", "www.example.com"),

@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import { defer } from "../../../../../../src/utils/index.js";
 import flushPromiseChains from "../../../../helpers/flushPromiseChains.js";
 import createProcessRedirect from "../../../../../../src/components/Personalization/handlers/createProcessRedirect.js";
@@ -22,16 +23,15 @@ describe("createProcessRedirect", () => {
   let data;
   let proposition;
   let meta;
-
   let processRedirect;
-
   beforeEach(() => {
-    logger = jasmine.createSpyObj("logger", ["warn", "logOnContentRendering"]);
-    executeRedirect = jasmine.createSpy("executeRedirect");
+    logger = {
+      warn: vi.fn(),
+      logOnContentRendering: vi.fn(),
+    };
+    executeRedirect = vi.fn();
     collectDefer = defer();
-    collect = jasmine
-      .createSpy("collect")
-      .and.returnValue(collectDefer.promise);
+    collect = vi.fn().mockReturnValue(collectDefer.promise);
     proposition = {
       getNotification() {
         return meta;
@@ -45,14 +45,12 @@ describe("createProcessRedirect", () => {
         return proposition;
       },
     };
-
     processRedirect = createProcessRedirect({
       logger,
       executeRedirect,
       collect,
     });
   });
-
   it("returns an empty object if the item has no data", () => {
     data = undefined;
     expect(processRedirect(item)).toEqual({});
@@ -61,20 +59,24 @@ describe("createProcessRedirect", () => {
       undefined,
     );
   });
-
   it("returns an empty object if the item has no content", () => {
-    data = { a: 1 };
+    data = {
+      a: 1,
+    };
     expect(processRedirect(item)).toEqual({});
     expect(logger.logOnContentRendering).not.toHaveBeenCalled();
-    expect(logger.warn).toHaveBeenCalledWith("Invalid Redirect data", { a: 1 });
+    expect(logger.warn).toHaveBeenCalledWith("Invalid Redirect data", {
+      a: 1,
+    });
   });
-
   it("redirects", async () => {
-    data = { content: "mycontent" };
+    data = {
+      content: "mycontent",
+    };
     meta = "mymetavalue";
     const result = processRedirect(item);
     expect(result).toEqual({
-      render: jasmine.any(Function),
+      render: expect.any(Function),
       setRenderAttempted: true,
       onlyRenderThis: true,
     });
@@ -93,14 +95,15 @@ describe("createProcessRedirect", () => {
     expect(executeRedirect).toHaveBeenCalledWith("mycontent");
     expect(await renderPromise).toBeUndefined();
   });
-
   it("doesn't eat the exception", async () => {
-    data = { content: "mycontent" };
+    data = {
+      content: "mycontent",
+    };
     meta = "mymetavalue";
     const result = processRedirect(item);
     const renderPromise = result.render();
     collectDefer.reject("myerror");
     expect(logger.logOnContentRendering).not.toHaveBeenCalled();
-    await expectAsync(renderPromise).toBeRejectedWith("myerror");
+    await expect(renderPromise).rejects.toThrowError("myerror");
   });
 });

@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import isRequestRetryable from "../../../../../src/core/network/isRequestRetryable.js";
 
 describe("isRequestRetryable", () => {
@@ -21,9 +22,8 @@ describe("isRequestRetryable", () => {
         },
         retriesAttempted: 2,
       });
-      expect(isRetryable).toBeTrue();
+      expect(isRetryable).toBe(true);
     });
-
     it(`returns false for ${statusCode} and retries attempted is over the limit`, () => {
       const isRetryable = isRequestRetryable({
         response: {
@@ -31,10 +31,9 @@ describe("isRequestRetryable", () => {
         },
         retriesAttempted: 3,
       });
-      expect(isRetryable).toBeFalse();
+      expect(isRetryable).toBe(false);
     });
   });
-
   [100, 199, 200, 299, 300, 399, 400, 499, 500, 599].forEach((statusCode) => {
     it(`returns false for ${statusCode}`, () => {
       const isRetryable = isRequestRetryable({
@@ -43,7 +42,7 @@ describe("isRequestRetryable", () => {
         },
         retriesAttempted: 0,
       });
-      expect(isRetryable).toBeFalse();
+      expect(isRetryable).toBe(false);
     });
   });
 });

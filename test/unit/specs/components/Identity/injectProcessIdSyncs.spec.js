@@ -9,35 +9,33 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import injectProcessIdSyncs from "../../../../../src/components/Identity/injectProcessIdSyncs.js";
 
 describe("Identity::injectProcessIdSyncs", () => {
   let fireReferrerHideableImage;
   let logger;
   let processIdSyncs;
-
   beforeEach(() => {
-    fireReferrerHideableImage = jasmine
-      .createSpy()
-      .and.returnValue(Promise.resolve());
-    logger = jasmine.createSpyObj("logger", ["info", "error"]);
+    fireReferrerHideableImage = vi.fn().mockReturnValue(Promise.resolve());
+    logger = {
+      info: vi.fn(),
+      error: vi.fn(),
+    };
     processIdSyncs = injectProcessIdSyncs({
       fireReferrerHideableImage,
       logger,
     });
   });
-
   it("handles no ID syncs", () => {
     return processIdSyncs([]).then(() => {
       expect(fireReferrerHideableImage).not.toHaveBeenCalled();
     });
   });
-
   it("calls fireReferrerHideableImage for all ID syncs of type URL, and logs results", () => {
-    fireReferrerHideableImage.and.callFake(({ url }) => {
+    fireReferrerHideableImage.mockImplementation(({ url }) => {
       return url === "http://test.zyx" ? Promise.resolve() : Promise.reject();
     });
-
     const identities = [
       {
         type: "url",
@@ -65,7 +63,6 @@ describe("Identity::injectProcessIdSyncs", () => {
         },
       },
     ];
-
     return processIdSyncs(identities).then(() => {
       expect(fireReferrerHideableImage).toHaveBeenCalledWith({
         url: "http://test.abc",

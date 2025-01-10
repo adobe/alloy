@@ -9,6 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+import { vi, describe, beforeEach, it, expect } from "vitest";
 import publishToNpm from "../helpers/publishToNpm.js";
 
 describe("publishToNpm", () => {
@@ -20,32 +22,36 @@ describe("publishToNpm", () => {
   let container;
 
   beforeEach(() => {
-    exec = jasmine.createSpy("exec");
-    execSync = jasmine.createSpy("execSync");
-    logger = jasmine.createSpyObj("logger", ["warn", "info"]);
+    exec = vi.fn();
+    execSync = vi.fn();
+    logger = { warn: vi.fn(), info: vi.fn() };
     container = { exec, execSync, logger, npmTag, version };
   });
 
   it("publishes to NPM", async () => {
-    execSync.and.returnValue("");
+    execSync.mockReturnValue("");
     await publishToNpm(container);
-    expect(execSync).toHaveBeenCalledOnceWith(
+
+    expect(execSync).toHaveBeenCalledTimes(1);
+    expect(execSync).toHaveBeenCalledWith(
       "npm view @adobe/alloy@1.2.3 version --json",
     );
     expect(logger.warn).not.toHaveBeenCalled();
     expect(logger.info).toHaveBeenCalledWith("Publishing NPM package.");
-    expect(exec).toHaveBeenCalledWith("npm publish", jasmine.any(String));
+    expect(exec).toHaveBeenCalledWith("npm publish", expect.any(String));
   });
 
   it("doesn't publish to NPM", async () => {
-    execSync.and.returnValue('"1.2.3"');
+    execSync.mockReturnValue('"1.2.3"');
     await publishToNpm(container);
-    expect(execSync).toHaveBeenCalledOnceWith(
+
+    expect(execSync).toHaveBeenCalledTimes(1);
+    expect(execSync).toHaveBeenCalledWith(
       "npm view @adobe/alloy@1.2.3 version --json",
     );
-    expect(logger.warn).toHaveBeenCalledOnceWith(
-      "NPM already has version 1.2.3.",
-    );
+
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith("NPM already has version 1.2.3.");
     expect(logger.info).not.toHaveBeenCalled();
     expect(exec).not.toHaveBeenCalled();
   });

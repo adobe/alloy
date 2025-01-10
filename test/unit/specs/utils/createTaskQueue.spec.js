@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, describe, it, expect } from "vitest";
 import createTaskQueue from "../../../../src/utils/createTaskQueue.js";
 import { defer } from "../../../../src/utils/index.js";
 import flushPromiseChains from "../../helpers/flushPromiseChains.js";
@@ -17,31 +18,22 @@ import flushPromiseChains from "../../helpers/flushPromiseChains.js";
 describe("createTaskQueue", () => {
   it("executes a single task once even when it throws an error", () => {
     const queue = createTaskQueue();
-    const task1 = jasmine
-      .createSpy("task1")
-      .and.returnValue(Promise.reject(Error("myerror")));
-    return queue.addTask(task1).then(fail, (e) => {
+    const task1 = vi.fn().mockReturnValue(Promise.reject(Error("myerror")));
+    return queue.addTask(task1).catch((e) => {
       expect(e.message).toEqual("myerror");
       expect(task1).toHaveBeenCalledTimes(1);
     });
   });
-
   it("executes tasks in sequence when first task succeeds", () => {
     const queue = createTaskQueue();
     const task1Deferred = defer();
-    const task1 = jasmine
-      .createSpy("task1")
-      .and.returnValue(task1Deferred.promise);
+    const task1 = vi.fn().mockReturnValue(task1Deferred.promise);
     const task2Deferred = defer();
-    const task2 = jasmine
-      .createSpy("task2")
-      .and.returnValue(task2Deferred.promise);
-
-    const task1OnFulfilled = jasmine.createSpy("task1OnFulfilled");
+    const task2 = vi.fn().mockReturnValue(task2Deferred.promise);
+    const task1OnFulfilled = vi.fn();
     queue.addTask(task1).then(task1OnFulfilled);
-    const task2OnFulfilled = jasmine.createSpy("task2OnFulfilled");
+    const task2OnFulfilled = vi.fn();
     queue.addTask(task2).then(task2OnFulfilled);
-
     return flushPromiseChains()
       .then(() => {
         expect(task1).toHaveBeenCalled();
@@ -62,23 +54,16 @@ describe("createTaskQueue", () => {
         expect(task2OnFulfilled).toHaveBeenCalledWith("task2Result");
       });
   });
-
   it("executes tasks in sequence when first task rejects promise", () => {
     const queue = createTaskQueue();
     const task1Deferred = defer();
-    const task1 = jasmine
-      .createSpy("task1")
-      .and.returnValue(task1Deferred.promise);
+    const task1 = vi.fn().mockReturnValue(task1Deferred.promise);
     const task2Deferred = defer();
-    const task2 = jasmine
-      .createSpy("task2")
-      .and.returnValue(task2Deferred.promise);
-
-    const task1OnRejected = jasmine.createSpy("task1OnRejected");
+    const task2 = vi.fn().mockReturnValue(task2Deferred.promise);
+    const task1OnRejected = vi.fn();
     queue.addTask(task1).catch(task1OnRejected);
-    const task2OnFulfilled = jasmine.createSpy("task2OnFulfilled");
+    const task2OnFulfilled = vi.fn();
     queue.addTask(task2).then(task2OnFulfilled);
-
     return flushPromiseChains()
       .then(() => {
         expect(task1).toHaveBeenCalled();
@@ -99,22 +84,17 @@ describe("createTaskQueue", () => {
         expect(task2OnFulfilled).toHaveBeenCalledWith("task2Result");
       });
   });
-
   it("executes tasks in sequence when first task throws error", () => {
     const queue = createTaskQueue();
-    const task1 = jasmine
-      .createSpy("task1")
-      .and.throwError(new Error("task1Error"));
+    const task1 = vi.fn().mockImplementation(() => {
+      throw new Error("task1Error");
+    });
     const task2Deferred = defer();
-    const task2 = jasmine
-      .createSpy("task2")
-      .and.returnValue(task2Deferred.promise);
-
-    const task1OnRejected = jasmine.createSpy("task1OnRejected");
+    const task2 = vi.fn().mockReturnValue(task2Deferred.promise);
+    const task1OnRejected = vi.fn();
     queue.addTask(task1).catch(task1OnRejected);
-    const task2OnFulfilled = jasmine.createSpy("task2OnFulfilled");
+    const task2OnFulfilled = vi.fn();
     queue.addTask(task2).then(task2OnFulfilled);
-
     return flushPromiseChains()
       .then(() => {
         expect(task1).toHaveBeenCalled();
@@ -128,7 +108,6 @@ describe("createTaskQueue", () => {
         expect(task2OnFulfilled).toHaveBeenCalledWith("task2Result");
       });
   });
-
   it("accurately reports the size of the queue", () => {
     const queue = createTaskQueue();
     const task1Deferred = defer();

@@ -9,8 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { PAGE_WIDE_SCOPE_DECISIONS } from "../responsesMock/eventResponses.js";
 
+import { describe, it, expect } from "vitest";
+import { PAGE_WIDE_SCOPE_DECISIONS } from "../responsesMock/eventResponses.js";
 import buildMocks from "./buildMocks.js";
 import buildAlloy from "./buildAlloy.js";
 import pause from "../../../../helpers/pause.js";
@@ -43,122 +44,97 @@ describe("PersonalizationComponent", () => {
         },
       },
     });
-    expect(result.propositions).toEqual(
-      jasmine.arrayWithExactContents([
-        {
-          renderAttempted: true,
-          id: "TNT:activity1:experience1",
-          scope: "__view__",
-          items: [
-            {
-              schema: "https://ns.adobe.com/personalization/dom-action",
-              data: {
-                type: "setHtml",
-                selector: "#foo",
-                content: "<div>Hola Mundo</div>",
-              },
-            },
-            {
-              schema: "https://ns.adobe.com/personalization/dom-action",
-              data: {
-                type: "setHtml",
-                selector: "#foo2",
-                content: "<div>here is a target activity</div>",
-              },
-            },
-            {
-              schema:
-                "https://ns.adobe.com/personalization/default-content-item",
-            },
-          ],
-          scopeDetails: {
-            blah: "test",
-          },
-        },
-        {
-          renderAttempted: true,
-          id: "AJO:campaign1:message1",
-          scope: "web://alloy.test.com/test/page/1",
-          items: [
-            {
-              schema: "https://ns.adobe.com/personalization/dom-action",
-              data: {
-                type: "setHtml",
-                selector: "#foo",
-                content: "<div>Hola Mundo</div>",
-              },
-            },
-            {
-              schema: "https://ns.adobe.com/personalization/dom-action",
-              data: {
-                type: "setHtml",
-                selector: "#foo2",
-                content: "<div>here is a target activity</div>",
-              },
-            },
-            {
-              schema:
-                "https://ns.adobe.com/personalization/default-content-item",
-            },
-          ],
-          scopeDetails: {
-            decisionProvider: "AJO",
-          },
-        },
-        {
-          renderAttempted: false,
-          id: "TNT:activity1:experience1",
-          scope: "__view__",
-          items: [
-            {
-              schema: "https://ns.adove.com/experience/item",
-              data: {
-                id: "A",
-                content: "Banner A ....",
-              },
-            },
-            {
-              schema: "https://ns.adove.com/experience/item",
-              data: {
-                id: "B",
-                content: "Banner B ....",
-              },
-            },
-          ],
-          scopeDetails: {
-            blah: "test",
-          },
-        },
-      ]),
-    );
-    expect(result.decisions).toEqual(
-      jasmine.arrayWithExactContents([
-        {
-          id: "TNT:activity1:experience1",
-          scope: "__view__",
-          items: [
-            {
-              schema: "https://ns.adove.com/experience/item",
-              data: {
-                id: "A",
-                content: "Banner A ....",
-              },
-            },
-            {
-              schema: "https://ns.adove.com/experience/item",
-              data: {
-                id: "B",
-                content: "Banner B ....",
-              },
-            },
-          ],
-          scopeDetails: {
-            blah: "test",
-          },
-        },
-      ]),
-    );
 
+    expect(result.propositions).toEqual([
+      {
+        id: "TNT:activity1:experience1",
+        scope: "__view__",
+        scopeDetails: { blah: "test" },
+        items: [
+          {
+            schema: "https://ns.adobe.com/personalization/dom-action",
+            data: {
+              type: "setHtml",
+              selector: "#foo",
+              content: "<div>Hola Mundo</div>",
+            },
+          },
+          {
+            schema: "https://ns.adobe.com/personalization/dom-action",
+            data: {
+              type: "setHtml",
+              selector: "#foo2",
+              content: "<div>here is a target activity</div>",
+            },
+          },
+          {
+            schema: "https://ns.adobe.com/personalization/default-content-item",
+          },
+        ],
+        renderAttempted: true,
+      },
+      {
+        id: "TNT:activity1:experience1",
+        scope: "__view__",
+        scopeDetails: { blah: "test" },
+        items: [
+          {
+            schema: "https://ns.adove.com/experience/item",
+            data: { id: "A", content: "Banner A ...." },
+          },
+          {
+            schema: "https://ns.adove.com/experience/item",
+            data: { id: "B", content: "Banner B ...." },
+          },
+        ],
+        renderAttempted: false,
+      },
+      {
+        id: "AJO:campaign1:message1",
+        scope: "web://alloy.test.com/test/page/1",
+        scopeDetails: { decisionProvider: "AJO" },
+        items: [
+          {
+            schema: "https://ns.adobe.com/personalization/dom-action",
+            data: {
+              type: "setHtml",
+              selector: "#foo",
+              content: "<div>Hola Mundo</div>",
+            },
+          },
+          {
+            schema: "https://ns.adobe.com/personalization/dom-action",
+            data: {
+              type: "setHtml",
+              selector: "#foo2",
+              content: "<div>here is a target activity</div>",
+            },
+          },
+          {
+            schema: "https://ns.adobe.com/personalization/default-content-item",
+          },
+        ],
+        renderAttempted: true,
+      },
+    ]);
+
+    expect(result.decisions).toEqual([
+      {
+        id: "TNT:activity1:experience1",
+        scope: "__view__",
+        scopeDetails: { blah: "test" },
+        items: [
+          {
+            schema: "https://ns.adove.com/experience/item",
+            data: { id: "A", content: "Banner A ...." },
+          },
+          {
+            schema: "https://ns.adove.com/experience/item",
+            data: { id: "B", content: "Banner B ...." },
+          },
+        ],
+      },
+    ]);
     expect(mocks.actions.setHtml).toHaveBeenCalledWith(
       "#foo",
       "<div>Hola Mundo</div>",
@@ -178,9 +154,7 @@ describe("PersonalizationComponent", () => {
     expect(mocks.actions.setHtml).toHaveBeenCalledTimes(4);
     expect(mocks.logger.warn).not.toHaveBeenCalled();
     expect(mocks.logger.error).not.toHaveBeenCalled();
-
     await pause(100);
-
     expect(mocks.sendEvent).toHaveBeenCalledWith({
       xdm: {
         _experience: {

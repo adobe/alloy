@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi } from "vitest";
 import createEvent from "../../../../../../src/core/createEvent.js";
 import flushPromiseChains from "../../../../helpers/flushPromiseChains.js";
 import createComponent from "../../../../../../src/components/Personalization/createComponent.js";
@@ -67,7 +68,6 @@ const createAction =
     }
     return renderFunc(selector, content);
   };
-
 const buildComponent = ({
   actions,
   config,
@@ -98,29 +98,28 @@ const buildComponent = ({
       [DOM_ACTION_CLICK]: createAction(actions.click),
     };
   };
-
   const {
     targetMigrationEnabled,
     prehidingStyle,
     autoCollectPropositionInteractions,
   } = config;
-  const collect = createCollect({ eventManager, mergeDecisionsMeta });
-
+  const collect = createCollect({
+    eventManager,
+    mergeDecisionsMeta,
+  });
   const { storeInteractionMeta, getInteractionMetas } =
     createInteractionStorage();
-
   const { storeClickMeta, getClickSelectors, getClickMetas } =
     createClickStorage();
-
   const preprocess = (action) => action;
   const createProposition = injectCreateProposition({
     preprocess,
     isPageWideSurface,
   });
-
-  const viewCache = createViewCacheManager({ createProposition });
+  const viewCache = createViewCacheManager({
+    createProposition,
+  });
   const modules = initDomActionsModulesMocks();
-
   const schemaProcessors = {
     [schema.DEFAULT_CONTENT_ITEM]: processDefaultContent,
     [schema.DOM_ACTION]: createProcessDomAction({
@@ -142,21 +141,22 @@ const buildComponent = ({
       collect,
     }),
   };
-
   const processPropositions = createProcessPropositions({
     schemaProcessors,
     logger,
   });
-
   const renderedPropositions = createAsyncArray();
   const notificationHandler = createNotificationHandler(
     collect,
     renderedPropositions,
   );
-
-  const consent = jasmine.createSpyObj("consent", ["current"]);
-  consent.current.and.returnValue({ state: "in", wasSet: false });
-
+  const consent = {
+    current: vi.fn(),
+  };
+  consent.current.mockReturnValue({
+    state: "in",
+    wasSet: false,
+  });
   const fetchDataHandler = createFetchDataHandler({
     logger,
     prehidingStyle,
@@ -176,7 +176,6 @@ const buildComponent = ({
     getClickMetas,
     getClickSelectors,
   });
-
   const viewChangeHandler = createViewChangeHandler({
     logger,
     processPropositions,
@@ -191,13 +190,11 @@ const buildComponent = ({
   const setTargetMigration = createSetTargetMigration({
     targetMigrationEnabled,
   });
-
   const onDecisionHandler = createOnDecisionHandler({
     processPropositions,
     createProposition,
     notificationHandler,
   });
-
   return createComponent({
     getPageLocation,
     logger,
@@ -215,7 +212,6 @@ const buildComponent = ({
     onDecisionHandler,
   });
 };
-
 export default (mocks) => {
   const component = buildComponent(mocks);
   const { response } = mocks;
@@ -235,14 +231,21 @@ export default (mocks) => {
         event,
         renderDecisions,
         decisionScopes,
-        personalization: personalization || { sendDisplayEvent: true },
+        personalization: personalization || {
+          sendDisplayEvent: true,
+        },
         onResponse: callbacks.add,
       });
-      const results = await callbacks.call({ response });
+      const results = await callbacks.call({
+        response,
+      });
       const result = Object.assign({}, ...results);
       await flushPromiseChains();
       event.finalize();
-      return { event, result };
+      return {
+        event,
+        result,
+      };
     },
     applyPropositions(args) {
       return component.commands.applyPropositions.run(args);

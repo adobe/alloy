@@ -9,12 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { describe, it, expect } from "vitest";
 import parseUrl from "../../../../src/utils/parseUrl.js";
 
 describe("parseUrl", () => {
   it("should parse a valid URL with all components", () => {
     const url = "https://example.com/path/to/page?param=value#section";
-
     const result = parseUrl(url);
     expect(result.path).toBe("/path/to/page");
     expect(result.query).toBe("param=value");
@@ -23,12 +23,9 @@ describe("parseUrl", () => {
     expect(result.subdomain).toBe("");
     expect(result.topLevelDomain).toBe("com");
   });
-
   it("should handle URL without subdomain", () => {
     const url = "https://example.com";
-
     const result = parseUrl(url);
-
     expect(result.path).toBe("");
     expect(result.query).toBe("");
     expect(result.fragment).toBe("");
@@ -36,10 +33,8 @@ describe("parseUrl", () => {
     expect(result.subdomain).toBe("");
     expect(result.topLevelDomain).toBe("com");
   });
-
   it("should handle empty URL and return default values", () => {
     const url = "";
-
     const result = parseUrl(url);
     expect(result.path).toBe("");
     expect(result.query).toBe("");
@@ -48,10 +43,8 @@ describe("parseUrl", () => {
     expect(result.subdomain).toBe("");
     expect(result.topLevelDomain).toBe("");
   });
-
   it("should handle URL with subdomain", () => {
     const url = "https://www.example.com";
-
     const result = parseUrl(url);
     expect(result.path).toBe("");
     expect(result.query).toBe("");

@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import remapCustomCodeOffers from "../../../../../../src/components/Personalization/dom-actions/remapCustomCodeOffers.js";
 
 describe("remapCustomCodeOffers", () => {
@@ -26,7 +27,6 @@ describe("remapCustomCodeOffers", () => {
       selector: "BODY",
     });
   });
-
   it("does not change selector if non-standard", () => {
     expect(
       remapCustomCodeOffers({
@@ -40,7 +40,6 @@ describe("remapCustomCodeOffers", () => {
       selector: ".whoopie",
     });
   });
-
   it("only handles customCode type", () => {
     expect(
       remapCustomCodeOffers({

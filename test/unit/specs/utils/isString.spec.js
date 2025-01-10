@@ -10,15 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import isString from "../../../../src/utils/isString.js";
 
 const nonStrings = [{}, [], new Date(), /abc/, true, false, 123];
-
 describe("isString", () => {
   it("returns true if the value is a string", () => {
     expect(isString("123")).toBe(true);
   });
-
   it("returns false if the value is not a string", () => {
     nonStrings.forEach((str) => {
       expect(isString(str)).toBe(false);

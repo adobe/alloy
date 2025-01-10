@@ -10,30 +10,58 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe } from "vitest";
 import { string } from "../../../../../src/utils/validation/index.js";
 import describeValidation from "../../../helpers/describeValidation.js";
 
 const regexp = /^[A-z]+$/;
-
 describe("validation::matchesRegexp", () => {
   describeValidation("optional matchesRegexp", string().matches(regexp), [
-    { value: "abc" },
-    { value: "ABCD" },
-    { value: "*", error: true },
-    { value: "123", error: true },
-    { value: null },
-    { value: undefined },
+    {
+      value: "abc",
+    },
+    {
+      value: "ABCD",
+    },
+    {
+      value: "*",
+      error: true,
+    },
+    {
+      value: "123",
+      error: true,
+    },
+    {
+      value: null,
+    },
+    {
+      value: undefined,
+    },
   ]);
-
   describeValidation("required regexp", string().regexp(regexp).required(), [
-    { value: null, error: true },
-    { value: undefined, error: true },
-    { value: "" },
+    {
+      value: null,
+      error: true,
+    },
+    {
+      value: undefined,
+      error: true,
+    },
+    {
+      value: "",
+    },
   ]);
-
   describeValidation("default regexp", string().regexp(regexp).default("abc"), [
-    { value: null, expected: "abc" },
-    { value: undefined, expected: "abc" },
-    { value: "a" },
+    {
+      value: null,
+      expected: "abc",
+    },
+    {
+      value: undefined,
+      expected: "abc",
+    },
+    {
+      value: "a",
+    },
   ]);
 });

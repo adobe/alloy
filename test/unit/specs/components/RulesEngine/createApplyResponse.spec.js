@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, describe, it, expect } from "vitest";
 import createApplyResponse from "../../../../../src/components/RulesEngine/createApplyResponse.js";
 
 describe("RulesEngine:createApplyResponse", () => {
@@ -17,23 +18,20 @@ describe("RulesEngine:createApplyResponse", () => {
     scope: "__view__",
     items: [],
   };
-
   it("calls lifecycle.onDecision with propositions", () => {
-    const lifecycle = jasmine.createSpyObj("lifecycle", {
-      onDecision: Promise.resolve(),
-    });
-
+    const lifecycle = {
+      onDecision: vi.fn().mockReturnValue(Promise.resolve()),
+    };
     const applyResponse = createApplyResponse(lifecycle);
-
-    const mockEvent = { getViewName: () => undefined };
+    const mockEvent = {
+      getViewName: () => undefined,
+    };
     const personalization = {};
-
     applyResponse({
       propositions: [proposition],
       event: mockEvent,
       personalization,
     });
-
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
       renderDecisions: false,
       propositions: [proposition],
@@ -41,22 +39,20 @@ describe("RulesEngine:createApplyResponse", () => {
       personalization: {},
     });
   });
-
   it("calls lifecycle.onDecision with viewName", () => {
-    const lifecycle = jasmine.createSpyObj("lifecycle", {
-      onDecision: Promise.resolve(),
-    });
-
+    const lifecycle = {
+      onDecision: vi.fn().mockReturnValue(Promise.resolve()),
+    };
     const applyResponse = createApplyResponse(lifecycle);
-    const mockEvent = { getViewName: () => "oh hai" };
-
+    const mockEvent = {
+      getViewName: () => "oh hai",
+    };
     applyResponse({
       renderDecisions: true,
       event: mockEvent,
       personalization: {},
       propositions: [proposition],
     });
-
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
       renderDecisions: true,
       propositions: [proposition],
@@ -64,23 +60,21 @@ describe("RulesEngine:createApplyResponse", () => {
       personalization: {},
     });
   });
-
   it("call lifecycle.onDecision even if no propositions", () => {
     // this use case is necessary for content cards with no items
-    const lifecycle = jasmine.createSpyObj("lifecycle", {
-      onDecision: Promise.resolve(),
-    });
-
+    const lifecycle = {
+      onDecision: vi.fn().mockReturnValue(Promise.resolve()),
+    };
     const applyResponse = createApplyResponse(lifecycle);
-    const mockEvent = { getViewName: () => undefined };
-
+    const mockEvent = {
+      getViewName: () => undefined,
+    };
     applyResponse({
       renderDecisions: true,
       propositions: [],
       event: mockEvent,
       personalization: {},
     });
-
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
       renderDecisions: true,
       propositions: [],

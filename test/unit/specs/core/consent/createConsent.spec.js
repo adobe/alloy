@@ -10,48 +10,60 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createConsent from "../../../../../src/core/consent/createConsent.js";
 
 describe("createConsent", () => {
   let state;
   let subject;
   let logger;
-
   beforeEach(() => {
-    state = jasmine.createSpyObj("state", [
-      "in",
-      "out",
-      "pending",
-      "awaitConsent",
-      "withConsent",
-    ]);
-    logger = jasmine.createSpyObj("logger", ["warn"]);
-    subject = createConsent({ generalConsentState: state, logger });
+    state = {
+      in: vi.fn(),
+      out: vi.fn(),
+      pending: vi.fn(),
+      awaitConsent: vi.fn(),
+      withConsent: vi.fn(),
+    };
+    logger = {
+      warn: vi.fn(),
+    };
+    subject = createConsent({
+      generalConsentState: state,
+      logger,
+    });
   });
-
   it("sets consent to in", () => {
-    subject.setConsent({ general: "in" });
+    subject.setConsent({
+      general: "in",
+    });
     expect(state.in).toHaveBeenCalled();
     expect(state.out).not.toHaveBeenCalled();
     expect(state.pending).not.toHaveBeenCalled();
     expect(logger.warn).not.toHaveBeenCalled();
   });
   it("sets consent to out", () => {
-    subject.setConsent({ general: "out" });
+    subject.setConsent({
+      general: "out",
+    });
     expect(state.in).not.toHaveBeenCalled();
     expect(state.out).toHaveBeenCalled();
     expect(state.pending).not.toHaveBeenCalled();
     expect(logger.warn).not.toHaveBeenCalled();
   });
   it("sets consent to pending", () => {
-    subject.setConsent({ general: "pending" });
+    subject.setConsent({
+      general: "pending",
+    });
     expect(state.in).not.toHaveBeenCalled();
     expect(state.out).not.toHaveBeenCalled();
     expect(state.pending).toHaveBeenCalled();
     expect(logger.warn).not.toHaveBeenCalled();
   });
   it("logs unknown consent values", () => {
-    subject.setConsent({ general: "foo" });
+    subject.setConsent({
+      general: "foo",
+    });
     expect(state.in).not.toHaveBeenCalled();
     expect(state.out).not.toHaveBeenCalled();
     expect(state.pending).not.toHaveBeenCalled();
@@ -65,11 +77,11 @@ describe("createConsent", () => {
     expect(logger.warn).not.toHaveBeenCalled();
   });
   it("calls await consent", () => {
-    state.awaitConsent.and.returnValue("mypromise");
+    state.awaitConsent.mockReturnValue("mypromise");
     expect(subject.awaitConsent()).toEqual("mypromise");
   });
   it("calls with consent", () => {
-    state.withConsent.and.returnValue("mypromise");
+    state.withConsent.mockReturnValue("mypromise");
     expect(subject.withConsent()).toEqual("mypromise");
   });
 });

@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { describe, it, expect } from "vitest";
 import { REDIRECT_PAGE_WIDE_SCOPE_DECISION } from "../responsesMock/eventResponses.js";
-
 import buildMocks from "./buildMocks.js";
 import buildAlloy from "./buildAlloy.js";
 
@@ -64,7 +64,6 @@ describe("PersonalizationComponent", () => {
         eventType: "decisioning.propositionDisplay",
       },
     });
-
     expect(mocks.logger.warn).not.toHaveBeenCalled();
     expect(mocks.logger.error).not.toHaveBeenCalled();
   });

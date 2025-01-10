@@ -10,29 +10,60 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe } from "vitest";
 import { string } from "../../../../../src/utils/validation/index.js";
 import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::regexp", () => {
   describeValidation("optional regexp", string().regexp(), [
-    { value: "steel|bronze" },
-    { value: "/a/" },
-    { value: "/^[a-z0-9+]:///i" },
-    { value: "[", error: true },
-    { value: "*", error: true },
-    { value: null },
-    { value: undefined },
+    {
+      value: "steel|bronze",
+    },
+    {
+      value: "/a/",
+    },
+    {
+      value: "/^[a-z0-9+]:///i",
+    },
+    {
+      value: "[",
+      error: true,
+    },
+    {
+      value: "*",
+      error: true,
+    },
+    {
+      value: null,
+    },
+    {
+      value: undefined,
+    },
   ]);
-
   describeValidation("required regexp", string().regexp().required(), [
-    { value: null, error: true },
-    { value: undefined, error: true },
-    { value: "" },
+    {
+      value: null,
+      error: true,
+    },
+    {
+      value: undefined,
+      error: true,
+    },
+    {
+      value: "",
+    },
   ]);
-
   describeValidation("default regexp", string().regexp().default("/default/"), [
-    { value: null, expected: "/default/" },
-    { value: undefined, expected: "/default/" },
-    { value: "a" },
+    {
+      value: null,
+      expected: "/default/",
+    },
+    {
+      value: undefined,
+      expected: "/default/",
+    },
+    {
+      value: "a",
+    },
   ]);
 });

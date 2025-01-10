@@ -10,15 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import getLastArrayItems from "../../../../src/utils/getLastArrayItems.js";
 
 describe("getLastArrayItems", () => {
   const letters = ["a", "b", "c"];
-
   it("returns last items from array larger than count", () => {
     expect(getLastArrayItems(letters, 2)).toEqual(["b", "c"]);
   });
-
   it("returns all items from array smaller than or equal to count", () => {
     expect(getLastArrayItems(letters, 10)).toEqual(["a", "b", "c"]);
     expect(getLastArrayItems(letters, 3)).toEqual(["a", "b", "c"]);

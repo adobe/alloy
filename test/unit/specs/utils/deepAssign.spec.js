@@ -10,69 +10,94 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import deepAssign from "../../../../src/utils/deepAssign.js";
 
 describe("deepAssign", () => {
   it("should throw when target is null or undefined", () => {
     expect(() => {
-      deepAssign(null, { a: 1 });
+      deepAssign(null, {
+        a: 1,
+      });
     }).toThrow();
-
     expect(() => {
-      deepAssign(undefined, { a: 1 });
+      deepAssign(undefined, {
+        a: 1,
+      });
     }).toThrow();
   });
-
   it("should assign when target is string", () => {
-    const result1 = deepAssign("foo", { a: 1 });
-    const result2 = Object.assign("foo", { a: 1 });
-
+    const result1 = deepAssign("foo", {
+      a: 1,
+    });
+    const result2 = Object.assign("foo", {
+      a: 1,
+    });
     expect(result1).toEqual(result2);
   });
-
   it("should assign when target is number", () => {
-    const result1 = deepAssign(1, { a: 1 });
-    const result2 = Object.assign(1, { a: 1 });
-
+    const result1 = deepAssign(1, {
+      a: 1,
+    });
+    const result2 = Object.assign(1, {
+      a: 1,
+    });
     expect(result1).toEqual(result2);
   });
-
   it("should assign when target is array", () => {
-    const result1 = deepAssign([1], { a: 1 });
-    const result2 = Object.assign([1], { a: 1 });
-
+    const result1 = deepAssign([1], {
+      a: 1,
+    });
+    const result2 = Object.assign([1], {
+      a: 1,
+    });
     expect(result1).toEqual(result2);
   });
-
   it("should assign when target is object and source is string", () => {
     const result1 = deepAssign({}, "foo");
-    const result2 = { ..."foo" };
-
+    const result2 = {
+      ..."foo",
+    };
     expect(result1).toEqual(result2);
   });
-
   it("should assign when target is object and source is number", () => {
     const result1 = deepAssign({}, 1);
-    const result2 = { ...1 };
-
+    const result2 = {
+      ...1,
+    };
     expect(result1).toEqual(result2);
   });
-
   it("should assign when target is object and source is array", () => {
     const result1 = deepAssign({}, [1]);
-    const result2 = { ...[1] };
-
+    const result2 = {
+      ...[1],
+    };
     expect(result1).toEqual(result2);
   });
-
   it("should assign values recursively", () => {
     const result = deepAssign(
       {},
-      { a: { c: 1 } },
-      { b: 2 },
-      { a: { c: 2, d: 3 } },
+      {
+        a: {
+          c: 1,
+        },
+      },
+      {
+        b: 2,
+      },
+      {
+        a: {
+          c: 2,
+          d: 3,
+        },
+      },
     );
-
-    expect(result).toEqual({ a: { c: 2, d: 3 }, b: 2 });
+    expect(result).toEqual({
+      a: {
+        c: 2,
+        d: 3,
+      },
+      b: 2,
+    });
   });
 });

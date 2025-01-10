@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import injectSendEdgeNetworkRequest from "../../../../../src/core/edgeNetwork/injectSendEdgeNetworkRequest.js";
 import createConfig from "../../../../../src/core/config/createConfig.js";
 import { defer } from "../../../../../src/utils/index.js";
@@ -39,11 +40,12 @@ describe("injectSendEdgeNetworkRequest", () => {
     assertLifecycleCall,
   }) => {
     const error = new Error("no connection");
-    sendNetworkRequest.and.returnValue(Promise.reject(error));
-    const errorHandler = jasmine.createSpy("errorHandler");
-    sendEdgeNetworkRequest({ request, runOnRequestFailureCallbacks })
-      .then(fail)
-      .catch(errorHandler);
+    sendNetworkRequest.mockReturnValue(Promise.reject(error));
+    const errorHandler = vi.fn();
+    sendEdgeNetworkRequest({
+      request,
+      runOnRequestFailureCallbacks,
+    }).catch(errorHandler);
     return flushPromiseChains()
       .then(() => {
         expect(errorHandler).not.toHaveBeenCalled();
@@ -63,11 +65,16 @@ describe("injectSendEdgeNetworkRequest", () => {
     assertLifecycleCall,
   }) => {
     const error = new Error("Unexpected response.");
-    processWarningsAndErrors.and.throwError(error);
-    const errorHandler = jasmine.createSpy("errorHandler");
-    sendEdgeNetworkRequest({ request, runOnRequestFailureCallbacks })
-      .then(fail)
-      .catch(errorHandler);
+    processWarningsAndErrors.mockImplementation(() => {
+      throw error;
+    });
+    const errorHandler = vi.fn();
+
+    sendEdgeNetworkRequest({
+      request,
+      runOnRequestFailureCallbacks,
+    }).catch(errorHandler);
+
     return flushPromiseChains()
       .then(() => {
         expect(errorHandler).not.toHaveBeenCalled();
@@ -85,66 +92,71 @@ describe("injectSendEdgeNetworkRequest", () => {
     runOnResponseCallbacks,
     assertLifecycleCall,
   }) => {
-    const successHandler = jasmine.createSpy("successHandler");
-    sendEdgeNetworkRequest({ request, runOnResponseCallbacks }).then(
-      successHandler,
-    );
+    const successHandler = vi.fn();
+    sendEdgeNetworkRequest({
+      request,
+      runOnResponseCallbacks,
+    }).then(successHandler);
     return flushPromiseChains()
       .then(() => {
         expect(successHandler).not.toHaveBeenCalled();
         assertLifecycleCall();
-        expect(lifecycle.onResponse).toHaveBeenCalledWith({ response });
+        expect(lifecycle.onResponse).toHaveBeenCalledWith({
+          response,
+        });
         return flushPromiseChains();
       })
       .then(() => {
         expect(successHandler).toHaveBeenCalled();
       });
   };
-
   beforeEach(() => {
     config = createConfig({
       edgeDomain: "edge.example.com",
       edgeBasePath: "ee",
       datastreamId: "myconfigId",
     });
-    payload = jasmine.createSpyObj("payload", ["mergeMeta"], {
-      type: "payload",
-    });
-    request = jasmine.createSpyObj("request", {
-      getId: "RID123",
-      getAction: "test-action",
-      getPayload: payload,
-      getUseIdThirdPartyDomain: false,
-      getUseSendBeacon: false,
-      getDatastreamIdOverride: "",
-      getEdgeSubPath: "",
-    });
-    logger = jasmine.createSpyObj("logger", ["info"]);
-    lifecycle = jasmine.createSpyObj("lifecycle", {
-      onBeforeRequest: Promise.resolve(),
-      onRequestFailure: Promise.resolve(),
-      onResponse: Promise.resolve(),
-    });
-    cookieTransfer = jasmine.createSpyObj("cookieTransfer", [
-      "cookiesToPayload",
-      "responseToCookies",
-    ]);
+    payload = {
+      mergeMeta: vi.fn(),
+      type: vi.fn().mockReturnValue("payload"),
+    };
+    request = {
+      getId: vi.fn().mockReturnValue("RID123"),
+      getAction: vi.fn().mockReturnValue("test-action"),
+      getPayload: vi.fn().mockReturnValue(payload),
+      getUseIdThirdPartyDomain: vi.fn().mockReturnValue(false),
+      getUseSendBeacon: vi.fn().mockReturnValue(false),
+      getDatastreamIdOverride: vi.fn().mockReturnValue(""),
+      getEdgeSubPath: vi.fn().mockReturnValue(""),
+    };
+    logger = {
+      info: vi.fn(),
+    };
+    lifecycle = {
+      onBeforeRequest: vi.fn().mockReturnValue(Promise.resolve()),
+      onRequestFailure: vi.fn().mockReturnValue(Promise.resolve()),
+      onResponse: vi.fn().mockReturnValue(Promise.resolve()),
+    };
+    cookieTransfer = {
+      cookiesToPayload: vi.fn(),
+      responseToCookies: vi.fn(),
+    };
     networkResult = {
-      parsedBody: { my: "parsedBody" },
+      parsedBody: {
+        my: "parsedBody",
+      },
       getHeader: () => "myheader",
     };
-    sendNetworkRequest = jasmine
-      .createSpy("sendNetworkRequest")
-      .and.returnValue(Promise.resolve(networkResult));
-    response = { type: "response" };
-    createResponse = jasmine
-      .createSpy("createResponse")
-      .and.returnValue(response);
-    processWarningsAndErrors = jasmine.createSpy("processWarningsAndErrors");
-    getLocationHint = jasmine.createSpy("getLocationHint");
-    getAssuranceValidationTokenParams = jasmine
-      .createSpy("getAssuranceValidationTokenParams")
-      .and.returnValue("");
+    sendNetworkRequest = vi
+      .fn()
+      .mockReturnValue(Promise.resolve(networkResult));
+    response = {
+      type: "response",
+    };
+    createResponse = vi.fn().mockReturnValue(response);
+    processWarningsAndErrors = vi.fn();
+    getLocationHint = vi.fn();
+    getAssuranceValidationTokenParams = vi.fn().mockReturnValue("");
     sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
       config,
       logger,
@@ -157,33 +169,36 @@ describe("injectSendEdgeNetworkRequest", () => {
       getAssuranceValidationTokenParams,
     });
   });
-
   it("transfers cookies to payload when sending to first-party domain", () => {
-    return sendEdgeNetworkRequest({ request }).then(() => {
+    return sendEdgeNetworkRequest({
+      request,
+    }).then(() => {
       expect(cookieTransfer.cookiesToPayload).toHaveBeenCalledWith(
         payload,
         "edge.example.com",
       );
     });
   });
-
   it("transfers cookies to payload when sending to third-party domain", () => {
     // Ensure that sendEdgeNetworkRequest waits until after
     // lifecycle.onBeforeRequest to determine the endpoint domain.
-    lifecycle.onBeforeRequest.and.callFake(() => {
-      request.getUseIdThirdPartyDomain.and.returnValue(true);
+    lifecycle.onBeforeRequest.mockImplementation(() => {
+      request.getUseIdThirdPartyDomain.mockReturnValue(true);
       return Promise.resolve();
     });
-    return sendEdgeNetworkRequest({ request }).then(() => {
+    return sendEdgeNetworkRequest({
+      request,
+    }).then(() => {
       expect(cookieTransfer.cookiesToPayload).toHaveBeenCalledWith(
         payload,
         "adobedc.demdex.net",
       );
     });
   });
-
   it("sends request to first-party domain", () => {
-    return sendEdgeNetworkRequest({ request }).then(() => {
+    return sendEdgeNetworkRequest({
+      request,
+    }).then(() => {
       expect(sendNetworkRequest).toHaveBeenCalledWith({
         requestId: "RID123",
         url: "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123",
@@ -192,15 +207,16 @@ describe("injectSendEdgeNetworkRequest", () => {
       });
     });
   });
-
   it("sends request to third-party domain", () => {
     // Ensure that sendEdgeNetworkRequest waits until after
     // lifecycle.onBeforeRequest to determine the endpoint domain.
-    lifecycle.onBeforeRequest.and.callFake(() => {
-      request.getUseIdThirdPartyDomain.and.returnValue(true);
+    lifecycle.onBeforeRequest.mockImplementation(() => {
+      request.getUseIdThirdPartyDomain.mockReturnValue(true);
       return Promise.resolve();
     });
-    return sendEdgeNetworkRequest({ request }).then(() => {
+    return sendEdgeNetworkRequest({
+      request,
+    }).then(() => {
       expect(sendNetworkRequest).toHaveBeenCalledWith({
         requestId: "RID123",
         url: "https://adobedc.demdex.net/ee/v1/test-action?configId=myconfigId&requestId=RID123",
@@ -209,15 +225,16 @@ describe("injectSendEdgeNetworkRequest", () => {
       });
     });
   });
-
   it("sends request using sendBeacon", () => {
     // Ensure that sendEdgeNetworkRequest waits until after
     // lifecycle.onBeforeRequest to determine whether to use sendBeacon.
-    lifecycle.onBeforeRequest.and.callFake(() => {
-      request.getUseSendBeacon.and.returnValue(true);
+    lifecycle.onBeforeRequest.mockImplementation(() => {
+      request.getUseSendBeacon.mockReturnValue(true);
       return Promise.resolve();
     });
-    return sendEdgeNetworkRequest({ request }).then(() => {
+    return sendEdgeNetworkRequest({
+      request,
+    }).then(() => {
       expect(sendNetworkRequest).toHaveBeenCalledWith({
         requestId: "RID123",
         url: "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123",
@@ -226,18 +243,19 @@ describe("injectSendEdgeNetworkRequest", () => {
       });
     });
   });
-
   it("calls lifecycle.onBeforeRequest and waits for it to complete before sending request", () => {
     const deferred = defer();
-    lifecycle.onBeforeRequest.and.returnValue(deferred.promise);
-    const successHandler = jasmine.createSpy("successHandler");
-    sendEdgeNetworkRequest({ request }).then(successHandler);
+    lifecycle.onBeforeRequest.mockReturnValue(deferred.promise);
+    const successHandler = vi.fn();
+    sendEdgeNetworkRequest({
+      request,
+    }).then(successHandler);
     return flushPromiseChains()
       .then(() => {
         expect(lifecycle.onBeforeRequest).toHaveBeenCalledWith({
           request,
-          onResponse: jasmine.any(Function),
-          onRequestFailure: jasmine.any(Function),
+          onResponse: expect.any(Function),
+          onRequestFailure: expect.any(Function),
         });
         expect(sendNetworkRequest).not.toHaveBeenCalled();
         deferred.resolve();
@@ -247,13 +265,14 @@ describe("injectSendEdgeNetworkRequest", () => {
         expect(successHandler).toHaveBeenCalled();
       });
   });
-
   it("when network request fails, calls lifecycle.onRequestFailure, waits for it to complete, then rejects promise", () => {
     const deferred = defer();
-    lifecycle.onRequestFailure.and.returnValue(deferred.promise);
+    lifecycle.onRequestFailure.mockReturnValue(deferred.promise);
     return testRequestFailureHandling({
       assertLifecycleCall(error) {
-        expect(lifecycle.onRequestFailure).toHaveBeenCalledWith({ error });
+        expect(lifecycle.onRequestFailure).toHaveBeenCalledWith({
+          error,
+        });
         // We reject this deferred to simulate a component throwing an error
         // during the lifecycle.onRequestFailure hook. This tests that the
         // promise from sendEdgeNetworkRequest is still rejected with the
@@ -262,19 +281,18 @@ describe("injectSendEdgeNetworkRequest", () => {
       },
     });
   });
-
   it("when network request fails, calls lifecycle.onBeforeRequest's onRequestFailure callback, waits for it to complete, then rejects promise", () => {
     const deferred = defer();
-    const requestFailureCallback = jasmine
-      .createSpy("requestFailureCallback")
-      .and.returnValue(deferred.promise);
-    lifecycle.onBeforeRequest.and.callFake(({ onRequestFailure }) => {
+    const requestFailureCallback = vi.fn().mockReturnValue(deferred.promise);
+    lifecycle.onBeforeRequest.mockImplementation(({ onRequestFailure }) => {
       onRequestFailure(requestFailureCallback);
       return Promise.resolve();
     });
     return testRequestFailureHandling({
       assertLifecycleCall(error) {
-        expect(requestFailureCallback).toHaveBeenCalledWith({ error });
+        expect(requestFailureCallback).toHaveBeenCalledWith({
+          error,
+        });
         // We reject this deferred to simulate a component throwing an error
         // during the lifecycle.onBeforeRequest's onRequestFailure callback.
         // This tests that the promise from sendEdgeNetworkRequest is still
@@ -284,16 +302,17 @@ describe("injectSendEdgeNetworkRequest", () => {
       },
     });
   });
-
   it("when network request fails, calls onRequestFailureCallbacks, waits for it to complete, then rejects promise", () => {
     const deferred = defer();
-    const runOnRequestFailureCallbacks = jasmine
-      .createSpy("runOnRequestFailureCallbacks")
-      .and.returnValue(deferred.promise);
+    const runOnRequestFailureCallbacks = vi
+      .fn()
+      .mockReturnValue(deferred.promise);
     return testRequestFailureHandling({
       runOnRequestFailureCallbacks,
       assertLifecycleCall(error) {
-        expect(runOnRequestFailureCallbacks).toHaveBeenCalledWith({ error });
+        expect(runOnRequestFailureCallbacks).toHaveBeenCalledWith({
+          error,
+        });
         // We reject this deferred to simulate a component throwing an error
         // during the runOnRequestFailureCallbacks call. This tests that the
         // promise from sendEdgeNetworkRequest is still rejected with the
@@ -302,14 +321,14 @@ describe("injectSendEdgeNetworkRequest", () => {
       },
     });
   });
-
   it("when network response is a failure, calls lifecycle.onRequestFailure, waits for it to complete, then rejects promise", () => {
     const deferred = defer();
-    lifecycle.onRequestFailure.and.returnValue(deferred.promise);
-
+    lifecycle.onRequestFailure.mockReturnValue(deferred.promise);
     return testResponseFailureHandling({
       assertLifecycleCall(error) {
-        expect(lifecycle.onRequestFailure).toHaveBeenCalledWith({ error });
+        expect(lifecycle.onRequestFailure).toHaveBeenCalledWith({
+          error,
+        });
         // We reject this deferred to simulate a component throwing an error
         // during the lifecycle.onRequestFailure hook. This tests that the
         // promise from sendEdgeNetworkRequest is still rejected with the
@@ -318,19 +337,18 @@ describe("injectSendEdgeNetworkRequest", () => {
       },
     });
   });
-
   it("when network response is a failure, calls lifecycle.onBeforeRequest's onRequestFailure callback, waits for it to complete, then rejects promise", () => {
     const deferred = defer();
-    const requestFailureCallback = jasmine
-      .createSpy("requestFailureCallback")
-      .and.returnValue(deferred.promise);
-    lifecycle.onBeforeRequest.and.callFake(({ onRequestFailure }) => {
+    const requestFailureCallback = vi.fn().mockReturnValue(deferred.promise);
+    lifecycle.onBeforeRequest.mockImplementation(({ onRequestFailure }) => {
       onRequestFailure(requestFailureCallback);
       return Promise.resolve();
     });
     return testResponseFailureHandling({
       assertLifecycleCall(error) {
-        expect(requestFailureCallback).toHaveBeenCalledWith({ error });
+        expect(requestFailureCallback).toHaveBeenCalledWith({
+          error,
+        });
         // We reject this deferred to simulate a component throwing an error
         // during the lifecycle.onBeforeRequest's onRequestFailure callback.
         // This tests that the promise from sendEdgeNetworkRequest is still
@@ -340,16 +358,17 @@ describe("injectSendEdgeNetworkRequest", () => {
       },
     });
   });
-
   it("when network response is a failure, calls runOnRequestFailureCallbacks, waits for it to complete, then rejects promise", () => {
     const deferred = defer();
-    const runOnRequestFailureCallbacks = jasmine
-      .createSpy("runOnRequestFailureCallbacks")
-      .and.returnValue(deferred.promise);
+    const runOnRequestFailureCallbacks = vi
+      .fn()
+      .mockReturnValue(deferred.promise);
     return testResponseFailureHandling({
       runOnRequestFailureCallbacks,
       assertLifecycleCall(error) {
-        expect(runOnRequestFailureCallbacks).toHaveBeenCalledWith({ error });
+        expect(runOnRequestFailureCallbacks).toHaveBeenCalledWith({
+          error,
+        });
         // We reject this deferred to simulate a component throwing an error
         // during the runOnRequestFailureCallbacks call. This tests that the
         // promise from sendEdgeNetworkRequest is still rejected with the
@@ -358,51 +377,51 @@ describe("injectSendEdgeNetworkRequest", () => {
       },
     });
   });
-
   it("when network response is a success, calls lifecycle.onResponse, waits for it to complete, then resolves promise", () => {
     const deferred = defer();
-    lifecycle.onResponse.and.returnValue(deferred.promise);
+    lifecycle.onResponse.mockReturnValue(deferred.promise);
     return testResponseSuccessHandling({
       assertLifecycleCall() {
-        expect(lifecycle.onResponse).toHaveBeenCalledWith({ response });
+        expect(lifecycle.onResponse).toHaveBeenCalledWith({
+          response,
+        });
         deferred.resolve();
       },
     });
   });
-
   it("when network response is a success, calls lifecycle.onBeforeRequest's responseCallback callback, waits for it to complete, then resolves promise", () => {
     const deferred = defer();
-    const responseCallback = jasmine
-      .createSpy("responseCallback")
-      .and.returnValue(deferred.promise);
-    lifecycle.onBeforeRequest.and.callFake(({ onResponse }) => {
+    const responseCallback = vi.fn().mockReturnValue(deferred.promise);
+    lifecycle.onBeforeRequest.mockImplementation(({ onResponse }) => {
       onResponse(responseCallback);
       return Promise.resolve();
     });
     return testResponseSuccessHandling({
       assertLifecycleCall() {
-        expect(responseCallback).toHaveBeenCalledWith({ response });
+        expect(responseCallback).toHaveBeenCalledWith({
+          response,
+        });
         deferred.resolve();
       },
     });
   });
-
   it("when network response is a success, calls runOnResponseCallbacks, waits for it to complete, then resolves promise", () => {
     const deferred = defer();
-    const runOnResponseCallbacks = jasmine
-      .createSpy("runOnResponseCallbacks")
-      .and.returnValue(deferred.promise);
+    const runOnResponseCallbacks = vi.fn().mockReturnValue(deferred.promise);
     return testResponseSuccessHandling({
       runOnResponseCallbacks,
       assertLifecycleCall() {
-        expect(runOnResponseCallbacks).toHaveBeenCalledWith({ response });
+        expect(runOnResponseCallbacks).toHaveBeenCalledWith({
+          response,
+        });
         deferred.resolve();
       },
     });
   });
-
   it("transfers cookies from response before lifecycle.onResponse", () => {
-    return sendEdgeNetworkRequest({ request }).then(() => {
+    return sendEdgeNetworkRequest({
+      request,
+    }).then(() => {
       expect(cookieTransfer.responseToCookies).toHaveBeenCalledWith(response);
       assertFunctionCallOrder([
         cookieTransfer.responseToCookies,
@@ -410,48 +429,86 @@ describe("injectSendEdgeNetworkRequest", () => {
       ]);
     });
   });
-
   it("returns the merged object from lifecycle::onResponse and runOnResponseCallbacks", () => {
-    const runOnResponseCallbacks = jasmine
-      .createSpy("runOnResponseCallbacks")
-      .and.returnValue(Promise.resolve([{ c: 2 }, { h: 9 }, undefined]));
-
-    lifecycle.onResponse.and.returnValue(
-      Promise.resolve([{ a: 2 }, { b: 8 }, undefined]),
+    const runOnResponseCallbacks = vi.fn().mockReturnValue(
+      Promise.resolve([
+        {
+          c: 2,
+        },
+        {
+          h: 9,
+        },
+        undefined,
+      ]),
     );
-
-    return expectAsync(
-      sendEdgeNetworkRequest({ request, runOnResponseCallbacks }),
-    ).toBeResolvedTo({ c: 2, h: 9, a: 2, b: 8 });
+    lifecycle.onResponse.mockReturnValue(
+      Promise.resolve([
+        {
+          a: 2,
+        },
+        {
+          b: 8,
+        },
+        undefined,
+      ]),
+    );
+    return expect(
+      sendEdgeNetworkRequest({
+        request,
+        runOnResponseCallbacks,
+      }),
+    ).resolves.toStrictEqual({
+      c: 2,
+      h: 9,
+      a: 2,
+      b: 8,
+    });
   });
-
   it("returns the merged object from lifecycle::onBeforeRequest & lifecycle::onResponse", () => {
-    lifecycle.onBeforeRequest.and.callFake(({ onResponse }) => {
-      onResponse(() => ({ a: 1 }));
-      onResponse(() => ({ b: 1 }));
+    lifecycle.onBeforeRequest.mockImplementation(({ onResponse }) => {
+      onResponse(() => ({
+        a: 1,
+      }));
+      onResponse(() => ({
+        b: 1,
+      }));
       onResponse(() => undefined);
       return Promise.resolve();
     });
-    lifecycle.onResponse.and.returnValue(Promise.resolve([{ c: 2 }]));
-    return expectAsync(sendEdgeNetworkRequest({ request })).toBeResolvedTo({
+    lifecycle.onResponse.mockReturnValue(
+      Promise.resolve([
+        {
+          c: 2,
+        },
+      ]),
+    );
+    return expect(
+      sendEdgeNetworkRequest({
+        request,
+      }),
+    ).resolves.toStrictEqual({
       a: 1,
       b: 1,
       c: 2,
     });
   });
-
   it("creates the response with the correct parameters", () => {
-    return sendEdgeNetworkRequest({ request }).then(() => {
+    return sendEdgeNetworkRequest({
+      request,
+    }).then(() => {
       expect(createResponse).toHaveBeenCalledWith({
-        content: { my: "parsedBody" },
+        content: {
+          my: "parsedBody",
+        },
         getHeader: networkResult.getHeader,
       });
     });
   });
-
   it("uses the cluster cookie location hint", () => {
-    getLocationHint.and.returnValue("va6");
-    return sendEdgeNetworkRequest({ request }).then(() => {
+    getLocationHint.mockReturnValue("va6");
+    return sendEdgeNetworkRequest({
+      request,
+    }).then(() => {
       expect(sendNetworkRequest).toHaveBeenCalledWith({
         requestId: "RID123",
         url: "https://edge.example.com/ee/va6/v1/test-action?configId=myconfigId&requestId=RID123",
@@ -460,12 +517,13 @@ describe("injectSendEdgeNetworkRequest", () => {
       });
     });
   });
-
   it("sets validation token params", () => {
-    getAssuranceValidationTokenParams.and.returnValue(
+    getAssuranceValidationTokenParams.mockReturnValue(
       "&adobeAepValidationToken=abc-123",
     );
-    return sendEdgeNetworkRequest({ request }).then(() => {
+    return sendEdgeNetworkRequest({
+      request,
+    }).then(() => {
       expect(sendNetworkRequest).toHaveBeenCalledWith({
         requestId: "RID123",
         url: "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123&adobeAepValidationToken=abc-123",
@@ -474,12 +532,17 @@ describe("injectSendEdgeNetworkRequest", () => {
       });
     });
   });
-
   it("respects the datastreamIdOverride", () => {
-    request.getDatastreamIdOverride.and.returnValue("myconfigIdOverride");
-    return sendEdgeNetworkRequest({ request }).then(() => {
+    request.getDatastreamIdOverride.mockReturnValue("myconfigIdOverride");
+    return sendEdgeNetworkRequest({
+      request,
+    }).then(() => {
       expect(payload.mergeMeta).toHaveBeenCalledWith({
-        sdkConfig: { datastream: { original: "myconfigId" } },
+        sdkConfig: {
+          datastream: {
+            original: "myconfigId",
+          },
+        },
       });
       expect(sendNetworkRequest).toHaveBeenCalledWith({
         payload,

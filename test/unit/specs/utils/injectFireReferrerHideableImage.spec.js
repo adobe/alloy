@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import injectFireReferrerHideableImage from "../../../../src/utils/injectFireReferrerHideableImage.js";
 
 describe("injectFireReferrerHideableImage", () => {
@@ -18,20 +19,21 @@ describe("injectFireReferrerHideableImage", () => {
   let createNodeMock;
   let fireImageMock;
   let fireReferrerHideableImage;
-
   beforeEach(() => {
-    appendNodeMock = jasmine
-      .createSpy("appendNode")
-      .and.callFake(() => ({ contentWindow: { document: {} } }));
-    awaitSelectorMock = jasmine
-      .createSpy("awaitSelector")
-      .and.callFake(() => Promise.resolve(["body"]));
-    createNodeMock = jasmine
-      .createSpy("createNode")
-      .and.callFake(() => ({ contentWindow: { document: {} } }));
-    fireImageMock = jasmine
-      .createSpy("fireImage")
-      .and.callFake(() => Promise.resolve());
+    appendNodeMock = vi.fn().mockImplementation(() => ({
+      contentWindow: {
+        document: {},
+      },
+    }));
+    awaitSelectorMock = vi
+      .fn()
+      .mockImplementation(() => Promise.resolve(["body"]));
+    createNodeMock = vi.fn().mockImplementation(() => ({
+      contentWindow: {
+        document: {},
+      },
+    }));
+    fireImageMock = vi.fn().mockImplementation(() => Promise.resolve());
     fireReferrerHideableImage = injectFireReferrerHideableImage({
       appendNode: appendNodeMock,
       awaitSelector: awaitSelectorMock,
@@ -39,30 +41,25 @@ describe("injectFireReferrerHideableImage", () => {
       fireImage: fireImageMock,
     });
   });
-
   it("should create an iframe for a request that hides the referrer", async () => {
     const request = {
       hideReferrer: true,
       url: "https://adobe.com/test-referrer.jpg",
     };
     await fireReferrerHideableImage(request);
-
     expect(createNodeMock).toHaveBeenCalled();
-    expect(createNodeMock.calls.argsFor(0)).toContain("IFRAME");
+    expect(createNodeMock.mock.calls[0]).toContain("IFRAME");
     expect(fireImageMock).toHaveBeenCalled();
   });
-
   it("should fire the image on the page for a request that does not hide the referrer", async () => {
     const request = {
       hideReferrer: false,
       url: "https://adobe.com/test-referrer.jpg",
     };
     await fireReferrerHideableImage(request);
-
     expect(createNodeMock).not.toHaveBeenCalled();
     expect(fireImageMock).toHaveBeenCalled();
   });
-
   it("should only create one iframe when called multiple times", async () => {
     const request = {
       hideReferrer: true,
@@ -72,12 +69,10 @@ describe("injectFireReferrerHideableImage", () => {
       hideReferrer: true,
       url: "https://adobe.com/test-invalid-referrer2.jpg",
     };
-
     await fireReferrerHideableImage(request);
     await fireReferrerHideableImage(secondRequest);
-
     expect(createNodeMock).toHaveBeenCalledTimes(1);
-    expect(createNodeMock.calls.argsFor(0)).toContain("IFRAME");
+    expect(createNodeMock.mock.calls[0]).toContain("IFRAME");
     expect(fireImageMock).toHaveBeenCalledTimes(2);
   });
 });

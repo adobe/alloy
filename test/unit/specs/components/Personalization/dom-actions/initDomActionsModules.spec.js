@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import initDomActionsModules, {
   DOM_ACTION_APPEND_HTML,
   DOM_ACTION_CUSTOM_CODE,
@@ -49,19 +50,14 @@ const buildSet = () => {
   result.add(DOM_ACTION_PREPEND_HTML);
   result.add(DOM_ACTION_APPEND_HTML);
   result.add(DOM_ACTION_COLLECT_INTERACTIONS);
-
   return result;
 };
-
 const STANDARD_MODULES = buildSet();
-
 describe("Personalization::turbine::initDomActionsModules", () => {
   it("should have all the required modules", () => {
     const result = initDomActionsModules(() => {});
     const keys = Object.keys(result);
-
     expect(keys.length).toEqual(STANDARD_MODULES.size);
-
     Object.keys(result).forEach((key) => {
       expect(STANDARD_MODULES.has(key)).toEqual(true);
     });

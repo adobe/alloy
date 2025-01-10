@@ -10,37 +10,43 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import createNode from "../../../../../src/utils/dom/createNode.js";
 
 describe("DOM::createNode", () => {
   it("should createNode with tag only", () => {
     const element = createNode("DIV");
-
     expect(element.tagName).toEqual("DIV");
   });
-
   it("should createNode with tag and attrs", () => {
-    const element = createNode("DIV", { id: "create" });
-
+    const element = createNode("DIV", {
+      id: "create",
+    });
     expect(element.tagName).toEqual("DIV");
     expect(element.id).toEqual("create");
   });
-
   it("should createNode with tag, child", () => {
     const element = createNode("DIV", {}, {}, [createNode("p")]);
-
     expect(element.tagName).toEqual("DIV");
     expect(element.firstElementChild.tagName).toEqual("P");
   });
-
   it("supports style attribute objects", () => {
-    const element = createNode("DIV", {}, { style: { color: "blue" } });
+    const element = createNode(
+      "DIV",
+      {},
+      {
+        style: {
+          color: "blue",
+        },
+      },
+    );
     expect(element.tagName).toEqual("DIV");
     expect(element.style.color).toEqual("blue");
   });
-
   it("supports style attribute strings", () => {
-    const element = createNode("DIV", { style: "color: blue;" });
+    const element = createNode("DIV", {
+      style: "color: blue;",
+    });
     expect(element.tagName).toEqual("DIV");
     expect(element.style.color).toEqual("blue");
   });

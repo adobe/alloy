@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { afterEach, describe, it, expect } from "vitest";
 import createNode from "../../../../../src/utils/dom/createNode.js";
 import appendNode from "../../../../../src/utils/dom/appendNode.js";
 import removeNode from "../../../../../src/utils/dom/removeNode.js";
@@ -19,12 +20,11 @@ describe("DOM::removeNode", () => {
   afterEach(() => {
     selectNodes("div").forEach(removeNode);
   });
-
   it("should remove a node from head tag", () => {
-    const node = createNode("div", { id: "remove" });
-
+    const node = createNode("div", {
+      id: "remove",
+    });
     removeNode(appendNode(document.head, node));
-
     expect(selectNodes("#remove").length).toEqual(0);
   });
 });

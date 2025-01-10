@@ -10,36 +10,38 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createRecallAndInjectClickedElementProperties from "../../../../../src/components/ActivityCollector/createRecallAndInjectClickedElementProperties.js";
 
 describe("ActivityCollector::createRecallAndInjectClickedElementProperties", () => {
   let props;
   let clickActivityStorage;
   let event;
-
   beforeEach(() => {
     props = {};
     clickActivityStorage = {
-      load: jasmine.createSpy().and.returnValue(props),
-      save: jasmine.createSpy(),
+      load: vi.fn().mockReturnValue(props),
+      save: vi.fn(),
     };
     event = {
-      mergeXdm: jasmine.createSpy(),
-      mergeData: jasmine.createSpy(),
+      mergeXdm: vi.fn(),
+      mergeData: vi.fn(),
     };
   });
-
   it("should return a function", () => {
     const recallAndInjectClickedElementProperties =
-      createRecallAndInjectClickedElementProperties({ clickActivityStorage });
+      createRecallAndInjectClickedElementProperties({
+        clickActivityStorage,
+      });
     expect(recallAndInjectClickedElementProperties).toEqual(
-      jasmine.any(Function),
+      expect.any(Function),
     );
   });
-
   it("should merge stored clicked element properties to event XDM and DATA", () => {
     const recallClickElementProperties =
-      createRecallAndInjectClickedElementProperties({ clickActivityStorage });
+      createRecallAndInjectClickedElementProperties({
+        clickActivityStorage,
+      });
     props.pageName = "examplePage";
     props.linkName = "example";
     props.linkRegion = "exampleRegion";

@@ -9,29 +9,62 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { describe } from "vitest";
 import { string } from "../../../../../src/utils/validation/index.js";
 import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::string", () => {
   describeValidation("optional string", string(), [
-    { value: false, error: true },
-    { value: 0, error: true },
-    { value: [], error: true },
-    { value: () => {}, error: true },
-    { value: null },
-    { value: undefined },
+    {
+      value: false,
+      error: true,
+    },
+    {
+      value: 0,
+      error: true,
+    },
+    {
+      value: [],
+      error: true,
+    },
+    {
+      value: () => {},
+      error: true,
+    },
+    {
+      value: null,
+    },
+    {
+      value: undefined,
+    },
   ]);
-
   describeValidation("required string", string().required(), [
-    { value: null, error: true },
-    { value: undefined, error: true },
-    { value: "" },
-    { value: "hello" },
+    {
+      value: null,
+      error: true,
+    },
+    {
+      value: undefined,
+      error: true,
+    },
+    {
+      value: "",
+    },
+    {
+      value: "hello",
+    },
   ]);
-
   describeValidation("default string", string().default("default"), [
-    { value: null, expected: "default" },
-    { value: undefined, expected: "default" },
-    { value: "hello" },
+    {
+      value: null,
+      expected: "default",
+    },
+    {
+      value: undefined,
+      expected: "default",
+    },
+    {
+      value: "hello",
+    },
   ]);
 });
