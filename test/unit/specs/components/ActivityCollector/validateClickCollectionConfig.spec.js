@@ -10,13 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import validateClickCollectionConfig from "../../../../../src/components/ActivityCollector/validateClickCollectionConfig.js";
 import { DEFAULT_DOWNLOAD_QUALIFIER } from "../../../../../src/components/ActivityCollector/configValidators.js";
+import validateClickCollectionConfig from "../../../../../src/components/ActivityCollector/validateClickCollectionConfig.js";
 
 describe("ActivityCollector::validateClickCollectionConfig", () => {
   let logger;
 
   beforeEach(() => {
+    logger = {
+      warn: vi.fn(),
+    };
     logger = {
       warn: vi.fn(),
     };
@@ -31,7 +34,7 @@ describe("ActivityCollector::validateClickCollectionConfig", () => {
     validateClickCollectionConfig(config, logger);
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "The 'onBeforeLinkClickSend' configuration was provided but will be ignored because clickCollectionEnabled is false.",
+      "The 'onBeforeLinkClickSend' configuration was provided but will be ignored because clickCollectionEnabled is false."
     );
   });
 
@@ -44,7 +47,7 @@ describe("ActivityCollector::validateClickCollectionConfig", () => {
     validateClickCollectionConfig(config, logger);
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "The 'downloadLinkQualifier' configuration was provided but will be ignored because clickCollectionEnabled is false.",
+      "The 'downloadLinkQualifier' configuration was provided but will be ignored because clickCollectionEnabled is false."
     );
   });
 
