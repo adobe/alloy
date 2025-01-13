@@ -83,6 +83,7 @@
     "css.escape": "^1.5.1",
     "js-cookie": "3.0.5",
     "parse-uri": "^1.0.9",
+    "protobufjs": "^7.4.0",
     "rollup": "^4.31.0",
     "rollup-plugin-license": "^3.5.3",
     "uuid": "^11.0.5"
