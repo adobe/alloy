@@ -10,8 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { getNamespacedCookieName } from "../../utils/index.js";
-import { Identity } from "./identityProtobuf.js";
+import decodeIdentityFromKndctrProtobuf from "./identityProtobuf.js";
 
+/**
+ * takes a base64 string of bytes and returns a Uint8Array
+ * @param {string} base64
+ * @returns {Uint8Array}
+ */
 const base64ToBytes = (base64) => {
   const binString = atob(base64);
   return Uint8Array.from(binString, (m) => m.codePointAt(0));
@@ -35,7 +40,6 @@ export default ({ orgId, cookieJar }) => {
     // and we need to get it to a Uint8Array in order to decode it
 
     const cookieBytes = base64ToBytes(decodedCookie);
-    const message = Identity.decode(cookieBytes);
-    return message.ecid;
+    return decodeIdentityFromKndctrProtobuf(cookieBytes);
   };
 };

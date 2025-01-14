@@ -1,295 +1,143 @@
-/* eslint-disable no-bitwise, max-classes-per-file, no-multi-assign, func-style, no-plusplus, vars-on-top */
-/* eslint-disable block-scoped-var, id-length, no-control-regex, no-magic-numbers, no-prototype-builtins, no-redeclare, no-shadow, no-var, sort-vars */
-/*
- * Generated automatically by the command
- * `npx --package "protobufjs-cli" --command "pbjs --target static-module --wrap es6 --es6 --no-create --no-encode --no-verify --no-convert --no-delimited --no-beautify --no-service ./kndctr.proto"
+/* eslint-disable no-bitwise */
+
+/** Decoding bytes is not something commonly done in vanilla JavaScript work, and as such
+ * this file will strive to explain each step of decoding a protobuf in detail.
+ * It leans heavily on the protobuf documentation https://protobuf.dev/programming-guides/encoding/,
+ * often quoting directly from it without citation.
  */
-import * as $protobuf from "protobufjs/minimal.js";
 
-// Common aliases
-const $Reader = $protobuf.Reader;
-const $util = $protobuf.util;
+/** From https://git.corp.adobe.com/pages/experience-edge/konductor/#/api/identifying-visitors?id=device-identifiers */
+const ECID_FIELD_NUMBER = 1;
 
-// Exported root namespace
-const $root = $protobuf.roots.default || ($protobuf.roots.default = {});
+/**
+ * Decodes a varint from a buffer starting at the given offset.
+ *
+ * Variable-width integers, or varints, are at the core of the wire format. They
+ * allow encoding unsigned 64-bit integers using anywhere between one and ten
+ * bytes, with small values using fewer bytes.
+ *
+ * Each byte in the varint has a continuation bit that indicates if the byte
+ * that follows it is part of the varint. This is the most significant bit (MSB)
+ * of the byte (sometimes also called the sign bit). The lower 7 bits are a
+ * payload; the resulting integer is built by appending together the 7-bit
+ * payloads of its constituent bytes.
+ *
+ * @example decodeVarint(new Uint8Array([0b0, 0b1]), 0) // { value: 1, length: 2 }
+ * @example decodeVarint(new Uint8Array([0b10010110, 0b00000001], 0) // { value: 150, length: 2 })
+ * @param {Uint8Array} buffer
+ * @param {number} offset
+ * @returns {{ value: number, length: number }}
+ */
+export const decodeVarint = (buffer, offset) => {
+  let value = 0;
+  let length = 0;
+  let byte;
+  do {
+    byte = buffer[offset + length];
+    value |= (byte & 0b01111111) << (7 * length);
+    length += 1;
+  } while (byte & 0b10000000);
+  return { value, length };
+};
 
-export const Identity = ($root.Identity = (() => {
-  /**
-   * Properties of an Identity.
-   * @exports IIdentity
-   * @interface IIdentity
-   * @property {string|null} [ecid] Identity ecid
-   * @property {IIdentityMetadata|null} [metadata] Identity metadata
-   * @property {number|Long|null} [lastSync] Identity lastSync
-   * @property {number|Long|null} [syncHash] Identity syncHash
-   * @property {number|null} [idSyncContainerId] Identity idSyncContainerId
-   * @property {number|Long|null} [writeTime] Identity writeTime
-   */
+/**
+ * | ID | Name   | Used for                                                 |
+ * |----|--------|----------------------------------------------------------|
+ * | 0  | varint | int32, int64, uint32, uint64, sint32, sint64, bool, enum |
+ * | 1  | I64    | fixed64, sfixed64, double                                |
+ * | 2  | LEN    | string, bytes                                            |
+ * | 3  | SGROUP | group start (deprecated)                                 |
+ * | 4  | EGROUP | group end (deprecated)                                   |
+ * | 5  | I32    | fixed32, sfixed32, float                                 |
+ */
+const WIRE_TYPES = Object.freeze({
+  VARINT: 0,
+  I64: 1,
+  LEN: 2,
+  SGROUP: 3,
+  EGROUP: 4,
+  I32: 5,
+});
 
-  /**
-   * Constructs a new Identity.
-   * @exports Identity
-   * @classdesc Represents an Identity.
-   * @implements IIdentity
-   * @constructor
-   * @param {IIdentity=} [p] Properties to set
-   */
-  function Identity(p) {
-    if (p)
-      for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-        if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-  }
-
-  /**
-   * Identity ecid.
-   * @member {string} ecid
-   * @memberof Identity
-   * @instance
-   */
-  Identity.prototype.ecid = "";
-
-  /**
-   * Identity metadata.
-   * @member {IIdentityMetadata|null|undefined} metadata
-   * @memberof Identity
-   * @instance
-   */
-  Identity.prototype.metadata = null;
-
-  /**
-   * Identity lastSync.
-   * @member {number|Long} lastSync
-   * @memberof Identity
-   * @instance
-   */
-  Identity.prototype.lastSync = $util.Long
-    ? $util.Long.fromBits(0, 0, false)
-    : 0;
-
-  /**
-   * Identity syncHash.
-   * @member {number|Long} syncHash
-   * @memberof Identity
-   * @instance
-   */
-  Identity.prototype.syncHash = $util.Long
-    ? $util.Long.fromBits(0, 0, false)
-    : 0;
-
-  /**
-   * Identity idSyncContainerId.
-   * @member {number} idSyncContainerId
-   * @memberof Identity
-   * @instance
-   */
-  Identity.prototype.idSyncContainerId = 0;
-
-  /**
-   * Identity writeTime.
-   * @member {number|Long} writeTime
-   * @memberof Identity
-   * @instance
-   */
-  Identity.prototype.writeTime = $util.Long
-    ? $util.Long.fromBits(0, 0, false)
-    : 0;
-
-  /**
-   * Decodes an Identity message from the specified reader or buffer.
-   * @function decode
-   * @memberof Identity
-   * @static
-   * @param {$protobuf.Reader|Uint8Array} r Reader or buffer to decode from
-   * @param {number} [l] Message length if known beforehand
-   * @returns {Identity} Identity
-   * @throws {Error} If the payload is not a reader or valid buffer
-   * @throws {$protobuf.util.ProtocolError} If required fields are missing
-   */
-  Identity.decode = function decode(r, l) {
-    if (!(r instanceof $Reader)) r = $Reader.create(r);
-    var c = l === undefined ? r.len : r.pos + l;
-    var m = new $root.Identity();
-    while (r.pos < c) {
-      var t = r.uint32();
-      switch (t >>> 3) {
-        case 1: {
-          m.ecid = r.string();
+/**
+ * Given a protobuf as a Uint8Array and based on the protobuf definition for the
+ * kndctr cookie provided at https://git.corp.adobe.com/pages/experience-edge/konductor/#/api/identifying-visitors?id=device-identifiers,
+ * this function should return the ECID as a string.
+ * The decoding of the protobuf is hand-crafted in order to save on size
+ * compared to the full protobuf.js library.
+ * @param {Uint8Array} buffer
+ * @returns {string|null}
+ */
+const decodeIdentityFromKndctrProtobuf = (buffer) => {
+  let offset = 0;
+  let ecid = null;
+  while (offset < buffer.length && !ecid) {
+    // A protobuf message is a series of records. Each record is a tag, the length,
+    // and the value.
+    // A record always starts with the tag. The “tag” of a record is encoded as
+    // a varint formed from the field number and the wire type via the formula
+    // `(field_number << 3) | wire_type`. In other words, after decoding the
+    // varint representing a field, the low 3 bits tell us the wire type, and the rest of the integer tells us the field number.
+    // So the first step is to decode the varint
+    const { value: tag, length: tagLength } = decodeVarint(buffer, offset);
+    offset += tagLength;
+    // Next, we get the wire type and the field number.
+    // You take the last three bits to get the wire type and then right-shift by
+    // three to get the field number.
+    const wireType = tag & 0b111;
+    const fieldNumber = tag >> 3;
+    // We only care about the ECID field, so we will skip any other fields until
+    // we find it.
+    if (fieldNumber === ECID_FIELD_NUMBER) {
+      // The wire type for the ECID field is 2, which means it is a length-delimited field.
+      if (wireType === WIRE_TYPES.LEN) {
+        // The next varint will tell us the length of the ECID.
+        const { value: length, length: lengthLength } = decodeVarint(
+          buffer,
+          offset,
+        );
+        offset += lengthLength;
+        // The ECID is a UTF-8 encoded string, so we will decode it as such.
+        ecid = new TextDecoder().decode(buffer.slice(offset, offset + length));
+        offset += length;
+      }
+    } else {
+      // If we don't care about the field, we skip it.
+      // The wire type tells us how to skip the field.
+      switch (wireType) {
+        case WIRE_TYPES.VARINT:
+          // Skip the varint
+          offset += decodeVarint(buffer, offset).length;
+          break;
+        case WIRE_TYPES.I64:
+          // Skip the 64-bit integer
+          offset += 8;
+          break;
+        case WIRE_TYPES.LEN: {
+          // Skip the length-delimited field
+          const { value: length, length: lengthLength } = decodeVarint(
+            buffer,
+            offset,
+          );
+          offset += lengthLength + length;
           break;
         }
-        case 10: {
-          m.metadata = $root.IdentityMetadata.decode(r, r.uint32());
+        case WIRE_TYPES.SGROUP:
+          // Skip the start group
           break;
-        }
-        case 20: {
-          m.lastSync = r.int64();
+        case WIRE_TYPES.EGROUP:
+          // Skip the end group
           break;
-        }
-        case 21: {
-          m.syncHash = r.int64();
+        case WIRE_TYPES.I32:
+          // Skip the 32-bit integer
+          offset += 4;
           break;
-        }
-        case 22: {
-          m.idSyncContainerId = r.int32();
-          break;
-        }
-        case 30: {
-          m.writeTime = r.int64();
-          break;
-        }
         default:
-          r.skipType(t & 7);
-          break;
+          throw new Error(`Unknown wire type: ${wireType}`);
       }
     }
-    return m;
-  };
-
-  /**
-   * Gets the default type url for Identity
-   * @function getTypeUrl
-   * @memberof Identity
-   * @static
-   * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-   * @returns {string} The default type url
-   */
-  Identity.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-    if (typeUrlPrefix === undefined) {
-      typeUrlPrefix = "type.googleapis.com";
-    }
-    return `${typeUrlPrefix}/Identity`;
-  };
-
-  return Identity;
-})());
-
-export const IdentityMetadata = ($root.IdentityMetadata = (() => {
-  /**
-   * Properties of an IdentityMetadata.
-   * @exports IIdentityMetadata
-   * @interface IIdentityMetadata
-   * @property {number|Long|null} [createdAt] IdentityMetadata createdAt
-   * @property {boolean|null} [isNew] IdentityMetadata isNew
-   * @property {number|null} [deviceType] IdentityMetadata deviceType
-   * @property {string|null} [region] IdentityMetadata region
-   * @property {number|null} [source] IdentityMetadata source
-   */
-
-  /**
-   * Constructs a new IdentityMetadata.
-   * @exports IdentityMetadata
-   * @classdesc Represents an IdentityMetadata.
-   * @implements IIdentityMetadata
-   * @constructor
-   * @param {IIdentityMetadata=} [p] Properties to set
-   */
-  function IdentityMetadata(p) {
-    if (p)
-      for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-        if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
   }
 
-  /**
-   * IdentityMetadata createdAt.
-   * @member {number|Long} createdAt
-   * @memberof IdentityMetadata
-   * @instance
-   */
-  IdentityMetadata.prototype.createdAt = $util.Long
-    ? $util.Long.fromBits(0, 0, false)
-    : 0;
-
-  /**
-   * IdentityMetadata isNew.
-   * @member {boolean} isNew
-   * @memberof IdentityMetadata
-   * @instance
-   */
-  IdentityMetadata.prototype.isNew = false;
-
-  /**
-   * IdentityMetadata deviceType.
-   * @member {number} deviceType
-   * @memberof IdentityMetadata
-   * @instance
-   */
-  IdentityMetadata.prototype.deviceType = 0;
-
-  /**
-   * IdentityMetadata region.
-   * @member {string} region
-   * @memberof IdentityMetadata
-   * @instance
-   */
-  IdentityMetadata.prototype.region = "";
-
-  /**
-   * IdentityMetadata source.
-   * @member {number} source
-   * @memberof IdentityMetadata
-   * @instance
-   */
-  IdentityMetadata.prototype.source = 0;
-
-  /**
-   * Decodes an IdentityMetadata message from the specified reader or buffer.
-   * @function decode
-   * @memberof IdentityMetadata
-   * @static
-   * @param {$protobuf.Reader|Uint8Array} r Reader or buffer to decode from
-   * @param {number} [l] Message length if known beforehand
-   * @returns {IdentityMetadata} IdentityMetadata
-   * @throws {Error} If the payload is not a reader or valid buffer
-   * @throws {$protobuf.util.ProtocolError} If required fields are missing
-   */
-  IdentityMetadata.decode = function decode(r, l) {
-    if (!(r instanceof $Reader)) r = $Reader.create(r);
-    var c = l === undefined ? r.len : r.pos + l;
-    var m = new $root.IdentityMetadata();
-    while (r.pos < c) {
-      var t = r.uint32();
-      switch (t >>> 3) {
-        case 1: {
-          m.createdAt = r.int64();
-          break;
-        }
-        case 2: {
-          m.isNew = r.bool();
-          break;
-        }
-        case 3: {
-          m.deviceType = r.int32();
-          break;
-        }
-        case 5: {
-          m.region = r.string();
-          break;
-        }
-        case 6: {
-          m.source = r.int32();
-          break;
-        }
-        default:
-          r.skipType(t & 7);
-          break;
-      }
-    }
-    return m;
-  };
-
-  /**
-   * Gets the default type url for IdentityMetadata
-   * @function getTypeUrl
-   * @memberof IdentityMetadata
-   * @static
-   * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-   * @returns {string} The default type url
-   */
-  IdentityMetadata.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-    if (typeUrlPrefix === undefined) {
-      typeUrlPrefix = "type.googleapis.com";
-    }
-    return `${typeUrlPrefix}/IdentityMetadata`;
-  };
-
-  return IdentityMetadata;
-})());
+  return ecid;
+};
+export default decodeIdentityFromKndctrProtobuf;

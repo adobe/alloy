@@ -12,22 +12,24 @@ governing permissions and limitations under the License.
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import createGetEcidFromCookie from "../../../../../src/components/CookieReader/createGetEcidFromCookie.js";
 
-describe("Identity::createGetEcidFromCookie", () => {
-  let cookieValue;
-  let cookieJar;
-  let getEcidFromCookie;
-  beforeEach(() => {
-    cookieValue =
-      "CiYxNDAxNTI0NjEzODM4MjI2ODk1MTgwNTkyMTYxNjkxNTc0MzEyOFISCIelhf%5FOMRABGAEqA09SMjAA8AHX%5F4DZlzI%3D";
-    cookieJar = { get: vi.fn().mockReturnValue(cookieValue) };
-    getEcidFromCookie = createGetEcidFromCookie({
-      orgId: "TEST_ORG",
-      cookieJar,
+describe("CookieReader", () => {
+  describe("createGetEcidFromCookie", () => {
+    let cookieValue;
+    let cookieJar;
+    let getEcidFromCookie;
+    beforeEach(() => {
+      cookieValue =
+        "CiYxNDAxNTI0NjEzODM4MjI2ODk1MTgwNTkyMTYxNjkxNTc0MzEyOFISCIelhf%5FOMRABGAEqA09SMjAA8AHX%5F4DZlzI%3D";
+      cookieJar = { get: vi.fn().mockReturnValue(cookieValue) };
+      getEcidFromCookie = createGetEcidFromCookie({
+        orgId: "TEST_ORG",
+        cookieJar,
+      });
     });
-  });
 
-  it("should return the ecid from the cookie", () => {
-    const result = getEcidFromCookie();
-    expect(result).toBe("14015246138382268951805921616915743128");
+    it("should return the ecid from the cookie", () => {
+      const result = getEcidFromCookie();
+      expect(result).toBe("14015246138382268951805921616915743128");
+    });
   });
 });
