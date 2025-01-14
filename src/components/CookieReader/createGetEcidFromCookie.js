@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { getNamespacedCookieName } from "../../utils/index.js";
-import decodeIdentityFromKndctrProtobuf from "./identityProtobuf.js";
+import decodeKndctrProtobuf from "./decodeKndctrProtobuf.js";
 
 /**
  * takes a base64 string of bytes and returns a Uint8Array
@@ -22,7 +22,7 @@ const base64ToBytes = (base64) => {
   return Uint8Array.from(binString, (m) => m.codePointAt(0));
 };
 
-export default ({ orgId, cookieJar }) => {
+export default ({ orgId, cookieJar, logger }) => {
   const kndctrCookieName = getNamespacedCookieName(orgId, "kndctr");
   /**
    * Returns the ECID from the kndctr cookie.
@@ -33,13 +33,21 @@ export default ({ orgId, cookieJar }) => {
     if (!cookie) {
       return null;
     }
-    const decodedCookie = decodeURIComponent(cookie)
-      .replace(/_/g, "/")
-      .replace(/-/g, "+");
-    // cookie is a base64 encoded byte representation of a Identity protobuf message
-    // and we need to get it to a Uint8Array in order to decode it
+    try {
+      const decodedCookie = decodeURIComponent(cookie)
+        .replace(/_/g, "/")
+        .replace(/-/g, "+");
+      // cookie is a base64 encoded byte representation of a Identity protobuf message
+      // and we need to get it to a Uint8Array in order to decode it
 
-    const cookieBytes = base64ToBytes(decodedCookie);
-    return decodeIdentityFromKndctrProtobuf(cookieBytes);
+      const cookieBytes = base64ToBytes(decodedCookie);
+      return decodeKndctrProtobuf(cookieBytes);
+    } catch (error) {
+      logger.warn(
+        `Unable to decode ECID from ${kndctrCookieName} cookie`,
+        error,
+      );
+      return null;
+    }
   };
 };

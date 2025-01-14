@@ -22,11 +22,18 @@ const ECID_FIELD_NUMBER = 1;
  * payload; the resulting integer is built by appending together the 7-bit
  * payloads of its constituent bytes.
  *
+ * 10010110 00000001        // Original inputs.
+ *  0010110  0000001        // Drop continuation bits.
+ *  0000001  0010110        // Convert to big-endian.
+ *    00000010010110        // Concatenate.
+ *  128 + 16 + 4 + 2 = 150  // Interpret as an unsigned 64-bit integer.
+ *
  * @example decodeVarint(new Uint8Array([0b0, 0b1]), 0) // { value: 1, length: 2 }
  * @example decodeVarint(new Uint8Array([0b10010110, 0b00000001], 0) // { value: 150, length: 2 })
  * @param {Uint8Array} buffer
  * @param {number} offset
- * @returns {{ value: number, length: number }}
+ * @returns {{ value: number, length: number }} The value of the varint and the
+ * number of bytes it takes up.
  */
 export const decodeVarint = (buffer, offset) => {
   let value = 0;
@@ -34,7 +41,10 @@ export const decodeVarint = (buffer, offset) => {
   let byte;
   do {
     byte = buffer[offset + length];
+    // Drop the continuation bit (the most significant bit), convert it from
+    // little endian to big endian, and add it to the accumlator `value`.
     value |= (byte & 0b01111111) << (7 * length);
+    // Increase the length of the varint by one byte.
     length += 1;
   } while (byte & 0b10000000);
   return { value, length };
@@ -68,7 +78,7 @@ const WIRE_TYPES = Object.freeze({
  * @param {Uint8Array} buffer
  * @returns {string|null}
  */
-const decodeIdentityFromKndctrProtobuf = (buffer) => {
+const decodeKndctrProtobuf = (buffer) => {
   let offset = 0;
   let ecid = null;
   while (offset < buffer.length && !ecid) {
@@ -92,14 +102,13 @@ const decodeIdentityFromKndctrProtobuf = (buffer) => {
       // The wire type for the ECID field is 2, which means it is a length-delimited field.
       if (wireType === WIRE_TYPES.LEN) {
         // The next varint will tell us the length of the ECID.
-        const { value: length, length: lengthLength } = decodeVarint(
-          buffer,
-          offset,
-        );
-        offset += lengthLength;
+        const fieldValueLength = decodeVarint(buffer, offset);
+        offset += fieldValueLength.length;
         // The ECID is a UTF-8 encoded string, so we will decode it as such.
-        ecid = new TextDecoder().decode(buffer.slice(offset, offset + length));
-        offset += length;
+        ecid = new TextDecoder().decode(
+          buffer.slice(offset, offset + fieldValueLength.value),
+        );
+        offset += fieldValueLength.value;
       }
     } else {
       // If we don't care about the field, we skip it.
@@ -114,12 +123,9 @@ const decodeIdentityFromKndctrProtobuf = (buffer) => {
           offset += 8;
           break;
         case WIRE_TYPES.LEN: {
-          // Skip the length-delimited field
-          const { value: length, length: lengthLength } = decodeVarint(
-            buffer,
-            offset,
-          );
-          offset += lengthLength + length;
+          // Find the value that represents the length of the vield
+          const fieldValueLength = decodeVarint(buffer, offset);
+          offset += fieldValueLength.length + fieldValueLength.value;
           break;
         }
         case WIRE_TYPES.SGROUP:
@@ -133,11 +139,13 @@ const decodeIdentityFromKndctrProtobuf = (buffer) => {
           offset += 4;
           break;
         default:
-          throw new Error(`Unknown wire type: ${wireType}`);
+          throw new Error(
+            `Malformed kndctr cookie. Unknown wire type: ${wireType}`,
+          );
       }
     }
   }
 
   return ecid;
 };
-export default decodeIdentityFromKndctrProtobuf;
+export default decodeKndctrProtobuf;
