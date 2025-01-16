@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { describe, it, expect } from "vitest";
 import inAppMessageConsequenceAdapter from "../../../../../../src/components/RulesEngine/consequenceAdapters/inAppMessageConsequenceAdapter.js";
 import { TEXT_HTML } from "../../../../../../src/constants/contentType.js";
 
@@ -53,7 +54,7 @@ describe("RulesEngine:inAppMessageConsequenceAdapter", () => {
           backdropColor: "#000000",
           height: 60,
         },
-        webParameters: jasmine.any(Object),
+        webParameters: expect.any(Object),
         content: "<!doctype html></html>",
         contentType: TEXT_HTML,
       },

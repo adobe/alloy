@@ -9,11 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { beforeEach, describe, it, expect } from "vitest";
 import injectDevice from "../../../../../src/components/Context/injectDevice.js";
 
 describe("Context::injectDevice", () => {
   let window;
-
   beforeEach(() => {
     window = {
       screen: {
@@ -22,15 +22,15 @@ describe("Context::injectDevice", () => {
       },
     };
   });
-
   const run = () => {
     const xdm = {};
     injectDevice(window)(xdm);
     return xdm;
   };
-
   it("handles the happy path", () => {
-    window.screen.orientation = { type: "landscape-primary" };
+    window.screen.orientation = {
+      type: "landscape-primary",
+    };
     expect(run()).toEqual({
       device: {
         screenHeight: 800,
@@ -39,9 +39,10 @@ describe("Context::injectDevice", () => {
       },
     });
   });
-
   it("handles portrait orientation type", () => {
-    window.screen.orientation = { type: "portrait-secondary" };
+    window.screen.orientation = {
+      type: "portrait-secondary",
+    };
     expect(run()).toEqual({
       device: {
         screenHeight: 800,
@@ -50,7 +51,6 @@ describe("Context::injectDevice", () => {
       },
     });
   });
-
   it("handles matchMedia queries: portrait", () => {
     window.matchMedia = (query) => ({
       matches: query === "(orientation: portrait)",
@@ -63,7 +63,6 @@ describe("Context::injectDevice", () => {
       },
     });
   });
-
   it("handles matchMedia queries: landscape", () => {
     window.matchMedia = (query) => ({
       matches: query === "(orientation: landscape)",
@@ -76,7 +75,6 @@ describe("Context::injectDevice", () => {
       },
     });
   });
-
   it("handles string values for the height and width", () => {
     window = {
       screen: {
@@ -100,22 +98,27 @@ describe("Context::injectDevice", () => {
     };
     expect(run()).toEqual({});
   });
-
   [
     undefined,
     null,
     {},
-    { type: "foo" },
-    { type: "a-b" },
-    { type: null },
+    {
+      type: "foo",
+    },
+    {
+      type: "a-b",
+    },
+    {
+      type: null,
+    },
   ].forEach((orientation) => {
-    it(`handles a bad screen orientation: ${JSON.stringify(
-      orientation,
-    )}`, () => {
+    it(`handles a bad screen orientation: ${JSON.stringify(orientation)}`, () => {
       if (orientation !== undefined) {
         window.screen.orientation = orientation;
       }
-      window.matchMedia = () => ({ matches: false });
+      window.matchMedia = () => ({
+        matches: false,
+      });
       expect(run()).toEqual({
         device: {
           screenHeight: 800,

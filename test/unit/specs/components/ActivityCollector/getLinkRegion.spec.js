@@ -9,6 +9,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import getLinkRegion from "../../../../../src/components/ActivityCollector/getLinkRegion.js";
 
 const createChildElement = (element) => {
@@ -16,12 +17,10 @@ const createChildElement = (element) => {
     parentNode: element,
   };
 };
-
 describe("ActivityCollector::getLinkRegion", () => {
   it("Returns BODY if no region is found", () => {
     expect(getLinkRegion({})).toBe("BODY");
   });
-
   it("Picks region properties based on priority", () => {
     const tests = [
       {
@@ -54,7 +53,6 @@ describe("ActivityCollector::getLinkRegion", () => {
     });
     expect(getLinkRegion({})).toBe("BODY");
   });
-
   it("Traverses up the DOM to find a region", () => {
     const element = {
       id: "3-levels",
@@ -62,7 +60,6 @@ describe("ActivityCollector::getLinkRegion", () => {
     const anchor = createChildElement(createChildElement(element));
     expect(getLinkRegion(anchor)).toBe("3-levels");
   });
-
   it("Supports setting region as semantic element name for supported elements", () => {
     const tests = [
       {
@@ -102,7 +99,6 @@ describe("ActivityCollector::getLinkRegion", () => {
     });
     expect(getLinkRegion({})).toBe("BODY");
   });
-
   it("Truncates excess whitespace in region", () => {
     const element = {
       id: " ab   c",

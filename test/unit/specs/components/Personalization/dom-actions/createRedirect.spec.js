@@ -9,14 +9,15 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, describe, it, expect } from "vitest";
 import createRedirect from "../../../../../../src/components/Personalization/dom-actions/createRedirect.js";
 
 describe("createRedirect", () => {
   it("redirects", () => {
     const window = {
       location: {
-        replace: jasmine.createSpy(),
-        href: jasmine.createSpy(),
+        replace: vi.fn(),
+        href: vi.fn(),
       },
     };
     const redirect = createRedirect(window);
@@ -24,12 +25,11 @@ describe("createRedirect", () => {
     expect(window.location.replace).toHaveBeenCalledWith("myurl");
     expect(window.location.href).not.toHaveBeenCalled();
   });
-
   it("redirects using window.location.href when preserveHistory is true", () => {
     const window = {
       location: {
-        href: jasmine.createSpy(),
-        replace: jasmine.createSpy(),
+        href: vi.fn(),
+        replace: vi.fn(),
       },
     };
     const redirectUrl = "https://www.adobe.com";

@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import injectAppendIdentityToUrl from "../../../../../../src/components/Identity/appendIdentityToUrl/injectAppendIdentityToUrl.js";
 
 describe("appendIdentityToUrl", () => {
@@ -21,13 +22,11 @@ describe("appendIdentityToUrl", () => {
   });
   const ecid = "1234";
   const qsp = "adobe_mc=TS%3D1%7CMCMID%3D1234%7CMCORGID%3Dmyorg%2540adobe";
-
   const test = (original, expected) => {
     it(`appends to "${original}"`, () => {
       expect(appendIdentityToUrl(ecid, original)).toBe(expected);
     });
   };
-
   test("", `?${qsp}`);
   test("/", `/?${qsp}`);
   test("?", `?${qsp}`);

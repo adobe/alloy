@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import validateMediaSessionOptions from "../../../../../src/components/StreamingMedia/validateMediaSessionOptions.js";
 
 describe("StreamingMedia::validateMediaSessionOptions", () => {
@@ -24,12 +25,12 @@ describe("StreamingMedia::validateMediaSessionOptions", () => {
         },
       },
     };
-
     expect(() => {
-      validateMediaSessionOptions({ options });
+      validateMediaSessionOptions({
+        options,
+      });
     }).not.toThrowError();
   });
-
   it("should not fail when playerId, callback and xdm are used", () => {
     const options = {
       xdm: {
@@ -40,12 +41,12 @@ describe("StreamingMedia::validateMediaSessionOptions", () => {
         },
       },
     };
-
     expect(() => {
-      validateMediaSessionOptions({ options });
+      validateMediaSessionOptions({
+        options,
+      });
     }).not.toThrowError();
   });
-
   it("should throw an error when invalid options are passed", () => {
     const options = {
       xdm: {
@@ -56,9 +57,10 @@ describe("StreamingMedia::validateMediaSessionOptions", () => {
         },
       },
     };
-
     expect(() => {
-      validateMediaSessionOptions({ options });
+      validateMediaSessionOptions({
+        options,
+      });
     }).toThrowError();
   });
 });

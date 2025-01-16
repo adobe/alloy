@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   injectDoesIdentityCookieExist,
   cookieJar,
@@ -19,19 +20,17 @@ import removeAllCookies from "../../helpers/removeAllCookies.js";
 describe("Identity::injectDoesIdentityCookieExist", () => {
   beforeEach(removeAllCookies);
   afterEach(removeAllCookies);
-
   it("returns false if cookie does not exist", () => {
     const doesIdentityCookieExist = injectDoesIdentityCookieExist({
       orgId: "org@adobe",
     });
-    expect(doesIdentityCookieExist()).toBeFalse();
+    expect(doesIdentityCookieExist()).toBe(false);
   });
-
   it("returns true if cookie exists", () => {
     cookieJar.set("kndctr_org_adobe_identity", "user@adobe");
     const doesIdentityCookieExist = injectDoesIdentityCookieExist({
       orgId: "org@adobe",
     });
-    expect(doesIdentityCookieExist()).toBeTrue();
+    expect(doesIdentityCookieExist()).toBe(true);
   });
 });

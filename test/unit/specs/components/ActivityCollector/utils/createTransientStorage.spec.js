@@ -10,18 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import createTransientStorage from "../../../../../../src/components/ActivityCollector/utils/createTransientStorage.js";
 
 describe("ActivityCollector::createTransientStorage", () => {
   it("should return an object with the expected methods", () => {
     const transientStorage = createTransientStorage(window);
     expect(transientStorage).toEqual({
-      setItem: jasmine.any(Function),
-      getItem: jasmine.any(Function),
-      removeItem: jasmine.any(Function),
+      setItem: expect.any(Function),
+      getItem: expect.any(Function),
+      removeItem: expect.any(Function),
     });
   });
-
   it("should support storing and retrieving values", () => {
     const transientStorage = createTransientStorage(window);
     transientStorage.setItem("key1", "value1");
@@ -29,7 +29,6 @@ describe("ActivityCollector::createTransientStorage", () => {
     expect(transientStorage.getItem("key1")).toBe("value1");
     expect(transientStorage.getItem("key2")).toBe("value2");
   });
-
   it("should support removing values", () => {
     const transientStorage = createTransientStorage(window);
     transientStorage.setItem("key1", "value1");

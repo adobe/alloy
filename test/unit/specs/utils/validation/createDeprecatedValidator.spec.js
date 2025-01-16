@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe } from "vitest";
 import {
   objectOf,
   callback,
@@ -26,12 +27,31 @@ describe("validation::deprecated", () => {
       new: string(),
     }),
     [
-      { value: { old: "a" }, expected: { old: "a" }, warning: true },
-      { value: {}, expected: {}, warning: false },
-      { value: { new: "b" }, expected: { new: "b" }, warning: false },
+      {
+        value: {
+          old: "a",
+        },
+        expected: {
+          old: "a",
+        },
+        warning: true,
+      },
+      {
+        value: {},
+        expected: {},
+        warning: false,
+      },
+      {
+        value: {
+          new: "b",
+        },
+        expected: {
+          new: "b",
+        },
+        warning: false,
+      },
     ],
   );
-
   describeValidation(
     "works for a boolean field",
     objectOf({
@@ -39,12 +59,31 @@ describe("validation::deprecated", () => {
       new: boolean(),
     }),
     [
-      { value: { old: true }, expected: { old: true }, warning: true },
-      { value: {}, expected: {}, warning: false },
-      { value: { new: false }, expected: { new: false }, warning: false },
+      {
+        value: {
+          old: true,
+        },
+        expected: {
+          old: true,
+        },
+        warning: true,
+      },
+      {
+        value: {},
+        expected: {},
+        warning: false,
+      },
+      {
+        value: {
+          new: false,
+        },
+        expected: {
+          new: false,
+        },
+        warning: false,
+      },
     ],
   );
-
   const noop = () => undefined;
   describeValidation(
     "works for a callback field",
@@ -54,12 +93,30 @@ describe("validation::deprecated", () => {
     }),
     [
       {
-        value: { old: noop, new: noop },
-        expected: { old: noop, new: noop },
+        value: {
+          old: noop,
+          new: noop,
+        },
+        expected: {
+          old: noop,
+          new: noop,
+        },
         warning: true,
       },
-      { value: {}, expected: {}, warning: false },
-      { value: { new: noop }, expected: { new: noop }, warning: false },
+      {
+        value: {},
+        expected: {},
+        warning: false,
+      },
+      {
+        value: {
+          new: noop,
+        },
+        expected: {
+          new: noop,
+        },
+        warning: false,
+      },
     ],
   );
 });

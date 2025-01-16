@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createProcessInAppMessage from "../../../../../../src/components/Personalization/handlers/createProcessInAppMessage.js";
 
 describe("Personalization::handlers::createProcessInAppMessage", () => {
@@ -18,7 +19,6 @@ describe("Personalization::handlers::createProcessInAppMessage", () => {
   let modules;
   let logger;
   let processInAppMessage;
-
   beforeEach(() => {
     item = {
       getData() {
@@ -32,16 +32,16 @@ describe("Personalization::handlers::createProcessInAppMessage", () => {
       },
     };
     modules = {
-      defaultContent: jasmine.createSpy("defaultContent"),
+      defaultContent: vi.fn(),
     };
-    logger = jasmine.createSpyObj("logger", ["warn"]);
-
+    logger = {
+      warn: vi.fn(),
+    };
     processInAppMessage = createProcessInAppMessage({
       modules,
       logger,
     });
   });
-
   it("returns an empty object if the item has no data, and logs missing type", () => {
     data = undefined;
     expect(processInAppMessage(item)).toEqual({});
@@ -50,16 +50,16 @@ describe("Personalization::handlers::createProcessInAppMessage", () => {
       undefined,
     );
   });
-
   it("returns an empty object if the item has an unknown type, and logs unknown type", () => {
-    data = { type: "wtf" };
+    data = {
+      type: "wtf",
+    };
     expect(processInAppMessage(item)).toEqual({});
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid in-app message data: unknown type.",
       data,
     );
   });
-
   it("handles a valid in app message type", () => {
     meta = {
       id: "abc",
@@ -89,18 +89,19 @@ describe("Personalization::handlers::createProcessInAppMessage", () => {
       contentType: "text/html",
       qualifiedDate: 1694731987996,
     };
-
     const result = processInAppMessage(item);
     expect(result).toEqual({
-      render: jasmine.any(Function),
+      render: expect.any(Function),
       setRenderAttempted: true,
       includeInNotification: true,
     });
     expect(modules.defaultContent).not.toHaveBeenCalled();
     result.render();
-    expect(modules.defaultContent).toHaveBeenCalledWith({ ...data, meta });
+    expect(modules.defaultContent).toHaveBeenCalledWith({
+      ...data,
+      meta,
+    });
   });
-
   it("handles an invalid in app message type, and logs", () => {
     meta = {
       id: "abc",
@@ -129,7 +130,6 @@ describe("Personalization::handlers::createProcessInAppMessage", () => {
       contentType: "text/html",
       qualifiedDate: 1694731987996,
     };
-
     expect(processInAppMessage(item)).toEqual({});
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid in-app message data: missing property 'content'.",

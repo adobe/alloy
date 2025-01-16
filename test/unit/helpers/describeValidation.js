@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, describe, it, expect } from "vitest";
 
 export default (description, validator, specObjects) => {
   describe(description, () => {
@@ -16,12 +17,18 @@ export default (description, validator, specObjects) => {
       ({ value, expected = value, error = false, warning = false }) => {
         if (error) {
           it(`rejects ${JSON.stringify(value)}`, () => {
-            const logger = jasmine.createSpyObj("logger", ["warn"]);
+            const logger = {
+              warn: vi.fn(),
+            };
             expect(() =>
-              validator.call({ logger }, value, "mykey"),
-            ).toThrowMatching((e) => {
-              return /'mykey[^']*'(:| is)/.test(e.message);
-            });
+              validator.call(
+                {
+                  logger,
+                },
+                value,
+                "mykey",
+              ),
+            ).toThrowError(/'mykey[^']*'(:| is)/);
             if (warning) {
               expect(logger.warn).toHaveBeenCalled();
             } else {
@@ -29,13 +36,19 @@ export default (description, validator, specObjects) => {
             }
           });
         } else {
-          it(`transforms \`${JSON.stringify(value)}\` to \`${JSON.stringify(
-            expected,
-          )}\``, () => {
-            const logger = jasmine.createSpyObj("logger", ["warn"]);
-            expect(validator.call({ logger }, value, "mykey")).toEqual(
-              expected,
-            );
+          it(`transforms \`${JSON.stringify(value)}\` to \`${JSON.stringify(expected)}\``, () => {
+            const logger = {
+              warn: vi.fn(),
+            };
+            expect(
+              validator.call(
+                {
+                  logger,
+                },
+                value,
+                "mykey",
+              ),
+            ).toEqual(expected);
             if (warning) {
               expect(logger.warn).toHaveBeenCalled();
             } else {

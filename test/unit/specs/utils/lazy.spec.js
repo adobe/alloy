@@ -10,43 +10,38 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import lazy from "../../../../src/utils/lazy.js";
 
 describe("lazy", () => {
   let factory;
   let getter;
   beforeEach(() => {
-    factory = jasmine.createSpy("factory");
-    factory.and.returnValue("result");
+    factory = vi.fn();
+    factory.mockReturnValue("result");
     getter = lazy(factory);
   });
-
   it("doesn't call the factory function before the first time the getter is called", () => {
     expect(factory).not.toHaveBeenCalled();
   });
-
   it("calls the factory function the first time the getter is called", () => {
     getter();
     expect(factory).toHaveBeenCalledTimes(1);
   });
-
   it("doesn't call the factory function the second time the getter is called", () => {
     getter();
     getter();
     expect(factory).toHaveBeenCalledTimes(1);
   });
-
   it("returns the result of the factory function", () => {
     expect(getter()).toBe("result");
   });
-
   it("returns the same result the second time the getter is called", () => {
     const result = getter();
     expect(getter()).toBe(result);
   });
-
   it("handles factory functions that return undefined", () => {
-    factory.and.returnValue(undefined);
+    factory.mockReturnValue(undefined);
     getter();
     expect(getter()).toBeUndefined();
     expect(factory).toHaveBeenCalledTimes(1);

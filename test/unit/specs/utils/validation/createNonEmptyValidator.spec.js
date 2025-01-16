@@ -10,28 +10,54 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe } from "vitest";
 import { string } from "../../../../../src/utils/validation/index.js";
 import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::nonEmpty", () => {
   describeValidation("optional nonEmpty", string().nonEmpty(), [
-    { value: "key" },
-    { value: "", error: true },
-    { value: null },
-    { value: undefined },
+    {
+      value: "key",
+    },
+    {
+      value: "",
+      error: true,
+    },
+    {
+      value: null,
+    },
+    {
+      value: undefined,
+    },
   ]);
   describeValidation("required nonEmpty", string().nonEmpty().required(), [
-    { value: "abc" },
-    { value: null, error: true },
-    { value: undefined, error: true },
+    {
+      value: "abc",
+    },
+    {
+      value: null,
+      error: true,
+    },
+    {
+      value: undefined,
+      error: true,
+    },
   ]);
   describeValidation(
     "default nonEmpty",
     string().nonEmpty().default("mydefault"),
     [
-      { value: null, expected: "mydefault" },
-      { value: undefined, expected: "mydefault" },
-      { value: "abc" },
+      {
+        value: null,
+        expected: "mydefault",
+      },
+      {
+        value: undefined,
+        expected: "mydefault",
+      },
+      {
+        value: "abc",
+      },
     ],
   );
 });

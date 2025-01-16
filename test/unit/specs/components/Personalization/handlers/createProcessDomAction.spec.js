@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import createProcessDomAction from "../../../../../../src/components/Personalization/handlers/createProcessDomAction.js";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 import {
@@ -32,18 +33,17 @@ describe("createProcessDomAction", () => {
   let storeInteractionMeta;
   let storeClickMeta;
   let processDomAction;
-
   beforeEach(() => {
     cleanUpDomChanges("click-element");
-
     modules = {
-      typeA: jasmine.createSpy("typeA"),
-      typeB: jasmine.createSpy("typeB"),
+      typeA: vi.fn(),
+      typeB: vi.fn(),
     };
-    logger = jasmine.createSpyObj("logger", ["warn"]);
-    storeInteractionMeta = jasmine.createSpy("storeInteractionMeta");
-    storeClickMeta = jasmine.createSpy("storeClickMeta");
-
+    logger = {
+      warn: vi.fn(),
+    };
+    storeInteractionMeta = vi.fn();
+    storeClickMeta = vi.fn();
     processDomAction = createProcessDomAction({
       modules,
       logger,
@@ -55,17 +55,14 @@ describe("createProcessDomAction", () => {
       },
     });
   });
-
   afterEach(() => {
     cleanUpDomChanges("click-element");
   });
-
   it("returns an empty object if the item has no data, and logs missing type", () => {
     const proposition = createMockProposition({
       schema: DOM_ACTION,
       data: undefined,
     });
-
     expect(processDomAction(proposition.getItems()[0])).toEqual({
       setRenderAttempted: false,
       includeInNotification: false,
@@ -75,7 +72,6 @@ describe("createProcessDomAction", () => {
       undefined,
     );
   });
-
   it("returns an empty object if the item has no type, and logs missing type", () => {
     const proposition = createMockProposition({
       schema: DOM_ACTION,
@@ -90,11 +86,12 @@ describe("createProcessDomAction", () => {
       {},
     );
   });
-
   it("returns an empty object if the item has an unknown type, and logs unknown type", () => {
     const proposition = createMockProposition({
       schema: DOM_ACTION,
-      data: { type: "typeC" },
+      data: {
+        type: "typeC",
+      },
     });
     expect(processDomAction(proposition.getItems()[0])).toEqual({
       setRenderAttempted: false,
@@ -107,11 +104,12 @@ describe("createProcessDomAction", () => {
       },
     );
   });
-
   it("returns an empty object if the item has no selector for a click type, and logs missing selector", () => {
     const proposition = createMockProposition({
       schema: DOM_ACTION,
-      data: { type: "click" },
+      data: {
+        type: "click",
+      },
     });
     expect(processDomAction(proposition.getItems()[0])).toEqual({
       setRenderAttempted: false,
@@ -124,7 +122,6 @@ describe("createProcessDomAction", () => {
       },
     );
   });
-
   it("handles a click type", async () => {
     const element = createNode("div", {
       id: "click-element",
@@ -132,12 +129,14 @@ describe("createProcessDomAction", () => {
     });
     element.innerHTML = "click element";
     appendNode(document.body, element);
-
     const proposition = createMockProposition(
       {
         id: "itemId",
         schema: DOM_ACTION,
-        data: { type: "click", selector: ".click-element" },
+        data: {
+          type: "click",
+          selector: ".click-element",
+        },
         characteristics: {
           trackingLabel: "mytrackinglabel",
         },
@@ -150,12 +149,10 @@ describe("createProcessDomAction", () => {
       },
     );
     const clickAction = processDomAction(proposition.getItems()[0]);
-
     expect(clickAction).toEqual({
       setRenderAttempted: true,
       includeInNotification: false,
     });
-
     expect(storeInteractionMeta).not.toHaveBeenCalled();
     expect(storeClickMeta).toHaveBeenCalledWith({
       selector: ".click-element",
@@ -174,23 +171,28 @@ describe("createProcessDomAction", () => {
       },
     });
   });
-
   it("handles a non-click known type", () => {
     const proposition = createMockProposition({
       schema: DOM_ACTION,
-      data: { type: "typeA", a: "b" },
+      data: {
+        type: "typeA",
+        a: "b",
+      },
     });
     const result = processDomAction(proposition.getItems()[0]);
     expect(result).toEqual({
-      render: jasmine.any(Function),
+      render: expect.any(Function),
       setRenderAttempted: true,
       includeInNotification: true,
     });
     expect(modules.typeA).not.toHaveBeenCalled();
     result.render();
     expect(modules.typeA).toHaveBeenCalledWith(
-      { type: "typeA", a: "b" },
-      jasmine.any(Function),
+      {
+        type: "typeA",
+        a: "b",
+      },
+      expect.any(Function),
     );
   });
 });

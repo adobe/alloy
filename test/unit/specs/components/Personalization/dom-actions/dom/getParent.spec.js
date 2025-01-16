@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { afterEach, describe, it, expect } from "vitest";
 import getParent from "../../../../../../../src/components/Personalization/dom-actions/dom/getParent.js";
 import {
   selectNodes,
@@ -24,16 +25,16 @@ describe("Personalization::DOM::getParent", () => {
     selectNodes("#parentId").forEach(removeNode);
     selectNodes("#childId").forEach(removeNode);
   });
-
   it("returns the parent node if exists", () => {
-    const parentNode = createNode("div", { id: "parentId" });
-    const childNode = createNode("div", { id: "childId" });
-
+    const parentNode = createNode("div", {
+      id: "parentId",
+    });
+    const childNode = createNode("div", {
+      id: "childId",
+    });
     appendNode(parentNode, childNode);
     appendNode(document.head, parentNode);
-
     const result = getParent(getElementById("childId"));
-
     expect(result.tagName).toEqual("DIV");
     expect(result.id).toEqual("parentId");
   });

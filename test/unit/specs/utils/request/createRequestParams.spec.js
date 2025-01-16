@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import { createRequestParams } from "../../../../../src/utils/request/index.js";
 
 describe("createRequestParams", () => {
@@ -16,9 +17,10 @@ describe("createRequestParams", () => {
   let globalConfigOverrides;
   let localConfigOverrides;
   beforeEach(() => {
-    payload = jasmine.createSpyObj("payload", ["mergeConfigOverride"]);
+    payload = {
+      mergeConfigOverride: vi.fn(),
+    };
   });
-
   it("returns the payload and datastreamIdOverride", () => {
     const result = createRequestParams({
       payload,
@@ -31,7 +33,6 @@ describe("createRequestParams", () => {
       datastreamIdOverride: "123",
     });
   });
-
   it("works fine without overrides", () => {
     const result = createRequestParams({
       payload,
@@ -40,7 +41,6 @@ describe("createRequestParams", () => {
       payload,
     });
   });
-
   it("merges the global and local config overrides", () => {
     globalConfigOverrides = {
       a: "b",

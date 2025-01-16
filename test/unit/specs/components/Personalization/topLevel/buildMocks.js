@@ -9,8 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi } from "vitest";
 import createEvent from "../../../../../../src/core/createEvent.js";
-import createResponse from "../../../../../functional/helpers/createResponse.js";
+import createResponse from "../../../../helpers/createResponse.js";
 import {
   ADOBE_JOURNEY_OPTIMIZER,
   ADOBE_TARGET,
@@ -29,23 +30,21 @@ export default (decisions) => {
       })),
     },
   });
-
-  const actions = jasmine.createSpyObj("actions", {
-    setHtml: () => Promise.resolve(),
-    setText: () => Promise.resolve(),
-    setAttributes: () => Promise.resolve(),
-    swapImage: () => Promise.resolve(),
-    setStyles: () => Promise.resolve(),
-    rearrangeChildren: () => Promise.resolve(),
-    removeNode: () => Promise.resolve(),
-    replaceHtml: () => Promise.resolve(),
-    appendHtml: () => Promise.resolve(),
-    prependHtml: () => Promise.resolve(),
-    insertHtmlAfter: () => Promise.resolve(),
-    insertHtmlBefore: () => Promise.resolve(),
-    click: () => Promise.resolve(),
-  });
-
+  const actions = {
+    setHtml: vi.fn().mockReturnValue(() => Promise.resolve()),
+    setText: vi.fn().mockReturnValue(() => Promise.resolve()),
+    setAttributes: vi.fn().mockReturnValue(() => Promise.resolve()),
+    swapImage: vi.fn().mockReturnValue(() => Promise.resolve()),
+    setStyles: vi.fn().mockReturnValue(() => Promise.resolve()),
+    rearrangeChildren: vi.fn().mockReturnValue(() => Promise.resolve()),
+    removeNode: vi.fn().mockReturnValue(() => Promise.resolve()),
+    replaceHtml: vi.fn().mockReturnValue(() => Promise.resolve()),
+    appendHtml: vi.fn().mockReturnValue(() => Promise.resolve()),
+    prependHtml: vi.fn().mockReturnValue(() => Promise.resolve()),
+    insertHtmlAfter: vi.fn().mockReturnValue(() => Promise.resolve()),
+    insertHtmlBefore: vi.fn().mockReturnValue(() => Promise.resolve()),
+    click: vi.fn().mockReturnValue(() => Promise.resolve()),
+  };
   const config = {
     targetMigrationEnabled: true,
     prehidingStyle: "myprehidingstyle",
@@ -55,16 +54,12 @@ export default (decisions) => {
     },
   };
   const logger = {
-    warn: spyOn(console, "warn").and.callThrough(),
-    error: spyOn(console, "error").and.callThrough(),
-    logOnContentRendering: jasmine
-      .createSpy("logOnContentRendering")
-      .and.callThrough(),
-    logOnContentHiding: jasmine
-      .createSpy("logOnContentHiding")
-      .and.callThrough(),
+    warn: vi.spyOn(console, "warn"),
+    error: vi.spyOn(console, "error"),
+    logOnContentRendering: vi.fn(),
+    logOnContentHiding: vi.fn(),
   };
-  const sendEvent = jasmine.createSpy("sendEvent");
+  const sendEvent = vi.fn();
   const eventManager = {
     createEvent,
     async sendEvent(event) {
@@ -75,11 +70,12 @@ export default (decisions) => {
   };
   const getPageLocation = () => new URL("http://example.com/home");
   const window = {
-    location: jasmine.createSpyObj("location", ["replace"]),
+    location: {
+      replace: vi.fn(),
+    },
   };
-  const hideContainers = jasmine.createSpy("hideContainers");
-  const showContainers = jasmine.createSpy("showContainers");
-
+  const hideContainers = vi.fn();
+  const showContainers = vi.fn();
   return {
     actions,
     config,

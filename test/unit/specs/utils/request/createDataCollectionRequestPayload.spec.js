@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import { createDataCollectionRequestPayload } from "../../../../../src/utils/request/index.js";
 import createEvent from "../../../../../src/core/createEvent.js";
 import describeRequestPayload from "../../../helpers/describeRequestPayload.js";
 
 describe("createDataCollectionRequestPayload", () => {
   describeRequestPayload(createDataCollectionRequestPayload);
-
   it("adds an identity", () => {
     const payload = createDataCollectionRequestPayload();
     payload.addIdentity("IDNS", {
@@ -40,16 +40,33 @@ describe("createDataCollectionRequestPayload", () => {
       },
     });
   });
-
   it("adds events and serializes them properly", () => {
     const payload = createDataCollectionRequestPayload();
-    payload.addEvent({ xdm: { a: "b" } });
-    payload.addEvent({ xdm: { c: "d" } });
+    payload.addEvent({
+      xdm: {
+        a: "b",
+      },
+    });
+    payload.addEvent({
+      xdm: {
+        c: "d",
+      },
+    });
     expect(JSON.parse(JSON.stringify(payload))).toEqual({
-      events: [{ xdm: { a: "b" } }, { xdm: { c: "d" } }],
+      events: [
+        {
+          xdm: {
+            a: "b",
+          },
+        },
+        {
+          xdm: {
+            c: "d",
+          },
+        },
+      ],
     });
   });
-
   it("returns that document may unload if any event reports that it may unload", () => {
     const payload = createDataCollectionRequestPayload();
     const event1 = createEvent();
@@ -57,20 +74,18 @@ describe("createDataCollectionRequestPayload", () => {
     const event2 = createEvent();
     event2.documentMayUnload();
     payload.addEvent(event2);
-    expect(payload.getDocumentMayUnload()).toBeTrue();
+    expect(payload.getDocumentMayUnload()).toBe(true);
   });
-
   it("returns that document will not unload if no event reports that it may unload", () => {
     const payload = createDataCollectionRequestPayload();
     const event1 = createEvent();
     payload.addEvent(event1);
     const event2 = createEvent();
     payload.addEvent(event2);
-    expect(payload.getDocumentMayUnload()).toBeFalse();
+    expect(payload.getDocumentMayUnload()).toBe(false);
   });
-
   it("returns that document will not unload if the payload contains no events", () => {
     const payload = createDataCollectionRequestPayload();
-    expect(payload.getDocumentMayUnload()).toBeFalse();
+    expect(payload.getDocumentMayUnload()).toBe(false);
   });
 });

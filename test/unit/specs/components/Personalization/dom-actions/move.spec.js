@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   appendNode,
   createNode,
@@ -25,61 +26,63 @@ import { DOM_ACTION_MOVE } from "../../../../../../src/components/Personalizatio
 
 describe("Personalization::actions::move", () => {
   let decorateProposition;
-
   beforeEach(() => {
     cleanUpDomChanges("move");
     decorateProposition = createDecoratePropositionForTest({
       type: DOM_ACTION_MOVE,
     });
   });
-
   afterEach(() => {
     cleanUpDomChanges("move");
   });
-
   it("should move personalized content", () => {
     const modules = initDomActionsModules();
     const { move } = modules;
-    const element = createNode("div", { id: "move" });
-
+    const element = createNode("div", {
+      id: "move",
+    });
     appendNode(document.body, element);
-
     const settings = {
       selector: "#move",
       prehidingSelector: "#move",
-      content: { left: "100px", top: "100px" },
-      meta: { a: 1 },
+      content: {
+        left: "100px",
+        top: "100px",
+      },
+      meta: {
+        a: 1,
+      },
     };
-
     move(settings, decorateProposition).then(() => {
       expect(element.style.left).toEqual("100px");
       expect(element.style.top).toEqual("100px");
-
       expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
         "trackingLabel",
       );
       expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
     });
   });
-
   it("should move personalized content even if coordinates are not properly formatted", () => {
     const modules = initDomActionsModules();
     const { move } = modules;
-    const element = createNode("div", { id: "move" });
-
+    const element = createNode("div", {
+      id: "move",
+    });
     appendNode(document.body, element);
-
     const settings = {
       selector: "#move",
       prehidingSelector: "#move",
-      content: { left: "100", top: "100" },
-      meta: { a: 1 },
+      content: {
+        left: "100",
+        top: "100",
+      },
+      meta: {
+        a: 1,
+      },
     };
-
     move(settings, decorateProposition).then(() => {
       expect(element.style.left).toEqual("100px");
       expect(element.style.top).toEqual("100px");
-
       expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
         "trackingLabel",
       );

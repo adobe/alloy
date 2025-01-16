@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { describe, it, expect } from "vitest";
 import { CART_VIEW_DECISIONS } from "../responsesMock/eventResponses.js";
-
 import buildMocks from "./buildMocks.js";
 import buildAlloy from "./buildAlloy.js";
 import resetMocks from "./resetMocks.js";
@@ -49,10 +49,8 @@ describe("PersonalizationComponent", () => {
       decisions: [],
     });
     expect(mocks.sendEvent).not.toHaveBeenCalled();
-
     expect(mocks.logger.warn).not.toHaveBeenCalled();
     expect(mocks.logger.error).not.toHaveBeenCalled();
-
     resetMocks(mocks);
     ({ event, result } = await alloy.sendEvent(
       {
@@ -67,7 +65,6 @@ describe("PersonalizationComponent", () => {
       },
       [],
     ));
-
     expect(event.toJSON()).toEqual({
       xdm: {
         _experience: {
@@ -147,7 +144,6 @@ describe("PersonalizationComponent", () => {
     expect(mocks.logger.warn).not.toHaveBeenCalled();
     expect(mocks.logger.error).not.toHaveBeenCalled();
   });
-
   it("CART_VIEW_DECISIONS 2", async () => {
     const mocks = buildMocks(CART_VIEW_DECISIONS);
     const alloy = buildAlloy(mocks);
@@ -164,9 +160,7 @@ describe("PersonalizationComponent", () => {
       },
       CART_VIEW_DECISIONS,
     );
-
     await flushPromiseChains();
-
     expect(event.toJSON()).toEqual({
       query: {
         personalization: {

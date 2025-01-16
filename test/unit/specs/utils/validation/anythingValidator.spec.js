@@ -10,41 +10,100 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe } from "vitest";
 import { anything } from "../../../../../src/utils/validation/index.js";
 import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::anything", () => {
   describeValidation("optional anything", anything(), [
-    { value: {} },
-    { value: { a: 1 } },
-    { value: [] },
-    { value: ["hello"] },
-    { value: 1 },
-    { value: true },
-    { value: undefined },
-    { value: null },
-    { value: () => undefined },
+    {
+      value: {},
+    },
+    {
+      value: {
+        a: 1,
+      },
+    },
+    {
+      value: [],
+    },
+    {
+      value: ["hello"],
+    },
+    {
+      value: 1,
+    },
+    {
+      value: true,
+    },
+    {
+      value: undefined,
+    },
+    {
+      value: null,
+    },
+    {
+      value: () => undefined,
+    },
   ]);
-
   describeValidation("required anything", anything().required(), [
-    { value: {} },
-    { value: { a: 1 } },
-    { value: [] },
-    { value: ["hello"] },
-    { value: 1 },
-    { value: true },
-    { value: undefined, error: true },
-    { value: null, error: true },
+    {
+      value: {},
+    },
+    {
+      value: {
+        a: 1,
+      },
+    },
+    {
+      value: [],
+    },
+    {
+      value: ["hello"],
+    },
+    {
+      value: 1,
+    },
+    {
+      value: true,
+    },
+    {
+      value: undefined,
+      error: true,
+    },
+    {
+      value: null,
+      error: true,
+    },
   ]);
-
   describeValidation("default anything", anything().default("foo"), [
-    { value: {} },
-    { value: { a: 1 } },
-    { value: [] },
-    { value: ["hello"] },
-    { value: 1 },
-    { value: true },
-    { value: undefined, expected: "foo" },
-    { value: null, expected: "foo" },
+    {
+      value: {},
+    },
+    {
+      value: {
+        a: 1,
+      },
+    },
+    {
+      value: [],
+    },
+    {
+      value: ["hello"],
+    },
+    {
+      value: 1,
+    },
+    {
+      value: true,
+    },
+    {
+      value: undefined,
+      expected: "foo",
+    },
+    {
+      value: null,
+      expected: "foo",
+    },
   ]);
 });

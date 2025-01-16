@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 import {
   createFragment,
@@ -26,24 +27,21 @@ describe("Personalization::helper::images", () => {
   beforeEach(() => {
     cleanUpDomChanges("fooImage");
   });
-
   afterEach(() => {
     cleanUpDomChanges("fooImage");
   });
-
   it("should verify if it is an image", () => {
     const fragmentHTML = "<img id='fooImage' src='http://foo.com' />";
     const fragment = createFragment(fragmentHTML);
     const imageNode = getChildNodes(fragment)[0];
-
-    expect(isImage(fragment)).toBeFalse();
-    expect(isImage(imageNode)).toBeTrue();
+    expect(isImage(fragment)).toBe(false);
+    expect(isImage(imageNode)).toBe(true);
   });
-
   it("should create an image node", () => {
     const result = loadImage("http://foo.com");
-    const image = createNode(IMG, { src: "http://foo.com" });
-
+    const image = createNode(IMG, {
+      src: "http://foo.com",
+    });
     expect(result).toEqual(image);
   });
 });

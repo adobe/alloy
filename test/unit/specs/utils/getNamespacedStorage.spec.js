@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import injectStorage from "../../../../src/utils/injectStorage.js";
 
 const getNamespacedStorage = injectStorage(window);
 const storage = getNamespacedStorage("namespace");
-
 describe("getNamespacedStorage", () => {
   it("is able to write and read from session storage", () => {
     storage.session.setItem("test", "session-storage");

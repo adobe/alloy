@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createRulesEngine from "../../../../../src/components/RulesEngine/index.js";
 import { defer } from "../../../../../src/utils/index.js";
 import {
@@ -25,22 +26,21 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
   let getBrowser;
   let persistentStorage;
   let createNamespacedStorage;
-
   beforeEach(() => {
-    mergeData = jasmine.createSpy();
+    mergeData = vi.fn();
     awaitConsentDeferred = defer();
-    consent = jasmine.createSpyObj("consent", {
-      awaitConsent: awaitConsentDeferred.promise,
-    });
-    getBrowser = jasmine.createSpy().and.returnValue("foo");
+    consent = {
+      awaitConsent: vi.fn().mockReturnValue(awaitConsentDeferred.promise),
+    };
+    getBrowser = vi.fn().mockReturnValue("foo");
     window.referrer =
       "https://www.google.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer";
-    persistentStorage = jasmine.createSpyObj("persistentStorage", [
-      "getItem",
-      "setItem",
-      "clear",
-    ]);
-    createNamespacedStorage = jasmine.createSpy().and.returnValue({
+    persistentStorage = {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      clear: vi.fn(),
+    };
+    createNamespacedStorage = vi.fn().mockReturnValue({
       persistent: persistentStorage,
     });
     mockEvent = {
@@ -50,7 +50,6 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
       mergeData,
     };
   });
-
   const setUpDecisionEngine = ({ personalizationStorageEnabled }) => {
     const config = {
       orgId: "exampleOrgId",
@@ -65,7 +64,6 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
     rulesEngine.lifecycle.onComponentsRegistered(() => {});
     return rulesEngine;
   };
-
   it("should run the evaluateRulesets command and satisfy the rule based on global context", async () => {
     const rulesEngine = setUpDecisionEngine({
       personalizationStorageEnabled: true,
@@ -86,7 +84,9 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
     rulesEngine.lifecycle.onBeforeEvent({
       event: mockEvent,
       renderDecisions: true,
-      personalization: { decisionContext: {} },
+      personalization: {
+        decisionContext: {},
+      },
       onResponse: onResponseHandler,
     });
     const result = rulesEngine.commands.evaluateRulesets.run({});
@@ -94,7 +94,6 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
       propositions: [proposition],
     });
   });
-
   it("should run the evaluateRulesets command and does not satisfy rule due to unmatched global context", async () => {
     const rulesEngine = setUpDecisionEngine({
       personalizationStorageEnabled: true,
@@ -115,7 +114,9 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
     rulesEngine.lifecycle.onBeforeEvent({
       event: mockEvent,
       renderDecisions: true,
-      personalization: { decisionContext: {} },
+      personalization: {
+        decisionContext: {},
+      },
       onResponse: onResponseHandler,
     });
     const result = rulesEngine.commands.evaluateRulesets.run({});
@@ -123,7 +124,6 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
       propositions: [],
     });
   });
-
   it("should run the evaluateRulesets command and return propositions with renderDecisions true", async () => {
     const rulesEngine = setUpDecisionEngine({
       personalizationStorageEnabled: true,
@@ -144,7 +144,9 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
     rulesEngine.lifecycle.onBeforeEvent({
       event: mockEvent,
       renderDecisions: true,
-      personalization: { decisionContext: {} },
+      personalization: {
+        decisionContext: {},
+      },
       onResponse: onResponseHandler,
     });
     const result = rulesEngine.commands.evaluateRulesets.run({});
@@ -152,7 +154,6 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
       propositions: [proposition],
     });
   });
-
   it("should run the evaluateRulesets command returns propositions with renderDecisions false", async () => {
     const rulesEngine = setUpDecisionEngine({
       personalizationStorageEnabled: true,
@@ -173,7 +174,9 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
     rulesEngine.lifecycle.onBeforeEvent({
       event: mockEvent,
       renderDecisions: false,
-      personalization: { decisionContext: {} },
+      personalization: {
+        decisionContext: {},
+      },
       onResponse: onResponseHandler,
     });
     const result = rulesEngine.commands.evaluateRulesets.run({});
@@ -182,22 +185,26 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
     });
   });
   it("should clear the local storage when personalizationStorageEnabled is false", async () => {
-    setUpDecisionEngine({ personalizationStorageEnabled: false });
+    setUpDecisionEngine({
+      personalizationStorageEnabled: false,
+    });
     await awaitConsentDeferred.resolve();
     expect(persistentStorage.clear).toHaveBeenCalled();
   });
-
   it("should set eventRegistry storage when consent is obtained", async () => {
-    setUpDecisionEngine({ personalizationStorageEnabled: true });
+    setUpDecisionEngine({
+      personalizationStorageEnabled: true,
+    });
     await awaitConsentDeferred.resolve();
-    await expectAsync(awaitConsentDeferred.promise).toBeResolved();
+    await expect(awaitConsentDeferred.promise).resolves.toBe(undefined);
     expect(persistentStorage.getItem).toHaveBeenCalled();
   });
-
   it("should clear the local storage when consent is not obtained", async () => {
-    setUpDecisionEngine({ personalizationStorageEnabled: true });
+    setUpDecisionEngine({
+      personalizationStorageEnabled: true,
+    });
     await awaitConsentDeferred.reject();
-    await expectAsync(awaitConsentDeferred.promise).toBeRejected();
+    await expect(awaitConsentDeferred.promise).rejects.toBe(undefined);
     expect(persistentStorage.clear).toHaveBeenCalled();
   });
 });

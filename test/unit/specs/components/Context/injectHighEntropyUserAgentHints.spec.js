@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import injectHighEntropyUserAgentHints from "../../../../../src/components/Context/injectHighEntropyUserAgentHints.js";
 
 describe("Context::injectHighEntropyUserAgentHints", () => {
@@ -27,8 +28,7 @@ describe("Context::injectHighEntropyUserAgentHints", () => {
       },
     },
   };
-
-  it("works", (done) => {
+  it("works", () => {
     const xdm = {};
     injectHighEntropyUserAgentHints(navigator)(xdm, console).then(() => {
       expect(xdm).toEqual({
@@ -44,7 +44,6 @@ describe("Context::injectHighEntropyUserAgentHints", () => {
           },
         },
       });
-      done();
     });
   });
 });

@@ -9,6 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+import { vi, describe, beforeEach, it, expect } from "vitest";
 import setupDeployment from "../helpers/setupDeployment.js";
 
 describe("setupDeployment", () => {
@@ -20,8 +22,8 @@ describe("setupDeployment", () => {
   let container;
 
   beforeEach(() => {
-    exec = jasmine.createSpy("exec");
-    logger = jasmine.createSpyObj("logger", ["info"]);
+    exec = vi.fn();
+    logger = { info: vi.fn() };
     container = {
       exec,
       githubActor,
@@ -37,16 +39,16 @@ describe("setupDeployment", () => {
     expect(logger.info).toHaveBeenCalled();
     // make sure all the container parameters are defined
     expect(exec).toHaveBeenCalledWith(
-      jasmine.anything(),
-      jasmine.stringMatching(/myactor/),
+      expect.anything(),
+      expect.stringMatching(/myactor/),
     );
     expect(exec).toHaveBeenCalledWith(
-      jasmine.anything(),
-      jasmine.stringMatching(/myrepo/),
+      expect.anything(),
+      expect.stringMatching(/myrepo/),
     );
     expect(exec).toHaveBeenCalledWith(
-      jasmine.anything(),
-      jasmine.stringMatching(/mytoken/),
+      expect.anything(),
+      expect.stringMatching(/mytoken/),
     );
   });
 });

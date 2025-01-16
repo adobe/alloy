@@ -9,6 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+import { vi, describe, beforeEach, it, expect } from "vitest";
 import ApplicationError from "../helpers/applicationError.js";
 import withErrorHandling from "../helpers/withErrorHandling.js";
 
@@ -19,14 +21,14 @@ describe("withErrorHandling", () => {
   let func;
 
   beforeEach(() => {
-    logger = jasmine.createSpyObj("logger", ["info", "error"]);
-    process = jasmine.createSpyObj("process", ["exit"]);
+    logger = { info: vi.fn(), error: vi.fn() };
+    process = { exit: vi.fn() };
     container = { logger, process };
-    func = jasmine.createSpy("func");
+    func = vi.fn();
   });
 
   it("runs without failure", async () => {
-    func.and.returnValue(Promise.resolve());
+    func.mockReturnValue(Promise.resolve());
     await withErrorHandling(container, "Deploy", func);
     expect(logger.info).toHaveBeenCalledWith("Deploy.");
     expect(func).toHaveBeenCalled();
@@ -34,7 +36,9 @@ describe("withErrorHandling", () => {
   });
 
   it("handles ApplicationErrors", async () => {
-    func.and.throwError(new ApplicationError("myerrormessage"));
+    func.mockImplementationOnce(() => {
+      throw new ApplicationError("myerrormessage");
+    });
     await withErrorHandling(container, "Deploy", func);
     expect(logger.info).toHaveBeenCalledWith("Deploy.");
     expect(logger.error).toHaveBeenCalledWith("Deploy FAILED.");
@@ -43,7 +47,9 @@ describe("withErrorHandling", () => {
   });
   it("handles unexpected errors", async () => {
     const error = new Error("myerrormessage");
-    func.and.throwError(error);
+    func.mockImplementationOnce(() => {
+      throw error;
+    });
     await withErrorHandling(container, "Deploy", func);
     expect(logger.info).toHaveBeenCalledWith("Deploy.");
     expect(logger.error).toHaveBeenCalledWith("Deploy FAILED.");

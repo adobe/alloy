@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createCookieTransfer from "../../../../src/core/createCookieTransfer.js";
 
 describe("createCookieTransfer", () => {
@@ -21,15 +22,18 @@ describe("createCookieTransfer", () => {
   let cookieTransfer;
   const date = new Date();
   const dateProvider = () => date;
-
   beforeEach(() => {
     apexDomain = "example.com";
-    shouldTransferCookie = jasmine.createSpy("shouldTransferCookie");
-    shouldTransferCookie.and.returnValue(false);
-    payload = jasmine.createSpyObj("payload", ["mergeState"]);
-    cookieJar = jasmine.createSpyObj("cookieJar", ["get", "set"]);
+    shouldTransferCookie = vi.fn();
+    shouldTransferCookie.mockReturnValue(false);
+    payload = {
+      mergeState: vi.fn(),
+    };
+    cookieJar = {
+      get: vi.fn(),
+      set: vi.fn(),
+    };
   });
-
   const build = () => {
     cookieTransfer = createCookieTransfer({
       cookieJar,
@@ -38,7 +42,6 @@ describe("createCookieTransfer", () => {
       dateProvider,
     });
   };
-
   describe("cookiesToPayload", () => {
     it("does not transfer cookies to payload if endpoint is first-party", () => {
       build();
@@ -48,9 +51,8 @@ describe("createCookieTransfer", () => {
         cookiesEnabled: true,
       });
     });
-
     it("does not set state.entries if there are no qualifying cookies", () => {
-      cookieJar.get.and.returnValue({});
+      cookieJar.get.mockReturnValue({});
       build();
       cookieTransfer.cookiesToPayload(payload, endpointDomain);
       expect(payload.mergeState).toHaveBeenCalledWith({
@@ -58,19 +60,22 @@ describe("createCookieTransfer", () => {
         cookiesEnabled: true,
       });
     });
-
     ["example.com", ""].forEach((domain) => {
       it(`transfers eligible cookies to payload with domain ${domain}`, () => {
         apexDomain = domain;
         build();
-        cookieJar.get.and.returnValue({
+        cookieJar.get.mockReturnValue({
           kndctr_ABC_CustomOrg_identity: "XYZ@CustomOrg",
           ineligible_cookie: "foo",
           kndctr_ABC_CustomOrg_optIn: "all",
           at_qa_mode:
             '{"token":"QATokenString","listedActivitiesOnly":true,"evaluateAsTrueAudienceIds":["2480042"],"previewIndexes":[{"activityIndex":1,"experienceIndex":1}]}',
         });
-        shouldTransferCookie.and.returnValues(true, false, true, true);
+        shouldTransferCookie
+          .mockReturnValueOnce(true)
+          .mockReturnValueOnce(false)
+          .mockReturnValueOnce(true)
+          .mockReturnValueOnce(true);
         cookieTransfer.cookiesToPayload(payload, endpointDomain);
         expect(payload.mergeState).toHaveBeenCalledWith({
           domain: apexDomain,
@@ -94,30 +99,29 @@ describe("createCookieTransfer", () => {
       });
     });
   });
-
   describe("responseToCookies", () => {
     let response;
     beforeEach(() => {
-      response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
+      response = {
+        getPayloadsByType: vi.fn(),
+      };
     });
-
     it("adds a cookie with the correct domain", () => {
       build();
-      response.getPayloadsByType.and.returnValue([
+      response.getPayloadsByType.mockReturnValue([
         {
           key: "mykey",
           value: "myvalue",
         },
       ]);
       cookieTransfer.responseToCookies(response);
-      expect(cookieJar.set).toHaveBeenCalledOnceWith("mykey", "myvalue", {
+      expect(cookieJar.set).toHaveBeenNthCalledWith(1, "mykey", "myvalue", {
         domain: "example.com",
       });
     });
-
     it("adds multiple cookies", () => {
       build();
-      response.getPayloadsByType.and.returnValue([
+      response.getPayloadsByType.mockReturnValue([
         {
           key: "mykey1",
           value: "myvalue1",
@@ -131,18 +135,17 @@ describe("createCookieTransfer", () => {
       expect(cookieJar.set).toHaveBeenCalledWith(
         "mykey1",
         "myvalue1",
-        jasmine.any(Object),
+        expect.any(Object),
       );
       expect(cookieJar.set).toHaveBeenCalledWith(
         "mykey2",
         "myvalue2",
-        jasmine.any(Object),
+        expect.any(Object),
       );
     });
-
     it("sets the expires attribute", () => {
       build();
-      response.getPayloadsByType.and.returnValue([
+      response.getPayloadsByType.mockReturnValue([
         {
           key: "mykey",
           value: "myvalue",
@@ -150,37 +153,39 @@ describe("createCookieTransfer", () => {
         },
       ]);
       cookieTransfer.responseToCookies(response);
-      expect(cookieJar.set.calls.argsFor(0)[2].expires.getTime()).toEqual(
+      expect(cookieJar.set.mock.calls[0][2].expires.getTime()).toEqual(
         date.getTime() + 172800 * 1000,
       );
     });
-
     it("adds a sameSite=none cookie with secure attribute", () => {
       build();
-      response.getPayloadsByType.and.returnValue([
+      response.getPayloadsByType.mockReturnValue([
         {
           key: "mykey",
           value: "myvalue",
-          attrs: { SameSite: "None" },
+          attrs: {
+            SameSite: "None",
+          },
         },
       ]);
       cookieTransfer.responseToCookies(response);
-      expect(cookieJar.set.calls.argsFor(0)[2].sameSite).toEqual("none");
-      expect(cookieJar.set.calls.argsFor(0)[2].secure).toEqual(true);
+      expect(cookieJar.set.mock.calls[0][2].sameSite).toEqual("none");
+      expect(cookieJar.set.mock.calls[0][2].secure).toEqual(true);
     });
-
     it("adds a sameSite=strict cookie", () => {
       build();
-      response.getPayloadsByType.and.returnValue([
+      response.getPayloadsByType.mockReturnValue([
         {
           key: "mykey",
           value: "myvalue",
-          attrs: { SameSite: "Strict" },
+          attrs: {
+            SameSite: "Strict",
+          },
         },
       ]);
       cookieTransfer.responseToCookies(response);
-      expect(cookieJar.set.calls.argsFor(0)[2].sameSite).toEqual("strict");
-      expect(cookieJar.set.calls.argsFor(0)[2].secure).toBeUndefined();
+      expect(cookieJar.set.mock.calls[0][2].sameSite).toEqual("strict");
+      expect(cookieJar.set.mock.calls[0][2].secure).toBeUndefined();
     });
   });
 });

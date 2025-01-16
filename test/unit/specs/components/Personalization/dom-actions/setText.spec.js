@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   appendNode,
   createNode,
@@ -25,35 +26,33 @@ import { DOM_ACTION_SET_TEXT } from "../../../../../../src/components/Personaliz
 
 describe("Personalization::actions::setText", () => {
   let decorateProposition;
-
   beforeEach(() => {
     cleanUpDomChanges("setText");
     decorateProposition = createDecoratePropositionForTest({
       type: DOM_ACTION_SET_TEXT,
     });
   });
-
   afterEach(() => {
     cleanUpDomChanges("setText");
   });
-
   it("should set personalized text", async () => {
     const itemData = {
       type: "setText",
       selector: "#setText",
       prehidingSelector: "#setText",
       content: "bar",
-      meta: { a: 1 },
+      meta: {
+        a: 1,
+      },
     };
-
     const modules = initDomActionsModules();
     const { setText } = modules;
-    const element = createNode("div", { id: "setText" });
+    const element = createNode("div", {
+      id: "setText",
+    });
     element.textContent = "foo";
     appendNode(document.body, element);
-
     await setText(itemData, decorateProposition);
-
     expect(element.textContent).toEqual("bar");
     expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
       "trackingLabel",

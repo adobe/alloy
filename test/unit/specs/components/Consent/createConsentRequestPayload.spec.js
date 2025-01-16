@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import createConsentRequestPayload from "../../../../../src/components/Consent/createConsentRequestPayload.js";
 import describeRequestPayload from "../../../helpers/describeRequestPayload.js";
 
 describe("createConsentRequestPayload", () => {
   describeRequestPayload(createConsentRequestPayload);
-
   it("adds an identity", () => {
     const payload = createConsentRequestPayload();
     payload.addIdentity("IDNS", {
@@ -37,7 +37,6 @@ describe("createConsentRequestPayload", () => {
       },
     });
   });
-
   it("sets consent", () => {
     const payload = createConsentRequestPayload();
     payload.setConsent([

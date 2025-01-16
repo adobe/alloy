@@ -10,18 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import initInAppMessageActionsModules from "../../../../../../src/components/Personalization/in-app-message-actions/initInAppMessageActionsModules.js";
 
 describe("Personalization::turbine::initInAppMessageActionsModules", () => {
   const noop = () => undefined;
-
   it("should have all the required modules", () => {
     const messagingActionsModules = initInAppMessageActionsModules(noop);
-
     expect(Object.keys(messagingActionsModules).length).toEqual(1);
-
     expect(messagingActionsModules.defaultContent).toEqual(
-      jasmine.any(Function),
+      expect.any(Function),
     );
   });
 });

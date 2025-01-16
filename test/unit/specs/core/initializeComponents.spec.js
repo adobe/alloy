@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import initializeComponents from "../../../../src/core/initializeComponents.js";
 
 describe("initializeComponents", () => {
@@ -18,30 +19,26 @@ describe("initializeComponents", () => {
   let componentByNamespace;
   let componentCreators;
   let getImmediatelyAvailableTools;
-
   beforeEach(() => {
     lifecycle = {
-      onComponentsRegistered: jasmine
-        .createSpy()
-        .and.returnValue(Promise.resolve()),
+      onComponentsRegistered: vi.fn().mockReturnValue(Promise.resolve()),
     };
     componentRegistry = {
-      register: jasmine.createSpy(),
+      register: vi.fn(),
     };
     componentByNamespace = {
       Comp1: {},
       Comp2: {},
     };
-    const componentCreator1 = jasmine
-      .createSpy()
-      .and.returnValue(componentByNamespace.Comp1);
+    const componentCreator1 = vi
+      .fn()
+      .mockReturnValue(componentByNamespace.Comp1);
     componentCreator1.namespace = "Comp1";
-    const componentCreator2 = jasmine
-      .createSpy()
-      .and.returnValue(componentByNamespace.Comp2);
+    const componentCreator2 = vi
+      .fn()
+      .mockReturnValue(componentByNamespace.Comp2);
     componentCreator2.namespace = "Comp2";
     componentCreators = [componentCreator1, componentCreator2];
-
     getImmediatelyAvailableTools = (componentName) => {
       return {
         tool1: {
@@ -55,7 +52,6 @@ describe("initializeComponents", () => {
       };
     };
   });
-
   it("creates and registers components", () => {
     const initializeComponentsPromise = initializeComponents({
       componentCreators,
@@ -63,7 +59,6 @@ describe("initializeComponents", () => {
       componentRegistry,
       getImmediatelyAvailableTools,
     });
-
     componentCreators.forEach((componentCreator) => {
       const { namespace } = componentCreator;
       expect(componentCreator).toHaveBeenCalledWith({
@@ -84,15 +79,14 @@ describe("initializeComponents", () => {
     expect(lifecycle.onComponentsRegistered).toHaveBeenCalledWith({
       lifecycle,
     });
-
     return initializeComponentsPromise.then((result) => {
       expect(result).toBe(componentRegistry);
     });
   });
-
   it("throws error if component throws error during creation", () => {
-    componentCreators[1].and.throwError("thrownError");
-
+    componentCreators[1].mockImplementation(() => {
+      throw new Error("thrownError");
+    });
     expect(() => {
       initializeComponents({
         componentCreators,

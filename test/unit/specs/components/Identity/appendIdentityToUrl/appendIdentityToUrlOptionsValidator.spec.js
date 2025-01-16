@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { describe, it, expect } from "vitest";
 import appendIdentityToUrlOptionsValidator from "../../../../../../src/components/Identity/appendIdentityToUrl/appendIdentityToUrlOptionsValidator.js";
 
 describe("Identity::appendIdentityToUrlOptionsValidator", () => {
@@ -16,8 +17,13 @@ describe("Identity::appendIdentityToUrlOptionsValidator", () => {
     undefined,
     "myurl",
     {},
-    { url: "" },
-    { url: "hello", other: "goodbye" },
+    {
+      url: "",
+    },
+    {
+      url: "hello",
+      other: "goodbye",
+    },
   ].forEach((param) => {
     it(`should throw an error when ${JSON.stringify(param)} is passed`, () => {
       expect(() => {
@@ -25,18 +31,24 @@ describe("Identity::appendIdentityToUrlOptionsValidator", () => {
       }).toThrowError();
     });
   });
-
   it("should accept a url", () => {
     expect(
-      appendIdentityToUrlOptionsValidator({ url: "http://google.com" }),
-    ).toEqual({ url: "http://google.com" });
+      appendIdentityToUrlOptionsValidator({
+        url: "http://google.com",
+      }),
+    ).toEqual({
+      url: "http://google.com",
+    });
   });
-
   it("should accept override configuration", () => {
     expect(() => {
       appendIdentityToUrlOptionsValidator({
         url: "http://google.com",
-        edgeConfigOverrides: { identity: { idSyncContainerId: "123" } },
+        edgeConfigOverrides: {
+          identity: {
+            idSyncContainerId: "123",
+          },
+        },
       });
     }).not.toThrowError();
     expect(() => {

@@ -10,25 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import defer from "../../../../src/utils/defer.js";
 
 describe("defer", () => {
-  it("resolves an exposed promise", (done) => {
+  it("resolves an exposed promise", () => {
     const deferred = defer();
     deferred.promise.then((value) => {
       expect(value).toBe("abc");
-      done();
     });
     deferred.resolve("abc");
   });
-
-  it("rejects an exposed promise", (done) => {
+  it("rejects an exposed promise", () => {
     const deferred = defer();
     deferred.promise.then(
       () => {},
       (value) => {
         expect(value).toBe("abc");
-        done();
       },
     );
     deferred.reject("abc");

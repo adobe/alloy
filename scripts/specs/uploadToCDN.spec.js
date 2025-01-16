@@ -9,6 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+import { vi, describe, beforeEach, it, expect } from "vitest";
 import ApplicationError from "../helpers/applicationError.js";
 import uploadToCDN from "../helpers/uploadToCDN.js";
 
@@ -20,15 +22,15 @@ describe("uploadToCDN", () => {
   let container;
 
   beforeEach(() => {
-    exec = jasmine.createSpy("exec");
-    exec.and.returnValue(Promise.resolve());
-    logger = jasmine.createSpyObj("logger", ["info"]);
-    urlExists = jasmine.createSpy("urlExists");
+    exec = vi.fn();
+    exec.mockReturnValue(Promise.resolve());
+    logger = { info: vi.fn() };
+    urlExists = vi.fn();
     container = { exec, logger, urlExists, version };
   });
 
   it("uploads to CDN", async () => {
-    urlExists.and.returnValue(Promise.resolve(true));
+    urlExists.mockReturnValue(Promise.resolve(true));
     await uploadToCDN(container);
     expect(logger.info).toHaveBeenCalledWith("Building files for CDN");
     expect(exec).toHaveBeenCalledWith("build", "npm run build");
@@ -44,16 +46,20 @@ describe("uploadToCDN", () => {
       "https://cdn1.adoberesources.net/alloy/1.2.3/alloy.min.js",
     );
   });
+
   it("fails to upload min file to CDN", async () => {
-    urlExists.and.returnValues([Promise.resolve(false), Promise.resolve(true)]);
-    await expectAsync(uploadToCDN(container)).toBeRejectedWithError(
-      ApplicationError,
-    );
+    urlExists
+      .mockReturnValueOnce(Promise.resolve(false))
+      .mockReturnValueOnce(Promise.resolve(true));
+
+    await expect(uploadToCDN(container)).rejects.toThrow(ApplicationError);
   });
+
   it("fails to upload regular file to CDN", async () => {
-    urlExists.and.returnValues([Promise.resolve(true), Promise.resolve(false)]);
-    await expectAsync(uploadToCDN(container)).toBeRejectedWithError(
-      ApplicationError,
-    );
+    urlExists
+      .mockReturnValueOnce(Promise.resolve(true))
+      .mockReturnValueOnce(Promise.resolve(false));
+
+    await expect(uploadToCDN(container)).rejects.toThrow(ApplicationError);
   });
 });

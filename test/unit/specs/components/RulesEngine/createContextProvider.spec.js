@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import createContextProvider from "../../../../../src/components/RulesEngine/createContextProvider.js";
 import createEventRegistry from "../../../../../src/components/RulesEngine/createEventRegistry.js";
 
@@ -19,9 +20,12 @@ describe("RulesEngine:createContextProvider", () => {
   let window;
   let mockedTimestamp;
   let getBrowser;
-
   beforeEach(() => {
-    storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
+    storage = {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      clear: vi.fn(),
+    };
     window = {
       title: "My awesome website",
       referrer: "https://stage.applookout.net/",
@@ -36,24 +40,24 @@ describe("RulesEngine:createContextProvider", () => {
       },
     };
     mockedTimestamp = new Date(Date.UTC(2023, 4, 11, 12, 34, 56));
-    jasmine.clock().install();
-    jasmine.clock().mockDate(mockedTimestamp);
-    getBrowser = jasmine.createSpy().and.returnValue("Chrome");
+    vi.useFakeTimers();
+    vi.setSystemTime(mockedTimestamp);
+    getBrowser = vi.fn().mockReturnValue("Chrome");
   });
-
   afterEach(() => {
-    jasmine.clock().uninstall();
+    vi.useRealTimers();
   });
   it("returns page context", () => {
-    eventRegistry = createEventRegistry({ storage });
+    eventRegistry = createEventRegistry({
+      storage,
+    });
     contextProvider = createContextProvider({
       eventRegistry,
       window,
       getBrowser,
     });
-
     expect(contextProvider.getContext()).toEqual(
-      jasmine.objectContaining({
+      expect.objectContaining({
         "page.title": "My awesome website",
         "page.url":
           "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
@@ -67,15 +71,16 @@ describe("RulesEngine:createContextProvider", () => {
     );
   });
   it("returns referring page context", () => {
-    eventRegistry = createEventRegistry({ storage });
+    eventRegistry = createEventRegistry({
+      storage,
+    });
     contextProvider = createContextProvider({
       eventRegistry,
       window,
       getBrowser,
     });
-
     expect(contextProvider.getContext()).toEqual(
-      jasmine.objectContaining({
+      expect.objectContaining({
         "referringPage.url": "https://stage.applookout.net/",
         "referringPage.path": "/",
         "referringPage.query": "",
@@ -87,29 +92,31 @@ describe("RulesEngine:createContextProvider", () => {
     );
   });
   it("returns browser context", () => {
-    eventRegistry = createEventRegistry({ storage });
+    eventRegistry = createEventRegistry({
+      storage,
+    });
     contextProvider = createContextProvider({
       eventRegistry,
       window,
       getBrowser,
     });
-
     expect(contextProvider.getContext()).toEqual(
-      jasmine.objectContaining({
+      expect.objectContaining({
         "browser.name": "Chrome",
       }),
     );
   });
   it("returns windows context", () => {
-    eventRegistry = createEventRegistry({ storage });
+    eventRegistry = createEventRegistry({
+      storage,
+    });
     contextProvider = createContextProvider({
       eventRegistry,
       window,
       getBrowser,
     });
-
     expect(contextProvider.getContext()).toEqual(
-      jasmine.objectContaining({
+      expect.objectContaining({
         "window.height": 100,
         "window.width": 100,
         "window.scrollY": 10,
@@ -118,24 +125,31 @@ describe("RulesEngine:createContextProvider", () => {
     );
   });
   it("includes provided context passed in", () => {
-    eventRegistry = createEventRegistry({ storage });
+    eventRegistry = createEventRegistry({
+      storage,
+    });
     contextProvider = createContextProvider({
       eventRegistry,
       window,
       getBrowser,
     });
-
-    expect(contextProvider.getContext({ cool: "beans" })).toEqual(
-      jasmine.objectContaining({
+    expect(
+      contextProvider.getContext({
+        cool: "beans",
+      }),
+    ).toEqual(
+      expect.objectContaining({
         cool: "beans",
       }),
     );
   });
-
   it("includes events context", () => {
     const events = {
       abc: {
-        event: { id: "abc", type: "display" },
+        event: {
+          id: "abc",
+          type: "display",
+        },
         timestamp: new Date().getTime(),
         count: 1,
       },
@@ -148,9 +162,10 @@ describe("RulesEngine:createContextProvider", () => {
       window,
       getBrowser,
     });
-
-    expect(contextProvider.getContext({ cool: "beans" }).events).toEqual(
-      events,
-    );
+    expect(
+      contextProvider.getContext({
+        cool: "beans",
+      }).events,
+    ).toEqual(events);
   });
 });

@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import hasPageName from "../../../../../../src/components/ActivityCollector/utils/hasPageName.js";
 
 describe("ActivityCollector::hasPageName", () => {
@@ -27,7 +28,6 @@ describe("ActivityCollector::hasPageName", () => {
     };
     expect(hasPageName(event)).toBe(true);
   });
-
   it("should return false if event does not have page name", () => {
     const event = {
       getContent: () => ({

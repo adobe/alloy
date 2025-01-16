@@ -10,12 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, describe, it, expect } from "vitest";
 import injectPlaceContext from "../../../../../src/components/Context/injectPlaceContext.js";
 
 describe("Context::injectPlaceContext", () => {
   it("adds placeContext", () => {
     const date = new Date("March 25, 2019 21:56:18");
-    spyOn(date, "getTimezoneOffset").and.returnValue(7 * 60);
+    vi.spyOn(date, "getTimezoneOffset").mockReturnValue(7 * 60);
     const xdm = {};
     injectPlaceContext(() => date)(xdm);
     expect(xdm).toEqual({
@@ -25,10 +26,9 @@ describe("Context::injectPlaceContext", () => {
       },
     });
   });
-
   it("handles string values from timezoneOffset", () => {
     const date = new Date("May 19, 2022 13:43:42");
-    spyOn(date, "getTimezoneOffset").and.returnValue("55.1");
+    vi.spyOn(date, "getTimezoneOffset").mockReturnValue("55.1");
     const xdm = {};
     injectPlaceContext(() => date)(xdm);
     expect(xdm).toEqual({
@@ -38,10 +38,9 @@ describe("Context::injectPlaceContext", () => {
       },
     });
   });
-
   it("handles NaN timezoneOffsets", () => {
     const date = new Date("May 19, 2022 13:43:42");
-    spyOn(date, "getTimezoneOffset").and.returnValue("foo");
+    vi.spyOn(date, "getTimezoneOffset").mockReturnValue("foo");
     const xdm = {};
     injectPlaceContext(() => date)(xdm);
     expect(xdm).toEqual({
@@ -50,10 +49,9 @@ describe("Context::injectPlaceContext", () => {
       },
     });
   });
-
   it("handles large timezoneOffsets 1", () => {
     const date = new Date("October 28, 2022 11:57:42");
-    spyOn(date, "getTimezoneOffset").and.returnValue(-5999);
+    vi.spyOn(date, "getTimezoneOffset").mockReturnValue(-5999);
     const xdm = {};
     injectPlaceContext(() => date)(xdm);
     expect(xdm).toEqual({
@@ -63,10 +61,9 @@ describe("Context::injectPlaceContext", () => {
       },
     });
   });
-
   it("handles large timezoneOffsets 2", () => {
     const date = new Date("October 28, 2022 11:57:42");
-    spyOn(date, "getTimezoneOffset").and.returnValue(-6000);
+    vi.spyOn(date, "getTimezoneOffset").mockReturnValue(-6000);
     const xdm = {};
     injectPlaceContext(() => date)(xdm);
     expect(xdm).toEqual({

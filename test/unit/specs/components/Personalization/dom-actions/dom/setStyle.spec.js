@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { afterEach, describe, it, expect } from "vitest";
 import setStyle from "../../../../../../../src/components/Personalization/dom-actions/dom/setStyle.js";
 import {
   selectNodes,
@@ -22,22 +23,20 @@ describe("Personalization::DOM::setStyle", () => {
   afterEach(() => {
     selectNodes("#fooDivId").forEach(removeNode);
   });
-
   it("sets style with priority to the element", () => {
-    const element = createNode("div", { id: "fooDivId" });
+    const element = createNode("div", {
+      id: "fooDivId",
+    });
     setStyle(element, "padding", "15px", "important");
-
     const style = getAttribute(element, "style");
-
     expect(style).toEqual("padding: 15px !important;");
   });
-
   it("sets style to the element, without priority", () => {
-    const element = createNode("div", { id: "fooDivId" });
+    const element = createNode("div", {
+      id: "fooDivId",
+    });
     setStyle(element, "padding", "15px");
-
     const style = getAttribute(element, "style");
-
     expect(style).toEqual("padding: 15px;");
   });
 });

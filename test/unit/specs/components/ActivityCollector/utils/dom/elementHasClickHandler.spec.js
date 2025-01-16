@@ -10,26 +10,48 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import elementHasClickHandler from "../../../../../../../src/components/ActivityCollector/utils/dom/elementHasClickHandler.js";
 
 describe("ActivityCollector::elementHasClickHandler", () => {
   it("should handle invalid elements", () => {
     const invalidElements = [
-      { element: null },
-      { element: undefined },
-      { element: {} },
-      { element: { onclick: null } },
-      { element: { onclick: undefined } },
+      {
+        element: null,
+      },
+      {
+        element: undefined,
+      },
+      {
+        element: {},
+      },
+      {
+        element: {
+          onclick: null,
+        },
+      },
+      {
+        element: {
+          onclick: undefined,
+        },
+      },
     ];
     invalidElements.forEach(({ element }) => {
       expect(elementHasClickHandler(element)).toBe(false);
     });
   });
-
   it("should handle elements with click handlers", () => {
     const clickHandlerElements = [
-      { element: { onclick: () => {} } },
-      { element: { onclick() {} } },
+      {
+        element: {
+          onclick: () => {},
+        },
+      },
+      {
+        element: {
+          onclick() {},
+        },
+      },
     ];
     clickHandlerElements.forEach(({ element }) => {
       expect(elementHasClickHandler(element)).toBe(true);

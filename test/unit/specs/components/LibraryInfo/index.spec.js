@@ -9,11 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { beforeEach, describe, it, expect } from "vitest";
 import createLibraryInfo from "../../../../../src/components/LibraryInfo/index.js";
 
 describe("LibraryInfo", () => {
   let toolsMock;
-
   beforeEach(() => {
     toolsMock = {
       config: {
@@ -25,12 +25,13 @@ describe("LibraryInfo", () => {
       },
     };
   });
-
   it("returns library, command, and config information", () => {
     expect(createLibraryInfo(toolsMock).commands.getLibraryInfo.run()).toEqual({
       libraryInfo: {
         version: `__VERSION__`,
-        configs: { foo: "bar" },
+        configs: {
+          foo: "bar",
+        },
         commands: ["bar", "configure", "setDebug"],
         components: ["ComponentA", "ComponentB"],
       },

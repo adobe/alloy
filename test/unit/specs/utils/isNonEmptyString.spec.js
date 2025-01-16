@@ -10,17 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import isNonEmptyString from "../../../../src/utils/isNonEmptyString.js";
 
 describe("isNonEmptyString", () => {
   it("returns true when string", () => {
     expect(isNonEmptyString("1234")).toBe(true);
   });
-
   it("returns false when empty string", () => {
     expect(isNonEmptyString("")).toBe(false);
   });
-
   it("returns false when undefined string", () => {
     expect(isNonEmptyString(undefined)).toBe(false);
   });

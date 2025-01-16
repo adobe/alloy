@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import {
   buildPageSurface,
   isPageWideSurface,
@@ -18,18 +19,18 @@ import {
 
 let pageLocation;
 let logger;
-
 const getPageLocation = () => pageLocation;
-
 describe("Personalization::surfaceUtils", () => {
   beforeEach(() => {
-    logger = jasmine.createSpyObj("logger", ["error", "warn"]);
+    logger = {
+      error: vi.fn(),
+      warn: vi.fn(),
+    };
     pageLocation = {
       host: "domain.com",
       pathname: "/products/test/",
     };
   });
-
   it("builds page-wide surface from location", () => {
     expect(buildPageSurface(getPageLocation)).toEqual(
       "web://domain.com/products/test",
@@ -55,17 +56,15 @@ describe("Personalization::surfaceUtils", () => {
     };
     expect(buildPageSurface(getPageLocation)).toEqual("web://domain.com/a");
   });
-
   it("checks for a page-wide surface", () => {
-    expect(isPageWideSurface("__view__")).toBeFalse();
-    expect(isPageWideSurface("name")).toBeFalse();
-    expect(isPageWideSurface("web://domain.com")).toBeTrue();
-    expect(isPageWideSurface("web://domain.com/path/page.html")).toBeTrue();
-    expect(isPageWideSurface("web://domain.com#fragment")).toBeFalse();
-    expect(isPageWideSurface("webapp://domain.com")).toBeFalse();
-    expect(isPageWideSurface("webapp://domain.com#view")).toBeFalse();
+    expect(isPageWideSurface("__view__")).toBe(false);
+    expect(isPageWideSurface("name")).toBe(false);
+    expect(isPageWideSurface("web://domain.com")).toBe(true);
+    expect(isPageWideSurface("web://domain.com/path/page.html")).toBe(true);
+    expect(isPageWideSurface("web://domain.com#fragment")).toBe(false);
+    expect(isPageWideSurface("webapp://domain.com")).toBe(false);
+    expect(isPageWideSurface("webapp://domain.com#view")).toBe(false);
   });
-
   it("expands fragment surfaces", () => {
     let result = normalizeSurfaces([], getPageLocation, logger);
     expect(result).toEqual([]);
@@ -78,9 +77,8 @@ describe("Personalization::surfaceUtils", () => {
       "web://custom.surface.com/",
       "web://domain.com/products/test#fragment1",
     ]);
-    expect(logger.warn).toHaveBeenCalledOnceWith("Invalid surface: test");
+    expect(logger.warn).toHaveBeenNthCalledWith(1, "Invalid surface: test");
   });
-
   it("validates & normalizes surface type", () => {
     const result = normalizeSurfaces(
       [
@@ -103,7 +101,6 @@ describe("Personalization::surfaceUtils", () => {
     ]);
     expect(logger.warn).toHaveBeenCalledTimes(5);
   });
-
   it("validates & normalizes surface authority", () => {
     let result = normalizeSurfaces(
       [
@@ -156,7 +153,6 @@ describe("Personalization::surfaceUtils", () => {
       "web://[ff11:af21:::1]:3000/",
     ]);
     expect(logger.warn).not.toHaveBeenCalled();
-
     result = normalizeSurfaces(
       [
         "web://foo?.com",
@@ -173,7 +169,6 @@ describe("Personalization::surfaceUtils", () => {
     expect(result).toEqual([]);
     expect(logger.warn).toHaveBeenCalledTimes(7);
   });
-
   it("validates & normalizes surface path", () => {
     let result = normalizeSurfaces(
       [
@@ -196,7 +191,6 @@ describe("Personalization::surfaceUtils", () => {
       "web://domain6.com/a/%D0%B6%D0%BE%D1%80%D0%B0%D1%82%D0%B5%D1%81%D1%82",
     ]);
     expect(logger.warn).not.toHaveBeenCalled();
-
     result = normalizeSurfaces(
       [
         "web://domain1.com/pr od",
@@ -213,7 +207,6 @@ describe("Personalization::surfaceUtils", () => {
     expect(result).toEqual([]);
     expect(logger.warn).toHaveBeenCalledTimes(7);
   });
-
   it("validates surface fragment", () => {
     let result = normalizeSurfaces(
       [
@@ -236,7 +229,6 @@ describe("Personalization::surfaceUtils", () => {
       "web://domain6.com/#my-%D0%B6%D0%BE%D1%80%D0%B0%D1%82%D0%B5%D1%81%D1%82",
     ]);
     expect(logger.warn).not.toHaveBeenCalled();
-
     result = normalizeSurfaces(
       [
         "web://domain1.com/#pr od",
