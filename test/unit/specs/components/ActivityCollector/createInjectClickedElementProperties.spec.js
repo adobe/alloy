@@ -10,19 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, describe, it, expect } from "vitest";
 import createInjectClickedElementProperties from "../../../../../src/components/ActivityCollector/createInjectClickedElementProperties.js";
 import createEvent from "../../../../../src/core/createEvent.js";
 import { downloadLinkQualifier as dlwValidator } from "../../../../../src/components/ActivityCollector/configValidators.js";
 
 describe("ActivityCollector::createInjectClickedElementProperties", () => {
-  const getClickedElementProperties = jasmine.createSpy(
-    "getClickedElementProperties",
-  );
-  const clickActivityStorage = jasmine.createSpyObj("clickActivityStorage", [
-    "save",
-  ]);
+  const getClickedElementProperties = vi.fn();
+  const clickActivityStorage = {
+    save: vi.fn(),
+  };
   const downloadLinkQualifier = dlwValidator();
-
   it("Extends event XDM data with link information for supported anchor elements when clickCollectionEnabled", () => {
     const config = {
       downloadLinkQualifier,
@@ -30,10 +28,14 @@ describe("ActivityCollector::createInjectClickedElementProperties", () => {
       clickCollection: {},
     };
     const injectClickedElementProperties = createInjectClickedElementProperties(
-      { getClickedElementProperties, clickActivityStorage, config },
+      {
+        getClickedElementProperties,
+        clickActivityStorage,
+        config,
+      },
     );
     const event = createEvent();
-    getClickedElementProperties.and.returnValue({
+    getClickedElementProperties.mockReturnValue({
       xdm: {
         web: {
           webInteraction: {
@@ -46,10 +48,12 @@ describe("ActivityCollector::createInjectClickedElementProperties", () => {
       isInternalLink: () => false,
       isValidActivityMapData: () => true,
     });
-    injectClickedElementProperties({ event, clickedElement: {} });
+    injectClickedElementProperties({
+      event,
+      clickedElement: {},
+    });
     expect(event.isEmpty()).toBe(false);
   });
-
   it("Does not extend event XDM data when clickCollectionEnabled is false", () => {
     const event = createEvent();
     const config = {
@@ -62,7 +66,7 @@ describe("ActivityCollector::createInjectClickedElementProperties", () => {
         config,
       },
     );
-    getClickedElementProperties.and.returnValue({
+    getClickedElementProperties.mockReturnValue({
       xdm: {
         web: {
           webInteraction: {
@@ -72,10 +76,12 @@ describe("ActivityCollector::createInjectClickedElementProperties", () => {
       },
       data: {},
     });
-    injectClickedElementProperties({ clickedElement: {}, event });
+    injectClickedElementProperties({
+      clickedElement: {},
+      event,
+    });
     expect(event.isEmpty()).toBe(true);
   });
-
   it("Does not extend event XDM data with link information for unsupported anchor elements", () => {
     const event = createEvent();
     const config = {
@@ -90,16 +96,18 @@ describe("ActivityCollector::createInjectClickedElementProperties", () => {
         config,
       },
     );
-    getClickedElementProperties.and.returnValue({
+    getClickedElementProperties.mockReturnValue({
       data: {},
       isValidLink: () => false,
       isInternalLink: () => false,
       isValidActivityMapData: () => true,
     });
-    injectClickedElementProperties({ clickedElement: {}, event });
+    injectClickedElementProperties({
+      clickedElement: {},
+      event,
+    });
     expect(event.isEmpty()).toBe(true);
   });
-
   it("Does not save click data to storage if onBeforeLinkClickSend is defined", () => {
     const config = {
       clickCollectionEnabled: true,
@@ -109,8 +117,10 @@ describe("ActivityCollector::createInjectClickedElementProperties", () => {
       },
       onBeforeLinkClickSend: () => {},
     };
-    const logger = jasmine.createSpyObj("logger", ["info"]);
-    getClickedElementProperties.and.returnValue({
+    const logger = {
+      info: vi.fn(),
+    };
+    getClickedElementProperties.mockReturnValue({
       isValidLink: () => true,
       isInternalLink: () => true,
       pageName: "testPage",
@@ -126,8 +136,14 @@ describe("ActivityCollector::createInjectClickedElementProperties", () => {
         clickActivityStorage,
       },
     );
-    const event = jasmine.createSpyObj("event", ["mergeXdm", "mergeData"]);
-    injectClickedElementProperties({ clickedElement: {}, event });
+    const event = {
+      mergeXdm: vi.fn(),
+      mergeData: vi.fn(),
+    };
+    injectClickedElementProperties({
+      clickedElement: {},
+      event,
+    });
     // No click data should be saved to storage, only the page data.
     expect(clickActivityStorage.save).toHaveBeenCalledWith({
       pageName: "testPage",

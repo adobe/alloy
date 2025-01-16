@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import createGetPageLocation from "../../../../../src/components/Personalization/createGetPageLocation.js";
 
 describe("Personalization::createGetPageLocation", () => {
@@ -21,9 +22,10 @@ describe("Personalization::createGetPageLocation", () => {
         pathname: "/test/page/1/",
       },
     };
-    const getPageLocation = createGetPageLocation({ window: win });
+    const getPageLocation = createGetPageLocation({
+      window: win,
+    });
     const location = getPageLocation();
-
     expect(location).toEqual(win.location);
   });
 });

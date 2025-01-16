@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, afterEach, describe, it, expect } from "vitest";
 import {
   createNode,
   appendNode,
@@ -22,7 +23,6 @@ describe("Personalization::tracking::clicks", () => {
   afterEach(() => {
     selectNodes(".eq").forEach(removeNode);
   });
-
   it("should collect clicks", () => {
     const meta = [
       {
@@ -30,9 +30,7 @@ describe("Personalization::tracking::clicks", () => {
         scope: "example_scope",
       },
     ];
-    const getClickMetas = jasmine
-      .createSpy("getClickMetas")
-      .and.returnValue(meta);
+    const getClickMetas = vi.fn().mockReturnValue(meta);
     const content = `
       <div class="b">
         <div id="one" class="c">first</div>
@@ -44,25 +42,25 @@ describe("Personalization::tracking::clicks", () => {
     `;
     const node = createNode(
       "DIV",
-      { id: "abc", class: "eq" },
-      { innerHTML: content },
+      {
+        id: "abc",
+        class: "eq",
+      },
+      {
+        innerHTML: content,
+      },
     );
-
     appendNode(document.body, node);
-
     const selectors = ["#abc:eq(0) > div.b:eq(0) > div.c"];
-
     const element = document.getElementById("one");
     const { decisionsMeta, propositionActionLabel } = collectClicks(
       element,
       selectors,
       getClickMetas,
     );
-
     expect(decisionsMeta).toEqual(meta);
     expect(propositionActionLabel).toEqual("");
   });
-
   it("should collect and dedupe clicks with labels", () => {
     const metaOuter = [
       {
@@ -96,12 +94,17 @@ describe("Personalization::tracking::clicks", () => {
         trackingLabel: "inner-label-3",
       },
     ];
-    const getClickMetas = jasmine
-      .createSpy("getClickMetas")
-      .withArgs("#abc:eq(0) > div.b:eq(0)")
-      .and.returnValue(metaOuter)
-      .withArgs("#abc:eq(0) > div.b:eq(0) > div.c")
-      .and.returnValue(metaInner);
+    const getClickMetas = vi.fn((...args) => {
+      if (args[0] === "#abc:eq(0) > div.b:eq(0)") {
+        return metaOuter;
+      }
+      if (args[0] === "#abc:eq(0) > div.b:eq(0) > div.c") {
+        return metaInner;
+      }
+
+      return undefined;
+    });
+
     const content = `
       <div class="b">
         <div id="one" class="c">first</div>
@@ -113,24 +116,25 @@ describe("Personalization::tracking::clicks", () => {
     `;
     const node = createNode(
       "DIV",
-      { id: "abc", class: "eq" },
-      { innerHTML: content },
+      {
+        id: "abc",
+        class: "eq",
+      },
+      {
+        innerHTML: content,
+      },
     );
-
     appendNode(document.body, node);
-
     const selectors = [
       "#abc:eq(0) > div.b:eq(0)",
       "#abc:eq(0) > div.b:eq(0) > div.c",
     ];
-
     const element = document.getElementById("one");
     const { decisionsMeta, propositionActionLabel } = collectClicks(
       element,
       selectors,
       getClickMetas,
     );
-
     expect(decisionsMeta).toEqual([
       {
         id: "AT:outer-id-1",

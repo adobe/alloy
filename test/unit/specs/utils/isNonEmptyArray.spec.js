@@ -10,22 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import isNonEmptyArray from "../../../../src/utils/isNonEmptyArray.js";
 
 describe("isNonEmptyArray", () => {
   it("returns true when array with values", () => {
     expect(isNonEmptyArray([1, 2, 3])).toBe(true);
   });
-
   it("returns false when array is empty", () => {
     expect(isNonEmptyArray([])).toBe(false);
   });
-
   it("returns false when undefined or null", () => {
     expect(isNonEmptyArray(undefined)).toBe(false);
     expect(isNonEmptyArray(null)).toBe(false);
   });
-
   it("returns false when non array", () => {
     expect(isNonEmptyArray("123")).toBe(false);
   });

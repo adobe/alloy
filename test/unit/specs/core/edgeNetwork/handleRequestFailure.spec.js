@@ -9,19 +9,17 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, describe, it, expect } from "vitest";
 import handleRequestFailure from "../../../../../src/core/edgeNetwork/handleRequestFailure.js";
 
 describe("handleRequestFailure", () => {
   it("works", () => {
-    const onRequestFailureCallbackAggregator = jasmine.createSpyObj(
-      "onRequestFailureCallbackAggregator",
-      ["add", "call"],
-    );
-
-    onRequestFailureCallbackAggregator.call.and.returnValue(Promise.resolve());
-
+    const onRequestFailureCallbackAggregator = {
+      add: vi.fn(),
+      call: vi.fn(),
+    };
+    onRequestFailureCallbackAggregator.call.mockReturnValue(Promise.resolve());
     const error = new Error("woopsie");
-
     handleRequestFailure(onRequestFailureCallbackAggregator)(error).catch(
       (err) => {
         expect(onRequestFailureCallbackAggregator.call).toHaveBeenCalledWith({

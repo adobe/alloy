@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { beforeEach, describe, it, expect } from "vitest";
 import uuidV4Regex from "../constants/uuidV4Regex.js";
 
 /**
@@ -19,10 +20,11 @@ export default (createRequest) => {
   describe("base request functionality", () => {
     let payload;
     let request;
-
     beforeEach(() => {
       payload = {};
-      request = createRequest({ payload });
+      request = createRequest({
+        payload,
+      });
     });
 
     // getAction and getUseSendBeacon will be covered in the tests
@@ -31,23 +33,20 @@ export default (createRequest) => {
     it("provides an ID", () => {
       expect(request.getId()).toMatch(uuidV4Regex);
     });
-
     it("provides payload", () => {
       expect(request.getPayload()).toBe(payload);
     });
-
     it("provides useThirdPartyDomain", () => {
-      expect(request.getUseIdThirdPartyDomain()).toBeFalse();
+      expect(request.getUseIdThirdPartyDomain()).toBe(false);
       request.setUseIdThirdPartyDomain();
-      expect(request.getUseIdThirdPartyDomain()).toBeTrue();
+      expect(request.getUseIdThirdPartyDomain()).toBe(true);
     });
-
     it("sets isIdentityEstablished", () => {
       // We only test that isIdentityEstablished is a function.
       // It sets an internal variable that's passed into
       // getAction and getUseSendBeacon. This part will be covered in the tests
       // for the request modules that leverage this base request.
-      expect(request.setIsIdentityEstablished).toEqual(jasmine.any(Function));
+      expect(request.setIsIdentityEstablished).toEqual(expect.any(Function));
     });
   });
 };

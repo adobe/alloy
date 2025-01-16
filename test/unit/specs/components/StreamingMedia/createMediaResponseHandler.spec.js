@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createMediaResponseHandler from "../../../../../src/components/StreamingMedia/createMediaResponseHandler.js";
 
 describe("createMediaResponseHandler", () => {
@@ -19,18 +20,19 @@ describe("createMediaResponseHandler", () => {
   let mediaResponseHandler;
   let response;
   const getPlayerDetails = () => {};
-
   beforeEach(() => {
     response = {
-      getPayloadsByType: jasmine.createSpy(),
+      getPayloadsByType: vi.fn(),
     };
     mediaSessionCacheManager = {
-      getSession: jasmine.createSpy().and.returnValue({
-        getPlayerDetails: jasmine.createSpy(),
-        sessionPromise: Promise.resolve({ sessionId: "123" }),
+      getSession: vi.fn().mockReturnValue({
+        getPlayerDetails: vi.fn(),
+        sessionPromise: Promise.resolve({
+          sessionId: "123",
+        }),
       }),
-      stopPing: jasmine.createSpy(),
-      savePing: jasmine.createSpy(),
+      stopPing: vi.fn(),
+      savePing: vi.fn(),
     };
     config = {
       streamingMedia: {
@@ -39,9 +41,9 @@ describe("createMediaResponseHandler", () => {
       },
     };
     logger = {
-      info: jasmine.createSpy(),
+      info: vi.fn(),
     };
-    trackMediaEvent = jasmine.createSpy();
+    trackMediaEvent = vi.fn();
     mediaResponseHandler = createMediaResponseHandler({
       mediaSessionCacheManager,
       logger,
@@ -49,10 +51,8 @@ describe("createMediaResponseHandler", () => {
       trackMediaEvent,
     });
   });
-
   it("should return empty object when no media payload", async () => {
-    response.getPayloadsByType.and.returnValue([]);
-
+    response.getPayloadsByType.mockReturnValue([]);
     const result = await mediaResponseHandler({
       response,
       playerId: "player1",
@@ -61,26 +61,34 @@ describe("createMediaResponseHandler", () => {
     await expect(result).toEqual({});
     await expect(mediaSessionCacheManager.savePing).not.toHaveBeenCalled();
   });
-
   it("should return session id", async () => {
-    response.getPayloadsByType.and.returnValue([{ sessionId: "123" }]);
-
+    response.getPayloadsByType.mockReturnValue([
+      {
+        sessionId: "123",
+      },
+    ]);
     const result = await mediaResponseHandler({
       response,
       playerId: "player1",
       getPlayerDetails,
     });
-    await expect(result).toEqual({ sessionId: "123" });
+    await expect(result).toEqual({
+      sessionId: "123",
+    });
     await expect(mediaSessionCacheManager.savePing).toHaveBeenCalled();
   });
-
   it("should return sessionId when no player or getPlayerDetails function", async () => {
-    response.getPayloadsByType.and.returnValue([{ sessionId: "123" }]);
-
+    response.getPayloadsByType.mockReturnValue([
+      {
+        sessionId: "123",
+      },
+    ]);
     const result = await mediaResponseHandler({
       response,
     });
-    await expect(result).toEqual({ sessionId: "123" });
+    await expect(result).toEqual({
+      sessionId: "123",
+    });
     await expect(mediaSessionCacheManager.savePing).not.toHaveBeenCalled();
   });
 });

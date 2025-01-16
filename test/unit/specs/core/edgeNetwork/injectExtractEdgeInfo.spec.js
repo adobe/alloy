@@ -10,35 +10,57 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import injectExtractEdgeInfo from "../../../../../src/core/edgeNetwork/injectExtractEdgeInfo.js";
 
 describe("extractEdgeInfo", () => {
   let logger;
   let extractEdgeInfo;
   beforeEach(() => {
-    logger = jasmine.createSpyObj("logger", ["warn"]);
-    extractEdgeInfo = injectExtractEdgeInfo({ logger });
+    logger = {
+      warn: vi.fn(),
+    };
+    extractEdgeInfo = injectExtractEdgeInfo({
+      logger,
+    });
   });
-
   [undefined, ""].forEach((input) => {
     it(`doesn't log for missing header "${input}"`, () => {
       expect(extractEdgeInfo(input)).toEqual({});
       expect(logger.warn).not.toHaveBeenCalled();
     });
   });
-
   ["OR2", "VA6;", "VA6;bad"].forEach((input) => {
     it(`handles invalid header "${input}"`, () => {
       expect(extractEdgeInfo(input)).toEqual({});
       expect(logger.warn).toHaveBeenCalled();
     });
   });
-
   [
-    ["OR2;9", { regionId: 9 }],
-    ["OR2;9;other info", { regionId: 9 }],
-    ["OR2;011", { regionId: 11 }],
-    ["VA7;-1", { regionId: -1 }],
+    [
+      "OR2;9",
+      {
+        regionId: 9,
+      },
+    ],
+    [
+      "OR2;9;other info",
+      {
+        regionId: 9,
+      },
+    ],
+    [
+      "OR2;011",
+      {
+        regionId: 11,
+      },
+    ],
+    [
+      "VA7;-1",
+      {
+        regionId: -1,
+      },
+    ],
   ].forEach(([input, expectedOutput]) => {
     it(`parses "${input}" correctly`, () => {
       expect(extractEdgeInfo(input)).toEqual(expectedOutput);

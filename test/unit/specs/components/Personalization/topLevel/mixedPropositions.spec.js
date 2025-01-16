@@ -9,8 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { MIXED_PROPOSITIONS } from "../responsesMock/eventResponses.js";
 
+import { describe, it, expect } from "vitest";
+import { MIXED_PROPOSITIONS } from "../responsesMock/eventResponses.js";
 import buildMocks from "./buildMocks.js";
 import buildAlloy from "./buildAlloy.js";
 import resetMocks from "./resetMocks.js";
@@ -44,197 +45,188 @@ describe("PersonalizationComponent", () => {
         },
       },
     });
-    expect(result.propositions).toEqual(
-      jasmine.arrayWithExactContents([
-        {
-          renderAttempted: true,
-          id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
-          scope: "__view__",
-          scopeDetails: { decisionProvider: "AJO" },
-          items: [
-            {
-              id: "442358",
-              schema: "https://ns.adobe.com/personalization/dom-action",
-              data: {
-                type: "click",
-                format: "application/vnd.adobe.target.dom-action",
-                selector: "#root",
-              },
+    expect(result.propositions).toEqual([
+      {
+        id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
+        scope: "__view__",
+        scopeDetails: { decisionProvider: "AJO" },
+        items: [
+          {
+            id: "442358",
+            schema: "https://ns.adobe.com/personalization/dom-action",
+            data: {
+              type: "click",
+              format: "application/vnd.adobe.target.dom-action",
+              selector: "#root",
             },
-          ],
-        },
-        {
-          renderAttempted: true,
-          id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn2=",
-          scope: "__view__",
-          scopeDetails: { decisionProvider: "AJO" },
-          items: [
-            {
-              id: "442379",
-              schema: "https://ns.adobe.com/personalization/dom-action",
-              data: {
-                type: "click",
-                format: "application/vnd.adobe.target.dom-action",
-                selector: "#root",
-              },
+          },
+        ],
+        renderAttempted: true,
+      },
+      {
+        id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn2=",
+        scope: "__view__",
+        scopeDetails: { decisionProvider: "AJO" },
+        items: [
+          {
+            id: "442379",
+            schema: "https://ns.adobe.com/personalization/dom-action",
+            data: {
+              type: "click",
+              format: "application/vnd.adobe.target.dom-action",
+              selector: "#root",
             },
-          ],
-        },
-        {
-          renderAttempted: false,
-          id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
-          scope: "home",
-          scopeDetails: { decisionProvider: "AJO" },
-          items: [
-            {
-              id: "442359",
-              schema: "https://ns.adobe.com/personalization/html-content-item",
-              data: {
-                content: "<p>Some custom content for the home page</p>",
-                format: "text/html",
-                id: "1202448",
-              },
+          },
+        ],
+        renderAttempted: true,
+      },
+      {
+        id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn0=",
+        scope: "home",
+        scopeDetails: { decisionProvider: "AJO" },
+        items: [
+          {
+            id: "442358",
+            schema: "https://ns.adobe.com/personalization/dom-action",
+            data: {
+              type: "click",
+              format: "application/vnd.adobe.target.dom-action",
+              selector: "#root",
             },
-          ],
-        },
-        {
-          renderAttempted: false,
-          id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
-          scope: "home",
-          scopeDetails: { decisionProvider: "AJO" },
-          items: [
-            {
-              id: "442360",
-              schema: "https://ns.adobe.com/personalization/json-content-item",
-              data: {
-                content: "{'field1': 'custom content'}",
-                format: "text/javascript",
-                id: "1202449",
-              },
+          },
+        ],
+        renderAttempted: false,
+      },
+      {
+        id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
+        scope: "home",
+        scopeDetails: { decisionProvider: "AJO" },
+        items: [
+          {
+            id: "442359",
+            schema: "https://ns.adobe.com/personalization/html-content-item",
+            data: {
+              content: "<p>Some custom content for the home page</p>",
+              format: "text/html",
+              id: "1202448",
             },
-          ],
-        },
-        {
-          renderAttempted: false,
-          id: "AT:eyJhY3Rpdml0eUlkIjoiMTQxNjY0IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
-          scope: "home",
-          scopeDetails: { decisionProvider: "AJO" },
-          items: [
-            {
+          },
+        ],
+        renderAttempted: false,
+      },
+      {
+        id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
+        scope: "home",
+        scopeDetails: { decisionProvider: "AJO" },
+        items: [
+          {
+            id: "442360",
+            schema: "https://ns.adobe.com/personalization/json-content-item",
+            data: {
+              content: "{'field1': 'custom content'}",
+              format: "text/javascript",
+              id: "1202449",
+            },
+          },
+        ],
+        renderAttempted: false,
+      },
+      {
+        id: "AT:eyJhY3Rpdml0eUlkIjoiMTQxNjY0IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
+        scope: "home",
+        scopeDetails: { decisionProvider: "AJO" },
+        items: [
+          {
+            id: "xcore:personalized-offer:134ce877e13a04ca",
+            etag: "4",
+            schema:
+              "https://ns.adobe.com/experience/offer-management/content-component-html",
+            data: {
               id: "xcore:personalized-offer:134ce877e13a04ca",
-              etag: "4",
-              schema:
-                "https://ns.adobe.com/experience/offer-management/content-component-html",
-              data: {
-                id: "xcore:personalized-offer:134ce877e13a04ca",
-                format: "text/html",
-                language: ["en-us"],
-                content: "<p>An html offer from Offer Decisioning</p>",
-                characteristics: {
-                  testing: "true",
-                },
-              },
+              format: "text/html",
+              language: ["en-us"],
+              content: "<p>An html offer from Offer Decisioning</p>",
+              characteristics: { testing: "true" },
             },
-          ],
-        },
-        {
-          renderAttempted: false,
-          id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn0=",
-          scope: "home",
-          scopeDetails: { decisionProvider: "AJO" },
-          items: [
-            {
-              id: "442358",
-              schema: "https://ns.adobe.com/personalization/dom-action",
-              data: {
-                type: "click",
-                format: "application/vnd.adobe.target.dom-action",
-                selector: "#root",
-              },
-            },
-          ],
-        },
-      ]),
-    );
-    expect(result.decisions).toEqual(
-      jasmine.arrayWithExactContents([
-        {
-          id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
-          scope: "home",
-          scopeDetails: { decisionProvider: "AJO" },
-          items: [
-            {
-              id: "442359",
-              schema: "https://ns.adobe.com/personalization/html-content-item",
-              data: {
-                content: "<p>Some custom content for the home page</p>",
-                format: "text/html",
-                id: "1202448",
-              },
-            },
-          ],
-        },
-        {
-          id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
-          scope: "home",
-          scopeDetails: { decisionProvider: "AJO" },
-          items: [
-            {
-              id: "442360",
-              schema: "https://ns.adobe.com/personalization/json-content-item",
-              data: {
-                content: "{'field1': 'custom content'}",
-                format: "text/javascript",
-                id: "1202449",
-              },
-            },
-          ],
-        },
-        {
-          id: "AT:eyJhY3Rpdml0eUlkIjoiMTQxNjY0IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
-          scope: "home",
-          scopeDetails: { decisionProvider: "AJO" },
-          items: [
-            {
-              id: "xcore:personalized-offer:134ce877e13a04ca",
-              etag: "4",
-              schema:
-                "https://ns.adobe.com/experience/offer-management/content-component-html",
-              data: {
-                id: "xcore:personalized-offer:134ce877e13a04ca",
-                format: "text/html",
-                language: ["en-us"],
-                content: "<p>An html offer from Offer Decisioning</p>",
-                characteristics: {
-                  testing: "true",
-                },
-              },
-            },
-          ],
-        },
-        {
-          id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn0=",
-          scope: "home",
-          scopeDetails: { decisionProvider: "AJO" },
-          items: [
-            {
-              id: "442358",
-              schema: "https://ns.adobe.com/personalization/dom-action",
-              data: {
-                type: "click",
-                format: "application/vnd.adobe.target.dom-action",
-                selector: "#root",
-              },
-            },
-          ],
-        },
-      ]),
-    );
-    expect(mocks.sendEvent).not.toHaveBeenCalled();
+          },
+        ],
+        renderAttempted: false,
+      },
+    ]);
 
+    expect(result.decisions).toEqual([
+      {
+        id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn0=",
+        scope: "home",
+        scopeDetails: { decisionProvider: "AJO" },
+        items: [
+          {
+            id: "442358",
+            schema: "https://ns.adobe.com/personalization/dom-action",
+            data: {
+              type: "click",
+              format: "application/vnd.adobe.target.dom-action",
+              selector: "#root",
+            },
+          },
+        ],
+      },
+      {
+        id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
+        scope: "home",
+        scopeDetails: { decisionProvider: "AJO" },
+        items: [
+          {
+            id: "442359",
+            schema: "https://ns.adobe.com/personalization/html-content-item",
+            data: {
+              content: "<p>Some custom content for the home page</p>",
+              format: "text/html",
+              id: "1202448",
+            },
+          },
+        ],
+      },
+      {
+        id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
+        scope: "home",
+        scopeDetails: { decisionProvider: "AJO" },
+        items: [
+          {
+            id: "442360",
+            schema: "https://ns.adobe.com/personalization/json-content-item",
+            data: {
+              content: "{'field1': 'custom content'}",
+              format: "text/javascript",
+              id: "1202449",
+            },
+          },
+        ],
+      },
+      {
+        id: "AT:eyJhY3Rpdml0eUlkIjoiMTQxNjY0IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
+        scope: "home",
+        scopeDetails: { decisionProvider: "AJO" },
+        items: [
+          {
+            id: "xcore:personalized-offer:134ce877e13a04ca",
+            etag: "4",
+            schema:
+              "https://ns.adobe.com/experience/offer-management/content-component-html",
+            data: {
+              id: "xcore:personalized-offer:134ce877e13a04ca",
+              format: "text/html",
+              language: ["en-us"],
+              content: "<p>An html offer from Offer Decisioning</p>",
+              characteristics: { testing: "true" },
+            },
+          },
+        ],
+      },
+    ]);
+    expect(mocks.sendEvent).not.toHaveBeenCalled();
     expect(mocks.logger.warn).not.toHaveBeenCalled();
     expect(mocks.logger.error).not.toHaveBeenCalled();
-
     resetMocks(mocks);
     const applyPropositionsResult = await alloy.applyPropositions({
       propositions: result.propositions,
@@ -261,7 +253,9 @@ describe("PersonalizationComponent", () => {
           },
         ],
         renderAttempted: true,
-        scopeDetails: { decisionProvider: "AJO" },
+        scopeDetails: {
+          decisionProvider: "AJO",
+        },
       },
       {
         id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
@@ -280,14 +274,16 @@ describe("PersonalizationComponent", () => {
           },
         ],
         renderAttempted: true,
-        scopeDetails: { decisionProvider: "AJO" },
+        scopeDetails: {
+          decisionProvider: "AJO",
+        },
       },
     ]);
     expect(applyPropositionsResult.decisions).toBeUndefined();
-
     await flushPromiseChains();
     expect(mocks.sendEvent).not.toHaveBeenCalled();
-    expect(mocks.actions.appendHtml).toHaveBeenCalledOnceWith(
+    expect(mocks.actions.appendHtml).toHaveBeenNthCalledWith(
+      1,
       "#myhomeselector",
       "<p>Some custom content for the home page</p>",
     );

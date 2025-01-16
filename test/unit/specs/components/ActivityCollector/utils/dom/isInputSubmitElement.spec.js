@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import isInputSubmitElement from "../../../../../../../src/components/ActivityCollector/utils/dom/isInputSubmitElement.js";
 
 describe("ActivityCollector::isInputSubmitElement", () => {
@@ -18,20 +19,17 @@ describe("ActivityCollector::isInputSubmitElement", () => {
     input.type = "submit";
     expect(isInputSubmitElement(input)).toBe(true);
   });
-
   it("should return true for image input", () => {
     const input = document.createElement("input");
     input.type = "image";
     input.src = "https://example.com/image.png";
     expect(isInputSubmitElement(input)).toBe(true);
   });
-
   it("should return false for non-submit input", () => {
     const input = document.createElement("input");
     input.type = "text";
     expect(isInputSubmitElement(input)).toBe(false);
   });
-
   it("should return false for non-input element", () => {
     const div = document.createElement("div");
     expect(isInputSubmitElement(div)).toBe(false);

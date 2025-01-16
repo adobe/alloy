@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import injectProcessDestinations from "../../../../../src/components/Audiences/injectProcessDestinations.js";
 
 describe("Audiences::injectProcessDestinations", () => {
@@ -17,16 +18,17 @@ describe("Audiences::injectProcessDestinations", () => {
   let logger;
   let isPageSsl;
   let processDestinations;
-
   beforeEach(() => {
-    fireReferrerHideableImage = jasmine
-      .createSpy()
-      .and.returnValue(Promise.resolve());
-    logger = jasmine.createSpyObj("logger", ["info", "error"]);
-    cookieJar = jasmine.createSpyObj("cookieJar", ["set"]);
+    fireReferrerHideableImage = vi.fn().mockReturnValue(Promise.resolve());
+    logger = {
+      info: vi.fn(),
+      error: vi.fn(),
+    };
+    cookieJar = {
+      set: vi.fn(),
+    };
     isPageSsl = true;
   });
-
   const inject = () => {
     processDestinations = injectProcessDestinations({
       fireReferrerHideableImage,
@@ -35,7 +37,6 @@ describe("Audiences::injectProcessDestinations", () => {
       isPageSsl,
     });
   };
-
   const SAMPLE_DESTINATIONS1 = [
     {
       type: "url",
@@ -62,7 +63,6 @@ describe("Audiences::injectProcessDestinations", () => {
       },
     },
   ];
-
   it("sets cookie destinations", () => {
     inject();
     return processDestinations(SAMPLE_DESTINATIONS1).then(() => {
@@ -88,7 +88,6 @@ describe("Audiences::injectProcessDestinations", () => {
       );
     });
   });
-
   it("sets cookie destinations without sameSite flag", () => {
     isPageSsl = false;
     inject();
@@ -111,10 +110,9 @@ describe("Audiences::injectProcessDestinations", () => {
       );
     });
   });
-
   it("calls fireReferrerHideableImage for all destinations of type URL and logs results", () => {
     inject();
-    fireReferrerHideableImage.and.callFake(({ url }) => {
+    fireReferrerHideableImage.mockImplementation(({ url }) => {
       return url === "http://test.zyx" ? Promise.resolve() : Promise.reject();
     });
     return processDestinations([
@@ -169,8 +167,6 @@ describe("Audiences::injectProcessDestinations", () => {
         },
       },
     ];
-    return expectAsync(processDestinations(destinations)).toBeResolvedTo(
-      undefined,
-    );
+    return expect(processDestinations(destinations)).resolves.toBe(undefined);
   });
 });

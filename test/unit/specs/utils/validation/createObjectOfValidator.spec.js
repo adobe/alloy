@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe } from "vitest";
 import { objectOf, string } from "../../../../../src/utils/validation/index.js";
 import describeValidation from "../../../helpers/describeValidation.js";
 
@@ -22,16 +23,44 @@ describe("validation::objectOf", () => {
       c: string(),
     }),
     [
-      { value: {}, error: true },
-      { value: { a: "1" }, expected: { a: "1", b: "b default" } },
-      { value: { a: "1", b: "2", c: "3" } },
-      { value: undefined },
-      { value: null },
-      { value: { a: 123 }, error: true },
-      { value: 123, error: true },
+      {
+        value: {},
+        error: true,
+      },
+      {
+        value: {
+          a: "1",
+        },
+        expected: {
+          a: "1",
+          b: "b default",
+        },
+      },
+      {
+        value: {
+          a: "1",
+          b: "2",
+          c: "3",
+        },
+      },
+      {
+        value: undefined,
+      },
+      {
+        value: null,
+      },
+      {
+        value: {
+          a: 123,
+        },
+        error: true,
+      },
+      {
+        value: 123,
+        error: true,
+      },
     ],
   );
-
   describeValidation(
     "nested object",
     objectOf({
@@ -40,12 +69,25 @@ describe("validation::objectOf", () => {
       }).required(),
     }),
     [
-      { value: {}, error: true },
-      { value: { a: {} }, error: true },
-      { value: { a: { aa: "11" } } },
+      {
+        value: {},
+        error: true,
+      },
+      {
+        value: {
+          a: {},
+        },
+        error: true,
+      },
+      {
+        value: {
+          a: {
+            aa: "11",
+          },
+        },
+      },
     ],
   );
-
   describeValidation(
     "concat",
     objectOf({
@@ -62,13 +104,42 @@ describe("validation::objectOf", () => {
         }),
       ),
     [
-      { value: {}, error: true },
-      { value: { a: "1" }, expected: { a: "1", b: "b default" } },
-      { value: { a: "1", b: "2", c: "3" } },
-      { value: undefined },
-      { value: null },
-      { value: { a: 123 }, error: true },
-      { value: 123, error: true },
+      {
+        value: {},
+        error: true,
+      },
+      {
+        value: {
+          a: "1",
+        },
+        expected: {
+          a: "1",
+          b: "b default",
+        },
+      },
+      {
+        value: {
+          a: "1",
+          b: "2",
+          c: "3",
+        },
+      },
+      {
+        value: undefined,
+      },
+      {
+        value: null,
+      },
+      {
+        value: {
+          a: 123,
+        },
+        error: true,
+      },
+      {
+        value: 123,
+        error: true,
+      },
     ],
   );
 });

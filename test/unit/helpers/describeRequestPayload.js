@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { beforeEach, describe, it, expect } from "vitest";
 
 /**
  * Tests the base methods that all types of request payloads share.
@@ -16,11 +17,9 @@ governing permissions and limitations under the License.
 export default (createPayload) => {
   describe("base request payload functionality", () => {
     let payload;
-
     beforeEach(() => {
       payload = createPayload();
     });
-
     it("merges state", () => {
       payload.mergeState({
         fruit: {
@@ -54,7 +53,6 @@ export default (createPayload) => {
         calories: 25,
       });
     });
-
     it("merges query", () => {
       payload.mergeQuery({
         fruit: {

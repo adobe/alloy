@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import groupBy from "../../../../src/utils/groupBy.js";
 
 describe("groupBy", () => {
@@ -17,42 +18,84 @@ describe("groupBy", () => {
     const array = [];
     expect(groupBy(array, null)).toEqual({});
   });
-
   it("expects to group by key getter provided", () => {
     const array = [
-      { id: 1, name: "Foo" },
-      { id: 2, name: "Foo2" },
-      { id: 2, name: "Foo3" },
+      {
+        id: 1,
+        name: "Foo",
+      },
+      {
+        id: 2,
+        name: "Foo2",
+      },
+      {
+        id: 2,
+        name: "Foo3",
+      },
     ];
-
     const map = {
-      1: [{ id: 1, name: "Foo" }],
+      1: [
+        {
+          id: 1,
+          name: "Foo",
+        },
+      ],
       2: [
-        { id: 2, name: "Foo2" },
-        { id: 2, name: "Foo3" },
+        {
+          id: 2,
+          name: "Foo2",
+        },
+        {
+          id: 2,
+          name: "Foo3",
+        },
       ],
     };
-
     expect(groupBy(array, (item) => item.id || "default")).toEqual(map);
   });
-
   it("expects to group by key getter provided or to the default key", () => {
     const array = [
-      { id: 1, name: "Foo" },
-      { id: 2, name: "Foo2" },
-      { id: 2, name: "Foo3" },
-      { noId: 2, name: "Foo3" },
+      {
+        id: 1,
+        name: "Foo",
+      },
+      {
+        id: 2,
+        name: "Foo2",
+      },
+      {
+        id: 2,
+        name: "Foo3",
+      },
+      {
+        noId: 2,
+        name: "Foo3",
+      },
     ];
-
     const map = {
-      1: [{ id: 1, name: "Foo" }],
-      2: [
-        { id: 2, name: "Foo2" },
-        { id: 2, name: "Foo3" },
+      1: [
+        {
+          id: 1,
+          name: "Foo",
+        },
       ],
-      default: [{ noId: 2, name: "Foo3" }],
+      2: [
+        {
+          id: 2,
+          name: "Foo2",
+        },
+        {
+          id: 2,
+          name: "Foo3",
+        },
+      ],
+      default: [
+        {
+          noId: 2,
+          name: "Foo3",
+        },
+      ],
     };
-
     expect(groupBy(array, (item) => item.id || "default")).toEqual(map);
   });
 });

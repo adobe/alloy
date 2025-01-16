@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { describe, it, expect } from "vitest";
 import {
   string,
   arrayOf,
@@ -20,32 +21,26 @@ describe("validation::createUniqueItems", () => {
     const validator = arrayOf(string()).uniqueItems();
     expect(validator([])).toEqual([]);
   });
-
   it(`validates an array of one item`, () => {
     const validator = arrayOf(string()).uniqueItems();
     expect(validator(["a"])).toEqual(["a"]);
   });
-
   it(`throws an error on an array with duplicate (string) items`, () => {
     const validator = arrayOf(string()).uniqueItems();
     expect(() => validator(["a", "b", "a", "e"])).toThrowError();
   });
-
   it(`throws an error on an array with duplicate integers`, () => {
     const validator = arrayOf(number()).uniqueItems();
     expect(() => validator([1, 2, 3, 4, 4, 5])).toThrowError();
   });
-
   it(`validates an array of enums`, () => {
     const validator = arrayOf(number()).uniqueItems();
     expect(validator([])).toEqual([]);
   });
-
   it(`validates an array of null or undefined`, () => {
     const validator = arrayOf(string()).uniqueItems();
     expect(validator([null, undefined])).toEqual([null, undefined]);
   });
-
   it(`complains about required when null or undefined`, () => {
     const validator = arrayOf(string().required()).uniqueItems();
     expect(() => validator([null, undefined])).toThrowError();

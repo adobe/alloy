@@ -10,23 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createStorePageViewProperties from "../../../../../src/components/ActivityCollector/createStorePageViewProperties.js";
 
 describe("ActivityCollector::createStorePageViewProperties", () => {
   let clickActivityStorage;
   beforeEach(() => {
     clickActivityStorage = {
-      save: jasmine.createSpy(),
+      save: vi.fn(),
     };
   });
-
   it("should return a function", () => {
     const storePageViewProperties = createStorePageViewProperties({
       clickActivityStorage,
     });
-    expect(storePageViewProperties).toEqual(jasmine.any(Function));
+    expect(storePageViewProperties).toEqual(expect.any(Function));
   });
-
   it("stores page view properties when available in event", () => {
     const storePageViewProperties = createStorePageViewProperties({
       clickActivityStorage,

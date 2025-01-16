@@ -10,28 +10,29 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, describe, it, expect } from "vitest";
 import getNamespacesFromResponse from "../../../../../src/components/Identity/getNamespacesFromResponse.js";
 
 describe("Identity::getEcidFromResponse", () => {
   it("does not return ECID if ECID does not exist in response", () => {
-    const response = jasmine.createSpyObj("response", {
-      getPayloadsByType: [
+    const response = {
+      getPayloadsByType: vi.fn().mockReturnValue([
         {
           namespace: {
             code: "other",
           },
           id: "user123",
         },
-      ],
+      ]),
+    };
+    expect(getNamespacesFromResponse(response)).toEqual({
+      other: "user123",
     });
-
-    expect(getNamespacesFromResponse(response)).toEqual({ other: "user123" });
     expect(response.getPayloadsByType).toHaveBeenCalledWith("identity:result");
   });
-
   it("returns ECID if ECID exists in response", () => {
-    const response = jasmine.createSpyObj("response", {
-      getPayloadsByType: [
+    const response = {
+      getPayloadsByType: vi.fn().mockReturnValue([
         {
           namespace: {
             code: "other",
@@ -44,9 +45,8 @@ describe("Identity::getEcidFromResponse", () => {
           },
           id: "user@adobe",
         },
-      ],
-    });
-
+      ]),
+    };
     expect(getNamespacesFromResponse(response)).toEqual({
       other: "user123",
       ECID: "user@adobe",

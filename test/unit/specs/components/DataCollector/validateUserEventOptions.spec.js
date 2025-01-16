@@ -9,6 +9,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import validateUserEventOptions from "../../../../../src/components/DataCollector/validateUserEventOptions.js";
 
 describe("DataCollector::validateUserEventOptions", () => {
@@ -24,7 +25,10 @@ describe("DataCollector::validateUserEventOptions", () => {
         xdm: {
           eventType: "test",
           identityMap: {
-            namespace1: { id: "123", primary: true },
+            namespace1: {
+              id: "123",
+              primary: true,
+            },
           },
         },
       },
@@ -55,7 +59,9 @@ describe("DataCollector::validateUserEventOptions", () => {
       },
     ].forEach((options) => {
       expect(() => {
-        validateUserEventOptions({ options });
+        validateUserEventOptions({
+          options,
+        });
       }).toThrowError();
     });
   });

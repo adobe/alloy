@@ -10,15 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import isObject from "../../../../src/utils/isObject.js";
 
 const nonObjects = [[], true, false, 123];
-
 describe("isObject", () => {
   it("returns true if the value is an object", () => {
     expect(isObject({})).toBe(true);
   });
-
   it("returns false if the value is not an object", () => {
     nonObjects.forEach((obj) => {
       expect(isObject(obj)).toBe(false);

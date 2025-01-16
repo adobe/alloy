@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, expect } from "vitest";
 import createContextProvider from "../../../../../src/components/RulesEngine/createContextProvider.js";
 import createOnResponseHandler from "../../../../../src/components/RulesEngine/createOnResponseHandler.js";
 import createEventRegistry from "../../../../../src/components/RulesEngine/createEventRegistry.js";
@@ -27,7 +28,7 @@ export const proposition = {
       schema: "https://ns.adobe.com/personalization/mock-action",
       data: {
         hello: "kitty",
-        qualifiedDate: jasmine.any(Number),
+        qualifiedDate: expect.any(Number),
         displayedDate: undefined,
       },
       id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
@@ -35,7 +36,6 @@ export const proposition = {
   ],
   scope: "web://mywebsite.com",
 };
-
 export const mockWindow = ({
   title = "My awesome website",
   referrer = "https://www.google.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer",
@@ -57,7 +57,6 @@ export const mockWindow = ({
     userAgent,
   },
 });
-
 export const payloadWithCondition = (condition) => {
   return {
     id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
@@ -115,21 +114,25 @@ export const mockRulesetResponseWithCondition = (condition) => {
     ],
   };
 };
-
 const mockEvent = {
-  getContent: () => ({ query: {} }),
+  getContent: () => ({
+    query: {},
+  }),
   hasQuery: () => true,
   getViewName: () => undefined,
 };
-
 export const setupResponseHandler = (applyResponse, window, condition) => {
-  const storage = jasmine.createSpyObj("storage", [
-    "getItem",
-    "setItem",
-    "clear",
-  ]);
-  const eventRegistry = createEventRegistry({ storage });
-  const decisionProvider = createDecisionProvider({ eventRegistry });
+  const storage = {
+    getItem: vi.fn(),
+    setItem: vi.fn(),
+    clear: vi.fn(),
+  };
+  const eventRegistry = createEventRegistry({
+    storage,
+  });
+  const decisionProvider = createDecisionProvider({
+    eventRegistry,
+  });
   const getBrowser = injectGetBrowser({
     userAgent: window.navigator.userAgent,
   });
@@ -138,7 +141,6 @@ export const setupResponseHandler = (applyResponse, window, condition) => {
     window,
     getBrowser,
   });
-
   const onResponseHandler = createOnResponseHandler({
     renderDecisions: true,
     decisionProvider,
@@ -146,7 +148,6 @@ export const setupResponseHandler = (applyResponse, window, condition) => {
     event: mockEvent,
     decisionContext: contextProvider.getContext(),
   });
-
   onResponseHandler({
     response: mockRulesetResponseWithCondition(condition),
   });

@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import libraryVersion from "../../../../../src/constants/libraryVersion.js";
 import {
   mockWindow,
@@ -20,9 +21,8 @@ describe("RulesEngine:globalContext:sdkVersion", () => {
   let applyResponse;
   const currentVersion = libraryVersion;
   beforeEach(() => {
-    applyResponse = jasmine.createSpy();
+    applyResponse = vi.fn();
   });
-
   it("satisfies rule based on matched alloy sdk version", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -32,14 +32,13 @@ describe("RulesEngine:globalContext:sdkVersion", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched dk version", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -49,9 +48,9 @@ describe("RulesEngine:globalContext:sdkVersion", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );

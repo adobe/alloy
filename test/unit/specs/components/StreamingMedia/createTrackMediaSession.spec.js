@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createTrackMediaSession from "../../../../../src/components/StreamingMedia/createTrackMediaSession.js";
 import PlaybackState from "../../../../../src/components/StreamingMedia/constants/playbackState.js";
 
@@ -18,18 +19,17 @@ describe("createTrackMediaSession", () => {
   let mediaSessionCacheManager;
   let config;
   let logger;
-
   beforeEach(() => {
     logger = {
-      warn: jasmine.createSpy(),
+      warn: vi.fn(),
     };
     mediaEventManager = {
-      createMediaSession: jasmine.createSpy(),
-      augmentMediaEvent: jasmine.createSpy(),
-      trackMediaSession: jasmine.createSpy().and.returnValue(Promise.resolve()),
+      createMediaSession: vi.fn(),
+      augmentMediaEvent: vi.fn(),
+      trackMediaSession: vi.fn().mockReturnValue(Promise.resolve()),
     };
     mediaSessionCacheManager = {
-      storeSession: jasmine.createSpy(),
+      storeSession: vi.fn(),
     };
     config = {
       streamingMedia: {
@@ -51,9 +51,10 @@ describe("createTrackMediaSession", () => {
     const playerId = "testPlayerId";
     const playerName = "testPlayerName";
     const eventType = "media.sessionStart";
-    const event = { eventType };
+    const event = {
+      eventType,
+    };
     const getPlayerDetails = () => {};
-
     const options = {
       playerId,
       getPlayerDetails,
@@ -65,8 +66,10 @@ describe("createTrackMediaSession", () => {
         },
       },
     };
-    mediaEventManager.createMediaSession.and.returnValue({ eventType });
-    mediaEventManager.augmentMediaEvent.and.returnValue({
+    mediaEventManager.createMediaSession.mockReturnValue({
+      eventType,
+    });
+    mediaEventManager.augmentMediaEvent.mockReturnValue({
       eventType,
       xdm: {
         mediaCollection: {
@@ -77,18 +80,14 @@ describe("createTrackMediaSession", () => {
         },
       },
     });
-    mediaEventManager.trackMediaSession.and.returnValue(sessionPromise);
-
+    mediaEventManager.trackMediaSession.mockReturnValue(sessionPromise);
     await trackMediaSession(options);
-
     expect(mediaEventManager.createMediaSession).toHaveBeenCalledWith(options);
-
     expect(mediaEventManager.augmentMediaEvent).toHaveBeenCalledWith({
       event,
       playerId,
       getPlayerDetails,
     });
-
     expect(mediaEventManager.trackMediaSession).toHaveBeenCalledWith({
       event,
       mediaOptions: {
@@ -98,7 +97,6 @@ describe("createTrackMediaSession", () => {
       },
       edgeConfigOverrides: undefined,
     });
-
     expect(mediaSessionCacheManager.storeSession).toHaveBeenCalledWith({
       playerId,
       sessionDetails: {
@@ -122,6 +120,6 @@ describe("createTrackMediaSession", () => {
       },
       getPlayerDetails: "",
     };
-    return expectAsync(trackMediaSession(options)).toBeRejected();
+    return expect(trackMediaSession(options)).rejects.toThrowError();
   });
 });

@@ -18,12 +18,12 @@ export default ({
   showContainers,
 }) => {
   Object.keys(actions).forEach((key) => {
-    actions[key].calls.reset();
+    actions[key].mockClear();
   });
-  logger.warn.calls.reset();
-  logger.error.calls.reset();
-  sendEvent.calls.reset();
-  window.location.replace.calls.reset();
-  hideContainers.calls.reset();
-  showContainers.calls.reset();
+  logger.warn.mockClear();
+  logger.error.mockClear();
+  sendEvent.mockClear();
+  window.location.replace.mockClear();
+  hideContainers.mockClear();
+  showContainers.mockClear();
 };

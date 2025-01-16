@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createEventManager from "../../../../src/core/createEventManager.js";
 import createConfig from "../../../../src/core/config/createConfig.js";
 import { defer } from "../../../../src/utils/index.js";
 import flushPromiseChains from "../../helpers/flushPromiseChains.js";
 
 const CANCELLATION_MESSAGE_REGEX = /Event was canceled/;
-
 describe("createEventManager", () => {
   let config;
   let logger;
@@ -34,26 +34,26 @@ describe("createEventManager", () => {
   beforeEach(() => {
     config = createConfig({
       orgId: "ABC123",
-      onBeforeEventSend: jasmine.createSpy(),
+      onBeforeEventSend: vi.fn(),
       debugEnabled: true,
       edgeConfigOverrides: {},
     });
-    logger = jasmine.createSpyObj("logger", ["info"]);
-    lifecycle = jasmine.createSpyObj("lifecycle", {
-      onBeforeEvent: Promise.resolve(),
-      onBeforeDataCollectionRequest: Promise.resolve(),
-      onRequestFailure: Promise.resolve(),
-    });
-    consent = jasmine.createSpyObj("consent", {
-      awaitConsent: Promise.resolve(),
-    });
-    event = jasmine.createSpyObj("event", {
-      finalize: undefined,
-      shouldSend: true,
-    });
-    onRequestFailureForOnBeforeEvent = jasmine.createSpy(
-      "onRequestFailureForOnBeforeEvent",
-    );
+    logger = {
+      info: vi.fn(),
+    };
+    lifecycle = {
+      onBeforeEvent: vi.fn().mockReturnValue(Promise.resolve()),
+      onBeforeDataCollectionRequest: vi.fn().mockReturnValue(Promise.resolve()),
+      onRequestFailure: vi.fn().mockReturnValue(Promise.resolve()),
+    };
+    consent = {
+      awaitConsent: vi.fn().mockReturnValue(Promise.resolve()),
+    };
+    event = {
+      finalize: vi.fn().mockReturnValue(undefined),
+      shouldSend: vi.fn().mockReturnValue(true),
+    };
+    onRequestFailureForOnBeforeEvent = vi.fn();
     fakeOnRequestFailure = ({ onRequestFailure }) => {
       onRequestFailure(onRequestFailureForOnBeforeEvent);
       return Promise.resolve();
@@ -61,10 +61,10 @@ describe("createEventManager", () => {
     const createEvent = () => {
       return event;
     };
-    requestPayload = jasmine.createSpyObj("requestPayload", [
-      "addEvent",
-      "mergeConfigOverride",
-    ]);
+    requestPayload = {
+      addEvent: vi.fn(),
+      mergeConfigOverride: vi.fn(),
+    };
     const createDataCollectionRequestPayload = () => {
       return requestPayload;
     };
@@ -73,15 +73,9 @@ describe("createEventManager", () => {
         return requestPayload;
       },
     };
-    createDataCollectionRequest = jasmine
-      .createSpy("createDataCollectionRequest")
-      .and.returnValue(request);
-    sendEdgeNetworkRequest = jasmine
-      .createSpy("sendEdgeNetworkRequest")
-      .and.returnValue(Promise.resolve());
-    applyResponse = jasmine
-      .createSpy("applyResponse")
-      .and.returnValue(Promise.resolve());
+    createDataCollectionRequest = vi.fn().mockReturnValue(request);
+    sendEdgeNetworkRequest = vi.fn().mockReturnValue(Promise.resolve());
+    applyResponse = vi.fn().mockReturnValue(Promise.resolve());
     eventManager = createEventManager({
       config,
       logger,
@@ -94,34 +88,31 @@ describe("createEventManager", () => {
       applyResponse,
     });
   });
-
   describe("createEvent", () => {
     it("creates an event object", () => {
       expect(eventManager.createEvent()).toBe(event);
     });
   });
-
   describe("sendEvent", () => {
     it("creates the payload and adds event and meta", () => {
       return eventManager.sendEvent(event).then(() => {
         expect(requestPayload.addEvent).toHaveBeenCalledWith(event);
       });
     });
-
     it("allows other components to access event and pause the lifecycle", () => {
       const deferred = defer();
       const options = {
         renderDecisions: true,
       };
-      lifecycle.onBeforeEvent.and.returnValue(deferred.promise);
+      lifecycle.onBeforeEvent.mockReturnValue(deferred.promise);
       eventManager.sendEvent(event, options);
       return flushPromiseChains()
         .then(() => {
           expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith({
             event,
             renderDecisions: true,
-            onResponse: jasmine.any(Function),
-            onRequestFailure: jasmine.any(Function),
+            onResponse: expect.any(Function),
+            onRequestFailure: expect.any(Function),
           });
           expect(consent.awaitConsent).not.toHaveBeenCalled();
           deferred.resolve();
@@ -131,62 +122,59 @@ describe("createEventManager", () => {
           expect(sendEdgeNetworkRequest).toHaveBeenCalled();
         });
     });
-
-    it("events call finalize with onBeforeEventSend callback", () => {
-      return eventManager.sendEvent(event).then(() => {
-        expect(event.finalize).toHaveBeenCalledWith(config.onBeforeEventSend);
-      });
+    it("events call finalize with onBeforeEventSend callback", async () => {
+      await eventManager.sendEvent(event);
+      expect(event.finalize).toHaveBeenCalledWith(config.onBeforeEventSend);
     });
-
     it("does not send event when event.shouldSend returns false", () => {
-      lifecycle.onBeforeEvent.and.callFake(fakeOnRequestFailure);
-      event.shouldSend.and.returnValue(false);
+      lifecycle.onBeforeEvent.mockImplementation(fakeOnRequestFailure);
+      event.shouldSend.mockReturnValue(false);
       return eventManager.sendEvent(event).then((result) => {
         expect(result).toBeUndefined();
         expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalled();
         expect(
-          onRequestFailureForOnBeforeEvent.calls.mostRecent().args[0].error
-            .message,
+          onRequestFailureForOnBeforeEvent.mock.calls[0][0].error.message,
         ).toMatch(CANCELLATION_MESSAGE_REGEX);
         expect(logger.info).toHaveBeenCalledWith(
-          jasmine.stringMatching(CANCELLATION_MESSAGE_REGEX),
+          expect.stringMatching(CANCELLATION_MESSAGE_REGEX),
         );
         expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
       });
     });
-
     it("sends event when event.shouldSend returns true", () => {
-      lifecycle.onBeforeEvent.and.callFake(fakeOnRequestFailure);
+      lifecycle.onBeforeEvent.mockImplementation(fakeOnRequestFailure);
       return eventManager.sendEvent(event).then((result) => {
         expect(result).toBeUndefined();
         expect(onRequestFailureForOnBeforeEvent).not.toHaveBeenCalled();
         expect(sendEdgeNetworkRequest).toHaveBeenCalled();
       });
     });
-
-    it("throws an error on event finalize and event should not be sent", () => {
-      lifecycle.onBeforeEvent.and.callFake(fakeOnRequestFailure);
+    it("throws an error on event finalize and event should not be sent", async () => {
+      lifecycle.onBeforeEvent.mockImplementation(fakeOnRequestFailure);
       const errorMsg = "Expected Error";
-      event.finalize.and.throwError(errorMsg);
-      return eventManager
-        .sendEvent(event)
-        .then(() => {
-          throw new Error("Should not have resolved.");
-        })
-        .catch((error) => {
-          expect(error.message).toEqual(errorMsg);
-          expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalledWith({
-            error,
-          });
-          expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
-        });
-    });
+      const error = new Error(errorMsg);
 
+      event.finalize.mockImplementation(() => {
+        throw error;
+      });
+
+      await expect(
+        eventManager.sendEvent(event).then(() => {
+          throw new Error("Should not have resolved.");
+        }),
+      ).rejects.toThrowError(errorMsg);
+
+      expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalledWith({
+        error,
+      });
+
+      expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
+    });
     it("allows components and consent to pause the lifecycle", () => {
       const onBeforeEventDeferred = defer();
       const consentDeferred = defer();
-      lifecycle.onBeforeEvent.and.returnValue(onBeforeEventDeferred.promise);
-      consent.awaitConsent.and.returnValue(consentDeferred.promise);
+      lifecycle.onBeforeEvent.mockReturnValue(onBeforeEventDeferred.promise);
+      consent.awaitConsent.mockReturnValue(consentDeferred.promise);
       eventManager.sendEvent(event);
       expect(lifecycle.onBeforeEvent).toHaveBeenCalled();
       return flushPromiseChains()
@@ -206,64 +194,60 @@ describe("createEventManager", () => {
           expect(sendEdgeNetworkRequest).toHaveBeenCalled();
         });
     });
-
-    it("calls onResponse callbacks on response", () => {
-      const onResponseForOnBeforeEvent = jasmine.createSpy(
-        "onResponseForOnBeforeEvent",
-      );
-      lifecycle.onBeforeEvent.and.callFake(({ onResponse }) => {
+    it("calls onResponse callbacks on response", async () => {
+      const onResponseForOnBeforeEvent = vi.fn();
+      lifecycle.onBeforeEvent.mockImplementation(({ onResponse }) => {
         onResponse(onResponseForOnBeforeEvent);
         return Promise.resolve();
       });
-      const response = { type: "response" };
-      sendEdgeNetworkRequest.and.callFake(({ runOnResponseCallbacks }) => {
-        runOnResponseCallbacks({ response });
-        return Promise.resolve();
-      });
-      return eventManager.sendEvent(event).then(() => {
-        expect(onResponseForOnBeforeEvent).toHaveBeenCalledWith({ response });
+      const response = {
+        type: "response",
+      };
+      sendEdgeNetworkRequest.mockImplementation(
+        ({ runOnResponseCallbacks }) => {
+          runOnResponseCallbacks({
+            response,
+          });
+          return Promise.resolve();
+        },
+      );
+
+      await eventManager.sendEvent(event);
+      expect(onResponseForOnBeforeEvent).toHaveBeenCalledWith({
+        response,
       });
     });
-
-    it("calls onRequestFailure callbacks on request failure", () => {
-      lifecycle.onBeforeEvent.and.callFake(fakeOnRequestFailure);
-      sendEdgeNetworkRequest.and.callFake(
+    it("calls onRequestFailure callbacks on request failure", async () => {
+      lifecycle.onBeforeEvent.mockImplementation(fakeOnRequestFailure);
+      const error = new Error();
+      sendEdgeNetworkRequest.mockImplementation(
         ({ runOnRequestFailureCallbacks }) => {
-          const error = new Error();
           runOnRequestFailureCallbacks({ error });
           throw error;
         },
       );
-      return eventManager
-        .sendEvent(event)
-        .then(fail)
-        .catch((error) => {
-          expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalledWith({
-            error,
-          });
-        });
-    });
 
+      await expect(eventManager.sendEvent(event)).rejects.toThrow(error);
+      expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalledWith({ error });
+    });
     it("sends network request", () => {
       return eventManager.sendEvent(event).then(() => {
         expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
           request,
-          runOnResponseCallbacks: jasmine.any(Function),
-          runOnRequestFailureCallbacks: jasmine.any(Function),
+          runOnResponseCallbacks: expect.any(Function),
+          runOnRequestFailureCallbacks: expect.any(Function),
         });
       });
     });
-
     it("fails returned promise if request fails", () => {
-      sendEdgeNetworkRequest.and.returnValue(
+      sendEdgeNetworkRequest.mockReturnValue(
         Promise.reject(new Error("no connection")),
       );
-      return expectAsync(eventManager.sendEvent(event)).toBeRejectedWithError(
+      return expect(eventManager.sendEvent(event)).rejects.toThrowError(
         "no connection",
       );
     });
   });
-
   describe("applyResponse", () => {
     const responseHeaders = {
       "x-request-id": "474ec8af-6326-4cb5-952a-4b7dc6be5749",
@@ -272,62 +256,59 @@ describe("createEventManager", () => {
       requestId: "474ec8af-6326-4cb5-952a-4b7dc6be5749",
       handle: [],
     };
-
     const options = {
       renderDecisions: false,
       responseHeaders,
       responseBody,
     };
-
     it("creates the payload and adds event and meta", () => {
       return eventManager.applyResponse(event, options).then(() => {
         expect(requestPayload.addEvent).toHaveBeenCalledWith(event);
       });
     });
-
     it("events no not call finalize with onBeforeEventSend callback", () => {
       return eventManager.applyResponse(event, options).then(() => {
         expect(event.finalize).not.toHaveBeenCalled();
       });
     });
-
     it("calls onResponse callbacks", () => {
-      const onResponseForOnBeforeEvent = jasmine.createSpy(
-        "onResponseForOnBeforeEvent",
-      );
-      lifecycle.onBeforeEvent.and.callFake(({ onResponse }) => {
+      const onResponseForOnBeforeEvent = vi.fn();
+      lifecycle.onBeforeEvent.mockImplementation(({ onResponse }) => {
         onResponse(onResponseForOnBeforeEvent);
         return Promise.resolve();
       });
-      const response = { type: "response" };
-
-      applyResponse.and.callFake(({ runOnResponseCallbacks }) => {
-        runOnResponseCallbacks({ response });
+      const response = {
+        type: "response",
+      };
+      applyResponse.mockImplementation(({ runOnResponseCallbacks }) => {
+        runOnResponseCallbacks({
+          response,
+        });
         return Promise.resolve();
       });
-
       return eventManager.applyResponse(event, options).then(() => {
-        expect(onResponseForOnBeforeEvent).toHaveBeenCalledWith({ response });
+        expect(onResponseForOnBeforeEvent).toHaveBeenCalledWith({
+          response,
+        });
       });
     });
-
     it("applies AEP edge response headers and body and returns result", () => {
-      const mockResult = { response: "yep" };
-      applyResponse.and.returnValue(mockResult);
-
+      const mockResult = {
+        response: "yep",
+      };
+      applyResponse.mockReturnValue(mockResult);
       return eventManager.applyResponse(event, options).then((result) => {
         expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
         expect(applyResponse).toHaveBeenCalledWith({
           request,
           responseHeaders,
           responseBody,
-          runOnResponseCallbacks: jasmine.any(Function),
+          runOnResponseCallbacks: expect.any(Function),
         });
         expect(result).toEqual(mockResult);
       });
     });
-
-    it("includes override configuration, if provided", (done) => {
+    it("includes override configuration, if provided", () => {
       eventManager
         .sendEvent(event, {
           edgeConfigOverrides: {
@@ -352,15 +333,12 @@ describe("createEventManager", () => {
               },
             },
           });
-          done();
         });
     });
-
-    it("includes global override configuration, if provided", (done) => {
+    it("includes global override configuration, if provided", () => {
       config.edgeConfigOverrides.com_adobe_identity = {
         idSyncContainerId: "123",
       };
-
       eventManager
         .sendEvent(event, {
           edgeConfigOverrides: {},
@@ -371,10 +349,9 @@ describe("createEventManager", () => {
               idSyncContainerId: "123",
             },
           });
-          done();
         });
     });
-    it("includes the datastreamId override, if provided", (done) => {
+    it("includes the datastreamId override, if provided", () => {
       eventManager
         .sendEvent(event, {
           edgeConfigOverrides: {
@@ -383,10 +360,9 @@ describe("createEventManager", () => {
         })
         .then(() => {
           expect(createDataCollectionRequest).toHaveBeenCalledWith({
-            payload: jasmine.any(Object),
+            payload: expect.any(Object),
             datastreamIdOverride: "456",
           });
-          done();
         });
     });
   });

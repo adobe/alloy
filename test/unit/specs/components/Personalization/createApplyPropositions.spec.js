@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import {
   MIXED_PROPOSITIONS,
   PAGE_WIDE_SCOPE_DECISIONS,
@@ -30,7 +31,6 @@ const METADATA = {
     actionType: "setHtml",
   },
 };
-
 describe("Personalization::createApplyPropositions", () => {
   let processPropositions;
   let createProposition;
@@ -38,28 +38,31 @@ describe("Personalization::createApplyPropositions", () => {
   let viewCache;
   let applyPropositions;
   let render;
-
   beforeEach(() => {
-    processPropositions = jasmine.createSpy("processPropositions");
-    processPropositions.and.callFake((propositions) => {
+    processPropositions = vi.fn();
+    processPropositions.mockImplementation((propositions) => {
       const returnedPropositions = propositions.map((proposition) => ({
         ...proposition.toJSON(),
         renderAttempted: true,
       }));
-      return { returnedPropositions, render };
+      return {
+        returnedPropositions,
+        render,
+      };
     });
-    render = jasmine.createSpy("render");
-    render.and.callFake(() => Promise.resolve("notifications"));
+    render = vi.fn();
+    render.mockImplementation(() => Promise.resolve("notifications"));
     createProposition = injectCreateProposition({
       preprocess: (data) => data,
       isPageWideSurface: () => false,
     });
-
-    renderedPropositions = jasmine.createSpyObj("renderedPropositions", [
-      "concat",
-    ]);
-    viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
-    viewCache.getView.and.returnValue(Promise.resolve([]));
+    renderedPropositions = {
+      concat: vi.fn(),
+    };
+    viewCache = {
+      getView: vi.fn(),
+    };
+    viewCache.getView.mockReturnValue(Promise.resolve([]));
     applyPropositions = createApplyPropositions({
       processPropositions,
       createProposition,
@@ -67,15 +70,15 @@ describe("Personalization::createApplyPropositions", () => {
       viewCache,
     });
   });
-
   it("it should return an empty propositions promise if propositions is empty array", async () => {
     const result = await applyPropositions({
       propositions: [],
     });
-    expect(result).toEqual({ propositions: [] });
-    expect(processPropositions).toHaveBeenCalledOnceWith([]);
+    expect(result).toEqual({
+      propositions: [],
+    });
+    expect(processPropositions).toHaveBeenNthCalledWith(1, []);
   });
-
   it("it should apply user-provided dom-action/default-content schema propositions", async () => {
     const expectedExecuteDecisionsPropositions = clone(
       PAGE_WIDE_SCOPE_DECISIONS,
@@ -83,32 +86,27 @@ describe("Personalization::createApplyPropositions", () => {
       proposition.items = proposition.items.slice(0, 2);
       return proposition;
     });
-
     const result = await applyPropositions({
       propositions: PAGE_WIDE_SCOPE_DECISIONS,
     });
-
     expect(processPropositions).toHaveBeenCalledTimes(1);
-
     const expectedScopes = expectedExecuteDecisionsPropositions.map(
       (proposition) => proposition.scope,
     );
     result.propositions.forEach((proposition) => {
-      expect(proposition.renderAttempted).toBeTrue();
+      expect(proposition.renderAttempted).toBe(true);
       expect(expectedScopes).toContain(proposition.scope);
       expect(proposition.items).toEqual(
-        jasmine.arrayContaining([jasmine.any(Object)]),
+        expect.arrayContaining([expect.any(Object)]),
       );
       expect(proposition.items.length).toEqual(3);
     });
   });
-
   it("it should merge metadata with propositions that have html-content-item schema", async () => {
     const { propositions } = await applyPropositions({
       propositions: MIXED_PROPOSITIONS,
       metadata: METADATA,
     });
-
     expect(propositions.length).toEqual(4);
     propositions.forEach((proposition) => {
       expect(proposition.items.length).toEqual(1);
@@ -123,7 +121,6 @@ describe("Personalization::createApplyPropositions", () => {
     });
     expect(processPropositions).toHaveBeenCalledTimes(1);
   });
-
   it("it should drop items with html-content-item schema when there is no metadata", async () => {
     const propositions = [
       {
@@ -151,37 +148,32 @@ describe("Personalization::createApplyPropositions", () => {
         ],
       },
     ];
-
     const result = await applyPropositions({
       propositions,
     });
-
     expect(result.propositions.length).toEqual(1);
     expect(result.propositions[0].items.length).toEqual(1);
     expect(result.propositions[0].items[0].id).toEqual("442358");
-    expect(result.propositions[0].renderAttempted).toBeTrue();
+    expect(result.propositions[0].renderAttempted).toBe(true);
   });
-
   it("it should return renderAttempted = true on resulting propositions", async () => {
     const result = await applyPropositions({
       propositions: MIXED_PROPOSITIONS,
     });
     expect(result.propositions.length).toEqual(3);
     result.propositions.forEach((proposition) => {
-      expect(proposition.renderAttempted).toBeTrue();
+      expect(proposition.renderAttempted).toBe(true);
     });
   });
-
   it("it should ignore propositions with __view__ scope that have already been rendered", async () => {
     const propositions = JSON.parse(JSON.stringify(MIXED_PROPOSITIONS));
     propositions[4].renderAttempted = true;
-
     const result = await applyPropositions({
       propositions,
     });
     expect(result.propositions.length).toEqual(2);
     result.propositions.forEach((proposition) => {
-      expect(proposition.renderAttempted).toBeTrue();
+      expect(proposition.renderAttempted).toBe(true);
       if (proposition.scope === "__view__") {
         expect(proposition.items[0].id).not.toEqual("442358");
       } else {
@@ -189,10 +181,8 @@ describe("Personalization::createApplyPropositions", () => {
       }
     });
   });
-
   it("it should ignore items with unsupported schemas", async () => {
     const expectedItemIds = ["442358", "442359"];
-
     const { propositions } = await applyPropositions({
       propositions: MIXED_PROPOSITIONS,
     });
@@ -204,14 +194,12 @@ describe("Personalization::createApplyPropositions", () => {
       });
     });
   });
-
   it("it should not mutate original propositions", async () => {
     const originalPropositions = clone(MIXED_PROPOSITIONS);
     const result = await applyPropositions({
       propositions: originalPropositions,
       metadata: METADATA,
     });
-
     let numReturnedPropositions = 0;
     expect(originalPropositions).toEqual(MIXED_PROPOSITIONS);
     result.propositions.forEach((proposition) => {
@@ -225,11 +213,13 @@ describe("Personalization::createApplyPropositions", () => {
     });
     expect(numReturnedPropositions).toEqual(4);
   });
-
   it("concats viewName propositions", async () => {
-    viewCache.getView.and.returnValue(
+    viewCache.getView.mockReturnValue(
       Promise.resolve([
-        createProposition({ id: "myViewNameProp1", items: [{}] }),
+        createProposition({
+          id: "myViewNameProp1",
+          items: [{}],
+        }),
       ]),
     );
     const result = await applyPropositions({
@@ -245,16 +235,15 @@ describe("Personalization::createApplyPropositions", () => {
       ],
     });
   });
-
   it("handles track actions for json-content-item", async () => {
     const testElementId = "superfluous123";
-
     const proposition = createMockProposition({
       id: "abc",
       schema: JSON_CONTENT_ITEM,
-      data: { isGood: true },
+      data: {
+        isGood: true,
+      },
     });
-
     const expectedProposition = {
       id: "id",
       scope: "scope",
@@ -273,7 +262,6 @@ describe("Personalization::createApplyPropositions", () => {
         },
       ],
     };
-
     const result = await applyPropositions({
       propositions: [proposition.toJSON()],
       metadata: {
@@ -283,13 +271,16 @@ describe("Personalization::createApplyPropositions", () => {
         },
       },
     });
-
     expect(result).toEqual({
-      propositions: [{ ...expectedProposition, renderAttempted: true }],
+      propositions: [
+        {
+          ...expectedProposition,
+          renderAttempted: true,
+        },
+      ],
     });
     expect(processPropositions).toHaveBeenCalledTimes(1);
-
-    expect(processPropositions.calls.first().args[0][0].toJSON()).toEqual(
+    expect(processPropositions.mock.calls[0][0][0].toJSON()).toEqual(
       expectedProposition,
     );
   });

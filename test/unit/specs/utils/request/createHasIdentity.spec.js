@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { beforeEach, describe, it, expect } from "vitest";
 import {
   createHasIdentity,
   createAddIdentity,
@@ -18,13 +19,11 @@ describe("createHasIdentity", () => {
   let content;
   let hasIdentity;
   let addIdentity;
-
   beforeEach(() => {
     content = {};
     hasIdentity = createHasIdentity(content);
     addIdentity = createAddIdentity(content);
   });
-
   it("should return false when no xdm has been set", () => {
     expect(hasIdentity("myid")).toBe(false);
   });

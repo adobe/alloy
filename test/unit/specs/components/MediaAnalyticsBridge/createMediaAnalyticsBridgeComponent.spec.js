@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createMediaAnalyticsBridgeComponent from "../../../../../src/components/MediaAnalyticsBridge/createMediaAnalyticsBridgeComponent.js";
 
 describe("MediaAnalyticsBridge::createMediaAnalyticsBridgeComponent", () => {
@@ -27,7 +28,6 @@ describe("MediaAnalyticsBridge::createMediaAnalyticsBridgeComponent", () => {
   let trackMediaSession;
   let createMediaHelper;
   let createGetInstance;
-
   const build = (configs) => {
     mediaAnalyticsBridgeComponent = createMediaAnalyticsBridgeComponent({
       config: configs,
@@ -39,34 +39,30 @@ describe("MediaAnalyticsBridge::createMediaAnalyticsBridgeComponent", () => {
       createGetInstance,
     });
   };
-
   beforeEach(() => {
-    logger = jasmine.createSpyObj("logger", ["info"]);
-    mediaResponseHandler = jasmine.createSpy();
-    trackMediaEvent = jasmine.createSpy();
-    trackMediaSession = jasmine.createSpy();
-    createMediaHelper = jasmine.createSpy();
-    createGetInstance = jasmine.createSpy();
+    logger = {
+      info: vi.fn(),
+    };
+    mediaResponseHandler = vi.fn();
+    trackMediaEvent = vi.fn();
+    trackMediaSession = vi.fn();
+    createMediaHelper = vi.fn();
+    createGetInstance = vi.fn();
     build(config);
   });
-
   it("should reject promise when called with invalid config", async () => {
     build({});
     const getMediaAnalyticsTracker =
       mediaAnalyticsBridgeComponent.commands.getMediaAnalyticsTracker;
-
-    return expectAsync(getMediaAnalyticsTracker.run()).toBeRejected();
+    return expect(getMediaAnalyticsTracker.run()).rejects.toThrowError();
   });
-
   it("should call createGetInstance when getInstance Media API is called", async () => {
     build(config);
-
     const { getMediaAnalyticsTracker } = mediaAnalyticsBridgeComponent.commands;
     const mediaApi = await getMediaAnalyticsTracker.run();
     mediaApi.getInstance();
     expect(createGetInstance).toHaveBeenCalled();
   });
-
   it("should call onBeforeMediaEvent when onBeforeEvent is called with legacy flag", async () => {
     build(config);
     const getPlayerDetails = () => {};
@@ -77,16 +73,20 @@ describe("MediaAnalyticsBridge::createMediaAnalyticsBridgeComponent", () => {
       getPlayerDetails,
     };
     const onResponseHandler = (onResponse) => {
-      onResponse({ response: {} });
+      onResponse({
+        response: {},
+      });
     };
-    onBeforeEvent({ mediaOptions, onResponse: onResponseHandler });
+    onBeforeEvent({
+      mediaOptions,
+      onResponse: onResponseHandler,
+    });
     expect(mediaResponseHandler).toHaveBeenCalledWith({
       getPlayerDetails,
       playerId: "testPlayerId",
       response: {},
     });
   });
-
   it("should not call onBeforeMediaEvent when onBeforeEvent is called without legacy flag", async () => {
     build(config);
     const getPlayerDetails = () => {};
@@ -97,9 +97,14 @@ describe("MediaAnalyticsBridge::createMediaAnalyticsBridgeComponent", () => {
       getPlayerDetails,
     };
     const onResponseHandler = (onResponse) => {
-      onResponse({ response: {} });
+      onResponse({
+        response: {},
+      });
     };
-    onBeforeEvent({ mediaOptions, onResponse: onResponseHandler });
+    onBeforeEvent({
+      mediaOptions,
+      onResponse: onResponseHandler,
+    });
     expect(mediaResponseHandler).not.toHaveBeenCalled();
   });
 });

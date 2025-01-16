@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createClickActivityStorage from "../../../../../src/components/ActivityCollector/createClickActivityStorage.js";
 import { CLICK_ACTIVITY_DATA } from "../../../../../src/constants/sessionDataKeys.js";
 
@@ -17,33 +18,35 @@ describe("ActivityCollector::createClickActivityStorage", () => {
   let storage;
   let clickActivityStorage;
   beforeEach(() => {
-    storage = jasmine.createSpyObj("storage", [
-      "getItem",
-      "setItem",
-      "removeItem",
-    ]);
-    clickActivityStorage = createClickActivityStorage({ storage });
+    storage = {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    };
+    clickActivityStorage = createClickActivityStorage({
+      storage,
+    });
   });
-
   it("saves data", () => {
-    clickActivityStorage.save({ key: "value" });
+    clickActivityStorage.save({
+      key: "value",
+    });
     expect(storage.setItem).toHaveBeenCalledWith(
       CLICK_ACTIVITY_DATA,
       '{"key":"value"}',
     );
   });
-
   it("loads data", () => {
-    storage.getItem.and.returnValue('{"key":"value"}');
+    storage.getItem.mockReturnValue('{"key":"value"}');
     const data = clickActivityStorage.load();
-    expect(data).toEqual({ key: "value" });
+    expect(data).toEqual({
+      key: "value",
+    });
   });
-
   it("loads null when no data is present", () => {
     const data = clickActivityStorage.load();
     expect(data).toBeNull();
   });
-
   it("removes data", () => {
     clickActivityStorage.remove();
     expect(storage.removeItem).toHaveBeenCalledWith(CLICK_ACTIVITY_DATA);

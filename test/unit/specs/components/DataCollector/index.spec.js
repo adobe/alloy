@@ -9,6 +9,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createDataCollector from "../../../../../src/components/DataCollector/index.js";
 import { noop } from "../../../../../src/utils/index.js";
 
@@ -18,38 +19,41 @@ describe("Event Command", () => {
   let logger;
   let sendEventCommand;
   beforeEach(() => {
-    event = jasmine.createSpyObj("event", [
-      "documentMayUnload",
-      "setUserData",
-      "setUserXdm",
-      "mergeXdm",
-      "mergeMeta",
-      "mergeConfigOverride",
-    ]);
-    logger = jasmine.createSpyObj("logger", ["warn"]);
-
+    event = {
+      documentMayUnload: vi.fn(),
+      setUserData: vi.fn(),
+      setUserXdm: vi.fn(),
+      mergeXdm: vi.fn(),
+      mergeMeta: vi.fn(),
+      mergeConfigOverride: vi.fn(),
+    };
+    logger = {
+      warn: vi.fn(),
+    };
     eventManager = {
       createEvent() {
         return event;
       },
-      sendEvent: jasmine
-        .createSpy()
-        .and.callFake((_event, { applyUserProvidedData = noop }) => {
+      sendEvent: vi
+        .fn()
+        .mockImplementation((_event, { applyUserProvidedData = noop }) => {
           applyUserProvidedData();
           return Promise.resolve("sendEventResult");
         }),
     };
-
     const dataCollector = createDataCollector({
       eventManager,
       logger,
     });
     sendEventCommand = dataCollector.commands.sendEvent;
   });
-
   it("sends event", () => {
-    const xdm = { a: "b" };
-    const data = { c: "d" };
+    const xdm = {
+      a: "b",
+    };
+    const data = {
+      c: "d",
+    };
     const options = {
       otherSetting: "foo",
       type: "test",
@@ -57,7 +61,6 @@ describe("Event Command", () => {
       data,
       documentUnloading: true,
     };
-
     return sendEventCommand.run(options).then((result) => {
       expect(event.documentMayUnload).toHaveBeenCalled();
       expect(event.setUserXdm).toHaveBeenCalledWith(xdm);
@@ -68,7 +71,6 @@ describe("Event Command", () => {
       expect(result).toEqual("sendEventResult");
     });
   });
-
   it("sends event with decisionScopes parameter when decisionScopes is not empty", () => {
     const options = {
       renderDecisions: true,
@@ -77,7 +79,6 @@ describe("Event Command", () => {
         decisionScopes: ["Foo2"],
       },
     };
-
     return sendEventCommand.run(options).then((result) => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: true,
@@ -89,7 +90,6 @@ describe("Event Command", () => {
       expect(result).toEqual("sendEventResult");
     });
   });
-
   it("sends event with surfaces parameter when surfaces is not empty", () => {
     const options = {
       renderDecisions: true,
@@ -97,7 +97,6 @@ describe("Event Command", () => {
         surfaces: ["Foo1", "Foo2"],
       },
     };
-
     return sendEventCommand.run(options).then((result) => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: true,
@@ -108,13 +107,11 @@ describe("Event Command", () => {
       expect(result).toEqual("sendEventResult");
     });
   });
-
   it("does not call documentMayUnload if documentUnloading is not defined", () => {
     return sendEventCommand.run({}).then(() => {
       expect(event.documentMayUnload).not.toHaveBeenCalled();
     });
   });
-
   it("merges eventType", () => {
     return sendEventCommand
       .run({
@@ -126,7 +123,6 @@ describe("Event Command", () => {
         });
       });
   });
-
   it("merges eventMergeID", () => {
     return sendEventCommand
       .run({
@@ -138,7 +134,6 @@ describe("Event Command", () => {
         });
       });
   });
-
   it("merges datasetId into the override configuration", () => {
     const datasetId = "mydatasetId";
     return sendEventCommand
@@ -147,12 +142,14 @@ describe("Event Command", () => {
       })
       .then(() => {
         expect(eventManager.sendEvent).toHaveBeenCalledWith(
-          jasmine.any(Object),
+          expect.any(Object),
           {
             edgeConfigOverrides: {
               com_adobe_experience_platform: {
                 datasets: {
-                  event: { datasetId },
+                  event: {
+                    datasetId,
+                  },
                 },
               },
             },
@@ -161,7 +158,6 @@ describe("Event Command", () => {
         expect(logger.warn).toHaveBeenCalled();
       });
   });
-
   it("includes configuration if provided", () => {
     return sendEventCommand
       .run({
@@ -174,7 +170,7 @@ describe("Event Command", () => {
       })
       .then(() => {
         expect(eventManager.sendEvent).toHaveBeenCalledWith(
-          jasmine.any(Object),
+          expect.any(Object),
           {
             renderDecisions: true,
             edgeConfigOverrides: {

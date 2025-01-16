@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import createInteractionStorage from "../../../../../../../src/components/Personalization/createInteractionStorage.js";
 import {
   appendNode,
@@ -33,24 +34,21 @@ describe("Personalization::tracking::interactions", () => {
   let getInteractionMetas;
   let autoCollectPropositionInteractions;
   let scopeDetails;
-
   beforeEach(() => {
     selectNodes(".eq").forEach(removeNode);
     ({ storeInteractionMeta, getInteractionMetas } =
       createInteractionStorage());
-
     autoCollectPropositionInteractions = {
       [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
       [ADOBE_TARGET]: NEVER,
     };
-
-    scopeDetails = { decisionProvider: ADOBE_JOURNEY_OPTIMIZER };
+    scopeDetails = {
+      decisionProvider: ADOBE_JOURNEY_OPTIMIZER,
+    };
   });
-
   afterEach(() => {
     selectNodes(".eq").forEach(removeNode);
   });
-
   it("should collect interactions with interact-id, label and token", () => {
     storeInteractionMeta(
       "AT:1234",
@@ -63,7 +61,6 @@ describe("Personalization::tracking::interactions", () => {
       },
       99,
     );
-
     const content = `
       <div class="b" data-aep-interact-id="99">
         <div id="one" class="c" data-aep-click-label="lbl-first" data-aep-click-token="tok-111">first</div>
@@ -73,12 +70,15 @@ describe("Personalization::tracking::interactions", () => {
     `;
     const node = createNode(
       "DIV",
-      { id: "abc", class: "eq" },
-      { innerHTML: content },
+      {
+        id: "abc",
+        class: "eq",
+      },
+      {
+        innerHTML: content,
+      },
     );
-
     appendNode(document.body, node);
-
     [
       {
         elementId: "one",
@@ -103,7 +103,6 @@ describe("Personalization::tracking::interactions", () => {
           getInteractionMetas,
           autoCollectPropositionInteractions,
         );
-
       expect(decisionsMeta).toEqual([
         {
           id: "AT:1234",
@@ -120,13 +119,11 @@ describe("Personalization::tracking::interactions", () => {
       expect(propositionActionToken).toEqual(definition.expectedToken);
     });
   });
-
   it("should collect interactions for elements decorated with label when configured for 'decoratedElementsOnly'", () => {
     autoCollectPropositionInteractions = {
       [ADOBE_JOURNEY_OPTIMIZER]: DECORATED_ELEMENTS_ONLY,
       [ADOBE_TARGET]: NEVER,
     };
-
     storeInteractionMeta(
       "AT:1234",
       "063",
@@ -138,7 +135,6 @@ describe("Personalization::tracking::interactions", () => {
       },
       99,
     );
-
     const content = `
       <div class="b" data-aep-interact-id="99">
         <div id="one" class="c" data-aep-click-label="lbl-first" data-aep-click-token="tok-111">first</div>
@@ -148,12 +144,15 @@ describe("Personalization::tracking::interactions", () => {
     `;
     const node = createNode(
       "DIV",
-      { id: "abc", class: "eq" },
-      { innerHTML: content },
+      {
+        id: "abc",
+        class: "eq",
+      },
+      {
+        innerHTML: content,
+      },
     );
-
     appendNode(document.body, node);
-
     [
       {
         elementId: "one",
@@ -178,7 +177,6 @@ describe("Personalization::tracking::interactions", () => {
           getInteractionMetas,
           autoCollectPropositionInteractions,
         );
-
       expect(decisionsMeta).toEqual([
         {
           id: "AT:1234",
@@ -195,13 +193,11 @@ describe("Personalization::tracking::interactions", () => {
       expect(propositionActionToken).toEqual(definition.expectedToken);
     });
   });
-
   it("should NOT collect interactions for elements NOT decorated with label when configured for 'decoratedElementsOnly'", () => {
     autoCollectPropositionInteractions = {
       [ADOBE_JOURNEY_OPTIMIZER]: DECORATED_ELEMENTS_ONLY,
       [ADOBE_TARGET]: NEVER,
     };
-
     storeInteractionMeta(
       "AT:1234",
       "063",
@@ -213,7 +209,6 @@ describe("Personalization::tracking::interactions", () => {
       },
       99,
     );
-
     const content = `
       <div class="b" data-aep-interact-id="99">
         <div id="one" class="c">first</div>
@@ -223,12 +218,15 @@ describe("Personalization::tracking::interactions", () => {
     `;
     const node = createNode(
       "DIV",
-      { id: "abc", class: "eq" },
-      { innerHTML: content },
+      {
+        id: "abc",
+        class: "eq",
+      },
+      {
+        innerHTML: content,
+      },
     );
-
     appendNode(document.body, node);
-
     [
       {
         elementId: "one",
@@ -253,13 +251,11 @@ describe("Personalization::tracking::interactions", () => {
           getInteractionMetas,
           autoCollectPropositionInteractions,
         );
-
       expect(decisionsMeta).toEqual([]);
       expect(propositionActionLabel).toBeNull();
       expect(propositionActionToken).toBeNull();
     });
   });
-
   it("should find closest label and token", () => {
     storeInteractionMeta(
       "AT:1234",
@@ -272,7 +268,6 @@ describe("Personalization::tracking::interactions", () => {
       },
       99,
     );
-
     const content = `
       <div class="b" data-aep-interact-id="99" data-aep-click-label="lbl-main" data-aep-click-token="tok-main">
         <div id="one" class="c">first</div>
@@ -282,11 +277,15 @@ describe("Personalization::tracking::interactions", () => {
     `;
     const node = createNode(
       "DIV",
-      { id: "abc", class: "eq" },
-      { innerHTML: content },
+      {
+        id: "abc",
+        class: "eq",
+      },
+      {
+        innerHTML: content,
+      },
     );
     appendNode(document.body, node);
-
     [
       {
         elementId: "one",
@@ -311,7 +310,6 @@ describe("Personalization::tracking::interactions", () => {
           getInteractionMetas,
           autoCollectPropositionInteractions,
         );
-
       expect(decisionsMeta).toEqual([
         {
           id: "AT:1234",
@@ -328,7 +326,6 @@ describe("Personalization::tracking::interactions", () => {
       expect(propositionActionToken).toEqual(definition.expectedToken);
     });
   });
-
   it("should find closest label and token (nesting)", () => {
     storeInteractionMeta(
       "AT:1234",
@@ -341,7 +338,6 @@ describe("Personalization::tracking::interactions", () => {
       },
       99,
     );
-
     const content = `
       <div class="b" data-aep-interact-id="99">
         <div id="one" class="c">
@@ -355,11 +351,15 @@ describe("Personalization::tracking::interactions", () => {
     `;
     const node = createNode(
       "DIV",
-      { id: "abc", class: "eq" },
-      { innerHTML: content },
+      {
+        id: "abc",
+        class: "eq",
+      },
+      {
+        innerHTML: content,
+      },
     );
     appendNode(document.body, node);
-
     [
       {
         elementId: "onegreatgrandchild",
@@ -384,7 +384,6 @@ describe("Personalization::tracking::interactions", () => {
           getInteractionMetas,
           autoCollectPropositionInteractions,
         );
-
       expect(decisionsMeta).toEqual([
         {
           id: "AT:1234",
@@ -401,7 +400,6 @@ describe("Personalization::tracking::interactions", () => {
       expect(propositionActionToken).toEqual(definition.expectedToken);
     });
   });
-
   it("handles case where no interact-id exists", () => {
     storeInteractionMeta(
       "AT:1234",
@@ -414,7 +412,6 @@ describe("Personalization::tracking::interactions", () => {
       },
       99,
     );
-
     const content = `
       <div class="b" >
         <div id="one" class="c">
@@ -428,11 +425,15 @@ describe("Personalization::tracking::interactions", () => {
     `;
     const node = createNode(
       "DIV",
-      { id: "abc", class: "eq" },
-      { innerHTML: content },
+      {
+        id: "abc",
+        class: "eq",
+      },
+      {
+        innerHTML: content,
+      },
     );
     appendNode(document.body, node);
-
     const element = document.getElementById("onegreatgrandchild");
     expect(
       collectInteractions(
@@ -442,7 +443,6 @@ describe("Personalization::tracking::interactions", () => {
       ),
     ).toEqual({});
   });
-
   it("should collect and dedupe interactions with labels", () => {
     // outer
     storeInteractionMeta(
@@ -528,7 +528,6 @@ describe("Personalization::tracking::interactions", () => {
       },
       11,
     );
-
     const content = `
       <div class="b" data-aep-interact-id="99" data-aep-click-label="outer-label-2" data-aep-click-token="outer-token-2">
         <div id="one" class="c" data-aep-interact-id="11" data-aep-click-label="inner-label-2" data-aep-click-token="inner-token-2">first</div>
@@ -538,12 +537,15 @@ describe("Personalization::tracking::interactions", () => {
     `;
     const node = createNode(
       "DIV",
-      { id: "abc", class: "eq" },
-      { innerHTML: content },
+      {
+        id: "abc",
+        class: "eq",
+      },
+      {
+        innerHTML: content,
+      },
     );
-
     appendNode(document.body, node);
-
     const element = document.getElementById("one");
     const { decisionsMeta, propositionActionLabel, propositionActionToken } =
       collectInteractions(
@@ -551,9 +553,8 @@ describe("Personalization::tracking::interactions", () => {
         getInteractionMetas,
         autoCollectPropositionInteractions,
       );
-
     expect(decisionsMeta).toEqual(
-      jasmine.arrayContaining([
+      expect.arrayContaining([
         {
           id: "AJO:inner-id-2",
           scope: "inner-scope2",

@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { beforeEach, describe, it, expect } from "vitest";
 import injectShouldTransferCookie from "../../../../src/core/injectShouldTransferCookie.js";
 
 describe("shouldTransferCookie", () => {
   let targetMigrationEnabled;
   let orgId;
   let shouldTransferCookie;
-
   beforeEach(() => {
     targetMigrationEnabled = false;
     orgId = "ABC@CustomOrg";
@@ -28,31 +28,26 @@ describe("shouldTransferCookie", () => {
       orgId,
     });
   };
-
   it("returns true if it's at_qa_mode cookie", () => {
     build();
-    expect(shouldTransferCookie("at_qa_mode")).toBeTrue();
+    expect(shouldTransferCookie("at_qa_mode")).toBe(true);
   });
-
   it("returns true if it's mbox cookie and targetMigrationEnabled=true", () => {
     targetMigrationEnabled = true;
     build();
-    expect(shouldTransferCookie("mbox")).toBeTrue();
+    expect(shouldTransferCookie("mbox")).toBe(true);
   });
-
   it("returns false if it's mbox cookie and targetMigrationEnabled=false", () => {
     build();
-    expect(shouldTransferCookie("mbox")).toBeFalse();
+    expect(shouldTransferCookie("mbox")).toBe(false);
   });
-
   it("returns false if it's not a legacy cookie name", () => {
     targetMigrationEnabled = true;
     build();
-    expect(shouldTransferCookie("foo")).toBeFalse();
+    expect(shouldTransferCookie("foo")).toBe(false);
   });
-
   it("returns true for kndctr cookies", () => {
     build();
-    expect(shouldTransferCookie("kndctr_ABC_CustomOrg_mynewcookie")).toBeTrue();
+    expect(shouldTransferCookie("kndctr_ABC_CustomOrg_mynewcookie")).toBe(true);
   });
 });

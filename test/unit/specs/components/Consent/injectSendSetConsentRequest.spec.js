@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import injectSendSetConsentRequest from "../../../../../src/components/Consent/injectSendSetConsentRequest.js";
 
 describe("Consent:injectSendSetConsentRequest", () => {
@@ -19,25 +20,20 @@ describe("Consent:injectSendSetConsentRequest", () => {
   let createConsentRequest;
   let sendSetConsentRequest;
   let globalEdgeConfigOverrides;
-
   beforeEach(() => {
-    sendEdgeNetworkRequest = jasmine.createSpy("sendEdgeNetworkRequest");
-    requestPayload = jasmine.createSpyObj("requestPayload", [
-      "setConsent",
-      "addIdentity",
-      "mergeConfigOverride",
-    ]);
-    createConsentRequestPayload = jasmine
-      .createSpy("createConsentRequestPayload")
-      .and.returnValue(requestPayload);
+    sendEdgeNetworkRequest = vi.fn();
+    requestPayload = {
+      setConsent: vi.fn(),
+      addIdentity: vi.fn(),
+      mergeConfigOverride: vi.fn(),
+    };
+    createConsentRequestPayload = vi.fn().mockReturnValue(requestPayload);
     request = {
       getPayload() {
         return requestPayload;
       },
     };
-    createConsentRequest = jasmine
-      .createSpy("createConsentRequest")
-      .and.returnValue(request);
+    createConsentRequest = vi.fn().mockReturnValue(request);
     globalEdgeConfigOverrides = {};
     sendSetConsentRequest = injectSendSetConsentRequest({
       createConsentRequestPayload,
@@ -46,14 +42,24 @@ describe("Consent:injectSendSetConsentRequest", () => {
       edgeConfigOverrides: globalEdgeConfigOverrides,
     });
   });
-
   it("sets consent level and on requestPayload and sends the request", () => {
-    sendEdgeNetworkRequest.and.returnValue(Promise.resolve());
+    sendEdgeNetworkRequest.mockReturnValue(Promise.resolve());
     return sendSetConsentRequest({
       consentOptions: "anything",
       identityMap: {
-        a: [{ id: "1" }, { id: "2" }],
-        b: [{ id: "3" }],
+        a: [
+          {
+            id: "1",
+          },
+          {
+            id: "2",
+          },
+        ],
+        b: [
+          {
+            id: "3",
+          },
+        ],
       },
     }).then((resolvedValue) => {
       expect(requestPayload.setConsent).toHaveBeenCalledWith("anything");
@@ -61,19 +67,35 @@ describe("Consent:injectSendSetConsentRequest", () => {
         request,
       });
       expect(resolvedValue).toBeUndefined();
-      expect(requestPayload.addIdentity).toHaveBeenCalledWith("a", { id: "1" });
-      expect(requestPayload.addIdentity).toHaveBeenCalledWith("a", { id: "2" });
-      expect(requestPayload.addIdentity).toHaveBeenCalledWith("b", { id: "3" });
+      expect(requestPayload.addIdentity).toHaveBeenCalledWith("a", {
+        id: "1",
+      });
+      expect(requestPayload.addIdentity).toHaveBeenCalledWith("a", {
+        id: "2",
+      });
+      expect(requestPayload.addIdentity).toHaveBeenCalledWith("b", {
+        id: "3",
+      });
     });
   });
-
   it("sets the configuration overrides on the payload, if provided", () => {
-    sendEdgeNetworkRequest.and.returnValue(Promise.resolve());
+    sendEdgeNetworkRequest.mockReturnValue(Promise.resolve());
     return sendSetConsentRequest({
       consentOptions: "anything",
       identityMap: {
-        a: [{ id: "1" }, { id: "2" }],
-        b: [{ id: "3" }],
+        a: [
+          {
+            id: "1",
+          },
+          {
+            id: "2",
+          },
+        ],
+        b: [
+          {
+            id: "3",
+          },
+        ],
       },
       edgeConfigOverrides: {
         com_adobe_identity: {
@@ -89,17 +111,27 @@ describe("Consent:injectSendSetConsentRequest", () => {
       });
     });
   });
-
   it("sets the configuration overrides on the payload, if provided, from the global config", () => {
-    sendEdgeNetworkRequest.and.returnValue(Promise.resolve());
+    sendEdgeNetworkRequest.mockReturnValue(Promise.resolve());
     globalEdgeConfigOverrides.com_adobe_identity = {
       idSyncContainerId: "123",
     };
     return sendSetConsentRequest({
       consentOptions: "anything",
       identityMap: {
-        a: [{ id: "1" }, { id: "2" }],
-        b: [{ id: "3" }],
+        a: [
+          {
+            id: "1",
+          },
+          {
+            id: "2",
+          },
+        ],
+        b: [
+          {
+            id: "3",
+          },
+        ],
       },
     }).then(() => {
       expect(requestPayload.setConsent).toHaveBeenCalledWith("anything");
@@ -110,14 +142,24 @@ describe("Consent:injectSendSetConsentRequest", () => {
       });
     });
   });
-
   it("sets the override for the datastreamId, if provided", () => {
-    sendEdgeNetworkRequest.and.returnValue(Promise.resolve());
+    sendEdgeNetworkRequest.mockReturnValue(Promise.resolve());
     return sendSetConsentRequest({
       consentOptions: "anything",
       identityMap: {
-        a: [{ id: "1" }, { id: "2" }],
-        b: [{ id: "3" }],
+        a: [
+          {
+            id: "1",
+          },
+          {
+            id: "2",
+          },
+        ],
+        b: [
+          {
+            id: "3",
+          },
+        ],
       },
       edgeConfigOverrides: {
         datastreamId: "123",
@@ -125,7 +167,7 @@ describe("Consent:injectSendSetConsentRequest", () => {
     }).then(() => {
       expect(requestPayload.setConsent).toHaveBeenCalledWith("anything");
       expect(createConsentRequest).toHaveBeenCalledWith({
-        payload: jasmine.any(Object),
+        payload: expect.any(Object),
         datastreamIdOverride: "123",
       });
     });

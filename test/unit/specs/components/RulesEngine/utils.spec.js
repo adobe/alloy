@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import {
   createInMemoryStorage,
   createRestoreStorage,
@@ -20,67 +21,82 @@ import {
 describe("RulesEngine:utils", () => {
   let storage;
   let inMemoryStorage;
-
   beforeEach(() => {
-    storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
+    storage = {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      clear: vi.fn(),
+    };
     inMemoryStorage = createInMemoryStorage();
   });
-
   it("restores from storage", () => {
-    storage.getItem.and.returnValue(
+    storage.getItem.mockReturnValue(
       '{ "something": true, "color": "orange", "person": { "height": 5.83 } }',
     );
     const restore = createRestoreStorage(storage, "zoink");
-
-    expect(restore({ good: true })).toEqual({
+    expect(
+      restore({
+        good: true,
+      }),
+    ).toEqual({
       something: true,
       color: "orange",
-      person: { height: 5.83 },
+      person: {
+        height: 5.83,
+      },
     });
-
     expect(storage.getItem).toHaveBeenCalledWith("zoink");
   });
-
   it("uses default value if storage unavailable", () => {
-    storage.getItem.and.returnValue(undefined);
+    storage.getItem.mockReturnValue(undefined);
     const restore = createRestoreStorage(storage, "zoink");
-
-    expect(restore({ good: true })).toEqual({ good: true });
-
+    expect(
+      restore({
+        good: true,
+      }),
+    ).toEqual({
+      good: true,
+    });
     expect(storage.getItem).toHaveBeenCalledWith("zoink");
   });
+  it("saves to storage", () => {
+    const mockedTimestamp = new Date(Date.UTC(2023, 8, 2, 13, 34, 56));
+    vi.useFakeTimers();
+    vi.setSystemTime(mockedTimestamp);
 
-  it("saves to storage", (done) => {
-    storage.getItem.and.returnValue(
+    storage.getItem.mockReturnValue(
       '{ "something": true, "color": "orange", "person": { "height": 5.83 } }',
     );
     const save = createSaveStorage(storage, "zoink");
-
     save({
       something: true,
       color: "orange",
-      person: { height: 5.83 },
+      person: {
+        height: 5.83,
+      },
     });
 
-    setTimeout(() => {
-      expect(storage.setItem).toHaveBeenCalledWith(
-        "zoink",
-        '{"something":true,"color":"orange","person":{"height":5.83}}',
-      );
+    vi.advanceTimersByTime(60);
 
-      done();
-    }, 20);
+    expect(storage.setItem).toHaveBeenCalledWith(
+      "zoink",
+      '{"something":true,"color":"orange","person":{"height":5.83}}',
+    );
+
+    vi.useRealTimers();
   });
   it("should return the date of expiration", () => {
     const mockedTimestamp = new Date(Date.UTC(2023, 8, 2, 13, 34, 56));
-    jasmine.clock().install();
-    jasmine.clock().mockDate(mockedTimestamp);
+    vi.useFakeTimers();
+    vi.setSystemTime(mockedTimestamp);
+
     const retentionPeriod = 10;
     const expectedDate = new Date(mockedTimestamp);
     expectedDate.setDate(expectedDate.getDate() - retentionPeriod);
     const result = getExpirationDate(retentionPeriod);
     expect(result).toEqual(expectedDate);
-    jasmine.clock().uninstall();
+
+    vi.useRealTimers();
   });
   it("should return the activityId", () => {
     const proposition = {
@@ -172,7 +188,6 @@ describe("RulesEngine:utils", () => {
       "39ae8d4b-b55e-43dc-a143-77f50195b487#b47fde8b-57c1-4bbe-ae22-64d5b782d183",
     );
   });
-
   it("should return the activityId as undefined", () => {
     const proposition = {
       id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
@@ -200,13 +215,11 @@ describe("RulesEngine:utils", () => {
     const retrievedValue = inMemoryStorage.getItem(key);
     expect(retrievedValue).toEqual(value);
   });
-
   it("should return null for a non-existent item", () => {
     const key = "nonExistentKey";
     const retrievedValue = inMemoryStorage.getItem(key);
     expect(retrievedValue).toBeNull();
   });
-
   it("should overwrite the value for an existing key", () => {
     const key = "existingKey";
     const originalValue = "originalValue";

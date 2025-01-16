@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { describe, it, expect } from "vitest";
 import crc32 from "../../../../src/utils/crc32.js";
 
 const crc32Sample = {
@@ -613,7 +614,6 @@ const crc32Sample = {
     crc32Hash: 4211638728,
   },
 };
-
 describe("crc32", () => {
   it("should hash a string and return a number ", () => {
     const str = "hello";
@@ -621,7 +621,6 @@ describe("crc32", () => {
     expect(typeof result).toBe("number");
     expect(result).toEqual(907060870);
   });
-
   it("should create same hash every time", () => {
     const idsTohash = {
       email: {
@@ -635,7 +634,6 @@ describe("crc32", () => {
     expect(resultOne).toBe(3158443042);
     expect(resultTwo).toBe(3158443042);
   });
-
   it("should always return a positive number", () => {
     const idOneTohash = "x+x";
     const idTwoTohash = "a*b/100-220";
@@ -646,13 +644,11 @@ describe("crc32", () => {
     expect(typeof resultTwo).toBe("number");
     expect(resultTwo).toBeGreaterThan(0);
   });
-
   it("should hash strings with special characters", () => {
     const stringToHash = "hello@#&^hq10";
     const result = crc32(stringToHash);
     expect(result).toBe(864118309);
   });
-
   it("should create different hashes for different strings", () => {
     const stringOneToHash = "hello@#&^hq10";
     const stringTwoToHash = "hello@#&h^q10";
@@ -662,7 +658,6 @@ describe("crc32", () => {
     expect(resultOne).toBe(864118309);
     expect(resultTwo).toBe(3365964926);
   });
-
   describe("hashing of various of unicode chars", () => {
     Object.keys(crc32Sample).forEach((lang) => {
       const sample = crc32Sample[lang];

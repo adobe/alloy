@@ -10,20 +10,55 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe } from "vitest";
 import { objectOf, string } from "../../../../../src/utils/validation/index.js";
 import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::renamed", () => {
   const testCases = [
-    { value: { old: "a", new: "a" }, expected: { new: "a" }, warning: true },
-    { value: { old: "a" }, expected: { new: "a" }, warning: true },
-    { value: { new: "a" } },
-    { value: { old: "a", new: "b" }, error: true },
-    { value: "foo", error: true },
-    { value: 1, error: true },
-    { value: undefined },
+    {
+      value: {
+        old: "a",
+        new: "a",
+      },
+      expected: {
+        new: "a",
+      },
+      warning: true,
+    },
+    {
+      value: {
+        old: "a",
+      },
+      expected: {
+        new: "a",
+      },
+      warning: true,
+    },
+    {
+      value: {
+        new: "a",
+      },
+    },
+    {
+      value: {
+        old: "a",
+        new: "b",
+      },
+      error: true,
+    },
+    {
+      value: "foo",
+      error: true,
+    },
+    {
+      value: 1,
+      error: true,
+    },
+    {
+      value: undefined,
+    },
   ];
-
   describeValidation(
     "works for a single deprecated field",
     objectOf({
@@ -31,7 +66,6 @@ describe("validation::renamed", () => {
     }).renamed("old", string(), "new"),
     testCases,
   );
-
   describeValidation(
     "works for multiple deprecated fields",
     objectOf({
@@ -42,8 +76,14 @@ describe("validation::renamed", () => {
       .renamed("old2", string(), "new2"),
     [
       {
-        value: { old1: "a", old2: "b" },
-        expected: { new1: "a", new2: "b" },
+        value: {
+          old1: "a",
+          old2: "b",
+        },
+        expected: {
+          new1: "a",
+          new2: "b",
+        },
         warning: true,
       },
     ],

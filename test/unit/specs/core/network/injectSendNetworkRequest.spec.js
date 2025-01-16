@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import injectSendNetworkRequest from "../../../../../src/core/network/injectSendNetworkRequest.js";
 import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
@@ -20,49 +21,44 @@ describe("injectSendNetworkRequest", () => {
   };
   const payloadJson = JSON.stringify(payload);
   const requestId = "RID123";
-
   let logger;
-
-  const responseBody = { requestId: "myrequestid", handle: [] };
+  const responseBody = {
+    requestId: "myrequestid",
+    handle: [],
+  };
   const responseBodyJson = JSON.stringify(responseBody);
-
   let sendNetworkRequest;
   let sendFetchRequest;
   let sendBeaconRequest;
   let isRequestRetryable;
   let getRequestRetryDelay;
   let getHeader;
-
   beforeEach(() => {
-    jasmine.clock().install();
-    logger = jasmine.createSpyObj("logger", [
-      "logOnBeforeNetworkRequest",
-      "logOnNetworkResponse",
-      "logOnNetworkError",
-    ]);
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(1998, 11, 19));
+    logger = {
+      logOnBeforeNetworkRequest: vi.fn(),
+      logOnNetworkResponse: vi.fn(),
+      logOnNetworkError: vi.fn(),
+    };
     logger.enabled = true;
-    getHeader = jasmine.createSpy("getHeader");
-    sendFetchRequest = jasmine.createSpy().and.returnValue(
+    getHeader = vi.fn();
+    sendFetchRequest = vi.fn().mockReturnValue(
       Promise.resolve({
         statusCode: 200,
         body: responseBodyJson,
         getHeader,
       }),
     );
-    sendBeaconRequest = jasmine.createSpy().and.returnValue(
+    sendBeaconRequest = vi.fn().mockReturnValue(
       Promise.resolve({
         statusCode: 204,
         body: "",
         getHeader: () => undefined,
       }),
     );
-    isRequestRetryable = jasmine
-      .createSpy("isRequestRetryable")
-      .and.returnValue(false);
-    getRequestRetryDelay = jasmine
-      .createSpy("getRequestRetryDelay")
-      .and.returnValue(1000);
-
+    isRequestRetryable = vi.fn().mockReturnValue(false);
+    getRequestRetryDelay = vi.fn().mockReturnValue(1000);
     sendNetworkRequest = injectSendNetworkRequest({
       logger,
       sendFetchRequest,
@@ -71,11 +67,9 @@ describe("injectSendNetworkRequest", () => {
       getRequestRetryDelay,
     });
   });
-
   afterEach(() => {
-    jasmine.clock().uninstall();
+    vi.useRealTimers();
   });
-
   it("sends the request", () => {
     return sendNetworkRequest({
       requestId,
@@ -91,7 +85,6 @@ describe("injectSendNetworkRequest", () => {
       expect(sendFetchRequest).toHaveBeenCalledWith(url, payloadJson);
     });
   });
-
   it("handles a response with a JSON body", () => {
     return sendNetworkRequest({
       payload,
@@ -116,9 +109,8 @@ describe("injectSendNetworkRequest", () => {
       });
     });
   });
-
   it("handles a response with a non-JSON body", () => {
-    sendFetchRequest.and.returnValue(
+    sendFetchRequest.mockReturnValue(
       Promise.resolve({
         statusCode: 200,
         body: "non-JSON body",
@@ -150,9 +142,8 @@ describe("injectSendNetworkRequest", () => {
       });
     });
   });
-
   it("handles a response with an empty body", () => {
-    sendFetchRequest.and.returnValue(
+    sendFetchRequest.mockReturnValue(
       Promise.resolve({
         statusCode: 200,
         body: "",
@@ -184,22 +175,18 @@ describe("injectSendNetworkRequest", () => {
       });
     });
   });
-
   it("rejects the promise when a network error occurs", () => {
-    sendFetchRequest.and.returnValue(Promise.reject(new Error("networkerror")));
+    sendFetchRequest.mockReturnValue(Promise.reject(new Error("networkerror")));
     return sendNetworkRequest({
       payload,
       url,
       requestId,
-    })
-      .then(fail)
-      .catch((error) => {
-        expect(error.message).toEqual(
-          "Network request failed.\nCaused by: networkerror",
-        );
-      });
+    }).catch((error) => {
+      expect(error.message).toEqual(
+        "Network request failed.\nCaused by: networkerror",
+      );
+    });
   });
-
   it("resolves the promise for successful status and valid json", () => {
     return sendNetworkRequest({
       payload,
@@ -214,32 +201,34 @@ describe("injectSendNetworkRequest", () => {
       });
     });
   });
-
   it(`retries requests until request is no longer retryable`, () => {
-    isRequestRetryable.and.returnValues(true, true, false);
+    isRequestRetryable
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(false);
+
     sendNetworkRequest({
       payload,
       url,
       requestId,
     });
-
     expect(sendFetchRequest).toHaveBeenCalledTimes(1);
     return flushPromiseChains()
       .then(() => {
         expect(sendFetchRequest).toHaveBeenCalledTimes(1);
-        jasmine.clock().tick(1000);
+        vi.advanceTimersByTime(1000);
         expect(sendFetchRequest).toHaveBeenCalledTimes(2);
         return flushPromiseChains();
       })
       .then(() => {
         expect(sendFetchRequest).toHaveBeenCalledTimes(2);
-        jasmine.clock().tick(1000);
+        vi.advanceTimersByTime(1000);
         expect(sendFetchRequest).toHaveBeenCalledTimes(3);
         return flushPromiseChains();
       })
       .then(() => {
         expect(sendFetchRequest).toHaveBeenCalledTimes(3);
-        jasmine.clock().tick(1000);
+        vi.advanceTimersByTime(1000);
         expect(sendFetchRequest).toHaveBeenCalledTimes(3);
       });
   });

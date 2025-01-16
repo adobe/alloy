@@ -10,16 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import updateErrorMessage from "../../../../src/utils/updateErrorMessage.js";
 
 describe("updateErrorMessage", () => {
   it("updates error message if the message property is writeable", () => {
     const error = new Error("Conundrum encountered.");
     const message = "Predicament discovered.";
-    updateErrorMessage({ error, message });
+    updateErrorMessage({
+      error,
+      message,
+    });
     expect(error.message).toEqual("Predicament discovered.");
   });
-
   it("does not update error message if the message property is read-only", () => {
     let error;
     try {
@@ -29,7 +32,10 @@ describe("updateErrorMessage", () => {
     } catch (e) {
       error = e;
     }
-    updateErrorMessage({ error, message: "Predicament discovered." });
+    updateErrorMessage({
+      error,
+      message: "Predicament discovered.",
+    });
     expect(error.message).not.toContain("Predicament discovered.");
   });
 });

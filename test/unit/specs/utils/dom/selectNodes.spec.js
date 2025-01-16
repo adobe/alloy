@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import selectNodes from "../../../../../src/utils/dom/selectNodes.js";
 
 describe("DOM::selectNodes", () => {
   it("should return array when nodes are present", () => {
     expect(selectNodes("HEAD").length).toEqual(1);
   });
-
   it("should return array when nodes are NOT present", () => {
     expect(selectNodes("FOO").length).toEqual(0);
   });

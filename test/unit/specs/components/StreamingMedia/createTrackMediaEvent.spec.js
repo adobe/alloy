@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createTrackMediaEvent from "../../../../../src/components/StreamingMedia/createTrackMediaEvent.js";
 import MediaEvents from "../../../../../src/components/StreamingMedia/constants/eventTypes.js";
 
@@ -17,20 +18,21 @@ describe("createTrackMediaEvent", () => {
   let mediaEventManager;
   let mediaSessionCacheManager;
   let config;
-
   beforeEach(() => {
     mediaEventManager = {
-      createMediaEvent: jasmine.createSpy(),
-      augmentMediaEvent: jasmine.createSpy(),
-      trackMediaEvent: jasmine.createSpy().and.returnValue(Promise.resolve()),
+      createMediaEvent: vi.fn(),
+      augmentMediaEvent: vi.fn(),
+      trackMediaEvent: vi.fn().mockReturnValue(Promise.resolve()),
     };
     mediaSessionCacheManager = {
-      getSession: jasmine.createSpy().and.returnValue({
-        getPlayerDetails: jasmine.createSpy(),
-        sessionPromise: Promise.resolve({ sessionId: "123" }),
+      getSession: vi.fn().mockReturnValue({
+        getPlayerDetails: vi.fn(),
+        sessionPromise: Promise.resolve({
+          sessionId: "123",
+        }),
       }),
-      stopPing: jasmine.createSpy(),
-      savePing: jasmine.createSpy(),
+      stopPing: vi.fn(),
+      savePing: vi.fn(),
     };
     config = {
       streamingMedia: {
@@ -44,7 +46,6 @@ describe("createTrackMediaEvent", () => {
       config,
     });
   });
-
   it("should send a media event", async () => {
     const options = {
       playerId: "player1",
@@ -52,9 +53,7 @@ describe("createTrackMediaEvent", () => {
         eventType: "media.play",
       },
     };
-
     await trackMediaEvent(options);
-
     expect(mediaEventManager.createMediaEvent).toHaveBeenCalledWith({
       options,
     });
@@ -64,7 +63,6 @@ describe("createTrackMediaEvent", () => {
     expect(mediaEventManager.augmentMediaEvent).toHaveBeenCalled();
     expect(mediaEventManager.trackMediaEvent).toHaveBeenCalled();
   });
-
   it("should stop the Ping for session complete event", async () => {
     const options = {
       playerId: "player1",
@@ -72,14 +70,11 @@ describe("createTrackMediaEvent", () => {
         eventType: MediaEvents.SESSION_COMPLETE,
       },
     };
-
     await trackMediaEvent(options);
-
     expect(mediaSessionCacheManager.stopPing).toHaveBeenCalledWith({
       playerId: options.playerId,
     });
   });
-
   it("should save the Ping for non-session complete event", async () => {
     const options = {
       playerId: "player1",
@@ -87,9 +82,7 @@ describe("createTrackMediaEvent", () => {
         eventType: "media.play",
       },
     };
-
     await trackMediaEvent(options);
-
     expect(mediaSessionCacheManager.savePing).toHaveBeenCalled();
   });
 });

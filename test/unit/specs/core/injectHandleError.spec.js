@@ -10,38 +10,35 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, describe, it, expect } from "vitest";
 import injectHandleError from "../../../../src/core/injectHandleError.js";
 
 const expectedMessage = "[testinstanceName] Bad thing happened.";
-
 describe("injectHandleError", () => {
   it("converts non-error to error and throws", () => {
     const handleError = injectHandleError({
       errorPrefix: "[testinstanceName]",
     });
-
     expect(() => {
       handleError("Bad thing happened.", "myoperation");
     }).toThrowError(expectedMessage);
   });
-
   it("rethrows error with instanceName prepended", () => {
     const handleError = injectHandleError({
       errorPrefix: "[testinstanceName]",
     });
-
     expect(() => {
       handleError(new Error("Bad thing happened."), "myoperation");
     }).toThrowError(expectedMessage);
   });
-
   it("logs an error and returns empty object if error is due to declined consent", () => {
-    const logger = jasmine.createSpyObj("logger", ["warn"]);
+    const logger = {
+      warn: vi.fn(),
+    };
     const handleError = injectHandleError({
       errorPrefix: "[testinstanceName]",
       logger,
     });
-
     const error = new Error("User declined consent.");
     error.code = "declinedConsent";
     expect(handleError(error, "myoperation")).toEqual({});

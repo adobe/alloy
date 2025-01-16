@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { describe, it, expect } from "vitest";
 import createConsequenceAdapter from "../../../../../src/components/RulesEngine/createConsequenceAdapter.js";
 import { TEXT_HTML } from "../../../../../src/constants/contentType.js";
 
@@ -30,16 +31,14 @@ describe("RulesEngine:createConsequenceAdapter", () => {
         backdropColor: "#000000",
         height: 60,
       },
-      webParameters: jasmine.any(Object),
+      webParameters: expect.any(Object),
       content: "<!doctype html></html>",
       contentType: TEXT_HTML,
     },
     id: "72042c7c-4e34-44f6-af95-1072ae117424",
   };
-
   it("handles cjmiam", () => {
     const consequenceAdapter = createConsequenceAdapter();
-
     const adaptedConsequence = consequenceAdapter({
       id: "72042c7c-4e34-44f6-af95-1072ae117424",
       type: "cjmiam",
@@ -61,13 +60,10 @@ describe("RulesEngine:createConsequenceAdapter", () => {
         html: "<!doctype html></html>",
       },
     });
-
     expect(adaptedConsequence).toEqual(ADAPTED_CONSEQUENCE);
   });
-
   it("handles schema", () => {
     const consequenceAdapter = createConsequenceAdapter();
-
     const adaptedConsequence = consequenceAdapter({
       id: "72042c7c-4e34-44f6-af95-1072ae117424",
       type: "schema",
@@ -75,7 +71,6 @@ describe("RulesEngine:createConsequenceAdapter", () => {
         ...ADAPTED_CONSEQUENCE,
       },
     });
-
     expect(adaptedConsequence).toEqual(ADAPTED_CONSEQUENCE);
   });
 });

@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import configValidators from "../../../../../src/components/StreamingMedia/configValidators.js";
 import testConfigValidators from "../../../helpers/testConfigValidators.js";
 
@@ -42,14 +43,25 @@ describe("Streaming Media config validators", () => {
       },
     ],
     invalidConfigurations: [
-      { streamingMedia: "" },
-      { streamingMedia: {} },
-      { streamingMedia: { channel: "test-channel" } },
-      { streamingMedia: { playerName: "test-player-name" } },
+      {
+        streamingMedia: "",
+      },
+      {
+        streamingMedia: {},
+      },
+      {
+        streamingMedia: {
+          channel: "test-channel",
+        },
+      },
+      {
+        streamingMedia: {
+          playerName: "test-player-name",
+        },
+      },
     ],
     defaultValues: {},
   });
-
   it("provides default values when Streaming media configured", () => {
     const config = configValidators({
       streamingMedia: {

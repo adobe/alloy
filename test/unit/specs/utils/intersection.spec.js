@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import intersection from "../../../../src/utils/intersection.js";
 
 describe("intersection", () => {
@@ -17,7 +18,6 @@ describe("intersection", () => {
     const result = intersection(["a", "b", "c", "d"], ["z", "b", "d"]);
     expect(result).toEqual(["b", "d"]);
   });
-
   it("returns an empty array if there are no matches", () => {
     const result = intersection(["a", "b", "c", "d"], ["e"]);
     expect(result).toEqual([]);

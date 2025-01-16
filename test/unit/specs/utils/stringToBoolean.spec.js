@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { describe, it, expect } from "vitest";
 import { stringToBoolean } from "../../../../src/utils/index.js";
 
 describe("stringToBoolean", () => {
@@ -17,7 +18,6 @@ describe("stringToBoolean", () => {
       expect(stringToBoolean(str)).toBe(true);
     });
   });
-
   ["false", "0", "foo", ""].forEach((str) => {
     it(`parses '${str}' as false`, () => {
       expect(stringToBoolean(str)).toBe(false);
