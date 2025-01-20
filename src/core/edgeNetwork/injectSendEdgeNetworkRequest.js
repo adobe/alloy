@@ -116,8 +116,15 @@ export default ({
         return handleRequestFailure(onRequestFailureCallbackAggregator)(error);
       })
       .then(({ parsedBody, getHeader }) => {
+        // Note that networkResponse.parsedBody may be undefined if it was a
+        // 204 No Content response. That's fine.
         const response = createResponse({ content: parsedBody, getHeader });
         cookieTransfer.responseToCookies(response);
+
+        // Notice we're calling the onResponse lifecycle method even if there are errors
+        // inside the response body. This is because the full request didn't actually fail--
+        // only portions of it that are considered non-fatal (a specific, non-critical
+        // Konductor plugin, for example).
         return onResponseCallbackAggregator
           .call({
             response,
