@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import validateClickCollectionConfig from "../../../../../src/components/ActivityCollector/validateClickCollectionConfig.js";
 import { DEFAULT_DOWNLOAD_QUALIFIER } from "../../../../../src/components/ActivityCollector/configValidators.js";
 
@@ -17,7 +17,9 @@ describe("ActivityCollector::validateClickCollectionConfig", () => {
   let logger;
 
   beforeEach(() => {
-    logger = jasmine.createSpyObj("logger", ["warn"]);
+    logger = {
+      warn: vi.fn(),
+    };
   });
 
   it("warns when onBeforeLinkClickSend provided with clickCollectionEnabled false", () => {
