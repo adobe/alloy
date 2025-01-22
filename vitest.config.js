@@ -8,7 +8,11 @@ export default defineProject({
     isolate: false,
     browser: {
       provider: "playwright",
-      name: "chromium",
+      instances: [
+        {
+          browser: "chromium",
+        },
+      ],
       enabled: true,
       headless: true,
     },
