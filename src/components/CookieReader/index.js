@@ -9,9 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { cookieJar as defaultCookieJar } from "../../utils/index.js";
 import createGetEcidFromCookie from "./createGetEcidFromCookie.js";
 
-const CookieReader = ({ config, cookieJar }) => {
+const CookieReader = ({ config, cookieJar = defaultCookieJar }) => {
   const { orgId } = config;
   const getEcidFromCookie = createGetEcidFromCookie({ orgId, cookieJar });
   return {
