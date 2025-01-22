@@ -20,7 +20,6 @@ describe("isNumber", () => {
     );
   });
 
-  // eslint-disable-next-line no-restricted-globals
   it("returns false if the value is not a number", () => {
     [null, undefined, NaN, "abc", "123"].forEach((value) =>
       expect(isNumber(value)).toBe(false),

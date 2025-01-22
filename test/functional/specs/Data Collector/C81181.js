@@ -189,7 +189,6 @@ test("Test C81181: Verify that onBeforeLinkClickSend augments a request", async 
     clickCollectionEnabled,
     clickCollectionEventGroupingDisabled,
     {
-      // eslint-disable-next-line consistent-return
       onBeforeLinkClickSend: (options) => {
         const { xdm, data, clickedElement } = options;
 

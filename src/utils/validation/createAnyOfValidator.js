@@ -18,7 +18,7 @@ export default (validators, message) =>
       try {
         newValue = validator.call(this, value, path);
         return true;
-      } catch (e) {
+      } catch {
         return false;
       }
     });

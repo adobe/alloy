@@ -39,7 +39,7 @@ const isRulesetItem = (item) => {
       Object.prototype.hasOwnProperty.call(content, "version") &&
       Object.prototype.hasOwnProperty.call(content, "rules")
     );
-  } catch (error) {
+  } catch {
     return false;
   }
 };

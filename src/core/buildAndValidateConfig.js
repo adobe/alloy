@@ -93,7 +93,7 @@ export default ({
   );
   setDebugEnabled(config.debugEnabled, { fromConfig: true });
   queuedLogger.flush();
-  // eslint-disable-next-line no-underscore-dangle
+
   const extraParams = buildAllOnInstanceConfiguredExtraParams(
     config,
     logger,

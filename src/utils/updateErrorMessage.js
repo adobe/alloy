@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 export default ({ error, message }) => {
   try {
     error.message = message;
-  } catch (e) {
+  } catch {
     // We'll set a new message when we can, but some errors, like DOMException,
     // have a read-only message property, which limits our options.
   }

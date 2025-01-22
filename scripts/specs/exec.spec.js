@@ -40,7 +40,7 @@ describe("exec", () => {
     try {
       await exec("bad exit", "exit 42", { outputStream });
       fail();
-    } catch (e) {
+    } catch {
       const result = getResult();
       expect(result).toMatch(/exited with code 42/);
     }
@@ -50,7 +50,7 @@ describe("exec", () => {
     try {
       await exec("bad exit", "exit 42", { outputStream });
       fail();
-    } catch (e) {
+    } catch {
       const result = getResult();
       expect(result).toMatch(/bad exit/);
     }

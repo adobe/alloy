@@ -46,7 +46,6 @@ const parseDomainBasic = (host) => {
 
 const parseUrl = (url, parseDomain = parseDomainBasic) => {
   if (!isString(url)) {
-    // eslint-disable-next-line no-param-reassign
     url = "";
   }
   const parsed = parseUri(url) || {};

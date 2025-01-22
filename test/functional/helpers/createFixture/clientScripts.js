@@ -65,7 +65,7 @@ const getProdNpmLibraryCode = () => readCache.sync(prodNpmLibraryPath, "utf8");
 
 export const injectInlineScript = ClientFunction((code) => {
   const scriptElement = document.createElement("script");
-  // eslint-disable-next-line no-undef
+
   scriptElement.innerHTML = code;
   document.getElementsByTagName("head")[0].appendChild(scriptElement);
 });
