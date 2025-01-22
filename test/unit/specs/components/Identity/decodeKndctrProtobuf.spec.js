@@ -1,9 +1,9 @@
 import { beforeEach, describe, it, expect } from "vitest";
 import decodeKndctrProtobuf, {
   decodeVarint,
-} from "../../../../../src/components/CookieReader/decodeKndctrProtobuf.js";
+} from "../../../../../src/components/Identity/decodeKndctrProtobuf.js";
 
-describe("CookieReader", () => {
+describe("Identity", () => {
   describe("decodeKndctrProtobuf", () => {
     describe("decodeVarint", () => {
       it("should decode a varint", () => {

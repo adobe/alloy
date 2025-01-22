@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import createGetEcidFromCookie from "../../../../../src/components/CookieReader/createGetEcidFromCookie.js";
+import createGetEcidFromCookie from "../../../../../src/components/Identity/createGetEcidFromCookie.js";
 
-describe("CookieReader", () => {
+describe("Identity", () => {
   describe("createGetEcidFromCookie", () => {
     let cookieValue;
     let cookieJar;

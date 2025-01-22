@@ -24,6 +24,7 @@ export default ({
   appendIdentityToUrl,
   logger,
   getIdentityOptionsValidator,
+  getEcidFromCookie,
 }) => {
   let namespaces;
   let edge = {};
@@ -63,7 +64,14 @@ export default ({
           return consent
             .awaitConsent()
             .then(() => {
-              return namespaces ? undefined : getIdentity(options);
+              if (namespaces) {
+                return undefined;
+              }
+              const fromCookie = getEcidFromCookie();
+              if (fromCookie) {
+                return fromCookie;
+              }
+              return getIdentity(options);
             })
             .then(() => {
               return {
@@ -97,6 +105,9 @@ export default ({
               return options;
             });
         },
+      },
+      getEcidFromCookie: {
+        run: getEcidFromCookie,
       },
     },
   };
