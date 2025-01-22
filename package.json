@@ -64,11 +64,6 @@
   },
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
-  "bundlesize": [
-    {
-      "path": "./dist/alloy.min.js"
-    }
-  ],
   "dependencies": {
     "@adobe/aep-rules-engine": "^2.0.3",
     "@adobe/reactor-cookie": "^1.1.0",
@@ -100,7 +95,6 @@
     "@octokit/rest": "^21.1.0",
     "@vitest/browser": "^2.1.8",
     "@vitest/coverage-v8": "^2.1.8",
-    "bundlesize": "^0.18.1",
     "chalk": "^5.4.1",
     "concurrently": "^9.1.2",
     "date-fns": "^4.1.0",
@@ -137,5 +131,8 @@
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.31.0"
+  },
+  "overrides": {
+    "eslint": "^9.18.0"
   }
 }
