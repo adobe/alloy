@@ -40,16 +40,20 @@ export default ({ schemaProcessors, logger }) => {
       });
   };
 
-  const renderItems = (renderers, meta) =>
-    Promise.all(renderers.map((renderer) => renderer())).then((results) => {
-      const successes = results.filter((result) => result);
-      // as long as at least one renderer succeeds, we want to add the notification
-      // to the display notifications
-      if (meta && isNonEmptyArray(successes)) {
-        return { ...meta, items: successes };
-      }
-      return undefined;
-    });
+  const renderItems = async (renderers, meta) => {
+    const results = await Promise.allSettled(
+      renderers.map((renderer) => renderer()),
+    );
+    const successes = results
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value);
+    // as long as at least one renderer succeeds, we want to add the notification
+    // to the display notifications
+    if (meta && isNonEmptyArray(successes)) {
+      return { ...meta, items: successes };
+    }
+    return undefined;
+  };
 
   const processItem = (item) => {
     const processor = schemaProcessors[item.getSchema()];
