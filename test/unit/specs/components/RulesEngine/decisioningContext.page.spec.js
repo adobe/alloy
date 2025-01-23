@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import {
   mockWindow,
   setupResponseHandler,
@@ -18,9 +19,8 @@ import {
 describe("RulesEngine:globalContext:page", () => {
   let applyResponse;
   beforeEach(() => {
-    applyResponse = jasmine.createSpy();
+    applyResponse = vi.fn();
   });
-
   it("satisfies rule based on matched page url", () => {
     setupResponseHandler(
       applyResponse,
@@ -38,14 +38,13 @@ describe("RulesEngine:globalContext:page", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched page url", () => {
     setupResponseHandler(
       applyResponse,
@@ -63,14 +62,13 @@ describe("RulesEngine:globalContext:page", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfy rule based on matched domain", () => {
     setupResponseHandler(
       applyResponse,
@@ -86,14 +84,13 @@ describe("RulesEngine:globalContext:page", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched domain", () => {
     setupResponseHandler(
       applyResponse,
@@ -109,14 +106,13 @@ describe("RulesEngine:globalContext:page", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfied rule based on matched page subdomain", () => {
     setupResponseHandler(
       applyResponse,
@@ -132,9 +128,9 @@ describe("RulesEngine:globalContext:page", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
@@ -155,14 +151,13 @@ describe("RulesEngine:globalContext:page", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfies rule based on matched page topLevelDomain", () => {
     setupResponseHandler(
       applyResponse,
@@ -178,14 +173,13 @@ describe("RulesEngine:globalContext:page", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched page topLevelDomain", () => {
     setupResponseHandler(
       applyResponse,
@@ -201,14 +195,13 @@ describe("RulesEngine:globalContext:page", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfies rule based on matched page path", () => {
     setupResponseHandler(
       applyResponse,
@@ -224,14 +217,13 @@ describe("RulesEngine:globalContext:page", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched page path", () => {
     setupResponseHandler(
       applyResponse,
@@ -247,14 +239,13 @@ describe("RulesEngine:globalContext:page", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfies rule based on matched page query", () => {
     setupResponseHandler(
       applyResponse,
@@ -270,14 +261,13 @@ describe("RulesEngine:globalContext:page", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched page query", () => {
     setupResponseHandler(
       applyResponse,
@@ -293,14 +283,13 @@ describe("RulesEngine:globalContext:page", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfies rule based on matched page fragment", () => {
     setupResponseHandler(
       applyResponse,
@@ -316,14 +305,13 @@ describe("RulesEngine:globalContext:page", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched page fragment", () => {
     setupResponseHandler(
       applyResponse,
@@ -339,9 +327,9 @@ describe("RulesEngine:globalContext:page", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );

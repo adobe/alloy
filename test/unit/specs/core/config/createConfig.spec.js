@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { beforeEach, describe, it, expect } from "vitest";
 import createConfig from "../../../../../src/core/config/createConfig.js";
 
 let testConfig = {};
-
 describe("createConfig", () => {
   beforeEach(() => {
     testConfig = {
@@ -44,7 +44,6 @@ describe("createConfig", () => {
     cfg.d = "ABC";
     expect(cfg.d).toEqual("ABC");
   });
-
   describe("changing config", () => {
     it("does not change the provided options", () => {
       const cfg = createConfig(testConfig);
@@ -52,7 +51,6 @@ describe("createConfig", () => {
       expect(testConfig.d).toBe(undefined);
     });
   });
-
   describe("changing provided options", () => {
     it("does not change the config", () => {
       const cfg = createConfig(testConfig);

@@ -9,43 +9,42 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import injectProcessResponse from "../../../../../src/components/Audiences/injectProcessResponse.js";
 
 describe("injectProcessResponse", () => {
   let response;
   let processResponse;
   let processDestinations;
-
   beforeEach(() => {
-    processDestinations = jasmine
-      .createSpy("processDestinations")
-      .and.returnValue(Promise.resolve());
-    processResponse = injectProcessResponse({ processDestinations });
-
-    response = jasmine.createSpyObj("response", {
-      getPayloadsByType: ["An Edge Destination"],
+    processDestinations = vi.fn().mockReturnValue(Promise.resolve());
+    processResponse = injectProcessResponse({
+      processDestinations,
     });
+    response = {
+      getPayloadsByType: vi.fn().mockReturnValue(["An Edge Destination"]),
+    };
   });
-
   it("fetches destinations from the response", () => {
-    return processResponse({ response }).then((result) => {
+    return processResponse({
+      response,
+    }).then((result) => {
       expect(processDestinations).toHaveBeenCalled();
       expect(result).toEqual({
         destinations: ["An Edge Destination"],
       });
     });
   });
-
   it("returns [] if no destinations were found", () => {
-    const responseWithNoDestinations = jasmine.createSpyObj("response", {
-      getPayloadsByType: [],
+    const responseWithNoDestinations = {
+      getPayloadsByType: vi.fn().mockReturnValue([]),
+    };
+    return processResponse({
+      response: responseWithNoDestinations,
+    }).then((result) => {
+      expect(result).toEqual({
+        destinations: [],
+      });
     });
-    return processResponse({ response: responseWithNoDestinations }).then(
-      (result) => {
-        expect(result).toEqual({
-          destinations: [],
-        });
-      },
-    );
   });
 });

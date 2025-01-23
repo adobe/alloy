@@ -9,6 +9,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import getLinkName from "../../../../../src/components/ActivityCollector/getLinkName.js";
 
 const createNodeWithAttribute = (nodeName, attributeName, attributeValue) => {
@@ -24,12 +25,10 @@ const createNodeWithAttribute = (nodeName, attributeName, attributeValue) => {
   node[attributeName] = attributeValue;
   return node;
 };
-
 describe("ActivityCollector::getLinkName", () => {
   it("Returns empty string if no link-name can be constructed", () => {
     expect(getLinkName({})).toBe("");
   });
-
   it("Prioritizes node innerText over textContent", () => {
     // The innerText always takes priority when determining the link-name
     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/innerText
@@ -86,7 +85,6 @@ describe("ActivityCollector::getLinkName", () => {
       }),
     ).toBe("Click Here");
   });
-
   it("Select link-name based on a property hierarchy", () => {
     expect(
       getLinkName({
@@ -125,7 +123,6 @@ describe("ActivityCollector::getLinkName", () => {
       }),
     ).toBe("image.jpg");
   });
-
   it("Truncates excess whitespace in link-name", () => {
     expect(
       getLinkName({
@@ -136,7 +133,6 @@ describe("ActivityCollector::getLinkName", () => {
     ).toBe("ab c");
   });
 });
-
 it("Ignores the spaces attributes", () => {
   expect(
     getLinkName({

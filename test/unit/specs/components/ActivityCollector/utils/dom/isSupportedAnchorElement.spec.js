@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import isSupportedAnchorElement from "../../../../../../../src/components/ActivityCollector/utils/dom/isSupportedAnchorElement.js";
 
 describe("ActivityCollector::isSupportedAnchorElement", () => {

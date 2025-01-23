@@ -30,7 +30,7 @@ export default ({ options }) => {
             sessionDetails: objectOf(anything()).required(),
           }),
         }),
-        edgeConfigOverrides: objectOf({})
+        edgeConfigOverrides: objectOf({}),
       }).required(),
 
       objectOf({
@@ -40,7 +40,7 @@ export default ({ options }) => {
             sessionDetails: objectOf(anything()).required(),
           }),
         }),
-        edgeConfigOverrides: objectOf({})
+        edgeConfigOverrides: objectOf({}),
       }).required(),
     ],
 

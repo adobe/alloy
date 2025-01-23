@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import getNextSibling from "../../../../../../../src/components/Personalization/dom-actions/dom/getNextSibling.js";
 import createFragment from "../../../../../../../src/components/Personalization/dom-actions/dom/createFragment.js";
 import getFirstChild from "../../../../../../../src/components/Personalization/dom-actions/dom/getFirstChild.js";
@@ -21,15 +22,12 @@ describe("Personalization::helper::dom::getNextSibling", () => {
     );
     const firstElement = getFirstChild(element);
     const nextSibling = getNextSibling(firstElement);
-
     expect(nextSibling.tagName).toEqual("H1");
   });
-
   it("returns null if the element doesn't have a sibling node", () => {
     const element = createFragment(`<div id="foo">foo</div>`);
     const firstElement = getFirstChild(element);
     const nextSibling = getNextSibling(firstElement);
-
     expect(nextSibling).toBeNull();
   });
 });

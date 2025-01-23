@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { describe, it, expect } from "vitest";
 import { PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS } from "../responsesMock/eventResponses.js";
-
 import buildMocks from "./buildMocks.js";
 import buildAlloy from "./buildAlloy.js";
 import pause from "../../../../helpers/pause.js";
@@ -108,7 +108,6 @@ describe("PersonalizationComponent", () => {
       ],
       decisions: [],
     });
-
     expect(mocks.actions.setHtml).toHaveBeenCalledWith(
       "#foo",
       "<div>Hola Mundo</div>",
@@ -128,9 +127,7 @@ describe("PersonalizationComponent", () => {
     expect(mocks.actions.setHtml).toHaveBeenCalledTimes(4);
     expect(mocks.logger.warn).not.toHaveBeenCalled();
     expect(mocks.logger.error).not.toHaveBeenCalled();
-
     await pause(100);
-
     expect(mocks.sendEvent).toHaveBeenCalledWith({
       xdm: {
         _experience: {

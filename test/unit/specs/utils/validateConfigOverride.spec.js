@@ -15,7 +15,9 @@ import describeValidation from "../../helpers/describeValidation.js";
 
 describeValidation("utils:validateConfigOverride", validateConfigOverride, [
   // empty configuration
-  { value: {} },
+  {
+    value: {},
+  },
   // standard configuration
   {
     value: {
@@ -60,9 +62,24 @@ describeValidation("utils:validateConfigOverride", validateConfigOverride, [
     },
   },
   // value must be an object
-  { value: true, error: true },
-  { value: false, error: true },
-  { value: "", error: true },
-  { value: [], error: true },
-  { value: 123, error: true },
+  {
+    value: true,
+    error: true,
+  },
+  {
+    value: false,
+    error: true,
+  },
+  {
+    value: "",
+    error: true,
+  },
+  {
+    value: [],
+    error: true,
+  },
+  {
+    value: 123,
+    error: true,
+  },
 ]);

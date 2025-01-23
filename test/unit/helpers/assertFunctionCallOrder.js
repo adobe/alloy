@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { expect } from "vitest";
 
 /**
  * Asserts that functions were called in a particular order.
@@ -17,8 +18,8 @@ governing permissions and limitations under the License.
  */
 export default (orderedFunctions) => {
   for (let i = 0; i < orderedFunctions.length - 1; i += 1) {
-    const fn = orderedFunctions[i];
-    const nextFn = orderedFunctions[i + 1];
-    expect(fn).toHaveBeenCalledBefore(nextFn);
+    const callOrder1 = orderedFunctions[i].mock.invocationCallOrder[0];
+    const callOrder2 = orderedFunctions[i + 1].mock.invocationCallOrder[0];
+    expect(callOrder1).toBeLessThan(callOrder2);
   }
 };

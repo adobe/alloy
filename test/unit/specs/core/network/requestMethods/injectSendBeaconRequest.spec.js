@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, describe, it, expect } from "vitest";
 import injectSendBeaconRequest from "../../../../../../src/core/network/requestMethods/injectSendBeaconRequest.js";
 
 // When running these tests in IE 11, they fail because IE doesn't like the
@@ -23,45 +24,47 @@ const guardForSendBeaconAvailability = (spec) => {
     ? spec
     : () => pending("No sendBeacon API available.");
 };
-
 describe("injectSendBeaconRequest", () => {
   it(
     "falls back to sendFetchRequest if sendBeacon fails",
     guardForSendBeaconAvailability(() => {
-      const sendBeacon = jasmine.createSpy().and.returnValue(false);
+      const sendBeacon = vi.fn().mockReturnValue(false);
       const sendFetchRequestPromise = Promise.resolve();
-      const sendFetchRequest = jasmine
-        .createSpy()
-        .and.returnValue(sendFetchRequestPromise);
-      const logger = jasmine.createSpyObj(["info"]);
+      const sendFetchRequest = vi.fn().mockReturnValue(sendFetchRequestPromise);
+      const logger = {
+        info: vi.fn(),
+      };
       const sendBeaconRequest = injectSendBeaconRequest({
         sendBeacon,
         sendFetchRequest,
         logger,
       });
-      const body = { a: "b" };
+      const body = {
+        a: "b",
+      };
       const result = sendBeaconRequest("https://example.com/endpoint", body);
       expect(sendBeacon).toHaveBeenCalledWith(
         "https://example.com/endpoint",
-        jasmine.any(Object),
+        expect.any(Object),
       );
       expect(sendFetchRequest).toHaveBeenCalledWith(
         "https://example.com/endpoint",
         body,
       );
       expect(logger.info).toHaveBeenCalledWith(
-        jasmine.stringMatching("falling back to"),
+        expect.stringMatching("falling back to"),
       );
       expect(result).toBe(sendFetchRequestPromise);
     }),
   );
-
   it(
     "does not fall back to sendFetchRequest if sendBeacon succeeds",
     guardForSendBeaconAvailability(() => {
-      const sendBeacon = jasmine.createSpy().and.returnValue(true);
-      const body = { a: "b" };
-      const sendFetchRequest = jasmine.createSpy();
+      const sendBeacon = vi.fn().mockReturnValue(true);
+      const body = {
+        a: "b",
+      };
+      const sendFetchRequest = vi.fn();
       const sendBeaconRequest = injectSendBeaconRequest({
         sendBeacon,
         sendFetchRequest,

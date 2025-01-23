@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { beforeEach, describe, it, expect } from "vitest";
 import { DEFAULT_CONTENT_ITEM } from "../../../../../src/constants/schema.js";
 import createViewCacheManager from "../../../../../src/components/Personalization/createViewCacheManager.js";
 import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 const propsToJSON = (props) => props.map((p) => p.toJSON());
-
 describe("Personalization::createViewCacheManager", () => {
   const viewHandles = [
     {
@@ -35,10 +35,8 @@ describe("Personalization::createViewCacheManager", () => {
       scope: "other",
     },
   ];
-
   let createProposition;
   let propositions;
-
   beforeEach(() => {
     createProposition = (viewHandle) => {
       const { scope } = viewHandle;
@@ -53,29 +51,26 @@ describe("Personalization::createViewCacheManager", () => {
     };
     propositions = viewHandles.map(createProposition);
   });
-
   it("stores and gets the decisions based on a viewName", async () => {
-    const viewCacheManager = createViewCacheManager({ createProposition });
-
+    const viewCacheManager = createViewCacheManager({
+      createProposition,
+    });
     const cacheUpdate = viewCacheManager.createCacheUpdate("home");
     const resultingHandles = cacheUpdate.update(propositions);
     expect(resultingHandles).toEqual([propositions[0], propositions[1]]);
-
     const homeViews = await viewCacheManager.getView("home");
     expect(homeViews).toEqual([propositions[0], propositions[1]]);
-
     const cartViews = await viewCacheManager.getView("cart");
     expect(cartViews).toEqual([propositions[2]]);
-
     const otherViews = await viewCacheManager.getView("other");
     expect(otherViews).toEqual([propositions[3]]);
   });
-
   it("should be no views when decisions deferred is rejected", async () => {
-    const viewCacheManager = createViewCacheManager({ createProposition });
+    const viewCacheManager = createViewCacheManager({
+      createProposition,
+    });
     const cacheUpdate = viewCacheManager.createCacheUpdate("home");
     cacheUpdate.cancel();
-
     const homeViews = await viewCacheManager.getView("home");
     expect(homeViews.map((h) => h.toJSON())).toEqual([
       {
@@ -93,30 +88,38 @@ describe("Personalization::createViewCacheManager", () => {
       },
     ]);
   });
-
   it("should not be initialized when first created", () => {
-    const viewCacheManager = createViewCacheManager({ createProposition });
+    const viewCacheManager = createViewCacheManager({
+      createProposition,
+    });
     expect(viewCacheManager.isInitialized()).toBe(false);
   });
-
   it("should be initialized when first cache update is created", () => {
-    const viewCacheManager = createViewCacheManager({ createProposition });
+    const viewCacheManager = createViewCacheManager({
+      createProposition,
+    });
     viewCacheManager.createCacheUpdate("home");
     expect(viewCacheManager.isInitialized()).toBe(true);
   });
-
   it("allows you to store the views multiple times", async () => {
-    const viewCacheManager = createViewCacheManager({ createProposition });
-
+    const viewCacheManager = createViewCacheManager({
+      createProposition,
+    });
     const cacheUpdate1 = viewCacheManager.createCacheUpdate("cart");
     const cartProps = await cacheUpdate1.update(propositions);
-
     expect(cartProps).toEqual([propositions[2]]);
-
     const cacheUpdate2 = viewCacheManager.createCacheUpdate();
     const cartViewPromise = viewCacheManager.getView("cart");
     await flushPromiseChains();
-    await expectAsync(cartViewPromise).toBePending();
+    // await expectAsync(cartViewPromise).toBePending();
+
+    const cartPromiseIsPending = await Promise.race([
+      cartViewPromise.then(() => false),
+      new Promise((resolve) => {
+        setTimeout(() => resolve(true), 0);
+      }),
+    ]);
+    expect(cartPromiseIsPending).toBe(true);
     cacheUpdate2.update([
       createProposition({
         id: "foo4",
@@ -124,7 +127,6 @@ describe("Personalization::createViewCacheManager", () => {
         scope: "about",
       }),
     ]);
-
     expect(await cartViewPromise).toEqual([propositions[2]]);
     expect(await viewCacheManager.getView("about").then(propsToJSON)).toEqual([
       {
@@ -134,27 +136,26 @@ describe("Personalization::createViewCacheManager", () => {
       },
     ]);
   });
-
   it("is initialized after the first storeViews call", () => {
-    const viewCacheManager = createViewCacheManager({ createProposition });
-
+    const viewCacheManager = createViewCacheManager({
+      createProposition,
+    });
     viewCacheManager.createCacheUpdate();
-
-    expect(viewCacheManager.isInitialized()).toBeTrue();
+    expect(viewCacheManager.isInitialized()).toBe(true);
   });
-
   it("is initialized even after a failure", async () => {
-    const viewCacheManager = createViewCacheManager({ createProposition });
-
+    const viewCacheManager = createViewCacheManager({
+      createProposition,
+    });
     const update1 = viewCacheManager.createCacheUpdate();
     update1.cancel();
     await flushPromiseChains();
-
-    expect(viewCacheManager.isInitialized()).toBeTrue();
+    expect(viewCacheManager.isInitialized()).toBe(true);
   });
-
   it("reverts to old storage after a failure", async () => {
-    const viewCacheManager = createViewCacheManager({ createProposition });
+    const viewCacheManager = createViewCacheManager({
+      createProposition,
+    });
     const update1 = viewCacheManager.createCacheUpdate();
     update1.update(propositions);
     const update2 = viewCacheManager.createCacheUpdate();
@@ -167,23 +168,19 @@ describe("Personalization::createViewCacheManager", () => {
   /*
   it("applies the decisions in the order they were requested", async () => {
     const viewCacheManager = createViewCacheManager({ createProposition });
-
-    const update1 = viewCacheManager.createCacheUpdate();
+     const update1 = viewCacheManager.createCacheUpdate();
     const viewPromise1 = viewCacheManager.getView(cartView).then(props => props.map(p => p.toJSON()));
     const update2 = viewCacheManager.createCacheUpdate();
     const viewPromise2 = viewCacheManager.getView(cartView).then(props => props.map(p => p.toJSON()));
-
-    update2.update([
+     update2.update([
       createProposition({
         id: "foo4",
         items: [],
         scope: "cart"
       })
     ]);
-
-    update1.update(viewHandles);
-
-    await expectAsync(viewPromise2).toBeResolvedTo([
+     update1.update(viewHandles);
+     await expectAsync(viewPromise2).toBeResolvedTo([
       {
         id: "foo4",
         items: [],

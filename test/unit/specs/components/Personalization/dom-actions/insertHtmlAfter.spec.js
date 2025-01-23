@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   appendNode,
   createNode,
@@ -26,44 +27,50 @@ import { DOM_ACTION_INSERT_AFTER } from "../../../../../../src/components/Person
 
 describe("Personalization::actions::insertAfter", () => {
   let decorateProposition;
-
   beforeEach(() => {
     cleanUpDomChanges("insertAfter");
     decorateProposition = createDecoratePropositionForTest({
       type: DOM_ACTION_INSERT_AFTER,
     });
   });
-
   afterEach(() => {
     cleanUpDomChanges("insertAfter");
   });
-
   it("should insert after personalized content", () => {
     const modules = initDomActionsModules();
     const { insertAfter } = modules;
     const child = createNode(
       "div",
-      { id: "a", class: "ia" },
-      { innerHTML: "AAA" },
+      {
+        id: "a",
+        class: "ia",
+      },
+      {
+        innerHTML: "AAA",
+      },
     );
-    const element = createNode("div", { id: "insertAfter" }, {}, [child]);
-
+    const element = createNode(
+      "div",
+      {
+        id: "insertAfter",
+      },
+      {},
+      [child],
+    );
     appendNode(document.body, element);
-
     const settings = {
       selector: "#a",
       prehidingSelector: "#a",
       content: `<div id="b" class="ia">BBB</div><div id="c" class="ia">CCC</div>`,
-      meta: { a: 1 },
+      meta: {
+        a: 1,
+      },
     };
-
     return insertAfter(settings, decorateProposition).then(() => {
       const result = selectNodes("div#insertAfter .ia");
-
       expect(result[0].innerHTML).toEqual("AAA");
       expect(result[1].innerHTML).toEqual("BBB");
       expect(result[2].innerHTML).toEqual("CCC");
-
       expect(getAttribute(result[1], CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
         "trackingLabel",
       );

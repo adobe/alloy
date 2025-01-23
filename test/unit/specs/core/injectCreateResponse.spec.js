@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import injectCreateResponse from "../../../../src/core/injectCreateResponse.js";
 
 const responseContent = {
@@ -53,42 +54,41 @@ const responseContent = {
     },
   ],
 };
-
 describe("createResponse", () => {
   let extractEdgeInfo;
   let getHeader;
   let createResponse;
   let response;
-
   beforeEach(() => {
-    extractEdgeInfo = jasmine.createSpy("extractEdgeInfo");
-    getHeader = jasmine.createSpy("getHeader");
-    createResponse = injectCreateResponse({ extractEdgeInfo });
+    extractEdgeInfo = vi.fn();
+    getHeader = vi.fn();
+    createResponse = injectCreateResponse({
+      extractEdgeInfo,
+    });
     response = createResponse({
       content: responseContent,
       getHeader,
     });
   });
-
   describe("getPayloadsByType", () => {
     it("handles undefined content", () => {
-      const emptyResponse = createResponse({ content: undefined });
+      const emptyResponse = createResponse({
+        content: undefined,
+      });
       expect(emptyResponse.getPayloadsByType("type1")).toEqual([]);
     });
-
     it("handles content without handle property", () => {
-      const emptyResponse = createResponse({ content: {} });
+      const emptyResponse = createResponse({
+        content: {},
+      });
       expect(emptyResponse.getPayloadsByType("type1")).toEqual([]);
     });
-
     it("returns empty array when there are no matching payloads", () => {
       expect(response.getPayloadsByType("type3")).toEqual([]);
     });
-
     it("returns one matching payload as an array", () => {
       expect(response.getPayloadsByType("type2")).toEqual(["payload2a"]);
     });
-
     it("returns three matching payloads", () => {
       expect(response.getPayloadsByType("type1")).toEqual([
         "payload1a",
@@ -97,49 +97,53 @@ describe("createResponse", () => {
       ]);
     });
   });
-
   describe("getErrors", () => {
     it("handles undefined content", () => {
-      const emptyResponse = createResponse({ content: undefined });
+      const emptyResponse = createResponse({
+        content: undefined,
+      });
       expect(emptyResponse.getErrors()).toEqual([]);
     });
-
     it("handles content without errors property", () => {
-      const emptyResponse = createResponse({ content: {} });
+      const emptyResponse = createResponse({
+        content: {},
+      });
       expect(emptyResponse.getErrors()).toEqual([]);
     });
-
     it("returns errors", () => {
       expect(response.getErrors()).toBe(responseContent.errors);
     });
   });
-
   describe("getWarnings", () => {
     it("handles undefined content", () => {
-      const emptyResponse = createResponse({ content: undefined });
+      const emptyResponse = createResponse({
+        content: undefined,
+      });
       expect(emptyResponse.getWarnings()).toEqual([]);
     });
-
     it("handles content without warnings property", () => {
-      const emptyResponse = createResponse({ content: {} });
+      const emptyResponse = createResponse({
+        content: {},
+      });
       expect(emptyResponse.getWarnings()).toEqual([]);
     });
-
     it("returns warnings", () => {
       expect(response.getWarnings()).toBe(responseContent.warnings);
     });
   });
-
   describe("getEdge", () => {
     it("calls extractEdgeInfo with x-adobe-edge header and returns the result", () => {
-      extractEdgeInfo.and.returnValue({ regionId: 42 });
-      getHeader.and.returnValue("VA6;42");
-      expect(response.getEdge()).toEqual({ regionId: 42 });
+      extractEdgeInfo.mockReturnValue({
+        regionId: 42,
+      });
+      getHeader.mockReturnValue("VA6;42");
+      expect(response.getEdge()).toEqual({
+        regionId: 42,
+      });
       expect(extractEdgeInfo).toHaveBeenCalledWith("VA6;42");
       expect(getHeader).toHaveBeenCalledWith("x-adobe-edge");
     });
   });
-
   describe("toJSON", () => {
     it("returns underlying content object", () => {
       expect(response.toJSON()).toBe(responseContent);

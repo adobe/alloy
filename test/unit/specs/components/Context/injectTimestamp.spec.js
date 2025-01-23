@@ -10,18 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { beforeEach, describe, it, expect } from "vitest";
 import injectTimestamp from "../../../../../src/components/Context/injectTimestamp.js";
 
 describe("Context::injectTimestamp", () => {
   let dateProvider;
   const date = new Date("November 25, 2019 10:09:42 UTC");
-
   beforeEach(() => {
     dateProvider = () => {
       return date;
     };
   });
-
   it("adds timestamp", () => {
     const xdm = {};
     injectTimestamp(dateProvider)(xdm);

@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import {
   ADOBE_JOURNEY_OPTIMIZER,
   ADOBE_TARGET,
@@ -26,16 +27,15 @@ describe("createProcessHtmlContent", () => {
   let modules;
   let logger;
   let processHtmlContent;
-
   beforeEach(() => {
     const { storeInteractionMeta } = createInteractionStorage();
-
     modules = {
-      typeA: jasmine.createSpy("typeA"),
-      typeB: jasmine.createSpy("typeB"),
+      typeA: vi.fn(),
+      typeB: vi.fn(),
     };
-    logger = jasmine.createSpyObj("logger", ["warn"]);
-
+    logger = {
+      warn: vi.fn(),
+    };
     processHtmlContent = createProcessHtmlContent({
       modules,
       logger,
@@ -46,46 +46,43 @@ describe("createProcessHtmlContent", () => {
       },
     });
   });
-
   it("returns an empty object if the item has no data", () => {
     const proposition = createMockProposition({
       schema: HTML_CONTENT_ITEM,
       data: undefined,
     });
-
     expect(processHtmlContent(proposition.getItems()[0])).toEqual({
       setRenderAttempted: false,
       includeInNotification: false,
     });
     expect(logger.warn).not.toHaveBeenCalled();
   });
-
   it("returns an empty object if the item has no type", () => {
     const proposition = createMockProposition({
       schema: HTML_CONTENT_ITEM,
-      data: { selector: ".myselector" },
+      data: {
+        selector: ".myselector",
+      },
     });
-
     expect(processHtmlContent(proposition.getItems()[0])).toEqual({
       setRenderAttempted: false,
       includeInNotification: false,
     });
     expect(logger.warn).not.toHaveBeenCalled();
   });
-
   it("returns an empty object if the item has no selector", () => {
     const proposition = createMockProposition({
       schema: HTML_CONTENT_ITEM,
-      data: { type: "mytype" },
+      data: {
+        type: "mytype",
+      },
     });
-
     expect(processHtmlContent(proposition.getItems()[0])).toEqual({
       setRenderAttempted: false,
       includeInNotification: false,
     });
     expect(logger.warn).not.toHaveBeenCalled();
   });
-
   it("returns an empty object if the item has an unknown type, and logs unknown type", () => {
     const proposition = createMockProposition({
       schema: HTML_CONTENT_ITEM,
@@ -95,7 +92,6 @@ describe("createProcessHtmlContent", () => {
         content: "mycontent",
       },
     });
-
     expect(processHtmlContent(proposition.getItems()[0])).toEqual({
       setRenderAttempted: false,
       includeInNotification: false,
@@ -106,7 +102,6 @@ describe("createProcessHtmlContent", () => {
       content: "mycontent",
     });
   });
-
   it("handles a known type", () => {
     const proposition = createMockProposition({
       schema: HTML_CONTENT_ITEM,
@@ -116,10 +111,9 @@ describe("createProcessHtmlContent", () => {
         content: "mycontent",
       },
     });
-
     const result = processHtmlContent(proposition.getItems()[0]);
     expect(result).toEqual({
-      render: jasmine.any(Function),
+      render: expect.any(Function),
       setRenderAttempted: true,
       includeInNotification: true,
     });
@@ -131,7 +125,7 @@ describe("createProcessHtmlContent", () => {
         selector: ".myselector",
         content: "mycontent",
       },
-      jasmine.any(Function),
+      expect.any(Function),
     );
   });
 });

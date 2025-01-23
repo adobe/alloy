@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import {
   mockWindow,
   setupResponseHandler,
@@ -18,9 +19,8 @@ import {
 describe("RulesEngine:globalContext:referringPage", () => {
   let applyResponse;
   beforeEach(() => {
-    applyResponse = jasmine.createSpy();
+    applyResponse = vi.fn();
   });
-
   it("satisfies rule based on matched domain", () => {
     setupResponseHandler(
       applyResponse,
@@ -37,14 +37,13 @@ describe("RulesEngine:globalContext:referringPage", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched domain", () => {
     setupResponseHandler(
       applyResponse,
@@ -61,14 +60,13 @@ describe("RulesEngine:globalContext:referringPage", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfies rule based on matched referringPage subdomain", () => {
     setupResponseHandler(
       applyResponse,
@@ -85,14 +83,13 @@ describe("RulesEngine:globalContext:referringPage", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched subdomain", () => {
     setupResponseHandler(
       applyResponse,
@@ -109,14 +106,13 @@ describe("RulesEngine:globalContext:referringPage", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfies rule based on matched referringPage topLevelDomain", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -126,14 +122,13 @@ describe("RulesEngine:globalContext:referringPage", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched topLevelDomain", () => {
     setupResponseHandler(
       applyResponse,
@@ -150,14 +145,13 @@ describe("RulesEngine:globalContext:referringPage", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfies rule based on matched referringPage path", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -167,14 +161,13 @@ describe("RulesEngine:globalContext:referringPage", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched referringPage path", () => {
     setupResponseHandler(
       applyResponse,
@@ -191,14 +184,13 @@ describe("RulesEngine:globalContext:referringPage", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfies rule based on matched referringPage query", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -208,14 +200,13 @@ describe("RulesEngine:globalContext:referringPage", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched referringPage query", () => {
     setupResponseHandler(
       applyResponse,
@@ -232,14 +223,13 @@ describe("RulesEngine:globalContext:referringPage", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfies rule based on matched referringPage fragment", () => {
     setupResponseHandler(
       applyResponse,
@@ -256,14 +246,13 @@ describe("RulesEngine:globalContext:referringPage", () => {
         type: "matcher",
       },
     );
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule based on unmatched referringPage fragment", () => {
     setupResponseHandler(
       applyResponse,
@@ -279,8 +268,9 @@ describe("RulesEngine:globalContext:referringPage", () => {
         type: "matcher",
       },
     );
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );

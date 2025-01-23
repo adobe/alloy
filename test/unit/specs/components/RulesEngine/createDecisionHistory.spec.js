@@ -9,55 +9,71 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import createDecisionHistory from "../../../../../src/components/RulesEngine/createDecisionHistory.js";
 import createEventRegistry from "../../../../../src/components/RulesEngine/createEventRegistry.js";
 
 describe("RulesEngine:decisionHistory", () => {
   let storage;
   let history;
-
+  let mockedTimestamp;
   beforeEach(() => {
-    storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
-
+    storage = {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      clear: vi.fn(),
+    };
     history = createDecisionHistory({
-      eventRegistry: createEventRegistry({ storage }),
+      eventRegistry: createEventRegistry({
+        storage,
+      }),
     });
+
+    mockedTimestamp = new Date("2023-05-24T08:00:00Z");
+    vi.useFakeTimers();
+    vi.setSystemTime(mockedTimestamp);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("records decision time", () => {
-    const decision = history.recordQualified({ id: "abc" });
-
+    const decision = history.recordQualified({
+      id: "abc",
+    });
     expect(Object.getPrototypeOf(decision)).toEqual(Object.prototype);
-    expect(decision.timestamp).toEqual(jasmine.any(Number));
+    expect(decision.timestamp).toEqual(expect.any(Number));
   });
+  it("preserves first decision time, if decision already recorded", () => {
+    const firstDecision = history.recordQualified({
+      id: "abc",
+    });
 
-  it("preserves first decision time, if decision already recorded", (done) => {
-    const firstDecision = history.recordQualified({ id: "abc" });
+    vi.advanceTimersByTime(60);
 
-    setTimeout(() => {
-      expect(history.recordQualified({ id: "abc" }).firstTimestamp).toEqual(
-        firstDecision.firstTimestamp,
-      );
-      expect(history.recordQualified({ id: "abc" }).firstTimestamp).toEqual(
-        firstDecision.timestamp,
-      );
-      done();
-    }, 20);
+    expect(
+      history.recordQualified({
+        id: "abc",
+      }).firstTimestamp,
+    ).toEqual(firstDecision.firstTimestamp);
+
+    expect(
+      history.recordQualified({
+        id: "abc",
+      }).firstTimestamp,
+    ).toEqual(firstDecision.timestamp);
   });
-
   it("restores history from event storage", () => {
     expect(storage.getItem).toHaveBeenCalledWith("events");
   });
+  it("saves history to event storage", () => {
+    history.recordQualified({
+      id: "abc",
+    });
 
-  it("saves history to event storage", (done) => {
-    history.recordQualified({ id: "abc" });
+    vi.advanceTimersByTime(60);
 
-    setTimeout(() => {
-      expect(storage.setItem).toHaveBeenCalledWith(
-        "events",
-        jasmine.any(String),
-      );
-      done();
-    }, 20);
+    expect(storage.setItem).toHaveBeenCalledWith("events", expect.any(String));
   });
 });

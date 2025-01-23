@@ -10,22 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import getVisitor from "../../../../../../src/components/Identity/visitorService/getVisitor.js";
 
 describe("getVisitor", () => {
   let mockWindow;
-
   beforeEach(() => {
     mockWindow = {};
   });
-
   it("Returns Visitor function if Visitor is available and valid", () => {
-    mockWindow.Visitor = jasmine.createSpy();
-    mockWindow.Visitor.getInstance = jasmine.createSpy();
+    mockWindow.Visitor = vi.fn();
+    mockWindow.Visitor.getInstance = vi.fn();
     expect(getVisitor(mockWindow)).toEqual(mockWindow.Visitor);
   });
   it("Returns false if Visitor is available but does not support getInstance", () => {
-    mockWindow.Visitor = jasmine.createSpy();
+    mockWindow.Visitor = vi.fn();
     expect(getVisitor(mockWindow)).toBe(false);
   });
   it("Returns false if Visitor is not available", () => {

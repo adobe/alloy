@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   selectNodes,
   removeNode,
@@ -22,35 +23,24 @@ describe("Personalization::flicker", () => {
   beforeEach(() => {
     selectNodes("style").forEach(removeNode);
   });
-
   afterEach(() => {
     selectNodes("style").forEach(removeNode);
   });
-
   it("should add prehiding style tags", () => {
     const prehidingSelector = ".add";
-
     hideElements(prehidingSelector);
-
     const styles = selectNodes("style");
-
     expect(styles.length).toEqual(1);
-
     const styleDefinition = styles[0].textContent;
-
     expect(styleDefinition).toEqual(
       `${prehidingSelector} { visibility: hidden }`,
     );
   });
-
   it("should remove prehiding style tags", () => {
     const prehidingSelector = ".remove";
-
     hideElements(prehidingSelector);
     showElements(prehidingSelector);
-
     const styles = selectNodes("style");
-
     expect(styles.length).toEqual(0);
   });
 });

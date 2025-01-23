@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import toInteger from "../../../../src/utils/toInteger.js";
 
 describe("toInteger", () => {
@@ -35,7 +36,6 @@ describe("toInteger", () => {
       expect(toInteger(input)).toEqual(output);
     });
   });
-
   it("uses the passed value for the default", () => {
     expect(toInteger("foo", 0)).toEqual(0);
   });

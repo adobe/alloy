@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import isAuthoringModeEnabled from "../../../../../../src/components/Personalization/utils/isAuthoringModeEnabled.js";
 
 describe("Personalization::isAuthoringModeEnabled", () => {
@@ -21,7 +22,6 @@ describe("Personalization::isAuthoringModeEnabled", () => {
     };
     expect(isAuthoringModeEnabled(doc)).toEqual(true);
   });
-
   it("returns false if authoring mode is disabled", () => {
     const doc = {
       location: {

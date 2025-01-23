@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createOnResponseHandler from "../../../../../src/components/RulesEngine/createOnResponseHandler.js";
 import createDecisionProvider from "../../../../../src/components/RulesEngine/createDecisionProvider.js";
 import createApplyResponse from "../../../../../src/components/RulesEngine/createApplyResponse.js";
@@ -20,18 +21,23 @@ describe("RulesEngine:createOnResponseHandler", () => {
   let eventRegistry;
   let decisionProvider;
   let applyResponse;
-
   beforeEach(() => {
-    lifecycle = jasmine.createSpyObj("lifecycle", {
-      onDecision: Promise.resolve(),
+    lifecycle = {
+      onDecision: vi.fn().mockReturnValue(Promise.resolve()),
+    };
+    storage = {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      clear: vi.fn(),
+    };
+    eventRegistry = createEventRegistry({
+      storage,
     });
-
-    storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
-    eventRegistry = createEventRegistry({ storage });
-    decisionProvider = createDecisionProvider({ eventRegistry });
+    decisionProvider = createDecisionProvider({
+      eventRegistry,
+    });
     applyResponse = createApplyResponse(lifecycle);
   });
-
   it("calls lifecycle.onDecision with propositions based on decisionContext", () => {
     const event = {
       getViewName: () => undefined,
@@ -60,13 +66,13 @@ describe("RulesEngine:createOnResponseHandler", () => {
         },
       }),
     };
-
     const decisionContext = {
       color: "orange",
       action: "lipstick",
     };
-    const personalization = { surfaces: ["#woof"] };
-
+    const personalization = {
+      surfaces: ["#woof"],
+    };
     const responseHandler = createOnResponseHandler({
       renderDecisions: true,
       decisionProvider,
@@ -75,7 +81,6 @@ describe("RulesEngine:createOnResponseHandler", () => {
       personalization,
       decisionContext,
     });
-
     const response = {
       getPayloadsByType: () => [
         {
@@ -172,11 +177,9 @@ describe("RulesEngine:createOnResponseHandler", () => {
         },
       ],
     };
-
     responseHandler({
       response,
     });
-
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
       event,
       personalization,
@@ -200,7 +203,7 @@ describe("RulesEngine:createOnResponseHandler", () => {
                 },
                 prehidingSelector:
                   "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
-                qualifiedDate: jasmine.any(Number),
+                qualifiedDate: expect.any(Number),
                 displayedDate: undefined,
               },
               id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
@@ -214,7 +217,7 @@ describe("RulesEngine:createOnResponseHandler", () => {
                 content: "Hello Treatment A!",
                 prehidingSelector:
                   "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
-                qualifiedDate: jasmine.any(Number),
+                qualifiedDate: expect.any(Number),
                 displayedDate: undefined,
               },
               id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f",
@@ -225,7 +228,6 @@ describe("RulesEngine:createOnResponseHandler", () => {
       ],
     });
   });
-
   it("calls lifecycle.onDecision with propositions based on xdm and event data", () => {
     const event = {
       getViewName: () => "home",
@@ -254,11 +256,8 @@ describe("RulesEngine:createOnResponseHandler", () => {
         },
       }),
     };
-
     const decisionContext = {};
-
     const personalization = {};
-
     const responseHandler = createOnResponseHandler({
       renderDecisions: true,
       decisionProvider,
@@ -267,7 +266,6 @@ describe("RulesEngine:createOnResponseHandler", () => {
       personalization,
       decisionContext,
     });
-
     const response = {
       getPayloadsByType: () => [
         {
@@ -353,11 +351,9 @@ describe("RulesEngine:createOnResponseHandler", () => {
         },
       ],
     };
-
     responseHandler({
       response,
     });
-
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
       renderDecisions: true,
       propositions: [
@@ -378,7 +374,7 @@ describe("RulesEngine:createOnResponseHandler", () => {
                 content: "Hello Treatment A!",
                 prehidingSelector:
                   "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
-                qualifiedDate: jasmine.any(Number),
+                qualifiedDate: expect.any(Number),
                 displayedDate: undefined,
               },
               id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f",

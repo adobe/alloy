@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   appendNode,
   createNode,
@@ -26,40 +27,39 @@ import { DOM_ACTION_PREPEND_HTML } from "../../../../../../src/components/Person
 
 describe("Personalization::actions::prependHtml", () => {
   let decorateProposition;
-
   beforeEach(() => {
     cleanUpDomChanges("prependHtml");
     decorateProposition = createDecoratePropositionForTest({
       type: DOM_ACTION_PREPEND_HTML,
     });
   });
-
   afterEach(() => {
     cleanUpDomChanges("prependHtml");
   });
-
   it("should prepend personalized content", () => {
     const modules = initDomActionsModules();
     const { prependHtml } = modules;
     const content = `<li>3</li>`;
     const element = createNode(
       "ul",
-      { id: "prependHtml" },
-      { innerHTML: content },
+      {
+        id: "prependHtml",
+      },
+      {
+        innerHTML: content,
+      },
     );
-
     appendNode(document.body, element);
-
     const settings = {
       selector: "#prependHtml",
       prehidingSelector: "#prependHtml",
       content: `<li>1</li><li>2</li>`,
-      meta: { a: 1 },
+      meta: {
+        a: 1,
+      },
     };
-
     return prependHtml(settings, decorateProposition).then(() => {
       const result = selectNodes("ul#prependHtml li");
-
       expect(result.length).toEqual(3);
       // first li (prepended)
       expect(result[0].innerHTML).toEqual("1");

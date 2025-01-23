@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import {
   DOM_ACTION,
   MESSAGE_CONTENT_CARD,
@@ -19,7 +20,6 @@ import { PropositionEventType } from "../../../../../src/constants/propositionEv
 describe("RulesEngine:subscribeRulesetItems", () => {
   let collect;
   let subscribeRulesetItems;
-
   const PROPOSITIONS = [
     {
       id: "abc",
@@ -110,7 +110,6 @@ describe("RulesEngine:subscribeRulesetItems", () => {
           data: {
             expiryDate: 1712190456,
             publishedDate: 1677839040000,
-
             meta: {
               surface: "web://mywebsite.com/my-cards",
             },
@@ -194,25 +193,22 @@ describe("RulesEngine:subscribeRulesetItems", () => {
       },
     },
   ];
-
   beforeEach(() => {
-    collect = jasmine.createSpy().and.returnValue(Promise.resolve());
-    subscribeRulesetItems = createSubscribeRulesetItems({ collect });
-  });
-
-  it("has a command defined", () => {
-    const { command } = subscribeRulesetItems;
-
-    expect(command).toEqual({
-      optionsValidator: jasmine.any(Function),
-      run: jasmine.any(Function),
+    collect = vi.fn().mockReturnValue(Promise.resolve());
+    subscribeRulesetItems = createSubscribeRulesetItems({
+      collect,
     });
   });
-
+  it("has a command defined", () => {
+    const { command } = subscribeRulesetItems;
+    expect(command).toEqual({
+      optionsValidator: expect.any(Function),
+      run: expect.any(Function),
+    });
+  });
   it("calls the callback with list of content cards", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy("callback");
+    const callback = vi.fn();
 
     // register a subscription.  equivalent to alloy("subscribeRulesetItems", ...
     command.run({
@@ -220,9 +216,9 @@ describe("RulesEngine:subscribeRulesetItems", () => {
       schemas: [MESSAGE_CONTENT_CARD],
       callback,
     });
-
     refresh(PROPOSITIONS);
-    expect(callback).toHaveBeenCalledOnceWith(
+    expect(callback).toHaveBeenNthCalledWith(
+      1,
       {
         propositions: [
           {
@@ -342,23 +338,20 @@ describe("RulesEngine:subscribeRulesetItems", () => {
           },
         ],
       },
-      jasmine.any(Function),
+      expect.any(Function),
     );
   });
-
   it("calls the callback with list of content cards at time of subscription (when there are existing propositions)", () => {
     const { command, refresh } = subscribeRulesetItems;
     refresh(PROPOSITIONS);
-
-    const callback = jasmine.createSpy("callback");
-
+    const callback = vi.fn();
     command.run({
       surfaces: ["web://mywebsite.com/my-cards"],
       schemas: [MESSAGE_CONTENT_CARD],
       callback,
     });
-
-    expect(callback).toHaveBeenCalledOnceWith(
+    expect(callback).toHaveBeenNthCalledWith(
+      1,
       {
         propositions: [
           {
@@ -478,14 +471,12 @@ describe("RulesEngine:subscribeRulesetItems", () => {
           },
         ],
       },
-      jasmine.any(Function),
+      expect.any(Function),
     );
   });
-
   it("calls the callback with list of dom action items", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy();
+    const callback = vi.fn();
 
     // register a subscription.  equivalent to alloy("subscribeRulesetItems", ...
     command.run({
@@ -493,9 +484,9 @@ describe("RulesEngine:subscribeRulesetItems", () => {
       schemas: [DOM_ACTION],
       callback,
     });
-
     refresh(PROPOSITIONS);
-    expect(callback).toHaveBeenCalledOnceWith(
+    expect(callback).toHaveBeenNthCalledWith(
+      1,
       {
         propositions: [
           {
@@ -539,23 +530,20 @@ describe("RulesEngine:subscribeRulesetItems", () => {
           },
         ],
       },
-      jasmine.any(Function),
+      expect.any(Function),
     );
   });
-
   it("calls the callback with list of dom action items at time of subscription (when there are existing propositions)", () => {
     const { command, refresh } = subscribeRulesetItems;
     refresh(PROPOSITIONS);
-
-    const callback = jasmine.createSpy("callback");
-
+    const callback = vi.fn();
     command.run({
       surfaces: ["web://mywebsite.com/my-cards"],
       schemas: [DOM_ACTION],
       callback,
     });
-
-    expect(callback).toHaveBeenCalledOnceWith(
+    expect(callback).toHaveBeenNthCalledWith(
+      1,
       {
         propositions: [
           {
@@ -599,23 +587,21 @@ describe("RulesEngine:subscribeRulesetItems", () => {
           },
         ],
       },
-      jasmine.any(Function),
+      expect.any(Function),
     );
   });
-
   it("calls the callback with list of all schema-based items for single schema", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy();
+    const callback = vi.fn();
 
     // register a subscription.  equivalent to alloy("subscribeRulesetItems", ...
     command.run({
       surfaces: ["web://mywebsite.com/my-cards"],
       callback,
     });
-
     refresh(PROPOSITIONS);
-    expect(callback).toHaveBeenCalledOnceWith(
+    expect(callback).toHaveBeenNthCalledWith(
+      1,
       {
         propositions: [
           {
@@ -774,14 +760,12 @@ describe("RulesEngine:subscribeRulesetItems", () => {
           },
         ],
       },
-      jasmine.any(Function),
+      expect.any(Function),
     );
   });
-
   it("filters out all surfaces", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy("callback");
+    const callback = vi.fn();
 
     // register a subscription.  equivalent to alloy("subscribeRulesetItems", ...
     command.run({
@@ -789,33 +773,33 @@ describe("RulesEngine:subscribeRulesetItems", () => {
       schemas: [MESSAGE_CONTENT_CARD],
       callback,
     });
-
     refresh(PROPOSITIONS);
-    expect(callback).toHaveBeenCalledOnceWith(
-      { propositions: [] },
-      jasmine.any(Function),
+    expect(callback).toHaveBeenNthCalledWith(
+      1,
+      {
+        propositions: [],
+      },
+      expect.any(Function),
     );
   });
-
   it("filters on surface", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy();
+    const callback = vi.fn();
 
     // register a subscription.  equivalent to alloy("subscribeRulesetItems", ...
     command.run({
       surfaces: ["web://something.com"],
       callback,
     });
-
     refresh(PROPOSITIONS);
-    expect(callback).toHaveBeenCalledOnceWith(
+    expect(callback).toHaveBeenNthCalledWith(
+      1,
       {
         propositions: [
           {
             id: "abc",
             items: [
-              jasmine.objectContaining({
+              expect.objectContaining({
                 schema: DOM_ACTION,
                 data: {
                   selector: "a",
@@ -837,22 +821,20 @@ describe("RulesEngine:subscribeRulesetItems", () => {
           },
         ],
       },
-      jasmine.any(Function),
+      expect.any(Function),
     );
   });
-
   it("returns all surfaces and schemas", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy();
+    const callback = vi.fn();
 
     // register a subscription.  equivalent to alloy("subscribeRulesetItems", ...
     command.run({
       callback,
     });
-
     refresh(PROPOSITIONS);
-    expect(callback).toHaveBeenCalledOnceWith(
+    expect(callback).toHaveBeenNthCalledWith(
+      1,
       {
         propositions: [
           {
@@ -1034,147 +1016,134 @@ describe("RulesEngine:subscribeRulesetItems", () => {
           },
         ],
       },
-      jasmine.any(Function),
+      expect.any(Function),
     );
   });
-
   it("does not invoke callback if unsubscribed", async () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy("callback");
+    const callback = vi.fn();
 
     // register a subscription.  equivalent to alloy("subscribeRulesetItems", ...
     const { unsubscribe } = await command.run({
       callback,
     });
-
-    expect(unsubscribe instanceof Function).toBeTrue();
+    expect(unsubscribe instanceof Function).toBe(true);
     unsubscribe();
-
     refresh(PROPOSITIONS);
     expect(callback).not.toHaveBeenCalled();
   });
-
   it("collects interact events", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy();
-
-    command.run({ surface: "web://mywebsite.com/my-cards", callback });
-
+    const callback = vi.fn();
+    command.run({
+      surface: "web://mywebsite.com/my-cards",
+      callback,
+    });
     refresh(PROPOSITIONS);
-
-    const [{ propositions = [] }, collectEvent] = callback.calls.first().args;
-
+    const [{ propositions = [] }, collectEvent] = callback.mock.calls[0];
     collectEvent(PropositionEventType.INTERACT, [propositions[0]]);
-
     expect(collect).toHaveBeenCalledWith({
       decisionsMeta: [
         {
           id: "abc",
           scope: "web://something.com",
-          scopeDetails: { decisionProvider: "AJO" },
+          scopeDetails: {
+            decisionProvider: "AJO",
+          },
         },
       ],
       eventType: "decisioning.propositionInteract",
       documentMayUnload: true,
     });
   });
-
   it("collects only one interact event per proposition", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy();
-
-    command.run({ surface: "web://mywebsite.com/my-cards", callback });
-
+    const callback = vi.fn();
+    command.run({
+      surface: "web://mywebsite.com/my-cards",
+      callback,
+    });
     refresh(PROPOSITIONS);
-
-    const [{ propositions = [] }, collectEvent] = callback.calls.first().args;
-
+    const [{ propositions = [] }, collectEvent] = callback.mock.calls[0];
     collectEvent(PropositionEventType.INTERACT, [
       propositions[0],
       propositions[0],
       propositions[0],
     ]);
-
     expect(collect).toHaveBeenCalledWith({
       decisionsMeta: [
         {
           id: "abc",
           scope: "web://something.com",
-          scopeDetails: { decisionProvider: "AJO" },
+          scopeDetails: {
+            decisionProvider: "AJO",
+          },
         },
       ],
       eventType: "decisioning.propositionInteract",
       documentMayUnload: true,
     });
   });
-
   it("collects separate interact events for each distinct proposition", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy();
-
-    command.run({ surface: "web://mywebsite.com/my-cards", callback });
-
+    const callback = vi.fn();
+    command.run({
+      surface: "web://mywebsite.com/my-cards",
+      callback,
+    });
     refresh(PROPOSITIONS);
-
-    const [{ propositions = [] }, collectEvent] = callback.calls.first().args;
-
+    const [{ propositions = [] }, collectEvent] = callback.mock.calls[0];
     collectEvent(PropositionEventType.INTERACT, [propositions[0]]);
-
     expect(collect).toHaveBeenCalledWith({
       decisionsMeta: [
         {
           id: "abc",
           scope: "web://something.com",
-          scopeDetails: { decisionProvider: "AJO" },
+          scopeDetails: {
+            decisionProvider: "AJO",
+          },
         },
       ],
       eventType: "decisioning.propositionInteract",
       documentMayUnload: true,
     });
-
     collectEvent(PropositionEventType.INTERACT, [propositions[0]]);
-
     expect(collect).toHaveBeenCalledWith({
       decisionsMeta: [
         {
           id: "abc",
           scope: "web://something.com",
-          scopeDetails: { decisionProvider: "AJO" },
+          scopeDetails: {
+            decisionProvider: "AJO",
+          },
         },
       ],
       eventType: "decisioning.propositionInteract",
       documentMayUnload: true,
     });
-
     expect(collect).toHaveBeenCalledTimes(2);
   });
-
   it("collects multiple interact events for distinct propositions", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy();
-
-    command.run({ surface: "web://mywebsite.com/my-cards", callback });
-
+    const callback = vi.fn();
+    command.run({
+      surface: "web://mywebsite.com/my-cards",
+      callback,
+    });
     refresh(PROPOSITIONS);
-
-    const [{ propositions = [] }, collectEvent] = callback.calls.first().args;
-
+    const [{ propositions = [] }, collectEvent] = callback.mock.calls[0];
     collectEvent(PropositionEventType.INTERACT, [
       propositions[0],
       propositions[1],
     ]);
-
-    expect(collect).toHaveBeenCalledOnceWith({
+    expect(collect).toHaveBeenNthCalledWith(1, {
       decisionsMeta: [
         {
           id: "abc",
           scope: "web://something.com",
-          scopeDetails: { decisionProvider: "AJO" },
+          scopeDetails: {
+            decisionProvider: "AJO",
+          },
         },
         {
           id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
@@ -1188,85 +1157,79 @@ describe("RulesEngine:subscribeRulesetItems", () => {
       documentMayUnload: true,
     });
   });
-
   it("collects display events", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy();
-
-    command.run({ surface: "web://mywebsite.com/my-cards", callback });
-
+    const callback = vi.fn();
+    command.run({
+      surface: "web://mywebsite.com/my-cards",
+      callback,
+    });
     refresh(PROPOSITIONS);
-
-    const [{ propositions = [] }, collectEvent] = callback.calls.first().args;
-
+    const [{ propositions = [] }, collectEvent] = callback.mock.calls[0];
     collectEvent(PropositionEventType.DISPLAY, [propositions[0]]);
-
     expect(collect).toHaveBeenCalledWith({
       decisionsMeta: [
         {
           id: "abc",
           scope: "web://something.com",
-          scopeDetails: { decisionProvider: "AJO" },
+          scopeDetails: {
+            decisionProvider: "AJO",
+          },
         },
       ],
       eventType: "decisioning.propositionDisplay",
       documentMayUnload: true,
     });
   });
-
   it("collects only one display event per proposition", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy();
-
-    command.run({ surface: "web://mywebsite.com/my-cards", callback });
-
+    const callback = vi.fn();
+    command.run({
+      surface: "web://mywebsite.com/my-cards",
+      callback,
+    });
     refresh(PROPOSITIONS);
-
-    const [{ propositions = [] }, collectEvent] = callback.calls.first().args;
-
+    const [{ propositions = [] }, collectEvent] = callback.mock.calls[0];
     collectEvent(PropositionEventType.DISPLAY, [propositions[0]]);
     collectEvent(PropositionEventType.DISPLAY, [
       propositions[0],
       propositions[0],
     ]);
-
-    expect(collect).toHaveBeenCalledOnceWith({
+    expect(collect).toHaveBeenNthCalledWith(1, {
       decisionsMeta: [
         {
           id: "abc",
           scope: "web://something.com",
-          scopeDetails: { decisionProvider: "AJO" },
+          scopeDetails: {
+            decisionProvider: "AJO",
+          },
         },
       ],
       eventType: "decisioning.propositionDisplay",
       documentMayUnload: true,
     });
   });
-
   it("collects multiple display events for distinct propositions", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy();
-
-    command.run({ surface: "web://mywebsite.com/my-cards", callback });
-
+    const callback = vi.fn();
+    command.run({
+      surface: "web://mywebsite.com/my-cards",
+      callback,
+    });
     refresh(PROPOSITIONS);
-
-    const [{ propositions = [] }, collectEvent] = callback.calls.first().args;
-
+    const [{ propositions = [] }, collectEvent] = callback.mock.calls[0];
     collectEvent(PropositionEventType.DISPLAY, [
       propositions[0],
       propositions[1],
     ]);
-
-    expect(collect).toHaveBeenCalledOnceWith({
+    expect(collect).toHaveBeenNthCalledWith(1, {
       decisionsMeta: [
         {
           id: "abc",
           scope: "web://something.com",
-          scopeDetails: { decisionProvider: "AJO" },
+          scopeDetails: {
+            decisionProvider: "AJO",
+          },
         },
         {
           id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
@@ -1280,38 +1243,33 @@ describe("RulesEngine:subscribeRulesetItems", () => {
       documentMayUnload: true,
     });
   });
-
   it("collects display events only once per session", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy();
-
-    command.run({ surface: "web://mywebsite.com/my-cards", callback });
-
+    const callback = vi.fn();
+    command.run({
+      surface: "web://mywebsite.com/my-cards",
+      callback,
+    });
     refresh(PROPOSITIONS);
-
-    const [{ propositions = [] }, collectEvent] = callback.calls.first().args;
-
+    const [{ propositions = [] }, collectEvent] = callback.mock.calls[0];
     collectEvent(PropositionEventType.DISPLAY, [
       propositions[0],
       propositions[1],
     ]);
-
     collectEvent(PropositionEventType.DISPLAY, [
       propositions[0],
       propositions[1],
     ]);
-
     collectEvent(PropositionEventType.DISPLAY, [propositions[2]]);
-
     expect(collect).toHaveBeenCalledTimes(2);
-
     expect(collect).toHaveBeenCalledWith({
       decisionsMeta: [
         {
           id: "abc",
           scope: "web://something.com",
-          scopeDetails: { decisionProvider: "AJO" },
+          scopeDetails: {
+            decisionProvider: "AJO",
+          },
         },
         {
           id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
@@ -1324,140 +1282,132 @@ describe("RulesEngine:subscribeRulesetItems", () => {
       eventType: "decisioning.propositionDisplay",
       documentMayUnload: true,
     });
-
     expect(collect).toHaveBeenCalledWith({
       decisionsMeta: [
         {
           id: "1a3d874f-39ee-4310-bfa9-6559a10041a4",
           scope: "web://mywebsite.com/my-cards",
-          scopeDetails: { decisionProvider: "AJO" },
+          scopeDetails: {
+            decisionProvider: "AJO",
+          },
         },
       ],
       eventType: "decisioning.propositionDisplay",
       documentMayUnload: true,
     });
   });
-
   it("collects dismiss events", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy();
-
-    command.run({ surface: "web://mywebsite.com/my-cards", callback });
-
+    const callback = vi.fn();
+    command.run({
+      surface: "web://mywebsite.com/my-cards",
+      callback,
+    });
     refresh(PROPOSITIONS);
-
-    const [{ propositions = [] }, collectEvent] = callback.calls.first().args;
-
+    const [{ propositions = [] }, collectEvent] = callback.mock.calls[0];
     collectEvent(PropositionEventType.DISMISS, [propositions[0]]);
-
     expect(collect).toHaveBeenCalledWith({
       decisionsMeta: [
         {
           id: "abc",
           scope: "web://something.com",
-          scopeDetails: { decisionProvider: "AJO" },
+          scopeDetails: {
+            decisionProvider: "AJO",
+          },
         },
       ],
       documentMayUnload: true,
       eventType: "decisioning.propositionDismiss",
     });
   });
-
   it("collects only one dismiss event per proposition", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy();
-
-    command.run({ surface: "web://mywebsite.com/my-cards", callback });
-
+    const callback = vi.fn();
+    command.run({
+      surface: "web://mywebsite.com/my-cards",
+      callback,
+    });
     refresh(PROPOSITIONS);
-
-    const [{ propositions = [] }, collectEvent] = callback.calls.first().args;
-
+    const [{ propositions = [] }, collectEvent] = callback.mock.calls[0];
     collectEvent(PropositionEventType.DISMISS, [
       propositions[0],
       propositions[0],
       propositions[0],
     ]);
-
-    expect(collect).toHaveBeenCalledOnceWith({
+    expect(collect).toHaveBeenNthCalledWith(1, {
       decisionsMeta: [
         {
           id: "abc",
           scope: "web://something.com",
-          scopeDetails: { decisionProvider: "AJO" },
+          scopeDetails: {
+            decisionProvider: "AJO",
+          },
         },
       ],
       eventType: "decisioning.propositionDismiss",
       documentMayUnload: true,
     });
   });
-
   it("collects separate dismiss events for each distinct proposition", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy();
-
-    command.run({ surface: "web://mywebsite.com/my-cards", callback });
-
+    const callback = vi.fn();
+    command.run({
+      surface: "web://mywebsite.com/my-cards",
+      callback,
+    });
     refresh(PROPOSITIONS);
-
-    const [{ propositions = [] }, collectEvent] = callback.calls.first().args;
-
+    const [{ propositions = [] }, collectEvent] = callback.mock.calls[0];
     collectEvent(PropositionEventType.DISMISS, [propositions[0]]);
-
     expect(collect).toHaveBeenCalledWith({
       decisionsMeta: [
         {
           id: "abc",
           scope: "web://something.com",
-          scopeDetails: { decisionProvider: "AJO" },
+          scopeDetails: {
+            decisionProvider: "AJO",
+          },
         },
       ],
       eventType: "decisioning.propositionDismiss",
       documentMayUnload: true,
     });
-
     collectEvent(PropositionEventType.DISMISS, [propositions[0]]);
-
     expect(collect).toHaveBeenCalledWith({
       decisionsMeta: [
         {
           id: "abc",
           scope: "web://something.com",
-          scopeDetails: { decisionProvider: "AJO" },
+          scopeDetails: {
+            decisionProvider: "AJO",
+          },
         },
       ],
       eventType: "decisioning.propositionDismiss",
       documentMayUnload: true,
     });
-
     expect(collect).toHaveBeenCalledTimes(2);
   });
-
   it("collects multiple dismiss events for distinct propositions", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy();
-
-    command.run({ surface: "web://mywebsite.com/my-cards", callback });
-
+    const callback = vi.fn();
+    command.run({
+      surface: "web://mywebsite.com/my-cards",
+      callback,
+    });
     refresh(PROPOSITIONS);
-
-    const [{ propositions = [] }, collectEvent] = callback.calls.first().args;
-
+    const [{ propositions = [] }, collectEvent] = callback.mock.calls[0];
     collectEvent(PropositionEventType.DISMISS, [
       propositions[0],
       propositions[1],
     ]);
-
-    expect(collect).toHaveBeenCalledOnceWith({
+    expect(collect).toHaveBeenNthCalledWith(1, {
       decisionsMeta: [
         {
           id: "abc",
           scope: "web://something.com",
-          scopeDetails: { decisionProvider: "AJO" },
+          scopeDetails: {
+            decisionProvider: "AJO",
+          },
         },
         {
           id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
@@ -1471,24 +1421,17 @@ describe("RulesEngine:subscribeRulesetItems", () => {
       documentMayUnload: true,
     });
   });
-
   it("does not call collect event when there are no propositions", () => {
     const { command, refresh } = subscribeRulesetItems;
-
-    const callback = jasmine.createSpy("callback");
-
+    const callback = vi.fn();
     command.run({
       surfaces: ["web://mywebsite.com/my-cards"],
       schemas: [MESSAGE_CONTENT_CARD],
       callback,
     });
-
     refresh([]);
-
-    const [{ propositions = [] }, collectEvent] = callback.calls.first().args;
-
+    const [{ propositions = [] }, collectEvent] = callback.mock.calls[0];
     collectEvent(PropositionEventType.DISPLAY, propositions);
-
     expect(collect).not.toHaveBeenCalled();
   });
 });

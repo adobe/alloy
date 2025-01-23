@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import injectAreThirdPartyCookiesSupportedByDefault from "../../../../src/utils/injectAreThirdPartyCookiesSupportedByDefault.js";
 import {
   CHROME,
@@ -23,28 +24,26 @@ import {
 
 const browsersWithSupport = [CHROME, EDGE, EDGE_CHROMIUM, IE, UNKNOWN];
 const browsersWithoutSupport = [FIREFOX, SAFARI];
-
 describe("areThirdPartyCookiesSupportedByDefault", () => {
   let getBrowser;
   let areThirdPartyCookiesSupportedByDefault;
-
   beforeEach(() => {
-    getBrowser = jasmine.createSpy();
+    getBrowser = vi.fn();
     areThirdPartyCookiesSupportedByDefault =
-      injectAreThirdPartyCookiesSupportedByDefault({ getBrowser });
+      injectAreThirdPartyCookiesSupportedByDefault({
+        getBrowser,
+      });
   });
-
   browsersWithSupport.forEach((browser) => {
     it(`reports true for ${browser}`, () => {
-      getBrowser.and.returnValue(browser);
-      expect(areThirdPartyCookiesSupportedByDefault()).toBeTrue();
+      getBrowser.mockReturnValue(browser);
+      expect(areThirdPartyCookiesSupportedByDefault()).toBe(true);
     });
   });
-
   browsersWithoutSupport.forEach((browser) => {
     it(`reports false for ${browser}`, () => {
-      getBrowser.and.returnValue(browser);
-      expect(areThirdPartyCookiesSupportedByDefault()).toBeFalse();
+      getBrowser.mockReturnValue(browser);
+      expect(areThirdPartyCookiesSupportedByDefault()).toBe(false);
     });
   });
 });

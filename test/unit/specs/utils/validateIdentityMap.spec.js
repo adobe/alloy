@@ -14,23 +14,149 @@ import { validateIdentityMap } from "../../../../src/utils/index.js";
 import describeValidation from "../../helpers/describeValidation.js";
 
 describeValidation("utils:validateIdentityMap", validateIdentityMap, [
-  { value: { a: [{ authenticatedState: "unknown" }] }, error: true },
-  { value: { a: [{ authenticatedState: "authenticated" }] } },
-  { value: { a: [{ id: 123 }] }, error: true },
-  { value: { a: [{ id: "123" }] } },
-  { value: { a: [{ namespace: { unknown: "field" } }] }, error: true },
-  { value: { a: [{ namespace: { code: "123" } }] } },
-  { value: { a: [{ primary: 1 }] }, error: true },
-  { value: { a: [{ primary: true }] } },
-  { value: { a: [{ xid: 123 }] }, error: true },
-  { value: { a: [{ xid: "123" }] } },
-  { value: { a: [{ unknown: "field" }] }, error: true },
-  { value: null },
-  { value: undefined },
-  { value: [], error: true },
-  { value: { a: [] } },
-  { value: { a: null }, error: true },
-  { value: { a: undefined }, error: true },
-  { value: { a: "string" }, error: true },
-  { value: {} },
+  {
+    value: {
+      a: [
+        {
+          authenticatedState: "unknown",
+        },
+      ],
+    },
+    error: true,
+  },
+  {
+    value: {
+      a: [
+        {
+          authenticatedState: "authenticated",
+        },
+      ],
+    },
+  },
+  {
+    value: {
+      a: [
+        {
+          id: 123,
+        },
+      ],
+    },
+    error: true,
+  },
+  {
+    value: {
+      a: [
+        {
+          id: "123",
+        },
+      ],
+    },
+  },
+  {
+    value: {
+      a: [
+        {
+          namespace: {
+            unknown: "field",
+          },
+        },
+      ],
+    },
+    error: true,
+  },
+  {
+    value: {
+      a: [
+        {
+          namespace: {
+            code: "123",
+          },
+        },
+      ],
+    },
+  },
+  {
+    value: {
+      a: [
+        {
+          primary: 1,
+        },
+      ],
+    },
+    error: true,
+  },
+  {
+    value: {
+      a: [
+        {
+          primary: true,
+        },
+      ],
+    },
+  },
+  {
+    value: {
+      a: [
+        {
+          xid: 123,
+        },
+      ],
+    },
+    error: true,
+  },
+  {
+    value: {
+      a: [
+        {
+          xid: "123",
+        },
+      ],
+    },
+  },
+  {
+    value: {
+      a: [
+        {
+          unknown: "field",
+        },
+      ],
+    },
+    error: true,
+  },
+  {
+    value: null,
+  },
+  {
+    value: undefined,
+  },
+  {
+    value: [],
+    error: true,
+  },
+  {
+    value: {
+      a: [],
+    },
+  },
+  {
+    value: {
+      a: null,
+    },
+    error: true,
+  },
+  {
+    value: {
+      a: undefined,
+    },
+    error: true,
+  },
+  {
+    value: {
+      a: "string",
+    },
+    error: true,
+  },
+  {
+    value: {},
+  },
 ]);

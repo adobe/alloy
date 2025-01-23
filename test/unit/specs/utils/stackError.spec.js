@@ -10,22 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import stackError from "../../../../src/utils/stackError.js";
 
 describe("stackError", () => {
   it("stacks message onto error instance", () => {
     const error = new Error("Conundrum encountered.");
-    const result = stackError({ error, message: "Predicament discovered." });
-    expect(result).toEqual(jasmine.any(Error));
+    const result = stackError({
+      error,
+      message: "Predicament discovered.",
+    });
+    expect(result).toEqual(expect.any(Error));
     expect(result.message).toBe(
       "Predicament discovered.\nCaused by: Conundrum encountered.",
     );
   });
-
   it("stacks message onto non-error instance", () => {
     const error = "Conundrum encountered.";
-    const result = stackError({ error, message: "Predicament discovered." });
-    expect(result).toEqual(jasmine.any(Error));
+    const result = stackError({
+      error,
+      message: "Predicament discovered.",
+    });
+    expect(result).toEqual(expect.any(Error));
     expect(result.message).toBe(
       "Predicament discovered.\nCaused by: Conundrum encountered.",
     );

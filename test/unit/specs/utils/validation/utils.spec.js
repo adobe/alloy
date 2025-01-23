@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, describe, it, expect } from "vitest";
 import {
   chain,
   nullSafeChain,
@@ -19,12 +20,12 @@ import {
 describe("validation::utils", () => {
   describe("chain", () => {
     it("calls the validators with the correct params", () => {
-      const validator1 = jasmine.createSpy();
-      const validator2 = jasmine.createSpy();
-      const validator3 = jasmine.createSpy();
-      validator1.and.returnValue("validator1return");
-      validator2.and.returnValue("validator2return");
-      validator3.and.returnValue("validator3return");
+      const validator1 = vi.fn();
+      const validator2 = vi.fn();
+      const validator3 = vi.fn();
+      validator1.mockReturnValue("validator1return");
+      validator2.mockReturnValue("validator2return");
+      validator3.mockReturnValue("validator3return");
       const subject = chain(chain(validator1, validator2), validator3);
       expect(subject("myCurrentValue", "myKey")).toEqual("validator3return");
       expect(validator1).toHaveBeenCalledTimes(1);
@@ -34,14 +35,15 @@ describe("validation::utils", () => {
       expect(validator3).toHaveBeenCalledTimes(1);
       expect(validator3).toHaveBeenCalledWith("validator2return", "myKey");
     });
-
     it("short circuits evaluation", () => {
-      const validator1 = jasmine.createSpy();
-      const validator2 = jasmine.createSpy();
-      const validator3 = jasmine.createSpy();
-      validator1.and.returnValue("validator1return");
-      validator2.and.throwError("My Error!");
-      validator3.and.returnValue("validator3return");
+      const validator1 = vi.fn();
+      const validator2 = vi.fn();
+      const validator3 = vi.fn();
+      validator1.mockReturnValue("validator1return");
+      validator2.mockImplementation(() => {
+        throw new Error("My Error!");
+      });
+      validator3.mockReturnValue("validator3return");
       const subject = chain(chain(validator1, validator2), validator3);
       expect(() => subject("myCurrentValue", "myKey")).toThrow(
         Error("My Error!"),
@@ -49,13 +51,12 @@ describe("validation::utils", () => {
       expect(validator3).not.toHaveBeenCalled();
     });
   });
-
   describe("nullSafeChain", () => {
     it("doesn't call the underlying validators when null is passed in", () => {
-      const validator1 = jasmine.createSpy();
-      const validator2 = jasmine.createSpy();
-      const validator3 = jasmine.createSpy();
-      validator1.and.returnValue(null);
+      const validator1 = vi.fn();
+      const validator2 = vi.fn();
+      const validator3 = vi.fn();
+      validator1.mockReturnValue(null);
       const subject = nullSafeChain(
         nullSafeChain(validator1, validator2),
         validator3,
@@ -67,19 +68,12 @@ describe("validation::utils", () => {
       expect(validator3).toHaveBeenCalledTimes(0);
     });
   });
-
   describe("assertValid", () => {
     it("throws an error when it is invalid", () => {
       expect(() =>
         assertValid(false, "myValue", "myPath", "myMessage"),
-      ).toThrowMatching((e) => {
-        expect(e.message).toEqual(
-          `'myPath': Expected myMessage, but got "myValue".`,
-        );
-        return true;
-      });
+      ).toThrowError(/'myPath': Expected myMessage, but got "myValue"\./);
     });
-
     it("does not throw an error when it is valid", () => {
       expect(
         assertValid(true, "myValue", "myPath", "myMessage"),

@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { afterEach, describe, it, expect } from "vitest";
 import setAttribute from "../../../../../../../src/components/Personalization/dom-actions/dom/setAttribute.js";
 import {
   createNode,
@@ -22,13 +23,12 @@ describe("Personalization::DOM::setAttribute", () => {
   afterEach(() => {
     selectNodes("#fooId").forEach(removeNode);
   });
-
   it("should set the attribute for the element", () => {
-    const element = createNode("div", { id: "fooId" });
+    const element = createNode("div", {
+      id: "fooId",
+    });
     setAttribute(element, "foo-data", "dummyValue");
-
     const attr = getAttribute(element, "foo-data");
-
     expect(attr).toEqual("dummyValue");
   });
 });

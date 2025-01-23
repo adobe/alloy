@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, describe, it, expect } from "vitest";
 import createLifecycle from "../../../../src/core/createLifecycle.js";
 
 describe("createLifecycle", () => {
@@ -28,20 +29,19 @@ describe("createLifecycle", () => {
       "onRequestFailure",
       "onClick",
     ].forEach((methodName) => {
-      expect(lifecycle[methodName]()).toEqual(jasmine.any(Promise));
+      expect(lifecycle[methodName]()).toEqual(expect.any(Promise));
     });
   });
-
   it("calls all callbacks for a given lifecycle method", () => {
     const callbacks = [
-      jasmine
-        .createSpy()
-        .and.returnValue({ returnValue1: "valueFromCallback1" }),
-      jasmine
-        .createSpy()
-        .and.returnValue(
-          Promise.resolve({ returnValue2: "valueFromCallback2" }),
-        ),
+      vi.fn().mockReturnValue({
+        returnValue1: "valueFromCallback1",
+      }),
+      vi.fn().mockReturnValue(
+        Promise.resolve({
+          returnValue2: "valueFromCallback2",
+        }),
+      ),
     ];
     const componentRegistry = {
       getLifecycleCallbacks(hookName) {
@@ -58,17 +58,16 @@ describe("createLifecycle", () => {
       expect(result[1].returnValue2).toEqual("valueFromCallback2");
     });
   });
-
-  it("ensures all callbacks for one method are called before any callbacks from a different method", () => {
+  it("ensures all callbacks for one method are called before any callbacks from a different method", async () => {
     let lifecycle;
     const callbacksByHookName = {
       onComponentsRegistered: [
-        jasmine.createSpy().and.callFake(() => {
+        vi.fn().mockImplementation(() => {
           lifecycle.onBeforeEvent();
         }),
-        jasmine.createSpy(),
+        vi.fn(),
       ],
-      onBeforeEvent: [jasmine.createSpy()],
+      onBeforeEvent: [vi.fn()],
     };
     const componentRegistry = {
       getLifecycleCallbacks(hookName) {
@@ -76,13 +75,17 @@ describe("createLifecycle", () => {
       },
     };
     lifecycle = createLifecycle(componentRegistry);
-    return lifecycle.onComponentsRegistered().then(() => {
-      expect(
-        callbacksByHookName.onComponentsRegistered[0],
-      ).toHaveBeenCalledBefore(callbacksByHookName.onComponentsRegistered[1]);
-      expect(
-        callbacksByHookName.onComponentsRegistered[1],
-      ).toHaveBeenCalledBefore(callbacksByHookName.onBeforeEvent[0]);
-    });
+
+    await lifecycle.onComponentsRegistered();
+
+    const callOrder1 =
+      callbacksByHookName.onComponentsRegistered[0].mock.invocationCallOrder[0];
+    const callOrder2 =
+      callbacksByHookName.onComponentsRegistered[1].mock.invocationCallOrder[0];
+    const callOrder3 =
+      callbacksByHookName.onBeforeEvent[0].mock.invocationCallOrder[0];
+
+    expect(callOrder1).toBeLessThan(callOrder2);
+    expect(callOrder2).toBeLessThan(callOrder3);
   });
 });

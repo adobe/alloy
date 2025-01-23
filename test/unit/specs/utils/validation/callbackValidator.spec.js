@@ -10,31 +10,66 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe } from "vitest";
 import { callback } from "../../../../../src/utils/validation/index.js";
 import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::callback", () => {
   describeValidation("optional callback", callback(), [
-    { value: "", error: true },
-    { value: "true", error: true },
-    { value: [1], error: true },
-    { value: {}, error: true },
-    { value: 0, error: true },
-    { value: () => undefined },
-    { value: function func() {} },
+    {
+      value: "",
+      error: true,
+    },
+    {
+      value: "true",
+      error: true,
+    },
+    {
+      value: [1],
+      error: true,
+    },
+    {
+      value: {},
+      error: true,
+    },
+    {
+      value: 0,
+      error: true,
+    },
+    {
+      value: () => undefined,
+    },
+    {
+      value: function func() {},
+    },
   ]);
-
   describeValidation("required callback", callback().required(), [
-    { value: () => undefined },
-    { value: null, error: true },
-    { value: undefined, error: true },
+    {
+      value: () => undefined,
+    },
+    {
+      value: null,
+      error: true,
+    },
+    {
+      value: undefined,
+      error: true,
+    },
   ]);
-
   const func1 = () => {};
   const func2 = () => {};
   describeValidation("callback with default value", callback().default(func1), [
-    { value: null, expected: func1 },
-    { value: undefined, expected: func1 },
-    { value: func2, expected: func2 },
+    {
+      value: null,
+      expected: func1,
+    },
+    {
+      value: undefined,
+      expected: func1,
+    },
+    {
+      value: func2,
+      expected: func2,
+    },
   ]);
 });

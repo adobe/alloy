@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import schemaTypeConsequenceAdapter from "../../../../../../src/components/RulesEngine/consequenceAdapters/schemaTypeConsequenceAdapter.js";
 import { TEXT_HTML } from "../../../../../../src/constants/contentType.js";
 
@@ -36,7 +37,7 @@ describe("RulesEngine:schemaTypeConsequenceAdapter", () => {
               backdropColor: "#000000",
               height: 60,
             },
-            webParameters: jasmine.any(Object),
+            webParameters: expect.any(Object),
             content: "<!doctype html></html>",
             contentType: TEXT_HTML,
           },
@@ -60,7 +61,7 @@ describe("RulesEngine:schemaTypeConsequenceAdapter", () => {
           backdropColor: "#000000",
           height: 60,
         },
-        webParameters: jasmine.any(Object),
+        webParameters: expect.any(Object),
         content: "<!doctype html></html>",
         contentType: TEXT_HTML,
       },

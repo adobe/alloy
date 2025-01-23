@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import injectGetBrowser from "../../../../src/utils/injectGetBrowser.js";
-
 import {
   EDGE,
   EDGE_CHROMIUM,
@@ -49,17 +49,21 @@ const userAgentsByBrowser = {
     "Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13 Mobile/15E148 Safari/604.1",
   ],
   [UNKNOWN]: [
-    "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 OPR/43.0.2442.991", // Opera
+    "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 OPR/43.0.2442.991",
+    // Opera
     "Mozilla/5.0 (X11; Linux) KHTML/4.9.1 (like Gecko) Konqueror/4.9", // Konqueror
   ],
 };
-
 describe("getBrowser", () => {
   Object.keys(userAgentsByBrowser).forEach((browser) => {
     const userAgents = userAgentsByBrowser[browser];
     userAgents.forEach((userAgent) => {
       it(`reports ${browser} for ${userAgent}`, () => {
-        expect(injectGetBrowser({ userAgent })()).toBe(browser);
+        expect(
+          injectGetBrowser({
+            userAgent,
+          })(),
+        ).toBe(browser);
       });
     });
   });

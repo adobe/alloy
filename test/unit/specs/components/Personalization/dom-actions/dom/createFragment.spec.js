@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import createFragment from "../../../../../../../src/components/Personalization/dom-actions/dom/createFragment.js";
 
 describe("Personalization::helper", () => {
   it("createFragmentTest", () => {
     const result = createFragment(`<div id="foo">foo</div>`);
-
     expect(result.firstElementChild.id).toEqual("foo");
   });
 });

@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import { isFunction, isObject } from "../utils/index.js";
 import { CONFIGURE, SET_DEBUG } from "../constants/coreCommands.js";
+import { objectOf, boolean } from "../utils/validation/index.js";
 
 export default ({
   logger,
@@ -44,7 +45,18 @@ export default ({
         );
       }
       if (commandName === SET_DEBUG) {
-        executor = () => setDebugCommand(options);
+        executor = () => {
+          const optionsValidator = objectOf({
+            enabled: boolean().required(),
+          }).noUnknownFields();
+
+          const validatedOptions = validateCommandOptions({
+            command: { commandName: SET_DEBUG, optionsValidator },
+            options,
+          });
+
+          setDebugCommand(validatedOptions);
+        };
       } else {
         executor = () => {
           return configurePromise.then(

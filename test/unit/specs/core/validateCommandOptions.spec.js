@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { beforeEach, describe, it, expect } from "vitest";
 import validateCommandOptions from "../../../../src/core/validateCommandOptions.js";
 
 describe("validateCommandOptions", () => {
   let command;
   let options;
-
   beforeEach(() => {
     options = {};
     command = {
@@ -23,10 +23,12 @@ describe("validateCommandOptions", () => {
       run: () => {},
     };
   });
-
   it("supports commands not implementing command options validation.", () => {
     expect(() => {
-      validateCommandOptions({ command, options });
+      validateCommandOptions({
+        command,
+        options,
+      });
     }).not.toThrowError();
   });
   it("should throw exception if command options validator throws exception.", () => {
@@ -34,7 +36,10 @@ describe("validateCommandOptions", () => {
       throw new Error("Invalid Options");
     };
     expect(() => {
-      validateCommandOptions({ command, options });
+      validateCommandOptions({
+        command,
+        options,
+      });
     }).toThrowError();
   });
   it("should include custom documentation URI in error message if provided by command options validator.", () => {
@@ -44,7 +49,10 @@ describe("validateCommandOptions", () => {
     command.documentationUri = "https://example.com";
     let errorMessage;
     try {
-      validateCommandOptions({ command, options });
+      validateCommandOptions({
+        command,
+        options,
+      });
     } catch (e) {
       errorMessage = e.message;
     }

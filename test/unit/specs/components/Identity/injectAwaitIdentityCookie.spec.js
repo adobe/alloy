@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import injectAwaitIdentityCookie from "../../../../../src/components/Identity/injectAwaitIdentityCookie.js";
 
 describe("Identity::injectAwaitIdentityCookie", () => {
@@ -20,7 +21,6 @@ describe("Identity::injectAwaitIdentityCookie", () => {
   let onResponse;
   let onRequestFailure;
   let logger;
-
   beforeEach(() => {
     identityCookieExists = true;
     const onResponseCallbacks = [];
@@ -37,45 +37,51 @@ describe("Identity::injectAwaitIdentityCookie", () => {
       });
     };
     onRequestFailure = (callback) => onRequestFailureCallbacks.push(callback);
-    logger = jasmine.createSpyObj("logger", ["warn"]);
+    logger = {
+      warn: vi.fn(),
+    };
     awaitIdentityCookie = injectAwaitIdentityCookie({
       orgId: "org@adobe",
       doesIdentityCookieExist: () => identityCookieExists,
       logger,
     });
   });
-
   it("resolves promise if identity cookie exists after response", () => {
-    const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
+    const promise = awaitIdentityCookie({
+      onResponse,
+      onRequestFailure,
+    });
     runOnResponseCallbacks();
     expect(logger.warn).not.toHaveBeenCalled();
     return promise;
   });
-
   it("rejects promise if identity cookie does not exist after response and logs warning", () => {
     identityCookieExists = false;
-    const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
+    const promise = awaitIdentityCookie({
+      onResponse,
+      onRequestFailure,
+    });
     runOnResponseCallbacks();
     expect(logger.warn).toHaveBeenCalled();
-    return expectAsync(promise).toBeRejectedWithError(
-      /Identity cookie not found/i,
-    );
+    return expect(promise).rejects.toThrowError(/Identity cookie not found/i);
   });
-
   it("resolves promise if identity cookie exists after request failure", () => {
-    const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
+    const promise = awaitIdentityCookie({
+      onResponse,
+      onRequestFailure,
+    });
     runOnRequestFailureCallbacks();
     expect(logger.warn).not.toHaveBeenCalled();
     return promise;
   });
-
   it("rejects promise if identity cookie does not exist after request failure", () => {
     identityCookieExists = false;
-    const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
+    const promise = awaitIdentityCookie({
+      onResponse,
+      onRequestFailure,
+    });
     runOnRequestFailureCallbacks();
     expect(logger.warn).not.toHaveBeenCalled();
-    return expectAsync(promise).toBeRejectedWithError(
-      /Identity cookie not found/i,
-    );
+    return expect(promise).rejects.toThrowError(/Identity cookie not found/i);
   });
 });

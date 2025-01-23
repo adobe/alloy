@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createCollect from "../../../../src/utils/createCollect.js";
 import { PropositionEventType } from "../../../../src/constants/propositionEventType.js";
 
@@ -22,20 +23,23 @@ describe("Utils::createCollect", () => {
     },
   ];
   const event = {
-    mergeXdm: jasmine.createSpy(),
+    mergeXdm: vi.fn(),
   };
-
   beforeEach(() => {
-    eventManager = jasmine.createSpyObj("eventManager", {
-      sendEvent: undefined,
-      createEvent: event,
-    });
-    mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
+    eventManager = {
+      sendEvent: vi.fn().mockReturnValue(undefined),
+      createEvent: vi.fn().mockReturnValue(event),
+    };
+    mergeDecisionsMeta = vi.fn();
   });
-
   it("collects and sends event with metadata", () => {
-    const collect = createCollect({ eventManager, mergeDecisionsMeta });
-    collect({ decisionsMeta });
+    const collect = createCollect({
+      eventManager,
+      mergeDecisionsMeta,
+    });
+    collect({
+      decisionsMeta,
+    });
     expect(eventManager.createEvent).toHaveBeenCalled();
     expect(event.mergeXdm).toHaveBeenCalledWith({
       eventType: "decisioning.propositionDisplay",
