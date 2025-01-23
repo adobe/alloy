@@ -32,7 +32,7 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
     lifecycle = {
       onClick: vi.fn().mockReturnValue(Promise.resolve()),
     };
-    // eslint-disable-next-line no-unused-vars
+
     vi.spyOn(document, "addEventListener").mockImplementation(
       (name, handler) => {
         clickHandler = handler;

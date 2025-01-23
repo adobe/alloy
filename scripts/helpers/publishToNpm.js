@@ -15,7 +15,7 @@ const publishToNpm = async ({ exec, execSync, logger, npmTag, version }) => {
     publishVersionJson = execSync(
       `npm view @adobe/alloy@${version} version --json`,
     ).toString();
-  } catch (e) {
+  } catch {
     // the error is already printed to stdErr
   }
   if (publishVersionJson !== "") {

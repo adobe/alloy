@@ -18,7 +18,7 @@ governing permissions and limitations under the License.
 export default (value) => {
   try {
     return RegExp(value) !== null;
-  } catch (e) {
+  } catch {
     return false;
   }
 };

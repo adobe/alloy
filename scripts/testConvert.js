@@ -308,8 +308,8 @@ for (let fileIndex = start; fileIndex < f.length; fileIndex += 1) {
                           ),
                         ),
                       );
-                    } catch (e) {
-                      // sss
+                    } catch {
+                      // Catch all errors.
                     }
                   }
                 }

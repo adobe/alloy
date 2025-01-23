@@ -47,7 +47,7 @@ test("Test C205528: A redirect offer should redirect the page to the URL in the 
     await alloy.sendEvent({
       renderDecisions: true,
     });
-  } catch (e) {
+  } catch {
     // an exception will be thrown because a redirect will be executed within the Alloy Client Function
   } finally {
     await t.expect(redirectLogger.count(() => true)).eql(1);

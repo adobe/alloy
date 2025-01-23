@@ -18,7 +18,6 @@ describe("isInteger", () => {
     [123, -123].forEach((value) => expect(isInteger(value)).toBe(true));
   });
 
-  // eslint-disable-next-line no-restricted-globals
   it("returns false if the value is not an integer", () => {
     [null, undefined, NaN, "abc", "123", 123.45, -123.45].forEach((value) =>
       expect(isInteger(value)).toBe(false),

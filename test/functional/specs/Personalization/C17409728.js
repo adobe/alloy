@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 /*
 Copyright 2023 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -419,6 +418,7 @@ test("Test C17409728: Includes rendered propositions as display notifications in
   );
   const hasPlatformDisplayNotifications = sendEventRequestBody.events.some(
     ({ xdm }) =>
+      // eslint-disable-next-line no-underscore-dangle
       xdm._experience?.decisioning?.propositionEventType?.display === 1,
   );
   await t

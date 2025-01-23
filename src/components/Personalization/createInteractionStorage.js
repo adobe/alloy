@@ -46,7 +46,6 @@ export default () => {
     notification,
     interactId,
   ) => {
-    // eslint-disable-next-line no-param-reassign
     interactId = parseInt(interactId, 10);
 
     if (!clickMetaStorage[interactId]) {

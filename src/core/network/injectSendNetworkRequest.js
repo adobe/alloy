@@ -65,7 +65,7 @@ export default ({
 
         try {
           parsedBody = JSON.parse(response.body);
-        } catch (e) {
+        } catch {
           // Non-JSON. Something went wrong.
         }
 

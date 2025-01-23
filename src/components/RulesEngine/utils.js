@@ -19,7 +19,7 @@ export const createRestoreStorage = (storage, storageKey) => {
 
     try {
       return JSON.parse(stored);
-    } catch (e) {
+    } catch {
       return defaultValue;
     }
   };

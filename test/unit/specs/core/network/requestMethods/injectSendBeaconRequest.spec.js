@@ -69,7 +69,7 @@ describe("injectSendBeaconRequest", () => {
         sendBeacon,
         sendFetchRequest,
       });
-      // eslint-disable-next-line consistent-return
+
       return sendBeaconRequest("https://example.com/endpoint", body).then(
         (result) => {
           expect(sendFetchRequest).not.toHaveBeenCalled();
