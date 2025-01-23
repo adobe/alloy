@@ -13,8 +13,13 @@ governing permissions and limitations under the License.
 import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain.js";
 import apiVersion from "../../constants/apiVersion.js";
 import { createCallbackAggregator, noop } from "../../utils/index.js";
+import { isNetworkError } from "../../utils/networkErrors.js";
 import mergeLifecycleResponses from "./mergeLifecycleResponses.js";
 import handleRequestFailure from "./handleRequestFailure.js";
+
+const isDemdexBlockedError = (error, request) => {
+  return request.getUseIdThirdPartyDomain() && isNetworkError(error);
+};
 
 export default ({
   config,
@@ -27,6 +32,27 @@ export default ({
   getAssuranceValidationTokenParams,
 }) => {
   const { edgeDomain, edgeBasePath, datastreamId } = config;
+  let hasDemdexFailed = false;
+
+  const buildEndpointUrl = (endpointDomain, request) => {
+    const locationHint = getLocationHint();
+    const edgeBasePathWithLocationHint = locationHint
+      ? `${edgeBasePath}/${locationHint}${request.getEdgeSubPath()}`
+      : `${edgeBasePath}${request.getEdgeSubPath()}`;
+    const configId = request.getDatastreamIdOverride() || datastreamId;
+
+    if (configId !== datastreamId) {
+      request.getPayload().mergeMeta({
+        sdkConfig: {
+          datastream: {
+            original: datastreamId,
+          },
+        },
+      });
+    }
+
+    return `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${configId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
+  };
 
   /**
    * Sends a network request that is aware of payload interfaces,
@@ -52,26 +78,15 @@ export default ({
         onRequestFailure: onRequestFailureCallbackAggregator.add,
       })
       .then(() => {
-        const endpointDomain = request.getUseIdThirdPartyDomain()
-          ? ID_THIRD_PARTY_DOMAIN
-          : edgeDomain;
-        const locationHint = getLocationHint();
-        const edgeBasePathWithLocationHint = locationHint
-          ? `${edgeBasePath}/${locationHint}${request.getEdgeSubPath()}`
-          : `${edgeBasePath}${request.getEdgeSubPath()}`;
-        const configId = request.getDatastreamIdOverride() || datastreamId;
+        const endpointDomain =
+          hasDemdexFailed || !request.getUseIdThirdPartyDomain()
+            ? edgeDomain
+            : ID_THIRD_PARTY_DOMAIN;
+
+        const url = buildEndpointUrl(endpointDomain, request);
         const payload = request.getPayload();
-        if (configId !== datastreamId) {
-          payload.mergeMeta({
-            sdkConfig: {
-              datastream: {
-                original: datastreamId,
-              },
-            },
-          });
-        }
-        const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${configId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
         cookieTransfer.cookiesToPayload(payload, endpointDomain);
+
         return sendNetworkRequest({
           requestId: request.getId(),
           url,
@@ -83,7 +98,23 @@ export default ({
         processWarningsAndErrors(networkResponse);
         return networkResponse;
       })
-      .catch(handleRequestFailure(onRequestFailureCallbackAggregator))
+      .catch((error) => {
+        if (isDemdexBlockedError(error, request)) {
+          hasDemdexFailed = true;
+          request.setUseIdThirdPartyDomain(false);
+          const url = buildEndpointUrl(edgeDomain, request);
+          const payload = request.getPayload();
+          cookieTransfer.cookiesToPayload(payload, edgeDomain);
+
+          return sendNetworkRequest({
+            requestId: request.getId(),
+            url,
+            payload,
+            useSendBeacon: request.getUseSendBeacon(),
+          });
+        }
+        return handleRequestFailure(onRequestFailureCallbackAggregator)(error);
+      })
       .then(({ parsedBody, getHeader }) => {
         // Note that networkResponse.parsedBody may be undefined if it was a
         // 204 No Content response. That's fine.
