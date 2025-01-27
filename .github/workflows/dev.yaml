@@ -1,5 +1,7 @@
 name: Alloy Dev
 on:
+  push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -41,6 +43,8 @@ jobs:
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
+      - name: Install Playwright browsers
+        run: npx playwright install chromium # Force browsers fresh installation since the ones in the cache can be out of date (browsers are released monthly).
       - name: Run Unit Test
         run: npm run test
         env:
