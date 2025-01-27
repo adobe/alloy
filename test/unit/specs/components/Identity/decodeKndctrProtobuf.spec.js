@@ -10,6 +10,10 @@ describe("Identity", () => {
         const buffer = new Uint8Array([0b00000001]);
         const result = decodeVarint(buffer, 0);
         expect(result).toEqual({ value: 1, length: 1 });
+        expect(decodeVarint(new Uint8Array([0b00011011]), 0)).toEqual({
+          value: 27,
+          length: 1,
+        });
       });
 
       it("should decode a varint with multiple bytes", () => {
@@ -24,6 +28,37 @@ describe("Identity", () => {
         ]);
         const result = decodeVarint(buffer, 2);
         expect(result).toEqual({ value: 151, length: 2 });
+      });
+
+      it("should handle a negative varint", () => {
+        const buffer = new Uint8Array([
+          0b11111110, 0b11111111, 0b11111111, 0b11111111, 0b11111111,
+          0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b00000001,
+        ]);
+        expect(decodeVarint(buffer, 0)).toEqual({
+          value: -2,
+          length: 10,
+        });
+      });
+
+      it("should handle an invalid varint", () => {
+        const buffer = new Uint8Array([0b10000000]);
+        expect(() => decodeVarint(buffer, 0)).toThrow();
+      });
+
+      it("should handle an empty buffer", () => {
+        const buffer = new Uint8Array([]);
+        expect(() => decodeVarint(buffer, 0)).toThrow();
+      });
+
+      it("should handle a negative offset", () => {
+        const buffer = new Uint8Array([0b00000001]);
+        expect(() => decodeVarint(buffer, -1)).toThrow();
+      });
+
+      it("should handle buffer overflow", () => {
+        const buffer = new Uint8Array([0b10000000, 0b10000000]);
+        expect(() => decodeVarint(buffer, 0)).toThrow();
       });
     });
 

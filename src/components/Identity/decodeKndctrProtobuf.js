@@ -85,12 +85,19 @@ export const decodeVarint = (buffer, offset) => {
   let length = 0;
   let byte;
   do {
+    if (offset < 0 || offset + length >= buffer.length) {
+      throw new Error("Invalid varint: buffer ended unexpectedly");
+    }
     byte = buffer[offset + length];
     // Drop the continuation bit (the most significant bit), convert it from
-    // little endian to big endian, and add it to the accumlator `value`.
+    // little endian to big endian, and add it to the accumulator `value`.
     value |= (byte & 0b01111111) << (7 * length);
     // Increase the length of the varint by one byte.
     length += 1;
+    // A varint can be at most 10 bytes long for a 64-bit integer.
+    if (length > 10) {
+      throw new Error("Invalid varint: too long");
+    }
   } while (byte & 0b10000000);
   return { value, length };
 };

@@ -34,7 +34,7 @@ describe("ActivityCollector::validateClickCollectionConfig", () => {
     validateClickCollectionConfig(config, logger);
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "The 'onBeforeLinkClickSend' configuration was provided but will be ignored because clickCollectionEnabled is false."
+      "The 'onBeforeLinkClickSend' configuration was provided but will be ignored because clickCollectionEnabled is false.",
     );
   });
 
@@ -47,7 +47,7 @@ describe("ActivityCollector::validateClickCollectionConfig", () => {
     validateClickCollectionConfig(config, logger);
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "The 'downloadLinkQualifier' configuration was provided but will be ignored because clickCollectionEnabled is false."
+      "The 'downloadLinkQualifier' configuration was provided but will be ignored because clickCollectionEnabled is false.",
     );
   });
 
