@@ -1,4 +1,4 @@
-import { beforeEach, describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import decodeKndctrProtobuf, {
   decodeVarint,
 } from "../../../../../src/components/Identity/decodeKndctrProtobuf.js";
@@ -64,8 +64,11 @@ describe("Identity", () => {
 
     describe("decodeKndctrProtobuf", () => {
       const uint8ArrayFromBase64 = (base64, isUrlSafeBase64 = false) => {
-        // Can be replaced with https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array/fromBase64
-        // in the future
+        if ("fromBase64" in Uint8Array) {
+          return Uint8Array.fromBase64(base64, {
+            alphabet: isUrlSafeBase64 ? "base64url" : "base64",
+          });
+        }
         let input = base64;
         if (isUrlSafeBase64) {
           input = input.replace(/-/g, "+").replace(/_/g, "/");
@@ -73,16 +76,26 @@ describe("Identity", () => {
         const binString = atob(input);
         return Uint8Array.from(binString, (m) => m.codePointAt(0));
       };
-      let message;
-      beforeEach(() => {
-        const messageStr =
+      it("should extract an ecid from a kndctr cookie", () => {
+        const knctr =
           "CiYxNTkyMTM0MTU3ODg1MzkxOTM2MDExOTIxMzkxNzkyNTE5NzMyMlISCMjKluKXMhABGAEqA09SMjAAoAHrypbilzKwAbyzAfAByMqW4pcy";
-        message = uint8ArrayFromBase64(messageStr);
-      });
-
-      it("should decode the message", () => {
-        const ecid = decodeKndctrProtobuf(message);
+        const bytes = uint8ArrayFromBase64(knctr, true);
+        const ecid = decodeKndctrProtobuf(bytes);
         expect(ecid).toBe("15921341578853919360119213917925197322");
+
+        // Test with a different ECID
+        const knctr2 =
+          "CiY4MDA2MDcwMjc3Nzk4MDc1NjMxMzI5Mjg1NTQ1NDE0OTUxMzIxN1IQCJS1kPGzMRgBKgNPUjIwAaAB0NOe3o0ysAG8swHwAcjTnt6NMg";
+        const bytes2 = uint8ArrayFromBase64(knctr2, true);
+        const ecid2 = decodeKndctrProtobuf(bytes2);
+        expect(ecid2).toBe("80060702777980756313292855454149513217");
+
+        // Test with a different ECID
+        const knctr3 =
+          "CiY0NDQ0MjAwMTI2MDA4NzQwNTQ5MTUxNDc5MzAzNTA2NTIxNDI4OFISCMjEz4O5MRABGAEqA09SMjAA8AHj2ouV1DE";
+        const bytes3 = uint8ArrayFromBase64(knctr3, true);
+        const ecid3 = decodeKndctrProtobuf(bytes3);
+        expect(ecid3).toBe("44442001260087405491514793035065214288");
       });
     });
   });
