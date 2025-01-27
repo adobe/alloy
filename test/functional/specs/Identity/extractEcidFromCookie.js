@@ -27,7 +27,7 @@ createFixture({
   requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
-test.only("Extracts ECID from kndctr cookie", async () => {
+test("Extracts ECID from kndctr cookie", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
 
