@@ -67,9 +67,11 @@ export default ({
               if (namespaces) {
                 return undefined;
               }
-              const fromCookie = getEcidFromCookie();
-              if (fromCookie) {
-                return fromCookie;
+              if (namespaces.includes(ecidNamespace)) {
+                const ecidFromCookie = getEcidFromCookie();
+                if (ecidFromCookie) {
+                  return { [ecidNamespace]: ecidFromCookie };
+                }
               }
               return getIdentity(options);
             })
@@ -90,7 +92,16 @@ export default ({
           return consent
             .withConsent()
             .then(() => {
-              return namespaces ? undefined : getIdentity(options);
+              if (namespaces) {
+                return undefined;
+              }
+              if (namespaces.includes(ecidNamespace)) {
+                const ecidFromCookie = getEcidFromCookie();
+                if (ecidFromCookie) {
+                  return { [ecidNamespace]: ecidFromCookie };
+                }
+              }
+              return getIdentity(options);
             })
             .then(() => {
               return {
