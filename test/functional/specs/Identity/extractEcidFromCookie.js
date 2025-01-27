@@ -15,16 +15,17 @@ import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import reloadPage from "../../helpers/reloadPage.js";
 
 const networkLogger = createNetworkLogger();
-const config = compose(orgMainConfigMain);
+const config = compose(orgMainConfigMain, debugEnabled);
 
 createFixture({
   title: "Extract ECID from cookie",
-  requestHooks: [networkLogger.edgeEndpointLogs],
+  requestHooks: [networkLogger.acquireEndpointLogs],
 });
 
 test("Extracts ECID from kndctr cookie", async () => {
@@ -34,12 +35,16 @@ test("Extracts ECID from kndctr cookie", async () => {
   const {
     identity: { ECID: networkEcid },
   } = await alloy.getIdentity();
-  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
+  await t.expect(networkEcid).ok();
+  await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
 
+  networkLogger.clearLogs();
   await reloadPage();
+
+  await alloy.configure(config);
   const {
     identity: { ECID: cookieEcid },
   } = await alloy.getIdentity();
   await t.expect(cookieEcid).eql(networkEcid);
-  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);
+  await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(0);
 });

@@ -23,7 +23,7 @@ const base64ToBytes = (base64) => {
 };
 
 export default ({ orgId, cookieJar, logger }) => {
-  const kndctrCookieName = getNamespacedCookieName(orgId, "kndctr");
+  const kndctrCookieName = getNamespacedCookieName(orgId, "identity");
   /**
    * Returns the ECID from the kndctr cookie.
    * @returns {string|null}

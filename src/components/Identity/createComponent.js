@@ -69,7 +69,11 @@ export default ({
               }
               const ecidFromCookie = getEcidFromCookie();
               if (ecidFromCookie) {
-                return { [ecidNamespace]: ecidFromCookie };
+                if (!namespaces) {
+                  namespaces = {};
+                }
+                namespaces[ecidNamespace] = ecidFromCookie;
+                return undefined;
               }
               return getIdentity(options);
             })
@@ -95,7 +99,11 @@ export default ({
               }
               const ecidFromCookie = getEcidFromCookie();
               if (ecidFromCookie) {
-                return { [ecidNamespace]: ecidFromCookie };
+                if (!namespaces) {
+                  namespaces = {};
+                }
+                namespaces[ecidNamespace] = ecidFromCookie;
+                return undefined;
               }
               return getIdentity(options);
             })
