@@ -67,11 +67,9 @@ export default ({
               if (namespaces) {
                 return undefined;
               }
-              if (namespaces.includes(ecidNamespace)) {
-                const ecidFromCookie = getEcidFromCookie();
-                if (ecidFromCookie) {
-                  return { [ecidNamespace]: ecidFromCookie };
-                }
+              const ecidFromCookie = getEcidFromCookie();
+              if (ecidFromCookie) {
+                return { [ecidNamespace]: ecidFromCookie };
               }
               return getIdentity(options);
             })
@@ -95,11 +93,9 @@ export default ({
               if (namespaces) {
                 return undefined;
               }
-              if (namespaces.includes(ecidNamespace)) {
-                const ecidFromCookie = getEcidFromCookie();
-                if (ecidFromCookie) {
-                  return { [ecidNamespace]: ecidFromCookie };
-                }
+              const ecidFromCookie = getEcidFromCookie();
+              if (ecidFromCookie) {
+                return { [ecidNamespace]: ecidFromCookie };
               }
               return getIdentity(options);
             })
