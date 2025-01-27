@@ -14,4 +14,4 @@ distTest
 libEs5
 libEs6
 artifacts
-**/__screenshots__/
+__screenshots__/
