@@ -10,16 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { DEFAULT_DOWNLOAD_QUALIFIER } from "../../../../../src/components/ActivityCollector/configValidators.js";
 import validateClickCollectionConfig from "../../../../../src/components/ActivityCollector/validateClickCollectionConfig.js";
+import { DEFAULT_DOWNLOAD_QUALIFIER } from "../../../../../src/components/ActivityCollector/configValidators.js";
 
 describe("ActivityCollector::validateClickCollectionConfig", () => {
   let logger;
 
   beforeEach(() => {
-    logger = {
-      warn: vi.fn(),
-    };
     logger = {
       warn: vi.fn(),
     };
