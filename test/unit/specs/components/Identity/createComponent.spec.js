@@ -32,7 +32,7 @@ describe("Identity::createComponent", () => {
   let getIdentityDeferred;
   let response;
   let component;
-  let getEcidFromCookie;
+  let decodeKndctrCookie;
   beforeEach(() => {
     ensureSingleIdentity = vi.fn();
     addEcidQueryToPayload = vi.fn();
@@ -43,7 +43,7 @@ describe("Identity::createComponent", () => {
     getIdentityDeferred = defer();
     awaitConsentDeferred = defer();
     withConsentDeferred = defer();
-    getEcidFromCookie = vi.fn();
+    decodeKndctrCookie = vi.fn();
     consent = {
       awaitConsent: vi.fn().mockReturnValue(awaitConsentDeferred.promise),
       withConsent: vi.fn().mockReturnValue(withConsentDeferred.promise),
@@ -66,7 +66,7 @@ describe("Identity::createComponent", () => {
       appendIdentityToUrl,
       logger,
       getIdentityOptionsValidator,
-      getEcidFromCookie,
+      decodeKndctrCookie,
     });
     response = {
       getEdge: vi.fn(),

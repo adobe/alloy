@@ -124,7 +124,7 @@ const createIdentity = ({
     thirdPartyCookiesEnabled,
     areThirdPartyCookiesSupportedByDefault,
   });
-  const getEcidFromCookie = createGetEcidFromCookie({
+  const decodeKndctrCookie = createGetEcidFromCookie({
     orgId,
     cookieJar: loggingCookieJar,
     logger,
@@ -142,7 +142,7 @@ const createIdentity = ({
     logger,
     config,
     getIdentityOptionsValidator,
-    getEcidFromCookie,
+    decodeKndctrCookie,
   });
 };
 

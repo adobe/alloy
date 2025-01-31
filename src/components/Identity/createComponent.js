@@ -24,7 +24,7 @@ export default ({
   appendIdentityToUrl,
   logger,
   getIdentityOptionsValidator,
-  getEcidFromCookie,
+  decodeKndctrCookie,
 }) => {
   let namespaces;
   let edge = {};
@@ -67,7 +67,7 @@ export default ({
               if (namespaces) {
                 return undefined;
               }
-              const ecidFromCookie = getEcidFromCookie();
+              const ecidFromCookie = decodeKndctrCookie();
               if (ecidFromCookie) {
                 if (!namespaces) {
                   namespaces = {};
@@ -97,7 +97,7 @@ export default ({
               if (namespaces) {
                 return undefined;
               }
-              const ecidFromCookie = getEcidFromCookie();
+              const ecidFromCookie = decodeKndctrCookie();
               if (ecidFromCookie) {
                 if (!namespaces) {
                   namespaces = {};
@@ -120,9 +120,6 @@ export default ({
               return options;
             });
         },
-      },
-      getEcidFromCookie: {
-        run: getEcidFromCookie,
       },
     },
   };
