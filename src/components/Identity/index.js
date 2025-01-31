@@ -37,7 +37,7 @@ import createIdentityRequest from "./getIdentity/createIdentityRequest.js";
 import createIdentityRequestPayload from "./getIdentity/createIdentityRequestPayload.js";
 import injectAppendIdentityToUrl from "./appendIdentityToUrl/injectAppendIdentityToUrl.js";
 import createGetIdentityOptionsValidator from "./getIdentity/createGetIdentityOptionsValidator.js";
-import createGetEcidFromCookie from "./createGetEcidFromCookie.js";
+import createGetEcidFromCookie from "./createDecodeKndctrCookie.js";
 
 const createIdentity = ({
   config,

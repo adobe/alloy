@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import { describe, expect, it, vi } from "vitest";
 import createGetEcidFromCookie, {
   decodeVarint,
-} from "../../../../../src/components/Identity/createGetEcidFromCookie.js";
+} from "../../../../../src/components/Identity/createDecodeKndctrCookie.js";
 
 describe("Identity", () => {
   describe("createGetEcidFromCookie", () => {
