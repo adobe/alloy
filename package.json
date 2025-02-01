@@ -85,6 +85,8 @@
     "parse-uri": "^1.0.9",
     "rollup": "^4.32.0",
     "rollup-plugin-license": "^3.5.3",
+    "testcafe-browser-provider-saucelabs": "^3.0.0",
+    "testcafe-reporter-saucelabs": "^3.6.0",
     "uuid": "^11.0.5"
   },
   "devDependencies": {
