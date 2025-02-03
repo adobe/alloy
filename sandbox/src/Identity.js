@@ -83,9 +83,9 @@ const appendIdentityToUrl = (event) => {
 };
 
 const removeUrlParameter = (name) => {
-  const escapedName = name.replace(/[[]/, "\\[").replace(/[\]]/, "\\]");
-  const regex = new RegExp(`[\\?&]${escapedName}=([^&#]*)`);
-  return document.location.search.replace(regex, "").replace(/^&/, "?");
+  const searchParams = new URLSearchParams(document.location.search);
+  searchParams.delete(name);
+  return searchParams.toString() ? `?${searchParams.toString()}` : "";
 };
 const searchWithoutAdobeMc = removeUrlParameter("adobe_mc");
 
