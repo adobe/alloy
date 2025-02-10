@@ -142,7 +142,7 @@ const WIRE_TYPES = Object.freeze({
  * The decoding of the protobuf is hand-crafted in order to save on size
  * compared to the full protobuf.js library.
  * @param {Uint8Array} buffer
- * @returns {string|null}
+ * @returns {string}
  */
 const decodeKndctrProtobuf = (buffer) => {
   let offset = 0;
@@ -175,6 +175,7 @@ const decodeKndctrProtobuf = (buffer) => {
           buffer.slice(offset, offset + fieldValueLength.value),
         );
         offset += fieldValueLength.value;
+        return ecid;
       }
     } else {
       // If we don't care about the field, we skip it.
@@ -212,7 +213,8 @@ const decodeKndctrProtobuf = (buffer) => {
     }
   }
 
-  return ecid;
+  // No ECID was found. Maybe the cookie is malformed, maybe the format was changed.
+  throw new Error("No ECID found in cookie.");
 };
 
 /**
