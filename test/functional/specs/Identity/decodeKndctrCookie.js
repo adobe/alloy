@@ -48,3 +48,34 @@ test("Extracts information from kndctr cookie", async () => {
   await t.expect(cookieEcid).eql(networkEcid);
   await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(0);
 });
+
+test("Gracefully falls back to a network request if the cookie is not base64 encoded", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  // Establish the cookie
+  const {
+    identity: { ECID: networkEcid },
+  } = await alloy.getIdentity();
+  await t.expect(networkEcid).ok();
+  await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
+  // Change the cookie value to be gibberish
+  const orgId = config.orgId;
+  const cookieName = `kndctr_${orgId.replace("@", "_")}_identity`;
+  const cookieValue = "gibberish";
+  /** @type { { name: string, value: string, domain: string }[] } */
+  const [currentCookie] = await t.getCookies(cookieName);
+  await t.expect(currentCookie).ok();
+  await t.setCookies({ ...currentCookie, value: cookieValue });
+
+  // Reload the page
+  networkLogger.clearLogs();
+  await reloadPage();
+  await alloy.configure(config);
+
+  // Request the identity and ensure a network request was made
+  const {
+    identity: { ECID: cookieEcid },
+  } = await alloy.getIdentity();
+  await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
+  await t.expect(cookieEcid).notEql(networkEcid);
+});
