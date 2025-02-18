@@ -19,7 +19,9 @@ export default (downloadLinkQualifier, linkUrl, clickedObj) => {
       result = true;
     } else if (downloadLinkQualifier) {
       const re = new RegExp(downloadLinkQualifier);
-      const trimmedLinkUrl = trimQueryFromUrl(linkUrl).toLowerCase();
+      const trimmedLinkUrl = trimQueryFromUrl(linkUrl)
+        .toLowerCase()
+        .slice(0, 2000); // protect against regex denial of service attacks
       result = re.test(trimmedLinkUrl);
     }
   }
