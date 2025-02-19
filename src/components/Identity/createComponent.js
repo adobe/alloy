@@ -24,6 +24,7 @@ export default ({
   appendIdentityToUrl,
   logger,
   getIdentityOptionsValidator,
+  decodeKndctrCookie,
 }) => {
   let namespaces;
   let edge = {};
@@ -63,7 +64,18 @@ export default ({
           return consent
             .awaitConsent()
             .then(() => {
-              return namespaces ? undefined : getIdentity(options);
+              if (namespaces) {
+                return undefined;
+              }
+              const ecidFromCookie = decodeKndctrCookie();
+              if (ecidFromCookie) {
+                if (!namespaces) {
+                  namespaces = {};
+                }
+                namespaces[ecidNamespace] = ecidFromCookie;
+                return undefined;
+              }
+              return getIdentity(options);
             })
             .then(() => {
               return {
@@ -82,7 +94,18 @@ export default ({
           return consent
             .withConsent()
             .then(() => {
-              return namespaces ? undefined : getIdentity(options);
+              if (namespaces) {
+                return undefined;
+              }
+              const ecidFromCookie = decodeKndctrCookie();
+              if (ecidFromCookie) {
+                if (!namespaces) {
+                  namespaces = {};
+                }
+                namespaces[ecidNamespace] = ecidFromCookie;
+                return undefined;
+              }
+              return getIdentity(options);
             })
             .then(() => {
               return {
