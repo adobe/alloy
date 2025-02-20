@@ -52,7 +52,6 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
     "createEventMergeId",
     "createMediaSession",
     "evaluateRulesets",
-    "getEcidFromCookie",
     "getIdentity",
     "getLibraryInfo",
     "getMediaAnalyticsTracker",
