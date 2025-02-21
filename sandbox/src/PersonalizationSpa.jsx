@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Switch, Route, useRouteMatch, Link } from "react-router-dom";
-import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy.jsx";
+import useSendPageViewEvent from "./useSendPageViewEvent.js";
 
 const usePropositions = ({ viewName }) => {
   const [propositions, setPropositions] = useState(undefined);

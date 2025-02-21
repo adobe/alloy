@@ -1,6 +1,6 @@
 import React from "react";
-import UnsafeContentSecurityPolicy from "./components/UnsafeContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import UnsafeContentSecurityPolicy from "./components/UnsafeContentSecurityPolicy.jsx";
+import useSendPageViewEvent from "./useSendPageViewEvent.js";
 
 const loadLaunch = () => {
   const script = document.createElement("script");

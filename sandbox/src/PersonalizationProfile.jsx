@@ -1,6 +1,6 @@
 import React from "react";
-import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy.jsx";
+import useSendPageViewEvent from "./useSendPageViewEvent.js";
 
 export default function Personalization() {
   useSendPageViewEvent({
