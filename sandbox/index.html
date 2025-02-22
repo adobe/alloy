@@ -49,12 +49,13 @@
     <script src="/onBeforeEventSentHelper.js"></script>
 
     <!-- prettier-ignore -->
-    <script nonce="%REACT_APP_NONCE%">
+    <script>
     !function (e, a, n, t) {
       var i = e.head; if (i) {
         if (a) return;
         var o = e.createElement("style");
-        o.setAttribute("nonce", "%REACT_APP_NONCE%");
+        const nonce = document.querySelector('meta[property="nonce"]')?.getAttribute("nonce") || document.querySelector("script[nonce]")?.getAttribute("nonce") || "";
+        o.setAttribute("nonce", nonce);
         o.id = "alloy-prehiding", o.innerText = n, i.appendChild(o),
           setTimeout(function () { o.parentNode && o.parentNode.removeChild(o) }, t)
       }
@@ -63,7 +64,7 @@
   </script>
 
     <!-- prettier-ignore -->
-    <script nonce="%REACT_APP_NONCE%">
+    <script>
     !function (n, o) {
       o.forEach(function (o) {
         n[o] || ((n.__alloyNS = n.__alloyNS ||
@@ -76,7 +77,7 @@
       (window, ["alloy", "organizationTwo", "cjmProd", 'iamAlloy']);
   </script>
 
-    <script nonce="%REACT_APP_NONCE%">
+    <script>
       function getUrlParameter(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
@@ -94,7 +95,13 @@
           tag.addEventListener("load", function () {
             resolve();
           });
-          tag.nonce = "%REACT_APP_NONCE%";
+          const nonce =
+            document
+              .querySelector('meta[property="nonce"]')
+              ?.getAttribute("nonce") ||
+            document.querySelector("script[nonce]")?.getAttribute("nonce") ||
+            "";
+          tag.setAttribute("nonce", nonce);
           tag.src = src;
           document.head.appendChild(tag);
         });
@@ -115,7 +122,7 @@
       }
     </script>
 
-    <script nonce="%REACT_APP_NONCE%">
+    <script>
       alloy("configure", {
         defaultConsent: getUrlParameter("defaultConsent") || "in",
         edgeDomain:

@@ -14,6 +14,28 @@ import React from "react";
 import { Helmet } from "react-helmet";
 
 export default function ContentSecurityPolicy() {
+  const [nonce, setNonce] = React.useState("");
+  React.useEffect(() => {
+    const getNonce = () => {
+      const nonce =
+        document
+          .querySelector('meta[property="nonce"]')
+          ?.getAttribute("nonce") ||
+        document.querySelector("script[nonce]")?.getAttribute("nonce") ||
+        "";
+      return nonce;
+    };
+    setNonce(getNonce());
+    const observer = new MutationObserver(() => {
+      setNonce(getNonce());
+    });
+    observer.observe(document.head, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+    });
+    return () => observer.disconnect();
+  }, []);
   return (
     <Helmet>
       <meta
@@ -21,7 +43,7 @@ export default function ContentSecurityPolicy() {
         // cdn.tt.omtrdc.net is necessary for Target VEC to function properly.
         // *.sc.omtrdc.net is necessary for Analytics Data Insertion API to function properly
         content={`default-src 'self' blob:;
-              script-src 'self' 'nonce-${import.meta.env.REACT_APP_NONCE}' cdn.jsdelivr.net assets.adobedtm.com cdn.tt.omtrdc.net;
+              script-src 'self' 'nonce-${nonce}' cdn.jsdelivr.net assets.adobedtm.com cdn.tt.omtrdc.net;
               style-src 'self' 'unsafe-inline';
               img-src * data:;
               connect-src 'self' *.alloyio.com *.adobedc.net *.demdex.net *.sc.omtrdc.net`}

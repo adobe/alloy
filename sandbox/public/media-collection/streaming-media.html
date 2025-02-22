@@ -13,25 +13,26 @@
     <title>Mock website hosting Alloy</title>
 
     <!-- prettier-ignore -->
-    <script nonce="%REACT_APP_NONCE%">
+    <script>
       !function(e,a,n,t){var i=e.head;if(i){
         if (a) return;
         var o=e.createElement("style");
-        o.setAttribute("nonce", "%REACT_APP_NONCE%");
+        const nonce=e.querySelector('meta[property="nonce"]')?.getAttribute("nonce") || e.querySelector("script[nonce]")?.getAttribute("nonce") || "";
+        o.setAttribute("nonce", nonce);
         o.id="alloy-prehiding",o.innerText=n,i.appendChild(o),
           setTimeout(function(){o.parentNode&&o.parentNode.removeChild(o)},t)}}
       (document, document.location.href.indexOf("mboxEdit") !== -1, ".personalization-container { opacity: 0 !important }", 3000);
     </script>
 
     <!-- prettier-ignore -->
-    <script nonce="%REACT_APP_NONCE%">
+    <script>
       !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
         []).push(o),n[o]=function(){var u=arguments;return new Promise(
         function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
       (window,["alloy"]);
     </script>
 
-    <script nonce="%REACT_APP_NONCE%">
+    <script>
       function getUrlParameter(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
@@ -49,7 +50,13 @@
           tag.addEventListener("load", function () {
             resolve();
           });
-          tag.nonce = "%REACT_APP_NONCE%";
+          const nonce =
+            document
+              .querySelector('meta[property="nonce"]')
+              ?.getAttribute("nonce") ||
+            document.querySelector("script[nonce]")?.getAttribute("nonce") ||
+            "";
+          tag.setAttribute("nonce", nonce);
           tag.src = src;
           document.head.appendChild(tag);
         });
@@ -69,7 +76,7 @@
         includeScript("/alloy.js");
       }
     </script>
-    <script nonce="%REACT_APP_NONCE%">
+    <script>
       alloy("configure", {
         streamingMedia: {
           // adobeStreamingMedia
