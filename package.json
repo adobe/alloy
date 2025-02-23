@@ -81,7 +81,6 @@
     "commander": "^13.1.0",
     "css.escape": "^1.5.1",
     "js-cookie": "3.0.5",
-    "parse-uri": "^1.0.9",
     "rollup": "^4.34.8",
     "rollup-plugin-license": "^3.6.0",
     "uuid": "^11.1.0"
