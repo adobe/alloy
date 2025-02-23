@@ -114,7 +114,6 @@
     "prettier": "^3.5.1",
     "read-cache": "^1.0.0",
     "recursive-readdir": "^2.2.3",
-    "request": "^2.88.2",
     "rimraf": "^6.0.1",
     "rollup-plugin-glob-import": "^0.5.0",
     "rollup-plugin-istanbul": "^5.0.0",
