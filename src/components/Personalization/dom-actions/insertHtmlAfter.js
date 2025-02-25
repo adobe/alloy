@@ -20,7 +20,7 @@ import {
   executeRemoteScripts,
 } from "./scripts.js";
 
-export default (container, html, decorateProposition) => {
+export default (container, html, decorateProposition, markRendered) => {
   const fragment = createFragment(html);
   addNonceToInlineStyleElements(fragment);
   const elements = getChildNodes(fragment);
@@ -36,7 +36,7 @@ export default (container, html, decorateProposition) => {
     insertAfter(insertionPoint, element);
     insertionPoint = element;
   });
-
+  markRendered(container);
   executeInlineScripts(container, scripts);
 
   return executeRemoteScripts(scriptsUrls);

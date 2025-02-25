@@ -21,7 +21,7 @@ import {
   getRemoteScriptsUrls,
 } from "./scripts.js";
 
-export default (container, html, decorateProposition) => {
+export default (container, html, decorateProposition, markAsRendered) => {
   const fragment = createFragment(html);
   addNonceToInlineStyleElements(fragment);
   const elements = getChildNodes(fragment);
@@ -35,7 +35,7 @@ export default (container, html, decorateProposition) => {
   });
 
   decorateProposition(container);
-
+  markAsRendered(container);
   executeInlineScripts(container, scripts);
 
   return executeRemoteScripts(scriptsUrls);
