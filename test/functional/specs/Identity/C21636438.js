@@ -24,8 +24,14 @@ const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 
 createFixture({
-  title: "Decode the kndctr_ORGID_Identity cookie",
+  title: "C21636438: Decode the kndctr_ORGID_Identity cookie",
   requestHooks: [networkLogger.acquireEndpointLogs],
+});
+
+test.meta({
+  ID: "C21636438",
+  SEVERITY: "P0",
+  TEST_RUN: "Regression",
 });
 
 test("Extracts information from kndctr cookie", async () => {

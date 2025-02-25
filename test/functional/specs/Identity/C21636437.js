@@ -24,8 +24,14 @@ const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, thirdPartyCookiesEnabled);
 
 createFixture({
-  title: "Demdex Fallback Behavior",
+  title: "C21636437: Demdex Fallback Behavior",
   requestHooks: [networkLogger.edgeEndpointLogs, demdexBlockerMock],
+});
+
+test.meta({
+  ID: "C21636437",
+  SEVERITY: "P0",
+  TEST_RUN: "Regression",
 });
 
 test("Continues collecting data when demdex is blocked", async () => {
