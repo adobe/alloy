@@ -25,8 +25,13 @@ const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 
 createFixture({
-  title: "Get Identity after Collect Call",
+  title: "C21636436: Get Identity after Collect Call",
   requestHooks: [networkLogger.acquireEndpointLogs],
+});
+test.meta({
+  ID: "C21636436",
+  SEVERITY: "P0",
+  TEST_RUN: "Regression",
 });
 
 test("Preserves ECID after sendEvent call with collect beacon", async () => {
