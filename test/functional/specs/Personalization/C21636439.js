@@ -48,11 +48,17 @@ const firstInteractCallReturnsInAppMessagesMock = () => {
 
 createFixture({
   title:
-    "Conflict resoulution: show one in app message propositions sorted by rank",
+    "C21636439: Conflict resoulution: show one in app message propositions sorted by rank",
   requestHooks: [
     firstInteractCallReturnsInAppMessagesMock(),
     networkLogger.edgeEndpointLogs,
   ],
+});
+
+test.meta({
+  ID: "C21636439",
+  SEVERITY: "P0",
+  TEST_RUN: "Regression",
 });
 
 test("propositions are sorted ascending by rank", async () => {

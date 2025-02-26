@@ -48,7 +48,10 @@ export default ({
           // https://jira.corp.adobe.com/browse/EXEG-1234
           setLegacyEcid(newNamespaces[ecidNamespace]);
         }
-        namespaces = newNamespaces;
+
+        if (newNamespaces && Object.keys(newNamespaces).length > 0) {
+          namespaces = { ...namespaces, ...newNamespaces };
+        }
         // For sendBeacon requests, getEdge() will return {}, so we are using assign here
         // so that sendBeacon requests don't override the edge info from before.
         edge = { ...edge, ...response.getEdge() };
