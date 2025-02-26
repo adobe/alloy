@@ -31,15 +31,15 @@ export default [
   ...compat.extends("airbnb-base", "plugin:testcafe/recommended"),
   ...compat.plugins("ban", "testcafe"),
   {
-    files: ["**/*.{js,cjs}"],
+    files: ["**/*.{js,cjs,jsx}"],
     settings: {
       // This will do the trick
       "import/parsers": {
-        "@babel/eslint-parser": [".js", ".cjs", ".mjs"],
+        "@babel/eslint-parser": [".js", ".cjs", ".mjs", ".jsx"],
       },
       "import/resolver": {
         node: {
-          extensions: [".js", ".cjs", ".mjs"],
+          extensions: [".js", ".cjs", ".mjs", ".jsx"],
         },
       },
     },

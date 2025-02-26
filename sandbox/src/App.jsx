@@ -13,26 +13,26 @@ governing permissions and limitations under the License.
 import React from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
-import Home from "./Home";
-import Consent from "./Consent";
-import Personalization from "./Personalization";
-import PersonalizationSpa from "./PersonalizationSpa";
-import PersonalizationAjo from "./PersonalizationAjo";
-import PersonalizationProfile from "./PersonalizationProfile";
-import Links from "./Links";
-import EventMerge from "./EventMerge";
-import LargePayload from "./LargePayload";
-import OrgTwo from "./OrgTwo";
-import DualTag from "./DualTag";
-import RedirectOffers from "./RedirectOffers";
-import RedirectedNewPage from "./RedirectedNewPage";
-import PersonalizationAnalyticsClientSide from "./PersonalizationAnalyticsClientSide";
-import PersonalizationFormBased from "./PersonalizationFormBased";
-import Identity from "./Identity";
-import AlloyVersion from "./components/AlloyVersion";
+import Home from "./Home.jsx";
+import Consent from "./Consent.jsx";
+import Personalization from "./Personalization.jsx";
+import PersonalizationSpa from "./PersonalizationSpa.jsx";
+import PersonalizationAjo from "./PersonalizationAjo.jsx";
+import PersonalizationProfile from "./PersonalizationProfile.jsx";
+import Links from "./Links.jsx";
+import EventMerge from "./EventMerge.jsx";
+import LargePayload from "./LargePayload.jsx";
+import OrgTwo from "./OrgTwo.jsx";
+import DualTag from "./DualTag.jsx";
+import RedirectOffers from "./RedirectOffers.jsx";
+import RedirectedNewPage from "./RedirectedNewPage.jsx";
+import PersonalizationAnalyticsClientSide from "./PersonalizationAnalyticsClientSide.jsx";
+import PersonalizationFormBased from "./PersonalizationFormBased.jsx";
+import Identity from "./Identity.jsx";
+import AlloyVersion from "./components/AlloyVersion.jsx";
 import ConfigOverrides from "./ConfigOverrides.jsx";
-import InAppMessages from "./components/InAppMessagesDemo/InAppMessages";
-import ContentCards from "./components/ContentCardsDemo/ContentCards";
+import InAppMessages from "./components/InAppMessagesDemo/InAppMessages.jsx";
+import ContentCards from "./components/ContentCardsDemo/ContentCards.jsx";
 
 const BasicExample = () => {
   return (

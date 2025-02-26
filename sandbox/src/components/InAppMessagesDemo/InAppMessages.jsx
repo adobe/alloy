@@ -1,8 +1,8 @@
 /* eslint-disable no-bitwise, no-console */
 import React, { useEffect, useState } from "react";
-import ContentSecurityPolicy from "../ContentSecurityPolicy";
+import ContentSecurityPolicy from "../ContentSecurityPolicy.jsx";
 import "./InAppMessagesStyle.css";
-import { deleteAllCookies, getAlloyTestConfigs } from "../utils";
+import { deleteAllCookies, getAlloyTestConfigs } from "../utils.js";
 
 const configKey =
   localStorage.getItem("iam-configKey") || "aemonacpprodcampaign";

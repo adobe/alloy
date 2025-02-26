@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
-import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy.jsx";
 import {
   getFormBasedOffer,
   personalizationEvent,
-} from "./personalizationAnalyticsClientSideHelper";
+} from "./personalizationAnalyticsClientSideHelper.js";
 
 const Products = () => {
   personalizationEvent({ renderDecisions: true });

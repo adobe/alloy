@@ -1,8 +1,7 @@
-/* eslint-disable */
 import React, { useEffect, useState } from "react";
-import ContentSecurityPolicy from "../ContentSecurityPolicy";
+import ContentSecurityPolicy from "../ContentSecurityPolicy.jsx";
 import "./ContentCards.css";
-import { deleteAllCookies, getAlloyTestConfigs } from "../utils";
+import { deleteAllCookies, getAlloyTestConfigs } from "../utils.js";
 
 const configKey = localStorage.getItem("iam-configKey") || "stage";
 let responseSource = localStorage.getItem("iam-responseSource") || "mock";
