@@ -19,7 +19,7 @@ jobs:
       - uses: adobe/project-card-release-automation/validate-version@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          version: ${{ github.event.inputs.version | escape }}
+          version: ${{ github.event.inputs.version }}
   release:
     name: "Release"
     runs-on: ubuntu-latest
@@ -46,7 +46,7 @@ jobs:
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
-      - run: ./scripts/deploy.js ${{ github.event.inputs.version | escape }} latest
+      - run: ./scripts/deploy.js ${{ github.event.inputs.version }} latest
         env:
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
       - uses: actions/upload-artifact@v4
@@ -79,7 +79,7 @@ jobs:
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
-      - run: ./scripts/deploy.js ${{ github.event.inputs.version | escape }} next
+      - run: ./scripts/deploy.js ${{ github.event.inputs.version }} next
         env:
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
       - uses: actions/upload-artifact@v4
