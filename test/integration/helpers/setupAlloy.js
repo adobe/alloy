@@ -14,17 +14,22 @@ import { server } from "@vitest/browser/context";
 const { readFile } = server.commands;
 
 export default async (config) => {
-  const alloyBaseCode = await readFile("../../../../distTest/baseCode.min.js");
-  const alloySrc = await readFile("../../../../dist/alloy.js");
+  const alloyBaseCode = await readFile(
+    `${server.config.root}/distTest/baseCode.min.js`,
+  );
 
   document.body.innerHTML = "Alloy Test Page";
 
   const alloyBaseCodeScriptTag = document.createElement("script");
   alloyBaseCodeScriptTag.textContent = alloyBaseCode;
+
   document.body.appendChild(alloyBaseCodeScriptTag);
 
   const alloyScriptTag = document.createElement("script");
-  alloyScriptTag.textContent = alloySrc;
+  alloyScriptTag.type = "text/javascript";
+  alloyScriptTag.setAttribute("async", true);
+  alloyScriptTag.src = "/dist/alloy.js";
+
   document.body.appendChild(alloyScriptTag);
 
   if (config) {
