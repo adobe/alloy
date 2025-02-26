@@ -12,15 +12,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import fs from "fs";
-import path from "path";
 import stagedGitFiles from "staged-git-files";
 import Handlebars from "handlebars";
-import { fileURLToPath } from "url";
+import { getDirname, getProjectRoot, safePathJoin } from "./helpers/path.js";
 
-const filename = fileURLToPath(import.meta.url);
-const dirname = path.dirname(filename);
+const dirname = getDirname(import.meta.url);
 
-const PROJECT_ROOT = path.resolve(dirname, "../");
+const PROJECT_ROOT = getProjectRoot();
 const SOURCE_TEMPLATE = "source-header.handlebars";
 
 const GIT_DELETED = "Deleted";
@@ -40,7 +38,7 @@ const walk = async (dir, matchesFilter) => {
     files
       .filter((file) => matchesFilter(file, dir))
       .map(async (file) => {
-        const filePath = path.join(dir, file);
+        const filePath = safePathJoin(dir, file);
         const stats = fs.statSync(filePath);
         if (stats.isDirectory()) {
           return walk(filePath, matchesFilter);
@@ -62,13 +60,13 @@ const getStagedGitFiles = async () => {
         SOURCE_FILE_EXTENSIONS.indexOf(parts[1]) > -1
       );
     })
-    .map((detail) => path.join(PROJECT_ROOT, detail.filename));
+    .map((detail) => safePathJoin(PROJECT_ROOT, detail.filename));
 };
 
 const getAllSourceFiles = async () => {
   const IGNORED = ["node_modules", ".git", "dist"];
   return walk(PROJECT_ROOT, (file, dir) => {
-    const filePath = path.join(dir, file);
+    const filePath = safePathJoin(dir, file);
     const stats = fs.statSync(filePath);
 
     for (let i = 0; i < IGNORED.length; i += 1) {
@@ -97,7 +95,7 @@ const run = async () => {
   const stagedOnly = typeof process.env.STAGED_ONLY !== "undefined";
 
   const template = fs.readFileSync(
-    path.resolve(dirname, SOURCE_TEMPLATE),
+    safePathJoin(dirname, SOURCE_TEMPLATE),
     "utf-8",
   );
 
@@ -114,9 +112,9 @@ const run = async () => {
   sourceFiles
     .filter((file) => IGNORE_PATTERNS.every((pattern) => !file.match(pattern)))
     .forEach((file) => {
-      const contents = fs.readFileSync(path.resolve(file), "utf-8");
+      const contents = fs.readFileSync(safePathJoin(file), "utf-8");
       if (templateText.slice(0, 2) !== contents.slice(0, 2)) {
-        fs.writeFileSync(path.resolve(file), `${templateText}${contents}`);
+        fs.writeFileSync(safePathJoin(file), `${templateText}${contents}`);
       }
     });
 };

@@ -10,6 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+/**
+ * Trims the query from the URL.
+ * @param {string} url
+ * @returns {string}
+ */
 export default (url) => {
   const questionMarkIndex = url.indexOf("?");
   const hashIndex = url.indexOf("#");
