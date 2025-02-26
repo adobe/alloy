@@ -5,13 +5,9 @@ import ContentSecurityPolicy from "./components/ContentSecurityPolicy.jsx";
 
 export default function RedirectedNewPage() {
   useEffect(() => {
-    window
-      .alloy("sendEvent", {
-        renderDecisions: true,
-      })
-      .then(({ decisions = [] }) => {
-        console.log("personalized decisions on the redirected view", decisions);
-      });
+    window.alloy("sendEvent", {
+      renderDecisions: true,
+    });
   }, []);
   return (
     <div className="personalization-container">

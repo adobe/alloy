@@ -12,12 +12,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import path from "path";
 import fs from "fs";
+import path from "path";
 import recursive from "recursive-readdir";
 import pkg from "minimatch";
 import { fileURLToPath } from "url";
 import { createRequire } from "module";
+import { safePathJoin } from "./helpers/path.js";
 
 const require = createRequire(import.meta.url);
 
@@ -28,9 +29,9 @@ const { Minimatch } = pkg;
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
-const baseDir = path.join(dirname, "../");
-const srcDir = path.join(dirname, "../src");
-const testDir = path.join(dirname, "../test/unit/specs");
+const baseDir = safePathJoin(dirname, "../");
+const srcDir = safePathJoin(dirname, "../src");
+const testDir = safePathJoin(dirname, "../test/unit/specs");
 const specExtension = ".spec.js";
 
 const ignoreMinimatches = ignorePatterns.map((ignorePattern) => {
@@ -59,7 +60,7 @@ recursive(srcDir, [shouldFileBeIgnored]).then((srcFiles) => {
           path.extname(pathRelativeToSrcDir),
         )}${specExtension}`,
       );
-      return path.join(testDir, pathRelativeToTestDir);
+      return safePathJoin(testDir, pathRelativeToTestDir);
     })
     .filter((testFile) => {
       return !fs.existsSync(testFile);
