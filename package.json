@@ -12,7 +12,8 @@
     "babel.config.cjs",
     "rollup.config.js",
     "scripts/helpers/entryPointGeneratorBabelPlugin.js",
-    "scripts/helpers/versionBabelPlugin.js"
+    "scripts/helpers/versionBabelPlugin.js",
+    "scripts/helpers/path.js"
   ],
   "bin": {
     "alloyBuilder": "scripts/alloyBuilder.js"
