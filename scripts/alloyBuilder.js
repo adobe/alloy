@@ -71,7 +71,7 @@ const getComponents = (() => {
 })();
 
 const getOutputFilePath = (argv) => {
-  const outputPath = safePathJoin(
+  const outputPath = path.join(
     argv.outputDir,
     `alloy${argv.minify ? ".min" : ""}.js`,
   );
@@ -161,7 +161,7 @@ const getMakeBuildCommand = () => {
         .default(getProjectRoot())
         .argParser((value) => {
           if (!path.isAbsolute(value)) {
-            value = safePathJoin(getProjectRoot(), value);
+            value = path.join(process.cwd(), value);
           }
 
           try {
