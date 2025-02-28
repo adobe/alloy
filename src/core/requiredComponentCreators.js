@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+export { default as context } from "../components/Context/index.js";
 export { default as dataCollector } from "../components/DataCollector/index.js";
 export { default as identity } from "../components/Identity/index.js";
 export { default as libraryInfo } from "../components/LibraryInfo/index.js";
