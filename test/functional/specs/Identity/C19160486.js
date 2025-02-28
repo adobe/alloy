@@ -22,6 +22,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import createNetworkLogger from "../../helpers/networkLogger/index.js";
 import areThirdPartyCookiesSupported from "../../helpers/areThirdPartyCookiesSupported.js";
 import { SECONDARY_TEST_PAGE } from "../../helpers/constants/url.js";
+import reloadPage from "../../helpers/reloadPage.js";
 
 const thirdPartyCookiesEnabledConfig = compose(
   orgMainConfigMain,
@@ -150,4 +151,26 @@ test("C19160486: Requesting CORE identity and ECID can be done separately", asyn
   } else {
     await t.expect(core).eql(null);
   }
+});
+
+test("The CORE identity is returned correctly, even when the ECID is read from a cookie", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(thirdPartyCookiesEnabledConfig);
+
+  const {
+    identity: { ECID: networkEcid, CORE: networkCore },
+  } = await alloy.getIdentity({ namespaces: ["ECID", "CORE"] });
+  await t.expect(networkEcid).ok();
+  await t.expect(networkCore).ok();
+
+  networkLogger.clearLogs();
+  await reloadPage();
+
+  await alloy.configure(thirdPartyCookiesEnabledConfig);
+  const {
+    identity: { ECID: cookieEcid, CORE: newCore },
+  } = await alloy.getIdentity({ namespaces: ["ECID", "CORE"] });
+
+  await t.expect(cookieEcid).eql(networkEcid);
+  await t.expect(newCore).ok();
 });

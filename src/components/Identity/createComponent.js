@@ -71,12 +71,19 @@ export default ({
                 return undefined;
               }
               const ecidFromCookie = decodeKndctrCookie();
-              if (ecidFromCookie) {
+              if (
+                ecidFromCookie &&
+                requestedNamespaces.includes(ecidNamespace)
+              ) {
                 if (!namespaces) {
                   namespaces = {};
                 }
                 namespaces[ecidNamespace] = ecidFromCookie;
-                return undefined;
+                if (requestedNamespaces.length === 1) {
+                  // If only ECID is requested, we don't need to make an acquire request
+                  // and can return immediately
+                  return undefined;
+                }
               }
               return getIdentity(options);
             })
