@@ -43,45 +43,33 @@ const insertShadowDomLink = ClientFunction(
   },
 );
 
-test("Support click tracking for a link in an open shadow DOM", async () => {
+const testShadowRoot = async ({ testCafe, mode }) => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
 
-  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);
+  await testCafe.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);
 
   const linkId = "shadow-dom-link-test";
-  const linkText = "open shadow dom link";
+  const linkText = `${mode} shadow dom link`;
   await insertShadowDomLink("open", linkId, linkText);
 
-  await t.click(Selector("body").shadowRoot().find(`#${linkId}`));
+  await testCafe.click(Selector("body").shadowRoot().find(`#${linkId}`));
 
-  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
+  await testCafe.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
     networkLogger.edgeEndpointLogs.requests[0].request.body,
   );
 
-  await t.expect(request.events[0].xdm.web.webInteraction.name).eql(linkText);
+  await testCafe
+    .expect(request.events[0].xdm.web.webInteraction.name)
+    .eql(linkText);
+};
+
+test("Support click tracking for a link in an open shadow DOM", async () => {
+  await testShadowRoot({ testCafe: t, mode: "open" });
 });
 
-// Skipped until we have a way to track clicks on a link in a closed shadow DOM
-test.skip("Support click tracking for a link in an closed shadow DOM", async () => {
-  const alloy = createAlloyProxy();
-  await alloy.configure(config);
-
-  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);
-
-  const linkId = "shadow-dom-link-test";
-  const linkText = "closed shadow dom link";
-  await insertShadowDomLink("closed", linkId, linkText);
-
-  await t.click(Selector("body").shadowRoot().find(`#${linkId}`));
-
-  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
-
-  const request = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body,
-  );
-
-  await t.expect(request.events[0].xdm.web.webInteraction.name).eql(linkText);
+test("Support click tracking for a link in an closed shadow DOM", async () => {
+  await testShadowRoot({ testCafe: t, mode: "closed" });
 });
