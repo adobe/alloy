@@ -31,7 +31,11 @@ const getInteractionDetail = (clickedElement) => {
   let clickLabel;
   let clickToken;
 
-  while (element && element !== documentElement) {
+  while (
+    element &&
+    element !== documentElement &&
+    !(element instanceof ShadowRoot)
+  ) {
     const interactId = getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE);
 
     if (interactId) {

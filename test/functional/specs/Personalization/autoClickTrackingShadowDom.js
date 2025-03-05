@@ -30,16 +30,17 @@ createFixture({
   requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
-const linkId = "shadow-dom-link-test";
-
 const insertShadowDomLink = ClientFunction(
-  (mode = "open") => {
+  (
+    mode = "open",
+    linkId = "shadow-dom-link-test",
+    innerText = "open shadow dom link",
+  ) => {
     const shadow = document.body.attachShadow({ mode });
     const div = document.createElement("div");
-    div.setHTMLUnsafe(`<a id="${linkId}" href="#">${mode} shadow dom link</a>`);
+    div.setHTMLUnsafe(`<a id="${linkId}" href="#">${innerText}</a>`);
     shadow.appendChild(div);
   },
-  { dependencies: { linkId } },
 );
 
 test("Support click tracking for a link in an open shadow DOM", async () => {
@@ -48,7 +49,9 @@ test("Support click tracking for a link in an open shadow DOM", async () => {
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);
 
-  await insertShadowDomLink("open");
+  const linkId = "shadow-dom-link-test";
+  const linkText = "open shadow dom link";
+  await insertShadowDomLink("open", linkId, linkText);
 
   await t.click(Selector("body").shadowRoot().find(`#${linkId}`));
 
@@ -58,9 +61,7 @@ test("Support click tracking for a link in an open shadow DOM", async () => {
     networkLogger.edgeEndpointLogs.requests[0].request.body,
   );
 
-  await t
-    .expect(request.events[0].xdm.web.webInteraction.name)
-    .eql("shadow-dom-link-test");
+  await t.expect(request.events[0].xdm.web.webInteraction.name).eql(linkText);
 });
 
 // Skipped until we have a way to track clicks on a link in a closed shadow DOM
@@ -70,7 +71,9 @@ test.skip("Support click tracking for a link in an closed shadow DOM", async () 
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);
 
-  await insertShadowDomLink("closed");
+  const linkId = "shadow-dom-link-test";
+  const linkText = "closed shadow dom link";
+  await insertShadowDomLink("closed", linkId, linkText);
 
   await t.click(Selector("body").shadowRoot().find(`#${linkId}`));
 
@@ -80,7 +83,5 @@ test.skip("Support click tracking for a link in an closed shadow DOM", async () 
     networkLogger.edgeEndpointLogs.requests[0].request.body,
   );
 
-  await t
-    .expect(request.events[0].xdm.web.webInteraction.name)
-    .eql("shadow-dom-link-test");
+  await t.expect(request.events[0].xdm.web.webInteraction.name).eql(linkText);
 });

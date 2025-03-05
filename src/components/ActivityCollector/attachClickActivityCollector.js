@@ -19,7 +19,11 @@ const createClickHandler = ({ eventManager, lifecycle, handleError }) => {
       return Promise.resolve();
     }
     // TODO: Consider safeguarding from the same object being clicked multiple times in rapid succession?
-    const clickedElement = clickEvent.target;
+    let clickedElement = clickEvent.target;
+    // if the clicked element is a shadow root, drill down into it to find the actual click element
+    if (clickedElement?.shadowRoot) {
+      clickedElement = clickedElement.shadowRoot.activeElement;
+    }
     const event = eventManager.createEvent();
     // this is to make sure a exit link personalization metric use send beacon
     event.documentMayUnload();
