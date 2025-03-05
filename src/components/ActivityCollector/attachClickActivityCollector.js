@@ -23,7 +23,6 @@ const createClickHandler = ({ eventManager, lifecycle, handleError }) => {
       "composedPath" in clickEvent && clickEvent.composedPath().length > 0
         ? clickEvent.composedPath()[0]
         : clickEvent.target;
-    // if the clicked element is a shadow root, drill down into it to find the actual click element
     const event = eventManager.createEvent();
     // this is to make sure a exit link personalization metric use send beacon
     event.documentMayUnload();
