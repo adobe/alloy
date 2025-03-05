@@ -43,6 +43,11 @@ const insertShadowDomLink = ClientFunction(
   },
 );
 
+/**
+ * @param {Object} params
+ * @param {import('testcafe').TestCafe} params.testCafe
+ * @param {string} params.mode
+ */
 const testShadowRoot = async ({ testCafe, mode }) => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
@@ -52,7 +57,7 @@ const testShadowRoot = async ({ testCafe, mode }) => {
   const linkId = "shadow-dom-link-test";
   const linkText = `${mode} shadow dom link`;
   await insertShadowDomLink("open", linkId, linkText);
-
+  await testCafe.debug();
   await testCafe.click(Selector("body").shadowRoot().find(`#${linkId}`));
 
   await testCafe.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
