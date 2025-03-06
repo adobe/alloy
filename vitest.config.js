@@ -26,6 +26,7 @@ export default defineProject({
       ],
       enabled: true,
       headless: true,
+      screenshotFailures: false,
     },
     coverage: {
       include: ["src/**/*"],
