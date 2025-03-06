@@ -25,7 +25,7 @@ describe("computeConsentHash", () => {
           },
         },
       ]),
-    ).toBe(2905535662);
+    ).toBe("10c9fc7c");
   });
 
   it("computes different hashes for different consent objects", () => {

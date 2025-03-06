@@ -20,6 +20,7 @@ const CONSENT_IN = {
     general: "in",
   },
 };
+
 const CONSENT_OUT = {
   standard: "Adobe",
   version: "1.0",
@@ -27,6 +28,7 @@ const CONSENT_OUT = {
     general: "out",
   },
 };
+
 describe("createConsentHashStore", () => {
   let storage;
   let subject;
@@ -40,28 +42,33 @@ describe("createConsentHashStore", () => {
       storage,
     });
   });
+
   it("clears", () => {
     subject.clear();
     expect(storage.clear).toHaveBeenCalled();
   });
+
   it("is new when storage is empty", () => {
     storage.getItem.mockReturnValue(null);
     const consentHashes = subject.lookup([CONSENT_IN]);
     expect(consentHashes.isNew()).toBe(true);
   });
+
   it("saves the hash", () => {
     const consentHashes = subject.lookup([CONSENT_IN]);
     consentHashes.save();
-    expect(storage.setItem).toHaveBeenCalledWith("Adobe.1.0", "3165644325");
+    expect(storage.setItem).toHaveBeenCalledWith("Adobe.1.0", "e385c3ab");
   });
+
   it("is not new when lookup is the same", () => {
-    storage.getItem.mockReturnValue("3165644325");
+    storage.getItem.mockReturnValue("e385c3ab");
     const consentHashes = subject.lookup([CONSENT_IN]);
     expect(consentHashes.isNew()).toBe(false);
     expect(storage.getItem).toHaveBeenCalledWith("Adobe.1.0");
   });
+
   it("is new when lookup is different", () => {
-    storage.getItem.mockReturnValue("3165644325");
+    storage.getItem.mockReturnValue("e385c3ab");
     const consentHashes = subject.lookup([CONSENT_OUT]);
     expect(consentHashes.isNew()).toBe(true);
     expect(storage.getItem).toHaveBeenCalledWith("Adobe.1.0");

@@ -63,6 +63,7 @@ const testShadowRoot = async ({ testCafe, mode }) => {
   const linkId = "shadow-dom-link-test";
   const linkText = `${mode} shadow dom link`;
   await insertShadowDomLink(mode, linkId, linkText);
+
   await testCafe.click(Selector("body").shadowRoot().find(`#${linkId}`));
 
   await testCafe.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
