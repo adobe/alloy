@@ -1,5 +1,5 @@
 /*
-Copyright 2024 Adobe. All rights reserved.
+Copyright 2025 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -26,8 +26,14 @@ const config = compose(getBaseConfig(), debugEnabled, {
 });
 
 createFixture({
-  title: "Supports click tracking for links in shadow DOMs",
+  title: "C21886916: Supports click tracking for links in shadow DOMs",
   requestHooks: [networkLogger.edgeEndpointLogs],
+});
+
+test.meta({
+  ID: "C21886916",
+  SEVERITY: "P0",
+  TEST_RUN: "Regression",
 });
 
 const insertShadowDomLink = ClientFunction(
@@ -71,10 +77,10 @@ const testShadowRoot = async ({ testCafe, mode }) => {
     .eql(linkText);
 };
 
-test("Support click tracking for a link in an open shadow DOM", async () => {
+test("C21886916: Support click tracking for a link in an open shadow DOM", async () => {
   await testShadowRoot({ testCafe: t, mode: "open" });
 });
 
-test("Support click tracking for a link in an closed shadow DOM", async () => {
+test("C21886916: Support click tracking for a link in an closed shadow DOM", async () => {
   await testShadowRoot({ testCafe: t, mode: "closed" });
 });
