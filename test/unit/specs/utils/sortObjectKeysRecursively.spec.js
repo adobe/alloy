@@ -82,8 +82,8 @@ describe("sortObjectKeysRecursively", () => {
 
   differentHashCases.forEach(({ description, a, b }, index) => {
     it(`computes a different hash for case ${index + 1}: ${description}`, () => {
-      expect(sortObjectKeysRecursively(a)).not.toBe(
-        sortObjectKeysRecursively(b),
+      expect(JSON.stringify(sortObjectKeysRecursively(a))).not.toBe(
+        JSON.stringify(sortObjectKeysRecursively(b)),
       );
     });
   });
