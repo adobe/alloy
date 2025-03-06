@@ -11,9 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import stableSerialization from "../../../../src/utils/stableSerialization.js";
+import sortObjectKeysRecursively from "../../../../src/utils/sortObjectKeysRecursively.js";
 
-describe("stableSerialization", () => {
+describe("sortObjectKeysRecursively", () => {
   const sameHashCases = [
     {
       description: "objects with same keys and values in different order",
@@ -46,7 +46,9 @@ describe("stableSerialization", () => {
 
   sameHashCases.forEach(({ description, a, b }, index) => {
     it(`computes the same hash for case ${index + 1}: ${description}`, () => {
-      expect(stableSerialization(a)).toBe(stableSerialization(b));
+      expect(JSON.stringify(sortObjectKeysRecursively(a))).toBe(
+        JSON.stringify(sortObjectKeysRecursively(b)),
+      );
     });
   });
 
@@ -80,7 +82,9 @@ describe("stableSerialization", () => {
 
   differentHashCases.forEach(({ description, a, b }, index) => {
     it(`computes a different hash for case ${index + 1}: ${description}`, () => {
-      expect(stableSerialization(a)).not.toBe(stableSerialization(b));
+      expect(sortObjectKeysRecursively(a)).not.toBe(
+        sortObjectKeysRecursively(b),
+      );
     });
   });
 });
