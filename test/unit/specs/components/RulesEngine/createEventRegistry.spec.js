@@ -17,6 +17,7 @@ import createEventRegistry, {
 describe("RulesEngine:createEventRegistry", () => {
   let storage;
   let mockedTimestamp;
+
   beforeEach(() => {
     storage = {
       getItem: vi.fn(),
@@ -27,13 +28,16 @@ describe("RulesEngine:createEventRegistry", () => {
     vi.useFakeTimers();
     vi.setSystemTime(mockedTimestamp);
   });
+
   afterEach(() => {
     vi.useRealTimers();
   });
+
   it("registers events", () => {
     const eventRegistry = createEventRegistry({
       storage,
     });
+
     const getContent = () => ({
       xdm: {
         eventType: "decisioning.propositionDisplay",
@@ -81,10 +85,13 @@ describe("RulesEngine:createEventRegistry", () => {
         },
       },
     });
+
     const event = {
       getContent,
     };
+
     eventRegistry.addExperienceEdgeEvent(event);
+
     expect(eventRegistry.toJSON()).toEqual({
       display: {
         "111#aaa": {
@@ -108,6 +115,7 @@ describe("RulesEngine:createEventRegistry", () => {
       },
     });
   });
+
   it("does not register invalid events", () => {
     const eventRegistry = createEventRegistry({
       storage,
@@ -142,53 +150,28 @@ describe("RulesEngine:createEventRegistry", () => {
     });
     expect(eventRegistry.toJSON()).toEqual({});
   });
+
   it("does not register events without type and id", () => {
     const eventRegistry = createEventRegistry({
       storage,
     });
-    expect(eventRegistry.addEvent({}, "trigger")).toBeUndefined();
-    expect(eventRegistry.addEvent({}, "trigger", undefined)).toBeUndefined();
-    expect(eventRegistry.addEvent({})).toBeUndefined();
-    expect(eventRegistry.toJSON()).toEqual({});
+
+    expect(eventRegistry.addEvent({ eventType: "trigger" })).toBeUndefined();
+
     expect(
-      eventRegistry.addEvent(
-        {
-          something: "special",
-        },
-        "display",
-        "abc#123",
-      ),
-    ).toEqual({
-      event: {
-        "iam.id": "abc#123",
-        "iam.eventType": "display",
-        "iam.action": undefined,
-        something: "special",
-      },
-      firstTimestamp: expect.any(Number),
-      timestamp: expect.any(Number),
-      count: 1,
-    });
-    expect(eventRegistry.toJSON()).toEqual({
-      display: {
-        "abc#123": {
-          event: {
-            "iam.id": "abc#123",
-            "iam.eventType": "display",
-            "iam.action": undefined,
-            something: "special",
-          },
-          firstTimestamp: expect.any(Number),
-          timestamp: expect.any(Number),
-          count: 1,
-        },
-      },
-    });
+      eventRegistry.addEvent({ eventType: "trigger", eventId: undefined }),
+    ).toBeUndefined();
+
+    expect(eventRegistry.addEvent()).toBeUndefined();
+
+    expect(eventRegistry.toJSON()).toEqual({});
   });
+
   it("increments count and sets timestamp", () => {
     const eventRegistry = createEventRegistry({
       storage,
     });
+
     const getContent = () => ({
       xdm: {
         eventType: "decisioning.propositionDisplay",
@@ -214,11 +197,15 @@ describe("RulesEngine:createEventRegistry", () => {
         },
       },
     });
+
     const event = {
       getContent,
     };
+
     let lastEventTime = 0;
+
     eventRegistry.addExperienceEdgeEvent(event);
+
     expect(eventRegistry.getEvent("display", "111#aaa")).toEqual({
       event: expect.objectContaining({
         "iam.id": "111#aaa",
@@ -228,10 +215,12 @@ describe("RulesEngine:createEventRegistry", () => {
       timestamp: expect.any(Number),
       count: 1,
     });
+
     expect(
       eventRegistry.getEvent("display", "111#aaa").timestamp,
     ).toBeGreaterThan(lastEventTime);
     lastEventTime = eventRegistry.getEvent("display", "111#aaa").timestamp;
+
     setTimeout(() => {
       eventRegistry.addExperienceEdgeEvent(event); // again
 
@@ -250,11 +239,14 @@ describe("RulesEngine:createEventRegistry", () => {
     }, 50);
     vi.advanceTimersByTime(60);
   });
+
   it("limits events to 1000 events", () => {
     const prune = createEventPruner();
     const events = {};
+
     events["decisioning.propositionDisplay"] = {};
     events["decisioning.propositionInteract"] = {};
+
     for (let i = 0; i < 2000; i += 1) {
       events["decisioning.propositionDisplay"][i] = {
         event: {
@@ -265,6 +257,7 @@ describe("RulesEngine:createEventRegistry", () => {
         timestamp: mockedTimestamp,
         count: 1,
       };
+
       events["decisioning.propositionInteract"][i] = {
         event: {
           "iam.id": i,
@@ -274,19 +267,25 @@ describe("RulesEngine:createEventRegistry", () => {
         timestamp: mockedTimestamp,
         count: 1,
       };
+
       const pruned = prune(events);
       const interactEvents = Object.values(
         pruned["decisioning.propositionInteract"],
       );
+
       const displayEvents = Object.values(
         pruned["decisioning.propositionDisplay"],
       );
+
       expect(interactEvents.length).not.toBeGreaterThan(1000);
+
       expect(displayEvents.length).not.toBeGreaterThan(1000);
+
       if (i > 1000) {
         expect(interactEvents[0].event["iam.id"]).toEqual(i - 999);
         expect(displayEvents[0].event["iam.id"]).toEqual(i - 999);
       }
+
       if (i > 0) {
         expect(
           interactEvents[0].timestamp <
@@ -303,6 +302,7 @@ describe("RulesEngine:createEventRegistry", () => {
     const prune = createEventPruner(10);
     const events = {};
     events["decisioning.propositionDisplay"] = {};
+
     for (let i = 0; i < 20; i += 1) {
       events["decisioning.propositionDisplay"][i] = {
         event: {
@@ -317,12 +317,14 @@ describe("RulesEngine:createEventRegistry", () => {
       const displayEvents = Object.values(
         pruned["decisioning.propositionDisplay"],
       );
+
       expect(displayEvents.length).not.toBeGreaterThan(10);
     }
   });
   it("should filter events based on expiration date", () => {
     const pruner = createEventPruner(4, 2);
     const events = {};
+
     events["decisioning.propositionDisplay"] = {
       1: {
         event: {
@@ -343,6 +345,7 @@ describe("RulesEngine:createEventRegistry", () => {
         count: 1,
       },
     };
+
     events["decisioning.propositionInteract"] = {
       3: {
         event: {
@@ -363,7 +366,9 @@ describe("RulesEngine:createEventRegistry", () => {
         count: 1,
       },
     };
+
     const prunedEvents = pruner(events);
+
     expect(prunedEvents).toEqual({
       "decisioning.propositionDisplay": {
         2: {

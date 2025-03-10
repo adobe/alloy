@@ -40,24 +40,24 @@ export const getExpirationDate = (retentionPeriod) => {
   expirationDate.setDate(expirationDate.getDate() - retentionPeriod);
   return expirationDate;
 };
-export const getActivityId = (proposition) => {
-  const { scopeDetails = {} } = proposition;
-  const { activity = {} } = scopeDetails;
-  const { id } = activity;
 
-  return id;
-};
+export const getActivityId = (proposition) =>
+  proposition?.scopeDetails?.activity?.id;
+
 export const createInMemoryStorage = () => {
   const inMemoryStorage = {};
+
   return {
     getItem: (key) => {
       return key in inMemoryStorage ? inMemoryStorage[key] : null;
     },
+
     setItem: (key, value) => {
       inMemoryStorage[key] = value;
     },
   };
 };
+
 export const clearLocalStorage = (storage) => {
   storage.clear();
 };
