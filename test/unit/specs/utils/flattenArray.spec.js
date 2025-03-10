@@ -67,6 +67,7 @@ describe("flattenArray", () => {
       "z",
     ]);
   });
+
   it("handles non arrays", () => {
     expect(
       flattenArray({

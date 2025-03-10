@@ -9,22 +9,5 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const flattenArray = (items = []) => {
-  const flat = [];
 
-  if (!Array.isArray(items)) {
-    return items;
-  }
-
-  items.forEach((item) => {
-    if (Array.isArray(item)) {
-      flat.push(...flattenArray(item));
-    } else {
-      flat.push(item);
-    }
-  });
-
-  return flat;
-};
-
-export default flattenArray;
+export default (arr) => (Array.isArray(arr) ? arr.flat(Infinity) : arr);
