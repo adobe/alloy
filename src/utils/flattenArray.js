@@ -10,4 +10,4 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (arr) => (Array.isArray(arr) ? arr.flat(Infinity) : arr);
+export default (arr = []) => (Array.isArray(arr) ? arr.flat(Infinity) : arr);
