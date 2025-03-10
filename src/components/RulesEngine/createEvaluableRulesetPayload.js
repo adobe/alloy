@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 import RulesEngine from "@adobe/aep-rules-engine";
 import { JSON_CONTENT_ITEM, RULESET_ITEM } from "../../constants/schema.js";
 import { DISPLAY } from "../../constants/eventType.js";
+import { PropositionEventType } from "../../constants/propositionEventType.js";
 import { getActivityId } from "./utils.js";
 
 import flattenArray from "../../utils/flattenArray.js";
@@ -44,7 +45,7 @@ const isRulesetItem = (item) => {
   }
 };
 
-export default (payload, eventRegistry, decisionHistory) => {
+export default (payload, eventRegistry) => {
   const consequenceAdapter = createConsequenceAdapter();
   const activityId = getActivityId(payload);
   const items = [];
@@ -76,7 +77,11 @@ export default (payload, eventRegistry, decisionHistory) => {
       .map(consequenceAdapter)
       .map((item) => {
         const { firstTimestamp: qualifiedDate } =
-          decisionHistory.recordQualified(activityId) || {};
+          eventRegistry.addEvent(
+            {},
+            PropositionEventType.TRIGGER,
+            activityId,
+          ) || {};
 
         return {
           ...item,

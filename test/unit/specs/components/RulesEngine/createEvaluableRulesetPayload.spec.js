@@ -12,25 +12,23 @@ governing permissions and limitations under the License.
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import createEvaluableRulesetPayload from "../../../../../src/components/RulesEngine/createEvaluableRulesetPayload.js";
 import createEventRegistry from "../../../../../src/components/RulesEngine/createEventRegistry.js";
-import createDecisionHistory from "../../../../../src/components/RulesEngine/createDecisionHistory.js";
 
 describe("RulesEngine:createEvaluableRulesetPayload", () => {
   let storage;
   let eventRegistry;
-  let decisionHistory;
+
   beforeEach(() => {
     storage = {
       getItem: vi.fn(),
       setItem: vi.fn(),
       clear: vi.fn(),
     };
+
     eventRegistry = createEventRegistry({
       storage,
     });
-    decisionHistory = createDecisionHistory({
-      eventRegistry,
-    });
   });
+
   it("consumes ruleset-items", () => {
     const evaluableRulesetPayload = createEvaluableRulesetPayload(
       {
@@ -137,8 +135,8 @@ describe("RulesEngine:createEvaluableRulesetPayload", () => {
         scope: "web://mywebsite.com",
       },
       eventRegistry,
-      decisionHistory,
     );
+
     expect(
       evaluableRulesetPayload.evaluate({
         color: "orange",
@@ -195,6 +193,7 @@ describe("RulesEngine:createEvaluableRulesetPayload", () => {
       scope: "web://mywebsite.com",
     });
   });
+
   it("consumes json-content-items", () => {
     const evaluableRulesetPayload = createEvaluableRulesetPayload(
       {
@@ -303,8 +302,8 @@ describe("RulesEngine:createEvaluableRulesetPayload", () => {
         scope: "web://mywebsite.com",
       },
       eventRegistry,
-      decisionHistory,
     );
+
     expect(
       evaluableRulesetPayload.evaluate({
         color: "orange",
