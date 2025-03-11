@@ -66,10 +66,7 @@ export default (payload, eventRegistry) => {
 
   const evaluate = (context) => {
     const displayEvent = eventRegistry.getEvent(DISPLAY, activityId);
-
-    const displayedDate = displayEvent
-      ? displayEvent.firstTimestamp
-      : undefined;
+    const displayedDate = displayEvent?.firstTimestamp;
 
     const qualifyingItems = flattenArray(
       items.map((item) => item.execute(context)),
@@ -77,11 +74,10 @@ export default (payload, eventRegistry) => {
       .map(consequenceAdapter)
       .map((item) => {
         const { firstTimestamp: qualifiedDate } =
-          eventRegistry.addEvent(
-            {},
-            PropositionEventType.TRIGGER,
-            activityId,
-          ) || {};
+          eventRegistry.addEvent({
+            eventType: PropositionEventType.TRIGGER,
+            eventId: activityId,
+          }) || {};
 
         return {
           ...item,

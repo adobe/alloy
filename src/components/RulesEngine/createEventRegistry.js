@@ -25,6 +25,7 @@ const MAX_EVENT_RECORDS = 1000;
 const RETENTION_PERIOD = 30;
 
 const prefixed = (key) => `iam.${key}`;
+
 export const createEventPruner = (
   limit = MAX_EVENT_RECORDS,
   retentionPeriod = RETENTION_PERIOD,
@@ -68,7 +69,7 @@ export default ({ storage }) => {
 
   setStorage(storage);
 
-  const addEvent = (event, eventType, eventId, action) => {
+  const addEvent = ({ eventType, eventId, action } = {}) => {
     if (!eventType || !eventId) {
       return undefined;
     }
@@ -86,7 +87,6 @@ export default ({ storage }) => {
 
     events[eventType][eventId] = {
       event: {
-        ...event,
         [prefixed("id")]: eventId,
         [prefixed("eventType")]: eventType,
         [prefixed("action")]: action,
@@ -123,24 +123,23 @@ export default ({ storage }) => {
       return;
     }
 
-    const validPropositionEventType = (propositionEventType) =>
-      propositionEventTypeObj[propositionEventType] === EVENT_TYPE_TRUE;
-
     const { id: action } = propositionAction;
 
     propositionEventTypesList
-      .filter(validPropositionEventType)
+      .filter(
+        (eventType) => propositionEventTypeObj[eventType] === EVENT_TYPE_TRUE,
+      )
       .forEach((propositionEventType) => {
         propositions.forEach((proposition) => {
           if (getDecisionProvider(proposition) !== ADOBE_JOURNEY_OPTIMIZER) {
             return;
           }
-          addEvent(
-            {},
-            propositionEventType,
-            getActivityId(proposition),
+
+          addEvent({
+            eventType: propositionEventType,
+            eventId: getActivityId(proposition),
             action,
-          );
+          });
         });
       });
   };
