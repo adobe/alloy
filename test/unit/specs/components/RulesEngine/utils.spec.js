@@ -16,11 +16,13 @@ import {
   createSaveStorage,
   getActivityId,
   getExpirationDate,
+  hasExperienceData,
 } from "../../../../../src/components/RulesEngine/utils.js";
 
 describe("RulesEngine:utils", () => {
   let storage;
   let inMemoryStorage;
+
   beforeEach(() => {
     storage = {
       getItem: vi.fn(),
@@ -29,6 +31,32 @@ describe("RulesEngine:utils", () => {
     };
     inMemoryStorage = createInMemoryStorage();
   });
+
+  it("should return true when _experience is an object", () => {
+    const data = { _experience: { key: "value" } };
+    expect(hasExperienceData(data)).toBe(true);
+  });
+
+  it("should return false when _experience is not an object", () => {
+    const data = { _experience: "notAnObject" };
+    expect(hasExperienceData(data)).toBe(false);
+  });
+
+  it("should return false when _experience is undefined", () => {
+    const data = {};
+    expect(hasExperienceData(data)).toBe(false);
+  });
+
+  it("should return false when data is undefined", () => {
+    const data = undefined;
+    expect(hasExperienceData(data)).toBe(false);
+  });
+
+  it("should return false when data is null", () => {
+    const data = null;
+    expect(hasExperienceData(data)).toBe(false);
+  });
+
   it("restores from storage", () => {
     storage.getItem.mockReturnValue(
       '{ "something": true, "color": "orange", "person": { "height": 5.83 } }',
@@ -47,6 +75,7 @@ describe("RulesEngine:utils", () => {
     });
     expect(storage.getItem).toHaveBeenCalledWith("zoink");
   });
+
   it("uses default value if storage unavailable", () => {
     storage.getItem.mockReturnValue(undefined);
     const restore = createRestoreStorage(storage, "zoink");
@@ -59,6 +88,7 @@ describe("RulesEngine:utils", () => {
     });
     expect(storage.getItem).toHaveBeenCalledWith("zoink");
   });
+
   it("saves to storage", () => {
     const mockedTimestamp = new Date(Date.UTC(2023, 8, 2, 13, 34, 56));
     vi.useFakeTimers();
@@ -85,6 +115,7 @@ describe("RulesEngine:utils", () => {
 
     vi.useRealTimers();
   });
+
   it("should return the date of expiration", () => {
     const mockedTimestamp = new Date(Date.UTC(2023, 8, 2, 13, 34, 56));
     vi.useFakeTimers();
@@ -98,6 +129,7 @@ describe("RulesEngine:utils", () => {
 
     vi.useRealTimers();
   });
+
   it("should return the activityId", () => {
     const proposition = {
       id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
@@ -184,10 +216,12 @@ describe("RulesEngine:utils", () => {
         },
       ],
     };
+
     expect(getActivityId(proposition)).toEqual(
       "39ae8d4b-b55e-43dc-a143-77f50195b487#b47fde8b-57c1-4bbe-ae22-64d5b782d183",
     );
   });
+
   it("should return the activityId as undefined", () => {
     const proposition = {
       id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
@@ -208,6 +242,7 @@ describe("RulesEngine:utils", () => {
     };
     expect(getActivityId(proposition)).toEqual(undefined);
   });
+
   it("should set and retrieve an item from in-memory storage", () => {
     const key = "testKey";
     const value = "testValue";
@@ -215,11 +250,13 @@ describe("RulesEngine:utils", () => {
     const retrievedValue = inMemoryStorage.getItem(key);
     expect(retrievedValue).toEqual(value);
   });
+
   it("should return null for a non-existent item", () => {
     const key = "nonExistentKey";
     const retrievedValue = inMemoryStorage.getItem(key);
     expect(retrievedValue).toBeNull();
   });
+
   it("should overwrite the value for an existing key", () => {
     const key = "existingKey";
     const originalValue = "originalValue";
