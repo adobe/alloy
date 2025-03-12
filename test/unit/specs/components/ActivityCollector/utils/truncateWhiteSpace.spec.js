@@ -14,7 +14,7 @@ import { describe, it, expect } from "vitest";
 import truncateWhiteSpace from "../../../../../../src/components/ActivityCollector/utils/truncateWhiteSpace.js";
 
 describe("ActivityCollector::truncateWhiteSpace", () => {
-  it("it trims leading and trailing white spaces and limits contained white space to one character", () => {
+  it("trims leading and trailing white spaces and limits contained white space to one character", () => {
     const testCases = [
       ["  hello  world  ", "hello world"],
       [" hello  world ", "hello world"],

@@ -14,7 +14,7 @@ import injectEnvironment from "../../../../../src/components/Context/injectEnvir
 
 describe("Context::injectEnvironment", () => {
   const run = (description, mywindow, expectedXdm) => {
-    it(description, () => {
+    it(`${description}`, () => {
       const xdm = {};
       injectEnvironment(mywindow)(xdm);
       expect(xdm).toEqual(expectedXdm);

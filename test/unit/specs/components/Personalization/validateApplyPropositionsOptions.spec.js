@@ -80,14 +80,14 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
   beforeEach(() => {
     resetLogger();
   });
-  it("it should log a warning when no options are present", () => {
+  it("should log a warning when no options are present", () => {
     const result = validateApplyPropositionsOptions({
       logger,
     });
     expect(loggerSpy).toHaveBeenCalled();
     expect(result).toEqual(EMPTY_PROPOSITIONS);
   });
-  it("it should log a warning when propositions array is missing from options", () => {
+  it("should log a warning when propositions array is missing from options", () => {
     const result = validateApplyPropositionsOptions({
       logger,
       options: {},
@@ -98,7 +98,7 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
     );
     expect(result).toEqual(EMPTY_PROPOSITIONS);
   });
-  it("it should log a warning when propositions is empty array", () => {
+  it("should log a warning when propositions is empty array", () => {
     const result = validateApplyPropositionsOptions({
       logger,
       options: {
@@ -111,7 +111,7 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
     );
     expect(result).toEqual(EMPTY_PROPOSITIONS);
   });
-  it("it should log a warning when propositions are missing required values", () => {
+  it("should log a warning when propositions are missing required values", () => {
     const scopeDetails = {
       decisionProvider: "AJO",
     };
@@ -211,7 +211,7 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
       expect(result).toEqual(EMPTY_PROPOSITIONS);
     }
   });
-  it("it should not log a warning when extra options are present", () => {
+  it("should not log a warning when extra options are present", () => {
     const result = validateApplyPropositionsOptions({
       logger,
       options: {
@@ -222,7 +222,7 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
     expect(loggerSpy).not.toHaveBeenCalled();
     expect(result).not.toEqual(EMPTY_PROPOSITIONS);
   });
-  it("it should log a warning when metadata is not an object", () => {
+  it("should log a warning when metadata is not an object", () => {
     const result = validateApplyPropositionsOptions({
       logger,
       options: {
@@ -236,7 +236,7 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
     );
     expect(result).toEqual(EMPTY_PROPOSITIONS);
   });
-  it("it should not log a warning when propositions and metadata are present", () => {
+  it("should not log a warning when propositions and metadata are present", () => {
     const result = validateApplyPropositionsOptions({
       logger,
       options: {

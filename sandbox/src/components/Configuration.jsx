@@ -41,7 +41,7 @@ const ConfigurationLinks = ({ param, currentValue, defaultValue, options }) => {
   });
 };
 
-export default () => {
+export default function Configuration() {
   return (
     <table className="configuration">
       <tbody>
@@ -109,4 +109,4 @@ export default () => {
       </tbody>
     </table>
   );
-};
+}

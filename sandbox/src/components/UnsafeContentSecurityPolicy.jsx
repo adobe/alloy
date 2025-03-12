@@ -17,7 +17,7 @@ export default function UnsafeContentSecurityPolicy() {
   return (
     <Helmet>
       <meta
-        http-equiv="Content-Security-Policy"
+        httpEquiv="Content-Security-Policy"
         content="default-src 'self' *.demdex.net;
               script-src 'self' 'unsafe-inline' cdn.jsdelivr.net assets.adobedtm.com *.omtrdc.net;
               style-src 'self' 'unsafe-inline';

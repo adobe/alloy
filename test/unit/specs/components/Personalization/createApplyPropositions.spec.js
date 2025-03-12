@@ -31,13 +31,15 @@ const METADATA = {
     actionType: "setHtml",
   },
 };
-describe("Personalization::createApplyPropositions", () => {
+
+describe.only("Personalization::createApplyPropositions", () => {
   let processPropositions;
   let createProposition;
   let renderedPropositions;
   let viewCache;
   let applyPropositions;
   let render;
+
   beforeEach(() => {
     processPropositions = vi.fn();
     processPropositions.mockImplementation((propositions) => {
@@ -50,19 +52,25 @@ describe("Personalization::createApplyPropositions", () => {
         render,
       };
     });
+
     render = vi.fn();
     render.mockImplementation(() => Promise.resolve("notifications"));
+
     createProposition = injectCreateProposition({
       preprocess: (data) => data,
       isPageWideSurface: () => false,
     });
+
     renderedPropositions = {
       concat: vi.fn(),
     };
+
     viewCache = {
       getView: vi.fn(),
     };
+
     viewCache.getView.mockReturnValue(Promise.resolve([]));
+
     applyPropositions = createApplyPropositions({
       processPropositions,
       createProposition,
@@ -70,16 +78,19 @@ describe("Personalization::createApplyPropositions", () => {
       viewCache,
     });
   });
-  it("it should return an empty propositions promise if propositions is empty array", async () => {
+
+  it("should return an empty propositions promise if propositions is empty array", async () => {
     const result = await applyPropositions({
       propositions: [],
     });
+
     expect(result).toEqual({
       propositions: [],
     });
     expect(processPropositions).toHaveBeenNthCalledWith(1, []);
   });
-  it("it should apply user-provided dom-action/default-content schema propositions", async () => {
+
+  it("should apply user-provided dom-action/default-content schema propositions", async () => {
     const expectedExecuteDecisionsPropositions = clone(
       PAGE_WIDE_SCOPE_DECISIONS,
     ).map((proposition) => {
@@ -90,6 +101,7 @@ describe("Personalization::createApplyPropositions", () => {
       propositions: PAGE_WIDE_SCOPE_DECISIONS,
     });
     expect(processPropositions).toHaveBeenCalledTimes(1);
+
     const expectedScopes = expectedExecuteDecisionsPropositions.map(
       (proposition) => proposition.scope,
     );
@@ -102,7 +114,8 @@ describe("Personalization::createApplyPropositions", () => {
       expect(proposition.items.length).toEqual(3);
     });
   });
-  it("it should merge metadata with propositions that have html-content-item schema", async () => {
+
+  it("should merge metadata with propositions that have html-content-item schema", async () => {
     const { propositions } = await applyPropositions({
       propositions: MIXED_PROPOSITIONS,
       metadata: METADATA,
@@ -121,7 +134,8 @@ describe("Personalization::createApplyPropositions", () => {
     });
     expect(processPropositions).toHaveBeenCalledTimes(1);
   });
-  it("it should drop items with html-content-item schema when there is no metadata", async () => {
+
+  it("should drop items with html-content-item schema when there is no metadata", async () => {
     const propositions = [
       {
         id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
@@ -156,7 +170,8 @@ describe("Personalization::createApplyPropositions", () => {
     expect(result.propositions[0].items[0].id).toEqual("442358");
     expect(result.propositions[0].renderAttempted).toBe(true);
   });
-  it("it should return renderAttempted = true on resulting propositions", async () => {
+
+  it("should return renderAttempted = true on resulting propositions", async () => {
     const result = await applyPropositions({
       propositions: MIXED_PROPOSITIONS,
     });
@@ -165,7 +180,8 @@ describe("Personalization::createApplyPropositions", () => {
       expect(proposition.renderAttempted).toBe(true);
     });
   });
-  it("it should ignore propositions with __view__ scope that have already been rendered", async () => {
+
+  it("should ignore propositions with __view__ scope that have already been rendered", async () => {
     const propositions = JSON.parse(JSON.stringify(MIXED_PROPOSITIONS));
     propositions[4].renderAttempted = true;
     const result = await applyPropositions({
@@ -181,20 +197,26 @@ describe("Personalization::createApplyPropositions", () => {
       }
     });
   });
-  it("it should ignore items with unsupported schemas", async () => {
-    const expectedItemIds = ["442358", "442359"];
+
+  it("should ignore items with unsupported schemas", async () => {
+    const expectedItemIds = ["442358", "442379"];
+
     const { propositions } = await applyPropositions({
       propositions: MIXED_PROPOSITIONS,
     });
+
     expect(propositions.length).toEqual(3);
+
     propositions.forEach((proposition) => {
       expect(proposition.items.length).toEqual(1);
+
       proposition.items.forEach((item) => {
-        expect(expectedItemIds.indexOf(item.id) > -1);
+        expect(expectedItemIds.indexOf(item.id) > -1).toBe(true);
       });
     });
   });
-  it("it should not mutate original propositions", async () => {
+
+  it("should not mutate original propositions", async () => {
     const originalPropositions = clone(MIXED_PROPOSITIONS);
     const result = await applyPropositions({
       propositions: originalPropositions,
@@ -244,6 +266,7 @@ describe("Personalization::createApplyPropositions", () => {
         isGood: true,
       },
     });
+
     const expectedProposition = {
       id: "id",
       scope: "scope",
@@ -262,6 +285,7 @@ describe("Personalization::createApplyPropositions", () => {
         },
       ],
     };
+
     const result = await applyPropositions({
       propositions: [proposition.toJSON()],
       metadata: {
@@ -271,6 +295,7 @@ describe("Personalization::createApplyPropositions", () => {
         },
       },
     });
+
     expect(result).toEqual({
       propositions: [
         {

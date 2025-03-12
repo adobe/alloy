@@ -1,6 +1,6 @@
 import React from "react";
-import ContentSecurityPolicy from "./components/ContentSecurityPolicy.jsx";
-import useSendPageViewEvent from "./useSendPageViewEvent.js";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
+import useSendPageViewEvent from "./useSendPageViewEvent";
 
 const makePayload =
   (size, times = 1) =>
@@ -25,7 +25,7 @@ export default function LargePayload() {
       <p>This page tests send really large payloads to the edge.</p>
       <p>
         All those requests should attempt to use <code>sendBeacon</code> and
-        fall back to <code>fetch</code> if the request can't be queued.
+        fall back to <code>fetch</code> if the request can&apos;t be queued.
       </p>
       <p>The sizes below do not include the size of the Context data:</p>
 

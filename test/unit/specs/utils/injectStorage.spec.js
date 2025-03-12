@@ -24,7 +24,7 @@ describe("injectStorage", () => {
       windowProperty: "localStorage",
     },
   ].forEach(({ storageProperty, windowProperty }) => {
-    describe(storageProperty, () => {
+    describe(`${storageProperty}`, () => {
       describe("setItem", () => {
         it("sets item", () => {
           const window = {

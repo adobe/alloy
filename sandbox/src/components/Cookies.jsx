@@ -1,4 +1,4 @@
-/* eslint-disable no-console, func-names */
+/* eslint-disable func-names */
 
 import React, { useEffect, useState } from "react";
 
@@ -40,7 +40,7 @@ window.__alloyMonitors = window.__alloyMonitors || [];
 // eslint-disable-next-line no-underscore-dangle
 window.__alloyMonitors.push(monitor);
 
-export default () => {
+export default function Cookies() {
   const [consent, setConsent] = useState(originalConsentCookie);
   const [hasConsentCheck, setHasConsentCheck] = useState(
     originalHasConsentCheckCookie,
@@ -122,4 +122,4 @@ export default () => {
       </tbody>
     </table>
   );
-};
+}

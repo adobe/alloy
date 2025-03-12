@@ -11,13 +11,17 @@ governing permissions and limitations under the License.
 */
 
 import { FlatCompat } from "@eslint/eslintrc";
+// eslint-disable-next-line import/no-unresolved
+import { defineConfig, globalIgnores } from "eslint/config";
+import pluginJs from "@eslint/js";
 import path from "path";
 import { fileURLToPath } from "url";
-import pluginJs from "@eslint/js";
+import { glob } from "glob";
 import globals from "globals";
 import babelParser from "@babel/eslint-parser";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
-import { glob } from "glob";
+import vitest from "@vitest/eslint-plugin";
+import react from "eslint-plugin-react";
 
 const allComponentPaths = glob.sync("src/components/*/");
 const filename = fileURLToPath(import.meta.url);
@@ -27,9 +31,10 @@ const compat = new FlatCompat({
   baseDirectory: dirname,
 });
 
-export default [
+export default defineConfig([
   ...compat.extends("airbnb-base", "plugin:testcafe/recommended"),
-  ...compat.plugins("ban", "testcafe"),
+  ...compat.plugins("testcafe"),
+  globalIgnores(["sandbox/build/", "sandbox/public/"]),
   {
     files: ["**/*.{js,cjs,jsx}"],
     settings: {
@@ -52,26 +57,11 @@ export default [
       },
       ecmaVersion: 2021,
       globals: {
-        ...globals.jasmine,
         ...globals.browser,
         ...globals.node,
-        fixture: true,
-        test: true,
-        expectAsync: "readonly", // newer jasmine feature
-        spyOnAllFunctions: "readonly", // newer jasmine feature
       },
     },
     rules: {
-      "ban/ban": [
-        "error",
-        { name: ["describe", "only"], message: "don't focus tests" },
-        { name: "fdescribe", message: "don't focus tests" },
-        { name: ["it", "only"], message: "don't focus tests" },
-        { name: "fit", message: "don't focus tests" },
-        { name: ["fixture", "only"], message: "don't focus tests" },
-        { name: ["test", "only"], message: "don't focus tests" },
-        { name: "ftest", message: "don't focus tests" },
-      ],
       "no-param-reassign": "off",
       "prettier/prettier": "error",
       "func-style": "error",
@@ -130,6 +120,15 @@ export default [
     },
   },
   {
+    files: ["test/unit/specs/**/*.{cjs,js}"],
+    plugins: {
+      vitest,
+    },
+    rules: {
+      ...vitest.configs.recommended.rules,
+    },
+  },
+  {
     files: ["test/**/*.{cjs,js}"],
     rules: {
       "import/extensions": [
@@ -152,6 +151,36 @@ export default [
       ],
     },
   },
+
+  {
+    files: ["sandbox/src/**/*.{js,jsx}"],
+    settings: {
+      react: {
+        version: "17.0.2",
+      },
+    },
+    languageOptions: {
+      parser: babelParser,
+      parserOptions: {
+        babelOptions: {
+          presets: ["@babel/preset-react"],
+        },
+      },
+      ecmaVersion: 2021,
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+    },
+
+    plugins: {
+      react,
+    },
+    rules: {
+      ...react.configs.recommended.rules,
+    },
+  },
+
   pluginJs.configs.recommended,
   eslintPluginPrettierRecommended,
-];
+]);

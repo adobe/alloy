@@ -161,7 +161,7 @@ export default function ConfigOverrides() {
         ></textarea>
         <pre>
           <code>
-            alloy("sendEvent",{" "}
+            alloy(&quot;sendEvent&quot;,{" "}
             {JSON.stringify(
               { renderDecisions: true, edgeConfigOverrides: overrides },
               null,

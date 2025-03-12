@@ -229,7 +229,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       clickedElement: {},
     });
   });
-  it("Returns the object with link details when callback does not return explicit false ", () => {
+  it("Returns the object with link details when callback does not return explicit false", () => {
     const config = {
       onBeforeLinkClickSend: () => {},
       clickCollection: {

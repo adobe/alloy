@@ -21,6 +21,7 @@ describe("RulesEngine:globalContext:window", () => {
   beforeEach(() => {
     applyResponse = vi.fn();
   });
+
   it("satisfies rule based on matched window height", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -30,6 +31,7 @@ describe("RulesEngine:globalContext:window", () => {
       },
       type: "matcher",
     });
+
     expect(applyResponse).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -37,6 +39,7 @@ describe("RulesEngine:globalContext:window", () => {
       }),
     );
   });
+
   it("does not satisfy rule due to unmatched window height", () => {
     setupResponseHandler(
       applyResponse,
@@ -52,6 +55,7 @@ describe("RulesEngine:globalContext:window", () => {
         type: "matcher",
       },
     );
+
     expect(applyResponse).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -59,6 +63,7 @@ describe("RulesEngine:globalContext:window", () => {
       }),
     );
   });
+
   it("satisfies rule based on matched window width", () => {
     setupResponseHandler(
       applyResponse,
@@ -74,6 +79,7 @@ describe("RulesEngine:globalContext:window", () => {
         type: "matcher",
       },
     );
+
     expect(applyResponse).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -81,6 +87,7 @@ describe("RulesEngine:globalContext:window", () => {
       }),
     );
   });
+
   it("does not satisfy rule due to unmatched window width", () => {
     setupResponseHandler(
       applyResponse,
@@ -96,6 +103,7 @@ describe("RulesEngine:globalContext:window", () => {
         type: "matcher",
       },
     );
+
     expect(applyResponse).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -103,6 +111,7 @@ describe("RulesEngine:globalContext:window", () => {
       }),
     );
   });
+
   it("satisfies rule based on matched window scrollX", () => {
     setupResponseHandler(
       applyResponse,
@@ -118,6 +127,7 @@ describe("RulesEngine:globalContext:window", () => {
         type: "matcher",
       },
     );
+
     expect(applyResponse).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -125,6 +135,7 @@ describe("RulesEngine:globalContext:window", () => {
       }),
     );
   });
+
   it("does not satisfy rule due to unmatched window scrollX", () => {
     setupResponseHandler(
       applyResponse,
@@ -140,6 +151,7 @@ describe("RulesEngine:globalContext:window", () => {
         type: "matcher",
       },
     );
+
     expect(applyResponse).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -147,36 +159,42 @@ describe("RulesEngine:globalContext:window", () => {
       }),
     );
   });
+
   it("satisfies rule based on matched window scrollY", () => {
-    setupResponseHandler(
-      applyResponse,
-      mockWindow({
-        scrollY: 200,
-      }),
-      {
-        definition: {
-          key: "window.scrollY",
-          matcher: "gt",
-          values: [90],
+    expect(() => {
+      setupResponseHandler(
+        applyResponse,
+        mockWindow({
+          scrollY: 200,
+        }),
+        {
+          definition: {
+            key: "window.scrollY",
+            matcher: "gt",
+            values: [90],
+          },
+          type: "matcher",
         },
-        type: "matcher",
-      },
-    );
+      );
+    }).not.toThrow();
   });
+
   it("does not satisfy rule due to unmatched window scrollY", () => {
-    setupResponseHandler(
-      applyResponse,
-      mockWindow({
-        scrollY: 50,
-      }),
-      {
-        definition: {
-          key: "window.scrollY",
-          matcher: "gt",
-          values: [90],
+    expect(() => {
+      setupResponseHandler(
+        applyResponse,
+        mockWindow({
+          scrollY: 50,
+        }),
+        {
+          definition: {
+            key: "window.scrollY",
+            matcher: "gt",
+            values: [90],
+          },
+          type: "matcher",
         },
-        type: "matcher",
-      },
-    );
+      );
+    }).not.toThrow();
   });
 });

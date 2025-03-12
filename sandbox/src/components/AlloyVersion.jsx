@@ -26,7 +26,7 @@ const useAlloyVersion = (instanceName = "alloy") => {
 /**
  * Display the Alloy version in a footer in the bottom right.
  */
-export default () => {
+export default function AlloyVersion() {
   // eslint-disable-next-line no-underscore-dangle
   const alloyVersion = useAlloyVersion(window.__alloyNS[0]);
   return (
@@ -46,4 +46,4 @@ export default () => {
       {alloyVersion}
     </div>
   );
-};
+}

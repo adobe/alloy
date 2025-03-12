@@ -19,11 +19,13 @@ describe("createGetInstance", () => {
   let trackMediaSession;
   let trackMediaEvent;
   let uuid;
+
   beforeEach(() => {
     trackMediaSession = vi.fn();
     trackMediaEvent = vi.fn();
     uuid = vi.fn().mockReturnValue("1234-5678-9101-1121");
   });
+
   it("should return an object", () => {
     const result = createGetInstance({
       logger,
@@ -31,6 +33,7 @@ describe("createGetInstance", () => {
       trackMediaEvent,
       uuid,
     });
+
     expect(typeof result).toBe("object");
     expect(typeof result.trackSessionStart).toBe("function");
     expect(typeof result.trackPlay).toBe("function");
@@ -43,6 +46,7 @@ describe("createGetInstance", () => {
     expect(typeof result.updateQoEObject).toBe("function");
     expect(typeof result.destroy).toBe("function");
   });
+
   it("when play is called", () => {
     const result = createGetInstance({
       logger,
@@ -54,6 +58,7 @@ describe("createGetInstance", () => {
       sessionDetails: {},
     });
     result.trackPlay();
+
     expect(trackMediaEvent).toHaveBeenCalledWith({
       playerId: "1234-5678-9101-1121",
       xdm: {
@@ -62,6 +67,7 @@ describe("createGetInstance", () => {
       },
     });
   });
+
   it("when pause is called", () => {
     const result = createGetInstance({
       logger,
@@ -81,6 +87,7 @@ describe("createGetInstance", () => {
       },
     });
   });
+
   it("when sessionStart is called", () => {
     const result = createGetInstance({
       logger,
@@ -88,6 +95,7 @@ describe("createGetInstance", () => {
       trackMediaEvent,
       uuid,
     });
+
     const sessionDetails = {
       name: "test",
       friendlyName: "test1",
@@ -95,6 +103,7 @@ describe("createGetInstance", () => {
       streamType: "vod",
       contentType: "video/mp4",
     };
+
     const meta = {
       isUserLoggedIn: "false",
       tvStation: "Sample TV station",
@@ -102,12 +111,14 @@ describe("createGetInstance", () => {
       assetID: "/uri-reference",
       "a.media.episode": "episode1",
     };
+
     result.trackSessionStart(
       {
         sessionDetails,
       },
       meta,
     );
+
     expect(trackMediaSession).toHaveBeenCalledWith({
       playerId: "1234-5678-9101-1121",
       getPlayerDetails: expect.any(Function),
@@ -144,6 +155,7 @@ describe("createGetInstance", () => {
       },
     });
   });
+
   it("when trackError is called", () => {
     const result = createGetInstance({
       logger,
@@ -155,6 +167,7 @@ describe("createGetInstance", () => {
       sessionDetails: {},
     });
     result.trackError("error");
+
     expect(trackMediaEvent).toHaveBeenCalledWith({
       playerId: "1234-5678-9101-1121",
       xdm: {
@@ -169,6 +182,7 @@ describe("createGetInstance", () => {
     });
     expect(logger.warn).toHaveBeenCalled();
   });
+
   it("when trackComplete is called", () => {
     const result = createGetInstance({
       logger,
@@ -180,6 +194,7 @@ describe("createGetInstance", () => {
       sessionDetails: {},
     });
     result.trackComplete();
+
     expect(trackMediaEvent).toHaveBeenCalledWith({
       playerId: "1234-5678-9101-1121",
       xdm: {
@@ -188,6 +203,7 @@ describe("createGetInstance", () => {
       },
     });
   });
+
   it("when trackSessionEnd is called", () => {
     const result = createGetInstance({
       logger,
@@ -199,6 +215,7 @@ describe("createGetInstance", () => {
       sessionDetails: {},
     });
     result.trackSessionEnd();
+
     expect(trackMediaEvent).toHaveBeenCalledWith({
       playerId: "1234-5678-9101-1121",
       xdm: {
@@ -207,6 +224,7 @@ describe("createGetInstance", () => {
       },
     });
   });
+
   it("when state update is called", () => {
     const result = createGetInstance({
       logger,
@@ -221,6 +239,7 @@ describe("createGetInstance", () => {
       sessionDetails: {},
     });
     result.trackEvent("stateStart", state);
+
     expect(trackMediaEvent).toHaveBeenCalledWith({
       playerId: "1234-5678-9101-1121",
       xdm: {
@@ -235,7 +254,8 @@ describe("createGetInstance", () => {
       },
     });
   });
-  it("when state update is called", () => {
+
+  it("when state end update is called", () => {
     const result = createGetInstance({
       logger,
       trackMediaSession,
@@ -249,6 +269,7 @@ describe("createGetInstance", () => {
       sessionDetails: {},
     });
     result.trackEvent("stateEnd", state);
+
     expect(trackMediaEvent).toHaveBeenCalledWith({
       playerId: "1234-5678-9101-1121",
       xdm: {
@@ -263,6 +284,7 @@ describe("createGetInstance", () => {
       },
     });
   });
+
   it("when track adds is called add get's converted correctly", () => {
     const result = createGetInstance({
       logger,
@@ -292,6 +314,7 @@ describe("createGetInstance", () => {
       },
       adContextData,
     );
+
     expect(trackMediaEvent).toHaveBeenCalledWith({
       playerId: "1234-5678-9101-1121",
       xdm: {
