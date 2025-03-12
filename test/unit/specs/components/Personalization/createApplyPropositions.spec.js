@@ -32,7 +32,7 @@ const METADATA = {
   },
 };
 
-describe.only("Personalization::createApplyPropositions", () => {
+describe("Personalization::createApplyPropositions", () => {
   let processPropositions;
   let createProposition;
   let renderedPropositions;
