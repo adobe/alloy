@@ -32,27 +32,27 @@ describe("RulesEngine:utils", () => {
     inMemoryStorage = createInMemoryStorage();
   });
 
-  it("should return true when _experience is an object", () => {
+  it("hasExperienceData should return true when _experience is an object", () => {
     const data = { _experience: { key: "value" } };
     expect(hasExperienceData(data)).toBe(true);
   });
 
-  it("should return false when _experience is not an object", () => {
+  it("hasExperienceData should return false when _experience is not an object", () => {
     const data = { _experience: "notAnObject" };
     expect(hasExperienceData(data)).toBe(false);
   });
 
-  it("should return false when _experience is undefined", () => {
+  it("hasExperienceData should return false when _experience is undefined", () => {
     const data = {};
     expect(hasExperienceData(data)).toBe(false);
   });
 
-  it("should return false when data is undefined", () => {
+  it("hasExperienceData should return false when data is undefined", () => {
     const data = undefined;
     expect(hasExperienceData(data)).toBe(false);
   });
 
-  it("should return false when data is null", () => {
+  it("hasExperienceData should return false when data is null", () => {
     const data = null;
     expect(hasExperienceData(data)).toBe(false);
   });
