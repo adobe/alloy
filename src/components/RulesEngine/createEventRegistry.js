@@ -102,47 +102,41 @@ export default ({ storage }) => {
   };
 
   const addExperienceEdgeEvent = (event) => {
-    const { xdm = {} } = event.getContent();
-    const { _experience } = xdm;
+    const { xdm } = event.getContent();
 
     if (!hasExperienceData(xdm)) {
       return;
     }
 
-    const { decisioning = {} } = _experience;
     const {
-      propositionEventType: propositionEventTypeObj = {},
-      propositionAction = {},
-      propositions = [],
-    } = decisioning;
+      _experience: {
+        decisioning: {
+          propositionEventType = {},
+          propositionAction: { id: action } = {},
+          propositions = [],
+        } = {},
+      },
+    } = xdm;
 
-    const propositionEventTypesList = Object.keys(propositionEventTypeObj);
-
-    // https://wiki.corp.adobe.com/pages/viewpage.action?spaceKey=CJM&title=Proposition+Event+Types
-    if (propositionEventTypesList.length === 0) {
-      return;
-    }
-
-    const { id: action } = propositionAction;
-
-    propositionEventTypesList
+    Object.keys(propositionEventType)
       .filter(
-        (eventType) => propositionEventTypeObj[eventType] === EVENT_TYPE_TRUE,
+        (eventType) => propositionEventType[eventType] === EVENT_TYPE_TRUE,
       )
-      .forEach((propositionEventType) => {
+      .forEach((eventType) => {
         propositions.forEach((proposition) => {
           if (getDecisionProvider(proposition) !== ADOBE_JOURNEY_OPTIMIZER) {
             return;
           }
 
           addEvent({
-            eventType: propositionEventType,
+            eventType,
             eventId: getActivityId(proposition),
             action,
           });
         });
       });
   };
+
   const getEvent = (eventType, eventId) => {
     if (!events[eventType]) {
       return undefined;
