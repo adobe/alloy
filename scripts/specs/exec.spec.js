@@ -35,26 +35,29 @@ describe("exec", () => {
       ApplicationError,
     );
   });
+
   it("logs the exit code", async () => {
     const [outputStream, getResult] = createStringBackedWritableStream();
     try {
       await exec("bad exit", "exit 42", { outputStream });
-      fail();
+      throw new Error("Test failed");
     } catch {
       const result = getResult();
       expect(result).toMatch(/exited with code 42/);
     }
   });
+
   it("logs the process name", async () => {
     const [outputStream, getResult] = createStringBackedWritableStream();
     try {
       await exec("bad exit", "exit 42", { outputStream });
-      fail();
+      throw new Error("Test failed");
     } catch {
       const result = getResult();
       expect(result).toMatch(/bad exit/);
     }
   });
+
   it("handles multi-line echo statements", async () => {
     const [outputStream, getResult] = createStringBackedWritableStream();
     const input = "Hello\nWorld\n";

@@ -16,15 +16,10 @@ import { Helmet } from "react-helmet";
 export default function ContentSecurityPolicy() {
   const [nonce, setNonce] = React.useState("");
   React.useEffect(() => {
-    const getNonce = () => {
-      const nonce =
-        document
-          .querySelector('meta[property="nonce"]')
-          ?.getAttribute("nonce") ||
-        document.querySelector("script[nonce]")?.getAttribute("nonce") ||
-        "";
-      return nonce;
-    };
+    const getNonce = () =>
+      document.querySelector('meta[property="nonce"]')?.getAttribute("nonce") ||
+      document.querySelector("script[nonce]")?.getAttribute("nonce") ||
+      "";
     setNonce(getNonce());
     const observer = new MutationObserver(() => {
       setNonce(getNonce());
@@ -39,7 +34,7 @@ export default function ContentSecurityPolicy() {
   return (
     <Helmet>
       <meta
-        http-equiv="Content-Security-Policy"
+        httpEquiv="Content-Security-Policy"
         // cdn.tt.omtrdc.net is necessary for Target VEC to function properly.
         // *.sc.omtrdc.net is necessary for Analytics Data Insertion API to function properly
         content={`default-src 'self' blob:;

@@ -290,14 +290,16 @@ describe("RulesEngine:createEventRegistry", () => {
         expect(
           interactEvents[0].timestamp <
             interactEvents[interactEvents.length - 1].timestamp,
-        );
+        ).toBe(false);
+
         expect(
           displayEvents[0].timestamp <
             displayEvents[interactEvents.length - 1].timestamp,
-        );
+        ).toBe(false);
       }
     }
   });
+
   it("has configurable limits", () => {
     const prune = createEventPruner(10);
     const events = {};
@@ -321,6 +323,7 @@ describe("RulesEngine:createEventRegistry", () => {
       expect(displayEvents.length).not.toBeGreaterThan(10);
     }
   });
+
   it("should filter events based on expiration date", () => {
     const pruner = createEventPruner(4, 2);
     const events = {};

@@ -1,6 +1,6 @@
 import React from "react";
-import UnsafeContentSecurityPolicy from "./components/UnsafeContentSecurityPolicy.jsx";
-import useSendPageViewEvent from "./useSendPageViewEvent.js";
+import UnsafeContentSecurityPolicy from "./components/UnsafeContentSecurityPolicy";
+import useSendPageViewEvent from "./useSendPageViewEvent";
 
 const loadLaunch = () => {
   const script = document.createElement("script");
@@ -10,7 +10,7 @@ const loadLaunch = () => {
   document.body.appendChild(script);
 };
 
-export default () => {
+export default function DualTag() {
   useSendPageViewEvent();
   return (
     <div>
@@ -29,4 +29,4 @@ export default () => {
       </p>
     </div>
   );
-};
+}

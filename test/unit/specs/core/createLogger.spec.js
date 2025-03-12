@@ -83,13 +83,19 @@ describe("createLogger", () => {
     build();
     expect(logger.enabled).toBe(false);
   });
+
   it("is ok for a monitor to only implement some of the methods", () => {
-    getMonitors = () => [{}];
-    build();
-    logger.logOnInstanceCreated({
-      b: "2",
-    });
+    expect(() => {
+      getMonitors = () => [{}];
+
+      build();
+
+      logger.logOnInstanceCreated({
+        b: "2",
+      });
+    }).not.toThrow();
   });
+
   monitorMethods.forEach((monitorMethod) => {
     it(`calls the monitor method ${monitorMethod}`, () => {
       const loggerMethod = `log${monitorMethod.charAt(0).toUpperCase()}${monitorMethod.slice(1)}`;

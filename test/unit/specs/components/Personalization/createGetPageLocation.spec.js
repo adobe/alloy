@@ -14,7 +14,7 @@ import { describe, it, expect } from "vitest";
 import createGetPageLocation from "../../../../../src/components/Personalization/createGetPageLocation.js";
 
 describe("Personalization::createGetPageLocation", () => {
-  it("it should return page location object", () => {
+  it("should return page location object", () => {
     const win = {
       location: {
         href: "https://alloy.test.com/test/page/1/",

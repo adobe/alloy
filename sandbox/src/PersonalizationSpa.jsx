@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Switch, Route, useRouteMatch, Link } from "react-router-dom";
-import ContentSecurityPolicy from "./components/ContentSecurityPolicy.jsx";
-import useSendPageViewEvent from "./useSendPageViewEvent.js";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
+import useSendPageViewEvent from "./useSendPageViewEvent";
 
 const usePropositions = ({ viewName }) => {
   const [propositions, setPropositions] = useState(undefined);
@@ -75,8 +75,9 @@ export default function Personalization() {
       <p>
         Below are links to two different single-page app views. Each view
         contains personalized content set up in Target using a view scope of{" "}
-        <i>product</i> and <i>cart</i>, respectively. Each view's personalized
-        content contains a button whose clicks are tracked as conversions.
+        <i>product</i> and <i>cart</i>, respectively. Each view&apos;s
+        personalized content contains a button whose clicks are tracked as
+        conversions.
       </p>
       <ul>
         <li>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import ContentSecurityPolicy from "../ContentSecurityPolicy.jsx";
+import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./ContentCards.css";
-import { deleteAllCookies, getAlloyTestConfigs } from "../utils.js";
+import { deleteAllCookies, getAlloyTestConfigs } from "../utils";
 
 const configKey = localStorage.getItem("iam-configKey") || "stage";
 let responseSource = localStorage.getItem("iam-responseSource") || "mock";
@@ -595,7 +595,7 @@ export default function ContentCards() {
   const [dismissHandler, setDismissHandler] = useState(() => () => {});
 
   const [contentCards, setContentCards] = useState([]);
-  let alreadySubscribed = false;
+  const alreadySubscribed = false;
 
   const subscribeRulesetItems = () => {
     return alreadySubscribed
@@ -607,7 +607,7 @@ export default function ContentCards() {
           ],
           callback: (result, collectEvent) => {
             const { propositions = [] } = result;
-            const contentCards = extractContentCards(propositions);
+            const extractedContentCards = extractContentCards(propositions);
 
             const dismiss = (items) => {
               collectEvent(
@@ -627,7 +627,7 @@ export default function ContentCards() {
             setDismissHandler(() => (items) => dismiss(items, collectEvent));
 
             collectEvent("display", propositions);
-            setContentCards(contentCards);
+            setContentCards(extractedContentCards);
           },
         });
   };
@@ -652,8 +652,8 @@ export default function ContentCards() {
     ]);
 
     return () => {
-      startupPromises.then(([rulesetItems, contentCards]) => {
-        contentCards.unsubscribe();
+      startupPromises.then(([rulesetItems, contentCardsFromResponse]) => {
+        contentCardsFromResponse.unsubscribe();
         rulesetItems.unsubscribe();
       });
     };

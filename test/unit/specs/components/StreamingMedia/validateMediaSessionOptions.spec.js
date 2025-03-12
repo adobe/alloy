@@ -25,13 +25,15 @@ describe("StreamingMedia::validateMediaSessionOptions", () => {
         },
       },
     };
+
     expect(() => {
       validateMediaSessionOptions({
         options,
       });
     }).not.toThrowError();
   });
-  it("should not fail when playerId, callback and xdm are used", () => {
+
+  it("should not fail when xdm is used", () => {
     const options = {
       xdm: {
         eventType: "eventType",
@@ -41,12 +43,14 @@ describe("StreamingMedia::validateMediaSessionOptions", () => {
         },
       },
     };
+
     expect(() => {
       validateMediaSessionOptions({
         options,
       });
     }).not.toThrowError();
   });
+
   it("should throw an error when invalid options are passed", () => {
     const options = {
       xdm: {
@@ -57,6 +61,7 @@ describe("StreamingMedia::validateMediaSessionOptions", () => {
         },
       },
     };
+
     expect(() => {
       validateMediaSessionOptions({
         options,

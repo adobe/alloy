@@ -3,8 +3,8 @@ import {
   concatenateAnalyticsPayloads,
   getDisplayAnalyticsToken,
   getECID,
-} from "./analyticsTokenHandler.js";
-import { sendAnalyticsPayload } from "./dataInsertionApi.js";
+} from "./analyticsTokenHandler";
+import { sendAnalyticsPayload } from "./dataInsertionApi";
 
 // this org is configured to have Analytics disabled thus it is A4T Client Side Logging
 const instanceName = "organizationTwo";

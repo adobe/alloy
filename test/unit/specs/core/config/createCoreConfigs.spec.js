@@ -97,7 +97,9 @@ describe("createCoreConfigs", () => {
     },
   ].forEach((cfg, i) => {
     it(`validates configuration (${i})`, () => {
-      validator(cfg);
+      expect(() => {
+        validator(cfg);
+      }).not.toThrow();
     });
   });
   [
