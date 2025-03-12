@@ -17,13 +17,15 @@ import path from "path";
 import recursive from "recursive-readdir";
 import pkg from "minimatch";
 import { fileURLToPath } from "url";
-import { createRequire } from "module";
 import { safePathJoin } from "./helpers/path.js";
 
-const require = createRequire(import.meta.url);
-
-// eslint-disable-next-line import/extensions
-const ignorePatterns = require("../coverageignore.cjs");
+const ignorePatterns = [
+  "**/.*",
+  "**/constants/**",
+  "**/index.js",
+  "baseCode.js",
+  "standalone.js",
+];
 
 const { Minimatch } = pkg;
 const filename = fileURLToPath(import.meta.url);
