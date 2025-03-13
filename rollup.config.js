@@ -147,7 +147,7 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
     babel({
       envName: "rollup",
       babelHelpers: "bundled",
-      configFile: path.resolve(dirname, "babel.config.cjs"),
+      configFile: path.resolve(dirname, "babel.config.js"),
       plugins: babelPlugins,
     }),
   ];

@@ -23,15 +23,10 @@ governing permissions and limitations under the License.
  * "npmEs5" - Used for building libEs5 files when publishing to NPM
  * "npmEs6" - Used for building libEs6 files when publishing to NPM
  */
+import { dirname } from "path";
+import { fileURLToPath } from "url";
 
-const targets = {
-  browsers: [
-    "last 2 Chrome versions",
-    "last 2 Firefox versions",
-    "last 2 Safari versions",
-    "last 2 Edge versions",
-  ],
-};
+const cwd = dirname(fileURLToPath(import.meta.url));
 
 const transformTemplateLiteralsPlugin = [
   "@babel/plugin-transform-template-literals",
@@ -39,10 +34,7 @@ const transformTemplateLiteralsPlugin = [
     loose: true,
   },
 ];
-const versionPlugin = [
-  "./scripts/helpers/versionBabelPlugin",
-  { cwd: __dirname },
-];
+const versionPlugin = ["./scripts/helpers/versionBabelPlugin", { cwd }];
 
 const transformModulesCommonjsPlugin = [
   "@babel/plugin-transform-modules-commonjs",
@@ -54,7 +46,7 @@ const transformModulesCommonjsPlugin = [
 
 const npmIgnoreFiles = ["src/baseCode.js"];
 
-module.exports = {
+export default {
   env: {
     rollup: {
       presets: [
@@ -62,21 +54,13 @@ module.exports = {
           "@babel/preset-env",
           {
             modules: false,
-            targets,
           },
         ],
       ],
       plugins: [transformTemplateLiteralsPlugin, versionPlugin],
     },
     npmEs5: {
-      presets: [
-        [
-          "@babel/preset-env",
-          {
-            targets,
-          },
-        ],
-      ],
+      presets: [["@babel/preset-env"]],
       ignore: npmIgnoreFiles,
       plugins: [
         transformTemplateLiteralsPlugin,
