@@ -78,7 +78,7 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
     datastreamId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
     edgeDomain: "edge.adobedc.net",
     idMigrationEnabled: true,
-    onBeforeEventSend: "function func() {}",
+    onBeforeEventSend: "() => {}",
     orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
     thirdPartyCookiesEnabled: true,
     targetMigrationEnabled: false,
