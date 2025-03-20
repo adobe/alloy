@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import {
-  createRestoreStorage,
-  createSaveStorage,
   getExpirationDate,
   getActivityId,
   hasExperienceData,
   getDecisionProvider,
-} from "./utils.js";
+  createRestoreStorage,
+  createSaveStorage,
+} from "./utils/index.js";
 import { EVENT_TYPE_TRUE } from "../../constants/eventType.js";
 import { ADOBE_JOURNEY_OPTIMIZER } from "../../constants/decisionProvider.js";
 

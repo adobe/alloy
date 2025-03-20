@@ -22,7 +22,7 @@ import {
   CONTEXT_EVENT_TYPE,
 } from "./constants.js";
 import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand.js";
-import { clearLocalStorage, createInMemoryStorage } from "./utils.js";
+import { clearLocalStorage, createInMemoryStorage } from "./utils/storage.js";
 import { objectOf, boolean } from "../../utils/validation/index.js";
 import createCollect from "../../utils/createCollect.js";
 import { mergeDecisionsMeta } from "../../utils/event.js";

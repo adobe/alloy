@@ -13,7 +13,7 @@ import RulesEngine from "@adobe/aep-rules-engine";
 import { JSON_CONTENT_ITEM, RULESET_ITEM } from "../../constants/schema.js";
 import { DISPLAY } from "../../constants/eventType.js";
 import { PropositionEventType } from "../../constants/propositionEventType.js";
-import { getActivityId } from "./utils.js";
+import { getActivityId } from "./utils/index.js";
 
 import flattenArray from "../../utils/flattenArray.js";
 import createConsequenceAdapter from "./createConsequenceAdapter.js";

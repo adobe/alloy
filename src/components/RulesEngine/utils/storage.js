@@ -1,5 +1,5 @@
 /*
-Copyright 2023 Adobe. All rights reserved.
+Copyright 2025 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -35,15 +35,6 @@ export const createSaveStorage = (
   };
 };
 
-export const getExpirationDate = (retentionPeriod) => {
-  const expirationDate = new Date();
-  expirationDate.setDate(expirationDate.getDate() - retentionPeriod);
-  return expirationDate;
-};
-
-export const getActivityId = (proposition) =>
-  proposition?.scopeDetails?.activity?.id;
-
 export const createInMemoryStorage = () => {
   const inMemoryStorage = {};
 
@@ -60,15 +51,4 @@ export const createInMemoryStorage = () => {
 
 export const clearLocalStorage = (storage) => {
   storage.clear();
-};
-
-export const hasExperienceData = (xdm) => {
-  const { _experience } = xdm || {};
-  return !!_experience && typeof _experience === "object";
-};
-
-export const getDecisionProvider = (proposition) => {
-  const { scopeDetails = {} } = proposition;
-  const { decisionProvider } = scopeDetails;
-  return decisionProvider;
 };
