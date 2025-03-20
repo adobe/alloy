@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createEvaluableRulesetPayload from "./createEvaluableRulesetPayload.js";
-import { getActivityId } from "./utils.js";
+import { getActivityId } from "./utils/index.js";
 
 export default ({ eventRegistry }) => {
   const payloadsBasedOnActivityId = {};
