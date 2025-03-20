@@ -9,15 +9,4 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-export { default as getExpirationDate } from "./getExpirationDate.js";
-export { default as getPrefixedKey } from "./getPrefixedKey.js";
-export { default as createEventPruner } from "./createEventPruner.js";
-export { default as hasExperienceData } from "./hasExperienceData.js";
-export { getActivityId, getDecisionProvider } from "./getPropositionData.js";
-export {
-  createRestoreStorage,
-  createSaveStorage,
-  createInMemoryStorage,
-  clearLocalStorage,
-} from "./storage.js";
+export default (key) => `iam.${key}`;

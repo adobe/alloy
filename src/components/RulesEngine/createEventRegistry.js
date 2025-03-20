@@ -10,45 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import {
-  getExpirationDate,
   getActivityId,
   hasExperienceData,
   getDecisionProvider,
   createRestoreStorage,
   createSaveStorage,
+  createEventPruner,
+  getPrefixedKey,
 } from "./utils/index.js";
 import { EVENT_TYPE_TRUE } from "../../constants/eventType.js";
 import { ADOBE_JOURNEY_OPTIMIZER } from "../../constants/decisionProvider.js";
-
-const STORAGE_KEY = "events";
-const MAX_EVENT_RECORDS = 1000;
-const RETENTION_PERIOD = 30;
-
-const prefixed = (key) => `iam.${key}`;
-
-export const createEventPruner = (
-  limit = MAX_EVENT_RECORDS,
-  retentionPeriod = RETENTION_PERIOD,
-) => {
-  return (events) => {
-    const pruned = {};
-    Object.keys(events).forEach((eventType) => {
-      pruned[eventType] = {};
-      Object.values(events[eventType])
-        .filter(
-          (entry) =>
-            new Date(entry.firstTimestamp) >=
-            getExpirationDate(retentionPeriod),
-        )
-        .sort((a, b) => a.firstTimestamp - b.firstTimestamp)
-        .slice(-1 * limit)
-        .forEach((entry) => {
-          pruned[eventType][entry.event[prefixed("id")]] = entry;
-        });
-    });
-    return pruned;
-  };
-};
+import { EVENT_HISTORY_STORAGE_KEY } from "./constants/index.js";
 
 export default ({ storage }) => {
   let currentStorage = storage;
@@ -58,11 +30,11 @@ export default ({ storage }) => {
   const setStorage = (newStorage) => {
     currentStorage = newStorage;
 
-    restore = createRestoreStorage(currentStorage, STORAGE_KEY);
+    restore = createRestoreStorage(currentStorage, EVENT_HISTORY_STORAGE_KEY);
     save = createSaveStorage(
       currentStorage,
-      STORAGE_KEY,
-      createEventPruner(MAX_EVENT_RECORDS, RETENTION_PERIOD),
+      EVENT_HISTORY_STORAGE_KEY,
+      createEventPruner(),
     );
     events = restore({});
   };
@@ -87,9 +59,9 @@ export default ({ storage }) => {
 
     events[eventType][eventId] = {
       event: {
-        [prefixed("id")]: eventId,
-        [prefixed("eventType")]: eventType,
-        [prefixed("action")]: action,
+        [getPrefixedKey("id")]: eventId,
+        [getPrefixedKey("eventType")]: eventType,
+        [getPrefixedKey("action")]: action,
       },
       firstTimestamp,
       timestamp,
