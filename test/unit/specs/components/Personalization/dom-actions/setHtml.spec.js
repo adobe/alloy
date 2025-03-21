@@ -24,7 +24,8 @@ import { getAttribute } from "../../../../../../src/components/Personalization/d
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
 import pause from "../../../../helpers/pause.js";
 import { DOM_ACTION_SET_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
-import createRenderStatusHandlerForTest from "../../../../helpers/createRenderStatusHandlerForTest.js";
+import createRenderStatusHandler from "../../../../../../src/components/Personalization/handlers/createRenderStatusHandler.js";
+
 describe("Personalization::actions::setHtml", () => {
   let decorateProposition;
   beforeEach(() => {
@@ -55,7 +56,11 @@ describe("Personalization::actions::setHtml", () => {
         a: 1,
       },
     };
-    await setHtml(settings, decorateProposition, createRenderStatusHandlerForTest());
+    await setHtml(
+      settings,
+      decorateProposition,
+      createRenderStatusHandler("view", "test"),
+    );
     expect(element.innerHTML).toEqual("bar");
     expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
       "trackingLabel",
@@ -79,7 +84,11 @@ describe("Personalization::actions::setHtml", () => {
         a: 1,
       },
     };
-    await setHtml(settings, decorateProposition, createRenderStatusHandlerForTest());
+    await setHtml(
+      settings,
+      decorateProposition,
+      createRenderStatusHandler("view", "test"),
+    );
     await pause(501);
     expect(window.someEvar123).toEqual(1);
     const scriptElements = document.querySelectorAll("#evar123");
@@ -108,7 +117,11 @@ describe("Personalization::actions::setHtml", () => {
         a: 1,
       },
     };
-    await setHtml(settings, decorateProposition, createRenderStatusHandlerForTest());
+    await setHtml(
+      settings,
+      decorateProposition,
+      createRenderStatusHandler("view", "test"),
+    );
     button.click();
     expect(window.someEvar123).toEqual(2);
   });

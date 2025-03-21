@@ -23,7 +23,7 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
-import createRenderStatusHandlerForTest from "../../../../helpers/createRenderStatusHandlerForTest.js";
+import createRenderStatusHandler from "../../../../../../src/components/Personalization/handlers/createRenderStatusHandler.js";
 import { DOM_ACTION_INSERT_AFTER } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::insertAfter", () => {
@@ -70,7 +70,7 @@ describe("Personalization::actions::insertAfter", () => {
     return insertAfter(
       settings,
       decorateProposition,
-      createRenderStatusHandlerForTest(),
+      createRenderStatusHandler("view", "test"),
     ).then(() => {
       const result = selectNodes("div#insertAfter .ia");
       expect(result[0].innerHTML).toEqual("AAA");

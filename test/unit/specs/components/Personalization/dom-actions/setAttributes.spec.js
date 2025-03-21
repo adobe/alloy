@@ -22,7 +22,7 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
-import createRenderStatusHandlerForTest from "../../../../helpers/createRenderStatusHandlerForTest.js";
+import createRenderStatusHandler from "../../../../../../src/components/Personalization/handlers/createRenderStatusHandler.js";
 import { DOM_ACTION_SET_ATTRIBUTE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::setAttribute", () => {
@@ -56,7 +56,7 @@ describe("Personalization::actions::setAttribute", () => {
     return setAttribute(
       settings,
       decorateProposition,
-      createRenderStatusHandlerForTest(),
+      createRenderStatusHandler("view", "test"),
     ).then(() => {
       expect(element.getAttribute("data-test")).toEqual("bar");
       expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(

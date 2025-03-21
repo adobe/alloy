@@ -23,7 +23,7 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
-import createRenderStatusHandlerForTest from "../../../../helpers/createRenderStatusHandlerForTest.js";
+import createRenderStatusHandler from "../../../../../../src/components/Personalization/handlers/createRenderStatusHandler.js";
 import { DOM_ACTION_REARRANGE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::rearrange", () => {
@@ -66,7 +66,11 @@ describe("Personalization::actions::rearrange", () => {
         a: 1,
       },
     };
-    return rearrange(settings, decorateProposition, createRenderStatusHandlerForTest()).then(() => {
+    return rearrange(
+      settings,
+      decorateProposition,
+      createRenderStatusHandler("view", "test"),
+    ).then(() => {
       const result = selectNodes("li");
       expect(result[0].textContent).toEqual("2");
       expect(getAttribute(result[0], CLICK_LABEL_DATA_ATTRIBUTE)).toBeNull();
@@ -116,7 +120,11 @@ describe("Personalization::actions::rearrange", () => {
         a: 1,
       },
     };
-    return rearrange(settings, decorateProposition, createRenderStatusHandlerForTest()).then(() => {
+    return rearrange(
+      settings,
+      decorateProposition,
+      createRenderStatusHandler("view", "test"),
+    ).then(() => {
       const result = selectNodes("li");
       expect(result[0].textContent).toEqual("3");
       expect(result[1].textContent).toEqual("1");
