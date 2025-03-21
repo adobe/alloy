@@ -85,9 +85,6 @@ export const createAction = (renderFunc) => {
         renderFunc,
         renderStatusHandler,
       });
-    } catch (e) {
-      console.error(e);
-      throw e;
     } finally {
       showElements(prehidingSelector);
     }
