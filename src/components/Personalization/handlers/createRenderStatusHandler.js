@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 // import { VIEW_SCOPE_TYPE } from "../constants/scopeType.js";
-
+      
 /**
  * Creates a handler to manage the rendering status of elements in personalization
  *
@@ -26,15 +26,13 @@ export default (scopeType, itemId) => {
      * @returns {boolean} True if the element should be rendered, false otherwise
      */
     shouldRender: (propositionContainer) => {
-      // TODO: Figure out why Nina was filtering for only VIEW_SCOPE_TYPE.
-      // What about page scope?
-      if (propositionContainer) {
-        const previouslyRendered = (
-          propositionContainer.dataset.adobePropositionIds ?? ""
-        ).split(",");
-        return !previouslyRendered.includes(itemId);
+      if (!propositionContainer) {
+        return true;
       }
-      return true;
+      const previouslyRendered = (
+        propositionContainer.dataset.adobePropositionIds ?? ""
+      ).split(",");
+      return !previouslyRendered.includes(itemId);
     },
     /**
      * Marks an element as rendered by setting a data attribute
