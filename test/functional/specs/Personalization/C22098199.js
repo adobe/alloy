@@ -32,15 +32,15 @@ const orgMainConfigMain = getBaseConfig(
 );
 
 test.meta({
-  ID: "C17409729",
+  ID: "C22098199",
   SEVERITY: "P0",
   TEST_RUN: "Regression",
 });
 
 createFixture({
   title:
-    "C17409729 - Non-idempotent proposition actions are not applied multiple times",
-  url: `${TEST_PAGE_URL}?test=C17409729`,
+    "C22098199 - Non-idempotent proposition actions are not applied multiple times",
+  url: `${TEST_PAGE_URL}?test=C22098199`,
   requestHooks: [edgeEndpointLogs],
 });
 
