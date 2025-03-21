@@ -193,6 +193,7 @@ describe("createProcessDomAction", () => {
         a: "b",
       },
       expect.any(Function),
+      expect.any(Object),
     );
   });
 });

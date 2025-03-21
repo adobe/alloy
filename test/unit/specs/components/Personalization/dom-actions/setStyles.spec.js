@@ -22,6 +22,7 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import createRenderStatusHandlerForTest from "../../../../helpers/createRenderStatusHandlerForTest.js";
 import { DOM_ACTION_SET_STYLE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::setStyle", () => {
@@ -53,7 +54,7 @@ describe("Personalization::actions::setStyle", () => {
         a: 1,
       },
     };
-    return setStyle(settings, decorateProposition).then(() => {
+    return setStyle(settings, decorateProposition, createRenderStatusHandlerForTest()).then(() => {
       expect(element.style.getPropertyValue("font-size")).toEqual("33px");
       expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
         "trackingLabel",

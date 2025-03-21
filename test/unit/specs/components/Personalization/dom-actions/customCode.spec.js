@@ -17,6 +17,7 @@ import {
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import createRenderStatusHandlerForTest from "../../../../helpers/createRenderStatusHandlerForTest.js";
 import { DOM_ACTION_CUSTOM_CODE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::customCode", () => {
@@ -51,7 +52,11 @@ describe("Personalization::actions::customCode", () => {
         a: 1,
       },
     };
-    await customCode(settings, decorateProposition);
+    await customCode(
+      settings,
+      decorateProposition,
+      createRenderStatusHandlerForTest(),
+    );
     expect(element.innerHTML).toMatch(
       /<p data-aep-interact-id="\d+" data-aep-click-label="trackingLabel">Hola!<\/p><div id="inner1"><\/div><div id="inner2"><\/div>/,
     );
@@ -70,7 +75,11 @@ describe("Personalization::actions::customCode", () => {
         a: 1,
       },
     };
-    await customCode(settings, decorateProposition);
+    await customCode(
+      settings,
+      decorateProposition,
+      createRenderStatusHandlerForTest(),
+    );
     expect(element.innerHTML).toMatch(
       /<p data-aep-interact-id="\d+" data-aep-click-label="trackingLabel">Hola!<\/p><div data-aep-interact-id="\d+" data-aep-click-label="trackingLabel">Hello<\/div>/,
     );

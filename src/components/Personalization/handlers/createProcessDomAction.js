@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createDecorateProposition from "./createDecorateProposition.js";
+import createRenderStatusHandler from "./createRenderStatusHandler.js";
 import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules.js";
 
 export default ({
@@ -54,6 +55,10 @@ export default ({
       return { setRenderAttempted: false, includeInNotification: false };
     }
 
+    const renderStatusHandler = createRenderStatusHandler(
+      item.getProposition().getScopeType(),
+      item.getId(),
+    );
     const decorateProposition = createDecorateProposition(
       autoCollectPropositionInteractions,
       type,
@@ -66,7 +71,8 @@ export default ({
     );
 
     return {
-      render: () => modules[type](item.getData(), decorateProposition),
+      render: () =>
+        modules[type](item.getData(), decorateProposition, renderStatusHandler),
       setRenderAttempted: true,
       includeInNotification: true,
     };

@@ -22,6 +22,7 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import createRenderStatusHandlerForTest from "../../../../helpers/createRenderStatusHandlerForTest.js";
 import { DOM_ACTION_MOVE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::move", () => {
@@ -53,7 +54,7 @@ describe("Personalization::actions::move", () => {
         a: 1,
       },
     };
-    move(settings, decorateProposition).then(() => {
+    move(settings, decorateProposition, createRenderStatusHandlerForTest()).then(() => {
       expect(element.style.left).toEqual("100px");
       expect(element.style.top).toEqual("100px");
       expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
@@ -80,7 +81,7 @@ describe("Personalization::actions::move", () => {
         a: 1,
       },
     };
-    move(settings, decorateProposition).then(() => {
+    move(settings, decorateProposition, createRenderStatusHandlerForTest()).then(() => {
       expect(element.style.left).toEqual("100px");
       expect(element.style.top).toEqual("100px");
       expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(

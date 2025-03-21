@@ -23,23 +23,36 @@ export default (scopeType, itemId) => {
     /**
      * Determines if an element should be rendered based on scopeType and previous render status
      *
-     * @param {Element|null} element - The DOM element to check
+     * @param {Element|null} propositionContainer - The DOM element to check
      * @returns {boolean} True if the element should be rendered, false otherwise
      */
-    shouldRender: (element) => {
-      if (scopeType === VIEW_SCOPE_TYPE && element) {
-        return getAttribute(element, "data-aep-rendered") !== itemId;
+    shouldRender: (propositionContainer) => {
+      // TODO: Figure out why Nina was filtering for only VIEW_SCOPE_TYPE.
+      // What about page scope?
+      if (propositionContainer) {
+        const previouslyRendered = (
+          propositionContainer.dataset.aepRendered ?? ""
+        ).split(",");
+        return !previouslyRendered.includes(itemId);
       }
       return true;
     },
     /**
      * Marks an element as rendered by setting a data attribute
      *
-     * @param {Element} element - The DOM element to mark as rendered
+     * @param {Element} propositionContainer - The DOM element to mark as rendered
      * @returns {void}
      */
-    markAsRendered: (element) => {
-      setAttribute(element, "data-aep-rendered", itemId);
+    markAsRendered: (propositionContainer) => {
+      let previouslyRendered = (
+        propositionContainer.dataset.aepRendered ?? ""
+      ).split(",");
+      if (!previouslyRendered.includes(itemId)) {
+        previouslyRendered.push(itemId);
+      }
+      propositionContainer.dataset.aepRendered = previouslyRendered
+        .sort()
+        .join(",");
     },
   };
 };

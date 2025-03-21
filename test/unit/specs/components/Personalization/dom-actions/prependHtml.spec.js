@@ -23,6 +23,7 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import createRenderStatusHandlerForTest from "../../../../helpers/createRenderStatusHandlerForTest.js";
 import { DOM_ACTION_PREPEND_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::prependHtml", () => {
@@ -58,7 +59,11 @@ describe("Personalization::actions::prependHtml", () => {
         a: 1,
       },
     };
-    return prependHtml(settings, decorateProposition).then(() => {
+    return prependHtml(
+      settings,
+      decorateProposition,
+      createRenderStatusHandlerForTest(),
+    ).then(() => {
       const result = selectNodes("ul#prependHtml li");
       expect(result.length).toEqual(3);
       // first li (prepended)

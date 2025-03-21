@@ -26,35 +26,70 @@ export { default as setAttributes } from "./setAttributes.js";
 export { default as swapImage } from "./swapImage.js";
 export { default as rearrangeChildren } from "./rearrangeChildren.js";
 
-const renderContent = (elements, content, decorateProposition, renderFunc) => {
-  const executions = elements.map((element) =>
-    renderFunc(element, content, decorateProposition),
-  );
+/**
+ * Renders content into a container element.
+ *
+ * @param {Object} params
+ * @param {Element[]} params.containers
+ * @param {string} params.content
+ * @param {(element: Element) => void} params.decorateProposition
+ * @param {(container: Element, content: string, decorateProposition: (element: Element) => void) => Promise<void>} params.renderFunc
+ * @returns {Promise<void>} A promise that resolves when the content is rendered.
+ */
+const renderContent = ({
+  containers,
+  content,
+  decorateProposition,
+  renderFunc,
+  renderStatusHandler,
+}) => {
+  const executions = containers
+    .filter(renderStatusHandler.shouldRender)
+    .map(async (container) => {
+      await renderFunc(container, content, decorateProposition);
+      renderStatusHandler.markAsRendered(container);
+    });
 
   return Promise.all(executions);
 };
 
+/**
+ * Creates an action function that renders content into a container element.
+ *
+ * @param {Function} renderFunc - The function that performs the rendering.
+ */
 export const createAction = (renderFunc) => {
-  return (itemData, decorateProposition) => {
-    const { selector, prehidingSelector, content } = itemData;
-
+  /**
+   * Renders content into a container element.
+   *
+   * @param {{ selector: string, prehidingSelector: string, content: string }} itemData - The item data containing the container selector and prehiding selector.
+   * @param {(element: Element) => void} createDecorateProposition
+   * @param {{ shouldRender: (element: Element) => boolean, markAsRendered: (element: Element) => void }} renderStatusHandler
+   */
+  return async (itemData, decorateProposition, renderStatusHandler) => {
+    const {
+      selector: containerSelector,
+      prehidingSelector,
+      content,
+    } = itemData;
     hideElements(prehidingSelector);
-
-    return awaitSelector(selector, selectNodesWithEq)
-      .then((elements) =>
-        renderContent(elements, content, decorateProposition, renderFunc),
-      )
-      .then(
-        () => {
-          // if everything is OK, show elements
-          showElements(prehidingSelector);
-        },
-        (error) => {
-          // in case of awaiting timing or error, we need to remove the style tag
-          // hence showing the pre-hidden elements
-          showElements(prehidingSelector);
-          throw error;
-        },
+    try {
+      const containers = await awaitSelector(
+        containerSelector,
+        selectNodesWithEq,
       );
+      renderContent({
+        containers,
+        content,
+        decorateProposition,
+        renderFunc,
+        renderStatusHandler,
+      });
+    } catch (e) {
+      console.error(e);
+      throw e;
+    } finally {
+      showElements(prehidingSelector);
+    }
   };
 };

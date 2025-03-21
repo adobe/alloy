@@ -19,6 +19,7 @@ import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 import { INTERACT_ID_DATA_ATTRIBUTE } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import createRenderStatusHandlerForTest from "../../../../helpers/createRenderStatusHandlerForTest.js";
 import { DOM_ACTION_COLLECT_INTERACTIONS } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::collectInteractions", () => {
@@ -45,6 +46,7 @@ describe("Personalization::actions::collectInteractions", () => {
     await modules[DOM_ACTION_COLLECT_INTERACTIONS](
       itemData,
       decorateProposition,
+      createRenderStatusHandlerForTest(),
     );
     expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
   });

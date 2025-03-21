@@ -18,6 +18,7 @@ import {
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import createRenderStatusHandlerForTest from "../../../../helpers/createRenderStatusHandlerForTest.js";
 import { DOM_ACTION_REMOVE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::remove", () => {
@@ -52,7 +53,7 @@ describe("Personalization::actions::remove", () => {
         a: 1,
       },
     };
-    return remove(settings, decorateProposition).then(() => {
+    return remove(settings, decorateProposition, createRenderStatusHandlerForTest()).then(() => {
       const result = selectNodes("#child");
       expect(result.length).toEqual(0);
     });
