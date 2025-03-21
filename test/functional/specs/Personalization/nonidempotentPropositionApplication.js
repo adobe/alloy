@@ -44,10 +44,11 @@ createFixture({
   requestHooks: [edgeEndpointLogs],
 });
 
+const containerId = "target-container";
 const testPageBody = `
 <div id="container">
   <h1 id="page-header">Hello World!</h1>
-  <div id="target-container"></div>
+  <div id="${containerId}"></div>
 </div>
 `;
 
@@ -96,7 +97,10 @@ const createMockResponse = ({
   };
 };
 
-test.only("Test C17409729: Proposition with prependHtml action is not applied multiple times", async () => {
+/**
+ * @param {string} action
+ */
+const createTest = (action) => async () => {
   const config = compose(orgMainConfigMain, debugEnabled);
   const propositionId = uuid();
   const itemId = uuid();
@@ -109,9 +113,9 @@ test.only("Test C17409729: Proposition with prependHtml action is not applied mu
         id: itemId,
         schema: "https://ns.adobe.com/personalization/dom-action",
         data: {
-          type: "prependHtml",
-          content: `<div id="${contentId}">This is prepended content</div>`,
-          selector: "#target-container",
+          type: action,
+          content: `<div id="${contentId}">This is content—${action}</div>`,
+          selector: `#${containerId}`,
         },
       },
     ],
@@ -128,70 +132,14 @@ test.only("Test C17409729: Proposition with prependHtml action is not applied mu
     responseBody,
   });
 
-  const appendedContent = Selector(`#${contentId}`).addCustomDOMProperties({
+  const container = Selector(`#${containerId}`).addCustomDOMProperties({
     renderedId: (el) => el.getAttribute("data-aep-rendered"),
   });
+  const renderedContent = Selector(`#${contentId}`);
   // Verify the content was prepended once
-  await t
-    .expect(appendedContent.count)
-    .eql(1)
-    // failing because the renderedId is set on #target-container, not #appended-content
-    .expect(appendedContent.renderedId)
-    .eql(itemId);
-
-  await t.debug();
-  // Second application - should not append again
-  await alloy.applyResponse({
-    renderDecisions: true,
-    responseBody,
-  });
-
-  // Verify the content was not appended again
-  await t.expect(appendedContent.count).eql(1);
-});
-
-test("Test C17409729: Proposition with appendHtml action is not applied multiple times", async () => {
-  const config = compose(orgMainConfigMain, debugEnabled);
-  const propositionId = uuid();
-  const itemId = uuid();
-
-  const contentId = "appended-content";
-  const responseBody = createMockResponse({
-    propositionId,
-    items: [
-      {
-        id: itemId,
-        schema: "https://ns.adobe.com/personalization/dom-action",
-        data: {
-          type: "appendHtml",
-          content: `<div id="${contentId}">This is appended content</div>`,
-          selector: "#target-container",
-        },
-      },
-    ],
-  });
-
-  await addHtmlToBody(testPageBody, true);
-
-  const alloy = createAlloyProxy();
-  await alloy.configure(config);
-
-  // First application
-  await alloy.applyResponse({
-    renderDecisions: true,
-    responseBody,
-  });
-
-  const appendedContent = Selector(`#${contentId}`).addCustomDOMProperties({
-    renderedId: (el) => el.getAttribute("data-aep-rendered"),
-  });
-  // Verify the content was appended once
-  await t
-    .expect(appendedContent.count)
-    .eql(1)
-    // failing because the renderedId is set on #target-container, not #appended-content
-    .expect(appendedContent.renderedId)
-    .eql(itemId);
+  await t.expect(renderedContent.count).eql(1);
+  // failing because the renderedId is set on #target-container, not #appended-content
+  await t.expect(container.renderedId).contains(itemId);
 
   // Second application - should not append again
   await alloy.applyResponse({
@@ -200,105 +148,14 @@ test("Test C17409729: Proposition with appendHtml action is not applied multiple
   });
 
   // Verify the content was not appended again
-  await t.expect(appendedContent.count).eql(1);
-});
+  await t.expect(renderedContent.count).eql(1);
+};
 
-test("Test C17409729: Proposition with insertBefore action is not applied multiple times", async () => {
-  const config = compose(orgMainConfigMain, debugEnabled);
-  const propositionId = uuid();
-  const itemId = uuid();
-
-  const responseBody = createMockResponse({
-    propositionId,
-    items: [
-      {
-        id: itemId,
-        schema: "https://ns.adobe.com/personalization/dom-action",
-        data: {
-          type: "insertBefore",
-          content: '<div id="inserted-before">This is inserted before</div>',
-          selector: "#page-header",
-        },
-      },
-    ],
-  });
-
-  await addHtmlToBody(testPageBody, true);
-
-  const alloy = createAlloyProxy();
-  await alloy.configure(config);
-
-  // First application
-  await alloy.applyResponse({
-    renderDecisions: true,
-    responseBody,
-  });
-
-  const insertedBefore = Selector("#inserted-before").addCustomDOMProperties({
-    renderedId: (el) => el.getAttribute("data-aep-rendered"),
-  });
-  // Verify the content was inserted once
-  await t
-    .expect(insertedBefore.count)
-    .eql(1)
-    .expect(insertedBefore.renderedId)
-    .eql(itemId);
-  // Second application - should not insert again
-  await alloy.applyResponse({
-    renderDecisions: true,
-    responseBody,
-  });
-
-  // Verify the content was not inserted again
-  await t.expect(insertedBefore.count).eql(1);
-});
-
-test("Test C17409729: Proposition with insertAfter action is not applied multiple times", async () => {
-  const config = compose(orgMainConfigMain, debugEnabled);
-  const propositionId = uuid();
-  const itemId = uuid();
-
-  const responseBody = createMockResponse({
-    propositionId,
-    items: [
-      {
-        id: itemId,
-        schema: "https://ns.adobe.com/personalization/dom-action",
-        data: {
-          type: "insertAfter",
-          content: '<div id="inserted-after">This is inserted after</div>',
-          selector: "#page-header",
-        },
-      },
-    ],
-  });
-
-  await addHtmlToBody(testPageBody, true);
-
-  const alloy = createAlloyProxy();
-  await alloy.configure(config);
-
-  // First application
-  await alloy.applyResponse({
-    renderDecisions: true,
-    responseBody,
-  });
-
-  const insertedAfter = Selector("#inserted-after").addCustomDOMProperties({
-    renderedId: (el) => el.getAttribute("data-aep-rendered"),
-  });
-  // Verify the content was inserted once
-  await t
-    .expect(insertedAfter.count)
-    .eql(1)
-    .expect(insertedAfter.renderedId)
-    .eql(itemId);
-  // Second application - should not insert again
-  await alloy.applyResponse({
-    renderDecisions: true,
-    responseBody,
-  });
-
-  // Verify the content was not inserted again
-  await t.expect(insertedAfter.count).eql(1);
-});
+["prependHtml", "appendHtml", "insertBefore", "insertAfter"].forEach(
+  (action) => {
+    test.only(
+      `Test C17409729: Proposition with ${action} action is not applied multiple times`,
+      createTest(action),
+    );
+  },
+);
