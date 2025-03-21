@@ -17,9 +17,6 @@ import { getAttribute, setAttribute } from "../dom-actions/dom/index.js";
  *
  * @param {string} scopeType - The type of scope (e.g. 'view', 'page')
  * @param {string} itemId - The unique identifier for the item being rendered
- * @returns {Object} An object with methods to check and update rendering status
- * @returns {(element: Element) => boolean} Object.shouldRender - Function to determine if an element should be rendered
- * @returns {(element: Element) => void} Object.markAsRendered - Function to mark an element as rendered
  */
 export default (scopeType, itemId) => {
   return {
@@ -30,12 +27,6 @@ export default (scopeType, itemId) => {
      * @returns {boolean} True if the element should be rendered, false otherwise
      */
     shouldRender: (element) => {
-      console.log("[CARTER] shouldRender", {
-        element,
-        scopeType,
-        itemId,
-        "data-aep-rendered": getAttribute(element, "data-aep-rendered"),
-      });
       if (scopeType === VIEW_SCOPE_TYPE && element) {
         return getAttribute(element, "data-aep-rendered") !== itemId;
       }
@@ -48,11 +39,6 @@ export default (scopeType, itemId) => {
      * @returns {void}
      */
     markAsRendered: (element) => {
-      console.log("[CARTER] markAsRendered", {
-        element,
-        scopeType,
-        itemId,
-      });
       setAttribute(element, "data-aep-rendered", itemId);
     },
   };
