@@ -30,7 +30,7 @@ export default (scopeType, itemId) => {
       // What about page scope?
       if (propositionContainer) {
         const previouslyRendered = (
-          propositionContainer.dataset.aepRendered ?? ""
+          propositionContainer.dataset.adobePropositionIds ?? ""
         ).split(",");
         return !previouslyRendered.includes(itemId);
       }
@@ -44,14 +44,13 @@ export default (scopeType, itemId) => {
      */
     markAsRendered: (propositionContainer) => {
       const previouslyRendered = (
-        propositionContainer.dataset.aepRendered ?? ""
+        propositionContainer.dataset.adobePropositionIds ?? ""
       ).split(",");
       if (!previouslyRendered.includes(itemId)) {
         previouslyRendered.push(itemId);
       }
-      propositionContainer.dataset.aepRendered = previouslyRendered
-        .sort()
-        .join(",");
+      propositionContainer.dataset.adobePropositionIdsadobePropositionIds =
+        previouslyRendered.sort().join(",");
     },
   };
 };

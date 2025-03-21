@@ -133,7 +133,7 @@ const createTest = (action) => async () => {
   });
 
   const container = Selector(`#${containerId}`).addCustomDOMProperties({
-    renderedId: (el) => el.getAttribute("data-aep-rendered"),
+    renderedId: (el) => el.getAttribute("data-adobe-proposition-ids"),
   });
   const renderedContent = Selector(`#${contentId}`);
   // Verify the content was prepended once
