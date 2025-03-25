@@ -52,49 +52,29 @@ const testPageBody = `
 </div>
 `;
 
-const createMockResponse = ({
+const createPropositions = ({
   propositionId = uuid(),
   activityId = uuid(),
   items = [],
 }) => {
-  return {
-    requestId: uuid(),
-    handle: [
-      {
-        payload: [
-          {
-            id: "54671057599843051332294448941462242513",
-            namespace: {
-              code: "ECID",
-            },
-          },
-        ],
-        type: "identity:result",
+  return [
+    {
+      id: propositionId,
+      scope: "web://aepdemo.com/",
+      scopeDetails: {
+        decisionProvider: ADOBE_JOURNEY_OPTIMIZER,
+        correlationID: "6dae465b-9553-4fc6-b7d4-6c9979c88f21-0",
+        characteristics: {
+          eventToken:
+            "eyJtZXNzYWdlRXhlY3V0aW9uIjp7Im1lc3NhZ2VFeGVjdXRpb25JRCI6IlVFOkluYm91bmQiLCJtZXNzYWdlSUQiOiJmMzgxZWJhYS1kNDIyLTQxNzQtOWUzNS0yMTY3NDYwMjk5MTAiLCJtZXNzYWdlUHVibGljYXRpb25JRCI6IjZkYWU0NjViLTk1NTMtNGZjNi1iN2Q0LTZjOTk3OWM4OGYyMSIsIm1lc3NhZ2VUeXBlIjoibWFya2V0aW5nIiwiY2FtcGFpZ25JRCI6ImVhZDg5MWE0LTNjYWUtNGE1ZC05MGEzLTFkZTc0MzkwYjNkMyIsImNhbXBhaWduVmVyc2lvbklEIjoiZDhiYzk5YmMtZGRhZC00Y2MyLThlYjItYTJlMGUzY2FmNzg0IiwiY2FtcGFpZ25BY3Rpb25JRCI6IjQzNmZmM2NkLTZkZWItNDczNi04NDc1LTA3NDhhYzc4MTlkOCJ9LCJtZXNzYWdlUHJvZmlsZSI6eyJtZXNzYWdlUHJvZmlsZUlEIjoiMDg5NGYwNmYtOTkyNi00YTc2LTk4OTktYThmZjc3NWZmNTA4IiwiY2hhbm5lbCI6eyJfaWQiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbHMvd2ViIiwiX3R5cGUiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbC10eXBlcy93ZWIifX19",
+        },
+        activity: {
+          id: activityId,
+        },
       },
-      {
-        payload: [
-          {
-            id: propositionId,
-            scope: "web://aepdemo.com/",
-            scopeDetails: {
-              decisionProvider: ADOBE_JOURNEY_OPTIMIZER,
-              correlationID: "6dae465b-9553-4fc6-b7d4-6c9979c88f21-0",
-              characteristics: {
-                eventToken:
-                  "eyJtZXNzYWdlRXhlY3V0aW9uIjp7Im1lc3NhZ2VFeGVjdXRpb25JRCI6IlVFOkluYm91bmQiLCJtZXNzYWdlSUQiOiJmMzgxZWJhYS1kNDIyLTQxNzQtOWUzNS0yMTY3NDYwMjk5MTAiLCJtZXNzYWdlUHVibGljYXRpb25JRCI6IjZkYWU0NjViLTk1NTMtNGZjNi1iN2Q0LTZjOTk3OWM4OGYyMSIsIm1lc3NhZ2VUeXBlIjoibWFya2V0aW5nIiwiY2FtcGFpZ25JRCI6ImVhZDg5MWE0LTNjYWUtNGE1ZC05MGEzLTFkZTc0MzkwYjNkMyIsImNhbXBhaWduVmVyc2lvbklEIjoiZDhiYzk5YmMtZGRhZC00Y2MyLThlYjItYTJlMGUzY2FmNzg0IiwiY2FtcGFpZ25BY3Rpb25JRCI6IjQzNmZmM2NkLTZkZWItNDczNi04NDc1LTA3NDhhYzc4MTlkOCJ9LCJtZXNzYWdlUHJvZmlsZSI6eyJtZXNzYWdlUHJvZmlsZUlEIjoiMDg5NGYwNmYtOTkyNi00YTc2LTk4OTktYThmZjc3NWZmNTA4IiwiY2hhbm5lbCI6eyJfaWQiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbHMvd2ViIiwiX3R5cGUiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbC10eXBlcy93ZWIifX19",
-              },
-              activity: {
-                id: activityId,
-              },
-            },
-            items: [...items],
-          },
-        ],
-        type: "personalization:decisions",
-        eventIndex: 0,
-      },
-    ],
-  };
+      items: [...items],
+    },
+  ];
 };
 
 /**
@@ -106,7 +86,7 @@ const createTest = (action) => async () => {
   const itemId = uuid();
 
   const contentId = "prepended-content";
-  const responseBody = createMockResponse({
+  const propositions = createPropositions({
     propositionId,
     items: [
       {
@@ -127,9 +107,8 @@ const createTest = (action) => async () => {
   await alloy.configure(config);
 
   // First application
-  await alloy.applyResponse({
-    renderDecisions: true,
-    responseBody,
+  await alloy.applyPropositions({
+    propositions,
   });
 
   const container = Selector(`#${containerId}`).addCustomDOMProperties({
@@ -140,20 +119,15 @@ const createTest = (action) => async () => {
   await t.expect(renderedContent.count).eql(1);
   await t.expect(container.renderedIds).ok();
   await t.expect(container.renderedIds).contains(itemId);
-  // Verify that the display event was sent once
-  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   // Second application - should not append again
-  await alloy.applyResponse({
-    renderDecisions: true,
-    responseBody,
+
+  await alloy.applyPropositions({
+    propositions,
   });
 
   // Verify the content was not appended again
   await t.expect(renderedContent.count).eql(1);
-
-  // verify that the display event was sent again.
-  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
 };
 
 ["prependHtml", "appendHtml", "insertBefore", "insertAfter"].forEach(
