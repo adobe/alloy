@@ -133,13 +133,13 @@ const createTest = (action) => async () => {
   });
 
   const container = Selector(`#${containerId}`).addCustomDOMProperties({
-    renderedId: (el) => el.getAttribute("data-adobe-proposition-ids"),
+    renderedIds: (el) => el.dataset.adobePropositionIds,
   });
   const renderedContent = Selector(`#${contentId}`);
   // Verify the content was prepended once
   await t.expect(renderedContent.count).eql(1);
-  // failing because the renderedId is set on #target-container, not #appended-content
-  await t.expect(container.renderedId).contains(itemId);
+  await t.expect(container.renderedIds).ok();
+  await t.expect(container.renderedIds).contains(itemId);
 
   // Second application - should not append again
   await alloy.applyResponse({

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 // import { VIEW_SCOPE_TYPE } from "../constants/scopeType.js";
-      
+
 /**
  * Creates a handler to manage the rendering status of elements in personalization
  *
@@ -47,8 +47,9 @@ export default (scopeType, itemId) => {
       if (!previouslyRendered.includes(itemId)) {
         previouslyRendered.push(itemId);
       }
-      propositionContainer.dataset.adobePropositionIdsadobePropositionIds =
-        previouslyRendered.sort().join(",");
+      propositionContainer.dataset.adobePropositionIds = previouslyRendered
+        .sort()
+        .join(",");
     },
   };
 };
