@@ -140,6 +140,8 @@ const createTest = (action) => async () => {
   await t.expect(renderedContent.count).eql(1);
   await t.expect(container.renderedIds).ok();
   await t.expect(container.renderedIds).contains(itemId);
+  // Verify that the display event was sent once
+  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   // Second application - should not append again
   await alloy.applyResponse({
@@ -149,6 +151,9 @@ const createTest = (action) => async () => {
 
   // Verify the content was not appended again
   await t.expect(renderedContent.count).eql(1);
+
+  // verify that the display event was sent again.
+  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
 };
 
 ["prependHtml", "appendHtml", "insertBefore", "insertAfter"].forEach(
