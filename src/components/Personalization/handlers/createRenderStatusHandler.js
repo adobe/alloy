@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-// import { VIEW_SCOPE_TYPE } from "../constants/scopeType.js";
+import { VIEW_SCOPE_TYPE } from "../constants/scopeType.js";
 
 /**
  * Creates a handler to manage the rendering status of elements in personalization
@@ -18,6 +18,13 @@ governing permissions and limitations under the License.
  * @param {string} itemId - The unique identifier for the item being rendered
  */
 export default (scopeType, itemId) => {
+  // We only care about tracking renders for view scope
+  if (scopeType !== VIEW_SCOPE_TYPE) {
+    return {
+      shouldRender: () => true,
+      markAsRendered: () => {},
+    };
+  }
   return {
     /**
      * Determines if an element should be rendered based on scopeType and previous render status

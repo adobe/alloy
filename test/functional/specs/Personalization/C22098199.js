@@ -54,19 +54,22 @@ const testPageBody = `
 
 const createPropositions = ({
   propositionId = uuid(),
+  viewName = "test",
   activityId = uuid(),
   items = [],
 }) => {
   return [
     {
       id: propositionId,
-      scope: "web://aepdemo.com/",
+      scope: `web://aepdemo.com/#${viewName}`,
       scopeDetails: {
         decisionProvider: ADOBE_JOURNEY_OPTIMIZER,
         correlationID: "6dae465b-9553-4fc6-b7d4-6c9979c88f21-0",
         characteristics: {
           eventToken:
             "eyJtZXNzYWdlRXhlY3V0aW9uIjp7Im1lc3NhZ2VFeGVjdXRpb25JRCI6IlVFOkluYm91bmQiLCJtZXNzYWdlSUQiOiJmMzgxZWJhYS1kNDIyLTQxNzQtOWUzNS0yMTY3NDYwMjk5MTAiLCJtZXNzYWdlUHVibGljYXRpb25JRCI6IjZkYWU0NjViLTk1NTMtNGZjNi1iN2Q0LTZjOTk3OWM4OGYyMSIsIm1lc3NhZ2VUeXBlIjoibWFya2V0aW5nIiwiY2FtcGFpZ25JRCI6ImVhZDg5MWE0LTNjYWUtNGE1ZC05MGEzLTFkZTc0MzkwYjNkMyIsImNhbXBhaWduVmVyc2lvbklEIjoiZDhiYzk5YmMtZGRhZC00Y2MyLThlYjItYTJlMGUzY2FmNzg0IiwiY2FtcGFpZ25BY3Rpb25JRCI6IjQzNmZmM2NkLTZkZWItNDczNi04NDc1LTA3NDhhYzc4MTlkOCJ9LCJtZXNzYWdlUHJvZmlsZSI6eyJtZXNzYWdlUHJvZmlsZUlEIjoiMDg5NGYwNmYtOTkyNi00YTc2LTk4OTktYThmZjc3NWZmNTA4IiwiY2hhbm5lbCI6eyJfaWQiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbHMvd2ViIiwiX3R5cGUiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbC10eXBlcy93ZWIifX19",
+          viewName,
+          scopeType: "view",
         },
         activity: {
           id: activityId,
@@ -132,7 +135,7 @@ const createTest = (action) => async () => {
 
 ["prependHtml", "appendHtml", "insertBefore", "insertAfter"].forEach(
   (action) => {
-    test.only(
+    test(
       `Test C17409729: Proposition with ${action} action is not applied multiple times`,
       createTest(action),
     );
