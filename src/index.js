@@ -29,7 +29,18 @@ import * as optionalComponents from "./core/componentCreators.js";
 const { console } = window;
 const createNamespacedStorage = injectStorage(window);
 
-export const createCustomInstance = (options = {}) => {
+/**
+ * Creates a custom Alloy instance which can reduce the library size and increase performance.
+ * 
+ * @param {Object} [options] - Configuration options for the instance.
+ * @param {string} [options.name] - (Optional) The name of the instance. Defaults to "alloy".
+ * @param {Array<Object>} [options.monitors] - (Optional) Monitors for the instance.
+ * @param {Array<Function>} [options.components] - Components for the instance.
+ * @returns {(commandName: string, options?: Object) => Promise<any>} A callable Alloy instance.
+ * 
+ * @see {@link https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/install/create-custom-build} for more details.
+ */
+export function createCustomInstance(options = {}) {
   const eventOptionsValidator = objectOf({
     name: string().default("alloy"),
     monitors: arrayOf(objectOf({})).default([]),
@@ -61,7 +72,21 @@ export const createCustomInstance = (options = {}) => {
   return instance;
 };
 
-export const createInstance = (options = {}) => {
+/**
+ * Creates a new Alloy instance.
+ * 
+ * @param {Object} [options] - (Optional) Configuration options for the instance.
+ * @param {string} [options.name] - (Optional) The name of the instance. Defaults to "alloy".
+ * @param {Array<Object>} [options.monitors] - (Optional) Monitors for the instance.
+ * @returns {(commandName: string, options?: Object) => Promise<any>} A callable Alloy instance.
+ * 
+ * @example
+ * const alloy = createInstance({ name: "myInstance" });
+ * alloy("configure", { datastreamId: "myDatastreamId", orgId: "myOrgId" });
+ * 
+ * @see {@link https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/install/npm} for more details.
+ */
+export function createInstance(options = {}) {
   const eventOptionsValidator = objectOf({
     name: string().default("alloy"),
     monitors: arrayOf(objectOf({})).default([]),
