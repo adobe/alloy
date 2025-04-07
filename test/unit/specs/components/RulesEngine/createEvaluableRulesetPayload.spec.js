@@ -26,6 +26,7 @@ describe("RulesEngine:createEvaluableRulesetPayload", () => {
 
     eventRegistry = createEventRegistry({
       storage,
+      logger: { info: vi.fn() },
     });
   });
 

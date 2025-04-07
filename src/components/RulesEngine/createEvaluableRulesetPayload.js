@@ -13,7 +13,7 @@ import RulesEngine from "@adobe/aep-rules-engine";
 import { JSON_CONTENT_ITEM, RULESET_ITEM } from "../../constants/schema.js";
 import { DISPLAY } from "../../constants/eventType.js";
 import { PropositionEventType } from "../../constants/propositionEventType.js";
-import { getActivityId } from "./utils/index.js";
+import { generateEventHash, getActivityId } from "./utils/index.js";
 
 import flattenArray from "../../utils/flattenArray.js";
 import createConsequenceAdapter from "./createConsequenceAdapter.js";
@@ -60,24 +60,27 @@ export default (payload, eventRegistry) => {
     }
 
     items.push(
-      RulesEngine(typeof content === "string" ? JSON.parse(content) : content),
+      RulesEngine(typeof content === "string" ? JSON.parse(content) : content, {
+        generateEventHash,
+      }),
     );
   };
 
   const evaluate = (context) => {
     const displayEvent = eventRegistry.getEvent(DISPLAY, activityId);
-    const displayedDate = displayEvent?.firstTimestamp;
+    const displayedDate = displayEvent?.timestamps[0];
 
     const qualifyingItems = flattenArray(
       items.map((item) => item.execute(context)),
     )
       .map(consequenceAdapter)
       .map((item) => {
-        const { firstTimestamp: qualifiedDate } =
-          eventRegistry.addEvent({
-            eventType: PropositionEventType.TRIGGER,
-            eventId: activityId,
-          }) || {};
+        const event = eventRegistry.addEvent({
+          eventType: PropositionEventType.TRIGGER,
+          eventId: activityId,
+        });
+
+        const qualifiedDate = event.timestamps[0];
 
         return {
           ...item,

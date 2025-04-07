@@ -33,6 +33,7 @@ const createRulesEngine = ({
   createNamespacedStorage,
   consent,
   getBrowser,
+  logger,
 }) => {
   const { orgId, personalizationStorageEnabled } = config;
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
@@ -46,6 +47,7 @@ const createRulesEngine = ({
 
   const eventRegistry = createEventRegistry({
     storage: createInMemoryStorage(),
+    logger,
   });
   const decisionProvider = createDecisionProvider({ eventRegistry });
   const contextProvider = createContextProvider({

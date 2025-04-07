@@ -35,10 +35,11 @@ describe("RulesEngine:utils", () => {
       '{ "something": true, "color": "orange", "person": { "height": 5.83 } }',
     );
     const restore = createRestoreStorage(storage, "zoink");
+
     expect(
       restore({
         good: true,
-      }),
+      })[0],
     ).toEqual({
       something: true,
       color: "orange",
@@ -52,10 +53,11 @@ describe("RulesEngine:utils", () => {
   it("uses default value if storage unavailable", () => {
     storage.getItem.mockReturnValue(undefined);
     const restore = createRestoreStorage(storage, "zoink");
+
     expect(
       restore({
         good: true,
-      }),
+      })[0],
     ).toEqual({
       good: true,
     });

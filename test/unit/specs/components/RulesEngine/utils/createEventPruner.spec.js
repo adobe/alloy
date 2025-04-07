@@ -9,186 +9,75 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
+
+/* eslint-disable no-plusplus */
+
+import { describe, it, expect } from "vitest";
 import createEventPruner from "../../../../../../src/components/RulesEngine/utils/createEventPruner.js";
+import generateEventHash from "../../../../../../src/components/RulesEngine/utils/generateEventHash.js";
 
 describe("RulesEngine:createEventRegistry", () => {
-  let mockedTimestamp;
+  const mockedTimestamp = new Date("2023-05-24T08:00:00Z");
 
-  beforeEach(() => {
-    mockedTimestamp = new Date("2023-05-24T08:00:00Z");
-    vi.useFakeTimers();
-    vi.setSystemTime(mockedTimestamp);
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
-  it("limits events to 1000 events", () => {
-    const prune = createEventPruner();
+  it("limits events to the number of configured events", () => {
+    const prune = createEventPruner(30, 2);
     const events = {};
+    let hash;
 
-    events["decisioning.propositionDisplay"] = {};
-    events["decisioning.propositionInteract"] = {};
+    let validTimestamp = new Date().getTime();
 
-    for (let i = 0; i < 2000; i += 1) {
-      events["decisioning.propositionDisplay"][i] = {
-        event: {
-          "iam.id": i,
-          "iam.eventType": "decisioning.propositionDisplay",
-        },
-        firstTimestamp: "2023-05-23T08:00:00Z",
-        timestamp: mockedTimestamp,
-        count: 1,
-      };
+    // Generate a few expired events (have a timestamp older than 30 days).
+    for (let i = 0; i < 2; i += 1) {
+      hash = generateEventHash({
+        "iam.id": i,
+        "iam.eventType": "decisioning.propositionDisplay",
+      });
+      events[hash] = { timestamps: [validTimestamp++] };
 
-      events["decisioning.propositionInteract"][i] = {
-        event: {
-          "iam.id": i,
-          "iam.eventType": "decisioning.propositionInteract",
-        },
-        firstTimestamp: "2023-05-23T08:00:00Z",
-        timestamp: mockedTimestamp,
-        count: 1,
-      };
-
-      const pruned = prune(events);
-      const interactEvents = Object.values(
-        pruned["decisioning.propositionInteract"],
-      );
-
-      const displayEvents = Object.values(
-        pruned["decisioning.propositionDisplay"],
-      );
-
-      expect(interactEvents.length).not.toBeGreaterThan(1000);
-
-      expect(displayEvents.length).not.toBeGreaterThan(1000);
-
-      if (i > 1000) {
-        expect(interactEvents[0].event["iam.id"]).toEqual(i - 999);
-        expect(displayEvents[0].event["iam.id"]).toEqual(i - 999);
-      }
-
-      if (i > 0) {
-        expect(
-          interactEvents[0].timestamp <
-            interactEvents[interactEvents.length - 1].timestamp,
-        ).toBe(false);
-
-        expect(
-          displayEvents[0].timestamp <
-            displayEvents[interactEvents.length - 1].timestamp,
-        ).toBe(false);
-      }
+      hash = generateEventHash({
+        "iam.id": i,
+        "iam.eventType": "decisioning.propositionInteract",
+      });
+      events[hash] = { timestamps: [validTimestamp++] };
     }
-  });
 
-  it("has configurable limits", () => {
-    const prune = createEventPruner(10);
-    const events = {};
-    events["decisioning.propositionDisplay"] = {};
+    expect(Object.keys(events).length).toBe(4);
 
-    for (let i = 0; i < 20; i += 1) {
-      events["decisioning.propositionDisplay"][i] = {
-        event: {
-          "iam.id": i,
-          "iam.eventType": "decisioning.propositionDisplay",
-        },
-        firstTimestamp: 1,
-        timestamp: 1,
-        count: 1,
-      };
-      const pruned = prune(events);
-      const displayEvents = Object.values(
-        pruned["decisioning.propositionDisplay"],
-      );
-
-      expect(displayEvents.length).not.toBeGreaterThan(10);
-    }
+    const prunedEvents = prune(events);
+    expect(Object.keys(prunedEvents).length).toBe(2);
   });
 
   it("should filter events based on expiration date", () => {
-    const pruner = createEventPruner(4, 2);
+    const prune = createEventPruner(30, 1000);
     const events = {};
+    let hash;
 
-    events["decisioning.propositionDisplay"] = {
-      1: {
-        event: {
-          "iam.id": 1,
-          "iam.eventType": "decisioning.propositionInteract",
-        },
-        firstTimestamp: "2023-05-20T10:00:00Z",
-        timestamp: mockedTimestamp,
-        count: 1,
-      },
-      2: {
-        event: {
-          "iam.id": 2,
-          "iam.eventType": "decisioning.propositionInteract",
-        },
-        firstTimestamp: "2023-05-24T15:00:00Z",
-        timestamp: mockedTimestamp,
-        count: 1,
-      },
-    };
+    // Generate a few expired events (have a timestamp older than 30 days).
+    for (let i = 0; i < 2; i += 1) {
+      hash = generateEventHash({
+        "iam.id": i,
+        "iam.eventType": "decisioning.propositionDisplay",
+      });
+      events[hash] = { timestamps: [mockedTimestamp] };
 
-    events["decisioning.propositionInteract"] = {
-      3: {
-        event: {
-          "iam.id": 3,
-          "iam.eventType": "decisioning.propositionInteract",
-        },
-        firstTimestamp: "2023-05-23T08:00:00Z",
-        timestamp: mockedTimestamp,
-        count: 1,
-      },
-      4: {
-        event: {
-          "iam.id": 4,
-          "iam.eventType": "decisioning.propositionInteract",
-        },
-        firstTimestamp: "2023-05-23T08:00:00Z",
-        timestamp: mockedTimestamp,
-        count: 1,
-      },
-    };
+      hash = generateEventHash({
+        "iam.id": i,
+        "iam.eventType": "decisioning.propositionInteract",
+      });
+      events[hash] = { timestamps: [mockedTimestamp] };
+    }
 
-    const prunedEvents = pruner(events);
-
-    expect(prunedEvents).toEqual({
-      "decisioning.propositionDisplay": {
-        2: {
-          event: {
-            "iam.id": 2,
-            "iam.eventType": "decisioning.propositionInteract",
-          },
-          firstTimestamp: "2023-05-24T15:00:00Z",
-          timestamp: mockedTimestamp,
-          count: 1,
-        },
-      },
-      "decisioning.propositionInteract": {
-        3: {
-          event: {
-            "iam.id": 3,
-            "iam.eventType": "decisioning.propositionInteract",
-          },
-          firstTimestamp: "2023-05-23T08:00:00Z",
-          timestamp: mockedTimestamp,
-          count: 1,
-        },
-        4: {
-          event: {
-            "iam.id": 4,
-            "iam.eventType": "decisioning.propositionInteract",
-          },
-          firstTimestamp: "2023-05-23T08:00:00Z",
-          timestamp: mockedTimestamp,
-          count: 1,
-        },
-      },
+    const validTimestamp = new Date().getTime();
+    hash = generateEventHash({
+      "iam.id": 100,
+      "iam.eventType": "decisioning.propositionInteract",
     });
+    events[hash] = { timestamps: [mockedTimestamp, validTimestamp] };
+
+    expect(Object.keys(events).length).toBe(5);
+
+    const prunedEvents = prune(events);
+    expect(Object.keys(prunedEvents).length).toBe(1);
+    expect(prunedEvents[hash].timestamps[0]).toBe(validTimestamp);
   });
 });

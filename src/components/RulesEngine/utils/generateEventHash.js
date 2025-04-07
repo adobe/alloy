@@ -34,6 +34,5 @@ export default (o) => {
       return result;
     }, "");
 
-  // Hash the string using fnv1a32Hex
   return fnv1a32Hex(objectString);
 };
