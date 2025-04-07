@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+export { default as generateEventHash } from "./generateEventHash.js";
 export { default as getExpirationDate } from "./getExpirationDate.js";
-export { default as getPrefixedKey } from "./getPrefixedKey.js";
 export { default as createEventPruner } from "./createEventPruner.js";
 export { default as hasExperienceData } from "./hasExperienceData.js";
 export { getActivityId, getDecisionProvider } from "./getPropositionData.js";

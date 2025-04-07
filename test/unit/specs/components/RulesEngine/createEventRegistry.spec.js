@@ -34,6 +34,7 @@ describe("RulesEngine:createEventRegistry", () => {
   it("registers events", () => {
     const eventRegistry = createEventRegistry({
       storage,
+      logger: { info: vi.fn() },
     });
 
     const getContent = () => ({
@@ -91,25 +92,11 @@ describe("RulesEngine:createEventRegistry", () => {
     eventRegistry.addExperienceEdgeEvent(event);
 
     expect(eventRegistry.toJSON()).toEqual({
-      display: {
-        "111#aaa": {
-          event: expect.objectContaining({
-            "iam.id": "111#aaa",
-            "iam.eventType": "display",
-          }),
-          firstTimestamp: expect.any(Number),
-          timestamp: expect.any(Number),
-          count: 1,
-        },
-        "222#bbb": {
-          event: expect.objectContaining({
-            "iam.id": "222#bbb",
-            "iam.eventType": "display",
-          }),
-          firstTimestamp: expect.any(Number),
-          timestamp: expect.any(Number),
-          count: 1,
-        },
+      c0d80871: {
+        timestamps: [expect.any(Number)],
+      },
+      f1173131: {
+        timestamps: [expect.any(Number)],
       },
     });
   });
@@ -165,9 +152,10 @@ describe("RulesEngine:createEventRegistry", () => {
     expect(eventRegistry.toJSON()).toEqual({});
   });
 
-  it("increments count and sets timestamp", () => {
+  it("adds new timestamp for every call", () => {
     const eventRegistry = createEventRegistry({
       storage,
+      logger: { info: vi.fn() },
     });
 
     const getContent = () => ({
@@ -205,36 +193,26 @@ describe("RulesEngine:createEventRegistry", () => {
     eventRegistry.addExperienceEdgeEvent(event);
 
     expect(eventRegistry.getEvent("display", "111#aaa")).toEqual({
-      event: expect.objectContaining({
-        "iam.id": "111#aaa",
-        "iam.eventType": "display",
-      }),
-      firstTimestamp: expect.any(Number),
-      timestamp: expect.any(Number),
-      count: 1,
+      timestamps: [expect.any(Number)],
     });
 
     expect(
-      eventRegistry.getEvent("display", "111#aaa").timestamp,
+      eventRegistry.getEvent("display", "111#aaa").timestamps[0],
     ).toBeGreaterThan(lastEventTime);
-    lastEventTime = eventRegistry.getEvent("display", "111#aaa").timestamp;
+    lastEventTime = eventRegistry.getEvent("display", "111#aaa").timestamps[0];
 
     setTimeout(() => {
       eventRegistry.addExperienceEdgeEvent(event); // again
 
       expect(eventRegistry.getEvent("display", "111#aaa")).toEqual({
-        event: expect.objectContaining({
-          "iam.id": "111#aaa",
-          "iam.eventType": "display",
-        }),
-        firstTimestamp: expect.any(Number),
-        timestamp: expect.any(Number),
-        count: 2,
+        timestamps: expect.arrayContaining([expect.any(Number)]),
       });
+
       expect(
-        eventRegistry.getEvent("display", "111#aaa").timestamp,
+        eventRegistry.getEvent("display", "111#aaa").timestamps[1],
       ).toBeGreaterThan(lastEventTime);
     }, 50);
+
     vi.advanceTimersByTime(60);
   });
 });

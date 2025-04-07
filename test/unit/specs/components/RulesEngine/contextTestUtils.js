@@ -36,6 +36,7 @@ export const proposition = {
   ],
   scope: "web://mywebsite.com",
 };
+
 export const mockWindow = ({
   title = "My awesome website",
   referrer = "https://www.google.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer",
@@ -57,6 +58,7 @@ export const mockWindow = ({
     userAgent,
   },
 });
+
 export const payloadWithCondition = (condition) => {
   return {
     id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
@@ -101,6 +103,7 @@ export const payloadWithCondition = (condition) => {
     scope: "web://mywebsite.com",
   };
 };
+
 export const mockRulesetResponseWithCondition = (condition) => {
   return {
     getPayloadsByType: () => [
@@ -114,6 +117,7 @@ export const mockRulesetResponseWithCondition = (condition) => {
     ],
   };
 };
+
 const mockEvent = {
   getContent: () => ({
     query: {},
@@ -121,26 +125,33 @@ const mockEvent = {
   hasQuery: () => true,
   getViewName: () => undefined,
 };
+
 export const setupResponseHandler = (applyResponse, window, condition) => {
   const storage = {
     getItem: vi.fn(),
     setItem: vi.fn(),
     clear: vi.fn(),
   };
+
   const eventRegistry = createEventRegistry({
     storage,
+    logger: { info: vi.fn() },
   });
+
   const decisionProvider = createDecisionProvider({
     eventRegistry,
   });
+
   const getBrowser = injectGetBrowser({
     userAgent: window.navigator.userAgent,
   });
+
   const contextProvider = createContextProvider({
     eventRegistry,
     window,
     getBrowser,
   });
+
   const onResponseHandler = createOnResponseHandler({
     renderDecisions: true,
     decisionProvider,
@@ -148,6 +159,7 @@ export const setupResponseHandler = (applyResponse, window, condition) => {
     event: mockEvent,
     decisionContext: contextProvider.getContext(),
   });
+
   onResponseHandler({
     response: mockRulesetResponseWithCondition(condition),
   });

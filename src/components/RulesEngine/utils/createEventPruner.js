@@ -14,28 +14,52 @@ import {
   EVENT_HISTORY_RETENTION_PERIOD,
 } from "../constants/index.js";
 import getExpirationDate from "./getExpirationDate.js";
-import getPrefixedKey from "./getPrefixedKey.js";
 
+/**
+ * Creates an event pruner function that filters events based on retention period and maximum count
+ *
+ * @param {number} [retentionPeriod=EVENT_HISTORY_RETENTION_PERIOD] - The retention period in days
+ * @param {number} [limit=EVENT_HISTORY_MAX_RECORDS] - Maximum number of events to keep
+ * @returns {Function} A function that takes an events object and returns a pruned version of it
+ * @param {Object} events - Object containing events with timestamps
+ * @returns {Object} Pruned events object with events filtered by retention period and limited to max count
+ */
 export default (
-  limit = EVENT_HISTORY_MAX_RECORDS,
-  retentionPeriod = EVENT_HISTORY_RETENTION_PERIOD,
-) => {
-  return (events) => {
-    const pruned = {};
-    Object.keys(events).forEach((eventType) => {
-      pruned[eventType] = {};
-      Object.values(events[eventType])
-        .filter(
-          (entry) =>
-            new Date(entry.firstTimestamp) >=
-            getExpirationDate(retentionPeriod),
-        )
-        .sort((a, b) => a.firstTimestamp - b.firstTimestamp)
-        .slice(-1 * limit)
-        .forEach((entry) => {
-          pruned[eventType][entry.event[getPrefixedKey("id")]] = entry;
+    retentionPeriod = EVENT_HISTORY_RETENTION_PERIOD,
+    limit = EVENT_HISTORY_MAX_RECORDS,
+  ) =>
+  (events) => {
+    let eventsWithHash = Object.entries(events).reduce(
+      (accumulator, [key, { timestamps = [] }]) => {
+        timestamps.forEach((timestamp) => {
+          accumulator.push({
+            key,
+            timestamp,
+          });
         });
-    });
-    return pruned;
+
+        return accumulator;
+      },
+      [],
+    );
+
+    const expirationDate = getExpirationDate(retentionPeriod);
+
+    eventsWithHash = eventsWithHash.filter(
+      ({ timestamp }) => timestamp >= expirationDate,
+    );
+
+    eventsWithHash.sort((a, b) => a.timestamp - b.timestamp);
+    eventsWithHash = eventsWithHash.slice(-limit);
+
+    return eventsWithHash.reduce((accumulator, { key, timestamp }) => {
+      if (!accumulator[key]) {
+        accumulator[key] = {
+          timestamps: [],
+        };
+      }
+
+      accumulator[key].timestamps.push(timestamp);
+      return accumulator;
+    }, {});
   };
-};

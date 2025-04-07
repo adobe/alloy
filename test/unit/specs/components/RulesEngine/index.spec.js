@@ -26,6 +26,7 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
   let getBrowser;
   let persistentStorage;
   let createNamespacedStorage;
+
   beforeEach(() => {
     mergeData = vi.fn();
     awaitConsentDeferred = defer();
@@ -35,14 +36,17 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
     getBrowser = vi.fn().mockReturnValue("foo");
     window.referrer =
       "https://www.google.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer";
+
     persistentStorage = {
       getItem: vi.fn(),
       setItem: vi.fn(),
       clear: vi.fn(),
     };
+
     createNamespacedStorage = vi.fn().mockReturnValue({
       persistent: persistentStorage,
     });
+
     mockEvent = {
       getContent: () => ({}),
       hasQuery: () => true,
@@ -50,20 +54,25 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
       mergeData,
     };
   });
+
   const setUpDecisionEngine = ({ personalizationStorageEnabled }) => {
     const config = {
       orgId: "exampleOrgId",
       personalizationStorageEnabled,
     };
+
     const rulesEngine = createRulesEngine({
       config,
       createNamespacedStorage,
       consent,
       getBrowser,
+      logger: { info: vi.fn() },
     });
+
     rulesEngine.lifecycle.onComponentsRegistered(() => {});
     return rulesEngine;
   };
+
   it("should run the evaluateRulesets command and satisfy the rule based on global context", async () => {
     const rulesEngine = setUpDecisionEngine({
       personalizationStorageEnabled: true,
@@ -81,6 +90,7 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
         }),
       });
     };
+
     rulesEngine.lifecycle.onBeforeEvent({
       event: mockEvent,
       renderDecisions: true,
@@ -89,11 +99,13 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
       },
       onResponse: onResponseHandler,
     });
+
     const result = rulesEngine.commands.evaluateRulesets.run({});
     expect(result).toEqual({
       propositions: [proposition],
     });
   });
+
   it("should run the evaluateRulesets command and does not satisfy rule due to unmatched global context", async () => {
     const rulesEngine = setUpDecisionEngine({
       personalizationStorageEnabled: true,
@@ -158,7 +170,9 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
     const rulesEngine = setUpDecisionEngine({
       personalizationStorageEnabled: true,
     });
+
     await awaitConsentDeferred.resolve();
+
     onResponseHandler = (onResponse) => {
       onResponse({
         response: mockRulesetResponseWithCondition({
@@ -171,6 +185,7 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
         }),
       });
     };
+
     rulesEngine.lifecycle.onBeforeEvent({
       event: mockEvent,
       renderDecisions: false,
@@ -179,6 +194,7 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
       },
       onResponse: onResponseHandler,
     });
+
     const result = rulesEngine.commands.evaluateRulesets.run({});
     expect(result).toEqual({
       propositions: [proposition],

@@ -32,6 +32,7 @@ describe("RulesEngine:createOnResponseHandler", () => {
     };
     eventRegistry = createEventRegistry({
       storage,
+      logger: { info: vi.fn() },
     });
     decisionProvider = createDecisionProvider({
       eventRegistry,

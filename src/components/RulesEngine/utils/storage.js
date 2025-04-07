@@ -12,28 +12,22 @@ governing permissions and limitations under the License.
 
 export const createRestoreStorage = (storage, storageKey) => {
   return (defaultValue) => {
-    const stored = storage.getItem(storageKey);
-    if (!stored) {
-      return defaultValue;
-    }
-
     try {
-      return JSON.parse(stored);
-    } catch {
-      return defaultValue;
-    }
+      const stored = storage.getItem(storageKey);
+      const s = JSON.parse(stored);
+      return [s, stored.length];
+      // eslint-disable-next-line no-empty
+    } catch {}
+
+    return [defaultValue, 0];
   };
 };
 
-export const createSaveStorage = (
-  storage,
-  storageKey,
-  prepareFn = (value) => value,
-) => {
-  return (value) => {
-    storage.setItem(storageKey, JSON.stringify(prepareFn(value)));
+export const createSaveStorage =
+  (storage, storageKey = (value) => value) =>
+  (value) => {
+    storage.setItem(storageKey, JSON.stringify(value));
   };
-};
 
 export const createInMemoryStorage = () => {
   const inMemoryStorage = {};

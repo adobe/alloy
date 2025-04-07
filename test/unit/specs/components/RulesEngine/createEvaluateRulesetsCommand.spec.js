@@ -38,6 +38,7 @@ describe("RulesEngine:evaluateRulesetsCommand", () => {
     };
     eventRegistry = createEventRegistry({
       storage,
+      logger: { info: vi.fn() },
     });
     getBrowser = injectGetBrowser({
       userAgent: window.navigator.userAgent,

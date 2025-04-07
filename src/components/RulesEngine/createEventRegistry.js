@@ -16,61 +16,69 @@ import {
   createRestoreStorage,
   createSaveStorage,
   createEventPruner,
-  getPrefixedKey,
+  generateEventHash,
 } from "./utils/index.js";
 import { EVENT_TYPE_TRUE } from "../../constants/eventType.js";
 import { ADOBE_JOURNEY_OPTIMIZER } from "../../constants/decisionProvider.js";
-import { EVENT_HISTORY_STORAGE_KEY } from "./constants/index.js";
+import {
+  EVENT_HISTORY_STORAGE_KEY,
+  EVENT_HISTORY_MAX_LENGTH,
+} from "./constants/index.js";
 
-export default ({ storage }) => {
+export default ({ storage, logger }) => {
   let currentStorage = storage;
   let restore;
   let save;
   let events;
+  let size;
+
   const setStorage = (newStorage) => {
     currentStorage = newStorage;
 
     restore = createRestoreStorage(currentStorage, EVENT_HISTORY_STORAGE_KEY);
-    save = createSaveStorage(
-      currentStorage,
-      EVENT_HISTORY_STORAGE_KEY,
-      createEventPruner(),
-    );
-    events = restore({});
+    save = createSaveStorage(currentStorage, EVENT_HISTORY_STORAGE_KEY);
+    [events, size] = restore({});
+
+    if (size > EVENT_HISTORY_MAX_LENGTH) {
+      const eventPruner = createEventPruner();
+      events = eventPruner(events);
+      save(events);
+    }
   };
 
   setStorage(storage);
 
-  const addEvent = ({ eventType, eventId, action } = {}) => {
+  const addEvent = (o = {}) => {
+    const { eventType, eventId } = o;
+
     if (!eventType || !eventId) {
       return undefined;
     }
 
-    if (!events[eventType]) {
-      events[eventType] = {};
-    }
-    const existingEvent = events[eventType][eventId];
-
-    const count = existingEvent ? existingEvent.count : 0;
     const timestamp = new Date().getTime();
-    const firstTimestamp = existingEvent
-      ? existingEvent.firstTimestamp || existingEvent.timestamp
-      : timestamp;
+    const eventHash = generateEventHash(o);
 
-    events[eventType][eventId] = {
-      event: {
-        [getPrefixedKey("id")]: eventId,
-        [getPrefixedKey("eventType")]: eventType,
-        [getPrefixedKey("action")]: action,
-      },
-      firstTimestamp,
+    if (!events[eventHash] || !Array.isArray(events[eventHash].timestamps)) {
+      events[eventHash] = {
+        timestamps: [],
+      };
+    }
+
+    events[eventHash].timestamps.push(timestamp);
+    events[eventHash].timestamps.sort();
+
+    logger.info(
+      "[Event History] Added event for",
+      o,
+      "with hash",
+      eventHash,
+      "and timestamp",
       timestamp,
-      count: count + 1,
-    };
+    );
 
     save(events);
 
-    return events[eventType][eventId];
+    return events[eventHash];
   };
 
   const addExperienceEdgeEvent = (event) => {
@@ -101,8 +109,8 @@ export default ({ storage }) => {
           }
 
           addEvent({
-            eventType,
             eventId: getActivityId(proposition),
+            eventType,
             action,
           });
         });
@@ -110,11 +118,13 @@ export default ({ storage }) => {
   };
 
   const getEvent = (eventType, eventId) => {
-    if (!events[eventType]) {
+    const h = generateEventHash({ eventType, eventId });
+
+    if (!events[h]) {
       return undefined;
     }
 
-    return events[eventType][eventId];
+    return events[h];
   };
 
   return {

@@ -18,9 +18,11 @@ import {
 
 describe("RulesEngine:globalContext:browser", () => {
   let applyResponse;
+
   beforeEach(() => {
     applyResponse = vi.fn();
   });
+
   it("satisfies rule based on matched browser", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -30,6 +32,7 @@ describe("RulesEngine:globalContext:browser", () => {
       },
       type: "matcher",
     });
+
     expect(applyResponse).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -37,6 +40,7 @@ describe("RulesEngine:globalContext:browser", () => {
       }),
     );
   });
+
   it("does not satisfy rule due to unmatched browser", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -46,6 +50,7 @@ describe("RulesEngine:globalContext:browser", () => {
       },
       type: "matcher",
     });
+
     expect(applyResponse).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
