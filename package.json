@@ -5,9 +5,11 @@
   "type": "module",
   "main": "libEs5/index.js",
   "module": "libEs6/index.js",
+  "types": "types/index.d.ts",
   "files": [
     "libEs5",
     "libEs6",
+    "types",
     "LICENSE_BANNER",
     "babel.config.js",
     "rollup.config.js",
