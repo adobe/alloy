@@ -23,11 +23,9 @@ export const createRestoreStorage = (storage, storageKey) => {
   };
 };
 
-export const createSaveStorage =
-  (storage, storageKey = (value) => value) =>
-  (value) => {
-    storage.setItem(storageKey, JSON.stringify(value));
-  };
+export const createSaveStorage = (storage, storageKey) => (value) => {
+  storage.setItem(storageKey, JSON.stringify(value));
+};
 
 export const createInMemoryStorage = () => {
   const inMemoryStorage = {};
