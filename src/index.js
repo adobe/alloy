@@ -39,8 +39,8 @@ export const createCustomInstance = (options = {}) => {
   const { name, monitors, components } = eventOptionsValidator(options);
 
   // this is a function so that window.__alloyMonitors can be set or added to at any time
-  // eslint-disable-next-line no-underscore-dangle
-  const getMonitors = () => (window.__alloyMonitors || []).concat(monitors);
+  // eslint-disable-next-line dot-notation
+  const getMonitors = () => (window["__alloyMonitors"] || []).concat(monitors);
 
   const logController = createLogController({
     console,

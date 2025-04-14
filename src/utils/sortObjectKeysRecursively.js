@@ -39,4 +39,4 @@ const sortObjectPropertiesDeep = (data) => {
  * @param {Object|Array} data - The data structure to serialize. It can be an object or an array.
  * @returns {Object|Array} - A new object or array with allo the container object having properties sorted.
  */
-export default (obj) => sortObjectPropertiesDeep(obj);
+export default (data) => sortObjectPropertiesDeep(data);
