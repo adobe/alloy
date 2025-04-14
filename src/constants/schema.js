@@ -30,3 +30,6 @@ export const MESSAGE_NATIVE_ALERT =
 
 export const MEASUREMENT_SCHEMA =
   "https://ns.adobe.com/personalization/measurement";
+
+export const EVENT_HISTORY_OPERATION =
+  "https://ns.adobe.com/personalization/eventHistoryOperation";
