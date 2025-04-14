@@ -18,7 +18,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { glob } from "glob";
 import globals from "globals";
-import babelParser from "@babel/eslint-parser";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import vitest from "@vitest/eslint-plugin";
 import react from "eslint-plugin-react";
@@ -38,10 +37,6 @@ export default defineConfig([
   {
     files: ["**/*.{js,cjs,jsx}"],
     settings: {
-      // This will do the trick
-      "import/parsers": {
-        "@babel/eslint-parser": [".js", ".cjs", ".mjs", ".jsx"],
-      },
       "import/resolver": {
         node: {
           extensions: [".js", ".cjs", ".mjs", ".jsx"],
@@ -49,7 +44,6 @@ export default defineConfig([
       },
     },
     languageOptions: {
-      parser: babelParser,
       parserOptions: {
         babelOptions: {
           presets: ["@babel/preset-env"],
@@ -160,8 +154,10 @@ export default defineConfig([
       },
     },
     languageOptions: {
-      parser: babelParser,
       parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
         babelOptions: {
           presets: ["@babel/preset-react"],
         },

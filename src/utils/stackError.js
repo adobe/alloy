@@ -15,8 +15,9 @@ import updateErrorMessage from "./updateErrorMessage.js";
 
 /**
  * Augments an error's message with additional context as it bubbles up the call stack.
- * @param {String} message The message to be added to the error.
- * @param {*} error Optimally, this is an instance of Error. If it is not,
+ * @param {Object} options
+ * @param {String} options.message The message to be added to the error.
+ * @param {Error} options.error Optimally, this is an instance of Error. If it is not,
  * this is used as the basis for the message of a newly created Error instance.
  * @returns {*}
  */

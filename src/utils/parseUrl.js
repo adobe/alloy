@@ -67,7 +67,12 @@ const parseUri = (url) => {
       anchor: parsed.hash.replace(/^#/, ""),
     };
   } catch {
-    return {};
+    return {
+      host: "",
+      path: "",
+      query: "",
+      anchor: "",
+    };
   }
 };
 
@@ -75,9 +80,9 @@ const parseUrl = (url, parseDomain = parseDomainBasic) => {
   if (!isString(url)) {
     url = "";
   }
-  const parsed = parseUri(url) || {};
 
-  const { host = "", path = "", query = "", anchor = "" } = parsed;
+  const parsed = parseUri(url);
+  const { host, path, query, anchor } = parsed;
 
   return {
     path,
