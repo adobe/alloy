@@ -22,6 +22,7 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import createRenderStatusHandler from "../../../../../../src/components/Personalization/handlers/createRenderStatusHandler.js";
 import { DOM_ACTION_SET_IMAGE_SOURCE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::setImageSource", () => {
@@ -52,7 +53,11 @@ describe("Personalization::actions::setImageSource", () => {
         a: 1,
       },
     };
-    return setImageSource(settings, decorateProposition).then(() => {
+    return setImageSource(
+      settings,
+      decorateProposition,
+      createRenderStatusHandler("view", "test"),
+    ).then(() => {
       expect(element.getAttribute("src")).toEqual("http://foo.com/b.png");
       expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
         "trackingLabel",

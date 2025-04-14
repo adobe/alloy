@@ -23,6 +23,7 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import createRenderStatusHandler from "../../../../../../src/components/Personalization/handlers/createRenderStatusHandler.js";
 import { DOM_ACTION_APPEND_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::appendHtml", () => {
@@ -57,7 +58,11 @@ describe("Personalization::actions::appendHtml", () => {
         a: 1,
       },
     };
-    return appendHtml(settings, decorateProposition).then(() => {
+    return appendHtml(
+      settings,
+      decorateProposition,
+      createRenderStatusHandler("view", "test"),
+    ).then(() => {
       const result = selectNodes("ul#appendHtml li");
       expect(result.length).toEqual(3);
       expect(result[0].innerHTML).toEqual("1");

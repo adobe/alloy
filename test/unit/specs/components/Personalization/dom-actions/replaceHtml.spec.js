@@ -23,6 +23,7 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import createRenderStatusHandler from "../../../../../../src/components/Personalization/handlers/createRenderStatusHandler.js";
 import { DOM_ACTION_REPLACE_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::replaceHtml", () => {
@@ -66,7 +67,11 @@ describe("Personalization::actions::replaceHtml", () => {
         a: 1,
       },
     };
-    return replaceHtml(settings, decorateProposition).then(() => {
+    return replaceHtml(
+      settings,
+      decorateProposition,
+      createRenderStatusHandler("view", "test"),
+    ).then(() => {
       const result = selectNodes("div#replaceHtml .rh");
       expect(result.length).toEqual(1);
       expect(result[0].innerHTML).toEqual("BBB");
