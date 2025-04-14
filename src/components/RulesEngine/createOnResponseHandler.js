@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { PERSONALIZATION_DECISIONS_HANDLE } from "../../constants/decisionProvider.js";
 import flattenObject from "../../utils/flattenObject.js";
-import extractEventHistoryOperations from "./utils/extractEventHistoryOperations.js";
+import extractPayloadsFromEventHistoryOperations from "./utils/extractPayloadsFromEventHistoryOperations.js";
 
 export default ({
   renderDecisions,
@@ -40,7 +40,8 @@ export default ({
 
     const propositions = decisionProvider.evaluate(context);
 
-    const eventPayloads = extractEventHistoryOperations(propositions);
+    const eventPayloads =
+      extractPayloadsFromEventHistoryOperations(propositions);
     eventRegistry.addEventPayloads(eventPayloads);
 
     return applyResponse({
