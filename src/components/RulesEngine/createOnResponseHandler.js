@@ -40,6 +40,8 @@ export default ({
 
     const propositions = decisionProvider.evaluate(context);
 
+    // Some propositions may contains event history operations.
+    // We extract them and add the events to the event registry.
     const eventPayloads =
       extractPayloadsFromEventHistoryOperations(propositions);
     eventRegistry.addEventPayloads(eventPayloads);
