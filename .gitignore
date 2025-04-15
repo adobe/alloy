@@ -16,3 +16,6 @@ libEs6
 artifacts
 __screenshots__/
 adobe-alloy-*.tgz
+
+# Ignore auto generated types
+types/

@@ -5,9 +5,11 @@
   "type": "module",
   "main": "libEs5/index.js",
   "module": "libEs6/index.js",
+  "types": "types/index.d.ts",
   "files": [
     "libEs5",
     "libEs6",
+    "types",
     "LICENSE_BANNER",
     "babel.config.js",
     "rollup.config.js",
@@ -20,9 +22,10 @@
     "alloyBuilder": "scripts/alloyBuilder.js"
   },
   "scripts": {
-    "clean": "rimraf dist distTest libEs5 libEs6",
+    "clean": "rimraf dist distTest libEs5 libEs6 types",
     "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{src,test,scripts,sandbox}/**/*.{js,cjs,mjs,jsx}\"",
     "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandbox,src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
+    "types": "tsc",
     "test": "npm run test:unit && npm run test:scripts",
     "test:unit": "npx playwright install chromium && vitest run",
     "test:unit:debug": "npx playwright install chromium && vitest --no-file-parallelism --browser.headless=false",
@@ -41,7 +44,7 @@
     "build": "npm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,BUNDLESIZE && echo \"Base Code:\" && cat distTest/baseCode.min.js",
     "build:custom": "node scripts/alloyBuilder.js",
     "prepare": "husky && cd sandbox && npm install",
-    "prepack": "rimraf libEs5 libEs6 && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6",
+    "prepack": "rimraf libEs5 libEs6 types && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6 && npm run types",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
     "add-license": "./scripts/add-license.js"
   },
@@ -123,6 +126,7 @@
     "testcafe-browser-provider-saucelabs": "^3.0.0",
     "testcafe-reporter-junit": "^3.0.2",
     "testcafe-reporter-saucelabs": "^3.6.0",
+    "typescript": "^5.8.3",
     "url-exists-nodejs": "^0.2.4",
     "url-parse": "^1.5.10",
     "vitest": "^3.1.1"
