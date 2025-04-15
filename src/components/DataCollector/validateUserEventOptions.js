@@ -47,7 +47,6 @@ export default ({ options }) => {
     datasetId: string(),
     mergeId: string(),
     edgeConfigOverrides: validateConfigOverride,
-    initializePersonalization: boolean(),
   })
     .required()
     .noUnknownFields();
