@@ -44,7 +44,7 @@
     "build": "npm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,BUNDLESIZE && echo \"Base Code:\" && cat distTest/baseCode.min.js",
     "build:custom": "node scripts/alloyBuilder.js",
     "prepare": "husky && cd sandbox && npm install",
-    "prepack": "rimraf libEs5 libEs6 types && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6 && npm run types",
+    "prepack": "npm run clean && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6 && npm run types",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
     "add-license": "./scripts/add-license.js"
   },

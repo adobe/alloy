@@ -24,6 +24,7 @@ import {
   string,
   callback,
 } from "./utils/validation/index.js";
+import getMonitors from "./core/getMonitors.js";
 import * as optionalComponents from "./core/componentCreators.js";
 
 const { console } = window;
@@ -50,17 +51,13 @@ export const createCustomInstance = (options = {}) => {
 
   const { name, monitors, components } = eventOptionsValidator(options);
 
-  // this is a function so that window.__alloyMonitors can be set or added to at any time
-  // eslint-disable-next-line dot-notation
-  const getMonitors = () => (window["__alloyMonitors"] || []).concat(monitors);
-
   const logController = createLogController({
     console,
     locationSearch: window.location.search,
     createLogger,
     instanceName: name,
     createNamespacedStorage,
-    getMonitors,
+    getMonitors: getMonitors.bind(null, monitors),
   });
 
   const instance = createExecuteCommand({
