@@ -53,15 +53,12 @@ import injectGetLocationHint from "./edgeNetwork/injectGetLocationHint.js";
 import isRequestRetryable from "./network/isRequestRetryable.js";
 import getRequestRetryDelay from "./network/getRequestRetryDelay.js";
 import injectApplyResponse from "./edgeNetwork/injectApplyResponse.js";
+import getMonitors from "./getMonitors.js";
 import * as requiredComponents from "./requiredComponentCreators.js";
 
 const createNamespacedStorage = injectStorage(window);
 
 const { console, fetch, navigator } = window;
-
-// set this up as a function so that monitors can be added at anytime
-// eslint-disable-next-line no-underscore-dangle
-const getMonitors = () => window.__alloyMonitors || [];
 
 const coreConfigValidators = createCoreConfigs();
 const apexDomain = getApexDomain(window, cookieJar);
