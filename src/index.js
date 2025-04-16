@@ -14,6 +14,8 @@ governing permissions and limitations under the License.
 // like the launch extension. Everything that is exported here can be used independently by other
 // npm projects.
 
+/** @import { AlloyMonitor } from './types.js' */
+
 import { createExecuteCommand } from "./core/index.js";
 import createLogger from "./core/createLogger.js";
 import createLogController from "./core/createLogController.js";
@@ -35,8 +37,8 @@ const createNamespacedStorage = injectStorage(window);
  *
  * @type {(options: Object) => Function}
  * @param {Object} [options] - Configuration options for the instance.
- * @param {string} [options.name] - (Optional) The name of the instance. Defaults to "alloy".
- * @param {Array<Object>} [options.monitors] - (Optional) Monitors for the instance.
+ * @param {string} [options.name=alloy] - The name of the instance.
+ * @param {Array<AlloyMonitor>} [options.monitors] - Monitors for the instance.
  * @param {Array<Function>} [options.components] - Components for the instance.
  * @returns {(commandName: string, options?: Object) => Promise<any>} A callable Alloy instance.
  *
@@ -74,9 +76,9 @@ export const createCustomInstance = (options = {}) => {
  * Creates a new Alloy instance.
  *
  * @type {(options?: Object) => Function}
- * @param {Object} [options] - (Optional) Configuration options for the instance.
- * @param {string} [options.name] - (Optional) The name of the instance. Defaults to "alloy".
- * @param {Array<Object>} [options.monitors] - (Optional) Monitors for the instance.
+ * @param {Object} [options] - Configuration options for the instance.
+ * @param {string} [options.name=alloy] - The name of the instance.
+ * @param {Array<AlloyMonitor>} [options.monitors] - (Optional) Monitors for the instance.
  * @returns {(commandName: string, options?: Object) => Promise<any>} A callable Alloy instance.
  *
  * @example
