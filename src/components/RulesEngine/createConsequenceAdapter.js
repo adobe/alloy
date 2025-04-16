@@ -11,9 +11,7 @@ governing permissions and limitations under the License.
 */
 import inAppMessageConsequenceAdapter from "./consequenceAdapters/inAppMessageConsequenceAdapter.js";
 import schemaTypeConsequenceAdapter from "./consequenceAdapters/schemaTypeConsequenceAdapter.js";
-
-const CJM_IN_APP_MESSAGE_TYPE = "cjmiam";
-const SCHEMA = "schema";
+import { CJM_IN_APP_MESSAGE_TYPE, SCHEMA } from "./constants/index.js";
 
 const adapters = {
   [CJM_IN_APP_MESSAGE_TYPE]: inAppMessageConsequenceAdapter,

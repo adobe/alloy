@@ -13,3 +13,26 @@ export const EVENT_HISTORY_MAX_RECORDS = 1000;
 export const EVENT_HISTORY_RETENTION_PERIOD = 30; // 30 days
 export const EVENT_HISTORY_STORAGE_KEY = "events";
 export const EVENT_HISTORY_MAX_LENGTH = 2 * 1024 * 1024; // 2MB
+
+export const CONTEXT_KEY = {
+  TYPE: "~type",
+  SOURCE: "~source",
+};
+
+export const CONTEXT_EVENT_TYPE = {
+  LIFECYCLE: "com.adobe.eventType.lifecycle",
+  TRACK: "com.adobe.eventType.generic.track",
+  EDGE: "com.adobe.eventType.edge",
+  RULES_ENGINE: "com.adobe.eventType.rulesEngine",
+};
+
+export const CONTEXT_EVENT_SOURCE = {
+  LAUNCH: "com.adobe.eventSource.applicationLaunch",
+  REQUEST: "com.adobe.eventSource.requestContent",
+};
+
+export const CJM_IN_APP_MESSAGE_TYPE = "cjmiam";
+export const SCHEMA = "schema";
+
+export const INSERT_OPERATION = "insert";
+export const INSERT_IF_NOT_EXISTS_OPERATION = "insertIfNotExists";
