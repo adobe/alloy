@@ -12,8 +12,7 @@ governing permissions and limitations under the License.
 
 import { assertValid } from "./utils.js";
 
-export default () => {
-  const values = [];
+export default (values) => {
   return (value, path) => {
     assertValid(
       values.indexOf(value) === -1,

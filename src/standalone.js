@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 // This file is used by rollup to create the browser version that is uploaded to cdn
 
-import core from "./core/index.js";
+import core from "./core/createInstance.js";
 import * as components from "./core/componentCreators.js";
 
 // If you change this line, check if the custom build script is still working.

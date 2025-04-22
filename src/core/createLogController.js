@@ -10,57 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { queryString, stringToBoolean } from "../utils/index.js";
-import debugQueryParam from "../constants/debugQueryParam.js";
-
 export default ({
-  console,
-  locationSearch,
   createLogger,
   instanceName,
-  createNamespacedStorage,
   getMonitors,
 }) => {
-  const parsedQueryString = queryString.parse(locationSearch);
-  const storage = createNamespacedStorage(`instance.${instanceName}.`);
-
-  const debugSessionValue = storage.session.getItem("debug");
-  let debugEnabled = debugSessionValue === "true";
-  let debugEnabledWritableFromConfig = debugSessionValue === null;
-
-  const getDebugEnabled = () => debugEnabled;
-  const setDebugEnabled = (value, { fromConfig }) => {
-    if (!fromConfig || debugEnabledWritableFromConfig) {
-      debugEnabled = value;
-    }
-
-    if (!fromConfig) {
-      // Web storage only allows strings, so we explicitly convert to string.
-      storage.session.setItem("debug", value.toString());
-      debugEnabledWritableFromConfig = false;
-    }
-  };
-
-  if (parsedQueryString[debugQueryParam] !== undefined) {
-    setDebugEnabled(stringToBoolean(parsedQueryString[debugQueryParam]), {
-      fromConfig: false,
-    });
-  }
-
   return {
-    setDebugEnabled,
     logger: createLogger({
-      getDebugEnabled,
       context: { instanceName },
       getMonitors,
-      console,
     }),
     createComponentLogger(componentName) {
       return createLogger({
-        getDebugEnabled,
         context: { instanceName, componentName },
         getMonitors,
-        console,
       });
     },
   };

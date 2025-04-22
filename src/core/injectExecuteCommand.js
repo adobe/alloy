@@ -11,13 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import { isFunction, isObject } from "../utils/index.js";
-import { CONFIGURE, SET_DEBUG } from "../constants/coreCommands.js";
-import { objectOf, boolean } from "../utils/validation/index.js";
+import { CONFIGURE } from "../constants/coreCommands.js";
 
 export default ({
   logger,
   configureCommand,
-  setDebugCommand,
   handleError,
   validateCommandOptions,
 }) => {
@@ -44,54 +42,39 @@ export default ({
           `The library must be configured first. Please do so by executing the configure command.`,
         );
       }
-      if (commandName === SET_DEBUG) {
-        executor = () => {
-          const optionsValidator = objectOf({
-            enabled: boolean().required(),
-          }).noUnknownFields();
-
-          const validatedOptions = validateCommandOptions({
-            command: { commandName: SET_DEBUG, optionsValidator },
-            options,
-          });
-
-          setDebugCommand(validatedOptions);
-        };
-      } else {
-        executor = () => {
-          return configurePromise.then(
-            (componentRegistry) => {
-              const command = componentRegistry.getCommand(commandName);
-              if (!command || !isFunction(command.run)) {
-                const commandNames = [CONFIGURE, SET_DEBUG]
-                  .concat(componentRegistry.getCommandNames())
-                  .join(", ");
-                throw new Error(
-                  `The ${commandName} command does not exist. List of available commands: ${commandNames}.`,
-                );
-              }
-              const validatedOptions = validateCommandOptions({
-                command,
-                options,
-              });
-              return command.run(validatedOptions);
-            },
-            () => {
-              logger.warn(
-                `An error during configuration is preventing the ${commandName} command from executing.`,
+      executor = () => {
+        return configurePromise.then(
+          (componentRegistry) => {
+            const command = componentRegistry.getCommand(commandName);
+            if (!command || !isFunction(command.run)) {
+              const commandNames = [CONFIGURE]
+                .concat(componentRegistry.getCommandNames())
+                .join(", ");
+              throw new Error(
+                `The ${commandName} command does not exist. List of available commands: ${commandNames}.`,
               );
-              // If configuration failed, we prevent the configuration
-              // error from bubbling here because we don't want the
-              // configuration error to be reported in the console every
-              // time any command is executed. Only having it bubble
-              // once when the configure command runs is sufficient.
-              // Instead, for this command, we'll just return a promise
-              // that never gets resolved.
-              return new Promise(() => {});
-            },
-          );
-        };
-      }
+            }
+            const validatedOptions = validateCommandOptions({
+              command,
+              options,
+            });
+            return command.run(validatedOptions);
+          },
+          () => {
+            logger.warn(
+              `An error during configuration is preventing the ${commandName} command from executing.`,
+            );
+            // If configuration failed, we prevent the configuration
+            // error from bubbling here because we don't want the
+            // configuration error to be reported in the console every
+            // time any command is executed. Only having it bubble
+            // once when the configure command runs is sufficient.
+            // Instead, for this command, we'll just return a promise
+            // that never gets resolved.
+            return new Promise(() => { });
+          },
+        );
+      };
     }
 
     return executor;

@@ -9,13 +9,39 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+const COLLECT_REGEX = /collect\?/;
 
-export default ({ sendBeacon, sendFetchRequest, logger }) => {
-  return (url, body) => {
+export default ({ fetch, sendBeacon, logger }) => {
+
+  const sendWithFetch = (url, body) => {
+    return fetch(url, {
+      method: "POST",
+      cache: "no-cache",
+      credentials: "include", // To set the cookie header in the request.
+      headers: {
+        "Content-Type": "text/plain; charset=UTF-8",
+      },
+      referrerPolicy: "no-referrer-when-downgrade",
+      body,
+    }).then((response) => {
+      return response.text().then((responseBody) => ({
+        statusCode: response.status,
+        // We expose headers through a function instead of creating an object
+        // with all the headers up front largely because the native
+        // request.getResponseHeader method is case-insensitive.
+        getHeader(name) {
+          return response.headers.get(name);
+        },
+        body: responseBody,
+      }));
+    });
+  };
+
+  const sendWithSendBeacon = (url, body) => {
     const blob = new Blob([body], { type: "text/plain; charset=UTF-8" });
     if (!sendBeacon(url, blob)) {
       logger.info("Unable to use `sendBeacon`; falling back to `fetch`.");
-      return sendFetchRequest(url, body);
+      return sendWithFetch(url, body);
     }
 
     // Using sendBeacon, we technically don't get a response back from
@@ -28,5 +54,9 @@ export default ({ sendBeacon, sendFetchRequest, logger }) => {
       },
       body: "",
     });
+  };
+
+  return (url, body) => {
+    return COLLECT_REGEX.test(url) ? sendWithSendBeacon(url, body) : sendWithFetch(url, body);
   };
 };

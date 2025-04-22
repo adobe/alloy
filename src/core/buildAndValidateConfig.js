@@ -72,7 +72,6 @@ export default ({
   coreConfigValidators,
   createConfig,
   logger,
-  setDebugEnabled,
 }) => {
   // We wrap the logger in a queue in case debugEnabled is set in the config
   // but we need to log something before the config is created.
@@ -91,14 +90,12 @@ export default ({
       logger: queuedLogger,
     }),
   );
-  setDebugEnabled(config.debugEnabled, { fromConfig: true });
-  queuedLogger.flush();
   // eslint-disable-next-line no-underscore-dangle
   const extraParams = buildAllOnInstanceConfiguredExtraParams(
     config,
     logger,
     componentCreators,
   );
-  logger.logOnInstanceConfigured({ ...extraParams, config });
-  return config;
+  queuedLogger.logOnInstanceConfigured({ ...extraParams, config });
+  return { config, queuedLogger };
 };

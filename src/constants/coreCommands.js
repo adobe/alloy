@@ -11,4 +11,3 @@ governing permissions and limitations under the License.
 */
 
 export const CONFIGURE = "configure";
-export const SET_DEBUG = "setDebug";

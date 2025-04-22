@@ -11,15 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import createInstanceFunction from "./createInstanceFunction.js";
-import {
-  getApexDomain,
-  injectStorage,
-  cookieJar,
-  isFunction,
-  createLoggingCookieJar,
-  injectFireReferrerHideableImage,
-  injectGetBrowser,
-} from "../utils/index.js";
 import createLogController from "./createLogController.js";
 import createLifecycle from "./createLifecycle.js";
 import createComponentRegistry from "./createComponentRegistry.js";
@@ -36,8 +27,6 @@ import initializeComponents from "./initializeComponents.js";
 import createConfig from "./config/createConfig.js";
 import createCoreConfigs from "./config/createCoreConfigs.js";
 import injectHandleError from "./injectHandleError.js";
-import injectSendFetchRequest from "./network/requestMethods/injectSendFetchRequest.js";
-import injectSendBeaconRequest from "./network/requestMethods/injectSendBeaconRequest.js";
 import createLogger from "./createLogger.js";
 import createEventManager from "./createEventManager.js";
 import createCookieTransfer from "./createCookieTransfer.js";
@@ -45,7 +34,6 @@ import injectShouldTransferCookie from "./injectShouldTransferCookie.js";
 import {
   createDataCollectionRequest,
   createDataCollectionRequestPayload,
-  createGetAssuranceValidationTokenParams,
 } from "../utils/request/index.js";
 import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkRequest.js";
 import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsAndErrors.js";
@@ -55,29 +43,20 @@ import getRequestRetryDelay from "./network/getRequestRetryDelay.js";
 import injectApplyResponse from "./edgeNetwork/injectApplyResponse.js";
 import * as requiredComponents from "./requiredComponentCreators.js";
 
-const createNamespacedStorage = injectStorage(window);
-
-const { console, fetch, navigator } = window;
-
-// set this up as a function so that monitors can be added at anytime
-// eslint-disable-next-line no-underscore-dangle
-const getMonitors = () => window.__alloyMonitors || [];
-
-const coreConfigValidators = createCoreConfigs();
-const apexDomain = getApexDomain(window, cookieJar);
-const sendFetchRequest = injectSendFetchRequest({ fetch });
-const fireReferrerHideableImage = injectFireReferrerHideableImage();
-const getAssuranceValidationTokenParams =
-  createGetAssuranceValidationTokenParams({ window, createNamespacedStorage });
-
-const getBrowser = injectGetBrowser({ userAgent: window.navigator.userAgent });
 
 export const createExecuteCommand = ({
   instanceName,
-  logController: { setDebugEnabled, logger, createComponentLogger },
+  logController: { logger, createComponentLogger },
   components,
-  env
+  getAssuranceToken,
+  sendRequest,
+  getState,
+  updateState,
+  getStateEntry,
+  context,
 }) => {
+  const coreConfigValidators = createCoreConfigs(context);
+
   const componentRegistry = createComponentRegistry();
   const lifecycle = createLifecycle(componentRegistry);
 
@@ -85,44 +64,28 @@ export const createExecuteCommand = ({
     Object.values(requiredComponents),
   );
 
-  const setDebugCommand = (options) => {
-    setDebugEnabled(options.enabled, { fromConfig: false });
-  };
-
-  const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });
   const configureCommand = (options) => {
-    const config = buildAndValidateConfig({
+    const { config, queuedLogger } = buildAndValidateConfig({
       options,
       componentCreators,
       coreConfigValidators,
       createConfig,
       logger,
-      setDebugEnabled,
     });
+    console.log("config", config);
     const { orgId, targetMigrationEnabled } = config;
     const shouldTransferCookie = injectShouldTransferCookie({
       orgId,
       targetMigrationEnabled,
     });
     const cookieTransfer = createCookieTransfer({
-      cookieJar: loggingCookieJar,
       shouldTransferCookie,
-      apexDomain,
-      dateProvider: () => new Date(),
+      getState,
+      updateState,
     });
-    const sendBeaconRequest = isFunction(navigator.sendBeacon)
-      ? injectSendBeaconRequest({
-        // Without the bind(), the browser will complain about an
-        // illegal invocation.
-        sendBeacon: navigator.sendBeacon.bind(navigator),
-        sendFetchRequest,
-        logger,
-      })
-      : sendFetchRequest;
     const sendNetworkRequest = injectSendNetworkRequest({
       logger,
-      sendFetchRequest,
-      sendBeaconRequest,
+      sendRequest,
       isRequestRetryable,
       getRequestRetryDelay,
     });
@@ -131,7 +94,7 @@ export const createExecuteCommand = ({
     });
     const extractEdgeInfo = injectExtractEdgeInfo({ logger });
     const createResponse = injectCreateResponse({ extractEdgeInfo });
-    const getLocationHint = injectGetLocationHint({ orgId, cookieJar });
+    const getLocationHint = injectGetLocationHint({ orgId, getStateEntry });
     const sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
       config,
       lifecycle,
@@ -140,7 +103,7 @@ export const createExecuteCommand = ({
       createResponse,
       processWarningsAndErrors,
       getLocationHint,
-      getAssuranceValidationTokenParams,
+      getAssuranceToken,
     });
 
     const applyResponse = injectApplyResponse({
@@ -177,7 +140,6 @@ export const createExecuteCommand = ({
           componentRegistry,
           consent,
           eventManager,
-          fireReferrerHideableImage,
           logger: componentLogger,
           lifecycle,
           sendEdgeNetworkRequest,
@@ -185,12 +147,11 @@ export const createExecuteCommand = ({
             errorPrefix: `[${instanceName}] [${componentName}]`,
             logger: componentLogger,
           }),
-          createNamespacedStorage,
-          apexDomain,
-          getBrowser,
-          env
         };
       },
+    }).then((componentRegistry) => {
+      queuedLogger.flush();
+      return componentRegistry;
     });
   };
 
@@ -202,39 +163,42 @@ export const createExecuteCommand = ({
   const executeCommand = injectExecuteCommand({
     logger,
     configureCommand,
-    setDebugCommand,
     handleError,
     validateCommandOptions,
   });
   return executeCommand;
 };
 
-export default ({ components }) => {
-  // eslint-disable-next-line no-underscore-dangle
-  const instanceNames = window.__alloyNS;
+export default ({
+  components,
+  instanceName,
+  getMonitors,
+  getAssuranceToken,
+  sendRequest,
+  getState,
+  updateState,
+  getStateEntry,
+  context,
+}) => {
 
-  if (instanceNames) {
-    instanceNames.forEach((instanceName) => {
-      const logController = createLogController({
-        console,
-        locationSearch: window.location.search,
-        createLogger,
-        instanceName,
-        createNamespacedStorage,
-        getMonitors,
-      });
+  const logController = createLogController({
+    createLogger,
+    instanceName,
+    getMonitors,
+  });
 
-      const executeCommand = createExecuteCommand({
-        instanceName,
-        logController,
-        components,
-      });
-      const instance = createInstanceFunction(executeCommand);
+  const executeCommand = createExecuteCommand({
+    instanceName,
+    logController,
+    components,
+    getAssuranceToken,
+    sendRequest,
+    getState,
+    updateState,
+    getStateEntry,
+    context,
+  });
 
-      const queue = window[instanceName].q;
-      queue.push = instance;
-      logController.logger.logOnInstanceCreated({ instance });
-      queue.forEach(instance);
-    });
-  }
+  return executeCommand;
+  //return createInstanceFunction(executeCommand);
 };

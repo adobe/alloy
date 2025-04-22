@@ -17,4 +17,4 @@ export { default as createHasIdentity } from "./createHasIdentity.js";
 export { default as createRequest } from "./createRequest.js";
 export { default as createRequestParams } from "./createRequestParams.js";
 export { default as createRequestPayload } from "./createRequestPayload.js";
-export { default as createGetAssuranceValidationTokenParams } from "./createGetAssuranceValidationTokenParams.js";
+export { default as createGetAssuranceValidationTokenParams } from "../../../adapters/web/core/createGetAssuranceToken.js";

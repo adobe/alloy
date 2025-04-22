@@ -14,11 +14,11 @@ import { getNamespacedCookieName } from "../../utils/index.js";
 import { CLUSTER } from "../../constants/cookieNameKey.js";
 import { MBOX_EDGE_CLUSTER } from "../../constants/legacyCookies.js";
 
-export default ({ orgId, cookieJar }) => {
+export default ({ orgId, getStateEntry }) => {
   const clusterCookieName = getNamespacedCookieName(orgId, CLUSTER);
-  const fromClusterCookie = () => cookieJar.get(clusterCookieName);
+  const fromClusterCookie = () => getStateEntry(clusterCookieName);
   const fromTarget = () => {
-    const mboxEdgeCluster = cookieJar.get(MBOX_EDGE_CLUSTER);
+    const mboxEdgeCluster = getStateEntry(MBOX_EDGE_CLUSTER);
     if (mboxEdgeCluster) {
       return `t${mboxEdgeCluster}`;
     }

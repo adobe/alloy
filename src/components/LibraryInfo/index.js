@@ -11,13 +11,12 @@ governing permissions and limitations under the License.
 */
 
 import libraryVersion from "../../constants/libraryVersion.js";
-import { CONFIGURE, SET_DEBUG } from "../../constants/coreCommands.js";
+import { CONFIGURE } from "../../constants/coreCommands.js";
 
 const prepareLibraryInfo = ({ config, componentRegistry }) => {
   const allCommands = [
     ...componentRegistry.getCommandNames(),
     CONFIGURE,
-    SET_DEBUG,
   ].sort();
   const resultConfig = { ...config };
   Object.keys(config).forEach((key) => {

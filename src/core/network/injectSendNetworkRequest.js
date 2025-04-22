@@ -14,15 +14,14 @@ import { stackError } from "../../utils/index.js";
 
 export default ({
   logger,
-  sendFetchRequest,
-  sendBeaconRequest,
+  sendRequest,
   isRequestRetryable,
   getRequestRetryDelay,
 }) => {
   /**
    * Send a network request and returns details about the response.
    */
-  return ({ requestId, url, payload, useSendBeacon }) => {
+  return ({ requestId, url, payload }) => {
     // We want to log raw payload and event data rather than
     // our fancy wrapper objects. Calling payload.toJSON() is
     // insufficient to get all the nested raw data, because it's
@@ -39,11 +38,8 @@ export default ({
     });
 
     const executeRequest = (retriesAttempted = 0) => {
-      const requestMethod = useSendBeacon
-        ? sendBeaconRequest
-        : sendFetchRequest;
 
-      return requestMethod(url, stringifiedPayload).then((response) => {
+      return sendRequest(url, stringifiedPayload).then((response) => {
         const requestIsRetryable = isRequestRetryable({
           response,
           retriesAttempted,

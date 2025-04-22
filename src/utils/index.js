@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 // Please keep in alphabetical order.
 export { default as assignConcatArrayValues } from "./assignConcatArrayValues.js";
 export { default as clone } from "./clone.js";
-export { default as cookieJar } from "./cookieJar.js";
+export { default as cookieJar } from "../../adapters/web/utils/cookieJar.js";
 export { default as createMerger } from "./createMerger.js";
 export { default as createCallbackAggregator } from "./createCallbackAggregator.js";
 export { default as createLoggingCookieJar } from "./createLoggingCookieJar.js";
@@ -31,8 +31,8 @@ export { default as getNamespacedCookieName } from "./getNamespacedCookieName.js
 export { default as groupBy } from "./groupBy.js";
 export { default as injectAreThirdPartyCookiesSupportedByDefault } from "./injectAreThirdPartyCookiesSupportedByDefault.js";
 export { default as injectDoesIdentityCookieExist } from "./injectDoesIdentityCookieExist.js";
-export { default as injectGetBrowser } from "./injectGetBrowser.js";
-export { default as injectStorage } from "./injectStorage.js";
+export { default as injectGetBrowser } from "../../adapters/web/utils/injectGetBrowser.js";
+export { default as injectStorage } from "../../adapters/web/utils/injectStorage.js";
 export { default as intersection } from "./intersection.js";
 export { default as isBoolean } from "./isBoolean.js";
 export { default as isEmptyObject } from "./isEmptyObject.js";

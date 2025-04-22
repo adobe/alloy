@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ getDebugEnabled, console, getMonitors, context }) => {
+export default ({ getMonitors, context }) => {
   let prefix = `[${context.instanceName}]`;
   if (context.componentName) {
     prefix += ` [${context.componentName}]`;
@@ -30,14 +30,12 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
 
   const log = (level, ...rest) => {
     notifyMonitors("onBeforeLog", { level, arguments: rest });
-    if (getDebugEnabled()) {
-      console[level](prefix, ...rest);
-    }
   };
 
   return {
     get enabled() {
-      return getMonitors().length > 0 || getDebugEnabled();
+      // TODO: check if any monitors implement the onBeforeLog method
+      return getMonitors().length > 0;
     },
     logOnInstanceCreated(data) {
       notifyMonitors("onInstanceCreated", data);

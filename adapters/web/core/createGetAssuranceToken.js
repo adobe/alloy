@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { uuid, queryString } from "../index.js";
+import { uuid, queryString } from "../../../src/utils/index.js";
 
 const ASSURANCE_VALIDATION_SESSION_URL_PARAM = "adb_validation_sessionid";
 const ASSURANCE_VALIDATION_NAMESPACE = "validation.";
@@ -35,9 +35,6 @@ export default ({ window, createNamespacedStorage }) => {
       return "";
     }
     const clientId = getOrCreateAssuranceClientId(storage);
-    const validationToken = `${validationSessionId}|${clientId}`;
-    return `&${queryString.stringify({
-      adobeAepValidationToken: validationToken,
-    })}`;
+    return `${validationSessionId}|${clientId}`;
   };
 };

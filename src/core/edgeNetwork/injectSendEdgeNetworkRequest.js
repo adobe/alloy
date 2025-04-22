@@ -15,6 +15,7 @@ import apiVersion from "../../constants/apiVersion.js";
 import { createCallbackAggregator, noop } from "../../utils/index.js";
 import mergeLifecycleResponses from "./mergeLifecycleResponses.js";
 import handleRequestFailure from "./handleRequestFailure.js";
+import { queryString } from "../../utils/index.js";
 
 export default ({
   config,
@@ -24,7 +25,7 @@ export default ({
   createResponse,
   processWarningsAndErrors,
   getLocationHint,
-  getAssuranceValidationTokenParams,
+  getAssuranceToken,
 }) => {
   const { edgeDomain, edgeBasePath, datastreamId } = config;
 
@@ -70,13 +71,21 @@ export default ({
             },
           });
         }
-        const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${configId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
+        const params = {
+          configId: configId,
+          requestId: request.getId(),
+        };
+        const assuranceToken = getAssuranceToken();
+        if (assuranceToken) {
+          params.adobeAepValidationToken = assuranceToken;
+        }
+
+        const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?${queryString.stringify(params)}`;
         cookieTransfer.cookiesToPayload(payload, endpointDomain);
         return sendNetworkRequest({
           requestId: request.getId(),
           url,
           payload,
-          useSendBeacon: request.getUseSendBeacon(),
         });
       })
       .then((networkResponse) => {

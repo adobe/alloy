@@ -14,9 +14,37 @@ governing permissions and limitations under the License.
 // like the launch extension. Everything that is exported here can be used independently by other
 // npm projects.
 
-import { createExecuteCommand } from "./core/index.js";
 import createLogger from "./core/createLogger.js";
 import createLogController from "./core/createLogController.js";
+
+export default ({ components, getMonitors, name }) => {
+  const logController = createLogController({
+    createLogger,
+    instanceName: name,
+    getMonitors,
+  });
+
+  const instance = createExecuteCommand({
+    instanceName: name,
+    logController,
+    components,
+  });
+  logController.logger.logOnInstanceCreated({ instance });
+
+  return instance;
+};
+
+
+
+
+
+
+
+
+
+
+
+import { createExecuteCommand } from "./core/createInstance.js";
 import { injectStorage } from "./utils/index.js";
 import {
   arrayOf,

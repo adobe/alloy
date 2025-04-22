@@ -145,8 +145,8 @@ const regexp = function regexp() {
 const matches = function matches(regexpPattern) {
   return nullSafeChain(this, matchesRegexpValidator(regexpPattern));
 };
-const unique = function createUnique() {
-  return nullSafeChain(this, createUniqueValidator());
+const unique = function createUnique(values) {
+  return nullSafeChain(this, createUniqueValidator(values));
 };
 const uniqueItems = function createUniqueItems() {
   return nullSafeChain(this, createUniqueItemsValidator());

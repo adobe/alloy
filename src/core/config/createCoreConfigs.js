@@ -20,13 +20,15 @@ import { noop, validateConfigOverride } from "../../utils/index.js";
 import { EDGE as EDGE_DOMAIN } from "../../constants/domain.js";
 import EDGE_BASE_PATH from "../../constants/edgeBasePath.js";
 
-export default () =>
-  objectOf({
-    debugEnabled: boolean().default(false),
-    datastreamId: string().unique().required(),
+export default (context) => {
+  context.datastreamIdValues = context.datastreamIdValues || [];
+  context.orgIdValues = context.orgIdValues || [];
+  return objectOf({
+    datastreamId: string().unique(context.datastreamIdValues).required(),
     edgeDomain: string().domain().default(EDGE_DOMAIN),
     edgeBasePath: string().nonEmpty().default(EDGE_BASE_PATH),
-    orgId: string().unique().required(),
+    orgId: string().unique(context.orgIdValues).required(),
     onBeforeEventSend: callback().default(noop),
     edgeConfigOverrides: validateConfigOverride,
-  }).renamed("edgeConfigId", string().unique(), "datastreamId");
+  }).renamed("edgeConfigId", string().unique(context.datastreamIdValues), "datastreamId");
+};
