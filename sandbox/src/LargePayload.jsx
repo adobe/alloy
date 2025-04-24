@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import sendPageViewEvent from "./helpers/sendPageViewEvent";
+import configureAlloy from "./helpers/configureAlloy";
+import setupAlloy from "./helpers/setupAlloy";
 
 const makePayload =
   (size, times = 1) =>
@@ -17,7 +19,12 @@ const makePayload =
   };
 
 export default function LargePayload() {
-  useSendPageViewEvent();
+  useEffect(() => {
+    setupAlloy();
+    configureAlloy();
+    sendPageViewEvent();
+  }, []);
+
   return (
     <div>
       <ContentSecurityPolicy />

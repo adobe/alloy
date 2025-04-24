@@ -1,18 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import sendPageViewEvent from "./helpers/sendPageViewEvent";
+import configureAlloy from "./helpers/configureAlloy";
+import setupAlloy from "./helpers/setupAlloy";
 
 export default function Personalization() {
-  useSendPageViewEvent({
-    data: {
-      __adobe: {
-        target: {
-          "profile.favoriteColor": "Black",
+  useEffect(() => {
+    setupAlloy();
+    configureAlloy();
+    sendPageViewEvent({
+      renderDecisions: true,
+      data: {
+        __adobe: {
+          target: {
+            "profile.favoriteColor": "Black",
+          },
         },
       },
-    },
-  });
-
+    });
+  }, []);
   return (
     <div>
       <ContentSecurityPolicy />

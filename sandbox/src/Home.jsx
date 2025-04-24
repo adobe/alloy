@@ -1,11 +1,13 @@
-/* eslint-disable no-console, func-names */
+/* eslint-disable no-console */
 
-import React from "react";
+import React, { useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import configureAlloy from "./helpers/configureAlloy";
+import sendPageViewEvent from "./helpers/sendPageViewEvent";
+import setupAlloy from "./helpers/setupAlloy";
 
 const getIdentity = () => {
-  window.alloy("getIdentity", { namespaces: ["ECID"] }).then(function (result) {
+  window.alloy("getIdentity", { namespaces: ["ECID"] }).then((result) => {
     if (result.identity) {
       console.log(
         "Sandbox: Get Identity command has completed.",
@@ -19,14 +21,17 @@ const getIdentity = () => {
   });
 };
 
-const sendDataToSecondaryDataset = () => {
-  window.alloy("sendEvent", {
-    datasetId: "5eb9aaa6a3b16e18a818e06f",
-  });
+const getLibraryInfo = () => {
+  window.alloy("getLibraryInfo");
 };
 
 export default function Home() {
-  useSendPageViewEvent();
+  useEffect(() => {
+    setupAlloy();
+    configureAlloy();
+    sendPageViewEvent();
+  }, []);
+
   return (
     <div>
       <ContentSecurityPolicy />
@@ -38,11 +43,9 @@ export default function Home() {
         </div>
       </section>
       <section>
-        <h2>Collect data by overriding the Dataset configured in Config UI</h2>
+        <h2>Library Info</h2>
         <div>
-          <button onClick={sendDataToSecondaryDataset}>
-            Send Event to Secondary Dataset
-          </button>
+          <button onClick={getLibraryInfo}>Get Library Info</button>
         </div>
       </section>
     </div>

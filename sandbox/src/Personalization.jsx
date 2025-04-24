@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import configureAlloy from "./helpers/configureAlloy";
+import sendPageViewEvent from "./helpers/sendPageViewEvent";
+import setupAlloy from "./helpers/setupAlloy";
 
 export default function Personalization() {
-  useSendPageViewEvent();
+  useEffect(() => {
+    setupAlloy();
+    configureAlloy();
+    sendPageViewEvent({ renderDecisions: true });
+  }, []);
+
   return (
     <div>
       <ContentSecurityPolicy />

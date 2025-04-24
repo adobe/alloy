@@ -1,9 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import sendPageViewEvent from "./helpers/sendPageViewEvent";
+import configureAlloy from "./helpers/configureAlloy";
+import setupAlloy from "./helpers/setupAlloy";
 
 export default function PersonalizationAjo() {
-  useSendPageViewEvent({ instanceName: "cjmProd" });
+  useEffect(() => {
+    setupAlloy({ instanceNames: ["cjmProd"] });
+    configureAlloy({
+      instanceName: "cjmProd",
+      datastreamId: "3e808bee-74f7-468f-be1d-99b498f36fa8:prod",
+      orgId: "4DA0571C5FDC4BF70A495FC2@AdobeOrg",
+      thirdPartyCookiesEnabled: false,
+      clickCollectionEnabled: false,
+    });
+    sendPageViewEvent({ renderDecisions: true, instanceName: "cjmProd" });
+  }, []);
+
   return (
     <div>
       <ContentSecurityPolicy />

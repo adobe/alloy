@@ -13,6 +13,8 @@
 /* eslint-disable no-console, func-names */
 
 import React, { useEffect, useState } from "react";
+import setupAlloy from "./helpers/setupAlloy";
+import configureAlloy from "./helpers/configureAlloy";
 
 const readCookies = () => {
   const cookies = {};
@@ -98,6 +100,9 @@ export default function Identity() {
   const [identity, setIdentity] = useState("");
 
   useEffect(() => {
+    setupAlloy();
+    configureAlloy();
+
     const ecid = readIdentityCookie();
     setOriginalIdentityCookie(ecid);
     setCurrentIdentityCookie(ecid);
