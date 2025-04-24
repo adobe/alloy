@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-console */
 
 import React, { useEffect } from "react";
@@ -28,6 +29,39 @@ const getLibraryInfo = () => {
 export default function Home() {
   useEffect(() => {
     setupAlloy();
+
+    window.__alloyMonitors = window.__alloyMonitors || [];
+    window.__alloyMonitors.push({
+      onContentRendering(data) {
+        console.log("Alloy Content Rendering");
+        console.log("data", data.status, data);
+      },
+      onContentHiding(data) {
+        console.log("Alloy Content Hiding");
+        console.log("data", data.status);
+      },
+      onInstanceCreated(data) {
+        console.log("Alloy Instance Created");
+        console.log(data.instanceName);
+        console.log(data.instance);
+      },
+      onInstanceConfigured(data) {
+        console.log("Alloy Instance Configured");
+        console.log(JSON.stringify(data.config, null, 2));
+        const { getLinkDetails } = data;
+        const listOfLinks = document.links;
+        setTimeout(async () => {
+          console.log(
+            `Will now print link details for ${listOfLinks.length} links`,
+          );
+          for (let i = 0; i < listOfLinks.length; i += 1) {
+            const linkDetails = getLinkDetails(listOfLinks[i]);
+            console.log("link details", linkDetails);
+          }
+        }, 1000);
+      },
+    });
+
     configureAlloy();
     sendPageViewEvent();
   }, []);

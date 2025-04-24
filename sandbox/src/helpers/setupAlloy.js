@@ -18,6 +18,7 @@ import getUrlParameter from "./getUrlParameter";
 import includeScript from "./includeScript";
 
 export default ({ instanceNames = ["alloy"] } = {}) => {
+  delete window.__alloyMonitors;
   delete window.__alloyNS;
 
   instanceNames.forEach((instanceName) => {
