@@ -17,7 +17,8 @@ import babel from "@rollup/plugin-babel";
 import terser from "@rollup/plugin-terser";
 import license from "rollup-plugin-license";
 import { fileURLToPath } from "url";
-import bundleSizePlugin from "./scripts/helpers/rollupBundleSizePlugin";
+/* eslint-disable-next-line import/extensions -- Rollup needs the file extension */
+import bundleSizePlugin from "./scripts/helpers/rollupBundleSizePlugin.js";
 
 const INCLUDE_BUNDLESIZE = process.env.BUNDLESIZE === "true";
 // Set these boolean environment options to control which files are built:
