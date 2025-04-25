@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import useAlloy from "./helpers/useAlloy";
 import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
 
