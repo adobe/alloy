@@ -38,20 +38,14 @@ const CUSTOM_BUILD = "CUSTOM_BUILD";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const buildPlugins = ({ variant, minify, babelPlugins }) => {
+const buildPlugins = ({ variant, minify }) => {
   const plugins = [
-    resolve({
-      preferBuiltins: false,
-      // Support the browser field in dependencies' package.json.
-      // Useful for the uuid package.
-      mainFields: ["module", "main", "browser"],
-    }),
+    resolve(),
     commonjs(),
     babel({
       envName: "rollup",
       babelHelpers: "bundled",
       configFile: path.resolve(dirname, "babel.config.js"),
-      plugins: babelPlugins,
     }),
   ];
 
@@ -67,14 +61,9 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
     if (variant === BASE_CODE) {
       plugins.push(
         terser({
-          mangle: true,
-          compress: {
-            unused: true,
-          },
-          output: {
+          format: {
             wrap_func_args: false,
           },
-          toplevel: true,
         }),
       );
     } else {
@@ -84,7 +73,6 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
   if (variant === STANDALONE || variant === CUSTOM_BUILD) {
     plugins.push(
       license({
-        cwd: dirname,
         banner: {
           content: {
             file: path.join(dirname, "LICENSE_BANNER"),
@@ -100,11 +88,10 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
 export const buildConfig = ({
   variant = STANDALONE,
   minify = false,
-  babelPlugins = [],
   input = `${dirname}/src/standalone.js`,
   file,
 }) => {
-  const plugins = buildPlugins({ variant, minify, babelPlugins });
+  const plugins = buildPlugins({ variant, minify });
   const minifiedExtension = minify ? ".min" : "";
 
   if (variant === BASE_CODE) {
