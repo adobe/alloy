@@ -1,21 +1,21 @@
-import React, { useEffect } from "react";
+import React from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import sendPageViewEvent from "./helpers/sendPageViewEvent";
-import configureAlloy from "./helpers/configureAlloy";
-import setupAlloy from "./helpers/setupAlloy";
+import useAlloy from "./helpers/useAlloy";
+import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
 
 export default function PersonalizationAjo() {
-  useEffect(() => {
-    setupAlloy({ instanceNames: ["cjmProd"] });
-    configureAlloy({
-      instanceName: "cjmProd",
-      datastreamId: "3e808bee-74f7-468f-be1d-99b498f36fa8:prod",
-      orgId: "4DA0571C5FDC4BF70A495FC2@AdobeOrg",
-      thirdPartyCookiesEnabled: false,
-      clickCollectionEnabled: false,
-    });
-    sendPageViewEvent({ renderDecisions: true, instanceName: "cjmProd" });
-  }, []);
+  useAlloy({
+    instanceNames: ["cjmProd"],
+    configurations: {
+      cjmProd: {
+        datastreamId: "3e808bee-74f7-468f-be1d-99b498f36fa8:prod",
+        orgId: "4DA0571C5FDC4BF70A495FC2@AdobeOrg",
+        thirdPartyCookiesEnabled: false,
+        clickCollectionEnabled: false,
+      },
+    },
+  });
+  useSendPageViewEvent({ renderDecisions: true, instanceName: "cjmProd" });
 
   return (
     <div>

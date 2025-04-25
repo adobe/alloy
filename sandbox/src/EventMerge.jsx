@@ -2,17 +2,16 @@
 
 import React, { useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import sendPageViewEvent from "./helpers/sendPageViewEvent";
-import configureAlloy from "./helpers/configureAlloy";
-import setupAlloy from "./helpers/setupAlloy";
+import useAlloy from "./helpers/useAlloy";
+import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
 
 export default function EventMerge() {
   const [eventMergeIdPromise, setEventMergeIdPromise] = React.useState(null);
 
+  useAlloy();
+  useSendPageViewEvent();
+
   useEffect(() => {
-    setupAlloy();
-    configureAlloy();
-    sendPageViewEvent();
     setEventMergeIdPromise(window.alloy("createEventMergeId"));
   }, []);
 

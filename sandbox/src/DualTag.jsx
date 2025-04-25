@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import UnsafeContentSecurityPolicy from "./components/UnsafeContentSecurityPolicy";
-import sendPageViewEvent from "./helpers/sendPageViewEvent";
-import setupAlloy from "./helpers/setupAlloy";
-import configureAlloy from "./helpers/configureAlloy";
+import useAlloy from "./helpers/useAlloy";
+import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
 
 const loadLaunch = () => {
   const script = document.createElement("script");
@@ -13,17 +12,14 @@ const loadLaunch = () => {
 };
 
 export default function DualTag() {
-  useEffect(() => {
-    setupAlloy();
-    configureAlloy();
-    sendPageViewEvent();
-    loadLaunch();
-  }, []);
+  useAlloy();
+  useSendPageViewEvent();
 
   return (
     <div>
       {/* Need less restrictive CSP for old libraries */}
       <UnsafeContentSecurityPolicy />
+      {loadLaunch()}
       <h1>Dual Tagging</h1>
       <p>
         This page loads a launch library containing Analytics, ECID, DIL, and

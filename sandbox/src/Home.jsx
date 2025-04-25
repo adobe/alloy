@@ -3,9 +3,8 @@
 
 import React, { useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import configureAlloy from "./helpers/configureAlloy";
-import sendPageViewEvent from "./helpers/sendPageViewEvent";
-import setupAlloy from "./helpers/setupAlloy";
+import useAlloy from "./helpers/useAlloy";
+import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
 
 const getIdentity = () => {
   window.alloy("getIdentity", { namespaces: ["ECID"] }).then((result) => {
@@ -28,9 +27,7 @@ const getLibraryInfo = () => {
 
 export default function Home() {
   useEffect(() => {
-    setupAlloy();
-
-    window.__alloyMonitors = window.__alloyMonitors || [];
+    window.__alloyMonitors = [];
     window.__alloyMonitors.push({
       onContentRendering(data) {
         console.log("Alloy Content Rendering");
@@ -61,10 +58,12 @@ export default function Home() {
         }, 1000);
       },
     });
-
-    configureAlloy();
-    sendPageViewEvent();
   }, []);
+
+  useAlloy({
+    options: { keepExistingMonitors: true },
+  });
+  useSendPageViewEvent();
 
   return (
     <div>

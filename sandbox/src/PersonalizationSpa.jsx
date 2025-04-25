@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Switch, Route, useRouteMatch, Link } from "react-router-dom";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import configureAlloy from "./helpers/configureAlloy";
-import sendPageViewEvent from "./helpers/sendPageViewEvent";
-import setupAlloy from "./helpers/setupAlloy";
+import useAlloy from "./helpers/useAlloy";
+import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
 
 const usePropositions = ({ viewName }) => {
   const [propositions, setPropositions] = useState(undefined);
-  sendPageViewEvent({ renderDecisions: true, viewName, setPropositions });
+  useSendPageViewEvent({ renderDecisions: true, viewName, setPropositions });
 
   useEffect(() => {
     if (propositions) {
@@ -69,19 +68,22 @@ const Promotion = () => {
 };
 
 export default function Personalization() {
-  const [configurationDone, setConfigurationDone] = useState(false);
+  const [isAlloyConfigured, setIsAlloyConfigured] = useState(false);
 
-  useEffect(() => {
-    setupAlloy();
-    configureAlloy();
-    sendPageViewEvent();
-    setConfigurationDone(true);
-  }, []);
+  useAlloy({
+    options: {
+      onAlloySetupCompleted: () => {
+        setIsAlloyConfigured(true);
+      },
+    },
+  });
+
+  useSendPageViewEvent();
 
   const match = useRouteMatch();
 
   return (
-    configurationDone && (
+    isAlloyConfigured && (
       <div>
         <ContentSecurityPolicy />
         <h1>Personalization - SPA</h1>

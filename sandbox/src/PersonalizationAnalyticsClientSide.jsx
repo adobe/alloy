@@ -5,8 +5,7 @@ import {
   getFormBasedOffer,
   personalizationEvent,
 } from "./personalizationAnalyticsClientSideHelper";
-import configureAlloy from "./helpers/configureAlloy";
-import setupAlloy from "./helpers/setupAlloy";
+import useAlloy from "./helpers/useAlloy";
 
 const Products = () => {
   personalizationEvent({ renderDecisions: true });
@@ -41,26 +40,32 @@ const Cart = () => {
 };
 
 export default function PersonalizationAnalyticsClientSide() {
-  const [alloyConfigured, setAlloyConfigure] = useState(false);
+  const [isAlloyConfigured, setIsAlloyConfigured] = useState(false);
+
+  useAlloy({
+    instanceNames: ["organizationTwo"],
+    configurations: {
+      organizationTwo: {
+        datastreamId: "7984963a-6609-4e84-98d5-4e2ff8c0dd5e:prod",
+        orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
+        clickCollectionEnabled: false,
+      },
+    },
+    options: {
+      onAlloySetupCompleted: () => {
+        setIsAlloyConfigured(true);
+      },
+    },
+  });
 
   useEffect(() => {
-    setupAlloy({ instanceNames: ["organizationTwo"] });
-    configureAlloy({
-      instanceName: "organizationTwo",
-
-      datastreamId: "7984963a-6609-4e84-98d5-4e2ff8c0dd5e:prod",
-      orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
-      clickCollectionEnabled: false,
-    });
     personalizationEvent({ renderDecisions: true });
-
-    setAlloyConfigure(true);
   }, []);
 
   const match = useRouteMatch();
 
   return (
-    alloyConfigured && (
+    isAlloyConfigured && (
       <div>
         <ContentSecurityPolicy />
         <h1>Personalization with A4T client side logging</h1>

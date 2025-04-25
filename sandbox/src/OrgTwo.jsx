@@ -1,23 +1,21 @@
 import React, { useEffect } from "react";
-import sendPageViewEvent from "./helpers/sendPageViewEvent";
-import setupAlloy from "./helpers/setupAlloy";
-import configureAlloy from "./helpers/configureAlloy";
+import useAlloy from "./helpers/useAlloy";
+import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
 
 export default function OrgTwo() {
-  useEffect(() => {
-    setupAlloy({ instanceNames: ["alloy", "organizationTwo"] });
+  useAlloy({
+    instanceNames: ["alloy", "organizationTwo"],
+    configurations: {
+      organizationTwo: {
+        datastreamId: "7984963a-6609-4e84-98d5-4e2ff8c0dd5e:prod",
+        orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
+        clickCollectionEnabled: false,
+      },
+    },
+  });
 
-    configureAlloy();
-    configureAlloy({
-      instanceName: "organizationTwo",
+  useSendPageViewEvent({ instanceName: "organizationTwo" });
 
-      datastreamId: "7984963a-6609-4e84-98d5-4e2ff8c0dd5e:prod",
-      orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
-      clickCollectionEnabled: false,
-    });
-
-    sendPageViewEvent({ instanceName: "organizationTwo" });
-  }, []);
   return (
     <div>
       <h1>Multiple Organizations</h1>

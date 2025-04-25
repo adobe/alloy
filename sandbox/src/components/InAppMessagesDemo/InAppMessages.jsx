@@ -3,8 +3,7 @@ import React, { useEffect, useState } from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./InAppMessagesStyle.css";
 import { deleteAllCookies, getAlloyTestConfigs } from "../utils";
-import setupAlloy from "../../helpers/setupAlloy";
-import configureAlloy from "../../helpers/configureAlloy";
+import useAlloy from "../../helpers/useAlloy";
 
 const configKey =
   localStorage.getItem("iam-configKey") || "aemonacpprodcampaign";
@@ -40,19 +39,22 @@ export default function InAppMessages() {
     localStorage.setItem(CUSTOM_TRAIT_VALUE, value);
   };
 
-  useEffect(() => {
-    setupAlloy();
-    configureAlloy({
-      defaultConsent: getURLParams("defaultConsent") || "in",
-      datastreamId,
-      orgId,
-      edgeDomain,
-      thirdPartyCookiesEnabled: false,
-      targetMigrationEnabled: false,
-      personalizationStorageEnabled: true,
-      debugEnabled: true,
-    });
+  useAlloy({
+    configurations: {
+      alloy: {
+        defaultConsent: getURLParams("defaultConsent") || "in",
+        datastreamId,
+        orgId,
+        edgeDomain,
+        thirdPartyCookiesEnabled: false,
+        targetMigrationEnabled: false,
+        personalizationStorageEnabled: true,
+        debugEnabled: true,
+      },
+    },
+  });
 
+  useEffect(() => {
     const unsubscribePromise = window.alloy("subscribeRulesetItems", {
       callback: (result) => {
         console.log("subscribeRulesetItems", result);

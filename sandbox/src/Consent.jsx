@@ -1,11 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import configureAlloy from "./helpers/configureAlloy";
-import sendPageViewEvent from "./helpers/sendPageViewEvent";
 import "./Consent.css";
 import Configuration from "./components/Configuration";
 import Cookies from "./components/Cookies";
-import setupAlloy from "./helpers/setupAlloy";
+import useAlloy from "./helpers/useAlloy";
+import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
 
 const IAB_OPT_IN =
   "CO1Z4yuO1Z4yuAcABBENArCsAP_AAH_AACiQGCNX_T5eb2vj-3Zdt_tkaYwf55y3o-wzhhaIse8NwIeH7BoGP2MwvBX4JiQCGBAkkiKBAQdtHGhcCQABgIhRiTKMYk2MjzNKJLJAilsbe0NYCD9mnsHT3ZCY70--u__7P3fAwQgkwVLwCRIWwgJJs0ohTABCOICpBwCUEIQEClhoACAnYFAR6gAAAIDAACAAAAEEEBAIABAAAkIgAAAEBAKACIBAACAEaAhAARIEAsAJEgCAAVA0JACKIIQBCDgwCjlACAoAAAAA.YAAAAAAAAAAA";
@@ -83,11 +82,8 @@ const executeCommand =
   };
 
 export default function Consent() {
-  useEffect(() => {
-    setupAlloy();
-    configureAlloy();
-    sendPageViewEvent();
-  }, []);
+  useAlloy();
+  useSendPageViewEvent();
 
   return (
     <div>

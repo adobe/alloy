@@ -1,8 +1,7 @@
 /* eslint-disable no-console */
 
-import React, { useEffect, useState } from "react";
-import setupAlloy from "./helpers/setupAlloy";
-import configureAlloy from "./helpers/configureAlloy";
+import React, { useState } from "react";
+import useAlloy from "./helpers/useAlloy";
 
 const defaultOverrides = {
   datastreamId: "",
@@ -78,10 +77,7 @@ export default function ConfigOverrides() {
   const [overrides, setOverrides] = useState({ ...defaultOverrides });
   const overridesString = JSON.stringify(overrides, null, 2);
 
-  useEffect(() => {
-    setupAlloy();
-    configureAlloy();
-  }, []);
+  useAlloy();
 
   const onTextareaChange = (event) => {
     try {

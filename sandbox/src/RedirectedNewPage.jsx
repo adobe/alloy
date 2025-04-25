@@ -1,13 +1,11 @@
 import React, { useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import setupAlloy from "./helpers/setupAlloy";
-import configureAlloy from "./helpers/configureAlloy";
+import useAlloy from "./helpers/useAlloy";
 
 export default function RedirectedNewPage() {
-  useEffect(() => {
-    setupAlloy();
-    configureAlloy();
+  useAlloy();
 
+  useEffect(() => {
     window.alloy("sendEvent", {
       renderDecisions: true,
     });

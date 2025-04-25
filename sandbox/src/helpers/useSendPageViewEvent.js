@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { useEffect } from "react";
+
 const isNonEmptyArray = (value) => Array.isArray(value) && value.length > 0;
 
 export default ({
@@ -21,25 +23,27 @@ export default ({
   decisionScopes,
   setPropositions,
 } = {}) => {
-  xdm.eventType = "page-view";
+  useEffect(() => {
+    xdm.eventType = "page-view";
 
-  if (viewName) {
-    xdm.web = {
-      webPageDetails: {
-        viewName,
-      },
-    };
-  }
-
-  window[instanceName]("sendEvent", {
-    renderDecisions,
-    decisionScopes, // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
-    xdm,
-    data,
-  }).then((res) => {
-    const { propositions } = res;
-    if (setPropositions && isNonEmptyArray(propositions)) {
-      setPropositions(propositions);
+    if (viewName) {
+      xdm.web = {
+        webPageDetails: {
+          viewName,
+        },
+      };
     }
-  });
+
+    window[instanceName]("sendEvent", {
+      renderDecisions,
+      decisionScopes, // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
+      xdm,
+      data,
+    }).then((res) => {
+      const { propositions } = res;
+      if (setPropositions && isNonEmptyArray(propositions)) {
+        setPropositions(propositions);
+      }
+    });
+  }, []);
 };

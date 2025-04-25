@@ -1,8 +1,8 @@
+/**
+ * @param {string} name
+ * @returns {string | null}
+ */
 export default (name) => {
-  name = name.replace(/[[]/, "\\[").replace(/[\]]/, "\\]");
-  const regex = new RegExp(`[\\?&]${name}=([^&#]*)`);
-  const results = regex.exec(window.location.search);
-  return results === null
-    ? ""
-    : decodeURIComponent(results[1].replace(/\+/g, " "));
+  const params = new URLSearchParams(window.location.search);
+  return params.get(name);
 };

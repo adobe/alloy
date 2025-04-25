@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./ContentCards.css";
 import { deleteAllCookies, getAlloyTestConfigs } from "../utils";
-import setupAlloy from "../../helpers/setupAlloy";
-import configureAlloy from "../../helpers/configureAlloy";
+import useAlloy from "../../helpers/useAlloy";
 
 const configKey = localStorage.getItem("iam-configKey") || "stage";
 let responseSource = localStorage.getItem("iam-responseSource") || "mock";
@@ -619,18 +618,19 @@ export default function ContentCards() {
         });
   };
 
-  useEffect(() => {
-    setupAlloy();
-    configureAlloy({
-      defaultConsent: "in",
-      datastreamId,
-      orgId,
-      edgeDomain,
-      thirdPartyCookiesEnabled: false,
-      targetMigrationEnabled: false,
-      personalizationStorageEnabled: true,
-      debugEnabled: true,
-    });
+  useAlloy({
+    configurations: {
+      alloy: {
+        defaultConsent: "in",
+        datastreamId,
+        orgId,
+        edgeDomain,
+        thirdPartyCookiesEnabled: false,
+        targetMigrationEnabled: false,
+        personalizationStorageEnabled: true,
+        debugEnabled: true,
+      },
+    },
   });
 
   useEffect(() => {
