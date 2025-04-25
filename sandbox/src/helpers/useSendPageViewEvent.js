@@ -45,5 +45,12 @@ export default ({
         setPropositions(propositions);
       }
     });
-  }, []);
+  }, [
+    JSON.stringify(data),
+    decisionScopes,
+    instanceName,
+    setPropositions,
+    viewName,
+    JSON.stringify(xdm),
+  ]);
 };
