@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import useAlloy from "./helpers/useAlloy";
+import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
 
 const SCOPES_FOR_PAGE = ["sandbox-personalization-page2"];
 
@@ -11,12 +12,18 @@ const metadata = {
   },
 };
 
-const usePropositions = () => {
+export default function Personalization() {
+  const [renderCounter, setRenderCounter] = useState(0);
   const [propositions, setPropositions] = useState(undefined);
+
+  useAlloy();
+
   useSendPageViewEvent({
+    renderDecisions: true,
     setPropositions,
     decisionScopes: SCOPES_FOR_PAGE, // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
   });
+
   useEffect(() => {
     if (propositions) {
       window.alloy("applyPropositions", {
@@ -24,24 +31,14 @@ const usePropositions = () => {
         metadata,
       });
     }
-  });
-};
+  }, [propositions]);
 
-const updateComponent = ({ renderCounter, setRenderCounter }) => {
-  setRenderCounter(renderCounter + 1);
-};
-
-export default function Personalization() {
-  const [renderCounter, setRenderCounter] = useState(0);
-  usePropositions();
   return (
     <div>
       <ContentSecurityPolicy />
       <h1>Personalization</h1>
       <h2>Number of times rendered: {renderCounter}</h2>
-      <button
-        onClick={() => updateComponent({ renderCounter, setRenderCounter })}
-      >
+      <button onClick={() => setRenderCounter((u) => u + 1)}>
         Re-render component
       </button>
       <p>
