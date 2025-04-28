@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createViewChangeHandler from "../../../../../src/components/Personalization/createViewChangeHandler.js";
 import { CART_VIEW_DECISIONS } from "./responsesMock/eventResponses.js";
 import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition.js";
@@ -17,31 +18,30 @@ import injectCreateProposition from "../../../../../src/components/Personalizati
 describe("Personalization::createViewChangeHandler", () => {
   let processPropositions;
   let viewCache;
-
   let personalizationDetails;
   let event;
   let onResponse;
   let logger;
   let createProposition;
-
   beforeEach(() => {
-    logger = jasmine.createSpyObj("logger", ["logOnContentRendering"]);
-    processPropositions = jasmine.createSpy("processPropositions");
-    viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
-
-    personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
-      "isRenderDecisions",
-      "getViewName",
-    ]);
+    logger = {
+      logOnContentRendering: vi.fn(),
+    };
+    processPropositions = vi.fn();
+    viewCache = {
+      getView: vi.fn(),
+    };
+    personalizationDetails = {
+      isRenderDecisions: vi.fn(),
+      getViewName: vi.fn(),
+    };
     event = "myevent";
-    onResponse = jasmine.createSpy();
-
+    onResponse = vi.fn();
     createProposition = injectCreateProposition({
       preprocess: (data) => data,
       isPageWideSurface: () => false,
     });
   });
-
   const run = async () => {
     const viewChangeHandler = createViewChangeHandler({
       logger,
@@ -53,28 +53,27 @@ describe("Personalization::createViewChangeHandler", () => {
       personalizationDetails,
       onResponse,
     });
-    const result = onResponse.calls.argsFor(0)[0]();
-    return { decisionsMeta, result };
+    const result = onResponse.mock.calls[0][0]();
+    return {
+      decisionsMeta,
+      result,
+    };
   };
-
   it("should trigger render if renderDecisions is true", async () => {
-    viewCache.getView.and.returnValue(
+    viewCache.getView.mockReturnValue(
       Promise.resolve(CART_VIEW_DECISIONS.map((p) => createProposition(p))),
     );
-    personalizationDetails.isRenderDecisions.and.returnValue(true);
-    personalizationDetails.getViewName.and.returnValue("cart");
-    processPropositions.and.returnValue({
+    personalizationDetails.isRenderDecisions.mockReturnValue(true);
+    personalizationDetails.getViewName.mockReturnValue("cart");
+    processPropositions.mockReturnValue({
       render: () => Promise.resolve("decisionMeta"),
       returnedPropositions: [],
       returnedDecisions: CART_VIEW_DECISIONS,
     });
-
     const { decisionsMeta, result } = await run();
-
     expect(logger.logOnContentRendering).toHaveBeenCalledTimes(1);
     expect(processPropositions).toHaveBeenCalledTimes(1);
     expect(decisionsMeta).toEqual("decisionMeta");
-
     expect(result.decisions).toEqual(CART_VIEW_DECISIONS);
   });
 });

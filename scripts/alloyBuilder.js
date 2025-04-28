@@ -11,27 +11,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import babel from "@babel/core";
+import { checkbox, input, select } from "@inquirer/prompts";
+import { Command, InvalidOptionArgumentError, Option } from "commander";
 import fs from "fs";
 import path from "path";
 import { rollup } from "rollup";
-import { Command, Option, InvalidOptionArgumentError } from "commander";
-import { input, checkbox, select } from "@inquirer/prompts";
-import { fileURLToPath } from "url";
-import babel from "@babel/core";
 import { buildConfig } from "../rollup.config.js";
 import entryPointGeneratorBabelPlugin from "./helpers/entryPointGeneratorBabelPlugin.js";
-
-const dirname = path.dirname(fileURLToPath(import.meta.url));
+import { getProjectRoot, safePathJoin } from "./helpers/path.js";
 
 const packageJsonContent = fs.readFileSync(
-  `${dirname}/../package.json`,
+  safePathJoin(getProjectRoot(), "package.json"),
   "utf8",
 );
 const { version } = JSON.parse(packageJsonContent);
 
-let sourceRootPath = `${dirname}/../src`;
+let sourceRootPath = safePathJoin(getProjectRoot(), "src");
 if (!fs.existsSync(sourceRootPath)) {
-  sourceRootPath = `${dirname}/../libEs6`;
+  sourceRootPath = safePathJoin(getProjectRoot(), "libEs6");
 }
 
 const arrayDifference = (arr1, arr2) => arr1.filter((x) => !arr2.includes(x));
@@ -44,11 +42,14 @@ const getComponents = (() => {
   const components = {};
   [
     {
-      filePath: `${sourceRootPath}/core/componentCreators.js`,
+      filePath: safePathJoin(sourceRootPath, "core/componentCreators.js"),
       key: "optional",
     },
     {
-      filePath: `${sourceRootPath}/core/requiredComponentCreators.js`,
+      filePath: safePathJoin(
+        sourceRootPath,
+        "core/requiredComponentCreators.js",
+      ),
       key: "required",
     },
   ].forEach(({ filePath, key }) => {
@@ -69,12 +70,12 @@ const getComponents = (() => {
   return () => components;
 })();
 
-const getDefaultPath = () => {
-  return process.cwd();
-};
-
 const getOutputFilePath = (argv) => {
-  return `${[argv.outputDir, `alloy${argv.minify ? ".min" : ""}.js`].join(path.sep)}`;
+  const outputPath = path.join(
+    argv.outputDir,
+    `alloy${argv.minify ? ".min" : ""}.js`,
+  );
+  return outputPath;
 };
 
 const getFileSizeInKB = (filePath) => {
@@ -93,7 +94,7 @@ const generateInputEntryFile = ({
   }).code;
 
   const destinationDirectory = path.dirname(inputPath);
-  const outputPath = path.join(destinationDirectory, outputFile);
+  const outputPath = safePathJoin(destinationDirectory, outputFile);
 
   fs.writeFileSync(outputPath, output);
 
@@ -157,10 +158,10 @@ const getMakeBuildCommand = () => {
         "-o, --outputDir <dir>",
         "the output directory for the generated build",
       )
-        .default(getDefaultPath())
+        .default(getProjectRoot())
         .argParser((value) => {
           if (!path.isAbsolute(value)) {
-            value = `${getDefaultPath()}${path.sep}${value}`;
+            value = path.join(process.cwd(), value);
           }
 
           try {

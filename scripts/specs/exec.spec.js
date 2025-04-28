@@ -9,6 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+import { describe, it, expect } from "vitest";
 import { Writable } from "stream";
 import exec from "../helpers/exec.js";
 import ApplicationError from "../helpers/applicationError.js";
@@ -29,30 +31,33 @@ const createStringBackedWritableStream = () => {
 describe("exec", () => {
   it("throws an ApplicationError on a non-zero exit code.", async () => {
     const [outputStream] = createStringBackedWritableStream();
-    await expectAsync(
-      exec("bad exit", "exit 42", { outputStream }),
-    ).toBeRejectedWithError(ApplicationError);
+    await expect(exec("bad exit", "exit 42", { outputStream })).rejects.toThrow(
+      ApplicationError,
+    );
   });
+
   it("logs the exit code", async () => {
     const [outputStream, getResult] = createStringBackedWritableStream();
     try {
       await exec("bad exit", "exit 42", { outputStream });
-      fail();
-    } catch (e) {
+      throw new Error("Test failed");
+    } catch {
       const result = getResult();
       expect(result).toMatch(/exited with code 42/);
     }
   });
+
   it("logs the process name", async () => {
     const [outputStream, getResult] = createStringBackedWritableStream();
     try {
       await exec("bad exit", "exit 42", { outputStream });
-      fail();
-    } catch (e) {
+      throw new Error("Test failed");
+    } catch {
       const result = getResult();
       expect(result).toMatch(/bad exit/);
     }
   });
+
   it("handles multi-line echo statements", async () => {
     const [outputStream, getResult] = createStringBackedWritableStream();
     const input = "Hello\nWorld\n";

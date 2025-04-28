@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { describe, it, expect } from "vitest";
 import { string } from "../../../../../src/utils/validation/index.js";
 
 describe("validation::createUnique", () => {
@@ -20,7 +21,6 @@ describe("validation::createUnique", () => {
       });
     });
   });
-
   [
     ["a", "a"],
     ["a", "b", "a"],
@@ -37,7 +37,6 @@ describe("validation::createUnique", () => {
       });
     });
   });
-
   [null, undefined].forEach((value) => {
     it(`complains about required when ${JSON.stringify(value)}`, () => {
       const validator = string().unique().required();

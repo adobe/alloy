@@ -9,16 +9,18 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { describe, it, expect } from "vitest";
 import injectWeb from "../../../../../src/components/Context/injectWeb.js";
 
 describe("Context::injectWeb", () => {
   const window = {
-    location: { href: "http://mylocation.com" },
+    location: {
+      href: "http://mylocation.com",
+    },
     document: {
       referrer: "http://myreferrer.com",
     },
   };
-
   it("works", () => {
     const xdm = {};
     injectWeb(window)(xdm);

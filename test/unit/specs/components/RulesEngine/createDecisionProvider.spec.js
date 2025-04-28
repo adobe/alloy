@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createDecisionProvider from "../../../../../src/components/RulesEngine/createDecisionProvider.js";
 import createEventRegistry from "../../../../../src/components/RulesEngine/createEventRegistry.js";
 
@@ -16,11 +17,19 @@ describe("RulesEngine:createDecisionProvider", () => {
   let decisionProvider;
   let storage;
   let eventRegistry;
-
   beforeEach(() => {
-    storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
-    eventRegistry = createEventRegistry({ storage });
-    decisionProvider = createDecisionProvider({ eventRegistry });
+    storage = {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      clear: vi.fn(),
+    };
+    eventRegistry = createEventRegistry({
+      storage,
+      logger: { info: vi.fn() },
+    });
+    decisionProvider = createDecisionProvider({
+      eventRegistry,
+    });
     decisionProvider.addPayloads([
       {
         id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
@@ -218,7 +227,10 @@ describe("RulesEngine:createDecisionProvider", () => {
   });
   it("returns a single payload with items that qualify", () => {
     expect(
-      decisionProvider.evaluate({ color: "blue", action: "lipstick" }),
+      decisionProvider.evaluate({
+        color: "blue",
+        action: "lipstick",
+      }),
     ).toEqual([
       {
         id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
@@ -250,7 +262,7 @@ describe("RulesEngine:createDecisionProvider", () => {
               },
               prehidingSelector:
                 "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
-              qualifiedDate: jasmine.any(Number),
+              qualifiedDate: expect.any(Number),
               displayedDate: undefined,
             },
             id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
@@ -263,7 +275,7 @@ describe("RulesEngine:createDecisionProvider", () => {
               content: "Hello Treatment A!",
               prehidingSelector:
                 "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
-              qualifiedDate: jasmine.any(Number),
+              qualifiedDate: expect.any(Number),
               displayedDate: undefined,
             },
             id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f",
@@ -274,7 +286,9 @@ describe("RulesEngine:createDecisionProvider", () => {
   });
   it("returns a different single payload with items that qualify", () => {
     expect(
-      decisionProvider.evaluate({ "xdm.web.webPageDetails.viewName": "home" }),
+      decisionProvider.evaluate({
+        "xdm.web.webPageDetails.viewName": "home",
+      }),
     ).toEqual([
       {
         scopeDetails: {
@@ -302,7 +316,7 @@ describe("RulesEngine:createDecisionProvider", () => {
               type: "setHtml",
               content: "i can haz?",
               prehidingSelector: "div#spa #spa-content h3",
-              qualifiedDate: jasmine.any(Number),
+              qualifiedDate: expect.any(Number),
               displayedDate: undefined,
             },
             id: "8a0d7a45-70fb-4845-a093-2133b5744c8d",
@@ -314,7 +328,7 @@ describe("RulesEngine:createDecisionProvider", () => {
               type: "setHtml",
               content: "ALL YOUR BASE ARE BELONG TO US",
               prehidingSelector: "div#spa #spa-content p",
-              qualifiedDate: jasmine.any(Number),
+              qualifiedDate: expect.any(Number),
               displayedDate: undefined,
             },
             id: "a44af51a-e073-4e8c-92e1-84ac28210043",
@@ -361,7 +375,7 @@ describe("RulesEngine:createDecisionProvider", () => {
               },
               prehidingSelector:
                 "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
-              qualifiedDate: jasmine.any(Number),
+              qualifiedDate: expect.any(Number),
               displayedDate: undefined,
             },
             id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
@@ -374,7 +388,7 @@ describe("RulesEngine:createDecisionProvider", () => {
               content: "Hello Treatment A!",
               prehidingSelector:
                 "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
-              qualifiedDate: jasmine.any(Number),
+              qualifiedDate: expect.any(Number),
               displayedDate: undefined,
             },
             id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f",
@@ -408,7 +422,7 @@ describe("RulesEngine:createDecisionProvider", () => {
               type: "setHtml",
               content: "i can haz?",
               prehidingSelector: "div#spa #spa-content h3",
-              qualifiedDate: jasmine.any(Number),
+              qualifiedDate: expect.any(Number),
               displayedDate: undefined,
             },
             id: "8a0d7a45-70fb-4845-a093-2133b5744c8d",
@@ -420,7 +434,7 @@ describe("RulesEngine:createDecisionProvider", () => {
               type: "setHtml",
               content: "ALL YOUR BASE ARE BELONG TO US",
               prehidingSelector: "div#spa #spa-content p",
-              qualifiedDate: jasmine.any(Number),
+              qualifiedDate: expect.any(Number),
               displayedDate: undefined,
             },
             id: "a44af51a-e073-4e8c-92e1-84ac28210043",
@@ -430,7 +444,6 @@ describe("RulesEngine:createDecisionProvider", () => {
       },
     ]);
   });
-
   it("ignores payloads that aren't json-ruleset type", () => {
     decisionProvider.addPayload({
       id: "AT:eyJhY3Rpdml0eUlkIjoiMTQxMDY0IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
@@ -468,7 +481,6 @@ describe("RulesEngine:createDecisionProvider", () => {
         },
       ],
     });
-
     expect(decisionProvider.evaluate()).toEqual([]);
   });
 });

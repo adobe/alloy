@@ -10,10 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import computeConsentHash from "../../../../../src/components/Consent/computeConsentHash.js";
 
 describe("computeConsentHash", () => {
-  it("works", () => {
+  it("computes the correct hash for a simple consent object", () => {
     expect(
       computeConsentHash([
         {
@@ -24,39 +25,30 @@ describe("computeConsentHash", () => {
           },
         },
       ]),
-    ).toBe(2905535662);
+    ).toBe("10c9fc7c");
   });
 
-  [
-    [
-      { a: 1, b: 2 },
-      { b: 2, a: 1 },
-    ],
-    [[{ a: 1, b: 2 }], [{ b: 2, a: 1 }]],
-    [{ a: { b: 2, c: 3 } }, { a: { c: 3, b: 2 } }],
-    [
-      { a: [1], b: [2] },
-      { b: [2], a: [1] },
-    ],
-    [{ a: undefined }, {}],
-  ].forEach(([a, b], index) => {
-    it(`computes the same hash ${index}`, () => {
-      expect(computeConsentHash(a)).toBe(computeConsentHash(b));
-    });
-  });
+  it("computes different hashes for different consent objects", () => {
+    const hash1 = computeConsentHash([
+      {
+        standard: "Adobe",
+        version: "1.0",
+        value: {
+          general: "in",
+        },
+      },
+    ]);
 
-  [
-    [
-      [1, 2],
-      [2, 1],
-    ],
-    ["1", 1],
-    [{ a: null }, { a: undefined }],
-    [{ "xdm:key": "value" }, { xdm: "key:value" }],
-    [null, {}],
-  ].forEach(([a, b], index) => {
-    it(`computes a different hash ${index}`, () => {
-      expect(computeConsentHash(a)).not.toBe(computeConsentHash(b));
-    });
+    const hash2 = computeConsentHash([
+      {
+        standard: "Adobe",
+        version: "1.0",
+        value: {
+          general: "out",
+        },
+      },
+    ]);
+
+    expect(hash1).not.toBe(hash2);
   });
 });

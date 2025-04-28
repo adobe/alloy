@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   appendNode,
   createNode,
@@ -21,39 +22,43 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import createRenderStatusHandler from "../../../../../../src/components/Personalization/handlers/createRenderStatusHandler.js";
 import { DOM_ACTION_SET_ATTRIBUTE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::setAttribute", () => {
   let decorateProposition;
-
   beforeEach(() => {
     cleanUpDomChanges("setAttribute");
     decorateProposition = createDecoratePropositionForTest({
       type: DOM_ACTION_SET_ATTRIBUTE,
     });
   });
-
   afterEach(() => {
     cleanUpDomChanges("setAttribute");
   });
-
   it("should set element attribute", () => {
     const modules = initDomActionsModules();
     const { setAttribute } = modules;
-    const element = createNode("div", { id: "setAttribute" });
-
+    const element = createNode("div", {
+      id: "setAttribute",
+    });
     appendNode(document.body, element);
-
     const settings = {
       selector: "#setAttribute",
       prehidingSelector: "#setAttribute",
-      content: { "data-test": "bar" },
-      meta: { a: 1 },
+      content: {
+        "data-test": "bar",
+      },
+      meta: {
+        a: 1,
+      },
     };
-
-    return setAttribute(settings, decorateProposition).then(() => {
+    return setAttribute(
+      settings,
+      decorateProposition,
+      createRenderStatusHandler("view", "test"),
+    ).then(() => {
       expect(element.getAttribute("data-test")).toEqual("bar");
-
       expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
         "trackingLabel",
       );

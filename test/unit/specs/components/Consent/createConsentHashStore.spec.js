@@ -10,26 +10,37 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createConsentHashStore from "../../../../../src/components/Consent/createConsentHashStore.js";
 
 const CONSENT_IN = {
   standard: "Adobe",
   version: "1.0",
-  value: { general: "in" },
+  value: {
+    general: "in",
+  },
 };
 
 const CONSENT_OUT = {
   standard: "Adobe",
   version: "1.0",
-  value: { general: "out" },
+  value: {
+    general: "out",
+  },
 };
 
 describe("createConsentHashStore", () => {
   let storage;
   let subject;
   beforeEach(() => {
-    storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
-    subject = createConsentHashStore({ storage });
+    storage = {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      clear: vi.fn(),
+    };
+    subject = createConsentHashStore({
+      storage,
+    });
   });
 
   it("clears", () => {
@@ -38,7 +49,7 @@ describe("createConsentHashStore", () => {
   });
 
   it("is new when storage is empty", () => {
-    storage.getItem.and.returnValue(null);
+    storage.getItem.mockReturnValue(null);
     const consentHashes = subject.lookup([CONSENT_IN]);
     expect(consentHashes.isNew()).toBe(true);
   });
@@ -46,18 +57,18 @@ describe("createConsentHashStore", () => {
   it("saves the hash", () => {
     const consentHashes = subject.lookup([CONSENT_IN]);
     consentHashes.save();
-    expect(storage.setItem).toHaveBeenCalledWith("Adobe.1.0", "3165644325");
+    expect(storage.setItem).toHaveBeenCalledWith("Adobe.1.0", "e385c3ab");
   });
 
   it("is not new when lookup is the same", () => {
-    storage.getItem.and.returnValue("3165644325");
+    storage.getItem.mockReturnValue("e385c3ab");
     const consentHashes = subject.lookup([CONSENT_IN]);
     expect(consentHashes.isNew()).toBe(false);
     expect(storage.getItem).toHaveBeenCalledWith("Adobe.1.0");
   });
 
   it("is new when lookup is different", () => {
-    storage.getItem.and.returnValue("3165644325");
+    storage.getItem.mockReturnValue("e385c3ab");
     const consentHashes = subject.lookup([CONSENT_OUT]);
     expect(consentHashes.isNew()).toBe(true);
     expect(storage.getItem).toHaveBeenCalledWith("Adobe.1.0");

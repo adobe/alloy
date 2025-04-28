@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   appendNode,
   createNode,
@@ -22,46 +23,58 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import createRenderStatusHandler from "../../../../../../src/components/Personalization/handlers/createRenderStatusHandler.js";
 import { DOM_ACTION_INSERT_BEFORE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::insertBefore", () => {
   let decorateProposition;
-
   beforeEach(() => {
     cleanUpDomChanges("insertBefore");
     decorateProposition = createDecoratePropositionForTest({
       type: DOM_ACTION_INSERT_BEFORE,
     });
   });
-
   afterEach(() => {
     cleanUpDomChanges("insertBefore");
   });
-
   it("should insert before personalized content", () => {
     const modules = initDomActionsModules();
     const { insertBefore } = modules;
     const child = createNode(
       "div",
-      { id: "a", class: "ib" },
-      { innerHTML: "AAA" },
+      {
+        id: "a",
+        class: "ib",
+      },
+      {
+        innerHTML: "AAA",
+      },
     );
-    const element = createNode("div", { id: "insertBefore" }, {}, [child]);
-
+    const element = createNode(
+      "div",
+      {
+        id: "insertBefore",
+      },
+      {},
+      [child],
+    );
     appendNode(document.body, element);
-
     const settings = {
       selector: "#a",
       prehidingSelector: "#a",
       content: `<div id="b" class="ib">BBB</div>`,
-      meta: { a: 1 },
+      meta: {
+        a: 1,
+      },
     };
-
-    return insertBefore(settings, decorateProposition).then(() => {
+    return insertBefore(
+      settings,
+      decorateProposition,
+      createRenderStatusHandler("view", "test"),
+    ).then(() => {
       const [insertedElement, existingElement] = selectNodes(
         "div#insertBefore .ib",
       );
-
       expect(insertedElement.innerHTML).toEqual("BBB");
       expect(getAttribute(insertedElement, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
         "trackingLabel",
@@ -69,7 +82,6 @@ describe("Personalization::actions::insertBefore", () => {
       expect(
         getAttribute(insertedElement, INTERACT_ID_DATA_ATTRIBUTE),
       ).not.toBeNull();
-
       expect(existingElement.innerHTML).toEqual("AAA");
       expect(
         getAttribute(existingElement, INTERACT_ID_DATA_ATTRIBUTE),

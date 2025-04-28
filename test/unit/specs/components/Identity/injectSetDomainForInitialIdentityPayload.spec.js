@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import injectSetDomainForInitialIdentityPayload from "../../../../../src/components/Identity/injectSetDomainForInitialIdentityPayload.js";
 
 describe("Identity::injectSetDomainForInitialIdentityPayload", () => {
@@ -17,7 +18,6 @@ describe("Identity::injectSetDomainForInitialIdentityPayload", () => {
   let thirdPartyCookiesEnabled;
   let areThirdPartyCookiesSupportedByDefault;
   let setDomainForInitialIdentityPayload;
-
   const build = () => {
     setDomainForInitialIdentityPayload =
       injectSetDomainForInitialIdentityPayload({
@@ -25,34 +25,30 @@ describe("Identity::injectSetDomainForInitialIdentityPayload", () => {
         areThirdPartyCookiesSupportedByDefault,
       });
   };
-
   beforeEach(() => {
-    request = jasmine.createSpyObj("request", ["setUseIdThirdPartyDomain"]);
-    areThirdPartyCookiesSupportedByDefault = jasmine.createSpy(
-      "areThirdPartyCookiesSupportedByDefault",
-    );
+    request = {
+      setUseIdThirdPartyDomain: vi.fn(),
+    };
+    areThirdPartyCookiesSupportedByDefault = vi.fn();
   });
-
   it("does not use third-party domain if third-party cookies are disabled", () => {
     thirdPartyCookiesEnabled = false;
-    areThirdPartyCookiesSupportedByDefault.and.returnValue(true);
+    areThirdPartyCookiesSupportedByDefault.mockReturnValue(true);
     build();
     setDomainForInitialIdentityPayload(request);
     expect(request.setUseIdThirdPartyDomain).not.toHaveBeenCalled();
   });
-
   it("does not use third-party domain if third-party cookies are not supported by the browser by default", () => {
     thirdPartyCookiesEnabled = true;
-    areThirdPartyCookiesSupportedByDefault.and.returnValue(false);
+    areThirdPartyCookiesSupportedByDefault.mockReturnValue(false);
     build();
     setDomainForInitialIdentityPayload(request);
     expect(areThirdPartyCookiesSupportedByDefault).toHaveBeenCalledWith();
     expect(request.setUseIdThirdPartyDomain).not.toHaveBeenCalled();
   });
-
   it("uses third-party domain if third-party cookies are enabled and supported by the browser by default", () => {
     thirdPartyCookiesEnabled = true;
-    areThirdPartyCookiesSupportedByDefault.and.returnValue(true);
+    areThirdPartyCookiesSupportedByDefault.mockReturnValue(true);
     build();
     setDomainForInitialIdentityPayload(request);
     expect(areThirdPartyCookiesSupportedByDefault).toHaveBeenCalledWith();

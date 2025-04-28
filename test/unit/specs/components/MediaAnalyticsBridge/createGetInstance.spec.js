@@ -9,20 +9,21 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const createGetInstance = require("../../../../../src/components/MediaAnalyticsBridge/createGetInstance.js");
+import { vi, beforeEach, describe, it, expect } from "vitest";
+import createGetInstance from "../../../../../src/components/MediaAnalyticsBridge/createGetInstance.js";
 
 describe("createGetInstance", () => {
   const logger = {
-    warn: jasmine.createSpy(),
+    warn: vi.fn(),
   };
   let trackMediaSession;
   let trackMediaEvent;
   let uuid;
 
   beforeEach(() => {
-    trackMediaSession = jasmine.createSpy();
-    trackMediaEvent = jasmine.createSpy();
-    uuid = jasmine.createSpy().and.returnValue("1234-5678-9101-1121");
+    trackMediaSession = vi.fn();
+    trackMediaEvent = vi.fn();
+    uuid = vi.fn().mockReturnValue("1234-5678-9101-1121");
   });
 
   it("should return an object", () => {
@@ -32,6 +33,7 @@ describe("createGetInstance", () => {
       trackMediaEvent,
       uuid,
     });
+
     expect(typeof result).toBe("object");
     expect(typeof result.trackSessionStart).toBe("function");
     expect(typeof result.trackPlay).toBe("function");
@@ -52,14 +54,20 @@ describe("createGetInstance", () => {
       trackMediaEvent,
       uuid,
     });
-    result.trackSessionStart({ sessionDetails: {} });
+    result.trackSessionStart({
+      sessionDetails: {},
+    });
     result.trackPlay();
 
     expect(trackMediaEvent).toHaveBeenCalledWith({
       playerId: "1234-5678-9101-1121",
-      xdm: { eventType: "media.play", mediaCollection: {} },
+      xdm: {
+        eventType: "media.play",
+        mediaCollection: {},
+      },
     });
   });
+
   it("when pause is called", () => {
     const result = createGetInstance({
       logger,
@@ -67,12 +75,16 @@ describe("createGetInstance", () => {
       trackMediaEvent,
       uuid,
     });
-    result.trackSessionStart({ sessionDetails: {} });
+    result.trackSessionStart({
+      sessionDetails: {},
+    });
     result.trackPause();
-
     expect(trackMediaEvent).toHaveBeenCalledWith({
       playerId: "1234-5678-9101-1121",
-      xdm: { eventType: "media.pauseStart", mediaCollection: {} },
+      xdm: {
+        eventType: "media.pauseStart",
+        mediaCollection: {},
+      },
     });
   });
 
@@ -83,6 +95,7 @@ describe("createGetInstance", () => {
       trackMediaEvent,
       uuid,
     });
+
     const sessionDetails = {
       name: "test",
       friendlyName: "test1",
@@ -98,10 +111,17 @@ describe("createGetInstance", () => {
       assetID: "/uri-reference",
       "a.media.episode": "episode1",
     };
-    result.trackSessionStart({ sessionDetails }, meta);
+
+    result.trackSessionStart(
+      {
+        sessionDetails,
+      },
+      meta,
+    );
+
     expect(trackMediaSession).toHaveBeenCalledWith({
       playerId: "1234-5678-9101-1121",
-      getPlayerDetails: jasmine.any(Function),
+      getPlayerDetails: expect.any(Function),
       xdm: {
         eventType: "media.sessionStart",
         mediaCollection: {
@@ -114,10 +134,22 @@ describe("createGetInstance", () => {
             episode: "episode1",
           },
           customMetadata: [
-            { name: "isUserLoggedIn", value: "false" },
-            { name: "tvStation", value: "Sample TV station" },
-            { name: "programmer", value: "Sample programmer" },
-            { name: "assetID", value: "/uri-reference" },
+            {
+              name: "isUserLoggedIn",
+              value: "false",
+            },
+            {
+              name: "tvStation",
+              value: "Sample TV station",
+            },
+            {
+              name: "programmer",
+              value: "Sample programmer",
+            },
+            {
+              name: "assetID",
+              value: "/uri-reference",
+            },
           ],
         },
       },
@@ -131,7 +163,9 @@ describe("createGetInstance", () => {
       trackMediaEvent,
       uuid,
     });
-    result.trackSessionStart({ sessionDetails: {} });
+    result.trackSessionStart({
+      sessionDetails: {},
+    });
     result.trackError("error");
 
     expect(trackMediaEvent).toHaveBeenCalledWith({
@@ -139,7 +173,10 @@ describe("createGetInstance", () => {
       xdm: {
         eventType: "media.error",
         mediaCollection: {
-          errorDetails: { name: "error", source: "player" },
+          errorDetails: {
+            name: "error",
+            source: "player",
+          },
         },
       },
     });
@@ -153,7 +190,9 @@ describe("createGetInstance", () => {
       trackMediaEvent,
       uuid,
     });
-    result.trackSessionStart({ sessionDetails: {} });
+    result.trackSessionStart({
+      sessionDetails: {},
+    });
     result.trackComplete();
 
     expect(trackMediaEvent).toHaveBeenCalledWith({
@@ -164,6 +203,7 @@ describe("createGetInstance", () => {
       },
     });
   });
+
   it("when trackSessionEnd is called", () => {
     const result = createGetInstance({
       logger,
@@ -171,7 +211,9 @@ describe("createGetInstance", () => {
       trackMediaEvent,
       uuid,
     });
-    result.trackSessionStart({ sessionDetails: {} });
+    result.trackSessionStart({
+      sessionDetails: {},
+    });
     result.trackSessionEnd();
 
     expect(trackMediaEvent).toHaveBeenCalledWith({
@@ -182,6 +224,7 @@ describe("createGetInstance", () => {
       },
     });
   });
+
   it("when state update is called", () => {
     const result = createGetInstance({
       logger,
@@ -192,7 +235,9 @@ describe("createGetInstance", () => {
     const state = {
       name: "muted",
     };
-    result.trackSessionStart({ sessionDetails: {} });
+    result.trackSessionStart({
+      sessionDetails: {},
+    });
     result.trackEvent("stateStart", state);
 
     expect(trackMediaEvent).toHaveBeenCalledWith({
@@ -200,12 +245,17 @@ describe("createGetInstance", () => {
       xdm: {
         eventType: "media.statesUpdate",
         mediaCollection: {
-          statesStart: [{ name: "muted" }],
+          statesStart: [
+            {
+              name: "muted",
+            },
+          ],
         },
       },
     });
   });
-  it("when state update is called", () => {
+
+  it("when state end update is called", () => {
     const result = createGetInstance({
       logger,
       trackMediaSession,
@@ -215,7 +265,9 @@ describe("createGetInstance", () => {
     const state = {
       name: "muted",
     };
-    result.trackSessionStart({ sessionDetails: {} });
+    result.trackSessionStart({
+      sessionDetails: {},
+    });
     result.trackEvent("stateEnd", state);
 
     expect(trackMediaEvent).toHaveBeenCalledWith({
@@ -223,11 +275,16 @@ describe("createGetInstance", () => {
       xdm: {
         eventType: "media.statesUpdate",
         mediaCollection: {
-          statesEnd: [{ name: "muted" }],
+          statesEnd: [
+            {
+              name: "muted",
+            },
+          ],
         },
       },
     });
   });
+
   it("when track adds is called add get's converted correctly", () => {
     const result = createGetInstance({
       logger,
@@ -241,15 +298,22 @@ describe("createGetInstance", () => {
       podPosition: 2,
       length: 100,
     };
-
     const adContextData = {
       affiliate: "Sample affiliate 2",
       campaign: "Sample ad campaign 2",
       "a.media.ad.advertiser": "Sample Advertiser 2",
       "a.media.ad.campaign": "csmpaign2",
     };
-    result.trackSessionStart({ sessionDetails: {} });
-    result.trackEvent("adStart", { advertisingDetails }, adContextData);
+    result.trackSessionStart({
+      sessionDetails: {},
+    });
+    result.trackEvent(
+      "adStart",
+      {
+        advertisingDetails,
+      },
+      adContextData,
+    );
 
     expect(trackMediaEvent).toHaveBeenCalledWith({
       playerId: "1234-5678-9101-1121",
@@ -265,8 +329,14 @@ describe("createGetInstance", () => {
             campaignID: "csmpaign2",
           },
           customMetadata: [
-            { name: "affiliate", value: "Sample affiliate 2" },
-            { name: "campaign", value: "Sample ad campaign 2" },
+            {
+              name: "affiliate",
+              value: "Sample affiliate 2",
+            },
+            {
+              name: "campaign",
+              value: "Sample ad campaign 2",
+            },
           ],
         },
       },

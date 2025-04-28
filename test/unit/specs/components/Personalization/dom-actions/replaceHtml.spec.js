@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   appendNode,
   createNode,
@@ -22,47 +23,58 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import createRenderStatusHandler from "../../../../../../src/components/Personalization/handlers/createRenderStatusHandler.js";
 import { DOM_ACTION_REPLACE_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::replaceHtml", () => {
   let decorateProposition;
-
   beforeEach(() => {
     cleanUpDomChanges("replaceHtml");
     decorateProposition = createDecoratePropositionForTest({
       type: DOM_ACTION_REPLACE_HTML,
     });
   });
-
   afterEach(() => {
     cleanUpDomChanges("replaceHtml");
   });
-
   it("should replace element with personalized content", () => {
     const modules = initDomActionsModules();
     const { replaceHtml } = modules;
     const child = createNode(
       "div",
-      { id: "a", class: "rh" },
-      { innerHTML: "AAA" },
+      {
+        id: "a",
+        class: "rh",
+      },
+      {
+        innerHTML: "AAA",
+      },
     );
-    const element = createNode("div", { id: "replaceHtml" }, {}, [child]);
-
+    const element = createNode(
+      "div",
+      {
+        id: "replaceHtml",
+      },
+      {},
+      [child],
+    );
     appendNode(document.body, element);
-
     const settings = {
       selector: "#a",
       prehidingSelector: "#a",
       content: `<div id="b" class="rh">BBB</div>`,
-      meta: { a: 1 },
+      meta: {
+        a: 1,
+      },
     };
-
-    return replaceHtml(settings, decorateProposition).then(() => {
+    return replaceHtml(
+      settings,
+      decorateProposition,
+      createRenderStatusHandler("view", "test"),
+    ).then(() => {
       const result = selectNodes("div#replaceHtml .rh");
-
       expect(result.length).toEqual(1);
       expect(result[0].innerHTML).toEqual("BBB");
-
       expect(getAttribute(result[0], CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
         "trackingLabel",
       );

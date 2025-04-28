@@ -13,9 +13,9 @@ governing permissions and limitations under the License.
 import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain.js";
 import apiVersion from "../../constants/apiVersion.js";
 import { createCallbackAggregator, noop } from "../../utils/index.js";
+import { isNetworkError } from "../../utils/networkErrors.js";
 import mergeLifecycleResponses from "./mergeLifecycleResponses.js";
 import handleRequestFailure from "./handleRequestFailure.js";
-import { isNetworkError } from "../../utils/networkErrors.js";
 
 const isDemdexBlockedError = (error, request) => {
   return request.getUseIdThirdPartyDomain() && isNetworkError(error);
@@ -33,6 +33,26 @@ export default ({
 }) => {
   const { edgeDomain, edgeBasePath, datastreamId } = config;
   let hasDemdexFailed = false;
+
+  const buildEndpointUrl = (endpointDomain, request) => {
+    const locationHint = getLocationHint();
+    const edgeBasePathWithLocationHint = locationHint
+      ? `${edgeBasePath}/${locationHint}${request.getEdgeSubPath()}`
+      : `${edgeBasePath}${request.getEdgeSubPath()}`;
+    const configId = request.getDatastreamIdOverride() || datastreamId;
+
+    if (configId !== datastreamId) {
+      request.getPayload().mergeMeta({
+        sdkConfig: {
+          datastream: {
+            original: datastreamId,
+          },
+        },
+      });
+    }
+
+    return `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${configId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
+  };
 
   /**
    * Sends a network request that is aware of payload interfaces,
@@ -62,23 +82,11 @@ export default ({
           hasDemdexFailed || !request.getUseIdThirdPartyDomain()
             ? edgeDomain
             : ID_THIRD_PARTY_DOMAIN;
-        const locationHint = getLocationHint();
-        const edgeBasePathWithLocationHint = locationHint
-          ? `${edgeBasePath}/${locationHint}${request.getEdgeSubPath()}`
-          : `${edgeBasePath}${request.getEdgeSubPath()}`;
-        const configId = request.getDatastreamIdOverride() || datastreamId;
+
+        const url = buildEndpointUrl(endpointDomain, request);
         const payload = request.getPayload();
-        if (configId !== datastreamId) {
-          payload.mergeMeta({
-            sdkConfig: {
-              datastream: {
-                original: datastreamId,
-              },
-            },
-          });
-        }
-        const url = `http://localhost:8080/v1/interact/`;
         cookieTransfer.cookiesToPayload(payload, endpointDomain);
+
         return sendNetworkRequest({
           requestId: request.getId(),
           url,
@@ -94,10 +102,14 @@ export default ({
         if (isDemdexBlockedError(error, request)) {
           hasDemdexFailed = true;
           request.setUseIdThirdPartyDomain(false);
+          const url = buildEndpointUrl(edgeDomain, request);
+          const payload = request.getPayload();
+          cookieTransfer.cookiesToPayload(payload, edgeDomain);
+
           return sendNetworkRequest({
             requestId: request.getId(),
-            url: request.buildUrl(edgeDomain),
-            payload: request.getPayload(),
+            url,
+            payload,
             useSendBeacon: request.getUseSendBeacon(),
           });
         }

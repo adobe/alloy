@@ -25,7 +25,7 @@ const getStorageByType = (context, storageType, namespace) => {
     getItem(name) {
       try {
         return context[storageType].getItem(namespace + name);
-      } catch (e) {
+      } catch {
         return null;
       }
     },
@@ -39,7 +39,7 @@ const getStorageByType = (context, storageType, namespace) => {
       try {
         context[storageType].setItem(namespace + name, value);
         return true;
-      } catch (e) {
+      } catch {
         return false;
       }
     },
@@ -54,7 +54,7 @@ const getStorageByType = (context, storageType, namespace) => {
           }
         });
         return true;
-      } catch (e) {
+      } catch {
         return false;
       }
     },

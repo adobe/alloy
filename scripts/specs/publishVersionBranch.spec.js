@@ -9,6 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+import { vi, describe, beforeEach, it, expect } from "vitest";
 import publishVersionBranch from "../helpers/publishVersionBranch.js";
 
 describe("publishVersionBranch", () => {
@@ -18,16 +20,18 @@ describe("publishVersionBranch", () => {
   let container;
 
   beforeEach(() => {
-    exec = jasmine.createSpy("exec");
-    execSync = jasmine.createSpy("execSync");
-    logger = jasmine.createSpyObj("logger", ["warn", "info"]);
+    exec = vi.fn();
+    execSync = vi.fn();
+    logger = { warn: vi.fn(), info: vi.fn() };
     container = { exec, execSync, logger, version: "1.2.3" };
   });
 
   it("doesn't publish a prerelease branch", async () => {
     container.version = "1.2.3-beta.0";
     await publishVersionBranch(container);
-    expect(logger.info).toHaveBeenCalledOnceWith(
+
+    expect(logger.info).toHaveBeenCalledTimes(1);
+    expect(logger.info).toHaveBeenCalledWith(
       "No need to create a test branch for a prerelease version.",
     );
     expect(logger.warn).not.toHaveBeenCalled();
@@ -36,9 +40,11 @@ describe("publishVersionBranch", () => {
   });
 
   it("doesn't publish a branch that was already published", async () => {
-    execSync.and.returnValue("v1.2.3");
+    execSync.mockReturnValue("v1.2.3");
     await publishVersionBranch(container);
-    expect(logger.warn).toHaveBeenCalledOnceWith(
+
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
       "Git branch v1.2.3 already published.",
     );
     expect(logger.info).not.toHaveBeenCalled();
@@ -46,14 +52,14 @@ describe("publishVersionBranch", () => {
   });
 
   it("publishes a branch", async () => {
-    execSync.and.returnValue("");
-    exec.and.returnValue(Promise.resolve(), Promise.resolve());
+    execSync.mockReturnValue("");
+    exec.mockReturnValue(Promise.resolve(), Promise.resolve());
     await publishVersionBranch(container);
-    expect(logger.info).toHaveBeenCalledOnceWith(
-      "Publishing Git branch v1.2.3.",
-    );
+
+    expect(logger.info).toHaveBeenCalledTimes(1);
+    expect(logger.info).toHaveBeenCalledWith("Publishing Git branch v1.2.3.");
     expect(logger.warn).not.toHaveBeenCalled();
-    expect(exec).toHaveBeenCalledWith("git branch", jasmine.any(String));
-    expect(exec).toHaveBeenCalledWith("git push", jasmine.any(String));
+    expect(exec).toHaveBeenCalledWith("git branch", expect.any(String));
+    expect(exec).toHaveBeenCalledWith("git push", expect.any(String));
   });
 });

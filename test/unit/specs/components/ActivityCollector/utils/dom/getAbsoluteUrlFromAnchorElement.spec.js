@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import getAbsoluteUrlFromAnchorElement from "../../../../../../../src/components/ActivityCollector/utils/dom/getAbsoluteUrlFromAnchorElement.js";
 
 const initAnchorState = (window, element, anchorState) => {
@@ -20,7 +21,6 @@ const initAnchorState = (window, element, anchorState) => {
   window.location.host = anchorState["window.location.host"];
   window.location.pathname = anchorState["window.location.pathname"];
 };
-
 describe("ActivityCollector::getAbsoluteUrlFromAnchorElement", () => {
   it("Makes best attempt to constructs absolute URLs", () => {
     const window = {

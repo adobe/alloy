@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import createEventMergeId from "../../../../../src/components/EventMerge/createEventMergeId.js";
 import uuidV4Regex from "../../../constants/uuidV4Regex.js";
 
@@ -17,7 +18,6 @@ describe("EventMerge:createEventMergeId", () => {
   it("returns a UUID v4-compliant Id", () => {
     expect(uuidV4Regex.test(createEventMergeId().eventMergeId)).toBe(true);
   });
-
   it("doesn't return any other fields in the response", () => {
     expect(Object.keys(createEventMergeId())).toEqual(["eventMergeId"]);
   });

@@ -19,12 +19,10 @@ governing permissions and limitations under the License.
  */
 export default () => {
   let promise;
-
   for (let i = 0; i < 10; i += 1) {
     promise = promise
       ? promise.then(() => Promise.resolve())
       : Promise.resolve();
   }
-
   return promise;
 };

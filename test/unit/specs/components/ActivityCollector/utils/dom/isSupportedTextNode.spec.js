@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import isSupportedTextNode from "../../../../../../../src/components/ActivityCollector/utils/dom/isSupportedTextNode.js";
 
 describe("ActivityCollector::isSupportedTextNode", () => {
@@ -17,27 +18,22 @@ describe("ActivityCollector::isSupportedTextNode", () => {
     const textNode = document.createTextNode("text");
     expect(isSupportedTextNode(textNode)).toBe(true);
   });
-
   it("should return false for comment node", () => {
     const commentNode = document.createComment("comment");
     expect(isSupportedTextNode(commentNode)).toBe(false);
   });
-
   it("should return true for a paragraph node", () => {
     const paragraphNode = document.createElement("p");
     expect(isSupportedTextNode(paragraphNode)).toBe(true);
   });
-
   it("should return false for a script node", () => {
     const scriptNode = document.createElement("script");
     expect(isSupportedTextNode(scriptNode)).toBe(false);
   });
-
   it("should return false for a style node", () => {
     const styleNode = document.createElement("style");
     expect(isSupportedTextNode(styleNode)).toBe(false);
   });
-
   it("should return false for a link node", () => {
     const linkNode = document.createElement("link");
     expect(isSupportedTextNode(linkNode)).toBe(false);

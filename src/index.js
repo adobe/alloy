@@ -14,6 +14,8 @@ governing permissions and limitations under the License.
 // like the launch extension. Everything that is exported here can be used independently by other
 // npm projects.
 
+/** @import { AlloyMonitor } from './types.js' */
+
 import { createExecuteCommand } from "./core/index.js";
 import createLogger from "./core/createLogger.js";
 import createLogController from "./core/createLogController.js";
@@ -24,11 +26,24 @@ import {
   string,
   callback,
 } from "./utils/validation/index.js";
+import getMonitors from "./core/getMonitors.js";
 import * as optionalComponents from "./core/componentCreators.js";
 
 const { console } = window;
 const createNamespacedStorage = injectStorage(window);
 
+/**
+ * Creates a custom Alloy instance which can reduce the library size and increase performance.
+ *
+ * @type {(options: Object) => Function}
+ * @param {Object} [options] - Configuration options for the instance.
+ * @param {string} [options.name=alloy] - The name of the instance.
+ * @param {Array<AlloyMonitor>} [options.monitors] - Monitors for the instance.
+ * @param {Array<Function>} [options.components] - Components for the instance.
+ * @returns {(commandName: string, options?: Object) => Promise<any>} A callable Alloy instance.
+ *
+ * @see {@link https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/install/create-custom-build} for more details.
+ */
 export const createCustomInstance = (options = {}) => {
   const eventOptionsValidator = objectOf({
     name: string().default("alloy"),
@@ -38,17 +53,13 @@ export const createCustomInstance = (options = {}) => {
 
   const { name, monitors, components } = eventOptionsValidator(options);
 
-  // this is a function so that window.__alloyMonitors can be set or added to at any time
-  // eslint-disable-next-line no-underscore-dangle
-  const getMonitors = () => (window.__alloyMonitors || []).concat(monitors);
-
   const logController = createLogController({
     console,
     locationSearch: window.location.search,
     createLogger,
     instanceName: name,
     createNamespacedStorage,
-    getMonitors,
+    getMonitors: getMonitors.bind(null, monitors),
   });
 
   const instance = createExecuteCommand({
@@ -61,6 +72,21 @@ export const createCustomInstance = (options = {}) => {
   return instance;
 };
 
+/**
+ * Creates a new Alloy instance.
+ *
+ * @type {(options?: Object) => Function}
+ * @param {Object} [options] - Configuration options for the instance.
+ * @param {string} [options.name=alloy] - The name of the instance.
+ * @param {Array<AlloyMonitor>} [options.monitors] - (Optional) Monitors for the instance.
+ * @returns {(commandName: string, options?: Object) => Promise<any>} A callable Alloy instance.
+ *
+ * @example
+ * const alloy = createInstance({ name: "myInstance" });
+ * alloy("configure", { datastreamId: "myDatastreamId", orgId: "myOrgId" });
+ *
+ * @see {@link https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/install/npm} for more details.
+ */
 export const createInstance = (options = {}) => {
   const eventOptionsValidator = objectOf({
     name: string().default("alloy"),

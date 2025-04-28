@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 // tests for createMediaEventManager.js
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createMediaEventManager from "../../../../../src/components/StreamingMedia/createMediaEventManager.js";
 
 describe("StreamingMedia::createMediaEventManager", () => {
@@ -21,7 +22,6 @@ describe("StreamingMedia::createMediaEventManager", () => {
   let sendEdgeNetworkRequest;
   let mediaEventManager;
   let setTimestamp;
-
   beforeEach(() => {
     config = {
       streamingMedia: {
@@ -30,15 +30,15 @@ describe("StreamingMedia::createMediaEventManager", () => {
         version: "1.0.0",
       },
     };
-    eventManager = jasmine.createSpyObj("eventManager", [
-      "createEvent",
-      "sendEvent",
-    ]);
-    consent = jasmine.createSpyObj("consent", ["awaitConsent"]);
-    sendEdgeNetworkRequest = jasmine
-      .createSpy("sendEdgeNetworkRequest")
-      .and.returnValue(Promise.resolve());
-    setTimestamp = jasmine.createSpy("setTimestamp");
+    eventManager = {
+      createEvent: vi.fn(),
+      sendEvent: vi.fn(),
+    };
+    consent = {
+      awaitConsent: vi.fn(),
+    };
+    sendEdgeNetworkRequest = vi.fn().mockReturnValue(Promise.resolve());
+    setTimestamp = vi.fn();
     mediaEventManager = createMediaEventManager({
       config,
       eventManager,
@@ -47,21 +47,22 @@ describe("StreamingMedia::createMediaEventManager", () => {
       setTimestamp,
     });
   });
-
   it("should create a media event with user xdm", () => {
-    const options = { xdm: {} };
-    const event = {
-      setUserXdm: jasmine.createSpy("setUserXdm"),
-      toJSON: () => ({ a: 1 }),
+    const options = {
+      xdm: {},
     };
-
-    eventManager.createEvent.and.returnValue(event);
-
-    const result = mediaEventManager.createMediaEvent({ options });
-
+    const event = {
+      setUserXdm: vi.fn(),
+      toJSON: () => ({
+        a: 1,
+      }),
+    };
+    eventManager.createEvent.mockReturnValue(event);
+    const result = mediaEventManager.createMediaEvent({
+      options,
+    });
     expect(result.toJSON()).toEqual(event.toJSON());
   });
-
   it("should create a media session with player name, channel, and version", () => {
     const options = {
       xdm: {
@@ -73,57 +74,58 @@ describe("StreamingMedia::createMediaEventManager", () => {
         },
       },
     };
-
     const event = {
-      setUserXdm: jasmine.createSpy("setUserXdm"),
-      mergeXdm: jasmine.createSpy("mergeXdm"),
-      toJSON: () => ({ a: 1 }),
+      setUserXdm: vi.fn(),
+      mergeXdm: vi.fn(),
+      toJSON: () => ({
+        a: 1,
+      }),
     };
-
-    eventManager.createEvent.and.returnValue(event);
-
+    eventManager.createEvent.mockReturnValue(event);
     const result = mediaEventManager.createMediaSession(options);
-
     expect(result.toJSON()).toEqual(event.toJSON());
   });
-
   it("should augment media event with playhead, qoeDataDetails, and sessionID", () => {
     const event = {
-      mergeXdm: jasmine.createSpy("mergeXdm"),
+      mergeXdm: vi.fn(),
     };
     const playerId = "player1";
-    const getPlayerDetails = jasmine
-      .createSpy("getPlayerDetails")
-      .and.returnValue({
-        playhead: 10,
-        qoeDataDetails: { duration: 60 },
-      });
+    const getPlayerDetails = vi.fn().mockReturnValue({
+      playhead: 10,
+      qoeDataDetails: {
+        duration: 60,
+      },
+    });
     const sessionID = "session1";
-
     const result = mediaEventManager.augmentMediaEvent({
       event,
       playerId,
       getPlayerDetails,
       sessionID,
     });
-
     expect(result).toBe(event);
-    expect(getPlayerDetails).toHaveBeenCalledWith({ playerId });
+    expect(getPlayerDetails).toHaveBeenCalledWith({
+      playerId,
+    });
     expect(event.mergeXdm).toHaveBeenCalledWith({
       mediaCollection: {
         playhead: 10,
-        qoeDataDetails: { duration: 60 },
+        qoeDataDetails: {
+          duration: 60,
+        },
         sessionID: "session1",
       },
     });
   });
-
   it("should track media session with event, playerId, and getPlayerDetails", () => {
     const event = {};
     const playerId = "player1";
     const getPlayerDetails = () => {};
-    const mediaOptions = { playerId, getPlayerDetails, legacy: false };
-
+    const mediaOptions = {
+      playerId,
+      getPlayerDetails,
+      legacy: false,
+    };
     mediaEventManager.trackMediaSession({
       event,
       mediaOptions,
@@ -133,15 +135,16 @@ describe("StreamingMedia::createMediaEventManager", () => {
       edgeConfigOverrides: undefined,
     });
   });
-
   it("should track media event with action and send request to Edge Network", async () => {
-    const event = jasmine.createSpyObj("event", ["finalize"]);
+    const event = {
+      finalize: vi.fn(),
+    };
     const action = "play";
-
-    consent.awaitConsent.and.returnValue(Promise.resolve());
-
-    await mediaEventManager.trackMediaEvent({ event, action });
-
+    consent.awaitConsent.mockReturnValue(Promise.resolve());
+    await mediaEventManager.trackMediaEvent({
+      event,
+      action,
+    });
     expect(event.finalize).toHaveBeenCalled();
     expect(sendEdgeNetworkRequest).toHaveBeenCalled();
   });

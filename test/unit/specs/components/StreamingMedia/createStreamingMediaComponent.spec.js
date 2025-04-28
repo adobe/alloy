@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createStreamingMediaComponent from "../../../../../src/components/StreamingMedia/createStreamingMediaComponent.js";
 
 describe("StreamingMedia::createComponent", () => {
@@ -25,7 +26,6 @@ describe("StreamingMedia::createComponent", () => {
   let trackMediaEvent;
   let mediaResponseHandler;
   let trackMediaSession;
-
   const build = (configs) => {
     mediaComponent = createStreamingMediaComponent({
       config: configs,
@@ -35,15 +35,15 @@ describe("StreamingMedia::createComponent", () => {
       trackMediaSession,
     });
   };
-
   beforeEach(() => {
-    logger = jasmine.createSpyObj("logger", ["warn"]);
-    mediaResponseHandler = jasmine.createSpy();
-    trackMediaEvent = jasmine.createSpy();
-    trackMediaSession = jasmine.createSpy();
+    logger = {
+      warn: vi.fn(),
+    };
+    mediaResponseHandler = vi.fn();
+    trackMediaEvent = vi.fn();
+    trackMediaSession = vi.fn();
     build(config);
   });
-
   it("should call trackSession when with invalid config", async () => {
     build({});
     const options = {
@@ -57,12 +57,10 @@ describe("StreamingMedia::createComponent", () => {
         },
       },
     };
-
     const createMediaSession = mediaComponent.commands.createMediaSession;
     await createMediaSession.run(options);
     expect(trackMediaSession).toHaveBeenCalled();
   });
-
   it("should not send media event if no valid configs", async () => {
     build({});
     const options = {
@@ -71,8 +69,7 @@ describe("StreamingMedia::createComponent", () => {
         mediaCollection: {},
       },
     };
-
     const { sendMediaEvent } = mediaComponent.commands;
-    return expectAsync(sendMediaEvent.run(options)).toBeRejected();
+    return expect(sendMediaEvent.run(options)).rejects.toThrowError();
   });
 });

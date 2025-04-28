@@ -9,25 +9,21 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { beforeEach, describe, it, expect } from "vitest";
 import createInteractionStorage from "../../../../../src/components/Personalization/createInteractionStorage.js";
 
 describe("Personalization::createInteractionStorage", () => {
   let storeInteractionMeta;
   let getInteractionMetas;
-
   let PROPOSITIONS = [];
-
   let interactIDs = {};
-
   beforeEach(() => {
     ({ storeInteractionMeta, getInteractionMetas } =
       createInteractionStorage());
-
     interactIDs = {
       "div:123:h2": [1],
       "div:123:h1": [2],
     };
-
     PROPOSITIONS = [
       {
         id: "AT:123",
@@ -114,11 +110,9 @@ describe("Personalization::createInteractionStorage", () => {
       },
     ];
   });
-
   it("returns empty array when no metadata for this selector", () => {
     expect(getInteractionMetas([1])).toEqual([]);
   });
-
   it("stores clicks as a map in the click storage and returns the metadata", () => {
     PROPOSITIONS.forEach((proposition) => {
       const { id, scope, scopeDetails } = proposition;
@@ -127,19 +121,20 @@ describe("Personalization::createInteractionStorage", () => {
           proposition.id,
           item.id,
           proposition.scopeDetails.characteristics.scopeType,
-          { id, scope, scopeDetails },
+          {
+            id,
+            scope,
+            scopeDetails,
+          },
           interactIDs[item.data.selector],
         ),
       );
     });
-
     expect(getInteractionMetas(interactIDs["div:123:h2"]).length).toEqual(2);
     expect(getInteractionMetas(interactIDs["div:123:h1"]).length).toEqual(1);
   });
-
   it("getInteractionMetas returns the id, scopeDetails, scope, trackingLabel, and scopeType", () => {
     const proposition = PROPOSITIONS[0];
-
     proposition.items.forEach((item) =>
       storeInteractionMeta(
         proposition.id,
@@ -153,11 +148,8 @@ describe("Personalization::createInteractionStorage", () => {
         interactIDs[item.data.selector],
       ),
     );
-
     const meta = getInteractionMetas(interactIDs["div:123:h2"]);
-
     expect(meta.length).toEqual(1);
-
     expect(meta[0]).toEqual({
       id: "AT:123",
       scope: "__view__",

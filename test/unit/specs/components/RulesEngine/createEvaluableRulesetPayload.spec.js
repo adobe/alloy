@@ -9,19 +9,25 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createEvaluableRulesetPayload from "../../../../../src/components/RulesEngine/createEvaluableRulesetPayload.js";
 import createEventRegistry from "../../../../../src/components/RulesEngine/createEventRegistry.js";
-import createDecisionHistory from "../../../../../src/components/RulesEngine/createDecisionHistory.js";
 
 describe("RulesEngine:createEvaluableRulesetPayload", () => {
   let storage;
   let eventRegistry;
-  let decisionHistory;
 
   beforeEach(() => {
-    storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
-    eventRegistry = createEventRegistry({ storage });
-    decisionHistory = createDecisionHistory({ eventRegistry });
+    storage = {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      clear: vi.fn(),
+    };
+
+    eventRegistry = createEventRegistry({
+      storage,
+      logger: { info: vi.fn() },
+    });
   });
 
   it("consumes ruleset-items", () => {
@@ -130,11 +136,13 @@ describe("RulesEngine:createEvaluableRulesetPayload", () => {
         scope: "web://mywebsite.com",
       },
       eventRegistry,
-      decisionHistory,
     );
 
     expect(
-      evaluableRulesetPayload.evaluate({ color: "orange", action: "lipstick" }),
+      evaluableRulesetPayload.evaluate({
+        color: "orange",
+        action: "lipstick",
+      }),
     ).toEqual({
       scopeDetails: {
         decisionProvider: "AJO",
@@ -164,7 +172,7 @@ describe("RulesEngine:createEvaluableRulesetPayload", () => {
             },
             prehidingSelector:
               "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
-            qualifiedDate: jasmine.any(Number),
+            qualifiedDate: expect.any(Number),
             displayedDate: undefined,
           },
           id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
@@ -177,7 +185,7 @@ describe("RulesEngine:createEvaluableRulesetPayload", () => {
             content: "Hello Treatment A!",
             prehidingSelector:
               "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
-            qualifiedDate: jasmine.any(Number),
+            qualifiedDate: expect.any(Number),
             displayedDate: undefined,
           },
           id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f",
@@ -295,11 +303,13 @@ describe("RulesEngine:createEvaluableRulesetPayload", () => {
         scope: "web://mywebsite.com",
       },
       eventRegistry,
-      decisionHistory,
     );
 
     expect(
-      evaluableRulesetPayload.evaluate({ color: "orange", action: "lipstick" }),
+      evaluableRulesetPayload.evaluate({
+        color: "orange",
+        action: "lipstick",
+      }),
     ).toEqual({
       scopeDetails: {
         decisionProvider: "AJO",
@@ -329,7 +339,7 @@ describe("RulesEngine:createEvaluableRulesetPayload", () => {
             },
             prehidingSelector:
               "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
-            qualifiedDate: jasmine.any(Number),
+            qualifiedDate: expect.any(Number),
             displayedDate: undefined,
           },
           id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
@@ -342,7 +352,7 @@ describe("RulesEngine:createEvaluableRulesetPayload", () => {
             content: "Hello Treatment A!",
             prehidingSelector:
               "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
-            qualifiedDate: jasmine.any(Number),
+            qualifiedDate: expect.any(Number),
             displayedDate: undefined,
           },
           id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f",

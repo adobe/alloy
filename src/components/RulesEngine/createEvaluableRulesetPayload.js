@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 import RulesEngine from "@adobe/aep-rules-engine";
 import { JSON_CONTENT_ITEM, RULESET_ITEM } from "../../constants/schema.js";
 import { DISPLAY } from "../../constants/eventType.js";
-import { getActivityId } from "./utils.js";
+import { PropositionEventType } from "../../constants/propositionEventType.js";
+import { generateEventHash, getActivityId } from "./utils/index.js";
 
 import flattenArray from "../../utils/flattenArray.js";
 import createConsequenceAdapter from "./createConsequenceAdapter.js";
@@ -39,12 +40,12 @@ const isRulesetItem = (item) => {
       Object.prototype.hasOwnProperty.call(content, "version") &&
       Object.prototype.hasOwnProperty.call(content, "rules")
     );
-  } catch (error) {
+  } catch {
     return false;
   }
 };
 
-export default (payload, eventRegistry, decisionHistory) => {
+export default (payload, eventRegistry) => {
   const consequenceAdapter = createConsequenceAdapter();
   const activityId = getActivityId(payload);
   const items = [];
@@ -59,24 +60,27 @@ export default (payload, eventRegistry, decisionHistory) => {
     }
 
     items.push(
-      RulesEngine(typeof content === "string" ? JSON.parse(content) : content),
+      RulesEngine(typeof content === "string" ? JSON.parse(content) : content, {
+        generateEventHash,
+      }),
     );
   };
 
   const evaluate = (context) => {
     const displayEvent = eventRegistry.getEvent(DISPLAY, activityId);
-
-    const displayedDate = displayEvent
-      ? displayEvent.firstTimestamp
-      : undefined;
+    const displayedDate = displayEvent?.timestamps[0];
 
     const qualifyingItems = flattenArray(
       items.map((item) => item.execute(context)),
     )
       .map(consequenceAdapter)
       .map((item) => {
-        const { firstTimestamp: qualifiedDate } =
-          decisionHistory.recordQualified(activityId) || {};
+        const event = eventRegistry.addEvent({
+          eventType: PropositionEventType.TRIGGER,
+          eventId: activityId,
+        });
+
+        const qualifiedDate = event.timestamps[0];
 
         return {
           ...item,

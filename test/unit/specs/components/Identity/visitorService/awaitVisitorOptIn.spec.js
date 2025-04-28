@@ -10,27 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, afterAll, describe, it, expect } from "vitest";
 import awaitVisitorOptIn from "../../../../../../src/components/Identity/visitorService/awaitVisitorOptIn.js";
 
-const logger = jasmine.createSpyObj(["info"]);
-
+const logger = {
+  info: vi.fn(),
+};
 describe("awaitVisitorOptIn", () => {
   beforeEach(() => {
     window.adobe = undefined;
   });
-
   afterAll(() => {
     window.adobe = undefined;
   });
-
   describe("No legacy opt in object is present", () => {
     it("should return promise resolved with undefined", () => {
-      return expectAsync(awaitVisitorOptIn({ logger })).toBeResolvedTo(
-        undefined,
-      );
+      return expect(
+        awaitVisitorOptIn({
+          logger,
+        }),
+      ).resolves.toBe(undefined);
     });
   });
-
   describe("Legacy opt in object is present and gives approval", () => {
     it("should return promise resolved with undefined", () => {
       window.adobe = {
@@ -46,13 +47,13 @@ describe("awaitVisitorOptIn", () => {
           },
         },
       };
-
-      return expectAsync(awaitVisitorOptIn({ logger })).toBeResolvedTo(
-        undefined,
-      );
+      return expect(
+        awaitVisitorOptIn({
+          logger,
+        }),
+      ).resolves.toBe(undefined);
     });
   });
-
   describe("Legacy opt in object is present and gives denial", () => {
     it('should return promise rejected with new Error("Legacy opt-in was declined.")', () => {
       window.adobe = {
@@ -68,10 +69,11 @@ describe("awaitVisitorOptIn", () => {
           },
         },
       };
-
-      return expectAsync(awaitVisitorOptIn({ logger })).toBeRejectedWithError(
-        "Legacy opt-in was declined.",
-      );
+      return expect(
+        awaitVisitorOptIn({
+          logger,
+        }),
+      ).rejects.toThrowError("Legacy opt-in was declined.");
     });
   });
 });

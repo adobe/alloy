@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createGetClickedElementProperties from "../../../../../src/components/ActivityCollector/createGetClickedElementProperties.js";
 import createClickActivityStorage from "../../../../../src/components/ActivityCollector/createClickActivityStorage.js";
 
@@ -28,7 +29,6 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     href: "index.html",
     nodeType: 1,
   };
-
   let getLinkName;
   let getLinkRegion;
   let getAbsoluteUrlFromAnchorElement;
@@ -37,14 +37,14 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
   let logger;
   let clickActivityStorage;
   beforeEach(() => {
-    getLinkName = jasmine.createSpy("getLinkName");
-    getLinkRegion = jasmine.createSpy("getLinkRegion");
-    getAbsoluteUrlFromAnchorElement = jasmine.createSpy(
-      "getAbsoluteUrlFromAnchorElement",
-    );
-    findClickableElement = jasmine.createSpy("findClickableElement");
-    determineLinkType = jasmine.createSpy("determineLinkType");
-    logger = jasmine.createSpyObj("logger", ["info"]);
+    getLinkName = vi.fn();
+    getLinkRegion = vi.fn();
+    getAbsoluteUrlFromAnchorElement = vi.fn();
+    findClickableElement = vi.fn();
+    determineLinkType = vi.fn();
+    logger = {
+      info: vi.fn(),
+    };
     clickActivityStorage = createClickActivityStorage({
       storage: {
         getItem: () => {},
@@ -53,7 +53,6 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       },
     });
   });
-
   it("Returns complete linkDetails when it is a supported anchor element", () => {
     const config = {
       onBeforeLinkClickSend: (options) => {
@@ -64,12 +63,11 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
         externalLink: true,
       },
     };
-    getLinkRegion.and.returnValue("root");
-    getLinkName.and.returnValue("Go to cart");
-    getAbsoluteUrlFromAnchorElement.and.returnValue("http://blah.com");
-    findClickableElement.and.returnValue(supportedLinkElement);
-    determineLinkType.and.returnValue("exit");
-
+    getLinkRegion.mockReturnValue("root");
+    getLinkName.mockReturnValue("Go to cart");
+    getAbsoluteUrlFromAnchorElement.mockReturnValue("http://blah.com");
+    findClickableElement.mockReturnValue(supportedLinkElement);
+    determineLinkType.mockReturnValue("exit");
     const getClickedElementProperties = createGetClickedElementProperties({
       getLinkRegion,
       getLinkName,
@@ -78,7 +76,6 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       determineLinkType,
       window: mockWindow,
     });
-
     const result = getClickedElementProperties({
       clickedElement: {},
       config,
@@ -87,7 +84,6 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     });
     // I have to set this manually because of passing in {} as the clickedElement
     result.pageIDType = 0;
-
     expect(result.options).toEqual({
       xdm: {
         eventType: "web.webinteraction.linkClicks",
@@ -123,7 +119,6 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       clickedElement: {},
     });
   });
-
   it("Returns undefined when the customer callback returns false", () => {
     const config = {
       onBeforeLinkClickSend: () => {
@@ -133,12 +128,11 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
         externalLink: true,
       },
     };
-    getLinkRegion.and.returnValue("root");
-    getLinkName.and.returnValue("Go to cart");
-    getAbsoluteUrlFromAnchorElement.and.returnValue("http://blah.com");
-    findClickableElement.and.returnValue(supportedLinkElement);
-    determineLinkType.and.returnValue("exit");
-
+    getLinkRegion.mockReturnValue("root");
+    getLinkName.mockReturnValue("Go to cart");
+    getAbsoluteUrlFromAnchorElement.mockReturnValue("http://blah.com");
+    findClickableElement.mockReturnValue(supportedLinkElement);
+    determineLinkType.mockReturnValue("exit");
     const getClickedElementProperties = createGetClickedElementProperties({
       getLinkRegion,
       getLinkName,
@@ -147,7 +141,6 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       determineLinkType,
       window: mockWindow,
     });
-
     const result = getClickedElementProperties({
       clickedElement: {},
       config,
@@ -156,7 +149,6 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     });
     expect(result.options).toEqual(undefined);
   });
-
   it("Returns undefined when not supported anchor element", () => {
     const config = {
       onBeforeLinkClickSend: () => {
@@ -166,12 +158,11 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
         externalLink: true,
       },
     };
-    getLinkRegion.and.returnValue(undefined);
-    getLinkName.and.returnValue("Go to cart");
-    getAbsoluteUrlFromAnchorElement.and.returnValue("http://blah.com");
-    findClickableElement.and.returnValue(undefined);
-    determineLinkType.and.returnValue("exit");
-
+    getLinkRegion.mockReturnValue(undefined);
+    getLinkName.mockReturnValue("Go to cart");
+    getAbsoluteUrlFromAnchorElement.mockReturnValue("http://blah.com");
+    findClickableElement.mockReturnValue(undefined);
+    determineLinkType.mockReturnValue("exit");
     const getClickedElementProperties = createGetClickedElementProperties({
       getLinkRegion,
       getLinkName,
@@ -180,7 +171,6 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       determineLinkType,
       window: mockWindow,
     });
-
     const result = getClickedElementProperties({
       clickedElement: {},
       config,
@@ -189,7 +179,6 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     });
     expect(result.options).toEqual(undefined);
   });
-
   it("Returns only options with data element if clickable element is missing href", () => {
     const config = {
       onBeforeLinkClickSend: () => {
@@ -199,12 +188,11 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
         externalLink: true,
       },
     };
-    getLinkRegion.and.returnValue("root");
-    getLinkName.and.returnValue("Go to cart");
-    getAbsoluteUrlFromAnchorElement.and.returnValue(undefined);
-    findClickableElement.and.returnValue(supportedLinkElement);
-    determineLinkType.and.returnValue("exit");
-
+    getLinkRegion.mockReturnValue("root");
+    getLinkName.mockReturnValue("Go to cart");
+    getAbsoluteUrlFromAnchorElement.mockReturnValue(undefined);
+    findClickableElement.mockReturnValue(supportedLinkElement);
+    determineLinkType.mockReturnValue("exit");
     const getClickedElementProperties = createGetClickedElementProperties({
       getLinkRegion,
       getLinkName,
@@ -213,7 +201,6 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       determineLinkType,
       window: mockWindow,
     });
-
     const result = getClickedElementProperties({
       clickedElement: {},
       config,
@@ -242,20 +229,18 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       clickedElement: {},
     });
   });
-
-  it("Returns the object with link details when callback does not return explicit false ", () => {
+  it("Returns the object with link details when callback does not return explicit false", () => {
     const config = {
       onBeforeLinkClickSend: () => {},
       clickCollection: {
         externalLink: true,
       },
     };
-    getLinkRegion.and.returnValue("root");
-    getLinkName.and.returnValue("Go to cart");
-    getAbsoluteUrlFromAnchorElement.and.returnValue("http://blah.com");
-    findClickableElement.and.returnValue(supportedLinkElement);
-    determineLinkType.and.returnValue("exit");
-
+    getLinkRegion.mockReturnValue("root");
+    getLinkName.mockReturnValue("Go to cart");
+    getAbsoluteUrlFromAnchorElement.mockReturnValue("http://blah.com");
+    findClickableElement.mockReturnValue(supportedLinkElement);
+    determineLinkType.mockReturnValue("exit");
     const getClickedElementProperties = createGetClickedElementProperties({
       getLinkRegion,
       getLinkName,
@@ -264,7 +249,6 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
       determineLinkType,
       window: mockWindow,
     });
-
     const result = getClickedElementProperties({
       clickedElement: {},
       config,

@@ -10,10 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect, afterAll } from "vitest";
 import awaitSelector from "../../../../../src/utils/dom/awaitSelector.js";
 
 describe("awaitSelector", () => {
-  it("await via requestAnimationFrame", (done) => {
+  it("await via requestAnimationFrame", async () => {
     // Create test element
     const testElement = document.createElement("div");
     testElement.id = "def";
@@ -21,25 +22,20 @@ describe("awaitSelector", () => {
     // Immediately append element to document
     document.body.appendChild(testElement);
 
-    // Now wait for selector
-    awaitSelector("#def")
-      .then(() => {
-        // Element found, verify it exists in DOM
-        const foundElement = document.querySelector("#def");
-        expect(foundElement).toBeTruthy();
-        expect(foundElement.id).toBe("def");
+    try {
+      // Now wait for selector
+      await awaitSelector("#def");
 
-        // Cleanup
+      // Element found, verify it exists in DOM
+      const foundElement = document.querySelector("#def");
+      expect(foundElement).toBeTruthy();
+      expect(foundElement.id).toBe("def");
+    } finally {
+      // Cleanup
+      if (testElement.parentNode) {
         document.body.removeChild(testElement);
-        done();
-      })
-      .catch((error) => {
-        // Cleanup on error
-        if (testElement.parentNode) {
-          document.body.removeChild(testElement);
-        }
-        done.fail(error);
-      });
+      }
+    }
   });
 
   // Ensure cleanup after all tests

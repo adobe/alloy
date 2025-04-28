@@ -39,7 +39,7 @@ export default {
       .reduce((a, b) => {
         try {
           a[b[0]] = JSON.parse(b[1]);
-        } catch (e) {
+        } catch {
           a[b[0]] = b[1];
         }
         return a;

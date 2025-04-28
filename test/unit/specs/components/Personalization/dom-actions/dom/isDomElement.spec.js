@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   appendNode,
   createNode,
@@ -34,13 +35,13 @@ describe("Personalization::DOM::isDomElement", () => {
   });
 
   it("validates dom element", () => {
-    expect(isDomElement(document.getElementById(testElementId))).toBeTrue();
+    expect(isDomElement(document.getElementById(testElementId))).toBe(true);
   });
 
   it("validates not a dom element", () => {
-    expect(isDomElement({}).toBeFalse);
-    expect(isDomElement([]).toBeFalse);
-    expect(isDomElement(true).toBeFalse);
-    expect(isDomElement("something").toBeFalse);
+    expect(isDomElement({})).toBe(false);
+    expect(isDomElement([])).toBe(false);
+    expect(isDomElement(true)).toBe(false);
+    expect(isDomElement("something")).toBe(false);
   });
 });

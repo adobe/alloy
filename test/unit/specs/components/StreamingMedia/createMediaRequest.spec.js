@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import createMediaRequest from "../../../../../src/components/StreamingMedia/createMediaRequest.js";
 
 describe("StreamingMedia::createMediaRequest", () => {
@@ -17,8 +18,10 @@ describe("StreamingMedia::createMediaRequest", () => {
     const mediaRequestPayload = {}; // replace with valid payload
     const action = "testAction";
     const edgeSubPath = "/va";
-    const result = createMediaRequest({ mediaRequestPayload, action });
-
+    const result = createMediaRequest({
+      mediaRequestPayload,
+      action,
+    });
     expect(result.getAction()).toEqual(action);
     expect(result.getEdgeSubPath()).toEqual(edgeSubPath);
     expect(result.getUseSendBeacon()).toEqual(false);

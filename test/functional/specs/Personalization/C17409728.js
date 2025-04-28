@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 /*
 Copyright 2023 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -368,4 +367,61 @@ test("Test C17409728: Automatically sends interact event when using applyProposi
   //       .items[0].id,
   //   )
   //   .eql(itemId);
+});
+
+test("Test C17409728: Includes rendered propositions as display notifications in sendEvent after using applyPropositions", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(compose(getBaseConfig(), debugEnabled));
+
+  const propositions = [
+    {
+      id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
+      scope: "alloy-test-scope-1",
+      scopeDetails: { decisionProvider: "TGT" },
+      items: [
+        {
+          id: "442359",
+          schema: "https://ns.adobe.com/personalization/html-content-item",
+          data: {
+            content: "<p>Some custom content for the home page</p>",
+            format: "text/html",
+            id: "1202448",
+          },
+        },
+      ],
+    },
+  ];
+  const metadata = {
+    "alloy-test-scope-1": {
+      selector: "#home-item1",
+      actionType: "setHtml",
+    },
+  };
+  const applyPropositionsResult = await alloy.applyPropositions({
+    propositions,
+    metadata,
+  });
+
+  const allPropositionsWereRendered =
+    applyPropositionsResult.propositions.every((p) => p.renderAttempted);
+  await t.expect(allPropositionsWereRendered).eql(true);
+  await t.expect(applyPropositionsResult.propositions.length).eql(1);
+
+  await alloy.sendEvent({
+    personalization: { includeRenderedPropositions: true },
+  });
+  await t.expect(edgeEndpointLogs.requests.length).eql(1);
+  const sendEventRequest = edgeEndpointLogs.requests.at(-1);
+  const sendEventRequestBody = JSON.parse(sendEventRequest.request.body);
+  const hasTargetDisplayNotifications = sendEventRequestBody.events.some(
+    ({ xdm }) => xdm.eventType === "decisioning.propositionDisplay",
+  );
+  const hasPlatformDisplayNotifications = sendEventRequestBody.events.some(
+    ({ xdm }) =>
+      // eslint-disable-next-line no-underscore-dangle
+      xdm._experience?.decisioning?.propositionEventType?.display === 1,
+  );
+  await t
+    .expect(hasTargetDisplayNotifications || hasPlatformDisplayNotifications)
+    .eql(true);
 });

@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   appendNode,
   createNode,
@@ -22,22 +23,20 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import createRenderStatusHandler from "../../../../../../src/components/Personalization/handlers/createRenderStatusHandler.js";
 import { DOM_ACTION_REARRANGE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::rearrange", () => {
   let decorateProposition;
-
   beforeEach(() => {
     cleanUpDomChanges("rearrange");
     decorateProposition = createDecoratePropositionForTest({
       type: DOM_ACTION_REARRANGE,
     });
   });
-
   afterEach(() => {
     cleanUpDomChanges("rearrange");
   });
-
   it("should rearrange elements when from < to", () => {
     const modules = initDomActionsModules();
     const { rearrange } = modules;
@@ -48,26 +47,34 @@ describe("Personalization::actions::rearrange", () => {
     `;
     const element = createNode(
       "ul",
-      { id: "rearrange" },
-      { innerHTML: content },
+      {
+        id: "rearrange",
+      },
+      {
+        innerHTML: content,
+      },
     );
-
     appendNode(document.body, element);
-
     const settings = {
       selector: "#rearrange",
       prehidingSelector: "#rearrange",
-      content: { from: 0, to: 2 },
-      meta: { a: 1 },
+      content: {
+        from: 0,
+        to: 2,
+      },
+      meta: {
+        a: 1,
+      },
     };
-
-    return rearrange(settings, decorateProposition).then(() => {
+    return rearrange(
+      settings,
+      decorateProposition,
+      createRenderStatusHandler("view", "test"),
+    ).then(() => {
       const result = selectNodes("li");
-
       expect(result[0].textContent).toEqual("2");
       expect(getAttribute(result[0], CLICK_LABEL_DATA_ATTRIBUTE)).toBeNull();
       expect(getAttribute(result[0], INTERACT_ID_DATA_ATTRIBUTE)).toBeNull();
-
       expect(result[1].textContent).toEqual("3");
       expect(getAttribute(result[1], CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
         "trackingLabel",
@@ -75,7 +82,6 @@ describe("Personalization::actions::rearrange", () => {
       expect(
         getAttribute(result[1], INTERACT_ID_DATA_ATTRIBUTE),
       ).not.toBeNull();
-
       expect(result[2].textContent).toEqual("1");
       expect(getAttribute(result[2], CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
         "trackingLabel",
@@ -85,7 +91,6 @@ describe("Personalization::actions::rearrange", () => {
       ).not.toBeNull();
     });
   });
-
   it("should rearrange elements when from > to", () => {
     const modules = initDomActionsModules();
     const { rearrange } = modules;
@@ -96,22 +101,31 @@ describe("Personalization::actions::rearrange", () => {
     `;
     const element = createNode(
       "ul",
-      { id: "rearrange" },
-      { innerHTML: content },
+      {
+        id: "rearrange",
+      },
+      {
+        innerHTML: content,
+      },
     );
-
     appendNode(document.body, element);
-
     const settings = {
       selector: "#rearrange",
       prehidingSelector: "#rearrange",
-      content: { from: 2, to: 0 },
-      meta: { a: 1 },
+      content: {
+        from: 2,
+        to: 0,
+      },
+      meta: {
+        a: 1,
+      },
     };
-
-    return rearrange(settings, decorateProposition).then(() => {
+    return rearrange(
+      settings,
+      decorateProposition,
+      createRenderStatusHandler("view", "test"),
+    ).then(() => {
       const result = selectNodes("li");
-
       expect(result[0].textContent).toEqual("3");
       expect(result[1].textContent).toEqual("1");
       expect(result[2].textContent).toEqual("2");

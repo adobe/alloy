@@ -10,12 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import createComponent from "../../../../../src/components/EventMerge/createComponent.js";
 
 describe("EventMerge:createComponent", () => {
   it("creates a component", () => {
     const createEventMergeId = () => undefined;
-    expect(createComponent({ createEventMergeId })).toEqual({
+    expect(
+      createComponent({
+        createEventMergeId,
+      }),
+    ).toEqual({
       commands: {
         createEventMergeId: {
           run: createEventMergeId,

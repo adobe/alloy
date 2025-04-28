@@ -41,7 +41,8 @@ export default ({ locationSearch, dateProvider, orgId, logger }) =>
 
     const properties = queryStringValue.split("|").reduce((memo, keyValue) => {
       const [key, value] = keyValue.split("=");
-      memo[key] = value;
+      memo[key] = decodeUriComponentSafely(value);
+      memo[key] = memo[key].replace(/[^a-zA-Z0-9@.]/g, ""); // sanitization
       return memo;
     }, {});
     // We are using MCMID and MCORGID to be compatible with Visitor.

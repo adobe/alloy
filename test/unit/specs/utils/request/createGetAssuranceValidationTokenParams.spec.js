@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import { createGetAssuranceValidationTokenParams } from "../../../../../src/utils/request/index.js";
 import { injectStorage } from "../../../../../src/utils/index.js";
 import uuidV4Regex from "../../../constants/uuidV4Regex.js";
@@ -20,7 +21,6 @@ const win = {
   },
   localStorage: window.localStorage,
 };
-
 describe("createGetAssuranceValidationTokenParams", () => {
   it("gets validation token params", () => {
     let result;
@@ -33,34 +33,29 @@ describe("createGetAssuranceValidationTokenParams", () => {
         createNamespacedStorage: injectStorage(win),
       });
     expect(getAssuranceValidationTokenParams()).toEqual("");
-
     win.location.search = "?adb_validation_sessionid=abc-123";
     result = getAssuranceValidationTokenParams();
     // eslint-disable-next-line prefer-const
     [token, firstClientId] = result.split("%7C");
     expect(token).toEqual("&adobeAepValidationToken=abc-123");
-    expect(uuidV4Regex.test(firstClientId)).toBeTrue();
+    expect(uuidV4Regex.test(firstClientId)).toBe(true);
     expect(
       win.localStorage.getItem("com.adobe.alloy.validation.clientId"),
     ).toEqual(firstClientId);
-
     win.location.search = "?adb_validation_sessionid=abc-123%20fgh";
     result = getAssuranceValidationTokenParams();
     [token, clientId] = result.split("%7C");
     expect(token).toEqual("&adobeAepValidationToken=abc-123%20fgh");
     expect(clientId).toEqual(firstClientId);
-
     win.location.search =
       "?lang=en&sort=relevancy&f:el_product=[Data%20Collection]&adb_validation_sessionid=abc-123";
     result = getAssuranceValidationTokenParams();
     [token, clientId] = result.split("%7C");
     expect(token).toEqual("&adobeAepValidationToken=abc-123");
     expect(clientId).toEqual(firstClientId);
-
     win.location.search =
       "?lang=en&sort=relevancy&f:el_product=[Data%20Collection]";
     expect(getAssuranceValidationTokenParams()).toEqual("");
-
     win.location.search = "?adb_validation_sessionid=";
     expect(getAssuranceValidationTokenParams()).toEqual("");
   });

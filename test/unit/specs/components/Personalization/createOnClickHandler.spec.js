@@ -9,11 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createOnClickHandler from "../../../../../src/components/Personalization/createOnClickHandler.js";
 import { mergeDecisionsMeta } from "../../../../../src/utils/event.js";
 import createEvent from "../../../../../src/core/createEvent.js";
 import { createNode } from "../../../../../src/utils/dom/index.js";
-
 import {
   ALWAYS,
   NEVER,
@@ -26,12 +26,9 @@ import {
 describe("Personalization::createOnClickHandler", () => {
   let collectInteractions;
   let collectClicks;
-
   let getInteractionMetas;
   let getClickMetas;
-
   let getClickSelectors;
-
   let event;
   const decisionsMeta = [
     {
@@ -45,36 +42,30 @@ describe("Personalization::createOnClickHandler", () => {
       scope: "bar",
     },
   ];
-
   let autoCollectPropositionInteractions;
-
   beforeEach(() => {
-    collectInteractions = jasmine.createSpy("collectInteractions");
-    collectClicks = jasmine.createSpy("collectClicks");
-
-    getInteractionMetas = jasmine.createSpy("getInteractionMetas");
-    getClickMetas = jasmine.createSpy("getInteractionMetas");
-
-    getClickSelectors = jasmine.createSpy("getClickSelectors");
-
+    collectInteractions = vi.fn();
+    collectClicks = vi.fn();
+    getInteractionMetas = vi.fn();
+    getClickMetas = vi.fn();
+    getClickSelectors = vi.fn();
     event = createEvent();
-    spyOn(event, "mergeXdm").and.callThrough();
-
+    vi.spyOn(event, "mergeXdm");
     autoCollectPropositionInteractions = {
       [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
       [ADOBE_TARGET]: NEVER,
     };
   });
-
   it("collects clicks", () => {
     const selectors = ["foo", "foo2"];
-    collectInteractions.and.returnValue({ decisionsMeta: [] });
-    collectClicks.and.returnValue({
+    collectInteractions.mockReturnValue({
+      decisionsMeta: [],
+    });
+    collectClicks.mockReturnValue({
       decisionsMeta,
       eventLabel: "",
     });
-
-    getClickSelectors.and.returnValue(selectors);
+    getClickSelectors.mockReturnValue(selectors);
     const handleOnClick = createOnClickHandler({
       mergeDecisionsMeta,
       collectInteractions,
@@ -84,11 +75,11 @@ describe("Personalization::createOnClickHandler", () => {
       getClickSelectors,
       autoCollectPropositionInteractions,
     });
-
     const clickedElement = "foo";
-
-    handleOnClick({ event, clickedElement });
-
+    handleOnClick({
+      event,
+      clickedElement,
+    });
     const expectedXdm = {
       eventType: "decisioning.propositionInteract",
       _experience: {
@@ -105,7 +96,6 @@ describe("Personalization::createOnClickHandler", () => {
         },
       },
     };
-
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectClicks).toHaveBeenCalledWith(
       clickedElement,
@@ -117,14 +107,14 @@ describe("Personalization::createOnClickHandler", () => {
       xdm: expectedXdm,
     });
   });
-
   it("collects interactions", () => {
-    collectClicks.and.returnValue({ decisionsMeta: [] });
-    collectInteractions.and.returnValue({
+    collectClicks.mockReturnValue({
+      decisionsMeta: [],
+    });
+    collectInteractions.mockReturnValue({
       decisionsMeta,
       propositionActionLabel: "",
     });
-
     const handleOnClick = createOnClickHandler({
       mergeDecisionsMeta,
       collectInteractions,
@@ -134,10 +124,13 @@ describe("Personalization::createOnClickHandler", () => {
       getClickSelectors,
       autoCollectPropositionInteractions,
     });
-    const clickedElement = createNode("div", { class: "clicked-element" });
-
-    handleOnClick({ event, clickedElement });
-
+    const clickedElement = createNode("div", {
+      class: "clicked-element",
+    });
+    handleOnClick({
+      event,
+      clickedElement,
+    });
     const expectedXdm = {
       eventType: "decisioning.propositionInteract",
       _experience: {
@@ -154,7 +147,6 @@ describe("Personalization::createOnClickHandler", () => {
         },
       },
     };
-
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectInteractions).toHaveBeenCalledWith(
       clickedElement,
@@ -166,15 +158,16 @@ describe("Personalization::createOnClickHandler", () => {
       xdm: expectedXdm,
     });
   });
-
   it("collects clicks with label", () => {
     const selectors = ["foo", "foo2"];
-    collectInteractions.and.returnValue({ decisionsMeta: [] });
-    collectClicks.and.returnValue({
+    collectInteractions.mockReturnValue({
+      decisionsMeta: [],
+    });
+    collectClicks.mockReturnValue({
       decisionsMeta,
       propositionActionLabel: "click-label",
     });
-    getClickSelectors.and.returnValue(selectors);
+    getClickSelectors.mockReturnValue(selectors);
     const handleOnClick = createOnClickHandler({
       mergeDecisionsMeta,
       collectInteractions,
@@ -185,9 +178,10 @@ describe("Personalization::createOnClickHandler", () => {
       autoCollectPropositionInteractions,
     });
     const clickedElement = "foo";
-
-    handleOnClick({ event, clickedElement });
-
+    handleOnClick({
+      event,
+      clickedElement,
+    });
     const expectedXdm = {
       eventType: "decisioning.propositionInteract",
       _experience: {
@@ -207,7 +201,6 @@ describe("Personalization::createOnClickHandler", () => {
         },
       },
     };
-
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectClicks).toHaveBeenCalledWith(
       clickedElement,
@@ -219,14 +212,14 @@ describe("Personalization::createOnClickHandler", () => {
       xdm: expectedXdm,
     });
   });
-
   it("collects interactions with label", () => {
-    collectClicks.and.returnValue({ decisionsMeta: [] });
-    collectInteractions.and.returnValue({
+    collectClicks.mockReturnValue({
+      decisionsMeta: [],
+    });
+    collectInteractions.mockReturnValue({
       decisionsMeta,
       propositionActionLabel: "click-label",
     });
-
     const handleOnClick = createOnClickHandler({
       mergeDecisionsMeta,
       collectInteractions,
@@ -236,10 +229,13 @@ describe("Personalization::createOnClickHandler", () => {
       getClickSelectors,
       autoCollectPropositionInteractions,
     });
-    const clickedElement = createNode("div", { class: "clicked-element" });
-
-    handleOnClick({ event, clickedElement });
-
+    const clickedElement = createNode("div", {
+      class: "clicked-element",
+    });
+    handleOnClick({
+      event,
+      clickedElement,
+    });
     const expectedXdm = {
       eventType: "decisioning.propositionInteract",
       _experience: {
@@ -259,7 +255,6 @@ describe("Personalization::createOnClickHandler", () => {
         },
       },
     };
-
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectInteractions).toHaveBeenCalledWith(
       clickedElement,
@@ -275,12 +270,13 @@ describe("Personalization::createOnClickHandler", () => {
   // TODO collect clicks with token ??
 
   it("collects interactions with token", () => {
-    collectClicks.and.returnValue({ decisionsMeta: [] });
-    collectInteractions.and.returnValue({
+    collectClicks.mockReturnValue({
+      decisionsMeta: [],
+    });
+    collectInteractions.mockReturnValue({
       decisionsMeta,
       propositionActionToken: "click-token",
     });
-
     const handleOnClick = createOnClickHandler({
       mergeDecisionsMeta,
       collectInteractions,
@@ -290,10 +286,13 @@ describe("Personalization::createOnClickHandler", () => {
       getClickSelectors,
       autoCollectPropositionInteractions,
     });
-    const clickedElement = createNode("div", { class: "clicked-element" });
-
-    handleOnClick({ event, clickedElement });
-
+    const clickedElement = createNode("div", {
+      class: "clicked-element",
+    });
+    handleOnClick({
+      event,
+      clickedElement,
+    });
     const expectedXdm = {
       eventType: "decisioning.propositionInteract",
       _experience: {
@@ -313,7 +312,6 @@ describe("Personalization::createOnClickHandler", () => {
         },
       },
     };
-
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectInteractions).toHaveBeenCalledWith(
       clickedElement,
@@ -325,11 +323,13 @@ describe("Personalization::createOnClickHandler", () => {
       xdm: expectedXdm,
     });
   });
-
   it("shouldn't be called when clickStorage and interactionStorage are empty", () => {
-    collectInteractions.and.returnValue({ decisionsMeta: [] });
-    collectClicks.and.returnValue({ decisionsMeta: [] });
-
+    collectInteractions.mockReturnValue({
+      decisionsMeta: [],
+    });
+    collectClicks.mockReturnValue({
+      decisionsMeta: [],
+    });
     const handleOnClick = createOnClickHandler({
       mergeDecisionsMeta,
       collectInteractions,
@@ -339,16 +339,20 @@ describe("Personalization::createOnClickHandler", () => {
       getClickSelectors,
       autoCollectPropositionInteractions,
     });
-    const clickedElement = createNode("div", { class: "clicked-element" });
-
-    handleOnClick({ event, clickedElement });
-
+    const clickedElement = createNode("div", {
+      class: "clicked-element",
+    });
+    handleOnClick({
+      event,
+      clickedElement,
+    });
     expect(event.mergeXdm).not.toHaveBeenCalled();
   });
-
   it("for interactions, adds a viewName to the response", () => {
-    collectClicks.and.returnValue({ decisionsMeta: [] });
-    collectInteractions.and.returnValue({
+    collectClicks.mockReturnValue({
+      decisionsMeta: [],
+    });
+    collectInteractions.mockReturnValue({
       decisionsMeta,
       viewName: "myview",
     });
@@ -361,10 +365,13 @@ describe("Personalization::createOnClickHandler", () => {
       getClickSelectors,
       autoCollectPropositionInteractions,
     });
-    const clickedElement = createNode("div", { class: "clicked-element" });
-
-    handleOnClick({ event, clickedElement });
-
+    const clickedElement = createNode("div", {
+      class: "clicked-element",
+    });
+    handleOnClick({
+      event,
+      clickedElement,
+    });
     const expectedXdm = {
       eventType: "decisioning.propositionInteract",
       web: {
@@ -386,7 +393,6 @@ describe("Personalization::createOnClickHandler", () => {
         },
       },
     };
-
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectInteractions).toHaveBeenCalledWith(
       clickedElement,
@@ -398,15 +404,16 @@ describe("Personalization::createOnClickHandler", () => {
       xdm: expectedXdm,
     });
   });
-
   it("for clicks, adds a viewName to the response", () => {
     const selectors = ["foo", "foo2"];
-    collectInteractions.and.returnValue({ decisionsMeta: [] });
-    collectClicks.and.returnValue({
+    collectInteractions.mockReturnValue({
+      decisionsMeta: [],
+    });
+    collectClicks.mockReturnValue({
       decisionsMeta,
       viewName: "myview",
     });
-    getClickSelectors.and.returnValue(selectors);
+    getClickSelectors.mockReturnValue(selectors);
     const handleOnClick = createOnClickHandler({
       mergeDecisionsMeta,
       collectInteractions,
@@ -417,9 +424,10 @@ describe("Personalization::createOnClickHandler", () => {
       autoCollectPropositionInteractions,
     });
     const clickedElement = "foo";
-
-    handleOnClick({ event, clickedElement });
-
+    handleOnClick({
+      event,
+      clickedElement,
+    });
     const expectedXdm = {
       eventType: "decisioning.propositionInteract",
       web: {
@@ -441,7 +449,6 @@ describe("Personalization::createOnClickHandler", () => {
         },
       },
     };
-
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectClicks).toHaveBeenCalledWith(
       clickedElement,
@@ -453,16 +460,13 @@ describe("Personalization::createOnClickHandler", () => {
       xdm: expectedXdm,
     });
   });
-
   it("gets metas for both click and interact", () => {
-    collectInteractions.and.returnValue({
+    collectInteractions.mockReturnValue({
       decisionsMeta,
     });
-
-    collectClicks.and.returnValue({
+    collectClicks.mockReturnValue({
       decisionsMeta: decisionsMeta2,
     });
-
     const handleOnClick = createOnClickHandler({
       mergeDecisionsMeta,
       collectInteractions,
@@ -472,13 +476,15 @@ describe("Personalization::createOnClickHandler", () => {
       getClickSelectors,
       autoCollectPropositionInteractions,
     });
-    const clickedElement = createNode("div", { class: "clicked-element" });
-
-    handleOnClick({ event, clickedElement });
-
+    const clickedElement = createNode("div", {
+      class: "clicked-element",
+    });
+    handleOnClick({
+      event,
+      clickedElement,
+    });
     expect(collectInteractions).toHaveBeenCalled();
     expect(collectClicks).toHaveBeenCalled();
-
     const expectedXdm = {
       eventType: "decisioning.propositionInteract",
       _experience: {
@@ -499,7 +505,6 @@ describe("Personalization::createOnClickHandler", () => {
         },
       },
     };
-
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectInteractions).toHaveBeenCalledWith(
       clickedElement,

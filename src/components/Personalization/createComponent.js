@@ -91,7 +91,6 @@ export default ({
             onResponse,
           });
         } else if (personalizationDetails.shouldUseCachedData()) {
-          // eslint-disable-next-line consistent-return
           decisionsMetaPromises.push(
             viewChangeHandler({
               personalizationDetails,

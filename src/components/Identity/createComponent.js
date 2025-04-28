@@ -24,6 +24,7 @@ export default ({
   appendIdentityToUrl,
   logger,
   getIdentityOptionsValidator,
+  decodeKndctrCookie,
 }) => {
   let namespaces;
   let edge = {};
@@ -47,7 +48,10 @@ export default ({
           // https://jira.corp.adobe.com/browse/EXEG-1234
           setLegacyEcid(newNamespaces[ecidNamespace]);
         }
-        namespaces = newNamespaces;
+
+        if (newNamespaces && Object.keys(newNamespaces).length > 0) {
+          namespaces = { ...namespaces, ...newNamespaces };
+        }
         // For sendBeacon requests, getEdge() will return {}, so we are using assign here
         // so that sendBeacon requests don't override the edge info from before.
         edge = { ...edge, ...response.getEdge() };
@@ -63,7 +67,25 @@ export default ({
           return consent
             .awaitConsent()
             .then(() => {
-              return namespaces ? undefined : getIdentity(options);
+              if (namespaces) {
+                return undefined;
+              }
+              const ecidFromCookie = decodeKndctrCookie();
+              if (
+                ecidFromCookie &&
+                requestedNamespaces.includes(ecidNamespace)
+              ) {
+                if (!namespaces) {
+                  namespaces = {};
+                }
+                namespaces[ecidNamespace] = ecidFromCookie;
+                if (requestedNamespaces.length === 1) {
+                  // If only ECID is requested, we don't need to make an acquire request
+                  // and can return immediately
+                  return undefined;
+                }
+              }
+              return getIdentity(options);
             })
             .then(() => {
               return {
@@ -82,7 +104,18 @@ export default ({
           return consent
             .withConsent()
             .then(() => {
-              return namespaces ? undefined : getIdentity(options);
+              if (namespaces) {
+                return undefined;
+              }
+              const ecidFromCookie = decodeKndctrCookie();
+              if (ecidFromCookie) {
+                if (!namespaces) {
+                  namespaces = {};
+                }
+                namespaces[ecidNamespace] = ecidFromCookie;
+                return undefined;
+              }
+              return getIdentity(options);
             })
             .then(() => {
               return {

@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import { prepareConfigOverridesForEdge } from "../../../../src/utils/index.js";
 
 describe("utils:prepareConfigOverridesForEdge", () => {
@@ -18,8 +19,12 @@ describe("utils:prepareConfigOverridesForEdge", () => {
       prepareConfigOverridesForEdge({
         com_adobe_experience_platform: {
           datasets: {
-            event: { datasetId: "werewr" },
-            profile: { datasetId: "" },
+            event: {
+              datasetId: "werewr",
+            },
+            profile: {
+              datasetId: "",
+            },
           },
           enabled: false,
         },
@@ -36,7 +41,9 @@ describe("utils:prepareConfigOverridesForEdge", () => {
     ).toEqual({
       com_adobe_experience_platform: {
         datasets: {
-          event: { datasetId: "werewr" },
+          event: {
+            datasetId: "werewr",
+          },
         },
         enabled: false,
       },
@@ -46,14 +53,17 @@ describe("utils:prepareConfigOverridesForEdge", () => {
       },
     });
   });
-
   it("should return null for empty config objects", () => {
     expect(
       prepareConfigOverridesForEdge({
         com_adobe_experience_platform: {
           datasets: {
-            event: { datasetId: "" },
-            profile: { datasetId: "" },
+            event: {
+              datasetId: "",
+            },
+            profile: {
+              datasetId: "",
+            },
           },
         },
         com_adobe_analytics: {

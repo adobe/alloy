@@ -10,16 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import { mergeDecisionsMeta, mergeQuery } from "../../../../src/utils/event.js";
 import { PropositionEventType } from "../../../../src/constants/propositionEventType.js";
 
 describe("Utils::event", () => {
   let event;
-
   beforeEach(() => {
-    event = jasmine.createSpyObj("event", ["mergeXdm", "mergeQuery"]);
+    event = {
+      mergeXdm: vi.fn(),
+      mergeQuery: vi.fn(),
+    };
   });
-
   describe("mergeDecisionsMeta", () => {
     it("merges decisions meta", () => {
       const decisionsMeta = [
@@ -54,7 +56,6 @@ describe("Utils::event", () => {
       });
     });
   });
-
   describe("mergeQuery", () => {
     it("merges query details", () => {
       const details = {

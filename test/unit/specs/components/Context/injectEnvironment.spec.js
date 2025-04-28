@@ -9,21 +9,24 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { describe, it, expect } from "vitest";
 import injectEnvironment from "../../../../../src/components/Context/injectEnvironment.js";
 
 describe("Context::injectEnvironment", () => {
   const run = (description, mywindow, expectedXdm) => {
-    it(description, () => {
+    it(`${description}`, () => {
       const xdm = {};
       injectEnvironment(mywindow)(xdm);
       expect(xdm).toEqual(expectedXdm);
     });
   };
-
   run(
     "uses the correct width and height",
     {
-      screen: { width: 1001, height: 1002 },
+      screen: {
+        width: 1001,
+        height: 1002,
+      },
       innerWidth: 1003,
       innerHeight: 1004,
       document: {
@@ -43,7 +46,6 @@ describe("Context::injectEnvironment", () => {
       },
     },
   );
-
   run(
     "handles negative width and height",
     {
@@ -60,7 +62,6 @@ describe("Context::injectEnvironment", () => {
       },
     },
   );
-
   run(
     "handles negative width",
     {
@@ -77,7 +78,6 @@ describe("Context::injectEnvironment", () => {
       },
     },
   );
-
   run(
     "handles missing width and height",
     {
@@ -91,7 +91,6 @@ describe("Context::injectEnvironment", () => {
       },
     },
   );
-
   run(
     "handles missing documentElement",
     {
@@ -103,7 +102,6 @@ describe("Context::injectEnvironment", () => {
       },
     },
   );
-
   run(
     "handles 0 height and width",
     {
@@ -144,7 +142,6 @@ describe("Context::injectEnvironment", () => {
       },
     },
   );
-
   run(
     "handles null values",
     {
@@ -161,7 +158,6 @@ describe("Context::injectEnvironment", () => {
       },
     },
   );
-
   run(
     "handles only width",
     {
@@ -180,7 +176,6 @@ describe("Context::injectEnvironment", () => {
       },
     },
   );
-
   run(
     "handles only height",
     {

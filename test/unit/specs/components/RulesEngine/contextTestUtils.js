@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, expect } from "vitest";
 import createContextProvider from "../../../../../src/components/RulesEngine/createContextProvider.js";
 import createOnResponseHandler from "../../../../../src/components/RulesEngine/createOnResponseHandler.js";
 import createEventRegistry from "../../../../../src/components/RulesEngine/createEventRegistry.js";
@@ -27,7 +28,7 @@ export const proposition = {
       schema: "https://ns.adobe.com/personalization/mock-action",
       data: {
         hello: "kitty",
-        qualifiedDate: jasmine.any(Number),
+        qualifiedDate: expect.any(Number),
         displayedDate: undefined,
       },
       id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
@@ -102,6 +103,7 @@ export const payloadWithCondition = (condition) => {
     scope: "web://mywebsite.com",
   };
 };
+
 export const mockRulesetResponseWithCondition = (condition) => {
   return {
     getPayloadsByType: () => [
@@ -117,22 +119,33 @@ export const mockRulesetResponseWithCondition = (condition) => {
 };
 
 const mockEvent = {
-  getContent: () => ({ query: {} }),
+  getContent: () => ({
+    query: {},
+  }),
   hasQuery: () => true,
   getViewName: () => undefined,
 };
 
 export const setupResponseHandler = (applyResponse, window, condition) => {
-  const storage = jasmine.createSpyObj("storage", [
-    "getItem",
-    "setItem",
-    "clear",
-  ]);
-  const eventRegistry = createEventRegistry({ storage });
-  const decisionProvider = createDecisionProvider({ eventRegistry });
+  const storage = {
+    getItem: vi.fn(),
+    setItem: vi.fn(),
+    clear: vi.fn(),
+  };
+
+  const eventRegistry = createEventRegistry({
+    storage,
+    logger: { info: vi.fn() },
+  });
+
+  const decisionProvider = createDecisionProvider({
+    eventRegistry,
+  });
+
   const getBrowser = injectGetBrowser({
     userAgent: window.navigator.userAgent,
   });
+
   const contextProvider = createContextProvider({
     eventRegistry,
     window,

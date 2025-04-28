@@ -10,146 +10,121 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import {
-  createRestoreStorage,
-  createSaveStorage,
-  getExpirationDate,
   getActivityId,
   hasExperienceData,
   getDecisionProvider,
-} from "./utils.js";
+  createRestoreStorage,
+  createSaveStorage,
+  createEventPruner,
+  generateEventHash,
+} from "./utils/index.js";
 import { EVENT_TYPE_TRUE } from "../../constants/eventType.js";
 import { ADOBE_JOURNEY_OPTIMIZER } from "../../constants/decisionProvider.js";
+import {
+  EVENT_HISTORY_STORAGE_KEY,
+  EVENT_HISTORY_MAX_LENGTH,
+} from "./constants/index.js";
 
-const STORAGE_KEY = "events";
-const MAX_EVENT_RECORDS = 1000;
-const RETENTION_PERIOD = 30;
-
-const prefixed = (key) => `iam.${key}`;
-export const createEventPruner = (
-  limit = MAX_EVENT_RECORDS,
-  retentionPeriod = RETENTION_PERIOD,
-) => {
-  return (events) => {
-    const pruned = {};
-    Object.keys(events).forEach((eventType) => {
-      pruned[eventType] = {};
-      Object.values(events[eventType])
-        .filter(
-          (entry) =>
-            new Date(entry.firstTimestamp) >=
-            getExpirationDate(retentionPeriod),
-        )
-        .sort((a, b) => a.firstTimestamp - b.firstTimestamp)
-        .slice(-1 * limit)
-        .forEach((entry) => {
-          pruned[eventType][entry.event[prefixed("id")]] = entry;
-        });
-    });
-    return pruned;
-  };
-};
-
-export default ({ storage }) => {
+export default ({ storage, logger }) => {
   let currentStorage = storage;
   let restore;
   let save;
   let events;
+  let size;
+
   const setStorage = (newStorage) => {
     currentStorage = newStorage;
 
-    restore = createRestoreStorage(currentStorage, STORAGE_KEY);
-    save = createSaveStorage(
-      currentStorage,
-      STORAGE_KEY,
-      createEventPruner(MAX_EVENT_RECORDS, RETENTION_PERIOD),
-    );
-    events = restore({});
+    restore = createRestoreStorage(currentStorage, EVENT_HISTORY_STORAGE_KEY);
+    save = createSaveStorage(currentStorage, EVENT_HISTORY_STORAGE_KEY);
+    [events, size] = restore({});
+
+    if (size > EVENT_HISTORY_MAX_LENGTH) {
+      const eventPruner = createEventPruner();
+      events = eventPruner(events);
+      save(events);
+    }
   };
 
   setStorage(storage);
 
-  const addEvent = (event, eventType, eventId, action) => {
+  const addEvent = (o = {}) => {
+    const { eventType, eventId } = o;
+
     if (!eventType || !eventId) {
       return undefined;
     }
 
-    if (!events[eventType]) {
-      events[eventType] = {};
-    }
-    const existingEvent = events[eventType][eventId];
-
-    const count = existingEvent ? existingEvent.count : 0;
     const timestamp = new Date().getTime();
-    const firstTimestamp = existingEvent
-      ? existingEvent.firstTimestamp || existingEvent.timestamp
-      : timestamp;
+    const eventHash = generateEventHash(o);
 
-    events[eventType][eventId] = {
-      event: {
-        ...event,
-        [prefixed("id")]: eventId,
-        [prefixed("eventType")]: eventType,
-        [prefixed("action")]: action,
-      },
-      firstTimestamp,
+    if (!events[eventHash] || !Array.isArray(events[eventHash].timestamps)) {
+      events[eventHash] = {
+        timestamps: [],
+      };
+    }
+
+    events[eventHash].timestamps.push(timestamp);
+    events[eventHash].timestamps.sort();
+
+    logger.info(
+      "[Event History] Added event for",
+      o,
+      "with hash",
+      eventHash,
+      "and timestamp",
       timestamp,
-      count: count + 1,
-    };
+    );
 
     save(events);
 
-    return events[eventType][eventId];
+    return events[eventHash];
   };
 
   const addExperienceEdgeEvent = (event) => {
-    const { xdm = {} } = event.getContent();
-    const { _experience } = xdm;
+    const { xdm } = event.getContent();
 
     if (!hasExperienceData(xdm)) {
       return;
     }
 
-    const { decisioning = {} } = _experience;
     const {
-      propositionEventType: propositionEventTypeObj = {},
-      propositionAction = {},
-      propositions = [],
-    } = decisioning;
+      _experience: {
+        decisioning: {
+          propositionEventType = {},
+          propositionAction: { id: action } = {},
+          propositions = [],
+        } = {},
+      },
+    } = xdm;
 
-    const propositionEventTypesList = Object.keys(propositionEventTypeObj);
-
-    // https://wiki.corp.adobe.com/pages/viewpage.action?spaceKey=CJM&title=Proposition+Event+Types
-    if (propositionEventTypesList.length === 0) {
-      return;
-    }
-
-    const validPropositionEventType = (propositionEventType) =>
-      propositionEventTypeObj[propositionEventType] === EVENT_TYPE_TRUE;
-
-    const { id: action } = propositionAction;
-
-    propositionEventTypesList
-      .filter(validPropositionEventType)
-      .forEach((propositionEventType) => {
+    Object.keys(propositionEventType)
+      .filter(
+        (eventType) => propositionEventType[eventType] === EVENT_TYPE_TRUE,
+      )
+      .forEach((eventType) => {
         propositions.forEach((proposition) => {
           if (getDecisionProvider(proposition) !== ADOBE_JOURNEY_OPTIMIZER) {
             return;
           }
-          addEvent(
-            {},
-            propositionEventType,
-            getActivityId(proposition),
+
+          addEvent({
+            eventId: getActivityId(proposition),
+            eventType,
             action,
-          );
+          });
         });
       });
   };
+
   const getEvent = (eventType, eventId) => {
-    if (!events[eventType]) {
+    const h = generateEventHash({ eventType, eventId });
+
+    if (!events[h]) {
       return undefined;
     }
 
-    return events[eventType][eventId];
+    return events[h];
   };
 
   return {

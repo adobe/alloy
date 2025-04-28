@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   buildStyleFromMobileParameters,
   createIframe,
@@ -26,7 +27,6 @@ describe("DOM Actions on Iframe", () => {
     cleanUpDomChanges("alloy-overlay-container");
     cleanUpDomChanges("alloy-content-iframe");
   });
-
   afterEach(() => {
     cleanUpDomChanges("alloy-messaging-container");
     cleanUpDomChanges("alloy-overlay-container");
@@ -56,19 +56,16 @@ describe("DOM Actions on Iframe", () => {
       expect(style.height).toBe("60vh");
     });
   });
-
   describe("createIframe function", () => {
     it("should create an iframe element with specified properties", () => {
       const mockHtmlContent =
         '\u003c!doctype html\u003e\\n\u003chtml\u003e\\n\u003chead\u003e\\n  \u003ctitle\u003eBumper Sale!\u003c/title\u003e\\n  \u003cstyle\u003e\\n    body {\\n      margin: 0;\\n      padding: 0;\\n      font-family: Arial, sans-serif;\\n    }\\n\\n    #announcement {\\n      position: fixed;\\n      top: 0;\\n      left: 0;\\n      width: 100%;\\n      height: 100%;\\n      background-color: rgba(0, 0, 0, 0.8);\\n      display: flex;\\n      flex-direction: column;\\n      align-items: center;\\n      justify-content: center;\\n      color: #fff;\\n    }\\n\\n    #announcement img {\\n      max-width: 80%;\\n      height: auto;\\n      margin-bottom: 20px;\\n    }\\n\\n    #cross {\\n      position: absolute;\\n      top: 10px;\\n      right: 10px;\\n      cursor: pointer;\\n      font-size: 24px;\\n      color: #fff;\\n    }\\n\\n    #buttons {\\n      display: flex;\\n      justify-content: center;\\n      margin-top: 20px;\\n    }\\n\\n    #buttons a {\\n      margin: 0 10px;\\n      padding: 10px 20px;\\n      background-color: #ff5500;\\n      color: #fff;\\n      text-decoration: none;\\n      border-radius: 4px;\\n      font-weight: bold;\\n      transition: background-color 0.3s ease;\\n    }\\n\\n    #buttons a:hover {\\n      background-color: #ff3300;\\n    }\\n  \u003c/style\u003e\\n\u003c/head\u003e\\n\u003cbody\u003e\\n\u003cdiv id\u003d"announcement" class\u003d"fullscreen"\u003e\\n  \u003cspan id\u003d"cross" class\u003d"dismiss"\u003e✕\u003c/span\u003e\\n  \u003ch2\u003eBlack Friday Sale!\u003c/h2\u003e\\n  \u003cimg src\u003d"https://source.unsplash.com/800x600/?technology,gadget" alt\u003d"Technology Image"\u003e\\n  \u003cp\u003eDon\u0027t miss out on our incredible discounts and deals at our gadgets!\u003c/p\u003e\\n  \u003cdiv id\u003d"buttons"\u003e\\n    \u003ca class\u003d"forward" href\u003d"http://localhost:3000/"\u003eShop\u003c/a\u003e\\n    \u003ca class\u003d"dismiss"\u003eDismiss\u003c/a\u003e\\n  \u003c/div\u003e\\n\u003c/div\u003e\\n\\n\u003c/body\u003e\u003c/html\u003e\\n';
-      const mockClickHandler = jasmine.createSpy("clickHandler");
-
+      const mockClickHandler = vi.fn();
       const iframe = createIframe(mockHtmlContent, mockClickHandler);
       expect(iframe).toBeDefined();
       expect(iframe instanceof HTMLIFrameElement).toBe(true);
       expect(iframe.src).toContain("blob:");
     });
-
     it("should set 'nonce' attribute on script tag if it exists", async () => {
       const mockHtmlContentWithScript =
         "<!DOCTYPE html>\n" +
@@ -103,41 +100,32 @@ describe("DOM Actions on Iframe", () => {
         "</script>\n" +
         "</body>\n" +
         "</html>\n";
-
       testResetCachedNonce();
-
       const childElement = document.createElement("div");
       childElement.setAttribute("nonce", "12345");
       const parentElement = document.createElement("div");
       parentElement.appendChild(childElement);
       const originalGetNonce = getNonce(parentElement);
-
-      const mockClickHandler = jasmine.createSpy("clickHandler");
+      const mockClickHandler = vi.fn();
       const iframe = createIframe(mockHtmlContentWithScript, mockClickHandler);
-
       const blob = await fetch(iframe.src).then((r) => r.blob());
       const text = await blob.text();
       const parser = new DOMParser();
       const iframeDocument = parser.parseFromString(text, TEXT_HTML);
-
       const scriptTag = iframeDocument.querySelector("script");
       expect(scriptTag).toBeDefined();
       expect(scriptTag.getAttribute("nonce")).toEqual(originalGetNonce);
     });
   });
-
   describe("createIframeClickHandler", () => {
     let container;
     let mockedInteract;
     let mobileParameters;
-
     beforeEach(() => {
       container = document.createElement("div");
       container.setAttribute("id", "alloy-messaging-container");
       document.body.appendChild(container);
-
-      mockedInteract = jasmine.createSpy("interact");
-
+      mockedInteract = vi.fn();
       mobileParameters = {
         verticalAlign: "center",
         width: 80,
@@ -149,17 +137,14 @@ describe("DOM Actions on Iframe", () => {
         verticalInset: 10,
       };
     });
-
     it("should remove display message when dismiss is clicked and UI takeover is false", () => {
       Object.assign(mobileParameters, {
         uiTakeover: false,
       });
-
       const anchor = document.createElement("a");
       anchor.setAttribute("data-uuid", "12345");
       anchor.href = "adbinapp://dismiss?interaction=cancel";
       anchor.innerText = "Cancel";
-
       const mockEvent = {
         target: anchor,
         preventDefault: () => {},
@@ -170,7 +155,7 @@ describe("DOM Actions on Iframe", () => {
       const alloyMessagingContainer = document.getElementById(
         "alloy-messaging-container",
       );
-      expect(mockedInteract).toHaveBeenCalledOnceWith("dismiss", {
+      expect(mockedInteract).toHaveBeenNthCalledWith(1, "dismiss", {
         label: "Cancel",
         id: "cancel",
         uuid: "12345",
@@ -178,22 +163,17 @@ describe("DOM Actions on Iframe", () => {
       });
       expect(alloyMessagingContainer).toBeNull();
     });
-
     it("should remove display message when dismiss is clicked and Ui takeover is true", () => {
       Object.assign(mobileParameters, {
         uiTakeover: true,
       });
-
       const overlayContainer = document.createElement("div");
       overlayContainer.setAttribute("id", "alloy-overlay-container");
-
       document.body.appendChild(overlayContainer);
-
       const anchor = document.createElement("a");
       anchor.setAttribute("data-uuid", "54321");
       anchor.href = "adbinapp://dismiss?interaction=cancel";
       anchor.innerText = "Aloha";
-
       const mockEvent = {
         target: anchor,
         preventDefault: () => {},
@@ -204,28 +184,24 @@ describe("DOM Actions on Iframe", () => {
       const overlayContainerAfterDismissal = document.getElementById(
         "alloy-overlay-container",
       );
-      expect(mockedInteract).toHaveBeenCalledOnceWith("dismiss", {
+      expect(mockedInteract).toHaveBeenNthCalledWith(1, "dismiss", {
         label: "Aloha",
         id: "cancel",
         uuid: "54321",
         link: "",
       });
-
       expect(overlayContainerAfterDismissal).toBeNull();
     });
-
     it("extracts propositionAction details from anchor tag and sends to interact()", () => {
-      const mockNavigateToUrl = jasmine.createSpy("mockNavigateToUrl");
+      const mockNavigateToUrl = vi.fn();
       Object.assign(mobileParameters, {
         uiTakeover: true,
       });
-
       const anchor = document.createElement("a");
       anchor.setAttribute("data-uuid", "blippi");
       anchor.href =
         "adbinapp://dismiss?interaction=accept&link=https%3A%2F%2Fwww.google.com";
       anchor.innerText = "Woof";
-
       const mockEvent = {
         target: anchor,
         preventDefault: () => {},
@@ -239,54 +215,50 @@ describe("DOM Actions on Iframe", () => {
       const overlayContainerAfterDismissal = document.getElementById(
         "alloy-overlay-container",
       );
-      expect(mockedInteract).toHaveBeenCalledOnceWith("dismiss", {
+      expect(mockedInteract).toHaveBeenNthCalledWith(1, "dismiss", {
         label: "Woof",
         id: "accept",
         uuid: "blippi",
         link: "https://www.google.com",
       });
-      expect(mockNavigateToUrl).toHaveBeenCalledOnceWith(
+      expect(mockNavigateToUrl).toHaveBeenNthCalledWith(
+        1,
         "https://www.google.com",
         true,
       );
       expect(overlayContainerAfterDismissal).toBeNull();
     });
   });
-
   describe("displayHTMLContentInIframe", () => {
     let originalAppendChild;
     let originalBodyStyle;
     let mockCollect;
     let originalCreateIframe;
-
     beforeEach(() => {
-      mockCollect = jasmine.createSpy("collect");
+      mockCollect = vi.fn();
       originalAppendChild = document.body.appendChild;
-      document.body.appendChild = jasmine.createSpy("appendChild");
+      document.body.appendChild = vi.fn();
       originalBodyStyle = document.body.style;
       document.body.style = {};
       originalCreateIframe = window.createIframe;
-
-      window.createIframe = jasmine
-        .createSpy("createIframe")
-        .and.callFake(() => {
-          const element = document.createElement("iframe");
-          element.id = "alloy-content-iframe";
-          return element;
-        });
+      window.createIframe = vi.fn().mockImplementation(() => {
+        const element = document.createElement("iframe");
+        element.id = "alloy-content-iframe";
+        return element;
+      });
     });
-
     afterEach(() => {
       document.body.appendChild = originalAppendChild;
       document.body.style = originalBodyStyle;
       document.body.innerHTML = "";
       window.createIframe = originalCreateIframe;
     });
-
     it("should display HTML content in iframe with overlay using mobile parameters", () => {
       const settings = {
         type: "custom",
-        webParameters: { info: "this is a placeholder" },
+        webParameters: {
+          info: "this is a placeholder",
+        },
         mobileParameters: {
           verticalAlign: "center",
           dismissAnimation: "bottom",
@@ -322,12 +294,9 @@ describe("DOM Actions on Iframe", () => {
           },
         },
       };
-
       displayHTMLContentInIframe(settings, mockCollect);
-
       expect(document.body.appendChild).toHaveBeenCalledTimes(2);
     });
-
     it("should display HTML content in iframe with overlay using web parameters", () => {
       const settings = {
         webParameters: {
@@ -387,7 +356,6 @@ describe("DOM Actions on Iframe", () => {
         contentType: TEXT_HTML,
         schema: "https://ns.adobe.com/personalization/message/in-app",
       };
-
       displayHTMLContentInIframe(settings, mockCollect);
       expect(document.body.appendChild).toHaveBeenCalledTimes(2);
     });
@@ -450,7 +418,6 @@ describe("DOM Actions on Iframe", () => {
         contentType: TEXT_HTML,
         schema: "https://ns.adobe.com/personalization/message/in-app",
       };
-
       displayHTMLContentInIframe(settings, mockCollect);
       expect(document.body.appendChild).toHaveBeenCalledTimes(1);
     });

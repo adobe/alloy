@@ -10,14 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe } from "vitest";
 import { string } from "../../../../../src/utils/validation/index.js";
 import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::required", () => {
   describeValidation("required string", string().required(), [
-    { value: null, error: true },
-    { value: undefined, error: true },
-    { value: "" },
-    { value: "hello" },
+    {
+      value: null,
+      error: true,
+    },
+    {
+      value: undefined,
+      error: true,
+    },
+    {
+      value: "",
+    },
+    {
+      value: "hello",
+    },
   ]);
 });

@@ -9,7 +9,6 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import parseUri from "parse-uri";
 import isString from "./isString.js";
 
 const parseDomainBasic = (host) => {
@@ -44,14 +43,46 @@ const parseDomainBasic = (host) => {
   return result;
 };
 
+/**
+ * @typedef {Object} ParseUriResult
+ * @property {string} host
+ * @property {string} path
+ * @property {string} query
+ * @property {string} anchor
+ *
+ * @param {string} url
+ * @returns {ParseUriResult}
+ */
+const parseUri = (url) => {
+  try {
+    const parsed = new URL(url);
+    let path = parsed.pathname;
+    if (!url.endsWith("/") && path === "/") {
+      path = "";
+    }
+    return {
+      host: parsed.hostname,
+      path,
+      query: parsed.search.replace(/^\?/, ""),
+      anchor: parsed.hash.replace(/^#/, ""),
+    };
+  } catch {
+    return {
+      host: "",
+      path: "",
+      query: "",
+      anchor: "",
+    };
+  }
+};
+
 const parseUrl = (url, parseDomain = parseDomainBasic) => {
   if (!isString(url)) {
-    // eslint-disable-next-line no-param-reassign
     url = "";
   }
-  const parsed = parseUri(url) || {};
 
-  const { host = "", path = "", query = "", anchor = "" } = parsed;
+  const parsed = parseUri(url);
+  const { host, path, query, anchor } = parsed;
 
   return {
     path,

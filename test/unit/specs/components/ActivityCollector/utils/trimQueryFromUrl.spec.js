@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import trimQueryFromUrl from "../../../../../../src/components/ActivityCollector/utils/trimQueryFromUrl.js";
 
 describe("ActivityCollector::trimQueryFromUrl", () => {

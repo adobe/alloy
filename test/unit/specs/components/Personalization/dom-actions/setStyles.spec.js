@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   appendNode,
   createNode,
@@ -21,39 +22,44 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import createRenderStatusHandler from "../../../../../../src/components/Personalization/handlers/createRenderStatusHandler.js";
 import { DOM_ACTION_SET_STYLE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::setStyle", () => {
   let decorateProposition;
-
   beforeEach(() => {
     cleanUpDomChanges("setStyle");
     decorateProposition = createDecoratePropositionForTest({
       type: DOM_ACTION_SET_STYLE,
     });
   });
-
   afterEach(() => {
     cleanUpDomChanges("setStyle");
   });
-
   it("should set styles", () => {
     const modules = initDomActionsModules();
     const { setStyle } = modules;
-    const element = createNode("div", { id: "setStyle" });
-
+    const element = createNode("div", {
+      id: "setStyle",
+    });
     appendNode(document.body, element);
-
     const settings = {
       selector: "#setStyle",
       prehidingSelector: "#setStyle",
-      content: { "font-size": "33px", priority: "important" },
-      meta: { a: 1 },
+      content: {
+        "font-size": "33px",
+        priority: "important",
+      },
+      meta: {
+        a: 1,
+      },
     };
-
-    return setStyle(settings, decorateProposition).then(() => {
+    return setStyle(
+      settings,
+      decorateProposition,
+      createRenderStatusHandler("view", "test"),
+    ).then(() => {
       expect(element.style.getPropertyValue("font-size")).toEqual("33px");
-
       expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
         "trackingLabel",
       );

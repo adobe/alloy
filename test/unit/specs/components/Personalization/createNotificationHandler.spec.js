@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createNotificationHandler from "../../../../../src/components/Personalization/createNotificationHandler.js";
 
 describe("Personalization::createNotificationHandler", () => {
@@ -26,37 +27,30 @@ describe("Personalization::createNotificationHandler", () => {
       },
     },
   ];
-
   beforeEach(() => {
-    collect = jasmine.createSpy("collect").and.returnValue(Promise.resolve());
-
-    renderedPropositions = jasmine.createSpyObj("renderedPropositions", [
-      "concat",
-    ]);
-
+    collect = vi.fn().mockReturnValue(Promise.resolve());
+    renderedPropositions = {
+      concat: vi.fn(),
+    };
     notificationHandler = createNotificationHandler(
       collect,
       renderedPropositions,
     );
   });
-
   it("emits a notification immediately", () => {
     const handleNotifications = notificationHandler(true, true, "foo");
     handleNotifications(NOTIFICATIONS);
-    expect(collect).toHaveBeenCalledOnceWith({
+    expect(collect).toHaveBeenNthCalledWith(1, {
       decisionsMeta: NOTIFICATIONS,
       viewName: "foo",
     });
   });
-
   it("defers the notification", () => {
     const handleNotifications = notificationHandler(true, false, undefined);
     handleNotifications(NOTIFICATIONS);
-
     expect(collect).not.toHaveBeenCalled();
     expect(renderedPropositions.concat).toHaveBeenCalledTimes(1);
   });
-
   it("doesn't do anything if renderDecisions is false", () => {
     notificationHandler(false, true, undefined);
     expect(renderedPropositions.concat).not.toHaveBeenCalled();

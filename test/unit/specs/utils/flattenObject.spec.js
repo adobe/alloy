@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { describe, it, expect } from "vitest";
 import flattenObject from "../../../../src/utils/flattenObject.js";
 
 describe("flattenObject", () => {
@@ -47,7 +48,6 @@ describe("flattenObject", () => {
       "data.moo": "woof",
     });
   });
-
   it("flattens nested arrays", () => {
     expect(
       flattenObject({
@@ -101,15 +101,12 @@ describe("flattenObject", () => {
       "c.tres.value": "yeah ok",
     });
   });
-
   it("handles non-objects", () => {
     expect(flattenObject(true)).toEqual(true);
     expect(flattenObject([1, 2, 3])).toEqual([1, 2, 3]);
     expect(flattenObject("hello")).toEqual("hello");
-
     let obj = new Set();
     expect(obj).toEqual(obj);
-
     obj = () => undefined;
     expect(flattenObject(obj)).toEqual(obj);
   });

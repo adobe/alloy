@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { beforeEach, describe, it, expect } from "vitest";
 import determineLinkType from "../../../../../../src/components/ActivityCollector/utils/determineLinkType.js";
 
 describe("ActivityCollector::determineLinkType", () => {
@@ -17,26 +18,22 @@ describe("ActivityCollector::determineLinkType", () => {
   let config;
   let linkUrl;
   let clickedObj;
-
   beforeEach(() => {
     window = {};
     config = {};
     linkUrl = "";
     clickedObj = {};
   });
-
   it("returns 'other' if linkUrl is an empty string", () => {
     const result = determineLinkType(window, config, linkUrl, clickedObj);
     expect(result).toBe("other");
   });
-
   it("returns 'download' if linkUrl qualify as download link", () => {
     linkUrl = "https://example.com/download.pdf";
     config.downloadLinkQualifier = /\.pdf$/;
     const result = determineLinkType(window, config, linkUrl, clickedObj);
     expect(result).toBe("download");
   });
-
   it("returns 'exit' if linkUrl is an exit link", () => {
     linkUrl = "https://adobe.com";
     window.location = {
@@ -45,7 +42,6 @@ describe("ActivityCollector::determineLinkType", () => {
     const result = determineLinkType(window, config, linkUrl, clickedObj);
     expect(result).toBe("exit");
   });
-
   it("returns 'other' if linkUrl is not a download or exit link", () => {
     linkUrl = "https://example.com";
     window.location = {

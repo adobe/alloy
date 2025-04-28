@@ -20,7 +20,7 @@ export default ({ logger }) =>
           if (!Number.isNaN(regionId)) {
             return { regionId };
           }
-        } catch (e) {
+        } catch {
           // No need to do anything. The log statement below will log an error
         }
       }

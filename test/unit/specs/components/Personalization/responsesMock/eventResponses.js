@@ -58,7 +58,6 @@ export const SCOPES_FOO1_FOO2_DECISIONS = [
     ],
   },
 ];
-
 export const PAGE_WIDE_SCOPE_DECISIONS = [
   {
     id: "TNT:activity1:experience1",
@@ -156,7 +155,6 @@ export const PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS = [
     ],
   },
 ];
-
 export const PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS = [
   {
     id: "TNT:activity1:experience1",
@@ -215,7 +213,6 @@ export const PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS = [
     ],
   },
 ];
-
 export const CART_VIEW_DECISIONS = [
   {
     id: "TNT:activity4:experience9",
@@ -330,7 +327,6 @@ export const MERGED_METRIC_DECISIONS = [
     ],
   },
 ];
-
 export const MIXED_PROPOSITIONS = [
   {
     id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn0=",

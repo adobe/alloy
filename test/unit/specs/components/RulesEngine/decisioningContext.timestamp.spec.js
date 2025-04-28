@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   mockWindow,
   setupResponseHandler,
@@ -19,13 +20,14 @@ let mockedTimestamp;
 describe("RulesEngine:globalContext:timeContext", () => {
   let applyResponse;
   beforeEach(() => {
-    applyResponse = jasmine.createSpy();
+    applyResponse = vi.fn();
     mockedTimestamp = new Date(Date.UTC(2023, 4, 11, 13, 34, 56));
-    jasmine.clock().install();
-    jasmine.clock().mockDate(mockedTimestamp);
+    vi.useFakeTimers();
+    vi.setSystemTime(mockedTimestamp);
   });
+
   afterEach(() => {
-    jasmine.clock().uninstall();
+    vi.useRealTimers();
   });
 
   it("satisfies rule based on matched pageLoadTimestamp", () => {
@@ -37,14 +39,13 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched pageLoadTimestamp", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -54,14 +55,13 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfies rule based on matched currentTimestamp", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -71,14 +71,13 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched currentTimestamp", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -88,14 +87,13 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfies rule based on matched currentDate", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -105,14 +103,13 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched currentDate", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -122,14 +119,13 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfies rule based on matched currentDay", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -139,14 +135,13 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched currentDay", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -156,14 +151,13 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfies rule based on matched currentHour", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -173,14 +167,13 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched currentHour", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -190,14 +183,13 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfies rule based on matched currentMinute", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -207,14 +199,13 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched currentMinute", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -224,14 +215,13 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfies rule based on matched currentMonth", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -241,14 +231,13 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched currentMonth", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -258,14 +247,13 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfies rule based on matched currentYear", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -275,14 +263,13 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched currentYear", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -292,14 +279,13 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
   });
-
   it("satisfies rule based on matched pageVisitDuration", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -309,13 +295,13 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("does not satisfy rule due to unmatched pageVisitDuration", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -325,8 +311,9 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [],
       }),
     );
@@ -340,14 +327,13 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );
   });
-
   it("satisfies rule based on matched ~timestampz", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
@@ -357,9 +343,9 @@ describe("RulesEngine:globalContext:timeContext", () => {
       },
       type: "matcher",
     });
-
-    expect(applyResponse).toHaveBeenCalledOnceWith(
-      jasmine.objectContaining({
+    expect(applyResponse).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
         propositions: [proposition],
       }),
     );

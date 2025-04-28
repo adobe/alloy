@@ -10,22 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { beforeEach, describe, it, expect } from "vitest";
 import createCoreConfigs from "../../../../../src/core/config/createCoreConfigs.js";
 
 describe("createCoreConfigs", () => {
   let validator;
-  const baseConfig = { datastreamId: "1234", orgId: "org1" };
-
+  const baseConfig = {
+    datastreamId: "1234",
+    orgId: "org1",
+  };
   beforeEach(() => {
     validator = createCoreConfigs();
   });
-
   describe("debugEnabled", () => {
     it("validates debugEnabled=undefined", () => {
       const config = validator(baseConfig);
       expect(config.debugEnabled).toBe(false);
     });
-
     it("validates debugEnabled=true", () => {
       const config = validator({
         debugEnabled: true,
@@ -40,17 +41,24 @@ describe("createCoreConfigs", () => {
       });
       expect(config.debugEnabled).toBe(false);
     });
-
     it("validates debugEnabled=123", () => {
       expect(() => {
-        validator({ debugEnabled: 123, ...baseConfig });
+        validator({
+          debugEnabled: 123,
+          ...baseConfig,
+        });
       }).toThrowError();
     });
   });
-
   [
-    { datastreamId: "asdfasdf", orgId: "" },
-    { datastreamId: "asdfasdf", orgId: "" },
+    {
+      datastreamId: "asdfasdf",
+      orgId: "",
+    },
+    {
+      datastreamId: "asdfasdf",
+      orgId: "",
+    },
     {
       datastreamId: "myproperty1",
       orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
@@ -89,14 +97,21 @@ describe("createCoreConfigs", () => {
     },
   ].forEach((cfg, i) => {
     it(`validates configuration (${i})`, () => {
-      validator(cfg);
+      expect(() => {
+        validator(cfg);
+      }).not.toThrow();
     });
   });
-
   [
     {},
-    { datastreamId: "myproperty1", edgeDomain: "" },
-    { datastreamId: "myproperty1", edgeDomain: "stats firstparty.com" },
+    {
+      datastreamId: "myproperty1",
+      edgeDomain: "",
+    },
+    {
+      datastreamId: "myproperty1",
+      edgeDomain: "stats firstparty.com",
+    },
     {
       datastreamId: "myproperty1",
       edgeDomain: "stats firstparty.com",
@@ -111,22 +126,36 @@ describe("createCoreConfigs", () => {
       expect(() => validator(cfg)).toThrowError();
     });
   });
-
   it("invalidates duplicate configIds", () => {
-    const config1 = { datastreamId: "property1", orgId: "ims1" };
-    const config2 = { datastreamId: "property2", orgId: "ims2" };
-    const config3 = { datastreamId: "property1", orgId: "ims3" };
-
+    const config1 = {
+      datastreamId: "property1",
+      orgId: "ims1",
+    };
+    const config2 = {
+      datastreamId: "property2",
+      orgId: "ims2",
+    };
+    const config3 = {
+      datastreamId: "property1",
+      orgId: "ims3",
+    };
     validator(config1);
     validator(config2);
     expect(() => validator("", config3)).toThrowError();
   });
-
   it("invalidates duplicate orgIds", () => {
-    const config1 = { datastreamId: "a", orgId: "a" };
-    const config2 = { datastreamId: "b", orgId: "b" };
-    const config3 = { datastreamId: "c", orgId: "a" };
-
+    const config1 = {
+      datastreamId: "a",
+      orgId: "a",
+    };
+    const config2 = {
+      datastreamId: "b",
+      orgId: "b",
+    };
+    const config3 = {
+      datastreamId: "c",
+      orgId: "a",
+    };
     validator(config1);
     validator(config2);
     expect(() => validator("", config3)).toThrowError();

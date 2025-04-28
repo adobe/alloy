@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { afterEach, describe, it, expect } from "vitest";
 import {
   appendNode,
   createNode,
@@ -22,21 +23,21 @@ describe("Personalization::DOM::querySelectorAll", () => {
   afterEach(() => {
     selectNodes(".qsa").forEach(removeNode);
   });
-
   it("should select with querySelectorAll", () => {
     const node = createNode(
       "DIV",
-      { id: "abc", class: "qsa" },
+      {
+        id: "abc",
+        class: "qsa",
+      },
       {
         innerHTML: `<div class="test">Test</div>`,
       },
     );
-
     appendNode(document.body, node);
-
     const selector = ".test";
     const result = querySelectorAll(document, selector);
-    expect(Array.isArray(result)).toBeTrue();
+    expect(Array.isArray(result)).toBe(true);
     expect(result[0]).toEqual(node.children[0]);
   });
 });

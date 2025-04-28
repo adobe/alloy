@@ -10,24 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import describeRequest from "../../../helpers/describeRequest.js";
 import createConsentRequest from "../../../../../src/components/Consent/createConsentRequest.js";
 
 describe("createConsentRequest", () => {
   describeRequest(createConsentRequest);
-
   it("provides the appropriate action", () => {
     const payload = {};
-    const request = createConsentRequest({ payload });
+    const request = createConsentRequest({
+      payload,
+    });
     expect(request.getAction()).toBe("privacy/set-consent");
   });
-
   it("never uses sendBeacon", () => {
     const payload = {};
-    const request = createConsentRequest({ payload });
-    expect(request.getUseSendBeacon()).toBeFalse();
+    const request = createConsentRequest({
+      payload,
+    });
+    expect(request.getUseSendBeacon()).toBe(false);
   });
-
   it("passes the datastreamIdOverride to the request", () => {
     const payload = {};
     const datastreamIdOverride = "my-edge-config-id-override";

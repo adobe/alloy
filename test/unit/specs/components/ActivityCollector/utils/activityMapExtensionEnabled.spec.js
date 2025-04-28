@@ -10,26 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, describe, it, expect } from "vitest";
 import activityMapExtensionEnabled from "../../../../../../src/components/ActivityCollector/utils/activityMapExtensionEnabled.js";
 
 const ACTIVITY_MAP_EXTENSION_ID = "cppXYctnr";
-
 describe("ActivityCollector::activityMapExtensionEnabled", () => {
   it("should return true if the activity map extension is enabled", () => {
     const context = {
-      getElementById: jasmine.createSpy().and.returnValue({}),
+      getElementById: vi.fn().mockReturnValue({}),
     };
-    expect(activityMapExtensionEnabled(context)).toBeTrue();
+    expect(activityMapExtensionEnabled(context)).toBe(true);
     expect(context.getElementById).toHaveBeenCalledWith(
       ACTIVITY_MAP_EXTENSION_ID,
     );
   });
-
   it("should return false if the activity map extension is not enabled", () => {
     const context = {
-      getElementById: jasmine.createSpy().and.returnValue(null),
+      getElementById: vi.fn().mockReturnValue(null),
     };
-    expect(activityMapExtensionEnabled(context)).toBeFalse();
+    expect(activityMapExtensionEnabled(context)).toBe(false);
     expect(context.getElementById).toHaveBeenCalledWith(
       ACTIVITY_MAP_EXTENSION_ID,
     );

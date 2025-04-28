@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import isInteger from "../../../../src/utils/isInteger.js";
 
 describe("isInteger", () => {
@@ -17,7 +18,6 @@ describe("isInteger", () => {
     [123, -123].forEach((value) => expect(isInteger(value)).toBe(true));
   });
 
-  // eslint-disable-next-line no-restricted-globals
   it("returns false if the value is not an integer", () => {
     [null, undefined, NaN, "abc", "123", 123.45, -123.45].forEach((value) =>
       expect(isInteger(value)).toBe(false),

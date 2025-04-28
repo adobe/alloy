@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createOnDecisionHandler from "../../../../../src/components/Personalization/createOnDecisionHandler.js";
 import { MESSAGE_CONTENT_CARD } from "../../../../../src/constants/schema.js";
 import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition.js";
@@ -79,7 +80,6 @@ describe("Personalization::createOnDecisionHandler", () => {
           data: {
             expiryDate: 1712190456,
             publishedDate: 1677839040000,
-
             meta: {
               surface: "web://mywebsite.com/my-cards",
             },
@@ -182,81 +182,79 @@ describe("Personalization::createOnDecisionHandler", () => {
   let onDecisionHandler;
   let renderedPropositions;
   let notificationHandler;
-
   beforeEach(() => {
-    render = jasmine
-      .createSpy("render")
-      .and.returnValue(
-        Promise.resolve([
-          { id: "1a3d874f-39ee-4310-bfa9-6559a10041a4", hi: true },
-        ]),
-      );
-    collect = jasmine.createSpy("collect").and.returnValue(Promise.resolve());
-    processPropositions = jasmine
-      .createSpy("processPropositions")
-      .and.returnValue({ render, returnedPropositions: PROPOSITIONS });
-
+    render = vi.fn().mockReturnValue(
+      Promise.resolve([
+        {
+          id: "1a3d874f-39ee-4310-bfa9-6559a10041a4",
+          hi: true,
+        },
+      ]),
+    );
+    collect = vi.fn().mockReturnValue(Promise.resolve());
+    processPropositions = vi.fn().mockReturnValue({
+      render,
+      returnedPropositions: PROPOSITIONS,
+    });
     createProposition = injectCreateProposition({
       preprocess: (data) => data,
       isPageWideSurface: () => false,
     });
-
-    renderedPropositions = jasmine.createSpyObj("renderedPropositions", [
-      "concat",
-    ]);
-
+    renderedPropositions = {
+      concat: vi.fn(),
+    };
     notificationHandler = createNotificationHandler(
       collect,
       renderedPropositions,
     );
-
     onDecisionHandler = createOnDecisionHandler({
       processPropositions,
       createProposition,
       notificationHandler,
     });
   });
-
   it("does not call render if renderDecisions=false", () => {
     onDecisionHandler({
       viewName: "blippi",
       renderDecisions: false,
       propositions: PROPOSITIONS,
     });
-
     expect(render).not.toHaveBeenCalled();
   });
-
   it("calls render if renderDecisions=true", async () => {
-    const mockEvent = { getViewName: () => "blippi" };
+    const mockEvent = {
+      getViewName: () => "blippi",
+    };
     const { propositions } = await onDecisionHandler({
       event: mockEvent,
       personalization: {},
       renderDecisions: true,
       propositions: PROPOSITIONS,
     });
-
     expect(propositions).toEqual(PROPOSITIONS);
-
     expect(render).toHaveBeenCalledTimes(1);
-
-    expect(collect).toHaveBeenCalledOnceWith({
-      decisionsMeta: [{ id: "1a3d874f-39ee-4310-bfa9-6559a10041a4", hi: true }],
+    expect(collect).toHaveBeenNthCalledWith(1, {
+      decisionsMeta: [
+        {
+          id: "1a3d874f-39ee-4310-bfa9-6559a10041a4",
+          hi: true,
+        },
+      ],
       viewName: "blippi",
     });
     expect(renderedPropositions.concat).not.toHaveBeenCalled();
   });
-
   it("defers sending display notification when sendDisplayEvent=false", async () => {
     await onDecisionHandler({
       renderDecisions: true,
       propositions: PROPOSITIONS,
-      event: { getViewName: () => "blippi" },
+      event: {
+        getViewName: () => "blippi",
+      },
       personalization: {
         sendDisplayEvent: false,
       },
     });
-
     expect(collect).not.toHaveBeenCalled();
     expect(renderedPropositions.concat).toHaveBeenCalledTimes(1);
   });

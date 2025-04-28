@@ -10,10 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, afterAll, describe, it, expect } from "vitest";
 import injectGetEcidFromVisitor from "../../../../../../src/components/Identity/visitorService/injectGetEcidFromVisitor.js";
 
-const logger = jasmine.createSpyObj(["info"]);
-
+const logger = {
+  info: vi.fn(),
+};
 const Visitor = () => {};
 Visitor.getInstance = () => {
   return {
@@ -24,68 +26,61 @@ Visitor.getInstance = () => {
     },
   };
 };
-
 const orgId = "456org";
-
 describe("getEcidFromVisitor", () => {
   beforeEach(() => {
     window.Visitor = undefined;
   });
-
   afterAll(() => {
     window.Visitor = undefined;
   });
-
   describe("Visitor does not exist", () => {
     it("should return promise resolved with undefined", () => {
-      const getEcidFromVisitor = injectGetEcidFromVisitor({ logger, orgId });
-      return expectAsync(getEcidFromVisitor()).toBeResolvedTo(undefined);
+      const getEcidFromVisitor = injectGetEcidFromVisitor({
+        logger,
+        orgId,
+      });
+      return expect(getEcidFromVisitor()).resolves.toBe(undefined);
     });
   });
-
   describe("Visitor exists; awaitVisitorOptIn resolves the promise", () => {
     it("should return promise resolved with ecid123", () => {
       window.Visitor = Visitor;
       const awaitVisitorOptIn = () => {
         return Promise.resolve();
       };
-
       const getEcidFromVisitor = injectGetEcidFromVisitor({
         logger,
         orgId,
         awaitVisitorOptIn,
       });
-      return expectAsync(getEcidFromVisitor()).toBeResolvedTo("ecid123");
+      return expect(getEcidFromVisitor()).resolves.toBe("ecid123");
     });
   });
-
   describe("Visitor exists; awaitVisitorOptIn rejects the promise", () => {
     it("should return promise resolved with undefined", () => {
       window.Visitor = Visitor;
       const awaitVisitorOptIn = () => {
         return Promise.reject();
       };
-
       const getEcidFromVisitor = injectGetEcidFromVisitor({
         logger,
         orgId,
         awaitVisitorOptIn,
       });
-      return expectAsync(getEcidFromVisitor()).toBeResolvedTo(undefined);
+      return expect(getEcidFromVisitor()).resolves.toBe(undefined);
     });
   });
-
   it("should find Visitor if it was defined after Web SDK initialization.", () => {
     const awaitVisitorOptIn = () => {
       return Promise.resolve();
     };
-
     const getEcidFromVisitor = injectGetEcidFromVisitor({
       logger,
       orgId,
       awaitVisitorOptIn,
     });
     window.Visitor = Visitor;
-    return expectAsync(getEcidFromVisitor()).toBeResolvedTo("ecid123");
+    return expect(getEcidFromVisitor()).resolves.toBe("ecid123");
   });
 });

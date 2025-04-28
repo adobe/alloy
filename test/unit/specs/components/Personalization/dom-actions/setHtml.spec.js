@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   appendNode,
   createNode,
@@ -23,84 +24,88 @@ import { getAttribute } from "../../../../../../src/components/Personalization/d
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
 import pause from "../../../../helpers/pause.js";
 import { DOM_ACTION_SET_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
+import createRenderStatusHandler from "../../../../../../src/components/Personalization/handlers/createRenderStatusHandler.js";
 
 describe("Personalization::actions::setHtml", () => {
   let decorateProposition;
-
   beforeEach(() => {
     cleanUpDomChanges("setHtml");
     delete window.someEvar123;
-
     decorateProposition = createDecoratePropositionForTest({
       type: DOM_ACTION_SET_HTML,
     });
   });
-
   afterEach(() => {
     cleanUpDomChanges("setHtml");
     cleanUpDomChanges("btn");
     delete window.someEvar123;
   });
-
   it("should set personalized content", async () => {
     const modules = initDomActionsModules();
     const { setHtml } = modules;
-    const element = createNode("div", { id: "setHtml" });
+    const element = createNode("div", {
+      id: "setHtml",
+    });
     element.innerHTML = "foo";
-
     appendNode(document.body, element);
-
     const settings = {
       selector: "#setHtml",
       prehidingSelector: "#setHtml",
       content: "bar",
-      meta: { a: 1 },
+      meta: {
+        a: 1,
+      },
     };
-
-    await setHtml(settings, decorateProposition);
+    await setHtml(
+      settings,
+      decorateProposition,
+      createRenderStatusHandler("view", "test"),
+    );
     expect(element.innerHTML).toEqual("bar");
-
     expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
       "trackingLabel",
     );
     expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
   });
-
   it("should execute inline JavaScript", async () => {
     const modules = initDomActionsModules();
     const { setHtml } = modules;
-    const element = createNode("div", { id: "setHtml" });
+    const element = createNode("div", {
+      id: "setHtml",
+    });
     element.innerHTML = "foo";
-
     appendNode(document.body, element);
-
     const settings = {
       selector: "#setHtml",
       prehidingSelector: "#setHtml",
       content:
         "<script id='evar123'>setTimeout(function onTimeout() { window.someEvar123 = 1; }, 500);</script>",
-      meta: { a: 1 },
+      meta: {
+        a: 1,
+      },
     };
-
-    await setHtml(settings, decorateProposition);
+    await setHtml(
+      settings,
+      decorateProposition,
+      createRenderStatusHandler("view", "test"),
+    );
     await pause(501);
-
     expect(window.someEvar123).toEqual(1);
-
     const scriptElements = document.querySelectorAll("#evar123");
     expect(scriptElements.length).toEqual(1);
   });
-
   it("should execute inline JavaScript with event listeners", async () => {
     const modules = initDomActionsModules();
     const { setHtml } = modules;
-    const button = createNode("button", { id: "btn" });
-    const element = createNode("div", { id: "setHtml" });
+    const button = createNode("button", {
+      id: "btn",
+    });
+    const element = createNode("div", {
+      id: "setHtml",
+    });
     element.innerHTML = "foo";
-
     appendNode(document.body, button);
     appendNode(document.body, element);
-
     const settings = {
       selector: "#setHtml",
       prehidingSelector: "#setHtml",
@@ -108,11 +113,15 @@ describe("Personalization::actions::setHtml", () => {
           var btn = document.getElementById('btn');
           btn.addEventListener('click', function onEvent() { window.someEvar123 = 2; });
         </script>`,
-      meta: { a: 1 },
+      meta: {
+        a: 1,
+      },
     };
-
-    await setHtml(settings, decorateProposition);
-
+    await setHtml(
+      settings,
+      decorateProposition,
+      createRenderStatusHandler("view", "test"),
+    );
     button.click();
     expect(window.someEvar123).toEqual(2);
   });

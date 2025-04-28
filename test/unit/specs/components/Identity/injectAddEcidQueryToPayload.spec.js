@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, describe, it, expect } from "vitest";
 import injectAddEcidQueryToPayload from "../../../../../src/components/Identity/injectAddEcidQueryToPayload.js";
 
 describe("Identity::addEcidQueryToPayload", () => {
@@ -18,7 +19,9 @@ describe("Identity::addEcidQueryToPayload", () => {
       thirdPartyCookiesEnabled: true,
       areThirdPartyCookiesSupportedByDefault: () => true,
     });
-    const payload = jasmine.createSpyObj("payload", ["mergeQuery"]);
+    const payload = {
+      mergeQuery: vi.fn(),
+    };
     addEcidQueryToPayload(payload);
     expect(payload.mergeQuery).toHaveBeenCalledWith({
       identity: {
@@ -31,7 +34,9 @@ describe("Identity::addEcidQueryToPayload", () => {
       thirdPartyCookiesEnabled: true,
       areThirdPartyCookiesSupportedByDefault: () => false,
     });
-    const payload = jasmine.createSpyObj("payload", ["mergeQuery"]);
+    const payload = {
+      mergeQuery: vi.fn(),
+    };
     addEcidQueryToPayload(payload);
     expect(payload.mergeQuery).toHaveBeenCalledWith({
       identity: {
@@ -44,7 +49,9 @@ describe("Identity::addEcidQueryToPayload", () => {
       thirdPartyCookiesEnabled: false,
       areThirdPartyCookiesSupportedByDefault: () => true,
     });
-    const payload = jasmine.createSpyObj("payload", ["mergeQuery"]);
+    const payload = {
+      mergeQuery: vi.fn(),
+    };
     addEcidQueryToPayload(payload);
     expect(payload.mergeQuery).toHaveBeenCalledWith({
       identity: {

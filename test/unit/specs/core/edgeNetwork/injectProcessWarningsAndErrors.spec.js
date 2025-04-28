@@ -10,17 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import injectProcessWarningsAndErrors from "../../../../../src/core/edgeNetwork/injectProcessWarningsAndErrors.js";
 
 describe("processWarningsAndErrors", () => {
   let logger;
   let processWarningsAndErrors;
-
   beforeEach(() => {
-    logger = jasmine.createSpyObj("logger", ["warn", "error"]);
-    processWarningsAndErrors = injectProcessWarningsAndErrors({ logger });
+    logger = {
+      warn: vi.fn(),
+      error: vi.fn(),
+    };
+    processWarningsAndErrors = injectProcessWarningsAndErrors({
+      logger,
+    });
   });
-
   it("throws error if status code is below 2xx", () => {
     expect(() => {
       processWarningsAndErrors({
@@ -30,7 +34,6 @@ describe("processWarningsAndErrors", () => {
       "The server responded with a status code 199 and no response body.",
     );
   });
-
   it("throws error if status code is above 2xx", () => {
     expect(() => {
       processWarningsAndErrors({
@@ -40,7 +43,6 @@ describe("processWarningsAndErrors", () => {
       "The server responded with a status code 300 and no response body.",
     );
   });
-
   it("throws error if no parsed body and HTTP status code is not 204", () => {
     expect(() => {
       processWarningsAndErrors({
@@ -50,19 +52,19 @@ describe("processWarningsAndErrors", () => {
       "The server responded with a status code 200 and no response body.",
     );
   });
-
   it("throws an error if parsed body does not have handle array", () => {
     expect(() => {
       processWarningsAndErrors({
         statusCode: 200,
         body: '{"foo":"bar"}',
-        parsedBody: { foo: "bar" },
+        parsedBody: {
+          foo: "bar",
+        },
       });
     }).toThrowError(
       'The server responded with a status code 200 and response body:\n{\n  "foo": "bar"\n}',
     );
   });
-
   it("logs warnings", () => {
     const warnings = [
       {
@@ -74,7 +76,6 @@ describe("processWarningsAndErrors", () => {
         detail: "Personalization warning detail",
       },
     ];
-
     processWarningsAndErrors({
       statusCode: 200,
       parsedBody: {
@@ -82,7 +83,6 @@ describe("processWarningsAndErrors", () => {
         warnings,
       },
     });
-
     expect(logger.warn).toHaveBeenCalledWith(
       "The server responded with a warning:",
       warnings[0],
@@ -92,7 +92,6 @@ describe("processWarningsAndErrors", () => {
       warnings[1],
     );
   });
-
   it("logs non-fatal errors", () => {
     const errors = [
       {
@@ -104,7 +103,6 @@ describe("processWarningsAndErrors", () => {
         detail: "Personalization warning detail",
       },
     ];
-
     processWarningsAndErrors({
       statusCode: 207,
       parsedBody: {
@@ -112,7 +110,6 @@ describe("processWarningsAndErrors", () => {
         errors,
       },
     });
-
     expect(logger.error).toHaveBeenCalledWith(
       "The server responded with a non-fatal error:",
       errors[0],

@@ -9,13 +9,19 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import validateSetConsentOptions from "../../../../../src/components/Consent/validateSetConsentOptions.js";
 import describeValidation from "../../../helpers/describeValidation.js";
 
 const validGeneralConsent = [
-  { standard: "Adobe", version: "1.0", value: { general: "in" } },
+  {
+    standard: "Adobe",
+    version: "1.0",
+    value: {
+      general: "in",
+    },
+  },
 ];
-
 describeValidation(
   "Consent:validateSetConsentOptions",
   validateSetConsentOptions,
@@ -23,16 +29,46 @@ describeValidation(
     {
       value: {
         consent: [
-          { standard: "Adobe", version: "1.0", value: { general: "in" } },
+          {
+            standard: "Adobe",
+            version: "1.0",
+            value: {
+              general: "in",
+            },
+          },
         ],
       },
     },
-    { value: { consent: [] }, error: true },
-    { value: { consent: null }, error: true },
-    { value: { consent: undefined }, error: true },
-    { value: "in", error: true },
-    { value: undefined, error: true },
-    { value: null, error: true },
+    {
+      value: {
+        consent: [],
+      },
+      error: true,
+    },
+    {
+      value: {
+        consent: null,
+      },
+      error: true,
+    },
+    {
+      value: {
+        consent: undefined,
+      },
+      error: true,
+    },
+    {
+      value: "in",
+      error: true,
+    },
+    {
+      value: undefined,
+      error: true,
+    },
+    {
+      value: null,
+      error: true,
+    },
     {
       value: {
         consent: [
@@ -54,7 +90,13 @@ describeValidation(
             value: "1234abcd",
             gdprApplies: true,
           },
-          { standard: "Adobe", version: "1.0", value: { general: "in" } },
+          {
+            standard: "Adobe",
+            version: "1.0",
+            value: {
+              general: "in",
+            },
+          },
         ],
       },
     },
@@ -126,6 +168,11 @@ describeValidation(
         },
       },
     },
-    { value: { consent: validGeneralConsent, edgeConfigOverrides: {} } },
+    {
+      value: {
+        consent: validGeneralConsent,
+        edgeConfigOverrides: {},
+      },
+    },
   ],
 );

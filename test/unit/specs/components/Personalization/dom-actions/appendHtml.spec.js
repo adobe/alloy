@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   appendNode,
   createNode,
@@ -22,48 +23,51 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
+import createRenderStatusHandler from "../../../../../../src/components/Personalization/handlers/createRenderStatusHandler.js";
 import { DOM_ACTION_APPEND_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::appendHtml", () => {
   let decorateProposition;
-
   beforeEach(() => {
     cleanUpDomChanges("appendHtml");
     decorateProposition = createDecoratePropositionForTest({
       type: DOM_ACTION_APPEND_HTML,
     });
   });
-
   afterEach(() => {
     cleanUpDomChanges("appendHtml");
   });
-
   it("should append personalized content", () => {
     const modules = initDomActionsModules();
     const { appendHtml } = modules;
     const element = createNode(
       "ul",
-      { id: "appendHtml" },
-      { innerHTML: "<li>1</li>" },
+      {
+        id: "appendHtml",
+      },
+      {
+        innerHTML: "<li>1</li>",
+      },
     );
-
     appendNode(document.body, element);
-
     const settings = {
       selector: "#appendHtml",
       prehidingSelector: "#appendHtml",
       content: `<li>2</li><li>3</li>`,
-      meta: { a: 1 },
+      meta: {
+        a: 1,
+      },
     };
-
-    return appendHtml(settings, decorateProposition).then(() => {
+    return appendHtml(
+      settings,
+      decorateProposition,
+      createRenderStatusHandler("view", "test"),
+    ).then(() => {
       const result = selectNodes("ul#appendHtml li");
-
       expect(result.length).toEqual(3);
       expect(result[0].innerHTML).toEqual("1");
       expect(result[1].innerHTML).toEqual("2");
       expect(result[2].innerHTML).toEqual("3");
-
       expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
         "trackingLabel",
       );

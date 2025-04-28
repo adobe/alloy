@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import isUnique from "../../../../src/utils/isUnique.js";
 
 describe("isUnique", () => {
   it("returns true if array values are unique", () => {
     expect(isUnique(["item1", "item2", "item3"])).toBe(true);
   });
-
   it("returns false if array contains duplicate values", () => {
     expect(isUnique(["item1", "item1", "item3"])).toBe(false);
   });

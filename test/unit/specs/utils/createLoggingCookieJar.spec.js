@@ -10,42 +10,50 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import createLoggingCookieJar from "../../../../src/utils/createLoggingCookieJar.js";
 
 describe("loggingCookieJar", () => {
   let cookieJar;
   let logger;
   let loggingCookieJar;
-
   beforeEach(() => {
-    cookieJar = jasmine.createSpyObj("cookieJar", ["set", "get"]);
-    logger = jasmine.createSpyObj("logger", ["info"]);
-    loggingCookieJar = createLoggingCookieJar({ cookieJar, logger });
+    cookieJar = {
+      set: vi.fn(),
+      get: vi.fn(),
+    };
+    logger = {
+      info: vi.fn(),
+    };
+    loggingCookieJar = createLoggingCookieJar({
+      cookieJar,
+      logger,
+    });
   });
-
   it("logs a message", () => {
-    loggingCookieJar.set("mykey", "myvalue", { myoption: "myoptionvalue" });
-    expect(logger.info).toHaveBeenCalledOnceWith("Setting cookie", {
+    loggingCookieJar.set("mykey", "myvalue", {
+      myoption: "myoptionvalue",
+    });
+    expect(logger.info).toHaveBeenNthCalledWith(1, "Setting cookie", {
       name: "mykey",
       value: "myvalue",
       myoption: "myoptionvalue",
     });
   });
-
   it("calls set", () => {
-    loggingCookieJar.set("mykey", "myvalue", { myoption: "myoptionvalue" });
-    expect(cookieJar.set).toHaveBeenCalledOnceWith("mykey", "myvalue", {
+    loggingCookieJar.set("mykey", "myvalue", {
+      myoption: "myoptionvalue",
+    });
+    expect(cookieJar.set).toHaveBeenNthCalledWith(1, "mykey", "myvalue", {
       myoption: "myoptionvalue",
     });
   });
-
   it("calls get", () => {
     loggingCookieJar.get("mykey");
-    expect(cookieJar.get).toHaveBeenCalledOnceWith("mykey");
+    expect(cookieJar.get).toHaveBeenNthCalledWith(1, "mykey");
   });
-
   it("returns the value from get", () => {
-    cookieJar.get.and.returnValue("myvalue");
+    cookieJar.get.mockReturnValue("myvalue");
     expect(loggingCookieJar.get("mykey")).toEqual("myvalue");
   });
 });

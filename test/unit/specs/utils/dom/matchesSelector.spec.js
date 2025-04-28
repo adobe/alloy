@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import matchesSelector from "../../../../../src/utils/dom/matchesSelector.js";
 
 describe("DOM::matchesSelector", () => {
   it("should match selector for existing element", () => {
     expect(matchesSelector("BODY", document.body)).toEqual(true);
   });
-
   it("should not match selector for non-existing element", () => {
     expect(matchesSelector("#bla-bla", document.body)).toEqual(false);
   });

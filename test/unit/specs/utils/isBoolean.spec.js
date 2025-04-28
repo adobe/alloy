@@ -10,16 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { describe, it, expect } from "vitest";
 import isBoolean from "../../../../src/utils/isBoolean.js";
 
 const nonBooleans = [{}, [], new Date(), /abc/, "foo", 123];
-
 describe("isString", () => {
   it("returns true if the value is boolean", () => {
     expect(isBoolean(true)).toBe(true);
     expect(isBoolean(false)).toBe(true);
   });
-
   it("returns false if the value is not a boolean", () => {
     nonBooleans.forEach((value) => {
       expect(isBoolean(value)).toBe(false);
