@@ -35,6 +35,7 @@ const isLocalhost = Boolean(
 );
 
 const registerValidSW = (swUrl, config) => {
+  // eslint-disable-next-line compat/compat -- service worker support is checked before registering
   navigator.serviceWorker
     .register(swUrl)
     .then((registration) => {

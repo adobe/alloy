@@ -11,16 +11,17 @@ governing permissions and limitations under the License.
 */
 
 import { FlatCompat } from "@eslint/eslintrc";
+import pluginJs from "@eslint/js";
+import vitest from "@vitest/eslint-plugin";
+import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import react from "eslint-plugin-react";
+import compatPlugin from "eslint-plugin-compat";
 // eslint-disable-next-line import/no-unresolved
 import { defineConfig, globalIgnores } from "eslint/config";
-import pluginJs from "@eslint/js";
-import path from "path";
-import { fileURLToPath } from "url";
 import { glob } from "glob";
 import globals from "globals";
-import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
-import vitest from "@vitest/eslint-plugin";
-import react from "eslint-plugin-react";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const allComponentPaths = glob.sync("src/components/*/");
 const filename = fileURLToPath(import.meta.url);
@@ -179,4 +180,5 @@ export default defineConfig([
 
   pluginJs.configs.recommended,
   eslintPluginPrettierRecommended,
+  compatPlugin.configs["flat/recommended"],
 ]);
