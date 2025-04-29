@@ -28,6 +28,7 @@ describe("Context::injectDevice", () => {
     return xdm;
   };
   it("handles the happy path", () => {
+    // eslint-disable-next-line compat/compat -- this is a mock
     window.screen.orientation = {
       type: "landscape-primary",
     };
@@ -40,6 +41,7 @@ describe("Context::injectDevice", () => {
     });
   });
   it("handles portrait orientation type", () => {
+    // eslint-disable-next-line compat/compat -- this is a mock
     window.screen.orientation = {
       type: "portrait-secondary",
     };
