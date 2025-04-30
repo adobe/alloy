@@ -9,25 +9,19 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-// eslint-disable-next-line import/no-unresolved
-import { defineProject } from "vitest/config";
-
-export default defineProject({
-  test: {
-    isolate: false,
-    browser: {
-      provider: "playwright",
-      instances: [
-        {
-          browser: "chromium",
-        },
-      ],
-      enabled: true,
-      headless: true,
-      screenshotFailures: false,
-    },
-    coverage: {
-      include: ["src/**/*"],
-    },
-  },
-});
+export default async () => {
+  if (window.cookieStore) {
+    await cookieStore.getAll().then((cookies) => {
+      cookies.forEach((cookie) => {
+        cookieStore.delete(cookie.name);
+      });
+    });
+  } else {
+    // Fallback to the traditional method
+    document.cookie.split(";").forEach((c) => {
+      document.cookie = c
+        .replace(/^ +/, "")
+        .replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/`);
+    });
+  }
+};
