@@ -9,66 +9,76 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import {isNonEmptyString} from "../../utils/index.js";
 import {executeRemoteScripts} from "../Personalization/dom-actions/scripts.js";
 import validateMessage from "./validateMessage.js";
+import {createDataCollectionRequestPayload} from "../../utils/request/index.js";
+import createConversationServiceRequest from "./createConversationServiceRequest.js";
+import {buildPageSurface} from "../../utils/surfaceUtils.js";
+import createGetPageLocation from "../../utils/dom/createGetPageLocation.js";
 
-const fetch = window.fetch;
-
-const CONVERSATION_SERVICE_URL = "https://experience-platform-aep-gen-ai-assistant-exp86-v2.corp.ethos12-stage-va7.ethos.adobe.net/brand-concierge/chats";
-const getConversationServiceUrl = (datastreamId, ecid) => {
-  return `${CONVERSATION_SERVICE_URL}?datastream_id=${datastreamId}&ecid=${ecid}`;
+const getPageSurface = (getPageLocation) => {
+  return buildPageSurface(getPageLocation);
 };
 
-const getBody = (question) => {
-  if(isNonEmptyString(question)) {
-    return {
-      message: question
-    };
-  }
-  return {};
-};
-const shouldInsertBtn = () => {
-  const bcButton = document.querySelector("#adobe-bc-btn");
-  if(!bcButton) {
-    return true;
-  }
-  return false;
-};
 
-const createBrandConcierge = ({logger, eventManager, consent, config, instanceName}) => {
-  const { datastreamId } = config;
-
-  const fetchConversationServiceEvent = (options) => {
-    const url = getConversationServiceUrl(datastreamId, "68669774529250157325579584343949770920");
-    return fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(getBody(options.message))
-    });
+const createBrandConcierge = ({logger, eventManager, consent, instanceName, sendEdgeNetworkRequest}) => {
+  const brandConciergeConfig = {
+    initialized: false
   };
+  const getPageLocation = createGetPageLocation({window: window});
+
+  const sendConversationServiceEvent = (options) => {
+    const { message } = options;
+    const conversationRequestPayload = createDataCollectionRequestPayload();
+    const request = createConversationServiceRequest({
+      conversationRequestPayload
+    });
+
+    const event = eventManager.createEvent();
+
+    const pageSurface = getPageSurface(getPageLocation);
+    event.mergeQuery({conversation: { message: message,
+        surfaces: [pageSurface] }});
+
+    event.finalize();
+    conversationRequestPayload.addEvent(event);
+
+
+
+
+      return sendEdgeNetworkRequest({ request }).then(() => {
+        return {};
+      });
+  }
 
   return {
       lifecycle: {
         onResponse: ({response}) => {
-          const handles = response.getPayloadsByType("brandConcierge:configuration");
+          const configurationPayload = response.getPayloadsByType("concierge:config");
+          if(configurationPayload.length>0) {
+            if (!brandConciergeConfig.initialized) {
+              window.addEventListener("adobe-brand-concierge-prompt-loaded", () => {
+                // in the next event payload we can add urls to the styles and scripts that the prompt needs
+                window.dispatchEvent(new CustomEvent("alloy-brand-concierge-instance", {
+                  detail: {
+                    type: "loaded",
+                    instanceName: instanceName
+                  }
+                }));
+              });
 
-           if(shouldInsertBtn()) {
-             window.addEventListener("adobe-brand-concierge-prompt-loaded", () => {
-               // in the next event payload we can add urls to the styles and scripts that the prompt needs
-               window.dispatchEvent(new CustomEvent("alloy-brand-concierge-instance", {detail: {type: "loaded", instanceName: instanceName}}));
-             });
-          executeRemoteScripts([handles[0].src]);
-       }
-        },
+              executeRemoteScripts([configurationPayload[0]?.src]).then(() => {
+                brandConciergeConfig.initialized = true;
+              });
+            }
+          }
+        }
       },
       commands: {
         sendBrandConciergeEvent: {
           optionsValidator: (options) =>
             validateMessage({ logger, options }),
-          run: fetchConversationServiceEvent,
+          run: sendConversationServiceEvent,
         }
       }
     };

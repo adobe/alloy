@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyString, isNonEmptyArray } from "../../utils/index.js";
-import { buildPageSurface, normalizeSurfaces } from "./utils/surfaceUtils.js";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope.js";
 import {
   DEFAULT_CONTENT_ITEM,
@@ -23,6 +22,7 @@ import {
   RULESET_ITEM,
   MESSAGE_CONTENT_CARD,
 } from "../../constants/schema.js";
+import {buildPageSurface, normalizeSurfaces} from "../../utils/surfaceUtils.js";
 
 const addPageWideScope = (scopes) => {
   if (!scopes.includes(PAGE_WIDE_SCOPE)) {
