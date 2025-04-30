@@ -13,10 +13,8 @@
     "build": "vite build"
   },
   "browserslist": [
-    "last 2 Chrome versions",
-    "last 2 Firefox versions",
-    "last 2 Safari versions",
-    "Explorer >= 10"
+    "defaults",
+    "not op_mini all"
   ],
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
