@@ -36,17 +36,15 @@ describe("Setting edgeDomain to CNAME", () => {
     alloy("configure", { ...alloyConfig, edgeDomain: FIRST_PARTY_DOMAIN });
 
     await alloy("sendEvent");
-    await networkRecorder.waitForCalls();
 
-    const demdexCall = networkRecorder.findCall(demdexUrlRegex);
+    const demdexCall = await networkRecorder.findCall(demdexUrlRegex);
     expect(getIdentityCookie(demdexCall)).toBeDefined();
 
     networkRecorder.reset();
 
     await alloy("sendEvent");
-    await networkRecorder.waitForCalls();
 
-    expect(networkRecorder.findCall(demdexUrlRegex)).not.toBeDefined();
-    expect(networkRecorder.findCall(FIRST_PARTY_DOMAIN)).toBeDefined();
+    expect(await networkRecorder.findCall(FIRST_PARTY_DOMAIN)).toBeDefined();
+    expect(networkRecorder.calls.length).toBe(1);
   });
 });

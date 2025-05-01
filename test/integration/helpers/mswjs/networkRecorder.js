@@ -76,23 +76,26 @@ class NetworkRecorder {
   }
 
   /**
-   * Adds a delay to allow pending network calls to be captured
-   * @param {number} ms - Milliseconds to delay (defaults to 10ms)
-   * @returns {Promise<void>} - Promise that resolves after the delay
+   * Adds a delayMS to allow pending network calls to be captured
+   * @param {number} delayMs - Milliseconds to delayMS (defaults to 10ms)
+   * @returns {Promise<void>} - Promise that resolves after the delayMS
    */
   // eslint-disable-next-line class-methods-use-this
-  async waitForCalls(ms = 10) {
+  async waitForCalls(delayMs = 10) {
     return new Promise((resolve) => {
-      setTimeout(resolve, ms);
+      setTimeout(resolve, delayMs);
     });
   }
 
   /**
    * Finds network calls that match either a regex pattern or a segment URL string
    * @param {RegExp|string} pattern - Regex pattern or segment URL string to match against
-   * @returns {Array} - Array of matching call objects
+   * @param {Object} [options] - Search options
+   * @param {number} [options.retries=5] - Number of retries if no calls are found
+   * @param {number} [options.delayMS] - Milliseconds to delay between retries
+   * @returns {Promise<Array>} - Array of matching call objects
    */
-  findCalls(pattern) {
+  async findCalls(pattern, { retries = 5, delayMS } = {}) {
     if (!pattern) {
       return [];
     }
@@ -102,18 +105,37 @@ class NetworkRecorder {
       pattern = new RegExp(`/${pattern}/`, "i");
     }
 
-    return this.calls.filter(
-      (call) => call.request && pattern.test(call.request.url),
-    );
+    let retriesLeft = retries;
+    let calls;
+
+    while (retriesLeft > 0) {
+      calls = this.calls.filter(
+        (call) => call.request && pattern.test(call.request.url),
+      );
+
+      if (calls.length >= 0 && calls.filter((c) => !c.response).length >= 0) {
+        break;
+      }
+
+      // eslint-disable-next-line no-await-in-loop
+      await this.waitForCalls(delayMS);
+      retriesLeft -= 1;
+    }
+
+    return calls;
   }
 
   /**
    * Finds the first network call that match either a regex pattern or a segment URL string
    * @param {RegExp|string} pattern - Regex pattern or segment URL string to match against
-   * @returns {object|undefined} The first call matching the pattern. undefined otherwise.
+   * @param {Object} [options] - Search options
+   * @param {number} [options.retries] - Number of retries if no calls are found
+   * @param {number} [options.delayMS] - Milliseconds to delay between retries
+   * @returns {Promise<object|undefined>} The first call matching the pattern. undefined otherwise.
    */
-  findCall(pattern) {
-    return this.findCalls(pattern)[0];
+  async findCall(pattern, options) {
+    const calls = await this.findCalls(pattern, options);
+    return calls.length > 0 ? calls[0] : undefined;
   }
 
   reset() {
