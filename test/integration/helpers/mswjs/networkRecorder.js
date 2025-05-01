@@ -106,7 +106,8 @@ class NetworkRecorder {
     }
 
     let retriesLeft = retries;
-    let calls;
+    /** @type {NetworkCall[]}
+    let calls = [];
 
     while (retriesLeft > 0) {
       calls = this.calls.filter(
