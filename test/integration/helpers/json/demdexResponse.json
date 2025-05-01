@@ -1,0 +1,101 @@
+{
+  "requestId": "ec8ee801-136a-40ba-a4d4-87a600ce5cb9-d4378ad76b654ea0",
+  "handle": [
+    {
+      "payload": [
+        {
+          "id": "75142138344462263894507331812511658810",
+          "namespace": {
+            "code": "ECID"
+          }
+        },
+        {
+          "id": "71265032074538902643759651525003437623",
+          "namespace": {
+            "code": "CORE"
+          }
+        }
+      ],
+      "type": "identity:result"
+    },
+    {
+      "payload": [
+        {
+          "type": "cookie",
+          "spec": {
+            "name": "C12412",
+            "value": "test=C12412",
+            "domain": "alloyio.com",
+            "ttlDays": 30
+          }
+        }
+      ],
+      "type": "activation:push",
+      "eventIndex": 0
+    },
+    {
+      "payload": [
+        {
+          "type": "url",
+          "id": 4072007,
+          "spec": {
+            "url": "https://cataas.com/cat",
+            "hideReferrer": true,
+            "ttlMinutes": 10080
+          }
+        },
+        {
+          "type": "url",
+          "id": 4292297,
+          "spec": {
+            "url": "https://cataas.com/cat",
+            "hideReferrer": true,
+            "ttlMinutes": 10080
+          }
+        }
+      ],
+      "type": "activation:push",
+      "eventIndex": 0
+    },
+    {
+      "payload": [],
+      "type": "personalization:decisions",
+      "eventIndex": 0
+    },
+    {
+      "payload": [
+        {
+          "scope": "Target",
+          "hint": "35",
+          "ttlSeconds": 1800
+        },
+        {
+          "scope": "AAM",
+          "hint": "9",
+          "ttlSeconds": 1800
+        },
+        {
+          "scope": "EdgeNetwork",
+          "hint": "or2",
+          "ttlSeconds": 1800
+        }
+      ],
+      "type": "locationHint:result"
+    },
+    {
+      "payload": [
+        {
+          "key": "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_identity",
+          "value": "CiY3NTE0MjEzODM0NDQ2MjI2Mzg5NDUwNzMzMTgxMjUxMTY1ODgxMFIQCM68vcXoMhgBKgNPUjIwAaAB0ry9xegysAG8swHwAc68vcXoMg==",
+          "maxAge": 34128000
+        },
+        {
+          "key": "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster",
+          "value": "or2",
+          "maxAge": 1800
+        }
+      ],
+      "type": "state:store"
+    }
+  ]
+}
