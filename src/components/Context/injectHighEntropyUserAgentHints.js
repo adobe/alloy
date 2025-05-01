@@ -14,7 +14,7 @@ import { deepAssign, noop } from "../../utils/index.js";
 import highEntropyUserAgentHints from "../../constants/highEntropyUserAgentClientHints.js";
 
 const browserSupportsUserAgentClientHints = (navigator) => {
-  return typeof navigator.userAgentData !== "undefined";
+  return "userAgentData" in navigator;
 };
 
 export default (navigator) => {
@@ -23,6 +23,7 @@ export default (navigator) => {
   }
   return (xdm, logger) => {
     try {
+      // eslint-disable-next-line compat/compat -- userAgentData support is checked before calling
       return navigator.userAgentData
         .getHighEntropyValues(highEntropyUserAgentHints.map((hint) => hint[0]))
         .then((hints) => {
