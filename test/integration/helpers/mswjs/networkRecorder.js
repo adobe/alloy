@@ -65,6 +65,7 @@ class NetworkRecorder {
 
     // Clone the response to be able to read the body
     const responseClone = response.clone();
+    /** @type {string | Object} */
     let body;
 
     try {
