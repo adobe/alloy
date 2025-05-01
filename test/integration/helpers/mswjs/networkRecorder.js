@@ -93,7 +93,7 @@ class NetworkRecorder {
    * @param {Object} [options] - Search options
    * @param {number} [options.retries=5] - Number of retries if no calls are found
    * @param {number} [options.delayMS] - Milliseconds to delay between retries
-   * @returns {Promise<Array>} - Array of matching call objects
+   * @returns {Promise<NetworkCall[]>} - Array of matching call objects
    */
   async findCalls(pattern, { retries = 5, delayMS } = {}) {
     if (!pattern) {
