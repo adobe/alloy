@@ -17,7 +17,7 @@ class NetworkRecorder {
   /**
    * Captures request information for network calls
    * @param {Object} options - The request capture options
-   * @param {Object} options.request - The request object
+   * @param {Request} options.request - The request object
    * @param {string} options.requestId - Unique identifier for the request
    */
   captureRequest({ request, requestId }) {
