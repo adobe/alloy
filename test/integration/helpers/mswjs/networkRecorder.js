@@ -25,8 +25,11 @@ class NetworkRecorder {
    * @property {number} response.timestamp
    * @property {string | Object} response.body
    */
-  /** @type {NetworkCall[]} */
-  calls = [];
+
+  constructor() {
+    /** @type {NetworkCall[]} */
+    this.calls = [];
+  }
 
   /**
    * Captures request information for network calls
@@ -121,7 +124,8 @@ class NetworkRecorder {
     }
 
     let retriesLeft = retries;
-    /** @type {NetworkCall[]}
+
+    /** @type {NetworkCall[]} */
     let calls = [];
 
     while (retriesLeft > 0) {
