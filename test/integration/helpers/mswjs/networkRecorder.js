@@ -10,9 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 class NetworkRecorder {
-  constructor() {
-    this.calls = [];
-  }
+  /**
+   * @typedef {Object} NetworkCall
+   * @property {string} requestId
+   * @property {Object} [request]
+   * @property {string} request.url
+   * @property {string} request.method
+   * @property {Record<string, string>} request.headers
+   * @property {number} request.timestamp
+   * @property {Object} [response]
+   * @property {number} response.status
+   * @property {string} response.statusText
+   * @property {Record<string, string>} response.headers
+   * @property {number} response.timestamp
+   * @property {string | Object} response.body
+   */
+  /** @type {NetworkCall[]} */
+  calls = [];
 
   /**
    * Captures request information for network calls
