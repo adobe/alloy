@@ -131,7 +131,7 @@ class NetworkRecorder {
    * @param {Object} [options] - Search options
    * @param {number} [options.retries] - Number of retries if no calls are found
    * @param {number} [options.delayMS] - Milliseconds to delay between retries
-   * @returns {Promise<object|undefined>} The first call matching the pattern. undefined otherwise.
+   * @returns {Promise<NetworkCall | undefined>} The first call matching the pattern. undefined otherwise.
    */
   async findCall(pattern, options) {
     const calls = await this.findCalls(pattern, options);
