@@ -9,6 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+/** @import { EventData, EventPayload, EventRecord, EventRegistry } from './types.js' */
+
 import {
   getActivityId,
   hasExperienceData,
@@ -23,64 +26,118 @@ import { ADOBE_JOURNEY_OPTIMIZER } from "../../constants/decisionProvider.js";
 import {
   EVENT_HISTORY_STORAGE_KEY,
   EVENT_HISTORY_MAX_LENGTH,
+  INSERT_OPERATION,
+  INSERT_IF_NOT_EXISTS_OPERATION,
 } from "./constants/index.js";
 
+/**
+ * Creates an event registry to track and manage events
+ * @param {Object} options - The options object
+ * @param {Object} options.storage - The storage object used to persist events
+ * @param {Object} options.logger - The logger object used for logging
+ * @returns {Object} The event registry interface
+ */
 export default ({ storage, logger }) => {
   let currentStorage = storage;
-  let restore;
   let save;
-  let events;
-  let size;
 
+  /** @type {EventRegistry} */
+  let eventRegistry;
+
+  /** @type {number} */
+  let eventRegistrySize;
+
+  /**
+   * Sets a new storage object for the event registry
+   * @param {Object} newStorage
+   */
   const setStorage = (newStorage) => {
     currentStorage = newStorage;
 
-    restore = createRestoreStorage(currentStorage, EVENT_HISTORY_STORAGE_KEY);
-    save = createSaveStorage(currentStorage, EVENT_HISTORY_STORAGE_KEY);
-    [events, size] = restore({});
+    const restore = createRestoreStorage(
+      currentStorage,
+      EVENT_HISTORY_STORAGE_KEY,
+    );
 
-    if (size > EVENT_HISTORY_MAX_LENGTH) {
+    save = createSaveStorage(currentStorage, EVENT_HISTORY_STORAGE_KEY);
+
+    [eventRegistry, eventRegistrySize] = restore({});
+
+    if (eventRegistrySize > EVENT_HISTORY_MAX_LENGTH) {
       const eventPruner = createEventPruner();
-      events = eventPruner(events);
-      save(events);
+      eventRegistry = eventPruner(eventRegistry);
+      save(eventRegistry);
     }
   };
 
   setStorage(storage);
 
-  const addEvent = (o = {}) => {
-    const { eventType, eventId } = o;
+  /**
+   * Adds a single event to the event registry
+   * @param {EventData} event
+   * @param {string} operation
+   * @returns {EventRecord|undefined}
+   */
+  const addEvent = (
+    event = { eventType: null, eventId: null },
+    operation = INSERT_OPERATION,
+  ) => {
+    const { eventType, eventId } = event;
 
     if (!eventType || !eventId) {
       return undefined;
     }
 
-    const timestamp = new Date().getTime();
-    const eventHash = generateEventHash(o);
+    const eventHash = generateEventHash(event);
 
-    if (!events[eventHash] || !Array.isArray(events[eventHash].timestamps)) {
-      events[eventHash] = {
+    if (
+      operation === INSERT_IF_NOT_EXISTS_OPERATION &&
+      eventRegistry[eventHash]
+    ) {
+      return undefined;
+    }
+
+    if (
+      !eventRegistry[eventHash] ||
+      !Array.isArray(eventRegistry[eventHash].timestamps)
+    ) {
+      eventRegistry[eventHash] = {
         timestamps: [],
       };
     }
 
-    events[eventHash].timestamps.push(timestamp);
-    events[eventHash].timestamps.sort();
+    const timestamp = new Date().getTime();
+
+    eventRegistry[eventHash].timestamps.push(timestamp);
+    eventRegistry[eventHash].timestamps.sort();
 
     logger.info(
       "[Event History] Added event for",
-      o,
+      event,
       "with hash",
       eventHash,
       "and timestamp",
       timestamp,
     );
 
-    save(events);
+    save(eventRegistry);
 
-    return events[eventHash];
+    return eventRegistry[eventHash];
   };
 
+  /**
+   * Adds multiple events to the event registry
+   * @param {Array<EventPayload>} eventPayloads
+   * @returns {Array<EventRecord>}
+   */
+  const addEventPayloads = (eventPayloads = []) =>
+    eventPayloads.map(({ operation, event }) => addEvent(event, operation));
+
+  /**
+   * Processes and adds Experience Edge events to the registry
+   * @param {Object} event - The Experience Edge event object
+   * @returns {void}
+   */
   const addExperienceEdgeEvent = (event) => {
     const { xdm } = event.getContent();
 
@@ -117,21 +174,28 @@ export default ({ storage, logger }) => {
       });
   };
 
+  /**
+   * Retrieves an event from the registry based on type and ID
+   * @param {string} eventType - The type of the event to retrieve
+   * @param {string} eventId - The ID of the event to retrieve
+   * @returns {EventRecord|undefined} The event object if found, otherwise undefined
+   */
   const getEvent = (eventType, eventId) => {
     const h = generateEventHash({ eventType, eventId });
 
-    if (!events[h]) {
+    if (!eventRegistry[h]) {
       return undefined;
     }
 
-    return events[h];
+    return eventRegistry[h];
   };
 
   return {
     addExperienceEdgeEvent,
     addEvent,
+    addEventPayloads,
     getEvent,
-    toJSON: () => events,
+    toJSON: () => eventRegistry,
     setStorage,
   };
 };

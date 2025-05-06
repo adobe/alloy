@@ -80,6 +80,7 @@ describe("RulesEngine:createOnResponseHandler", () => {
       applyResponse,
       event,
       personalization,
+      eventRegistry,
       decisionContext,
     });
     const response = {
@@ -265,6 +266,7 @@ describe("RulesEngine:createOnResponseHandler", () => {
       applyResponse,
       event,
       personalization,
+      eventRegistry,
       decisionContext,
     });
     const response = {
