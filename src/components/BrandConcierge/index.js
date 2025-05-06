@@ -15,23 +15,36 @@ import {createDataCollectionRequestPayload} from "../../utils/request/index.js";
 import createConversationServiceRequest from "./createConversationServiceRequest.js";
 import {buildPageSurface} from "../../utils/surfaceUtils.js";
 import createGetPageLocation from "../../utils/dom/createGetPageLocation.js";
+import uuid from "../../utils/uuid.js";
+import {sanitizeOrgIdForCookieName} from "../../utils/index.js";
+import COOKIE_NAME_PREFIX from "../../constants/cookieNamePrefix.js";
 
 const getPageSurface = (getPageLocation) => {
   return buildPageSurface(getPageLocation);
 };
 
+const getConciergeSessionCookieName = (config) => {
+  const sanitizedOrgId = sanitizeOrgIdForCookieName(config.orgId);
+  return `${COOKIE_NAME_PREFIX}_${sanitizedOrgId}_sessionId`;
+}
 
-const createBrandConcierge = ({logger, eventManager, consent, instanceName, sendEdgeNetworkRequest}) => {
+const getConciergeSessionCookie = ({loggingCookieJar, config}) => {
+  const cookieName = getConciergeSessionCookieName(config);
+  return loggingCookieJar.get(cookieName);
+}
+
+const createBrandConcierge = ({loggingCookieJar, logger, eventManager, consent, instanceName, sendEdgeNetworkRequest, config}) => {
   const brandConciergeConfig = {
     initialized: false
   };
   const getPageLocation = createGetPageLocation({window: window});
 
   const sendConversationServiceEvent = (options) => {
+    const sessionId = getConciergeSessionCookie({loggingCookieJar, config}) || uuid();
     const { message } = options;
-    const conversationRequestPayload = createDataCollectionRequestPayload();
+    const payload = createDataCollectionRequestPayload();
     const request = createConversationServiceRequest({
-      conversationRequestPayload
+      payload, sessionId
     });
 
     const event = eventManager.createEvent();
@@ -41,10 +54,7 @@ const createBrandConcierge = ({logger, eventManager, consent, instanceName, send
         surfaces: [pageSurface] }});
 
     event.finalize();
-    conversationRequestPayload.addEvent(event);
-
-
-
+    payload.addEvent(event);
 
       return sendEdgeNetworkRequest({ request }).then(() => {
         return {};

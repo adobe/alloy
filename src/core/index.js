@@ -169,6 +169,7 @@ export const createExecuteCommand = ({
       getImmediatelyAvailableTools(componentName) {
         const componentLogger = createComponentLogger(componentName);
         return {
+          loggingCookieJar,
           instanceName,
           config,
           componentRegistry,

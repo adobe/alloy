@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain.js";
 import apiVersion from "../../constants/apiVersion.js";
-import { createCallbackAggregator, noop } from "../../utils/index.js";
+import {createCallbackAggregator, noop, queryString} from "../../utils/index.js";
 import { isNetworkError } from "../../utils/networkErrors.js";
 import mergeLifecycleResponses from "./mergeLifecycleResponses.js";
 import handleRequestFailure from "./handleRequestFailure.js";
@@ -35,11 +35,13 @@ export default ({
   let hasDemdexFailed = false;
 
   const buildEndpointUrl = (endpointDomain, request) => {
+    const params = request.getRequestParams();
     const locationHint = getLocationHint();
     const edgeBasePathWithLocationHint = locationHint
       ? `${edgeBasePath}/${locationHint}${request.getEdgeSubPath()}`
       : `${edgeBasePath}${request.getEdgeSubPath()}`;
     const configId = request.getDatastreamIdOverride() || datastreamId;
+    params.requestId = request.getId();
 
     if (configId !== datastreamId) {
       request.getPayload().mergeMeta({
@@ -50,8 +52,11 @@ export default ({
         },
       });
     }
+    params.configId = configId;
 
-    return `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${configId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
+    const stringifiedRequestParams = queryString.stringify({...params, ...getAssuranceValidationTokenParams()});
+
+    return `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?${stringifiedRequestParams}`;
   };
 
   /**
