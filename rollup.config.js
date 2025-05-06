@@ -118,3 +118,40 @@ export const generateConfigs = (options = {}) => {
 };
 
 export default generateConfigs;
+
+/**
+ * @param {Object} options
+ * @param {boolean} options.bundlesize
+ * @param {boolean} options.sourcemap
+ * @param {string} options.input
+ * @param {string} options.outputFile
+ * @param {boolean} options.minify
+ * @returns {RollupOptions | RollupOptions[]}
+ */
+export const buildCustomBuildConfig = (options = {}) => {
+  const { bundlesize, sourcemap, input, outputFile, minify } = {
+    bundlesize: Boolean(process.env.BUNDLESIZE),
+    sourcemap: Boolean(process.env.SOURCEMAP),
+    ...options,
+  };
+  const plugins = buildPlugins();
+  const rollupConfig = defineConfig({
+    input,
+    output: {
+      file: outputFile,
+      format: "iife",
+      sourcemap,
+    },
+    plugins: [...plugins.shared, plugins.license],
+  });
+
+  if (bundlesize) {
+    rollupConfig.plugins.push(plugins.bundlesize);
+  }
+
+  if (minify) {
+    rollupConfig.plugins.push(plugins.terser);
+  }
+
+  return rollupConfig;
+};
