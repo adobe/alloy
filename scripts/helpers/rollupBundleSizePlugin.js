@@ -66,19 +66,23 @@ const bundleSizePlugin = (_options = {}) => {
         const sizes = await Promise.all(
           Object.values(bundle)
             .filter((outputFile) => outputFile.type === "chunk")
-            .map(async (chunk) => ({
-              fileName: rollupOptions.file,
-              uncompressedSize: Buffer.from(chunk.code).byteLength,
-              gzippedSize: await getGzippedSize(chunk.code, {
-                level: options.gzipCompressionLevel,
-              }),
-              brotiliSize: await getBrotiliSize(chunk.code, {
-                params: {
-                  [zlibConstants.BROTLI_PARAM_QUALITY]:
-                    options.brotliCompressionLevel,
-                },
-              }),
-            })),
+            .map(async (chunk) => {
+              return {
+                fileName:
+                  rollupOptions.file ??
+                  path.join(rollupOptions.dir, chunk.fileName),
+                uncompressedSize: Buffer.from(chunk.code).byteLength,
+                gzippedSize: await getGzippedSize(chunk.code, {
+                  level: options.gzipCompressionLevel,
+                }),
+                brotiliSize: await getBrotiliSize(chunk.code, {
+                  params: {
+                    [zlibConstants.BROTLI_PARAM_QUALITY]:
+                      options.brotliCompressionLevel,
+                  },
+                }),
+              };
+            }),
         );
         if (options.reportToConsole) {
           console.table(sizes);
