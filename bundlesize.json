@@ -8,5 +8,10 @@
     "uncompressedSize": 127446,
     "gzippedSize": 42070,
     "brotiliSize": 36638
+  },
+  "dist/alloy.cjs": {
+    "uncompressedSize": 628205,
+    "gzippedSize": 99529,
+    "brotiliSize": 77384
   }
 }

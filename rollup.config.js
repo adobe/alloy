@@ -17,9 +17,9 @@ import { fileURLToPath } from "url";
 import bundleSizePlugin from "./scripts/helpers/rollupBundleSizePlugin.js";
 
 /**
- * @returns { Record<string, RollupPlugin> }
+ * @returns { Record<string, RollupPlugin> & { shared: RollupPlugin[] } }
  */
-const buildPlugins = () => {
+const createPlugins = () => {
   const dirname = path.dirname(fileURLToPath(import.meta.url));
   const plugins = {
     bundlesize: bundleSizePlugin({
@@ -57,15 +57,19 @@ export const generateConfigs = (options = {}) => {
     sourcemap: Boolean(process.env.SOURCEMAP),
     ...options,
   };
-  const plugins = buildPlugins();
+
+  const plugins = createPlugins();
+
   const baseCodeBuild = defineConfig({
     input: "src/baseCode.js",
     output: [
       {
         file: "dist/baseCode.js",
+        format: "es",
       },
       {
         file: "dist/baseCode.min.js",
+        format: "es",
         plugins: [plugins.terser],
       },
     ],
@@ -90,17 +94,13 @@ export const generateConfigs = (options = {}) => {
     plugins: [...plugins.shared, plugins.license],
   });
 
-  if (bundlesize) {
-    standaloneBuild.plugins.push(plugins.bundlesize);
-  }
-
   const modularBuild = defineConfig({
     input: "src/index.js",
     output: [
       {
         file: "dist/alloy.cjs",
         format: "umd",
-        name: "@adobe/alloy",
+        name: "AdobeAlloy",
         sourcemap,
       },
       {
@@ -113,6 +113,15 @@ export const generateConfigs = (options = {}) => {
     ],
     plugins: [...plugins.shared],
   });
+
+  if (bundlesize) {
+    // only add the bundlesize plugin to the umd output. ES output is many
+    // small files and that would be a lot of noise in the bundlesize report.
+    const umdOutput = modularBuild.output.find((o) => o.format === "umd");
+    umdOutput.plugins = [...(umdOutput.plugins ?? []), plugins.bundlesize];
+
+    standaloneBuild.plugins.push(plugins.bundlesize);
+  }
 
   return [baseCodeBuild, standaloneBuild, modularBuild];
 };
@@ -134,7 +143,7 @@ export const buildCustomBuildConfig = (options = {}) => {
     sourcemap: Boolean(process.env.SOURCEMAP),
     ...options,
   };
-  const plugins = buildPlugins();
+  const plugins = createPlugins();
   const rollupConfig = defineConfig({
     input,
     output: {
