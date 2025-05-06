@@ -17,7 +17,7 @@ import { Command, InvalidOptionArgumentError, Option } from "commander";
 import fs from "fs";
 import path from "path";
 import { rollup } from "rollup";
-import { buildConfig } from "../rollup.config.js";
+import { buildConfig } from "../rollup.old.js";
 import entryPointGeneratorBabelPlugin from "./helpers/entryPointGeneratorBabelPlugin.js";
 import { getProjectRoot, safePathJoin } from "./helpers/path.js";
 

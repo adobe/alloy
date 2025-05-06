@@ -3,26 +3,45 @@
   "version": "2.27.0",
   "description": "Adobe Experience Platform Web SDK",
   "type": "module",
-  "main": "libEs5/index.js",
-  "module": "libEs6/index.js",
-  "types": "types/index.d.ts",
+  "main": "dist/alloy.cjs",
+  "module": "src/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": "./dist/alloy.cjs"
+    },
+    "./standalone": "./dist/alloy.standalone.js",
+    "./components/EventMerge/createEventMergeId": {
+      "types": "./dist/components/EventMerge/createEventMergeId.d.ts",
+      "import": "./dist/components/EventMerge/createEventMergeId.js"
+    },
+    "./utils/deepAssign": {
+      "types": "./dist/utils/deepAssign.d.ts",
+      "import": "./dist/utils/deepAssign.js"
+    },
+    "./core/componentCreators": {
+      "types": "./dist/core/componentCreators.d.ts",
+      "import": "./dist/core/componentCreators.js"
+    }
+  },
   "files": [
-    "libEs5",
-    "libEs6",
-    "types",
+    "dist",
     "LICENSE_BANNER",
     "babel.config.js",
     "rollup.config.js",
     ".browserslistrc",
     "scripts/helpers/entryPointGeneratorBabelPlugin.js",
-    "scripts/helpers/versionBabelPlugin.js",
     "scripts/helpers/path.js"
   ],
   "bin": {
     "alloyBuilder": "scripts/alloyBuilder.js"
   },
   "scripts": {
-    "clean": "rimraf dist distTest libEs5 libEs6 types",
+    "clean": "rimraf dist",
     "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{src,test,scripts,sandbox}/**/*.{js,cjs,mjs,jsx}\"",
     "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandbox,src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
     "types": "tsc",
@@ -40,17 +59,16 @@
     "test:functional:custom": "node scripts/helpers/runFunctionalTests.js",
     "test:functional:watch": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ./scripts/watchFunctionalTests.js --browsers chrome",
     "test:functional:debug": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe --inspect-brk chrome",
-    "test:functional:build:int": "rollup -c --environment BASE_CODE_MIN,STANDALONE,NPM_PACKAGE_LOCAL",
-    "test:functional:build:prod": "rollup -c --environment BASE_CODE_MIN,NPM_PACKAGE_PROD",
+    "test:functional:build:int": "rollup -c --environment SOURCEMAP",
+    "test:functional:build:prod": "rollup -c --environment SOURCEMAP",
     "test:scripts": "vitest run --config=./scripts/specs/vitest.config.js",
-    "sandbox:build": "rollup -c --environment SANDBOX && cd sandbox && npm run build",
-    "dev": "concurrently --names build,sandbox \"rollup -c -w --environment SANDBOX\" \"cd sandbox && export REACT_APP_NONCE=321 && npm start\"",
-    "dev:standalone": "npm run clean && rollup -c -w --environment STANDALONE",
-    "build": "npm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,BUNDLESIZE && echo \"Base Code:\" && cat distTest/baseCode.min.js",
+    "dev": "cd sandbox && export REACT_APP_NONCE=321 && npm start",
+    "dev:standalone": "npm run clean && rollup -c -w --environment SOURCEMAP",
+    "build": "npm run clean && rollup -c --environment BUNDLESIZE && npm run types && echo \"Base Code:\" && cat dist/baseCode.min.js",
     "build:watch": "npm run clean && rollup -c --watch --environment BASE_CODE_MIN,STANDALONE",
     "build:custom": "node scripts/alloyBuilder.js",
     "prepare": "husky && cd sandbox && npm install",
-    "prepack": "npm run clean && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6 && npm run types",
+    "prepack": "npm run clean && npm run build && npm run types",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
     "add-license": "./scripts/add-license.js"
   },
@@ -134,6 +152,7 @@
     "testcafe-browser-provider-saucelabs": "^3.0.0",
     "testcafe-reporter-junit": "^3.0.2",
     "testcafe-reporter-saucelabs": "^3.6.0",
+    "tslib": "^2.8.1",
     "typescript": "^5.8.3",
     "url-exists-nodejs": "^0.2.4",
     "url-parse": "^1.5.10",
