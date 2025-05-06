@@ -49,9 +49,14 @@ const buildPlugins = () => {
  * @param {Object} params
  * @param {boolean} params.bundlesize
  * @param {boolean} params.sourcemap
- * @returns {Promise<RollupOptions | RollupOptions[]>}
+ * @returns {RollupOptions | RollupOptions[]}
  */
-const generateConfigs = ({ bundlesize, sourcemap }) => {
+export const generateConfigs = (options = {}) => {
+  const { bundlesize, sourcemap } = {
+    bundlesize: Boolean(process.env.BUNDLESIZE),
+    sourcemap: Boolean(process.env.SOURCEMAP),
+    ...options,
+  };
   const plugins = buildPlugins();
   const baseCodeBuild = defineConfig({
     input: "src/baseCode.js",
@@ -112,16 +117,4 @@ const generateConfigs = ({ bundlesize, sourcemap }) => {
   return [baseCodeBuild, standaloneBuild, modularBuild];
 };
 
-/**
- * Translate from env variables to the rollup config.
- *
- * @typedef {import("rollup").RollupOptions} RollupOptions
- * @returns {Promise<RollupOptions | RollupOptions[]>}
- */
-const getConfig = async () => {
-  const bundlesize = Boolean(process.env.BUNDLESIZE);
-  const sourcemap = Boolean(process.env.SOURCEMAP);
-  return generateConfigs({ sourcemap, bundlesize });
-};
-
-export default getConfig;
+export default generateConfigs;
