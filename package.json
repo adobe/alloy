@@ -4,7 +4,7 @@
   "description": "Adobe Experience Platform Web SDK",
   "type": "module",
   "main": "dist/alloy.cjs",
-  "module": "src/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
