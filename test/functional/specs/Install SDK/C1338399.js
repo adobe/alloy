@@ -32,7 +32,7 @@ createFixture({
 });
 
 const createAlloyInstance = ClientFunction(() => {
-  window.npmLibraryAlloy = window["@adobe/alloy"].createInstance({
+  window.npmLibraryAlloy = window.AdobeAlloy.createInstance({
     name: "npmLibraryAlloy",
   });
 });
