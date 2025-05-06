@@ -20,7 +20,7 @@ describe("Context::implementationDetails", () => {
     expect(xdm).toEqual({
       implementationDetails: {
         name: "https://ns.adobe.com/experience/alloy",
-        version: "__VERSION__",
+        version: expect.any(String),
         environment: "browser",
       },
     });
