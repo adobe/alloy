@@ -94,7 +94,8 @@ const generateConfigs = ({ bundlesize, sourcemap }) => {
     output: [
       {
         file: "dist/alloy.cjs",
-        format: "cjs",
+        format: "umd",
+        name: "@adobe/alloy",
         sourcemap,
       },
       {
