@@ -12,15 +12,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import fs from "fs";
+/**
+ * TODO: Fix or delete.
+ * We separated components into "required" and "optional"
+ * modules which are built at run time, and this file depends on them being
+ * declared statically.
+ */
+import fs from "fs/promises";
 import { glob } from "glob";
 import createTestCafe from "testcafe";
 
-fs.readFile("dist/alloy.js", "utf8", (readFileErr, alloyData) => {
-  if (readFileErr) {
-    console.error(`readFile error: ${readFileErr}`);
-    return;
-  }
+const runFunctionalTests = async () => {
+  const alloyData = await fs.readFile("dist/alloy.cjs", "utf8");
 
   // Extract componentCreators array from alloyData
   const componentCreatorsMatch = alloyData.match(
@@ -84,4 +87,6 @@ fs.readFile("dist/alloy.js", "utf8", (readFileErr, alloyData) => {
         });
     });
   });
-});
+};
+
+runFunctionalTests();
