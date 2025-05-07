@@ -34,6 +34,10 @@ const setup = ({
   });
 
   initializeAlloy(window, instanceNames);
+  const alloyScriptPath = new URL(
+    "../../../src/standalone.js",
+    import.meta.url,
+  );
 
   if (getUrlParameter("includeVisitor") === "true") {
     includeScript(
@@ -44,10 +48,10 @@ const setup = ({
         doesOptInApply: getUrlParameter("legacyOptIn") === "true",
       });
       // Alloy only looks for window.Visitor when it initially loads, so only load Alloy after Visitor loaded.
-      includeScript("/alloy.js");
+      includeScript(alloyScriptPath, { module: true });
     });
   } else {
-    includeScript("/alloy.js");
+    includeScript(alloyScriptPath, { module: true });
   }
 
   if (onAlloySetupCompleted) {
@@ -92,6 +96,7 @@ const defaultConfiguration = {
 };
 
 const configureInstance = (instanceName, configuration = {}) => {
+  // TODO: import alloy directly from the dist/src folder.
   window[instanceName]("configure", {
     ...defaultConfiguration,
     ...configuration,
