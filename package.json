@@ -73,7 +73,7 @@
     "test:unit:coverage": "npm run test:unit -- --coverage",
     "pretest:integration": "npm run test:build",
     "test:integration": "npx playwright install chromium && vitest run --project=integration",
-    "test:integration:debug": "npm run test:integration --no-file-parallelism --browser.headless=false --browser=chromium --browser.provider=playwright",
+    "test:integration:debug": "npm run test:integration --watch --inspect-brk --no-file-parallelism --browser.headless=false --browser=chromium --browser.provider=playwright",
     "test:integration:watch": "npm run test:integration -- --watch",
     "test:integration:coverage": "npm run test:integration -- --coverage",
     "pretest:functional": "npm run test:build",
