@@ -80,13 +80,13 @@ export const generateConfigs = (options = {}) => {
     input: "src/standalone.js",
     output: [
       {
-        file: "dist/alloy.standalone.js",
-        format: "iife",
+        file: "dist/alloy.standalone.cjs",
+        format: "umd",
         sourcemap,
       },
       {
-        file: "dist/alloy.standalone.min.js",
-        format: "iife",
+        file: "dist/alloy.standalone.min.cjs",
+        format: "umd",
         sourcemap,
         plugins: [plugins.terser],
       },
@@ -102,13 +102,6 @@ export const generateConfigs = (options = {}) => {
         format: "umd",
         name: "AdobeAlloy",
         sourcemap,
-      },
-      {
-        dir: "dist/",
-        format: "es",
-        sourcemap,
-        preserveModules: true,
-        preserveModulesRoot: "src",
       },
     ],
     plugins: [...plugins.shared],
