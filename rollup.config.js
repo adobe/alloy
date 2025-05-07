@@ -1,10 +1,3 @@
-/**
- * Differences between the new and old rollup.config.js:
- * 1. All build files should be generated into the dist/ directory
- * 2. The sandbox and tests will use the npm es6 dist outputs
- * 3.
- */
-
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
 import resolve from "@rollup/plugin-node-resolve";
