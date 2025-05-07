@@ -48,8 +48,8 @@
   },
   "files": [
     "dist",
+    "src",
     "LICENSE_BANNER",
-    "babel.config.js",
     "rollup.config.js",
     ".browserslistrc",
     "scripts/helpers/entryPointGeneratorBabelPlugin.js",
