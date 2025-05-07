@@ -1,6 +1,6 @@
 /**
  * @param {string} src
- * @param {{ module: boolean }} options
+ * @param {{ module?: boolean, async?: boolean }} [options]
  */
 export default (src, { module = false, async = true } = {}) =>
   new Promise((resolve) => {
