@@ -36,7 +36,7 @@ if (alloyEnv === PRODUCTION) {
 const baseCodePath = path.join(__dirname, "../../../../dist/baseCode.js");
 const localAlloyLibraryPath = path.join(
   __dirname,
-  "../../../../dist/alloy.standalone.js",
+  "../../../../dist/alloy.standalone.cjs",
 );
 const localNpmLibraryPath = path.join(__dirname, "../../../../dist/alloy.cjs");
 const prodNpmLibraryPath = localNpmLibraryPath;
