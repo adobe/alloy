@@ -10,7 +10,7 @@ import { fileURLToPath } from "url";
 import bundleSizePlugin from "./scripts/helpers/rollupBundleSizePlugin.js";
 
 /**
- * @returns { Record<string, RollupPlugin> & { shared: RollupPlugin[] } }
+ * @returns { Record<string, import('rollup').Plugin> & { shared: import('rollup').Plugin[] } }
  */
 const createPlugins = () => {
   const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -42,9 +42,9 @@ const createPlugins = () => {
  * @param {Object} params
  * @param {boolean} params.bundlesize
  * @param {boolean} params.sourcemap
- * @returns {RollupOptions | RollupOptions[]}
+ * @returns {import('rollup').RollupOptions[]}
  */
-export const generateConfigs = (options = {}) => {
+export const createConfigs = (options = {}) => {
   const { bundlesize, sourcemap } = {
     bundlesize: Boolean(process.env.BUNDLESIZE),
     sourcemap: Boolean(process.env.SOURCEMAP),
@@ -112,7 +112,7 @@ export const generateConfigs = (options = {}) => {
   return [baseCodeBuild, standaloneBuild, modularBuild];
 };
 
-export default generateConfigs;
+export default createConfigs;
 
 /**
  * @param {Object} options
@@ -123,7 +123,7 @@ export default generateConfigs;
  * @param {boolean} options.minify
  * @returns {RollupOptions | RollupOptions[]}
  */
-export const buildCustomBuildConfig = (options = {}) => {
+export const createCustomBuildConfig = (options = {}) => {
   const { bundlesize, sourcemap, input, outputFile, minify } = {
     bundlesize: Boolean(process.env.BUNDLESIZE),
     sourcemap: Boolean(process.env.SOURCEMAP),
