@@ -17,7 +17,7 @@ import { Command, InvalidOptionArgumentError, Option } from "commander";
 import fs from "fs";
 import path from "path";
 import { rollup } from "rollup";
-import { buildCustomBuildConfig } from "../rollup.config.js";
+import { createCustomBuildConfig } from "../rollup.config.js";
 import entryPointGeneratorBabelPlugin from "./helpers/entryPointGeneratorBabelPlugin.js";
 import { getProjectRoot, safePathJoin } from "./helpers/path.js";
 
@@ -107,7 +107,7 @@ const build = async (argv) => {
     includedModules: argv.include,
   });
 
-  const rollupConfig = buildCustomBuildConfig({
+  const rollupConfig = createCustomBuildConfig({
     input: inputFile,
     outputFile: getOutputFilePath(argv),
     minify: argv.minify,
