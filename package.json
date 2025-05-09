@@ -18,7 +18,8 @@
       "import": {
         "types": "./dist/types/baseCode.d.ts",
         "default": "./src/baseCode/index.js"
-      }
+      },
+      "require": "./dist/alloy/baseCode.js"
     },
     "./standalone": {
       "import": {
