@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import { setupWorker } from "msw/browser";
 import { networkRecorder } from "./networkRecorder.js";
 
-export const worker = setupWorker();
+const worker = setupWorker();
 
 const originalUse = worker.use;
 
@@ -36,3 +36,5 @@ worker.events.on("response:mocked", ({ request, requestId, response }) => {
 worker.events.on("response:bypass", ({ request, requestId, response }) => {
   networkRecorder.captureResponse({ request, requestId, response });
 });
+
+export { worker };

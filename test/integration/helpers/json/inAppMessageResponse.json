@@ -1,0 +1,272 @@
+{
+  "requestId": "e0207074-0499-44a7-bc8f-8942f961b114-318b8b28f4274cc1",
+  "handle": [
+    {
+      "payload": [
+        {
+          "id": "41861666193140161934276845651148876988",
+          "namespace": {
+            "code": "ECID"
+          }
+        }
+      ],
+      "type": "identity:result"
+    },
+    {
+      "payload": [
+        {
+          "type": "cookie",
+          "spec": {
+            "name": "C12412",
+            "value": "test=C12412",
+            "domain": "alloyio.com",
+            "ttlDays": 30
+          }
+        }
+      ],
+      "type": "activation:push",
+      "eventIndex": 0
+    },
+    {
+      "payload": [
+        {
+          "type": "url",
+          "id": 4072007,
+          "spec": {
+            "url": "https://cataas.com/cat",
+            "hideReferrer": true,
+            "ttlMinutes": 10080
+          }
+        },
+        {
+          "type": "url",
+          "id": 4292297,
+          "spec": {
+            "url": "https://cataas.com/cat",
+            "hideReferrer": true,
+            "ttlMinutes": 10080
+          }
+        }
+      ],
+      "type": "activation:push",
+      "eventIndex": 0
+    },
+    {
+      "payload": [
+        {
+          "id": "13cf72b2-04ac-428a-9bdf-613f8a48fc84",
+          "scope": "web://testing.alloy.adobe.com/",
+          "scopeDetails": {
+            "decisionProvider": "AJO",
+            "correlationID": "d08c755c-6980-403e-aec3-bca3184a17de-0",
+            "characteristics": {
+              "eventToken": "eyJtZXNzYWdlRXhlY3V0aW9uIjp7Im1lc3NhZ2VFeGVjdXRpb25JRCI6IlVFOkluYm91bmQiLCJtZXNzYWdlSUQiOiI4ODFiNmEyMy0yZmI3LTQ0MWEtYmZjZi1hZjRkMzljMGMwMzgiLCJtZXNzYWdlUHVibGljYXRpb25JRCI6ImQwOGM3NTVjLTY5ODAtNDAzZS1hZWMzLWJjYTMxODRhMTdkZSIsIm1lc3NhZ2VUeXBlIjoibWFya2V0aW5nIiwiY2FtcGFpZ25JRCI6IjhiNGI0YmI4LWZkMGUtNGE5MS05NzI4LTE0Yjg5NTUzYTAxZiIsImNhbXBhaWduVmVyc2lvbklEIjoiZDMxMTA1YTMtMzU0Ny00OTQzLWJiMWUtYjcwNGQ1OTZkYWI0IiwiY2FtcGFpZ25BY3Rpb25JRCI6IjUwM2RlMWY1LTQ0ZTgtNGNiMS1iZDIzLWZjZjM4NGEyOGJhZiJ9LCJtZXNzYWdlUHJvZmlsZSI6eyJtZXNzYWdlUHJvZmlsZUlEIjoiZjVmYjZiZDAtNzNlZS00NGFlLTkzOGEtNjQ1NmI2ZTAzMTNkIiwiY2hhbm5lbCI6eyJfaWQiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbHMvaW5BcHAiLCJfdHlwZSI6Imh0dHBzOi8vbnMuYWRvYmUuY29tL3hkbS9jaGFubmVsLXR5cGVzL2luQXBwIn19fQ=="
+            },
+            "rank": 1,
+            "activity": {
+              "id": "8b4b4bb8-fd0e-4a91-9728-14b89553a01f#503de1f5-44e8-4cb1-bd23-fcf384a28baf",
+              "priority": 0,
+              "matchedSurfaces": ["web://testing.alloy.adobe.com/"]
+            }
+          },
+          "items": [
+            {
+              "id": "38557ff9-919a-494c-8cf9-f7c188568252",
+              "schema": "https://ns.adobe.com/personalization/ruleset-item",
+              "data": {
+                "version": 1,
+                "rules": [
+                  {
+                    "condition": {
+                      "definition": {
+                        "conditions": [
+                          {
+                            "definition": {
+                              "conditions": [
+                                {
+                                  "definition": {
+                                    "conditions": [
+                                      {
+                                        "definition": {
+                                          "key": "~type",
+                                          "matcher": "eq",
+                                          "values": ["com.adobe.eventType.edge"]
+                                        },
+                                        "type": "matcher"
+                                      },
+                                      {
+                                        "definition": {
+                                          "key": "~source",
+                                          "matcher": "eq",
+                                          "values": [
+                                            "com.adobe.eventSource.requestContent"
+                                          ]
+                                        },
+                                        "type": "matcher"
+                                      }
+                                    ],
+                                    "logic": "and"
+                                  },
+                                  "type": "group"
+                                }
+                              ],
+                              "logic": "and"
+                            },
+                            "type": "group"
+                          },
+                          {
+                            "definition": {
+                              "conditions": [
+                                {
+                                  "definition": {
+                                    "key": "~timestampu",
+                                    "matcher": "lt",
+                                    "values": [2.5246332e9]
+                                  },
+                                  "type": "matcher"
+                                }
+                              ],
+                              "logic": "and"
+                            },
+                            "type": "group"
+                          }
+                        ],
+                        "logic": "and"
+                      },
+                      "type": "group"
+                    },
+                    "consequences": [
+                      {
+                        "id": "765107e5-e5ff-4695-bcb8-4b45381f121b",
+                        "type": "schema",
+                        "detail": {
+                          "id": "765107e5-e5ff-4695-bcb8-4b45381f121b",
+                          "schema": "https://ns.adobe.com/personalization/message/in-app",
+                          "data": {
+                            "content": "<!doctype html>\n<html><head>\n    <meta type=\"templateProperties\" name=\"fullscreen\" label=\"adobe-label:fullscreen\" icon=\"adobe-icon:fullscreen\">\n    <meta type=\"templateZone\" name=\"default\" label=\"Default\" classname=\"body\" definition=\"[&quot;CloseBtn&quot;, &quot;Image&quot;, &quot;Text&quot;, &quot;Buttons&quot;]\">\n\n    <meta type=\"templateDefaultAnimations\" displayanimation=\"bottom\" dismissanimation=\"bottom\">\n    <meta type=\"templateDefaultSize\" width=\"100\" height=\"100\">\n    <meta type=\"templateDefaultPosition\" verticalalign=\"center\" verticalinset=\"0\" horizontalalign=\"center\" horizontalinset=\"0\">\n    <meta type=\"templateDefaultGesture\">\n    <meta type=\"templateDefaultUiTakeover\" enable=\"true\">\n\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <meta charset=\"UTF-8\">\n    <style>\n      html,\n      body {\n        margin: 0;\n        padding: 0;\n        text-align: center;\n        width: 100%;\n        height: 100%;\n        font-family: adobe-clean, 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',\n          Roboto, sans-serif;\n      }\n\n      h3 {\n        margin: 0.4rem auto;\n      }\n      p {\n        margin: 0.4rem auto;\n      }\n\n      .body {\n        display: flex;\n        flex-direction: column;\n        background-color: #fff;\n        border-radius: 0.3rem;\n        color: #333333;\n        width: 100vw;\n        height: 100vh;\n        text-align: center;\n        align-items: center;\n        background-size: 'cover';\n      }\n\n      .content {\n        width: 100%;\n        height: 100%;\n        display: flex;\n        justify-content: center;\n        flex-direction: column;\n        position: relative;\n      }\n\n      a {\n        text-decoration: none;\n      }\n\n      .image {\n        height: 1rem;\n        flex-grow: 4;\n        flex-shrink: 1;\n        display: flex;\n        justify-content: center;\n        width: 90%;\n        flex-direction: column;\n        align-items: center;\n      }\n      .image img {\n        max-height: 100%;\n        max-width: 100%;\n      }\n\n      .image.empty-image {\n        display: none;\n      }\n\n      .empty-image ~ .text {\n        flex-grow: 1;\n      }\n\n      .text {\n        text-align: center;\n        color: #333333;\n        line-height: 1.25rem;\n        font-size: 0.875rem;\n        padding: 0 0.8rem;\n        width: 100%;\n        box-sizing: border-box;\n      }\n      .title {\n        line-height: 1.3125rem;\n        font-size: 1.025rem;\n      }\n\n      .buttons {\n        width: 100%;\n        display: flex;\n        flex-direction: column;\n        font-size: 1rem;\n        line-height: 1.3rem;\n        text-decoration: none;\n        text-align: center;\n        box-sizing: border-box;\n        padding: 0.8rem;\n        padding-top: 0.4rem;\n        gap: 0.3125rem;\n      }\n\n      .button {\n        flex-grow: 1;\n        background-color: #1473e6;\n        color: #ffffff;\n        border-radius: 0.25rem;\n        cursor: pointer;\n        padding: 0.3rem;\n        gap: 0.5rem;\n      }\n\n      .btnClose {\n        color: #000000;\n      }\n\n      .closeBtn {\n        align-self: flex-end;\n        width: 1.8rem;\n        height: 1.8rem;\n        margin-top: 1rem;\n        margin-right: 0.3rem;\n      }\n      .closeBtn img {\n        width: 100%;\n        height: 100%;\n      }\n    </style>\n    <style type=\"text/css\" id=\"editor-styles\">\n\n\n  .progressBar-title {\n    animation: delayedShow 0s 0.3s forwards;\n    opacity: 0;\n  }\n\n  .progressBar {\n    background-color: rgb(225, 225, 225);\n    color: rgb(75, 75, 75);\n    height: 6px;\n    overflow: hidden;\n    width: 192px;\n    border-radius: 3px;\n    z-index: 1;\n    margin: 5px;\n    animation: delayedShow 0s 0.3s forwards;\n    opacity: 0;\n  }\n\n  .progressBar-fill {\n    height: 6px;\n    position: relative;\n    width: 136px;\n    background-color: #1473e6;\n\n    will-change: transform;\n    transition: width 1s;\n    transition-timing-function: ease;\n    animation: indeterminate-loop-ltr 1s infinite;\n    animation-timing-function: ease;\n  }\n\n  @keyframes delayedShow {\n    to {\n      opacity: 1;\n    }\n  }\n\n  @keyframes indeterminate-loop-ltr {\n    from {\n      transform: translate(-136px);\n    }\n    to {\n      transform: translate(192px);\n    }\n  }\n\n  #loadingErrorMsg {\n    color: #ff0000;\n    font-weight: bold;\n  }\n</style>\n  </head>\n\n  <body>\n    <div class=\"body\"><div class=\"closeBtn\" data-uuid=\"51838c5a-073d-45d3-b6ee-e297bd46cbe7\" data-btn-style=\"plain\"><a aria-label=\"Close\" class=\"btnClose\" href=\"adbinapp://dismiss?interaction=cancel\"><svg xmlns=\"http://www.w3.org/2000/svg\" height=\"18\" viewBox=\"0 0 18 18\" width=\"18\" class=\"close\">\n  <rect id=\"Canvas\" fill=\"#ffffff\" opacity=\"0\" width=\"18\" height=\"18\"></rect>\n  <path fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" d=\"M13.2425,3.343,9,7.586,4.7575,3.343a.5.5,0,0,0-.707,0L3.343,4.05a.5.5,0,0,0,0,.707L7.586,9,3.343,13.2425a.5.5,0,0,0,0,.707l.707.7075a.5.5,0,0,0,.707,0L9,10.414l4.2425,4.243a.5.5,0,0,0,.707,0l.7075-.707a.5.5,0,0,0,0-.707L10.414,9l4.243-4.2425a.5.5,0,0,0,0-.707L13.95,3.343a.5.5,0,0,0-.70711-.00039Z\"></path>\n</svg></a></div><div class=\"image\" data-uuid=\"aa0ba953-0365-44b5-9de5-9454d3116eb6\"><img src=\"https://cdn.experience.adobe.net/solutions/cjm-inapp-editor/assets/InAppBlockImageDefault.aa849e19.svg\" alt=\"\"></div><div class=\"text\" data-uuid=\"0849b092-339f-4829-90ee-272b399697dc\"><h3>Integration Testing</h3><p>Used in Alloy Integration Suite</p></div><div class=\"buttons\" data-uuid=\"1d046d23-cde1-4cf5-9967-58a2355af921\"><a class=\"button\" data-uuid=\"854bb782-8339-45e8-bd53-9fefde8001db\" href=\"adbinapp://dismiss?interaction=clicked\">Button</a></div></div>\n  \n</body></html>",
+                            "contentType": "text/html",
+                            "remoteAssets": [
+                              "https://cdn.experience.adobe.net/solutions/cjm-inapp-editor/assets/InAppBlockImageDefault.aa849e19.svg"
+                            ],
+                            "mobileParameters": {
+                              "verticalAlign": "center",
+                              "dismissAnimation": "bottom",
+                              "verticalInset": 0,
+                              "backdropOpacity": 0.2,
+                              "cornerRadius": 15,
+                              "gestures": {},
+                              "horizontalInset": 0,
+                              "uiTakeover": true,
+                              "horizontalAlign": "center",
+                              "width": 55,
+                              "displayAnimation": "bottom",
+                              "backdropColor": "#000000",
+                              "height": 55
+                            },
+                            "webParameters": {
+                              "alloy-content-iframe": {
+                                "style": {
+                                  "border": "none",
+                                  "height": "100%",
+                                  "width": "100%"
+                                },
+                                "params": {
+                                  "enabled": true,
+                                  "insertionMethod": "appendChild",
+                                  "parentElement": "#alloy-messaging-container"
+                                }
+                              },
+                              "alloy-messaging-container": {
+                                "style": {
+                                  "backgroundColor": "#000000",
+                                  "border": "none",
+                                  "borderRadius": "15px",
+                                  "height": "55vh",
+                                  "overflow": "hidden",
+                                  "position": "fixed",
+                                  "width": "55%",
+                                  "left": "50%",
+                                  "transform": "translateX(-50%) translateY(-50%)",
+                                  "top": "50%"
+                                },
+                                "params": {
+                                  "enabled": true,
+                                  "insertionMethod": "appendChild",
+                                  "parentElement": "body"
+                                }
+                              },
+                              "alloy-overlay-container": {
+                                "style": {
+                                  "position": "fixed",
+                                  "top": "0",
+                                  "left": "0",
+                                  "width": "100%",
+                                  "height": "100%",
+                                  "background": "transparent",
+                                  "opacity": 0.2,
+                                  "backgroundColor": "#000000"
+                                },
+                                "params": {
+                                  "enabled": true,
+                                  "insertionMethod": "appendChild",
+                                  "parentElement": "body"
+                                }
+                              }
+                            },
+                            "publishedDate": 1746806494
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "type": "personalization:decisions",
+      "eventIndex": 0
+    },
+    {
+      "payload": [],
+      "type": "personalization:decisions",
+      "eventIndex": 0
+    },
+    {
+      "payload": [
+        {
+          "scope": "Target",
+          "hint": "35",
+          "ttlSeconds": 1800
+        },
+        {
+          "scope": "AAM",
+          "hint": "9",
+          "ttlSeconds": 1800
+        },
+        {
+          "scope": "EdgeNetwork",
+          "hint": "or2",
+          "ttlSeconds": 1800
+        }
+      ],
+      "type": "locationHint:result"
+    },
+    {
+      "payload": [
+        {
+          "key": "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_identity",
+          "value": "CiY0MTg2MTY2NjE5MzE0MDE2MTkzNDI3Njg0NTY1MTE0ODg3Njk4OFISCLTWxa7rMhABGAEqA09SMjAAoAG71sWu6zKwAbyzAfABtNbFrusy",
+          "maxAge": 34128000
+        },
+        {
+          "key": "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster",
+          "value": "or2",
+          "maxAge": 1800
+        }
+      ],
+      "type": "state:store"
+    }
+  ]
+}
