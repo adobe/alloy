@@ -11,4 +11,5 @@ governing permissions and limitations under the License.
 export default {
   orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
   datastreamId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
+  thirdPartyCookiesEnabled: false,
 };

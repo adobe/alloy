@@ -94,9 +94,9 @@ class NetworkRecorder {
   }
 
   /**
-   * Adds a delayMS to allow pending network calls to be captured
-   * @param {number} delayMs - Milliseconds to delayMS (defaults to 10ms)
-   * @returns {Promise<void>} - Promise that resolves after the delayMS
+   * Adds a delayMs to allow pending network calls to be captured
+   * @param {number} delayMs - Milliseconds to delayMs (defaults to 10ms)
+   * @returns {Promise<void>} - Promise that resolves after the delayMs
    */
   // eslint-disable-next-line class-methods-use-this
   async waitForCalls(delayMs = 10) {
@@ -110,10 +110,10 @@ class NetworkRecorder {
    * @param {RegExp|string} pattern - Regex pattern or segment URL string to match against
    * @param {Object} [options] - Search options
    * @param {number} [options.retries=5] - Number of retries if no calls are found
-   * @param {number} [options.delayMS] - Milliseconds to delay between retries
+   * @param {number} [options.delayMs] - Milliseconds to delay between retries
    * @returns {Promise<NetworkCall[]>} - Array of matching call objects
    */
-  async findCalls(pattern, { retries = 5, delayMS } = {}) {
+  async findCalls(pattern, { retries = 5, delayMs } = {}) {
     if (!pattern) {
       return [];
     }
@@ -133,16 +133,16 @@ class NetworkRecorder {
         (call) => call.request && pattern.test(call.request.url),
       );
 
-      if (calls.length >= 0 && calls.filter((c) => !c.response).length >= 0) {
+      if (calls.length >= 0 && calls.every((c) => c.response)) {
         break;
       }
 
       // eslint-disable-next-line no-await-in-loop
-      await this.waitForCalls(delayMS);
+      await this.waitForCalls(delayMs);
       retriesLeft -= 1;
     }
 
-    return calls;
+    return calls.filter((call) => call.request && call.response);
   }
 
   /**
@@ -150,7 +150,7 @@ class NetworkRecorder {
    * @param {RegExp|string} pattern - Regex pattern or segment URL string to match against
    * @param {Object} [options] - Search options
    * @param {number} [options.retries] - Number of retries if no calls are found
-   * @param {number} [options.delayMS] - Milliseconds to delay between retries
+   * @param {number} [options.delayMs] - Milliseconds to delay between retries
    * @returns {Promise<NetworkCall | undefined>} The first call matching the pattern. undefined otherwise.
    */
   async findCall(pattern, options) {
