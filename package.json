@@ -133,6 +133,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@adobe/alloy": "^2.26.0",
     "@babel/cli": "^7.27.2",
     "@babel/plugin-transform-runtime": "^7.27.3",
     "@eslint/js": "^9.27.0",
