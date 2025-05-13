@@ -26,7 +26,7 @@
         "types": "./dist/types/standalone.d.ts",
         "default": "./src/baseCode.js"
       },
-      "require": "./dist/alloy.standalone.cjs"
+      "require": "./dist/alloy.standalone.js"
     },
     "./components/EventMerge/createEventMergeId": {
       "import": {
