@@ -96,6 +96,12 @@ export const createConfigs = (options = {}) => {
         name: "AdobeAlloy",
         sourcemap,
       },
+      {
+        file: "dist/alloy.js",
+        format: "es",
+        sourcemap,
+        name: "AdobeAlloy",
+      },
     ],
     plugins: [...plugins.shared],
   });
