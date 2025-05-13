@@ -28,7 +28,7 @@ export default async () => {
   const alloyScriptTag = document.createElement("script");
   alloyScriptTag.type = "text/javascript";
   alloyScriptTag.setAttribute("async", true);
-  alloyScriptTag.src = "/dist/alloy.standalone.cjs";
+  alloyScriptTag.src = "/dist/alloy.standalone.js";
 
   document.body.appendChild(alloyScriptTag);
   return window.alloy;

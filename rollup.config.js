@@ -73,13 +73,13 @@ export const createConfigs = (options = {}) => {
     input: "src/standalone.js",
     output: [
       {
-        file: "dist/alloy.standalone.cjs",
-        format: "umd",
+        file: "dist/alloy.standalone.js",
+        format: "iife",
         sourcemap,
       },
       {
-        file: "dist/alloy.standalone.min.cjs",
-        format: "umd",
+        file: "dist/alloy.standalone.min.js",
+        format: "iife",
         sourcemap,
         plugins: [plugins.terser],
       },
