@@ -4,13 +4,13 @@
   "description": "Adobe Experience Platform Web SDK",
   "type": "module",
   "main": "dist/alloy.cjs",
-  "module": "src/index.js",
+  "module": "dist/alloy.js",
   "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./dist/types/index.d.ts",
-        "default": "./src/index.js"
+        "default": "./dist/alloy.js"
       },
       "require": "./dist/alloy.cjs"
     },
@@ -22,11 +22,8 @@
       "require": "./dist/alloy/baseCode.js"
     },
     "./standalone": {
-      "import": {
-        "types": "./dist/types/standalone.d.ts",
-        "default": "./src/baseCode.js"
-      },
-      "require": "./dist/alloy.standalone.js"
+      "types": "./dist/types/standalone.d.ts",
+      "default": "./dist/alloy.standalone.js"
     },
     "./components/EventMerge/createEventMergeId": {
       "import": {
