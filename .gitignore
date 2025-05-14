@@ -19,3 +19,4 @@ adobe-alloy-*.tgz
 
 # Ignore auto generated types
 types/
+.scannerwork
