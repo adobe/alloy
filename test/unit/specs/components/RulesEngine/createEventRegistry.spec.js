@@ -215,4 +215,22 @@ describe("RulesEngine:createEventRegistry", () => {
 
     vi.advanceTimersByTime(60);
   });
+
+  it("does not add duplicate events when operation is insertIfNotExists", () => {
+    const eventRegistry = createEventRegistry({
+      storage,
+      logger: { info: vi.fn() },
+    });
+
+    const event = { eventType: "trigger", eventId: "123" };
+
+    eventRegistry.addEvent(event, "insertIfNotExists");
+    eventRegistry.addEvent(event, "insertIfNotExists");
+
+    expect(eventRegistry.toJSON()).toEqual({
+      "435c27de": {
+        timestamps: [expect.any(Number)],
+      },
+    });
+  });
 });
