@@ -107,11 +107,7 @@ export const createConfigs = (options = {}) => {
   });
 
   if (bundlesize) {
-    // only add the bundlesize plugin to the umd output. ES output is many
-    // small files and that would be a lot of noise in the bundlesize report.
-    const umdOutput = modularBuild.output.find((o) => o.format === "umd");
-    umdOutput.plugins = [...(umdOutput.plugins ?? []), plugins.bundlesize];
-
+    modularBuild.plugins.push(plugins.bundlesize);
     standaloneBuild.plugins.push(plugins.bundlesize);
   }
 
