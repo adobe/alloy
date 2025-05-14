@@ -1,13 +1,13 @@
 {
-  "dist/alloy.standalone.cjs": {
-    "uncompressedSize": 627565,
-    "gzippedSize": 99192,
-    "brotiliSize": 77125
+  "dist/alloy.standalone.js": {
+    "uncompressedSize": 627465,
+    "gzippedSize": 99143,
+    "brotiliSize": 77060
   },
-  "dist/alloy.standalone.min.cjs": {
-    "uncompressedSize": 127512,
-    "gzippedSize": 42089,
-    "brotiliSize": 36702
+  "dist/alloy.standalone.min.js": {
+    "uncompressedSize": 127446,
+    "gzippedSize": 42070,
+    "brotiliSize": 36638
   },
   "dist/alloy.cjs": {
     "uncompressedSize": 628205,
