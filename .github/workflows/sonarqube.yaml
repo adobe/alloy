@@ -13,18 +13,26 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      - name: Set up Node.js version
+        uses: actions/setup-node@v4
+        with:
+          node-version: latest
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Install dependencies
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Build Alloy
+        run: npm run build
+
+      - name: Run Unit Test with coverage
+        run: npm run test:coverage
+
       - uses: sonarsource/sonarqube-scan-action@v3
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      # If you wish to fail your job when the Quality Gate is red, uncomment the
-      # following lines. This would typically be used to fail a deployment.
-      # We do not recommend to use this in a pull request. Prefer using pull request
-      # decoration instead.
-      # - uses: sonarsource/sonarqube-quality-gate-action@master
-      #   timeout-minutes: 5
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
