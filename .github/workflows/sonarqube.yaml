@@ -23,8 +23,8 @@ jobs:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: Install dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
+        run: sudo npx playwright install-deps
 
       - name: Build Alloy
         run: npm run build
