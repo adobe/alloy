@@ -1,4 +1,4 @@
-name: SonarQube AEP Operations
+name: SonarQube
 
 on:
   push:
