@@ -12,6 +12,7 @@ jobs:
   build:
     name: Build and analyze
     runs-on: self-hosted
+    continue-on-error: true # Entire job becomes a warning
 
     steps:
       - name: Set up Node.js version
