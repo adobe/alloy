@@ -28,8 +28,6 @@ jobs:
     environment: Production
     # final release versions do not contain '-'
     if: ${{ contains(github.event.inputs.version, '-') == false }}
-    env:
-      VERSION: ${{ github.event.inputs.version }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -48,7 +46,7 @@ jobs:
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
-      - run: ./scripts/deploy.js "${{ env.VERSION }}" latest
+      - run: ./scripts/deploy.js ${{ github.event.inputs.version }} latest
         env:
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
       - uses: actions/upload-artifact@v4
@@ -63,8 +61,6 @@ jobs:
     needs: validate
     # prerelease versions contain '-'
     if: ${{ contains(github.event.inputs.version, '-') }}
-    env:
-      VERSION: ${{ github.event.inputs.version }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -75,7 +71,7 @@ jobs:
           ssh-private-key: |
             ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
             ${{ secrets.CDN_PRIVATE_KEY }}
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         id: npm-cache
         with:
           path: "**/node_modules"
@@ -83,7 +79,7 @@ jobs:
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
-      - run: ./scripts/deploy.js "${{ env.VERSION }}" next
+      - run: ./scripts/deploy.js ${{ github.event.inputs.version }} next
         env:
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
       - uses: actions/upload-artifact@v4
