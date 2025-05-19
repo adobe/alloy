@@ -96,7 +96,6 @@ const defaultConfiguration = {
 };
 
 const configureInstance = (instanceName, configuration = {}) => {
-  // TODO: import alloy directly from the dist/src folder.
   window[instanceName]("configure", {
     ...defaultConfiguration,
     ...configuration,
