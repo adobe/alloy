@@ -89,7 +89,10 @@ jobs:
           path: |
             ./dist/alloy.standalone.js
             ./dist/alloy.standalone.min.js
+            ./dist/alloy.js
             ./dist/alloy.cjs
+            ./dist/utils.js
+            ./dist/utils.cjs
   record:
     name: "Record Version"
     runs-on: ubuntu-latest
