@@ -21,6 +21,7 @@ import publishTag from "./helpers/publishTag.js";
 import publishToNpm from "./helpers/publishToNpm.js";
 import publishVersionBranch from "./helpers/publishVersionBranch.js";
 import setupDeployment from "./helpers/setupDeployment.js";
+import updateDevDependency from "./helpers/updateDevDependency.js";
 import updatePackageVersion from "./helpers/updatePackageVersion.js";
 import uploadToCDN from "./helpers/uploadToCDN.js";
 import withErrorHandling from "./helpers/withErrorHandling.js";
@@ -60,6 +61,7 @@ const run = async () => {
   await setupDeployment(container);
   await updatePackageVersion(container);
   await publishToNpm(container);
+  await updateDevDependency(container);
   await publishTag(container);
   await publishVersionBranch(container);
   await uploadToCDN(container);
