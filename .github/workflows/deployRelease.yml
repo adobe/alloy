@@ -55,7 +55,10 @@ jobs:
           path: |
             ./dist/alloy.standalone.js
             ./dist/alloy.standalone.min.js
+            ./dist/alloy.js
             ./dist/alloy.cjs
+            ./dist/utils.js
+            ./dist/utils.cjs
   prerelease:
     name: "Prerelease"
     runs-on: ubuntu-latest
