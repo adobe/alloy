@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy",
-  "version": "2.26.0",
+  "version": "2.27.0-beta.0",
   "description": "Adobe Experience Platform Web SDK",
   "type": "module",
   "main": "dist/alloy.cjs",
@@ -108,10 +108,10 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@adobe/alloy": "^2.26.0",
-    "@babel/cli": "^7.27.0",
-    "@babel/plugin-transform-runtime": "^7.26.10",
-    "@eslint/js": "^9.24.0",
+    "@adobe/alloy": "^2.27.0-beta.0",
+    "@babel/cli": "^7.27.2",
+    "@babel/plugin-transform-runtime": "^7.27.1",
+    "@eslint/js": "^9.26.0",
     "@octokit/rest": "^21.1.1",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-typescript": "^12.1.2",
