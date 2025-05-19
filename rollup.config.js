@@ -12,7 +12,7 @@ import bundleSizePlugin from "./scripts/helpers/rollupBundleSizePlugin.js";
 /**
  * @returns { Record<string, import('rollup').Plugin> & { shared: import('rollup').Plugin[] } }
  */
-const createPlugins = () => {
+const createPlugins = ({ bundlesize }) => {
   const dirname = path.dirname(fileURLToPath(import.meta.url));
   const plugins = {
     bundlesize: bundleSizePlugin({
@@ -35,6 +35,10 @@ const createPlugins = () => {
   };
   plugins.shared = [plugins.resolve, plugins.commonjs, plugins.json];
 
+  if (bundlesize) {
+    plugins.shared.push(plugins.bundlesize);
+  }
+
   return plugins;
 };
 
@@ -51,7 +55,7 @@ export const createConfigs = (options = {}) => {
     ...options,
   };
 
-  const plugins = createPlugins();
+  const plugins = createPlugins({ bundlesize });
 
   const baseCodeBuild = defineConfig({
     input: "src/baseCode.js",
@@ -106,12 +110,24 @@ export const createConfigs = (options = {}) => {
     plugins: [...plugins.shared],
   });
 
-  if (bundlesize) {
-    modularBuild.plugins.push(plugins.bundlesize);
-    standaloneBuild.plugins.push(plugins.bundlesize);
-  }
+  const utilsBuild = defineConfig({
+    input: "src/utils/index.js",
+    output: [
+      {
+        file: "dist/utils.js",
+        format: "es",
+        sourcemap,
+      },
+      {
+        file: "dist/utils.cjs",
+        format: "cjs",
+        sourcemap,
+      },
+    ],
+    plugins: [...plugins.shared],
+  });
 
-  return [baseCodeBuild, standaloneBuild, modularBuild];
+  return [baseCodeBuild, standaloneBuild, modularBuild, utilsBuild];
 };
 
 export default createConfigs;
