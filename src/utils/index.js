@@ -16,6 +16,7 @@ export { default as clone } from "./clone.js";
 export { default as cookieJar } from "./cookieJar.js";
 export { default as createMerger } from "./createMerger.js";
 export { default as createCallbackAggregator } from "./createCallbackAggregator.js";
+export { default as createEventMergeId } from "./createEventMergeId.js";
 export { default as createLoggingCookieJar } from "./createLoggingCookieJar.js";
 export { default as createTaskQueue } from "./createTaskQueue.js";
 export { default as defer } from "./defer.js";
