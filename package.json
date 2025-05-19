@@ -8,40 +8,18 @@
   "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/types/index.d.ts",
-        "default": "./dist/alloy.js"
-      },
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/alloy.js",
       "require": "./dist/alloy.cjs"
-    },
-    "./baseCode": {
-      "import": {
-        "types": "./dist/types/baseCode.d.ts",
-        "default": "./src/baseCode/index.js"
-      },
-      "require": "./dist/alloy/baseCode.js"
     },
     "./standalone": {
       "types": "./dist/types/standalone.d.ts",
       "default": "./dist/alloy.standalone.js"
     },
-    "./components/EventMerge/createEventMergeId": {
-      "import": {
-        "types": "./dist/types/components/EventMerge/createEventMergeId.d.ts",
-        "default": "./src/components/EventMerge/createEventMergeId.js"
-      }
-    },
-    "./utils/deepAssign": {
-      "import": {
-        "types": "./dist/types/utils/deepAssign.d.ts",
-        "default": "./src/utils/deepAssign.js"
-      }
-    },
-    "./core/componentCreators": {
-      "import": {
-        "types": "./dist/types/core/componentCreators.d.ts",
-        "default": "./src/core/componentCreators.js"
-      }
+    "./utils": {
+      "types": "./dist/types/utils/index.d.ts",
+      "import": "./dist/utils.js",
+      "require": "./dist/utils.cjs"
     }
   },
   "files": [
