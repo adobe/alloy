@@ -5,13 +5,13 @@
     "brotiliSize": 133
   },
   "dist/alloy.js": {
-    "uncompressedSize": 636087,
-    "gzippedSize": 98398,
-    "brotiliSize": 75923
+    "uncompressedSize": 636094,
+    "gzippedSize": 98404,
+    "brotiliSize": 75973
   },
   "dist/alloy.min.js": {
-    "uncompressedSize": 134991,
-    "gzippedSize": 43068,
-    "brotiliSize": 37343
+    "uncompressedSize": 134998,
+    "gzippedSize": 43073,
+    "brotiliSize": 37395
   }
 }
