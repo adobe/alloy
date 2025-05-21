@@ -32,7 +32,7 @@ export default ({
     return fetchAllIds()
       .then((ids) => {
         advertisingIds = ids;
-        logger.debug("Advertising IDs stored:", advertisingIds);
+        logger.info("Advertising IDs stored:", advertisingIds);
         return ids;
       })
       .catch((error) => {
@@ -49,8 +49,9 @@ export default ({
     logger,
   });
 
-  const sendAdConversion = (options = {}) => {
-    // return handleFetch().then(ids => {
+  const sendAdConversion = async (options = {}) => {
+    await handleFetch(); // Wait for advertisingIds to be populated
+
     // Create the event with standard structure
     const event = eventManager.createEvent();
     const advertisingXdm = {};
@@ -60,11 +61,13 @@ export default ({
         advertisingXdm.skwcid = advertisingIds.surfer_id;
       }
     }
+
     if (options.viewThruEnabled) {
-      // if(advertisingIds.liverampid) {
+      // if (advertisingIds.liverampid) {
       //   advertisingXdm['liverampid'] = advertisingIds.liverampid;
       // }
     }
+
     // Set the event type and core data
     event.setUserXdm({
       advertising: advertisingXdm,
@@ -72,7 +75,6 @@ export default ({
 
     // Send the event using our specialized handler
     return adConversionHandler.trackAdConversion({ event });
-    // });
   };
 
   return {
@@ -82,11 +84,11 @@ export default ({
         // Start fetching IDs when component is registered
         // Handle browser and non-browser environments
         if (typeof document !== "undefined") {
-          if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", handleFetch);
-          } else {
-            handleFetch();
-          }
+          //   if (document.readyState === "loading") {
+          //     document.addEventListener("DOMContentLoaded", handleFetch);
+          //   } else {
+          //     handleFetch();
+          //   }
         }
       },
     },
