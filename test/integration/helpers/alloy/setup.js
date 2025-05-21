@@ -8,28 +8,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-// eslint-disable-next-line import/extensions
-import { server } from "@vitest/browser/context";
-
-const { readFile } = server.commands;
 
 export default async () => {
-  const alloyBaseCode = await readFile(
-    `${server.config.root}/dist/baseCode.min.js`,
-  );
-
   document.body.innerHTML = "Alloy Test Page";
-
-  const alloyBaseCodeScriptTag = document.createElement("script");
-  alloyBaseCodeScriptTag.textContent = alloyBaseCode;
-
-  document.body.appendChild(alloyBaseCodeScriptTag);
-
-  const alloyScriptTag = document.createElement("script");
-  alloyScriptTag.type = "text/javascript";
-  alloyScriptTag.setAttribute("async", true);
-  alloyScriptTag.src = "/dist/alloy.standalone.js";
-
-  document.body.appendChild(alloyScriptTag);
+  await import(`../../../../src/baseCode.js`);
+  await import(`../../../../src/standalone.js`);
   return window.alloy;
 };
