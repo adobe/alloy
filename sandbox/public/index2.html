@@ -3,15 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
-    <link rel="stylesheet" href="/index.css" />
-    <meta
+     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
+    <meta httpEquiv="Content-Security-Policy" connect-src="*.alloyio.com *.adobedc.net *.demdex.net *.sc.omtrdc.net"/>
+    <link rel="stylesheet" href="https://cdn.experience.adobe.net/solutions/experience-platform-brand-concierge-web-agent/static-assets/main.css?experience-platform-brand-concierge-web-agent_version=PR-89-455c17c944664a84649517aecbb17fad1b28172f"/>
     <meta name="theme-color" content="#000000" />
 
     <title>Mock website hosting Alloy</title>
-
     <!-- prettier-ignore -->
     <script nonce="%REACT_APP_NONCE%">
       !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
@@ -68,8 +68,11 @@
             : undefined,
         edgeBasePath: getUrlParameter("edgeBasePath") || "ee",
         datastreamId:
-          "211312ed-d9ca-4f51-b09c-2de37a2a24d0",
-        orgId: "5BFE274A5F6980A50A495C08@AdobeOrg", // UnifiedJS QE Only
+                "211312ed-d9ca-4f51-b09c-2de37a2a24d0",
+        orgId: "52C418126318FCD90A494134@AdobeOrg",
+        /*datastreamId:
+                "211312ed-d9ca-4f51-b09c-2de37a2a24d0",
+        orgId: "59F945645D8BC5790A494135@AdobeOrg",*/
         debugEnabled: true,
         idMigrationEnabled: !(
           getUrlParameter("idMigrationEnabled") === "false"
@@ -123,7 +126,7 @@
         clickCollectionEnabled: true,
       });
 
-      alloy("sendEvent", {});
+      alloy("sendEvent", {renderDecisions:true});
     </script>
   </head>
   <body>

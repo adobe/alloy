@@ -16,17 +16,17 @@ import createConversationServiceRequest from "./createConversationServiceRequest
 import {buildPageSurface} from "../../utils/surfaceUtils.js";
 import createGetPageLocation from "../../utils/dom/createGetPageLocation.js";
 import uuid from "../../utils/uuid.js";
-import {sanitizeOrgIdForCookieName} from "../../utils/index.js";
+import {noop, sanitizeOrgIdForCookieName} from "../../utils/index.js";
 import COOKIE_NAME_PREFIX from "../../constants/cookieNamePrefix.js";
-
+const BC_SESSION_COOKIE_NAME = "bc_session_id";
 const getPageSurface = (getPageLocation) => {
   return buildPageSurface(getPageLocation);
 };
 
 const getConciergeSessionCookieName = (config) => {
   const sanitizedOrgId = sanitizeOrgIdForCookieName(config.orgId);
-  return `${COOKIE_NAME_PREFIX}_${sanitizedOrgId}_sessionId`;
-}
+  return `${COOKIE_NAME_PREFIX}_${sanitizedOrgId}_${BC_SESSION_COOKIE_NAME}`;
+};
 
 const getConciergeSessionCookie = ({loggingCookieJar, config}) => {
   const cookieName = getConciergeSessionCookieName(config);
@@ -56,15 +56,26 @@ const createBrandConcierge = ({loggingCookieJar, logger, eventManager, consent, 
     event.finalize();
     payload.addEvent(event);
 
-      return sendEdgeNetworkRequest({ request }).then(() => {
-        return {};
+      return sendEdgeNetworkRequest({ request }).then((response) => {
+        return response;
       });
-  }
+  };
 
   return {
       lifecycle: {
+        onBeforeEvent({
+                        event,
+                        renderDecisions,
+                        decisionScopes = [],
+                        personalization = {},
+                        onResponse = noop,
+                        onRequestFailure = noop,
+                      }) {
+
+        },
         onResponse: ({response}) => {
-          const configurationPayload = response.getPayloadsByType("concierge:config");
+          //const configurationPayload = response.getPayloadsByType("brand-concierge:config");
+          const configurationPayload = [{src: "./webagent.js"}]
           if(configurationPayload.length>0) {
             if (!brandConciergeConfig.initialized) {
               window.addEventListener("adobe-brand-concierge-prompt-loaded", () => {
@@ -81,6 +92,11 @@ const createBrandConcierge = ({loggingCookieJar, logger, eventManager, consent, 
                 brandConciergeConfig.initialized = true;
               });
             }
+          }
+
+          const conversationPayload = response.getPayloadsByType("brand-concierge:conversation");
+          if(conversationPayload.length > 0) {
+            return conversationPayload[0];
           }
         }
       },

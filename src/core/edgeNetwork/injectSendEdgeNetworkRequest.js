@@ -35,6 +35,7 @@ export default ({
   let hasDemdexFailed = false;
 
   const buildEndpointUrl = (endpointDomain, request) => {
+    endpointDomain = "jag-v3.edge-int.adobedc.net";
     const params = request.getRequestParams();
     const locationHint = getLocationHint();
     const edgeBasePathWithLocationHint = locationHint
@@ -53,12 +54,17 @@ export default ({
       });
     }
     params.configId = configId;
-
     const stringifiedRequestParams = queryString.stringify({...params, ...getAssuranceValidationTokenParams()});
+
+    if(params.sessionId) {
+      return `https://bc-conversation-service-stage.corp.ethos12-stage-va7.ethos.adobe.net/brand-concierge/${request.getAction()}?${stringifiedRequestParams}`;
+    }
 
     return `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?${stringifiedRequestParams}`;
   };
-
+  /* if(params.sessionId) {
+    return "https://brand-concierge-concierge-conversation-service-depl-d6c9b6.stage.cloud.adobe.io/brand-concierge/conversations?configId=211312ed-d9ca-4f51-b09c-2de37a2a24d0&sessionId=11-22-33-44&requestId=aaa-bbb-ccc"
+  }*/
   /**
    * Sends a network request that is aware of payload interfaces,
    * lifecycle methods, configured edge domains, response structures, etc.
