@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createEventMergeId from "./createEventMergeId.js";
+import { createEventMergeId } from "../../utils/index.js";
 import createComponent from "./createComponent.js";
 
 const createEventMerge = () => {

@@ -25,25 +25,25 @@ const mainConfig = compose(orgMainConfigMain, debugEnabled, migrationDisabled);
 const networkLogger = createNetworkLogger();
 
 createFixture({
-  title: "C1338399: Use SDK from NPM entry point",
+  title: "C1338399: Use SDK via CJS/UMD NPM entry point",
   includeAlloyLibrary: false,
   includeNpmLibrary: true,
   requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 const createAlloyInstance = ClientFunction(() => {
-  window.npmLibraryAlloy = window.alloyCreateInstance({
+  window.npmLibraryAlloy = window.AdobeAlloy.createInstance({
     name: "npmLibraryAlloy",
   });
 });
 
 test.meta({
-  ID: "C1338399: Use SDK from NPM entry point",
+  ID: "C1338399: Use SDK via CJS/UMD NPM entry point",
   SEVERITY: "P0",
   TEST_RUN: "Regression",
 });
 
-test("C1338399: Use SDK from NPM entry point", async () => {
+test("C1338399: Use SDK via CJS/UMD NPM entry point", async () => {
   await createAlloyInstance();
   const alloy = createAlloyProxy("npmLibraryAlloy");
   await alloy.configure(mainConfig);

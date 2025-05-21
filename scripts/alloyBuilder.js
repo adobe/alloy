@@ -17,7 +17,7 @@ import { Command, InvalidOptionArgumentError, Option } from "commander";
 import fs from "fs";
 import path from "path";
 import { rollup } from "rollup";
-import { buildConfig } from "../rollup.config.js";
+import { createCustomBuildConfig } from "../rollup.config.js";
 import entryPointGeneratorBabelPlugin from "./helpers/entryPointGeneratorBabelPlugin.js";
 import { getProjectRoot, safePathJoin } from "./helpers/path.js";
 
@@ -107,24 +107,23 @@ const build = async (argv) => {
     includedModules: argv.include,
   });
 
-  const rollupConfig = buildConfig({
-    variant: "CUSTOM_BUILD",
+  const rollupConfig = createCustomBuildConfig({
     input: inputFile,
-    file: getOutputFilePath(argv),
+    outputFile: getOutputFilePath(argv),
     minify: argv.minify,
   });
 
   const bundle = await rollup(rollupConfig);
-  await bundle.write(rollupConfig.output[0]);
+  await bundle.write(rollupConfig.output);
 
   fs.unlinkSync(inputFile);
 
   console.log(
     `🎉 Wrote ${
       path.isAbsolute(argv.outputDir)
-        ? rollupConfig.output[0].file
-        : path.relative(process.cwd(), rollupConfig.output[0].file)
-    } (${getFileSizeInKB(rollupConfig.output[0].file)}).`,
+        ? rollupConfig.output.file
+        : path.relative(process.cwd(), rollupConfig.output.file)
+    } (${getFileSizeInKB(rollupConfig.output.file)}).`,
   );
 };
 

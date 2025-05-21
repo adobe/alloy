@@ -53,8 +53,12 @@ jobs:
         with:
           name: build
           path: |
+            ./dist/alloy.standalone.js
+            ./dist/alloy.standalone.min.js
             ./dist/alloy.js
-            ./dist/alloy.min.js
+            ./dist/alloy.cjs
+            ./dist/utils.js
+            ./dist/utils.cjs
   prerelease:
     name: "Prerelease"
     runs-on: ubuntu-latest
@@ -86,8 +90,12 @@ jobs:
         with:
           name: build
           path: |
+            ./dist/alloy.standalone.js
+            ./dist/alloy.standalone.min.js
             ./dist/alloy.js
-            ./dist/alloy.min.js
+            ./dist/alloy.cjs
+            ./dist/utils.js
+            ./dist/utils.cjs
   record:
     name: "Record Version"
     runs-on: ubuntu-latest
