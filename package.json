@@ -19,7 +19,11 @@
     }
   },
   "files": [
-    "dist",
+    "dist/types/",
+    "dist/alloy.cjs",
+    "dist/alloy.js",
+    "dist/utils.cjs",
+    "dist/utils.js",
     "LICENSE_BANNER",
     "rollup.config.js",
     ".browserslistrc",
