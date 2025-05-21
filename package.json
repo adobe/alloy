@@ -12,10 +12,6 @@
       "import": "./dist/alloy.js",
       "require": "./dist/alloy.cjs"
     },
-    "./standalone": {
-      "types": "./dist/types/standalone.d.ts",
-      "default": "./dist/alloy.standalone.js"
-    },
     "./utils": {
       "types": "./dist/types/utils/index.d.ts",
       "import": "./dist/utils.js",
