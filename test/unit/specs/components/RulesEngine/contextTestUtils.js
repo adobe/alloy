@@ -158,6 +158,7 @@ export const setupResponseHandler = (applyResponse, window, condition) => {
     applyResponse,
     event: mockEvent,
     decisionContext: contextProvider.getContext(),
+    eventRegistry,
   });
 
   onResponseHandler({
