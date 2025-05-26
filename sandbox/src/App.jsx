@@ -31,6 +31,7 @@ import PersonalizationFormBased from "./PersonalizationFormBased";
 import Identity from "./Identity";
 import AlloyVersion from "./components/AlloyVersion";
 import ConfigOverrides from "./ConfigOverrides";
+import AdvertisingTest from "./AdvertisingTest";
 import InAppMessages from "./components/InAppMessagesDemo/InAppMessages";
 import ContentCards from "./components/ContentCardsDemo/ContentCards";
 
@@ -99,6 +100,9 @@ const BasicExample = () => {
               <a href="/configOverrides">Config Overrides</a>
             </li>
             <li>
+              <a href="/advertisingTest">Advertising Test</a>
+            </li>
+            <li>
               <Link to="/inAppMessages">In-app Messages</Link>
             </li>
             <li>
@@ -133,6 +137,7 @@ const BasicExample = () => {
           <Route path="/redirectedNewPage" component={RedirectedNewPage} />
           <Route path="/identity" component={Identity} />
           <Route path="/configOverrides" component={ConfigOverrides} />
+          <Route path="/advertisingTest" component={AdvertisingTest} />
           <Route path="/inAppMessages" component={InAppMessages} />
           <Route path="/contentCards" component={ContentCards} />
         </div>

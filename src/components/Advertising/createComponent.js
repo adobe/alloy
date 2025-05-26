@@ -13,6 +13,9 @@ governing permissions and limitations under the License.
 import createAdConversionHandler from "./utils/createAdConversionHandler.js";
 import validateAdConversionOptions from "./utils/validateAdConversionOptions.js";
 import fetchAllIds from "./identities/fetchAllIds.js";
+import createCookieSessionManager from "./utils/createAdvertisingSessionManager.js";
+import createLoggingCookieJar from "../../utils/createLoggingCookieJar.js";
+import { cookieJar } from "../../utils/index.js";
 
 export default ({
   logger,
@@ -25,6 +28,17 @@ export default ({
   const componentConfig = config?.advertising || {};
   logger.info("Advertising component initialized", componentConfig);
 
+  // Create cookie jar with logging
+  const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });
+
+  // Create session manager
+  const sessionManager = createCookieSessionManager({
+    orgId: "temp_ims_org_id",
+    cookieJar: loggingCookieJar,
+    logger,
+    namespace: "advertising",
+  });
+
   // Store for advertising IDs
   let advertisingIds = {};
 
@@ -32,6 +46,10 @@ export default ({
     return fetchAllIds()
       .then((ids) => {
         advertisingIds = ids;
+
+        // Store IDs in the session for persistence
+        sessionManager.setValue("advertisingIds", ids);
+
         logger.info("Advertising IDs stored:", advertisingIds);
         return ids;
       })
@@ -49,32 +67,109 @@ export default ({
     logger,
   });
 
+  const THROTTLE_MINUTES = 30;
+
+  const getUrlParams = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return {
+      skwcid: urlParams.get("skwcid"),
+      efid: urlParams.get("ef_id"),
+    };
+  };
+
+  const shouldThrottle = (lastTime) => {
+    const elapsedMinutes = (Date.now() - lastTime) / (60 * 1000);
+    return elapsedMinutes < THROTTLE_MINUTES;
+  };
+
   const sendAdConversion = async (options = {}) => {
-    await handleFetch(); // Wait for advertisingIds to be populated
+    const isDisplay = Object.keys(options).length > 0;
+    const { skwcid, efid } = getUrlParams();
+    const sessionData = sessionManager.readSession();
+    const lastConversionTime = sessionData.lastConversionTime;
 
-    // Create the event with standard structure
-    const event = eventManager.createEvent();
-    const advertisingXdm = {};
+    try {
+      // Throttle for Display only (both click thru and view thru)
+      if (
+        isDisplay &&
+        lastConversionTime &&
+        shouldThrottle(lastConversionTime)
+      ) {
+        const elapsed = (Date.now() - lastConversionTime) / (60 * 1000);
+        logger.info("Ad conversion throttled", {
+          lastConversion: new Date(lastConversionTime).toISOString(),
+          throttleMinutes: THROTTLE_MINUTES,
+          elapsedMinutes: Math.round(elapsed),
+        });
 
-    if (options.clickThruEnabled) {
-      if (advertisingIds.surfer_id) {
-        advertisingXdm.skwcid = advertisingIds.surfer_id;
+        return {
+          status: "throttled",
+          timestamp: lastConversionTime,
+          message: "Ad conversion throttled (sent within the last 30 minutes)",
+        };
       }
+
+      logger.info("Sending ad conversion", options);
+      await handleFetch();
+
+      const event = eventManager.createEvent();
+      const xdm = { eventType: "advertising.conversion" };
+
+      // Set cookie for click data if skwcid/efid present
+      if (skwcid || efid) {
+        const clickData = {
+          click_time: Date.now(),
+          ...(skwcid && { skwcid }),
+          ...(efid && { efid }),
+        };
+        sessionManager.writeCookie("ev_cc", clickData, {}, false);
+      }
+
+      // click thru case
+      if (skwcid || efid) {
+        if (!isDisplay) {
+          xdm.advertising = {
+            adConversionDetails: {
+              ...(efid && { adStitchData: efid }),
+              ...(skwcid && { adConversionMetaData: skwcid }),
+            },
+          };
+        } else {
+          xdm.advertising = {
+            adConversionDetails: {
+              ...(efid && { adStitchData: efid }),
+              ...(skwcid && { adConversionMetaData: skwcid }),
+            },
+            adAssetReference: {
+              advertiser: options.advertiser || "UNKNOWN",
+            },
+          };
+        }
+      } else {
+        // view thru case
+        const evCcData = sessionManager.readCookie("ev_cc");
+        xdm.data = {
+          conversionType: "vt",
+          dspAdvertiserID: "1111111",
+          amoAdvertiserID: "2222222",
+          gSurferId: advertisingIds?.surfer_id || "xxxxxx",
+          rampIDEnv: "aaaa",
+          ...(evCcData?.click_time && { clickTime: evCcData.click_time }),
+        };
+      }
+
+      event.setUserXdm(xdm);
+
+      // Update conversion time only for Display
+      if (isDisplay) {
+        sessionManager.setValue("lastConversionTime", Date.now(), "ev_cc");
+      }
+
+      return await adConversionHandler.trackAdConversion({ event });
+    } catch (error) {
+      logger.error("Error in sendAdConversion", error);
+      throw error;
     }
-
-    if (options.viewThruEnabled) {
-      // if (advertisingIds.liverampid) {
-      //   advertisingXdm['liverampid'] = advertisingIds.liverampid;
-      // }
-    }
-
-    // Set the event type and core data
-    event.setUserXdm({
-      advertising: advertisingXdm,
-    });
-
-    // Send the event using our specialized handler
-    return adConversionHandler.trackAdConversion({ event });
   };
 
   return {
@@ -82,13 +177,12 @@ export default ({
       onComponentsRegistered() {
         logger.info("Advertising component registered");
         // Start fetching IDs when component is registered
-        // Handle browser and non-browser environments
         if (typeof document !== "undefined") {
-          //   if (document.readyState === "loading") {
-          //     document.addEventListener("DOMContentLoaded", handleFetch);
-          //   } else {
-          //     handleFetch();
-          //   }
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", handleFetch);
+          } else {
+            handleFetch();
+          }
         }
       },
     },
@@ -96,6 +190,29 @@ export default ({
       sendAdConversion: {
         optionsValidator: (options) => validateAdConversionOptions({ options }),
         run: sendAdConversion,
+      },
+      getAdvertisingIdentity: {
+        run: async () => {
+          // Check if we already have IDs stored in the session
+          const sessionData = sessionManager.readSession();
+
+          // If we have cached advertising IDs that aren't expired, use them
+          if (
+            sessionData.advertisingIds &&
+            !sessionManager.isSessionExpired()
+          ) {
+            logger.debug("Using cached advertising IDs from session");
+            return { ...sessionData.advertisingIds };
+          }
+
+          // Otherwise fetch new IDs
+          const ids = await handleFetch();
+
+          // Store the IDs in the session for future use
+          sessionManager.setValue("advertisingIds", ids);
+
+          return { ...ids };
+        },
       },
     },
   };

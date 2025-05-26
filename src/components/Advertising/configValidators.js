@@ -10,26 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createComponent from "./createComponent.js";
-import configValidators from "./configValidators.js";
+import { objectOf, string } from "../../utils/validation/index.js";
 
-const createAdvertising = ({
-  logger,
-  config,
-  eventManager,
-  sendEdgeNetworkRequest,
-  consent,
-}) => {
-  return createComponent({
-    logger,
-    config,
-    eventManager,
-    sendEdgeNetworkRequest,
-    consent,
-  });
-};
+export default objectOf({
+  advertising: objectOf({
+    // LiveRamp script path for loading the LiveRamp identity SDK
+    liverampScriptPath: string(),
 
-createAdvertising.namespace = "Advertising";
-createAdvertising.configValidators = configValidators;
-
-export default createAdvertising;
+    // ID5 partner ID for identity resolution
+    id5PartnerId: string(),
+  }).noUnknownFields(),
+});
