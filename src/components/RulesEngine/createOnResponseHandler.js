@@ -9,8 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { PERSONALIZATION_DECISIONS_HANDLE } from "../../constants/handle.js";
+
+import { PERSONALIZATION_DECISIONS_HANDLE } from "../../constants/decisionProvider.js";
 import flattenObject from "../../utils/flattenObject.js";
+import extractPayloadsFromEventHistoryOperations from "./utils/extractPayloadsFromEventHistoryOperations.js";
 
 export default ({
   renderDecisions,
@@ -18,6 +20,7 @@ export default ({
   applyResponse,
   event,
   personalization,
+  eventRegistry,
   decisionContext,
 }) => {
   const context = {
@@ -36,6 +39,13 @@ export default ({
     }
 
     const propositions = decisionProvider.evaluate(context);
+
+    // Some propositions may contains event history operations.
+    // We extract them and add the events to the event registry.
+    const eventPayloads =
+      extractPayloadsFromEventHistoryOperations(propositions);
+    eventRegistry.addEventPayloads(eventPayloads);
+
     return applyResponse({
       renderDecisions,
       propositions,

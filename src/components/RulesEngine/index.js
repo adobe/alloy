@@ -20,7 +20,7 @@ import {
   CONTEXT_KEY,
   CONTEXT_EVENT_SOURCE,
   CONTEXT_EVENT_TYPE,
-} from "./constants.js";
+} from "./constants/index.js";
 import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand.js";
 import { clearLocalStorage, createInMemoryStorage } from "./utils/storage.js";
 import { objectOf, boolean } from "../../utils/validation/index.js";
@@ -98,6 +98,7 @@ const createRulesEngine = ({
             applyResponse,
             event,
             personalization,
+            eventRegistry,
             decisionContext: contextProvider.getContext({
               [CONTEXT_KEY.TYPE]: CONTEXT_EVENT_TYPE.EDGE,
               [CONTEXT_KEY.SOURCE]: CONTEXT_EVENT_SOURCE.REQUEST,
