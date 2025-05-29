@@ -5,13 +5,48 @@
     "brotiliSize": 133
   },
   "dist/alloy.js": {
-    "uncompressedSize": 636094,
-    "gzippedSize": 98404,
-    "brotiliSize": 75976
+    "uncompressedSize": 600165,
+    "gzippedSize": 99074,
+    "brotiliSize": 77486
   },
   "dist/alloy.min.js": {
     "uncompressedSize": 134998,
     "gzippedSize": 43074,
     "brotiliSize": 37353
+  },
+  "dist/baseCode.js": {
+    "uncompressedSize": 3597,
+    "gzippedSize": 1376,
+    "brotiliSize": 1045
+  },
+  "dist/baseCode.min.js": {
+    "uncompressedSize": 203,
+    "gzippedSize": 164,
+    "brotiliSize": 133
+  },
+  "dist/alloy.standalone.js": {
+    "uncompressedSize": 631404,
+    "gzippedSize": 100186,
+    "brotiliSize": 77868
+  },
+  "dist/alloy.standalone.min.js": {
+    "uncompressedSize": 128224,
+    "gzippedSize": 42342,
+    "brotiliSize": 36936
+  },
+  "dist/alloy.cjs": {
+    "uncompressedSize": 632144,
+    "gzippedSize": 100559,
+    "brotiliSize": 78199
+  },
+  "dist/utils.js": {
+    "uncompressedSize": 113608,
+    "gzippedSize": 18292,
+    "brotiliSize": 15068
+  },
+  "dist/utils.cjs": {
+    "uncompressedSize": 114900,
+    "gzippedSize": 18457,
+    "brotiliSize": 15203
   }
 }
