@@ -9,8 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+// This is the native way to import a json file, but rollup and eslint don't support
+// it yet. Once they do, we can use it and remove @rollup/plugin-json.
+// import { version } from "../../package.json" with { type: "json" };
+import { version } from "../../package.json";
 
-// The __VERSION__ keyword will be replace at alloy build time with the package.json version.
-// see babel-plugin-version
-
-export default "__VERSION__";
+export default version;

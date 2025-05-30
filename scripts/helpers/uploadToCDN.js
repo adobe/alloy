@@ -25,8 +25,8 @@ const uploadToCDN = async ({ exec, logger, urlExists, version }) => {
 
   const ftpCommands = `-mkdir ${version}
 cd ${version}
-put ./dist/alloy.js
-put ./dist/alloy.min.js
+put ./dist/alloy.standalone.js alloy.js
+put ./dist/alloy.standalone.min.js alloy.min.js
 bye
 `;
   logger.info("Uploading files to CDN.");

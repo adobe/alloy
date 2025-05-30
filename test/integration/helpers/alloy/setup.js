@@ -15,7 +15,7 @@ const { readFile } = server.commands;
 
 export default async () => {
   const alloyBaseCode = await readFile(
-    `${server.config.root}/distTest/baseCode.min.js`,
+    `${server.config.root}/dist/baseCode.min.js`,
   );
 
   document.body.innerHTML = "Alloy Test Page";
@@ -28,7 +28,7 @@ export default async () => {
   const alloyScriptTag = document.createElement("script");
   alloyScriptTag.type = "text/javascript";
   alloyScriptTag.setAttribute("async", true);
-  alloyScriptTag.src = "/dist/alloy.js";
+  alloyScriptTag.src = "/dist/alloy.standalone.js";
 
   document.body.appendChild(alloyScriptTag);
   return window.alloy;
