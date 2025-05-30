@@ -9,12 +9,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default () => {
-  const alloyScriptTag = document.createElement("script");
-  alloyScriptTag.type = "text/javascript";
-  alloyScriptTag.setAttribute("async", true);
-  alloyScriptTag.src = "/dist/alloy.standalone.js";
+/* eslint-disable no-underscore-dangle */
 
-  document.body.appendChild(alloyScriptTag);
-  return window.alloy;
+export default () => {
+  delete window.__alloyMonitors;
+  delete window.__alloyNS;
+  delete window.alloy;
 };
