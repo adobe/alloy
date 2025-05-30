@@ -25,7 +25,7 @@ export const demdexHandler = http.post(
     if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
       return HttpResponse.text(
         await readFile(
-          `${server.config.root}/test/integration/helpers/json/demdexResponse.json`,
+          `${server.config.root}/test/integration/helpers/mocks/demdexResponse.json`,
         ),
       );
     }
@@ -44,7 +44,7 @@ export const firstPartyAlloyHandler = http.post(
     if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
       return HttpResponse.text(
         await readFile(
-          `${server.config.root}/test/integration/helpers/json/firstPartyAlloyResponse.json`,
+          `${server.config.root}/test/integration/helpers/mocks/firstPartyAlloyResponse.json`,
         ),
       );
     }
@@ -63,7 +63,7 @@ export const inAppMessageHandler = http.post(
     if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
       return HttpResponse.text(
         await readFile(
-          `${server.config.root}/test/integration/helpers/json/inAppMessageResponse.json`,
+          `${server.config.root}/test/integration/helpers/mocks/inAppMessageResponse.json`,
         ),
       );
     }

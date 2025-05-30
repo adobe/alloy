@@ -48,6 +48,7 @@
     "test:scripts": "vitest run --config=./scripts/specs/vitest.config.js",
     "dev": "cd sandbox && export REACT_APP_NONCE=321 && npm start",
     "build": "npm run clean && rollup -c --environment BUNDLESIZE && npm run types && echo \"Base Code:\" && cat dist/baseCode.min.js",
+    "build:watch": "npm run clean && rollup -c --watch",
     "build:custom": "node scripts/alloyBuilder.js",
     "prepare": "husky && cd sandbox && npm install",
     "prepack": "npm run clean && npm run build",

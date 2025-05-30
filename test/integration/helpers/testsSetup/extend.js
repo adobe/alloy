@@ -1,9 +1,10 @@
 /* eslint-disable no-empty-pattern */
-/* eslint-disable no-underscore-dangle */
 import { test as baseTest } from "vitest";
 import { worker } from "../mswjs/browserWorker.js";
 import { networkRecorder } from "../mswjs/networkRecorder.js";
 import setupAlloy from "../alloy/setup.js";
+import setupBaseCode from "../alloy/setupBaseCode.js";
+import cleanAlloy from "../alloy/clean.js";
 
 // Extend the test with MSW worker
 export const test = baseTest.extend({
@@ -36,14 +37,13 @@ export const test = baseTest.extend({
 
   alloy: [
     async ({}, use) => {
-      const alloy = await setupAlloy();
+      await setupBaseCode();
+      const alloy = setupAlloy();
 
       // Make alloy available in the test context
       await use(alloy);
 
-      delete window.__alloyMonitors;
-      delete window.__alloyNS;
-      delete window.alloy;
+      cleanAlloy();
     },
     { auto: true }, // Apply to all tests even if not explicitly using alloy
   ],

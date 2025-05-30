@@ -9,6 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+import waitFor from "../utils/waitFor.js";
+
 class NetworkRecorder {
   /**
    * @typedef {Object} NetworkCall
@@ -94,18 +97,6 @@ class NetworkRecorder {
   }
 
   /**
-   * Adds a delayMs to allow pending network calls to be captured
-   * @param {number} delayMs - Milliseconds to delayMs (defaults to 10ms)
-   * @returns {Promise<void>} - Promise that resolves after the delayMs
-   */
-  // eslint-disable-next-line class-methods-use-this
-  async waitForCalls(delayMs = 10) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, delayMs);
-    });
-  }
-
-  /**
    * Finds network calls that match either a regex pattern or a segment URL string
    * @param {RegExp|string} pattern - Regex pattern or segment URL string to match against
    * @param {Object} [options] - Search options
@@ -138,7 +129,7 @@ class NetworkRecorder {
       }
 
       // eslint-disable-next-line no-await-in-loop
-      await this.waitForCalls(delayMs);
+      await waitFor(delayMs);
       retriesLeft -= 1;
     }
 
