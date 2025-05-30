@@ -40,7 +40,7 @@
     "test:unit": "npx playwright install chromium && vitest --project=unit --run",
     "test:unit:debug": "npm run test:unit -- --no-run --no-file-parallelism --browser=chromium --browser.provider=playwright --browser.headless=false",
     "pretest:integration": "npm run test:build",
-    "test:integration": "npx playwright install chromium && vitest --project=integration --run",
+    "test:integration": "npx playwright install chromium && vitest --project=integration --run --silent",
     "test:integration:debug": "npm run test:integration -- --no-run --no-file-parallelism --browser=chromium --browser.provider=playwright --browser.headless=false",
     "test:functional": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome",
     "test:functional:watch": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ./scripts/watchFunctionalTests.js --browsers chrome",
