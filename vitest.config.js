@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
+  silent: "passed-only",
   test: {
     workspace: [
       {

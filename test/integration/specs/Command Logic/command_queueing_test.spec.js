@@ -14,7 +14,6 @@ import setupBaseCode from "../../helpers/alloy/setupBaseCode.js";
 import alloyConfig from "../../helpers/alloy/config.js";
 import cleanAlloy from "../../helpers/alloy/clean.js";
 import setupAlloy from "../../helpers/alloy/setup.js";
-import waitFor from "../../helpers/utils/waitFor.js";
 
 describe("Command queueing", () => {
   let consoleSpy;
@@ -29,6 +28,18 @@ describe("Command queueing", () => {
 
   test("works", async () => {
     await setupBaseCode();
+    const p = new Promise((resolve) => {
+      // eslint-disable-next-line no-underscore-dangle
+      window.__alloyMonitors = [
+        {
+          onCommandResolved({ commandName }) {
+            if (commandName === "getLibraryInfo") {
+              resolve();
+            }
+          },
+        },
+      ];
+    });
 
     window.alloy("configure", {
       ...alloyConfig,
@@ -41,7 +52,7 @@ describe("Command queueing", () => {
 
     setupAlloy();
 
-    await waitFor(100);
+    await p;
 
     const containsExecutingMessage = consoleSpy.mock.calls.some(
       ([, logMessage]) =>
