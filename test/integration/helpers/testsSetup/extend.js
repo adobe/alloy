@@ -1,6 +1,6 @@
 /* eslint-disable no-empty-pattern */
 import { test as baseTest } from "vitest";
-import { worker } from "../mswjs/browserWorker.js";
+import { createWorker } from "../mswjs/browserWorker.js";
 import { networkRecorder } from "../mswjs/networkRecorder.js";
 import setupAlloy from "../alloy/setup.js";
 import setupBaseCode from "../alloy/setupBaseCode.js";
@@ -10,6 +10,8 @@ import cleanAlloy from "../alloy/clean.js";
 export const test = baseTest.extend({
   worker: [
     async ({}, use) => {
+      const worker = createWorker();
+
       // Start the worker before each test
       await worker.start({
         onUnhandledRequest: "bypass",
@@ -59,4 +61,5 @@ export {
   afterAll,
   beforeEach,
   afterEach,
+  vi,
 } from "vitest";

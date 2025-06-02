@@ -124,7 +124,7 @@ class NetworkRecorder {
         (call) => call.request && pattern.test(call.request.url),
       );
 
-      if (calls.length >= 0 && calls.every((c) => c.response)) {
+      if (calls.length > 0 && calls.every((c) => c.response)) {
         break;
       }
 

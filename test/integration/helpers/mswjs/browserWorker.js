@@ -12,29 +12,33 @@ governing permissions and limitations under the License.
 import { setupWorker } from "msw/browser";
 import { networkRecorder } from "./networkRecorder.js";
 
-const worker = setupWorker();
+const createWorker = () => {
+  const worker = setupWorker();
 
-const originalUse = worker.use;
+  const originalUse = worker.use;
 
-worker.use = (...handlers) => {
-  if (import.meta.env.VITE_BYPASS_HANDLERS === "true") {
-    handlers = [];
-  }
+  worker.use = (...handlers) => {
+    if (import.meta.env.VITE_BYPASS_HANDLERS === "true") {
+      handlers = [];
+    }
 
-  return originalUse.apply(worker, handlers);
+    return originalUse.apply(worker, handlers);
+  };
+
+  // Add a response transformer to record all requests/responses
+  worker.events.on("request:start", ({ request, requestId }) => {
+    networkRecorder.captureRequest({ request, requestId });
+  });
+
+  worker.events.on("response:mocked", ({ request, requestId, response }) => {
+    networkRecorder.captureResponse({ request, requestId, response });
+  });
+
+  worker.events.on("response:bypass", ({ request, requestId, response }) => {
+    networkRecorder.captureResponse({ request, requestId, response });
+  });
+
+  return worker;
 };
 
-// Add a response transformer to record all requests/responses
-worker.events.on("request:start", ({ request, requestId }) => {
-  networkRecorder.captureRequest({ request, requestId });
-});
-
-worker.events.on("response:mocked", ({ request, requestId, response }) => {
-  networkRecorder.captureResponse({ request, requestId, response });
-});
-
-worker.events.on("response:bypass", ({ request, requestId, response }) => {
-  networkRecorder.captureResponse({ request, requestId, response });
-});
-
-export { worker };
+export { createWorker };
