@@ -19,17 +19,15 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: lts/*
+          cache: "npm"
 
-      - name: Intall packages and build alloy
-        run: |
-          npm install
-          npm run build
+      - name: Intall packages
+        run: npm ci
 
-      - name: Change directory to sandbox and install npm packages and build sandbox
+      - name: Build sandbox
         run: |
           cd sandbox
-          npm install
           npm run build
 
       - name: Upload artifact for deployment job
