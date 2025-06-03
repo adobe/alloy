@@ -18,7 +18,6 @@ import {
   afterEach,
 } from "../../helpers/testsSetup/extend.js";
 import alloyConfig from "../../helpers/alloy/config.js";
-import getOnCommandResolvedPromise from "../../helpers/utils/getOnCommandResolvedPromise.js";
 import searchForLogMessage from "../../helpers/utils/searchForLogMessage.js";
 
 describe("Configure command", () => {
@@ -39,14 +38,10 @@ describe("Configure command", () => {
       config.edgeConfigId = config.datastreamId;
       delete config.datastreamId;
 
-      const p = getOnCommandResolvedPromise("configure");
-
-      alloy("configure", {
+      await alloy("configure", {
         ...config,
         debugEnabled: true,
       });
-
-      await p;
 
       expect(
         searchForLogMessage(
@@ -62,14 +57,10 @@ describe("Configure command", () => {
       const config = structuredClone(alloyConfig);
       config.edgeConfigId = config.datastreamId;
 
-      const p = getOnCommandResolvedPromise("configure");
-
-      alloy("configure", {
+      await alloy("configure", {
         ...config,
         debugEnabled: true,
       });
-
-      await p;
 
       expect(
         searchForLogMessage(
@@ -92,5 +83,28 @@ describe("Configure command", () => {
     expect(error.message).toContain("orgId");
     expect(error.message).toContain("datastreamId");
     expect(error.message).toContain("documentation");
+  });
+
+  test("throws error when it is called multple times", async ({ alloy }) => {
+    let error;
+
+    try {
+      await alloy("configure", alloyConfig);
+      await alloy("configure", alloyConfig);
+    } catch (e) {
+      error = e;
+    }
+
+    expect(error.message).toContain(
+      "The library has already been configured and may only be configured once.",
+    );
+  });
+
+  test("returns a promise that resolves with an empty result object", async ({
+    alloy,
+  }) => {
+    const result = await alloy("configure", alloyConfig);
+
+    expect(result).toEqual({});
   });
 });

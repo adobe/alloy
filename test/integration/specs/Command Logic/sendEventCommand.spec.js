@@ -10,7 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { test, expect, describe } from "../../helpers/testsSetup/extend.js";
-import { sendEventHandler } from "../../helpers/mswjs/handlers.js";
+import {
+  sendEventHandler,
+  sendEventErrorHandler,
+} from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
 
 describe("Send event command", () => {
@@ -45,7 +48,9 @@ describe("Send event command", () => {
       error = e;
     }
 
-    expect(error.message).toContain("The library must be configured first.");
+    expect(error.message).toContain(
+      "The library must be configured first. Please do so by executing the configure command.",
+    );
   });
 
   test("uses the computed config even if the original config object is changed at a later time", async ({
@@ -65,5 +70,29 @@ describe("Send event command", () => {
 
     const call = await networkRecorder.findCall(/edge\.adobedc\.net/);
     expect(call?.request.url.includes(alloyConfig.datastreamId)).toBe(true);
+  });
+
+  test("throws an error when the datastreamId is invalid", async ({
+    alloy,
+    worker,
+  }) => {
+    worker.use(...[sendEventErrorHandler]);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      datastreamId: "BOGUS",
+    });
+
+    let error;
+    try {
+      await alloy("sendEvent");
+    } catch (e) {
+      error = e;
+    }
+
+    expect(error.message).toContain(
+      "The server responded with a status code 400 and response body",
+    );
+    expect(error.message).toContain("EXEG-0003-400");
   });
 });

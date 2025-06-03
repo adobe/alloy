@@ -34,6 +34,28 @@ export const sendEventHandler = http.post(
   },
 );
 
+export const sendEventErrorHandler = http.post(
+  /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
+
+  async (req) => {
+    const url = new URL(req.request.url);
+    const configId = url.searchParams.get("configId");
+
+    if (configId === "BOGUS") {
+      return HttpResponse.text(
+        await readFile(
+          `${server.config.root}/test/integration/helpers/mocks/sendEventErrorResponse.json`,
+        ),
+        {
+          status: 400,
+        },
+      );
+    }
+
+    throw new Error("Handler not configured properly");
+  },
+);
+
 export const demdexHandler = http.post(
   "https://adobedc.demdex.net/ee/v1/interact",
 
