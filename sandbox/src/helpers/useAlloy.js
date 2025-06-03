@@ -34,10 +34,6 @@ const setup = ({
   });
 
   initializeAlloy(window, instanceNames);
-  const alloyScriptPath = new URL(
-    "../../../src/standalone.js",
-    import.meta.url,
-  );
 
   if (getUrlParameter("includeVisitor") === "true") {
     includeScript(
@@ -48,10 +44,12 @@ const setup = ({
         doesOptInApply: getUrlParameter("legacyOptIn") === "true",
       });
       // Alloy only looks for window.Visitor when it initially loads, so only load Alloy after Visitor loaded.
-      includeScript(alloyScriptPath, { module: true });
+      // eslint-disable-next-line import/no-relative-packages
+      return import("../../../src/standalone");
     });
   } else {
-    includeScript(alloyScriptPath, { module: true });
+    // eslint-disable-next-line import/no-relative-packages
+    import("../../../src/standalone");
   }
 
   if (onAlloySetupCompleted) {
