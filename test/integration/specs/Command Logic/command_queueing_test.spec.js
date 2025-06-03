@@ -14,6 +14,8 @@ import setupBaseCode from "../../helpers/alloy/setupBaseCode.js";
 import alloyConfig from "../../helpers/alloy/config.js";
 import cleanAlloy from "../../helpers/alloy/clean.js";
 import setupAlloy from "../../helpers/alloy/setup.js";
+import getOnCommandResolvedPromise from "../../helpers/utils/getOnCommandResolvedPromise.js";
+import searchForLogMessage from "../../helpers/utils/searchForLogMessage.js";
 
 describe("Command queueing", () => {
   let consoleSpy;
@@ -28,19 +30,7 @@ describe("Command queueing", () => {
 
   test("works", async () => {
     await setupBaseCode();
-    const p = new Promise((resolve) => {
-      // eslint-disable-next-line no-underscore-dangle
-      window.__alloyMonitors = [
-        {
-          onCommandResolved({ commandName }) {
-            if (commandName === "getLibraryInfo") {
-              resolve();
-            }
-          },
-        },
-      ];
-    });
-
+    const p = getOnCommandResolvedPromise("getLibraryInfo");
     window.alloy("configure", {
       ...alloyConfig,
       debugEnabled: true,
@@ -54,13 +44,9 @@ describe("Command queueing", () => {
 
     await p;
 
-    const containsExecutingMessage = consoleSpy.mock.calls.some(
-      ([, logMessage]) =>
-        typeof logMessage === "string" &&
-        logMessage.includes("Executing getLibraryInfo command"),
-    );
-
-    expect(containsExecutingMessage).toBe(true);
+    expect(
+      searchForLogMessage(consoleSpy, "Executing getLibraryInfo command"),
+    ).toBe(true);
 
     cleanAlloy();
   });
