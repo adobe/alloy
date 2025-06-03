@@ -34,7 +34,7 @@
     "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{src,test,scripts,sandbox}/**/*.{js,cjs,mjs,jsx}\"",
     "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandbox,src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
     "types": "tsc",
-    "test": "npx playwright install chromium && npm run test:build && vitest run && npm run test:scripts",
+    "test": "npx playwright install chromium && npm run test:build && vitest run --silent && npm run test:scripts",
     "test:build": "rollup -c --environment SOURCEMAP",
     "test:coverage": "rimraf coverage && npx playwright install chromium && npm run test:build && vitest run --coverage --silent",
     "test:unit": "npx playwright install chromium && vitest --project=unit --run",

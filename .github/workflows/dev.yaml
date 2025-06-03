@@ -27,7 +27,7 @@ jobs:
         run: npm run lint
 
   unit-test:
-    name: "Unit Test"
+    name: "Test"
     runs-on: ubuntu-latest
     steps:
       - name: Set up Node.js version

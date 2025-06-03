@@ -1,0 +1,9 @@
+{
+  "type": "https://ns.adobe.com/aep/errors/EXEG-0003-400",
+  "status": 400,
+  "title": "Invalid datastream ID",
+  "detail": "The datastream ID 'BOGUS' referenced in your request does not exist. Update the request with a valid datastream ID and try again.",
+  "report": {
+    "requestId": "f201b808-e16f-4a19-bae0-35ba0396c575-7532070a3ffd4261"
+  }
+}
