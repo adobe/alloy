@@ -6,3 +6,15 @@ changelog:
       - ignore-for-release
     authors:
       - dependabot
+  categories:
+    - title: Breaking changes
+      labels:
+        - breaking-change
+    - title: New features
+      labels:
+        - "*"
+    - title: Fixes and improvements
+      labels:
+        - bug-fix
+        - improvement
+

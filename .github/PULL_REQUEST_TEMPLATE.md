@@ -2,6 +2,10 @@
 <!--- In general, start the title with a past tense verb (i.e. added, optimized, removed.) -->
 <!--- For bug fixes, start with "fixed" (i.e. fixed an issue, fixed broken.) -->
 <!--- For PRs that should not be included in the release notes, attach the label "ignore-for-release" -->
+<!--- For PRs that should increment the patch version, attach the label "bug-fix" or "improvement" -->
+<!--- For PRs that should increment the minor version, no labels are required -->
+<!--- For PRs that should increment the major version, attach the label "breaking-change" -->
+
 
 ## Description
 
