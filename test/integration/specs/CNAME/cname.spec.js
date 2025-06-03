@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 import alloyConfig from "../../helpers/alloy/config.js";
 import { describe, test, expect } from "../../helpers/testsSetup/extend.js";
-import deleteCookies from "../../helpers/deleteCookies.js";
+import deleteCookies from "../../helpers/utils/deleteCookies.js";
 import createResponse from "../../helpers/responses/createResponse.js";
 import { FIRST_PARTY_DOMAIN } from "../../helpers/constants/domains.js";
 import { MAIN_IDENTITY_COOKIE_NAME } from "../../../functional/helpers/constants/cookies.js";
