@@ -44,10 +44,12 @@ const setup = ({
         doesOptInApply: getUrlParameter("legacyOptIn") === "true",
       });
       // Alloy only looks for window.Visitor when it initially loads, so only load Alloy after Visitor loaded.
-      return import("../../../src/standalone.js");
+      // eslint-disable-next-line import/no-relative-packages
+      return import("../../../src/standalone");
     });
   } else {
-    import("../../../src/standalone.js");
+    // eslint-disable-next-line import/no-relative-packages
+    import("../../../src/standalone");
   }
 
   if (onAlloySetupCompleted) {
