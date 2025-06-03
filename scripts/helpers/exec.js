@@ -9,41 +9,52 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { createRequire } from "module";
+import { exec as execChildProcess } from "child_process";
 import ApplicationError from "./applicationError.js";
 
-const require = createRequire(import.meta.url);
+const timestampFormatter = new Intl.DateTimeFormat("en-GB", {
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  fractionalSecondDigits: 3,
+  hourCycle: "h23", // Explicitly use 24-hour cycle
+});
+const formatTimestamp = (date = new Date()) => {
+  return timestampFormatter.format(date);
+};
 
-// Use concurrently for its great log handling and prefix capabilities
-const concurrently = require("concurrently");
-
-// even though I'm only ever running one thing at a time.
-
+/**
+ * Executes a function in a child process, with log prefixing.
+ * @param {string} name
+ * @param {string} command
+ * @param {{ outputStream?: import("stream").Writable }} [options={}]
+ * @returns {Promise<void>}
+ */
 const exec = async (name, command, options = {}) => {
-  try {
-    const { result } = await concurrently(
-      [
-        {
-          name,
-          command,
-        },
-      ],
-      {
-        prefix: "[{time} {name}]",
-        timestampFormat: "HH:mm:ss.SSS",
-        ...options,
-      },
-    );
-    await result;
-  } catch (e) {
-    if (!e.message) {
-      // when a command fails, concurrently rejects with an array of objects.
-      throw new ApplicationError(
-        "Previous command exited with non-zero exit code.",
+  /** @type {import("child_process").ChildProcess | null} */
+  const process = execChildProcess(command);
+  const outputStream = options.outputStream ?? process.stdout;
+  process.stdout.on("data", (data) => {
+    outputStream.write(`[${formatTimestamp()} ${name}] ${data}`);
+  });
+  process.stderr.on("data", (data) => {
+    outputStream.write(`[${formatTimestamp()} ${name}] ${data}`);
+  });
+  return new Promise((resolve, reject) => {
+    process.on("close", (code) => {
+      if (code === 0) {
+        resolve();
+      }
+      outputStream.write(
+        `[${formatTimestamp()} ${name}] exited with code ${code}.`,
       );
-    }
-    throw e;
-  }
+      reject(
+        new ApplicationError(
+          "Previous command exited with non-zero exit code.",
+        ),
+      );
+    });
+  });
 };
 
 export default exec;
