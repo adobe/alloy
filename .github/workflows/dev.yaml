@@ -45,7 +45,7 @@ jobs:
         run: npm ci
       - name: Build Alloy
         run: npm run build
-      - name: Run Unit Test
+      - name: Run Test
         run: npm run test
         env:
           BUILD_NUMBER: $GITHUB_RUN_NUMBER
