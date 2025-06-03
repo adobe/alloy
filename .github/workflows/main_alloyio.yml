@@ -22,7 +22,7 @@ jobs:
           node-version: lts/*
           cache: "npm"
 
-      - name: Intall packages
+      - name: Install packages
         run: npm ci
 
       - name: Build sandbox
