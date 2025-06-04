@@ -13,6 +13,10 @@ changelog:
     - title: New features
       labels:
         - "*"
+      exclude:
+        labels:
+          - bug-fix
+          - improvement
     - title: Fixes and improvements
       labels:
         - bug-fix
