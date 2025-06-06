@@ -23,7 +23,7 @@ import bundleSizePlugin from "./scripts/helpers/rollupBundleSizePlugin.js";
 /**
  * @returns { Record<string, import('rollup').Plugin> & { shared: import('rollup').Plugin[] } }
  */
-const createPlugins = ({ bundlesize }) => {
+const createPlugins = ({ bundlesize } = {}) => {
   const dirname = path.dirname(fileURLToPath(import.meta.url));
   const plugins = {
     bundlesize: bundleSizePlugin({
