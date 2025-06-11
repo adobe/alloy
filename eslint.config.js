@@ -44,7 +44,6 @@ const airbnbBase = {
       ignoreReadBeforeAssign: true,
     },
   ],
-  "no-continue": "error",
   "valid-typeof": ["error", { requireStringLiterals: true }],
   "no-console": "error",
   "no-underscore-dangle": "error",
