@@ -26,31 +26,42 @@ describe("RulesEngine:evaluateRulesetsCommand", () => {
   let contextProvider;
   let decisionProvider;
   let evaluateRulesetsCommand;
+
   beforeEach(() => {
     onDecision = vi.fn();
-    applyResponse = createApplyResponse({
-      onDecision,
-    });
+
     storage = {
       getItem: vi.fn(),
       setItem: vi.fn(),
       clear: vi.fn(),
     };
+
     eventRegistry = createEventRegistry({
       storage,
       logger: { info: vi.fn() },
     });
+
+    applyResponse = createApplyResponse({
+      lifecycle: {
+        onDecision,
+      },
+      eventRegistry,
+    });
+
     getBrowser = injectGetBrowser({
       userAgent: window.navigator.userAgent,
     });
+
     contextProvider = createContextProvider({
       eventRegistry,
       window,
       getBrowser,
     });
+
     decisionProvider = createDecisionProvider({
       eventRegistry,
     });
+
     decisionProvider.addPayload({
       id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
       scopeDetails: {
