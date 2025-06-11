@@ -11,104 +11,29 @@ governing permissions and limitations under the License.
 */
 
 import pluginJs from "@eslint/js";
-import importPlugin from "eslint-plugin-import";
 import vitest from "@vitest/eslint-plugin";
+import compatPlugin from "eslint-plugin-compat";
+import importPlugin from "eslint-plugin-import";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import react from "eslint-plugin-react";
-import compatPlugin from "eslint-plugin-compat";
-// eslint-disable-next-line import/no-unresolved
+// eslint-disable-next-line import/no-unresolved -- eslint parses this a file, but it's a depenedency
 import { defineConfig, globalIgnores } from "eslint/config";
 import { glob } from "glob";
 import globals from "globals";
 
 const allComponentPaths = glob.sync("src/components/*/");
 
-/**
- * @typedef {import("eslint").Linter} ESLintLinter
- * @type {import("eslint").Plu}
- */
-const airBnBConfig = {
-  rules: {
-    "prefer-const": [
-      "error",
-      {
-        destructuring: "any",
-        ignoreReadBeforeAssign: true,
-      },
-    ],
-    "valid-typeof": ["error", { requireStringLiterals: true }],
-    "no-console": "error",
-    "no-underscore-dangle": "error",
-    "func-names": "error",
-    "import/no-relative-packages": "error",
-    "no-bitwise": "error",
-    "default-param-last": "error",
-    eqeqeq: ["error", "smart"],
-    "dot-notation": "error",
-    "no-await-in-loop": "error",
-    "default-case": "error",
-    "prefer-object-spread": "error", // disallow certain syntax forms
-    // https://eslint.org/docs/rules/no-restricted-syntax
-    "no-restricted-syntax": [
-      "error",
-      {
-        selector: "ForInStatement",
-        message:
-          "for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array.",
-      },
-      {
-        selector: "LabeledStatement",
-        message:
-          "Labels are a form of GOTO; using them makes code confusing and hard to maintain and understand.",
-      },
-      {
-        selector: "WithStatement",
-        message:
-          "`with` is disallowed in strict mode because it makes code impossible to predict and optimize.",
-      },
-    ],
-    "max-classes-per-file": "error",
-    "class-methods-use-this": "error",
-    "import/extensions": [
-      "error",
-      "ignorePackages",
-      {
-        js: "never",
-        mjs: "never",
-        jsx: "never",
-      },
-    ],
-    "import/namespace": "off",
-    "import/named": "error",
-    "import/no-named-as-default": "off",
-    "import/no-named-as-default-member": "off",
-    "import/no-extraneous-dependencies": [
-      "error",
-      {
-        devDependencies: [
-          "test/**", // tape, common npm pattern
-          "tests/**", // also common npm pattern
-          "spec/**", // mocha, rspec-like pattern
-          "**/*{.,_}{test,spec}.{js,jsx}", // tests where the extension or filename suffix denotes that it is a test
-          "**/rollup.config.js", // rollup config
-          "**/.eslintrc.js", // eslint config
-        ],
-        optionalDependencies: false,
-      },
-    ],
-    "no-unused-vars": ["error", { ignoreRestSiblings: true }],
-  },
-};
-
 export default defineConfig([
   importPlugin.flatConfigs.recommended,
   pluginJs.configs.recommended,
   eslintPluginPrettierRecommended,
   compatPlugin.configs["flat/recommended"],
-  airBnBConfig,
   globalIgnores(["sandbox/build/", "sandbox/public/", "node_modules/"]),
   {
-    files: ["**/*.{js,cjs,mjs,jsx}"],
+    name: "alloy/shared",
+    languageOptions: {
+      ecmaVersion: "latest",
+    },
     settings: {
       "import/resolver": {
         node: {
@@ -116,26 +41,89 @@ export default defineConfig([
         },
       },
     },
-    languageOptions: {
-      parserOptions: {
-        babelOptions: {
-          presets: ["@babel/preset-env"],
-        },
-      },
-      ecmaVersion: 2021,
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-      },
+    linterOptions: {
+      reportUnusedDisableDirectives: "error",
     },
     rules: {
+      "prefer-const": [
+        "error",
+        {
+          destructuring: "any",
+          ignoreReadBeforeAssign: true,
+        },
+      ],
+      "valid-typeof": ["error", { requireStringLiterals: true }],
+      "no-console": "error",
+      "no-underscore-dangle": "error",
+      "func-names": "error",
+      "import/no-relative-packages": "error",
+      "no-bitwise": "error",
+      "default-param-last": "error",
+      eqeqeq: ["error", "smart"],
+      "dot-notation": "error",
+      "no-await-in-loop": "error",
+      "default-case": "error",
+      "prefer-object-spread": "error", // disallow certain syntax forms
+      // https://eslint.org/docs/rules/no-restricted-syntax
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "ForInStatement",
+          message:
+            "for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array.",
+        },
+        {
+          selector: "LabeledStatement",
+          message:
+            "Labels are a form of GOTO; using them makes code confusing and hard to maintain and understand.",
+        },
+        {
+          selector: "WithStatement",
+          message:
+            "`with` is disallowed in strict mode because it makes code impossible to predict and optimize.",
+        },
+      ],
+      "max-classes-per-file": "error",
+      "class-methods-use-this": "error",
+      "import/extensions": [
+        "error",
+        "ignorePackages",
+        {
+          js: "never",
+          mjs: "never",
+          jsx: "never",
+        },
+      ],
+      "import/namespace": "off",
+      "import/named": "error",
+      "import/no-named-as-default": "off",
+      "import/no-named-as-default-member": "off",
+      "no-unused-vars": ["error", { ignoreRestSiblings: true }],
       "prettier/prettier": "error",
       "func-style": "error",
       // Turning this off allows us to import devDependencies in our build tools.
       // We enable the rule in src/.eslintrc.js since that's the only place we
       // want to disallow importing extraneous dependencies.
-      "import/no-extraneous-dependencies": "off",
       "import/prefer-default-export": "off",
+    },
+  },
+  {
+    name: "alloy/src",
+    files: ["src/**/*.{cjs,js}"],
+    languageOptions: {
+      globals: {
+        turbine: "readonly",
+        ...globals.browser,
+      },
+    },
+    rules: {
+      "import/no-extraneous-dependencies": "error",
+      "import/extensions": [
+        "error",
+        {
+          js: "always",
+        },
+      ],
       "import/no-restricted-paths": [
         "error",
         {
@@ -168,55 +156,13 @@ export default defineConfig([
     },
   },
   {
-    files: ["src/**/*.{cjs,js}"],
-    languageOptions: {
-      globals: {
-        turbine: "readonly",
-      },
-    },
-    rules: {
-      "import/no-extraneous-dependencies": "error",
-      "import/extensions": [
-        "error",
-        {
-          js: "always",
-        },
-      ],
-    },
-  },
-  {
-    files: [
-      "test/{unit,integration}/**/*.{cjs,js}",
-      "scripts/specs/**/*.{cjs,js}",
-    ],
-    settings: {
-      "import/core-modules": ["vitest"],
-    },
-    plugins: {
-      vitest,
-    },
-    languageOptions: {
-      globals: {
-        ...globals.vitest,
-      },
-    },
-    rules: {
-      ...vitest.configs.recommended.rules,
-    },
-  },
-  {
-    files: ["test/**/*.{cjs,js}"],
-    rules: {
-      "import/extensions": [
-        "error",
-        {
-          js: "always",
-        },
-      ],
-    },
-  },
-  {
+    name: "alloy/scripts",
     files: ["scripts/**/*.{cjs,js}"],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
     rules: {
       "no-console": "off",
       "import/extensions": [
@@ -228,6 +174,44 @@ export default defineConfig([
     },
   },
   {
+    name: "alloy/tests",
+    files: ["test/**/*.{cjs,js}"],
+    rules: {
+      "import/extensions": [
+        "error",
+        {
+          js: "always",
+        },
+      ],
+    },
+  },
+  {
+    name: "alloy/tests/vitest",
+    files: [
+      "test/{unit,integration}/**/*.{cjs,js}",
+      "scripts/specs/**/*.{cjs,js}",
+    ],
+    settings: {
+      "import/core-modules": ["vitest"],
+    },
+    plugins: {
+      vitest,
+    },
+    extends: [vitest.configs.recommended],
+  },
+  {
+    name: "alloy/tests/functional",
+    files: ["test/functional/**/*.{cjs,js}"],
+    languageOptions: {
+      globals: {
+        test: "readonly",
+        fixture: "readonly",
+        ...globals.node,
+      },
+    },
+  },
+  {
+    name: "alloy/sandbox",
     files: ["sandbox/src/**/*.{js,jsx}"],
     settings: {
       react: {
@@ -243,13 +227,10 @@ export default defineConfig([
           presets: ["@babel/preset-react"],
         },
       },
-      ecmaVersion: 2021,
       globals: {
         ...globals.browser,
-        ...globals.node,
       },
     },
-
     plugins: {
       react,
     },
@@ -257,24 +238,27 @@ export default defineConfig([
       ...react.configs.recommended.rules,
     },
   },
-  {
-    files: ["test/functional/**/*.{cjs,js}"],
-    languageOptions: {
-      globals: {
-        test: "readonly",
-        fixture: "readonly",
-      },
-    },
-  },
   // Vite plugins are ESM-only and confuse eslint-plugin-import; disable the
   // affected `import/*` rules for the Vite config file only.
   {
-    files: ["sandbox/vite.config.mjs"],
+    name: "alloy/configs",
+    files: [
+      "sandbox/vite.config.mjs",
+      "rollup.config.js",
+      "eslint.config.js",
+      "vitest.config.js",
+    ],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
     rules: {
       "import/namespace": "off",
       "import/default": "off",
       "import/no-named-as-default": "off",
       "import/no-named-as-default-member": "off",
+      "import/no-extraneous-dependencies": "error",
     },
   },
 ]);
