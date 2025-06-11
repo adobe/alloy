@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { FlatCompat } from "@eslint/eslintrc";
 import pluginJs from "@eslint/js";
 import importPlugin from "eslint-plugin-import";
 import vitest from "@vitest/eslint-plugin";
@@ -21,96 +20,92 @@ import compatPlugin from "eslint-plugin-compat";
 import { defineConfig, globalIgnores } from "eslint/config";
 import { glob } from "glob";
 import globals from "globals";
-import path from "path";
-import { fileURLToPath } from "url";
 
 const allComponentPaths = glob.sync("src/components/*/");
-const filename = fileURLToPath(import.meta.url);
-const dirname = path.dirname(filename);
-
-const compat = new FlatCompat({
-  baseDirectory: dirname,
-});
 
 /**
  * @typedef {import("eslint").Linter} ESLintLinter
- * @type {Partial<ESLintLinter.Config<ESLintLinter.RulesRecord>>}
+ * @type {import("eslint").Plu}
  */
-const airbnbBase = {
-  "prefer-const": [
-    "error",
-    {
-      destructuring: "any",
-      ignoreReadBeforeAssign: true,
-    },
-  ],
-  "valid-typeof": ["error", { requireStringLiterals: true }],
-  "no-console": "error",
-  "no-underscore-dangle": "error",
-  "func-names": "error",
-  "import/no-relative-packages": "error",
-  "no-bitwise": "error",
-  "default-param-last": "error",
-  eqeqeq: ["error", "smart"],
-  "dot-notation": "error",
-  "no-await-in-loop": "error",
-  "default-case": "error",
-  "prefer-object-spread": "error", // disallow certain syntax forms
-  // https://eslint.org/docs/rules/no-restricted-syntax
-  "no-restricted-syntax": [
-    "error",
-    {
-      selector: "ForInStatement",
-      message:
-        "for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array.",
-    },
-    {
-      selector: "LabeledStatement",
-      message:
-        "Labels are a form of GOTO; using them makes code confusing and hard to maintain and understand.",
-    },
-    {
-      selector: "WithStatement",
-      message:
-        "`with` is disallowed in strict mode because it makes code impossible to predict and optimize.",
-    },
-  ],
-  "max-classes-per-file": "error",
-  "class-methods-use-this": "error",
-  "import/extensions": [
-    "error",
-    "ignorePackages",
-    {
-      js: "never",
-      mjs: "never",
-      jsx: "never",
-    },
-  ],
-  "import/namespace": "off",
-  "import/named": "error",
-  "import/no-named-as-default": "off",
-  "import/no-named-as-default-member": "off",
-  "import/no-extraneous-dependencies": [
-    "error",
-    {
-      devDependencies: [
-        "test/**", // tape, common npm pattern
-        "tests/**", // also common npm pattern
-        "spec/**", // mocha, rspec-like pattern
-        "**/*{.,_}{test,spec}.{js,jsx}", // tests where the extension or filename suffix denotes that it is a test
-        "**/rollup.config.js", // rollup config
-        "**/.eslintrc.js", // eslint config
-      ],
-      optionalDependencies: false,
-    },
-  ],
-  "no-unused-vars": ["error", { ignoreRestSiblings: true }],
+const airBnBConfig = {
+  rules: {
+    "prefer-const": [
+      "error",
+      {
+        destructuring: "any",
+        ignoreReadBeforeAssign: true,
+      },
+    ],
+    "valid-typeof": ["error", { requireStringLiterals: true }],
+    "no-console": "error",
+    "no-underscore-dangle": "error",
+    "func-names": "error",
+    "import/no-relative-packages": "error",
+    "no-bitwise": "error",
+    "default-param-last": "error",
+    eqeqeq: ["error", "smart"],
+    "dot-notation": "error",
+    "no-await-in-loop": "error",
+    "default-case": "error",
+    "prefer-object-spread": "error", // disallow certain syntax forms
+    // https://eslint.org/docs/rules/no-restricted-syntax
+    "no-restricted-syntax": [
+      "error",
+      {
+        selector: "ForInStatement",
+        message:
+          "for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array.",
+      },
+      {
+        selector: "LabeledStatement",
+        message:
+          "Labels are a form of GOTO; using them makes code confusing and hard to maintain and understand.",
+      },
+      {
+        selector: "WithStatement",
+        message:
+          "`with` is disallowed in strict mode because it makes code impossible to predict and optimize.",
+      },
+    ],
+    "max-classes-per-file": "error",
+    "class-methods-use-this": "error",
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        js: "never",
+        mjs: "never",
+        jsx: "never",
+      },
+    ],
+    "import/namespace": "off",
+    "import/named": "error",
+    "import/no-named-as-default": "off",
+    "import/no-named-as-default-member": "off",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        devDependencies: [
+          "test/**", // tape, common npm pattern
+          "tests/**", // also common npm pattern
+          "spec/**", // mocha, rspec-like pattern
+          "**/*{.,_}{test,spec}.{js,jsx}", // tests where the extension or filename suffix denotes that it is a test
+          "**/rollup.config.js", // rollup config
+          "**/.eslintrc.js", // eslint config
+        ],
+        optionalDependencies: false,
+      },
+    ],
+    "no-unused-vars": ["error", { ignoreRestSiblings: true }],
+  },
 };
 
 export default defineConfig([
-  ...compat.extends("plugin:testcafe/recommended"),
-  ...compat.plugins("testcafe"),
   importPlugin.flatConfigs.recommended,
+  pluginJs.configs.recommended,
+  eslintPluginPrettierRecommended,
+  compatPlugin.configs["flat/recommended"],
+  airBnBConfig,
   globalIgnores(["sandbox/build/", "sandbox/public/", "node_modules/"]),
   {
     files: ["**/*.{js,cjs,mjs,jsx}"],
@@ -134,7 +129,6 @@ export default defineConfig([
       },
     },
     rules: {
-      ...airbnbBase,
       "prettier/prettier": "error",
       "func-style": "error",
       // Turning this off allows us to import devDependencies in our build tools.
@@ -233,7 +227,6 @@ export default defineConfig([
       ],
     },
   },
-
   {
     files: ["sandbox/src/**/*.{js,jsx}"],
     settings: {
@@ -264,10 +257,15 @@ export default defineConfig([
       ...react.configs.recommended.rules,
     },
   },
-
-  pluginJs.configs.recommended,
-  eslintPluginPrettierRecommended,
-  compatPlugin.configs["flat/recommended"],
+  {
+    files: ["test/functional/**/*.{cjs,js}"],
+    languageOptions: {
+      globals: {
+        test: "readonly",
+        fixture: "readonly",
+      },
+    },
+  },
   // Vite plugins are ESM-only and confuse eslint-plugin-import; disable the
   // affected `import/*` rules for the Vite config file only.
   {
