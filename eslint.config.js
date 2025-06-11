@@ -37,7 +37,6 @@ const compat = new FlatCompat({
  * @type {Partial<ESLintLinter.Config<ESLintLinter.RulesRecord>>}
  */
 const airbnbBase = {
-  "no-plusplus": "error",
   "prefer-const": [
     "error",
     {
