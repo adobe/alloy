@@ -38,7 +38,7 @@ const config = compose(orgMainConfigMain, debugEnabled);
 const convertHeadersToSimpleJson = (res) => {
   const headersPromise = new Promise((resolve) => {
     const result = {};
-    // eslint-disable-next-line no-restricted-syntax
+
     for (const pair of res.headers.entries()) {
       result[pair[0]] = pair[1];
     }
