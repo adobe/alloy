@@ -9,7 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-export default (lifecycle) => {
+
+import extractPayloadsFromEventHistoryOperations from "./utils/extractPayloadsFromEventHistoryOperations.js";
+
+export default ({ lifecycle, eventRegistry }) => {
   return ({
     renderDecisions = false,
     propositions = [],
@@ -17,6 +20,12 @@ export default (lifecycle) => {
     personalization,
   }) => {
     if (lifecycle) {
+      // Some propositions may contains event history operations.
+      // We extract them and add the events to the event registry.
+      const eventPayloads =
+        extractPayloadsFromEventHistoryOperations(propositions);
+      eventRegistry.addEventPayloads(eventPayloads);
+
       lifecycle.onDecision({
         renderDecisions,
         propositions,

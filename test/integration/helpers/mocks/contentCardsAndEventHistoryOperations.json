@@ -1,0 +1,161 @@
+{
+  "requestId": "adec2606-7d57-4140-b7ed-10b8e0f2426e-68aba8bbbd09411a",
+  "handle": [
+    {
+      "payload": [
+        {
+          "id": "15238239451035185950194595268323149515",
+          "namespace": {
+            "code": "ECID"
+          }
+        },
+        {
+          "id": "15829608607948879650171466727349563989",
+          "namespace": {
+            "code": "CORE"
+          }
+        }
+      ],
+      "type": "identity:result"
+    },
+    {
+      "payload": [
+        {
+          "id": "b8adcd1c-6334-4bd4-802c-c4a410f461e1",
+          "scope": "web://testing.alloy.adobe.com",
+          "scopeDetails": {
+            "decisionProvider": "AJO",
+            "correlationID": "14d33a9f-aba4-413b-abcb-fd42fde918d8-0",
+            "characteristics": {
+              "eventToken": "eyJtZXNzYWdlRXhlY3V0aW9uIjp7Im1lc3NhZ2VFeGVjdXRpb25JRCI6IlVFOkluYm91bmQiLCJtZXNzYWdlSUQiOiJiOGJiMjEyNy1lYzUwLTQzZWQtOGQ3Yi1kNTIwZjM1NzA5MTkiLCJtZXNzYWdlUHVibGljYXRpb25JRCI6IjE0ZDMzYTlmLWFiYTQtNDEzYi1hYmNiLWZkNDJmZGU5MThkOCIsIm1lc3NhZ2VUeXBlIjoibWFya2V0aW5nIiwiY2FtcGFpZ25JRCI6IjRlNDA3Mzg1LWI3NTktNDQ3Ni1iODViLWQxNzlhY2EzMWQ3YyIsImNhbXBhaWduVmVyc2lvbklEIjoiZDE5NmM5NWQtOGZiOC00MmIyLTgxYjktNGEyZTkyODlkY2E5IiwiY2FtcGFpZ25BY3Rpb25JRCI6IjJlMWMwMmM5LTVlOGMtNDlhMi05YzdmLTQ1OTJhYWM2Nzc0YyJ9LCJtZXNzYWdlUHJvZmlsZSI6eyJtZXNzYWdlUHJvZmlsZUlEIjoiM2ZmYjNiNmYtNjc1MC00NTNhLTk4Y2QtZmE0OGMzMGFiODIwIiwiY2hhbm5lbCI6eyJfaWQiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbHMvbWVzc2FnZUZlZWQiLCJfdHlwZSI6Imh0dHBzOi8vbnMuYWRvYmUuY29tL3hkbS9jaGFubmVsLXR5cGVzL21lc3NhZ2VGZWVkIn19fQ=="
+            },
+            "rank": 1,
+            "activity": {
+              "id": "4e407385-b759-4476-b85b-d179aca31d7c#2e1c02c9-5e8c-49a2-9c7f-4592aac6774c",
+              "priority": 0,
+              "matchedSurfaces": ["web://someurl.com/#test"]
+            }
+          },
+          "items": [
+            {
+              "id": "5e408baf-ec48-4bab-b6e0-08fcbb9f665d",
+              "schema": "https://ns.adobe.com/personalization/ruleset-item",
+              "data": {
+                "version": 1,
+                "rules": [
+                  {
+                    "condition": {
+                      "definition": {
+                        "key": "~source",
+                        "matcher": "eq",
+                        "values": ["{{value}}"]
+                      },
+                      "type": "matcher"
+                    },
+                    "consequences": [
+                      {
+                        "type": "schema",
+                        "detail": {
+                          "id": "e86d78bd-4772-4efe-82f1-c56ed938b437",
+                          "data": {
+                            "expiryDate": 2019715200,
+                            "meta": {
+                              "readState": false,
+                              "dismissState": false,
+                              "surface": "mobileapp://com.adobe.aep.TestApp/homepage",
+                              "adobe": {
+                                "template": "SmallImage"
+                              }
+                            },
+                            "content": {
+                              "body": {
+                                "content": "Fix typos and add text images to your PDFs. Try for 7 days"
+                              },
+                              "title": {
+                                "content": "Easily Edit PDFs-"
+                              },
+                              "buttons": [
+                                {
+                                  "interactId": "trynow",
+                                  "id": "66618b43-e6f4-4f83-b9fb-0fff0f81dc52",
+                                  "actionUrl": "https://adobe.com/acrobat",
+                                  "text": {
+                                    "content": "Try Now"
+                                  }
+                                }
+                              ],
+                              "image": {
+                                "darkUrl": "https://i.ibb.co/6RvHBPx/T-dark.jpg",
+                                "alt": "",
+                                "url": "https://i.ibb.co/WyyxYtp/T-light.jpg"
+                              },
+                              "dismissBtn": {
+                                "style": "simple"
+                              },
+                              "actionUrl": "https://adobe.com"
+                            },
+                            "contentType": "application/json",
+                            "publishedDate": 1724791670
+                          },
+                          "schema": "https://ns.adobe.com/personalization/message/content-card"
+                        },
+                        "id": "e86d78bd-4772-4efe-82f1-c56ed938b437"
+                      },
+                      {
+                        "id": "48181acd-22b3-edae-bc8a-447868a7df7c",
+                        "type": "schema",
+                        "detail": {
+                          "id": "48181acd-22b3-edae-bc8a-447868a7df7c",
+                          "schema": "https://ns.adobe.com/personalization/eventHistoryOperation",
+                          "data": {
+                            "operation": "insert",
+                            "content": {
+                              "iam.eventType": "qualify",
+                              "iam.id": "a43122c4-bf19-499f-b507-087a028d1769#fa035681-15ce-488e-859e-200bb2ca90ac"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "type": "personalization:decisions",
+      "eventIndex": 0
+    },
+    {
+      "payload": [
+        {
+          "scope": "Target",
+          "hint": "35",
+          "ttlSeconds": 1800
+        },
+        {
+          "scope": "AAM",
+          "hint": "9",
+          "ttlSeconds": 1800
+        },
+        {
+          "scope": "EdgeNetwork",
+          "hint": "or2",
+          "ttlSeconds": 1800
+        }
+      ],
+      "type": "locationHint:result"
+    },
+    {
+      "payload": [
+        {
+          "key": "kndctr_97D1F3F459CE0AD80A495CBE_AdobeOrg_cluster",
+          "value": "or2",
+          "maxAge": 1800
+        }
+      ],
+      "type": "state:store"
+    }
+  ]
+}

@@ -25,6 +25,10 @@ const createWorker = () => {
     return originalUse.apply(worker, handlers);
   };
 
+  worker.forceUse = (...handlers) => {
+    return originalUse.apply(worker, handlers);
+  };
+
   // Add a response transformer to record all requests/responses
   worker.events.on("request:start", ({ request, requestId }) => {
     networkRecorder.captureRequest({ request, requestId });
