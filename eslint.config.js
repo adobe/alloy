@@ -151,14 +151,12 @@ export default defineConfig([
     },
     rules: {
       ...airbnbBase,
-      "no-param-reassign": "off",
       "prettier/prettier": "error",
       "func-style": "error",
       // Turning this off allows us to import devDependencies in our build tools.
       // We enable the rule in src/.eslintrc.js since that's the only place we
       // want to disallow importing extraneous dependencies.
       "import/no-extraneous-dependencies": "off",
-      "prefer-destructuring": "off",
       "import/prefer-default-export": "off",
       "import/no-restricted-paths": [
         "error",
