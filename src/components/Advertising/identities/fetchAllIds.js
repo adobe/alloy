@@ -10,52 +10,113 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getAdvertisingIdentity from "../utils/getAdvertisingIdentity.js";
+import { getSurferId } from "../utils/getAdvertisingIdentity.js";
+import { getRampId } from "./fetchRampId.js";
+import { getID5Id } from "./fetchID5Id.js";
 
-let inProgressPromise = null;
-let advertisingIds = {};
+// Removed inProgressPromiseMap to ensure each call to fetchAllIds is independent
+// for concurrency safety when sendAdConversion is called multiple times.
 
-const fetchAllIds = () => {
-  if (inProgressPromise) {
-    return inProgressPromise;
-  }
+const fetchAllIds = (sessionManager, options = {}) => {
+  // Ensure options has a logger, default to console if not provided
+  const { id5PartnerId, rampIdScriptPath, logger = console } = options;
 
-  inProgressPromise = new Promise((resolve) => {
-    const promises = [
-      // todo: evaluate if we need to cache or not
-      getAdvertisingIdentity().then((id) => ({ key: "surfer_id", value: id })),
-      // fetchLiverampId().then(id => ({ key: 'liveramp_id', value: id })),
-      // fetchId5().then(id => ({ key: 'id5_id', value: id })),
-    ];
+  logger.info(
+    "fetchAllIds: Starting new fetch for all ID promises (invocation-specific).",
+  );
 
-    Promise.allSettled(promises)
-      .then((results) => {
-        const finalIds = {};
+  // This IIFE creates and returns the promise that resolves to the map of ID promises
+  // Ensure this logic runs every time fetchAllIds is called.
+  return (async () => {
+    const idPromisesMap = {};
 
-        results.forEach((result) => {
-          if (result.status === "fulfilled" && result.value?.value) {
-            finalIds[result.value.key] = result.value.value;
-          } else if (result.status === "rejected") {
-            console.warn(
-              `Failed to fetch ${result.reason?.key || "an ID"}:`,
-              result.reason,
+    // Fetch Surfer ID
+    logger.info("fetchAllIds: Initiating Surfer ID fetch.");
+    idPromisesMap.surfer_id = getSurferId(sessionManager)
+      .then((id) => {
+        if (id) {
+          logger.info("fetchAllIds: Surfer ID fetched successfully.", {
+            surfer_id: id,
+          });
+        } else {
+          logger.warn("fetchAllIds: Surfer ID fetch returned no value.");
+        }
+        return id;
+      })
+      .catch((err) => {
+        logger.warn("fetchAllIds: Failed to fetch surfer_id:", err);
+        return null; // Ensure promise resolves, even with null
+      });
+
+    // Fetch ID5 ID (if partnerId is provided)
+    if (id5PartnerId) {
+      logger.info("fetchAllIds: Initiating ID5 ID fetch.", { id5PartnerId });
+      idPromisesMap.id5_id = getID5Id(id5PartnerId, sessionManager)
+        .then((id) => {
+          if (id) {
+            logger.info("fetchAllIds: ID5 ID fetched successfully.", {
+              id5_id: id,
+            });
+          } else {
+            logger.warn(
+              "fetchAllIds: ID5 ID fetch returned no value for partner.",
+              { id5PartnerId },
             );
           }
+          return id;
+        })
+        .catch((err) => {
+          logger.warn(
+            `fetchAllIds: Failed to fetch id5_id for partner ${id5PartnerId}:`,
+            err,
+          );
+          return null;
         });
+    } else {
+      logger.info(
+        "fetchAllIds: No id5PartnerId provided, skipping ID5 ID fetch.",
+      );
+    }
 
-        advertisingIds = { ...advertisingIds, ...finalIds };
-        console.log(
-          "Advertising IDs fetched (partial or full):",
-          advertisingIds,
-        );
-        resolve({ ...advertisingIds });
-      })
-      .finally(() => {
-        inProgressPromise = null;
+    // Fetch RampID (if script path is provided)
+    if (rampIdScriptPath) {
+      logger.info("fetchAllIds: Initiating Ramp ID fetch.", {
+        rampIdScriptPath,
       });
-  });
+      idPromisesMap.ramp_id = getRampId(rampIdScriptPath, sessionManager)
+        .then((id) => {
+          if (id) {
+            logger.info("fetchAllIds: Ramp ID fetched successfully.", {
+              ramp_id: id,
+            });
+          } else {
+            logger.warn(
+              "fetchAllIds: Ramp ID fetch returned no value from script.",
+              { rampIdScriptPath },
+            );
+          }
+          return id;
+        })
+        .catch((err) => {
+          logger.warn(
+            `fetchAllIds: Failed to fetch ramp_id from ${rampIdScriptPath}:`,
+            err,
+          );
+          return null;
+        });
+    } else {
+      logger.info(
+        "fetchAllIds: No rampIdScriptPath provided, skipping Ramp ID fetch.",
+      );
+    }
 
-  return inProgressPromise;
+    logger.info(
+      "fetchAllIds: Returning map of new ID promises for this invocation.",
+    );
+    return idPromisesMap;
+  })();
+  // The caching mechanism (inProgressPromiseMap and its .finally() block) has been removed.
+  // Each call to fetchAllIds now directly returns the promise from the IIFE.
 };
 
 export default fetchAllIds;
