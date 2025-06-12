@@ -9,6 +9,17 @@
     "build": "npm run build -w @adobe/alloy.core",
     "lint": "npm run lint -w @adobe/alloy.core",
     "test": "npm run test -w @adobe/alloy.core",
-    "test:functional:build:prod": "npm run build -w @adobe/alloy.core"
+    "test:functional:build:prod": "npm run build -w @adobe/alloy.core",
+    "add-license": "npm run -w @adobe/alloy.core add-license",
+    "test:unit": "npm run -w @adobe/alloy.core test:unit",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,cjs,mjs,jsx,ts,tsx}": [
+      "eslint --cache --fix"
+    ],
+    "*.{html,js,cjs,mjs,jsx,ts,tsx,json,md}": [
+      "prettier --write"
+    ]
   }
 }
