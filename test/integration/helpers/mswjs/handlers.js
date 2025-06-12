@@ -113,3 +113,46 @@ export const inAppMessageHandler = http.post(
     throw new Error("Handler not configured properly");
   },
 );
+
+export const contentCardsAndEventHistoryOperationsOnSendEvent = http.post(
+  /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
+
+  async (req) => {
+    const url = new URL(req.request.url);
+    const configId = url.searchParams.get("configId");
+
+    if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
+      let response = await readFile(
+        `${server.config.root}/test/integration/helpers/mocks/contentCardsAndEventHistoryOperations.json`,
+      );
+      response = response.replace(
+        "{{value}}",
+        "com.adobe.eventSource.requestContent",
+      );
+
+      return HttpResponse.text(response);
+    }
+
+    throw new Error("Handler not configured properly");
+  },
+);
+
+export const contentCardsAndEventHistoryOperations = http.post(
+  /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
+
+  async (req) => {
+    const url = new URL(req.request.url);
+    const configId = url.searchParams.get("configId");
+
+    if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
+      let response = await readFile(
+        `${server.config.root}/test/integration/helpers/mocks/contentCardsAndEventHistoryOperations.json`,
+      );
+      response = response.replace("{{value}}", "someOtherValue");
+
+      return HttpResponse.text(response);
+    }
+
+    throw new Error("Handler not configured properly");
+  },
+);

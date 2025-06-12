@@ -69,7 +69,10 @@ const createRulesEngine = ({
         subscribeRulesetItems.refresh(propositions);
       },
       onComponentsRegistered(tools) {
-        applyResponse = createApplyResponse(tools.lifecycle);
+        applyResponse = createApplyResponse({
+          lifecycle: tools.lifecycle,
+          eventRegistry,
+        });
         if (personalizationStorageEnabled) {
           consent
             .awaitConsent()
@@ -98,7 +101,6 @@ const createRulesEngine = ({
             applyResponse,
             event,
             personalization,
-            eventRegistry,
             decisionContext: contextProvider.getContext({
               [CONTEXT_KEY.TYPE]: CONTEXT_EVENT_TYPE.EDGE,
               [CONTEXT_KEY.SOURCE]: CONTEXT_EVENT_SOURCE.REQUEST,
