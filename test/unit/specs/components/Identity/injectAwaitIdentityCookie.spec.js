@@ -84,4 +84,17 @@ describe("Identity::injectAwaitIdentityCookie", () => {
     expect(logger.warn).not.toHaveBeenCalled();
     return expect(promise).rejects.toThrowError(/Identity cookie not found/i);
   });
+
+  // eslint-disable-next-line vitest/expect-expect
+  it("handles promise rejection", () => {
+    identityCookieExists = false;
+    awaitIdentityCookie({
+      onResponse,
+      onRequestFailure,
+    });
+    runOnRequestFailureCallbacks();
+    // vitest will complain if the rejected promise is not handled
+    // so there are no assertions here, we are just making sure the
+    // promise doesn't get to the unhandled promise hook
+  });
 });
