@@ -47,7 +47,7 @@ export default (context, selector) => {
     // if part is empty, it means there's a chained :eq:shadow selector
     if (part === "" && parent.shadowRoot) {
       parent = parent.shadowRoot;
-      // eslint-disable-next-line no-continue
+
       continue;
     }
     const prefixed = transformPrefix(parent, part);

@@ -18,7 +18,7 @@ import ApplicationError from "../helpers/applicationError.js";
 const createStringBackedWritableStream = () => {
   let result = "";
   class WritableStream extends Writable {
-    // eslint-disable-next-line no-underscore-dangle, class-methods-use-this
+    // eslint-disable-next-line class-methods-use-this
     _write(chunk, encoding, next) {
       result += chunk.toString();
       next();

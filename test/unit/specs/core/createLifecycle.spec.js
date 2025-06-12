@@ -63,7 +63,7 @@ describe("createLifecycle", () => {
     const callbacksByHookName = {
       onComponentsRegistered: [
         vi.fn().mockImplementation(() => {
-          lifecycle.onBeforeEvent();
+          lifecycle?.onBeforeEvent();
         }),
         vi.fn(),
       ],
