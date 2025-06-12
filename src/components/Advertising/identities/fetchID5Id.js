@@ -114,7 +114,7 @@ const storeID5InCookie = function storeID5InCookie(sessionManager, id5IdValue) {
   }
   return false;
 };
-
+// todo: is external caching required or to be handled by id5 library itself
 // Expose function to get the current id5Id
 const getID5Id = function getID5Id(
   partnerId,

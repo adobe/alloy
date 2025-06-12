@@ -160,6 +160,7 @@ const storeRampIdInCookie = function storeRampIdInCookie(
   }
   return false;
 };
+// todo: is external caching required or to be handled by rampid library itself
 
 // Expose function to get the current rampId
 const getRampId = function getRampId(
