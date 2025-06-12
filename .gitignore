@@ -1,9 +1,9 @@
 node_modules
 dist
 coverage
-sandbox/public/alloy.js
-sandbox/public/alloy.js.map
-sandbox/build
+packages/browser-sandbox/public/alloy.js
+packages/browser-sandbox/public/alloy.js.map
+packages/browser-sandbox/build
 .sonarlint
 .env
 .eslintcache

@@ -1,8 +1,9 @@
 {
-  "name": "my-app",
+  "name": "@adobe/alloy.browser-sandbox",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@adobe/alloy.core": "workspace:*",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-helmet": "^6.1.0",
