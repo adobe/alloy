@@ -110,12 +110,6 @@ export default defineConfig([
   {
     name: "alloy/src",
     files: ["src/**/*.{cjs,js}"],
-    languageOptions: {
-      globals: {
-        turbine: "readonly",
-        ...globals.browser,
-      },
-    },
     rules: {
       "import/no-extraneous-dependencies": "error",
       "import/extensions": [
