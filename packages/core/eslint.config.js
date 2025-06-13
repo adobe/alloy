@@ -28,7 +28,11 @@ export default defineConfig([
   pluginJs.configs.recommended,
   eslintPluginPrettierRecommended,
   compatPlugin.configs["flat/recommended"],
-  globalIgnores(["sandbox/build/", "sandbox/public/", "node_modules/"]),
+  globalIgnores([
+    "packages/browser-sandbox/build/",
+    "packages/browser-sandbox/public/",
+    "node_modules/",
+  ]),
   {
     name: "alloy/shared",
     languageOptions: {
@@ -205,8 +209,8 @@ export default defineConfig([
     },
   },
   {
-    name: "alloy/sandbox",
-    files: ["sandbox/src/**/*.{js,jsx}"],
+    name: "alloy/browser-sandbox",
+    files: ["packages/browser-sandbox/src/**/*.{js,jsx}"],
     settings: {
       react: {
         version: "17.0.2",
@@ -237,7 +241,7 @@ export default defineConfig([
   {
     name: "alloy/configs",
     files: [
-      "sandbox/vite.config.mjs",
+      "packages/browser-sandbox/vite.config.mjs",
       "rollup.config.js",
       "eslint.config.js",
       "vitest.config.js",

@@ -23,11 +23,14 @@ jobs:
           cache: "npm"
 
       - name: Install packages
-        run: npm ci
+        run: npm ci --workspaces --include-workspace-root
 
-      - name: Build sandbox
+      - name: Install browser-sandbox dependencies
+        run: npm ci --prefix packages/browser-sandbox
+
+      - name: Build browser-sandbox
         run: |
-          cd sandbox
+          cd packages/browser-sandbox
           npm run build
 
       - name: Upload artifact for deployment job
@@ -38,7 +41,7 @@ jobs:
           action: "upload"
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "/sandbox/build" # App source code path
+          app_location: "/packages/browser-sandbox/build" # App source code path
           api_location: "" # Api source code path - optional
-          output_location: "/sandbox/build" # Built app content directory - optional
+          output_location: "/packages/browser-sandbox/build" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
