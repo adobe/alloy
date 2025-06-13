@@ -6,12 +6,13 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build -w @adobe/alloy.core",
-    "lint": "npm run lint -w @adobe/alloy.core",
-    "test": "npm run test -w @adobe/alloy.core",
-    "test:functional:build:prod": "npm run build -w @adobe/alloy.core",
-    "add-license": "npm run -w @adobe/alloy.core add-license",
-    "test:unit": "npm run -w @adobe/alloy.core test:unit",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "format": "npm run format --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:functional:build:prod": "npm run build --workspaces --if-present",
+    "add-license": "npm run --workspaces --if-present add-license",
+    "test:unit": "npm run --workspaces --if-present test:unit",
     "prepare": "husky"
   },
   "lint-staged": {
