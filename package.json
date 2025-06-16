@@ -78,6 +78,7 @@
     "@babel/plugin-transform-template-literals": "^7.26.8",
     "@babel/preset-env": "^7.26.9",
     "@inquirer/prompts": "^7.4.1",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-node-resolve": "^16.0.1",

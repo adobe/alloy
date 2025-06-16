@@ -16,8 +16,9 @@ import createConversationServiceRequest from "./createConversationServiceRequest
 import {buildPageSurface} from "../../utils/surfaceUtils.js";
 import createGetPageLocation from "../../utils/dom/createGetPageLocation.js";
 import uuid from "../../utils/uuid.js";
-import {noop, sanitizeOrgIdForCookieName} from "../../utils/index.js";
+import {cookieJar, noop, sanitizeOrgIdForCookieName} from "../../utils/index.js";
 import COOKIE_NAME_PREFIX from "../../constants/cookieNamePrefix.js";
+import {fetchEventSource} from "@microsoft/fetch-event-source";
 const BC_SESSION_COOKIE_NAME = "bc_session_id";
 const getPageSurface = (getPageLocation) => {
   return buildPageSurface(getPageLocation);
@@ -27,10 +28,148 @@ const getConciergeSessionCookieName = (config) => {
   const sanitizedOrgId = sanitizeOrgIdForCookieName(config.orgId);
   return `${COOKIE_NAME_PREFIX}_${sanitizedOrgId}_${BC_SESSION_COOKIE_NAME}`;
 };
+const createConciergeSessionCookieName = (name, value, maxAge, sameSite) => {
+  const options = {maxAge};
+  if (sameSite !== undefined) {
+    options.sameSite = sameSite;
+  }
+  try{
+    cookieJar.set(
+      name,
+      value,
+      options
+    );
+  }catch(e){
+    console.log(e);
+  }
 
+};
 const getConciergeSessionCookie = ({loggingCookieJar, config}) => {
   const cookieName = getConciergeSessionCookieName(config);
   return loggingCookieJar.get(cookieName);
+}
+
+const streamRequest = (message, surfaces, sessionId, configId, streamResponseCallback) => {
+
+  const payload = {
+    "events": [
+      {
+        "query": {
+          "conversation": {
+            "surfaces": surfaces,
+            "message": message
+          }
+        }
+      }
+    ]
+  };
+
+  const url = "https://bc-conversation-service-stage.corp.ethos12-stage-va7.ethos.adobe.net/brand-concierge/conversations?configId="+configId+"&sessionId=" +sessionId;
+
+  const createEventSource = (callback) => {
+    fetchEventSource(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain",
+        "Accept": "text/event-stream",
+      },
+      body: JSON.stringify(payload),
+
+      onmessage: (event) => {
+        if (event.data !== undefined) {
+          const data = JSON.parse(event.data);
+
+          callback(data);
+        } else {
+          console.warn("No data received");
+        }
+      },
+
+      onopen: () => {
+        console.log("Connection opened");
+      },
+
+      onclose: () => {
+        console.log("Connection closed");
+      },
+
+      onerror: (error) => {
+        console.error("SSE Error:", error);
+      },
+    }).then(r => {
+      console.log("SSE connection established:", r);
+    });
+  };
+
+  const extractResponse = (data) => {
+    const { handle = [] } = data;
+
+    if (handle.length === 0) {
+      return null;
+    }
+
+    const { payload = [] } = handle[0];
+    if (handle[1]) {
+      const statePayload = handle[1].payload;
+      console.log("statepayload", statePayload);
+      const { key, value, maxAge } = statePayload[0];
+      createConciergeSessionCookieName(key, value, maxAge);
+    }
+
+    if (payload.length === 0) {
+      return null;
+    }
+
+    const { response = {}, state = "" } = payload[0];
+
+    if (Object.keys(response).length === 0) {
+      return null;
+    }
+
+    const { message = "", promptSuggestions = [], multimodalElements = [] } = response;
+
+    if (message === "") {
+      return null;
+    }
+
+    return { message, multimodalElements, promptSuggestions, state };
+  };
+/*
+
+  const bufferedMessages = [];
+  const bufferedPromptSuggestions = [];
+  const messagesDiv = document.getElementById("messages-content");
+  const promptSuggestionsDiv = document.getElementById("prompt-suggestions-content");
+*/
+
+  const processMessage = (data) => {
+    const response = extractResponse(data);
+
+    if (!response) {
+      return;
+    }
+    streamResponseCallback(response);
+
+   // const { message, promptSuggestions, state } = response;
+
+    /*if (state !== "completed") {
+      bufferedMessages.push(message);
+      bufferedPromptSuggestions.push.apply(bufferedPromptSuggestions, promptSuggestions);
+
+      const messagesHtml = marked.parse(bufferedMessages.join("\n"));
+      messagesDiv.innerHTML = messagesHtml;
+
+      const promptSuggestionsHtml = marked.parse(bufferedPromptSuggestions.join("\n"));
+      promptSuggestionsDiv.innerHTML = promptSuggestionsHtml;
+    } else {
+      messagesDiv.innerHTML = marked.parse(message);
+      promptSuggestionsDiv.innerHTML = marked.parse(promptSuggestions.join("\n"));
+    }*/
+  }
+    createEventSource((data) => {
+      processMessage(data);
+    });
+  return Promise.resolve({});
 }
 
 const createBrandConcierge = ({loggingCookieJar, logger, eventManager, consent, instanceName, sendEdgeNetworkRequest, config}) => {
@@ -41,7 +180,7 @@ const createBrandConcierge = ({loggingCookieJar, logger, eventManager, consent, 
 
   const sendConversationServiceEvent = (options) => {
     const sessionId = getConciergeSessionCookie({loggingCookieJar, config}) || uuid();
-    const { message } = options;
+    const { message, streamResponseCallback } = options;
     const payload = createDataCollectionRequestPayload();
     const request = createConversationServiceRequest({
       payload, sessionId
@@ -55,6 +194,11 @@ const createBrandConcierge = ({loggingCookieJar, logger, eventManager, consent, 
 
     event.finalize();
     payload.addEvent(event);
+
+    if(streamResponseCallback) {
+      streamRequest(message,[pageSurface], sessionId, config.datastreamId, streamResponseCallback);
+      return;
+    }
 
       return sendEdgeNetworkRequest({ request }).then((response) => {
         return response;

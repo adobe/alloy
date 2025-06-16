@@ -205,6 +205,7 @@ document.addEventListener("DOMContentLoaded", async function (event) {
           },
           getPlayerDetails: () => {
             const getPlayhead = getVideoPlayedPlayhead(videoPlayer);
+
             return {
               playhead: getPlayhead,
             };
@@ -225,6 +226,7 @@ document.addEventListener("DOMContentLoaded", async function (event) {
         .catch((error) => {
           console.log("error", error);
         });
+
       playerSettings.videoLoaded = true;
     }
 
