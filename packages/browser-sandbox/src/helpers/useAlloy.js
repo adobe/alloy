@@ -15,7 +15,7 @@ governing permissions and limitations under the License.
 import { useEffect } from "react";
 
 // eslint-disable-next-line import/no-relative-packages
-import initializeAlloy from "../../../src/baseCode/index";
+import initializeAlloy from "../../../core/src/baseCode/index"
 import getUrlParameter from "./getUrlParameter";
 import includeScript from "./includeScript";
 
