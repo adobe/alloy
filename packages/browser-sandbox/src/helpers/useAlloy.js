@@ -13,11 +13,25 @@ governing permissions and limitations under the License.
 /* eslint-disable no-underscore-dangle */
 
 import { useEffect } from "react";
-
-// eslint-disable-next-line import/no-relative-packages
-import initializeAlloy from "../../../core/src/baseCode/index"
 import getUrlParameter from "./getUrlParameter";
 import includeScript from "./includeScript";
+
+// copied from @adobe/alloy.core because only the standalone baseCode is exported,
+// not the function itself.
+const initializeAlloy = (window, instanceNames) => {
+  instanceNames.forEach(function (instanceName) {
+    if (!window[instanceName]) {
+      (window.__alloyNS = window.__alloyNS || []).push(instanceName);
+      window[instanceName] = function () {
+        var userProvidedArgs = arguments;
+        return new Promise(function (resolve, reject) {
+          window[instanceName].q.push([resolve, reject, userProvidedArgs]);
+        });
+      };
+      window[instanceName].q = [];
+    }
+  });
+};
 
 const setup = ({
   instanceNames,
@@ -45,11 +59,15 @@ const setup = ({
       });
       // Alloy only looks for window.Visitor when it initially loads, so only load Alloy after Visitor loaded.
       // eslint-disable-next-line import/no-relative-packages
-      return import("../../../src/standalone");
+      return import(
+        "@adobe/alloy.core/standalone"
+      );
     });
   } else {
     // eslint-disable-next-line import/no-relative-packages
-    import("../../../src/standalone");
+    import(
+      "@adobe/alloy.core/standalone"
+    );
   }
 
   if (onAlloySetupCompleted) {
