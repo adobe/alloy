@@ -28,7 +28,11 @@ export default defineConfig([
   pluginJs.configs.recommended,
   eslintPluginPrettierRecommended,
   compatPlugin.configs["flat/recommended"],
-  globalIgnores(["sandbox/build/", "sandbox/public/", "node_modules/"]),
+  globalIgnores([
+    "packages/browser-sandbox/build/",
+    "packages/browser-sandbox/public/",
+    "node_modules/",
+  ]),
   {
     name: "alloy/shared",
     languageOptions: {
@@ -108,8 +112,8 @@ export default defineConfig([
     },
   },
   {
-    name: "alloy/src",
-    files: ["src/**/*.{cjs,js}"],
+    name: "alloy.core/src",
+    files: ["packages/core/src/**/*.{cjs,js}"],
     rules: {
       "import/no-extraneous-dependencies": "error",
       "import/extensions": [
@@ -151,7 +155,7 @@ export default defineConfig([
   },
   {
     name: "alloy/scripts",
-    files: ["scripts/**/*.{cjs,js}"],
+    files: ["**/scripts/**/*.{cjs,js}"],
     languageOptions: {
       globals: {
         ...globals.node,
@@ -169,7 +173,7 @@ export default defineConfig([
   },
   {
     name: "alloy/tests",
-    files: ["test/**/*.{cjs,js}"],
+    files: ["**/test/**/*.{cjs,js}"],
     rules: {
       "import/extensions": [
         "error",
@@ -180,10 +184,10 @@ export default defineConfig([
     },
   },
   {
-    name: "alloy/tests/vitest",
+    name: "alloy.core/tests/vitest",
     files: [
-      "test/{unit,integration}/**/*.{cjs,js}",
-      "scripts/specs/**/*.{cjs,js}",
+      "packages/core/test/{unit,integration}/**/*.{cjs,js}",
+      "packages/core/scripts/specs/**/*.{cjs,js}",
     ],
     settings: {
       "import/core-modules": ["vitest"],
@@ -194,8 +198,8 @@ export default defineConfig([
     extends: [vitest.configs.recommended],
   },
   {
-    name: "alloy/tests/functional",
-    files: ["test/functional/**/*.{cjs,js}"],
+    name: "alloy.core/tests/functional",
+    files: ["packages/core/test/functional/**/*.{cjs,js}"],
     languageOptions: {
       globals: {
         test: "readonly",
@@ -205,8 +209,8 @@ export default defineConfig([
     },
   },
   {
-    name: "alloy/sandbox",
-    files: ["sandbox/src/**/*.{js,jsx}"],
+    name: "alloy/browser-sandbox",
+    files: ["packages/browser-sandbox/src/**/*.{js,jsx}"],
     settings: {
       react: {
         version: "17.0.2",
@@ -237,10 +241,10 @@ export default defineConfig([
   {
     name: "alloy/configs",
     files: [
-      "sandbox/vite.config.mjs",
-      "rollup.config.js",
-      "eslint.config.js",
-      "vitest.config.js",
+      "packages/browser-sandbox/vite.config.mjs",
+      "**/rollup.config.js",
+      "**/eslint.config.js",
+      "**/vitest.config.js",
     ],
     languageOptions: {
       globals: {

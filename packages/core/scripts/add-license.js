@@ -13,12 +13,13 @@ governing permissions and limitations under the License.
 */
 import fs from "fs";
 import stagedGitFiles from "staged-git-files";
+import Handlebars from "handlebars";
 import { getDirname, getProjectRoot, safePathJoin } from "./helpers/path.js";
 
 const dirname = getDirname(import.meta.url);
 
 const PROJECT_ROOT = getProjectRoot();
-
+const SOURCE_TEMPLATE = "source-header.handlebars";
 
 const GIT_DELETED = "Deleted";
 const SOURCE_FILE_EXTENSIONS = ["js", "ts", "cjs", "mjs"];
@@ -68,16 +69,22 @@ const getAllSourceFiles = async () => {
     const filePath = safePathJoin(dir, file);
     const stats = fs.statSync(filePath);
 
-    if (IGNORE_PATTERNS.some((pattern) => filePath.match(pattern))) {
-      return false;
+    for (let i = 0; i < IGNORED.length; i += 1) {
+      if (filePath.includes(IGNORED[i])) {
+        return false;
+      }
     }
 
     if (stats.isDirectory()) {
       return true;
     }
 
-    if (stats.isFile() && SOURCE_FILE_EXTENSIONS.some((extension) => file.endsWith(extension))) {
-      return true;
+    if (stats.isFile()) {
+      for (let i = 0; i < SOURCE_FILE_EXTENSIONS.length; i += 1) {
+        if (file.endsWith(SOURCE_FILE_EXTENSIONS[i])) {
+          return true;
+        }
+      }
     }
 
     return false;
@@ -87,32 +94,29 @@ const getAllSourceFiles = async () => {
 const run = async () => {
   const stagedOnly = typeof process.env.STAGED_ONLY !== "undefined";
 
-  const template = `/*${fs.readFileSync(
-    safePathJoin(dirname, "..", "LICENSE_BANNER"),
+  const template = fs.readFileSync(
+    safePathJoin(dirname, SOURCE_TEMPLATE),
     "utf-8",
-  )}*/`;
-  console.log("✅ Retreived license banner.")
+  );
+
+  const renderTemplate = Handlebars.compile(template);
+
+  const templateText = renderTemplate({
+    year: new Date().getFullYear(),
+  });
 
   const sourceFiles = stagedOnly
     ? await getStagedGitFiles()
     : await getAllSourceFiles();
 
-  console.log(`✅ Retreived ${sourceFiles.length} source files.`)
-
   sourceFiles
     .filter((file) => IGNORE_PATTERNS.every((pattern) => !file.match(pattern)))
     .forEach((file) => {
       const contents = fs.readFileSync(safePathJoin(file), "utf-8");
-
-      if (template.slice(0, 2) !== contents.slice(0, 2)) {
-        console.log(`✏️ [${file}] Added license banner.`)
-        fs.writeFileSync(safePathJoin(file), `${template}${contents}`);
-      } else {
-        console.log(`✅ [${file}] License banner already exists.`)
+      if (templateText.slice(0, 2) !== contents.slice(0, 2)) {
+        fs.writeFileSync(safePathJoin(file), `${templateText}${contents}`);
       }
     });
-
-  console.log("✅ Added license banner to source files.")
 };
 
 run();
