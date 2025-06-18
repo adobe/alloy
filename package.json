@@ -1,6 +1,7 @@
 {
   "name": "@adobe/alloy",
   "private": true,
+  "type": "module",
   "version": "2.27.0",
   "workspaces": [
     "packages/*"
@@ -11,9 +12,9 @@
     "format": "npm run format --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "test:functional:build:prod": "npm run build --workspaces --if-present",
-    "add-license": "npm run --workspaces --if-present add-license",
     "test:unit": "npm run --workspaces --if-present test:unit",
-    "prepare": "husky"
+    "prepare": "husky",
+    "add-license": "./scripts/add-license.js"
   },
   "lint-staged": {
     "*.{js,cjs,mjs,jsx,ts,tsx}": [
@@ -22,5 +23,19 @@
     "*.{html,js,cjs,mjs,jsx,ts,tsx,json,md}": [
       "prettier --write"
     ]
+  },
+  "devDependencies": {
+    "@vitest/eslint-plugin": "^1.2.7",
+    "eslint": "^9.29.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-compat": "^6.0.2",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prettier": "^5.5.0",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^16.2.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
+    "prettier": "^3.5.3",
+    "staged-git-files": "^1.3.0"
   }
 }

@@ -55,24 +55,8 @@
     "build": "npm run clean && rollup -c --environment BUNDLESIZE && npm run types && echo \"Base Code:\" && cat dist/baseCode.min.js",
     "build:watch": "npm run clean && rollup -c --watch",
     "build:custom": "node scripts/alloyBuilder.js",
-    "prepare": "husky",
     "prepack": "npm run clean && npm run build",
-    "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
-    "add-license": "./scripts/add-license.js"
-  },
-  "lint-staged": {
-    "./*.{cjs,mjs,js,jsx}": [
-      "eslint --cache --fix"
-    ],
-    "./{src,test,scripts}/**/*.{cjs,mjs,js,jsx}": [
-      "eslint --cache --fix"
-    ],
-    "./*.{html,js,cjs,mjs,jsx}": [
-      "prettier --write"
-    ],
-    "./{sandbox,src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}": [
-      "prettier --write"
-    ]
+    "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js"
   },
   "repository": {
     "type": "git",
@@ -115,26 +99,15 @@
     "chalk": "^5.4.1",
     "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
-    "eslint": "^9.28.0",
-    "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-compat": "^6.0.2",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-prettier": "^5.4.1",
-    "eslint-plugin-react": "^7.37.5",
     "glob": "^11.0.2",
-    "globals": "^16.2.0",
     "handlebars": "^4.7.8",
     "happy-dom": "^17.5.9",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.1.0",
     "msw": "^2.8.7",
     "playwright": "^1.52.0",
-    "prettier": "^3.5.3",
     "read-cache": "^1.0.0",
     "recursive-readdir": "^2.2.3",
     "rimraf": "^6.0.1",
     "semver": "^7.7.2",
-    "staged-git-files": "^1.3.0",
     "testcafe": "^3.7.2",
     "testcafe-browser-provider-saucelabs": "^3.0.0",
     "testcafe-reporter-junit": "^3.0.2",
