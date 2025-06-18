@@ -10,13 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AdvertisingTestCSP from "./components/AdvertisingTestCSP";
 
 export default function AdvertisingTest() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [configInfo, setConfigInfo] = useState(null);
+  const [configLoading, setConfigLoading] = useState(false);
 
   // Options for sendAdConversion
   const [options, setOptions] = useState({
@@ -26,6 +28,23 @@ export default function AdvertisingTest() {
     placementId: "test-placement",
     channelName: "test-channel",
   });
+
+  // State for tracking advertising identities
+  const [identities, setIdentities] = useState(null);
+  const [identitiesLoading, setIdentitiesLoading] = useState(false);
+
+  // Configure Alloy once when the component mounts
+  useEffect(() => {
+    // Only configure if not already configured
+    window.alloy("configure", {
+      orgId: "5BFE274A5F6980A50A495C08@AdobeOrg", // Default sandbox org ID
+      edgeConfigId: "f46e981f-fd03-4bdd-a9d9-73ce4447f870", // Sandbox edge config
+      debugEnabled: true,
+      componentsBeforeInitialization: ["Advertising"],
+    });
+
+    console.log("Alloy configured during component mount");
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -52,6 +71,41 @@ export default function AdvertisingTest() {
       });
   };
 
+  const fetchLibraryInfo = () => {
+    setConfigLoading(true);
+    setConfigInfo(null);
+
+    window
+      .alloy("getLibraryInfo")
+      .then((info) => {
+        console.log("Library info:", info);
+        setConfigInfo(JSON.stringify(info, null, 2));
+        setConfigLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error getting library info:", error);
+        setError(`Error fetching library info: ${error.message}`);
+        setConfigLoading(false);
+      });
+  };
+
+  const handleGetAdvertisingIdentity = () => {
+    setIdentitiesLoading(true);
+    setIdentities(null);
+    setError(null);
+
+    window
+      .alloy("getAdvertisingIdentity")
+      .then((result) => {
+        setIdentities(result);
+        setIdentitiesLoading(false);
+      })
+      .catch((error) => {
+        setError(error.message || "Error retrieving advertising identities");
+        setIdentitiesLoading(false);
+      });
+  };
+
   return (
     <div>
       <AdvertisingTestCSP />
@@ -61,6 +115,33 @@ export default function AdvertisingTest() {
         pixel.everesttech.net and everestjs.net for testing the Advertising
         component.
       </p>
+
+      <div style={{ marginBottom: "20px" }}>
+        <h3>Configuration Information</h3>
+        <button
+          onClick={fetchLibraryInfo}
+          disabled={configLoading}
+          style={{ marginBottom: "10px" }}
+        >
+          {configLoading ? "Loading..." : "Fetch Library Info"}
+        </button>
+
+        {configInfo && (
+          <div>
+            <h4>SDK Configuration:</h4>
+            <pre
+              style={{
+                background: "#eef4ff",
+                padding: "10px",
+                maxHeight: "200px",
+                overflow: "auto",
+              }}
+            >
+              {configInfo}
+            </pre>
+          </div>
+        )}
+      </div>
 
       <div style={{ marginBottom: "20px" }}>
         <h3>sendAdConversion Options</h3>
@@ -124,6 +205,50 @@ export default function AdvertisingTest() {
       <button onClick={handleSendAdConversion} disabled={isLoading}>
         {isLoading ? "Sending..." : "Send Ad Conversion"}
       </button>
+
+      <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+        <h3>Get Advertising Identities</h3>
+        <button
+          onClick={handleGetAdvertisingIdentity}
+          disabled={identitiesLoading}
+        >
+          {identitiesLoading ? "Retrieving..." : "Get Advertising Identities"}
+        </button>
+
+        {identities && (
+          <div style={{ marginTop: "10px" }}>
+            <h4>Advertising Identities:</h4>
+            <div
+              style={{
+                background: "#f4fff4",
+                padding: "10px",
+                maxHeight: "200px",
+                overflow: "auto",
+              }}
+            >
+              {identities.id5_id && (
+                <div>
+                  <strong>ID5 ID:</strong> {identities.id5_id}
+                </div>
+              )}
+              {identities.ramp_id && (
+                <div>
+                  <strong>Ramp ID:</strong> {identities.ramp_id}
+                </div>
+              )}
+              {identities.surfer_id && (
+                <div>
+                  <strong>Surfer ID:</strong> {identities.surfer_id}
+                </div>
+              )}
+              <div style={{ marginTop: "10px" }}>
+                <strong>Raw data:</strong>
+                <pre>{JSON.stringify(identities, null, 2)}</pre>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       {result && (
         <div style={{ marginTop: "20px" }}>

@@ -1,6 +1,17 @@
+/*
+Copyright 2025 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
 import { getSurferId } from "./getAdvertisingIdentity.js";
 import { getID5Id } from "../identities/fetchID5Id.js";
-import { getRampId } from "../identities/fetchRampId.js";
+// import { getRampId } from "../identities/fetchRampId.js";
 import fetchAllIds from "../identities/fetchAllIds.js";
 
 export const resolvedIdsAndDispatchConversionEvent = async ({
@@ -23,15 +34,17 @@ export const resolvedIdsAndDispatchConversionEvent = async ({
       eventType: "advertising.conversion",
       data: {
         conversionType: "vt",
-        dspAdvertiserID: componentConfig.dspAdvertiserID || "1111111",
-        amoAdvertiserID: componentConfig.amoAdvertiserID || "2222222",
         ...(evCcData?.click_time && { clickTime: evCcData.click_time }),
       },
     };
 
-    const surferId = getSurferId(sessionManager, false);
-    const id5Id = getID5Id(componentConfig.id5PartnerId, sessionManager, false);
-    const rampId = getRampId(sessionManager, false);
+    const surferId = await getSurferId(sessionManager, false);
+    const id5Id = await getID5Id(
+      componentConfig.id5PartnerId,
+      sessionManager,
+      false,
+    );
+    // const rampId = await getRampId(sessionManager, false);
 
     const availableIds = {};
     if (surferId) {
@@ -42,10 +55,10 @@ export const resolvedIdsAndDispatchConversionEvent = async ({
       xdm.data.id5_id = id5Id;
       availableIds.id5Id = id5Id;
     }
-    if (rampId) {
-      xdm.data.rampIDEnv = rampId;
-      availableIds.rampId = rampId;
-    }
+    // if (rampId) {
+    //   xdm.data.rampIDEnv = rampId;
+    //   availableIds.rampId = rampId;
+    // }
 
     const event = eventManager.createEvent();
     event.setUserXdm(xdm);
@@ -64,7 +77,7 @@ export const resolvedIdsAndDispatchConversionEvent = async ({
     return adConversionHandler.trackAdConversion({ event });
   };
 
-  const idPromisesMap = await fetchAllIds(sessionManager, invocationConfig);
+  const idPromisesMap = fetchAllIds(sessionManager, invocationConfig);
   logger.info("ID resolution promises started:", Object.keys(idPromisesMap));
 
   const results = [];

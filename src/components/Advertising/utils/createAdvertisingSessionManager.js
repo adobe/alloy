@@ -10,9 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { getNamespacedCookieName } from "../../../utils/index.js";
+import { getNamespacedCookieName, cookieJar } from "../../../utils/index.js";
+import createLoggingCookieJar from "../../../utils/createLoggingCookieJar.js";
 
-export default ({ orgId, cookieJar, logger }) => {
+const ADVERTISING_COOKIE_KEY = "advertising";
+
+export default ({ orgId, logger }) => {
+  const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });
+
   const getCookieName = (key, useNamespace = true) =>
     useNamespace ? getNamespacedCookieName(orgId, key) : key;
 
@@ -37,7 +42,7 @@ export default ({ orgId, cookieJar, logger }) => {
 
   const readCookie = (key, useNamespace = true) => {
     const name = getCookieName(key, useNamespace);
-    const value = cookieJar.get(name);
+    const value = loggingCookieJar.get(name);
     return value ? safeJsonParse(value) : null;
   };
 
@@ -45,7 +50,7 @@ export default ({ orgId, cookieJar, logger }) => {
     try {
       const name = getCookieName(key, useNamespace);
       const storedValue = safeJsonStringify(value);
-      cookieJar.set(name, storedValue, options);
+      loggingCookieJar.set(name, storedValue, options);
       return true;
     } catch (error) {
       logger.error(`Error writing cookie: ${key}`, error);
@@ -53,40 +58,46 @@ export default ({ orgId, cookieJar, logger }) => {
     }
   };
 
-  const readAdvertisingIds = () => readCookie("advertising_ids") || {};
-
   const setValue = (key, value, options = {}) => {
-    const existing = readAdvertisingIds();
+    const existing = readCookie(ADVERTISING_COOKIE_KEY) || {};
     const updated = {
       ...existing,
       [key]: value,
       lastUpdated: Date.now(),
     };
 
-    return writeCookie("advertising_ids", updated, {
+    return writeCookie(ADVERTISING_COOKIE_KEY, updated, {
       expires: getDefaultExpiration(1440),
       ...options,
     });
   };
 
   const getValue = (key, maxAgeMinutes = 1440) => {
-    const data = readAdvertisingIds();
+    const data = readCookie(ADVERTISING_COOKIE_KEY) || {};
     const age = (Date.now() - (data?.lastUpdated || 0)) / 60000;
     return age > maxAgeMinutes ? undefined : data[key];
   };
 
-  const readClickData = () => readCookie("ev_cc", false) || {};
+  const readClickData = () => {
+    const data = readCookie(ADVERTISING_COOKIE_KEY) || {};
+    return data.ev_cc || {};
+  };
 
-  const writeClickData = (data, options = {}) =>
-    writeCookie(
-      "ev_cc",
-      { ...data, lastUpdated: Date.now() },
-      { expires: getDefaultExpiration(30), ...options },
-      false,
-    );
+  const writeClickData = (data, options = {}) => {
+    const existing = readCookie(ADVERTISING_COOKIE_KEY) || {};
+    const updated = {
+      ...existing,
+      ev_cc: { ...data, lastUpdated: Date.now() },
+      lastUpdated: Date.now(),
+    };
+
+    return writeCookie(ADVERTISING_COOKIE_KEY, updated, {
+      expires: getDefaultExpiration(1440),
+      ...options,
+    });
+  };
 
   return {
-    readAdvertisingIds,
     getValue,
     setValue,
     readClickData,

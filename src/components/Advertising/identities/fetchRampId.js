@@ -123,7 +123,13 @@ const initiateRampIDCall = function initiateRampIDCall(rampIdScriptPath) {
       const script = getScriptElement(rampIdScriptPath);
 
       if (script.addEventListener) {
-        script.addEventListener("load", waitForRampId, false);
+        script.addEventListener("load", function () {
+          if (window.ats && typeof window.ats.retrieveEnvelope === "function") {
+            window.ats.retrieveEnvelope().then(waitForRampId).catch(reject);
+          } else {
+            reject(new Error("ATS library loaded but window.ats is not ready"));
+          }
+        });
       } else {
         script.attachEvent("onload", waitForRampId);
       }

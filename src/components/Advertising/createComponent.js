@@ -12,10 +12,8 @@ governing permissions and limitations under the License.
 
 import createAdConversionHandler from "./utils/createAdConversionHandler.js";
 import createCookieSessionManager from "./utils/createAdvertisingSessionManager.js";
-import createLoggingCookieJar from "../../utils/createLoggingCookieJar.js";
 import handleOnBeforeSendEvent from "./utils/createOnBeforeSendEventHandler.js";
 import handleClickThrough from "./utils/createClickThroughHandler.js";
-import { cookieJar } from "../../utils/index.js";
 import { getUrlParams, shouldThrottle } from "./utils/helpers.js";
 import { resolvedIdsAndDispatchConversionEvent } from "./utils/resolvedIdsAndDispatchConversionEvent.js";
 
@@ -33,9 +31,7 @@ export default ({
   // Create session manager
   const sessionManager = createCookieSessionManager({
     orgId: config.orgId || "temp_ims_org_id",
-    cookieJar: createLoggingCookieJar({ logger, cookieJar }),
     logger,
-    namespace: "advertising",
   });
 
   // Create the specialized ad conversion handler
@@ -57,8 +53,7 @@ export default ({
     const { skwcid, efid } = getUrlParams();
     const isClickThru = !!(skwcid || efid);
     const isDisplay = componentConfig.isDisplay;
-    const idsData = sessionManager.readAdvertisingIds();
-    const lastConversionTime = idsData.lastConversionTime;
+    const lastConversionTime = sessionManager.getValue("lastConversionTime");
     // todo : evaluate if this will create problem in case of multiple alloy instances , one alloy instance fired adconversion then other alloy instance fires this and willl get throttled as lastconversiontime is not tracked at alloy instance level
     if (isDisplay && shouldThrottle(lastConversionTime, THROTTLE_MINUTES)) {
       const elapsed = (Date.now() - lastConversionTime) / (60 * 1000);

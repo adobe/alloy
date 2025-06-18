@@ -14,109 +14,99 @@ import { getSurferId } from "../utils/getAdvertisingIdentity.js";
 import { getRampId } from "./fetchRampId.js";
 import { getID5Id } from "./fetchID5Id.js";
 
-// Removed inProgressPromiseMap to ensure each call to fetchAllIds is independent
-// for concurrency safety when sendAdConversion is called multiple times.
-
+// Made synchronous to return map of id promises directly
 const fetchAllIds = (sessionManager, options = {}) => {
   // Ensure options has a logger, default to console if not provided
   const { id5PartnerId, rampIdScriptPath, logger = console } = options;
 
   logger.info(
-    "fetchAllIds: Starting new fetch for all ID promises (invocation-specific).",
+    "fetchAllIds: Starting new fetch for all ID promises (synchronous).",
   );
 
-  // This IIFE creates and returns the promise that resolves to the map of ID promises
-  // Ensure this logic runs every time fetchAllIds is called.
-  return (async () => {
-    const idPromisesMap = {};
+  const idPromisesMap = {};
 
-    // Fetch Surfer ID
-    logger.info("fetchAllIds: Initiating Surfer ID fetch.");
-    idPromisesMap.surfer_id = getSurferId(sessionManager)
+  // Fetch Surfer ID
+  logger.info("fetchAllIds: Initiating Surfer ID fetch.");
+  idPromisesMap.surfer_id = getSurferId(sessionManager)
+    .then((id) => {
+      if (id) {
+        logger.info("fetchAllIds: Surfer ID fetched successfully.", {
+          surfer_id: id,
+        });
+      } else {
+        logger.warn("fetchAllIds: Surfer ID fetch returned no value.");
+      }
+      return id;
+    })
+    .catch((err) => {
+      logger.warn("fetchAllIds: Failed to fetch surfer_id:", err);
+      return null; // Ensure promise resolves, even with null
+    });
+
+  // Fetch ID5 ID (if partnerId is provided)
+  if (id5PartnerId) {
+    logger.info("fetchAllIds: Initiating ID5 ID fetch.", { id5PartnerId });
+    idPromisesMap.id5_id = getID5Id(id5PartnerId, sessionManager)
       .then((id) => {
         if (id) {
-          logger.info("fetchAllIds: Surfer ID fetched successfully.", {
-            surfer_id: id,
+          logger.info("fetchAllIds: ID5 ID fetched successfully.", {
+            id5_id: id,
           });
         } else {
-          logger.warn("fetchAllIds: Surfer ID fetch returned no value.");
+          logger.warn(
+            "fetchAllIds: ID5 ID fetch returned no value for partner.",
+            { id5PartnerId },
+          );
         }
         return id;
       })
       .catch((err) => {
-        logger.warn("fetchAllIds: Failed to fetch surfer_id:", err);
-        return null; // Ensure promise resolves, even with null
+        logger.warn(
+          `fetchAllIds: Failed to fetch id5_id for partner ${id5PartnerId}:`,
+          err,
+        );
+        return null;
       });
-
-    // Fetch ID5 ID (if partnerId is provided)
-    if (id5PartnerId) {
-      logger.info("fetchAllIds: Initiating ID5 ID fetch.", { id5PartnerId });
-      idPromisesMap.id5_id = getID5Id(id5PartnerId, sessionManager)
-        .then((id) => {
-          if (id) {
-            logger.info("fetchAllIds: ID5 ID fetched successfully.", {
-              id5_id: id,
-            });
-          } else {
-            logger.warn(
-              "fetchAllIds: ID5 ID fetch returned no value for partner.",
-              { id5PartnerId },
-            );
-          }
-          return id;
-        })
-        .catch((err) => {
-          logger.warn(
-            `fetchAllIds: Failed to fetch id5_id for partner ${id5PartnerId}:`,
-            err,
-          );
-          return null;
-        });
-    } else {
-      logger.info(
-        "fetchAllIds: No id5PartnerId provided, skipping ID5 ID fetch.",
-      );
-    }
-
-    // Fetch RampID (if script path is provided)
-    if (rampIdScriptPath) {
-      logger.info("fetchAllIds: Initiating Ramp ID fetch.", {
-        rampIdScriptPath,
-      });
-      idPromisesMap.ramp_id = getRampId(rampIdScriptPath, sessionManager)
-        .then((id) => {
-          if (id) {
-            logger.info("fetchAllIds: Ramp ID fetched successfully.", {
-              ramp_id: id,
-            });
-          } else {
-            logger.warn(
-              "fetchAllIds: Ramp ID fetch returned no value from script.",
-              { rampIdScriptPath },
-            );
-          }
-          return id;
-        })
-        .catch((err) => {
-          logger.warn(
-            `fetchAllIds: Failed to fetch ramp_id from ${rampIdScriptPath}:`,
-            err,
-          );
-          return null;
-        });
-    } else {
-      logger.info(
-        "fetchAllIds: No rampIdScriptPath provided, skipping Ramp ID fetch.",
-      );
-    }
-
+  } else {
     logger.info(
-      "fetchAllIds: Returning map of new ID promises for this invocation.",
+      "fetchAllIds: No id5PartnerId provided, skipping ID5 ID fetch.",
     );
-    return idPromisesMap;
-  })();
-  // The caching mechanism (inProgressPromiseMap and its .finally() block) has been removed.
-  // Each call to fetchAllIds now directly returns the promise from the IIFE.
+  }
+
+  // Fetch RampID (if script path is provided)
+  if (rampIdScriptPath) {
+    logger.info("fetchAllIds: Initiating Ramp ID fetch.", {
+      rampIdScriptPath,
+    });
+    idPromisesMap.ramp_id = getRampId(rampIdScriptPath, sessionManager)
+      .then((id) => {
+        if (id) {
+          logger.info("fetchAllIds: Ramp ID fetched successfully.", {
+            ramp_id: id,
+          });
+        } else {
+          logger.warn(
+            "fetchAllIds: Ramp ID fetch returned no value from script.",
+            { rampIdScriptPath },
+          );
+        }
+        return id;
+      })
+      .catch((err) => {
+        logger.warn(
+          `fetchAllIds: Failed to fetch ramp_id from ${rampIdScriptPath}:`,
+          err,
+        );
+        return null;
+      });
+  } else {
+    logger.info(
+      "fetchAllIds: No rampIdScriptPath provided, skipping Ramp ID fetch.",
+    );
+  }
+
+  logger.info("fetchAllIds: Returning map of ID promises synchronously.");
+  return idPromisesMap;
 };
 
 export default fetchAllIds;
