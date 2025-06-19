@@ -12,14 +12,61 @@ governing permissions and limitations under the License.
 let rampIdEnv;
 let rampIdCallInitiated;
 let inProgressPromise = null; // Store the in-progress promise
+
+// Add parallel script loading state
+let scriptLoadingInitiated = false;
+
 const getScriptElement = function getScriptElement(url) {
   const scriptTag = document.createElement("script");
   scriptTag.language = "Javascript";
   scriptTag.type = "text/javascript";
   scriptTag.src = url;
+  scriptTag.async = true; // Make it truly async
   return scriptTag;
 };
+
+// Parallel script loader - fire and forget
+const loadScriptInParallel = function loadScriptInParallel(scriptPath) {
+  // Only load once
+  if (scriptLoadingInitiated || typeof window.ats !== "undefined") {
+    return;
+  }
+
+  // Check if script already exists in DOM
+  if (document.querySelector(`script[src="${scriptPath}"]`)) {
+    return;
+  }
+
+  scriptLoadingInitiated = true;
+
+  const script = getScriptElement(scriptPath);
+
+  // Silent loading - no error handling needed since existing logic handles retries
+  script.onerror = function scriptErrorHandler() {
+    scriptLoadingInitiated = false; // Allow retry on error
+  };
+
+  // Append to DOM
+  try {
+    if (document.body) {
+      document.body.appendChild(script);
+    } else if (document.head) {
+      document.head.appendChild(script);
+    } else {
+      // DOM not ready - wait for it
+      document.addEventListener("DOMContentLoaded", function domReadyHandler() {
+        (document.body || document.head).appendChild(script);
+      });
+    }
+  } catch {
+    scriptLoadingInitiated = false; // Allow retry on DOM error
+  }
+};
+
 const initiateRampIDCall = function initiateRampIDCall(rampIdScriptPath) {
+  // Start parallel script loading immediately (fire and forget)
+  loadScriptInParallel(rampIdScriptPath);
+
   // If there's already a fetch in progress, return that promise
   if (inProgressPromise) {
     return inProgressPromise;
@@ -71,10 +118,10 @@ const initiateRampIDCall = function initiateRampIDCall(rampIdScriptPath) {
             waitForRampId(tmpRampIdObj);
           } else {
             // If we've exhausted retries, reject the promise
+            inProgressPromise = null;
             reject(
               new Error("Failed to retrieve RampID after maximum retries"),
             );
-            inProgressPromise = null; // Clear stored promise on failure
           }
         }, 500 * timerMultiplier);
 
@@ -118,32 +165,7 @@ const initiateRampIDCall = function initiateRampIDCall(rampIdScriptPath) {
           });
       }
     } else {
-      // Load the rampId script if not already loaded
-
-      const script = getScriptElement(rampIdScriptPath);
-
-      if (script.addEventListener) {
-        script.addEventListener("load", function () {
-          if (window.ats && typeof window.ats.retrieveEnvelope === "function") {
-            window.ats.retrieveEnvelope().then(waitForRampId).catch(reject);
-          } else {
-            reject(new Error("ATS library loaded but window.ats is not ready"));
-          }
-        });
-      } else {
-        script.attachEvent("onload", waitForRampId);
-      }
-
-      script.onerror = function scriptErrorHandler() {
-        reject(new Error("Failed to load RampId script"));
-        inProgressPromise = null; // Clear stored promise on error
-      };
-
-      if (document.body !== undefined) {
-        document.body.appendChild(script);
-      } else {
-        document.head.appendChild(script);
-      }
+      waitForRampId();
     }
   });
 
@@ -195,12 +217,17 @@ const getRampId = function getRampId(
   }
   if (resolveRampIdIfNotAvailable) {
     // If not in memory or cookie, initialize and store in cookie
-    return initiateRampIDCall(rampIdScriptPath).then((rampId) => {
-      if (sessionManager) {
-        storeRampIdInCookie(sessionManager, rampId);
-      }
-      return rampId;
-    });
+    return initiateRampIDCall(rampIdScriptPath)
+      .then((rampId) => {
+        if (sessionManager) {
+          storeRampIdInCookie(sessionManager, rampId);
+        }
+        return rampId;
+      })
+      .catch(() => {
+        // RampID retrieval failed, graceful degradation
+        return null;
+      });
   }
   return Promise.resolve(null);
 };

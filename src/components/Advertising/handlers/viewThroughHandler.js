@@ -9,19 +9,18 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { getSurferId } from "./getAdvertisingIdentity.js";
-import { getID5Id } from "../identities/fetchID5Id.js";
-// import { getRampId } from "../identities/fetchRampId.js";
-import fetchAllIds from "../identities/fetchAllIds.js";
+import { getSurferId } from "../identities/collectSurferId.js";
+import { getID5Id } from "../identities/collectID5Id.js";
+import { getRampId } from "../identities/collectRampId.js";
+import collectAlldentities from "../identities/collectAllIdentities.js";
 
-export const resolvedIdsAndDispatchConversionEvent = async ({
+export default async function handleViewThrough({
   eventManager,
   sessionManager,
   logger,
   componentConfig,
   adConversionHandler,
-  isDisplay,
-}) => {
+}) {
   const invocationConfig = {
     id5PartnerId: componentConfig.id5PartnerId,
     rampIdScriptPath: componentConfig.liverampScriptPath,
@@ -44,7 +43,7 @@ export const resolvedIdsAndDispatchConversionEvent = async ({
       sessionManager,
       false,
     );
-    // const rampId = await getRampId(sessionManager, false);
+    const rampId = await getRampId(sessionManager, false);
 
     const availableIds = {};
     if (surferId) {
@@ -55,20 +54,16 @@ export const resolvedIdsAndDispatchConversionEvent = async ({
       xdm.data.id5_id = id5Id;
       availableIds.id5Id = id5Id;
     }
-    // if (rampId) {
-    //   xdm.data.rampIDEnv = rampId;
-    //   availableIds.rampId = rampId;
-    // }
+    if (rampId) {
+      xdm.data.rampIDEnv = rampId;
+      availableIds.rampId = rampId;
+    }
 
     const event = eventManager.createEvent();
     event.setUserXdm(xdm);
 
-    if (isDisplay) {
-      sessionManager.setValue("lastConversionTime", Date.now());
-      logger.info(
-        "lastConversionTime updated for display view-through operation.",
-      );
-    }
+    sessionManager.setValue("lastConversionTime", Date.now());
+    logger.info("lastConversionTime updated.");
 
     logger.info(
       `Ad conversion event triggered (${triggerIdType}). IDs:`,
@@ -77,7 +72,7 @@ export const resolvedIdsAndDispatchConversionEvent = async ({
     return adConversionHandler.trackAdConversion({ event });
   };
 
-  const idPromisesMap = fetchAllIds(sessionManager, invocationConfig);
+  const idPromisesMap = collectAlldentities(sessionManager, invocationConfig);
   logger.info("ID resolution promises started:", Object.keys(idPromisesMap));
 
   const results = [];
@@ -96,4 +91,4 @@ export const resolvedIdsAndDispatchConversionEvent = async ({
   });
 
   return results;
-};
+}

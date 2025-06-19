@@ -28,7 +28,11 @@ export default function handleOnBeforeSendEvent({
     // Check if surfer_id has been appended to any AEP event already
     if (!state.surferIdAppendedToAepEvent) {
       // Check if surfer_id exists in the consolidated advertising IDs cookie
-      const surferIdFromCookie = sessionManager.getValue("surfer_id");
+      const fourDayCookieMaxAge = 4 * 24 * 60; // if surfer_id was set before 4 days, it will not be appended to the AEP event
+      const surferIdFromCookie = sessionManager.getValue(
+        "surfer_id",
+        fourDayCookieMaxAge,
+      );
       if (surferIdFromCookie) {
         logger.debug("Appending surfer_id to AEP event from cookie");
 

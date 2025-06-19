@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createAdConversionHandler from "./utils/createAdConversionHandler.js";
-import createCookieSessionManager from "./utils/createAdvertisingSessionManager.js";
-import handleOnBeforeSendEvent from "./utils/createOnBeforeSendEventHandler.js";
-import handleClickThrough from "./utils/createClickThroughHandler.js";
+import createAdConversionHandler from "./handlers/createAdConversionHandler.js";
+import createSessionManager from "./utils/createAdvertisingSessionManager.js";
+import handleClickThrough from "./handlers/clickThroughHandler.js";
+import handleViewThrough from "./handlers/viewThroughHandler.js";
+import handleOnBeforeSendEvent from "./handlers/onBeforeSendEventHandler.js";
 import { getUrlParams, shouldThrottle } from "./utils/helpers.js";
-import { resolvedIdsAndDispatchConversionEvent } from "./utils/resolvedIdsAndDispatchConversionEvent.js";
 
 export default ({
   logger,
@@ -29,7 +29,7 @@ export default ({
   logger.info("Advertising component initialized", componentConfig);
 
   // Create session manager
-  const sessionManager = createCookieSessionManager({
+  const sessionManager = createSessionManager({
     orgId: config.orgId || "temp_ims_org_id",
     logger,
   });
@@ -52,22 +52,8 @@ export default ({
   const sendAdConversion = async (optionsFromCommand = {}) => {
     const { skwcid, efid } = getUrlParams();
     const isClickThru = !!(skwcid || efid);
-    const isDisplay = componentConfig.isDisplay;
+    const viewThruEnabled = componentConfig.viewThruEnabled;
     const lastConversionTime = sessionManager.getValue("lastConversionTime");
-    // todo : evaluate if this will create problem in case of multiple alloy instances , one alloy instance fired adconversion then other alloy instance fires this and willl get throttled as lastconversiontime is not tracked at alloy instance level
-    if (isDisplay && shouldThrottle(lastConversionTime, THROTTLE_MINUTES)) {
-      const elapsed = (Date.now() - lastConversionTime) / (60 * 1000);
-      logger.info("Ad conversion throttled", {
-        lastConversion: new Date(lastConversionTime).toISOString(),
-        throttleMinutes: THROTTLE_MINUTES,
-        elapsedMinutes: Math.round(elapsed),
-      });
-      return {
-        status: "throttled",
-        timestamp: lastConversionTime,
-        message: `Ad conversion throttled (sent within ${THROTTLE_MINUTES} mins)`,
-      };
-    }
 
     try {
       if (isClickThru) {
@@ -79,19 +65,43 @@ export default ({
           componentConfig,
           skwcid,
           efid,
-          isDisplay,
           optionsFromCommand,
         });
       }
-      logger.info("Handling view-through ad conversion...");
-      return await resolvedIdsAndDispatchConversionEvent({
-        eventManager,
-        sessionManager,
-        logger,
-        componentConfig,
-        adConversionHandler,
-        isDisplay,
+      if (viewThruEnabled) {
+        logger.info("Handling view-through ad conversion...");
+        // as long as each alloy instance has a different imsorgid , this is safe
+        if (shouldThrottle(lastConversionTime, THROTTLE_MINUTES)) {
+          const elapsed = (Date.now() - lastConversionTime) / (60 * 1000);
+          logger.info("Ad conversion throttled", {
+            lastConversion: new Date(lastConversionTime).toISOString(),
+            throttleMinutes: THROTTLE_MINUTES,
+            elapsedMinutes: Math.round(elapsed),
+          });
+          return {
+            status: "throttled",
+            timestamp: lastConversionTime,
+            message: `Ad conversion throttled (sent within ${THROTTLE_MINUTES} mins)`,
+          };
+        }
+        return await handleViewThrough({
+          eventManager,
+          sessionManager,
+          logger,
+          componentConfig,
+          adConversionHandler,
+        });
+      }
+
+      // No conversion scenario applies
+      logger.info("No advertising conversion scenario applies", {
+        isClickThru,
+        viewThruEnabled,
       });
+      return {
+        status: "skipped",
+        message: "No advertising conversion scenario applies",
+      };
     } catch (error) {
       logger.error("Error in sendAdConversion:", error);
       throw error;

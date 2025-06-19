@@ -22,4 +22,24 @@ const shouldThrottle = (lastTime, throttleMinutes) => {
   const elapsedMinutes = (Date.now() - lastTime) / (60 * 1000);
   return elapsedMinutes < throttleMinutes;
 };
-export { getUrlParams, shouldThrottle };
+
+/**
+ * Normalizes advertiser value - handles both string and array cases
+ * @param {string|string[]} advertiser - Single advertiser string or array of advertisers
+ * @returns {string} Comma-separated string of advertisers
+ */
+const normalizeAdvertiser = (advertiser) => {
+  if (!advertiser) {
+    return "UNKNOWN";
+  }
+
+  // If it's an array, join with commas
+  if (Array.isArray(advertiser)) {
+    return advertiser.filter(Boolean).join(", ");
+  }
+
+  // If it's a string, return as-is
+  return advertiser;
+};
+
+export { getUrlParams, shouldThrottle, normalizeAdvertiser };

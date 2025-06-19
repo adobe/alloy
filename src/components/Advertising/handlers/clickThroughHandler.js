@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { normalizeAdvertiser } from "../utils/helpers.js";
+
 /**
  * Handles click-through ad conversions
  * @param {Object} params - All required parameters
@@ -20,7 +22,7 @@ governing permissions and limitations under the License.
  * @param {Object} params.componentConfig - Component configuration object
  * @param {string} params.skwcid - Search keyword click ID
  * @param {string} params.efid - EF ID parameter
- * @param {boolean} params.isDisplay - Whether this is a display campaign
+ * @param {boolean} params.viewThruEnabled - Whether this is a display campaign
  * @param {Object} params.optionsFromCommand - Additional options from command
  * @returns {Promise} Result of the ad conversion tracking
  */
@@ -32,7 +34,6 @@ export default async function handleClickThrough({
   componentConfig,
   skwcid,
   efid,
-  isDisplay,
   optionsFromCommand = {},
 }) {
   logger.info("Handling click-through ad conversion.", { skwcid, efid });
@@ -55,24 +56,24 @@ export default async function handleClickThrough({
     ...(skwcid && { adConversionMetaData: skwcid }),
   };
 
+  // Handle advertiser normalization for both string and array cases
+  const normalizedAdvertiser = normalizeAdvertiser(
+    optionsFromCommand.advertiser || componentConfig.defaultAdvertiser,
+  );
+
   xdm.advertising = {
     adConversionDetails,
-    ...(isDisplay && {
+    ...{
       adAssetReference: {
-        advertiser:
-          optionsFromCommand.advertiser ||
-          componentConfig.defaultAdvertiser ||
-          "UNKNOWN",
+        advertiser: normalizedAdvertiser,
       },
-    }),
+    },
   };
 
   event.setUserXdm(xdm);
 
-  if (isDisplay) {
-    sessionManager.setValue("lastConversionTime", Date.now());
-    logger.debug("lastConversionTime updated for display click-through.");
-  }
+  sessionManager.setValue("lastConversionTime", Date.now());
+  logger.debug("lastConversionTime updated for display click-through.");
 
   logger.info("Sending click-through ad conversion event.", xdm);
   return adConversionHandler.trackAdConversion({ event });

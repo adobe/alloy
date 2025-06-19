@@ -21,6 +21,6 @@ export default objectOf({
     id5PartnerId: string(),
 
     // Display campaign configuration
-    isDisplay: boolean(),
+    viewThruEnabled: boolean(),
   }).noUnknownFields(),
 });
