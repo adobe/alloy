@@ -25,7 +25,7 @@ export default ({ sendEdgeNetworkRequest, consent, logger }) => {
    */
   const trackAdConversion = ({ event }) => {
     // Use Alloy's standard request payload and request
-    const dataCollectionRequestPayload = createDataCollectionRequestPayload();
+    const dataCollectionRequestPayload = createDataCollectionRequestPayload(); // Create payload container
     dataCollectionRequestPayload.addEvent(event);
     event.finalize();
     const request = createDataCollectionRequest({

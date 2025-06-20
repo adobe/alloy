@@ -1,58 +1,59 @@
 /*
 Copyright 2023 Adobe. All rights reserved.
-This file is licensed to you under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License. You may obtain a copy
-of the License at http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software distributed under
-the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-OF ANY KIND, either express or implied. See the License for the specific language
-governing permissions and limitations under the License.
+Licensed under the Apache License, Version 2.0.
+http://www.apache.org/licenses/LICENSE-2.0
 */
 
+import { getSurferId } from "../identities/collectSurferId.js";
+import { getID5Id } from "../identities/collectID5Id.js";
+import { getRampId } from "../identities/collectRampId.js";
+
 /**
- * Handles onBeforeSendEvent to intercept AEP events and append surfer_id
- * @param {Object} params - All required parameters
- * @param {Object} params.sessionManager - Session manager for cookie operations
- * @param {Object} params.logger - Logger instance
- * @param {Object} params.state - Shared state object containing globalResolvedIds and surferIdAppendedToAepEvent
- * @param {Object} params.event - The event object from the hook
+ * Appends advertising identity IDs to AEP event query if not already added.
+ * @param {Object} params
+ * @param {Object} params.sessionManager
+ * @param {Object} params.logger
+ * @param {Object} params.state
+ * @param {Object} params.event
+ * @param {Object} params.config
  */
-export default function handleOnBeforeSendEvent({
+export default async function handleOnBeforeSendEvent({
   sessionManager,
   logger,
   state,
   event,
+  config = {},
 }) {
+  if (state.surferIdAppendedToAepEvent) return;
+
   try {
-    // Check if surfer_id has been appended to any AEP event already
-    if (!state.surferIdAppendedToAepEvent) {
-      // Check if surfer_id exists in the consolidated advertising IDs cookie
-      const fourDayCookieMaxAge = 4 * 24 * 60; // if surfer_id was set before 4 days, it will not be appended to the AEP event
-      const surferIdFromCookie = sessionManager.getValue(
-        "surfer_id",
-        fourDayCookieMaxAge,
+    const [surferId, id5Id, rampId] = await Promise.all([
+      getSurferId(sessionManager, false).catch(() => null),
+      config.id5PartnerId
+        ? getID5Id(config.id5PartnerId).catch(() => null)
+        : null,
+      config.liverampScriptPath
+        ? getRampId(config.liverampScriptPath, sessionManager, false).catch(
+            () => null,
+          )
+        : null,
+    ]);
+
+    const advertisingQuery = {
+      ...(surferId && { gSurferId: surferId }),
+      ...(id5Id && { gID5Id: id5Id }),
+      ...(rampId && { gRampId: rampId }),
+    };
+
+    if (Object.keys(advertisingQuery).length > 0) {
+      Object.entries(advertisingQuery).forEach(([key, value]) =>
+        logger.debug(`Added ${key} to query:`, value),
       );
-      if (surferIdFromCookie) {
-        logger.debug("Appending surfer_id to AEP event from cookie");
 
-        const currentXdm = event.getContent()?.xdm || {};
-        const updatedXdm = {
-          ...currentXdm,
-          advertising: {
-            ...currentXdm.advertising,
-            gSurferId: surferIdFromCookie,
-          },
-        };
-
-        event.setUserXdm(updatedXdm);
-        state.surferIdAppendedToAepEvent = true;
-
-        logger.info(
-          "Surfer ID appended to AEP event from cookie:",
-          surferIdFromCookie,
-        );
-      }
+      logger.info("Adding advertising IDs to event query parameters");
+      event.mergeQuery({ advertising: advertisingQuery });
+      state.surferIdAppendedToAepEvent = true;
+      logger.info("Advertising IDs added to event query successfully");
     }
   } catch (error) {
     logger.error("Error in onBeforeSendEvent hook:", error);

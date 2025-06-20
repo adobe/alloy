@@ -40,7 +40,7 @@ const collectAlldentities = (sessionManager, options = {}) => {
     })
     .catch((err) => {
       logger.warn("collectAlldentities: Failed to fetch surfer_id:", err);
-      return null; // Ensure promise resolves, even with null
+      return null;
     });
 
   // Fetch ID5 ID (if partnerId is provided)
@@ -48,7 +48,7 @@ const collectAlldentities = (sessionManager, options = {}) => {
     logger.info("collectAlldentities: Initiating ID5 ID fetch.", {
       id5PartnerId,
     });
-    idPromisesMap.id5_id = getID5Id(id5PartnerId, sessionManager)
+    idPromisesMap.id5_id = getID5Id(id5PartnerId)
       .then((id) => {
         if (id) {
           logger.info("collectAlldentities: ID5 ID fetched successfully.", {
@@ -75,7 +75,6 @@ const collectAlldentities = (sessionManager, options = {}) => {
     );
   }
 
-  // Fetch RampID (if script path is provided)
   if (rampIdScriptPath) {
     logger.info("collectAlldentities: Initiating Ramp ID fetch.", {
       rampIdScriptPath,

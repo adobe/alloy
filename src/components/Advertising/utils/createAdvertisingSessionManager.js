@@ -58,12 +58,35 @@ export default ({ orgId, logger }) => {
     }
   };
 
+  const setValueWithLastUpdated = (key, value, options = {}) => {
+    const existing = readCookie(ADVERTISING_COOKIE_KEY) || {};
+    const keyData = {
+      value,
+      lastUpdated: Date.now(),
+    };
+    const updated = {
+      ...existing,
+      [key]: keyData,
+    };
+
+    return writeCookie(ADVERTISING_COOKIE_KEY, updated, {
+      expires: getDefaultExpiration(1440),
+      ...options,
+    });
+  };
+
+  const getValueWithLastUpdated = (key, maxAgeMinutes = 1440) => {
+    const data = readCookie(ADVERTISING_COOKIE_KEY) || {};
+    const age = (Date.now() - (data[key]?.lastUpdated || 0)) / 60000;
+    return age > maxAgeMinutes ? undefined : data[key]?.value;
+  };
+
   const setValue = (key, value, options = {}) => {
     const existing = readCookie(ADVERTISING_COOKIE_KEY) || {};
+
     const updated = {
       ...existing,
       [key]: value,
-      lastUpdated: Date.now(),
     };
 
     return writeCookie(ADVERTISING_COOKIE_KEY, updated, {
@@ -102,5 +125,7 @@ export default ({ orgId, logger }) => {
     setValue,
     readClickData,
     writeClickData,
+    getValueWithLastUpdated,
+    setValueWithLastUpdated,
   };
 };

@@ -8,7 +8,7 @@ const userId = "11076";
 
 // Global thread-safe storage (similar to fetchID5Id.js pattern)
 let surferId = "";
-let inProgressPromise = null; // Store the in-progress promise
+let inProgressSurferPromise = null; // Store the in-progress promise
 let surferIdHasChanged = true; // Flag to track if surfer_id has changed from cookie, and control if conversion event is fired or not
 
 const addToDom = function addToDom(element) {
@@ -57,16 +57,14 @@ const removeListener = function removeListener(fn) {
   }
 };
 
-// Main identity resolution with thread safety
 const initiateAdvertisingIdentityCall =
   function initiateAdvertisingIdentityCall(sessionManager = null) {
     // If there's already a fetch in progress, return that promise
-    if (inProgressPromise) {
-      return inProgressPromise;
+    if (inProgressSurferPromise) {
+      return inProgressSurferPromise;
     }
 
-    // Create a new promise and store it
-    inProgressPromise = new Promise((resolve, reject) => {
+    inProgressSurferPromise = new Promise((resolve, reject) => {
       setTimeout(() => {
         const scheme =
           document.location.protocol === "https:" ? "https:" : "http:";
@@ -100,23 +98,19 @@ const initiateAdvertisingIdentityCall =
             removeListener(pixelDetailsReceiver);
 
             if (resolvedSurferId) {
-              // Extracted surferId - handle silently in production
-
               // Check if surfer_id has changed by comparing with existing cookie value
               let existingSurferId = null;
               if (sessionManager) {
                 try {
                   existingSurferId = sessionManager.getValue("surfer_id");
                 } catch {
-                  // Error reading existing surferId from cookie - handle silently
+                  // Error reading existing surferId from cookie
                 }
               }
 
               // Set the change flag: true if different or no existing value, false if same
               surferIdHasChanged =
                 !existingSurferId || existingSurferId !== resolvedSurferId;
-              // Surfer ID change status - handle silently in production
-
               surferId = resolvedSurferId;
               resolve(resolvedSurferId);
             } else {
@@ -129,7 +123,7 @@ const initiateAdvertisingIdentityCall =
             surferIdHasChanged = true; // in safari if surfer_id not resolve still fire rampid call
             reject(err);
           } finally {
-            inProgressPromise = null; // Clear stored promise regardless of outcome
+            inProgressSurferPromise = null; // Clear stored promise regardless of outcome
           }
         };
 
@@ -137,7 +131,7 @@ const initiateAdvertisingIdentityCall =
       }, 5000);
     });
 
-    return inProgressPromise;
+    return inProgressSurferPromise;
   };
 
 // Store surferId in cookie using sessionManager
@@ -147,7 +141,7 @@ const storeSurferIdInCookie = function storeSurferIdInCookie(
 ) {
   if (sessionManager && surferIdValue) {
     try {
-      sessionManager.setValue("surfer_id", surferIdValue);
+      sessionManager.setValueWithLastUpdated("surfer_id", surferIdValue);
       return true;
     } catch {
       // Error storing surferId in cookie - handle silently
@@ -157,7 +151,6 @@ const storeSurferIdInCookie = function storeSurferIdInCookie(
   return false;
 };
 
-// Expose function to get the current surferId (similar to getID5Id)
 const getSurferId = function getSurferId(
   sessionManager,
   resolveSurferIdIfNotAvailable = true,
@@ -170,7 +163,8 @@ const getSurferId = function getSurferId(
   // If not in memory, check if available in cookie using sessionManager
   if (sessionManager) {
     try {
-      const cookieSurferId = sessionManager.getValue("surfer_id");
+      const cookieSurferId =
+        sessionManager.getValueWithLastUpdated("surfer_id");
       if (cookieSurferId) {
         // Update in-memory value
         surferId = cookieSurferId;

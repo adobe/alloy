@@ -47,8 +47,8 @@ export default async function handleClickThrough({
       ...(skwcid && { skwcid }),
       ...(efid && { efid }),
     };
-    sessionManager.writeClickData(clickData);
-    logger.debug("ev_cc cookie written for click-through.", clickData);
+    sessionManager.setValue("ev_cc", clickData);
+    logger.info("ev_cc cookie written for click-through.", clickData);
   }
 
   const adConversionDetails = {
@@ -73,7 +73,7 @@ export default async function handleClickThrough({
   event.setUserXdm(xdm);
 
   sessionManager.setValue("lastConversionTime", Date.now());
-  logger.debug("lastConversionTime updated for display click-through.");
+  logger.info("lastConversionTime updated for display click-through.");
 
   logger.info("Sending click-through ad conversion event.", xdm);
   return adConversionHandler.trackAdConversion({ event });

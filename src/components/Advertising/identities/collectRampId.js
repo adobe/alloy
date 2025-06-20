@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 let rampIdEnv;
 let rampIdCallInitiated;
-let inProgressPromise = null; // Store the in-progress promise
+let inProgressRampIdPromise = null; // Store the in-progress promise
 
 // Add parallel script loading state
 let scriptLoadingInitiated = false;
@@ -68,12 +68,12 @@ const initiateRampIDCall = function initiateRampIDCall(rampIdScriptPath) {
   loadScriptInParallel(rampIdScriptPath);
 
   // If there's already a fetch in progress, return that promise
-  if (inProgressPromise) {
-    return inProgressPromise;
+  if (inProgressRampIdPromise) {
+    return inProgressRampIdPromise;
   }
 
   // Create a new promise and store it
-  inProgressPromise = new Promise((resolve, reject) => {
+  inProgressRampIdPromise = new Promise((resolve, reject) => {
     let rampIdObj;
     let retryCount = 5;
     let timerMultiplier = 1;
@@ -93,7 +93,7 @@ const initiateRampIDCall = function initiateRampIDCall(rampIdScriptPath) {
           timeoutIds.forEach((id) => clearTimeout(id));
           // Resolve the promise with the rampId envelope
           resolve(rampIdEnv);
-          inProgressPromise = null; // Clear stored promise on success
+          inProgressRampIdPromise = null; // Clear stored promise on success
         }
       } else {
         const timeoutIdObj = setTimeout(function timeoutHandler() {
@@ -118,7 +118,7 @@ const initiateRampIDCall = function initiateRampIDCall(rampIdScriptPath) {
             waitForRampId(tmpRampIdObj);
           } else {
             // If we've exhausted retries, reject the promise
-            inProgressPromise = null;
+            inProgressRampIdPromise = null;
             reject(
               new Error("Failed to retrieve RampID after maximum retries"),
             );
@@ -152,7 +152,7 @@ const initiateRampIDCall = function initiateRampIDCall(rampIdScriptPath) {
                     },
                     function envelopeRejectHandler(error) {
                       reject(error);
-                      inProgressPromise = null; // Clear stored promise on error
+                      inProgressRampIdPromise = null; // Clear stored promise on error
                     },
                   );
                 },
@@ -161,7 +161,7 @@ const initiateRampIDCall = function initiateRampIDCall(rampIdScriptPath) {
           })
           .catch((error) => {
             reject(error);
-            inProgressPromise = null; // Clear stored promise on error
+            inProgressRampIdPromise = null; // Clear stored promise on error
           });
       }
     } else {
@@ -169,7 +169,7 @@ const initiateRampIDCall = function initiateRampIDCall(rampIdScriptPath) {
     }
   });
 
-  return inProgressPromise;
+  return inProgressRampIdPromise;
 };
 
 // Store rampId in cookie using sessionManager
@@ -179,7 +179,7 @@ const storeRampIdInCookie = function storeRampIdInCookie(
 ) {
   if (sessionManager && rampId) {
     try {
-      sessionManager.setValue("ramp_id", rampId);
+      sessionManager.setValueWithLastUpdated("ramp_id", rampId);
       return true;
     } catch {
       // Handle error silently for production
@@ -188,7 +188,6 @@ const storeRampIdInCookie = function storeRampIdInCookie(
   }
   return false;
 };
-// todo: is external caching required or to be handled by rampid library itself
 
 // Expose function to get the current rampId
 const getRampId = function getRampId(
@@ -204,7 +203,7 @@ const getRampId = function getRampId(
   // If not in memory, check if available in cookie using sessionManager
   if (sessionManager) {
     try {
-      const cookieRampId = sessionManager.getValue("ramp_id");
+      const cookieRampId = sessionManager.getValueWithLastUpdated("ramp_id");
       if (cookieRampId) {
         // Update in-memory value
         rampIdEnv = cookieRampId;

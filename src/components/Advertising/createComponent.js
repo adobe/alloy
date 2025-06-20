@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createAdConversionHandler from "./handlers/createAdConversionHandler.js";
-import createSessionManager from "./utils/createAdvertisingSessionManager.js";
+import createCookieManager from "./utils/createAdvertisingSessionManager.js";
 import handleClickThrough from "./handlers/clickThroughHandler.js";
 import handleViewThrough from "./handlers/viewThroughHandler.js";
 import handleOnBeforeSendEvent from "./handlers/onBeforeSendEventHandler.js";
@@ -29,7 +29,7 @@ export default ({
   logger.info("Advertising component initialized", componentConfig);
 
   // Create session manager
-  const sessionManager = createSessionManager({
+  const sessionManager = createCookieManager({
     orgId: config.orgId || "temp_ims_org_id",
     logger,
   });
@@ -119,14 +119,16 @@ export default ({
           logger.error("Error in auto-triggered sendAdConversion:", error);
         });
       },
-      onBeforeEvent: ({ event, onResponse, onRequestFailure }) => {
+      onBeforeEvent: ({ event }) => {
+        // Handle async function in fire-and-forget manner since lifecycle hooks are synchronous
         handleOnBeforeSendEvent({
           sessionManager,
           logger,
           state: sharedState,
           event,
-          onResponse,
-          onRequestFailure,
+          config: componentConfig,
+        }).catch((error) => {
+          logger.error("Error in onBeforeSendEvent handler:", error);
         });
       },
     },

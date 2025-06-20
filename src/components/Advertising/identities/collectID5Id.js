@@ -4,7 +4,8 @@
  */
 
 let id5Id = "";
-let inProgressPromise = null; // Store the in-progress promise
+// todo: make it specific to id5
+let inProgressId5Promise = null; // Store the in-progress promise
 
 const getScriptElement = function getScriptElement(url) {
   const scriptTag = document.createElement("script");
@@ -17,14 +18,14 @@ const getScriptElement = function getScriptElement(url) {
 const initiateID5Call = function initiateID5Call(partnerId) {
   partnerId = Math.floor(Number(partnerId));
   // If there's already a fetch in progress, return that promise
-  if (inProgressPromise) {
-    return inProgressPromise;
+  if (inProgressId5Promise) {
+    return inProgressId5Promise;
   }
 
   // Create a new promise and store it
-  inProgressPromise = new Promise((resolve, reject) => {
+  inProgressId5Promise = new Promise((resolve, reject) => {
     if (!partnerId) {
-      inProgressPromise = null; // Clear stored promise on failure
+      inProgressId5Promise = null; // Clear stored promise on failure
       reject(new Error("ID5 partner ID is required"));
       return;
     }
@@ -37,7 +38,7 @@ const initiateID5Call = function initiateID5Call(partnerId) {
 
         if (id5Id !== undefined && id5Id !== "") {
           resolve(id5Id);
-          inProgressPromise = null; // Clear stored promise on success
+          inProgressId5Promise = null; // Clear stored promise on success
         } else {
           // First retry with timeout
           window.ID5.init({ partnerId }).onAvailable(function firstRetry(
@@ -46,7 +47,7 @@ const initiateID5Call = function initiateID5Call(partnerId) {
             id5Id = retryStatus.getUserId();
             if (id5Id !== undefined && id5Id !== "") {
               resolve(id5Id);
-              inProgressPromise = null; // Clear stored promise on success
+              inProgressId5Promise = null; // Clear stored promise on success
             } else {
               // Second retry with additional timeout
               window.ID5.init({ partnerId }).onAvailable(function secondRetry(
@@ -60,14 +61,14 @@ const initiateID5Call = function initiateID5Call(partnerId) {
                     new Error("Failed to get ID5 ID after multiple attempts"),
                   );
                 }
-                inProgressPromise = null; // Clear stored promise regardless of outcome
+                inProgressId5Promise = null; // Clear stored promise regardless of outcome
               }, 1000); // 1 second timeout
             }
           }, 1000); // 1 second timeout
         }
       } catch (error) {
         reject(error);
-        inProgressPromise = null; // Clear stored promise on error
+        inProgressId5Promise = null; // Clear stored promise on error
       }
     };
 
@@ -87,7 +88,7 @@ const initiateID5Call = function initiateID5Call(partnerId) {
 
       script.onerror = function scriptError() {
         reject(new Error("Failed to load ID5 script"));
-        inProgressPromise = null; // Clear stored promise on error
+        inProgressId5Promise = null; // Clear stored promise on error
       };
 
       if (document.body !== undefined) {
@@ -98,57 +99,13 @@ const initiateID5Call = function initiateID5Call(partnerId) {
     }
   });
 
-  return inProgressPromise;
+  return inProgressId5Promise;
 };
-
-// Store id5Id in cookie using sessionManager
-const storeID5InCookie = function storeID5InCookie(sessionManager, id5IdValue) {
-  if (sessionManager && id5IdValue) {
-    try {
-      sessionManager.setValue("id5_id", id5IdValue);
-      return true;
-    } catch {
-      // Handle error silently for production
-      return false;
-    }
-  }
-  return false;
-};
-// todo: is external caching required or to be handled by id5 library itself
 // Expose function to get the current id5Id
-const getID5Id = function getID5Id(
-  partnerId,
-  sessionManager,
-  resolveID5IfNotAvailable = true,
-) {
-  // Check if ID5 ID is already initialized in memory
-  if (id5Id && id5Id !== "") {
-    return Promise.resolve(id5Id);
-  }
-
-  // If not in memory, check if available in cookie using sessionManager
-  if (sessionManager) {
-    try {
-      const cookieID5Id = sessionManager.getValue("id5_id");
-      if (cookieID5Id) {
-        // Update in-memory value
-        id5Id = cookieID5Id;
-        return Promise.resolve(cookieID5Id);
-      }
-    } catch {
-      // Handle error silently for production
-    }
-  }
-  if (resolveID5IfNotAvailable) {
-    // If not in memory or cookie, initialize and store in cookie
-    return initiateID5Call(partnerId).then((resolvedId) => {
-      if (sessionManager) {
-        storeID5InCookie(sessionManager, resolvedId);
-      }
-      return resolvedId;
-    });
-  }
-  return Promise.resolve(null);
+const getID5Id = function getID5Id(partnerId) {
+  return initiateID5Call(partnerId).then((resolvedId) => {
+    return resolvedId;
+  });
 };
 
 // Export the functions for use in other modules
