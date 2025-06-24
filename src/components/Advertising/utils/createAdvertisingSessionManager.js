@@ -75,10 +75,9 @@ export default ({ orgId, logger }) => {
     });
   };
 
-  const getValueWithLastUpdated = (key, maxAgeMinutes = 1440) => {
+  const getValueWithLastUpdated = (key) => {
     const data = readCookie(ADVERTISING_COOKIE_KEY) || {};
-    const age = (Date.now() - (data[key]?.lastUpdated || 0)) / 60000;
-    return age > maxAgeMinutes ? undefined : data[key]?.value;
+    return data[key]?.value;
   };
 
   const setValue = (key, value, options = {}) => {
@@ -95,10 +94,9 @@ export default ({ orgId, logger }) => {
     });
   };
 
-  const getValue = (key, maxAgeMinutes = 1440) => {
+  const getValue = (key) => {
     const data = readCookie(ADVERTISING_COOKIE_KEY) || {};
-    const age = (Date.now() - (data?.lastUpdated || 0)) / 60000;
-    return age > maxAgeMinutes ? undefined : data[key];
+    return data[key];
   };
 
   const readClickData = () => {
@@ -120,6 +118,18 @@ export default ({ orgId, logger }) => {
     });
   };
 
+  const markSuccessfulConversion = (idType, timestamp = Date.now()) => {
+    setValue(`${idType}_last_conversion`, timestamp);
+  };
+
+  const isIdThrottled = (idType, throttleMinutes = 30) => {
+    const lastConversion = getValue(`${idType}_last_conversion`);
+    if (!lastConversion) return false;
+
+    const throttleWindow = throttleMinutes * 60 * 1000;
+    return Date.now() - lastConversion < throttleWindow;
+  };
+
   return {
     getValue,
     setValue,
@@ -127,5 +137,7 @@ export default ({ orgId, logger }) => {
     writeClickData,
     getValueWithLastUpdated,
     setValueWithLastUpdated,
+    markSuccessfulConversion,
+    isIdThrottled,
   };
 };

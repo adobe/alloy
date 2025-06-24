@@ -11,14 +11,14 @@ import { getRampId } from "../identities/collectRampId.js";
 /**
  * Appends advertising identity IDs to AEP event query if not already added.
  * @param {Object} params
- * @param {Object} params.sessionManager
+ * @param {Object} params.cookieManager
  * @param {Object} params.logger
  * @param {Object} params.state
  * @param {Object} params.event
  * @param {Object} params.config
  */
 export default async function handleOnBeforeSendEvent({
-  sessionManager,
+  cookieManager,
   logger,
   state,
   event,
@@ -26,14 +26,18 @@ export default async function handleOnBeforeSendEvent({
 }) {
   if (state.surferIdAppendedToAepEvent) return;
 
+  // Create a processing flag to prevent concurrent calls
+  if (state.processingAdvertisingIds) return;
+  state.processingAdvertisingIds = true;
+
   try {
     const [surferId, id5Id, rampId] = await Promise.all([
-      getSurferId(sessionManager, false).catch(() => null),
+      getSurferId(cookieManager, false).catch(() => null),
       config.id5PartnerId
         ? getID5Id(config.id5PartnerId).catch(() => null)
         : null,
       config.liverampScriptPath
-        ? getRampId(config.liverampScriptPath, sessionManager, false).catch(
+        ? getRampId(config.liverampScriptPath, cookieManager, false).catch(
             () => null,
           )
         : null,
@@ -47,7 +51,7 @@ export default async function handleOnBeforeSendEvent({
 
     if (Object.keys(advertisingQuery).length > 0) {
       Object.entries(advertisingQuery).forEach(([key, value]) =>
-        logger.debug(`Added ${key} to query:`, value),
+        logger.info(`Added ${key} to query:`, value),
       );
 
       logger.info("Adding advertising IDs to event query parameters");
@@ -57,5 +61,7 @@ export default async function handleOnBeforeSendEvent({
     }
   } catch (error) {
     logger.error("Error in onBeforeSendEvent hook:", error);
+  } finally {
+    state.processingAdvertisingIds = false;
   }
 }

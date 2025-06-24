@@ -58,7 +58,7 @@ const removeListener = function removeListener(fn) {
 };
 
 const initiateAdvertisingIdentityCall =
-  function initiateAdvertisingIdentityCall(sessionManager = null) {
+  function initiateAdvertisingIdentityCall(cookieManager = null) {
     // If there's already a fetch in progress, return that promise
     if (inProgressSurferPromise) {
       return inProgressSurferPromise;
@@ -100,9 +100,9 @@ const initiateAdvertisingIdentityCall =
             if (resolvedSurferId) {
               // Check if surfer_id has changed by comparing with existing cookie value
               let existingSurferId = null;
-              if (sessionManager) {
+              if (cookieManager) {
                 try {
-                  existingSurferId = sessionManager.getValue("surfer_id");
+                  existingSurferId = cookieManager.getValue("surfer_id");
                 } catch {
                   // Error reading existing surferId from cookie
                 }
@@ -134,14 +134,14 @@ const initiateAdvertisingIdentityCall =
     return inProgressSurferPromise;
   };
 
-// Store surferId in cookie using sessionManager
+// Store surferId in cookie using cookieManager
 const storeSurferIdInCookie = function storeSurferIdInCookie(
-  sessionManager,
+  cookieManager,
   surferIdValue,
 ) {
-  if (sessionManager && surferIdValue) {
+  if (cookieManager && surferIdValue) {
     try {
-      sessionManager.setValueWithLastUpdated("surfer_id", surferIdValue);
+      cookieManager.setValueWithLastUpdated("surfer_id", surferIdValue);
       return true;
     } catch {
       // Error storing surferId in cookie - handle silently
@@ -152,7 +152,7 @@ const storeSurferIdInCookie = function storeSurferIdInCookie(
 };
 
 const getSurferId = function getSurferId(
-  sessionManager,
+  cookieManager,
   resolveSurferIdIfNotAvailable = true,
 ) {
   // Check if Surfer ID is already initialized in memory
@@ -160,11 +160,10 @@ const getSurferId = function getSurferId(
     return Promise.resolve(surferId);
   }
 
-  // If not in memory, check if available in cookie using sessionManager
-  if (sessionManager) {
+  // If not in memory, check if available in cookie using cookieManager
+  if (cookieManager) {
     try {
-      const cookieSurferId =
-        sessionManager.getValueWithLastUpdated("surfer_id");
+      const cookieSurferId = cookieManager.getValueWithLastUpdated("surfer_id");
       if (cookieSurferId) {
         // Update in-memory value
         surferId = cookieSurferId;
@@ -177,14 +176,12 @@ const getSurferId = function getSurferId(
 
   if (resolveSurferIdIfNotAvailable) {
     // If not in memory or cookie, initialize and store in cookie
-    return initiateAdvertisingIdentityCall(sessionManager).then(
-      (resolvedId) => {
-        if (sessionManager && resolvedId) {
-          storeSurferIdInCookie(sessionManager, resolvedId);
-        }
-        return resolvedId;
-      },
-    );
+    return initiateAdvertisingIdentityCall(cookieManager).then((resolvedId) => {
+      if (cookieManager && resolvedId) {
+        storeSurferIdInCookie(cookieManager, resolvedId);
+      }
+      return resolvedId;
+    });
   }
   return Promise.resolve(null);
 };

@@ -16,7 +16,7 @@ import { normalizeAdvertiser } from "../utils/helpers.js";
  * Handles click-through ad conversions
  * @param {Object} params - All required parameters
  * @param {Object} params.eventManager - Event manager for creating events
- * @param {Object} params.sessionManager - Session manager for cookie operations
+ * @param {Object} params.cookieManager - Session manager for cookie operations
  * @param {Object} params.adConversionHandler - Handler for sending ad conversion events
  * @param {Object} params.logger - Logger instance
  * @param {Object} params.componentConfig - Component configuration object
@@ -28,7 +28,7 @@ import { normalizeAdvertiser } from "../utils/helpers.js";
  */
 export default async function handleClickThrough({
   eventManager,
-  sessionManager,
+  cookieManager,
   adConversionHandler,
   logger,
   componentConfig,
@@ -47,7 +47,7 @@ export default async function handleClickThrough({
       ...(skwcid && { skwcid }),
       ...(efid && { efid }),
     };
-    sessionManager.setValue("ev_cc", clickData);
+    cookieManager.setValue("ev_cc", clickData);
     logger.info("ev_cc cookie written for click-through.", clickData);
   }
 
@@ -72,7 +72,7 @@ export default async function handleClickThrough({
 
   event.setUserXdm(xdm);
 
-  sessionManager.setValue("lastConversionTime", Date.now());
+  cookieManager.setValue("lastConversionTime", Date.now());
   logger.info("lastConversionTime updated for display click-through.");
 
   logger.info("Sending click-through ad conversion event.", xdm);

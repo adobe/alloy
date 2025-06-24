@@ -9,86 +9,122 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { getSurferId } from "../identities/collectSurferId.js";
-import { getID5Id } from "../identities/collectID5Id.js";
-import { getRampId } from "../identities/collectRampId.js";
-import collectAlldentities from "../identities/collectAllIdentities.js";
+
+import collectAllIdentities from "../identities/collectAllIdentities.js";
 
 export default async function handleViewThrough({
   eventManager,
-  sessionManager,
+  cookieManager,
   logger,
   componentConfig,
   adConversionHandler,
 }) {
-  const invocationConfig = {
-    id5PartnerId: componentConfig.id5PartnerId,
-    rampIdScriptPath: componentConfig.liverampScriptPath,
-    logger,
+  // Get promises only for non-throttled IDs
+  const identityPromises = collectAllIdentities(componentConfig, cookieManager);
+
+  // If no IDs to collect, skip entirely
+  if (Object.keys(identityPromises).length === 0) {
+    logger.info("All identity types throttled, skipping conversion");
+    return [];
+  }
+
+  logger.info("ID resolution promises:", Object.keys(identityPromises));
+
+  // Shared state for resolved IDs and per-ID conversion tracking
+  const availableIds = {};
+  const conversionCalled = {}; // Track conversion status per ID type
+  const conversionPromises = []; // Collect conversion promises to return
+
+  // Helper: Check if any ID is unused (not in conversionCalled or is false)
+  const isAnyIdUnused = () => {
+    return Object.entries(availableIds).some(([idType]) => {
+      return !conversionCalled[idType];
+    });
   };
 
-  const sendEvent = async (triggerIdType) => {
-    const evCcData = sessionManager.readClickData();
-    const xdm = {
+  // Helper: Create XDM conversion event
+  const createConversionEvent = (idsToInclude) => {
+    const event = eventManager.createEvent();
+    const clickData = cookieManager.readClickData();
+
+    const xdmData = {
       eventType: "advertising.conversion",
-      data: {
-        conversionType: "vt",
-        ...(evCcData?.click_time && { clickTime: evCcData.click_time }),
+      advertising: {
+        conversion: {
+          ...(clickData.clickTime && { clickTime: clickData.clickTime }),
+          ...(idsToInclude.surferId && { gSurferId: idsToInclude.surferId }),
+          ...(idsToInclude.id5Id && { id5_id: idsToInclude.id5Id }),
+          ...(idsToInclude.rampId && { rampIDEnv: idsToInclude.rampId }),
+        },
       },
     };
 
-    const surferId = await getSurferId(sessionManager, false);
-    const id5Id = await getID5Id(
-      componentConfig.id5PartnerId,
-      sessionManager,
-      false,
-    );
-    const rampId = await getRampId(sessionManager, false);
-
-    const availableIds = {};
-    if (surferId) {
-      xdm.data.gSurferId = surferId;
-      availableIds.surferId = surferId;
-    }
-    if (id5Id) {
-      xdm.data.id5_id = id5Id;
-      availableIds.id5Id = id5Id;
-    }
-    if (rampId) {
-      xdm.data.rampIDEnv = rampId;
-      availableIds.rampId = rampId;
-    }
-
-    const event = eventManager.createEvent();
-    event.setUserXdm(xdm);
-
-    sessionManager.setValue("lastConversionTime", Date.now());
-    logger.info("lastConversionTime updated.");
-
-    logger.info(
-      `Ad conversion event triggered (${triggerIdType}). IDs:`,
-      Object.keys(availableIds),
-    );
-    return adConversionHandler.trackAdConversion({ event });
+    event.setUserXdm(xdmData);
+    return event;
   };
 
-  const idPromisesMap = collectAlldentities(sessionManager, invocationConfig);
-  logger.info("ID resolution promises started:", Object.keys(idPromisesMap));
+  // Helper: Mark IDs as converted and update throttle times
+  const markIdsAsConverted = (idTypes) => {
+    const now = Date.now();
 
-  const results = [];
+    idTypes.forEach((idType) => {
+      // Mark as used in conversion (in memory only)
+      conversionCalled[idType] = true;
 
-  Object.entries(idPromisesMap).forEach(([idType, promise]) => {
+      // Update throttle time in session
+      cookieManager.setValue(`${idType}_last_conversion`, now);
+      logger.info(`${idType} conversion successful, throttle window started`);
+    });
+
+    // Backward compatibility
+    cookieManager.setValue("lastConversionTime", now);
+  };
+
+  // Conversion handler - called when any ID resolves
+  const handleConversion = async () => {
+    if (!isAnyIdUnused()) {
+      logger.info("All resolved IDs already used in conversion");
+      return null;
+    }
+
+    const idTypes = Object.keys(availableIds);
+
+    try {
+      // Create conversion event with unused IDs only
+      const event = createConversionEvent(availableIds);
+      const result = await adConversionHandler.trackAdConversion({ event });
+
+      // Mark these IDs as used in conversion and update throttle times
+      markIdsAsConverted(idTypes);
+
+      return result;
+    } catch (error) {
+      logger.error("Ad conversion tracking failed:", error);
+      return null;
+    }
+  };
+
+  // Register callbacks for each identity promise
+  Object.entries(identityPromises).forEach(([idType, promise]) => {
     promise
-      .then((value) => {
-        // todo: this check  hasSurferIdChanged() guarantees if surfer_id is changed from cookie, and control if conversion event is fired or not , but this creates problem with multiple alloy instances , this can be buggy
-        if (value) {
-          results.push(sendEvent(idType));
+      .then((idValue) => {
+        if (idValue) {
+          // Store resolved ID
+          availableIds[idType] = idValue;
+          logger.info(`${idType} resolved:`, idValue);
+
+          // Trigger conversion handler and collect the promise
+          const conversionPromise = handleConversion();
+          if (conversionPromise) {
+            conversionPromises.push(conversionPromise);
+          }
         }
       })
-      .catch((e) => {
-        logger.warn(`${idType} resolution failed:`, e.message);
+      .catch((error) => {
+        logger.error(`Error resolving ${idType}:`, error);
       });
   });
 
-  return results;
+  // Return array of conversion promises
+  return conversionPromises;
 }

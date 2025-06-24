@@ -15,7 +15,7 @@ import createCookieManager from "./utils/createAdvertisingSessionManager.js";
 import handleClickThrough from "./handlers/clickThroughHandler.js";
 import handleViewThrough from "./handlers/viewThroughHandler.js";
 import handleOnBeforeSendEvent from "./handlers/onBeforeSendEventHandler.js";
-import { getUrlParams, shouldThrottle } from "./utils/helpers.js";
+import { getUrlParams } from "./utils/helpers.js";
 
 export default ({
   logger,
@@ -29,7 +29,7 @@ export default ({
   logger.info("Advertising component initialized", componentConfig);
 
   // Create session manager
-  const sessionManager = createCookieManager({
+  const cookieManager = createCookieManager({
     orgId: config.orgId || "temp_ims_org_id",
     logger,
   });
@@ -42,8 +42,6 @@ export default ({
     logger,
   });
 
-  const THROTTLE_MINUTES = componentConfig.throttleMinutes || 30;
-
   // Shared state for onBeforeSendEvent hook
   const sharedState = {
     surferIdAppendedToAepEvent: false,
@@ -53,13 +51,12 @@ export default ({
     const { skwcid, efid } = getUrlParams();
     const isClickThru = !!(skwcid || efid);
     const viewThruEnabled = componentConfig.viewThruEnabled;
-    const lastConversionTime = sessionManager.getValue("lastConversionTime");
 
     try {
       if (isClickThru) {
         return await handleClickThrough({
           eventManager,
-          sessionManager,
+          cookieManager,
           adConversionHandler,
           logger,
           componentConfig,
@@ -70,23 +67,9 @@ export default ({
       }
       if (viewThruEnabled) {
         logger.info("Handling view-through ad conversion...");
-        // as long as each alloy instance has a different imsorgid , this is safe
-        if (shouldThrottle(lastConversionTime, THROTTLE_MINUTES)) {
-          const elapsed = (Date.now() - lastConversionTime) / (60 * 1000);
-          logger.info("Ad conversion throttled", {
-            lastConversion: new Date(lastConversionTime).toISOString(),
-            throttleMinutes: THROTTLE_MINUTES,
-            elapsedMinutes: Math.round(elapsed),
-          });
-          return {
-            status: "throttled",
-            timestamp: lastConversionTime,
-            message: `Ad conversion throttled (sent within ${THROTTLE_MINUTES} mins)`,
-          };
-        }
         return await handleViewThrough({
           eventManager,
-          sessionManager,
+          cookieManager,
           logger,
           componentConfig,
           adConversionHandler,
@@ -122,7 +105,7 @@ export default ({
       onBeforeEvent: ({ event }) => {
         // Handle async function in fire-and-forget manner since lifecycle hooks are synchronous
         handleOnBeforeSendEvent({
-          sessionManager,
+          cookieManager,
           logger,
           state: sharedState,
           event,

@@ -172,14 +172,14 @@ const initiateRampIDCall = function initiateRampIDCall(rampIdScriptPath) {
   return inProgressRampIdPromise;
 };
 
-// Store rampId in cookie using sessionManager
+// Store rampId in cookie using cookieManager
 const storeRampIdInCookie = function storeRampIdInCookie(
-  sessionManager,
+  cookieManager,
   rampId,
 ) {
-  if (sessionManager && rampId) {
+  if (cookieManager && rampId) {
     try {
-      sessionManager.setValueWithLastUpdated("ramp_id", rampId);
+      cookieManager.setValueWithLastUpdated("ramp_id", rampId);
       return true;
     } catch {
       // Handle error silently for production
@@ -192,7 +192,7 @@ const storeRampIdInCookie = function storeRampIdInCookie(
 // Expose function to get the current rampId
 const getRampId = function getRampId(
   rampIdScriptPath,
-  sessionManager,
+  cookieManager,
   resolveRampIdIfNotAvailable = true,
 ) {
   // Check if rampId is already initialized in memory
@@ -200,10 +200,10 @@ const getRampId = function getRampId(
     return Promise.resolve(rampIdEnv);
   }
 
-  // If not in memory, check if available in cookie using sessionManager
-  if (sessionManager) {
+  // If not in memory, check if available in cookie using cookieManager
+  if (cookieManager) {
     try {
-      const cookieRampId = sessionManager.getValueWithLastUpdated("ramp_id");
+      const cookieRampId = cookieManager.getValueWithLastUpdated("ramp_id");
       if (cookieRampId) {
         // Update in-memory value
         rampIdEnv = cookieRampId;
@@ -218,8 +218,8 @@ const getRampId = function getRampId(
     // If not in memory or cookie, initialize and store in cookie
     return initiateRampIDCall(rampIdScriptPath)
       .then((rampId) => {
-        if (sessionManager) {
-          storeRampIdInCookie(sessionManager, rampId);
+        if (cookieManager) {
+          storeRampIdInCookie(cookieManager, rampId);
         }
         return rampId;
       })
