@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createDecorateProposition from "./createDecorateProposition.js";
+import createRenderStatusHandler from "./createRenderStatusHandler.js";
 
 export default ({
     modules,
@@ -40,9 +41,18 @@ export default ({
       storeInteractionMeta,
     );
 
+    const renderStatusHandler = createRenderStatusHandler(
+      item.getProposition().getScopeType(),
+      item.getId(),
+    );
+
     return {
       render: () => {
-        return modules[type](item.getData(), decorateProposition);
+        return modules[type](
+          item.getData(),
+          decorateProposition,
+          renderStatusHandler,
+        );
       },
       setRenderAttempted: true,
       includeInNotification: true,
