@@ -44,7 +44,7 @@ const collectAllIdentities = (componentConfig, cookieManager) => {
     promises.rampId = getRampId(
       componentConfig.liverampScriptPath,
       cookieManager,
-      false,
+      true,
     ).catch(() => null);
   }
 
