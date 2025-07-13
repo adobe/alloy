@@ -167,8 +167,8 @@ const initiateID5Call = function initiateID5Call(partnerId, logger) {
 };
 
 const getID5Id = function getID5Id(
-  partnerId,
   logger,
+  partnerId,
   resolveId5IfNotAvailable = true,
 ) {
   logger.info("getID5Id called", { partnerId });
