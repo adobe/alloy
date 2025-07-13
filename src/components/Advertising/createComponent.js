@@ -50,7 +50,7 @@ export default ({
   const sendAdConversion = async (optionsFromCommand = {}) => {
     const { skwcid, efid } = getUrlParams();
     const isClickThru = !!(skwcid || efid);
-    const viewThruEnabled = componentConfig.viewThruEnabled;
+    const viewThruEnabled = true;
 
     try {
       if (isClickThru) {

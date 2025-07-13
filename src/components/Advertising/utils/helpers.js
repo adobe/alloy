@@ -9,18 +9,101 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+import {
+  SKWCID_PARAM,
+  EFID_PARAM,
+  UNKNOWN_ADVERTISER,
+  DEFAULT_THROTTLE_MINUTES,
+} from "../constants/index.js";
+
 const getUrlParams = () => {
   const urlParams = new URLSearchParams(window.location.search);
   return {
-    skwcid: urlParams.get("skwcid"),
-    efid: urlParams.get("ef_id"),
+    skwcid: urlParams.get(SKWCID_PARAM),
+    efid: urlParams.get(EFID_PARAM),
   };
 };
 
-const shouldThrottle = (lastTime, throttleMinutes) => {
+const shouldThrottle = (
+  lastTime,
+  throttleMinutes = DEFAULT_THROTTLE_MINUTES,
+) => {
   if (!lastTime) return false;
   const elapsedMinutes = (Date.now() - lastTime) / (60 * 1000);
   return elapsedMinutes < throttleMinutes;
+};
+
+/**
+ * Loads an external JavaScript file into the document.
+ * @param {string} url The URL of the script to load.
+ * @returns {Promise<void>} A promise that resolves when the script is loaded or rejects on error.
+ */
+const loadScript = (url) => {
+  if (document.querySelector(`script[src="${url}"]`)) {
+    console.log(`[ScriptLoader] Script already exists in DOM: ${url}`);
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve, reject) => {
+    const scriptTag = document.createElement("script");
+    scriptTag.type = "text/javascript";
+    scriptTag.src = url;
+    scriptTag.async = true;
+
+    const appendToDOM = () => {
+      // Always try head first, then body
+      const parent = document.head || document.body;
+      if (parent) {
+        parent.appendChild(scriptTag);
+      } else {
+        reject(
+          new Error(
+            "[ScriptLoader] Neither <head> nor <body> available for script insertion.",
+          ),
+        );
+      }
+    };
+
+    scriptTag.addEventListener("load", () => {
+      console.log(`[ScriptLoader] Script loaded successfully: ${url}`);
+      resolve();
+    });
+
+    scriptTag.addEventListener("error", () => {
+      console.error(`[ScriptLoader] Failed to load script: ${url}`);
+      reject(new Error(`Failed to load script: ${url}`));
+    });
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", appendToDOM);
+    } else {
+      appendToDOM();
+    }
+  });
+};
+
+/**
+ * Manages a single, ongoing asynchronous operation to prevent redundant calls.
+ * @param {string} operationName - A name for the operation for logging purposes.
+ * @param {Function} workerFn - A function that returns a Promise to be executed.
+ * @returns {Function} A function that, when called, will either start the worker or return the in-progress promise.
+ */
+const createManagedAsyncOperation = (operationName, workerFn) => {
+  let inProgressPromise = null;
+
+  return (...args) => {
+    if (inProgressPromise) {
+      return inProgressPromise;
+    }
+    inProgressPromise = workerFn(...args).finally(() => {
+      // Clear the promise once it's settled (resolved or rejected)
+      // so that subsequent calls can trigger a new operation.
+      inProgressPromise = null;
+    });
+
+    return inProgressPromise;
+  };
 };
 
 /**
@@ -30,7 +113,7 @@ const shouldThrottle = (lastTime, throttleMinutes) => {
  */
 const normalizeAdvertiser = (advertiser) => {
   if (!advertiser) {
-    return "UNKNOWN";
+    return UNKNOWN_ADVERTISER;
   }
 
   // If it's an array, join with commas
@@ -42,4 +125,10 @@ const normalizeAdvertiser = (advertiser) => {
   return advertiser;
 };
 
-export { getUrlParams, shouldThrottle, normalizeAdvertiser };
+export {
+  getUrlParams,
+  shouldThrottle,
+  normalizeAdvertiser,
+  loadScript,
+  createManagedAsyncOperation,
+};

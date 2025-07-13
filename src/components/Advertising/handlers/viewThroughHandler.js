@@ -11,6 +11,21 @@ governing permissions and limitations under the License.
 */
 
 import collectAllIdentities from "../identities/collectAllIdentities.js";
+import {
+  LAST_CLICK_COOKIE_KEY,
+  AD_CONVERSION_EVENT_TYPE,
+  SURFER_ID,
+  ID5_ID,
+  RAMP_ID,
+  LOG_ALL_IDS_THROTTLED,
+  LOG_ID_RESOLUTION_PROMISES,
+  LOG_ALL_IDS_USED,
+  LOG_ID_RESOLVED,
+  LOG_ERROR_RESOLVING_ID,
+  LOG_ID_CONVERSION_SUCCESS,
+  LOG_AD_CONVERSION_FAILED,
+  LAST_CONVERSION_TIME_KEY,
+} from "../constants/index.js";
 
 export default async function handleViewThrough({
   eventManager,
@@ -20,15 +35,19 @@ export default async function handleViewThrough({
   adConversionHandler,
 }) {
   // Get promises only for non-throttled IDs
-  const identityPromises = collectAllIdentities(componentConfig, cookieManager);
+  const identityPromises = collectAllIdentities(
+    logger,
+    componentConfig,
+    cookieManager,
+  );
 
   // If no IDs to collect, skip entirely
   if (Object.keys(identityPromises).length === 0) {
-    logger.info("All identity types throttled, skipping conversion");
+    logger.info(LOG_ALL_IDS_THROTTLED);
     return [];
   }
 
-  logger.info("ID resolution promises:", Object.keys(identityPromises));
+  logger.info(LOG_ID_RESOLUTION_PROMISES, Object.keys(identityPromises));
 
   // Shared state for resolved IDs and per-ID conversion tracking
   const availableIds = {};
@@ -45,21 +64,26 @@ export default async function handleViewThrough({
   // Helper: Create XDM conversion event
   const createConversionEvent = (idsToInclude) => {
     const event = eventManager.createEvent();
-    const clickData = cookieManager.readClickData();
+    const clickData = cookieManager.getValue(LAST_CLICK_COOKIE_KEY);
 
-    const xdmData = {
-      eventType: "advertising.conversion",
+    const query = {
+      eventType: AD_CONVERSION_EVENT_TYPE,
       advertising: {
         conversion: {
-          ...(clickData.clickTime && { clickTime: clickData.clickTime }),
-          ...(idsToInclude.surferId && { gSurferId: idsToInclude.surferId }),
-          ...(idsToInclude.id5Id && { id5_id: idsToInclude.id5Id }),
-          ...(idsToInclude.rampId && { rampIDEnv: idsToInclude.rampId }),
+          ...(clickData &&
+            clickData.click_time && { LastSearchClick: clickData.click_time }),
+          StitchIds: {
+            ...(idsToInclude[SURFER_ID] && {
+              SurferId: idsToInclude[SURFER_ID],
+            }),
+            ...(idsToInclude[ID5_ID] && { ID5: idsToInclude[ID5_ID] }),
+            ...(idsToInclude[RAMP_ID] && { RampIDEnv: idsToInclude[RAMP_ID] }),
+          },
         },
       },
     };
 
-    event.setUserXdm(xdmData);
+    event.mergeQuery(query);
     return event;
   };
 
@@ -73,17 +97,17 @@ export default async function handleViewThrough({
 
       // Update throttle time in session
       cookieManager.setValue(`${idType}_last_conversion`, now);
-      logger.info(`${idType} conversion successful, throttle window started`);
+      logger.info(LOG_ID_CONVERSION_SUCCESS.replace("{0}", idType));
     });
 
     // Backward compatibility
-    cookieManager.setValue("lastConversionTime", now);
+    cookieManager.setValue(LAST_CONVERSION_TIME_KEY, now);
   };
 
   // Conversion handler - called when any ID resolves
   const handleConversion = async () => {
     if (!isAnyIdUnused()) {
-      logger.info("All resolved IDs already used in conversion");
+      logger.info(LOG_ALL_IDS_USED);
       return null;
     }
 
@@ -99,7 +123,7 @@ export default async function handleViewThrough({
 
       return result;
     } catch (error) {
-      logger.error("Ad conversion tracking failed:", error);
+      logger.error(LOG_AD_CONVERSION_FAILED, error);
       return null;
     }
   };
@@ -111,7 +135,7 @@ export default async function handleViewThrough({
         if (idValue) {
           // Store resolved ID
           availableIds[idType] = idValue;
-          logger.info(`${idType} resolved:`, idValue);
+          logger.info(LOG_ID_RESOLVED.replace("{0}", idType), idValue);
 
           // Trigger conversion handler and collect the promise
           const conversionPromise = handleConversion();
@@ -121,7 +145,7 @@ export default async function handleViewThrough({
         }
       })
       .catch((error) => {
-        logger.error(`Error resolving ${idType}:`, error);
+        logger.error(LOG_ERROR_RESOLVING_ID.replace("{0}", idType), error);
       });
   });
 

@@ -12,8 +12,11 @@ governing permissions and limitations under the License.
 
 import { getNamespacedCookieName, cookieJar } from "../../../utils/index.js";
 import createLoggingCookieJar from "../../../utils/createLoggingCookieJar.js";
-
-const ADVERTISING_COOKIE_KEY = "advertising";
+import {
+  ADVERTISING_COOKIE_KEY,
+  DEFAULT_COOKIE_EXPIRATION_MINUTES,
+  DEFAULT_THROTTLE_MINUTES,
+} from "../constants/index.js";
 
 export default ({ orgId, logger }) => {
   const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });
@@ -21,7 +24,7 @@ export default ({ orgId, logger }) => {
   const getCookieName = (key, useNamespace = true) =>
     useNamespace ? getNamespacedCookieName(orgId, key) : key;
 
-  const getDefaultExpiration = (minutes = 30) =>
+  const getDefaultExpiration = (minutes = DEFAULT_THROTTLE_MINUTES) =>
     new Date(Date.now() + minutes * 60 * 1000);
 
   const safeJsonParse = (value) => {
@@ -70,7 +73,7 @@ export default ({ orgId, logger }) => {
     };
 
     return writeCookie(ADVERTISING_COOKIE_KEY, updated, {
-      expires: getDefaultExpiration(1440),
+      expires: getDefaultExpiration(DEFAULT_COOKIE_EXPIRATION_MINUTES),
       ...options,
     });
   };
@@ -89,7 +92,7 @@ export default ({ orgId, logger }) => {
     };
 
     return writeCookie(ADVERTISING_COOKIE_KEY, updated, {
-      expires: getDefaultExpiration(1440),
+      expires: getDefaultExpiration(DEFAULT_COOKIE_EXPIRATION_MINUTES),
       ...options,
     });
   };
@@ -101,19 +104,19 @@ export default ({ orgId, logger }) => {
 
   const readClickData = () => {
     const data = readCookie(ADVERTISING_COOKIE_KEY) || {};
-    return data.ev_cc || {};
+    return data.les_lsc || {};
   };
 
   const writeClickData = (data, options = {}) => {
     const existing = readCookie(ADVERTISING_COOKIE_KEY) || {};
     const updated = {
       ...existing,
-      ev_cc: { ...data, lastUpdated: Date.now() },
+      _les_lsc: { ...data, lastUpdated: Date.now() },
       lastUpdated: Date.now(),
     };
 
     return writeCookie(ADVERTISING_COOKIE_KEY, updated, {
-      expires: getDefaultExpiration(1440),
+      expires: getDefaultExpiration(DEFAULT_COOKIE_EXPIRATION_MINUTES),
       ...options,
     });
   };
@@ -122,7 +125,10 @@ export default ({ orgId, logger }) => {
     setValue(`${idType}_last_conversion`, timestamp);
   };
 
-  const isIdThrottled = (idType, throttleMinutes = 30) => {
+  const isIdThrottled = (
+    idType,
+    throttleMinutes = DEFAULT_THROTTLE_MINUTES,
+  ) => {
     const lastConversion = getValue(`${idType}_last_conversion`);
     if (!lastConversion) return false;
 

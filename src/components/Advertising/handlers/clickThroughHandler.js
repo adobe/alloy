@@ -11,6 +11,20 @@ governing permissions and limitations under the License.
 */
 
 import { normalizeAdvertiser } from "../utils/helpers.js";
+import {
+  LAST_CLICK_COOKIE_KEY,
+  LAST_CONVERSION_TIME_KEY,
+  XDM_AD_CLOUD_PATH,
+  XDM_AD_CONVERSION_DETAILS,
+  XDM_AD_ASSET_REFERENCE,
+  XDM_AD_STITCH_DATA,
+  XDM_AD_ASSET_DATA,
+  XDM_ADVERTISER,
+  LOG_AD_CONVERSION_START,
+  LOG_COOKIE_WRITTEN,
+  LOG_CONVERSION_TIME_UPDATED,
+  LOG_SENDING_CONVERSION,
+} from "../constants/index.js";
 
 /**
  * Handles click-through ad conversions
@@ -36,10 +50,9 @@ export default async function handleClickThrough({
   efid,
   optionsFromCommand = {},
 }) {
-  logger.info("Handling click-through ad conversion.", { skwcid, efid });
+  logger.info(LOG_AD_CONVERSION_START, { skwcid, efid });
 
   const event = eventManager.createEvent();
-  const xdm = { eventType: "advertising.conversion" };
 
   if (skwcid || efid) {
     const clickData = {
@@ -47,34 +60,32 @@ export default async function handleClickThrough({
       ...(skwcid && { skwcid }),
       ...(efid && { efid }),
     };
-    cookieManager.setValue("ev_cc", clickData);
-    logger.info("ev_cc cookie written for click-through.", clickData);
+    cookieManager.setValue(LAST_CLICK_COOKIE_KEY, clickData);
+    logger.info(LOG_COOKIE_WRITTEN, clickData);
   }
-
-  const adConversionDetails = {
-    ...(efid && { adStitchData: efid }),
-    ...(skwcid && { adConversionMetaData: skwcid }),
-  };
 
   // Handle advertiser normalization for both string and array cases
   const normalizedAdvertiser = normalizeAdvertiser(
     optionsFromCommand.advertiser || componentConfig.defaultAdvertiser,
   );
 
-  xdm.advertising = {
-    adConversionDetails,
-    ...{
-      adAssetReference: {
-        advertiser: normalizedAdvertiser,
+  const xdm = {
+    [XDM_AD_CLOUD_PATH]: {
+      [XDM_AD_CONVERSION_DETAILS]: {
+        ...(efid && { [XDM_AD_STITCH_DATA]: efid }),
+        ...(skwcid && { [XDM_AD_ASSET_DATA]: skwcid }),
+      },
+      [XDM_AD_ASSET_REFERENCE]: {
+        [XDM_ADVERTISER]: normalizedAdvertiser,
       },
     },
   };
 
   event.setUserXdm(xdm);
 
-  cookieManager.setValue("lastConversionTime", Date.now());
-  logger.info("lastConversionTime updated for display click-through.");
+  cookieManager.setValue(LAST_CONVERSION_TIME_KEY, Date.now());
+  logger.info(LOG_CONVERSION_TIME_UPDATED);
 
-  logger.info("Sending click-through ad conversion event.", xdm);
+  logger.info(LOG_SENDING_CONVERSION, xdm);
   return adConversionHandler.trackAdConversion({ event });
 }

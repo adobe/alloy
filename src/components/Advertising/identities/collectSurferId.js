@@ -9,7 +9,6 @@ const userId = "11076";
 // Global thread-safe storage (similar to fetchID5Id.js pattern)
 let surferId = "";
 let inProgressSurferPromise = null; // Store the in-progress promise
-let surferIdHasChanged = true; // Flag to track if surfer_id has changed from cookie, and control if conversion event is fired or not
 
 const addToDom = function addToDom(element) {
   if (document.body) {
@@ -99,28 +98,22 @@ const initiateAdvertisingIdentityCall =
 
             if (resolvedSurferId) {
               // Check if surfer_id has changed by comparing with existing cookie value
-              let existingSurferId = null;
               if (cookieManager) {
                 try {
-                  existingSurferId = cookieManager.getValue("surfer_id");
+                  cookieManager.getValue("surfer_id");
                 } catch {
                   // Error reading existing surferId from cookie
                 }
               }
 
-              // Set the change flag: true if different or no existing value, false if same
-              surferIdHasChanged =
-                !existingSurferId || existingSurferId !== resolvedSurferId;
               surferId = resolvedSurferId;
               resolve(resolvedSurferId);
             } else {
               // No surferId found in message data - handle silently
-              surferIdHasChanged = true; // in safari if surfer_id not resolve still fire rampid call
               resolve(null);
             }
           } catch (err) {
             // Error processing pixel response - handle silently
-            surferIdHasChanged = true; // in safari if surfer_id not resolve still fire rampid call
             reject(err);
           } finally {
             inProgressSurferPromise = null; // Clear stored promise regardless of outcome
@@ -186,10 +179,5 @@ const getSurferId = function getSurferId(
   return Promise.resolve(null);
 };
 
-// Expose function to check if surfer_id has changed
-const hasSurferIdChanged = function hasSurferIdChanged() {
-  return surferIdHasChanged;
-};
-
 // Export the functions for use in other modules
-export { getSurferId, hasSurferIdChanged };
+export { getSurferId };
