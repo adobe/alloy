@@ -32,14 +32,10 @@ export default async function handleOnBeforeSendEvent({
 
   try {
     const [surferId, id5Id, rampId] = await Promise.all([
-      getSurferId(cookieManager, false).catch(() => null),
-      config.id5PartnerId
-        ? getID5Id(config.id5PartnerId, false).catch(() => null)
-        : null,
+      getSurferId(cookieManager, false),
+      config.id5PartnerId ? getID5Id(logger, config.id5PartnerId, false) : null,
       config.liverampScriptPath
-        ? getRampId(config.liverampScriptPath, cookieManager, false).catch(
-            () => null,
-          )
+        ? getRampId(logger, config.liverampScriptPath, cookieManager, false)
         : null,
     ]);
 
@@ -55,7 +51,13 @@ export default async function handleOnBeforeSendEvent({
       );
 
       logger.info("Adding advertising IDs to event query parameters");
-      event.mergeXdm({ advertising: advertisingQuery });
+
+      // Add to query for server-side processing
+      event.mergeQuery({ advertising: advertisingQuery });
+
+      // Optionally also add to XDM for data collection
+      // event.mergeXdm({ advertising: advertisingQuery });
+
       state.surferIdAppendedToAepEvent = true;
       logger.info("Advertising IDs added to event query successfully");
     }

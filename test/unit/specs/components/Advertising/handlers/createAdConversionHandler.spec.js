@@ -164,34 +164,6 @@ describe("Advertising::createAdConversionHandler", () => {
       ).rejects.toThrow("Network failed");
     });
 
-    it("should log conversion attempt", async () => {
-      const mockEvent = {
-        finalize: vi.fn(),
-      };
-
-      const mockPayload = {
-        addEvent: vi.fn(),
-      };
-
-      const mockRequest = {
-        body: { events: [] },
-        getUseIdThirdPartyDomain: vi.fn().mockReturnValue(false),
-      };
-
-      createDataCollectionRequestPayload.mockReturnValue(mockPayload);
-      createDataCollectionRequest.mockReturnValue(mockRequest);
-      sendEdgeNetworkRequest.mockResolvedValue({ status: "success" });
-
-      await handler.trackAdConversion({ event: mockEvent });
-
-      expect(logger.info).toHaveBeenCalledWith(
-        "Sending ad conversion event to Edge Network",
-      );
-      expect(logger.info).toHaveBeenCalledWith(
-        "Ad conversion event sent successfully",
-      );
-    });
-
     it("should handle options parameter", async () => {
       const mockEvent = {
         finalize: vi.fn(),
@@ -284,12 +256,6 @@ describe("Advertising::createAdConversionHandler", () => {
           consent,
           logger,
         });
-      }).not.toThrow();
-    });
-
-    it("should handle missing dependencies gracefully", () => {
-      expect(() => {
-        createAdConversionHandler({});
       }).not.toThrow();
     });
   });

@@ -69,6 +69,7 @@ vi.mock(
 describe("Advertising::collectAllIdentities", () => {
   let componentConfig;
   let cookieManager;
+  let logger;
   let getSurferId;
   let getID5Id;
   let getRampId;
@@ -82,6 +83,13 @@ describe("Advertising::collectAllIdentities", () => {
     cookieManager = {
       getValue: vi.fn(),
       setValue: vi.fn(),
+    };
+
+    logger = {
+      info: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+      warn: vi.fn(),
     };
 
     // Setup mock functions
@@ -117,7 +125,7 @@ describe("Advertising::collectAllIdentities", () => {
     getID5Id.mockReturnValue(Promise.resolve("id5-id"));
     getRampId.mockReturnValue(Promise.resolve("ramp-id"));
 
-    const result = collectAllIdentities(componentConfig, cookieManager);
+    const result = collectAllIdentities(logger, componentConfig, cookieManager);
 
     expect(result).toHaveProperty("surferId");
     expect(result).toHaveProperty("id5Id");

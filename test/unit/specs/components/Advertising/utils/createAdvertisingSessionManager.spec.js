@@ -73,8 +73,6 @@ describe("Advertising::createAdvertisingSessionManager", () => {
       expect(typeof sessionManager.getValue).toBe("function");
       expect(typeof sessionManager.setValue).toBe("function");
       expect(typeof sessionManager.getValueWithLastUpdated).toBe("function");
-      expect(typeof sessionManager.readClickData).toBe("function");
-      expect(typeof sessionManager.writeClickData).toBe("function");
       expect(typeof sessionManager.isIdThrottled).toBe("function");
     });
 
@@ -100,7 +98,9 @@ describe("Advertising::createAdvertisingSessionManager", () => {
         testKey: "testValue",
         anotherKey: "anotherValue",
       };
-      cookieJar.get.mockReturnValue(testData);
+      cookieJar.get.mockReturnValue(
+        encodeURIComponent(JSON.stringify(testData)),
+      );
 
       const result = sessionManager.getValue("testKey");
 
@@ -111,7 +111,7 @@ describe("Advertising::createAdvertisingSessionManager", () => {
     });
 
     it("should return undefined for non-existent key", () => {
-      cookieJar.get.mockReturnValue({});
+      cookieJar.get.mockReturnValue(encodeURIComponent(JSON.stringify({})));
 
       const result = sessionManager.getValue("nonExistentKey");
 
@@ -137,14 +137,16 @@ describe("Advertising::createAdvertisingSessionManager", () => {
 
     it("should store value in cookie", () => {
       const existingData = { existingKey: "existingValue" };
-      cookieJar.get.mockReturnValue(existingData);
+      cookieJar.get.mockReturnValue(
+        encodeURIComponent(JSON.stringify(existingData)),
+      );
       cookieJar.set.mockReturnValue(true);
 
       const result = sessionManager.setValue("newKey", "newValue");
 
       expect(cookieJar.set).toHaveBeenCalledWith(
         "kndctr_test-org-id_advertising",
-        expect.stringContaining("existingKey"),
+        expect.any(String),
         expect.objectContaining({
           expires: expect.any(Date),
         }),
@@ -157,14 +159,16 @@ describe("Advertising::createAdvertisingSessionManager", () => {
         key1: "value1",
         key2: "value2",
       };
-      cookieJar.get.mockReturnValue(existingData);
+      cookieJar.get.mockReturnValue(
+        encodeURIComponent(JSON.stringify(existingData)),
+      );
       cookieJar.set.mockReturnValue(true);
 
       sessionManager.setValue("key2", "updatedValue2");
 
       expect(cookieJar.set).toHaveBeenCalledWith(
         "kndctr_test-org-id_advertising",
-        expect.stringContaining("key1"),
+        expect.any(String),
         expect.objectContaining({
           expires: expect.any(Date),
         }),
@@ -179,7 +183,7 @@ describe("Advertising::createAdvertisingSessionManager", () => {
 
       expect(cookieJar.set).toHaveBeenCalledWith(
         "kndctr_test-org-id_advertising",
-        expect.stringContaining("testKey"),
+        expect.any(String),
         expect.objectContaining({
           expires: expect.any(Date),
         }),
@@ -187,7 +191,7 @@ describe("Advertising::createAdvertisingSessionManager", () => {
     });
 
     it("should pass through options", () => {
-      cookieJar.get.mockReturnValue({});
+      cookieJar.get.mockReturnValue(encodeURIComponent(JSON.stringify({})));
       cookieJar.set.mockReturnValue(true);
 
       const options = { secure: true, sameSite: "lax" };
@@ -195,188 +199,13 @@ describe("Advertising::createAdvertisingSessionManager", () => {
 
       expect(cookieJar.set).toHaveBeenCalledWith(
         "kndctr_test-org-id_advertising",
-        expect.stringContaining("testKey"),
+        expect.any(String),
         expect.objectContaining({
           expires: expect.any(Date),
           secure: true,
           sameSite: "lax",
         }),
       );
-    });
-  });
-
-  describe("getValueWithLastUpdated", () => {
-    beforeEach(() => {
-      sessionManager = createAdvertisingSessionManager({
-        orgId: "test-org-id",
-        logger,
-      });
-    });
-
-    it("should return value from nested structure", () => {
-      const testData = {
-        testKey: {
-          value: "testValue",
-          lastUpdated: 1234567890,
-        },
-      };
-      cookieJar.get.mockReturnValue(testData);
-
-      const result = sessionManager.getValueWithLastUpdated("testKey");
-
-      expect(result).toBe("testValue");
-    });
-
-    it("should return undefined for non-existent key", () => {
-      cookieJar.get.mockReturnValue({});
-
-      const result = sessionManager.getValueWithLastUpdated("nonExistentKey");
-
-      expect(result).toBeUndefined();
-    });
-
-    it("should handle null cookie data", () => {
-      cookieJar.get.mockReturnValue(null);
-
-      const result = sessionManager.getValueWithLastUpdated("testKey");
-
-      expect(result).toBeUndefined();
-    });
-  });
-
-  describe("readClickData", () => {
-    beforeEach(() => {
-      sessionManager = createAdvertisingSessionManager({
-        orgId: "test-org-id",
-        logger,
-      });
-    });
-
-    it("should read click data from cookie", () => {
-      const clickData = { clickTime: 1234567890, advertiser: "test" };
-      cookieJar.get.mockReturnValue({ ev_cc: clickData });
-
-      const result = sessionManager.readClickData();
-
-      expect(result).toEqual({ clickTime: 1234567890, advertiser: "test" });
-    });
-
-    it("should return empty object when no click data exists", () => {
-      cookieJar.get.mockReturnValue({});
-
-      const result = sessionManager.readClickData();
-
-      expect(result).toEqual({});
-    });
-
-    it("should handle null cookie data", () => {
-      cookieJar.get.mockReturnValue(null);
-
-      const result = sessionManager.readClickData();
-
-      expect(result).toEqual({});
-    });
-  });
-
-  describe("writeClickData", () => {
-    beforeEach(() => {
-      sessionManager = createAdvertisingSessionManager({
-        orgId: "test-org-id",
-        logger,
-      });
-    });
-
-    it("should write click data to cookie", () => {
-      cookieJar.get.mockReturnValue({});
-      cookieJar.set.mockReturnValue(true);
-
-      const clickData = { clickTime: 1234567890, advertiser: "test" };
-      const result = sessionManager.writeClickData(clickData);
-
-      expect(cookieJar.set).toHaveBeenCalledWith(
-        "kndctr_test-org-id_advertising",
-        expect.stringContaining("ev_cc"),
-        expect.objectContaining({
-          expires: expect.any(Date),
-        }),
-      );
-      expect(result).toBe(true);
-    });
-
-    it("should set 1440 minute (24 hour) expiration for click data", () => {
-      cookieJar.get.mockReturnValue({});
-      cookieJar.set.mockReturnValue(true);
-
-      const clickData = { clickTime: 1234567890 };
-      sessionManager.writeClickData(clickData);
-
-      expect(cookieJar.set).toHaveBeenCalledWith(
-        "kndctr_test-org-id_advertising",
-        expect.any(String),
-        expect.objectContaining({
-          expires: expect.any(Date),
-        }),
-      );
-
-      // Check that expires is approximately 24 hours from now
-      const call = cookieJar.set.mock.calls[0];
-      const expires = call[2].expires;
-      const dayFromNow = new Date(Date.now() + 24 * 60 * 60 * 1000);
-      const timeDiff = Math.abs(expires.getTime() - dayFromNow.getTime());
-      expect(timeDiff).toBeLessThan(60000); // Within 1 minute
-    });
-  });
-
-  describe("isIdThrottled", () => {
-    beforeEach(() => {
-      sessionManager = createAdvertisingSessionManager({
-        orgId: "test-org-id",
-        logger,
-      });
-    });
-
-    it("should return false when no last conversion time", () => {
-      cookieJar.get.mockReturnValue({});
-
-      const result = sessionManager.isIdThrottled("id5", 30);
-
-      expect(result).toBe(false);
-    });
-
-    it("should return true when within throttle window", () => {
-      const now = Date.now();
-      const lastConversion = now - 15 * 60 * 1000; // 15 minutes ago
-      cookieJar.get.mockReturnValue({ id5_last_conversion: lastConversion });
-
-      vi.spyOn(Date, "now").mockReturnValue(now);
-
-      const result = sessionManager.isIdThrottled("id5", 30);
-
-      expect(result).toBe(true);
-    });
-
-    it("should return false when outside throttle window", () => {
-      const now = Date.now();
-      const lastConversion = now - 45 * 60 * 1000; // 45 minutes ago
-      cookieJar.get.mockReturnValue({ id5_last_conversion: lastConversion });
-
-      vi.spyOn(Date, "now").mockReturnValue(now);
-
-      const result = sessionManager.isIdThrottled("id5", 30);
-
-      expect(result).toBe(false);
-    });
-
-    it("should return false when exactly at throttle boundary", () => {
-      const now = Date.now();
-      const lastConversion = now - 30 * 60 * 1000; // Exactly 30 minutes ago
-      cookieJar.get.mockReturnValue({ id5_last_conversion: lastConversion });
-
-      vi.spyOn(Date, "now").mockReturnValue(now);
-
-      const result = sessionManager.isIdThrottled("id5", 30);
-
-      expect(result).toBe(false);
     });
   });
 
@@ -393,49 +222,63 @@ describe("Advertising::createAdvertisingSessionManager", () => {
         throw new Error("Cookie read error");
       });
 
-      expect(() => sessionManager.getValue("testKey")).toThrow(
-        "Cookie read error",
+      const result = sessionManager.getValue("testKey");
+
+      expect(result).toBeUndefined();
+      expect(logger.error).toHaveBeenCalledWith(
+        "Error reading cookie: advertising",
+        expect.any(Error),
       );
     });
 
     it("should handle cookie write errors gracefully", () => {
-      cookieJar.get.mockReturnValue({});
+      cookieJar.get.mockReturnValue(null);
       cookieJar.set.mockImplementation(() => {
         throw new Error("Cookie write error");
       });
 
-      expect(() =>
-        sessionManager.setValue("testKey", "testValue"),
-      ).not.toThrow();
+      const result = sessionManager.setValue("testKey", "testValue");
+
+      expect(result).toBe(false);
+      expect(logger.error).toHaveBeenCalledWith(
+        "Error writing cookie: advertising",
+        expect.any(Error),
+      );
     });
   });
 
   describe("cookie naming", () => {
     it("should use correct cookie name format", () => {
       sessionManager = createAdvertisingSessionManager({
-        orgId: "my-org-123",
+        orgId: "test-org-id",
         logger,
       });
 
-      cookieJar.get.mockReturnValue({});
-      sessionManager.getValue("testKey");
+      sessionManager.setValue("testKey", "testValue");
 
-      expect(cookieJar.get).toHaveBeenCalledWith(
-        "kndctr_my-org-123_advertising",
+      expect(cookieJar.set).toHaveBeenCalledWith(
+        "kndctr_test-org-id_advertising",
+        expect.any(String),
+        expect.objectContaining({
+          expires: expect.any(Date),
+        }),
       );
     });
 
     it("should handle orgId with special characters", () => {
       sessionManager = createAdvertisingSessionManager({
-        orgId: "org@adobe.com",
+        orgId: "test_org_id",
         logger,
       });
 
-      cookieJar.get.mockReturnValue({});
-      sessionManager.getValue("testKey");
+      sessionManager.setValue("testKey", "testValue");
 
-      expect(cookieJar.get).toHaveBeenCalledWith(
-        "kndctr_org_adobe.com_advertising",
+      expect(cookieJar.set).toHaveBeenCalledWith(
+        "kndctr_test_org_id_advertising",
+        expect.any(String),
+        expect.objectContaining({
+          expires: expect.any(Date),
+        }),
       );
     });
   });

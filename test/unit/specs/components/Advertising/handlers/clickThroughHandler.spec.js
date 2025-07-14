@@ -10,8 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { vi, beforeEach, describe, it, expect } from "vitest";
+import { vi, describe, it, expect, beforeEach } from "vitest";
 import handleClickThrough from "../../../../../../src/components/Advertising/handlers/clickThroughHandler.js";
+import {
+  LAST_CLICK_COOKIE_KEY,
+  LAST_CONVERSION_TIME_KEY,
+} from "../../../../../../src/components/Advertising/constants/index.js";
 
 // Mock network operations to prevent real network calls
 vi.mock("fetch", () => vi.fn());
@@ -47,9 +51,6 @@ describe("Advertising::clickThroughHandler", () => {
 
     cookieManager = {
       setValue: vi.fn(),
-      getValue: vi.fn(),
-      writeClickData: vi.fn(),
-      readClickData: vi.fn(),
     };
 
     adConversionHandler = {
@@ -59,8 +60,6 @@ describe("Advertising::clickThroughHandler", () => {
     logger = {
       info: vi.fn(),
       error: vi.fn(),
-      debug: vi.fn(),
-      warn: vi.fn(),
     };
 
     componentConfig = {};
@@ -87,24 +86,25 @@ describe("Advertising::clickThroughHandler", () => {
     expect(eventManager.createEvent).toHaveBeenCalledWith();
 
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
-      eventType: "advertising.conversion",
-      advertising: {
-        adConversionDetails: {
-          adConversionMetaData: "test-skwcid",
-        },
-        adAssetReference: {
-          advertiser: "UNKNOWN",
+      _experience: {
+        adCloud: {
+          adConversionDetails: {
+            adAssetData: "test-skwcid",
+          },
+          adAssetReference: {
+            advertiser: "UNKNOWN",
+          },
         },
       },
     });
 
-    expect(cookieManager.setValue).toHaveBeenCalledWith("ev_cc", {
+    expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
       click_time: expect.any(Number),
       skwcid: "test-skwcid",
     });
 
     expect(cookieManager.setValue).toHaveBeenCalledWith(
-      "lastConversionTime",
+      LAST_CONVERSION_TIME_KEY,
       expect.any(Number),
     );
 
@@ -134,18 +134,19 @@ describe("Advertising::clickThroughHandler", () => {
     });
 
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
-      eventType: "advertising.conversion",
-      advertising: {
-        adConversionDetails: {
-          adStitchData: "test-efid",
-        },
-        adAssetReference: {
-          advertiser: "UNKNOWN",
+      _experience: {
+        adCloud: {
+          adConversionDetails: {
+            adStitchData: "test-efid",
+          },
+          adAssetReference: {
+            advertiser: "UNKNOWN",
+          },
         },
       },
     });
 
-    expect(cookieManager.setValue).toHaveBeenCalledWith("ev_cc", {
+    expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
       click_time: expect.any(Number),
       efid: "test-efid",
     });
@@ -172,19 +173,20 @@ describe("Advertising::clickThroughHandler", () => {
     });
 
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
-      eventType: "advertising.conversion",
-      advertising: {
-        adConversionDetails: {
-          adStitchData: "test-efid",
-          adConversionMetaData: "test-skwcid",
-        },
-        adAssetReference: {
-          advertiser: "UNKNOWN",
+      _experience: {
+        adCloud: {
+          adConversionDetails: {
+            adStitchData: "test-efid",
+            adAssetData: "test-skwcid",
+          },
+          adAssetReference: {
+            advertiser: "UNKNOWN",
+          },
         },
       },
     });
 
-    expect(cookieManager.setValue).toHaveBeenCalledWith("ev_cc", {
+    expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
       click_time: expect.any(Number),
       skwcid: "test-skwcid",
       efid: "test-efid",
@@ -215,18 +217,19 @@ describe("Advertising::clickThroughHandler", () => {
     });
 
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
-      eventType: "advertising.conversion",
-      advertising: {
-        adConversionDetails: {
-          adConversionMetaData: "test-skwcid",
-        },
-        adAssetReference: {
-          advertiser: "test-advertiser",
+      _experience: {
+        adCloud: {
+          adConversionDetails: {
+            adAssetData: "test-skwcid",
+          },
+          adAssetReference: {
+            advertiser: "test-advertiser",
+          },
         },
       },
     });
 
-    expect(cookieManager.setValue).toHaveBeenCalledWith("ev_cc", {
+    expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
       click_time: expect.any(Number),
       skwcid: "test-skwcid",
     });
@@ -254,5 +257,7 @@ describe("Advertising::clickThroughHandler", () => {
         optionsFromCommand: {},
       }),
     ).rejects.toThrow("Tracking failed");
+
+    expect(logger.error).toHaveBeenCalled();
   });
 });

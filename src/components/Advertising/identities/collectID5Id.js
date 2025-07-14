@@ -132,12 +132,32 @@ const initiateID5Call = function initiateID5Call(partnerId, logger) {
                   });
                   resolve(id5Id);
                 } else {
-                  logger.error("Failed to get ID5 ID after all retries");
+                  logger.info(
+                    "No ID5 ID on Second retry, attempting third retry",
+                  );
+                  window.ID5.init({ partnerId }).onAvailable(
+                    function thirdRetry(thirdRetryStatus) {
+                      logger.info("Thrid retry attempt");
+                      id5Id = thirdRetryStatus.getUserId();
+                      logger.info("Third retry ID5 result", { id5Id });
+
+                      if (id5Id !== undefined && id5Id !== "") {
+                        logger.info("Valid ID5 ID received on third retry", {
+                          id5Id,
+                        });
+                        resolve(id5Id);
+                      } else {
+                        logger.error("Failed to get ID5 ID after all retries");
+                      }
+                      inProgressId5Promise = null;
+                    },
+                    2000,
+                  );
                 }
                 inProgressId5Promise = null;
-              }, 1000);
+              }, 2000);
             }
-          }, 1000);
+          }, 2000);
         }
       } catch (error) {
         logger.error("Error during ID5 initialization", error);

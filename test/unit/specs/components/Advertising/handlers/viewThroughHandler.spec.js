@@ -69,7 +69,10 @@ describe("Advertising::viewThroughHandler", () => {
 
   beforeEach(async () => {
     eventManager = {
-      createEvent: vi.fn(),
+      createEvent: vi.fn(() => ({
+        mergeQuery: vi.fn(),
+        finalize: vi.fn(),
+      })),
     };
 
     cookieManager = {
@@ -125,10 +128,11 @@ describe("Advertising::viewThroughHandler", () => {
       surferId,
     });
 
-    eventManager.createEvent.mockReturnValue({
-      setUserXdm: vi.fn(),
+    const mockEvent = {
+      mergeQuery: vi.fn(),
       finalize: vi.fn(),
-    });
+    };
+    eventManager.createEvent.mockReturnValue(mockEvent);
 
     const result = await handleViewThrough({
       eventManager,
@@ -141,12 +145,26 @@ describe("Advertising::viewThroughHandler", () => {
     await flushPromiseChains();
 
     expect(collectAllIdentities).toHaveBeenCalledWith(
+      logger,
       componentConfig,
       cookieManager,
     );
+
     expect(logger.info).toHaveBeenCalledWith("ID resolution promises:", [
       "surferId",
     ]);
-    expect(result).toBeDefined();
+
+    expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
+      eventType: "advertising.conversion",
+      advertising: {
+        conversion: {
+          StitchIds: {
+            SurferId: "test-surfer-id",
+          },
+        },
+      },
+    });
+
+    expect(result).toEqual([expect.any(Promise)]);
   });
 });

@@ -14,7 +14,6 @@ import { normalizeAdvertiser } from "../utils/helpers.js";
 import {
   LAST_CLICK_COOKIE_KEY,
   LAST_CONVERSION_TIME_KEY,
-  XDM_AD_CLOUD_PATH,
   XDM_AD_CONVERSION_DETAILS,
   XDM_AD_ASSET_REFERENCE,
   XDM_AD_STITCH_DATA,
@@ -24,6 +23,7 @@ import {
   LOG_COOKIE_WRITTEN,
   LOG_CONVERSION_TIME_UPDATED,
   LOG_SENDING_CONVERSION,
+  LOG_AD_CONVERSION_FAILED,
 } from "../constants/index.js";
 
 /**
@@ -70,13 +70,15 @@ export default async function handleClickThrough({
   );
 
   const xdm = {
-    [XDM_AD_CLOUD_PATH]: {
-      [XDM_AD_CONVERSION_DETAILS]: {
-        ...(efid && { [XDM_AD_STITCH_DATA]: efid }),
-        ...(skwcid && { [XDM_AD_ASSET_DATA]: skwcid }),
-      },
-      [XDM_AD_ASSET_REFERENCE]: {
-        [XDM_ADVERTISER]: normalizedAdvertiser,
+    _experience: {
+      adCloud: {
+        [XDM_AD_CONVERSION_DETAILS]: {
+          ...(efid && { [XDM_AD_STITCH_DATA]: efid }),
+          ...(skwcid && { [XDM_AD_ASSET_DATA]: skwcid }),
+        },
+        [XDM_AD_ASSET_REFERENCE]: {
+          [XDM_ADVERTISER]: normalizedAdvertiser,
+        },
       },
     },
   };
@@ -87,5 +89,10 @@ export default async function handleClickThrough({
   logger.info(LOG_CONVERSION_TIME_UPDATED);
 
   logger.info(LOG_SENDING_CONVERSION, xdm);
-  return adConversionHandler.trackAdConversion({ event });
+  try {
+    return await adConversionHandler.trackAdConversion({ event });
+  } catch (error) {
+    logger.error(LOG_AD_CONVERSION_FAILED, error);
+    throw error;
+  }
 }

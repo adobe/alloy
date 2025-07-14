@@ -44,9 +44,14 @@ export default ({ orgId, logger }) => {
       : value;
 
   const readCookie = (key, useNamespace = true) => {
-    const name = getCookieName(key, useNamespace);
-    const value = loggingCookieJar.get(name);
-    return value ? safeJsonParse(value) : null;
+    try {
+      const name = getCookieName(key, useNamespace);
+      const value = loggingCookieJar.get(name);
+      return value ? safeJsonParse(value) : null;
+    } catch (error) {
+      logger.error(`Error reading cookie: ${key}`, error);
+      return null;
+    }
   };
 
   const writeCookie = (key, value, options = {}, useNamespace = true) => {
@@ -102,25 +107,6 @@ export default ({ orgId, logger }) => {
     return data[key];
   };
 
-  const readClickData = () => {
-    const data = readCookie(ADVERTISING_COOKIE_KEY) || {};
-    return data.les_lsc || {};
-  };
-
-  const writeClickData = (data, options = {}) => {
-    const existing = readCookie(ADVERTISING_COOKIE_KEY) || {};
-    const updated = {
-      ...existing,
-      _les_lsc: { ...data, lastUpdated: Date.now() },
-      lastUpdated: Date.now(),
-    };
-
-    return writeCookie(ADVERTISING_COOKIE_KEY, updated, {
-      expires: getDefaultExpiration(DEFAULT_COOKIE_EXPIRATION_MINUTES),
-      ...options,
-    });
-  };
-
   const markSuccessfulConversion = (idType, timestamp = Date.now()) => {
     setValue(`${idType}_last_conversion`, timestamp);
   };
@@ -139,8 +125,6 @@ export default ({ orgId, logger }) => {
   return {
     getValue,
     setValue,
-    readClickData,
-    writeClickData,
     getValueWithLastUpdated,
     setValueWithLastUpdated,
     markSuccessfulConversion,

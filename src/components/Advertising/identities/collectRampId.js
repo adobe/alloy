@@ -62,14 +62,26 @@ const appendScript = (script, logger) => {
   }
 };
 
+// ===================================================================================
+// UPDATED FUNCTION 1: loadScriptInParallel
+// This function is updated to return a Promise that resolves when the script's
+// 'onload' event fires, and rejects on 'onerror'. This allows us to wait for
+// the script to fully load before trying to use it.
+// ===================================================================================
 const loadScriptInParallel = (scriptPath, logger) => {
-  if (state.scriptLoadingInitiated || typeof window.ats !== "undefined") {
-    logger.info("Script loading skipped - already loaded or in progress");
-    return;
+  if (typeof window.ats !== "undefined") {
+    logger.info("ATS script already loaded.");
+    return Promise.resolve();
+  }
+  if (state.scriptLoadingInitiated) {
+    logger.info("Script loading already in progress.");
+    // This part is tricky without a more robust promise cache, but for now
+    // we assume the existing process will handle it.
+    return Promise.resolve();
   }
   if (document.querySelector(`script[src="${scriptPath}"]`)) {
-    logger.info("Script already exists in DOM");
-    return;
+    logger.info("Script element already exists in DOM. Assuming it will load.");
+    return Promise.resolve();
   }
 
   logger.info("Starting parallel script load", scriptPath);
@@ -86,29 +98,34 @@ const loadScriptInParallel = (scriptPath, logger) => {
     logger.warn("Failed to add preload hint", error);
   }
 
-  const script = createNode(
-    SCRIPT,
-    {
-      src: scriptPath,
-      type: "text/javascript",
-      async: true,
-      crossorigin: "anonymous",
-    },
-    {
-      onerror: () => {
-        logger.error("Script load failed", { scriptPath });
-        state.scriptLoadingInitiated = false;
+  return new Promise((resolve, reject) => {
+    const script = createNode(
+      SCRIPT,
+      {
+        src: scriptPath,
+        type: "text/javascript",
+        async: true,
+        crossorigin: "anonymous",
       },
-      onload: () => {
-        logger.info("Script loaded successfully");
-        if (typeof window.ats === "undefined") {
-          logger.warn("Script loaded but ATS object not initialized");
-        }
+      {
+        // On error, reject the promise
+        onerror: () => {
+          logger.error("Script load failed", { scriptPath });
+          state.scriptLoadingInitiated = false;
+          reject(new Error(`Failed to load ATS script from ${scriptPath}`));
+        },
+        // On success, resolve the promise
+        onload: () => {
+          logger.info("Script loaded successfully");
+          if (typeof window.ats === "undefined") {
+            logger.warn("Script loaded but ATS object not initialized.");
+          }
+          resolve();
+        },
       },
-    },
-  );
-
-  appendScript(script, logger);
+    );
+    appendScript(script, logger);
+  });
 };
 
 const processEnvelope = (envelope, resolve, cookieManager, logger) => {
@@ -117,7 +134,7 @@ const processEnvelope = (envelope, resolve, cookieManager, logger) => {
   try {
     parsedEnvelope = JSON.parse(envelope).envelope;
   } catch (error) {
-    logger.error("Failed to parse RampID envelope", error);
+    logger.info("parse RampID envelope as is", error);
     parsedEnvelope = envelope;
   }
 
@@ -178,7 +195,8 @@ const retrieveEnvelopeWithRetries = (
       timerMultiplier += 1;
 
       if (
-        window.ats !== "undefined" &&
+        typeof window.ats !== "undefined" &&
+        window.ats !== null &&
         !state.rampIdEnv &&
         !state.envelopeRetrievalInProgress
       ) {
@@ -208,9 +226,13 @@ const retrieveEnvelopeWithRetries = (
   tryToRetrieve();
 };
 
+// ===================================================================================
+// UPDATED FUNCTION 2: initiateRampIDCall
+// This function is updated to wait for the loadScriptInParallel promise to
+// resolve before it attempts to call window.ats.retrieveEnvelope(). This
+// chained promise structure (.then()) eliminates the race condition.
+// ===================================================================================
 const initiateRampIDCall = (rampIdScriptPath, cookieManager, logger) => {
-  loadScriptInParallel(rampIdScriptPath, logger);
-
   if (state.inProgressRampIdPromise) {
     logger.info("Returning existing in-progress RampID promise");
     return state.inProgressRampIdPromise;
@@ -219,55 +241,75 @@ const initiateRampIDCall = (rampIdScriptPath, cookieManager, logger) => {
   logger.info("Initiating new RampID call");
 
   state.inProgressRampIdPromise = new Promise((resolve, reject) => {
-    if (
-      typeof window.ats !== "undefined" &&
-      !state.envelopeRetrievalInProgress
-    ) {
-      logger.info("ATS object found, checking configuration");
-      state.envelopeRetrievalInProgress = true;
-      window.ats
-        .retrieveEnvelope()
-        .then((envelopeResponse) => {
-          if (envelopeResponse) {
-            processEnvelope(envelopeResponse, resolve, cookieManager, logger);
-          } else {
-            logger.info(
-              "No immediate envelope, waiting for lrEnvelopePresent event",
-            );
-            state.envelopeRetrievalInProgress = false;
-            window.addEventListener("lrEnvelopePresent", () => {
-              if (state.envelopeRetrievalInProgress) return;
-              logger.info("lrEnvelopePresent event received");
-              state.envelopeRetrievalInProgress = true;
-              window.ats.retrieveEnvelope().then(
-                (envelopeResult) =>
-                  processEnvelope(
-                    envelopeResult,
-                    resolve,
-                    cookieManager,
-                    logger,
-                  ),
-                (error) => {
-                  logger.error(
-                    "Failed to retrieve envelope after event",
-                    error,
+    // First, call the script loader and wait for it to complete.
+    loadScriptInParallel(rampIdScriptPath, logger)
+      .then(() => {
+        // SUCCESS: This code runs ONLY AFTER the script is loaded.
+        logger.info("ATS script loaded, proceeding with envelope retrieval.");
+
+        // All the logic to retrieve the envelope is now safely placed here.
+        if (
+          typeof window.ats !== "undefined" &&
+          !state.envelopeRetrievalInProgress
+        ) {
+          logger.info("ATS object found, checking configuration");
+          state.envelopeRetrievalInProgress = true;
+          window.ats
+            .retrieveEnvelope()
+            .then((envelopeResponse) => {
+              if (envelopeResponse) {
+                processEnvelope(
+                  envelopeResponse,
+                  resolve,
+                  cookieManager,
+                  logger,
+                );
+              } else {
+                logger.info(
+                  "No immediate envelope, waiting for lrEnvelopePresent event",
+                );
+                state.envelopeRetrievalInProgress = false;
+                window.addEventListener("lrEnvelopePresent", () => {
+                  if (state.envelopeRetrievalInProgress) return;
+                  logger.info("lrEnvelopePresent event received");
+                  state.envelopeRetrievalInProgress = true;
+                  window.ats.retrieveEnvelope().then(
+                    (envelopeResult) =>
+                      processEnvelope(
+                        envelopeResult,
+                        resolve,
+                        cookieManager,
+                        logger,
+                      ),
+                    (error) => {
+                      logger.error(
+                        "Failed to retrieve envelope after event",
+                        error,
+                      );
+                      state.envelopeRetrievalInProgress = false;
+                      reject(error);
+                      state.inProgressRampIdPromise = null;
+                    },
                   );
-                  state.envelopeRetrievalInProgress = false;
-                  reject(error);
-                  state.inProgressRampIdPromise = null;
-                },
-              );
+                });
+              }
+            })
+            .catch((error) => {
+              logger.error("Error retrieving envelope", error);
+              state.envelopeRetrievalInProgress = false;
+              reject(error);
+              state.inProgressRampIdPromise = null;
             });
-          }
-        })
-        .catch((error) => {
-          logger.error("Error retrieving envelope", error);
-          state.envelopeRetrievalInProgress = false;
-          reject(error);
-          state.inProgressRampIdPromise = null;
-        });
-    }
-    retrieveEnvelopeWithRetries(resolve, reject, cookieManager, logger);
+        }
+        // The retry mechanism will now safely start after the script has loaded.
+        retrieveEnvelopeWithRetries(resolve, reject, cookieManager, logger);
+      })
+      .catch((error) => {
+        // FAILURE: This code runs if the script fails to load.
+        logger.error("Could not initiate RampID call.", error);
+        state.inProgressRampIdPromise = null; // Reset promise on failure
+        reject(error);
+      });
   });
 
   return state.inProgressRampIdPromise;
