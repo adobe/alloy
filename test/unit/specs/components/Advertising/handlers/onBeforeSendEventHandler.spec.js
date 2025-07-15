@@ -91,6 +91,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
 
     event = {
       mergeXdm: vi.fn(),
+      mergeQuery: vi.fn(),
     };
 
     config = {
@@ -149,10 +150,15 @@ describe("Advertising::onBeforeSendEventHandler", () => {
     });
 
     expect(getSurferId).toHaveBeenCalledWith(cookieManager, false);
-    expect(getID5Id).toHaveBeenCalledWith("test-partner", false);
-    expect(getRampId).toHaveBeenCalledWith("/test-path", cookieManager, false);
+    expect(getID5Id).toHaveBeenCalledWith(logger, "test-partner", false);
+    expect(getRampId).toHaveBeenCalledWith(
+      logger,
+      "/test-path",
+      cookieManager,
+      false,
+    );
 
-    expect(event.mergeXdm).toHaveBeenCalledWith({
+    expect(event.mergeQuery).toHaveBeenCalledWith({
       advertising: {
         gSurferId: "test-surfer-id",
         gID5Id: "test-id5-id",
@@ -181,7 +187,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       config,
     });
 
-    expect(event.mergeXdm).toHaveBeenCalledWith({
+    expect(event.mergeQuery).toHaveBeenCalledWith({
       advertising: {
         gSurferId: "test-surfer-id",
         gRampId: "test-ramp-id",
@@ -207,9 +213,14 @@ describe("Advertising::onBeforeSendEventHandler", () => {
 
     expect(getSurferId).toHaveBeenCalled();
     expect(getID5Id).not.toHaveBeenCalled();
-    expect(getRampId).toHaveBeenCalled();
+    expect(getRampId).toHaveBeenCalledWith(
+      logger,
+      "/test-path",
+      cookieManager,
+      false,
+    );
 
-    expect(event.mergeXdm).toHaveBeenCalledWith({
+    expect(event.mergeQuery).toHaveBeenCalledWith({
       advertising: {
         gSurferId: "test-surfer-id",
         gRampId: "test-ramp-id",
@@ -234,10 +245,10 @@ describe("Advertising::onBeforeSendEventHandler", () => {
     });
 
     expect(getSurferId).toHaveBeenCalled();
-    expect(getID5Id).toHaveBeenCalled();
+    expect(getID5Id).toHaveBeenCalledWith(logger, "test-partner", false);
     expect(getRampId).not.toHaveBeenCalled();
 
-    expect(event.mergeXdm).toHaveBeenCalledWith({
+    expect(event.mergeQuery).toHaveBeenCalledWith({
       advertising: {
         gSurferId: "test-surfer-id",
         gID5Id: "test-id5-id",
@@ -260,7 +271,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
     expect(getID5Id).not.toHaveBeenCalled();
     expect(getRampId).not.toHaveBeenCalled();
 
-    expect(event.mergeXdm).toHaveBeenCalledWith({
+    expect(event.mergeQuery).toHaveBeenCalledWith({
       advertising: {
         gSurferId: "test-surfer-id",
       },

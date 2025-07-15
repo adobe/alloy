@@ -62,12 +62,6 @@ const appendScript = (script, logger) => {
   }
 };
 
-// ===================================================================================
-// UPDATED FUNCTION 1: loadScriptInParallel
-// This function is updated to return a Promise that resolves when the script's
-// 'onload' event fires, and rejects on 'onerror'. This allows us to wait for
-// the script to fully load before trying to use it.
-// ===================================================================================
 const loadScriptInParallel = (scriptPath, logger) => {
   if (typeof window.ats !== "undefined") {
     logger.info("ATS script already loaded.");

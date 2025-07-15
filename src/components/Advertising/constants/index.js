@@ -67,3 +67,4 @@ export const LOG_ERROR_RESOLVING_ID = "Error resolving {0}:";
 export const LOG_ID_CONVERSION_SUCCESS =
   "{0} conversion successful, throttle window started";
 export const LOG_AD_CONVERSION_FAILED = "Ad conversion tracking failed:";
+export const DISPLAY_CLICK_COOKIE_KEY = "ev_lcc";

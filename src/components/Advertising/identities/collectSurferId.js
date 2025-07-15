@@ -3,11 +3,14 @@ Copyright 2025 Adobe. All rights reserved.
 This file is licensed under the Apache License, Version 2.0.
 */
 
+import { DISPLAY_CLICK_COOKIE_KEY, SURFER_ID } from "../constants/index.js";
+
 const pixelHost = "pixel.everesttech.net";
-const userId = "11076";
+const userId = "1";
 
 // Global thread-safe storage (similar to fetchID5Id.js pattern)
 let surferId = "";
+let displayClickCookie = "";
 let inProgressSurferPromise = null; // Store the in-progress promise
 
 const addToDom = function addToDom(element) {
@@ -57,7 +60,7 @@ const removeListener = function removeListener(fn) {
 };
 
 const initiateAdvertisingIdentityCall =
-  function initiateAdvertisingIdentityCall(cookieManager = null) {
+  function initiateAdvertisingIdentityCall() {
     // If there's already a fetch in progress, return that promise
     if (inProgressSurferPromise) {
       return inProgressSurferPromise;
@@ -67,7 +70,7 @@ const initiateAdvertisingIdentityCall =
       setTimeout(() => {
         const scheme =
           document.location.protocol === "https:" ? "https:" : "http:";
-        const pixelDetailsUrl = `${scheme}//${pixelHost}/${userId}/gr?ev_gb=0&url=${scheme}//www.everestjs.net%2Fstatic%2Fpixel_details.html%23gsurfer%3D__EFGSURFER__`;
+        const pixelDetailsUrl = `${scheme}//${pixelHost}/${userId}/gr?ev_gb=0&url=${scheme}%2F%2Fwww.everestjs.net%2Fstatic%2Fpixel_details.html%23google%3D__EFGCK__%26gsurfer%3D__EFGSURFER__%26imsId%3D__EFIMSORGID__%26is_fb_cookie_synced%3D__EFFB__%26optout%3D__EFOPTOUT__%26throttleCookie%3D__EFSYNC__%26time%3D__EFTIME__%26ev_lcc%3D__LCC__`;
         const iframeElement = getInvisibleIframeElement(pixelDetailsUrl);
         addToDom(iframeElement);
 
@@ -85,32 +88,25 @@ const initiateAdvertisingIdentityCall =
               .substring(pixelRedirectUri.indexOf("#") + 1)
               .split("&");
             let resolvedSurferId;
-
+            let resolvedDisplayClickCookie;
             for (let i = 0; i < hashParams.length; i += 1) {
               const parts = hashParams[i].split("=");
               if (parts[0] === "gsurfer" && parts[1]) {
                 resolvedSurferId = parts[1];
-                break;
+              } else if (parts[0] === DISPLAY_CLICK_COOKIE_KEY && parts[1]) {
+                resolvedDisplayClickCookie = parts[1];
               }
             }
 
             removeListener(pixelDetailsReceiver);
 
             if (resolvedSurferId) {
-              // Check if surfer_id has changed by comparing with existing cookie value
-              if (cookieManager) {
-                try {
-                  cookieManager.getValue("surfer_id");
-                } catch {
-                  // Error reading existing surferId from cookie
-                }
-              }
-
               surferId = resolvedSurferId;
-              resolve(resolvedSurferId);
+              displayClickCookie = resolvedDisplayClickCookie;
+              resolve({ surferId, displayClickCookie });
             } else {
               // No surferId found in message data - handle silently
-              resolve(null);
+              resolve({ surferId: null, displayClickCookie: null });
             }
           } catch (err) {
             // Error processing pixel response - handle silently
@@ -127,23 +123,6 @@ const initiateAdvertisingIdentityCall =
     return inProgressSurferPromise;
   };
 
-// Store surferId in cookie using cookieManager
-const storeSurferIdInCookie = function storeSurferIdInCookie(
-  cookieManager,
-  surferIdValue,
-) {
-  if (cookieManager && surferIdValue) {
-    try {
-      cookieManager.setValueWithLastUpdated("surfer_id", surferIdValue);
-      return true;
-    } catch {
-      // Error storing surferId in cookie - handle silently
-      return false;
-    }
-  }
-  return false;
-};
-
 const getSurferId = function getSurferId(
   cookieManager,
   resolveSurferIdIfNotAvailable = true,
@@ -156,7 +135,7 @@ const getSurferId = function getSurferId(
   // If not in memory, check if available in cookie using cookieManager
   if (cookieManager) {
     try {
-      const cookieSurferId = cookieManager.getValueWithLastUpdated("surfer_id");
+      const cookieSurferId = cookieManager.getValueWithLastUpdated(SURFER_ID);
       if (cookieSurferId) {
         // Update in-memory value
         surferId = cookieSurferId;
@@ -169,11 +148,19 @@ const getSurferId = function getSurferId(
 
   if (resolveSurferIdIfNotAvailable) {
     // If not in memory or cookie, initialize and store in cookie
-    return initiateAdvertisingIdentityCall(cookieManager).then((resolvedId) => {
+    return initiateAdvertisingIdentityCall().then((resolvedId) => {
       if (cookieManager && resolvedId) {
-        storeSurferIdInCookie(cookieManager, resolvedId);
+        if (resolvedId.surferId) {
+          cookieManager.setValueWithLastUpdated(SURFER_ID, resolvedId.surferId);
+        }
+        if (resolvedId.displayClickCookie) {
+          cookieManager.setValueWithLastUpdated(
+            DISPLAY_CLICK_COOKIE_KEY,
+            resolvedId.displayClickCookie,
+          );
+        }
       }
-      return resolvedId;
+      return resolvedId.surferId;
     });
   }
   return Promise.resolve(null);

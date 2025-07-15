@@ -25,6 +25,7 @@ import {
   LOG_ID_CONVERSION_SUCCESS,
   LOG_AD_CONVERSION_FAILED,
   LAST_CONVERSION_TIME_KEY,
+  DISPLAY_CLICK_COOKIE_KEY,
 } from "../constants/index.js";
 
 export default async function handleViewThrough({
@@ -64,14 +65,20 @@ export default async function handleViewThrough({
   // Helper: Create XDM conversion event
   const createConversionEvent = (idsToInclude) => {
     const event = eventManager.createEvent();
-    const clickData = cookieManager.getValue(LAST_CLICK_COOKIE_KEY);
-
+    const searchClickData = cookieManager.getValue(LAST_CLICK_COOKIE_KEY);
+    const displayClickCookie = cookieManager.getValue(DISPLAY_CLICK_COOKIE_KEY);
     const query = {
       eventType: AD_CONVERSION_EVENT_TYPE,
       advertising: {
         conversion: {
-          ...(clickData &&
-            clickData.click_time && { LastSearchClick: clickData.click_time }),
+          ...(searchClickData &&
+            searchClickData.click_time && {
+              LastSearchClick: searchClickData.click_time,
+            }),
+          ...(displayClickCookie &&
+            displayClickCookie.value && {
+              LastDisplayClick: displayClickCookie.value,
+            }),
           StitchIds: {
             ...(idsToInclude[SURFER_ID] && {
               SurferId: idsToInclude[SURFER_ID],
