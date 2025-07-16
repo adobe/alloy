@@ -9,6 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+const { execSync } = require("child_process");
+
 const setupDeployment = async ({
   exec,
   githubActor,
@@ -31,6 +34,9 @@ const setupDeployment = async ({
     "npm config",
     `npm config set //registry.npmjs.org/:_authToken=${npmToken}`,
   );
+  logger.info("git check config");
+  execSync("git remote -v", { stdio: "inherit" });
+  execSync("git config --get user.name", { stdio: "inherit" });
   logger.info("Configure done");
 };
 
