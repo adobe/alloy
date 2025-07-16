@@ -10,10 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { execSync } = require("child_process");
-
 const setupDeployment = async ({
   exec,
+  execSync,
   githubActor,
   githubRepository,
   logger,
