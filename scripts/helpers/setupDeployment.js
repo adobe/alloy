@@ -14,7 +14,7 @@ const setupDeployment = async ({
   githubActor,
   githubRepository,
   logger,
-  //npmToken,
+  npmToken,
 }) => {
   logger.info("Configuring git.");
   await exec("git config", `git config user.name ${githubActor}`);
@@ -26,16 +26,12 @@ const setupDeployment = async ({
     "git remote add",
     `git remote add gh-origin git@github.com:${githubRepository}.git`,
   );
-  /*
-  // We are getting connection timeout issues from this, and I'm wondering if its even necessary
-  // as from the documentation it says that the token can be read from the NPM_TOKEN environment variable.
-  // https://docs.npmjs.com/using-private-packages-in-a-ci-cd-workflow
   logger.info("Configuring NPM.");
   await exec(
     "npm config",
     `npm config set //registry.npmjs.org/:_authToken=${npmToken}`,
   );
-  */
+  logger.info("Configure done");
 };
 
 export default setupDeployment;

@@ -70,7 +70,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22.4.x
-      - uses: webfactory/ssh-agent@v0.5.3
+      - uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: |
             ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
