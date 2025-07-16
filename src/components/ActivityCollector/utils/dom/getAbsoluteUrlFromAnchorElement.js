@@ -20,6 +20,6 @@ export default (window, element) => {
   try {
     return new URL(href, base).href;
   } catch {
-    return href;
+    return base;
   }
 };
