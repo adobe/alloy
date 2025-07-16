@@ -66,4 +66,18 @@ describe("ActivityCollector::getAbsoluteUrlFromAnchorElement", () => {
       );
     });
   });
+
+  it("handles invalid URLs", () => {
+    const window = {
+      location: {
+        href: "http://example.com/example.html",
+      },
+    };
+    const element = {
+      href: "hello world",
+    };
+    expect(() =>
+      getAbsoluteUrlFromAnchorElement(window, element),
+    ).not.toThrow();
+  });
 });

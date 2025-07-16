@@ -17,5 +17,9 @@ export default (window, element) => {
   if (typeof href !== "string") {
     href = "";
   }
-  return new URL(href, base).href;
+  try {
+    return new URL(href, base).href;
+  } catch {
+    return href;
+  }
 };
