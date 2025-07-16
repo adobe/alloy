@@ -10,31 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import urlStartsWithScheme from "../urlStartsWithScheme.js";
-
 export default (window, element) => {
-  const loc = window.location;
+  const base = window.location.href;
   let href = element.href || "";
   // Some objects (like SVG animations) can contain a href object instead of a string
   if (typeof href !== "string") {
     href = "";
   }
-  let { protocol, host } = element;
-  if (href && !urlStartsWithScheme(href)) {
-    if (!protocol) {
-      protocol = loc.protocol ? loc.protocol : "";
-    }
-    protocol = protocol ? `${protocol}//` : "";
-    if (!host) {
-      host = loc.host ? loc.host : "";
-    }
-    let path = "";
-    if (href.substring(0, 1) !== "/") {
-      let indx = loc.pathname.lastIndexOf("/");
-      indx = indx < 0 ? 0 : indx;
-      path = loc.pathname.substring(0, indx);
-    }
-    href = `${protocol}${host}${path}/${href}`;
+  try {
+    return new URL(href, base).href;
+  } catch {
+    return base;
   }
-  return href;
 };
