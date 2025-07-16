@@ -223,7 +223,7 @@ describe("Advertising::clickThroughHandler", () => {
             adAssetData: "test-skwcid",
           },
           adAssetReference: {
-            advertiser: "test-advertiser",
+            advertiser: "UNKNOWN",
           },
         },
       },

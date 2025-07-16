@@ -14,13 +14,16 @@ import { objectOf, string, boolean } from "../../utils/validation/index.js";
 
 export default objectOf({
   advertising: objectOf({
-    // LiveRamp script path for loading the LiveRamp identity SDK
-    liverampScriptPath: string(),
-
-    // ID5 partner ID for identity resolution
-    id5PartnerId: string(),
-
-    // Display campaign configuration
-    viewThruEnabled: boolean(),
+    isAdvertisingEnabled: boolean(),
+    id5Enabled: boolean(),
+    rampIdEnabled: boolean(),
+    advertisingEdgeConfigOverrides: objectOf({
+      production: objectOf({
+        com_adobe_advertising: objectOf({
+          id5PartnerId: string(),
+          rampIdJSPath: string(),
+        }),
+      }),
+    }),
   }).noUnknownFields(),
 });

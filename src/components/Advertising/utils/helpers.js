@@ -125,10 +125,31 @@ const normalizeAdvertiser = (advertiser) => {
   return advertiser;
 };
 
+const populateAdvertisingComponentConfig = (config) => {
+  const componentConfig = config?.advertising || {};
+  const overrides =
+    componentConfig?.advertisingEdgeConfigOverrides?.production
+      ?.com_adobe_advertising;
+
+  if (!overrides) {
+    console.warn("com_adobe_advertising config missing");
+    return componentConfig;
+  }
+
+  componentConfig.rampIdScriptPath = overrides.rampIdJSPath || null;
+  componentConfig.id5PartnerId = overrides.id5PartnerId || null;
+  componentConfig.AA_DSP_AdvIds = Array.isArray(overrides.AA_DSP_AdvIds)
+    ? overrides.AA_DSP_AdvIds
+    : [];
+
+  return componentConfig;
+};
+
 export {
   getUrlParams,
   shouldThrottle,
   normalizeAdvertiser,
   loadScript,
   createManagedAsyncOperation,
+  populateAdvertisingComponentConfig,
 };

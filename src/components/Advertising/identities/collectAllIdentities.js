@@ -14,13 +14,11 @@ import { getSurferId } from "./collectSurferId.js";
 import { getRampId } from "./collectRampId.js";
 import { getID5Id } from "./collectID5Id.js";
 
-// Made synchronous to return map of id promises directly
 const collectAllIdentities = (logger, componentConfig, cookieManager) => {
   const promises = {};
   const now = Date.now();
   const THROTTLE_WINDOW = 30 * 60 * 1000; // 30 minutes
 
-  // Helper to check if ID conversion is throttled
   const isThrottled = (idType) => {
     const lastSuccessfulConversion = cookieManager.getValue(
       `${idType}_last_conversion`,
@@ -31,19 +29,28 @@ const collectAllIdentities = (logger, componentConfig, cookieManager) => {
     );
   };
 
-  // Only create promises for non-throttled IDs
   if (!isThrottled("surferId")) {
     promises.surferId = getSurferId(cookieManager, true).catch(() => null);
   }
-  // componentConfig.id5PartnerId &&
-  if (!isThrottled("id5Id")) {
-    promises.id5Id = getID5Id(logger, "1650").catch(() => null);
+
+  if (
+    componentConfig.id5Enabled &&
+    componentConfig.id5PartnerId &&
+    !isThrottled("id5Id")
+  ) {
+    promises.id5Id = getID5Id(logger, componentConfig.id5PartnerId).catch(
+      () => null,
+    );
   }
-  // componentConfig.liverampScriptPath &&
-  if (!isThrottled("rampId")) {
+
+  if (
+    componentConfig.rampIdEnabled &&
+    componentConfig.rampIdScriptPath &&
+    !isThrottled("rampId")
+  ) {
     promises.rampId = getRampId(
       logger,
-      "https://ats-wrapper.privacymanager.io/ats-modules/db58949f-d696-469b-a8ac-a04382bc5183/ats.js",
+      componentConfig.rampIdScriptPath,
       cookieManager,
       true,
     ).catch(() => null);

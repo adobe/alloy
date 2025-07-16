@@ -15,7 +15,10 @@ import createCookieManager from "./utils/createAdvertisingSessionManager.js";
 import handleClickThrough from "./handlers/clickThroughHandler.js";
 import handleViewThrough from "./handlers/viewThroughHandler.js";
 import handleOnBeforeSendEvent from "./handlers/onBeforeSendEventHandler.js";
-import { getUrlParams } from "./utils/helpers.js";
+import {
+  getUrlParams,
+  populateAdvertisingComponentConfig,
+} from "./utils/helpers.js";
 
 export default ({
   logger,
@@ -25,7 +28,7 @@ export default ({
   consent,
 }) => {
   // Component configuration - ensure it works even without configuration
-  const componentConfig = config?.advertising || {};
+  const componentConfig = populateAdvertisingComponentConfig(config);
   logger.info("Advertising component initialized", componentConfig);
 
   // Create session manager
@@ -50,6 +53,7 @@ export default ({
   const sendAdConversion = async (optionsFromCommand = {}) => {
     const { skwcid, efid } = getUrlParams();
     const isClickThru = !!(skwcid || efid);
+    // todo: read this from config
     const viewThruEnabled = true;
 
     try {
@@ -94,6 +98,9 @@ export default ({
   return {
     lifecycle: {
       onComponentsRegistered() {
+        if (!componentConfig.isAdvertisingEnabled) {
+          return;
+        }
         logger.info(
           "Advertising component registered - auto-triggering sendAdConversion",
         );
@@ -103,6 +110,9 @@ export default ({
         });
       },
       onBeforeEvent: ({ event }) => {
+        if (!componentConfig.isAdvertisingEnabled) {
+          return;
+        }
         // Handle async function in fire-and-forget manner since lifecycle hooks are synchronous
         handleOnBeforeSendEvent({
           cookieManager,

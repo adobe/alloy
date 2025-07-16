@@ -48,7 +48,6 @@ export default async function handleClickThrough({
   componentConfig,
   skwcid,
   efid,
-  optionsFromCommand = {},
 }) {
   logger.info(LOG_AD_CONVERSION_START, { skwcid, efid });
 
@@ -66,7 +65,7 @@ export default async function handleClickThrough({
 
   // Handle advertiser normalization for both string and array cases
   const normalizedAdvertiser = normalizeAdvertiser(
-    optionsFromCommand.advertiser || componentConfig.defaultAdvertiser,
+    componentConfig.AA_DSP_AdvIds,
   );
 
   const xdm = {

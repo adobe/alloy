@@ -76,8 +76,10 @@ describe("Advertising::collectAllIdentities", () => {
 
   beforeEach(async () => {
     componentConfig = {
-      id5PartnerId: "test-partner-id",
-      liverampScriptPath: "/test-path",
+      id5Enabled: true,
+      id5PartnerId: "test-partner",
+      rampIdEnabled: true,
+      rampIdScriptPath: "/test-path",
     };
 
     cookieManager = {
