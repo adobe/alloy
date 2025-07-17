@@ -56,7 +56,11 @@ const exec = async (name, command, options = {}) => {
     child.on("close", (code) => {
       if (code === 0) {
         resolve();
+        return;
       }
+      outputStream.write(
+        `[${formatTimestamp()} ${name}] exited with code ${code}.\n`,
+      );
       reject(
         new ApplicationError(`Command "${command}" exited with code ${code}.`),
       );

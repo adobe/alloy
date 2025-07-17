@@ -1,3 +1,4 @@
 STAGED_ONLY=true npm run add-license
 npx lint-staged
+npm run test:scripts
 npm run test:unit
