@@ -79,7 +79,7 @@ describe("Advertising::collectAllIdentities", () => {
       id5Enabled: true,
       id5PartnerId: "test-partner",
       rampIdEnabled: true,
-      rampIdScriptPath: "/test-path",
+      rampIdJSPath: "/test-path",
     };
 
     cookieManager = {

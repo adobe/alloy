@@ -146,14 +146,12 @@
         prehidingStyle: ".personalization-container { opacity: 0 !important }",
         // Advertising configuration
         advertising: {
-          // ID5 Configuration
-          id5PartnerId: getUrlParameter("id5PartnerId") || "1650",
-
-          // RampID/LiveRamp Configuration
-          liverampScriptPath:
-            "https://ats-wrapper.privacymanager.io/ats-modules/69584196-4cc8-4859-ae5e-7441332d2695/ats.js",
-          viewThruEnabled: true,
+          id5PartnerId: "1650",
+          rampIdJSPath:
+            "https://ats-wrapper.privacymanager.io/ats-modules/db58949f-d696-469b-a8ac-a04382bc5183/ats.js",
+          AA_DSP_AdvIds: [83565, 83567, 83569],
         },
+
         onBeforeEventSend: function (options) {
           const xdm = options.xdm;
           const data = options.data;
@@ -212,10 +210,11 @@
         // Advertising configuration for second instance
         advertising: {
           id5PartnerId: "1650",
-          liverampScriptPath:
-            "https://ats-wrapper.privacymanager.io/ats-modules/69584196-4cc8-4859-ae5e-7441332d2695/ats.js",
-          viewThruEnabled: true,
+          rampIdJSPath:
+            "https://ats-wrapper.privacymanager.io/ats-modules/db58949f-d696-469b-a8ac-a04382bc5183/ats.js",
+          AA_DSP_AdvIds: [83565, 83567, 83569],
         },
+
         onBeforeEventSend: function (options) {
           const xdm = options.xdm;
           const eventType = xdm.eventType;
@@ -248,9 +247,9 @@
         // Advertising configuration for CJM instance
         advertising: {
           id5PartnerId: "1650",
-          liverampScriptPath:
-            "https://ats-wrapper.privacymanager.io/ats-modules/69584196-4cc8-4859-ae5e-7441332d2695/ats.js",
-          viewThruEnabled: true,
+          rampIdJSPath:
+            "https://ats-wrapper.privacymanager.io/ats-modules/db58949f-d696-469b-a8ac-a04382bc5183/ats.js",
+          AA_DSP_AdvIds: [83565, 83567, 83569],
         },
       });
     </script>

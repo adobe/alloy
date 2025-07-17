@@ -150,9 +150,10 @@ describe("Advertising::viewThroughHandler", () => {
       cookieManager,
     );
 
-    expect(logger.info).toHaveBeenCalledWith("ID resolution promises:", [
-      "surferId",
-    ]);
+    expect(logger.info).toHaveBeenCalledWith(
+      "surferId resolved:",
+      "test-surfer-id",
+    );
 
     expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
       eventType: "advertising.conversion",

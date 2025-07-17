@@ -10,20 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { objectOf, string, boolean } from "../../utils/validation/index.js";
+import {
+  objectOf,
+  string,
+  arrayOf,
+  number,
+} from "../../utils/validation/index.js";
 
 export default objectOf({
   advertising: objectOf({
-    isAdvertisingEnabled: boolean(),
-    id5Enabled: boolean(),
-    rampIdEnabled: boolean(),
-    advertisingEdgeConfigOverrides: objectOf({
-      production: objectOf({
-        com_adobe_advertising: objectOf({
-          id5PartnerId: string(),
-          rampIdJSPath: string(),
-        }),
-      }),
-    }),
+    id5PartnerId: string(),
+    rampIdJSPath: string(),
+    AA_DSP_AdvIds: arrayOf(number()),
   }).noUnknownFields(),
 });

@@ -15,10 +15,7 @@ import createCookieManager from "./utils/createAdvertisingSessionManager.js";
 import handleClickThrough from "./handlers/clickThroughHandler.js";
 import handleViewThrough from "./handlers/viewThroughHandler.js";
 import handleOnBeforeSendEvent from "./handlers/onBeforeSendEventHandler.js";
-import {
-  getUrlParams,
-  populateAdvertisingComponentConfig,
-} from "./utils/helpers.js";
+import { getUrlParams } from "./utils/helpers.js";
 
 export default ({
   logger,
@@ -27,17 +24,14 @@ export default ({
   sendEdgeNetworkRequest,
   consent,
 }) => {
-  // Component configuration - ensure it works even without configuration
-  const componentConfig = populateAdvertisingComponentConfig(config);
+  const componentConfig = config.advertising;
   logger.info("Advertising component initialized", componentConfig);
 
-  // Create session manager
   const cookieManager = createCookieManager({
     orgId: config.orgId || "temp_ims_org_id",
     logger,
   });
 
-  // Create the specialized ad conversion handler
   const adConversionHandler = createAdConversionHandler({
     eventManager,
     sendEdgeNetworkRequest,
@@ -53,8 +47,6 @@ export default ({
   const sendAdConversion = async (optionsFromCommand = {}) => {
     const { skwcid, efid } = getUrlParams();
     const isClickThru = !!(skwcid || efid);
-    // todo: read this from config
-    const viewThruEnabled = true;
 
     try {
       if (isClickThru) {
@@ -69,26 +61,14 @@ export default ({
           optionsFromCommand,
         });
       }
-      if (viewThruEnabled) {
-        logger.info("Handling view-through ad conversion...");
-        return await handleViewThrough({
-          eventManager,
-          cookieManager,
-          logger,
-          componentConfig,
-          adConversionHandler,
-        });
-      }
-
-      // No conversion scenario applies
-      logger.info("No advertising conversion scenario applies", {
-        isClickThru,
-        viewThruEnabled,
+      logger.info("Handling view-through ad conversion...");
+      return await handleViewThrough({
+        eventManager,
+        cookieManager,
+        logger,
+        componentConfig,
+        adConversionHandler,
       });
-      return {
-        status: "skipped",
-        message: "No advertising conversion scenario applies",
-      };
     } catch (error) {
       logger.error("Error in sendAdConversion:", error);
       throw error;
@@ -98,22 +78,14 @@ export default ({
   return {
     lifecycle: {
       onComponentsRegistered() {
-        if (!componentConfig.isAdvertisingEnabled) {
-          return;
-        }
-        logger.info(
-          "Advertising component registered - auto-triggering sendAdConversion",
-        );
-        // Auto-trigger sendAdConversion for all scenarios
         sendAdConversion().catch((error) => {
-          logger.error("Error in auto-triggered sendAdConversion:", error);
+          logger.info("Error in auto-triggered sendAdConversion:", error);
         });
       },
       onBeforeEvent: ({ event }) => {
         if (!componentConfig.isAdvertisingEnabled) {
           return;
         }
-        // Handle async function in fire-and-forget manner since lifecycle hooks are synchronous
         handleOnBeforeSendEvent({
           cookieManager,
           logger,
@@ -121,7 +93,7 @@ export default ({
           event,
           config: componentConfig,
         }).catch((error) => {
-          logger.error("Error in onBeforeSendEvent handler:", error);
+          logger.info("Error in onBeforeSendEvent handler:", error);
         });
       },
     },

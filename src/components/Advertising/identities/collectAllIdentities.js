@@ -13,44 +13,26 @@ governing permissions and limitations under the License.
 import { getSurferId } from "./collectSurferId.js";
 import { getRampId } from "./collectRampId.js";
 import { getID5Id } from "./collectID5Id.js";
+import { ID5_ID, RAMP_ID, SURFER_ID } from "../constants/index.js";
+import { isThrottled } from "../utils/helpers.js";
 
 const collectAllIdentities = (logger, componentConfig, cookieManager) => {
   const promises = {};
-  const now = Date.now();
-  const THROTTLE_WINDOW = 30 * 60 * 1000; // 30 minutes
 
-  const isThrottled = (idType) => {
-    const lastSuccessfulConversion = cookieManager.getValue(
-      `${idType}_last_conversion`,
-    );
-    return (
-      lastSuccessfulConversion &&
-      now - lastSuccessfulConversion < THROTTLE_WINDOW
-    );
-  };
-
-  if (!isThrottled("surferId")) {
+  if (!isThrottled(SURFER_ID, cookieManager)) {
     promises.surferId = getSurferId(cookieManager, true).catch(() => null);
   }
 
-  if (
-    componentConfig.id5Enabled &&
-    componentConfig.id5PartnerId &&
-    !isThrottled("id5Id")
-  ) {
+  if (componentConfig.id5PartnerId && !isThrottled(ID5_ID, cookieManager)) {
     promises.id5Id = getID5Id(logger, componentConfig.id5PartnerId).catch(
       () => null,
     );
   }
 
-  if (
-    componentConfig.rampIdEnabled &&
-    componentConfig.rampIdScriptPath &&
-    !isThrottled("rampId")
-  ) {
+  if (componentConfig.rampIdJSPath && !isThrottled(RAMP_ID, cookieManager)) {
     promises.rampId = getRampId(
       logger,
-      componentConfig.rampIdScriptPath,
+      componentConfig.rampIdJSPath,
       cookieManager,
       true,
     ).catch(() => null);

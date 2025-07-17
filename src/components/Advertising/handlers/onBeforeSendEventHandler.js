@@ -55,9 +55,6 @@ export default async function handleOnBeforeSendEvent({
       // Add to query for server-side processing
       event.mergeQuery({ advertising: advertisingQuery });
 
-      // Optionally also add to XDM for data collection
-      // event.mergeXdm({ advertising: advertisingQuery });
-
       state.surferIdAppendedToAepEvent = true;
       logger.info("Advertising IDs added to event query successfully");
     }

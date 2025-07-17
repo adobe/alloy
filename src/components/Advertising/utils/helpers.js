@@ -15,6 +15,14 @@ import {
   EFID_PARAM,
   UNKNOWN_ADVERTISER,
   DEFAULT_THROTTLE_MINUTES,
+  LAST_CLICK_COOKIE_KEY,
+  LOG_ID_CONVERSION_SUCCESS,
+  LAST_CONVERSION_TIME_KEY,
+  DISPLAY_CLICK_COOKIE_KEY,
+  AD_CONVERSION_EVENT_TYPE,
+  SURFER_ID,
+  ID5_ID,
+  RAMP_ID,
 } from "../constants/index.js";
 
 const getUrlParams = () => {
@@ -125,24 +133,74 @@ const normalizeAdvertiser = (advertiser) => {
   return advertiser;
 };
 
-const populateAdvertisingComponentConfig = (config) => {
-  const componentConfig = config?.advertising || {};
-  const overrides =
-    componentConfig?.advertisingEdgeConfigOverrides?.production
-      ?.com_adobe_advertising;
+const createConversionEvent = (idsToInclude, eventManager, cookieManager) => {
+  const event = eventManager.createEvent();
+  const searchClickData = cookieManager.getValue(LAST_CLICK_COOKIE_KEY);
+  const displayClickCookie = cookieManager.getValue(DISPLAY_CLICK_COOKIE_KEY);
+  const query = {
+    eventType: AD_CONVERSION_EVENT_TYPE,
+    advertising: {
+      conversion: {
+        ...(searchClickData &&
+          searchClickData.click_time && {
+            LastSearchClick: searchClickData.click_time,
+          }),
+        ...(displayClickCookie &&
+          displayClickCookie.value && {
+            LastDisplayClick: displayClickCookie.value,
+          }),
+        StitchIds: {
+          ...(idsToInclude[SURFER_ID] && {
+            SurferId: idsToInclude[SURFER_ID],
+          }),
+          ...(idsToInclude[ID5_ID] && { ID5: idsToInclude[ID5_ID] }),
+          ...(idsToInclude[RAMP_ID] && { RampIDEnv: idsToInclude[RAMP_ID] }),
+        },
+      },
+    },
+  };
 
-  if (!overrides) {
-    console.warn("com_adobe_advertising config missing");
-    return componentConfig;
-  }
+  event.mergeQuery(query);
+  return event;
+};
 
-  componentConfig.rampIdScriptPath = overrides.rampIdJSPath || null;
-  componentConfig.id5PartnerId = overrides.id5PartnerId || null;
-  componentConfig.AA_DSP_AdvIds = Array.isArray(overrides.AA_DSP_AdvIds)
-    ? overrides.AA_DSP_AdvIds
-    : [];
+// Helper: Check if any ID is unused (not in conversionCalled or is false)
+const isAnyIdUnused = (availableIds, conversionCalled) => {
+  return Object.entries(availableIds).some(([idType]) => {
+    return !conversionCalled[idType];
+  });
+};
+// Helper: Mark IDs as converted and update throttle times
+const markIdsAsConverted = (
+  idTypes,
+  conversionCalled,
+  cookieManager,
+  logger,
+) => {
+  const now = Date.now();
 
-  return componentConfig;
+  idTypes.forEach((idType) => {
+    // Mark as used in conversion (in memory only)
+    conversionCalled[idType] = true;
+
+    // Update throttle time in session
+    cookieManager.setValue(`${idType}_last_conversion`, now);
+    logger.info(LOG_ID_CONVERSION_SUCCESS.replace("{0}", idType));
+  });
+
+  // Backward compatibility
+  cookieManager.setValue(LAST_CONVERSION_TIME_KEY, now);
+};
+
+const isThrottled = (idType, cookieManager) => {
+  const now = Date.now();
+  const THROTTLE_WINDOW = 30 * 60 * 1000; // 30 minutes
+  const lastSuccessfulConversion = cookieManager.getValue(
+    `${idType}_last_conversion`,
+  );
+  return (
+    lastSuccessfulConversion && now - lastSuccessfulConversion < THROTTLE_WINDOW
+  );
 };
 
 export {
@@ -151,5 +209,8 @@ export {
   normalizeAdvertiser,
   loadScript,
   createManagedAsyncOperation,
-  populateAdvertisingComponentConfig,
+  createConversionEvent,
+  isAnyIdUnused,
+  markIdsAsConverted,
+  isThrottled,
 };
