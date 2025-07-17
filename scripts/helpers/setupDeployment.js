@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 const setupDeployment = async ({
   exec,
-  execSync,
   githubActor,
   githubRepository,
   logger,
@@ -33,9 +32,6 @@ const setupDeployment = async ({
     "npm config",
     `npm config set //registry.npmjs.org/:_authToken=${npmToken}`,
   );
-  logger.info("git check config");
-  execSync("git remote -v", { stdio: "inherit" });
-  execSync("git config --get user.name", { stdio: "inherit" });
   logger.info("Configure done");
 };
 

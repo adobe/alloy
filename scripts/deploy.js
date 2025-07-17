@@ -12,7 +12,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { execSync } from "child_process";
 import { createRequire } from "module";
 import urlExists from "url-exists-nodejs";
 import createLogger from "./helpers/createLogger.js";
@@ -45,7 +44,6 @@ const [version, npmTag] = args;
 const container = {
   currentVersion,
   exec,
-  execSync,
   githubActor: process.env.GITHUB_ACTOR,
   githubRef: process.env.GITHUB_REF,
   githubRepository: process.env.GITHUB_REPOSITORY,

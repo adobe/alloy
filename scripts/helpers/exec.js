@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 import { exec as execChildProcess } from "child_process";
 import ApplicationError from "./applicationError.js";
+import readline from "readline";
 
 const timestampFormatter = new Intl.DateTimeFormat("en-GB", {
   hour: "2-digit",
@@ -21,6 +22,19 @@ const timestampFormatter = new Intl.DateTimeFormat("en-GB", {
 });
 const formatTimestamp = (date = new Date()) => {
   return timestampFormatter.format(date);
+};
+
+/**
+ * Pipes a stream line-by-line with timestamped prefixes.
+ * @param {NodeJS.ReadableStream} stream
+ * @param {string} name
+ * @param {import("stream").Writable} outputStream
+ */
+const pipeWithPrefix = (stream, name, outputStream) => {
+  const rl = readline.createInterface({ input: stream });
+  rl.on("line", (line) => {
+    outputStream.write(`[${formatTimestamp()} ${name}] ${line}\n`);
+  });
 };
 
 /**
@@ -35,29 +49,17 @@ const exec = async (name, command, options = {}) => {
   const { outputStream = process.stdout, ...execOptions } = options;
   const child = execChildProcess(command, execOptions);
 
-  let stderr = "";
-  let stdout = "";
-  child.stdout?.on("data", (data) => {
-    stdout += data;
-    outputStream.write(`[${formatTimestamp()} ${name}] ${data}`);
-  });
-  child.stderr?.on("data", (data) => {
-    stderr += data;
-    outputStream.write(`[${formatTimestamp()} ${name}] ${data}`);
-  });
+  pipeWithPrefix(child.stdout, name, outputStream);
+  pipeWithPrefix(child.stderr, name, outputStream);
+
   return new Promise((resolve, reject) => {
     child.on("close", (code) => {
       if (code === 0) {
         resolve();
       }
-      outputStream.write(
-        `[${formatTimestamp()} ${name}] exited with code ${code}.\n`,
+      reject(
+        new ApplicationError(`Command "${command}" exited with code ${code}.`),
       );
-      const error = new ApplicationError(
-        `Command "${command}" exited with code ${code}.\n\nSTDERR:\n${stderr}\n\nSTDOUT:\n${stdout}`,
-      );
-      error.code = code;
-      reject(error);
     });
     child.on("error", (err) => {
       outputStream.write(
