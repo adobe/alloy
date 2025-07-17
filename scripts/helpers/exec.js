@@ -35,16 +35,18 @@ const exec = async (name, command, options = {}) => {
   const { outputStream = process.stdout, ...execOptions } = options;
   const child = execChildProcess(command, execOptions);
 
-  const stderr = "";
-  const stdout = "";
+  let stderr = "";
+  let stdout = "";
   child.stdout?.on("data", (data) => {
+    stdout += data;
     outputStream.write(`[${formatTimestamp()} ${name}] ${data}`);
   });
   child.stderr?.on("data", (data) => {
+    stderr += data;
     outputStream.write(`[${formatTimestamp()} ${name}] ${data}`);
   });
   return new Promise((resolve, reject) => {
-    process.on("close", (code) => {
+    child.on("close", (code) => {
       if (code === 0) {
         resolve();
       }
@@ -52,14 +54,12 @@ const exec = async (name, command, options = {}) => {
         `[${formatTimestamp()} ${name}] exited with code ${code}.\n`,
       );
       const error = new ApplicationError(
-        `Command "${command}" exited with code ${code}.\n\nSTDERR:\n${stderr}`,
+        `Command "${command}" exited with code ${code}.\n\nSTDERR:\n${stderr}\n\nSTDOUT:\n${stdout}`,
       );
       error.code = code;
-      error.stderr = stderr;
-      error.stdout = stdout;
       reject(error);
     });
-    process.on("error", (err) => {
+    child.on("error", (err) => {
       outputStream.write(
         `[${formatTimestamp()} ${name}] Process error: ${err.message}\n`,
       );
