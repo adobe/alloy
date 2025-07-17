@@ -33,7 +33,8 @@ export const DEFAULT_THROTTLE_MINUTES = 30;
 export const DEFAULT_COOKIE_EXPIRATION_MINUTES = 1440; // 24 hours
 
 // Event Types
-export const AD_CONVERSION_EVENT_TYPE = "advertising.conversion";
+export const AD_CONVERSION_CLICK_EVENT_TYPE = "advertising.clickThrough";
+export const AD_CONVERSION_VIEW_EVENT_TYPE = "advertising.viewThrough";
 
 // XDM Paths
 export const XDM_AD_CLOUD_PATH = "_experience.adCloud";
@@ -52,19 +53,15 @@ export const ERROR_RAMP_ID_MAX_RETRIES =
   "Failed to retrieve RampID after maximum retries";
 
 // Log Messages
-export const LOG_AD_CONVERSION_START = "Handling click-through ad conversion.";
-export const LOG_COOKIE_WRITTEN = "_les_lsc cookie written for click-through.";
-export const LOG_CONVERSION_TIME_UPDATED =
-  "lastConversionTime updated for display click-through.";
-export const LOG_SENDING_CONVERSION =
-  "Sending click-through ad conversion event.";
+export const LOG_AD_CONVERSION_START = "Processing ad conversion";
+export const LOG_COOKIE_WRITTEN = "Ad tracking data saved";
+export const LOG_CONVERSION_TIME_UPDATED = "Conversion timing recorded";
+export const LOG_SENDING_CONVERSION = "Submitting ad conversion data";
 export const LOG_ALL_IDS_THROTTLED =
-  "All identity types throttled, skipping conversion";
-export const LOG_ID_RESOLUTION_PROMISES = "ID resolution promises:";
-export const LOG_ALL_IDS_USED = "All resolved IDs already used in conversion";
-export const LOG_ID_RESOLVED = "{0} resolved:";
-export const LOG_ERROR_RESOLVING_ID = "Error resolving {0}:";
-export const LOG_ID_CONVERSION_SUCCESS =
-  "{0} conversion successful, throttle window started";
-export const LOG_AD_CONVERSION_FAILED = "Ad conversion tracking failed:";
+  "Ad conversion paused to prevent duplicate submissions";
+export const LOG_ALL_IDS_USED = "Ad conversion already processed";
+export const LOG_ID_RESOLVED = "Ad identity available";
+export const LOG_ERROR_RESOLVING_ID = "Unable to obtain ad identity";
+export const LOG_ID_CONVERSION_SUCCESS = "Ad conversion submitted successfully";
+export const LOG_AD_CONVERSION_FAILED = "Ad conversion submission failed";
 export const DISPLAY_CLICK_COOKIE_KEY = "ev_lcc";

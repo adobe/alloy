@@ -21,6 +21,6 @@ export default objectOf({
   advertising: objectOf({
     id5PartnerId: string(),
     rampIdJSPath: string(),
-    AA_DSP_AdvIds: arrayOf(number()),
+    advertiserIds: arrayOf(number()),
   }).noUnknownFields(),
 });

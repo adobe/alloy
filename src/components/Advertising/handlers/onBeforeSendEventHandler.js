@@ -7,6 +7,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 import { getSurferId } from "../identities/collectSurferId.js";
 import { getID5Id } from "../identities/collectID5Id.js";
 import { getRampId } from "../identities/collectRampId.js";
+import { appendAdvertisingIdQueryToEvent } from "../utils/helpers.js";
 
 /**
  * Appends advertising identity IDs to AEP event query if not already added.
@@ -22,7 +23,7 @@ export default async function handleOnBeforeSendEvent({
   logger,
   state,
   event,
-  config = {},
+  componentConfig,
 }) {
   if (state.surferIdAppendedToAepEvent) return;
 
@@ -31,32 +32,23 @@ export default async function handleOnBeforeSendEvent({
   state.processingAdvertisingIds = true;
 
   try {
-    const [surferId, id5Id, rampId] = await Promise.all([
-      getSurferId(cookieManager, false),
-      config.id5PartnerId ? getID5Id(logger, config.id5PartnerId, false) : null,
-      config.liverampScriptPath
-        ? getRampId(logger, config.liverampScriptPath, cookieManager, false)
-        : null,
-    ]);
-
-    const advertisingQuery = {
-      ...(surferId && { gSurferId: surferId }),
-      ...(id5Id && { gID5Id: id5Id }),
-      ...(rampId && { gRampId: rampId }),
+    const surferId = await getSurferId(cookieManager, false);
+    const id5Id = await getID5Id(logger, null, false);
+    const rampId = await getRampId(logger, null, cookieManager, false);
+    const availableIds = {
+      ...(surferId && { surferId }),
+      ...(id5Id && { id5Id }),
+      ...(rampId && { rampId }),
     };
 
-    if (Object.keys(advertisingQuery).length > 0) {
-      Object.entries(advertisingQuery).forEach(([key, value]) =>
-        logger.info(`Added ${key} to query:`, value),
-      );
-
-      logger.info("Adding advertising IDs to event query parameters");
-
-      // Add to query for server-side processing
-      event.mergeQuery({ advertising: advertisingQuery });
-
+    appendAdvertisingIdQueryToEvent(
+      availableIds,
+      event,
+      cookieManager,
+      componentConfig,
+    );
+    if (Object.keys(availableIds).length > 0) {
       state.surferIdAppendedToAepEvent = true;
-      logger.info("Advertising IDs added to event query successfully");
     }
   } catch (error) {
     logger.error("Error in onBeforeSendEvent hook:", error);

@@ -24,7 +24,6 @@ export default ({ sendEdgeNetworkRequest, consent, logger }) => {
    * Tracks an ad conversion event by sending it directly to the Edge Network
    */
   const trackAdConversion = ({ event }) => {
-    // Use Alloy's standard request payload and request
     const dataCollectionRequestPayload = createDataCollectionRequestPayload(); // Create payload container
     dataCollectionRequestPayload.addEvent(event);
     event.finalize();
@@ -32,15 +31,13 @@ export default ({ sendEdgeNetworkRequest, consent, logger }) => {
       payload: dataCollectionRequestPayload,
     });
 
-    logger.info("Sending ad conversion event to Edge Network");
     return consent.awaitConsent().then(() => {
       return sendEdgeNetworkRequest({ request })
         .then(() => {
-          logger.info("Ad conversion event sent successfully");
           return { success: true };
         })
         .catch((error) => {
-          logger.error("Failed to send ad conversion event", error);
+          logger.debug("Failed to send ad conversion event", error);
           throw error;
         });
     });

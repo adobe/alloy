@@ -12,15 +12,12 @@ governing permissions and limitations under the License.
 
 import collectAllIdentities from "../identities/collectAllIdentities.js";
 import {
-  LOG_ALL_IDS_THROTTLED,
-  LOG_ALL_IDS_USED,
-  LOG_ID_RESOLVED,
   LOG_ERROR_RESOLVING_ID,
   LOG_AD_CONVERSION_FAILED,
 } from "../constants/index.js";
 import {
   isAnyIdUnused,
-  createConversionEvent,
+  appendAdvertisingIdQueryToEvent,
   markIdsAsConverted,
 } from "../utils/helpers.js";
 
@@ -35,10 +32,10 @@ export default async function handleViewThrough({
   const availableIds = {};
   const conversionCalled = {}; // Track conversion status per ID type
   const conversionPromises = []; // Collect conversion promises to return
+
   // Conversion handler - called when any ID resolves
   const handleConversion = async () => {
     if (!isAnyIdUnused(availableIds, conversionCalled)) {
-      logger.info(LOG_ALL_IDS_USED);
       return null;
     }
 
@@ -46,10 +43,11 @@ export default async function handleViewThrough({
 
     try {
       // Create conversion event with unused IDs only
-      const event = createConversionEvent(
+      const event = appendAdvertisingIdQueryToEvent(
         availableIds,
-        eventManager,
+        eventManager.createEvent(),
         cookieManager,
+        componentConfig,
       );
       const result = await adConversionHandler.trackAdConversion({ event });
 
@@ -62,6 +60,7 @@ export default async function handleViewThrough({
       return null;
     }
   };
+
   // Get promises only for non-throttled IDs
   const identityPromises = collectAllIdentities(
     logger,
@@ -71,7 +70,6 @@ export default async function handleViewThrough({
 
   // If no IDs to collect, skip entirely
   if (Object.keys(identityPromises).length === 0) {
-    logger.info(LOG_ALL_IDS_THROTTLED);
     return [];
   }
 
@@ -82,7 +80,6 @@ export default async function handleViewThrough({
         if (idValue) {
           // Store resolved ID
           availableIds[idType] = idValue;
-          logger.info(LOG_ID_RESOLVED.replace("{0}", idType), idValue);
 
           // Trigger conversion handler and collect the promise
           const conversionPromise = handleConversion();
@@ -93,6 +90,8 @@ export default async function handleViewThrough({
       })
       .catch((error) => {
         logger.error(LOG_ERROR_RESOLVING_ID.replace("{0}", idType), error);
+        // Continue with other IDs even if one fails
+        return null;
       });
   });
 

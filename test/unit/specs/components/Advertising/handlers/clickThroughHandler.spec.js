@@ -19,6 +19,8 @@ import {
 
 // Mock network operations to prevent real network calls
 vi.mock("fetch", () => vi.fn());
+
+// Mock globalThis fetch and other network APIs
 Object.defineProperty(globalThis, "fetch", {
   value: vi.fn(() =>
     Promise.resolve({
@@ -29,11 +31,63 @@ Object.defineProperty(globalThis, "fetch", {
   writable: true,
 });
 
-// Mock helpers
+// Mock XMLHttpRequest
+Object.defineProperty(globalThis, "XMLHttpRequest", {
+  value: class MockXMLHttpRequest {
+    open() {
+      this.readyState = 4;
+    }
+
+    send() {
+      this.status = 200;
+    }
+
+    setRequestHeader() {
+      this.headers = {};
+    }
+  },
+  writable: true,
+});
+
+// Mock DOM operations to prevent network calls from script loading
+if (typeof globalThis.document !== "undefined") {
+  globalThis.document.createElement = vi.fn(() => ({
+    src: "",
+    onload: null,
+    onerror: null,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  }));
+  if (globalThis.document.head) {
+    globalThis.document.head.appendChild = vi.fn();
+  }
+  if (globalThis.document.body) {
+    globalThis.document.body.appendChild = vi.fn();
+  }
+}
+
+if (typeof globalThis.window !== "undefined") {
+  globalThis.window.addEventListener = vi.fn();
+  globalThis.window.removeEventListener = vi.fn();
+}
+
+// Mock helpers with all functions that might make network calls
 vi.mock(
   "../../../../../../src/components/Advertising/utils/helpers.js",
   () => ({
-    normalizeAdvertiser: vi.fn((advertiser) => advertiser || "UNKNOWN"),
+    normalizeAdvertiser: vi.fn((advertiser) => {
+      if (Array.isArray(advertiser)) {
+        return advertiser.join(", ");
+      }
+      return advertiser || "UNKNOWN";
+    }),
+    loadScript: vi.fn().mockResolvedValue(),
+    getUrlParams: vi.fn(() => ({ skwcid: null, efid: null })),
+    appendAdvertisingIdQueryToEvent: vi.fn(),
+    isAnyIdUnused: vi.fn(() => true),
+    markIdsAsConverted: vi.fn(),
+    isThrottled: vi.fn(() => false),
+    shouldThrottle: vi.fn(() => false),
   }),
 );
 
@@ -62,7 +116,9 @@ describe("Advertising::clickThroughHandler", () => {
       error: vi.fn(),
     };
 
-    componentConfig = {};
+    componentConfig = {
+      advertiserIds: [123, 456],
+    };
   });
 
   it("should handle click-through with skwcid", async () => {
@@ -88,11 +144,12 @@ describe("Advertising::clickThroughHandler", () => {
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       _experience: {
         adCloud: {
-          adConversionDetails: {
-            adAssetData: "test-skwcid",
-          },
-          adAssetReference: {
-            advertiser: "UNKNOWN",
+          eventType: "advertising.clickThrough",
+          campaign: {
+            adConversionDetails: {
+              SampleGroupId: "test-skwcid",
+              accountId: "123, 456",
+            },
           },
         },
       },
@@ -136,11 +193,12 @@ describe("Advertising::clickThroughHandler", () => {
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       _experience: {
         adCloud: {
-          adConversionDetails: {
-            adStitchData: "test-efid",
-          },
-          adAssetReference: {
-            advertiser: "UNKNOWN",
+          eventType: "advertising.clickThrough",
+          campaign: {
+            adConversionDetails: {
+              experimentid: "test-efid",
+              accountId: "123, 456",
+            },
           },
         },
       },
@@ -175,12 +233,13 @@ describe("Advertising::clickThroughHandler", () => {
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       _experience: {
         adCloud: {
-          adConversionDetails: {
-            adStitchData: "test-efid",
-            adAssetData: "test-skwcid",
-          },
-          adAssetReference: {
-            advertiser: "UNKNOWN",
+          eventType: "advertising.clickThrough",
+          campaign: {
+            adConversionDetails: {
+              SampleGroupId: "test-skwcid",
+              experimentid: "test-efid",
+              accountId: "123, 456",
+            },
           },
         },
       },
@@ -219,11 +278,12 @@ describe("Advertising::clickThroughHandler", () => {
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       _experience: {
         adCloud: {
-          adConversionDetails: {
-            adAssetData: "test-skwcid",
-          },
-          adAssetReference: {
-            advertiser: "UNKNOWN",
+          eventType: "advertising.clickThrough",
+          campaign: {
+            adConversionDetails: {
+              SampleGroupId: "test-skwcid",
+              accountId: "123, 456",
+            },
           },
         },
       },

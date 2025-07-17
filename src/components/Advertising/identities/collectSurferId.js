@@ -135,7 +135,7 @@ const getSurferId = function getSurferId(
   // If not in memory, check if available in cookie using cookieManager
   if (cookieManager) {
     try {
-      const cookieSurferId = cookieManager.getValueWithLastUpdated(SURFER_ID);
+      const cookieSurferId = cookieManager.getValue(SURFER_ID);
       if (cookieSurferId) {
         // Update in-memory value
         surferId = cookieSurferId;
@@ -151,10 +151,10 @@ const getSurferId = function getSurferId(
     return initiateAdvertisingIdentityCall().then((resolvedId) => {
       if (cookieManager && resolvedId) {
         if (resolvedId.surferId) {
-          cookieManager.setValueWithLastUpdated(SURFER_ID, resolvedId.surferId);
+          cookieManager.setValue(SURFER_ID, resolvedId.surferId);
         }
         if (resolvedId.displayClickCookie) {
-          cookieManager.setValueWithLastUpdated(
+          cookieManager.setValue(
             DISPLAY_CLICK_COOKIE_KEY,
             resolvedId.displayClickCookie,
           );

@@ -14,17 +14,18 @@ import {
   SKWCID_PARAM,
   EFID_PARAM,
   UNKNOWN_ADVERTISER,
-  DEFAULT_THROTTLE_MINUTES,
   LAST_CLICK_COOKIE_KEY,
   LOG_ID_CONVERSION_SUCCESS,
   LAST_CONVERSION_TIME_KEY,
   DISPLAY_CLICK_COOKIE_KEY,
-  AD_CONVERSION_EVENT_TYPE,
   SURFER_ID,
   ID5_ID,
   RAMP_ID,
 } from "../constants/index.js";
 
+import { createNode, appendNode } from "../../../utils/dom/index.js";
+
+let nonce;
 const getUrlParams = () => {
   const urlParams = new URLSearchParams(window.location.search);
   return {
@@ -33,55 +34,75 @@ const getUrlParams = () => {
   };
 };
 
-const shouldThrottle = (
-  lastTime,
-  throttleMinutes = DEFAULT_THROTTLE_MINUTES,
-) => {
-  if (!lastTime) return false;
-  const elapsedMinutes = (Date.now() - lastTime) / (60 * 1000);
-  return elapsedMinutes < throttleMinutes;
+/**
+ * Returns the nonce if available.
+ * @param {Node} [context=document] defaults to document
+ * @returns {(String|undefined)} the nonce or undefined if not available
+ */
+const getNonce = (context = document) => {
+  if (nonce === undefined) {
+    const n = context.querySelector("[nonce]");
+    // NOTE: We're keeping n.getAttribute("nonce") until it is safe to remove:
+    //   ref: https://github.com/whatwg/html/issues/2369#issuecomment-280853946
+    nonce = n && (n.nonce || n.getAttribute("nonce"));
+  }
+  return nonce;
 };
 
 /**
- * Loads an external JavaScript file into the document.
+ * Loads an external JavaScript file using Alloy's DOM utilities.
+ * Enhanced version that supports additional script attributes.
  * @param {string} url The URL of the script to load.
+ * @param {Object} options Additional options for script loading
+ * @param {Object} options.attributes Additional attributes to set on script element
+ * @param {Function} options.onLoad Optional callback when script loads successfully
+ * @param {Function} options.onError Optional callback when script fails to load
  * @returns {Promise<void>} A promise that resolves when the script is loaded or rejects on error.
  */
-const loadScript = (url) => {
+const loadScript = (url, options = {}) => {
+  // Check if script already exists
   if (document.querySelector(`script[src="${url}"]`)) {
-    console.log(`[ScriptLoader] Script already exists in DOM: ${url}`);
+    if (options.onLoad) options.onLoad();
     return Promise.resolve();
   }
 
   return new Promise((resolve, reject) => {
-    const scriptTag = document.createElement("script");
-    scriptTag.type = "text/javascript";
-    scriptTag.src = url;
-    scriptTag.async = true;
+    const { attributes = {}, onLoad, onError } = options;
+
+    const script = createNode(
+      "script",
+      {
+        type: "text/javascript",
+        src: url,
+        async: true,
+        ...(getNonce() && { nonce }),
+        ...attributes, // Allow additional attributes like crossorigin
+      },
+      {
+        onload: () => {
+          if (onLoad) onLoad();
+          resolve();
+        },
+        onerror: () => {
+          const error = new Error(`Failed to load script: ${url}`);
+          if (onError) onError(error);
+          reject(error);
+        },
+      },
+    );
 
     const appendToDOM = () => {
-      // Always try head first, then body
       const parent = document.head || document.body;
       if (parent) {
-        parent.appendChild(scriptTag);
+        appendNode(parent, script);
       } else {
-        reject(
-          new Error(
-            "[ScriptLoader] Neither <head> nor <body> available for script insertion.",
-          ),
+        const error = new Error(
+          "Neither <head> nor <body> available for script insertion.",
         );
+        if (onError) onError(error);
+        reject(error);
       }
     };
-
-    scriptTag.addEventListener("load", () => {
-      console.log(`[ScriptLoader] Script loaded successfully: ${url}`);
-      resolve();
-    });
-
-    scriptTag.addEventListener("error", () => {
-      console.error(`[ScriptLoader] Failed to load script: ${url}`);
-      reject(new Error(`Failed to load script: ${url}`));
-    });
 
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", appendToDOM);
@@ -133,12 +154,15 @@ const normalizeAdvertiser = (advertiser) => {
   return advertiser;
 };
 
-const createConversionEvent = (idsToInclude, eventManager, cookieManager) => {
-  const event = eventManager.createEvent();
+const appendAdvertisingIdQueryToEvent = (
+  idsToInclude,
+  event,
+  cookieManager,
+  componentConfig,
+) => {
   const searchClickData = cookieManager.getValue(LAST_CLICK_COOKIE_KEY);
   const displayClickCookie = cookieManager.getValue(DISPLAY_CLICK_COOKIE_KEY);
   const query = {
-    eventType: AD_CONVERSION_EVENT_TYPE,
     advertising: {
       conversion: {
         ...(searchClickData &&
@@ -156,6 +180,7 @@ const createConversionEvent = (idsToInclude, eventManager, cookieManager) => {
           ...(idsToInclude[ID5_ID] && { ID5: idsToInclude[ID5_ID] }),
           ...(idsToInclude[RAMP_ID] && { RampIDEnv: idsToInclude[RAMP_ID] }),
         },
+        advIds: normalizeAdvertiser(componentConfig.advertiserIds),
       },
     },
   };
@@ -198,19 +223,24 @@ const isThrottled = (idType, cookieManager) => {
   const lastSuccessfulConversion = cookieManager.getValue(
     `${idType}_last_conversion`,
   );
-  return (
-    lastSuccessfulConversion && now - lastSuccessfulConversion < THROTTLE_WINDOW
+  return Boolean(
+    lastSuccessfulConversion &&
+      now - lastSuccessfulConversion < THROTTLE_WINDOW,
   );
+};
+
+const shouldThrottle = (idType, cookieManager) => {
+  return isThrottled(idType, cookieManager);
 };
 
 export {
   getUrlParams,
-  shouldThrottle,
   normalizeAdvertiser,
   loadScript,
   createManagedAsyncOperation,
-  createConversionEvent,
+  appendAdvertisingIdQueryToEvent,
   isAnyIdUnused,
   markIdsAsConverted,
   isThrottled,
+  shouldThrottle,
 };

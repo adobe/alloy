@@ -25,10 +25,9 @@ export default ({
   consent,
 }) => {
   const componentConfig = config.advertising;
-  logger.info("Advertising component initialized", componentConfig);
 
   const cookieManager = createCookieManager({
-    orgId: config.orgId || "temp_ims_org_id",
+    orgId: config.orgId,
     logger,
   });
 
@@ -61,7 +60,6 @@ export default ({
           optionsFromCommand,
         });
       }
-      logger.info("Handling view-through ad conversion...");
       return await handleViewThrough({
         eventManager,
         cookieManager,
@@ -78,22 +76,19 @@ export default ({
   return {
     lifecycle: {
       onComponentsRegistered() {
-        sendAdConversion().catch((error) => {
-          logger.info("Error in auto-triggered sendAdConversion:", error);
+        sendAdConversion().catch(() => {
+          // silent pass
         });
       },
       onBeforeEvent: ({ event }) => {
-        if (!componentConfig.isAdvertisingEnabled) {
-          return;
-        }
         handleOnBeforeSendEvent({
           cookieManager,
           logger,
           state: sharedState,
           event,
-          config: componentConfig,
-        }).catch((error) => {
-          logger.info("Error in onBeforeSendEvent handler:", error);
+          componentConfig,
+        }).catch(() => {
+          // silent pass
         });
       },
     },

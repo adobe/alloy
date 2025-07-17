@@ -15,15 +15,12 @@ import {
   LAST_CLICK_COOKIE_KEY,
   LAST_CONVERSION_TIME_KEY,
   XDM_AD_CONVERSION_DETAILS,
-  XDM_AD_ASSET_REFERENCE,
-  XDM_AD_STITCH_DATA,
-  XDM_AD_ASSET_DATA,
-  XDM_ADVERTISER,
   LOG_AD_CONVERSION_START,
   LOG_COOKIE_WRITTEN,
   LOG_CONVERSION_TIME_UPDATED,
   LOG_SENDING_CONVERSION,
   LOG_AD_CONVERSION_FAILED,
+  AD_CONVERSION_CLICK_EVENT_TYPE,
 } from "../constants/index.js";
 
 /**
@@ -65,18 +62,19 @@ export default async function handleClickThrough({
 
   // Handle advertiser normalization for both string and array cases
   const normalizedAdvertiser = normalizeAdvertiser(
-    componentConfig.AA_DSP_AdvIds,
+    componentConfig.advertiserIds,
   );
 
   const xdm = {
     _experience: {
       adCloud: {
-        [XDM_AD_CONVERSION_DETAILS]: {
-          ...(efid && { [XDM_AD_STITCH_DATA]: efid }),
-          ...(skwcid && { [XDM_AD_ASSET_DATA]: skwcid }),
-        },
-        [XDM_AD_ASSET_REFERENCE]: {
-          [XDM_ADVERTISER]: normalizedAdvertiser,
+        eventType: AD_CONVERSION_CLICK_EVENT_TYPE,
+        campaign: {
+          [XDM_AD_CONVERSION_DETAILS]: {
+            ...(efid && { experimentid: efid }),
+            ...(skwcid && { SampleGroupId: skwcid }),
+            ...(normalizedAdvertiser && { accountId: normalizedAdvertiser }),
+          },
         },
       },
     },
