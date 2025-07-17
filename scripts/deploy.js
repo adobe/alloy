@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 */
 
 import { createRequire } from "module";
+import { execSync } from "child_process";
 import urlExists from "url-exists-nodejs";
 import createLogger from "./helpers/createLogger.js";
 import exec from "./helpers/exec.js";
@@ -44,6 +45,7 @@ const [version, npmTag] = args;
 const container = {
   currentVersion,
   exec,
+  execSync,
   githubActor: process.env.GITHUB_ACTOR,
   githubRef: process.env.GITHUB_REF,
   githubRepository: process.env.GITHUB_REPOSITORY,
