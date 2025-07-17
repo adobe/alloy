@@ -23,6 +23,7 @@
     "LICENSE_BANNER",
     "rollup.config.js",
     ".browserslistrc",
+    "src/core/componentCreators.js",
     "scripts/helpers/entryPointGeneratorBabelPlugin.js",
     "scripts/helpers/path.js"
   ],
