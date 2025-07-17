@@ -32,12 +32,15 @@ const formatTimestamp = (date = new Date()) => {
  */
 const exec = async (name, command, options = {}) => {
   /** @type {import("child_process").ChildProcess | null} */
-  const process = execChildProcess(command);
-  const outputStream = options.outputStream ?? process.stdout;
-  process.stdout.on("data", (data) => {
+  const { outputStream = process.stdout, ...execOptions } = options;
+  const child = execChildProcess(command, execOptions);
+
+  const stderr = "";
+  const stdout = "";
+  child.stdout?.on("data", (data) => {
     outputStream.write(`[${formatTimestamp()} ${name}] ${data}`);
   });
-  process.stderr.on("data", (data) => {
+  child.stderr?.on("data", (data) => {
     outputStream.write(`[${formatTimestamp()} ${name}] ${data}`);
   });
   return new Promise((resolve, reject) => {
@@ -46,13 +49,21 @@ const exec = async (name, command, options = {}) => {
         resolve();
       }
       outputStream.write(
-        `[${formatTimestamp()} ${name}] exited with code ${code}.`,
+        `[${formatTimestamp()} ${name}] exited with code ${code}.\n`,
       );
-      reject(
-        new ApplicationError(
-          "Previous command exited with non-zero exit code.",
-        ),
+      const error = new ApplicationError(
+        `Command "${command}" exited with code ${code}.\n\nSTDERR:\n${stderr}`,
       );
+      error.code = code;
+      error.stderr = stderr;
+      error.stdout = stdout;
+      reject(error);
+    });
+    process.on("error", (err) => {
+      outputStream.write(
+        `[${formatTimestamp()} ${name}] Process error: ${err.message}\n`,
+      );
+      reject(err);
     });
   });
 };
