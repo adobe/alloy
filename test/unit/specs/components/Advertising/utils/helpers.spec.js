@@ -554,7 +554,7 @@ describe("Advertising::helpers", () => {
 
     it("should append advertising query with all data", () => {
       const searchClickData = { click_time: 1234567890 };
-      const displayClickData = { value: 9876543210 };
+      const displayClickData = 9876543210;
 
       mockCookieManager.getValue
         .mockReturnValueOnce(searchClickData) // LAST_CLICK_COOKIE_KEY

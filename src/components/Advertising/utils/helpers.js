@@ -169,10 +169,9 @@ const appendAdvertisingIdQueryToEvent = (
           searchClickData.click_time && {
             lastSearchClick: searchClickData.click_time,
           }),
-        ...(displayClickCookie &&
-          displayClickCookie.value && {
-            lastDisplayClick: displayClickCookie.value,
-          }),
+        ...(displayClickCookie && {
+          lastDisplayClick: displayClickCookie,
+        }),
         stitchIds: {
           ...(idsToInclude[SURFER_ID] && {
             surferId: idsToInclude[SURFER_ID],
