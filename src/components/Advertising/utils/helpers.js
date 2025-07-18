@@ -167,18 +167,18 @@ const appendAdvertisingIdQueryToEvent = (
       conversion: {
         ...(searchClickData &&
           searchClickData.click_time && {
-            LastSearchClick: searchClickData.click_time,
+            lastSearchClick: searchClickData.click_time,
           }),
         ...(displayClickCookie &&
           displayClickCookie.value && {
-            LastDisplayClick: displayClickCookie.value,
+            lastDisplayClick: displayClickCookie.value,
           }),
-        StitchIds: {
+        stitchIds: {
           ...(idsToInclude[SURFER_ID] && {
-            SurferId: idsToInclude[SURFER_ID],
+            surferId: idsToInclude[SURFER_ID],
           }),
-          ...(idsToInclude[ID5_ID] && { ID5: idsToInclude[ID5_ID] }),
-          ...(idsToInclude[RAMP_ID] && { RampIDEnv: idsToInclude[RAMP_ID] }),
+          ...(idsToInclude[ID5_ID] && { id5: idsToInclude[ID5_ID] }),
+          ...(idsToInclude[RAMP_ID] && { rampIDEnv: idsToInclude[RAMP_ID] }),
         },
         advIds: normalizeAdvertiser(componentConfig.advertiserIds),
       },

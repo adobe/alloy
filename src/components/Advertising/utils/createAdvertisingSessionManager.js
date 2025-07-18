@@ -66,28 +66,6 @@ export default ({ orgId, logger }) => {
     }
   };
 
-  const setValueWithLastUpdated = (key, value, options = {}) => {
-    const existing = readCookie(ADVERTISING_COOKIE_KEY) || {};
-    const keyData = {
-      value,
-      lastUpdated: Date.now(),
-    };
-    const updated = {
-      ...existing,
-      [key]: keyData,
-    };
-
-    return writeCookie(ADVERTISING_COOKIE_KEY, updated, {
-      expires: getDefaultExpiration(DEFAULT_COOKIE_EXPIRATION_MINUTES),
-      ...options,
-    });
-  };
-
-  const getValueWithLastUpdated = (key) => {
-    const data = readCookie(ADVERTISING_COOKIE_KEY) || {};
-    return data[key]?.value;
-  };
-
   const setValue = (key, value, options = {}) => {
     const existing = readCookie(ADVERTISING_COOKIE_KEY) || {};
 
@@ -107,27 +85,8 @@ export default ({ orgId, logger }) => {
     return data[key];
   };
 
-  const markSuccessfulConversion = (idType, timestamp = Date.now()) => {
-    setValue(`${idType}_last_conversion`, timestamp);
-  };
-
-  const isIdThrottled = (
-    idType,
-    throttleMinutes = DEFAULT_THROTTLE_MINUTES,
-  ) => {
-    const lastConversion = getValue(`${idType}_last_conversion`);
-    if (!lastConversion) return false;
-
-    const throttleWindow = throttleMinutes * 60 * 1000;
-    return Date.now() - lastConversion < throttleWindow;
-  };
-
   return {
-    getValue,
     setValue,
-    getValueWithLastUpdated,
-    setValueWithLastUpdated,
-    markSuccessfulConversion,
-    isIdThrottled,
+    getValue,
   };
 };

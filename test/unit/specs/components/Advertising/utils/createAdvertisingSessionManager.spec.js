@@ -72,8 +72,6 @@ describe("Advertising::createAdvertisingSessionManager", () => {
       expect(sessionManager).toBeDefined();
       expect(typeof sessionManager.getValue).toBe("function");
       expect(typeof sessionManager.setValue).toBe("function");
-      expect(typeof sessionManager.getValueWithLastUpdated).toBe("function");
-      expect(typeof sessionManager.isIdThrottled).toBe("function");
     });
 
     it("should use default orgId when not provided", () => {
