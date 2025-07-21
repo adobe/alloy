@@ -569,16 +569,14 @@ describe("Advertising::helpers", () => {
 
       expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
         advertising: {
-          conversion: {
-            lastSearchClick: 1234567890,
-            lastDisplayClick: 9876543210,
-            stitchIds: {
-              surferId: "surfer123",
-              id5: "id5_123",
-              rampIDEnv: "ramp123",
-            },
-            advIds: "test-advertiser",
+          lastSearchClick: 1234567890,
+          lastDisplayClick: 9876543210,
+          stitchIds: {
+            surferId: "surfer123",
+            id5: "id5_123",
+            rampIDEnv: "ramp123",
           },
+          advIds: "test-advertiser",
         },
       });
       expect(result).toBe(mockEvent);
@@ -596,14 +594,12 @@ describe("Advertising::helpers", () => {
 
       expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
         advertising: {
-          conversion: {
-            stitchIds: {
-              surferId: "surfer123",
-              id5: "id5_123",
-              rampIDEnv: "ramp123",
-            },
-            advIds: "test-advertiser",
+          stitchIds: {
+            surferId: "surfer123",
+            id5: "id5_123",
+            rampIDEnv: "ramp123",
           },
+          advIds: "test-advertiser",
         },
       });
     });
@@ -623,12 +619,10 @@ describe("Advertising::helpers", () => {
 
       expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
         advertising: {
-          conversion: {
-            stitchIds: {
-              surferId: "surfer123",
-            },
-            advIds: "test-advertiser",
+          stitchIds: {
+            surferId: "surfer123",
           },
+          advIds: "test-advertiser",
         },
       });
     });
@@ -646,10 +640,8 @@ describe("Advertising::helpers", () => {
 
       expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
         advertising: {
-          conversion: {
-            stitchIds: {},
-            advIds: "adv1, adv2",
-          },
+          stitchIds: {},
+          advIds: "adv1, adv2",
         },
       });
     });

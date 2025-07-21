@@ -164,23 +164,21 @@ const appendAdvertisingIdQueryToEvent = (
   const displayClickCookie = cookieManager.getValue(DISPLAY_CLICK_COOKIE_KEY);
   const query = {
     advertising: {
-      conversion: {
-        ...(searchClickData &&
-          searchClickData.click_time && {
-            lastSearchClick: searchClickData.click_time,
-          }),
-        ...(displayClickCookie && {
-          lastDisplayClick: displayClickCookie,
+      ...(searchClickData &&
+        searchClickData.click_time && {
+          lastSearchClick: searchClickData.click_time,
         }),
-        stitchIds: {
-          ...(idsToInclude[SURFER_ID] && {
-            surferId: idsToInclude[SURFER_ID],
-          }),
-          ...(idsToInclude[ID5_ID] && { id5: idsToInclude[ID5_ID] }),
-          ...(idsToInclude[RAMP_ID] && { rampIDEnv: idsToInclude[RAMP_ID] }),
-        },
-        advIds: normalizeAdvertiser(componentConfig.advertiserIds),
+      ...(displayClickCookie && {
+        lastDisplayClick: displayClickCookie,
+      }),
+      stitchIds: {
+        ...(idsToInclude[SURFER_ID] && {
+          surferId: idsToInclude[SURFER_ID],
+        }),
+        ...(idsToInclude[ID5_ID] && { id5: idsToInclude[ID5_ID] }),
+        ...(idsToInclude[RAMP_ID] && { rampIDEnv: idsToInclude[RAMP_ID] }),
       },
+      advIds: normalizeAdvertiser(componentConfig.advertiserIds),
     },
   };
 
