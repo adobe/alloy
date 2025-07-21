@@ -10,17 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  objectOf,
-  string,
-  arrayOf,
-  number,
-} from "../../utils/validation/index.js";
+import { objectOf, string, arrayOf } from "../../utils/validation/index.js";
 
 export default objectOf({
   advertising: objectOf({
     id5PartnerId: string(),
     rampIdJSPath: string(),
-    advertiserIds: arrayOf(number()),
+    advertiserIds: arrayOf(string()),
   }).noUnknownFields(),
 });

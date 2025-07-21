@@ -147,7 +147,7 @@ describe("Advertising::clickThroughHandler", () => {
           eventType: "advertising.clickThrough",
           campaign: {
             adConversionDetails: {
-              SampleGroupId: "test-skwcid",
+              sampleGroupId: "test-skwcid",
               accountId: "123, 456",
             },
           },
@@ -236,7 +236,7 @@ describe("Advertising::clickThroughHandler", () => {
           eventType: "advertising.clickThrough",
           campaign: {
             adConversionDetails: {
-              SampleGroupId: "test-skwcid",
+              sampleGroupId: "test-skwcid",
               experimentid: "test-efid",
               accountId: "123, 456",
             },
@@ -281,7 +281,7 @@ describe("Advertising::clickThroughHandler", () => {
           eventType: "advertising.clickThrough",
           campaign: {
             adConversionDetails: {
-              SampleGroupId: "test-skwcid",
+              sampleGroupId: "test-skwcid",
               accountId: "123, 456",
             },
           },

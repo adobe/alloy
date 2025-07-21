@@ -72,7 +72,7 @@ export default async function handleClickThrough({
         campaign: {
           [XDM_AD_CONVERSION_DETAILS]: {
             ...(efid && { experimentid: efid }),
-            ...(skwcid && { SampleGroupId: skwcid }),
+            ...(skwcid && { sampleGroupId: skwcid }),
             ...(normalizedAdvertiser && { accountId: normalizedAdvertiser }),
           },
         },
