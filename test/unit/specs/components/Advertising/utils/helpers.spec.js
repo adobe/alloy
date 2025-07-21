@@ -569,9 +569,9 @@ describe("Advertising::helpers", () => {
 
       expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
         advertising: {
-          lastSearchClick: 1234567890,
-          lastDisplayClick: 9876543210,
-          stitchIds: {
+          LastSearchClick: 1234567890,
+          LastDisplayClick: 9876543210,
+          StitchIds: {
             surferId: "surfer123",
             id5: "id5_123",
             rampIDEnv: "ramp123",
@@ -594,7 +594,7 @@ describe("Advertising::helpers", () => {
 
       expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
         advertising: {
-          stitchIds: {
+          StitchIds: {
             surferId: "surfer123",
             id5: "id5_123",
             rampIDEnv: "ramp123",
@@ -619,7 +619,7 @@ describe("Advertising::helpers", () => {
 
       expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
         advertising: {
-          stitchIds: {
+          StitchIds: {
             surferId: "surfer123",
           },
           advIds: "test-advertiser",
@@ -640,7 +640,7 @@ describe("Advertising::helpers", () => {
 
       expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
         advertising: {
-          stitchIds: {},
+          StitchIds: {},
           advIds: "adv1, adv2",
         },
       });

@@ -1,14 +1,10 @@
 /*
-Copyright 2025 Adobe. All rights reserved.
-This file is licensed to you under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License. You may obtain a copy
-of the License at http://www.apache.org/licenses/LICENSE-2.0
+ Copyright 2025 Adobe. All rights reserved.
+ This file is licensed to you under the Apache License, Version 2.0 (the "License");
+ ...
 
-Unless required by applicable law or agreed to in writing, software distributed under
-the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-OF ANY KIND, either express or implied. See the License for the specific language
-governing permissions and limitations under the License.
 */
+
 import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger/index.js";
 import { responseStatus } from "../../helpers/assertions/index.js";
@@ -20,20 +16,21 @@ import {
 } from "../../helpers/constants/configParts/index.js";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+
 import {
   findClickThroughRequest,
   validateClickThroughRequest,
+  createAdvertisingConfig,
+  ADVERTISING_CONSTANTS,
 } from "../../helpers/assertions/advertising.js";
 
 const networkLogger = createNetworkLogger();
 
-const advertisingConfig = {
-  advertising: {
-    advertiserIds: ["83565", "83567", "83569"],
-  },
-};
-
-const config = compose(orgMainConfigMain, advertisingConfig, debugEnabled);
+const config = compose(
+  orgMainConfigMain,
+  createAdvertisingConfig(), // will pick up DEFAULT_ADVERTISER_IDS
+  debugEnabled,
+);
 
 createFixture({
   title:
@@ -52,23 +49,21 @@ test("Test C300001: Click-through conversion with s_kwcid parameter should send 
   const alloy = createAlloyProxy();
   await alloy.configure(config);
 
-  // The advertising component should automatically detect s_kwcid parameter and send conversion
+  // wait for at least one edge call
   await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
-
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).gte(1);
 
-  // Find the advertising conversion request using helper
+  // pick out our click-through
   const conversionRequest = findClickThroughRequest(
     networkLogger.edgeEndpointLogs.requests,
   );
   await t
     .expect(conversionRequest)
-    .ok("Expected to find advertising conversion request");
+    .ok("Expected to find an advertising.clickThrough conversion request");
 
-  // Validate request using helper
+  // validate it
   await validateClickThroughRequest(conversionRequest, {
-    accountId: "83565, 83567, 83569",
+    accountId: ADVERTISING_CONSTANTS.DEFAULT_ADVERTISER_IDS_STRING,
     sampleGroupId: "test_keyword_123",
-    // experimentid not expected for s_kwcid only test
   });
 });
