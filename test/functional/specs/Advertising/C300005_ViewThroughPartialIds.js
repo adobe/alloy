@@ -104,6 +104,7 @@ test("Test C300005: View-through conversion should handle partial advertising ID
     );
 
     if (conversionRequests.length > 0) {
+      // eslint-disable-next-line no-console
       console.warn(
         "Found conversion requests but advertising IDs may not be resolved:",
         error.message,
@@ -116,6 +117,7 @@ test("Test C300005: View-through conversion should handle partial advertising ID
       });
     } else {
       // It's acceptable to have no conversion requests if no IDs are available
+      // eslint-disable-next-line no-console
       console.log(
         "No conversion requests found - this is acceptable when no advertising IDs are available for partial configuration",
       );

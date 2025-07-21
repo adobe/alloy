@@ -83,6 +83,7 @@ test("Test C300004: View-through conversion should send conversion query with ad
     );
 
     if (conversionRequests.length > 0) {
+      // eslint-disable-next-line no-console
       console.warn(
         "Found conversion requests but without advertising IDs resolved:",
         error.message,
