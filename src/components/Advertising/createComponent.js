@@ -25,7 +25,7 @@ export default ({
   consent,
 }) => {
   const componentConfig = config.advertising;
-  const activeAdvertiserIds = componentConfig.advertiserSettings
+  const activeAdvertiserIds = componentConfig?.advertiserSettings
     ? normalizeAdvertiser(componentConfig.advertiserSettings)
     : "";
   const cookieManager = createCookieManager({
