@@ -10,26 +10,54 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 // eslint-disable-next-line import/no-unresolved
-import { defineProject } from "vitest/config";
+import { defineConfig } from "vitest/config";
 
-export default defineProject({
+export default defineConfig({
   test: {
-    name: "unit-tests",
-    include: ["test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
-    isolate: false,
-    browser: {
-      provider: "playwright",
-      instances: [
-        {
-          browser: "chromium",
+    projects: [
+      {
+        extends: false,
+        test: {
+          name: "unit",
+          include: ["test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
+          isolate: false,
+          browser: {
+            provider: "playwright",
+            instances: [
+              {
+                browser: "chromium",
+              },
+            ],
+            enabled: true,
+            headless: true,
+            screenshotFailures: false,
+          },
         },
-      ],
-      enabled: true,
-      headless: true,
-      screenshotFailures: false,
-    },
+      },
+      {
+        extends: false,
+        test: {
+          name: "integration",
+          include: ["test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
+          isolate: false,
+          browser: {
+            provider: "playwright",
+            instances: [
+              {
+                browser: "chromium",
+              },
+            ],
+            enabled: true,
+            headless: true,
+            screenshotFailures: false,
+          },
+        },
+      },
+    ],
+
     coverage: {
       include: ["src/**/*"],
+      reporter: ["lcov", "html", "text"],
     },
   },
 });

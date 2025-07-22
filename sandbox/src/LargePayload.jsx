@@ -1,6 +1,7 @@
 import React from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import useAlloy from "./helpers/useAlloy";
+import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
 
 const makePayload =
   (size, times = 1) =>
@@ -17,7 +18,9 @@ const makePayload =
   };
 
 export default function LargePayload() {
+  useAlloy();
   useSendPageViewEvent();
+
   return (
     <div>
       <ContentSecurityPolicy />

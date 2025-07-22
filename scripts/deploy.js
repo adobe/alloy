@@ -12,8 +12,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { execSync } from "child_process";
 import { createRequire } from "module";
+import { execSync } from "child_process";
 import urlExists from "url-exists-nodejs";
 import createLogger from "./helpers/createLogger.js";
 import exec from "./helpers/exec.js";

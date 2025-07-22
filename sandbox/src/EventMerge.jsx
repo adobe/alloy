@@ -1,15 +1,26 @@
 /* eslint-disable no-console */
 
-import React, { useRef, useEffect } from "react";
+import React, { useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import useAlloy from "./helpers/useAlloy";
+import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
 
 export default function EventMerge() {
+  const [eventMergeIdPromise, setEventMergeIdPromise] = React.useState(null);
+
+  useAlloy();
   useSendPageViewEvent();
-  const eventMergeIdPromise = useRef(window.alloy("createEventMergeId"));
 
   useEffect(() => {
-    eventMergeIdPromise.current.then((result) => {
+    setEventMergeIdPromise(window.alloy("createEventMergeId"));
+  }, []);
+
+  useEffect(() => {
+    if (!eventMergeIdPromise) {
+      return;
+    }
+
+    eventMergeIdPromise.then((result) => {
       window
         .alloy("sendEvent", {
           xdm: {
@@ -30,7 +41,7 @@ export default function EventMerge() {
           .catch(console.error);
       }, 3000);
     });
-  }, []);
+  }, [eventMergeIdPromise]);
 
   return (
     <div>

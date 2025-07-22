@@ -89,8 +89,6 @@ export default ({
       onResponse,
       onRequestFailure,
     });
-    // This prevents an un-caught promise in the console when the identity isn't set.
-    obtainedIdentityPromise.catch(() => undefined);
     return allowRequestToGoWithoutIdentity(request);
   };
 };

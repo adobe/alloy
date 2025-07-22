@@ -28,7 +28,6 @@ const getInteractId = (propositionId, existingInteractId) => {
     return parseInt(existingInteractId, 10);
   }
 
-  // eslint-disable-next-line no-plusplus
   return ++lastInteractId;
 };
 

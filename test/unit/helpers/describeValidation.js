@@ -11,7 +11,13 @@ governing permissions and limitations under the License.
 */
 import { vi, describe, it, expect } from "vitest";
 
+/**
+ * @param {string | Function} description
+ * @param {Function} validator
+ * @param {Array<{value: any, expected: any, error: boolean, warning: boolean}>} specObjects
+ */
 export default (description, validator, specObjects) => {
+  // eslint-disable-next-line vitest/valid-title -- this is a helper function and receives a valid value
   describe(description, () => {
     specObjects.forEach(
       ({ value, expected = value, error = false, warning = false }) => {

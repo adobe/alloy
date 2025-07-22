@@ -1,0 +1,95 @@
+{
+  "requestId": "3931ed0b-d171-45f6-9d3e-29a61113aac2-254b6b357f27442f",
+  "handle": [
+    {
+      "payload": [
+        {
+          "id": "41861666193140161934276845651148876988",
+          "namespace": {
+            "code": "ECID"
+          }
+        }
+      ],
+      "type": "identity:result"
+    },
+    {
+      "payload": [
+        {
+          "type": "cookie",
+          "spec": {
+            "name": "C12412",
+            "value": "test=C12412",
+            "domain": "alloyio.com",
+            "ttlDays": 30
+          }
+        }
+      ],
+      "type": "activation:push",
+      "eventIndex": 0
+    },
+    {
+      "payload": [
+        {
+          "type": "url",
+          "id": 4072007,
+          "spec": {
+            "url": "https://cataas.com/cat",
+            "hideReferrer": true,
+            "ttlMinutes": 10080
+          }
+        },
+        {
+          "type": "url",
+          "id": 4292297,
+          "spec": {
+            "url": "https://cataas.com/cat",
+            "hideReferrer": true,
+            "ttlMinutes": 10080
+          }
+        }
+      ],
+      "type": "activation:push",
+      "eventIndex": 0
+    },
+    {
+      "payload": [],
+      "type": "personalization:decisions",
+      "eventIndex": 0
+    },
+    {
+      "payload": [],
+      "type": "personalization:decisions",
+      "eventIndex": 0
+    },
+    {
+      "payload": [
+        {
+          "scope": "Target",
+          "hint": "35",
+          "ttlSeconds": 1800
+        },
+        {
+          "scope": "AAM",
+          "hint": "9",
+          "ttlSeconds": 1800
+        },
+        {
+          "scope": "EdgeNetwork",
+          "hint": "or2",
+          "ttlSeconds": 1800
+        }
+      ],
+      "type": "locationHint:result"
+    },
+    {
+      "payload": [
+        {
+          "key": "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster",
+          "value": "or2",
+          "maxAge": 1800
+        }
+      ],
+      "type": "state:store"
+    }
+  ]
+}

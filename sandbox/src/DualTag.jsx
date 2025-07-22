@@ -1,6 +1,7 @@
 import React from "react";
 import UnsafeContentSecurityPolicy from "./components/UnsafeContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import useAlloy from "./helpers/useAlloy";
+import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
 
 const loadLaunch = () => {
   const script = document.createElement("script");
@@ -11,7 +12,9 @@ const loadLaunch = () => {
 };
 
 export default function DualTag() {
+  useAlloy();
   useSendPageViewEvent();
+
   return (
     <div>
       {/* Need less restrictive CSP for old libraries */}

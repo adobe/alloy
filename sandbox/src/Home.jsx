@@ -1,11 +1,13 @@
-/* eslint-disable no-console, func-names */
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable no-console */
 
-import React from "react";
+import React, { useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import useAlloy from "./helpers/useAlloy";
+import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
 
 const getIdentity = () => {
-  window.alloy("getIdentity", { namespaces: ["ECID"] }).then(function (result) {
+  window.alloy("getIdentity", { namespaces: ["ECID"] }).then((result) => {
     if (result.identity) {
       console.log(
         "Sandbox: Get Identity command has completed.",
@@ -19,14 +21,50 @@ const getIdentity = () => {
   });
 };
 
-const sendDataToSecondaryDataset = () => {
-  window.alloy("sendEvent", {
-    datasetId: "5eb9aaa6a3b16e18a818e06f",
-  });
+const getLibraryInfo = () => {
+  window.alloy("getLibraryInfo");
 };
 
 export default function Home() {
+  useEffect(() => {
+    window.__alloyMonitors = [];
+    window.__alloyMonitors.push({
+      onContentRendering(data) {
+        console.log("Alloy Content Rendering");
+        console.log("data", data.status, data);
+      },
+      onContentHiding(data) {
+        console.log("Alloy Content Hiding");
+        console.log("data", data.status);
+      },
+      onInstanceCreated(data) {
+        console.log("Alloy Instance Created");
+        console.log(data.instanceName);
+        console.log(data.instance);
+      },
+      onInstanceConfigured(data) {
+        console.log("Alloy Instance Configured");
+        console.log(JSON.stringify(data.config, null, 2));
+        const { getLinkDetails } = data;
+        const listOfLinks = document.links;
+        setTimeout(async () => {
+          console.log(
+            `Will now print link details for ${listOfLinks.length} links`,
+          );
+          for (let i = 0; i < listOfLinks.length; i += 1) {
+            const linkDetails = getLinkDetails(listOfLinks[i]);
+            console.log("link details", linkDetails);
+          }
+        }, 1000);
+      },
+    });
+  }, []);
+
+  useAlloy({
+    options: { keepExistingMonitors: true },
+  });
   useSendPageViewEvent();
+
   return (
     <div>
       <ContentSecurityPolicy />
@@ -38,11 +76,9 @@ export default function Home() {
         </div>
       </section>
       <section>
-        <h2>Collect data by overriding the Dataset configured in Config UI</h2>
+        <h2>Library Info</h2>
         <div>
-          <button onClick={sendDataToSecondaryDataset}>
-            Send Event to Secondary Dataset
-          </button>
+          <button onClick={getLibraryInfo}>Get Library Info</button>
         </div>
       </section>
     </div>

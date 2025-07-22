@@ -1,0 +1,63 @@
+{
+  "requestId": "eca91a48-43aa-401f-86f0-16ae11cdc0f2-cc5f8309196348dc",
+  "handle": [
+    {
+      "payload": [
+        {
+          "id": "75142138344462263894507331812511658810",
+          "namespace": {
+            "code": "ECID"
+          }
+        },
+        {
+          "id": "71265032074538902643759651525003437623",
+          "namespace": {
+            "code": "CORE"
+          }
+        }
+      ],
+      "type": "identity:result"
+    },
+    {
+      "payload": [
+        {
+          "scope": "Target",
+          "hint": "35",
+          "ttlSeconds": 1800
+        },
+        {
+          "scope": "AAM",
+          "hint": "9",
+          "ttlSeconds": 1800
+        },
+        {
+          "scope": "EdgeNetwork",
+          "hint": "or2",
+          "ttlSeconds": 1800
+        }
+      ],
+      "type": "locationHint:result"
+    },
+    {
+      "payload": [
+        {
+          "key": "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster",
+          "value": "or2",
+          "maxAge": 1800
+        }
+      ],
+      "type": "state:store"
+    }
+  ],
+  "errors": [
+    {
+      "type": "https://ns.adobe.com/aep/errors/EXEG-0200-504",
+      "status": 504,
+      "title": "The service call has timed out.",
+      "detail": "The service call to 'com.adobe.audiencemanager' exceeded the allowed time and was canceled. Try again.",
+      "report": {
+        "eventIndex": 0
+      }
+    }
+  ]
+}

@@ -51,7 +51,6 @@ export const getInlineScripts = (fragment) => {
     ...(nonce && { nonce }),
   };
 
-  /* eslint-disable no-continue */
   for (let i = 0; i < length; i += 1) {
     const element = scripts[i];
 
@@ -67,7 +66,6 @@ export const getInlineScripts = (fragment) => {
 
     result.push(createNode(SCRIPT, attributes, { textContent }));
   }
-  /* eslint-enable no-continue */
 
   return result;
 };
@@ -77,7 +75,6 @@ export const getRemoteScriptsUrls = (fragment) => {
   const result = [];
   const { length } = scripts;
 
-  /* eslint-disable no-continue */
   for (let i = 0; i < length; i += 1) {
     const element = scripts[i];
 
@@ -93,7 +90,6 @@ export const getRemoteScriptsUrls = (fragment) => {
 
     result.push(url);
   }
-  /* eslint-enable no-continue */
 
   return result;
 };

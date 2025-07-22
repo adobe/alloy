@@ -2,8 +2,10 @@
 
 import React, { useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
+import useAlloy from "./helpers/useAlloy";
 
 export default function RedirectOffers() {
+  useAlloy();
   useEffect(() => {
     window
       .alloy("sendEvent", {

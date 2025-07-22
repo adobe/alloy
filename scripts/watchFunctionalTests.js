@@ -95,9 +95,7 @@ const effectByEventCode = {
   // Ideally we would pass these environment variables as part
   // of the loadConfigFile function, but that doesn't work.
   // See https://github.com/rollup/rollup/issues/4003
-  process.env.STANDALONE = "true";
-  process.env.NPM_PACKAGE_LOCAL = "true";
-  process.env.BASE_CODE_MIN = "true";
+  process.env.SOURCEMAP = "true";
   const { options, warnings } = await loadConfigFile(
     path.join(dirname, "../rollup.config.js"),
   );

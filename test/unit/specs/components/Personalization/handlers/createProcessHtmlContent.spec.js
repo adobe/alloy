@@ -126,6 +126,7 @@ describe("createProcessHtmlContent", () => {
         content: "mycontent",
       },
       expect.any(Function),
+      expect.any(Object),
     );
   });
 });
