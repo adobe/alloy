@@ -10,8 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/* eslint-disable no-plusplus */
-
 import { describe, it, expect } from "vitest";
 import createEventPruner from "../../../../../../src/components/RulesEngine/utils/createEventPruner.js";
 import generateEventHash from "../../../../../../src/components/RulesEngine/utils/generateEventHash.js";

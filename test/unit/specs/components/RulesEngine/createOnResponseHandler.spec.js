@@ -37,7 +37,7 @@ describe("RulesEngine:createOnResponseHandler", () => {
     decisionProvider = createDecisionProvider({
       eventRegistry,
     });
-    applyResponse = createApplyResponse(lifecycle);
+    applyResponse = createApplyResponse({ lifecycle, eventRegistry });
   });
   it("calls lifecycle.onDecision with propositions based on decisionContext", () => {
     const event = {
@@ -259,6 +259,7 @@ describe("RulesEngine:createOnResponseHandler", () => {
     };
     const decisionContext = {};
     const personalization = {};
+
     const responseHandler = createOnResponseHandler({
       renderDecisions: true,
       decisionProvider,
@@ -267,6 +268,7 @@ describe("RulesEngine:createOnResponseHandler", () => {
       personalization,
       decisionContext,
     });
+
     const response = {
       getPayloadsByType: () => [
         {
@@ -352,9 +354,11 @@ describe("RulesEngine:createOnResponseHandler", () => {
         },
       ],
     };
+
     responseHandler({
       response,
     });
+
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
       renderDecisions: true,
       propositions: [

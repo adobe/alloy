@@ -11,24 +11,23 @@ governing permissions and limitations under the License.
 */
 import React, { useEffect, useState } from "react";
 
-const useAlloyVersion = (instanceName = "alloy") => {
+/**
+ * Display the Alloy version in a footer in the bottom right.
+ */
+export default function AlloyVersion() {
   const [version, setVersion] = useState("0.0.0");
+
   useEffect(() => {
+    // eslint-disable-next-line no-underscore-dangle
+    const instanceName = window.__alloyNS[0] || "alloy";
+
     window[instanceName]("getLibraryInfo").then(
       ({ libraryInfo: { version: v } }) => {
         setVersion(v);
       },
     );
-  }, [instanceName]);
-  return version;
-};
+  }, []);
 
-/**
- * Display the Alloy version in a footer in the bottom right.
- */
-export default function AlloyVersion() {
-  // eslint-disable-next-line no-underscore-dangle
-  const alloyVersion = useAlloyVersion(window.__alloyNS[0]);
   return (
     <div
       style={{
@@ -43,7 +42,7 @@ export default function AlloyVersion() {
         userSelect: "none",
       }}
     >
-      {alloyVersion}
+      {version}
     </div>
   );
 }

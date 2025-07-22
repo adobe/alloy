@@ -26,7 +26,7 @@ export default (fragment) => {
   if (!nonce) {
     return;
   }
-  /* eslint-disable no-continue */
+
   for (let i = 0; i < length; i += 1) {
     const element = styleNodes[i];
     if (!isInlineStyleElement(element)) {

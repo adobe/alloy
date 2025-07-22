@@ -58,7 +58,6 @@ export default (clickedElement, selectors, getClickMetas) => {
   let resultViewName;
   let resultViewNameWeight = Number.MAX_SAFE_INTEGER;
 
-  /* eslint-disable no-continue */
   for (let i = 0; i < selectors.length; i += 1) {
     const { metas, label, weight, viewName } = getMetasIfMatches(
       clickedElement,

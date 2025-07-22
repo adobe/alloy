@@ -2,6 +2,9 @@
 <!--- In general, start the title with a past tense verb (i.e. added, optimized, removed.) -->
 <!--- For bug fixes, start with "fixed" (i.e. fixed an issue, fixed broken.) -->
 <!--- For PRs that should not be included in the release notes, attach the label "ignore-for-release" -->
+<!--- For PRs that should increment the patch version, attach the label "bug-fix" or "improvement" -->
+<!--- For PRs that should increment the minor version, no labels are required -->
+<!--- For PRs that should increment the major version, attach the label "breaking-change" -->
 
 ## Description
 
@@ -19,15 +22,6 @@
 <!--- Why is this change required? What problem does it solve? -->
 
 ## Screenshots (if appropriate):
-
-## Types of changes
-
-<!--- What types of changes does your code introduce? Put an `x` in all the boxes that apply: -->
-
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Improvement (non-breaking change which does not add functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to change)
 
 ## Checklist:
 

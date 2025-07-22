@@ -3,32 +3,19 @@ import React, { useEffect, useState } from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./InAppMessagesStyle.css";
 import { deleteAllCookies, getAlloyTestConfigs } from "../utils";
+import useAlloy from "../../helpers/useAlloy";
 
 const configKey =
   localStorage.getItem("iam-configKey") || "aemonacpprodcampaign";
 
 const config = getAlloyTestConfigs();
 
-const { datastreamId, orgId, decisionContext, edgeDomain, alloyInstance } =
-  config[configKey];
+const { datastreamId, orgId, decisionContext, edgeDomain } = config[configKey];
 
 const getURLParams = (key) => {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get(key);
 };
-
-if (alloyInstance !== window.alloy) {
-  alloyInstance("configure", {
-    defaultConsent: getURLParams("defaultConsent") || "in",
-    datastreamId,
-    orgId,
-    edgeDomain,
-    thirdPartyCookiesEnabled: false,
-    targetMigrationEnabled: false,
-    personalizationStorageEnabled: true,
-    debugEnabled: true,
-  });
-}
 
 const CUSTOM_TRAIT_KEY = "iam-customtrait-key";
 const CUSTOM_TRAIT_VALUE = "iam-customtrait-value";
@@ -52,8 +39,23 @@ export default function InAppMessages() {
     localStorage.setItem(CUSTOM_TRAIT_VALUE, value);
   };
 
+  useAlloy({
+    configurations: {
+      alloy: {
+        defaultConsent: getURLParams("defaultConsent") || "in",
+        datastreamId,
+        orgId,
+        edgeDomain,
+        thirdPartyCookiesEnabled: false,
+        targetMigrationEnabled: false,
+        personalizationStorageEnabled: true,
+        debugEnabled: true,
+      },
+    },
+  });
+
   useEffect(() => {
-    const unsubscribePromise = alloyInstance("subscribeRulesetItems", {
+    const unsubscribePromise = window.alloy("subscribeRulesetItems", {
       callback: (result) => {
         console.log("subscribeRulesetItems", result);
       },
@@ -72,7 +74,7 @@ export default function InAppMessages() {
     }
 
     if (useEvaluateRulesetsCommand) {
-      alloyInstance("evaluateRulesets", {
+      window.alloy("evaluateRulesets", {
         renderDecisions: true,
         personalization: {
           decisionContext: context,
@@ -81,21 +83,23 @@ export default function InAppMessages() {
       return;
     }
 
-    alloyInstance("sendEvent", {
-      renderDecisions: true,
-      type: "decisioning.propositionFetch",
-      personalization: {
-        surfaces: ["#hello"],
-        decisionContext: context,
-        sendDisplayEvent: false,
-      },
-    }).then(() => {
-      setSentEvent(true);
-    });
+    window
+      .alloy("sendEvent", {
+        renderDecisions: true,
+        type: "decisioning.propositionFetch",
+        personalization: {
+          surfaces: ["#hello"],
+          decisionContext: context,
+          sendDisplayEvent: false,
+        },
+      })
+      .then(() => {
+        setSentEvent(true);
+      });
   };
 
   const sendDisplayEvents = () => {
-    alloyInstance("sendEvent", {
+    window.alloy("sendEvent", {
       renderDecisions: false,
       personalization: {
         includeRenderedPropositions: true,

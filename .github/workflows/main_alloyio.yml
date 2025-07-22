@@ -19,17 +19,16 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: lts/*
+          cache: "npm"
 
-      - name: Change directory to sandbox and install npm packages
+      - name: Install packages
+        run: npm ci
+
+      - name: Build sandbox
         run: |
           cd sandbox
-          npm install
-
-      - name: Change directory to root and install npm packages
-        run: |
-          npm install
-          npm run sandbox:build
+          npm run build
 
       - name: Upload artifact for deployment job
         uses: Azure/static-web-apps-deploy@v1

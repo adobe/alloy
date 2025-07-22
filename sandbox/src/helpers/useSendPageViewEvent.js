@@ -16,6 +16,7 @@ const isNonEmptyArray = (value) => Array.isArray(value) && value.length > 0;
 
 export default ({
   instanceName = "alloy",
+  renderDecisions = false,
   viewName,
   data = {},
   xdm = {},
@@ -34,7 +35,7 @@ export default ({
     }
 
     window[instanceName]("sendEvent", {
-      renderDecisions: true,
+      renderDecisions,
       decisionScopes, // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
       xdm,
       data,

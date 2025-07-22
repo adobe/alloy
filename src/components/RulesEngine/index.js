@@ -20,7 +20,7 @@ import {
   CONTEXT_KEY,
   CONTEXT_EVENT_SOURCE,
   CONTEXT_EVENT_TYPE,
-} from "./constants.js";
+} from "./constants/index.js";
 import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand.js";
 import { clearLocalStorage, createInMemoryStorage } from "./utils/storage.js";
 import { objectOf, boolean } from "../../utils/validation/index.js";
@@ -69,7 +69,10 @@ const createRulesEngine = ({
         subscribeRulesetItems.refresh(propositions);
       },
       onComponentsRegistered(tools) {
-        applyResponse = createApplyResponse(tools.lifecycle);
+        applyResponse = createApplyResponse({
+          lifecycle: tools.lifecycle,
+          eventRegistry,
+        });
         if (personalizationStorageEnabled) {
           consent
             .awaitConsent()

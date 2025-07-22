@@ -41,7 +41,7 @@ export default ({ logger }) => {
       const sessionDetails = {
         name: result.name,
         friendlyName: result.friendlyName,
-        length: result.length,
+        length: Math.round(result.length),
         streamType: result.streamType,
         contentType: result.contentType,
       };

@@ -15,43 +15,48 @@ import getAbsoluteUrlFromAnchorElement from "../../../../../../../src/components
 
 const initAnchorState = (window, element, anchorState) => {
   element.href = anchorState["element.href"];
-  element.protocol = anchorState["element.protocol"];
-  element.host = anchorState["element.host"];
-  window.location.protocol = anchorState["window.location.protocol"];
-  window.location.host = anchorState["window.location.host"];
-  window.location.pathname = anchorState["window.location.pathname"];
+  window.location.href = anchorState["window.location.href"];
 };
 describe("ActivityCollector::getAbsoluteUrlFromAnchorElement", () => {
   it("Makes best attempt to constructs absolute URLs", () => {
     const window = {
       location: {
-        protocol: "",
-        host: "",
-        pathname: "",
+        href: "",
       },
     };
     const element = {
-      protocol: "",
-      host: "",
+      href: "",
     };
     const anchorStates = [
       {
         "element.href": "http://example.com/example.html",
-        "element.protocol": "",
-        "element.host": "",
-        "window.location.protocol": "http:",
-        "window.location.host": "example.com",
-        "window.location.pathname": "/",
+        "window.location.href": "http://example.com/example.html",
         expectedResult: "http://example.com/example.html",
       },
       {
         "element.href": "example.html",
-        "element.protocol": "",
-        "element.host": "",
-        "window.location.protocol": "https:",
-        "window.location.host": "example.com",
-        "window.location.pathname": "/",
-        expectedResult: "https://example.com/example.html",
+        "window.location.href": "http://example.com/example.html",
+        expectedResult: "http://example.com/example.html",
+      },
+      {
+        "element.href": "mailto:email@domain.com",
+        "window.location.href": "http://example.com/example.html",
+        expectedResult: "mailto:email@domain.com",
+      },
+      {
+        "element.href": "tel:1234567",
+        "window.location.href": "https://example.com/example.html",
+        expectedResult: "tel:1234567",
+      },
+      {
+        "element.href": null,
+        "window.location.href": "http://example.com/example.html",
+        expectedResult: "http://example.com/example.html",
+      },
+      {
+        "element.href": { my: "object" },
+        "window.location.href": "http://example.com/",
+        expectedResult: "http://example.com/",
       },
     ];
     anchorStates.forEach((anchorState) => {
@@ -60,5 +65,19 @@ describe("ActivityCollector::getAbsoluteUrlFromAnchorElement", () => {
         anchorState.expectedResult,
       );
     });
+  });
+
+  it("handles invalid URLs", () => {
+    const window = {
+      location: {
+        href: "http://example.com/example.html",
+      },
+    };
+    const element = {
+      href: "hello world",
+    };
+    expect(() =>
+      getAbsoluteUrlFromAnchorElement(window, element),
+    ).not.toThrow();
   });
 });

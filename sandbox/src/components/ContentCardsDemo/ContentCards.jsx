@@ -2,27 +2,14 @@ import React, { useEffect, useState } from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./ContentCards.css";
 import { deleteAllCookies, getAlloyTestConfigs } from "../utils";
+import useAlloy from "../../helpers/useAlloy";
 
 const configKey = localStorage.getItem("iam-configKey") || "stage";
 let responseSource = localStorage.getItem("iam-responseSource") || "mock";
 
 const config = getAlloyTestConfigs();
 
-const { datastreamId, orgId, decisionContext, edgeDomain, alloyInstance } =
-  config[configKey];
-
-if (alloyInstance !== window.alloy) {
-  alloyInstance("configure", {
-    defaultConsent: "in",
-    datastreamId,
-    orgId,
-    edgeDomain,
-    thirdPartyCookiesEnabled: false,
-    targetMigrationEnabled: false,
-    personalizationStorageEnabled: true,
-    debugEnabled: true,
-  });
-}
+const { datastreamId, orgId, decisionContext, edgeDomain } = config[configKey];
 
 const surface = "web://aepdemo.com/contentCards";
 
@@ -600,7 +587,7 @@ export default function ContentCards() {
   const subscribeRulesetItems = () => {
     return alreadySubscribed
       ? Promise.resolve()
-      : alloyInstance("subscribeRulesetItems", {
+      : window.alloy("subscribeRulesetItems", {
           surfaces: [surface],
           schemas: [
             "https://ns.adobe.com/personalization/message/content-card",
@@ -609,12 +596,11 @@ export default function ContentCards() {
             const { propositions = [] } = result;
             const extractedContentCards = extractContentCards(propositions);
 
-            const dismiss = (items) => {
+            const dismiss = (items) =>
               collectEvent(
                 "dismiss",
                 items.map((item) => item.getProposition()),
               );
-            };
 
             setClickHandler(
               () => (items) =>
@@ -632,11 +618,26 @@ export default function ContentCards() {
         });
   };
 
+  useAlloy({
+    configurations: {
+      alloy: {
+        defaultConsent: "in",
+        datastreamId,
+        orgId,
+        edgeDomain,
+        thirdPartyCookiesEnabled: false,
+        targetMigrationEnabled: false,
+        personalizationStorageEnabled: true,
+        debugEnabled: true,
+      },
+    },
+  });
+
   useEffect(() => {
     const startupPromises = Promise.all([
       subscribeRulesetItems(),
       responseSource === "edge"
-        ? alloyInstance("sendEvent", {
+        ? window.alloy("sendEvent", {
             renderDecisions: true,
             type: "decisioning.propositionFetch",
             personalization: {
@@ -645,7 +646,7 @@ export default function ContentCards() {
               sendDisplayEvent: false,
             },
           })
-        : alloyInstance("applyResponse", {
+        : window.alloy("applyResponse", {
             renderDecisions: true,
             responseBody: mockResponse,
           }),
@@ -661,7 +662,7 @@ export default function ContentCards() {
 
   const dismissContentCard = (items) => {
     dismissHandler(items).then(() => {
-      alloyInstance("evaluateRulesets", {
+      window.alloy("evaluateRulesets", {
         renderDecisions: true,
       });
     });
@@ -683,7 +684,7 @@ export default function ContentCards() {
   };
 
   const shareSocialMedia = () => {
-    alloyInstance("evaluateRulesets", {
+    window.alloy("evaluateRulesets", {
       renderDecisions: true,
       personalization: {
         decisionContext: {
@@ -694,7 +695,7 @@ export default function ContentCards() {
   };
 
   const depositFunds = () => {
-    alloyInstance("evaluateRulesets", {
+    window.alloy("evaluateRulesets", {
       renderDecisions: true,
       personalization: {
         decisionContext: {

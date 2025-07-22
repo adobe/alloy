@@ -12,6 +12,4 @@ governing permissions and limitations under the License.
 
 import { ClientFunction } from "testcafe";
 
-export default ClientFunction(
-  () => typeof navigator.userAgentData !== "undefined",
-);
+export default ClientFunction(() => "userAgentData" in navigator);

@@ -1,6 +1,7 @@
 import React from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import useAlloy from "./helpers/useAlloy";
+import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
 
 const adobeLink = () => {
   window.alloy("sendEvent", {
@@ -12,7 +13,9 @@ const adobeLink = () => {
 };
 
 export default function Links() {
+  useAlloy();
   useSendPageViewEvent();
+
   return (
     <div>
       <ContentSecurityPolicy />

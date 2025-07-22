@@ -9,7 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { PERSONALIZATION_DECISIONS_HANDLE } from "../../constants/handle.js";
+
+import { PERSONALIZATION_DECISIONS_HANDLE } from "../../constants/decisionProvider.js";
 import flattenObject from "../../utils/flattenObject.js";
 
 export default ({
@@ -36,6 +37,7 @@ export default ({
     }
 
     const propositions = decisionProvider.evaluate(context);
+
     return applyResponse({
       renderDecisions,
       propositions,

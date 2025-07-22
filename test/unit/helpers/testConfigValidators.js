@@ -19,6 +19,7 @@ export default ({
   defaultValues,
 }) => {
   validConfigurations.forEach((cfg, i) => {
+    // eslint-disable-next-line vitest/expect-expect -- configValidators contains validations
     it(`validates configuration (${i})`, () => {
       configValidators(cfg);
     });

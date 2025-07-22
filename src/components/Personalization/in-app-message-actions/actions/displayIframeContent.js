@@ -94,7 +94,7 @@ const renderMessage = (iframe, webParameters, container, overlay) => {
   ].forEach(({ id, element }) => {
     const { style = {}, params = {} } = webParameters[id];
 
-    element.style = { ...element.style, ...style };
+    Object.assign(element.style, style);
 
     const {
       parentElement = "body",

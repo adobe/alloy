@@ -1,9 +1,12 @@
 import React from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import useAlloy from "./helpers/useAlloy";
+import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
 
 export default function Personalization() {
-  useSendPageViewEvent();
+  useAlloy();
+  useSendPageViewEvent({ renderDecisions: true });
+
   return (
     <div>
       <ContentSecurityPolicy />
