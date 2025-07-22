@@ -92,10 +92,5 @@ export default ({
         });
       },
     },
-    commands: {
-      sendAdConversion: {
-        run: sendAdConversion,
-      },
-    },
   };
 };
