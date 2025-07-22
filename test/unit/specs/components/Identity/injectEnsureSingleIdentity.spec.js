@@ -94,7 +94,9 @@ describe("Identity::injectEnsureSingleIdentity", () => {
     receivedIndex += 1;
   };
   const simulateResponseWithoutIdentity = () => {
-    awaitIdentityDeferreds[receivedIndex].reject();
+    awaitIdentityDeferreds[receivedIndex].reject(
+      new Error("Identity cookie not found"),
+    );
     receivedIndex += 1;
   };
   it("allows first request to proceed and pauses subsequent requests until identity cookie exists", () => {
@@ -208,5 +210,30 @@ describe("Identity::injectEnsureSingleIdentity", () => {
       onResponse,
       onRequestFailure,
     });
+  });
+
+  // eslint-disable-next-line vitest/expect-expect
+  it("prevents un-caught promise in console when the identity isn't set", () => {
+    setup();
+    return Promise.resolve()
+      .then(() => {
+        sendRequest();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        simulateResponseWithoutIdentity();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        sendRequest();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        simulateResponseWithoutIdentity();
+        return flushPromiseChains();
+      });
+    // vitest will complain if the rejected promise is not handled
+    // so there are no assertions here, we are just making sure the
+    // promise doesn't get to the unhandled promise hook
   });
 });
