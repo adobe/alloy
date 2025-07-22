@@ -60,9 +60,9 @@ export default async function handleClickThrough({
     logger.info(LOG_COOKIE_WRITTEN, clickData);
   }
 
-  // Handle advertiser normalization for both string and array cases
+  // Handle advertiser normalization
   const normalizedAdvertiser = normalizeAdvertiser(
-    componentConfig.advertiserIds,
+    componentConfig.advertiserSettings,
   );
 
   const xdm = {

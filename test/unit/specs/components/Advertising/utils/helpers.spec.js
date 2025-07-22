@@ -245,47 +245,63 @@ describe("Advertising::helpers", () => {
   describe("normalizeAdvertiser", () => {
     it("should return UNKNOWN_ADVERTISER for null input", () => {
       const result = normalizeAdvertiser(null);
-      expect(result).toBe("UNKNOWN");
+      expect(result).toBe("");
     });
 
     it("should return UNKNOWN_ADVERTISER for undefined input", () => {
       const result = normalizeAdvertiser(undefined);
-      expect(result).toBe("UNKNOWN");
+      expect(result).toBe("");
     });
 
-    it("should return UNKNOWN_ADVERTISER for empty string", () => {
-      const result = normalizeAdvertiser("");
-      expect(result).toBe("UNKNOWN");
-    });
-
-    it("should return string input as-is", () => {
+    it("should return UNKNOWN_ADVERTISER for non-array input", () => {
       const result = normalizeAdvertiser("test-advertiser");
-      expect(result).toBe("test-advertiser");
+      expect(result).toBe("");
     });
 
-    it("should join array of advertisers with commas", () => {
-      const result = normalizeAdvertiser([
-        "advertiser1",
-        "advertiser2",
-        "advertiser3",
-      ]);
-      expect(result).toBe("advertiser1, advertiser2, advertiser3");
+    it("should handle advertiserSettings with enabled advertisers only", () => {
+      const advertiserSettings = [
+        { advertiserId: "167524", enabled: true },
+        { advertiserId: "153472", enabled: false },
+        { advertiserId: "178901", enabled: true },
+      ];
+      const result = normalizeAdvertiser(advertiserSettings);
+      expect(result).toBe("167524, 178901");
     });
 
-    it("should filter out falsy values from array", () => {
-      const result = normalizeAdvertiser([
-        "advertiser1",
-        "",
-        null,
-        "advertiser2",
-        undefined,
-      ]);
-      expect(result).toBe("advertiser1, advertiser2");
+    it("should handle advertiserSettings with all disabled advertisers", () => {
+      const advertiserSettings = [
+        { advertiserId: "167524", enabled: false },
+        { advertiserId: "153472", enabled: false },
+      ];
+      const result = normalizeAdvertiser(advertiserSettings);
+      expect(result).toBe("");
     });
 
-    it("should handle empty array", () => {
+    it("should handle advertiserSettings with all enabled advertisers", () => {
+      const advertiserSettings = [
+        { advertiserId: "167524", enabled: true },
+        { advertiserId: "153472", enabled: true },
+      ];
+      const result = normalizeAdvertiser(advertiserSettings);
+      expect(result).toBe("167524, 153472");
+    });
+
+    it("should handle empty advertiserSettings array", () => {
       const result = normalizeAdvertiser([]);
       expect(result).toBe("");
+    });
+
+    it("should filter out invalid advertiserSettings objects", () => {
+      const advertiserSettings = [
+        { advertiserId: "167524", enabled: true },
+        { advertiserId: "", enabled: true }, // Empty advertiserId
+        { advertiserId: "153472", enabled: false },
+        null, // Null object
+        { advertiserId: "178901", enabled: true },
+        { enabled: true }, // Missing advertiserId
+      ];
+      const result = normalizeAdvertiser(advertiserSettings);
+      expect(result).toBe("167524, 178901");
     });
   });
 
@@ -543,7 +559,9 @@ describe("Advertising::helpers", () => {
 
     beforeEach(() => {
       componentConfig = {
-        advertiserIds: "test-advertiser",
+        advertiserSettings: [
+          { advertiserId: "test-advertiser", enabled: true },
+        ],
       };
       idsToInclude = {
         surferId: "surfer123",
@@ -569,9 +587,9 @@ describe("Advertising::helpers", () => {
 
       expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
         advertising: {
-          LastSearchClick: 1234567890,
-          LastDisplayClick: 9876543210,
-          StitchIds: {
+          lastSearchClick: 1234567890,
+          lastDisplayClick: 9876543210,
+          stitchIds: {
             surferId: "surfer123",
             id5: "id5_123",
             rampIDEnv: "ramp123",
@@ -594,7 +612,7 @@ describe("Advertising::helpers", () => {
 
       expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
         advertising: {
-          StitchIds: {
+          stitchIds: {
             surferId: "surfer123",
             id5: "id5_123",
             rampIDEnv: "ramp123",
@@ -619,7 +637,7 @@ describe("Advertising::helpers", () => {
 
       expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
         advertising: {
-          StitchIds: {
+          stitchIds: {
             surferId: "surfer123",
           },
           advIds: "test-advertiser",
@@ -627,8 +645,12 @@ describe("Advertising::helpers", () => {
       });
     });
 
-    it("should normalize advertiser IDs", () => {
-      componentConfig.advertiserIds = ["adv1", "adv2"];
+    it("should normalize advertiser settings", () => {
+      componentConfig.advertiserSettings = [
+        { advertiserId: "adv1", enabled: true },
+        { advertiserId: "adv2", enabled: false },
+        { advertiserId: "adv3", enabled: true },
+      ];
       mockCookieManager.getValue.mockReturnValue(null);
 
       appendAdvertisingIdQueryToEvent(
@@ -640,8 +662,8 @@ describe("Advertising::helpers", () => {
 
       expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
         advertising: {
-          StitchIds: {},
-          advIds: "adv1, adv2",
+          stitchIds: {},
+          advIds: "adv1, adv3",
         },
       });
     });

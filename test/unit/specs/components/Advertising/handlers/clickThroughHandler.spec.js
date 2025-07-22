@@ -75,11 +75,15 @@ if (typeof globalThis.window !== "undefined") {
 vi.mock(
   "../../../../../../src/components/Advertising/utils/helpers.js",
   () => ({
-    normalizeAdvertiser: vi.fn((advertiser) => {
-      if (Array.isArray(advertiser)) {
-        return advertiser.join(", ");
+    normalizeAdvertiser: vi.fn((advertiserSettings) => {
+      if (!advertiserSettings || !Array.isArray(advertiserSettings)) {
+        return "UNKNOWN";
       }
-      return advertiser || "UNKNOWN";
+
+      return advertiserSettings
+        .filter((item) => item && item.enabled === true && item.advertiserId)
+        .map((item) => item.advertiserId)
+        .join(", ");
     }),
     loadScript: vi.fn().mockResolvedValue(),
     getUrlParams: vi.fn(() => ({ skwcid: null, efid: null })),
@@ -117,7 +121,10 @@ describe("Advertising::clickThroughHandler", () => {
     };
 
     componentConfig = {
-      advertiserIds: [123, 456],
+      advertiserSettings: [
+        { advertiserId: "123", enabled: true },
+        { advertiserId: "456", enabled: true },
+      ],
     };
   });
 

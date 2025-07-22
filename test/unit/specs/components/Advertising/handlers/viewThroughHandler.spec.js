@@ -107,11 +107,15 @@ vi.mock(
       return event;
     }),
     loadScript: vi.fn().mockResolvedValue(),
-    normalizeAdvertiser: vi.fn((advertiser) => {
-      if (Array.isArray(advertiser)) {
-        return advertiser.join(", ");
+    normalizeAdvertiser: vi.fn((advertiserSettings) => {
+      if (!advertiserSettings || !Array.isArray(advertiserSettings)) {
+        return "UNKNOWN";
       }
-      return advertiser || "UNKNOWN";
+
+      return advertiserSettings
+        .filter((item) => item && item.enabled === true && item.advertiserId)
+        .map((item) => item.advertiserId)
+        .join(", ");
     }),
     getUrlParams: vi.fn(() => ({ skwcid: null, efid: null })),
     isAnyIdUnused: vi.fn(() => true),

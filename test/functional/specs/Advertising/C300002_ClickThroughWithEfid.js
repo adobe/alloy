@@ -59,7 +59,7 @@ test("Test C300002: Click-through conversion with ef_id parameter should send ad
 
   // Validate conversion payload
   await validateClickThroughRequest(conversionRequest, {
-    accountId: ADVERTISING_CONSTANTS.DEFAULT_ADVERTISER_IDS,
+    accountId: ADVERTISING_CONSTANTS.DEFAULT_ADVERTISER_IDS_STRING,
     experimentid: "test_experiment_456",
   });
 });

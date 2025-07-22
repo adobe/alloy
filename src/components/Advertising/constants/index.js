@@ -28,7 +28,7 @@ export const RAMP_ID = "rampId";
 export const ID5_ID = "id5Id";
 
 // Default Values
-export const UNKNOWN_ADVERTISER = "UNKNOWN";
+export const UNKNOWN_ADVERTISER = "";
 export const DEFAULT_THROTTLE_MINUTES = 30;
 export const DEFAULT_COOKIE_EXPIRATION_MINUTES = 1440; // 24 hours
 

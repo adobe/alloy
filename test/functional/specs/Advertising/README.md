@@ -33,7 +33,11 @@ The tests are configured with the following values:
 ```javascript
 const advertisingConfig = {
   advertising: {
-    advertiserIds: ["12345", "67890", "11111"], // Your test advertiser IDs
+    advertiserSettings: [
+      { advertiserId: "12345", enabled: true },
+      { advertiserId: "67890", enabled: false },
+      { advertiserId: "11111", enabled: true },
+    ], // Your test advertiser settings
     id5PartnerId: "your-test-partner-id",
     rampIdJSPath: "/path/to/test/ramp-id.js",
   },

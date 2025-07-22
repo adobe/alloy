@@ -22,7 +22,7 @@ import {
 
 const networkLogger = createNetworkLogger();
 
-// Build config with default advertiserIds array
+// Build config with default advertiserSettings array
 const config = compose(
   orgMainConfigMain,
   createAdvertisingConfig(),
@@ -58,9 +58,9 @@ test("Test C300003: Click-through conversion with both s_kwcid and ef_id paramet
     .expect(conversionRequest)
     .ok("Expected to find advertising.clickThrough conversion request");
 
-  // Validate conversion payload with array-based advertiserIds
+  // Validate conversion payload with advertiserSettings
   await validateClickThroughRequest(conversionRequest, {
-    accountId: ADVERTISING_CONSTANTS.DEFAULT_ADVERTISER_IDS,
+    accountId: ADVERTISING_CONSTANTS.DEFAULT_ADVERTISER_IDS_STRING,
     sampleGroupId: "test_keyword_123",
     experimentid: "test_experiment_456",
   });

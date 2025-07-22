@@ -6,7 +6,11 @@ import { t } from "testcafe";
 
 // Constants
 export const ADVERTISING_CONSTANTS = Object.freeze({
-  DEFAULT_ADVERTISER_IDS: ["83565", "83567", "83569"],
+  DEFAULT_ADVERTISER_SETTINGS: [
+    { advertiserId: "83565", enabled: true },
+    { advertiserId: "83567", enabled: true },
+    { advertiserId: "83569", enabled: true },
+  ],
   DEFAULT_ADVERTISER_IDS_STRING: "83565, 83567, 83569",
   DEFAULT_TIMEOUT: 15000,
   EVENT_TYPES: { CLICK_THROUGH: "advertising.clickThrough" },
@@ -31,12 +35,12 @@ const expectPath = async (obj, path, msg) => {
 
 // Config builder
 export const createAdvertisingConfig = ({
-  advertiserIds = ADVERTISING_CONSTANTS.DEFAULT_ADVERTISER_IDS,
+  advertiserSettings = ADVERTISING_CONSTANTS.DEFAULT_ADVERTISER_SETTINGS,
   id5PartnerId,
   rampIdJSPath,
 } = {}) => ({
   advertising: {
-    advertiserIds,
+    ...(advertiserSettings && { advertiserSettings }),
     ...(id5PartnerId && { id5PartnerId }),
     ...(rampIdJSPath && { rampIdJSPath }),
   },

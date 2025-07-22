@@ -15,7 +15,7 @@ import createCookieManager from "./utils/createAdvertisingSessionManager.js";
 import handleClickThrough from "./handlers/clickThroughHandler.js";
 import handleViewThrough from "./handlers/viewThroughHandler.js";
 import handleOnBeforeSendEvent from "./handlers/onBeforeSendEventHandler.js";
-import { getUrlParams } from "./utils/helpers.js";
+import { getUrlParams, normalizeAdvertiser } from "./utils/helpers.js";
 
 export default ({
   logger,
@@ -25,7 +25,9 @@ export default ({
   consent,
 }) => {
   const componentConfig = config.advertising;
-
+  const activeAdvertiserIds = componentConfig.advertiserSettings
+    ? normalizeAdvertiser(componentConfig.advertiserSettings)
+    : "";
   const cookieManager = createCookieManager({
     orgId: config.orgId,
     logger,
@@ -76,20 +78,24 @@ export default ({
   return {
     lifecycle: {
       onComponentsRegistered() {
-        sendAdConversion().catch(() => {
-          // silent pass
-        });
+        if (activeAdvertiserIds) {
+          sendAdConversion().catch(() => {
+            // silent pass
+          });
+        }
       },
       onBeforeEvent: ({ event }) => {
-        handleOnBeforeSendEvent({
-          cookieManager,
-          logger,
-          state: sharedState,
-          event,
-          componentConfig,
-        }).catch(() => {
-          // silent pass
-        });
+        if (activeAdvertiserIds) {
+          handleOnBeforeSendEvent({
+            cookieManager,
+            logger,
+            state: sharedState,
+            event,
+            componentConfig,
+          }).catch(() => {
+            // silent pass
+          });
+        }
       },
     },
   };

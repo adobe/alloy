@@ -136,22 +136,19 @@ const createManagedAsyncOperation = (operationName, workerFn) => {
 };
 
 /**
- * Normalizes advertiser value - handles both string and array cases
- * @param {string|string[]} advertiser - Single advertiser string or array of advertisers
- * @returns {string} Comma-separated string of advertisers
+ * Normalizes advertiser settings - extracts enabled advertiser IDs
+ * @param {Object[]} advertiserSettings - Array of advertiserSettings objects with advertiserId and enabled properties
+ * @returns {string} Comma-separated string of enabled advertiser IDs
  */
-const normalizeAdvertiser = (advertiser) => {
-  if (!advertiser) {
+const normalizeAdvertiser = (advertiserSettings) => {
+  if (!advertiserSettings || !Array.isArray(advertiserSettings)) {
     return UNKNOWN_ADVERTISER;
   }
 
-  // If it's an array, join with commas
-  if (Array.isArray(advertiser)) {
-    return advertiser.filter(Boolean).join(", ");
-  }
-
-  // If it's a string, return as-is
-  return advertiser;
+  return advertiserSettings
+    .filter((item) => item && item.enabled === true && item.advertiserId)
+    .map((item) => item.advertiserId)
+    .join(", ");
 };
 
 const appendAdvertisingIdQueryToEvent = (
@@ -162,23 +159,24 @@ const appendAdvertisingIdQueryToEvent = (
 ) => {
   const searchClickData = cookieManager.getValue(LAST_CLICK_COOKIE_KEY);
   const displayClickCookie = cookieManager.getValue(DISPLAY_CLICK_COOKIE_KEY);
+
   const query = {
     advertising: {
       ...(searchClickData &&
         searchClickData.click_time && {
-          LastSearchClick: searchClickData.click_time,
+          lastSearchClick: searchClickData.click_time,
         }),
       ...(displayClickCookie && {
-        LastDisplayClick: displayClickCookie,
+        lastDisplayClick: displayClickCookie,
       }),
-      StitchIds: {
+      stitchIds: {
         ...(idsToInclude[SURFER_ID] && {
           surferId: idsToInclude[SURFER_ID],
         }),
         ...(idsToInclude[ID5_ID] && { id5: idsToInclude[ID5_ID] }),
         ...(idsToInclude[RAMP_ID] && { rampIDEnv: idsToInclude[RAMP_ID] }),
       },
-      advIds: normalizeAdvertiser(componentConfig.advertiserIds),
+      advIds: normalizeAdvertiser(componentConfig.advertiserSettings),
     },
   };
 
