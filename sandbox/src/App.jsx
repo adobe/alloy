@@ -136,7 +136,6 @@ const BasicExample = () => {
           <Route path="/redirectedNewPage" component={RedirectedNewPage} />
           <Route path="/identity" component={Identity} />
           <Route path="/configOverrides" component={ConfigOverrides} />
-          <Route path="/advertisingTest" component={AdvertisingTest} />
           <Route path="/inAppMessages" component={InAppMessages} />
           <Route path="/contentCards" component={ContentCards} />
         </div>
