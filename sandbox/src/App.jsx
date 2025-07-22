@@ -31,7 +31,6 @@ import PersonalizationFormBased from "./PersonalizationFormBased";
 import Identity from "./Identity";
 import AlloyVersion from "./components/AlloyVersion";
 import ConfigOverrides from "./ConfigOverrides";
-import AdvertisingTest from "./AdvertisingTest";
 import InAppMessages from "./components/InAppMessagesDemo/InAppMessages";
 import ContentCards from "./components/ContentCardsDemo/ContentCards";
 
