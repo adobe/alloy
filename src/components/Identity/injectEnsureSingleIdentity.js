@@ -64,6 +64,8 @@ export default ({
       obtainedIdentityPromise = previousObtainedIdentityPromise.catch(() => {
         return awaitIdentityCookie({ onResponse, onRequestFailure });
       });
+      // This prevents an un-caught promise in the console when the identity isn't set.
+      obtainedIdentityPromise.catch(() => {});
 
       // When this returned promise resolves, the request will go out.
       return (
@@ -89,6 +91,9 @@ export default ({
       onResponse,
       onRequestFailure,
     });
+    // This prevents an un-caught promise in the console when the identity isn't set.
+    obtainedIdentityPromise.catch(() => {});
+
     return allowRequestToGoWithoutIdentity(request);
   };
 };
