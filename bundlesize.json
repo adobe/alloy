@@ -3,5 +3,40 @@
     "uncompressedSize": 113563,
     "gzippedSize": 18282,
     "brotiliSize": 15054
+  },
+  "dist/baseCode.js": {
+    "uncompressedSize": 3597,
+    "gzippedSize": 1376,
+    "brotiliSize": 1045
+  },
+  "dist/baseCode.min.js": {
+    "uncompressedSize": 203,
+    "gzippedSize": 164,
+    "brotiliSize": 133
+  },
+  "dist/alloy.standalone.js": {
+    "uncompressedSize": 630438,
+    "gzippedSize": 99961,
+    "brotiliSize": 77826
+  },
+  "dist/alloy.standalone.min.js": {
+    "uncompressedSize": 128231,
+    "gzippedSize": 42300,
+    "brotiliSize": 36853
+  },
+  "dist/alloy.js": {
+    "uncompressedSize": 599245,
+    "gzippedSize": 98896,
+    "brotiliSize": 77330
+  },
+  "dist/alloy.cjs": {
+    "uncompressedSize": 631178,
+    "gzippedSize": 100333,
+    "brotiliSize": 78023
+  },
+  "dist/utils.cjs": {
+    "uncompressedSize": 114855,
+    "gzippedSize": 18447,
+    "brotiliSize": 15175
   }
 }
