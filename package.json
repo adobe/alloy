@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy",
-  "version": "2.28.0-beta.5",
+  "version": "2.28.0-beta.6",
   "description": "Adobe Experience Platform Web SDK",
   "type": "module",
   "main": "dist/alloy.cjs",
@@ -98,7 +98,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@adobe/alloy": "^2.28.0-beta.5",
+    "@adobe/alloy": "^2.28.0-beta.6",
     "@babel/cli": "^7.27.2",
     "@babel/plugin-transform-runtime": "^7.27.4",
     "@eslint/js": "^9.28.0",
