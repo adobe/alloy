@@ -30,7 +30,6 @@ export default ({ options }) => {
             sessionDetails: objectOf(anything()).required(),
           }),
         }),
-        edgeConfigOverrides: objectOf({}),
       }).required(),
 
       objectOf({
@@ -40,11 +39,10 @@ export default ({ options }) => {
             sessionDetails: objectOf(anything()).required(),
           }),
         }),
-        edgeConfigOverrides: objectOf({}),
       }).required(),
     ],
 
-    "Error validating the createMediaSession command options.",
+    "an object with playerId, getPlayerDetails and xdm.mediaCollection.sessionDetails, or an object with xdm.mediaCollection.playhead and xdm.mediaCollection.sessionDetails",
   );
 
   return sessionValidator(options);
