@@ -150,7 +150,7 @@ describe("Advertising::clickThroughHandler", () => {
 
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       _experience: {
-        adCloud: {
+        adcloud: {
           eventType: "advertising.clickThrough",
           campaign: {
             sampleGroupId: "test-skwcid",
@@ -197,10 +197,10 @@ describe("Advertising::clickThroughHandler", () => {
 
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       _experience: {
-        adCloud: {
+        adcloud: {
           eventType: "advertising.clickThrough",
           campaign: {
-            experimentid: "test-efid",
+            experimentId: "test-efid",
             accountId: "123, 456",
           },
         },
@@ -235,11 +235,11 @@ describe("Advertising::clickThroughHandler", () => {
 
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       _experience: {
-        adCloud: {
+        adcloud: {
           eventType: "advertising.clickThrough",
           campaign: {
             sampleGroupId: "test-skwcid",
-            experimentid: "test-efid",
+            experimentId: "test-efid",
             accountId: "123, 456",
           },
         },
@@ -278,7 +278,7 @@ describe("Advertising::clickThroughHandler", () => {
 
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       _experience: {
-        adCloud: {
+        adcloud: {
           eventType: "advertising.clickThrough",
           campaign: {
             sampleGroupId: "test-skwcid",

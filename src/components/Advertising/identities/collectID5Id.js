@@ -34,43 +34,33 @@ const initiateID5Call = function initiateID5Call(partnerId, logger) {
         const id5Instance = window.ID5.init({ partnerId });
         id5Id = id5Instance.getUserId();
 
-        if (id5Id !== undefined && id5Id !== "") {
-          resolve(id5Id);
-          inProgressId5Promise = null;
-        } else {
-          // Retry logic with reduced logging
+        if (id5Id === undefined || id5Id === "") {
+          // First retry with 1000ms delay
           window.ID5.init({ partnerId }).onAvailable(function firstRetry(
             retryStatus,
           ) {
             id5Id = retryStatus.getUserId();
-            if (id5Id !== undefined && id5Id !== "") {
+            if (id5Id) {
               resolve(id5Id);
               inProgressId5Promise = null;
             } else {
-              window.ID5.init({ partnerId }).onAvailable(function secondRetry(
-                secondRetryStatus,
-              ) {
-                id5Id = secondRetryStatus.getUserId();
-                if (id5Id !== undefined && id5Id !== "") {
-                  resolve(id5Id);
-                } else {
-                  window.ID5.init({ partnerId }).onAvailable(
-                    function thirdRetry(thirdRetryStatus) {
-                      id5Id = thirdRetryStatus.getUserId();
-                      if (id5Id !== undefined && id5Id !== "") {
-                        resolve(id5Id);
-                      } else {
-                        logger.error("Failed to get ID5 ID after all retries");
-                      }
-                      inProgressId5Promise = null;
-                    },
-                    2000,
-                  );
-                }
-                inProgressId5Promise = null;
-              }, 2000);
+              // Second retry will complete without timeout.
+              window.ID5.init({ partnerId }).onAvailable(
+                function secondRetry(secondRetryStatus) {
+                  id5Id = secondRetryStatus.getUserId();
+                  if (id5Id !== undefined && id5Id !== "") {
+                    resolve(id5Id);
+                  } else {
+                    logger.error("Failed to get ID5 ID after all retries");
+                  }
+                  inProgressId5Promise = null;
+                },
+              );
             }
-          }, 2000);
+          }, 1000);
+        } else {
+          resolve(id5Id);
+          inProgressId5Promise = null;
         }
       } catch (error) {
         logger.error("Error during ID5 initialization", error);

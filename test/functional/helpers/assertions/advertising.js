@@ -54,7 +54,7 @@ export const findClickThroughRequest = (requests) =>
 
     const xdm = event?.xdm;
     const experience = xdm && xdm[ADVERTISING_CONSTANTS.EXPERIENCE_STRING];
-    const adCloudEventType = experience?.adCloud?.eventType;
+    const adCloudEventType = experience?.adcloud?.eventType;
 
     return adCloudEventType === ADVERTISING_CONSTANTS.EVENT_TYPES.CLICK_THROUGH;
   }) || null;
@@ -70,8 +70,8 @@ export const validateClickThroughRequest = async (req, expected) => {
   await t.expect(body.events.length).gte(1, "No events");
 
   const adCloud =
-    body.events[0]?.xdm?.[ADVERTISING_CONSTANTS.EXPERIENCE_STRING]?.adCloud;
-  await t.expect(adCloud).ok("Missing adCloud");
+    body.events[0]?.xdm?.[ADVERTISING_CONSTANTS.EXPERIENCE_STRING]?.adcloud;
+  await t.expect(adCloud).ok("Missing adcloud");
 
   const campaign = adCloud.campaign;
   await t.expect(campaign).ok("Missing campaign");

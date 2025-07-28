@@ -75,7 +75,7 @@ const loadScript = (url, options = {}) => {
         type: "text/javascript",
         src: url,
         async: true,
-        ...(getNonce() && { nonce }),
+        ...(getNonce() && { nonce: getNonce() }),
         ...attributes, // Allow additional attributes like crossorigin
       },
       {

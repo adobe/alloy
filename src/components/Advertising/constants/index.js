@@ -36,7 +36,7 @@ export const DEFAULT_COOKIE_EXPIRATION_MINUTES = 1440; // 24 hours
 export const AD_CONVERSION_CLICK_EVENT_TYPE = "advertising.clickThrough";
 
 // XDM Paths
-export const XDM_AD_CLOUD_PATH = "_experience.adCloud";
+export const XDM_AD_CLOUD_PATH = "_experience.adloud";
 export const XDM_AD_ASSET_REFERENCE = "adAssetReference";
 export const XDM_AD_STITCH_DATA = "adStitchData";
 export const XDM_AD_ASSET_DATA = "adAssetData";
@@ -44,6 +44,13 @@ export const XDM_ADVERTISER = "advertiser";
 
 // Script URLs
 export const ID5_SCRIPT_URL = "https://www.everestjs.net/static/id5-api.js";
+
+// Surfer ID Configuration
+export const SURFER_PIXEL_HOST = "pixel.everesttech.net";
+export const SURFER_USER_ID = "1";
+export const SURFER_TIMEOUT_MS = 5000;
+export const SURFER_TRUSTED_ORIGIN = "www.everestjs.net";
+export const SURFER_PARAM_KEY = "gsurfer";
 
 // Error Messages
 export const ERROR_ID5_PARTNER_ID_REQUIRED = "ID5 partner ID is required";

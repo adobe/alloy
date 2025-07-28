@@ -62,6 +62,6 @@ test("Test C300003: Click-through conversion with both s_kwcid and ef_id paramet
   await validateClickThroughRequest(conversionRequest, {
     accountId: ADVERTISING_CONSTANTS.DEFAULT_ADVERTISER_IDS_STRING,
     sampleGroupId: "test_keyword_123",
-    experimentid: "test_experiment_456",
+    experimentd: "test_experiment_456",
   });
 });
