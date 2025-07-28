@@ -37,7 +37,6 @@ export const AD_CONVERSION_CLICK_EVENT_TYPE = "advertising.clickThrough";
 
 // XDM Paths
 export const XDM_AD_CLOUD_PATH = "_experience.adCloud";
-export const XDM_AD_CONVERSION_DETAILS = "adConversionDetails";
 export const XDM_AD_ASSET_REFERENCE = "adAssetReference";
 export const XDM_AD_STITCH_DATA = "adStitchData";
 export const XDM_AD_ASSET_DATA = "adAssetData";

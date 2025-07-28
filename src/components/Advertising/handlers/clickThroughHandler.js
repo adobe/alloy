@@ -14,7 +14,6 @@ import { normalizeAdvertiser } from "../utils/helpers.js";
 import {
   LAST_CLICK_COOKIE_KEY,
   LAST_CONVERSION_TIME_KEY,
-  XDM_AD_CONVERSION_DETAILS,
   LOG_AD_CONVERSION_START,
   LOG_COOKIE_WRITTEN,
   LOG_CONVERSION_TIME_UPDATED,
@@ -67,14 +66,12 @@ export default async function handleClickThrough({
 
   const xdm = {
     _experience: {
-      adCloud: {
+      adcloud: {
         eventType: AD_CONVERSION_CLICK_EVENT_TYPE,
         campaign: {
-          [XDM_AD_CONVERSION_DETAILS]: {
-            ...(efid && { experimentid: efid }),
-            ...(skwcid && { sampleGroupId: skwcid }),
-            ...(normalizedAdvertiser && { accountId: normalizedAdvertiser }),
-          },
+          ...(efid && { experimentId: efid }),
+          ...(skwcid && { sampleGroupId: skwcid }),
+          ...(normalizedAdvertiser && { accountId: normalizedAdvertiser }),
         },
       },
     },

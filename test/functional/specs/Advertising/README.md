@@ -52,14 +52,12 @@ const advertisingConfig = {
   "events": [{
     "xdm": {
       "_experience": {
-        "adCloud": {
+        "adcloud": {
           "eventType": "advertising.clickThrough",
           "campaign": {
-            "adConversionDetails": {
               "sampleGroupId": "s_kwcid_value",
-              "experimentid": "ef_id_value", 
+              "experimentId": "ef_id_value", 
               "accountId": "advertiser1, advertiser2"
-            }
           }
         }
       }
