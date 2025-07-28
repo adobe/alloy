@@ -1,16 +1,9 @@
-/**
- * @param {string} src
- * @param {{ module?: boolean, async?: boolean }} [options]
- */
-export default (src, { module = false, async = true } = {}) =>
+export default (src) =>
   new Promise((resolve) => {
     const tag = document.createElement("script");
     tag.type = "text/javascript";
     tag.src = src;
-    tag.async = async;
-    if (module) {
-      tag.type = "module";
-    }
+    tag.async = true;
 
     const nonce =
       document.querySelector('meta[property="nonce"]')?.getAttribute("nonce") ||

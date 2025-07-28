@@ -33,13 +33,19 @@ if (alloyEnv === PRODUCTION) {
   }
 }
 
-const baseCodePath = path.join(__dirname, "../../../../dist/baseCode.js");
-const localAlloyLibraryPath = path.join(
+const baseCodePath = path.join(
   __dirname,
-  "../../../../dist/alloy.standalone.js",
+  "../../../../distTest/baseCode.min.js",
 );
-const localNpmLibraryPath = path.join(__dirname, "../../../../dist/alloy.cjs");
-const prodNpmLibraryPath = localNpmLibraryPath;
+const localAlloyLibraryPath = path.join(__dirname, "../../../../dist/alloy.js");
+const localNpmLibraryPath = path.join(
+  __dirname,
+  "../../../../distTest/npmPackageLocal.js",
+);
+const prodNpmLibraryPath = path.join(
+  __dirname,
+  "../../../../distTest/npmPackageProd.js",
+);
 const remoteAlloyLibraryUrl = `https://cdn1.adoberesources.net/alloy/${alloyProdVersion}/alloy.js`;
 
 // We use this getter for retrieving the library code instead of just loading
@@ -124,6 +130,7 @@ const getFixtureClientScriptsForInt = (options) => {
       content: getLocalNpmLibraryCode(),
     });
   }
+
   return clientScripts;
 };
 
