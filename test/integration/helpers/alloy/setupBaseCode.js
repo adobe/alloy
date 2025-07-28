@@ -15,7 +15,7 @@ const { readFile } = server.commands;
 
 export default async () => {
   const alloyBaseCode = await readFile(
-    `${server.config.root}/dist/baseCode.min.js`,
+    `${server.config.root}/distTest/baseCode.min.js`,
   );
 
   document.body.innerHTML = "Alloy Test Page";
