@@ -62,13 +62,16 @@ export default ({
           optionsFromCommand,
         });
       }
-      return await handleViewThrough({
-        eventManager,
-        cookieManager,
-        logger,
-        componentConfig,
-        adConversionHandler,
-      });
+      if (activeAdvertiserIds) {
+        return await handleViewThrough({
+          eventManager,
+          cookieManager,
+          logger,
+          componentConfig,
+          adConversionHandler,
+        });
+      }
+      return null; // No conversion to process
     } catch (error) {
       logger.error("Error in sendAdConversion:", error);
       throw error;
@@ -78,24 +81,20 @@ export default ({
   return {
     lifecycle: {
       onComponentsRegistered() {
-        if (activeAdvertiserIds) {
-          sendAdConversion().catch(() => {
-            // silent pass
-          });
-        }
+        sendAdConversion().catch(() => {
+          // silent pass
+        });
       },
       onBeforeEvent: ({ event }) => {
-        if (activeAdvertiserIds) {
-          handleOnBeforeSendEvent({
-            cookieManager,
-            logger,
-            state: sharedState,
-            event,
-            componentConfig,
-          }).catch(() => {
-            // silent pass
-          });
-        }
+        handleOnBeforeSendEvent({
+          cookieManager,
+          logger,
+          state: sharedState,
+          event,
+          componentConfig,
+        }).catch(() => {
+          // silent pass
+        });
       },
     },
   };

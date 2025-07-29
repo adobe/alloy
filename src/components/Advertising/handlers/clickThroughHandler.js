@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { normalizeAdvertiser } from "../utils/helpers.js";
 import {
   LAST_CLICK_COOKIE_KEY,
   LAST_CONVERSION_TIME_KEY,
@@ -29,10 +28,8 @@ import {
  * @param {Object} params.cookieManager - Session manager for cookie operations
  * @param {Object} params.adConversionHandler - Handler for sending ad conversion events
  * @param {Object} params.logger - Logger instance
- * @param {Object} params.componentConfig - Component configuration object
  * @param {string} params.skwcid - Search keyword click ID
  * @param {string} params.efid - EF ID parameter
- * @param {boolean} params.viewThruEnabled - Whether this is a display campaign
  * @param {Object} params.optionsFromCommand - Additional options from command
  * @returns {Promise} Result of the ad conversion tracking
  */
@@ -41,7 +38,6 @@ export default async function handleClickThrough({
   cookieManager,
   adConversionHandler,
   logger,
-  componentConfig,
   skwcid,
   efid,
 }) {
@@ -59,11 +55,6 @@ export default async function handleClickThrough({
     logger.info(LOG_COOKIE_WRITTEN, clickData);
   }
 
-  // Handle advertiser normalization
-  const normalizedAdvertiser = normalizeAdvertiser(
-    componentConfig.advertiserSettings,
-  );
-
   const xdm = {
     _experience: {
       adcloud: {
@@ -71,7 +62,6 @@ export default async function handleClickThrough({
         campaign: {
           ...(efid && { experimentId: efid }),
           ...(skwcid && { sampleGroupId: skwcid }),
-          ...(normalizedAdvertiser && { accountId: normalizedAdvertiser }),
         },
       },
     },
