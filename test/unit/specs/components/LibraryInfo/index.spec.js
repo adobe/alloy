@@ -28,7 +28,7 @@ describe("LibraryInfo", () => {
   it("returns library, command, and config information", () => {
     expect(createLibraryInfo(toolsMock).commands.getLibraryInfo.run()).toEqual({
       libraryInfo: {
-        version: expect.any(String),
+        version: `__VERSION__`,
         configs: {
           foo: "bar",
         },
