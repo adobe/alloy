@@ -54,7 +54,7 @@ export const findClickThroughRequest = (requests) =>
 
     const xdm = event?.xdm;
     const experience = xdm && xdm[ADVERTISING_CONSTANTS.EXPERIENCE_STRING];
-    const adCloudEventType = experience?.adCloud?.eventType;
+    const adCloudEventType = experience?.adcloud?.eventType;
 
     return adCloudEventType === ADVERTISING_CONSTANTS.EVENT_TYPES.CLICK_THROUGH;
   }) || null;
@@ -70,25 +70,25 @@ export const validateClickThroughRequest = async (req, expected) => {
   await t.expect(body.events.length).gte(1, "No events");
 
   const adCloud =
-    body.events[0]?.xdm?.[ADVERTISING_CONSTANTS.EXPERIENCE_STRING]?.adCloud;
-  await t.expect(adCloud).ok("Missing adCloud");
+    body.events[0]?.xdm?.[ADVERTISING_CONSTANTS.EXPERIENCE_STRING]?.adcloud;
+  await t.expect(adCloud).ok("Missing adcloud");
 
-  const details = adCloud.campaign?.adConversionDetails;
-  await t.expect(details).ok("Missing adConversionDetails");
+  const campaign = adCloud.campaign;
+  await t.expect(campaign).ok("Missing campaign");
 
   // Handle expected.accountId as string or array
   if (Array.isArray(expected.accountId)) {
     const actualIds =
-      details.advIds ||
-      (typeof details.accountId === "string" &&
-        details.accountId.split(/\s*,\s*/)) ||
+      campaign.advIds ||
+      (typeof campaign.accountId === "string" &&
+        campaign.accountId.split(/\s*,\s*/)) ||
       [];
     await t.expect(actualIds).eql(expected.accountId, "accountId mismatch");
   } else {
     // string comparison
     const actualAccountId =
-      details.accountId ||
-      (Array.isArray(details.advIds) && details.advIds.join(", "));
+      campaign.accountId ||
+      (Array.isArray(campaign.advIds) && campaign.advIds.join(", "));
     await t
       .expect(actualAccountId)
       .eql(expected.accountId, "accountId mismatch");
@@ -96,12 +96,12 @@ export const validateClickThroughRequest = async (req, expected) => {
 
   if (expected.sampleGroupId)
     await t
-      .expect(details.sampleGroupId)
+      .expect(campaign.sampleGroupId)
       .eql(expected.sampleGroupId, "sampleGroupId mismatch");
-  if (expected.experimentid)
+  if (expected.experimentId)
     await t
-      .expect(details.experimentid)
-      .eql(expected.experimentid, "experimentid mismatch");
+      .expect(campaign.experimentId)
+      .eql(expected.experimentId, "experimentId mismatch");
 };
 
 // Validator for view-through

@@ -3,10 +3,16 @@ Copyright 2025 Adobe. All rights reserved.
 This file is licensed under the Apache License, Version 2.0.
 */
 
-import { DISPLAY_CLICK_COOKIE_KEY, SURFER_ID } from "../constants/index.js";
-
-const pixelHost = "pixel.everesttech.net";
-const userId = "1";
+import {
+  DISPLAY_CLICK_COOKIE_KEY,
+  SURFER_ID,
+  SURFER_PIXEL_HOST,
+  SURFER_USER_ID,
+  SURFER_TIMEOUT_MS,
+  SURFER_TRUSTED_ORIGIN,
+  SURFER_PARAM_KEY,
+} from "../constants/index.js";
+import createNode from "../../../utils/dom/createNode.js";
 
 // Global thread-safe storage (similar to fetchID5Id.js pattern)
 let surferId = "";
@@ -32,15 +38,17 @@ const addToDom = function addToDom(element) {
 };
 
 const getInvisibleIframeElement = function getInvisibleIframeElement(url) {
-  const iframe = document.createElement("iframe");
-  if (url !== undefined) {
-    iframe.src = url;
-  }
-  iframe.height = 0;
-  iframe.width = 0;
-  iframe.frameBorder = 0;
-  iframe.style.display = "none";
-  return iframe;
+  return createNode(
+    "iframe",
+    { src: url }, // attrs
+    {
+      height: 0,
+      width: 0,
+      frameBorder: 0,
+      style: { display: "none" },
+    }, // props
+    [], // children
+  );
 };
 
 const addListener = function addListener(fn) {
@@ -70,12 +78,12 @@ const initiateAdvertisingIdentityCall =
       setTimeout(() => {
         const scheme =
           document.location.protocol === "https:" ? "https:" : "http:";
-        const pixelDetailsUrl = `${scheme}//${pixelHost}/${userId}/gr?ev_gb=0&url=${scheme}%2F%2Fwww.everestjs.net%2Fstatic%2Fpixel_details.html%23google%3D__EFGCK__%26gsurfer%3D__EFGSURFER__%26imsId%3D__EFIMSORGID__%26is_fb_cookie_synced%3D__EFFB__%26optout%3D__EFOPTOUT__%26throttleCookie%3D__EFSYNC__%26time%3D__EFTIME__%26ev_lcc%3D__LCC__`;
+        const pixelDetailsUrl = `${scheme}//${SURFER_PIXEL_HOST}/${SURFER_USER_ID}/gr?ev_gb=0&url=${scheme}%2F%2Fwww.everestjs.net%2Fstatic%2Fpixel_details.html%23google%3D__EFGCK__%26gsurfer%3D__EFGSURFER__%26imsId%3D__EFIMSORGID__%26is_fb_cookie_synced%3D__EFFB__%26optout%3D__EFOPTOUT__%26throttleCookie%3D__EFSYNC__%26time%3D__EFTIME__%26ev_lcc%3D__LCC__`;
         const iframeElement = getInvisibleIframeElement(pixelDetailsUrl);
         addToDom(iframeElement);
 
         const pixelDetailsReceiver = function pixelDetailsReceiver(message) {
-          if (!message.origin.includes("www.everestjs.net")) {
+          if (!message.origin.includes(SURFER_TRUSTED_ORIGIN)) {
             // Ignored message from untrusted origin - handle silently
             return;
           }
@@ -91,7 +99,7 @@ const initiateAdvertisingIdentityCall =
             let resolvedDisplayClickCookie;
             for (let i = 0; i < hashParams.length; i += 1) {
               const parts = hashParams[i].split("=");
-              if (parts[0] === "gsurfer" && parts[1]) {
+              if (parts[0] === SURFER_PARAM_KEY && parts[1]) {
                 resolvedSurferId = parts[1];
               } else if (parts[0] === DISPLAY_CLICK_COOKIE_KEY && parts[1]) {
                 resolvedDisplayClickCookie = parts[1];
@@ -117,7 +125,7 @@ const initiateAdvertisingIdentityCall =
         };
 
         addListener(pixelDetailsReceiver);
-      }, 5000);
+      }, SURFER_TIMEOUT_MS);
     });
 
     return inProgressSurferPromise;
