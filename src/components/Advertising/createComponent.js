@@ -9,80 +9,37 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createAdConversionHandler from "./handlers/createAdConversionHandler.js";
-import createCookieManager from "./utils/createAdvertisingSessionManager.js";
-import handleClickThrough from "./handlers/clickThroughHandler.js";
-import handleViewThrough from "./handlers/viewThroughHandler.js";
+
+import createSendAdConversion from "./handlers/createSendAdConversion.js";
 import handleOnBeforeSendEvent from "./handlers/onBeforeSendEventHandler.js";
-import { getUrlParams, normalizeAdvertiser } from "./utils/helpers.js";
 
 export default ({
   logger,
   config,
   eventManager,
-  sendEdgeNetworkRequest,
-  consent,
+  cookieManager,
+  adConversionHandler,
 }) => {
   const componentConfig = config.advertising;
-  const activeAdvertiserIds = componentConfig?.advertiserSettings
-    ? normalizeAdvertiser(componentConfig.advertiserSettings)
-    : "";
-  const cookieManager = createCookieManager({
-    orgId: config.orgId,
-    logger,
-  });
-
-  const adConversionHandler = createAdConversionHandler({
-    eventManager,
-    sendEdgeNetworkRequest,
-    consent,
-    logger,
-  });
 
   // Shared state for onBeforeSendEvent hook
   const sharedState = {
     surferIdAppendedToAepEvent: false,
   };
 
-  const sendAdConversion = async (optionsFromCommand = {}) => {
-    const { skwcid, efid } = getUrlParams();
-    const isClickThru = !!(skwcid || efid);
-
-    try {
-      if (isClickThru) {
-        return await handleClickThrough({
-          eventManager,
-          cookieManager,
-          adConversionHandler,
-          logger,
-          componentConfig,
-          skwcid,
-          efid,
-          optionsFromCommand,
-        });
-      }
-      if (activeAdvertiserIds) {
-        return await handleViewThrough({
-          eventManager,
-          cookieManager,
-          logger,
-          componentConfig,
-          adConversionHandler,
-        });
-      }
-      return null; // No conversion to process
-    } catch (error) {
-      logger.error("Error in sendAdConversion:", error);
-      throw error;
-    }
-  };
+  // Create the sendAdConversion handler with required dependencies
+  const sendAdConversionHandler = createSendAdConversion({
+    eventManager,
+    cookieManager,
+    adConversionHandler,
+    logger,
+    componentConfig,
+  });
 
   return {
     lifecycle: {
       onComponentsRegistered() {
-        sendAdConversion().catch(() => {
-          // silent pass
-        });
+        sendAdConversionHandler.sendAdConversion();
       },
       onBeforeEvent: ({ event }) => {
         handleOnBeforeSendEvent({
@@ -91,8 +48,6 @@ export default ({
           state: sharedState,
           event,
           componentConfig,
-        }).catch(() => {
-          // silent pass
         });
       },
     },

@@ -77,7 +77,7 @@ if (typeof globalThis.window !== "undefined") {
 vi.mock(
   "../../../../../../src/components/Advertising/identities/collectSurferId.js",
   () => ({
-    getSurferId: vi.fn(() => Promise.resolve("mock-surfer-id")),
+    default: vi.fn(() => Promise.resolve("mock-surfer-id")),
   }),
 );
 
@@ -121,7 +121,6 @@ vi.mock(
 
       event.mergeQuery(query);
     }),
-    loadScript: vi.fn().mockResolvedValue(),
     normalizeAdvertiser: vi.fn((advertiserSettings) => {
       if (!advertiserSettings || !Array.isArray(advertiserSettings)) {
         return "UNKNOWN";
@@ -189,7 +188,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       "../../../../../../src/components/Advertising/identities/collectRampId.js"
     );
 
-    getSurferId = vi.mocked(surferIdModule.getSurferId);
+    getSurferId = vi.mocked(surferIdModule.default);
     getID5Id = vi.mocked(id5IdModule.getID5Id);
     getRampId = vi.mocked(rampIdModule.getRampId);
 

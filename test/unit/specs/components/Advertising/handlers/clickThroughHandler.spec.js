@@ -85,7 +85,6 @@ vi.mock(
         .map((item) => item.advertiserId)
         .join(", ");
     }),
-    loadScript: vi.fn().mockResolvedValue(),
     getUrlParams: vi.fn(() => ({ skwcid: null, efid: null })),
     appendAdvertisingIdQueryToEvent: vi.fn(),
     isAnyIdUnused: vi.fn(() => true),
@@ -162,6 +161,7 @@ describe("Advertising::clickThroughHandler", () => {
     expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
       click_time: expect.any(Number),
       skwcid: "test-skwcid",
+      efid: null,
     });
 
     expect(cookieManager.setValue).toHaveBeenCalledWith(
@@ -208,6 +208,7 @@ describe("Advertising::clickThroughHandler", () => {
     expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
       click_time: expect.any(Number),
       efid: "test-efid",
+      skwcid: null,
     });
 
     expect(result).toEqual({ status: "success" });
@@ -287,6 +288,7 @@ describe("Advertising::clickThroughHandler", () => {
     expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
       click_time: expect.any(Number),
       skwcid: "test-skwcid",
+      efid: null,
     });
   });
 

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { getSurferId } from "./collectSurferId.js";
+import collectSurferId from "./collectSurferId.js";
 import { getRampId } from "./collectRampId.js";
 import { getID5Id } from "./collectID5Id.js";
 import { ID5_ID, RAMP_ID, SURFER_ID } from "../constants/index.js";
@@ -20,7 +20,7 @@ const collectAllIdentities = (logger, componentConfig, cookieManager) => {
   const promises = {};
 
   if (!isThrottled(SURFER_ID, cookieManager)) {
-    promises.surferId = getSurferId(cookieManager, true).catch(() => null);
+    promises.surferId = collectSurferId(cookieManager, true).catch(() => null);
   }
 
   if (componentConfig.id5PartnerId && !isThrottled(ID5_ID, cookieManager)) {

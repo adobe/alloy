@@ -10,16 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  createDataCollectionRequest,
-  createDataCollectionRequestPayload,
-} from "../../../utils/request/index.js";
-
 /**
  * Creates a specialized handler for ad conversion events.
  * This follows a similar pattern to the media event handling in the StreamingMedia component.
  */
-export default ({ sendEdgeNetworkRequest, consent, logger }) => {
+export default ({
+  sendEdgeNetworkRequest,
+  consent,
+  createDataCollectionRequest,
+  createDataCollectionRequestPayload,
+  logger,
+}) => {
   /**
    * Tracks an ad conversion event by sending it directly to the Edge Network
    */

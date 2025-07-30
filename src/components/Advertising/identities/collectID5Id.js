@@ -3,13 +3,13 @@
  * Loads the ID5 script and retrieves the ID5 user ID
  */
 
-import { loadScript } from "../utils/helpers.js";
+import { loadScript } from "../../../utils/dom/index.js";
 import { ID5_SCRIPT_URL } from "../constants/index.js";
 
 let id5Id = "";
 let inProgressId5Promise = null;
 
-const initiateID5Call = function initiateID5Call(partnerId, logger) {
+const initiateID5Call = (partnerId, logger) => {
   partnerId = Math.floor(Number(partnerId));
 
   if (inProgressId5Promise) {

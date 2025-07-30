@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { loadScript } from "../../../utils/dom/index.js";
 import { RAMP_ID } from "../constants/index.js";
-import { loadScript } from "../utils/helpers.js";
 
 const RETRY_CONFIG = {
   MAX_COUNT: 15,

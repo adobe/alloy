@@ -106,7 +106,6 @@ vi.mock(
       event.mergeQuery(query);
       return event;
     }),
-    loadScript: vi.fn().mockResolvedValue(),
     normalizeAdvertiser: vi.fn((advertiserSettings) => {
       if (!advertiserSettings || !Array.isArray(advertiserSettings)) {
         return "UNKNOWN";

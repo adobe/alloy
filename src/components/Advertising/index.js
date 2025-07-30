@@ -12,6 +12,12 @@ governing permissions and limitations under the License.
 
 import createComponent from "./createComponent.js";
 import configValidators from "./configValidators.js";
+import {
+  createDataCollectionRequest,
+  createDataCollectionRequestPayload,
+} from "../../utils/request/index.js";
+import createAdConversionHandler from "./handlers/createAdConversionHandler.js";
+import createCookieManager from "./utils/advertisingCookieManager.js";
 
 const createAdvertising = ({
   logger,
@@ -20,12 +26,25 @@ const createAdvertising = ({
   sendEdgeNetworkRequest,
   consent,
 }) => {
+  const cookieManager = createCookieManager({
+    orgId: config.orgId,
+    logger,
+  });
+
+  const adConversionHandler = createAdConversionHandler({
+    eventManager,
+    sendEdgeNetworkRequest,
+    consent,
+    createDataCollectionRequest,
+    createDataCollectionRequestPayload,
+    logger,
+  });
   return createComponent({
     logger,
     config,
     eventManager,
-    sendEdgeNetworkRequest,
-    consent,
+    cookieManager,
+    adConversionHandler,
   });
 };
 

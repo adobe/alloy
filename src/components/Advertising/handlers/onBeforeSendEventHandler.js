@@ -4,7 +4,7 @@ Licensed under the Apache License, Version 2.0.
 http://www.apache.org/licenses/LICENSE-2.0
 */
 
-import { getSurferId } from "../identities/collectSurferId.js";
+import collectSurferId from "../identities/collectSurferId.js";
 import { getID5Id } from "../identities/collectID5Id.js";
 import { getRampId } from "../identities/collectRampId.js";
 import { appendAdvertisingIdQueryToEvent } from "../utils/helpers.js";
@@ -32,7 +32,7 @@ export default async function handleOnBeforeSendEvent({
   state.processingAdvertisingIds = true;
 
   try {
-    const surferId = await getSurferId(cookieManager, false);
+    const surferId = await collectSurferId(cookieManager, false);
     const id5Id = await getID5Id(logger, null, false);
     const rampId = await getRampId(logger, null, cookieManager, false);
     const availableIds = {

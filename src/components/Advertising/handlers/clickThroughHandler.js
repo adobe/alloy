@@ -14,9 +14,6 @@ import {
   LAST_CLICK_COOKIE_KEY,
   LAST_CONVERSION_TIME_KEY,
   LOG_AD_CONVERSION_START,
-  LOG_COOKIE_WRITTEN,
-  LOG_CONVERSION_TIME_UPDATED,
-  LOG_SENDING_CONVERSION,
   LOG_AD_CONVERSION_FAILED,
   AD_CONVERSION_CLICK_EVENT_TYPE,
 } from "../constants/index.js";
@@ -45,14 +42,13 @@ export default async function handleClickThrough({
 
   const event = eventManager.createEvent();
 
-  if (skwcid || efid) {
+  if (typeof skwcid !== "undefined" && typeof efid !== "undefined") {
     const clickData = {
       click_time: Date.now(),
-      ...(skwcid && { skwcid }),
-      ...(efid && { efid }),
+      ...(typeof skwcid !== "undefined" && { skwcid }),
+      ...(typeof efid !== "undefined" && { efid }),
     };
     cookieManager.setValue(LAST_CLICK_COOKIE_KEY, clickData);
-    logger.info(LOG_COOKIE_WRITTEN, clickData);
   }
 
   const xdm = {
@@ -70,9 +66,7 @@ export default async function handleClickThrough({
   event.setUserXdm(xdm);
 
   cookieManager.setValue(LAST_CONVERSION_TIME_KEY, Date.now());
-  logger.info(LOG_CONVERSION_TIME_UPDATED);
 
-  logger.info(LOG_SENDING_CONVERSION, xdm);
   try {
     return await adConversionHandler.trackAdConversion({ event });
   } catch (error) {

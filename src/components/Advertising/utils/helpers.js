@@ -23,93 +23,14 @@ import {
   RAMP_ID,
 } from "../constants/index.js";
 
-import { createNode, appendNode } from "../../../utils/dom/index.js";
+import { queryString } from "../../../utils/index.js";
 
-let nonce;
 const getUrlParams = () => {
-  const urlParams = new URLSearchParams(window.location.search);
+  const parsedParams = queryString.parse(window.location.search);
   return {
-    skwcid: urlParams.get(SKWCID_PARAM),
-    efid: urlParams.get(EFID_PARAM),
+    skwcid: parsedParams[SKWCID_PARAM], // "s_kwcid"
+    efid: parsedParams[EFID_PARAM], // "ef_id"
   };
-};
-
-/**
- * Returns the nonce if available.
- * @param {Node} [context=document] defaults to document
- * @returns {(String|undefined)} the nonce or undefined if not available
- */
-const getNonce = (context = document) => {
-  if (nonce === undefined) {
-    const n = context.querySelector("[nonce]");
-    // NOTE: We're keeping n.getAttribute("nonce") until it is safe to remove:
-    //   ref: https://github.com/whatwg/html/issues/2369#issuecomment-280853946
-    nonce = n && (n.nonce || n.getAttribute("nonce"));
-  }
-  return nonce;
-};
-
-/**
- * Loads an external JavaScript file using Alloy's DOM utilities.
- * Enhanced version that supports additional script attributes.
- * @param {string} url The URL of the script to load.
- * @param {Object} options Additional options for script loading
- * @param {Object} options.attributes Additional attributes to set on script element
- * @param {Function} options.onLoad Optional callback when script loads successfully
- * @param {Function} options.onError Optional callback when script fails to load
- * @returns {Promise<void>} A promise that resolves when the script is loaded or rejects on error.
- */
-const loadScript = (url, options = {}) => {
-  // Check if script already exists
-  if (document.querySelector(`script[src="${url}"]`)) {
-    if (options.onLoad) options.onLoad();
-    return Promise.resolve();
-  }
-
-  return new Promise((resolve, reject) => {
-    const { attributes = {}, onLoad, onError } = options;
-
-    const script = createNode(
-      "script",
-      {
-        type: "text/javascript",
-        src: url,
-        async: true,
-        ...(getNonce() && { nonce: getNonce() }),
-        ...attributes, // Allow additional attributes like crossorigin
-      },
-      {
-        onload: () => {
-          if (onLoad) onLoad();
-          resolve();
-        },
-        onerror: () => {
-          const error = new Error(`Failed to load script: ${url}`);
-          if (onError) onError(error);
-          reject(error);
-        },
-      },
-    );
-
-    const appendToDOM = () => {
-      const parent = document.head || document.body;
-      if (parent) {
-        appendNode(parent, script);
-      } else {
-        const error = new Error(
-          "Neither <head> nor <body> available for script insertion.",
-        );
-        if (onError) onError(error);
-        reject(error);
-      }
-    };
-
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", appendToDOM);
-    } else {
-      appendToDOM();
-    }
-  });
 };
 
 /**
@@ -174,7 +95,8 @@ const appendAdvertisingIdQueryToEvent = (
           surferId: idsToInclude[SURFER_ID],
         }),
         ...(idsToInclude[ID5_ID] && { id5: idsToInclude[ID5_ID] }),
-        ...(idsToInclude[RAMP_ID] && { rampIDEnv: idsToInclude[RAMP_ID] }),
+        ...(idsToInclude[RAMP_ID] && { rampIdEnv: idsToInclude[RAMP_ID] }),
+        ipAddress: "DUMMY_IP_ADDRESS",
       },
       advIds: normalizeAdvertiser(componentConfig.advertiserSettings),
     },
@@ -231,7 +153,6 @@ const shouldThrottle = (idType, cookieManager) => {
 export {
   getUrlParams,
   normalizeAdvertiser,
-  loadScript,
   createManagedAsyncOperation,
   appendAdvertisingIdQueryToEvent,
   isAnyIdUnused,

@@ -74,9 +74,10 @@ describe("Advertising::createAdConversionHandler", () => {
     createDataCollectionRequest.mockReset();
 
     handler = createAdConversionHandler({
-      eventManager,
       sendEdgeNetworkRequest,
       consent,
+      createDataCollectionRequest,
+      createDataCollectionRequestPayload,
       logger,
     });
   });
