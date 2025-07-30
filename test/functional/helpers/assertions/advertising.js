@@ -85,10 +85,12 @@ export const validateClickThroughRequest = async (req, expected) => {
       [];
     await t.expect(actualIds).eql(expected.accountId, "accountId mismatch");
   } else {
-    // string comparison
+    // string comparison - handle both legacy accountId and new advIds array
     const actualAccountId =
       campaign.accountId ||
-      (Array.isArray(campaign.advIds) && campaign.advIds.join(", "));
+      (Array.isArray(campaign.advIds) && campaign.advIds.join(", ")) ||
+      (typeof campaign.advIds === "string" && campaign.advIds);
+
     await t
       .expect(actualAccountId)
       .eql(expected.accountId, "accountId mismatch");

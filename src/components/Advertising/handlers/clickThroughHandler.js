@@ -17,6 +17,7 @@ import {
   LOG_AD_CONVERSION_FAILED,
   AD_CONVERSION_CLICK_EVENT_TYPE,
 } from "../constants/index.js";
+import { normalizeAdvertiser } from "../utils/helpers.js";
 
 /**
  * Handles click-through ad conversions
@@ -25,6 +26,7 @@ import {
  * @param {Object} params.cookieManager - Session manager for cookie operations
  * @param {Object} params.adConversionHandler - Handler for sending ad conversion events
  * @param {Object} params.logger - Logger instance
+ * @param {Object} params.componentConfig - Component configuration containing advertiser settings
  * @param {string} params.skwcid - Search keyword click ID
  * @param {string} params.efid - EF ID parameter
  * @param {Object} params.optionsFromCommand - Additional options from command
@@ -35,6 +37,7 @@ export default async function handleClickThrough({
   cookieManager,
   adConversionHandler,
   logger,
+  componentConfig,
   skwcid,
   efid,
 }) {
@@ -51,11 +54,17 @@ export default async function handleClickThrough({
     cookieManager.setValue(LAST_CLICK_COOKIE_KEY, clickData);
   }
 
+  // Get the advertiser IDs string
+  const advertiserIds = normalizeAdvertiser(
+    componentConfig?.advertiserSettings,
+  );
+
   const xdm = {
     _experience: {
       adcloud: {
         eventType: AD_CONVERSION_CLICK_EVENT_TYPE,
         campaign: {
+          ...(advertiserIds && { advIds: advertiserIds }),
           ...(efid && { experimentId: efid }),
           ...(skwcid && { sampleGroupId: skwcid }),
         },
