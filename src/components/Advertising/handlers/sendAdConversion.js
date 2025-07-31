@@ -17,6 +17,7 @@ import { getUrlParams, normalizeAdvertiser } from "../utils/helpers.js";
 /**
  * Creates a handler for sending ad conversions.
  * Handles both click-through and view-through conversions.
+ * This is a workaround to avoid the full lifecycle of the eventManager.sendEvent
  */
 export default ({
   eventManager,
@@ -29,7 +30,7 @@ export default ({
     ? normalizeAdvertiser(componentConfig.advertiserSettings)
     : "";
 
-  const sendAdConversion = async (optionsFromCommand = {}) => {
+  return async (optionsFromCommand = {}) => {
     const { skwcid, efid } = getUrlParams();
     const isClickThru = !!(skwcid || efid);
 
@@ -59,9 +60,5 @@ export default ({
     } catch (error) {
       logger.error("Error in sendAdConversion:", error);
     }
-  };
-
-  return {
-    sendAdConversion,
   };
 };

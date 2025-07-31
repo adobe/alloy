@@ -229,6 +229,6 @@ describe("Advertising::viewThroughHandler", () => {
       },
     });
 
-    expect(result).toEqual([expect.any(Promise)]);
+    expect(result).toEqual([{ status: "success" }]);
   });
 });
