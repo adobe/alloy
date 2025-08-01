@@ -141,8 +141,8 @@ describe("Advertising::clickThroughHandler", () => {
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       _experience: {
         adcloud: {
-          conversiondetails: {
-            "xdm:trackingCode": "test-skwcid",
+          conversionDetails: {
+            trackingCode: "test-skwcid",
           },
         },
       },
@@ -186,8 +186,8 @@ describe("Advertising::clickThroughHandler", () => {
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       _experience: {
         adcloud: {
-          conversiondetails: {
-            "xdm:trackingIdentities": "test-efid",
+          conversionDetails: {
+            trackingIdentities: "test-efid",
           },
         },
       },
@@ -222,9 +222,9 @@ describe("Advertising::clickThroughHandler", () => {
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       _experience: {
         adcloud: {
-          conversiondetails: {
-            "xdm:trackingCode": "test-skwcid",
-            "xdm:trackingIdentities": "test-efid",
+          conversionDetails: {
+            trackingCode: "test-skwcid",
+            trackingIdentities: "test-efid",
           },
         },
       },
@@ -263,8 +263,8 @@ describe("Advertising::clickThroughHandler", () => {
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       _experience: {
         adcloud: {
-          conversiondetails: {
-            "xdm:trackingCode": "test-skwcid",
+          conversionDetails: {
+            trackingCode: "test-skwcid",
           },
         },
       },

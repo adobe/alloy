@@ -38,7 +38,7 @@ export default ({
           return { success: true };
         })
         .catch((error) => {
-          logger.debug("Failed to send ad conversion event", error);
+          logger.error("Failed to send ad conversion event", error);
           throw error;
         });
     });

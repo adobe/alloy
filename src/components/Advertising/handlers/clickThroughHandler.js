@@ -16,6 +16,8 @@ import {
   LOG_AD_CONVERSION_START,
   LOG_AD_CONVERSION_FAILED,
   AD_CONVERSION_CLICK_EVENT_TYPE,
+  TRACKING_CODE,
+  TRACKING_IDENTITIES,
 } from "../constants/index.js";
 
 /**
@@ -54,10 +56,10 @@ export default async function handleClickThrough({
   const xdm = {
     _experience: {
       adcloud: {
-        conversiondetails: {
-          ...(typeof skwcid !== "undefined" && { "xdm:trackingCode": skwcid }),
+        conversionDetails: {
+          ...(typeof skwcid !== "undefined" && { [TRACKING_CODE]: skwcid }),
           ...(typeof efid !== "undefined" && {
-            "xdm:trackingIdentities": efid,
+            [TRACKING_IDENTITIES]: efid,
           }),
         },
       },

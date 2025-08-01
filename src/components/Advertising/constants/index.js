@@ -42,6 +42,8 @@ export const XDM_AD_ASSET_REFERENCE = "adAssetReference";
 export const XDM_AD_STITCH_DATA = "adStitchData";
 export const XDM_AD_ASSET_DATA = "adAssetData";
 export const XDM_ADVERTISER = "advertiser";
+export const TRACKING_CODE = "trackingCode";
+export const TRACKING_IDENTITIES = "trackingIdentities";
 
 // Script URLs
 export const ID5_SCRIPT_URL = "https://www.everestjs.net/static/id5-api.js";
