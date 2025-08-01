@@ -13,7 +13,7 @@ export const ADVERTISING_CONSTANTS = Object.freeze({
   ],
   DEFAULT_ADVERTISER_IDS_STRING: "83565, 83567, 83569",
   DEFAULT_TIMEOUT: 15000,
-  EVENT_TYPES: { CLICK_THROUGH: "advertising.clickThrough" },
+  EVENT_TYPES: { CLICK_THROUGH: "advertising.enrichment_ct" },
   ID5_PARTNER_ID: "173",
   RAMP_ID_JS_PATH: "https://cdn.jsdelivr.net/npm/@liveramp/ats@2/ats.min.js",
   EXPERIENCE_STRING: "_experience",
@@ -53,10 +53,9 @@ export const findClickThroughRequest = (requests) =>
     const event = body.events?.[0];
 
     const xdm = event?.xdm;
-    const experience = xdm && xdm[ADVERTISING_CONSTANTS.EXPERIENCE_STRING];
-    const adCloudEventType = experience?.adcloud?.eventType;
+    const eventType = xdm?.eventType;
 
-    return adCloudEventType === ADVERTISING_CONSTANTS.EVENT_TYPES.CLICK_THROUGH;
+    return eventType === ADVERTISING_CONSTANTS.EVENT_TYPES.CLICK_THROUGH;
   }) || null;
 
 export const findViewThroughRequests = (requests) =>
@@ -73,37 +72,28 @@ export const validateClickThroughRequest = async (req, expected) => {
     body.events[0]?.xdm?.[ADVERTISING_CONSTANTS.EXPERIENCE_STRING]?.adcloud;
   await t.expect(adCloud).ok("Missing adcloud");
 
-  const campaign = adCloud.campaign;
-  await t.expect(campaign).ok("Missing campaign");
+  const conversionDetails = adCloud.conversiondetails;
+  await t.expect(conversionDetails).ok("Missing conversiondetails");
 
-  // Handle expected.accountId as string or array
-  if (Array.isArray(expected.accountId)) {
-    const actualIds =
-      campaign.advIds ||
-      (typeof campaign.accountId === "string" &&
-        campaign.accountId.split(/\s*,\s*/)) ||
-      [];
-    await t.expect(actualIds).eql(expected.accountId, "accountId mismatch");
-  } else {
-    // string comparison - handle both legacy accountId and new advIds array
-    const actualAccountId =
-      campaign.accountId ||
-      (Array.isArray(campaign.advIds) && campaign.advIds.join(", ")) ||
-      (typeof campaign.advIds === "string" && campaign.advIds);
+  // Validate eventType at the top level
+  const eventType = body.events[0]?.xdm?.eventType;
+  await t
+    .expect(eventType)
+    .eql("advertising.enrichment_ct", "eventType mismatch");
 
+  // Validate tracking code (skwcid)
+  if (expected.sampleGroupId !== undefined) {
     await t
-      .expect(actualAccountId)
-      .eql(expected.accountId, "accountId mismatch");
+      .expect(conversionDetails["xdm:trackingCode"])
+      .eql(expected.sampleGroupId, "trackingCode mismatch");
   }
 
-  if (expected.sampleGroupId)
+  // Validate tracking identities (efid)
+  if (expected.experimentId !== undefined) {
     await t
-      .expect(campaign.sampleGroupId)
-      .eql(expected.sampleGroupId, "sampleGroupId mismatch");
-  if (expected.experimentId)
-    await t
-      .expect(campaign.experimentId)
-      .eql(expected.experimentId, "experimentId mismatch");
+      .expect(conversionDetails["xdm:trackingIdentities"])
+      .eql(expected.experimentId, "trackingIdentities mismatch");
+  }
 };
 
 // Validator for view-through

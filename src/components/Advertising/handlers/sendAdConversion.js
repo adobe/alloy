@@ -41,7 +41,6 @@ export default ({
           cookieManager,
           adConversionHandler,
           logger,
-          componentConfig,
           skwcid,
           efid,
           optionsFromCommand,

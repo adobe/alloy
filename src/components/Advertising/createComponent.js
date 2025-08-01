@@ -41,13 +41,14 @@ export default ({
       onComponentsRegistered() {
         sendAdConversionHandler();
       },
-      onBeforeEvent: ({ event }) => {
+      onBeforeEvent: ({ event, options = {} }) => {
         handleOnBeforeSendEvent({
           cookieManager,
           logger,
           state: sharedState,
           event,
           componentConfig,
+          options,
         });
       },
     },

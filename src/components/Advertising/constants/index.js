@@ -33,7 +33,8 @@ export const DEFAULT_THROTTLE_MINUTES = 30;
 export const DEFAULT_COOKIE_EXPIRATION_MINUTES = 1440; // 24 hours
 
 // Event Types
-export const AD_CONVERSION_CLICK_EVENT_TYPE = "advertising.clickThrough";
+export const AD_CONVERSION_CLICK_EVENT_TYPE = "advertising.enrichment_ct";
+export const AD_CONVERSION_VIEW_EVENT_TYPE = "advertising.enrichment";
 
 // XDM Paths
 export const XDM_AD_CLOUD_PATH = "_experience.adloud";

@@ -21,7 +21,6 @@ import {
   findClickThroughRequest,
   validateClickThroughRequest,
   createAdvertisingConfig,
-  ADVERTISING_CONSTANTS,
 } from "../../helpers/assertions/advertising.js";
 
 const networkLogger = createNetworkLogger();
@@ -34,7 +33,7 @@ const config = compose(
 
 createFixture({
   title:
-    "C300001: Click-through conversion with s_kwcid parameter should send advertising.clickThrough event",
+    "C300001: Click-through conversion with s_kwcid parameter should send advertising.enrichment_ct event",
   requestHooks: [networkLogger.edgeEndpointLogs],
   url: `${TEST_PAGE_URL}?test=advertising-clickthrough-skwcid&s_kwcid=test_keyword_123`,
 });
@@ -45,7 +44,7 @@ test.meta({
   TEST_RUN: "Regression",
 });
 
-test("Test C300001: Click-through conversion with s_kwcid parameter should send advertising.clickThrough event", async () => {
+test("Test C300001: Click-through conversion with s_kwcid parameter should send advertising.enrichment_ct event", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
 
@@ -59,11 +58,10 @@ test("Test C300001: Click-through conversion with s_kwcid parameter should send 
   );
   await t
     .expect(conversionRequest)
-    .ok("Expected to find an advertising.clickThrough conversion request");
+    .ok("Expected to find an advertising.enrichment_ct conversion request");
 
   // validate it
   await validateClickThroughRequest(conversionRequest, {
-    accountId: ADVERTISING_CONSTANTS.DEFAULT_ADVERTISER_IDS_STRING,
     sampleGroupId: "test_keyword_123",
   });
 });

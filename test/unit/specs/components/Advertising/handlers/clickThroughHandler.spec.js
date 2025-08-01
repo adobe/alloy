@@ -99,7 +99,6 @@ describe("Advertising::clickThroughHandler", () => {
   let cookieManager;
   let adConversionHandler;
   let logger;
-  let componentConfig;
 
   beforeEach(() => {
     eventManager = {
@@ -118,13 +117,6 @@ describe("Advertising::clickThroughHandler", () => {
       info: vi.fn(),
       error: vi.fn(),
     };
-
-    componentConfig = {
-      advertiserSettings: [
-        { advertiserId: "123", enabled: true },
-        { advertiserId: "456", enabled: true },
-      ],
-    };
   });
 
   it("should handle click-through with skwcid", async () => {
@@ -139,9 +131,8 @@ describe("Advertising::clickThroughHandler", () => {
       cookieManager,
       adConversionHandler,
       logger,
-      componentConfig,
       skwcid: "test-skwcid",
-      efid: null,
+      efid: undefined,
       optionsFromCommand: {},
     });
 
@@ -150,19 +141,17 @@ describe("Advertising::clickThroughHandler", () => {
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       _experience: {
         adcloud: {
-          eventType: "advertising.clickThrough",
-          campaign: {
-            advIds: "123, 456",
-            sampleGroupId: "test-skwcid",
+          conversiondetails: {
+            "xdm:trackingCode": "test-skwcid",
           },
         },
       },
+      eventType: "advertising.enrichment_ct",
     });
 
     expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
       click_time: expect.any(Number),
       skwcid: "test-skwcid",
-      efid: null,
     });
 
     expect(cookieManager.setValue).toHaveBeenCalledWith(
@@ -189,8 +178,7 @@ describe("Advertising::clickThroughHandler", () => {
       cookieManager,
       adConversionHandler,
       logger,
-      componentConfig,
-      skwcid: null,
+      skwcid: undefined,
       efid: "test-efid",
       optionsFromCommand: {},
     });
@@ -198,19 +186,17 @@ describe("Advertising::clickThroughHandler", () => {
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       _experience: {
         adcloud: {
-          eventType: "advertising.clickThrough",
-          campaign: {
-            advIds: "123, 456",
-            experimentId: "test-efid",
+          conversiondetails: {
+            "xdm:trackingIdentities": "test-efid",
           },
         },
       },
+      eventType: "advertising.enrichment_ct",
     });
 
     expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
       click_time: expect.any(Number),
       efid: "test-efid",
-      skwcid: null,
     });
 
     expect(result).toEqual({ status: "success" });
@@ -228,7 +214,6 @@ describe("Advertising::clickThroughHandler", () => {
       cookieManager,
       adConversionHandler,
       logger,
-      componentConfig,
       skwcid: "test-skwcid",
       efid: "test-efid",
       optionsFromCommand: {},
@@ -237,14 +222,13 @@ describe("Advertising::clickThroughHandler", () => {
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       _experience: {
         adcloud: {
-          eventType: "advertising.clickThrough",
-          campaign: {
-            advIds: "123, 456",
-            sampleGroupId: "test-skwcid",
-            experimentId: "test-efid",
+          conversiondetails: {
+            "xdm:trackingCode": "test-skwcid",
+            "xdm:trackingIdentities": "test-efid",
           },
         },
       },
+      eventType: "advertising.enrichment_ct",
     });
 
     expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
@@ -271,28 +255,25 @@ describe("Advertising::clickThroughHandler", () => {
       cookieManager,
       adConversionHandler,
       logger,
-      componentConfig,
       skwcid: "test-skwcid",
-      efid: null,
+      efid: undefined,
       optionsFromCommand: options,
     });
 
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       _experience: {
         adcloud: {
-          eventType: "advertising.clickThrough",
-          campaign: {
-            advIds: "123, 456",
-            sampleGroupId: "test-skwcid",
+          conversiondetails: {
+            "xdm:trackingCode": "test-skwcid",
           },
         },
       },
+      eventType: "advertising.enrichment_ct",
     });
 
     expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
       click_time: expect.any(Number),
       skwcid: "test-skwcid",
-      efid: null,
     });
   });
 
@@ -312,9 +293,8 @@ describe("Advertising::clickThroughHandler", () => {
         cookieManager,
         adConversionHandler,
         logger,
-        componentConfig,
         skwcid: "test-skwcid",
-        efid: null,
+        efid: undefined,
         optionsFromCommand: {},
       }),
     ).rejects.toThrow("Tracking failed");

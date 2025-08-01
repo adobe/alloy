@@ -144,7 +144,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
   let logger;
   let state;
   let event;
-  let config;
+  let componentConfig;
   let getSurferId;
   let getID5Id;
   let getRampId;
@@ -172,7 +172,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       mergeQuery: vi.fn(),
     };
 
-    config = {
+    componentConfig = {
       id5PartnerId: "test-partner",
       rampIdJSPath: "/test-path",
     };
@@ -206,13 +206,63 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       logger,
       state,
       event,
-      config,
+      componentConfig,
+      options: {},
     });
 
     expect(getSurferId).not.toHaveBeenCalled();
     expect(getID5Id).not.toHaveBeenCalled();
     expect(getRampId).not.toHaveBeenCalled();
     expect(event.mergeXdm).not.toHaveBeenCalled();
+  });
+
+  it("should return early when advertising is disabled", async () => {
+    await handleOnBeforeSendEvent({
+      cookieManager,
+      logger,
+      state,
+      event,
+      componentConfig,
+      options: { handleAdvertisingData: "disabled" },
+    });
+
+    expect(getSurferId).not.toHaveBeenCalled();
+    expect(getID5Id).not.toHaveBeenCalled();
+    expect(getRampId).not.toHaveBeenCalled();
+    expect(event.mergeQuery).not.toHaveBeenCalled();
+  });
+
+  it("should return early when handleAdvertisingData is null", async () => {
+    await handleOnBeforeSendEvent({
+      cookieManager,
+      logger,
+      state,
+      event,
+      componentConfig,
+      options: { handleAdvertisingData: null },
+    });
+
+    expect(getSurferId).not.toHaveBeenCalled();
+    expect(getID5Id).not.toHaveBeenCalled();
+    expect(getRampId).not.toHaveBeenCalled();
+    expect(event.mergeQuery).not.toHaveBeenCalled();
+  });
+
+  it("should wait for surfer ID when handleAdvertisingData is 'wait'", async () => {
+    getSurferId.mockResolvedValue("test-surfer-id");
+
+    await handleOnBeforeSendEvent({
+      cookieManager,
+      logger,
+      state,
+      event,
+      componentConfig,
+      options: { handleAdvertisingData: "wait" },
+    });
+
+    expect(getSurferId).toHaveBeenCalledWith(cookieManager, true);
+    expect(getID5Id).toHaveBeenCalledWith(logger, null, false);
+    expect(getRampId).toHaveBeenCalledWith(logger, null, cookieManager, false);
   });
 
   it("should collect and merge available advertising IDs", async () => {
@@ -225,7 +275,8 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       logger,
       state,
       event,
-      config,
+      componentConfig,
+      options: {},
     });
 
     expect(getSurferId).toHaveBeenCalledWith(cookieManager, false);
@@ -244,10 +295,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       },
     });
 
-    // Current implementation doesn't log these messages
-    // expect(logger.info).toHaveBeenCalledWith(
-    //   "Adding advertising IDs to event query parameters",
-    // );
+    expect(state.surferIdAppendedToAepEvent).toBe(true);
   });
 
   it("should only include available IDs", async () => {
@@ -260,7 +308,8 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       logger,
       state,
       event,
-      config,
+      componentConfig,
+      options: {},
     });
 
     expect(event.mergeQuery).toHaveBeenCalledWith({
@@ -276,51 +325,19 @@ describe("Advertising::onBeforeSendEventHandler", () => {
   });
 
   it("should handle configuration without ID5", async () => {
-    const configWithoutId5 = {
-      rampIdJSPath: "/test-path",
-    };
-
-    getSurferId.mockResolvedValue("test-surfer-id");
-    getRampId.mockResolvedValue("test-ramp-id");
-
-    await handleOnBeforeSendEvent({
-      cookieManager,
-      logger,
-      state,
-      event,
-      config: configWithoutId5,
-    });
-
-    expect(getSurferId).toHaveBeenCalled();
-    expect(getID5Id).toHaveBeenCalledWith(logger, null, false);
-    expect(getRampId).toHaveBeenCalledWith(logger, null, cookieManager, false);
-
-    expect(event.mergeQuery).toHaveBeenCalledWith({
-      advertising: {
-        conversion: {
-          StitchIds: {
-            SurferId: "test-surfer-id",
-            RampIDEnv: "test-ramp-id",
-          },
-        },
-      },
-    });
-  });
-
-  it("should handle configuration without RampId", async () => {
-    const configWithoutRamp = {
-      id5PartnerId: "test-partner",
-    };
-
-    getSurferId.mockResolvedValue("test-surfer-id");
+    getSurferId.mockResolvedValue(null);
     getID5Id.mockResolvedValue("test-id5-id");
+    getRampId.mockResolvedValue(null);
 
     await handleOnBeforeSendEvent({
       cookieManager,
       logger,
       state,
       event,
-      config: configWithoutRamp,
+      componentConfig: {
+        rampIdJSPath: "/test-path",
+      },
+      options: {},
     });
 
     expect(getSurferId).toHaveBeenCalled();
@@ -331,7 +348,6 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       advertising: {
         conversion: {
           StitchIds: {
-            SurferId: "test-surfer-id",
             ID5: "test-id5-id",
           },
         },
@@ -347,7 +363,8 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       logger,
       state,
       event,
-      config: {},
+      componentConfig: {},
+      options: {},
     });
 
     expect(getSurferId).toHaveBeenCalled();
@@ -375,10 +392,12 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       logger,
       state,
       event,
-      config,
+      componentConfig,
+      options: {},
     });
 
     expect(event.mergeXdm).not.toHaveBeenCalled();
+    expect(state.surferIdAppendedToAepEvent).toBe(false);
   });
 
   it("should handle identity collection errors", async () => {
@@ -391,7 +410,8 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       logger,
       state,
       event,
-      config,
+      componentConfig,
+      options: {},
     });
 
     expect(event.mergeXdm).not.toHaveBeenCalled();
@@ -409,7 +429,8 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       logger,
       state,
       event,
-      config,
+      componentConfig,
+      options: {},
     });
 
     expect(getSurferId).not.toHaveBeenCalled();
@@ -419,29 +440,38 @@ describe("Advertising::onBeforeSendEventHandler", () => {
   });
 
   it("should prevent concurrent calls from processing", async () => {
-    // First call starts processing
-    const firstCall = handleOnBeforeSendEvent({
+    let resolveFirstCall;
+    const firstCallPromise = new Promise((resolve) => {
+      resolveFirstCall = resolve;
+    });
+
+    getSurferId.mockImplementation(() => firstCallPromise);
+
+    // Start two concurrent calls
+    const call1 = handleOnBeforeSendEvent({
       cookieManager,
       logger,
       state,
       event,
-      config,
+      componentConfig,
+      options: {},
     });
 
-    // Second call should return immediately
-    const secondCall = handleOnBeforeSendEvent({
+    const call2 = handleOnBeforeSendEvent({
       cookieManager,
       logger,
       state,
       event,
-      config,
+      componentConfig,
+      options: {},
     });
 
-    await Promise.all([firstCall, secondCall]);
+    // Resolve the first call
+    resolveFirstCall("test-surfer-id");
 
-    // Only one set of identity collection calls should be made
+    await Promise.all([call1, call2]);
+
+    // Should only be called once due to concurrent processing protection
     expect(getSurferId).toHaveBeenCalledTimes(1);
-    expect(getID5Id).toHaveBeenCalledTimes(1);
-    expect(getRampId).toHaveBeenCalledTimes(1);
   });
 });

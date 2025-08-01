@@ -17,7 +17,6 @@ import {
   LOG_AD_CONVERSION_FAILED,
   AD_CONVERSION_CLICK_EVENT_TYPE,
 } from "../constants/index.js";
-import { normalizeAdvertiser } from "../utils/helpers.js";
 
 /**
  * Handles click-through ad conversions
@@ -26,7 +25,6 @@ import { normalizeAdvertiser } from "../utils/helpers.js";
  * @param {Object} params.cookieManager - Session manager for cookie operations
  * @param {Object} params.adConversionHandler - Handler for sending ad conversion events
  * @param {Object} params.logger - Logger instance
- * @param {Object} params.componentConfig - Component configuration containing advertiser settings
  * @param {string} params.skwcid - Search keyword click ID
  * @param {string} params.efid - EF ID parameter
  * @param {Object} params.optionsFromCommand - Additional options from command
@@ -37,7 +35,6 @@ export default async function handleClickThrough({
   cookieManager,
   adConversionHandler,
   logger,
-  componentConfig,
   skwcid,
   efid,
 }) {
@@ -45,7 +42,7 @@ export default async function handleClickThrough({
 
   const event = eventManager.createEvent();
 
-  if (typeof skwcid !== "undefined" && typeof efid !== "undefined") {
+  if (typeof skwcid !== "undefined" || typeof efid !== "undefined") {
     const clickData = {
       click_time: Date.now(),
       ...(typeof skwcid !== "undefined" && { skwcid }),
@@ -54,22 +51,18 @@ export default async function handleClickThrough({
     cookieManager.setValue(LAST_CLICK_COOKIE_KEY, clickData);
   }
 
-  // Get the advertiser IDs string
-  const advertiserIds = normalizeAdvertiser(
-    componentConfig?.advertiserSettings,
-  );
-
   const xdm = {
     _experience: {
       adcloud: {
-        eventType: AD_CONVERSION_CLICK_EVENT_TYPE,
-        campaign: {
-          ...(advertiserIds && { advIds: advertiserIds }),
-          ...(efid && { experimentId: efid }),
-          ...(skwcid && { sampleGroupId: skwcid }),
+        conversiondetails: {
+          ...(typeof skwcid !== "undefined" && { "xdm:trackingCode": skwcid }),
+          ...(typeof efid !== "undefined" && {
+            "xdm:trackingIdentities": efid,
+          }),
         },
       },
     },
+    eventType: AD_CONVERSION_CLICK_EVENT_TYPE,
   };
 
   event.setUserXdm(xdm);

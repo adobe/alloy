@@ -9,6 +9,17 @@ import { getID5Id } from "../identities/collectID5Id.js";
 import { getRampId } from "../identities/collectRampId.js";
 import { appendAdvertisingIdQueryToEvent } from "../utils/helpers.js";
 
+const isAdvertisingDisabled = (options) => {
+  return (
+    options.handleAdvertisingData === "disabled" ||
+    options.handleAdvertisingData === null
+  );
+};
+
+const waitForSurferId = (options) => {
+  return options.handleAdvertisingData === "wait";
+};
+
 /**
  * Appends advertising identity IDs to AEP event query if not already added.
  * @param {Object} params
@@ -24,15 +35,20 @@ export default async function handleOnBeforeSendEvent({
   state,
   event,
   componentConfig,
+  options,
 }) {
-  if (state.surferIdAppendedToAepEvent) return;
+  if (state.surferIdAppendedToAepEvent || isAdvertisingDisabled(options))
+    return;
 
   // Create a processing flag to prevent concurrent calls
   if (state.processingAdvertisingIds) return;
   state.processingAdvertisingIds = true;
 
   try {
-    const surferId = await collectSurferId(cookieManager, false);
+    const surferId = await collectSurferId(
+      cookieManager,
+      waitForSurferId(options),
+    );
     const id5Id = await getID5Id(logger, null, false);
     const rampId = await getRampId(logger, null, cookieManager, false);
     const availableIds = {

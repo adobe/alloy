@@ -37,6 +37,7 @@ export default async function handleViewThrough({
         eventManager.createEvent(),
         cookieManager,
         componentConfig,
+        true,
       );
 
       const result = await adConversionHandler.trackAdConversion({ event });

@@ -37,7 +37,7 @@ const advertisingConfig = {
       { advertiserId: "12345", enabled: true },
       { advertiserId: "67890", enabled: false },
       { advertiserId: "11111", enabled: true },
-    ], // Your test advertiser settings
+    ], // Used for view-through conversions only
     id5PartnerId: "your-test-partner-id",
     rampIdJSPath: "/path/to/test/ramp-id.js",
   },
@@ -53,14 +53,13 @@ const advertisingConfig = {
     "xdm": {
       "_experience": {
         "adcloud": {
-          "eventType": "advertising.clickThrough",
-          "campaign": {
-              "sampleGroupId": "s_kwcid_value",
-              "experimentId": "ef_id_value", 
-              "accountId": "advertiser1, advertiser2"
+          "conversiondetails": {
+            "xdm:trackingCode": "s_kwcid_value",
+            "xdm:trackingIdentities": "ef_id_value"
           }
         }
-      }
+      },
+      "eventType": "advertising.enrichment_ct"
     }
   }]
 }

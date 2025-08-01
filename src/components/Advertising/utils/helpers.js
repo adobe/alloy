@@ -18,6 +18,7 @@ import {
   LOG_ID_CONVERSION_SUCCESS,
   LAST_CONVERSION_TIME_KEY,
   DISPLAY_CLICK_COOKIE_KEY,
+  AD_CONVERSION_VIEW_EVENT_TYPE,
   SURFER_ID,
   ID5_ID,
   RAMP_ID,
@@ -77,6 +78,7 @@ const appendAdvertisingIdQueryToEvent = (
   event,
   cookieManager,
   componentConfig,
+  addEventType = false,
 ) => {
   const searchClickData = cookieManager.getValue(LAST_CLICK_COOKIE_KEY);
   const displayClickCookie = cookieManager.getValue(DISPLAY_CLICK_COOKIE_KEY);
@@ -99,6 +101,7 @@ const appendAdvertisingIdQueryToEvent = (
         ipAddress: "DUMMY_IP_ADDRESS",
       },
       advIds: normalizeAdvertiser(componentConfig.advertiserSettings),
+      ...(addEventType && { eventType: AD_CONVERSION_VIEW_EVENT_TYPE }),
     },
   };
 
