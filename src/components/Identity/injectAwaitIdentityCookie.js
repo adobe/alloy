@@ -17,7 +17,7 @@ export default ({ doesIdentityCookieExist, orgId, logger }) => {
    * the first response.
    */
   return ({ onResponse, onRequestFailure }) => {
-    const promise = new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       onResponse(() => {
         if (doesIdentityCookieExist()) {
           resolve();
@@ -46,8 +46,5 @@ export default ({ doesIdentityCookieExist, orgId, logger }) => {
         }
       });
     });
-    // This prevents an un-caught promise in the console when the identity isn't set.
-    promise.catch(() => undefined);
-    return promise;
   };
 };

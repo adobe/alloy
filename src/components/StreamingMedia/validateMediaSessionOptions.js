@@ -18,6 +18,7 @@ import {
   objectOf,
   string,
 } from "../../utils/validation/index.js";
+import { validateConfigOverride } from "../../utils/index.js";
 
 export default ({ options }) => {
   const sessionValidator = anyOf(
@@ -30,7 +31,7 @@ export default ({ options }) => {
             sessionDetails: objectOf(anything()).required(),
           }),
         }),
-        edgeConfigOverrides: objectOf({}),
+        edgeConfigOverrides: validateConfigOverride,
       }).required(),
 
       objectOf({
@@ -40,11 +41,11 @@ export default ({ options }) => {
             sessionDetails: objectOf(anything()).required(),
           }),
         }),
-        edgeConfigOverrides: objectOf({}),
+        edgeConfigOverrides: validateConfigOverride,
       }).required(),
     ],
 
-    "Error validating the createMediaSession command options.",
+    "an object with playerId, getPlayerDetails and xdm.mediaCollection.sessionDetails, or an object with xdm.mediaCollection.playhead and xdm.mediaCollection.sessionDetails",
   );
 
   return sessionValidator(options);
