@@ -85,10 +85,9 @@ const appendAdvertisingIdQueryToEvent = (
 
   const query = {
     advertising: {
-      ...(searchClickData &&
-        searchClickData.click_time && {
-          lastSearchClick: searchClickData.click_time,
-        }),
+      ...(searchClickData?.click_time && {
+        lastSearchClick: searchClickData.click_time,
+      }),
       ...(displayClickCookie && {
         lastDisplayClick: displayClickCookie,
       }),

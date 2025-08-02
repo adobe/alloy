@@ -19,6 +19,7 @@ export default ({
   eventManager,
   cookieManager,
   adConversionHandler,
+  getBrowser,
 }) => {
   const componentConfig = config.advertising;
 
@@ -49,6 +50,7 @@ export default ({
           event,
           componentConfig,
           options,
+          getBrowser,
         });
       },
     },

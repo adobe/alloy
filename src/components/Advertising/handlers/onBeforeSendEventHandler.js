@@ -28,6 +28,7 @@ const waitForSurferId = (options) => {
  * @param {Object} params.state
  * @param {Object} params.event
  * @param {Object} params.config
+ * @param {Function} params.getBrowser
  */
 export default async function handleOnBeforeSendEvent({
   cookieManager,
@@ -36,6 +37,7 @@ export default async function handleOnBeforeSendEvent({
   event,
   componentConfig,
   options,
+  getBrowser,
 }) {
   if (state.surferIdAppendedToAepEvent || isAdvertisingDisabled(options))
     return;
@@ -47,6 +49,7 @@ export default async function handleOnBeforeSendEvent({
   try {
     const surferId = await collectSurferId(
       cookieManager,
+      getBrowser,
       waitForSurferId(options),
     );
     const id5Id = await getID5Id(logger, null, false);

@@ -13,6 +13,7 @@ import {
   SURFER_PARAM_KEY,
 } from "../constants/index.js";
 import createNode from "../../../utils/dom/createNode.js";
+import { injectAreThirdPartyCookiesSupportedByDefault } from "../../../utils/index.js";
 
 // Global thread-safe storage (similar to fetchID5Id.js pattern)
 let surferId = "";
@@ -60,7 +61,27 @@ const initiateAdvertisingIdentityCall = () => {
     setTimeout(() => {
       const scheme =
         document.location.protocol === "https:" ? "https:" : "http:";
-      const pixelDetailsUrl = `${scheme}//${SURFER_PIXEL_HOST}/${SURFER_USER_ID}/gr?ev_gb=0&url=${scheme}%2F%2Fwww.everestjs.net%2Fstatic%2Fpixel_details.html%23google%3D__EFGCK__%26gsurfer%3D__EFGSURFER__%26imsId%3D__EFIMSORGID__%26is_fb_cookie_synced%3D__EFFB__%26optout%3D__EFOPTOUT__%26throttleCookie%3D__EFSYNC__%26time%3D__EFTIME__%26ev_lcc%3D__LCC__`;
+
+      // Build the nested URL parameters using URLSearchParams
+      const nestedParams = new URLSearchParams({
+        google: "__EFGCK__",
+        gsurfer: "__EFGSURFER__",
+        imsId: "__EFIMSORGID__",
+        is_fb_cookie_synced: "__EFFB__",
+        optout: "__EFOPTOUT__",
+        throttleCookie: "__EFSYNC__",
+        time: "__EFTIME__",
+        ev_lcc: "__LCC__",
+      });
+      const nestedUrl = `${scheme}//www.everestjs.net/static/pixel_details.html#${nestedParams.toString()}`;
+
+      // Build the main URL parameters
+      const mainParams = new URLSearchParams({
+        ev_gb: "0",
+        url: nestedUrl,
+      });
+      const pixelDetailsUrl = `${scheme}//${SURFER_PIXEL_HOST}/${SURFER_USER_ID}/gr?${mainParams.toString()}`;
+
       const iframeElement = getInvisibleIframeElement(pixelDetailsUrl);
       addToDom(iframeElement);
 
@@ -74,22 +95,26 @@ const initiateAdvertisingIdentityCall = () => {
 
         try {
           const pixelRedirectUri = message.data;
-          const hashParams = pixelRedirectUri
-            .substring(pixelRedirectUri.indexOf("#") + 1)
-            .split("&");
+          const hashIndex = pixelRedirectUri.indexOf("#");
+          if (hashIndex === -1) {
+            resolve({ surferId: null, displayClickCookie: null });
+            return;
+          }
+
+          const hashParams = new URLSearchParams(
+            pixelRedirectUri.substring(hashIndex + 1),
+          );
           let resolvedSurferId;
           let resolvedDisplayClickCookie;
-          for (const param of hashParams) {
-            const parts = param.split("=");
-            if (parts[0] === SURFER_PARAM_KEY && parts[1]) {
-              resolvedSurferId = parts[1];
-            } else if (
-              parts[0] === DISPLAY_CLICK_COOKIE_KEY &&
-              parts[1] &&
-              parts[1] !== "__LCC__"
-            ) {
-              resolvedDisplayClickCookie = parts[1];
-            }
+
+          const surferValue = hashParams.get(SURFER_PARAM_KEY);
+          if (surferValue) {
+            resolvedSurferId = surferValue;
+          }
+
+          const displayClickValue = hashParams.get(DISPLAY_CLICK_COOKIE_KEY);
+          if (displayClickValue && displayClickValue !== "__LCC__") {
+            resolvedDisplayClickCookie = displayClickValue;
           }
 
           removeListener(pixelDetailsReceiver);
@@ -119,8 +144,19 @@ const initiateAdvertisingIdentityCall = () => {
 
 const collectSurferId = function collectSurferId(
   cookieManager,
+  getBrowser,
   resolveSurferIdIfNotAvailable = true,
 ) {
+  // Check if browser supports third-party cookies by default
+  if (getBrowser) {
+    const areThirdPartyCookiesSupportedByDefault =
+      injectAreThirdPartyCookiesSupportedByDefault({ getBrowser });
+
+    if (!areThirdPartyCookiesSupportedByDefault()) {
+      return Promise.resolve(null);
+    }
+  }
+
   // Check if Surfer ID is already initialized in memory
   if (surferId && surferId !== "") {
     return Promise.resolve(surferId);

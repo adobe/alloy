@@ -148,6 +148,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
   let getSurferId;
   let getID5Id;
   let getRampId;
+  let getBrowser;
 
   beforeEach(async () => {
     cookieManager = {
@@ -176,6 +177,8 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       id5PartnerId: "test-partner",
       rampIdJSPath: "/test-path",
     };
+
+    getBrowser = vi.fn().mockReturnValue("Chrome");
 
     // Get and reset mock functions - these are already mocked at module level
     const surferIdModule = await import(
@@ -208,6 +211,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       event,
       componentConfig,
       options: {},
+      getBrowser,
     });
 
     expect(getSurferId).not.toHaveBeenCalled();
@@ -224,6 +228,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       event,
       componentConfig,
       options: { handleAdvertisingData: "disabled" },
+      getBrowser,
     });
 
     expect(getSurferId).not.toHaveBeenCalled();
@@ -240,6 +245,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       event,
       componentConfig,
       options: { handleAdvertisingData: null },
+      getBrowser,
     });
 
     expect(getSurferId).not.toHaveBeenCalled();
@@ -258,9 +264,10 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       event,
       componentConfig,
       options: { handleAdvertisingData: "wait" },
+      getBrowser,
     });
 
-    expect(getSurferId).toHaveBeenCalledWith(cookieManager, true);
+    expect(getSurferId).toHaveBeenCalledWith(cookieManager, getBrowser, true);
     expect(getID5Id).toHaveBeenCalledWith(logger, null, false);
     expect(getRampId).toHaveBeenCalledWith(logger, null, cookieManager, false);
   });
@@ -277,9 +284,10 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       event,
       componentConfig,
       options: {},
+      getBrowser,
     });
 
-    expect(getSurferId).toHaveBeenCalledWith(cookieManager, false);
+    expect(getSurferId).toHaveBeenCalledWith(cookieManager, getBrowser, false);
     expect(getID5Id).toHaveBeenCalledWith(logger, null, false);
     expect(getRampId).toHaveBeenCalledWith(logger, null, cookieManager, false);
 
@@ -310,6 +318,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       event,
       componentConfig,
       options: {},
+      getBrowser,
     });
 
     expect(event.mergeQuery).toHaveBeenCalledWith({
@@ -338,6 +347,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
         rampIdJSPath: "/test-path",
       },
       options: {},
+      getBrowser,
     });
 
     expect(getSurferId).toHaveBeenCalled();
@@ -365,6 +375,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       event,
       componentConfig: {},
       options: {},
+      getBrowser,
     });
 
     expect(getSurferId).toHaveBeenCalled();
@@ -394,6 +405,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       event,
       componentConfig,
       options: {},
+      getBrowser,
     });
 
     expect(event.mergeXdm).not.toHaveBeenCalled();
@@ -412,6 +424,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       event,
       componentConfig,
       options: {},
+      getBrowser,
     });
 
     expect(event.mergeXdm).not.toHaveBeenCalled();
@@ -431,6 +444,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       event,
       componentConfig,
       options: {},
+      getBrowser,
     });
 
     expect(getSurferId).not.toHaveBeenCalled();

@@ -78,6 +78,6 @@ export default async function handleViewThrough({
         }),
   );
 
-  await Promise.all(identityPromises);
+  await Promise.allSettled(identityPromises);
   return Promise.all(conversionTasks);
 }

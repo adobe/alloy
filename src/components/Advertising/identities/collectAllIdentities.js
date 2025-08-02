@@ -20,7 +20,9 @@ const collectAllIdentities = (logger, componentConfig, cookieManager) => {
   const promises = {};
 
   if (!isThrottled(SURFER_ID, cookieManager)) {
-    promises.surferId = collectSurferId(cookieManager, true).catch(() => null);
+    promises.surferId = collectSurferId(cookieManager, undefined, true).catch(
+      () => null,
+    );
   }
 
   if (componentConfig.id5PartnerId && !isThrottled(ID5_ID, cookieManager)) {
