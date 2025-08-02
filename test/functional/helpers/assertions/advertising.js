@@ -72,8 +72,8 @@ export const validateClickThroughRequest = async (req, expected) => {
     body.events[0]?.xdm?.[ADVERTISING_CONSTANTS.EXPERIENCE_STRING]?.adcloud;
   await t.expect(adCloud).ok("Missing adcloud");
 
-  const conversionDetails = adCloud.conversiondetails;
-  await t.expect(conversionDetails).ok("Missing conversiondetails");
+  const conversionDetails = adCloud.conversionDetails;
+  await t.expect(conversionDetails).ok("Missing conversionDetails");
 
   // Validate eventType at the top level
   const eventType = body.events[0]?.xdm?.eventType;
@@ -84,14 +84,14 @@ export const validateClickThroughRequest = async (req, expected) => {
   // Validate tracking code (skwcid)
   if (expected.sampleGroupId !== undefined) {
     await t
-      .expect(conversionDetails["xdm:trackingCode"])
+      .expect(conversionDetails.trackingCode)
       .eql(expected.sampleGroupId, "trackingCode mismatch");
   }
 
   // Validate tracking identities (efid)
   if (expected.experimentId !== undefined) {
     await t
-      .expect(conversionDetails["xdm:trackingIdentities"])
+      .expect(conversionDetails.trackingIdentities)
       .eql(expected.experimentId, "trackingIdentities mismatch");
   }
 };

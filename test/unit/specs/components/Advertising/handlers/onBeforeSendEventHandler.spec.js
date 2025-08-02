@@ -444,7 +444,6 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       event,
       componentConfig,
       options: {},
-      getBrowser,
     });
 
     expect(getSurferId).not.toHaveBeenCalled();
