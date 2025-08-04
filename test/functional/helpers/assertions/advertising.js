@@ -76,6 +76,17 @@ export const findViewThroughRequests = (requests) =>
     return hasAdvertisingQuery || hasViewThroughEventType;
   });
 
+// Find view-through requests that specifically have XDM eventType set
+export const findViewThroughRequestsWithXDM = (requests) =>
+  requests.filter((req) => {
+    const body = parseBody(req);
+    const event = body.events?.[0];
+
+    return (
+      event?.xdm?.eventType === ADVERTISING_CONSTANTS.EVENT_TYPES.VIEW_THROUGH
+    );
+  });
+
 // Validator for click-through
 export const validateClickThroughRequest = async (req, expected) => {
   const body = parseBody(req);
@@ -119,13 +130,49 @@ export const validateViewThroughRequest = async (req, expected) => {
 
   const event = body.events[0];
 
-  // Validate eventType at the top level (new validation)
+  // Validate eventType at the top level (optional validation)
+  // Some view-through requests may not have XDM eventType set
+  const eventType = event?.xdm?.eventType;
+  if (eventType) {
+    await t
+      .expect(eventType)
+      .eql(
+        ADVERTISING_CONSTANTS.EVENT_TYPES.VIEW_THROUGH,
+        "eventType should be advertising.enrichment for view-through",
+      );
+  }
+
+  const conv = event?.query?.advertising;
+  await t.expect(conv).ok("Missing advertising query");
+
+  await t.expect(conv.advIds).eql(expected.advIds, "advIds mismatch");
+
+  if (expected.requireIds !== false) {
+    const ids = conv.stitchIds || {};
+    await t.expect(ids.surferId || ids.id5 || ids.rampIDEnv).ok("No IDs");
+  }
+
+  if (conv.lastDisplayClick)
+    await t.expect(typeof conv.lastDisplayClick).eql("string");
+  if (conv.lastSearchClick)
+    await t.expect(typeof conv.lastSearchClick).eql("number");
+};
+
+// Validator for view-through requests with XDM eventType
+export const validateViewThroughRequestWithXDM = async (req, expected) => {
+  const body = parseBody(req);
+  await expectPath(body, "events", "Missing events");
+  await t.expect(body.events.length).gte(1, "No events");
+
+  const event = body.events[0];
+
+  // Validate eventType at the top level (required for XDM-based requests)
   const eventType = event?.xdm?.eventType;
   await t
     .expect(eventType)
     .eql(
       ADVERTISING_CONSTANTS.EVENT_TYPES.VIEW_THROUGH,
-      "eventType should be advertising.enrichment for view-through",
+      "eventType should be advertising.enrichment for XDM view-through",
     );
 
   const conv = event?.query?.advertising;
