@@ -21,6 +21,7 @@ export default objectOf({
   advertising: objectOf({
     id5PartnerId: string(),
     rampIdJSPath: string(),
+    dspEnabled: boolean(),
     advertiserSettings: arrayOf(
       objectOf({
         advertiserId: string().required(),

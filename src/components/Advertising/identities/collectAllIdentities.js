@@ -25,13 +25,21 @@ const collectAllIdentities = (logger, componentConfig, cookieManager) => {
     );
   }
 
-  if (componentConfig.id5PartnerId && !isThrottled(ID5_ID, cookieManager)) {
+  if (
+    componentConfig.id5PartnerId &&
+    componentConfig.dspEnabled &&
+    !isThrottled(ID5_ID, cookieManager)
+  ) {
     promises.id5Id = getID5Id(logger, componentConfig.id5PartnerId).catch(
       () => null,
     );
   }
 
-  if (componentConfig.rampIdJSPath && !isThrottled(RAMP_ID, cookieManager)) {
+  if (
+    componentConfig.rampIdJSPath &&
+    componentConfig.dspEnabled &&
+    !isThrottled(RAMP_ID, cookieManager)
+  ) {
     promises.rampId = getRampId(
       logger,
       componentConfig.rampIdJSPath,
