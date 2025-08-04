@@ -138,6 +138,7 @@ describe("Advertising::viewThroughHandler", () => {
       createEvent: vi.fn(() => ({
         mergeQuery: vi.fn(),
         finalize: vi.fn(),
+        setUserXdm: vi.fn(),
       })),
     };
 
@@ -185,7 +186,7 @@ describe("Advertising::viewThroughHandler", () => {
     expect(result).toEqual([]);
   });
 
-  it("should process identity resolution", async () => {
+  it("should process identity resolution and set correct eventType", async () => {
     const surferId = Promise.resolve("test-surfer-id");
     collectAllIdentities.mockReturnValue({
       surferId,
@@ -194,6 +195,7 @@ describe("Advertising::viewThroughHandler", () => {
     const mockEvent = {
       mergeQuery: vi.fn(),
       finalize: vi.fn(),
+      setUserXdm: vi.fn(),
     };
     eventManager.createEvent.mockReturnValue(mockEvent);
 
@@ -213,11 +215,10 @@ describe("Advertising::viewThroughHandler", () => {
       cookieManager,
     );
 
-    // The current implementation doesn't directly log this message
-    // It would be logged by the markIdsAsConverted helper which is mocked
-    // expect(logger.info).toHaveBeenCalledWith(
-    //   "Ad conversion submitted successfully",
-    // );
+    // Verify that setUserXdm is called with correct eventType
+    expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
+      eventType: "advertising.enrichment",
+    });
 
     expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
       advertising: {
@@ -230,5 +231,46 @@ describe("Advertising::viewThroughHandler", () => {
     });
 
     expect(result).toEqual([{ status: "success" }]);
+  });
+
+  it("should handle error during conversion and still call setUserXdm", async () => {
+    const surferId = Promise.resolve("test-surfer-id");
+    collectAllIdentities.mockReturnValue({
+      surferId,
+    });
+
+    const mockEvent = {
+      mergeQuery: vi.fn(),
+      finalize: vi.fn(),
+      setUserXdm: vi.fn(),
+    };
+    eventManager.createEvent.mockReturnValue(mockEvent);
+
+    // Mock error in adConversionHandler
+    adConversionHandler.trackAdConversion.mockRejectedValue(
+      new Error("Network error"),
+    );
+
+    const result = await handleViewThrough({
+      eventManager,
+      cookieManager,
+      logger,
+      componentConfig,
+      adConversionHandler,
+    });
+
+    await flushPromiseChains();
+
+    // Verify that setUserXdm is still called even when error occurs
+    expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
+      eventType: "advertising.enrichment",
+    });
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "Ad conversion submission failed",
+      expect.any(Error),
+    );
+
+    expect(result).toEqual([null]);
   });
 });

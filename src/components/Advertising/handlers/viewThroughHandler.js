@@ -8,6 +8,7 @@ import collectAllIdentities from "../identities/collectAllIdentities.js";
 import {
   LOG_ERROR_RESOLVING_ID,
   LOG_AD_CONVERSION_FAILED,
+  AD_CONVERSION_VIEW_EVENT_TYPE,
 } from "../constants/index.js";
 import {
   isAnyIdUnused,
@@ -39,6 +40,10 @@ export default async function handleViewThrough({
         componentConfig,
         true,
       );
+      const xdm = {
+        eventType: AD_CONVERSION_VIEW_EVENT_TYPE,
+      };
+      event.setUserXdm(xdm);
 
       const result = await adConversionHandler.trackAdConversion({ event });
 

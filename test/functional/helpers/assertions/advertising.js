@@ -13,7 +13,10 @@ export const ADVERTISING_CONSTANTS = Object.freeze({
   ],
   DEFAULT_ADVERTISER_IDS_STRING: "83565, 83567, 83569",
   DEFAULT_TIMEOUT: 15000,
-  EVENT_TYPES: { CLICK_THROUGH: "advertising.enrichment_ct" },
+  EVENT_TYPES: {
+    CLICK_THROUGH: "advertising.enrichment_ct",
+    VIEW_THROUGH: "advertising.enrichment",
+  },
   ID5_PARTNER_ID: "173",
   RAMP_ID_JS_PATH: "https://cdn.jsdelivr.net/npm/@liveramp/ats@2/ats.min.js",
   EXPERIENCE_STRING: "_experience",
@@ -59,7 +62,19 @@ export const findClickThroughRequest = (requests) =>
   }) || null;
 
 export const findViewThroughRequests = (requests) =>
-  requests.filter((req) => !!parseBody(req).events?.[0]?.query?.advertising);
+  requests.filter((req) => {
+    const body = parseBody(req);
+    const event = body.events?.[0];
+
+    // Check if it has advertising query (legacy check)
+    const hasAdvertisingQuery = !!event?.query?.advertising;
+
+    // Check if it has the correct eventType in XDM (new check)
+    const hasViewThroughEventType =
+      event?.xdm?.eventType === ADVERTISING_CONSTANTS.EVENT_TYPES.VIEW_THROUGH;
+
+    return hasAdvertisingQuery || hasViewThroughEventType;
+  });
 
 // Validator for click-through
 export const validateClickThroughRequest = async (req, expected) => {
@@ -102,7 +117,18 @@ export const validateViewThroughRequest = async (req, expected) => {
   await expectPath(body, "events", "Missing events");
   await t.expect(body.events.length).gte(1, "No events");
 
-  const conv = body.events[0]?.query?.advertising;
+  const event = body.events[0];
+
+  // Validate eventType at the top level (new validation)
+  const eventType = event?.xdm?.eventType;
+  await t
+    .expect(eventType)
+    .eql(
+      ADVERTISING_CONSTANTS.EVENT_TYPES.VIEW_THROUGH,
+      "eventType should be advertising.enrichment for view-through",
+    );
+
+  const conv = event?.query?.advertising;
   await t.expect(conv).ok("Missing advertising query");
 
   await t.expect(conv.advIds).eql(expected.advIds, "advIds mismatch");
