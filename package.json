@@ -41,7 +41,7 @@
     "sandbox:build": "rollup -c --environment SANDBOX && cd sandbox && npm run build",
     "dev": "concurrently --names build,sandbox \"rollup -c -w --environment SANDBOX\" \"cd sandbox && export REACT_APP_NONCE=321 && npm start\"",
     "dev:standalone": "npm run clean && rollup -c -w --environment STANDALONE",
-    "build": "npm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,BUNDLESIZE && echo \"Base Code:\" && cat distTest/baseCode.min.js",
+    "build": "ALLOY_ENV=\"int\" npm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,BUNDLESIZE && echo \"Base Code:\" && cat distTest/baseCode.min.js",
     "build:custom": "node scripts/alloyBuilder.js",
     "prepare": "husky && cd sandbox && npm install",
     "prepack": "npm run clean && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6 && npm run types",
@@ -88,7 +88,8 @@
     "js-cookie": "3.0.5",
     "rollup": "^4.39.0",
     "rollup-plugin-license": "^3.6.0",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "eventsource-client": "^1.1.3"
   },
   "devDependencies": {
     "@adobe/alloy": "^2.26.0",

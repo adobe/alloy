@@ -35,7 +35,7 @@ export default ({
   let hasDemdexFailed = false;
 
   const buildEndpointUrl = (endpointDomain, request) => {
-    endpointDomain = "jag-v3.edge-int.adobedc.net";
+   // endpointDomain = "jag-v3.edge-int.adobedc.net";
     const params = request.getRequestParams();
     const locationHint = getLocationHint();
     const edgeBasePathWithLocationHint = locationHint
@@ -57,7 +57,7 @@ export default ({
     const stringifiedRequestParams = queryString.stringify({...params, ...getAssuranceValidationTokenParams()});
 
     if(params.sessionId) {
-      return `https://bc-conversation-service-stage.corp.ethos12-stage-va7.ethos.adobe.net/brand-concierge/${request.getAction()}?${stringifiedRequestParams}`;
+      return `https://edge-int.adobedc.net/brand-concierge/${request.getAction()}?${stringifiedRequestParams}`;
     }
 
     return `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?${stringifiedRequestParams}`;
