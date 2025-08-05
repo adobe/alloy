@@ -55,7 +55,7 @@ export default ({
           adConversionHandler,
         });
       }
-      return null; // No conversion to process
+      return null;
     } catch (error) {
       logger.error("Error in sendAdConversion:", error);
     }

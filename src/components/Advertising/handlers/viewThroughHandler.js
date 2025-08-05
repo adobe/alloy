@@ -23,9 +23,9 @@ export default async function handleViewThrough({
   componentConfig,
   adConversionHandler,
 }) {
-  const resolvedIds = {}; // Stores all successfully resolved IDs
-  const usedIdTracker = {}; // Tracks which IDs have been used for conversion
-  const conversionTasks = []; // Collects all triggered conversions
+  const resolvedIds = {};
+  const usedIdTracker = {};
+  const conversionTasks = [];
 
   const triggerConversion = async () => {
     if (!isAnyIdUnused(resolvedIds, usedIdTracker)) return null;
@@ -79,10 +79,10 @@ export default async function handleViewThrough({
         })
         .catch((error) => {
           logger.error(LOG_ERROR_RESOLVING_ID.replace("{0}", idType), error);
-          return null; // continue execution
+          return null;
         }),
   );
 
   await Promise.allSettled(identityPromises);
-  return Promise.all(conversionTasks);
+  return Promise.allSettled(conversionTasks);
 }

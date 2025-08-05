@@ -64,10 +64,9 @@ test("Test C300004: View-through conversion should send conversion query with ad
     .expect(viewThroughRequests.length)
     .gte(1, "Expected at least one view-through request");
 
-  // Validate that the first view-through request has the correct structure
   const firstViewThroughRequest = viewThroughRequests[0];
   await validateViewThroughRequest(firstViewThroughRequest, {
     advIds: ADVERTISING_CONSTANTS.DEFAULT_ADVERTISER_IDS_STRING,
-    requireIds: false, // Don't require specific IDs since they may vary in test environment
+    requireIds: false,
   });
 });

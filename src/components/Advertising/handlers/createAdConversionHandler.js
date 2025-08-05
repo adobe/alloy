@@ -25,7 +25,7 @@ export default ({
    * Tracks an ad conversion event by sending it directly to the Edge Network
    */
   const trackAdConversion = ({ event }) => {
-    const dataCollectionRequestPayload = createDataCollectionRequestPayload(); // Create payload container
+    const dataCollectionRequestPayload = createDataCollectionRequestPayload();
     dataCollectionRequestPayload.addEvent(event);
     event.finalize();
     const request = createDataCollectionRequest({

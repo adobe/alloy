@@ -66,17 +66,13 @@ export const findViewThroughRequests = (requests) =>
     const body = parseBody(req);
     const event = body.events?.[0];
 
-    // Check if it has advertising query (legacy check)
     const hasAdvertisingQuery = !!event?.query?.advertising;
-
-    // Check if it has the correct eventType in XDM (new check)
     const hasViewThroughEventType =
       event?.xdm?.eventType === ADVERTISING_CONSTANTS.EVENT_TYPES.VIEW_THROUGH;
 
     return hasAdvertisingQuery || hasViewThroughEventType;
   });
 
-// Find view-through requests that specifically have XDM eventType set
 export const findViewThroughRequestsWithXDM = (requests) =>
   requests.filter((req) => {
     const body = parseBody(req);
@@ -130,8 +126,6 @@ export const validateViewThroughRequest = async (req, expected) => {
 
   const event = body.events[0];
 
-  // Validate eventType at the top level (optional validation)
-  // Some view-through requests may not have XDM eventType set
   const eventType = event?.xdm?.eventType;
   if (eventType) {
     await t
@@ -158,7 +152,6 @@ export const validateViewThroughRequest = async (req, expected) => {
     await t.expect(typeof conv.lastSearchClick).eql("number");
 };
 
-// Validator for view-through requests with XDM eventType
 export const validateViewThroughRequestWithXDM = async (req, expected) => {
   const body = parseBody(req);
   await expectPath(body, "events", "Missing events");
@@ -166,7 +159,6 @@ export const validateViewThroughRequestWithXDM = async (req, expected) => {
 
   const event = body.events[0];
 
-  // Validate eventType at the top level (required for XDM-based requests)
   const eventType = event?.xdm?.eventType;
   await t
     .expect(eventType)

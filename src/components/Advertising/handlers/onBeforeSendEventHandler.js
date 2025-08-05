@@ -42,7 +42,6 @@ export default async function handleOnBeforeSendEvent({
   if (state.surferIdAppendedToAepEvent || isAdvertisingDisabled(options))
     return;
 
-  // Create a processing flag to prevent concurrent calls
   if (state.processingAdvertisingIds) return;
   state.processingAdvertisingIds = true;
 

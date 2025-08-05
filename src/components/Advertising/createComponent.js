@@ -23,12 +23,10 @@ export default ({
 }) => {
   const componentConfig = config.advertising;
 
-  // Shared state for onBeforeSendEvent hook
   const sharedState = {
     surferIdAppendedToAepEvent: false,
   };
 
-  // Create the sendAdConversion handler with required dependencies
   const sendAdConversionHandler = createSendAdConversion({
     eventManager,
     cookieManager,

@@ -15,10 +15,9 @@ import {
 import createNode from "../../../utils/dom/createNode.js";
 import { injectAreThirdPartyCookiesSupportedByDefault } from "../../../utils/index.js";
 
-// Global thread-safe storage (similar to fetchID5Id.js pattern)
 let surferId = "";
 let displayClickCookie = "";
-let inProgressSurferPromise = null; // Store the in-progress promise
+let inProgressSurferPromise = null;
 
 const addToDom = (element) => {
   if (document.body) {
@@ -37,14 +36,14 @@ const addToDom = (element) => {
 const getInvisibleIframeElement = (url) =>
   createNode(
     "iframe",
-    { src: url }, // attrs
+    { src: url },
     {
       height: 0,
       width: 0,
       frameBorder: 0,
       style: { display: "none" },
-    }, // props
-    [], // children
+    },
+    [],
   );
 
 const addListener = (fn) => window.addEventListener("message", fn, false);
@@ -52,7 +51,6 @@ const addListener = (fn) => window.addEventListener("message", fn, false);
 const removeListener = (fn) => window.removeEventListener("message", fn, false);
 
 const initiateAdvertisingIdentityCall = () => {
-  // If there's already a fetch in progress, return that promise
   if (inProgressSurferPromise) {
     return inProgressSurferPromise;
   }
@@ -62,7 +60,6 @@ const initiateAdvertisingIdentityCall = () => {
       const scheme =
         document.location.protocol === "https:" ? "https:" : "http:";
 
-      // Build the nested URL parameters using URLSearchParams
       const nestedParams = new URLSearchParams({
         google: "__EFGCK__",
         gsurfer: "__EFGSURFER__",
@@ -75,7 +72,6 @@ const initiateAdvertisingIdentityCall = () => {
       });
       const nestedUrl = `${scheme}//www.everestjs.net/static/pixel_details.html#${nestedParams.toString()}`;
 
-      // Build the main URL parameters
       const mainParams = new URLSearchParams({
         ev_gb: "0",
         url: nestedUrl,
@@ -87,11 +83,8 @@ const initiateAdvertisingIdentityCall = () => {
 
       const pixelDetailsReceiver = function pixelDetailsReceiver(message) {
         if (!message.origin.includes(SURFER_TRUSTED_ORIGIN)) {
-          // Ignored message from untrusted origin - handle silently
           return;
         }
-
-        // Received message from pixel iframe - handle silently in production
 
         try {
           const pixelRedirectUri = message.data;
@@ -124,14 +117,12 @@ const initiateAdvertisingIdentityCall = () => {
             displayClickCookie = resolvedDisplayClickCookie;
             resolve({ surferId, displayClickCookie });
           } else {
-            // No surferId found in message data - handle silently
             resolve({ surferId: null, displayClickCookie: null });
           }
         } catch (err) {
-          // Error processing pixel response - handle silently
           reject(err);
         } finally {
-          inProgressSurferPromise = null; // Clear stored promise regardless of outcome
+          inProgressSurferPromise = null;
         }
       };
 
@@ -147,7 +138,6 @@ const collectSurferId = function collectSurferId(
   getBrowser,
   resolveSurferIdIfNotAvailable = true,
 ) {
-  // Check if browser supports third-party cookies by default
   if (getBrowser) {
     const areThirdPartyCookiesSupportedByDefault =
       injectAreThirdPartyCookiesSupportedByDefault({ getBrowser });
@@ -157,23 +147,19 @@ const collectSurferId = function collectSurferId(
     }
   }
 
-  // Check if Surfer ID is already initialized in memory
   if (surferId && surferId !== "") {
     return Promise.resolve(surferId);
   }
 
-  // If not in memory, check if available in cookie using cookieManager
   if (cookieManager) {
     const cookieSurferId = cookieManager.getValue(SURFER_ID);
     if (cookieSurferId) {
-      // Update in-memory value
       surferId = cookieSurferId;
       return Promise.resolve(cookieSurferId);
     }
   }
 
   if (resolveSurferIdIfNotAvailable) {
-    // If not in memory or cookie, initialize and store in cookie
     return initiateAdvertisingIdentityCall().then((resolvedId) => {
       if (cookieManager && resolvedId) {
         if (resolvedId.surferId) {

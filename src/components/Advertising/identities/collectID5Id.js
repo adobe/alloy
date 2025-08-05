@@ -35,7 +35,6 @@ const initiateID5Call = (partnerId, logger) => {
         id5Id = id5Instance.getUserId();
 
         if (id5Id === undefined || id5Id === "") {
-          // First retry with 1000ms delay
           window.ID5.init({ partnerId }).onAvailable(function firstRetry(
             retryStatus,
           ) {
@@ -44,7 +43,6 @@ const initiateID5Call = (partnerId, logger) => {
               resolve(id5Id);
               inProgressId5Promise = null;
             } else {
-              // Second retry will complete without timeout.
               window.ID5.init({ partnerId }).onAvailable(
                 function secondRetry(secondRetryStatus) {
                   id5Id = secondRetryStatus.getUserId();
@@ -72,7 +70,6 @@ const initiateID5Call = (partnerId, logger) => {
     if (typeof window.ID5 !== "undefined") {
       handleId5();
     } else {
-      // Use centralized loadScript function
       loadScript(ID5_SCRIPT_URL, {
         onLoad: handleId5,
         onError: (error) => {

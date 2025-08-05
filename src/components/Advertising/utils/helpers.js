@@ -48,8 +48,6 @@ const createManagedAsyncOperation = (operationName, workerFn) => {
       return inProgressPromise;
     }
     inProgressPromise = workerFn(...args).finally(() => {
-      // Clear the promise once it's settled (resolved or rejected)
-      // so that subsequent calls can trigger a new operation.
       inProgressPromise = null;
     });
 
@@ -108,13 +106,12 @@ const appendAdvertisingIdQueryToEvent = (
   return event;
 };
 
-// Helper: Check if any ID is unused (not in conversionCalled or is false)
 const isAnyIdUnused = (availableIds, conversionCalled) => {
   return Object.entries(availableIds).some(([idType]) => {
     return !conversionCalled[idType];
   });
 };
-// Helper: Mark IDs as converted and update throttle times
+
 const markIdsAsConverted = (
   idTypes,
   conversionCalled,
@@ -124,15 +121,11 @@ const markIdsAsConverted = (
   const now = Date.now();
 
   idTypes.forEach((idType) => {
-    // Mark as used in conversion (in memory only)
     conversionCalled[idType] = true;
-
-    // Update throttle time in session
     cookieManager.setValue(`${idType}_last_conversion`, now);
     logger.info(LOG_ID_CONVERSION_SUCCESS.replace("{0}", idType));
   });
 
-  // Backward compatibility
   cookieManager.setValue(LAST_CONVERSION_TIME_KEY, now);
 };
 

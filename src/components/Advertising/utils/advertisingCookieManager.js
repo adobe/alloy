@@ -33,7 +33,7 @@ export default ({ orgId, logger }) => {
         return JSON.parse(decodeURIComponent(value));
       }
     } catch {
-      // Silent catch for invalid JSON - return original value
+      // pass
     }
     return value;
   };

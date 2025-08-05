@@ -215,7 +215,6 @@ describe("Advertising::viewThroughHandler", () => {
       cookieManager,
     );
 
-    // Verify that setUserXdm is called with correct eventType
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       eventType: "advertising.enrichment",
     });
@@ -230,7 +229,9 @@ describe("Advertising::viewThroughHandler", () => {
       },
     });
 
-    expect(result).toEqual([{ status: "success" }]);
+    expect(result).toEqual([
+      { status: "fulfilled", value: { status: "success" } },
+    ]);
   });
 
   it("should handle error during conversion and still call setUserXdm", async () => {
@@ -246,7 +247,6 @@ describe("Advertising::viewThroughHandler", () => {
     };
     eventManager.createEvent.mockReturnValue(mockEvent);
 
-    // Mock error in adConversionHandler
     adConversionHandler.trackAdConversion.mockRejectedValue(
       new Error("Network error"),
     );
@@ -261,7 +261,6 @@ describe("Advertising::viewThroughHandler", () => {
 
     await flushPromiseChains();
 
-    // Verify that setUserXdm is still called even when error occurs
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       eventType: "advertising.enrichment",
     });
@@ -271,6 +270,6 @@ describe("Advertising::viewThroughHandler", () => {
       expect.any(Error),
     );
 
-    expect(result).toEqual([null]);
+    expect(result).toEqual([{ status: "fulfilled", value: null }]);
   });
 });
