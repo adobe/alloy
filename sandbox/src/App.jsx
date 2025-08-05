@@ -33,6 +33,7 @@ import AlloyVersion from "./components/AlloyVersion";
 import ConfigOverrides from "./ConfigOverrides";
 import InAppMessages from "./components/InAppMessagesDemo/InAppMessages";
 import ContentCards from "./components/ContentCardsDemo/ContentCards";
+import Concierge from "./Concierge";
 
 const BasicExample = () => {
   return (
@@ -104,10 +105,13 @@ const BasicExample = () => {
             <li>
               <Link to="/contentCards">Content Cards</Link>
             </li>
+            <li>
+              <Link to="/concierge">Concierge</Link>
+            </li>
           </ul>
-          <hr />
+          <hr/>
 
-          <Route exact path="/" component={Home} />
+          <Route exact path="/" component={Home}/>
           <Route path="/consent" component={Consent} />
           <Route path="/personalization" component={Personalization} />
           <Route path="/personalizationSpa" component={PersonalizationSpa} />
@@ -135,6 +139,7 @@ const BasicExample = () => {
           <Route path="/configOverrides" component={ConfigOverrides} />
           <Route path="/inAppMessages" component={InAppMessages} />
           <Route path="/contentCards" component={ContentCards} />
+          <Route path="/concierge" component={Concierge} />
         </div>
       </Router>
       <AlloyVersion />
