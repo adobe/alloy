@@ -93,9 +93,9 @@ describe("Advertising::createComponent", () => {
 
   it("should call onBeforeSendEvent handler with correct parameters including options", async () => {
     const event = { mergeQuery: vi.fn() };
-    const options = { handleAdvertisingData: "wait" };
+    const advertising = { handleAdvertisingData: "wait" };
 
-    await component.lifecycle.onBeforeEvent({ event, options });
+    await component.lifecycle.onBeforeEvent({ event, advertising });
 
     expect(handleOnBeforeSendEvent).toHaveBeenCalledWith({
       cookieManager,
@@ -105,7 +105,8 @@ describe("Advertising::createComponent", () => {
       }),
       event,
       componentConfig: config.advertising,
-      options,
+      advertising,
+      getBrowser: undefined,
     });
   });
 
@@ -122,14 +123,15 @@ describe("Advertising::createComponent", () => {
       }),
       event,
       componentConfig: config.advertising,
-      options: {},
+      advertising: {},
+      getBrowser: undefined,
     });
   });
 
   it("should handle onBeforeEvent with undefined options", async () => {
     const event = { mergeQuery: vi.fn() };
 
-    await component.lifecycle.onBeforeEvent({ event, options: undefined });
+    await component.lifecycle.onBeforeEvent({ event, advertising: undefined });
 
     expect(handleOnBeforeSendEvent).toHaveBeenCalledWith({
       cookieManager,
@@ -139,7 +141,8 @@ describe("Advertising::createComponent", () => {
       }),
       event,
       componentConfig: config.advertising,
-      options: {},
+      advertising: {},
+      getBrowser: undefined,
     });
   });
 

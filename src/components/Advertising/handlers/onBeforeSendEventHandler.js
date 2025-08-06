@@ -9,15 +9,15 @@ import { getID5Id } from "../identities/collectID5Id.js";
 import { getRampId } from "../identities/collectRampId.js";
 import { appendAdvertisingIdQueryToEvent } from "../utils/helpers.js";
 
-const isAdvertisingDisabled = (options) => {
+const isAdvertisingDisabled = (advertising) => {
   return (
-    options.handleAdvertisingData === "disabled" ||
-    options.handleAdvertisingData === null
+    advertising?.handleAdvertisingData === "disabled" ||
+    advertising?.handleAdvertisingData === null
   );
 };
 
-const waitForAdvertisingId = (options) => {
-  return options.handleAdvertisingData === "wait";
+const waitForAdvertisingId = (advertising) => {
+  return advertising?.handleAdvertisingData === "wait";
 };
 
 /**
@@ -27,7 +27,8 @@ const waitForAdvertisingId = (options) => {
  * @param {Object} params.logger
  * @param {Object} params.state
  * @param {Object} params.event
- * @param {Object} params.config
+ * @param {Object} params.componentConfig
+ * @param {Object} params.advertising
  * @param {Function} params.getBrowser
  */
 export default async function handleOnBeforeSendEvent({
@@ -36,17 +37,17 @@ export default async function handleOnBeforeSendEvent({
   state,
   event,
   componentConfig,
-  options,
+  advertising,
   getBrowser,
 }) {
-  if (state.surferIdAppendedToAepEvent || isAdvertisingDisabled(options))
+  if (state.surferIdAppendedToAepEvent || isAdvertisingDisabled(advertising))
     return;
 
   if (state.processingAdvertisingIds) return;
   state.processingAdvertisingIds = true;
 
   try {
-    const useShortTimeout = waitForAdvertisingId(options);
+    const useShortTimeout = waitForAdvertisingId(advertising);
     const surferId = await collectSurferId(
       cookieManager,
       getBrowser,

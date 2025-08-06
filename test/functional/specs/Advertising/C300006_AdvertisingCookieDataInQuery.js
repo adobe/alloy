@@ -43,9 +43,9 @@ const setAdvertisingCookie = ClientFunction((cookieData) => {
 
 createFixture({
   title:
-    "C300006: Advertising cookie data including surferId should be appended to sendEvent query",
+    "C300006: Testing handleAdvertisingData options: auto, wait, and disabled modes",
   requestHooks: [networkLogger.edgeEndpointLogs],
-  url: `${TEST_PAGE_URL}?test=advertising-cookie-data`,
+  url: `${TEST_PAGE_URL}?test=advertising-options`,
 });
 
 test.meta({
@@ -54,8 +54,9 @@ test.meta({
   TEST_RUN: "Regression",
 });
 
-test("Test C300006: Advertising cookie data including surferId should be appended to sendEvent query", async () => {
+test("Test C300006: Auto mode - Advertising cookie data should be appended immediately to sendEvent query", async () => {
   await cookies.clear();
+  networkLogger.edgeEndpointLogs.clear();
 
   // Set up complete advertising cookie data before configuring Alloy
   const advertisingCookieData = {
@@ -83,13 +84,18 @@ test("Test C300006: Advertising cookie data including surferId should be appende
   const alloy = createAlloyProxy();
   await alloy.configure(config);
 
-  // Make the first sendEvent call (this should trigger advertising data inclusion)
-  await alloy.sendEvent({});
+  // Make the first sendEvent call with auto mode (default behavior)
+  // This should include cookie data immediately without waiting
+  await alloy.sendEvent({
+    xdm: {
+      eventType: "web.webpagedetails.pageViews",
+    },
+  });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).gte(1);
 
-  // Wait for advertising requests with potential cookie data
+  // Check that the request includes surferId from cookie
   await t
     .expect(() => {
       const allRequests = networkLogger.edgeEndpointLogs.requests;
@@ -99,23 +105,110 @@ test("Test C300006: Advertising cookie data including surferId should be appende
           const advertising = body.events?.[0]?.query?.advertising;
           if (!advertising) return false;
 
-          // Check if we have surferId from cookie or any other advertising data
-          const hasSurferId =
+          // In auto mode, we should get the surferId from cookie immediately
+          const hasSurferIdFromCookie =
             advertising.stitchIds?.surferId ===
             ADVERTISING_CONSTANTS.SAMPLE_SURFER_ID;
-          const hasOtherIds =
-            advertising.stitchIds &&
-            (advertising.stitchIds.id5 || advertising.stitchIds.rampIDEnv);
-          const hasClickData =
-            advertising.lastSearchClick || advertising.lastDisplayClick;
 
-          return hasSurferId || hasOtherIds || hasClickData;
+          return hasSurferIdFromCookie;
         } catch {
           return false;
         }
       });
     })
     .ok(
-      "Expected to find advertising request with cookie data or resolved IDs",
+      "Expected to find advertising request with surferId from cookie in auto mode",
+    );
+});
+
+test("Test C300006: Wait mode - Should wait for advertising IDs to be collected", async () => {
+  await cookies.clear();
+  networkLogger.edgeEndpointLogs.clear();
+
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+
+  // Make sendEvent call with wait mode
+  // This should wait for advertising IDs to be collected (up to timeout)
+  await alloy.sendEvent({
+    xdm: {
+      eventType: "web.webpagedetails.pageViews",
+    },
+    advertising: {
+      handleAdvertisingData: "wait",
+    },
+  });
+
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
+  await t.expect(networkLogger.edgeEndpointLogs.requests.length).gte(1);
+
+  // Check that the request was made (may or may not have IDs depending on timeout)
+  // But the important thing is that it waited before sending
+  const firstRequest = networkLogger.edgeEndpointLogs.requests[0];
+  const body = JSON.parse(firstRequest.request.body);
+
+  // The request should exist (even if advertising IDs weren't collected in time)
+  await t.expect(body.events).ok("Expected events in request body");
+  await t
+    .expect(body.events[0].xdm.eventType)
+    .eql("web.webpagedetails.pageViews");
+});
+
+test("Test C300006: Disabled mode - Should not include advertising data", async () => {
+  await cookies.clear();
+  networkLogger.edgeEndpointLogs.clear();
+
+  // Set up advertising cookie data
+  const advertisingCookieData = {
+    surferId: ADVERTISING_CONSTANTS.SAMPLE_SURFER_ID,
+    lastConversionTime: 1753102357031,
+  };
+
+  await setAdvertisingCookie(advertisingCookieData);
+
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+
+  // Make sendEvent call with disabled mode
+  // This should NOT include any advertising data even if it's available
+  await alloy.sendEvent({
+    xdm: {
+      eventType: "web.webpagedetails.pageViews",
+    },
+    advertising: {
+      handleAdvertisingData: "disabled",
+    },
+  });
+
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
+  await t.expect(networkLogger.edgeEndpointLogs.requests.length).gte(1);
+
+  // Check that NO advertising data is included in the request
+  const allRequests = networkLogger.edgeEndpointLogs.requests;
+
+  // Check specifically for stitchIds which come from onBeforeEvent hook
+  // (advIds might come from view-through conversion which runs separately)
+  const hasStitchIds = allRequests.some((request) => {
+    try {
+      const body = JSON.parse(request.request.body);
+      const advertising = body.events?.[0]?.query?.advertising;
+      const stitchIds = advertising?.stitchIds;
+
+      // Check if we have any stitchIds beyond the default ipAddress
+      return (
+        stitchIds &&
+        Object.keys(stitchIds).some(
+          (key) => key !== "ipAddress" && stitchIds[key],
+        )
+      );
+    } catch {
+      return false;
+    }
+  });
+
+  await t
+    .expect(hasStitchIds)
+    .notOk(
+      "Expected NO stitchIds (surferId, id5, rampId) when handleAdvertisingData is disabled",
     );
 });

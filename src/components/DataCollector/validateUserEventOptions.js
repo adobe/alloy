@@ -47,6 +47,9 @@ export default ({ options }) => {
     datasetId: string(),
     mergeId: string(),
     edgeConfigOverrides: validateConfigOverride,
+    advertising: objectOf({
+      handleAdvertisingData: string().default("disabled"),
+    }),
   })
     .required()
     .noUnknownFields();

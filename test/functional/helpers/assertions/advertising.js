@@ -20,6 +20,7 @@ export const ADVERTISING_CONSTANTS = Object.freeze({
   ID5_PARTNER_ID: "173",
   RAMP_ID_JS_PATH: "https://cdn.jsdelivr.net/npm/@liveramp/ats@2/ats.min.js",
   EXPERIENCE_STRING: "_experience",
+  SAMPLE_SURFER_ID: "sample-surfer-id-12345",
 });
 
 // Helpers

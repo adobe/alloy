@@ -227,7 +227,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       state,
       event,
       componentConfig,
-      options: { handleAdvertisingData: "disabled" },
+      advertising: { handleAdvertisingData: "disabled" },
       getBrowser,
     });
 
@@ -237,14 +237,14 @@ describe("Advertising::onBeforeSendEventHandler", () => {
     expect(event.mergeQuery).not.toHaveBeenCalled();
   });
 
-  it("should return early when handleAdvertisingData is null", async () => {
+  it("should return early when advertising.handleAdvertisingData is null", async () => {
     await handleOnBeforeSendEvent({
       cookieManager,
       logger,
       state,
       event,
       componentConfig,
-      options: { handleAdvertisingData: null },
+      advertising: { handleAdvertisingData: null },
       getBrowser,
     });
 
@@ -254,7 +254,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
     expect(event.mergeQuery).not.toHaveBeenCalled();
   });
 
-  it("should wait for surfer ID when handleAdvertisingData is 'wait'", async () => {
+  it("should wait for surfer ID when advertising.handleAdvertisingData is 'wait'", async () => {
     getSurferId.mockResolvedValue("test-surfer-id");
 
     await handleOnBeforeSendEvent({
@@ -263,7 +263,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       state,
       event,
       componentConfig,
-      options: { handleAdvertisingData: "wait" },
+      advertising: { handleAdvertisingData: "wait" },
       getBrowser,
     });
 
