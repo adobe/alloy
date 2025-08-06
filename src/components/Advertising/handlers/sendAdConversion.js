@@ -32,7 +32,7 @@ export default ({
 
   return async (optionsFromCommand = {}) => {
     const { skwcid, efid } = getUrlParams();
-    const isClickThru = !!(skwcid || efid);
+    const isClickThru = !!(skwcid && efid);
 
     try {
       if (isClickThru) {

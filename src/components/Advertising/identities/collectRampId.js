@@ -18,6 +18,7 @@ const RETRY_CONFIG = {
   MAX_TIME_MS: 30000,
   DELAY_BASE_MS: 500,
   MAX_DELAY_MS: 5000,
+  SHORT_TIMEOUT_MS: 5000,
 };
 
 const state = {
@@ -117,12 +118,23 @@ const retrieveEnvelopeWithRetries = (
   tryToRetrieve();
 };
 
-const initiateRampIDCall = (rampIdScriptPath, cookieManager, logger) => {
+const initiateRampIDCall = (
+  rampIdScriptPath,
+  cookieManager,
+  logger,
+  useShortTimeout = false,
+) => {
   if (state.inProgressRampIdPromise) {
     return state.inProgressRampIdPromise;
   }
 
-  state.inProgressRampIdPromise = new Promise((resolve, reject) => {
+  const timeoutMs = useShortTimeout
+    ? RETRY_CONFIG.SHORT_TIMEOUT_MS
+    : RETRY_CONFIG.MAX_TIME_MS;
+
+  let timedOut = false;
+
+  const mainPromise = new Promise((resolve, reject) => {
     loadScript(rampIdScriptPath, {
       onLoad: () => {
         if (
@@ -134,53 +146,87 @@ const initiateRampIDCall = (rampIdScriptPath, cookieManager, logger) => {
             .retrieveEnvelope()
             .then((envelopeResponse) => {
               if (envelopeResponse) {
-                processEnvelope(
-                  envelopeResponse,
-                  resolve,
-                  cookieManager,
-                  logger,
-                );
+                if (!timedOut) {
+                  processEnvelope(
+                    envelopeResponse,
+                    resolve,
+                    cookieManager,
+                    logger,
+                  );
+                }
               } else {
                 state.envelopeRetrievalInProgress = false;
                 window.addEventListener("lrEnvelopePresent", () => {
-                  if (state.envelopeRetrievalInProgress) return;
+                  if (state.envelopeRetrievalInProgress || timedOut) return;
                   state.envelopeRetrievalInProgress = true;
                   window.ats.retrieveEnvelope().then(
-                    (envelopeResult) =>
-                      processEnvelope(
-                        envelopeResult,
-                        resolve,
-                        cookieManager,
-                        logger,
-                      ),
+                    (envelopeResult) => {
+                      if (!timedOut) {
+                        processEnvelope(
+                          envelopeResult,
+                          resolve,
+                          cookieManager,
+                          logger,
+                        );
+                      }
+                    },
                     (error) => {
-                      logger.error(
-                        "Failed to retrieve envelope after event",
-                        error,
-                      );
-                      state.envelopeRetrievalInProgress = false;
-                      reject(error);
-                      state.inProgressRampIdPromise = null;
+                      if (!timedOut) {
+                        logger.error(
+                          "Failed to retrieve envelope after event",
+                          error,
+                        );
+                        state.envelopeRetrievalInProgress = false;
+                        reject(error);
+                        state.inProgressRampIdPromise = null;
+                      }
                     },
                   );
                 });
               }
             })
             .catch((error) => {
-              logger.error("Error retrieving envelope", error);
-              state.envelopeRetrievalInProgress = false;
-              reject(error);
-              state.inProgressRampIdPromise = null;
+              if (!timedOut) {
+                logger.error("Error retrieving envelope", error);
+                state.envelopeRetrievalInProgress = false;
+                reject(error);
+                state.inProgressRampIdPromise = null;
+              }
             });
         }
-        retrieveEnvelopeWithRetries(resolve, reject, cookieManager, logger);
+
+        retrieveEnvelopeWithRetries(
+          (val) => {
+            if (!timedOut) resolve(val);
+          },
+          (err) => {
+            if (!timedOut) reject(err);
+          },
+          cookieManager,
+          logger,
+        );
       },
       onError: (error) => {
-        logger.error("Could not initiate RampID call.", error);
+        if (!timedOut) {
+          reject(error);
+        }
         state.inProgressRampIdPromise = null;
-        reject(error);
       },
     });
+  });
+
+  const timeoutPromise = new Promise((resolve) => {
+    setTimeout(() => {
+      timedOut = true;
+      resolve(null);
+    }, timeoutMs);
+  });
+
+  state.inProgressRampIdPromise = Promise.race([
+    mainPromise,
+    timeoutPromise,
+  ]).finally(() => {
+    state.inProgressRampIdPromise = null;
   });
 
   return state.inProgressRampIdPromise;
@@ -191,6 +237,7 @@ const getRampId = (
   rampIdScriptPath,
   cookieManager,
   resolveRampIdIfNotAvailable = true,
+  useShortTimeout = false,
 ) => {
   if (state.rampIdEnv) {
     return Promise.resolve(state.rampIdEnv);
@@ -205,7 +252,12 @@ const getRampId = (
   if (!resolveRampIdIfNotAvailable) {
     return Promise.resolve(null);
   }
-  return initiateRampIDCall(rampIdScriptPath, cookieManager, logger);
+  return initiateRampIDCall(
+    rampIdScriptPath,
+    cookieManager,
+    logger,
+    useShortTimeout,
+  );
 };
 
 export { getRampId, initiateRampIDCall };

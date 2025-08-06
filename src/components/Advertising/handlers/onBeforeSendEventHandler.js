@@ -16,7 +16,7 @@ const isAdvertisingDisabled = (options) => {
   );
 };
 
-const waitForSurferId = (options) => {
+const waitForAdvertisingId = (options) => {
   return options.handleAdvertisingData === "wait";
 };
 
@@ -46,13 +46,20 @@ export default async function handleOnBeforeSendEvent({
   state.processingAdvertisingIds = true;
 
   try {
+    const useShortTimeout = waitForAdvertisingId(options);
     const surferId = await collectSurferId(
       cookieManager,
       getBrowser,
-      waitForSurferId(options),
+      useShortTimeout,
     );
-    const id5Id = await getID5Id(logger, null, false);
-    const rampId = await getRampId(logger, null, cookieManager, false);
+    const id5Id = await getID5Id(logger, null, false, useShortTimeout);
+    const rampId = await getRampId(
+      logger,
+      null,
+      cookieManager,
+      false,
+      useShortTimeout,
+    );
     const availableIds = {
       ...(surferId && { surferId }),
       ...(id5Id && { id5Id }),

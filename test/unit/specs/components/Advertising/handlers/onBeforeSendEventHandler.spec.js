@@ -268,8 +268,14 @@ describe("Advertising::onBeforeSendEventHandler", () => {
     });
 
     expect(getSurferId).toHaveBeenCalledWith(cookieManager, getBrowser, true);
-    expect(getID5Id).toHaveBeenCalledWith(logger, null, false);
-    expect(getRampId).toHaveBeenCalledWith(logger, null, cookieManager, false);
+    expect(getID5Id).toHaveBeenCalledWith(logger, null, false, true);
+    expect(getRampId).toHaveBeenCalledWith(
+      logger,
+      null,
+      cookieManager,
+      false,
+      true,
+    );
   });
 
   it("should collect and merge available advertising IDs", async () => {
@@ -288,8 +294,14 @@ describe("Advertising::onBeforeSendEventHandler", () => {
     });
 
     expect(getSurferId).toHaveBeenCalledWith(cookieManager, getBrowser, false);
-    expect(getID5Id).toHaveBeenCalledWith(logger, null, false);
-    expect(getRampId).toHaveBeenCalledWith(logger, null, cookieManager, false);
+    expect(getID5Id).toHaveBeenCalledWith(logger, null, false, false);
+    expect(getRampId).toHaveBeenCalledWith(
+      logger,
+      null,
+      cookieManager,
+      false,
+      false,
+    );
 
     expect(event.mergeQuery).toHaveBeenCalledWith({
       advertising: {
@@ -351,8 +363,14 @@ describe("Advertising::onBeforeSendEventHandler", () => {
     });
 
     expect(getSurferId).toHaveBeenCalled();
-    expect(getID5Id).toHaveBeenCalledWith(logger, null, false);
-    expect(getRampId).toHaveBeenCalledWith(logger, null, cookieManager, false);
+    expect(getID5Id).toHaveBeenCalledWith(logger, null, false, false);
+    expect(getRampId).toHaveBeenCalledWith(
+      logger,
+      null,
+      cookieManager,
+      false,
+      false,
+    );
 
     expect(event.mergeQuery).toHaveBeenCalledWith({
       advertising: {
@@ -379,8 +397,14 @@ describe("Advertising::onBeforeSendEventHandler", () => {
     });
 
     expect(getSurferId).toHaveBeenCalled();
-    expect(getID5Id).toHaveBeenCalledWith(logger, null, false);
-    expect(getRampId).toHaveBeenCalledWith(logger, null, cookieManager, false);
+    expect(getID5Id).toHaveBeenCalledWith(logger, null, false, false);
+    expect(getRampId).toHaveBeenCalledWith(
+      logger,
+      null,
+      cookieManager,
+      false,
+      false,
+    );
 
     expect(event.mergeQuery).toHaveBeenCalledWith({
       advertising: {

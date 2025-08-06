@@ -149,11 +149,6 @@ describe("Advertising::clickThroughHandler", () => {
       eventType: "advertising.enrichment_ct",
     });
 
-    expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
-      click_time: expect.any(Number),
-      skwcid: "test-skwcid",
-    });
-
     expect(cookieManager.setValue).toHaveBeenCalledWith(
       LAST_CONVERSION_TIME_KEY,
       expect.any(Number),
@@ -194,10 +189,10 @@ describe("Advertising::clickThroughHandler", () => {
       eventType: "advertising.enrichment_ct",
     });
 
-    expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
-      click_time: expect.any(Number),
-      efid: "test-efid",
-    });
+    expect(cookieManager.setValue).toHaveBeenCalledWith(
+      LAST_CONVERSION_TIME_KEY,
+      expect.any(Number),
+    );
 
     expect(result).toEqual({ status: "success" });
   });
@@ -271,10 +266,10 @@ describe("Advertising::clickThroughHandler", () => {
       eventType: "advertising.enrichment_ct",
     });
 
-    expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
-      click_time: expect.any(Number),
-      skwcid: "test-skwcid",
-    });
+    expect(cookieManager.setValue).toHaveBeenCalledWith(
+      LAST_CONVERSION_TIME_KEY,
+      expect.any(Number),
+    );
   });
 
   it("should handle trackAdConversion errors", async () => {

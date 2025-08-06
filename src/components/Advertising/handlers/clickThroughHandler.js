@@ -44,7 +44,11 @@ export default async function handleClickThrough({
 
   const event = eventManager.createEvent();
 
-  if (typeof skwcid !== "undefined" || typeof efid !== "undefined") {
+  if (
+    typeof skwcid !== "undefined" &&
+    typeof efid !== "undefined" &&
+    !skwcid.startsWith("AL!")
+  ) {
     const clickData = {
       click_time: Date.now(),
       ...(typeof skwcid !== "undefined" && { skwcid }),

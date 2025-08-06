@@ -30,7 +30,7 @@ export const ID5_ID = "id5Id";
 // Default Values
 export const UNKNOWN_ADVERTISER = "";
 export const DEFAULT_THROTTLE_MINUTES = 30;
-export const DEFAULT_COOKIE_EXPIRATION_MINUTES = 1440; // 24 hours
+export const DEFAULT_COOKIE_EXPIRATION_MINUTES = 131040; // 91 days
 
 // Event Types
 export const AD_CONVERSION_CLICK_EVENT_TYPE = "advertising.enrichment_ct";
