@@ -176,6 +176,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
     componentConfig = {
       id5PartnerId: "test-partner",
       rampIdJSPath: "/test-path",
+      dspEnabled: true,
     };
 
     getBrowser = vi.fn().mockReturnValue("Chrome");
@@ -210,7 +211,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       state,
       event,
       componentConfig,
-      options: {},
+      advertising: {},
       getBrowser,
     });
 
@@ -268,10 +269,10 @@ describe("Advertising::onBeforeSendEventHandler", () => {
     });
 
     expect(getSurferId).toHaveBeenCalledWith(cookieManager, getBrowser, true);
-    expect(getID5Id).toHaveBeenCalledWith(logger, null, false, true);
+    expect(getID5Id).toHaveBeenCalledWith(logger, "test-partner", false, true);
     expect(getRampId).toHaveBeenCalledWith(
       logger,
-      null,
+      "/test-path",
       cookieManager,
       false,
       true,
@@ -289,15 +290,15 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       state,
       event,
       componentConfig,
-      options: {},
+      advertising: { handleAdvertisingData: "auto" },
       getBrowser,
     });
 
     expect(getSurferId).toHaveBeenCalledWith(cookieManager, getBrowser, false);
-    expect(getID5Id).toHaveBeenCalledWith(logger, null, false, false);
+    expect(getID5Id).toHaveBeenCalledWith(logger, "test-partner", false, false);
     expect(getRampId).toHaveBeenCalledWith(
       logger,
-      null,
+      "/test-path",
       cookieManager,
       false,
       false,
@@ -329,7 +330,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       state,
       event,
       componentConfig,
-      options: {},
+      advertising: { handleAdvertisingData: "auto" },
       getBrowser,
     });
 
@@ -358,15 +359,15 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       componentConfig: {
         rampIdJSPath: "/test-path",
       },
-      options: {},
+      advertising: { handleAdvertisingData: "auto" },
       getBrowser,
     });
 
     expect(getSurferId).toHaveBeenCalled();
-    expect(getID5Id).toHaveBeenCalledWith(logger, null, false, false);
+    expect(getID5Id).toHaveBeenCalledWith(logger, undefined, false, false);
     expect(getRampId).toHaveBeenCalledWith(
       logger,
-      null,
+      "/test-path",
       cookieManager,
       false,
       false,
@@ -392,15 +393,15 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       state,
       event,
       componentConfig: {},
-      options: {},
+      advertising: { handleAdvertisingData: "auto" },
       getBrowser,
     });
 
     expect(getSurferId).toHaveBeenCalled();
-    expect(getID5Id).toHaveBeenCalledWith(logger, null, false, false);
+    expect(getID5Id).toHaveBeenCalledWith(logger, undefined, false, false);
     expect(getRampId).toHaveBeenCalledWith(
       logger,
-      null,
+      undefined,
       cookieManager,
       false,
       false,
@@ -428,7 +429,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       state,
       event,
       componentConfig,
-      options: {},
+      advertising: {},
       getBrowser,
     });
 
@@ -447,7 +448,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       state,
       event,
       componentConfig,
-      options: {},
+      advertising: { handleAdvertisingData: "auto" },
       getBrowser,
     });
 
@@ -467,7 +468,8 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       state,
       event,
       componentConfig,
-      options: {},
+      advertising: {},
+      getBrowser,
     });
 
     expect(getSurferId).not.toHaveBeenCalled();
@@ -491,7 +493,8 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       state,
       event,
       componentConfig,
-      options: {},
+      advertising: { handleAdvertisingData: "auto" },
+      getBrowser,
     });
 
     const call2 = handleOnBeforeSendEvent({
@@ -500,7 +503,8 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       state,
       event,
       componentConfig,
-      options: {},
+      advertising: { handleAdvertisingData: "auto" },
+      getBrowser,
     });
 
     // Resolve the first call

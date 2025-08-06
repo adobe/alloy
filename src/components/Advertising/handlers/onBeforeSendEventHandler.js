@@ -10,10 +10,7 @@ import { getRampId } from "../identities/collectRampId.js";
 import { appendAdvertisingIdQueryToEvent } from "../utils/helpers.js";
 
 const isAdvertisingDisabled = (advertising) => {
-  return (
-    advertising?.handleAdvertisingData === "disabled" ||
-    advertising?.handleAdvertisingData === null
-  );
+  return !["auto", "wait"].includes(advertising?.handleAdvertisingData);
 };
 
 const waitForAdvertisingId = (advertising) => {
@@ -40,25 +37,27 @@ export default async function handleOnBeforeSendEvent({
   advertising,
   getBrowser,
 }) {
-  logger.info("handleOnBeforeSendEvent", { advertising });
   if (state.surferIdAppendedToAepEvent || isAdvertisingDisabled(advertising))
     return;
-  logger.info("handleOnBeforeSendEvent", isAdvertisingDisabled(advertising));
   if (state.processingAdvertisingIds) return;
   state.processingAdvertisingIds = true;
 
   try {
     const useShortTimeout = waitForAdvertisingId(advertising);
-    logger.info("handleOnBeforeSendEvent", { useShortTimeout });
     const surferId = await collectSurferId(
       cookieManager,
       getBrowser,
       useShortTimeout,
     );
-    const id5Id = await getID5Id(logger, null, false, useShortTimeout);
+    const id5Id = await getID5Id(
+      logger,
+      componentConfig.id5PartnerId,
+      false,
+      useShortTimeout,
+    );
     const rampId = await getRampId(
       logger,
-      null,
+      componentConfig.rampIdJSPath,
       cookieManager,
       false,
       useShortTimeout,
