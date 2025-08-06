@@ -47,7 +47,7 @@ export default async function handleClickThrough({
   if (
     typeof skwcid !== "undefined" &&
     typeof efid !== "undefined" &&
-    !skwcid.startsWith("AL!")
+    skwcid.startsWith("AL!")
   ) {
     const clickData = {
       click_time: Date.now(),

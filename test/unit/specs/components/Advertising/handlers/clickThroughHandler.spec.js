@@ -209,7 +209,7 @@ describe("Advertising::clickThroughHandler", () => {
       cookieManager,
       adConversionHandler,
       logger,
-      skwcid: "test-skwcid",
+      skwcid: "AL!test-skwcid",
       efid: "test-efid",
       optionsFromCommand: {},
     });
@@ -218,7 +218,7 @@ describe("Advertising::clickThroughHandler", () => {
       _experience: {
         adcloud: {
           conversionDetails: {
-            trackingCode: "test-skwcid",
+            trackingCode: "AL!test-skwcid",
             trackingIdentities: "test-efid",
           },
         },
@@ -228,9 +228,14 @@ describe("Advertising::clickThroughHandler", () => {
 
     expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
       click_time: expect.any(Number),
-      skwcid: "test-skwcid",
+      skwcid: "AL!test-skwcid",
       efid: "test-efid",
     });
+
+    expect(cookieManager.setValue).toHaveBeenCalledWith(
+      LAST_CONVERSION_TIME_KEY,
+      expect.any(Number),
+    );
   });
 
   it("should include options from command", async () => {

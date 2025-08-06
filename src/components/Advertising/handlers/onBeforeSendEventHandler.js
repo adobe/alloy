@@ -40,14 +40,16 @@ export default async function handleOnBeforeSendEvent({
   advertising,
   getBrowser,
 }) {
+  logger.info("handleOnBeforeSendEvent", { advertising });
   if (state.surferIdAppendedToAepEvent || isAdvertisingDisabled(advertising))
     return;
-
+  logger.info("handleOnBeforeSendEvent", isAdvertisingDisabled(advertising));
   if (state.processingAdvertisingIds) return;
   state.processingAdvertisingIds = true;
 
   try {
     const useShortTimeout = waitForAdvertisingId(advertising);
+    logger.info("handleOnBeforeSendEvent", { useShortTimeout });
     const surferId = await collectSurferId(
       cookieManager,
       getBrowser,
