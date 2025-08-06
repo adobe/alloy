@@ -269,12 +269,12 @@ describe("Advertising::onBeforeSendEventHandler", () => {
     });
 
     expect(getSurferId).toHaveBeenCalledWith(cookieManager, getBrowser, true);
-    expect(getID5Id).toHaveBeenCalledWith(logger, "test-partner", false, true);
+    expect(getID5Id).toHaveBeenCalledWith(logger, "test-partner", true, true);
     expect(getRampId).toHaveBeenCalledWith(
       logger,
       "/test-path",
       cookieManager,
-      false,
+      true,
       true,
     );
   });
@@ -453,10 +453,8 @@ describe("Advertising::onBeforeSendEventHandler", () => {
     });
 
     expect(event.mergeXdm).not.toHaveBeenCalled();
-    expect(logger.error).toHaveBeenCalledWith(
-      "Error in onBeforeSendEvent hook:",
-      expect.any(Error),
-    );
+    expect(logger.error).not.toHaveBeenCalled();
+    expect(state.surferIdAppendedToAepEvent).toBe(false);
   });
 
   it("should set flag to prevent concurrent processing", async () => {

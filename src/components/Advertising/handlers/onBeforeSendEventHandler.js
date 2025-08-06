@@ -44,29 +44,35 @@ export default async function handleOnBeforeSendEvent({
 
   try {
     const useShortTimeout = waitForAdvertisingId(advertising);
-    const surferId = await collectSurferId(
-      cookieManager,
-      getBrowser,
-      useShortTimeout,
-    );
-    const id5Id = await getID5Id(
-      logger,
-      componentConfig.id5PartnerId,
-      false,
-      useShortTimeout,
-    );
-    const rampId = await getRampId(
-      logger,
-      componentConfig.rampIdJSPath,
-      cookieManager,
-      false,
-      useShortTimeout,
-    );
-    const availableIds = {
-      ...(surferId && { surferId }),
-      ...(id5Id && { id5Id }),
-      ...(rampId && { rampId }),
-    };
+
+    const [surferIdResult, id5IdResult, rampIdResult] =
+      await Promise.allSettled([
+        collectSurferId(cookieManager, getBrowser, useShortTimeout),
+        getID5Id(
+          logger,
+          componentConfig.id5PartnerId,
+          useShortTimeout,
+          useShortTimeout,
+        ),
+        getRampId(
+          logger,
+          componentConfig.rampIdJSPath,
+          cookieManager,
+          useShortTimeout,
+          useShortTimeout,
+        ),
+      ]);
+
+    const availableIds = {};
+    if (surferIdResult.status === "fulfilled" && surferIdResult.value) {
+      availableIds.surferId = surferIdResult.value;
+    }
+    if (id5IdResult.status === "fulfilled" && id5IdResult.value) {
+      availableIds.id5Id = id5IdResult.value;
+    }
+    if (rampIdResult.status === "fulfilled" && rampIdResult.value) {
+      availableIds.rampId = rampIdResult.value;
+    }
 
     appendAdvertisingIdQueryToEvent(
       availableIds,
