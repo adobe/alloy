@@ -41,11 +41,13 @@ export const createAdvertisingConfig = ({
   advertiserSettings = ADVERTISING_CONSTANTS.DEFAULT_ADVERTISER_SETTINGS,
   id5PartnerId,
   rampIdJSPath,
+  dspEnabled = true,
 } = {}) => ({
   advertising: {
     ...(advertiserSettings && { advertiserSettings }),
     ...(id5PartnerId && { id5PartnerId }),
     ...(rampIdJSPath && { rampIdJSPath }),
+    dspEnabled,
   },
 });
 

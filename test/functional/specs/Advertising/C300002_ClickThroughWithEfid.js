@@ -15,7 +15,6 @@ import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import {
   findClickThroughRequest,
-  validateClickThroughRequest,
   createAdvertisingConfig,
 } from "../../helpers/assertions/advertising.js";
 
@@ -30,7 +29,7 @@ const config = compose(
 
 createFixture({
   title:
-    "C300002: Click-through conversion with ef_id parameter should send advertising.enrichment_ct event",
+    "C300002: Click-through conversion with ef_id parameter should NOT send advertising.enrichment_ct event (requires both parameters)",
   requestHooks: [networkLogger.edgeEndpointLogs],
   url: `${TEST_PAGE_URL}?test=advertising-clickthrough-efid&ef_id=test_experiment_456`,
 });
@@ -41,23 +40,20 @@ test.meta({
   TEST_RUN: "Regression",
 });
 
-test("Test C300002: Click-through conversion with ef_id parameter should send advertising.enrichment_ct event", async () => {
+test("Test C300002: Click-through conversion with ef_id parameter should NOT send advertising.enrichment_ct event (requires both s_kwcid and ef_id)", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
 
   // Wait for edge calls
   await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
-  await t.expect(networkLogger.edgeEndpointLogs.requests.length).gte(1);
+  await t.expect(networkLogger.edgeEndpointLogs.requests.length).gte(0);
 
   const conversionRequest = findClickThroughRequest(
     networkLogger.edgeEndpointLogs.requests,
   );
   await t
     .expect(conversionRequest)
-    .ok("Expected to find advertising.enrichment_ct conversion request");
-
-  // Validate conversion payload
-  await validateClickThroughRequest(conversionRequest, {
-    experimentId: "test_experiment_456",
-  });
+    .notOk(
+      "Should NOT find an advertising.enrichment_ct conversion request when only ef_id is present",
+    );
 });

@@ -25,6 +25,7 @@ const createAdvertising = ({
   eventManager,
   sendEdgeNetworkRequest,
   consent,
+  getBrowser,
 }) => {
   const cookieManager = createCookieManager({
     orgId: config.orgId,
@@ -45,6 +46,7 @@ const createAdvertising = ({
     eventManager,
     cookieManager,
     adConversionHandler,
+    getBrowser,
   });
 };
 
