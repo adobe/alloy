@@ -37,10 +37,8 @@ export default async function handleOnBeforeSendEvent({
   advertising,
   getBrowser,
 }) {
-  if (state.surferIdAppendedToAepEvent || isAdvertisingDisabled(advertising))
+  if (isAdvertisingDisabled(advertising) || state.processedAdvertisingIds)
     return;
-  if (state.processingAdvertisingIds) return;
-  state.processingAdvertisingIds = true;
 
   try {
     const useShortTimeout = waitForAdvertisingId(advertising);
@@ -80,12 +78,7 @@ export default async function handleOnBeforeSendEvent({
       cookieManager,
       componentConfig,
     );
-    if (Object.keys(availableIds).length > 0) {
-      state.surferIdAppendedToAepEvent = true;
-    }
   } catch (error) {
     logger.error("Error in onBeforeSendEvent hook:", error);
-  } finally {
-    state.processingAdvertisingIds = false;
   }
 }

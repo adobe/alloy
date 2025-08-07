@@ -30,30 +30,33 @@ export default ({
     ? normalizeAdvertiser(componentConfig.advertiserSettings)
     : "";
 
-  return async (optionsFromCommand = {}) => {
+  return async (sharedState) => {
     const { skwcid, efid } = getUrlParams();
     const isClickThru = !!(skwcid && efid);
 
     try {
+      let result = null;
       if (isClickThru) {
-        return await handleClickThrough({
+        result = await handleClickThrough({
           eventManager,
           cookieManager,
           adConversionHandler,
           logger,
           skwcid,
           efid,
-          optionsFromCommand,
         });
-      }
-      if (activeAdvertiserIds) {
-        return await handleViewThrough({
+        sharedState.processedAdvertisingIds = true;
+        return result;
+      } else if (activeAdvertiserIds) {
+        result = await handleViewThrough({
           eventManager,
           cookieManager,
           logger,
           componentConfig,
           adConversionHandler,
         });
+        sharedState.processedAdvertisingIds = true;
+        return result;
       }
       return null;
     } catch (error) {

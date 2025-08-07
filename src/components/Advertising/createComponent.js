@@ -24,7 +24,7 @@ export default ({
   const componentConfig = config.advertising;
 
   const sharedState = {
-    surferIdAppendedToAepEvent: false,
+    processedAdvertisingIds: false,
   };
 
   const sendAdConversionHandler = createSendAdConversion({
@@ -38,7 +38,7 @@ export default ({
   return {
     lifecycle: {
       onComponentsRegistered() {
-        sendAdConversionHandler();
+        sendAdConversionHandler(sharedState);
       },
       onBeforeEvent: ({ event, advertising = {} }) => {
         handleOnBeforeSendEvent({

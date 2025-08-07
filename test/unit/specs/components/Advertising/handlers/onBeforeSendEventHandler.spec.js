@@ -164,7 +164,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
     };
 
     state = {
-      surferIdAppendedToAepEvent: false,
+      processedAdvertisingIds: false,
       processingAdvertisingIds: false,
     };
 
@@ -203,7 +203,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
   });
 
   it("should return early when already processed", async () => {
-    state.surferIdAppendedToAepEvent = true;
+    state.processedAdvertisingIds = true;
 
     await handleOnBeforeSendEvent({
       cookieManager,
@@ -316,7 +316,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       },
     });
 
-    expect(state.surferIdAppendedToAepEvent).toBe(true);
+    expect(state.processedAdvertisingIds).toBe(false);
   });
 
   it("should only include available IDs", async () => {
@@ -434,7 +434,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
     });
 
     expect(event.mergeXdm).not.toHaveBeenCalled();
-    expect(state.surferIdAppendedToAepEvent).toBe(false);
+    expect(state.processedAdvertisingIds).toBe(false);
   });
 
   it("should handle identity collection errors", async () => {
@@ -454,7 +454,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
 
     expect(event.mergeXdm).not.toHaveBeenCalled();
     expect(logger.error).not.toHaveBeenCalled();
-    expect(state.surferIdAppendedToAepEvent).toBe(false);
+    expect(state.processedAdvertisingIds).toBe(false);
   });
 
   it("should set flag to prevent concurrent processing", async () => {
@@ -510,7 +510,7 @@ describe("Advertising::onBeforeSendEventHandler", () => {
 
     await Promise.all([call1, call2]);
 
-    // Should only be called once due to concurrent processing protection
-    expect(getSurferId).toHaveBeenCalledTimes(1);
+    // Both calls will execute since processedAdvertisingIds is not set in onBeforeSendEventHandler
+    expect(getSurferId).toHaveBeenCalledTimes(2);
   });
 });

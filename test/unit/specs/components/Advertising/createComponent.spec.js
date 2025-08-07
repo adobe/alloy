@@ -101,7 +101,7 @@ describe("Advertising::createComponent", () => {
       cookieManager,
       logger,
       state: expect.objectContaining({
-        surferIdAppendedToAepEvent: false,
+        processedAdvertisingIds: false,
       }),
       event,
       componentConfig: config.advertising,
@@ -119,7 +119,7 @@ describe("Advertising::createComponent", () => {
       cookieManager,
       logger,
       state: expect.objectContaining({
-        surferIdAppendedToAepEvent: false,
+        processedAdvertisingIds: false,
       }),
       event,
       componentConfig: config.advertising,
@@ -137,7 +137,7 @@ describe("Advertising::createComponent", () => {
       cookieManager,
       logger,
       state: expect.objectContaining({
-        surferIdAppendedToAepEvent: false,
+        processedAdvertisingIds: false,
       }),
       event,
       componentConfig: config.advertising,
