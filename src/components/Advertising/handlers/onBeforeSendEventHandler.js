@@ -7,7 +7,10 @@ http://www.apache.org/licenses/LICENSE-2.0
 import collectSurferId from "../identities/collectSurferId.js";
 import { getID5Id } from "../identities/collectID5Id.js";
 import { getRampId } from "../identities/collectRampId.js";
-import { appendAdvertisingIdQueryToEvent } from "../utils/helpers.js";
+import {
+  appendAdvertisingIdQueryToEvent,
+  getUrlParams,
+} from "../utils/helpers.js";
 
 const isAdvertisingDisabled = (advertising) => {
   return !["auto", "wait"].includes(advertising?.handleAdvertisingData);
@@ -37,7 +40,13 @@ export default async function handleOnBeforeSendEvent({
   advertising,
   getBrowser,
 }) {
-  if (isAdvertisingDisabled(advertising) || state.processedAdvertisingIds)
+  const { skwcid, efid } = getUrlParams();
+  const isClickThru = !!(skwcid && efid);
+  if (
+    isAdvertisingDisabled(advertising) ||
+    state.processedAdvertisingIds ||
+    isClickThru
+  )
     return;
 
   try {

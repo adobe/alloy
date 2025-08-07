@@ -46,7 +46,6 @@ export default ({
           skwcid,
           efid,
         });
-        sharedState.processedAdvertisingIds = true;
         return result;
       } else if (activeAdvertiserIds) {
         result = await handleViewThrough({
