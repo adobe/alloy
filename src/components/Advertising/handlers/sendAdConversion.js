@@ -25,6 +25,7 @@ export default ({
   adConversionHandler,
   logger,
   componentConfig,
+  getBrowser,
 }) => {
   const activeAdvertiserIds = componentConfig?.advertiserSettings
     ? normalizeAdvertiser(componentConfig.advertiserSettings)
@@ -54,6 +55,7 @@ export default ({
           logger,
           componentConfig,
           adConversionHandler,
+          getBrowser,
         });
         sharedState.processedAdvertisingIds = true;
         return result;

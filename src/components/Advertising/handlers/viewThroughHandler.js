@@ -22,6 +22,7 @@ export default async function handleViewThrough({
   logger,
   componentConfig,
   adConversionHandler,
+  getBrowser,
 }) {
   const resolvedIds = {};
   const usedIdTracker = {};
@@ -59,6 +60,7 @@ export default async function handleViewThrough({
     logger,
     componentConfig,
     cookieManager,
+    getBrowser,
   );
 
   if (Object.keys(identityPromisesMap).length === 0) {

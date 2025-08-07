@@ -132,6 +132,7 @@ describe("Advertising::viewThroughHandler", () => {
   let componentConfig;
   let adConversionHandler;
   let collectAllIdentities;
+  let getBrowser;
 
   beforeEach(async () => {
     eventManager = {
@@ -164,6 +165,8 @@ describe("Advertising::viewThroughHandler", () => {
       trackAdConversion: vi.fn().mockResolvedValue({ status: "success" }),
     };
 
+    getBrowser = vi.fn();
+
     // Mock collectAllIdentities
     const { default: mockCollectAllIdentities } = await import(
       "../../../../../../src/components/Advertising/identities/collectAllIdentities.js"
@@ -181,6 +184,7 @@ describe("Advertising::viewThroughHandler", () => {
       logger,
       componentConfig,
       adConversionHandler,
+      getBrowser,
     });
 
     expect(result).toEqual([]);
@@ -205,6 +209,7 @@ describe("Advertising::viewThroughHandler", () => {
       logger,
       componentConfig,
       adConversionHandler,
+      getBrowser,
     });
 
     await flushPromiseChains();
@@ -213,6 +218,7 @@ describe("Advertising::viewThroughHandler", () => {
       logger,
       componentConfig,
       cookieManager,
+      getBrowser,
     );
 
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({

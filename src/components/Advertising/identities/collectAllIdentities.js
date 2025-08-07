@@ -16,11 +16,16 @@ import { getID5Id } from "./collectID5Id.js";
 import { ID5_ID, RAMP_ID, SURFER_ID } from "../constants/index.js";
 import { isThrottled } from "../utils/helpers.js";
 
-const collectAllIdentities = (logger, componentConfig, cookieManager) => {
+const collectAllIdentities = (
+  logger,
+  componentConfig,
+  cookieManager,
+  getBrowser,
+) => {
   const promises = {};
 
   if (!isThrottled(SURFER_ID, cookieManager)) {
-    promises.surferId = collectSurferId(cookieManager, undefined, true).catch(
+    promises.surferId = collectSurferId(cookieManager, getBrowser, true).catch(
       () => null,
     );
   }
