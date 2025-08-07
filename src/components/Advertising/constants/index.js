@@ -17,6 +17,7 @@ export const RAMP_ID_COOKIE_KEY = "ramp_id";
 export const ID5_COOKIE_KEY = "id5_id";
 export const LAST_CLICK_COOKIE_KEY = "_les_lsc";
 export const LAST_CONVERSION_TIME_KEY = "lastConversionTime";
+export const DISPLAY_CLICK_COOKIE_KEY_EXPIRES = "displayClickCookieExpires";
 
 // URL Parameters
 export const SKWCID_PARAM = "s_kwcid";

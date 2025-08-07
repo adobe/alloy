@@ -22,6 +22,7 @@ import {
   SURFER_ID,
   ID5_ID,
   RAMP_ID,
+  DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
 } from "../constants/index.js";
 
 import { queryString } from "../../../utils/index.js";
@@ -79,8 +80,13 @@ const appendAdvertisingIdQueryToEvent = (
   addEventType = false,
 ) => {
   const searchClickData = cookieManager.getValue(LAST_CLICK_COOKIE_KEY);
-  const displayClickCookie = cookieManager.getValue(DISPLAY_CLICK_COOKIE_KEY);
-
+  let displayClickCookie = null;
+  const displayClickCookieExpires = cookieManager.getValue(
+    DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
+  );
+  if (displayClickCookieExpires && displayClickCookieExpires > Date.now()) {
+    displayClickCookie = cookieManager.getValue(DISPLAY_CLICK_COOKIE_KEY);
+  }
   const query = {
     advertising: {
       ...(searchClickData?.click_time && {

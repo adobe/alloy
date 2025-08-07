@@ -11,6 +11,7 @@ import {
   SURFER_TIMEOUT_MS,
   SURFER_TRUSTED_ORIGIN,
   SURFER_PARAM_KEY,
+  DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
 } from "../constants/index.js";
 import createNode from "../../../utils/dom/createNode.js";
 import { injectAreThirdPartyCookiesSupportedByDefault } from "../../../utils/index.js";
@@ -169,6 +170,10 @@ const collectSurferId = function collectSurferId(
           cookieManager.setValue(
             DISPLAY_CLICK_COOKIE_KEY,
             resolvedId.displayClickCookie,
+          );
+          cookieManager.setValue(
+            DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
+            Date.now() + 15 * 60 * 1000,
           );
         }
       }
