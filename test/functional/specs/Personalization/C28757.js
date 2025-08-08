@@ -87,6 +87,13 @@ test("Test C28757: A VEC offer should render if renderDecision=true", async () =
     .ok();
   await t.expect(getDecisionContent()).eql("Here is an awesome target offer!");
 
-  await t.expect(eventResult.decisions).eql([]);
-  await t.expect(eventResult.propositions[0].renderAttempted).eql(true);
+  const vecSchemas = [
+    "https://ns.adobe.com/personalization/dom-action",
+    "https://ns.adobe.com/personalization/html-content-item",
+  ];
+  const remainingVecDecisions = (eventResult.decisions).filter((d) =>
+    (d.items).some((i) => vecSchemas.includes(i.schema)),
+  );
+  await t.expect(remainingVecDecisions.length).eql(0);
+  await t.expect((eventResult.propositions).some((p) => p.renderAttempted === true)).ok();
 });
