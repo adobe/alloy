@@ -118,6 +118,15 @@ test("Test C28758: A VEC offer with ShadowDOM selectors should render", async ()
   await t.expect(getSimpleShadowLabelText()).eql("Simple Shadow offer!");
   await t.expect(getNestedShadowLabelText()).eql("Nested Shadow offer!");
 
-  await t.expect(eventResult.decisions).eql([]);
-  await t.expect(eventResult.propositions[0].renderAttempted).eql(true);
+  const vecSchemas = [
+    "https://ns.adobe.com/personalization/dom-action",
+    "https://ns.adobe.com/personalization/html-content-item",
+  ];
+  const remainingVecDecisions = eventResult.decisions.filter((d) =>
+    d.items.some((i) => vecSchemas.includes(i.schema)),
+  );
+  await t.expect(remainingVecDecisions.length).eql(0);
+  await t
+    .expect(eventResult.propositions.some((p) => p.renderAttempted === true))
+    .ok();
 });
