@@ -11,13 +11,14 @@ import {
   appendAdvertisingIdQueryToEvent,
   getUrlParams,
 } from "../utils/helpers.js";
+import { AUTO, WAIT } from "../../../constants/consentStatus.js";
 
 const isAdvertisingDisabled = (advertising) => {
-  return !["auto", "wait"].includes(advertising?.handleAdvertisingData);
+  return ![AUTO, WAIT].includes(advertising?.handleAdvertisingData);
 };
 
 const waitForAdvertisingId = (advertising) => {
-  return advertising?.handleAdvertisingData === "wait";
+  return advertising?.handleAdvertisingData === WAIT;
 };
 
 /**

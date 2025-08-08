@@ -13,3 +13,6 @@ governing permissions and limitations under the License.
 export const IN = "in";
 export const OUT = "out";
 export const PENDING = "pending";
+export const DISABLED = "disabled";
+export const WAIT = "wait";
+export const AUTO = "auto";

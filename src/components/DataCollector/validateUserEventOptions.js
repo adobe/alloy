@@ -15,11 +15,13 @@ import {
   objectOf,
   boolean,
   arrayOf,
+  enumOf,
 } from "../../utils/validation/index.js";
 import {
   validateConfigOverride,
   validateIdentityMap,
 } from "../../utils/index.js";
+import { DISABLED, WAIT, AUTO } from "../../constants/consentStatus.js";
 /**
  * Verifies user provided event options.
  * @param {*} options The user event options to validate
@@ -48,7 +50,7 @@ export default ({ options }) => {
     mergeId: string(),
     edgeConfigOverrides: validateConfigOverride,
     advertising: objectOf({
-      handleAdvertisingData: string().default("disabled"),
+      handleAdvertisingData: enumOf(DISABLED, WAIT, AUTO).default(DISABLED),
     }),
   })
     .required()
