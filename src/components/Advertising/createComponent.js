@@ -42,7 +42,7 @@ export default ({
         sendAdConversionHandler(sharedState);
       },
       onBeforeEvent: ({ event, advertising = {} }) => {
-        handleOnBeforeSendEvent({
+        return handleOnBeforeSendEvent({
           cookieManager,
           logger,
           state: sharedState,
