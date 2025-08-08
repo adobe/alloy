@@ -82,18 +82,24 @@ test("Test C28760: A notification collect should be triggered if a VEC dom actio
     content: response,
   }).getPayloadsByType("personalization:decisions");
 
+  const vecSchemas = [
+    "https://ns.adobe.com/personalization/dom-action",
+    "https://ns.adobe.com/personalization/html-content-item",
+  ];
+  const vecDecisions = personalizationPayload.filter((d) =>
+    d.items.some((i) => vecSchemas.includes(i.schema)),
+  );
+
+  await t.expect(vecDecisions.length).gt(0);
   await t
     .expect(
-      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(personalizationPayload[0].scope),
-    )
-    .ok();
-  await t
-    .expect(
-      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(personalizationPayload[1].scope),
+      vecDecisions.every((d) =>
+        [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(d.scope),
+      ),
     )
     .ok();
 
-  const notificationPayload = extractDecisionsMeta(personalizationPayload);
+  const notificationPayload = extractDecisionsMeta(vecDecisions);
 
   const sendNotificationRequest = networkLogger.edgeEndpointLogs.requests[1];
   const notificationRequestBody = JSON.parse(
