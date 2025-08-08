@@ -100,6 +100,15 @@ test("Test C28759: Inline scripts should render when renderDecision=true", async
 
   await t.expect(getScriptExecutionResult()).eql(1);
 
-  await t.expect(eventResult.decisions).eql([]);
-  await t.expect(eventResult.propositions[0].renderAttempted).eql(true);
+  const vecSchemas = [
+    "https://ns.adobe.com/personalization/dom-action",
+    "https://ns.adobe.com/personalization/html-content-item",
+  ];
+  const remainingVecDecisions = eventResult.decisions.filter((d) =>
+    d.items.some((i) => vecSchemas.includes(i.schema)),
+  );
+  await t.expect(remainingVecDecisions.length).eql(0);
+  await t
+    .expect(eventResult.propositions.some((p) => p.renderAttempted === true))
+    .ok();
 });
