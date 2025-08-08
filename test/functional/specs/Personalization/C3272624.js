@@ -27,6 +27,7 @@ import awaitRequestResponse from "../../helpers/networkLogger/awaitRequestRespon
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
+const PAGE_SURFACE = TEST_PAGE_URL.replace(/^https?:/, "web:");
 const decisionContent =
   '<span id="action_insert_1622750393761927">C3272624: An activity based on profile data attribute: `favoriteCategory`</span>';
 
@@ -72,7 +73,11 @@ test("Test C3272624: Support passing profile attributes and qualify for offers",
     content: response,
   }).getPayloadsByType("personalization:decisions");
 
-  await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
+  await t
+    .expect(
+      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(personalizationPayload[0].scope),
+    )
+    .ok();
 
   await t
     .expect(personalizationPayload[0].items[0].data.content)

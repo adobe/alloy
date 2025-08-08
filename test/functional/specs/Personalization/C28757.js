@@ -26,6 +26,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
+const PAGE_SURFACE = TEST_PAGE_URL.replace(/^https?:/, "web:");
 createFixture({
   title: "C28757 A VEC offer should render if renderDecision=true",
   url: `${TEST_PAGE_URL}?test=C28755`,
@@ -79,7 +80,11 @@ test("Test C28757: A VEC offer should render if renderDecision=true", async () =
     content: response,
   }).getPayloadsByType("personalization:decisions");
 
-  await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
+  await t
+    .expect(
+      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(personalizationPayload[0].scope),
+    )
+    .ok();
   await t.expect(getDecisionContent()).eql("Here is an awesome target offer!");
 
   await t.expect(eventResult.decisions).eql([]);

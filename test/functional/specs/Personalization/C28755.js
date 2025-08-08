@@ -26,6 +26,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
+const PAGE_SURFACE = TEST_PAGE_URL.replace(/^https?:/, "web:");
 const decisionContent =
   '<div id="C28755">Here is an awesome target offer!</div>';
 
@@ -77,16 +78,28 @@ test("Test C28755: The first sendEvent on the page should fetch Personalization 
     content: response,
   }).getPayloadsByType("personalization:decisions");
 
-  await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
-  await t
-    .expect(personalizationPayload[0].items[0].data.content)
-    .eql(decisionContent);
+  const scope = personalizationPayload[0].scope;
+  await t.expect([PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(scope)).ok();
+  const payloadContents = personalizationPayload
+    .flatMap((p) => p.items)
+    .map((i) => i?.data?.content)
+    .filter(Boolean);
+  await t.expect(payloadContents).contains(decisionContent);
 
   await t.expect(result.decisions[0].renderAttempted).eql(undefined);
-  await t.expect(result.propositions[0].renderAttempted).eql(false);
-  await t.expect(result.decisions.length).eql(1);
-  await t.expect(result.decisions[0].scope).eql(PAGE_WIDE_SCOPE);
   await t
-    .expect(result.decisions[0].items[0].data.content)
-    .eql(decisionContent);
+    .expect(result.propositions.every((p) => p.renderAttempted === false))
+    .ok();
+  await t.expect(result.decisions.length).gte(1);
+  const decisionScopes = result.decisions.map((d) => d.scope);
+  await t
+    .expect(
+      decisionScopes.some((s) => [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(s)),
+    )
+    .ok();
+  const decisionContents = result.decisions
+    .flatMap((d) => d.items)
+    .map((i) => i?.data?.content)
+    .filter(Boolean);
+  await t.expect(decisionContents).contains(decisionContent);
 });

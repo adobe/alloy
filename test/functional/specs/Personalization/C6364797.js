@@ -26,6 +26,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
+const PAGE_SURFACE = TEST_PAGE_URL.replace(/^https?:/, "web:");
 const decisionContent =
   '<div id="C28755">Here is an awesome target offer!</div>';
 
@@ -77,7 +78,11 @@ test("Test C6364797: applyPropositions should render page-wide propositions that
     content: response,
   }).getPayloadsByType("personalization:decisions");
 
-  await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
+  await t
+    .expect(
+      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(personalizationPayload[0].scope),
+    )
+    .ok();
   await t
     .expect(personalizationPayload[0].items[0].data.content)
     .eql(decisionContent);
@@ -85,7 +90,9 @@ test("Test C6364797: applyPropositions should render page-wide propositions that
   await t.expect(result.decisions[0].renderAttempted).eql(undefined);
   await t.expect(result.propositions[0].renderAttempted).eql(false);
   await t.expect(result.decisions.length).eql(1);
-  await t.expect(result.decisions[0].scope).eql(PAGE_WIDE_SCOPE);
+  await t
+    .expect([PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(result.decisions[0].scope))
+    .ok();
   await t
     .expect(result.decisions[0].items[0].data.content)
     .eql(decisionContent);

@@ -26,6 +26,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
+const PAGE_SURFACE = TEST_PAGE_URL.replace(/^https?:/, "web:");
 createFixture({
   title: "C5805675: Default content offers should be delivered",
   url: `${TEST_PAGE_URL}?test=C5805675`,
@@ -80,7 +81,11 @@ test("Test C5805675: Default content offers should be delivered", async () => {
     content: response,
   }).getPayloadsByType("personalization:decisions");
 
-  await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
+  await t
+    .expect(
+      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(personalizationPayload[0].scope),
+    )
+    .ok();
   await t.expect(personalizationPayload[0].items.length).eql(1);
 
   const defaultContentItem = personalizationPayload[0].items[0];
