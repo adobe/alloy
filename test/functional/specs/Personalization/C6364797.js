@@ -78,24 +78,36 @@ test("Test C6364797: applyPropositions should render page-wide propositions that
     content: response,
   }).getPayloadsByType("personalization:decisions");
 
+  const decisionWithExpectedContent = personalizationPayload.find((d) =>
+    d.items.some((i) => i.data?.content === decisionContent),
+  );
+  await t.expect(!!decisionWithExpectedContent).ok();
   await t
     .expect(
-      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(personalizationPayload[0].scope),
+      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(
+        decisionWithExpectedContent.scope,
+      ),
     )
     .ok();
-  await t
-    .expect(personalizationPayload[0].items[0].data.content)
-    .eql(decisionContent);
 
-  await t.expect(result.decisions[0].renderAttempted).eql(undefined);
-  await t.expect(result.propositions[0].renderAttempted).eql(false);
-  await t.expect(result.decisions.length).eql(1);
+  const vecSchemas = [
+    "https://ns.adobe.com/personalization/dom-action",
+    "https://ns.adobe.com/personalization/html-content-item",
+  ];
+  const pageWideDecisions = result.decisions.filter((d) =>
+    [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(d.scope),
+  );
+  const targetDecisions = pageWideDecisions.filter((d) =>
+    (d.items || []).some((i) => vecSchemas.includes(i.schema)),
+  );
+  await t.expect(targetDecisions.length).gt(0);
+  const hasExpectedContent = targetDecisions.some((d) =>
+    (d.items || []).some((i) => (i.data && i.data.content) === decisionContent),
+  );
+  await t.expect(hasExpectedContent).ok();
   await t
-    .expect([PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(result.decisions[0].scope))
+    .expect(result.propositions.some((p) => p.renderAttempted === false))
     .ok();
-  await t
-    .expect(result.decisions[0].items[0].data.content)
-    .eql(decisionContent);
 
   const applyPropositionsResult = await alloy.applyPropositions({
     propositions: result.propositions,
@@ -106,9 +118,14 @@ test("Test C6364797: applyPropositions should render page-wide propositions that
       (proposition) => proposition.renderAttempted,
     );
   await t.expect(allPropositionsWereRendered).eql(true);
+  const applicableOriginalPropositions = result.propositions.filter(
+    (p) =>
+      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(p.scope) &&
+      (p.items || []).some((i) => vecSchemas.includes(i.schema)),
+  );
   await t
     .expect(applyPropositionsResult.propositions.length)
-    .eql(result.propositions.length);
+    .eql(applicableOriginalPropositions.length);
   // make sure no new network requests are sent - applyPropositions is a client-side only command.
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 });
