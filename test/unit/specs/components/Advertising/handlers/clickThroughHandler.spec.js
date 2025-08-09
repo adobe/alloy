@@ -149,8 +149,12 @@ describe("Advertising::clickThroughHandler", () => {
       eventType: "advertising.enrichment_ct",
     });
 
+    expect(cookieManager.setValue).toHaveBeenCalledTimes(2);
     expect(cookieManager.setValue).toHaveBeenCalledWith(
       LAST_CONVERSION_TIME_KEY,
+    );
+    expect(cookieManager.setValue).toHaveBeenCalledWith(
+      "lastConversionTimeExpires",
       expect.any(Number),
     );
 
@@ -189,8 +193,12 @@ describe("Advertising::clickThroughHandler", () => {
       eventType: "advertising.enrichment_ct",
     });
 
+    expect(cookieManager.setValue).toHaveBeenCalledTimes(2);
     expect(cookieManager.setValue).toHaveBeenCalledWith(
       LAST_CONVERSION_TIME_KEY,
+    );
+    expect(cookieManager.setValue).toHaveBeenCalledWith(
+      "lastConversionTimeExpires",
       expect.any(Number),
     );
 
@@ -232,8 +240,12 @@ describe("Advertising::clickThroughHandler", () => {
       efid: "test-efid",
     });
 
+    expect(cookieManager.setValue).toHaveBeenCalledTimes(3);
     expect(cookieManager.setValue).toHaveBeenCalledWith(
       LAST_CONVERSION_TIME_KEY,
+    );
+    expect(cookieManager.setValue).toHaveBeenCalledWith(
+      "lastConversionTimeExpires",
       expect.any(Number),
     );
   });
@@ -271,8 +283,12 @@ describe("Advertising::clickThroughHandler", () => {
       eventType: "advertising.enrichment_ct",
     });
 
+    expect(cookieManager.setValue).toHaveBeenCalledTimes(2);
     expect(cookieManager.setValue).toHaveBeenCalledWith(
       LAST_CONVERSION_TIME_KEY,
+    );
+    expect(cookieManager.setValue).toHaveBeenCalledWith(
+      "lastConversionTimeExpires",
       expect.any(Number),
     );
   });

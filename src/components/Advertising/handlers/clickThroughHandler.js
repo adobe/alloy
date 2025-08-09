@@ -18,6 +18,7 @@ import {
   AD_CONVERSION_CLICK_EVENT_TYPE,
   TRACKING_CODE,
   TRACKING_IDENTITIES,
+  LAST_CONVERSION_TIME_KEY_EXPIRES,
 } from "../constants/index.js";
 
 /**
@@ -73,7 +74,11 @@ export default async function handleClickThrough({
 
   event.setUserXdm(xdm);
 
-  cookieManager.setValue(LAST_CONVERSION_TIME_KEY, Date.now());
+  cookieManager.setValue(LAST_CONVERSION_TIME_KEY);
+  cookieManager.setValue(
+    LAST_CONVERSION_TIME_KEY_EXPIRES,
+    Date.now() + 91 * 24 * 60 * 60 * 1000,
+  ); //expires in 91 days
 
   try {
     return await adConversionHandler.trackAdConversion({ event });

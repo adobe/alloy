@@ -10,7 +10,9 @@ import { getRampId } from "../identities/collectRampId.js";
 import {
   appendAdvertisingIdQueryToEvent,
   getUrlParams,
+  isThrottled,
 } from "../utils/helpers.js";
+import { SURFER_ID, ID5_ID, RAMP_ID } from "../constants/index.js";
 import { AUTO, WAIT } from "../../../constants/consentStatus.js";
 
 const isAdvertisingDisabled = (advertising) => {
@@ -35,7 +37,6 @@ const waitForAdvertisingId = (advertising) => {
 export default async function handleOnBeforeSendEvent({
   cookieManager,
   logger,
-  state,
   event,
   componentConfig,
   advertising,
@@ -45,8 +46,10 @@ export default async function handleOnBeforeSendEvent({
   const isClickThru = !!(skwcid && efid);
   if (
     isAdvertisingDisabled(advertising) ||
-    state.processedAdvertisingIds ||
-    isClickThru
+    isClickThru ||
+    (isThrottled(SURFER_ID, cookieManager) &&
+      isThrottled(ID5_ID, cookieManager) &&
+      isThrottled(RAMP_ID, cookieManager))
   )
     return;
 
@@ -72,16 +75,36 @@ export default async function handleOnBeforeSendEvent({
       ]);
 
     const availableIds = {};
-    if (surferIdResult.status === "fulfilled" && surferIdResult.value) {
+    if (
+      surferIdResult.status === "fulfilled" &&
+      surferIdResult.value &&
+      !isThrottled(SURFER_ID, cookieManager)
+    ) {
       availableIds.surferId = surferIdResult.value;
     }
-    if (id5IdResult.status === "fulfilled" && id5IdResult.value) {
+    if (
+      id5IdResult.status === "fulfilled" &&
+      id5IdResult.value &&
+      !isThrottled(ID5_ID, cookieManager)
+    ) {
       availableIds.id5Id = id5IdResult.value;
     }
-    if (rampIdResult.status === "fulfilled" && rampIdResult.value) {
+    if (
+      rampIdResult.status === "fulfilled" &&
+      rampIdResult.value &&
+      !isThrottled(RAMP_ID, cookieManager)
+    ) {
       availableIds.rampId = rampIdResult.value;
     }
-
+    // If no IDs are available and any ID is throttled, return , because we dont have new info to send
+    if (
+      Object.keys(availableIds).length === 0 &&
+      (isThrottled(SURFER_ID, cookieManager) ||
+        isThrottled(ID5_ID, cookieManager) ||
+        isThrottled(RAMP_ID, cookieManager))
+    ) {
+      return;
+    }
     appendAdvertisingIdQueryToEvent(
       availableIds,
       event,

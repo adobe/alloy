@@ -39,7 +39,7 @@ export default ({
   return {
     lifecycle: {
       onComponentsRegistered() {
-        return sendAdConversionHandler(sharedState);
+        sendAdConversionHandler(sharedState);
       },
       onBeforeEvent: ({ event, advertising = {} }) => {
         return handleOnBeforeSendEvent({

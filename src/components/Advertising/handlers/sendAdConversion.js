@@ -31,7 +31,7 @@ export default ({
     ? normalizeAdvertiser(componentConfig.advertiserSettings)
     : "";
 
-  return async (sharedState) => {
+  return async () => {
     const { skwcid, efid } = getUrlParams();
     const isClickThru = !!(skwcid && efid);
 
@@ -56,7 +56,6 @@ export default ({
           adConversionHandler,
           getBrowser,
         });
-        sharedState.processedAdvertisingIds = true;
         return result;
       }
       return null;

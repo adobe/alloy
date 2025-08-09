@@ -18,7 +18,8 @@ export const ID5_COOKIE_KEY = "id5_id";
 export const LAST_CLICK_COOKIE_KEY = "_les_lsc";
 export const LAST_CONVERSION_TIME_KEY = "lastConversionTime";
 export const DISPLAY_CLICK_COOKIE_KEY_EXPIRES = "displayClickCookieExpires";
-
+export const RAMP_ID_EXPIRES = "rampIdExpires";
+export const LAST_CONVERSION_TIME_KEY_EXPIRES = "lastConversionTimeExpires";
 // URL Parameters
 export const SKWCID_PARAM = "s_kwcid";
 export const EFID_PARAM = "ef_id";
@@ -31,7 +32,7 @@ export const ID5_ID = "id5Id";
 // Default Values
 export const UNKNOWN_ADVERTISER = "";
 export const DEFAULT_THROTTLE_MINUTES = 30;
-export const DEFAULT_COOKIE_EXPIRATION_MINUTES = 131040; // 91 days
+export const DEFAULT_COOKIE_EXPIRATION_MINUTES = 527040; // 365 days
 
 // Event Types
 export const AD_CONVERSION_CLICK_EVENT_TYPE = "advertising.enrichment_ct";

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { loadScript } from "../../../utils/dom/index.js";
-import { RAMP_ID } from "../constants/index.js";
+import { RAMP_ID, RAMP_ID_EXPIRES } from "../constants/index.js";
 
 const RETRY_CONFIG = {
   MAX_COUNT: 15,
@@ -43,6 +43,7 @@ const processEnvelope = (envelope, resolve, cookieManager, logger) => {
     state.envelopeRetrievalInProgress = false;
     state.inProgressRampIdPromise = null;
     cookieManager.setValue(RAMP_ID, state.rampIdEnv);
+    cookieManager.setValue(RAMP_ID_EXPIRES, Date.now() + 48 * 60 * 60 * 1000); //expires in 48 hours
     resolve(state.rampIdEnv);
   } else {
     logger.warn("Invalid RampID envelope received", {
@@ -244,7 +245,8 @@ const getRampId = (
   }
   if (cookieManager) {
     const rampIdFromCookie = cookieManager.getValue(RAMP_ID);
-    if (rampIdFromCookie) {
+    const rampIdExpires = cookieManager.getValue(RAMP_ID_EXPIRES);
+    if (rampIdFromCookie && rampIdExpires && rampIdExpires > Date.now()) {
       state.rampIdEnv = rampIdFromCookie;
       return Promise.resolve(rampIdFromCookie);
     }
