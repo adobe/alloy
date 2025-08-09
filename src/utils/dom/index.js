@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 export { default as awaitSelector } from "./awaitSelector.js";
 export { default as appendNode } from "./appendNode.js";
 export { default as createNode } from "./createNode.js";
+export { default as loadScript } from "./loadScript.js";
 export { default as matchesSelector } from "./matchesSelector.js";
 export { default as querySelectorAll } from "./querySelectorAll.js";
 export { default as removeNode } from "./removeNode.js";
