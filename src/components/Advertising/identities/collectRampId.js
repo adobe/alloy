@@ -251,7 +251,7 @@ const getRampId = (
       return Promise.resolve(rampIdFromCookie);
     }
   }
-  if (!resolveRampIdIfNotAvailable) {
+  if (!resolveRampIdIfNotAvailable || rampIdScriptPath == null) {
     return Promise.resolve(null);
   }
   return initiateRampIDCall(
