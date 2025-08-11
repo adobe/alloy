@@ -54,11 +54,10 @@ export default ({
     }
     params.configId = configId;
     const stringifiedRequestParams = queryString.stringify({...params, ...getAssuranceValidationTokenParams()});
-
-    if(params.sessionId) {
-      return `https://edge-int.adobedc.net/brand-concierge/${request.getAction()}?${stringifiedRequestParams}`;
+   /* if(params.sessionId) {
+      return `https://${endpointDomain}/brand-concierge/${request.getAction()}?${stringifiedRequestParams}`;
     }
-
+*/
     return `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?${stringifiedRequestParams}`;
   };
 

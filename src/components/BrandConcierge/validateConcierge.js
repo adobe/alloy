@@ -12,19 +12,11 @@ governing permissions and limitations under the License.
 import {anyOf, arrayOf, objectOf, string} from "../../utils/validation/index.js";
 
 export default ({options, logger}) => {
-  const brandConciergeConfigValidator = anyOf([
-    objectOf({
-      message: string().required()
-    }),
-    objectOf({
-      feedback: objectOf({
-        conversationId: string(),
-        interactionId: string(),
-        classification: string(),
-        comment: string(),
-        reasons: arrayOf(string())
-      })
-    }).required()]);
+  const brandConciergeConfigValidator = objectOf({
+    src: string().required(),
+    stylingConfigurations: objectOf({}),
+    selector: string().required()
+    });
 
   return brandConciergeConfigValidator(options);
 }

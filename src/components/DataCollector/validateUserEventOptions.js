@@ -44,6 +44,9 @@ export default ({ options }) => {
       defaultPersonalizationEnabled: boolean(),
       decisionContext: objectOf({}),
     }).default({ sendDisplayEvent: true }),
+    conversation: objectOf({
+      fetchExperience: boolean().default(false)
+    }),
     datasetId: string(),
     mergeId: string(),
     edgeConfigOverrides: validateConfigOverride,
