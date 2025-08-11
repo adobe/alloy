@@ -22,3 +22,4 @@ export { default as mediaAnalyticsBridge } from "../components/MediaAnalyticsBri
 export { default as personalization } from "../components/Personalization/index.js";
 export { default as rulesEngine } from "../components/RulesEngine/index.js";
 export { default as streamingMedia } from "../components/StreamingMedia/index.js";
+export { default as advertising } from "../components/Advertising/index.js";

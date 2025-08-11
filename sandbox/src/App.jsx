@@ -99,6 +99,9 @@ const BasicExample = () => {
               <a href="/configOverrides">Config Overrides</a>
             </li>
             <li>
+              <a href="/advertisingTest">Advertising Test</a>
+            </li>
+            <li>
               <Link to="/inAppMessages">In-app Messages</Link>
             </li>
             <li>
