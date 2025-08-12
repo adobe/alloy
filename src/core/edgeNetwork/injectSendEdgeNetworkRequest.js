@@ -11,8 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain.js";
-import apiVersion from "../../constants/apiVersion.js";
-import {createCallbackAggregator, noop, queryString} from "../../utils/index.js";
+import {createCallbackAggregator, noop} from "../../utils/index.js";
 import { isNetworkError } from "../../utils/networkErrors.js";
 import mergeLifecycleResponses from "./mergeLifecycleResponses.js";
 import handleRequestFailure from "./handleRequestFailure.js";
@@ -28,39 +27,10 @@ export default ({
   sendNetworkRequest,
   createResponse,
   processWarningsAndErrors,
-  getLocationHint,
-  getAssuranceValidationTokenParams,
+  buildEndpointUrl
 }) => {
   const { edgeDomain, edgeBasePath, datastreamId } = config;
   let hasDemdexFailed = false;
-
-  const buildEndpointUrl = (endpointDomain, request) => {
-    const params = request.getRequestParams();
-    const locationHint = getLocationHint();
-    const edgeBasePathWithLocationHint = locationHint
-      ? `${edgeBasePath}/${locationHint}${request.getEdgeSubPath()}`
-      : `${edgeBasePath}${request.getEdgeSubPath()}`;
-    const configId = request.getDatastreamIdOverride() || datastreamId;
-    params.requestId = request.getId();
-
-    if (configId !== datastreamId) {
-      request.getPayload().mergeMeta({
-        sdkConfig: {
-          datastream: {
-            original: datastreamId,
-          },
-        },
-      });
-    }
-    params.configId = configId;
-    const stringifiedRequestParams = queryString.stringify({...params, ...getAssuranceValidationTokenParams()});
-   /* if(params.sessionId) {
-      return `https://${endpointDomain}/brand-concierge/${request.getAction()}?${stringifiedRequestParams}`;
-    }
-*/
-    return `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?${stringifiedRequestParams}`;
-  };
-
   /**
    * Sends a network request that is aware of payload interfaces,
    * lifecycle methods, configured edge domains, response structures, etc.
@@ -90,7 +60,7 @@ export default ({
             ? edgeDomain
             : ID_THIRD_PARTY_DOMAIN;
 
-        const url = buildEndpointUrl(endpointDomain, request);
+        const url = buildEndpointUrl({edgeBasePath, endpointDomain, request, datastreamId});
         const payload = request.getPayload();
         cookieTransfer.cookiesToPayload(payload, endpointDomain);
 

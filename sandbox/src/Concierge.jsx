@@ -1,29 +1,33 @@
-import React from "react";
+import React, {useEffect} from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useAlloy from "./helpers/useAlloy";
-import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
-
+import {styles} from "./acom-hackathon";
 export default function Concierge() {
-  useAlloy({
-    instanceNames:["alloy"],
-    configurations: {
-      datastreamId:
-        "211312ed-d9ca-4f51-b09c-2de37a2a24d0",
-      orgId: "52C418126318FCD90A494134@AdobeOrg",
-    }
-  });
-  useSendPageViewEvent({ renderDecisions: true });
+  useAlloy();
+
+  useEffect(() => {
+    window["alloy"]("sendEvent", {
+      conversation: {fetchExperience: true}
+    }).then(result=> {
+      window["alloy"]("bootstrapConversationalExperience", {
+        selector: "#brand-concierge-mount",
+        src: "https://experience-stage.adobe.net/solutions/experience-platform-brand-concierge-web-agent/static-assets/main.js",
+        stylingConfigurations: styles
+      })
+    });
+  }, []);
 
   return (
     <div>
-      <ContentSecurityPolicy />
+      <ContentSecurityPolicy/>
       <h1>Concierge Demo Page</h1>
       <p>
-       This page will be used to test the Concierge feature of the Adobe Experience Platform.
+        This page will be used to test the Concierge feature of the Adobe Experience Platform.
       </p>
-      <div style={{ border: "1px solid red" }} id="personalization-container">
+      <div id="brand-concierge-mount">
 
       </div>
     </div>
+
   );
 }

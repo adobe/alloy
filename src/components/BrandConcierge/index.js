@@ -13,12 +13,14 @@ import validateMessage from "./validateMessage.js";
 import validateConcierge from "./validateConcierge.js";
 import createSendConversationEvent from "./createSendConversationEvent.js";
 import createBootstrapConcierge from "./createBootstrapConcierge.js";
-import {mergeQuery} from "../../utils/event.js";
 import {getPageSurface} from "./utils.js";
-import {CONCIERGE_CONFIG_JSON} from "./constants.js";
+import createBuildEndpointUrl from "./createBuildEndpointUrl.js";
+import queryString from "@adobe/reactor-query-string";
 
-const createConciergeComponent = ({loggingCookieJar, logger, eventManager, consent, instanceName, sendEdgeNetworkRequest, config}) => {
+const createConciergeComponent = ({cookieJar, loggingCookieJar, logger, eventManager, consent, instanceName, sendEdgeNetworkRequest, config, createNamespacedStorage}) => {
   const session = {};
+  const { fetch } = window;
+   const buildEndpointUrl = createBuildEndpointUrl({queryString})
   const bootstrapConcierge = createBootstrapConcierge({session, logger, instanceName});
   const sendConversationEvent = createSendConversationEvent({
     session,
@@ -28,8 +30,11 @@ const createConciergeComponent = ({loggingCookieJar, logger, eventManager, conse
     consent,
     instanceName,
     sendEdgeNetworkRequest,
-    config
+    config,
+    fetch,
+    buildEndpointUrl
   });
+
   return {
     lifecycle: {
       onBeforeEvent({
@@ -57,11 +62,11 @@ const createConciergeComponent = ({loggingCookieJar, logger, eventManager, conse
       }
     },
     commands: {
-      bootstrapConcierge: {
+      bootstrapConversationalExperience: {
         optionsValidator: (options) => validateConcierge({logger, options}),
         run: bootstrapConcierge
       },
-      sendBrandConciergeEvent: {
+      sendConversationEvent: {
         optionsValidator: (options) =>
           validateMessage({logger, options}),
         run: sendConversationEvent,

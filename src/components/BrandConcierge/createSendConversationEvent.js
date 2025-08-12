@@ -13,122 +13,16 @@ import {createDataCollectionRequestPayload} from "../../utils/request/index.js";
 import createConversationServiceRequest from "./createConversationServiceRequest.js";
 import createGetEcidFromCookie from "../Identity/createDecodeKndctrCookie.js";
 import {getPageSurface} from "./utils.js";
-import {fetchEventSource} from "@microsoft/fetch-event-source";
+import createEventSource from "./createEventSource.js";
+import isRequestRetryable from "../../core/network/isRequestRetryable.js";
+import getRequestRetryDelay from "../../core/network/getRequestRetryDelay.js";
+import uuid from "../../utils/uuid.js";
 
-export default ({ session, sendEdgeNetworkRequest, eventManager, loggingCookieJar, config, logger }) => {
+export default ({ session, eventManager, loggingCookieJar, config, logger, fetch, buildEndpointUrl }) => {
+  const { edgeDomain, edgeBasePath, datastreamId } = config;
+  const eventSource = createEventSource({logger, isRequestRetryable, getRequestRetryDelay, fetch, config});
   // const BC_SESSION_COOKIE_NAME = "bc_session_id";
   // const IDENTITY_COOKIE_NAME = "identity";
-
-  const streamRequest = (message, surfaces, sessionId, configId, onStreamResponse, ecid) => {
-    const payload = {
-      "events": [
-        {
-          query: {
-            conversation: {
-              surfaces: surfaces,
-              message: message
-            }
-          },
-          xdm: {
-            identityMap: {
-              ECID: [{
-                id: ecid
-              }]
-            },
-            web: {
-              webPageDetails: {
-                URL: window.location.href || window.location,
-              },
-              webReferrer: {
-                URL: window.document.referrer,
-              },
-            }
-          }
-        }
-      ]
-    };
-
-    const url = "https://edge-int.adobedc.net/brand-concierge/conversations?configId="+configId+"&sessionId=" +sessionId;
-
-    const createEventSource = (callback) => {
-      fetchEventSource(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain",
-          "Accept": "text/event-stream",
-        },
-        body: JSON.stringify(payload),
-
-        onmessage: (event) => {
-          if (event.data !== undefined) {
-            const data = JSON.parse(event.data);
-
-            callback(data);
-          } else {
-            console.warn("No data received");
-          }
-        },
-
-        onopen: () => {
-          console.log("Connection opened");
-        },
-
-        onclose: () => {
-          console.log("Connection closed");
-        },
-
-        onerror: (error) => {
-          console.error("SSE Error:", error);
-        },
-      }).then(r => {
-        console.log("SSE connection established:", r);
-      });
-    };
-
-    const extractResponse = (data) => {
-      const { handle = [] } = data;
-
-      if (handle.length === 0) {
-        return null;
-      }
-
-      const { payload = [] } = handle[0];
-      if (handle[1]) {
-        const statePayload = handle[1].payload;
-        const { key, value, maxAge } = statePayload[0];
-        ///createConciergeSessionCookieName(key, value, maxAge);
-      }
-
-      if (payload.length === 0) {
-        return null;
-      }
-
-      const { response = {}, state = "", conversationId, interactionId } = payload[0];
-
-      if (Object.keys(response).length === 0) {
-        return null;
-      }
-
-      const { message = "", promptSuggestions = [], multimodalElements = [], sources } = response;
-
-      return { message, multimodalElements, promptSuggestions, state, sources, conversationId, interactionId };
-    };
-
-
-    const processMessage = (data) => {
-      const response = extractResponse(data);
-
-      if (!response) {
-        return;
-      }
-      console.log("response", response);
-      onStreamResponse(response);
-    }
-    createEventSource((data) => {
-      processMessage(data);
-    });
-    return Promise.resolve({});
-  }
 
   const decodeKndctrCookie = createGetEcidFromCookie({
     orgId: config.orgId,
@@ -139,6 +33,10 @@ export default ({ session, sendEdgeNetworkRequest, eventManager, loggingCookieJa
     //const sessionId = getConciergeSessionCookie({loggingCookieJar, config}) || uuid();
 
     const {message, onStreamResponse, feedback} = options;
+    const onFailureCallback = (error) => {console.log("error", error);};
+    const onStreamResponseCallback = (response) => {
+      onStreamResponse(response);
+    };
     const payload = createDataCollectionRequestPayload();
     const request = createConversationServiceRequest({
       payload, sessionId: session.id
@@ -179,7 +77,7 @@ export default ({ session, sendEdgeNetworkRequest, eventManager, loggingCookieJa
 
     event.finalize();
     payload.addEvent(event);
-
-    return streamRequest(message, [pageSurface], session.id, config.datastreamId, onStreamResponse, ecid);
+    const url = buildEndpointUrl({edgeDomain, edgeBasePath, datastreamId, request});
+    return eventSource({requestId: uuid(), url, request, onStreamResponseCallback, onFailureCallback});
   };
 };
