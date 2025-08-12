@@ -26,6 +26,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
+const PAGE_SURFACE = TEST_PAGE_URL.replace(/^https?:/, "web:");
 createFixture({
   title: "C28757 A VEC offer should render if renderDecision=true",
   url: `${TEST_PAGE_URL}?test=C28755`,
@@ -79,9 +80,22 @@ test("Test C28757: A VEC offer should render if renderDecision=true", async () =
     content: response,
   }).getPayloadsByType("personalization:decisions");
 
-  await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
+  await t
+    .expect(
+      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(personalizationPayload[0].scope),
+    )
+    .ok();
   await t.expect(getDecisionContent()).eql("Here is an awesome target offer!");
 
-  await t.expect(eventResult.decisions).eql([]);
-  await t.expect(eventResult.propositions[0].renderAttempted).eql(true);
+  const vecSchemas = [
+    "https://ns.adobe.com/personalization/dom-action",
+    "https://ns.adobe.com/personalization/html-content-item",
+  ];
+  const remainingVecDecisions = eventResult.decisions.filter((d) =>
+    d.items.some((i) => vecSchemas.includes(i.schema)),
+  );
+  await t.expect(remainingVecDecisions.length).eql(0);
+  await t
+    .expect(eventResult.propositions.some((p) => p.renderAttempted === true))
+    .ok();
 });

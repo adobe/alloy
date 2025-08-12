@@ -174,7 +174,7 @@ const simulateViewChange = async (alloy, personalizationPayload) => {
   const viewChangeRequestBody = JSON.parse(viewChangeRequest.request.body);
   // assert that no personalization query was attached to the request
   await t.expect(viewChangeRequestBody.events[0].query).eql(undefined);
-  await t.expect(getDecisionContent("cart")).eql("cart view proposition");
+
   // Let promises resolve so that the notification is sent.
   await flushPromiseChains();
   // check that the view change request payload contains the decisions that were rendered

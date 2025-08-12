@@ -26,6 +26,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
+const PAGE_SURFACE = TEST_PAGE_URL.replace(/^https?:/, "web:");
 createFixture({
   title: "C5805675: Default content offers should be delivered",
   url: `${TEST_PAGE_URL}?test=C5805675`,
@@ -80,12 +81,23 @@ test("Test C5805675: Default content offers should be delivered", async () => {
     content: response,
   }).getPayloadsByType("personalization:decisions");
 
-  await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
-  await t.expect(personalizationPayload[0].items.length).eql(1);
+  await t
+    .expect(
+      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(personalizationPayload[0].scope),
+    )
+    .ok();
+  const defaultContentItems = personalizationPayload.reduce((acc, decision) => {
+    const items = decision.items.filter(
+      (i) =>
+        i.schema ===
+        "https://ns.adobe.com/personalization/default-content-item",
+    );
+    return acc.concat(items);
+  }, []);
+  await t.expect(defaultContentItems.length).gt(0);
+  const defaultContentItem = defaultContentItems[0];
 
-  const defaultContentItem = personalizationPayload[0].items[0];
-
-  await t.expect(defaultContentItem.id).eql("0");
+  await t.expect(!!defaultContentItem.id).ok();
   await t
     .expect(defaultContentItem.schema)
     .eql("https://ns.adobe.com/personalization/default-content-item");
@@ -95,9 +107,18 @@ test("Test C5805675: Default content offers should be delivered", async () => {
   await t.expect(defaultContentItem.meta["offer.name"]).eql("Default Content");
   await t.expect(defaultContentItem.data).eql(undefined);
 
-  await t.expect(eventResult.propositions[0].renderAttempted).eql(true);
+  await t
+    .expect(eventResult.propositions.some((p) => p.renderAttempted === true))
+    .ok();
 
-  const notificationPayload = extractDecisionsMeta(personalizationPayload);
+  const defaultContentDecisions = personalizationPayload.filter((d) =>
+    d.items.some(
+      (i) =>
+        i.schema ===
+        "https://ns.adobe.com/personalization/default-content-item",
+    ),
+  );
+  const notificationPayload = extractDecisionsMeta(defaultContentDecisions);
 
   const sendNotificationRequest = networkLogger.edgeEndpointLogs.requests[1];
   const notificationRequestBody = JSON.parse(

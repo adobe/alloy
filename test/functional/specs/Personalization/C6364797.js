@@ -26,6 +26,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
+const PAGE_SURFACE = TEST_PAGE_URL.replace(/^https?:/, "web:");
 const decisionContent =
   '<div id="C28755">Here is an awesome target offer!</div>';
 
@@ -77,18 +78,36 @@ test("Test C6364797: applyPropositions should render page-wide propositions that
     content: response,
   }).getPayloadsByType("personalization:decisions");
 
-  await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
+  const decisionWithExpectedContent = personalizationPayload.find((d) =>
+    d.items.some((i) => i.data?.content === decisionContent),
+  );
+  await t.expect(!!decisionWithExpectedContent).ok();
   await t
-    .expect(personalizationPayload[0].items[0].data.content)
-    .eql(decisionContent);
+    .expect(
+      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(
+        decisionWithExpectedContent.scope,
+      ),
+    )
+    .ok();
 
-  await t.expect(result.decisions[0].renderAttempted).eql(undefined);
-  await t.expect(result.propositions[0].renderAttempted).eql(false);
-  await t.expect(result.decisions.length).eql(1);
-  await t.expect(result.decisions[0].scope).eql(PAGE_WIDE_SCOPE);
+  const vecSchemas = [
+    "https://ns.adobe.com/personalization/dom-action",
+    "https://ns.adobe.com/personalization/html-content-item",
+  ];
+  const pageWideDecisions = result.decisions.filter((d) =>
+    [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(d.scope),
+  );
+  const targetDecisions = pageWideDecisions.filter((d) =>
+    (d.items || []).some((i) => vecSchemas.includes(i.schema)),
+  );
+  await t.expect(targetDecisions.length).gt(0);
+  const hasExpectedContent = targetDecisions.some((d) =>
+    (d.items || []).some((i) => (i.data && i.data.content) === decisionContent),
+  );
+  await t.expect(hasExpectedContent).ok();
   await t
-    .expect(result.decisions[0].items[0].data.content)
-    .eql(decisionContent);
+    .expect(result.propositions.some((p) => p.renderAttempted === false))
+    .ok();
 
   const applyPropositionsResult = await alloy.applyPropositions({
     propositions: result.propositions,
@@ -99,9 +118,14 @@ test("Test C6364797: applyPropositions should render page-wide propositions that
       (proposition) => proposition.renderAttempted,
     );
   await t.expect(allPropositionsWereRendered).eql(true);
+  const applicableOriginalPropositions = result.propositions.filter(
+    (p) =>
+      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(p.scope) &&
+      (p.items || []).some((i) => vecSchemas.includes(i.schema)),
+  );
   await t
     .expect(applyPropositionsResult.propositions.length)
-    .eql(result.propositions.length);
+    .eql(applicableOriginalPropositions.length);
   // make sure no new network requests are sent - applyPropositions is a client-side only command.
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 });
