@@ -223,6 +223,7 @@ describe("Advertising::viewThroughHandler", () => {
 
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       eventType: "advertising.enrichment",
+      timestamp: expect.any(String),
     });
 
     expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
@@ -269,6 +270,7 @@ describe("Advertising::viewThroughHandler", () => {
 
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
       eventType: "advertising.enrichment",
+      timestamp: expect.any(String),
     });
 
     expect(logger.error).toHaveBeenCalledWith(

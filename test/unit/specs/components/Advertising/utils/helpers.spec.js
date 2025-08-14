@@ -449,7 +449,6 @@ describe("Advertising::helpers", () => {
 
       expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
         advertising: {
-          lastSearchClick: 1234567890,
           stitchIds: {
             surferId: "surfer123",
             id5: "id5_123",

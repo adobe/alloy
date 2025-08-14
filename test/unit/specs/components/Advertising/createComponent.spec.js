@@ -80,6 +80,7 @@ describe("Advertising::createComponent", () => {
       eventManager,
       cookieManager,
       adConversionHandler,
+      getBrowser: vi.fn(),
     });
   });
 
@@ -100,13 +101,10 @@ describe("Advertising::createComponent", () => {
     expect(handleOnBeforeSendEvent).toHaveBeenCalledWith({
       cookieManager,
       logger,
-      state: expect.objectContaining({
-        processedAdvertisingIds: false,
-      }),
       event,
       componentConfig: config.advertising,
       advertising,
-      getBrowser: undefined,
+      getBrowser: expect.any(Function),
     });
   });
 
@@ -118,13 +116,10 @@ describe("Advertising::createComponent", () => {
     expect(handleOnBeforeSendEvent).toHaveBeenCalledWith({
       cookieManager,
       logger,
-      state: expect.objectContaining({
-        processedAdvertisingIds: false,
-      }),
       event,
       componentConfig: config.advertising,
       advertising: {},
-      getBrowser: undefined,
+      getBrowser: expect.any(Function),
     });
   });
 
@@ -136,13 +131,10 @@ describe("Advertising::createComponent", () => {
     expect(handleOnBeforeSendEvent).toHaveBeenCalledWith({
       cookieManager,
       logger,
-      state: expect.objectContaining({
-        processedAdvertisingIds: false,
-      }),
       event,
       componentConfig: config.advertising,
       advertising: {},
-      getBrowser: undefined,
+      getBrowser: expect.any(Function),
     });
   });
 

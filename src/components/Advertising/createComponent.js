@@ -23,10 +23,6 @@ export default ({
 }) => {
   const componentConfig = config.advertising;
 
-  const sharedState = {
-    processedAdvertisingIds: false,
-  };
-
   const sendAdConversionHandler = createSendAdConversion({
     eventManager,
     cookieManager,
@@ -39,13 +35,12 @@ export default ({
   return {
     lifecycle: {
       onComponentsRegistered() {
-        sendAdConversionHandler(sharedState);
+        sendAdConversionHandler();
       },
       onBeforeEvent: ({ event, advertising = {} }) => {
         return handleOnBeforeSendEvent({
           cookieManager,
           logger,
-          state: sharedState,
           event,
           componentConfig,
           advertising,

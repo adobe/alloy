@@ -23,6 +23,7 @@ import {
   ID5_ID,
   RAMP_ID,
   DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
+  LAST_CONVERSION_TIME_KEY_EXPIRES,
 } from "../constants/index.js";
 
 import { queryString } from "../../../utils/index.js";
@@ -79,7 +80,14 @@ const appendAdvertisingIdQueryToEvent = (
   componentConfig,
   addEventType = false,
 ) => {
-  const searchClickData = cookieManager.getValue(LAST_CLICK_COOKIE_KEY);
+  let searchClickData = null;
+  const searchClickDataExpires = cookieManager.getValue(
+    LAST_CONVERSION_TIME_KEY_EXPIRES,
+  );
+  if (searchClickDataExpires && searchClickDataExpires > Date.now()) {
+    searchClickData = cookieManager.getValue(LAST_CLICK_COOKIE_KEY);
+  }
+
   let displayClickCookie = null;
   const displayClickCookieExpires = cookieManager.getValue(
     DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
