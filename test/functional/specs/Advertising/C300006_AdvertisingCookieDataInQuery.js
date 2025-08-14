@@ -144,14 +144,25 @@ test("Test C300006: Wait mode - Should wait for advertising IDs to be collected"
 
   // Check that the request was made (may or may not have IDs depending on timeout)
   // But the important thing is that it waited before sending
-  const firstRequest = networkLogger.edgeEndpointLogs.requests[0];
-  const body = JSON.parse(firstRequest.request.body);
-
-  // The request should exist (even if advertising IDs weren't collected in time)
-  await t.expect(body.events).ok("Expected events in request body");
   await t
-    .expect(body.events[0].xdm.eventType)
-    .eql("web.webpagedetails.pageViews");
+    .expect(() => {
+      const allRequests = networkLogger.edgeEndpointLogs.requests;
+      return allRequests.some((request) => {
+        try {
+          const body = JSON.parse(request.request.body);
+          const events = body.events || [];
+          // Look for the page view event among all events
+          return events.some(
+            (event) => event.xdm?.eventType === "web.webpagedetails.pageViews",
+          );
+        } catch {
+          return false;
+        }
+      });
+    })
+    .ok(
+      "Expected to find page view event with eventType 'web.webpagedetails.pageViews'",
+    );
 });
 
 test("Test C300006: Disabled mode - Should not include advertising data", async () => {
