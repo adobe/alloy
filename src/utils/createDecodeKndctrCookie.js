@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 /* eslint-disable no-bitwise */
-import { getNamespacedCookieName } from "../../utils/index.js";
+import { getNamespacedCookieName } from "./index.js";
+import { base64ToBytes } from "./bytes.js";
 
 // #region decode protobuf
 
@@ -26,39 +27,39 @@ import { getNamespacedCookieName } from "../../utils/index.js";
  * and https://git.corp.adobe.com/experience-edge/konductor/blob/master/feature-identity/src/main/kotlin/com/adobe/edge/features/identity/data/StoredIdentity.kt#L16
 
  * syntax = "proto3";
- * 
+ *
  * // Device-level identity for Experience Edge
  * message Identity {
  *   // The Experience Cloud ID value
  *   string ecid = 1;
- * 
+ *
  *   IdentityMetadata metadata = 10;
- * 
+ *
  *   // Used only in the 3rd party domain context.
  *   // It stores the UNIX timestamp and some metadata about the last identity sync triggered by Experience Edge.
  *   int64 last_sync = 20;
  *   int64 sync_hash = 21;
  *   int32 id_sync_container_id = 22;
- * 
+ *
  *   // UNIX timestamp when the Identity was last returned in a `state:store` instruction.
  *   // The Identity is written at most once every 24h with a large TTL, to ensure it does not expire.
  *   int64 write_time = 30;
  * }
- * 
+ *
  * message IdentityMetadata {
  *   // UNIX timestamp when this identity was minted.
  *   int64 created_at = 1;
- * 
+ *
  *   // Whether or not the identity is random (new) or based on an existing seed.
  *   bool is_new = 2;
- * 
+ *
  *   // Type of device for which the identity was generated.
  *   // 0 = UNKNOWN, 1 = BROWSER, 2 = MOBILE
  *   int32 device_type = 3;
- * 
+ *
  *   // The Experience Edge region in which the identity was minted.
  *   string region = 5;
- * 
+ *
  *   // More details on the source of the ECID identity.
  *   // Invariant: when `is_new` = true, the source must be set to `RANDOM`.
  *   // 0 = RANDOM, 1 = THIRD_PARTY_ID, 2 = FIRST_PARTY_ID, 3 = RECEIVED_IN_REQUEST
@@ -217,15 +218,6 @@ const decodeKndctrProtobuf = (buffer) => {
   throw new Error("No ECID found in cookie.");
 };
 
-/**
- * takes a base64 string of bytes and returns a Uint8Array
- * @param {string} base64
- * @returns {Uint8Array}
- */
-const base64ToBytes = (base64) => {
-  const binString = atob(base64);
-  return Uint8Array.from(binString, (m) => m.codePointAt(0));
-};
 // #endregion
 
 // #region decode cookie

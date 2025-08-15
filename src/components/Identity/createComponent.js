@@ -23,8 +23,8 @@ export default ({
   consent,
   appendIdentityToUrl,
   logger,
+  identity,
   getIdentityOptionsValidator,
-  decodeKndctrCookie,
 }) => {
   let namespaces;
   let edge = {};
@@ -56,6 +56,8 @@ export default ({
         // so that sendBeacon requests don't override the edge info from before.
         edge = { ...edge, ...response.getEdge() };
 
+        identity.setIdentityAcquired();
+
         return handleResponseForIdSyncs(response);
       },
     },
@@ -70,7 +72,7 @@ export default ({
               if (namespaces) {
                 return undefined;
               }
-              const ecidFromCookie = decodeKndctrCookie();
+              const ecidFromCookie = identity.getEcidFromCookie();
               if (
                 ecidFromCookie &&
                 requestedNamespaces.includes(ecidNamespace)
@@ -107,7 +109,7 @@ export default ({
               if (namespaces) {
                 return undefined;
               }
-              const ecidFromCookie = decodeKndctrCookie();
+              const ecidFromCookie = identity.getEcidFromCookie();
               if (ecidFromCookie) {
                 if (!namespaces) {
                   namespaces = {};
