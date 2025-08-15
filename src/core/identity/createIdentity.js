@@ -37,8 +37,8 @@ export default ({ logger, loggingCookieJar, config }) => {
       awaitIdentityResolve();
     },
 
-    async awaitIdentity() {
-      return await awaitIdentityPromise;
+    awaitIdentity() {
+      return awaitIdentityPromise;
     },
 
     getEcidFromCookie: () => decodeKndctrCookie(),
