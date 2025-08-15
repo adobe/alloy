@@ -17,6 +17,7 @@ import createEventSource from "./createEventSource.js";
 import isRequestRetryable from "../../core/network/isRequestRetryable.js";
 import getRequestRetryDelay from "../../core/network/getRequestRetryDelay.js";
 import uuid from "../../utils/uuid.js";
+import extractResponse from "./extractResponse.js";
 
 export default ({ session, eventManager, loggingCookieJar, config, logger, fetch, buildEndpointUrl }) => {
   const { edgeDomain, edgeBasePath, datastreamId } = config;
@@ -33,9 +34,12 @@ export default ({ session, eventManager, loggingCookieJar, config, logger, fetch
     //const sessionId = getConciergeSessionCookie({loggingCookieJar, config}) || uuid();
 
     const {message, onStreamResponse, feedback} = options;
-    const onFailureCallback = (error) => {console.log("error", error);};
-    const onStreamResponseCallback = (response) => {
-      onStreamResponse(response);
+    const onFailureCallback = (error) => { console.log("error", error); onStreamResponse({error})};
+    const onStreamResponseCallback = ( { data }) => {
+      const substr = data.replace("data: ", "");
+      const response = extractResponse(substr);
+      console.log("onStreamResponse called with", response);
+      onStreamResponse({response});
     };
     const payload = createDataCollectionRequestPayload();
     const request = createConversationServiceRequest({
