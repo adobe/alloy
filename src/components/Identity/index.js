@@ -37,7 +37,6 @@ import createIdentityRequest from "./getIdentity/createIdentityRequest.js";
 import createIdentityRequestPayload from "./getIdentity/createIdentityRequestPayload.js";
 import injectAppendIdentityToUrl from "./appendIdentityToUrl/injectAppendIdentityToUrl.js";
 import createGetIdentityOptionsValidator from "./getIdentity/createGetIdentityOptionsValidator.js";
-import createGetEcidFromCookie from "./createDecodeKndctrCookie.js";
 
 const createIdentity = ({
   config,
@@ -47,6 +46,7 @@ const createIdentity = ({
   sendEdgeNetworkRequest,
   apexDomain,
   getBrowser,
+  identity,
 }) => {
   const {
     orgId,
@@ -124,11 +124,6 @@ const createIdentity = ({
     thirdPartyCookiesEnabled,
     areThirdPartyCookiesSupportedByDefault,
   });
-  const decodeKndctrCookie = createGetEcidFromCookie({
-    orgId,
-    cookieJar: loggingCookieJar,
-    logger,
-  });
   return createComponent({
     addEcidQueryToPayload,
     addQueryStringIdentityToPayload,
@@ -138,11 +133,11 @@ const createIdentity = ({
     getNamespacesFromResponse,
     getIdentity,
     consent,
+    identity,
     appendIdentityToUrl,
     logger,
     config,
     getIdentityOptionsValidator,
-    decodeKndctrCookie,
   });
 };
 

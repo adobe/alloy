@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 /* eslint-disable no-bitwise */
-import { getNamespacedCookieName } from "../../utils/index.js";
-import { base64ToBytes } from "../../utils/bytes.js";
+import { getNamespacedCookieName } from "./index.js";
+import { base64ToBytes } from "./bytes.js";
 
 // #region decode protobuf
 
