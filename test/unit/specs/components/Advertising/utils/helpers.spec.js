@@ -21,11 +21,6 @@ import {
   isThrottled,
   shouldThrottle,
 } from "../../../../../../src/components/Advertising/utils/helpers.js";
-import {
-  loadScript,
-  createNode,
-  appendNode,
-} from "../../../../../../src/utils/dom/index.js";
 
 // Mock DOM utilities
 vi.mock("../../../../../../src/utils/dom/index.js", () => ({
@@ -41,8 +36,6 @@ vi.mock("../../../../../../src/utils/dom/index.js", () => ({
 }));
 
 describe("Advertising::helpers", () => {
-  let mockCreateNode;
-  let mockAppendNode;
   let mockEvent;
   let mockCookieManager;
   let mockLogger;
@@ -50,10 +43,6 @@ describe("Advertising::helpers", () => {
   beforeEach(() => {
     // Reset modules to clear any cached state
     vi.resetModules();
-
-    // Setup DOM utility mocks
-    mockCreateNode = vi.mocked(createNode);
-    mockAppendNode = vi.mocked(appendNode);
 
     // Mock event object
     mockEvent = {
@@ -83,18 +72,12 @@ describe("Advertising::helpers", () => {
   });
 
   describe("getUrlParams", () => {
-    it.skip("should return URL parameters when present", () => {
-      // Mock URLSearchParams to return specific values
-      const mockGet = vi
-        .fn()
-        .mockReturnValueOnce("test_kwcid") // for s_kwcid
-        .mockReturnValueOnce("test_efid"); // for ef_id
+    afterEach(() => {
+      window.history.pushState({}, "", "/");
+    });
 
-      const mockURLSearchParams = vi.fn().mockImplementation(() => ({
-        get: mockGet,
-      }));
-
-      vi.stubGlobal("URLSearchParams", mockURLSearchParams);
+    it("should return URL parameters when present", () => {
+      window.history.pushState({}, "", "?s_kwcid=test_kwcid&ef_id=test_efid");
 
       const result = getUrlParams();
 
@@ -102,48 +85,24 @@ describe("Advertising::helpers", () => {
         skwcid: "test_kwcid",
         efid: "test_efid",
       });
-
-      vi.unstubAllGlobals();
     });
 
-    it.skip("should return null values when parameters are not present", () => {
-      // Mock URLSearchParams to return null for all parameters
-      const mockGet = vi.fn().mockReturnValue(null);
-
-      const mockURLSearchParams = vi.fn().mockImplementation(() => ({
-        get: mockGet,
-      }));
-
-      vi.stubGlobal("URLSearchParams", mockURLSearchParams);
+    it("should return undefined values when parameters are not present", () => {
+      window.history.pushState({}, "", "?foo=bar");
 
       const result = getUrlParams();
 
-      expect(result).toEqual({
-        skwcid: null,
-        efid: null,
-      });
-
-      vi.unstubAllGlobals();
+      expect(result.skwcid).toBeUndefined();
+      expect(result.efid).toBeUndefined();
     });
 
-    it.skip("should handle empty search string", () => {
-      // Mock URLSearchParams to return null for all parameters
-      const mockGet = vi.fn().mockReturnValue(null);
-
-      const mockURLSearchParams = vi.fn().mockImplementation(() => ({
-        get: mockGet,
-      }));
-
-      vi.stubGlobal("URLSearchParams", mockURLSearchParams);
+    it("should handle empty search string", () => {
+      window.history.pushState({}, "", "");
 
       const result = getUrlParams();
 
-      expect(result).toEqual({
-        skwcid: null,
-        efid: null,
-      });
-
-      vi.unstubAllGlobals();
+      expect(result.skwcid).toBeUndefined();
+      expect(result.efid).toBeUndefined();
     });
   });
 
@@ -210,139 +169,8 @@ describe("Advertising::helpers", () => {
     });
   });
 
-  describe("loadScript", () => {
-    beforeEach(() => {
-      // Mock document methods
-      vi.spyOn(document, "querySelector").mockReturnValue(null);
-      vi.spyOn(document, "addEventListener").mockImplementation(() => {});
-
-      // Mock document properties
-      Object.defineProperty(document, "readyState", {
-        value: "complete",
-        writable: true,
-        configurable: true,
-      });
-
-      Object.defineProperty(document, "head", {
-        value: { appendChild: vi.fn() },
-        writable: true,
-        configurable: true,
-      });
-    });
-
-    it.skip("should resolve immediately if script already exists", async () => {
-      const testUrl = "https://example.com/script.js";
-      document.querySelector.mockReturnValue({ src: testUrl });
-
-      const onLoad = vi.fn();
-      const result = loadScript(testUrl, { onLoad });
-
-      await expect(result).resolves.toBeUndefined();
-      expect(onLoad).toHaveBeenCalled();
-      expect(mockCreateNode).not.toHaveBeenCalled();
-    });
-
-    it.skip("should create and load script successfully", async () => {
-      const testUrl = "https://example.com/script.js";
-
-      // Mock createNode to return a simple script object and call onload immediately
-      mockCreateNode.mockImplementation((tag, attrs, listeners) => {
-        const script = { ...attrs };
-        // Call onload asynchronously but immediately using setTimeout
-        setTimeout(() => listeners.onload(), 0);
-        return script;
-      });
-
-      const onLoad = vi.fn();
-      await loadScript(testUrl, { onLoad });
-
-      expect(mockCreateNode).toHaveBeenCalledWith(
-        "script",
-        expect.objectContaining({
-          type: "text/javascript",
-          src: testUrl,
-          async: true,
-        }),
-        expect.objectContaining({
-          onload: expect.any(Function),
-          onerror: expect.any(Function),
-        }),
-      );
-      expect(onLoad).toHaveBeenCalled();
-      expect(mockAppendNode).toHaveBeenCalled();
-    });
-
-    it.skip("should reject on script load error", async () => {
-      const testUrl = "https://example.com/script.js";
-
-      // Mock createNode to return a script that triggers onerror
-      mockCreateNode.mockImplementation((tag, attrs, listeners) => {
-        const script = { ...attrs };
-        setTimeout(() => listeners.onerror(), 0);
-        return script;
-      });
-
-      const onError = vi.fn();
-      const result = loadScript(testUrl, { onError });
-
-      await expect(result).rejects.toThrow(`Failed to load script: ${testUrl}`);
-      expect(onError).toHaveBeenCalledWith(expect.any(Error));
-    });
-
-    it.skip("should handle DOM loading state", async () => {
-      const testUrl = "https://example.com/script.js";
-
-      // Set document to loading state
-      Object.defineProperty(document, "readyState", {
-        value: "loading",
-        writable: true,
-        configurable: true,
-      });
-
-      mockCreateNode.mockImplementation((tag, attrs, listeners) => {
-        const script = { ...attrs };
-        setTimeout(() => listeners.onload(), 0);
-        return script;
-      });
-
-      const loadPromise = loadScript(testUrl);
-
-      // Simulate DOMContentLoaded
-      const addEventListenerCall = document.addEventListener.mock.calls.find(
-        (call) => call[0] === "DOMContentLoaded",
-      );
-      expect(addEventListenerCall).toBeDefined();
-
-      // Trigger the DOMContentLoaded callback
-      addEventListenerCall[1]();
-
-      await expect(loadPromise).resolves.toBeUndefined();
-    });
-
-    it.skip("should reject if no head or body available", async () => {
-      const testUrl = "https://example.com/script.js";
-
-      // Mock document with no head or body
-      Object.defineProperty(document, "head", {
-        value: null,
-        configurable: true,
-      });
-      Object.defineProperty(document, "body", {
-        value: null,
-        configurable: true,
-      });
-
-      mockCreateNode.mockReturnValue({});
-
-      const onError = vi.fn();
-      const result = loadScript(testUrl, { onError });
-
-      await expect(result).rejects.toThrow(
-        "Neither <head> nor <body> available for script insertion.",
-      );
-      expect(onError).toHaveBeenCalledWith(expect.any(Error));
-    });
-  });
+  // Removed loadScript DOM-behavior tests from this file as the module is mocked above;
+  // testing mocked behavior would not be meaningful here.
 
   describe("createManagedAsyncOperation", () => {
     it("should execute worker function on first call", async () => {
