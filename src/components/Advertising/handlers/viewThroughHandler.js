@@ -26,7 +26,6 @@ export default async function handleViewThrough({
 }) {
   const resolvedIds = {};
   const usedIdTracker = {};
-
   const triggerConversion = async () => {
     if (!isAnyIdUnused(resolvedIds, usedIdTracker)) return null;
 
@@ -73,7 +72,7 @@ export default async function handleViewThrough({
         .then((idValue) => {
           if (idValue) {
             resolvedIds[idType] = idValue;
-            return triggerConversion(); // Return the promise directly
+            return triggerConversion();
           }
         })
         .catch((error) => {
@@ -82,5 +81,5 @@ export default async function handleViewThrough({
         }),
   );
 
-  return Promise.allSettled(identityPromises); // Remove the separate conversionTasks handling
+  return Promise.allSettled(identityPromises);
 }
