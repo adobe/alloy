@@ -21,6 +21,13 @@ import {
   isThrottled,
   shouldThrottle,
 } from "../../../../../../src/components/Advertising/utils/helpers.js";
+import {
+  LAST_CLICK_COOKIE_KEY,
+  DISPLAY_CLICK_COOKIE_KEY,
+  LAST_CONVERSION_TIME_KEY_EXPIRES,
+  DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
+  AD_CONVERSION_VIEW_EVENT_TYPE,
+} from "../../../../../../src/components/Advertising/constants/index.js";
 
 // Mock DOM utilities
 vi.mock("../../../../../../src/utils/dom/index.js", () => ({
@@ -359,6 +366,116 @@ describe("Advertising::helpers", () => {
           advIds: "adv1, adv3",
         },
       });
+    });
+
+    it("should include lastSearchClick only when not expired", () => {
+      const now = Date.now();
+      vi.spyOn(Date, "now").mockReturnValue(now);
+
+      mockCookieManager.getValue.mockImplementation((key) => {
+        if (key === LAST_CONVERSION_TIME_KEY_EXPIRES) return now + 1000;
+        if (key === LAST_CLICK_COOKIE_KEY) return { click_time: 1111 };
+        return null;
+      });
+
+      appendAdvertisingIdQueryToEvent(
+        idsToInclude,
+        mockEvent,
+        mockCookieManager,
+        componentConfig,
+      );
+
+      expect(mockEvent.mergeQuery).toHaveBeenCalledWith(
+        expect.objectContaining({
+          advertising: expect.objectContaining({ lastSearchClick: 1111 }),
+        }),
+      );
+
+      // Expired -> should not include
+      mockEvent.mergeQuery.mockClear();
+      mockCookieManager.getValue.mockImplementation((key) => {
+        if (key === LAST_CONVERSION_TIME_KEY_EXPIRES) return now - 1000;
+        if (key === LAST_CLICK_COOKIE_KEY) return { click_time: 2222 };
+        return null;
+      });
+
+      appendAdvertisingIdQueryToEvent(
+        idsToInclude,
+        mockEvent,
+        mockCookieManager,
+        componentConfig,
+      );
+
+      expect(mockEvent.mergeQuery).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          advertising: expect.objectContaining({ lastSearchClick: 2222 }),
+        }),
+      );
+    });
+
+    it("should include lastDisplayClick only when not expired", () => {
+      const now = Date.now();
+      vi.spyOn(Date, "now").mockReturnValue(now);
+
+      mockCookieManager.getValue.mockImplementation((key) => {
+        if (key === DISPLAY_CLICK_COOKIE_KEY_EXPIRES) return now + 1000;
+        if (key === DISPLAY_CLICK_COOKIE_KEY) return 999999;
+        return null;
+      });
+
+      appendAdvertisingIdQueryToEvent(
+        idsToInclude,
+        mockEvent,
+        mockCookieManager,
+        componentConfig,
+      );
+
+      expect(mockEvent.mergeQuery).toHaveBeenCalledWith(
+        expect.objectContaining({
+          advertising: expect.objectContaining({ lastDisplayClick: 999999 }),
+        }),
+      );
+
+      // Expired -> should not include
+      mockEvent.mergeQuery.mockClear();
+      mockCookieManager.getValue.mockImplementation((key) => {
+        if (key === DISPLAY_CLICK_COOKIE_KEY_EXPIRES) return now - 1000;
+        if (key === DISPLAY_CLICK_COOKIE_KEY) return 888888;
+        return null;
+      });
+
+      appendAdvertisingIdQueryToEvent(
+        idsToInclude,
+        mockEvent,
+        mockCookieManager,
+        componentConfig,
+      );
+
+      expect(mockEvent.mergeQuery).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          advertising: expect.objectContaining({ lastDisplayClick: 888888 }),
+        }),
+      );
+    });
+
+    it("should include eventType when addEventType flag is true", () => {
+      mockCookieManager.getValue.mockReturnValue(null);
+
+      appendAdvertisingIdQueryToEvent(
+        idsToInclude,
+        mockEvent,
+        mockCookieManager,
+        componentConfig,
+        true,
+      );
+
+      expect(mockEvent.mergeQuery).toHaveBeenCalledWith(
+        expect.objectContaining({
+          advertising: expect.objectContaining({
+            eventType: AD_CONVERSION_VIEW_EVENT_TYPE,
+          }),
+        }),
+      );
     });
   });
 
