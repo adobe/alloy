@@ -163,6 +163,7 @@ test("Test C300006: Wait mode - Should wait for advertising IDs to be collected"
     .ok(
       "Expected to find page view event with eventType 'web.webpagedetails.pageViews'",
     );
+
 });
 
 test("Test C300006: Disabled mode - Should not include advertising data", async () => {

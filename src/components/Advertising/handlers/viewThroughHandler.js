@@ -80,6 +80,5 @@ export default async function handleViewThrough({
           return null;
         }),
   );
-
   return Promise.allSettled(identityPromises);
 }

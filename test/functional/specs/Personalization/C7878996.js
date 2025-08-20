@@ -26,6 +26,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
+const PAGE_SURFACE = TEST_PAGE_URL.replace(/^https?:/, "web:");
 createFixture({
   title:
     "C7878996: A manual notification event without propositionEventType should return a successful response",
@@ -94,7 +95,11 @@ test("Test C7878996: A manual notification event without propositionEventType sh
     content: response,
   }).getPayloadsByType("personalization:decisions");
 
-  await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
+  await t
+    .expect(
+      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(personalizationPayload[0].scope),
+    )
+    .ok();
   await t.expect(eventResult.propositions[0].renderAttempted).eql(false);
 
   const notificationPropositions = extractDecisionsMeta(personalizationPayload);

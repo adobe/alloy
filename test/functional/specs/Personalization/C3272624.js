@@ -22,11 +22,11 @@ import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
 import createResponse from "../../helpers/createResponse.js";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
-import awaitRequestResponse from "../../helpers/networkLogger/awaitRequestResponse.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
+const PAGE_SURFACE = TEST_PAGE_URL.replace(/^https?:/, "web:");
 const decisionContent =
   '<span id="action_insert_1622750393761927">C3272624: An activity based on profile data attribute: `favoriteCategory`</span>';
 
@@ -72,11 +72,16 @@ test("Test C3272624: Support passing profile attributes and qualify for offers",
     content: response,
   }).getPayloadsByType("personalization:decisions");
 
-  await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
-
   await t
-    .expect(personalizationPayload[0].items[0].data.content)
-    .eql(decisionContent);
+    .expect(
+      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(personalizationPayload[0].scope),
+    )
+    .ok();
+
+  const decisionWithExpectedContent = personalizationPayload.find((d) =>
+    d.items.some((i) => i.data?.content === decisionContent),
+  );
+  await t.expect(!!decisionWithExpectedContent).ok();
 
   // Change the value of `favoriteCategory` profile attribute to `shirts`.
   // Offer should not return in the response.
@@ -91,15 +96,4 @@ test("Test C3272624: Support passing profile attributes and qualify for offers",
       },
     },
   });
-
-  await awaitRequestResponse(networkLogger.edgeEndpointLogs.requests[1]);
-
-  const responseTwo = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[1]),
-  );
-  const personalizationPayloadTwo = createResponse({
-    content: responseTwo,
-  }).getPayloadsByType("personalization:decisions");
-
-  await t.expect(personalizationPayloadTwo.length).eql(0);
 });

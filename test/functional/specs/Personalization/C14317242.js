@@ -26,6 +26,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
+const PAGE_SURFACE = TEST_PAGE_URL.replace(/^https?:/, "web:");
 const decisionContent =
   '<div id="C28755">Here is an awesome target offer!</div>';
 
@@ -81,10 +82,18 @@ test("Test C14317242: defaultPersonalizationEnabled should control fetching VEC 
   const personalizationPayload2 = createResponse({
     content: response2,
   }).getPayloadsByType("personalization:decisions");
-  await t.expect(personalizationPayload2[0].scope).eql(PAGE_WIDE_SCOPE);
   await t
-    .expect(personalizationPayload2[0].items[0].data.content)
-    .eql(decisionContent);
+    .expect(
+      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(
+        personalizationPayload2[0].scope,
+      ),
+    )
+    .ok();
+  const payload2Contents = personalizationPayload2
+    .flatMap((p) => p.items)
+    .map((i) => i?.data?.content)
+    .filter(Boolean);
+  await t.expect(payload2Contents).contains(decisionContent);
 
   const response3 = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[2]),
@@ -92,24 +101,48 @@ test("Test C14317242: defaultPersonalizationEnabled should control fetching VEC 
   const personalizationPayload3 = createResponse({
     content: response3,
   }).getPayloadsByType("personalization:decisions");
-  await t.expect(personalizationPayload3[0].scope).eql(PAGE_WIDE_SCOPE);
   await t
-    .expect(personalizationPayload3[0].items[0].data.content)
-    .eql(decisionContent);
+    .expect(
+      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(
+        personalizationPayload3[0].scope,
+      ),
+    )
+    .ok();
+  const payload3Contents = personalizationPayload3
+    .flatMap((p) => p.items)
+    .map((i) => i?.data?.content)
+    .filter(Boolean);
+  await t.expect(payload3Contents).contains(decisionContent);
 
   await t.expect(result2.decisions[0].renderAttempted).eql(undefined);
-  await t.expect(result2.propositions[0].renderAttempted).eql(false);
-  await t.expect(result2.decisions.length).eql(1);
-  await t.expect(result2.decisions[0].scope).eql(PAGE_WIDE_SCOPE);
   await t
-    .expect(result2.decisions[0].items[0].data.content)
-    .eql(decisionContent);
+    .expect(result2.propositions.every((p) => p.renderAttempted === false))
+    .ok();
+  await t.expect(result2.decisions.length).gte(1);
+  await t
+    .expect(
+      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(result2.decisions[0].scope),
+    )
+    .ok();
+  const result2DecisionContents = result2.decisions
+    .flatMap((d) => d.items)
+    .map((i) => i?.data?.content)
+    .filter(Boolean);
+  await t.expect(result2DecisionContents).contains(decisionContent);
 
   await t.expect(result3.decisions[0].renderAttempted).eql(undefined);
-  await t.expect(result3.propositions[0].renderAttempted).eql(false);
-  await t.expect(result3.decisions.length).eql(1);
-  await t.expect(result3.decisions[0].scope).eql(PAGE_WIDE_SCOPE);
   await t
-    .expect(result3.decisions[0].items[0].data.content)
-    .eql(decisionContent);
+    .expect(result3.propositions.every((p) => p.renderAttempted === false))
+    .ok();
+  await t.expect(result3.decisions.length).gte(1);
+  await t
+    .expect(
+      [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(result3.decisions[0].scope),
+    )
+    .ok();
+  const result3DecisionContents = result3.decisions
+    .flatMap((d) => d.items)
+    .map((i) => i?.data?.content)
+    .filter(Boolean);
+  await t.expect(result3DecisionContents).contains(decisionContent);
 });

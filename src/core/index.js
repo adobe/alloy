@@ -25,6 +25,7 @@ import createLifecycle from "./createLifecycle.js";
 import createComponentRegistry from "./createComponentRegistry.js";
 import injectSendNetworkRequest from "./network/injectSendNetworkRequest.js";
 import injectExtractEdgeInfo from "./edgeNetwork/injectExtractEdgeInfo.js";
+import createIdentity from "./identity/createIdentity.js";
 import createConsent from "./consent/createConsent.js";
 import createConsentStateMachine from "./consent/createConsentStateMachine.js";
 import createEvent from "./createEvent.js";
@@ -151,6 +152,10 @@ export const createExecuteCommand = ({
       generalConsentState,
       logger,
     });
+
+    const identity = createIdentity({ config, logger, loggingCookieJar });
+    identity.initialize();
+
     const eventManager = createEventManager({
       config,
       logger,
@@ -172,6 +177,7 @@ export const createExecuteCommand = ({
           config,
           componentRegistry,
           consent,
+          identity,
           eventManager,
           fireReferrerHideableImage,
           logger: componentLogger,

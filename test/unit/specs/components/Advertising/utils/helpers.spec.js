@@ -29,6 +29,7 @@ import {
   AD_CONVERSION_VIEW_EVENT_TYPE,
 } from "../../../../../../src/components/Advertising/constants/index.js";
 
+
 // Mock DOM utilities
 vi.mock("../../../../../../src/utils/dom/index.js", () => ({
   awaitSelector: vi.fn(),
@@ -43,6 +44,7 @@ vi.mock("../../../../../../src/utils/dom/index.js", () => ({
 }));
 
 describe("Advertising::helpers", () => {
+
   let mockEvent;
   let mockCookieManager;
   let mockLogger;
@@ -50,7 +52,6 @@ describe("Advertising::helpers", () => {
   beforeEach(() => {
     // Reset modules to clear any cached state
     vi.resetModules();
-
     // Mock event object
     mockEvent = {
       mergeQuery: vi.fn(),
@@ -175,9 +176,6 @@ describe("Advertising::helpers", () => {
       expect(result).toBe("167524, 178901");
     });
   });
-
-  // Removed loadScript DOM-behavior tests from this file as the module is mocked above;
-  // testing mocked behavior would not be meaningful here.
 
   describe("createManagedAsyncOperation", () => {
     it("should execute worker function on first call", async () => {

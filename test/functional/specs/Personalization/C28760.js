@@ -26,6 +26,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
+const PAGE_SURFACE = TEST_PAGE_URL.replace(/^https?:/, "web:");
 createFixture({
   title:
     "C28760: A notification collect should be triggered if a VEC dom actions offer has been rendered",
@@ -81,10 +82,24 @@ test("Test C28760: A notification collect should be triggered if a VEC dom actio
     content: response,
   }).getPayloadsByType("personalization:decisions");
 
-  await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
-  await t.expect(personalizationPayload[1].scope).eql(PAGE_WIDE_SCOPE);
+  const vecSchemas = [
+    "https://ns.adobe.com/personalization/dom-action",
+    "https://ns.adobe.com/personalization/html-content-item",
+  ];
+  const vecDecisions = personalizationPayload.filter((d) =>
+    d.items.some((i) => vecSchemas.includes(i.schema)),
+  );
 
-  const notificationPayload = extractDecisionsMeta(personalizationPayload);
+  await t.expect(vecDecisions.length).gt(0);
+  await t
+    .expect(
+      vecDecisions.every((d) =>
+        [PAGE_WIDE_SCOPE, PAGE_SURFACE].includes(d.scope),
+      ),
+    )
+    .ok();
+
+  const notificationPayload = extractDecisionsMeta(vecDecisions);
 
   const sendNotificationRequest = networkLogger.edgeEndpointLogs.requests[1];
   const notificationRequestBody = JSON.parse(

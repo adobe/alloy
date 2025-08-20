@@ -235,6 +235,7 @@ describe("Advertising::clickThroughHandler", () => {
       },
       eventType: "advertising.enrichment_ct",
       timestamp: expect.any(String),
+
     });
 
     expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
@@ -285,6 +286,7 @@ describe("Advertising::clickThroughHandler", () => {
       },
       eventType: "advertising.enrichment_ct",
       timestamp: expect.any(String),
+
     });
 
     expect(cookieManager.setValue).toHaveBeenCalledTimes(2);

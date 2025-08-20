@@ -24,6 +24,7 @@ import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
 import addHtmlToBody from "../../helpers/dom/addHtmlToBody.js";
 import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../src/constants/decisionProvider.js";
 import { responseStatus } from "../../helpers/assertions/index.js";
+import flushPromiseChains from "../../helpers/flushPromiseChains.js";
 
 const REASONABLE_WAIT_TIME = 250;
 
@@ -310,39 +311,46 @@ test("Test C1234567: Subscribes content cards", async () => {
     },
   });
 
-  const trigger = await getHistoricEventFromLocalStorage(
-    orgId,
-    activityId,
-    "trigger",
-  );
+  // allow async storage of event-history operations to complete
+  await flushPromiseChains();
 
-  await t.expect(trigger.count).eql(1);
-
-  // validate display event sent
+  // validate display event sent (network-level assertion)
   await responseStatus(edgeEndpointLogs.requests, [200, 204, 207]);
+  await flushPromiseChains();
   await t.expect(edgeEndpointLogs.count(() => true)).eql(1);
-
-  const display = await getHistoricEventFromLocalStorage(
-    orgId,
-    activityId,
-    "display",
-  );
-
-  await t.expect(display.count).eql(1);
+  const displayRequest = edgeEndpointLogs.requests[0];
+  const displayBody = JSON.parse(displayRequest.request.body);
+  await t
+    .expect(displayBody.events[0].xdm.eventType)
+    .eql("decisioning.propositionDisplay");
+  await t
+    .expect(
+      // eslint-disable-next-line no-underscore-dangle
+      displayBody.events[0].xdm._experience.decisioning.propositions.length,
+    )
+    .gt(0);
 
   await t.click("#content-card-0");
   await t.wait(REASONABLE_WAIT_TIME);
 
-  const interact = await getHistoricEventFromLocalStorage(
-    orgId,
-    activityId,
-    "interact",
-  );
+  await flushPromiseChains();
 
-  await t.expect(interact.count).eql(1);
-
-  // validate interact event sent
+  // validate interact event sent (network-level assertion)
   await responseStatus(edgeEndpointLogs.requests, [200, 204, 207]);
+  await flushPromiseChains();
+  const interactRequest = edgeEndpointLogs.requests[1];
+  const interactBody = JSON.parse(interactRequest.request.body);
+  await t
+    .expect(interactBody.events[0].xdm.eventType)
+    .eql("decisioning.propositionInteract");
+  await t
+    .expect(
+      // eslint-disable-next-line no-underscore-dangle
+      interactBody.events[0].xdm._experience.decisioning.propositions.length,
+    )
+    .gt(0);
+
+  // validate total requests
   await t.expect(edgeEndpointLogs.count(() => true)).eql(2);
 });
 

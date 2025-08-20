@@ -32,7 +32,7 @@ describe("Identity::createComponent", () => {
   let getIdentityDeferred;
   let response;
   let component;
-  let decodeKndctrCookie;
+  let identity;
   beforeEach(() => {
     ensureSingleIdentity = vi.fn();
     addEcidQueryToPayload = vi.fn();
@@ -43,7 +43,10 @@ describe("Identity::createComponent", () => {
     getIdentityDeferred = defer();
     awaitConsentDeferred = defer();
     withConsentDeferred = defer();
-    decodeKndctrCookie = vi.fn();
+    identity = {
+      getEcidFromCookie: vi.fn(),
+      setIdentityAcquired: vi.fn(),
+    };
     consent = {
       awaitConsent: vi.fn().mockReturnValue(awaitConsentDeferred.promise),
       withConsent: vi.fn().mockReturnValue(withConsentDeferred.promise),
@@ -65,13 +68,14 @@ describe("Identity::createComponent", () => {
       consent,
       appendIdentityToUrl,
       logger,
+      identity,
       getIdentityOptionsValidator,
-      decodeKndctrCookie,
     });
     response = {
       getEdge: vi.fn(),
     };
   });
+
   it("adds ECID query to event", () => {
     const payload = {
       type: "payload",
@@ -88,6 +92,7 @@ describe("Identity::createComponent", () => {
     });
     expect(addEcidQueryToPayload).toHaveBeenCalledWith(payload);
   });
+
   it("adds the query string identity to the payload", () => {
     const payload = {
       type: "payload",
@@ -102,6 +107,7 @@ describe("Identity::createComponent", () => {
     });
     expect(addQueryStringIdentityToPayload).toHaveBeenNthCalledWith(1, payload);
   });
+
   it("ensures request has identity", () => {
     const payload = {
       type: "payload",
@@ -127,6 +133,7 @@ describe("Identity::createComponent", () => {
     });
     expect(result).toBe(ensureSingleIdentityPromise);
   });
+
   it("does not create legacy identity cookie if response does not contain ECID", () => {
     const idSyncsPromise = Promise.resolve();
     handleResponseForIdSyncs.mockReturnValue(idSyncsPromise);
@@ -136,6 +143,7 @@ describe("Identity::createComponent", () => {
     expect(getNamespacesFromResponse).toHaveBeenCalledWith(response);
     expect(setLegacyEcid).not.toHaveBeenCalled();
   });
+
   it("creates legacy identity cookie if response contains ECID", () => {
     const idSyncsPromise = Promise.resolve();
     handleResponseForIdSyncs.mockReturnValue(idSyncsPromise);
@@ -153,6 +161,7 @@ describe("Identity::createComponent", () => {
     expect(getNamespacesFromResponse).toHaveBeenCalledTimes(2);
     expect(setLegacyEcid).toHaveBeenCalledTimes(1);
   });
+
   it("handles ID syncs", () => {
     const idSyncsPromise = Promise.resolve();
     handleResponseForIdSyncs.mockReturnValue(idSyncsPromise);
@@ -162,6 +171,7 @@ describe("Identity::createComponent", () => {
     expect(handleResponseForIdSyncs).toHaveBeenCalledWith(response);
     return expect(result).resolves.toBe(undefined);
   });
+
   it("getIdentity command should make a request when ecid is not available", () => {
     const idSyncsPromise = Promise.resolve();
     handleResponseForIdSyncs.mockReturnValue(idSyncsPromise);
@@ -229,6 +239,7 @@ describe("Identity::createComponent", () => {
         });
       });
   });
+
   it("getIdentity command should not make a request when ecid is available", () => {
     const idSyncsPromise = Promise.resolve();
     handleResponseForIdSyncs.mockReturnValue(idSyncsPromise);
@@ -266,6 +277,7 @@ describe("Identity::createComponent", () => {
         });
       });
   });
+
   it("getIdentity command should not make a request when CORE is available", () => {
     const idSyncsPromise = Promise.resolve();
     handleResponseForIdSyncs.mockReturnValue(idSyncsPromise);
@@ -304,6 +316,7 @@ describe("Identity::createComponent", () => {
         });
       });
   });
+
   it("getIdentity command is called with configuration overrides, when provided", () => {
     const idSyncsPromise = Promise.resolve();
     handleResponseForIdSyncs.mockReturnValue(idSyncsPromise);
