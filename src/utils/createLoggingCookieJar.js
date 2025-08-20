@@ -10,12 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+/** @import { Logger } from '../core/types.js' */
+/** @import { CookieJar } from './types.js' */
+
+/**
+ * Creates a logging wrapper around a cookie jar that logs cookie operations.
+ *
+ * @function
+ *
+ * @param {object} options
+ * @param {Logger} options.logger
+ * @param {CookieJar} options.cookieJar
+ *
+ * @returns {CookieJar}
+ */
 export default ({ logger, cookieJar }) => {
   return {
     ...cookieJar,
     set(key, value, options) {
       logger.info("Setting cookie", { name: key, value, ...options });
-      cookieJar.set(key, value, options);
+      return cookieJar.set(key, value, options);
     },
   };
 };

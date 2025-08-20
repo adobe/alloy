@@ -33,6 +33,7 @@ import AlloyVersion from "./components/AlloyVersion";
 import ConfigOverrides from "./ConfigOverrides";
 import InAppMessages from "./components/InAppMessagesDemo/InAppMessages";
 import ContentCards from "./components/ContentCardsDemo/ContentCards";
+import PushNotifications from "./PushNotifications";
 
 const BasicExample = () => {
   return (
@@ -107,6 +108,9 @@ const BasicExample = () => {
             <li>
               <Link to="/contentCards">Content Cards</Link>
             </li>
+            <li>
+              <Link to="/pushNotifications">Push Notifications</Link>
+            </li>
           </ul>
           <hr />
 
@@ -138,6 +142,7 @@ const BasicExample = () => {
           <Route path="/configOverrides" component={ConfigOverrides} />
           <Route path="/inAppMessages" component={InAppMessages} />
           <Route path="/contentCards" component={ContentCards} />
+          <Route path="/pushNotifications" component={PushNotifications} />
         </div>
       </Router>
       <AlloyVersion />

@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+/** @import { ConsentStateMachineUtils, ConsentStateMachine } from './types.js' */
+
 import { defer } from "../../utils/index.js";
 
 export const DECLINED_CONSENT = "The user declined consent.";
@@ -18,6 +20,11 @@ export const CONSENT_SOURCE_DEFAULT = "default";
 export const CONSENT_SOURCE_INITIAL = "initial";
 export const CONSENT_SOURCE_NEW = "new";
 
+/**
+ * @private
+ * @param {string} errorMessage
+ * @returns {Error}
+ */
 const createDeclinedConsentError = (errorMessage) => {
   const error = new Error(errorMessage);
   error.code = DECLINED_CONSENT_ERROR_CODE;
@@ -25,6 +32,30 @@ const createDeclinedConsentError = (errorMessage) => {
   return error;
 };
 
+/**
+ * Creates a consent state machine that manages user consent preferences and
+ * coordinates deferred operations that require consent.
+ *
+ * The state machine supports the following states:
+ * - "in": User has provided consent (with default or explicit consent)
+ * - "out": User has declined consent (with default or explicit decline)
+ * - "pending": Consent decision is awaiting user input
+ *
+ * @param {ConsentStateMachineUtils} utils
+ * @returns {ConsentStateMachine}
+ *
+ * @example
+ * const consentStateMachine = createConsentStateMachine({ logger });
+ *
+ * // Set consent state
+ * consentStateMachine.in('new');
+ *
+ * // Wait for consent
+ * await consentStateMachine.awaitConsent();
+ *
+ * // Check current state
+ * const { state, wasSet } = consentStateMachine.current();
+ */
 export default ({ logger }) => {
   const deferreds = [];
 

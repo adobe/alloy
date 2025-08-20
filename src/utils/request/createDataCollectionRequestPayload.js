@@ -9,26 +9,36 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+/** @import { DataCollectionRequestPayload } from './types.js' */
+
 import createRequestPayload from "./createRequestPayload.js";
 import createAddIdentity from "./createAddIdentity.js";
 import createHasIdentity from "./createHasIdentity.js";
 
+/**
+ * @function
+ *
+ * @returns {DataCollectionRequestPayload}
+ */
 export default () => {
   const content = {};
-  const payload = createRequestPayload({
+  const requestPayload = createRequestPayload({
     content,
     addIdentity: createAddIdentity(content),
     hasIdentity: createHasIdentity(content),
   });
 
-  payload.addEvent = (event) => {
-    content.events = content.events || [];
-    content.events.push(event);
+  return {
+    ...requestPayload,
+    addEvent: (event) => {
+      content.events = content.events || [];
+      content.events.push(event);
+    },
+    getDocumentMayUnload: () => {
+      return (content.events || []).some((event) =>
+        event.getDocumentMayUnload(),
+      );
+    },
   };
-
-  payload.getDocumentMayUnload = () => {
-    return (content.events || []).some((event) => event.getDocumentMayUnload());
-  };
-
-  return payload;
 };
