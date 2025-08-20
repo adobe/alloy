@@ -42,6 +42,12 @@ export default ({
         sendAdConversionHandler();
       },
       onBeforeEvent: ({ event, advertising = {} }) => {
+        const { state } = consent.current();
+        if (state !== "in") {
+          // Consent not yet granted — skip advertising ID resolution
+          // but don't block the sendEvent call.
+          return undefined;
+        }
         return handleOnBeforeSendEvent({
           cookieManager,
           logger,

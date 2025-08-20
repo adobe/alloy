@@ -47,6 +47,8 @@ describe("Advertising::helpers", () => {
   let mockLogger;
 
   beforeEach(() => {
+    // Reset modules to clear any cached state
+    vi.resetModules();
     // Mock event object
     mockEvent = {
       mergeQuery: vi.fn(),
