@@ -100,9 +100,6 @@ describe("Advertising::createComponent", () => {
     expect(handleOnBeforeSendEvent).toHaveBeenCalledWith({
       cookieManager,
       logger,
-      state: expect.objectContaining({
-        processedAdvertisingIds: false,
-      }),
       event,
       componentConfig: config.advertising,
       advertising,
@@ -118,9 +115,6 @@ describe("Advertising::createComponent", () => {
     expect(handleOnBeforeSendEvent).toHaveBeenCalledWith({
       cookieManager,
       logger,
-      state: expect.objectContaining({
-        processedAdvertisingIds: false,
-      }),
       event,
       componentConfig: config.advertising,
       advertising: {},
@@ -136,9 +130,6 @@ describe("Advertising::createComponent", () => {
     expect(handleOnBeforeSendEvent).toHaveBeenCalledWith({
       cookieManager,
       logger,
-      state: expect.objectContaining({
-        processedAdvertisingIds: false,
-      }),
       event,
       componentConfig: config.advertising,
       advertising: {},
