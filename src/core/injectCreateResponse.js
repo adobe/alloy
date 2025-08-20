@@ -9,25 +9,30 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+/** @import { ResponseCreator } from './types.js' */
+
 import { ADOBE_EDGE } from "../constants/httpHeaderNames.js";
 
 /**
  * Creates a representation of a gateway response with the addition of
  * helper methods.
- * @returns Response
+ *
+ * @function
+ *
+ * @param {object} options
+ * @param {function(string): Object} options.extractEdgeInfo
+ *
+ * @returns {ResponseCreator}
  */
 export default ({ extractEdgeInfo }) =>
   ({ content = {}, getHeader }) => {
     const { handle = [], errors = [], warnings = [] } = content;
 
-    /**
-     * Response object.
-     * @typedef {Object} Response
-     */
     return {
       /**
        * Returns matching fragments of the response by type.
-       * @param {String} type A string with the current format: <namespace:action>
+       * @param {string} type A string with the current format: <namespace:action>
        *
        * @example
        * getPayloadsByType("identity:persist")

@@ -10,9 +10,37 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+/** @import { Request, RequestPayload } from './types.js' */
+
 import { uuid } from "../index.js";
 
-// This provides the base functionality that all types of requests share.
+/**
+ * Creates a request object with methods to access and modify request properties.
+ *
+ * @function
+ *
+ * @param {Object} options
+ * @param {RequestPayload} options.payload
+ * @param {function({isIdentityEstablished: boolean}): string} options.getAction
+ * @param {function({isIdentityEstablished: boolean}): boolean} options.getUseSendBeacon
+ * @param {string} [options.datastreamIdOverride]
+ * @param {string} [options.edgeSubPath]
+ *
+ * @returns {Request}
+ *
+ * @example
+ * const request = createRequest({
+ *   payload: { event: 'pageView' },
+ *   getAction: ({ isIdentityEstablished }) => isIdentityEstablished ? 'send' : 'queue',
+ *   getUseSendBeacon: ({ isIdentityEstablished }) => isIdentityEstablished,
+ *   datastreamIdOverride: 'custom-datastream-id',
+ *   edgeSubPath: 'custom/path'
+ * });
+ *
+ * console.log(request.getId()); // Returns unique UUID
+ * request.setIsIdentityEstablished();
+ * console.log(request.getAction()); // Returns action based on identity status
+ */
 export default (options) => {
   const {
     payload,

@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+/** @import { RequestPayload, Identity } from './types.js' */
+
 import { createMerger, prepareConfigOverridesForEdge } from "../index.js";
 
 /**
@@ -63,8 +65,19 @@ const createMergeConfigOverride = (content, key) => (updates) => {
   Object.assign(hostObjectForUpdates, updates);
 };
 
-// This provides the base functionality that all types of
-// request payloads share.
+/**
+ * Creates a request payload object with methods for merging different types of data.
+ * This provides the base functionality that all types of request payloads share.
+ *
+ * @function
+ *
+ * @param {Object} options
+ * @param {Object} options.content
+ * @param {function(string, Identity): void} options.addIdentity
+ * @param {function(string):  boolean} options.hasIdentity
+ *
+ * @returns {RequestPayload}
+ */
 export default (options) => {
   const { content, addIdentity, hasIdentity } = options;
   const mergeConfigOverrides = createMergeConfigOverride(
