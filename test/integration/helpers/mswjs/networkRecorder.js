@@ -40,7 +40,7 @@ class NetworkRecorder {
    * @param {Request} options.request - The request object
    * @param {string} options.requestId - Unique identifier for the request
    */
-  captureRequest({ request, requestId }) {
+  async captureRequest({ request, requestId }) {
     let call = this.calls.find((c) => c.requestId === requestId);
 
     if (!call) {
@@ -48,11 +48,29 @@ class NetworkRecorder {
       this.calls.push(call);
     }
 
+    const requestClone = request.clone();
+    /** @type {string | Object} */
+    let body;
+
+    try {
+      const bodyText = await requestClone.text();
+      try {
+        // Try to parse as JSON first
+        body = JSON.parse(bodyText);
+      } catch {
+        // If not JSON, store as text
+        body = bodyText;
+      }
+    } catch (e) {
+      body = `Unable to read body: ${e.message}`;
+    }
+
     call.request = {
       url: request.url,
       method: request.method,
       headers: Object.fromEntries(request.headers.entries()),
       timestamp: Date.now(),
+      body,
     };
   }
 
