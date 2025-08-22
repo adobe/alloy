@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+/** @import { Logger } from '../../core/types.js' */
 /** @import { ConsentStateMachineUtils, ConsentStateMachine } from './types.js' */
 
 import { defer } from "../../utils/index.js";
@@ -41,7 +42,9 @@ const createDeclinedConsentError = (errorMessage) => {
  * - "out": User has declined consent (with default or explicit decline)
  * - "pending": Consent decision is awaiting user input
  *
- * @param {ConsentStateMachineUtils} utils
+ * @param {object} options
+ * @param {Logger} options.logger
+ *
  * @returns {ConsentStateMachine}
  *
  * @example
