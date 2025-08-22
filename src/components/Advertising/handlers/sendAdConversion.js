@@ -36,9 +36,9 @@ export default ({
     const isClickThru = !!(skwcid && efid);
 
     try {
-      let result = null;
       if (isClickThru) {
-        result = await handleClickThrough({
+        // wait for click through to complete
+        return handleClickThrough({
           eventManager,
           cookieManager,
           adConversionHandler,
@@ -46,19 +46,17 @@ export default ({
           skwcid,
           efid,
         });
-        return result;
       } else if (activeAdvertiserIds) {
-        result = await handleViewThrough({
+        // fire and forget view through
+        handleViewThrough({
           eventManager,
           cookieManager,
           logger,
           componentConfig,
           adConversionHandler,
           getBrowser,
-        });
-        return result;
+        }).catch((error) => logger.error("Error in view through:", error));
       }
-      return null;
     } catch (error) {
       logger.error("Error in sendAdConversion:", error);
     }
