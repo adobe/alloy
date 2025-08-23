@@ -18,6 +18,10 @@ import isButtonSubmitElement from "./isButtonSubmitElement.js";
 export default (element) => {
   let node = element;
   while (node) {
+    // Stop looking when BODY is reached
+    if (node.nodeName && node.nodeName === "BODY") {
+      break;
+    }
     if (
       isSupportedAnchorElement(node) ||
       elementHasClickHandler(node) ||
