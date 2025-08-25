@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
-import getRequestRetryDelay from "../../../../../src/core/network/getRequestRetryDelay.js";
+import getRequestRetryDelay from "../../../../../packages/core/src/core/network/getRequestRetryDelay.js";
 
 describe("getRequestRetryDelay", () => {
   beforeEach(() => {

@@ -15,15 +15,15 @@ import {
   MIXED_PROPOSITIONS,
   PAGE_WIDE_SCOPE_DECISIONS,
 } from "./responsesMock/eventResponses.js";
-import createApplyPropositions from "../../../../../src/components/Personalization/createApplyPropositions.js";
-import clone from "../../../../../src/utils/clone.js";
-import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition.js";
+import createApplyPropositions from "../../../../../packages/core/src/components/Personalization/createApplyPropositions.js";
+import clone from "../../../../../packages/core/src/utils/clone.js";
+import injectCreateProposition from "../../../../../packages/core/src/components/Personalization/handlers/injectCreateProposition.js";
 import createMockProposition from "../../../helpers/createMockProposition.js";
-import { DOM_ACTION_COLLECT_INTERACTIONS } from "../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
+import { DOM_ACTION_COLLECT_INTERACTIONS } from "../../../../../packages/core/src/components/Personalization/dom-actions/initDomActionsModules.js";
 import {
   JSON_CONTENT_ITEM,
   DOM_ACTION,
-} from "../../../../../src/constants/schema.js";
+} from "../../../../../packages/core/src/constants/schema.js";
 
 const METADATA = {
   home: {

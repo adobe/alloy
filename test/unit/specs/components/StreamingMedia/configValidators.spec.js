@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import configValidators from "../../../../../src/components/StreamingMedia/configValidators.js";
+import configValidators from "../../../../../packages/core/src/components/StreamingMedia/configValidators.js";
 import testConfigValidators from "../../../helpers/testConfigValidators.js";
 
 describe("Streaming Media config validators", () => {

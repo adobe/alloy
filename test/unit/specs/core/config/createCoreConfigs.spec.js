@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { beforeEach, describe, it, expect } from "vitest";
-import createCoreConfigs from "../../../../../src/core/config/createCoreConfigs.js";
+import createCoreConfigs from "../../../../../packages/core/src/core/config/createCoreConfigs.js";
 
 describe("createCoreConfigs", () => {
   let validator;

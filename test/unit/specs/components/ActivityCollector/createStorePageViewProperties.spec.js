@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createStorePageViewProperties from "../../../../../src/components/ActivityCollector/createStorePageViewProperties.js";
+import createStorePageViewProperties from "../../../../../packages/core/src/components/ActivityCollector/createStorePageViewProperties.js";
 
 describe("ActivityCollector::createStorePageViewProperties", () => {
   let clickActivityStorage;

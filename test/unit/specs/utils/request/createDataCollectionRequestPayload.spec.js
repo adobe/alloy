@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import { createDataCollectionRequestPayload } from "../../../../../src/utils/request/index.js";
-import createEvent from "../../../../../src/core/createEvent.js";
+import { createDataCollectionRequestPayload } from "../../../../../packages/core/src/utils/request/index.js";
+import createEvent from "../../../../../packages/core/src/core/createEvent.js";
 import describeRequestPayload from "../../../helpers/describeRequestPayload.js";
 
 describe("createDataCollectionRequestPayload", () => {

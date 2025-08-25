@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createComponent from "../../../../../src/components/Personalization/createComponent.js";
+import createComponent from "../../../../../packages/core/src/components/Personalization/createComponent.js";
 
 describe("Personalization", () => {
   let logger;

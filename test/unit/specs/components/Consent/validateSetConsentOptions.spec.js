@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import validateSetConsentOptions from "../../../../../src/components/Consent/validateSetConsentOptions.js";
+import validateSetConsentOptions from "../../../../../packages/core/src/components/Consent/validateSetConsentOptions.js";
 import describeValidation from "../../../helpers/describeValidation.js";
 
 const validGeneralConsent = [

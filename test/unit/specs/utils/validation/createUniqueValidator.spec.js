@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { describe, it, expect } from "vitest";
-import { string } from "../../../../../src/utils/validation/index.js";
+import { string } from "../../../../../packages/core/src/utils/validation/index.js";
 
 describe("validation::createUnique", () => {
   [["a"], ["a", "b", "c"]].forEach((values) => {

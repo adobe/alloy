@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import computeConsentHash from "../../../../../src/components/Consent/computeConsentHash.js";
+import computeConsentHash from "../../../../../packages/core/src/components/Consent/computeConsentHash.js";
 
 describe("computeConsentHash", () => {
   it("computes the correct hash for a simple consent object", () => {

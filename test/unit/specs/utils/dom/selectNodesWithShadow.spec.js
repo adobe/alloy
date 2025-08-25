@@ -17,8 +17,8 @@ import {
   appendNode,
   selectNodes,
   removeNode,
-} from "../../../../../src/utils/dom/index.js";
-import { selectNodesWithEq } from "../../../../../src/components/Personalization/dom-actions/dom/index.js";
+} from "../../../../../packages/core/src/utils/dom/index.js";
+import { selectNodesWithEq } from "../../../../../packages/core/src/components/Personalization/dom-actions/dom/index.js";
 
 const ieDetected = () => !!document.documentMode;
 const defineCustomElements = () => {

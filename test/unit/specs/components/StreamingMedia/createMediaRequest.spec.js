@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import createMediaRequest from "../../../../../src/components/StreamingMedia/createMediaRequest.js";
+import createMediaRequest from "../../../../../packages/core/src/components/StreamingMedia/createMediaRequest.js";
 
 describe("StreamingMedia::createMediaRequest", () => {
   it("should call createRequest with correct parameters", () => {

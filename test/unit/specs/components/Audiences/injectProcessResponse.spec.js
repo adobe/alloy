@@ -10,7 +10,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import injectProcessResponse from "../../../../../src/components/Audiences/injectProcessResponse.js";
+import injectProcessResponse from "../../../../../packages/core/src/components/Audiences/injectProcessResponse.js";
 
 describe("injectProcessResponse", () => {
   let response;

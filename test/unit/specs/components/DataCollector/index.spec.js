@@ -10,8 +10,8 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createDataCollector from "../../../../../src/components/DataCollector/index.js";
-import { noop } from "../../../../../src/utils/index.js";
+import createDataCollector from "../../../../../packages/core/src/components/DataCollector/index.js";
+import { noop } from "../../../../../packages/core/src/utils/index.js";
 
 describe("Event Command", () => {
   let event;

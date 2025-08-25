@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import validateClickCollectionConfig from "../../../../../src/components/ActivityCollector/validateClickCollectionConfig.js";
-import { DEFAULT_DOWNLOAD_QUALIFIER } from "../../../../../src/components/ActivityCollector/configValidators.js";
+import validateClickCollectionConfig from "../../../../../packages/core/src/components/ActivityCollector/validateClickCollectionConfig.js";
+import { DEFAULT_DOWNLOAD_QUALIFIER } from "../../../../../packages/core/src/components/ActivityCollector/configValidators.js";
 
 describe("ActivityCollector::validateClickCollectionConfig", () => {
   let logger;

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import validateMediaSessionOptions from "../../../../../src/components/StreamingMedia/validateMediaSessionOptions.js";
+import validateMediaSessionOptions from "../../../../../packages/core/src/components/StreamingMedia/validateMediaSessionOptions.js";
 
 describe("StreamingMedia::validateMediaSessionOptions", () => {
   it("should not fail when playerId, callback and xdm are used", () => {

@@ -10,7 +10,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import getLinkRegion from "../../../../../src/components/ActivityCollector/getLinkRegion.js";
+import getLinkRegion from "../../../../../packages/core/src/components/ActivityCollector/getLinkRegion.js";
 
 const createChildElement = (element) => {
   return {

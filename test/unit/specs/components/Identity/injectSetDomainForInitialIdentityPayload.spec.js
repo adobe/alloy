@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import injectSetDomainForInitialIdentityPayload from "../../../../../src/components/Identity/injectSetDomainForInitialIdentityPayload.js";
+import injectSetDomainForInitialIdentityPayload from "../../../../../packages/core/src/components/Identity/injectSetDomainForInitialIdentityPayload.js";
 
 describe("Identity::injectSetDomainForInitialIdentityPayload", () => {
   let request;

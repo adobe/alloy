@@ -11,8 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createComponent from "../../../../../src/components/Consent/createComponent.js";
-import { createTaskQueue, defer } from "../../../../../src/utils/index.js";
+import createComponent from "../../../../../packages/core/src/components/Consent/createComponent.js";
+import {
+  createTaskQueue,
+  defer,
+} from "../../../../../packages/core/src/utils/index.js";
 import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 const createConsent = (generalConsent) => ({

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import configValidators from "../../../../../src/components/Consent/configValidators.js";
+import configValidators from "../../../../../packages/core/src/components/Consent/configValidators.js";
 
 describe("defaultConsent", () => {
   it("validates defaultConsent=undefined", () => {

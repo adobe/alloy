@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import matchesSelector from "../../../../../src/utils/dom/matchesSelector.js";
+import matchesSelector from "../../../../../packages/core/src/utils/dom/matchesSelector.js";
 
 describe("DOM::matchesSelector", () => {
   it("should match selector for existing element", () => {

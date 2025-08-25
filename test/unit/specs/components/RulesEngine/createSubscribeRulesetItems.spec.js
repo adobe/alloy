@@ -13,9 +13,9 @@ import { vi, beforeEach, describe, it, expect } from "vitest";
 import {
   DOM_ACTION,
   MESSAGE_CONTENT_CARD,
-} from "../../../../../src/constants/schema.js";
-import createSubscribeRulesetItems from "../../../../../src/components/RulesEngine/createSubscribeRulesetItems.js";
-import { PropositionEventType } from "../../../../../src/constants/propositionEventType.js";
+} from "../../../../../packages/core/src/constants/schema.js";
+import createSubscribeRulesetItems from "../../../../../packages/core/src/components/RulesEngine/createSubscribeRulesetItems.js";
+import { PropositionEventType } from "../../../../../packages/core/src/constants/propositionEventType.js";
 
 describe("RulesEngine:subscribeRulesetItems", () => {
   let collect;

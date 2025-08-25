@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import createNode from "../../../../../src/utils/dom/createNode.js";
+import createNode from "../../../../../packages/core/src/utils/dom/createNode.js";
 
 describe("DOM::createNode", () => {
   it("should createNode with tag only", () => {

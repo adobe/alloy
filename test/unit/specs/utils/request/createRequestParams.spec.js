@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import { createRequestParams } from "../../../../../src/utils/request/index.js";
+import { createRequestParams } from "../../../../../packages/core/src/utils/request/index.js";
 
 describe("createRequestParams", () => {
   let payload;

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi, describe, it, expect } from "vitest";
-import handleRequestFailure from "../../../../../src/core/edgeNetwork/handleRequestFailure.js";
+import handleRequestFailure from "../../../../../packages/core/src/core/edgeNetwork/handleRequestFailure.js";
 
 describe("handleRequestFailure", () => {
   it("works", () => {

@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import { DOM_ACTION } from "../../../../../src/constants/schema.js";
+import { DOM_ACTION } from "../../../../../packages/core/src/constants/schema.js";
 import validateApplyPropositionsOptions, {
   EMPTY_PROPOSITIONS,
-} from "../../../../../src/components/Personalization/validateApplyPropositionsOptions.js";
+} from "../../../../../packages/core/src/components/Personalization/validateApplyPropositionsOptions.js";
 
 const PROPOSITIONS = [
   {

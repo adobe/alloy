@@ -14,7 +14,7 @@ import { vi, beforeEach, describe, it, expect } from "vitest";
 
 // Mock the onBeforeSendEventHandler
 vi.mock(
-  "../../../../../src/components/Advertising/handlers/onBeforeSendEventHandler.js",
+  "../../../../../packages/core/src/components/Advertising/handlers/onBeforeSendEventHandler.js",
   () => ({
     default: vi.fn(),
   }),
@@ -22,14 +22,14 @@ vi.mock(
 
 // Mock the sendAdConversion handler
 vi.mock(
-  "../../../../../src/components/Advertising/handlers/sendAdConversion.js",
+  "../../../../../packages/core/src/components/Advertising/handlers/sendAdConversion.js",
   () => ({
     default: vi.fn(() => vi.fn()),
   }),
 );
 
-import createComponent from "../../../../../src/components/Advertising/createComponent.js";
-import handleOnBeforeSendEvent from "../../../../../src/components/Advertising/handlers/onBeforeSendEventHandler.js";
+import createComponent from "../../../../../packages/core/src/components/Advertising/createComponent.js";
+import handleOnBeforeSendEvent from "../../../../../packages/core/src/components/Advertising/handlers/onBeforeSendEventHandler.js";
 
 describe("Advertising::createComponent", () => {
   let logger;

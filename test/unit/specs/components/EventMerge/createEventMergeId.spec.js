@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import createEventMergeId from "../../../../../src/components/EventMerge/createEventMergeId.js";
+import createEventMergeId from "../../../../../packages/core/src/components/EventMerge/createEventMergeId.js";
 import uuidV4Regex from "../../../constants/uuidV4Regex.js";
 
 describe("EventMerge:createEventMergeId", () => {

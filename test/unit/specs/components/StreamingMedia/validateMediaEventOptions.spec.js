@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import validateMediaEventOptions from "../../../../../src/components/StreamingMedia/validateMediaEventOptions.js";
+import validateMediaEventOptions from "../../../../../packages/core/src/components/StreamingMedia/validateMediaEventOptions.js";
 
 describe("StreamingMedia::validateMediaEventOptions", () => {
   it("should not fail when payerId and xdm are used", () => {

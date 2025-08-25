@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import injectAddQueryStringIdentityToPayload from "../../../../../src/components/Identity/injectAddQueryStringIdentityToPayload.js";
-import createDataCollectionRequestPayload from "../../../../../src/utils/request/createDataCollectionRequestPayload.js";
-import createIdentityRequestPayload from "../../../../../src/components/Identity/getIdentity/createIdentityRequestPayload.js";
-import createConsentRequestPayload from "../../../../../src/components/Consent/createConsentRequestPayload.js";
+import injectAddQueryStringIdentityToPayload from "../../../../../packages/core/src/components/Identity/injectAddQueryStringIdentityToPayload.js";
+import createDataCollectionRequestPayload from "../../../../../packages/core/src/utils/request/createDataCollectionRequestPayload.js";
+import createIdentityRequestPayload from "../../../../../packages/core/src/components/Identity/getIdentity/createIdentityRequestPayload.js";
+import createConsentRequestPayload from "../../../../../packages/core/src/components/Consent/createConsentRequestPayload.js";
 
 describe("Identity::injectAddQueryStringIdentityToPayload", () => {
   let locationSearch;

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import injectAddLegacyEcidToPayload from "../../../../../src/components/Identity/injectAddLegacyEcidToPayload.js";
+import injectAddLegacyEcidToPayload from "../../../../../packages/core/src/components/Identity/injectAddLegacyEcidToPayload.js";
 
 describe("Identity::injectAddLegacyEcidToPayload", () => {
   let getLegacyEcid;

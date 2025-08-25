@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import injectSendSetConsentRequest from "../../../../../src/components/Consent/injectSendSetConsentRequest.js";
+import injectSendSetConsentRequest from "../../../../../packages/core/src/components/Consent/injectSendSetConsentRequest.js";
 
 describe("Consent:injectSendSetConsentRequest", () => {
   let sendEdgeNetworkRequest;

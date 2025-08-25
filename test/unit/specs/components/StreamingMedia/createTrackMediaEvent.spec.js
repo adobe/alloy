@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createTrackMediaEvent from "../../../../../src/components/StreamingMedia/createTrackMediaEvent.js";
-import MediaEvents from "../../../../../src/components/StreamingMedia/constants/eventTypes.js";
+import createTrackMediaEvent from "../../../../../packages/core/src/components/StreamingMedia/createTrackMediaEvent.js";
+import MediaEvents from "../../../../../packages/core/src/components/StreamingMedia/constants/eventTypes.js";
 
 describe("createTrackMediaEvent", () => {
   let trackMediaEvent;

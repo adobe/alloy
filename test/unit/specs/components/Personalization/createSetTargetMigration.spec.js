@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createSetTargetMigration from "../../../../../src/components/Personalization/createSetTargetMigration.js";
+import createSetTargetMigration from "../../../../../packages/core/src/components/Personalization/createSetTargetMigration.js";
 
 describe("Personalization::createSetTargetMigration", () => {
   let request;

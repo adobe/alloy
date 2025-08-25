@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createFetchDataHandler from "../../../../../src/components/Personalization/createFetchDataHandler.js";
-import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition.js";
+import createFetchDataHandler from "../../../../../packages/core/src/components/Personalization/createFetchDataHandler.js";
+import injectCreateProposition from "../../../../../packages/core/src/components/Personalization/handlers/injectCreateProposition.js";
 import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
-import defer from "../../../../../src/utils/defer.js";
-import createNotificationHandler from "../../../../../src/components/Personalization/createNotificationHandler.js";
+import defer from "../../../../../packages/core/src/utils/defer.js";
+import createNotificationHandler from "../../../../../packages/core/src/components/Personalization/createNotificationHandler.js";
 
 describe("Personalization::createFetchDataHandler", () => {
   let prehidingStyle;

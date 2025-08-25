@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createOnResponseHandler from "../../../../../src/components/RulesEngine/createOnResponseHandler.js";
-import createDecisionProvider from "../../../../../src/components/RulesEngine/createDecisionProvider.js";
-import createApplyResponse from "../../../../../src/components/RulesEngine/createApplyResponse.js";
-import createEventRegistry from "../../../../../src/components/RulesEngine/createEventRegistry.js";
+import createOnResponseHandler from "../../../../../packages/core/src/components/RulesEngine/createOnResponseHandler.js";
+import createDecisionProvider from "../../../../../packages/core/src/components/RulesEngine/createDecisionProvider.js";
+import createApplyResponse from "../../../../../packages/core/src/components/RulesEngine/createApplyResponse.js";
+import createEventRegistry from "../../../../../packages/core/src/components/RulesEngine/createEventRegistry.js";
 
 describe("RulesEngine:createOnResponseHandler", () => {
   let lifecycle;

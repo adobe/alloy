@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { beforeEach, describe, it, expect } from "vitest";
-import createLibraryInfo from "../../../../../src/components/LibraryInfo/index.js";
+import createLibraryInfo from "../../../../../packages/core/src/components/LibraryInfo/index.js";
 
 describe("LibraryInfo", () => {
   let toolsMock;

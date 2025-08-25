@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect } from "vitest";
-import injectAddEcidQueryToPayload from "../../../../../src/components/Identity/injectAddEcidQueryToPayload.js";
+import injectAddEcidQueryToPayload from "../../../../../packages/core/src/components/Identity/injectAddEcidQueryToPayload.js";
 
 describe("Identity::addEcidQueryToPayload", () => {
   it("adds an ECID & CORE query to the event when third party cookies are enabled on Chrome", () => {

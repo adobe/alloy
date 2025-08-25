@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createLegacyIdentity from "../../../../../src/components/Identity/createLegacyIdentity.js";
+import createLegacyIdentity from "../../../../../packages/core/src/components/Identity/createLegacyIdentity.js";
 
 describe("Identity::createLegacyIdentity", () => {
   let idMigrationEnabled;

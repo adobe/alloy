@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect } from "vitest";
-import injectPlaceContext from "../../../../../src/components/Context/injectPlaceContext.js";
+import injectPlaceContext from "../../../../../packages/core/src/components/Context/injectPlaceContext.js";
 
 describe("Context::injectPlaceContext", () => {
   it("adds placeContext", () => {

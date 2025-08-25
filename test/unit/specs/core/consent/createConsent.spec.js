@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createConsent from "../../../../../src/core/consent/createConsent.js";
+import createConsent from "../../../../../packages/core/src/core/consent/createConsent.js";
 
 describe("createConsent", () => {
   let state;

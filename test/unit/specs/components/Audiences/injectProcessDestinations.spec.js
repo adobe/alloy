@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import injectProcessDestinations from "../../../../../src/components/Audiences/injectProcessDestinations.js";
+import injectProcessDestinations from "../../../../../packages/core/src/components/Audiences/injectProcessDestinations.js";
 
 describe("Audiences::injectProcessDestinations", () => {
   let fireReferrerHideableImage;

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { describe, it, expect } from "vitest";
-import injectEnvironment from "../../../../../src/components/Context/injectEnvironment.js";
+import injectEnvironment from "../../../../../packages/core/src/components/Context/injectEnvironment.js";
 
 describe("Context::injectEnvironment", () => {
   const run = (description, mywindow, expectedXdm) => {

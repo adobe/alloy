@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import { createGetAssuranceValidationTokenParams } from "../../../../../src/utils/request/index.js";
-import { injectStorage } from "../../../../../src/utils/index.js";
+import { createGetAssuranceValidationTokenParams } from "../../../../../packages/core/src/utils/request/index.js";
+import { injectStorage } from "../../../../../packages/core/src/utils/index.js";
 import uuidV4Regex from "../../../constants/uuidV4Regex.js";
 
 const win = {

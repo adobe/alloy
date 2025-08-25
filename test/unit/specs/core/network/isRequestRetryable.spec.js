@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isRequestRetryable from "../../../../../src/core/network/isRequestRetryable.js";
+import isRequestRetryable from "../../../../../packages/core/src/core/network/isRequestRetryable.js";
 
 describe("isRequestRetryable", () => {
   [429, 503, 502, 504].forEach((statusCode) => {

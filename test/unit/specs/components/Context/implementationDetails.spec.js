@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import implementationDetails from "../../../../../src/components/Context/implementationDetails.js";
+import implementationDetails from "../../../../../packages/core/src/components/Context/implementationDetails.js";
 
 describe("Context::implementationDetails", () => {
   it("works", () => {

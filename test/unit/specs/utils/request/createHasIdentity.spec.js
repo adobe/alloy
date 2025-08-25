@@ -13,7 +13,7 @@ import { beforeEach, describe, it, expect } from "vitest";
 import {
   createHasIdentity,
   createAddIdentity,
-} from "../../../../../src/utils/request/index.js";
+} from "../../../../../packages/core/src/utils/request/index.js";
 
 describe("createHasIdentity", () => {
   let content;

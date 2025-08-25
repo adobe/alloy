@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createEvaluableRulesetPayload from "../../../../../src/components/RulesEngine/createEvaluableRulesetPayload.js";
-import createEventRegistry from "../../../../../src/components/RulesEngine/createEventRegistry.js";
+import createEvaluableRulesetPayload from "../../../../../packages/core/src/components/RulesEngine/createEvaluableRulesetPayload.js";
+import createEventRegistry from "../../../../../packages/core/src/components/RulesEngine/createEventRegistry.js";
 
 describe("RulesEngine:createEvaluableRulesetPayload", () => {
   let storage;

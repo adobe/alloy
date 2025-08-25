@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import libraryVersion from "../../../../../src/constants/libraryVersion.js";
+import libraryVersion from "../../../../../packages/core/src/constants/libraryVersion.js";
 import {
   mockWindow,
   setupResponseHandler,

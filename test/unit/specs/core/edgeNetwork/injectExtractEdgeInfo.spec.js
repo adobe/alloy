@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import injectExtractEdgeInfo from "../../../../../src/core/edgeNetwork/injectExtractEdgeInfo.js";
+import injectExtractEdgeInfo from "../../../../../packages/core/src/core/edgeNetwork/injectExtractEdgeInfo.js";
 
 describe("extractEdgeInfo", () => {
   let logger;

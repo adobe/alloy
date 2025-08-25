@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createEvaluateRulesetsCommand from "../../../../../src/components/RulesEngine/createEvaluateRulesetsCommand.js";
-import createContextProvider from "../../../../../src/components/RulesEngine/createContextProvider.js";
-import createEventRegistry from "../../../../../src/components/RulesEngine/createEventRegistry.js";
-import createDecisionProvider from "../../../../../src/components/RulesEngine/createDecisionProvider.js";
-import createApplyResponse from "../../../../../src/components/RulesEngine/createApplyResponse.js";
-import injectGetBrowser from "../../../../../src/utils/injectGetBrowser.js";
+import createEvaluateRulesetsCommand from "../../../../../packages/core/src/components/RulesEngine/createEvaluateRulesetsCommand.js";
+import createContextProvider from "../../../../../packages/core/src/components/RulesEngine/createContextProvider.js";
+import createEventRegistry from "../../../../../packages/core/src/components/RulesEngine/createEventRegistry.js";
+import createDecisionProvider from "../../../../../packages/core/src/components/RulesEngine/createDecisionProvider.js";
+import createApplyResponse from "../../../../../packages/core/src/components/RulesEngine/createApplyResponse.js";
+import injectGetBrowser from "../../../../../packages/core/src/utils/injectGetBrowser.js";
 
 describe("RulesEngine:evaluateRulesetsCommand", () => {
   let onDecision;

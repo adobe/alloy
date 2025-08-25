@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import injectHighEntropyUserAgentHints from "../../../../../src/components/Context/injectHighEntropyUserAgentHints.js";
+import injectHighEntropyUserAgentHints from "../../../../../packages/core/src/components/Context/injectHighEntropyUserAgentHints.js";
 
 describe("Context::injectHighEntropyUserAgentHints", () => {
   const navigator = {
