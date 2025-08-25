@@ -128,7 +128,7 @@ export default defineConfig([
   },
   {
     name: "alloy/tests",
-    files: ["test/**/*.{cjs,js}"],
+    files: ["packages/core/test/**/*.{cjs,js}"],
     rules: {
       "import/extensions": [
         "error",
@@ -141,7 +141,7 @@ export default defineConfig([
   {
     name: "alloy/tests/vitest",
     files: [
-      "test/{unit,integration}/**/*.{cjs,js}",
+      "packages/core/test/{unit,integration}/**/*.{cjs,js}",
       "scripts/specs/**/*.{cjs,js}",
     ],
     settings: {
@@ -154,7 +154,7 @@ export default defineConfig([
   },
   {
     name: "alloy/tests/functional",
-    files: ["test/functional/**/*.{cjs,js}"],
+    files: ["packages/core/test/functional/**/*.{cjs,js}"],
     languageOptions: {
       globals: {
         test: "readonly",

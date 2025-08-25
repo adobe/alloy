@@ -242,7 +242,7 @@ export const buildConfig = ({
     variant === NPM_PACKAGE_LOCAL ? "npmPackageLocal" : "npmPackageProd";
 
   return {
-    input: `test/functional/helpers/${filename}.js`,
+    input: `packages/core/test/functional/helpers/${filename}.js`,
     output: [
       {
         file: `distTest/${filename}${minifiedExtension}.js`,

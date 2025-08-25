@@ -33,7 +33,7 @@ const dirname = path.dirname(filename);
 
 const baseDir = safePathJoin(dirname, "../");
 const srcDir = safePathJoin(dirname, "../src");
-const testDir = safePathJoin(dirname, "../test/unit/specs");
+const testDir = safePathJoin(dirname, "../packages/core/test/unit/specs");
 const specExtension = ".spec.js";
 
 const ignoreMinimatches = ignorePatterns.map((ignorePattern) => {
