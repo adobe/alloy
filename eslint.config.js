@@ -219,7 +219,7 @@ export default defineConfig([
   },
   {
     name: "alloy/sandbox",
-    files: ["sandbox/src/**/*.{js,jsx}"],
+    files: ["sandboxes/browser/src/**/*.{js,jsx}"],
     settings: {
       react: {
         version: "17.0.2",
