@@ -11,17 +11,17 @@ governing permissions and limitations under the License.
 */
 
 import { afterEach, describe, it, expect } from "vitest";
-import insertAfter from "../../../../../../../src/components/Personalization/dom-actions/dom/insertAfter.js";
+import insertAfter from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/insertAfter.js";
 import {
   selectNodes,
   removeNode,
   appendNode,
   createNode,
-} from "../../../../../../../src/utils/dom/index.js";
+} from "../../../../../../../packages/core/src/utils/dom/index.js";
 import {
   getElementById,
   getNextSibling,
-} from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+} from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/index.js";
 
 describe("Personalization::DOM::insertAfter", () => {
   afterEach(() => {

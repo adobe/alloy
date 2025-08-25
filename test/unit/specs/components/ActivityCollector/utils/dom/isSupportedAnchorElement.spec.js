@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isSupportedAnchorElement from "../../../../../../../src/components/ActivityCollector/utils/dom/isSupportedAnchorElement.js";
+import isSupportedAnchorElement from "../../../../../../../packages/core/src/components/ActivityCollector/utils/dom/isSupportedAnchorElement.js";
 
 describe("ActivityCollector::isSupportedAnchorElement", () => {
   it("Returns true for supported anchor elements", () => {

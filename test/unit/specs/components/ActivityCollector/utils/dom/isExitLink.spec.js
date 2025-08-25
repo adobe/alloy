@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isExitLink from "../../../../../../../src/components/ActivityCollector/utils/dom/isExitLink.js";
+import isExitLink from "../../../../../../../packages/core/src/components/ActivityCollector/utils/dom/isExitLink.js";
 
 describe("ActivityCollector::isExitLink", () => {
   it("Returns true if the link leads away from the current hostname", () => {

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { describe, it, expect } from "vitest";
-import generateEventHash from "../../../../../../src/components/RulesEngine/utils/generateEventHash.js";
+import generateEventHash from "../../../../../../packages/core/src/components/RulesEngine/utils/generateEventHash.js";
 
 describe("generateEventHash", () => {
   it("should remove empty keys, sort the object, and hash it", () => {

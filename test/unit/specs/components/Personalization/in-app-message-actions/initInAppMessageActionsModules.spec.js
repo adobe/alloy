@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import initInAppMessageActionsModules from "../../../../../../src/components/Personalization/in-app-message-actions/initInAppMessageActionsModules.js";
+import initInAppMessageActionsModules from "../../../../../../packages/core/src/components/Personalization/in-app-message-actions/initInAppMessageActionsModules.js";
 
 describe("Personalization::turbine::initInAppMessageActionsModules", () => {
   const noop = () => undefined;

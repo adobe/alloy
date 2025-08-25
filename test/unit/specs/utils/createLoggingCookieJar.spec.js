@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createLoggingCookieJar from "../../../../src/utils/createLoggingCookieJar.js";
+import createLoggingCookieJar from "../../../../packages/core/src/utils/createLoggingCookieJar.js";
 
 describe("loggingCookieJar", () => {
   let cookieJar;

@@ -16,12 +16,12 @@ import {
   appendNode,
   selectNodes,
   removeNode,
-} from "../../../../../../../src/utils/dom/index.js";
+} from "../../../../../../../packages/core/src/utils/dom/index.js";
 import {
   escapeIdentifiersInSelector,
   parseSelector,
   selectNodesWithEq,
-} from "../../../../../../../src/components/Personalization/dom-actions/dom/selectNodesWithEq.js";
+} from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/selectNodesWithEq.js";
 
 describe("Personalization::DOM::escapeIdentifiersInSelector", () => {
   it("should escape when digits only for ID selector", () => {

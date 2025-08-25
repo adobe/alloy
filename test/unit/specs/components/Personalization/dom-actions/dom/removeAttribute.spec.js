@@ -11,16 +11,16 @@ governing permissions and limitations under the License.
 */
 
 import { afterEach, describe, it, expect } from "vitest";
-import removeAttribute from "../../../../../../../src/components/Personalization/dom-actions/dom/removeAttribute.js";
+import removeAttribute from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/removeAttribute.js";
 import {
   createNode,
   removeNode,
   selectNodes,
-} from "../../../../../../../src/utils/dom/index.js";
+} from "../../../../../../../packages/core/src/utils/dom/index.js";
 import {
   getAttribute,
   setAttribute,
-} from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+} from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/index.js";
 
 describe("Personalization::DOM::removeAttribute", () => {
   afterEach(() => {

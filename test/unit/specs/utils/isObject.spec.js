@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isObject from "../../../../src/utils/isObject.js";
+import isObject from "../../../../packages/core/src/utils/isObject.js";
 
 const nonObjects = [[], true, false, 123];
 describe("isObject", () => {

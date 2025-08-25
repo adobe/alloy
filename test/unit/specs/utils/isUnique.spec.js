@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isUnique from "../../../../src/utils/isUnique.js";
+import isUnique from "../../../../packages/core/src/utils/isUnique.js";
 
 describe("isUnique", () => {
   it("returns true if array values are unique", () => {

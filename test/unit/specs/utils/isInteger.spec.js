@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isInteger from "../../../../src/utils/isInteger.js";
+import isInteger from "../../../../packages/core/src/utils/isInteger.js";
 
 describe("isInteger", () => {
   it("returns true if the value is an integer", () => {

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isNamespacedCookieName from "../../../../src/utils/isNamespacedCookieName.js";
+import isNamespacedCookieName from "../../../../packages/core/src/utils/isNamespacedCookieName.js";
 
 describe("isNamespacedCookieName", () => {
   it("returns true if it's a namespaced cookie name", () => {

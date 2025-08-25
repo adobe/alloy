@@ -23,7 +23,7 @@ import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
 import {
   MBOX_EDGE_CLUSTER,
   MBOX,
-} from "../../../../src/constants/legacyCookies.js";
+} from "../../../../packages/core/src/constants/legacyCookies.js";
 import {
   assertKonductorReturnsCookieAndCookieIsSet,
   assertSameLocationHintIsUsed,

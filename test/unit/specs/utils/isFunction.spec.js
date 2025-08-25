@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isFunction from "../../../../src/utils/isFunction.js";
+import isFunction from "../../../../packages/core/src/utils/isFunction.js";
 
 const nonFunctions = [{}, [], new Date(), /abc/, true, false, "text", 123];
 describe("isFunction", () => {

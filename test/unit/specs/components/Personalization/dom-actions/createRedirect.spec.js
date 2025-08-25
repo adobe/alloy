@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi, describe, it, expect } from "vitest";
-import createRedirect from "../../../../../../src/components/Personalization/dom-actions/createRedirect.js";
+import createRedirect from "../../../../../../packages/core/src/components/Personalization/dom-actions/createRedirect.js";
 
 describe("createRedirect", () => {
   it("redirects", () => {

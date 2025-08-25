@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import sanitizeOrgIdForCookieName from "../../../../src/utils/sanitizeOrgIdForCookieName.js";
+import sanitizeOrgIdForCookieName from "../../../../packages/core/src/utils/sanitizeOrgIdForCookieName.js";
 
 describe("sanitizeOrgIdForCookieName", () => {
   it("replaces @ with _", () => {

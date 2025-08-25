@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isNonEmptyString from "../../../../src/utils/isNonEmptyString.js";
+import isNonEmptyString from "../../../../packages/core/src/utils/isNonEmptyString.js";
 
 describe("isNonEmptyString", () => {
   it("returns true when string", () => {

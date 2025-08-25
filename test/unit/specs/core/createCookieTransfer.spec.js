@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createCookieTransfer from "../../../../src/core/createCookieTransfer.js";
+import createCookieTransfer from "../../../../packages/core/src/core/createCookieTransfer.js";
 
 describe("createCookieTransfer", () => {
   let apexDomain;

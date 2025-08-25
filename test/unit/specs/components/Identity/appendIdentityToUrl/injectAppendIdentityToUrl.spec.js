@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import injectAppendIdentityToUrl from "../../../../../../src/components/Identity/appendIdentityToUrl/injectAppendIdentityToUrl.js";
+import injectAppendIdentityToUrl from "../../../../../../packages/core/src/components/Identity/appendIdentityToUrl/injectAppendIdentityToUrl.js";
 
 describe("appendIdentityToUrl", () => {
   const date = new Date(1234);

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import clone from "../../../../src/utils/clone.js";
+import clone from "../../../../packages/core/src/utils/clone.js";
 
 describe("clone", () => {
   it("clones the object using JSON serialization/deserialization", () => {

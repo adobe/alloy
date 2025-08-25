@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import stackError from "../../../../src/utils/stackError.js";
+import stackError from "../../../../packages/core/src/utils/stackError.js";
 
 describe("stackError", () => {
   it("stacks message onto error instance", () => {

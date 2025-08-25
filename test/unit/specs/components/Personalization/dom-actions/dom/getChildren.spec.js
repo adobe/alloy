@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import getChildren from "../../../../../../../src/components/Personalization/dom-actions/dom/getChildren.js";
-import createFragment from "../../../../../../../src/components/Personalization/dom-actions/dom/createFragment.js";
+import getChildren from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/getChildren.js";
+import createFragment from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/createFragment.js";
 
 describe("Personalization::helper::dom::getChildren", () => {
   it("returns an array of children", () => {

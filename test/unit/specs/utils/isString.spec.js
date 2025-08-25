@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isString from "../../../../src/utils/isString.js";
+import isString from "../../../../packages/core/src/utils/isString.js";
 
 const nonStrings = [{}, [], new Date(), /abc/, true, false, 123];
 describe("isString", () => {

@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isDownloadLink from "../../../../../../../src/components/ActivityCollector/utils/dom/isDownloadLink.js";
-import { downloadLinkQualifier } from "../../../../../../../src/components/ActivityCollector/configValidators.js";
+import isDownloadLink from "../../../../../../../packages/core/src/components/ActivityCollector/utils/dom/isDownloadLink.js";
+import { downloadLinkQualifier } from "../../../../../../../packages/core/src/components/ActivityCollector/configValidators.js";
 
 describe("ActivityCollector::isDownloadLink", () => {
   it("Returns true if the clicked element has a download attribute", () => {

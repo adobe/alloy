@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import { defer } from "../../../../../../src/utils/index.js";
+import { defer } from "../../../../../../packages/core/src/utils/index.js";
 import flushPromiseChains from "../../../../helpers/flushPromiseChains.js";
-import createProcessRedirect from "../../../../../../src/components/Personalization/handlers/createProcessRedirect.js";
+import createProcessRedirect from "../../../../../../packages/core/src/components/Personalization/handlers/createProcessRedirect.js";
 
 describe("createProcessRedirect", () => {
   let logger;

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createLogger from "../../../../src/core/createLogger.js";
+import createLogger from "../../../../packages/core/src/core/createLogger.js";
 
 const logMethods = ["info", "warn", "error"];
 const monitorMethods = [

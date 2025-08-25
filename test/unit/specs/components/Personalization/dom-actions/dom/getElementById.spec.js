@@ -16,8 +16,8 @@ import {
   removeNode,
   appendNode,
   createNode,
-} from "../../../../../../../src/utils/dom/index.js";
-import { getElementById } from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+} from "../../../../../../../packages/core/src/utils/dom/index.js";
+import { getElementById } from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/index.js";
 
 describe("Personalization::DOM::getElementById", () => {
   afterEach(() => {

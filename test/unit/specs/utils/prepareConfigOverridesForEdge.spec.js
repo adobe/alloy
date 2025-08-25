@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import { prepareConfigOverridesForEdge } from "../../../../src/utils/index.js";
+import { prepareConfigOverridesForEdge } from "../../../../packages/core/src/utils/index.js";
 
 describe("utils:prepareConfigOverridesForEdge", () => {
   it("should filter out functions, unused objects and keys, empty arrays, and empty strings", () => {

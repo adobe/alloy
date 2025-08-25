@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect } from "vitest";
-import injectHandleError from "../../../../src/core/injectHandleError.js";
+import injectHandleError from "../../../../packages/core/src/core/injectHandleError.js";
 
 const expectedMessage = "[testinstanceName] Bad thing happened.";
 describe("injectHandleError", () => {

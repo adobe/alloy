@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import remapCustomCodeOffers from "../../../../../../src/components/Personalization/dom-actions/remapCustomCodeOffers.js";
+import remapCustomCodeOffers from "../../../../../../packages/core/src/components/Personalization/dom-actions/remapCustomCodeOffers.js";
 
 describe("remapCustomCodeOffers", () => {
   it("changes target selector to parent for standard body selector", () => {

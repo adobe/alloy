@@ -11,8 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import { mergeDecisionsMeta, mergeQuery } from "../../../../src/utils/event.js";
-import { PropositionEventType } from "../../../../src/constants/propositionEventType.js";
+import {
+  mergeDecisionsMeta,
+  mergeQuery,
+} from "../../../../packages/core/src/utils/event.js";
+import { PropositionEventType } from "../../../../packages/core/src/constants/propositionEventType.js";
 
 describe("Utils::event", () => {
   let event;

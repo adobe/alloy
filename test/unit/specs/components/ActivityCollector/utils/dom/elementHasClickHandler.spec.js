@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import elementHasClickHandler from "../../../../../../../src/components/ActivityCollector/utils/dom/elementHasClickHandler.js";
+import elementHasClickHandler from "../../../../../../../packages/core/src/components/ActivityCollector/utils/dom/elementHasClickHandler.js";
 
 describe("ActivityCollector::elementHasClickHandler", () => {
   it("should handle invalid elements", () => {

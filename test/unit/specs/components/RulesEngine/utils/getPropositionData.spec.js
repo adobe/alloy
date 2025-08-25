@@ -14,7 +14,7 @@ import { describe, it, expect } from "vitest";
 import {
   getActivityId,
   getDecisionProvider,
-} from "../../../../../../src/components/RulesEngine/utils/getPropositionData.js";
+} from "../../../../../../packages/core/src/components/RulesEngine/utils/getPropositionData.js";
 
 describe("getPropositionData::", () => {
   describe("getActivityId", () => {

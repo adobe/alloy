@@ -15,7 +15,7 @@ import {
   buildPageSurface,
   isPageWideSurface,
   normalizeSurfaces,
-} from "../../../../../../src/components/Personalization/utils/surfaceUtils.js";
+} from "../../../../../../packages/core/src/components/Personalization/utils/surfaceUtils.js";
 
 let pageLocation;
 let logger;

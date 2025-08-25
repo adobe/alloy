@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import hasExperienceData from "../../../../../../src/components/RulesEngine/utils/hasExperienceData.js";
+import hasExperienceData from "../../../../../../packages/core/src/components/RulesEngine/utils/hasExperienceData.js";
 
 describe("hasExperienceData", () => {
   it("should return true when _experience is an object", () => {

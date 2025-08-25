@@ -23,7 +23,7 @@ import cookies from "../../helpers/cookies.js";
 import {
   MBOX_EDGE_CLUSTER,
   MBOX,
-} from "../../../../src/constants/legacyCookies.js";
+} from "../../../../packages/core/src/constants/legacyCookies.js";
 import {
   assertTargetMigrationEnabledIsSent,
   getLocationHint,

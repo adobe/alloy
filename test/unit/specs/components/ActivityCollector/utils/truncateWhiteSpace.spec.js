@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import truncateWhiteSpace from "../../../../../../src/components/ActivityCollector/utils/truncateWhiteSpace.js";
+import truncateWhiteSpace from "../../../../../../packages/core/src/components/ActivityCollector/utils/truncateWhiteSpace.js";
 
 describe("ActivityCollector::truncateWhiteSpace", () => {
   it("trims leading and trailing white spaces and limits contained white space to one character", () => {

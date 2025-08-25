@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { describe, it, expect } from "vitest";
-import processDefaultContent from "../../../../../../src/components/Personalization/handlers/processDefaultContent.js";
+import processDefaultContent from "../../../../../../packages/core/src/components/Personalization/handlers/processDefaultContent.js";
 
 describe("processDefaultContent", () => {
   it("always renders the default content", () => {

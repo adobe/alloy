@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import getVisitor from "../../../../../../src/components/Identity/visitorService/getVisitor.js";
+import getVisitor from "../../../../../../packages/core/src/components/Identity/visitorService/getVisitor.js";
 
 describe("getVisitor", () => {
   let mockWindow;

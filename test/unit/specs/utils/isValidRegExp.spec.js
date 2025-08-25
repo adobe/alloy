@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isValidRegExp from "../../../../src/utils/isValidRegExp.js";
+import isValidRegExp from "../../../../packages/core/src/utils/isValidRegExp.js";
 
 describe("isValidRegExp", () => {
   ["steel|bronze", "/a/", "/^[a-z0-9+]:///i"].forEach((value) => {

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import hasPageName from "../../../../../../src/components/ActivityCollector/utils/hasPageName.js";
+import hasPageName from "../../../../../../packages/core/src/components/ActivityCollector/utils/hasPageName.js";
 
 describe("ActivityCollector::hasPageName", () => {
   it("should return true if event has page name", () => {

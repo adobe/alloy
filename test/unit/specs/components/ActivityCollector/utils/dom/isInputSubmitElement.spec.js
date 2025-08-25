@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isInputSubmitElement from "../../../../../../../src/components/ActivityCollector/utils/dom/isInputSubmitElement.js";
+import isInputSubmitElement from "../../../../../../../packages/core/src/components/ActivityCollector/utils/dom/isInputSubmitElement.js";
 
 describe("ActivityCollector::isInputSubmitElement", () => {
   it("should return true for submit input", () => {

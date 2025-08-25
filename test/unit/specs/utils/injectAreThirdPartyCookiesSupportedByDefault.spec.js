@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import injectAreThirdPartyCookiesSupportedByDefault from "../../../../src/utils/injectAreThirdPartyCookiesSupportedByDefault.js";
+import injectAreThirdPartyCookiesSupportedByDefault from "../../../../packages/core/src/utils/injectAreThirdPartyCookiesSupportedByDefault.js";
 import {
   CHROME,
   EDGE,
@@ -20,7 +20,7 @@ import {
   IE,
   SAFARI,
   UNKNOWN,
-} from "../../../../src/constants/browser.js";
+} from "../../../../packages/core/src/constants/browser.js";
 
 const browsersWithSupport = [CHROME, EDGE, EDGE_CHROMIUM, IE, UNKNOWN];
 const browsersWithoutSupport = [FIREFOX, SAFARI];

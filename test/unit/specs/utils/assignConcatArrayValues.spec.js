@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { describe, it, expect } from "vitest";
-import assignConcatArrayValues from "../../../../src/utils/assignConcatArrayValues.js";
+import assignConcatArrayValues from "../../../../packages/core/src/utils/assignConcatArrayValues.js";
 
 describe("assignConcatArrayValues", () => {
   it("throws an error if no arguments are passed", () => {

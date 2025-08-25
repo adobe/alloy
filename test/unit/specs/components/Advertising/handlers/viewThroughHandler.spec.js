@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import handleViewThrough from "../../../../../../src/components/Advertising/handlers/viewThroughHandler.js";
+import handleViewThrough from "../../../../../../packages/core/src/components/Advertising/handlers/viewThroughHandler.js";
 import flushPromiseChains from "../../../../helpers/flushPromiseChains.js";
 
 // Mock network operations to prevent real network calls
@@ -76,12 +76,12 @@ if (typeof globalThis.window !== "undefined") {
 
 // Mock dependencies
 vi.mock(
-  "../../../../../../src/components/Advertising/identities/collectAllIdentities.js",
+  "../../../../../../packages/core/src/components/Advertising/identities/collectAllIdentities.js",
 );
 
 // Mock helpers to prevent network calls
 vi.mock(
-  "../../../../../../src/components/Advertising/utils/helpers.js",
+  "../../../../../../packages/core/src/components/Advertising/utils/helpers.js",
   () => ({
     appendAdvertisingIdQueryToEvent: vi.fn((availableIds, event) => {
       // Mock the actual behavior
@@ -176,7 +176,7 @@ describe("Advertising::viewThroughHandler", () => {
 
     // Mock collectAllIdentities
     const { default: mockCollectAllIdentities } = await import(
-      "../../../../../../src/components/Advertising/identities/collectAllIdentities.js"
+      "../../../../../../packages/core/src/components/Advertising/identities/collectAllIdentities.js"
     );
     collectAllIdentities = mockCollectAllIdentities;
     collectAllIdentities.mockReset();

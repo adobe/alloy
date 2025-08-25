@@ -14,7 +14,7 @@ import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   injectDoesIdentityCookieExist,
   cookieJar,
-} from "../../../../src/utils/index.js";
+} from "../../../../packages/core/src/utils/index.js";
 import removeAllCookies from "../../helpers/removeAllCookies.js";
 
 describe("Identity::injectDoesIdentityCookieExist", () => {

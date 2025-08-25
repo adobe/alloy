@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { describe, it, expect } from "vitest";
-import flattenArray from "../../../../src/utils/flattenArray.js";
+import flattenArray from "../../../../packages/core/src/utils/flattenArray.js";
 
 describe("flattenArray", () => {
   it("recursively flattens an array", () => {

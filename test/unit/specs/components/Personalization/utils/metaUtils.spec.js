@@ -13,7 +13,7 @@ import { describe, it, expect } from "vitest";
 import {
   cleanMetas,
   dedupeMetas,
-} from "../../../../../../src/components/Personalization/utils/metaUtils.js";
+} from "../../../../../../packages/core/src/components/Personalization/utils/metaUtils.js";
 
 describe("Personalization::metaUtils", () => {
   it("cleanMetas", () => {

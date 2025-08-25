@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect } from "vitest";
-import createInstanceFunction from "../../../../src/core/createInstanceFunction.js";
+import createInstanceFunction from "../../../../packages/core/src/core/createInstanceFunction.js";
 import flushPromiseChains from "../../helpers/flushPromiseChains.js";
 
 describe("createInstance", () => {

@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { describe, it, expect } from "vitest";
-import createAsyncArray from "../../../../../../src/components/Personalization/utils/createAsyncArray.js";
-import { defer } from "../../../../../../src/utils/index.js";
+import createAsyncArray from "../../../../../../packages/core/src/components/Personalization/utils/createAsyncArray.js";
+import { defer } from "../../../../../../packages/core/src/utils/index.js";
 import flushPromiseChains from "../../../../helpers/flushPromiseChains.js";
 
 const isPending = (promise) => {

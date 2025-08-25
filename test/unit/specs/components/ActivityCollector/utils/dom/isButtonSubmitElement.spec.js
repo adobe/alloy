@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isButtonSubmitElement from "../../../../../../../src/components/ActivityCollector/utils/dom/isButtonSubmitElement.js";
+import isButtonSubmitElement from "../../../../../../../packages/core/src/components/ActivityCollector/utils/dom/isButtonSubmitElement.js";
 
 describe("ActivityCollector::isButtonSubmitElement", () => {
   it("should return true for submit button", () => {

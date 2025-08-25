@@ -15,7 +15,7 @@ import {
   createInMemoryStorage,
   createRestoreStorage,
   createSaveStorage,
-} from "../../../../../../src/components/RulesEngine/utils/storage.js";
+} from "../../../../../../packages/core/src/components/RulesEngine/utils/storage.js";
 
 describe("RulesEngine:utils", () => {
   let storage;

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import injectCreateResponse from "../../../../src/core/injectCreateResponse.js";
+import injectCreateResponse from "../../../../packages/core/src/core/injectCreateResponse.js";
 
 const responseContent = {
   requestId: 123,

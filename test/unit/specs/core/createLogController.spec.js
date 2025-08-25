@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createLogController from "../../../../src/core/createLogController.js";
+import createLogController from "../../../../packages/core/src/core/createLogController.js";
 
 const instanceName = "alloy123";
 describe("createLogController", () => {

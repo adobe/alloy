@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isNumber from "../../../../src/utils/isNumber.js";
+import isNumber from "../../../../packages/core/src/utils/isNumber.js";
 
 describe("isNumber", () => {
   it("returns true if the value is a number", () => {

@@ -13,14 +13,14 @@ import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   appendNode,
   createNode,
-} from "../../../../../../src/utils/dom/index.js";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+} from "../../../../../../packages/core/src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../packages/core/src/components/Personalization/dom-actions/index.js";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
-import { INTERACT_ID_DATA_ATTRIBUTE } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
-import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+import { INTERACT_ID_DATA_ATTRIBUTE } from "../../../../../../packages/core/src/components/Personalization/handlers/createDecorateProposition.js";
+import { getAttribute } from "../../../../../../packages/core/src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
-import createRenderStatusHandler from "../../../../../../src/components/Personalization/handlers/createRenderStatusHandler.js";
-import { DOM_ACTION_COLLECT_INTERACTIONS } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
+import createRenderStatusHandler from "../../../../../../packages/core/src/components/Personalization/handlers/createRenderStatusHandler.js";
+import { DOM_ACTION_COLLECT_INTERACTIONS } from "../../../../../../packages/core/src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::collectInteractions", () => {
   let decorateProposition;

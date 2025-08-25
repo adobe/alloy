@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import injectStorage from "../../../../src/utils/injectStorage.js";
+import injectStorage from "../../../../packages/core/src/utils/injectStorage.js";
 
 const getNamespacedStorage = injectStorage(window);
 const storage = getNamespacedStorage("namespace");

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import getLastArrayItems from "../../../../src/utils/getLastArrayItems.js";
+import getLastArrayItems from "../../../../packages/core/src/utils/getLastArrayItems.js";
 
 describe("getLastArrayItems", () => {
   const letters = ["a", "b", "c"];

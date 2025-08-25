@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import injectGetBrowser from "../../../../src/utils/injectGetBrowser.js";
+import injectGetBrowser from "../../../../packages/core/src/utils/injectGetBrowser.js";
 import {
   EDGE,
   EDGE_CHROMIUM,
@@ -20,7 +20,7 @@ import {
   IE,
   SAFARI,
   UNKNOWN,
-} from "../../../../src/constants/browser.js";
+} from "../../../../packages/core/src/constants/browser.js";
 
 const userAgentsByBrowser = {
   [EDGE]: [

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import validateConfigOverride from "../../../../src/utils/validateConfigOverride.js";
+import validateConfigOverride from "../../../../packages/core/src/utils/validateConfigOverride.js";
 import describeValidation from "../../helpers/describeValidation.js";
 
 describeValidation("utils:validateConfigOverride", validateConfigOverride, [

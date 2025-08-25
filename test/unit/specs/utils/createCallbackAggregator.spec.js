@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createCallbackAggregator from "../../../../src/utils/createCallbackAggregator.js";
+import createCallbackAggregator from "../../../../packages/core/src/utils/createCallbackAggregator.js";
 
 describe("createCallbackAggregator", () => {
   let callbackAggregator;

@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import getAttribute from "../../../../../../../src/components/Personalization/dom-actions/dom/getAttribute.js";
-import createFragment from "../../../../../../../src/components/Personalization/dom-actions/dom/createFragment.js";
+import getAttribute from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/getAttribute.js";
+import createFragment from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/createFragment.js";
 
 describe("Personalization::helper::dom::getAttribute", () => {
   it("returns element's attribute if exists", () => {

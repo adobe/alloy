@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { beforeEach, describe, it, expect } from "vitest";
-import injectShouldTransferCookie from "../../../../src/core/injectShouldTransferCookie.js";
+import injectShouldTransferCookie from "../../../../packages/core/src/core/injectShouldTransferCookie.js";
 
 describe("shouldTransferCookie", () => {
   let targetMigrationEnabled;

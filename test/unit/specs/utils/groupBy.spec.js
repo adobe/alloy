@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import groupBy from "../../../../src/utils/groupBy.js";
+import groupBy from "../../../../packages/core/src/utils/groupBy.js";
 
 describe("groupBy", () => {
   it("expects empty obj if array is empty", () => {

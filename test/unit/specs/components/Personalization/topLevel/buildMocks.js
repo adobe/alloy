@@ -10,16 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi } from "vitest";
-import createEvent from "../../../../../../src/core/createEvent.js";
+import createEvent from "../../../../../../packages/core/src/core/createEvent.js";
 import createResponse from "../../../../helpers/createResponse.js";
 import {
   ADOBE_JOURNEY_OPTIMIZER,
   ADOBE_TARGET,
-} from "../../../../../../src/constants/decisionProvider.js";
+} from "../../../../../../packages/core/src/constants/decisionProvider.js";
 import {
   ALWAYS,
   NEVER,
-} from "../../../../../../src/constants/propositionInteractionType.js";
+} from "../../../../../../packages/core/src/constants/propositionInteractionType.js";
 
 export default (decisions) => {
   const response = createResponse({

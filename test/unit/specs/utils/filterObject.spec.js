@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import { filterObject } from "../../../../src/utils/index.js";
+import { filterObject } from "../../../../packages/core/src/utils/index.js";
 
 describe("utils:filterObject", () => {
   it("should filter out keys with values that do not pass the predicate", () => {

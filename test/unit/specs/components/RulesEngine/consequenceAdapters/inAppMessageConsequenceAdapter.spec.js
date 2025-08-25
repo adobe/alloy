@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { describe, it, expect } from "vitest";
-import inAppMessageConsequenceAdapter from "../../../../../../src/components/RulesEngine/consequenceAdapters/inAppMessageConsequenceAdapter.js";
-import { TEXT_HTML } from "../../../../../../src/constants/contentType.js";
+import inAppMessageConsequenceAdapter from "../../../../../../packages/core/src/components/RulesEngine/consequenceAdapters/inAppMessageConsequenceAdapter.js";
+import { TEXT_HTML } from "../../../../../../packages/core/src/constants/contentType.js";
 
 describe("RulesEngine:inAppMessageConsequenceAdapter", () => {
   it("handles cjmiam", () => {

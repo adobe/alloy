@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import injectExecuteCommand from "../../../../src/core/injectExecuteCommand.js";
+import injectExecuteCommand from "../../../../packages/core/src/core/injectExecuteCommand.js";
 import flushPromiseChains from "../../helpers/flushPromiseChains.js";
 
 describe("injectExecuteCommand", () => {

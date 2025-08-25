@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import handleOnBeforeSendEvent from "../../../../../../src/components/Advertising/handlers/onBeforeSendEventHandler.js";
+import handleOnBeforeSendEvent from "../../../../../../packages/core/src/components/Advertising/handlers/onBeforeSendEventHandler.js";
 
 // Mock network operations to prevent real network calls
 vi.mock("fetch", () => vi.fn());
@@ -75,21 +75,21 @@ if (typeof globalThis.window !== "undefined") {
 
 // Mock identity collectors to return resolved promises immediately
 vi.mock(
-  "../../../../../../src/components/Advertising/identities/collectSurferId.js",
+  "../../../../../../packages/core/src/components/Advertising/identities/collectSurferId.js",
   () => ({
     default: vi.fn(() => Promise.resolve("mock-surfer-id")),
   }),
 );
 
 vi.mock(
-  "../../../../../../src/components/Advertising/identities/collectID5Id.js",
+  "../../../../../../packages/core/src/components/Advertising/identities/collectID5Id.js",
   () => ({
     getID5Id: vi.fn(() => Promise.resolve("mock-id5-id")),
   }),
 );
 
 vi.mock(
-  "../../../../../../src/components/Advertising/identities/collectRampId.js",
+  "../../../../../../packages/core/src/components/Advertising/identities/collectRampId.js",
   () => ({
     getRampId: vi.fn(() => Promise.resolve("mock-ramp-id")),
   }),
@@ -97,7 +97,7 @@ vi.mock(
 
 // Mock helpers to prevent network calls
 vi.mock(
-  "../../../../../../src/components/Advertising/utils/helpers.js",
+  "../../../../../../packages/core/src/components/Advertising/utils/helpers.js",
   () => ({
     appendAdvertisingIdQueryToEvent: vi.fn((availableIds, event) => {
       // Mock the actual behavior of appending advertising IDs to the event query
@@ -184,13 +184,13 @@ describe("Advertising::onBeforeSendEventHandler", () => {
 
     // Get and reset mock functions - these are already mocked at module level
     const surferIdModule = await import(
-      "../../../../../../src/components/Advertising/identities/collectSurferId.js"
+      "../../../../../../packages/core/src/components/Advertising/identities/collectSurferId.js"
     );
     const id5IdModule = await import(
-      "../../../../../../src/components/Advertising/identities/collectID5Id.js"
+      "../../../../../../packages/core/src/components/Advertising/identities/collectID5Id.js"
     );
     const rampIdModule = await import(
-      "../../../../../../src/components/Advertising/identities/collectRampId.js"
+      "../../../../../../packages/core/src/components/Advertising/identities/collectRampId.js"
     );
 
     getSurferId = vi.mocked(surferIdModule.default);

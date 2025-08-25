@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import toInteger from "../../../../src/utils/toInteger.js";
+import toInteger from "../../../../packages/core/src/utils/toInteger.js";
 
 describe("toInteger", () => {
   [

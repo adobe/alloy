@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import trimQueryFromUrl from "../../../../../../src/components/ActivityCollector/utils/trimQueryFromUrl.js";
+import trimQueryFromUrl from "../../../../../../packages/core/src/components/ActivityCollector/utils/trimQueryFromUrl.js";
 
 describe("ActivityCollector::trimQueryFromUrl", () => {
   it("Removes query portion from URL", () => {

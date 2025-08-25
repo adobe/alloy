@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import toArray from "../../../../src/utils/toArray.js";
+import toArray from "../../../../packages/core/src/utils/toArray.js";
 
 describe("toArray", () => {
   it("does not convert value if already an array", () => {

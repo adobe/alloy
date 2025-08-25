@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { describe, it, expect } from "vitest";
-import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition.js";
+import injectCreateProposition from "../../../../../../packages/core/src/components/Personalization/handlers/injectCreateProposition.js";
 
 describe("injectCreateProposition", () => {
   const preprocess = (data) => `preprocessed ${data}`;

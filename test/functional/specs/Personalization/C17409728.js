@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { Selector, t } from "testcafe";
-import uuid from "../../../../src/utils/uuid.js";
+import uuid from "../../../../packages/core/src/utils/uuid.js";
 import createNetworkLogger from "../../helpers/networkLogger/index.js";
 import createFixture from "../../helpers/createFixture/index.js";
 import {
@@ -24,14 +24,14 @@ import addHtmlToBody from "../../helpers/dom/addHtmlToBody.js";
 import {
   CLICK_LABEL_DATA_ATTRIBUTE,
   INTERACT_ID_DATA_ATTRIBUTE,
-} from "../../../../src/components/Personalization/handlers/createDecorateProposition.js";
-import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../src/constants/decisionProvider.js";
+} from "../../../../packages/core/src/components/Personalization/handlers/createDecorateProposition.js";
+import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../packages/core/src/constants/decisionProvider.js";
 import {
   ALWAYS,
   DECORATED_ELEMENTS_ONLY,
   NEVER,
-} from "../../../../src/constants/propositionInteractionType.js";
-import { DOM_ACTION_COLLECT_INTERACTIONS } from "../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
+} from "../../../../packages/core/src/constants/propositionInteractionType.js";
+import { DOM_ACTION_COLLECT_INTERACTIONS } from "../../../../packages/core/src/components/Personalization/dom-actions/initDomActionsModules.js";
 import { responseStatus } from "../../helpers/assertions/index.js";
 
 const REASONABLE_WAIT_TIME = 250;
