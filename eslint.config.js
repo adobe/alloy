@@ -18,10 +18,7 @@ import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended"
 import react from "eslint-plugin-react";
 // eslint-disable-next-line import/no-unresolved -- eslint parses this a file, but it's a depenedency
 import { defineConfig, globalIgnores } from "eslint/config";
-import { glob } from "glob";
 import globals from "globals";
-
-const allComponentPaths = glob.sync("packages/core/src/components/*/");
 
 export default defineConfig([
   importPlugin.flatConfigs.recommended,
@@ -29,8 +26,8 @@ export default defineConfig([
   eslintPluginPrettierRecommended,
   compatPlugin.configs["flat/recommended"],
   globalIgnores([
-    "sandboxes/browser/build/",
-    "sandboxes/browser/public/",
+    "sandboxes/**/build/",
+    "sandboxes/**/public/",
     "node_modules/",
   ]),
   {
@@ -109,57 +106,6 @@ export default defineConfig([
       // We enable the rule in src/.eslintrc.js since that's the only place we
       // want to disallow importing extraneous dependencies.
       "import/prefer-default-export": "off",
-    },
-  },
-  {
-    name: "alloy/src",
-    files: ["packages/core/src/**/*.{cjs,js}"],
-    rules: {
-      "import/no-extraneous-dependencies": "error",
-      "import/extensions": [
-        "error",
-        {
-          js: "always",
-        },
-      ],
-      "import/no-restricted-paths": [
-        "error",
-        {
-          zones: [
-            // prevent components from importing from other components, but allow
-            // importing from themselves
-            ...allComponentPaths.map((componentPath, _, allPaths) => ({
-              target: componentPath,
-              from: [
-                "packages/core/src/core",
-                "packages/core/src/baseCode",
-                ...allPaths.filter((p) => p !== componentPath),
-              ],
-            })),
-            {
-              target: "packages/core/src/core",
-              from: "packages/core/src/baseCode",
-            },
-            {
-              target: "packages/core/src/utils",
-              from: [
-                "packages/core/src/core",
-                "packages/core/src/components",
-                "packages/core/src/baseCode",
-              ],
-            },
-            {
-              target: "packages/core/src/constants",
-              from: [
-                "packages/core/src/core",
-                "packages/core/src/components",
-                "packages/core/src/utils",
-                "packages/core/src/baseCode",
-              ],
-            },
-          ],
-        },
-      ],
     },
   },
   {
