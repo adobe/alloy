@@ -1,18 +1,9 @@
 {
-  "name": "@adobe/alloy",
+  "name": "@adobe/alloy-core",
   "version": "2.29.0-beta.1",
-  "description": "Adobe Experience Platform Web SDK",
+  "description": "Adobe Experience Platform Web SDK Core (Internal Package)",
   "type": "module",
-  "main": "./../../libEs5/index.js",
-  "module": "./../../libEs6/index.js",
-  "types": "./../../types/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./../../libEs6/index.js",
-      "require": "./../../libEs5/index.js",
-      "types": "./../../types/index.d.ts"
-    }
-  },
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/adobe/alloy.git",
