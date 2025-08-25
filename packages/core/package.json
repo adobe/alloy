@@ -1,0 +1,41 @@
+{
+  "name": "@adobe/alloy",
+  "version": "2.29.0-beta.1",
+  "description": "Adobe Experience Platform Web SDK",
+  "type": "module",
+  "main": "libEs5/index.js",
+  "module": "libEs6/index.js",
+  "types": "types/index.d.ts",
+  "files": [
+    "libEs5",
+    "libEs6",
+    "types",
+    "LICENSE_BANNER",
+    "babel.config.js",
+    "rollup.config.js",
+    ".browserslistrc",
+    "scripts/helpers/entryPointGeneratorBabelPlugin.js",
+    "scripts/helpers/versionBabelPlugin.js",
+    "scripts/helpers/path.js"
+  ],
+  "bin": {
+    "alloyBuilder": "scripts/alloyBuilder.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adobe/alloy.git",
+    "directory": "packages/core"
+  },
+  "author": "Adobe Inc.",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@adobe/aep-rules-engine": "^3.1.1",
+    "@adobe/reactor-cookie": "^1.1.0",
+    "@adobe/reactor-load-script": "^1.1.1",
+    "@adobe/reactor-object-assign": "^2.0.0",
+    "@adobe/reactor-query-string": "^2.0.0",
+    "css.escape": "^1.5.1",
+    "js-cookie": "3.0.5",
+    "uuid": "^11.1.0"
+  }
+}
