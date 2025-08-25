@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { beforeEach, describe, it, expect } from "vitest";
-import createMediaSessionCacheManager from "../../../../../src/components/StreamingMedia/createMediaSessionCacheManager.js";
+import createMediaSessionCacheManager from "../../../../../packages/core/src/components/StreamingMedia/createMediaSessionCacheManager.js";
 
 describe("StreamingMedia::createMediaSessionCacheManager", () => {
   let mediaSessionCacheManager;

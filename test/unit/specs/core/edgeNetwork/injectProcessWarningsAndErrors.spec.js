@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import injectProcessWarningsAndErrors from "../../../../../src/core/edgeNetwork/injectProcessWarningsAndErrors.js";
+import injectProcessWarningsAndErrors from "../../../../../packages/core/src/core/edgeNetwork/injectProcessWarningsAndErrors.js";
 
 describe("processWarningsAndErrors", () => {
   let logger;

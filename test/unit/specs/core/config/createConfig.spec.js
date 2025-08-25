@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { beforeEach, describe, it, expect } from "vitest";
-import createConfig from "../../../../../src/core/config/createConfig.js";
+import createConfig from "../../../../../packages/core/src/core/config/createConfig.js";
 
 let testConfig = {};
 describe("createConfig", () => {

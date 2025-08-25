@@ -10,7 +10,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import getLinkName from "../../../../../src/components/ActivityCollector/getLinkName.js";
+import getLinkName from "../../../../../packages/core/src/components/ActivityCollector/getLinkName.js";
 
 const createNodeWithAttribute = (nodeName, attributeName, attributeValue) => {
   const node = {

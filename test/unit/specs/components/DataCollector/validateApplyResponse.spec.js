@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { describe, it, expect } from "vitest";
-import validateApplyResponse from "../../../../../src/components/DataCollector/validateApplyResponse.js";
+import validateApplyResponse from "../../../../../packages/core/src/components/DataCollector/validateApplyResponse.js";
 
 describe("DataCollector::validateApplyResponse", () => {
   it("does not throw error for valid options", () => {

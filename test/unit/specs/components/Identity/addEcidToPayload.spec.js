@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect } from "vitest";
-import addEcidToPayload from "../../../../../src/components/Identity/addEcidToPayload.js";
+import addEcidToPayload from "../../../../../packages/core/src/components/Identity/addEcidToPayload.js";
 
 describe("Identity:addEcidToPayload", () => {
   it("adds ECID to payload", () => {

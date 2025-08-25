@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe } from "vitest";
-import { enumOf } from "../../../../../src/utils/validation/index.js";
+import { enumOf } from "../../../../../packages/core/src/utils/validation/index.js";
 import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation:enumOf", () => {

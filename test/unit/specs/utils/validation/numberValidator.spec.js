@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe } from "vitest";
-import { number } from "../../../../../src/utils/validation/index.js";
+import { number } from "../../../../../packages/core/src/utils/validation/index.js";
 import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::number", () => {

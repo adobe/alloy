@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe } from "vitest";
-import configValidators from "../../../../../src/components/ActivityCollector/configValidators.js";
+import configValidators from "../../../../../packages/core/src/components/ActivityCollector/configValidators.js";
 import testConfigValidators from "../../../helpers/testConfigValidators.js";
 
 describe("ActivityCollector config validators", () => {

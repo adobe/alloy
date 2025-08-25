@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createClickedElementProperties from "../../../../../src/components/ActivityCollector/createClickedElementProperties.js";
+import createClickedElementProperties from "../../../../../packages/core/src/components/ActivityCollector/createClickedElementProperties.js";
 
 describe("ActivityCollector::createClickedElementProperties", () => {
   let properties;

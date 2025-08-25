@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect } from "vitest";
-import injectHandleResponseForIdSyncs from "../../../../../src/components/Identity/injectHandleResponseForIdSyncs.js";
+import injectHandleResponseForIdSyncs from "../../../../../packages/core/src/components/Identity/injectHandleResponseForIdSyncs.js";
 
 describe("Identity::injectHandleResponseForIdSyncs", () => {
   it("processes ID syncs", () => {

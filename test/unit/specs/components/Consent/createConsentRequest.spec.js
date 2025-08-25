@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { describe, it, expect } from "vitest";
 import describeRequest from "../../../helpers/describeRequest.js";
-import createConsentRequest from "../../../../../src/components/Consent/createConsentRequest.js";
+import createConsentRequest from "../../../../../packages/core/src/components/Consent/createConsentRequest.js";
 
 describe("createConsentRequest", () => {
   describeRequest(createConsentRequest);

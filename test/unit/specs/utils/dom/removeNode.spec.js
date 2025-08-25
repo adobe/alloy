@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { afterEach, describe, it, expect } from "vitest";
-import createNode from "../../../../../src/utils/dom/createNode.js";
-import appendNode from "../../../../../src/utils/dom/appendNode.js";
-import removeNode from "../../../../../src/utils/dom/removeNode.js";
-import selectNodes from "../../../../../src/utils/dom/selectNodes.js";
+import createNode from "../../../../../packages/core/src/utils/dom/createNode.js";
+import appendNode from "../../../../../packages/core/src/utils/dom/appendNode.js";
+import removeNode from "../../../../../packages/core/src/utils/dom/removeNode.js";
+import selectNodes from "../../../../../packages/core/src/utils/dom/selectNodes.js";
 
 describe("DOM::removeNode", () => {
   afterEach(() => {

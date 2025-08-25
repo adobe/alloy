@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import createComponent from "../../../../../src/components/EventMerge/createComponent.js";
+import createComponent from "../../../../../packages/core/src/components/EventMerge/createComponent.js";
 
 describe("EventMerge:createComponent", () => {
   it("creates a component", () => {

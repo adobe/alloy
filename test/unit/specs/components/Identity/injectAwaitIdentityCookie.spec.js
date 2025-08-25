@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import injectAwaitIdentityCookie from "../../../../../src/components/Identity/injectAwaitIdentityCookie.js";
+import injectAwaitIdentityCookie from "../../../../../packages/core/src/components/Identity/injectAwaitIdentityCookie.js";
 
 describe("Identity::injectAwaitIdentityCookie", () => {
   let identityCookieExists;

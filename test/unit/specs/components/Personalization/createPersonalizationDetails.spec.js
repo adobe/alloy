@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import PAGE_WIDE_SCOPE from "../../../../../src/constants/pageWideScope.js";
-import createPersonalizationDetails from "../../../../../src/components/Personalization/createPersonalizationDetails.js";
-import createGetPageLocation from "../../../../../src/components/Personalization/createGetPageLocation.js";
+import PAGE_WIDE_SCOPE from "../../../../../packages/core/src/constants/pageWideScope.js";
+import createPersonalizationDetails from "../../../../../packages/core/src/components/Personalization/createPersonalizationDetails.js";
+import createGetPageLocation from "../../../../../packages/core/src/components/Personalization/createGetPageLocation.js";
 import {
   DEFAULT_CONTENT_ITEM,
   DOM_ACTION,
@@ -22,7 +22,7 @@ import {
   REDIRECT_ITEM,
   RULESET_ITEM,
   MESSAGE_CONTENT_CARD,
-} from "../../../../../src/constants/schema.js";
+} from "../../../../../packages/core/src/constants/schema.js";
 
 describe("Personalization::createPersonalizationDetails", () => {
   const TEST_SURFACE = "web://alloy.test.com/test/page/1";

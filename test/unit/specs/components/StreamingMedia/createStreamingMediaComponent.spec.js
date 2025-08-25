@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createStreamingMediaComponent from "../../../../../src/components/StreamingMedia/createStreamingMediaComponent.js";
+import createStreamingMediaComponent from "../../../../../packages/core/src/components/StreamingMedia/createStreamingMediaComponent.js";
 
 describe("StreamingMedia::createComponent", () => {
   const config = {

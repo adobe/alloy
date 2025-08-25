@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import parseConsentCookie from "../../../../../src/components/Consent/parseConsentCookie.js";
+import parseConsentCookie from "../../../../../packages/core/src/components/Consent/parseConsentCookie.js";
 
 describe("parseConsentCookie", () => {
   it("returns preferences by purpose", () => {

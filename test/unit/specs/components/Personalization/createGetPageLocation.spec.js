@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import createGetPageLocation from "../../../../../src/components/Personalization/createGetPageLocation.js";
+import createGetPageLocation from "../../../../../packages/core/src/components/Personalization/createGetPageLocation.js";
 
 describe("Personalization::createGetPageLocation", () => {
   it("should return page location object", () => {

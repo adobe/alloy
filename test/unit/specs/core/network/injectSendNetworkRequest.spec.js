@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
-import injectSendNetworkRequest from "../../../../../src/core/network/injectSendNetworkRequest.js";
+import injectSendNetworkRequest from "../../../../../packages/core/src/core/network/injectSendNetworkRequest.js";
 import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 describe("injectSendNetworkRequest", () => {

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import attachClickActivityCollector from "../../../../../src/components/ActivityCollector/attachClickActivityCollector.js";
+import attachClickActivityCollector from "../../../../../packages/core/src/components/ActivityCollector/attachClickActivityCollector.js";
 import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 describe("ActivityCollector::attachClickActivityCollector", () => {

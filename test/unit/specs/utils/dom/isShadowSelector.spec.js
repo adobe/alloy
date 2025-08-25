@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isShadowSelector from "../../../../../src/utils/dom/isShadowSelector.js";
+import isShadowSelector from "../../../../../packages/core/src/utils/dom/isShadowSelector.js";
 
 describe("Utils::DOM::isShadowSelector", () => {
   it("should detect shadow selectors", () => {

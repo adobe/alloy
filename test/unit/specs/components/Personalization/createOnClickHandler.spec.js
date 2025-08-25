@@ -10,18 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createOnClickHandler from "../../../../../src/components/Personalization/createOnClickHandler.js";
-import { mergeDecisionsMeta } from "../../../../../src/utils/event.js";
-import createEvent from "../../../../../src/core/createEvent.js";
-import { createNode } from "../../../../../src/utils/dom/index.js";
+import createOnClickHandler from "../../../../../packages/core/src/components/Personalization/createOnClickHandler.js";
+import { mergeDecisionsMeta } from "../../../../../packages/core/src/utils/event.js";
+import createEvent from "../../../../../packages/core/src/core/createEvent.js";
+import { createNode } from "../../../../../packages/core/src/utils/dom/index.js";
 import {
   ALWAYS,
   NEVER,
-} from "../../../../../src/constants/propositionInteractionType.js";
+} from "../../../../../packages/core/src/constants/propositionInteractionType.js";
 import {
   ADOBE_JOURNEY_OPTIMIZER,
   ADOBE_TARGET,
-} from "../../../../../src/constants/decisionProvider.js";
+} from "../../../../../packages/core/src/constants/decisionProvider.js";
 
 describe("Personalization::createOnClickHandler", () => {
   let collectInteractions;

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect } from "vitest";
-import getNamespacesFromResponse from "../../../../../src/components/Identity/getNamespacesFromResponse.js";
+import getNamespacesFromResponse from "../../../../../packages/core/src/components/Identity/getNamespacesFromResponse.js";
 
 describe("Identity::getEcidFromResponse", () => {
   it("does not return ECID if ECID does not exist in response", () => {

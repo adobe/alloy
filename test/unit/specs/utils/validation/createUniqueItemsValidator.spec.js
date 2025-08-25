@@ -14,7 +14,7 @@ import {
   string,
   arrayOf,
   number,
-} from "../../../../../src/utils/validation/index.js";
+} from "../../../../../packages/core/src/utils/validation/index.js";
 
 describe("validation::createUniqueItems", () => {
   it(`validates an empty array`, () => {

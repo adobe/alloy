@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createComponent from "../../../../../src/components/Identity/createComponent.js";
-import { defer } from "../../../../../src/utils/index.js";
+import createComponent from "../../../../../packages/core/src/components/Identity/createComponent.js";
+import { defer } from "../../../../../packages/core/src/utils/index.js";
 import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 describe("Identity::createComponent", () => {

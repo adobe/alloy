@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createConsentStateMachine from "../../../../../src/core/consent/createConsentStateMachine.js";
+import createConsentStateMachine from "../../../../../packages/core/src/core/consent/createConsentStateMachine.js";
 import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 const DECLINED_CONSENT_ERROR_CODE = "declinedConsent";

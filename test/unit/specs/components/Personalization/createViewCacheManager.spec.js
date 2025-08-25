@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { beforeEach, describe, it, expect } from "vitest";
-import { DEFAULT_CONTENT_ITEM } from "../../../../../src/constants/schema.js";
-import createViewCacheManager from "../../../../../src/components/Personalization/createViewCacheManager.js";
+import { DEFAULT_CONTENT_ITEM } from "../../../../../packages/core/src/constants/schema.js";
+import createViewCacheManager from "../../../../../packages/core/src/components/Personalization/createViewCacheManager.js";
 import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 const propsToJSON = (props) => props.map((p) => p.toJSON());

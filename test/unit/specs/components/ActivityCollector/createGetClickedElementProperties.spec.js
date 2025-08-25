@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createGetClickedElementProperties from "../../../../../src/components/ActivityCollector/createGetClickedElementProperties.js";
-import createClickActivityStorage from "../../../../../src/components/ActivityCollector/createClickActivityStorage.js";
+import createGetClickedElementProperties from "../../../../../packages/core/src/components/ActivityCollector/createGetClickedElementProperties.js";
+import createClickActivityStorage from "../../../../../packages/core/src/components/ActivityCollector/createClickActivityStorage.js";
 
 describe("ActivityCollector::createGetClickedElementProperties", () => {
   const mockWindow = {

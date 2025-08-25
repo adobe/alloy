@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { beforeEach, describe, it, expect } from "vitest";
-import createClickStorage from "../../../../../src/components/Personalization/createClickStorage.js";
+import createClickStorage from "../../../../../packages/core/src/components/Personalization/createClickStorage.js";
 
 describe("Personalization::createClickStorage", () => {
   let clickStorage;

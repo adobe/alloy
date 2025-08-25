@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import createConsentRequestPayload from "../../../../../src/components/Consent/createConsentRequestPayload.js";
+import createConsentRequestPayload from "../../../../../packages/core/src/components/Consent/createConsentRequestPayload.js";
 import describeRequestPayload from "../../../helpers/describeRequestPayload.js";
 
 describe("createConsentRequestPayload", () => {

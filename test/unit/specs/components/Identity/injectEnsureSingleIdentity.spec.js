@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import injectEnsureSingleIdentity from "../../../../../src/components/Identity/injectEnsureSingleIdentity.js";
-import { defer } from "../../../../../src/utils/index.js";
+import injectEnsureSingleIdentity from "../../../../../packages/core/src/components/Identity/injectEnsureSingleIdentity.js";
+import { defer } from "../../../../../packages/core/src/utils/index.js";
 import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 describe("Identity::injectEnsureSingleIdentity", () => {

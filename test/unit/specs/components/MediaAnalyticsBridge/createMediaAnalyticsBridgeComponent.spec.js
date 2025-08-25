@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createMediaAnalyticsBridgeComponent from "../../../../../src/components/MediaAnalyticsBridge/createMediaAnalyticsBridgeComponent.js";
+import createMediaAnalyticsBridgeComponent from "../../../../../packages/core/src/components/MediaAnalyticsBridge/createMediaAnalyticsBridgeComponent.js";
 
 describe("MediaAnalyticsBridge::createMediaAnalyticsBridgeComponent", () => {
   const config = {

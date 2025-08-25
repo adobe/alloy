@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { describe, it, expect } from "vitest";
-import mergeLifecycleResponses from "../../../../../src/core/edgeNetwork/mergeLifecycleResponses.js";
+import mergeLifecycleResponses from "../../../../../packages/core/src/core/edgeNetwork/mergeLifecycleResponses.js";
 
 describe("mergeLifecycleResponses", () => {
   it("works", () => {

@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 // tests for createMediaEventManager.js
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createMediaEventManager from "../../../../../src/components/StreamingMedia/createMediaEventManager.js";
+import createMediaEventManager from "../../../../../packages/core/src/components/StreamingMedia/createMediaEventManager.js";
 
 describe("StreamingMedia::createMediaEventManager", () => {
   let config;

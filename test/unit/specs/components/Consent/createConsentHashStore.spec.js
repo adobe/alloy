@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createConsentHashStore from "../../../../../src/components/Consent/createConsentHashStore.js";
+import createConsentHashStore from "../../../../../packages/core/src/components/Consent/createConsentHashStore.js";
 
 const CONSENT_IN = {
   standard: "Adobe",

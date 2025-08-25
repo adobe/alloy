@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createComponent from "../../../../../src/components/Context/createComponent.js";
-import createConfig from "../../../../../src/core/config/createConfig.js";
+import createComponent from "../../../../../packages/core/src/components/Context/createComponent.js";
+import createConfig from "../../../../../packages/core/src/core/config/createConfig.js";
 
 describe("Context::createComponent", () => {
   const logger = {

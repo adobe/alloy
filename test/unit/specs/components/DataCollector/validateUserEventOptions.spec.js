@@ -10,7 +10,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import validateUserEventOptions from "../../../../../src/components/DataCollector/validateUserEventOptions.js";
+import validateUserEventOptions from "../../../../../packages/core/src/components/DataCollector/validateUserEventOptions.js";
 
 describe("DataCollector::validateUserEventOptions", () => {
   it("throws error for invalid options", () => {

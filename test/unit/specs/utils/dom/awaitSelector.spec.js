@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect, afterAll } from "vitest";
-import awaitSelector from "../../../../../src/utils/dom/awaitSelector.js";
+import awaitSelector from "../../../../../packages/core/src/utils/dom/awaitSelector.js";
 
 describe("awaitSelector", () => {
   it("await via requestAnimationFrame", async () => {

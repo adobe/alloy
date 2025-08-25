@@ -11,9 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import injectSendEdgeNetworkRequest from "../../../../../src/core/edgeNetwork/injectSendEdgeNetworkRequest.js";
-import createConfig from "../../../../../src/core/config/createConfig.js";
-import { defer } from "../../../../../src/utils/index.js";
+import injectSendEdgeNetworkRequest from "../../../../../packages/core/src/core/edgeNetwork/injectSendEdgeNetworkRequest.js";
+import createConfig from "../../../../../packages/core/src/core/config/createConfig.js";
+import { defer } from "../../../../../packages/core/src/utils/index.js";
 import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 import assertFunctionCallOrder from "../../../helpers/assertFunctionCallOrder.js";
 

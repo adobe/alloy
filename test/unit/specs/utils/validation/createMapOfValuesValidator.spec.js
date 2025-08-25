@@ -16,7 +16,7 @@ import {
   arrayOf,
   anything,
   string,
-} from "../../../../../src/utils/validation/index.js";
+} from "../../../../../packages/core/src/utils/validation/index.js";
 import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::mapOfValues", () => {

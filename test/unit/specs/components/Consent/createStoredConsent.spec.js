@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createStoredConsent from "../../../../../src/components/Consent/createStoredConsent.js";
+import createStoredConsent from "../../../../../packages/core/src/components/Consent/createStoredConsent.js";
 
 describe("Consent:createStoredConsent", () => {
   let parseConsentCookie;

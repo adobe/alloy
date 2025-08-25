@@ -11,9 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect } from "vitest";
-import createInjectClickedElementProperties from "../../../../../src/components/ActivityCollector/createInjectClickedElementProperties.js";
-import createEvent from "../../../../../src/core/createEvent.js";
-import { downloadLinkQualifier as dlwValidator } from "../../../../../src/components/ActivityCollector/configValidators.js";
+import createInjectClickedElementProperties from "../../../../../packages/core/src/components/ActivityCollector/createInjectClickedElementProperties.js";
+import createEvent from "../../../../../packages/core/src/core/createEvent.js";
+import { downloadLinkQualifier as dlwValidator } from "../../../../../packages/core/src/components/ActivityCollector/configValidators.js";
 
 describe("ActivityCollector::createInjectClickedElementProperties", () => {
   const getClickedElementProperties = vi.fn();
