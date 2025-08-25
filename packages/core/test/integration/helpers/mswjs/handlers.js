@@ -26,7 +26,7 @@ export const sendEventHandler = http.post(
     if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
       return HttpResponse.text(
         await readFile(
-          `${server.config.root}/test/integration/helpers/mocks/sendEventResponse.json`,
+          `${server.config.root}/packages/core/test/integration/helpers/mocks/sendEventResponse.json`,
         ),
       );
     }
@@ -45,7 +45,7 @@ export const sendEventErrorHandler = http.post(
     if (configId === "BOGUS") {
       return HttpResponse.text(
         await readFile(
-          `${server.config.root}/test/integration/helpers/mocks/sendEventErrorResponse.json`,
+          `${server.config.root}/packages/core/test/integration/helpers/mocks/sendEventErrorResponse.json`,
         ),
         {
           status: 400,
@@ -67,7 +67,7 @@ export const demdexHandler = http.post(
     if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
       return HttpResponse.text(
         await readFile(
-          `${server.config.root}/test/integration/helpers/mocks/demdexResponse.json`,
+          `${server.config.root}/packages/core/test/integration/helpers/mocks/demdexResponse.json`,
         ),
       );
     }
@@ -86,7 +86,7 @@ export const firstPartyAlloyHandler = http.post(
     if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
       return HttpResponse.text(
         await readFile(
-          `${server.config.root}/test/integration/helpers/mocks/firstPartyAlloyResponse.json`,
+          `${server.config.root}/packages/core/test/integration/helpers/mocks/firstPartyAlloyResponse.json`,
         ),
       );
     }
@@ -105,7 +105,7 @@ export const inAppMessageHandler = http.post(
     if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
       return HttpResponse.text(
         await readFile(
-          `${server.config.root}/test/integration/helpers/mocks/inAppMessageResponse.json`,
+          `${server.config.root}/packages/core/test/integration/helpers/mocks/inAppMessageResponse.json`,
         ),
       );
     }
@@ -123,7 +123,7 @@ export const contentCardsAndEventHistoryOperationsOnSendEvent = http.post(
 
     if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
       let response = await readFile(
-        `${server.config.root}/test/integration/helpers/mocks/contentCardsAndEventHistoryOperations.json`,
+        `${server.config.root}/packages/core/test/integration/helpers/mocks/contentCardsAndEventHistoryOperations.json`,
       );
       response = response.replace(
         "{{value}}",
@@ -146,7 +146,7 @@ export const contentCardsAndEventHistoryOperations = http.post(
 
     if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
       let response = await readFile(
-        `${server.config.root}/test/integration/helpers/mocks/contentCardsAndEventHistoryOperations.json`,
+        `${server.config.root}/packages/core/test/integration/helpers/mocks/contentCardsAndEventHistoryOperations.json`,
       );
       response = response.replace("{{value}}", "someOtherValue");
 
