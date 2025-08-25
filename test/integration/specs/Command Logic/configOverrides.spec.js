@@ -14,7 +14,7 @@ import { sendEventHandler } from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
 
 describe("Config overrides", () => {
-  test.only("should not include 'global' config overrides in payload if the service is disabled in the command options", async ({
+  test("should not include 'global' config overrides in payload if the service is disabled in the command options", async ({
     alloy,
     worker,
     networkRecorder,
