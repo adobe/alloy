@@ -3,28 +3,15 @@
   "version": "2.29.0",
   "description": "Adobe Experience Platform Web SDK",
   "type": "module",
-  "main": "libEs5/index.js",
-  "module": "libEs6/index.js",
-  "types": "types/index.d.ts",
-  "files": [
-    "libEs5",
-    "libEs6",
-    "types",
-    "LICENSE_BANNER",
-    "babel.config.js",
-    "rollup.config.js",
-    ".browserslistrc",
-    "scripts/helpers/entryPointGeneratorBabelPlugin.js",
-    "scripts/helpers/versionBabelPlugin.js",
-    "scripts/helpers/path.js"
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "sandboxes/*"
   ],
-  "bin": {
-    "alloyBuilder": "scripts/alloyBuilder.js"
-  },
   "scripts": {
     "clean": "rimraf dist distTest libEs5 libEs6 types",
-    "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{src,test,scripts,sandbox}/**/*.{js,cjs,mjs,jsx}\"",
-    "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandbox,src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
+    "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{packages/core/src,test,scripts,sandboxes/browser}/**/*.{js,cjs,mjs,jsx}\"",
+    "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandboxes/browser,packages/core/src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
     "types": "tsc",
     "test": "npx playwright install chromium && vitest run && npm run test:scripts",
     "test:coverage": "rimraf coverage && npx playwright install chromium && vitest run --coverage",
@@ -43,12 +30,12 @@
     "test:functional:build:int": "rollup -c --environment BASE_CODE_MIN,STANDALONE,NPM_PACKAGE_LOCAL",
     "test:functional:build:prod": "rollup -c --environment BASE_CODE_MIN,NPM_PACKAGE_PROD",
     "test:scripts": "vitest run --config=./scripts/specs/vitest.config.js",
-    "dev": "concurrently --names build,sandbox \"rollup -c -w --environment SANDBOX\" \"cd sandbox && export REACT_APP_NONCE=321 && npm start\"",
+    "dev": "concurrently --names build,sandbox \"rollup -c -w --environment SANDBOX\" \"cd sandboxes/browser && export REACT_APP_NONCE=321 && npm start\"",
     "build": "npm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,BUNDLESIZE && echo \"Base Code:\" && cat distTest/baseCode.min.js",
     "build:watch": "npm run clean && rollup -c --watch --environment BASE_CODE_MIN,STANDALONE",
     "build:custom": "node scripts/alloyBuilder.js",
-    "prepare": "husky && cd sandbox && npm install",
-    "prepack": "npm run clean && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6 && npm run types",
+    "prepare": "husky && cd sandboxes/browser && npm install",
+    "prepack": "npm run clean && babel packages/core/src -d libEs5 --env-name npmEs5 && babel packages/core/src -d libEs6 --env-name npmEs6 && npm run types",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
     "add-license": "./scripts/add-license.js"
   },
@@ -56,13 +43,13 @@
     "./*.{cjs,mjs,js,jsx}": [
       "eslint --cache --fix"
     ],
-    "./{src,test,scripts}/**/*.{cjs,mjs,js,jsx}": [
+    "./{packages/core/src,test,scripts}/**/*.{cjs,mjs,js,jsx}": [
       "eslint --cache --fix"
     ],
     "./*.{html,js,cjs,mjs,jsx}": [
       "prettier --write"
     ],
-    "./{sandbox,src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}": [
+    "./{sandboxes/browser,packages/core/src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}": [
       "prettier --write"
     ]
   },
