@@ -3,7 +3,24 @@
   "version": "2.29.0",
   "description": "Adobe Experience Platform Web SDK",
   "type": "module",
-  "private": true,
+  "main": "libEs5/index.js",
+  "module": "libEs6/index.js",
+  "types": "types/index.d.ts",
+  "files": [
+    "libEs5",
+    "libEs6",
+    "types",
+    "LICENSE_BANNER",
+    "babel.config.js",
+    "rollup.config.js",
+    ".browserslistrc",
+    "scripts/helpers/entryPointGeneratorBabelPlugin.js",
+    "scripts/helpers/versionBabelPlugin.js",
+    "scripts/helpers/path.js"
+  ],
+  "bin": {
+    "alloyBuilder": "scripts/alloyBuilder.js"
+  },
   "workspaces": [
     "packages/*",
     "sandboxes/*"
