@@ -56,7 +56,7 @@ export default defineConfig({
     ],
 
     coverage: {
-      include: ["src/**/*"],
+      include: ["packages/core/src/**/*"],
       reporter: ["lcov", "html", "text"],
     },
   },

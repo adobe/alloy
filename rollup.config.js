@@ -198,7 +198,7 @@ export const buildConfig = ({
   variant = STANDALONE,
   minify = false,
   babelPlugins = [],
-  input = `${dirname}/src/standalone.js`,
+  input = `${dirname}/packages/core/src/standalone.js`,
   file,
 }) => {
   const plugins = buildPlugins({ variant, minify, babelPlugins });
@@ -206,7 +206,7 @@ export const buildConfig = ({
 
   if (variant === BASE_CODE) {
     return {
-      input: "src/baseCode.js",
+      input: "packages/core/src/baseCode.js",
       output: [
         {
           file: `distTest/baseCode${minifiedExtension}.js`,
