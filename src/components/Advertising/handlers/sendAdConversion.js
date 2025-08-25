@@ -33,7 +33,7 @@ export default ({
 
   return async () => {
     const { skwcid, efid } = getUrlParams();
-    const isClickThru = !!(skwcid && efid);
+    const isClickThru = !!(skwcid || efid);
 
     try {
       if (isClickThru) {
