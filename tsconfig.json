@@ -1,11 +1,11 @@
 {
-  "include": ["src/**/*"],
+  "include": ["packages/core/src/**/*"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "allowJs": true,
     "declaration": true,
     "emitDeclarationOnly": true,
     "outDir": "types",
-    "declarationMap": true,
+    "declarationMap": true
   }
 }

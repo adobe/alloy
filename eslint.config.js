@@ -21,14 +21,18 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import { glob } from "glob";
 import globals from "globals";
 
-const allComponentPaths = glob.sync("src/components/*/");
+const allComponentPaths = glob.sync("packages/core/src/components/*/");
 
 export default defineConfig([
   importPlugin.flatConfigs.recommended,
   pluginJs.configs.recommended,
   eslintPluginPrettierRecommended,
   compatPlugin.configs["flat/recommended"],
-  globalIgnores(["sandbox/build/", "sandbox/public/", "node_modules/"]),
+  globalIgnores([
+    "sandboxes/browser/build/",
+    "sandboxes/browser/public/",
+    "node_modules/",
+  ]),
   {
     name: "alloy/shared",
     languageOptions: {
@@ -109,7 +113,7 @@ export default defineConfig([
   },
   {
     name: "alloy/src",
-    files: ["src/**/*.{cjs,js}"],
+    files: ["packages/core/src/**/*.{cjs,js}"],
     rules: {
       "import/no-extraneous-dependencies": "error",
       "import/extensions": [
@@ -127,22 +131,31 @@ export default defineConfig([
             ...allComponentPaths.map((componentPath, _, allPaths) => ({
               target: componentPath,
               from: [
-                "src/core",
-                "src/baseCode",
+                "packages/core/src/core",
+                "packages/core/src/baseCode",
                 ...allPaths.filter((p) => p !== componentPath),
               ],
             })),
             {
-              target: "src/core",
-              from: "src/baseCode",
+              target: "packages/core/src/core",
+              from: "packages/core/src/baseCode",
             },
             {
-              target: "src/utils",
-              from: ["src/core", "src/components", "src/baseCode"],
+              target: "packages/core/src/utils",
+              from: [
+                "packages/core/src/core",
+                "packages/core/src/components",
+                "packages/core/src/baseCode",
+              ],
             },
             {
-              target: "src/constants",
-              from: ["src/core", "src/components", "src/utils", "src/baseCode"],
+              target: "packages/core/src/constants",
+              from: [
+                "packages/core/src/core",
+                "packages/core/src/components",
+                "packages/core/src/utils",
+                "packages/core/src/baseCode",
+              ],
             },
           ],
         },
