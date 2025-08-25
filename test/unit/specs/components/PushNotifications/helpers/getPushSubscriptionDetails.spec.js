@@ -105,7 +105,7 @@ describe("getPushSubscriptionDetails", () => {
       await expect(
         getPushSubscriptionDetails({ vapidPublicKey, window: mockWindow }),
       ).rejects.toThrow(
-        "The user didn't grant permissions for push notifications.",
+        "The user has not given permission to send push notifications.",
       );
     });
 
@@ -115,7 +115,7 @@ describe("getPushSubscriptionDetails", () => {
       await expect(
         getPushSubscriptionDetails({ vapidPublicKey, window: mockWindow }),
       ).rejects.toThrow(
-        "The user didn't grant permissions for push notifications.",
+        "The user has not given permission to send push notifications.",
       );
     });
 
