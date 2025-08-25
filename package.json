@@ -52,7 +52,7 @@
     "build:watch": "npm run clean && rollup -c --watch --environment BASE_CODE_MIN,STANDALONE",
     "build:custom": "node scripts/alloyBuilder.js",
     "prepare": "husky",
-    "prepack": "npm run clean && babel packages/core/src -d libEs5 --env-name npmEs5 && babel packages/core/src -d libEs6 --env-name npmEs6 && npm run types",
+    "prepack": "npm run clean && babel packages/core/src -d libEs5 --env-name npmEs5 && babel packages/core/src -d libEs6 --env-name npmEs6 && echo '{\"type\":\"commonjs\"}' > libEs5/package.json && echo '{\"type\":\"module\"}' > libEs6/package.json && npm run types",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
     "add-license": "./scripts/add-license.js"
   },
