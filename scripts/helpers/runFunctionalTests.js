@@ -59,7 +59,7 @@ fs.readFile("dist/alloy.js", "utf8", (readFileErr, alloyData) => {
 
   // Generate a glob pattern to match only the included components' test specs
   const includedComponentsPattern = adjustedComponentNames.join("|");
-  const testSpecsGlobPattern = `test/functional/specs/@(${includedComponentsPattern})/**/*.js`;
+  const testSpecsGlobPattern = `packages/core/test/functional/specs/@(${includedComponentsPattern})/**/*.js`;
 
   glob(testSpecsGlobPattern, (globErr, files) => {
     if (globErr) {
