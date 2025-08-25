@@ -14,7 +14,8 @@ governing permissions and limitations under the License.
 
 import { useEffect } from "react";
 
-import initializeAlloy from "@adobe/alloy/packages/core/src/baseCode/index";
+// eslint-disable-next-line import/no-unresolved
+import initializeAlloy from "@adobe/alloy/baseCode/index";
 import getUrlParameter from "./getUrlParameter";
 import includeScript from "./includeScript";
 
