@@ -14,7 +14,7 @@ governing permissions and limitations under the License.
 
 import { useEffect } from "react";
 
-import initializeAlloy from "@adobe/alloy/src/baseCode/index";
+import initializeAlloy from "@adobe/alloy/packages/core/src/baseCode/index";
 import getUrlParameter from "./getUrlParameter";
 import includeScript from "./includeScript";
 
