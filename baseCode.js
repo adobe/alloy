@@ -11,4 +11,5 @@ governing permissions and limitations under the License.
 */
 
 // Compatibility layer - import and execute from packages/core
-import "./packages/core/src/baseCode";
+// eslint-disable-next-line import/extensions
+import "./packages/core/src/baseCode.js";
