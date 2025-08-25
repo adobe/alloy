@@ -50,7 +50,7 @@ const getPushSubscriptionDetails = async ({ vapidPublicKey, window }) => {
   const notification = window.Notification;
   if (notification.permission !== "granted") {
     throw new Error(
-      "The user didn't grant permissions for push notifications.",
+      "The user has not given permission to send push notifications.",
     );
   }
 

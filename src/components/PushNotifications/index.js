@@ -20,12 +20,12 @@ import { objectOf, string } from "../../utils/validation/index.js";
 import { sanitizeOrgIdForCookieName } from "../../utils/index.js";
 import makeSendPushSubscriptionRequest from "./request/makeSendPushSubscriptionRequest.js";
 
-const isComponentDisabled = ({
+const isComponentConfigured = ({
   orgId,
   pushNotifications: { vapidPublicKey } = {
     vapidPublicKey: undefined,
   },
-}) => orgId == null || vapidPublicKey == null;
+}) => orgId && vapidPublicKey;
 
 /**
  * @function
@@ -53,7 +53,7 @@ const createPushNotifications = ({
     commands: {
       sendPushSubscription: {
         run: async () => {
-          if (isComponentDisabled(config)) {
+          if (isComponentConfigured(config)) {
             throw new Error(
               "Push notifications module is not configured. No VAPID public key was provided.",
             );
