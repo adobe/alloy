@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import sortObjectKeysRecursively from "../../../../src/utils/sortObjectKeysRecursively.js";
+import sortObjectKeysRecursively from "../../../../packages/core/src/utils/sortObjectKeysRecursively.js";
 
 describe("sortObjectKeysRecursively", () => {
   const sameHashCases = [

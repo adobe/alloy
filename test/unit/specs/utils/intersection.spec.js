@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import intersection from "../../../../src/utils/intersection.js";
+import intersection from "../../../../packages/core/src/utils/intersection.js";
 
 describe("intersection", () => {
   it("returns items that are found within both arrays", () => {

@@ -12,8 +12,8 @@ governing permissions and limitations under the License.
 
 import { describe, it, expect } from "vitest";
 
-import extractPayloadsFromEventHistoryOperations from "../../../../../../src/components/RulesEngine/utils/extractPayloadsFromEventHistoryOperations.js";
-import { EVENT_HISTORY_OPERATION } from "../../../../../../src/constants/schema.js";
+import extractPayloadsFromEventHistoryOperations from "../../../../../../packages/core/src/components/RulesEngine/utils/extractPayloadsFromEventHistoryOperations.js";
+import { EVENT_HISTORY_OPERATION } from "../../../../../../packages/core/src/constants/schema.js";
 
 describe("extractPayloadsFromEventHistoryOperations", () => {
   it("should return empty array for empty proposition list", () => {

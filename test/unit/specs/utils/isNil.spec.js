@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isNil from "../../../../src/utils/isNil.js";
+import isNil from "../../../../packages/core/src/utils/isNil.js";
 
 describe("isNil", () => {
   it("returns true when null", () => {

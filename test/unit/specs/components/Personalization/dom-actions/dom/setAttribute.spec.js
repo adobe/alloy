@@ -11,13 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import { afterEach, describe, it, expect } from "vitest";
-import setAttribute from "../../../../../../../src/components/Personalization/dom-actions/dom/setAttribute.js";
+import setAttribute from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/setAttribute.js";
 import {
   createNode,
   removeNode,
   selectNodes,
-} from "../../../../../../../src/utils/dom/index.js";
-import { getAttribute } from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+} from "../../../../../../../packages/core/src/utils/dom/index.js";
+import { getAttribute } from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/index.js";
 
 describe("Personalization::DOM::setAttribute", () => {
   afterEach(() => {

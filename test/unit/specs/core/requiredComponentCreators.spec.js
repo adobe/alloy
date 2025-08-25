@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import * as requiredComponentCreators from "../../../../src/core/requiredComponentCreators.js";
+import * as requiredComponentCreators from "../../../../packages/core/src/core/requiredComponentCreators.js";
 
 describe("requiredComponentCreators", () => {
   it("is an object of component creators", () => {

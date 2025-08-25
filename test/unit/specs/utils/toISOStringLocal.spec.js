@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi, describe, it, expect } from "vitest";
-import { toISOStringLocal } from "../../../../src/utils/index.js";
+import { toISOStringLocal } from "../../../../packages/core/src/utils/index.js";
 
 describe("toISOStringLocal", () => {
   it("handles a date in Utah", () => {

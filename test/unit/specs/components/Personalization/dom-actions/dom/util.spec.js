@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import { addPxIfMissing } from "../../../../../../../src/components/Personalization/dom-actions/dom/util.js";
+import { addPxIfMissing } from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/util.js";
 
 describe("Personalization::DOM::util", () => {
   it("appends 'px' string if missing", () => {

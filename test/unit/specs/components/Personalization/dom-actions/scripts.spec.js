@@ -15,11 +15,11 @@ import {
   getInlineScripts,
   getRemoteScriptsUrls,
   executeInlineScripts,
-} from "../../../../../../src/components/Personalization/dom-actions/scripts.js";
+} from "../../../../../../packages/core/src/components/Personalization/dom-actions/scripts.js";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
-import { createFragment } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
-import { DIV } from "../../../../../../src/constants/tagName.js";
-import { createNode } from "../../../../../../src/utils/dom/index.js";
+import { createFragment } from "../../../../../../packages/core/src/components/Personalization/dom-actions/dom/index.js";
+import { DIV } from "../../../../../../packages/core/src/constants/tagName.js";
+import { createNode } from "../../../../../../packages/core/src/utils/dom/index.js";
 
 describe("Personalization::helper::scripts", () => {
   beforeEach(() => {

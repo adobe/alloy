@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { describe, it, expect } from "vitest";
-import { deduplicateArray } from "../../../../src/utils/index.js";
+import { deduplicateArray } from "../../../../packages/core/src/utils/index.js";
 
 describe("deduplicateArray", () => {
   it("should return an empty array if input is empty", () => {

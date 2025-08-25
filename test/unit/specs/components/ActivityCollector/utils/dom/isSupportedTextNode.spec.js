@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isSupportedTextNode from "../../../../../../../src/components/ActivityCollector/utils/dom/isSupportedTextNode.js";
+import isSupportedTextNode from "../../../../../../../packages/core/src/components/ActivityCollector/utils/dom/isSupportedTextNode.js";
 
 describe("ActivityCollector::isSupportedTextNode", () => {
   it("should return true for text node", () => {

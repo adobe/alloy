@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import getAbsoluteUrlFromAnchorElement from "../../../../../../../src/components/ActivityCollector/utils/dom/getAbsoluteUrlFromAnchorElement.js";
+import getAbsoluteUrlFromAnchorElement from "../../../../../../../packages/core/src/components/ActivityCollector/utils/dom/getAbsoluteUrlFromAnchorElement.js";
 
 const initAnchorState = (window, element, anchorState) => {
   element.href = anchorState["element.href"];

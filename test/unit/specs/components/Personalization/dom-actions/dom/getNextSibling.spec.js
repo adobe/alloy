@@ -11,9 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import getNextSibling from "../../../../../../../src/components/Personalization/dom-actions/dom/getNextSibling.js";
-import createFragment from "../../../../../../../src/components/Personalization/dom-actions/dom/createFragment.js";
-import getFirstChild from "../../../../../../../src/components/Personalization/dom-actions/dom/getFirstChild.js";
+import getNextSibling from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/getNextSibling.js";
+import createFragment from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/createFragment.js";
+import getFirstChild from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/getFirstChild.js";
 
 describe("Personalization::helper::dom::getNextSibling", () => {
   it("returns the element next sibling", () => {

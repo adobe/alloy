@@ -22,11 +22,11 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import {
   ADOBE_JOURNEY_OPTIMIZER,
   ADOBE_TARGET,
-} from "../../../../src/constants/decisionProvider.js";
+} from "../../../../packages/core/src/constants/decisionProvider.js";
 import {
   ALWAYS,
   NEVER,
-} from "../../../../src/constants/propositionInteractionType.js";
+} from "../../../../packages/core/src/constants/propositionInteractionType.js";
 
 const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled, {
   onBeforeEventSend: () => {},

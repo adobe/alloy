@@ -13,26 +13,26 @@ import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   CLICK_LABEL_DATA_ATTRIBUTE,
   INTERACT_ID_DATA_ATTRIBUTE,
-} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
+} from "../../../../../../packages/core/src/components/Personalization/handlers/createDecorateProposition.js";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 import {
   appendNode,
   createNode,
-} from "../../../../../../src/utils/dom/index.js";
-import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+} from "../../../../../../packages/core/src/utils/dom/index.js";
+import { getAttribute } from "../../../../../../packages/core/src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
 import {
   DOM_ACTION_CLICK,
   DOM_ACTION_SET_HTML,
-} from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
+} from "../../../../../../packages/core/src/components/Personalization/dom-actions/initDomActionsModules.js";
 import {
   DECORATED_ELEMENTS_ONLY,
   NEVER,
-} from "../../../../../../src/constants/propositionInteractionType.js";
+} from "../../../../../../packages/core/src/constants/propositionInteractionType.js";
 import {
   ADOBE_JOURNEY_OPTIMIZER,
   ADOBE_TARGET,
-} from "../../../../../../src/constants/decisionProvider.js";
+} from "../../../../../../packages/core/src/constants/decisionProvider.js";
 
 describe("Personalization::createDecorateProposition", () => {
   let decorateProposition;

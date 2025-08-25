@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect } from "vitest";
-import createComponentRegistry from "../../../../src/core/createComponentRegistry.js";
+import createComponentRegistry from "../../../../packages/core/src/core/createComponentRegistry.js";
 
 const commandErrorRegex =
   /\[CompOne\] An error occurred while executing the perform command./;

@@ -28,7 +28,7 @@ import initDomActionsModules, {
   DOM_ACTION_SET_STYLE,
   DOM_ACTION_SET_TEXT,
   DOM_ACTION_COLLECT_INTERACTIONS,
-} from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
+} from "../../../../../../packages/core/src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 const buildSet = () => {
   const result = new Set();

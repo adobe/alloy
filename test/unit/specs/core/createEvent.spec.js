@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { beforeEach, describe, it, expect } from "vitest";
-import createEvent from "../../../../src/core/createEvent.js";
+import createEvent from "../../../../packages/core/src/core/createEvent.js";
 
 describe("createEvent", () => {
   let event;

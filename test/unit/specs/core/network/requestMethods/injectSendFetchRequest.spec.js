@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect } from "vitest";
-import injectSendFetchRequest from "../../../../../../src/core/network/requestMethods/injectSendFetchRequest.js";
+import injectSendFetchRequest from "../../../../../../packages/core/src/core/network/requestMethods/injectSendFetchRequest.js";
 
 describe("injectSendFetchRequest", () => {
   it("resolves returned promise upon network success", () => {

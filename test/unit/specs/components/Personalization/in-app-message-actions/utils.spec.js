@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { beforeEach, describe, it, expect } from "vitest";
-import { removeElementById } from "../../../../../../src/components/Personalization/in-app-message-actions/utils.js";
+import { removeElementById } from "../../../../../../packages/core/src/components/Personalization/in-app-message-actions/utils.js";
 
 describe("removeElementById", () => {
   beforeEach(() => {

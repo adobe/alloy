@@ -16,8 +16,8 @@ import {
   appendNode,
   selectNodes,
   removeNode,
-} from "../../../../../../../src/utils/dom/index.js";
-import collectClicks from "../../../../../../../src/components/Personalization/dom-actions/clicks/collectClicks.js";
+} from "../../../../../../../packages/core/src/utils/dom/index.js";
+import collectClicks from "../../../../../../../packages/core/src/components/Personalization/dom-actions/clicks/collectClicks.js";
 
 describe("Personalization::tracking::clicks", () => {
   afterEach(() => {

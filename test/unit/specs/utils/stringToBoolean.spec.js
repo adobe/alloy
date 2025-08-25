@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { describe, it, expect } from "vitest";
-import { stringToBoolean } from "../../../../src/utils/index.js";
+import { stringToBoolean } from "../../../../packages/core/src/utils/index.js";
 
 describe("stringToBoolean", () => {
   ["true", "TRUE", "True"].forEach((str) => {

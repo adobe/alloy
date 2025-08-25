@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import schemaTypeConsequenceAdapter from "../../../../../../src/components/RulesEngine/consequenceAdapters/schemaTypeConsequenceAdapter.js";
-import { TEXT_HTML } from "../../../../../../src/constants/contentType.js";
+import schemaTypeConsequenceAdapter from "../../../../../../packages/core/src/components/RulesEngine/consequenceAdapters/schemaTypeConsequenceAdapter.js";
+import { TEXT_HTML } from "../../../../../../packages/core/src/constants/contentType.js";
 
 describe("RulesEngine:schemaTypeConsequenceAdapter", () => {
   it("handles schema", () => {

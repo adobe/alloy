@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, afterAll, describe, it, expect } from "vitest";
-import awaitVisitorOptIn from "../../../../../../src/components/Identity/visitorService/awaitVisitorOptIn.js";
+import awaitVisitorOptIn from "../../../../../../packages/core/src/components/Identity/visitorService/awaitVisitorOptIn.js";
 
 const logger = {
   info: vi.fn(),

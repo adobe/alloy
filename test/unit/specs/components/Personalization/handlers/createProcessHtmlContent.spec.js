@@ -13,14 +13,14 @@ import { vi, beforeEach, describe, it, expect } from "vitest";
 import {
   ADOBE_JOURNEY_OPTIMIZER,
   ADOBE_TARGET,
-} from "../../../../../../src/constants/decisionProvider.js";
-import createProcessHtmlContent from "../../../../../../src/components/Personalization/handlers/createProcessHtmlContent.js";
-import createInteractionStorage from "../../../../../../src/components/Personalization/createInteractionStorage.js";
-import { HTML_CONTENT_ITEM } from "../../../../../../src/constants/schema.js";
+} from "../../../../../../packages/core/src/constants/decisionProvider.js";
+import createProcessHtmlContent from "../../../../../../packages/core/src/components/Personalization/handlers/createProcessHtmlContent.js";
+import createInteractionStorage from "../../../../../../packages/core/src/components/Personalization/createInteractionStorage.js";
+import { HTML_CONTENT_ITEM } from "../../../../../../packages/core/src/constants/schema.js";
 import {
   ALWAYS,
   NEVER,
-} from "../../../../../../src/constants/propositionInteractionType.js";
+} from "../../../../../../packages/core/src/constants/propositionInteractionType.js";
 import createMockProposition from "../../../../helpers/createMockProposition.js";
 
 describe("createProcessHtmlContent", () => {

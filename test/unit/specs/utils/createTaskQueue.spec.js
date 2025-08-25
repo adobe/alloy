@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect } from "vitest";
-import createTaskQueue from "../../../../src/utils/createTaskQueue.js";
-import { defer } from "../../../../src/utils/index.js";
+import createTaskQueue from "../../../../packages/core/src/utils/createTaskQueue.js";
+import { defer } from "../../../../packages/core/src/utils/index.js";
 import flushPromiseChains from "../../helpers/flushPromiseChains.js";
 
 describe("createTaskQueue", () => {

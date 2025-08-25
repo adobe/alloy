@@ -10,36 +10,36 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi } from "vitest";
-import createEvent from "../../../../../../src/core/createEvent.js";
+import createEvent from "../../../../../../packages/core/src/core/createEvent.js";
 import flushPromiseChains from "../../../../helpers/flushPromiseChains.js";
-import createComponent from "../../../../../../src/components/Personalization/createComponent.js";
-import createCollect from "../../../../../../src/utils/createCollect.js";
-import createFetchDataHandler from "../../../../../../src/components/Personalization/createFetchDataHandler.js";
-import collectInteractions from "../../../../../../src/components/Personalization/dom-actions/clicks/collectInteractions.js";
-import isAuthoringModeEnabled from "../../../../../../src/components/Personalization/utils/isAuthoringModeEnabled.js";
+import createComponent from "../../../../../../packages/core/src/components/Personalization/createComponent.js";
+import createCollect from "../../../../../../packages/core/src/utils/createCollect.js";
+import createFetchDataHandler from "../../../../../../packages/core/src/components/Personalization/createFetchDataHandler.js";
+import collectInteractions from "../../../../../../packages/core/src/components/Personalization/dom-actions/clicks/collectInteractions.js";
+import isAuthoringModeEnabled from "../../../../../../packages/core/src/components/Personalization/utils/isAuthoringModeEnabled.js";
 import {
   mergeDecisionsMeta,
   mergeQuery,
-} from "../../../../../../src/utils/event.js";
-import createOnClickHandler from "../../../../../../src/components/Personalization/createOnClickHandler.js";
-import createViewCacheManager from "../../../../../../src/components/Personalization/createViewCacheManager.js";
-import createViewChangeHandler from "../../../../../../src/components/Personalization/createViewChangeHandler.js";
-import createInteractionStorage from "../../../../../../src/components/Personalization/createInteractionStorage.js";
-import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage.js";
-import createApplyPropositions from "../../../../../../src/components/Personalization/createApplyPropositions.js";
-import createSetTargetMigration from "../../../../../../src/components/Personalization/createSetTargetMigration.js";
-import { createCallbackAggregator } from "../../../../../../src/utils/index.js";
-import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition.js";
-import createProcessPropositions from "../../../../../../src/components/Personalization/handlers/createProcessPropositions.js";
-import createAsyncArray from "../../../../../../src/components/Personalization/utils/createAsyncArray.js";
-import * as schema from "../../../../../../src/constants/schema.js";
-import createProcessDomAction from "../../../../../../src/components/Personalization/handlers/createProcessDomAction.js";
-import createProcessHtmlContent from "../../../../../../src/components/Personalization/handlers/createProcessHtmlContent.js";
-import createProcessRedirect from "../../../../../../src/components/Personalization/handlers/createProcessRedirect.js";
-import processDefaultContent from "../../../../../../src/components/Personalization/handlers/processDefaultContent.js";
-import { isPageWideSurface } from "../../../../../../src/components/Personalization/utils/surfaceUtils.js";
-import createOnDecisionHandler from "../../../../../../src/components/Personalization/createOnDecisionHandler.js";
-import createNotificationHandler from "../../../../../../src/components/Personalization/createNotificationHandler.js";
+} from "../../../../../../packages/core/src/utils/event.js";
+import createOnClickHandler from "../../../../../../packages/core/src/components/Personalization/createOnClickHandler.js";
+import createViewCacheManager from "../../../../../../packages/core/src/components/Personalization/createViewCacheManager.js";
+import createViewChangeHandler from "../../../../../../packages/core/src/components/Personalization/createViewChangeHandler.js";
+import createInteractionStorage from "../../../../../../packages/core/src/components/Personalization/createInteractionStorage.js";
+import createClickStorage from "../../../../../../packages/core/src/components/Personalization/createClickStorage.js";
+import createApplyPropositions from "../../../../../../packages/core/src/components/Personalization/createApplyPropositions.js";
+import createSetTargetMigration from "../../../../../../packages/core/src/components/Personalization/createSetTargetMigration.js";
+import { createCallbackAggregator } from "../../../../../../packages/core/src/utils/index.js";
+import injectCreateProposition from "../../../../../../packages/core/src/components/Personalization/handlers/injectCreateProposition.js";
+import createProcessPropositions from "../../../../../../packages/core/src/components/Personalization/handlers/createProcessPropositions.js";
+import createAsyncArray from "../../../../../../packages/core/src/components/Personalization/utils/createAsyncArray.js";
+import * as schema from "../../../../../../packages/core/src/constants/schema.js";
+import createProcessDomAction from "../../../../../../packages/core/src/components/Personalization/handlers/createProcessDomAction.js";
+import createProcessHtmlContent from "../../../../../../packages/core/src/components/Personalization/handlers/createProcessHtmlContent.js";
+import createProcessRedirect from "../../../../../../packages/core/src/components/Personalization/handlers/createProcessRedirect.js";
+import processDefaultContent from "../../../../../../packages/core/src/components/Personalization/handlers/processDefaultContent.js";
+import { isPageWideSurface } from "../../../../../../packages/core/src/components/Personalization/utils/surfaceUtils.js";
+import createOnDecisionHandler from "../../../../../../packages/core/src/components/Personalization/createOnDecisionHandler.js";
+import createNotificationHandler from "../../../../../../packages/core/src/components/Personalization/createNotificationHandler.js";
 import {
   DOM_ACTION_APPEND_HTML,
   DOM_ACTION_CLICK,
@@ -57,8 +57,8 @@ import {
   DOM_ACTION_SET_IMAGE_SOURCE,
   DOM_ACTION_SET_STYLE,
   DOM_ACTION_SET_TEXT,
-} from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
-import collectClicks from "../../../../../../src/components/Personalization/dom-actions/clicks/collectClicks.js";
+} from "../../../../../../packages/core/src/components/Personalization/dom-actions/initDomActionsModules.js";
+import collectClicks from "../../../../../../packages/core/src/components/Personalization/dom-actions/clicks/collectClicks.js";
 
 const createAction =
   (renderFunc) =>

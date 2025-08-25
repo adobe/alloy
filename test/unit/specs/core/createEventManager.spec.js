@@ -11,9 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createEventManager from "../../../../src/core/createEventManager.js";
-import createConfig from "../../../../src/core/config/createConfig.js";
-import { defer } from "../../../../src/utils/index.js";
+import createEventManager from "../../../../packages/core/src/core/createEventManager.js";
+import createConfig from "../../../../packages/core/src/core/config/createConfig.js";
+import { defer } from "../../../../packages/core/src/utils/index.js";
 import flushPromiseChains from "../../helpers/flushPromiseChains.js";
 
 const CANCELLATION_MESSAGE_REGEX = /Event was canceled/;

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect } from "vitest";
-import createLifecycle from "../../../../src/core/createLifecycle.js";
+import createLifecycle from "../../../../packages/core/src/core/createLifecycle.js";
 
 describe("createLifecycle", () => {
   it("exposes all lifecycle methods and they return promises", () => {

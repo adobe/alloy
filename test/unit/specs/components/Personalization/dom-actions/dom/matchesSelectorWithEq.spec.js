@@ -16,8 +16,8 @@ import {
   appendNode,
   selectNodes,
   removeNode,
-} from "../../../../../../../src/utils/dom/index.js";
-import matchesSelectorWithEq from "../../../../../../../src/components/Personalization/dom-actions/dom/matchesSelectorWithEq.js";
+} from "../../../../../../../packages/core/src/utils/dom/index.js";
+import matchesSelectorWithEq from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/matchesSelectorWithEq.js";
 
 describe("Personalization::DOM::matchesSelectorWithEq", () => {
   afterEach(() => {

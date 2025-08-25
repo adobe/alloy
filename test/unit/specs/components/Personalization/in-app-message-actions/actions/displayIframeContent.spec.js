@@ -15,11 +15,11 @@ import {
   createIframe,
   createIframeClickHandler,
   displayHTMLContentInIframe,
-} from "../../../../../../../src/components/Personalization/in-app-message-actions/actions/displayIframeContent.js";
+} from "../../../../../../../packages/core/src/components/Personalization/in-app-message-actions/actions/displayIframeContent.js";
 import cleanUpDomChanges from "../../../../../helpers/cleanUpDomChanges.js";
-import { getNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
-import { testResetCachedNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom/getNonce.js";
-import { TEXT_HTML } from "../../../../../../../src/constants/contentType.js";
+import { getNonce } from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/index.js";
+import { testResetCachedNonce } from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/getNonce.js";
+import { TEXT_HTML } from "../../../../../../../packages/core/src/constants/contentType.js";
 
 describe("DOM Actions on Iframe", () => {
   beforeEach(() => {

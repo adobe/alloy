@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createAdConversionHandler from "../../../../../../src/components/Advertising/handlers/createAdConversionHandler.js";
+import createAdConversionHandler from "../../../../../../packages/core/src/components/Advertising/handlers/createAdConversionHandler.js";
 
 // Mock network operations to prevent real network calls
 vi.mock("fetch", () => vi.fn());
@@ -27,9 +27,11 @@ Object.defineProperty(globalThis, "fetch", {
 
 // Mock dependencies
 vi.mock(
-  "../../../../../../src/utils/request/createDataCollectionRequestPayload.js",
+  "../../../../../../packages/core/src/utils/request/createDataCollectionRequestPayload.js",
 );
-vi.mock("../../../../../../src/utils/request/createDataCollectionRequest.js");
+vi.mock(
+  "../../../../../../packages/core/src/utils/request/createDataCollectionRequest.js",
+);
 
 describe("Advertising::createAdConversionHandler", () => {
   let eventManager;
@@ -60,10 +62,10 @@ describe("Advertising::createAdConversionHandler", () => {
 
     // Mock the request creation functions
     const mockCreateDataCollectionRequestPayload = await import(
-      "../../../../../../src/utils/request/createDataCollectionRequestPayload.js"
+      "../../../../../../packages/core/src/utils/request/createDataCollectionRequestPayload.js"
     );
     const mockCreateDataCollectionRequest = await import(
-      "../../../../../../src/utils/request/createDataCollectionRequest.js"
+      "../../../../../../packages/core/src/utils/request/createDataCollectionRequest.js"
     );
 
     createDataCollectionRequestPayload =

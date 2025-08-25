@@ -22,7 +22,7 @@ import { TEST_PAGE, TEST_PAGE_AT_JS_TWO } from "../../helpers/constants/url.js";
 import {
   MBOX_EDGE_CLUSTER,
   MBOX,
-} from "../../../../src/constants/legacyCookies.js";
+} from "../../../../packages/core/src/constants/legacyCookies.js";
 import {
   assertKonductorReturnsCookieAndCookieIsSet,
   assertSameLocationHintIsUsed,

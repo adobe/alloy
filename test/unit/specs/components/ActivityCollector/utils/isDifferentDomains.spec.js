@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isDifferentDomains from "../../../../../../src/components/ActivityCollector/utils/isDifferentDomains.js";
+import isDifferentDomains from "../../../../../../packages/core/src/components/ActivityCollector/utils/isDifferentDomains.js";
 
 describe("ActivityCollector::isDifferentDomains", () => {
   it("should return true if the domains are different", () => {

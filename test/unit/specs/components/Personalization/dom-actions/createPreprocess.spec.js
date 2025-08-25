@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import createPreprocess from "../../../../../../src/components/Personalization/dom-actions/createPreprocess.js";
+import createPreprocess from "../../../../../../packages/core/src/components/Personalization/dom-actions/createPreprocess.js";
 
 describe("Personalization::dom-actions::createPreprocess", () => {
   let preprocessor1;

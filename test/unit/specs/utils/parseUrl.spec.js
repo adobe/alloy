@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { describe, it, expect } from "vitest";
-import parseUrl from "../../../../src/utils/parseUrl.js";
+import parseUrl from "../../../../packages/core/src/utils/parseUrl.js";
 
 describe("parseUrl", () => {
   it("should parse a valid URL with all components", () => {

@@ -14,17 +14,17 @@ import {
   appendNode,
   createNode,
   selectNodes,
-} from "../../../../../../src/utils/dom/index.js";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+} from "../../../../../../packages/core/src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../packages/core/src/components/Personalization/dom-actions/index.js";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 import {
   CLICK_LABEL_DATA_ATTRIBUTE,
   INTERACT_ID_DATA_ATTRIBUTE,
-} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
-import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+} from "../../../../../../packages/core/src/components/Personalization/handlers/createDecorateProposition.js";
+import { getAttribute } from "../../../../../../packages/core/src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
-import createRenderStatusHandler from "../../../../../../src/components/Personalization/handlers/createRenderStatusHandler.js";
-import { DOM_ACTION_INSERT_BEFORE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
+import createRenderStatusHandler from "../../../../../../packages/core/src/components/Personalization/handlers/createRenderStatusHandler.js";
+import { DOM_ACTION_INSERT_BEFORE } from "../../../../../../packages/core/src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::insertBefore", () => {
   let decorateProposition;

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import deepAssign from "../../../../src/utils/deepAssign.js";
+import deepAssign from "../../../../packages/core/src/utils/deepAssign.js";
 
 describe("deepAssign", () => {
   it("should throw when target is null or undefined", () => {

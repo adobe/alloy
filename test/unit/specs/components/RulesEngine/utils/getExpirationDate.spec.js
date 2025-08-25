@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect } from "vitest";
-import getExpirationDate from "../../../../../../src/components/RulesEngine/utils/getExpirationDate.js";
+import getExpirationDate from "../../../../../../packages/core/src/components/RulesEngine/utils/getExpirationDate.js";
 
 describe("getExpirationDate", () => {
   it("should return the date of expiration", () => {

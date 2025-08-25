@@ -15,13 +15,13 @@ import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 import {
   createFragment,
   getChildNodes,
-} from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+} from "../../../../../../packages/core/src/components/Personalization/dom-actions/dom/index.js";
 import {
   isImage,
   loadImage,
-} from "../../../../../../src/components/Personalization/dom-actions/images.js";
-import { IMG } from "../../../../../../src/constants/tagName.js";
-import { createNode } from "../../../../../../src/utils/dom/index.js";
+} from "../../../../../../packages/core/src/components/Personalization/dom-actions/images.js";
+import { IMG } from "../../../../../../packages/core/src/constants/tagName.js";
+import { createNode } from "../../../../../../packages/core/src/utils/dom/index.js";
 
 describe("Personalization::helper::images", () => {
   beforeEach(() => {

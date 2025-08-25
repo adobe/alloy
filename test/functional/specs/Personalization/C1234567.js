@@ -11,7 +11,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { ClientFunction, t, Selector } from "testcafe";
-import uuid from "../../../../src/utils/uuid.js";
+import uuid from "../../../../packages/core/src/utils/uuid.js";
 import createNetworkLogger from "../../helpers/networkLogger/index.js";
 import createFixture from "../../helpers/createFixture/index.js";
 import {
@@ -22,7 +22,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import getBaseConfig from "../../helpers/getBaseConfig.js";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
 import addHtmlToBody from "../../helpers/dom/addHtmlToBody.js";
-import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../src/constants/decisionProvider.js";
+import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../packages/core/src/constants/decisionProvider.js";
 import { responseStatus } from "../../helpers/assertions/index.js";
 import flushPromiseChains from "../../helpers/flushPromiseChains.js";
 

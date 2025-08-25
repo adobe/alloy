@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect } from "vitest";
-import injectStorage from "../../../../src/utils/injectStorage.js";
+import injectStorage from "../../../../packages/core/src/utils/injectStorage.js";
 
 describe("injectStorage", () => {
   [

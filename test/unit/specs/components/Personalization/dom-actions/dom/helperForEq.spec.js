@@ -14,7 +14,7 @@ import { describe, it, expect } from "vitest";
 import {
   isNotEqSelector,
   splitWithEq,
-} from "../../../../../../../src/components/Personalization/dom-actions/dom/helperForEq.js";
+} from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/helperForEq.js";
 
 describe("Personalization::DOM::helperForEq::isNotEqSelector", () => {
   it("should match when no eq", () => {

@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import createEventPruner from "../../../../../../src/components/RulesEngine/utils/createEventPruner.js";
-import generateEventHash from "../../../../../../src/components/RulesEngine/utils/generateEventHash.js";
+import createEventPruner from "../../../../../../packages/core/src/components/RulesEngine/utils/createEventPruner.js";
+import generateEventHash from "../../../../../../packages/core/src/components/RulesEngine/utils/generateEventHash.js";
 
 describe("RulesEngine:createEventRegistry", () => {
   const mockedTimestamp = new Date("2023-05-24T08:00:00Z");

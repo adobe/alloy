@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect } from "vitest";
-import activityMapExtensionEnabled from "../../../../../../src/components/ActivityCollector/utils/activityMapExtensionEnabled.js";
+import activityMapExtensionEnabled from "../../../../../../packages/core/src/components/ActivityCollector/utils/activityMapExtensionEnabled.js";
 
 const ACTIVITY_MAP_EXTENSION_ID = "cppXYctnr";
 describe("ActivityCollector::activityMapExtensionEnabled", () => {

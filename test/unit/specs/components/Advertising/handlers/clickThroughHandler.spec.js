@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import handleClickThrough from "../../../../../../src/components/Advertising/handlers/clickThroughHandler.js";
+import handleClickThrough from "../../../../../../packages/core/src/components/Advertising/handlers/clickThroughHandler.js";
 import {
   LAST_CLICK_COOKIE_KEY,
   LAST_CONVERSION_TIME_KEY,
-} from "../../../../../../src/components/Advertising/constants/index.js";
+} from "../../../../../../packages/core/src/components/Advertising/constants/index.js";
 
 // Mock network operations to prevent real network calls
 vi.mock("fetch", () => vi.fn());
@@ -73,7 +73,7 @@ if (typeof globalThis.window !== "undefined") {
 
 // Mock helpers with all functions that might make network calls
 vi.mock(
-  "../../../../../../src/components/Advertising/utils/helpers.js",
+  "../../../../../../packages/core/src/components/Advertising/utils/helpers.js",
   () => ({
     normalizeAdvertiser: vi.fn((advertiserSettings) => {
       if (!advertiserSettings || !Array.isArray(advertiserSettings)) {

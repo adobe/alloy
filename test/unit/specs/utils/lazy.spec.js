@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import lazy from "../../../../src/utils/lazy.js";
+import lazy from "../../../../packages/core/src/utils/lazy.js";
 
 describe("lazy", () => {
   let factory;

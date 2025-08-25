@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import decodeUriComponentSafely from "../../../../src/utils/decodeUriComponentSafely.js";
+import decodeUriComponentSafely from "../../../../packages/core/src/utils/decodeUriComponentSafely.js";
 
 describe("decodeUriComponentSafely", () => {
   it("decodes a uri encoded string", () => {

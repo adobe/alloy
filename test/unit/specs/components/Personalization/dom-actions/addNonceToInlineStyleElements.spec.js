@@ -11,16 +11,16 @@ governing permissions and limitations under the License.
 */
 
 import { afterEach, describe, it, expect } from "vitest";
-import addNonceToInlineStyleElements from "../../../../../../src/components/Personalization/dom-actions/addNonceToInlineStyleElements.js";
-import { testResetCachedNonce } from "../../../../../../src/components/Personalization/dom-actions/dom/getNonce.js";
-import { createFragment } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
-import { STYLE } from "../../../../../../src/constants/tagName.js";
+import addNonceToInlineStyleElements from "../../../../../../packages/core/src/components/Personalization/dom-actions/addNonceToInlineStyleElements.js";
+import { testResetCachedNonce } from "../../../../../../packages/core/src/components/Personalization/dom-actions/dom/getNonce.js";
+import { createFragment } from "../../../../../../packages/core/src/components/Personalization/dom-actions/dom/index.js";
+import { STYLE } from "../../../../../../packages/core/src/constants/tagName.js";
 import {
   selectNodes,
   removeNode,
   appendNode,
   createNode,
-} from "../../../../../../src/utils/dom/index.js";
+} from "../../../../../../packages/core/src/utils/dom/index.js";
 
 describe("Personalization::dom-actions::addNonceToInlineStyleElements", () => {
   afterEach(() => {

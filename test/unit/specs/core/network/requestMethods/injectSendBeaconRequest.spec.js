@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect } from "vitest";
-import injectSendBeaconRequest from "../../../../../../src/core/network/requestMethods/injectSendBeaconRequest.js";
+import injectSendBeaconRequest from "../../../../../../packages/core/src/core/network/requestMethods/injectSendBeaconRequest.js";
 
 describe("injectSendBeaconRequest", () => {
   it("falls back to sendFetchRequest if sendBeacon fails", () => {

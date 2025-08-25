@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import noop from "../../../../src/utils/noop.js";
+import noop from "../../../../packages/core/src/utils/noop.js";
 
 describe("noop", () => {
   it("accepts any arguments and returns undefined", () => {

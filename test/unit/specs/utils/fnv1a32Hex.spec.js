@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import fnv1a32Hex from "../../../../src/utils/fnv1a32Hex.js";
+import fnv1a32Hex from "../../../../packages/core/src/utils/fnv1a32Hex.js";
 
 describe("fnv1a32Hex", () => {
   it("should return the correct hash for an empty string", () => {

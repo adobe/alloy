@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import addRenderAttemptedToDecisions from "../../../../../../src/components/Personalization/utils/addRenderAttemptedToDecisions.js";
+import addRenderAttemptedToDecisions from "../../../../../../packages/core/src/components/Personalization/utils/addRenderAttemptedToDecisions.js";
 
 describe("Personalization::addRenderAttemptedToDecisions", () => {
   it("adds a renderAttempted flag", () => {

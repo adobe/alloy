@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import updateErrorMessage from "../../../../src/utils/updateErrorMessage.js";
+import updateErrorMessage from "../../../../packages/core/src/utils/updateErrorMessage.js";
 
 describe("updateErrorMessage", () => {
   it("updates error message if the message property is writeable", () => {

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import findClickableElement from "../../../../../../../src/components/ActivityCollector/utils/dom/findClickableElement.js";
+import findClickableElement from "../../../../../../../packages/core/src/components/ActivityCollector/utils/dom/findClickableElement.js";
 
 describe("ActivityCollector::findClickableElement", () => {
   it("returns null if no clickable element is found", () => {

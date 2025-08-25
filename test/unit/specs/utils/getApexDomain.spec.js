@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect } from "vitest";
-import getApexDomain from "../../../../src/utils/getApexDomain.js";
+import getApexDomain from "../../../../packages/core/src/utils/getApexDomain.js";
 
 const mockWindowWithHostname = (hostname) => {
   return {

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import createTransientStorage from "../../../../../../src/components/ActivityCollector/utils/createTransientStorage.js";
+import createTransientStorage from "../../../../../../packages/core/src/components/ActivityCollector/utils/createTransientStorage.js";
 
 describe("ActivityCollector::createTransientStorage", () => {
   it("should return an object with the expected methods", () => {

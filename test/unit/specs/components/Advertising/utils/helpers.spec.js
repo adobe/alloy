@@ -20,15 +20,15 @@ import {
   markIdsAsConverted,
   isThrottled,
   shouldThrottle,
-} from "../../../../../../src/components/Advertising/utils/helpers.js";
+} from "../../../../../../packages/core/src/components/Advertising/utils/helpers.js";
 import {
   loadScript,
   createNode,
   appendNode,
-} from "../../../../../../src/utils/dom/index.js";
+} from "../../../../../../packages/core/src/utils/dom/index.js";
 
 // Mock DOM utilities
-vi.mock("../../../../../../src/utils/dom/index.js", () => ({
+vi.mock("../../../../../../packages/core/src/utils/dom/index.js", () => ({
   awaitSelector: vi.fn(),
   loadScript: vi.fn().mockResolvedValue(),
   createNode: vi.fn(),

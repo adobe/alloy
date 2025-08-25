@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import extractDomain from "../../../../../../../src/components/ActivityCollector/utils/dom/extractDomain.js";
+import extractDomain from "../../../../../../../packages/core/src/components/ActivityCollector/utils/dom/extractDomain.js";
 
 describe("ActivityCollector::extractDomain", () => {
   it("should extract the domain from a URL", () => {

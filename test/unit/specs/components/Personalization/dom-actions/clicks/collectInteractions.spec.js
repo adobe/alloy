@@ -11,23 +11,23 @@ governing permissions and limitations under the License.
 */
 
 import { beforeEach, afterEach, describe, it, expect } from "vitest";
-import createInteractionStorage from "../../../../../../../src/components/Personalization/createInteractionStorage.js";
+import createInteractionStorage from "../../../../../../../packages/core/src/components/Personalization/createInteractionStorage.js";
 import {
   appendNode,
   createNode,
   removeNode,
   selectNodes,
-} from "../../../../../../../src/utils/dom/index.js";
-import collectInteractions from "../../../../../../../src/components/Personalization/dom-actions/clicks/collectInteractions.js";
+} from "../../../../../../../packages/core/src/utils/dom/index.js";
+import collectInteractions from "../../../../../../../packages/core/src/components/Personalization/dom-actions/clicks/collectInteractions.js";
 import {
   ADOBE_JOURNEY_OPTIMIZER,
   ADOBE_TARGET,
-} from "../../../../../../../src/constants/decisionProvider.js";
+} from "../../../../../../../packages/core/src/constants/decisionProvider.js";
 import {
   ALWAYS,
   DECORATED_ELEMENTS_ONLY,
   NEVER,
-} from "../../../../../../../src/constants/propositionInteractionType.js";
+} from "../../../../../../../packages/core/src/constants/propositionInteractionType.js";
 
 describe("Personalization::tracking::interactions", () => {
   let storeInteractionMeta;

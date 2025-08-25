@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import injectFireReferrerHideableImage from "../../../../src/utils/injectFireReferrerHideableImage.js";
+import injectFireReferrerHideableImage from "../../../../packages/core/src/utils/injectFireReferrerHideableImage.js";
 
 describe("injectFireReferrerHideableImage", () => {
   let appendNodeMock;

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import createMerger from "../../../../src/utils/createMerger.js";
+import createMerger from "../../../../packages/core/src/utils/createMerger.js";
 
 describe("createMerger", () => {
   it("populates key if key doesn't exist", () => {

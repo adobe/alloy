@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { beforeEach, describe, it, expect } from "vitest";
-import determineLinkType from "../../../../../../src/components/ActivityCollector/utils/determineLinkType.js";
+import determineLinkType from "../../../../../../packages/core/src/components/ActivityCollector/utils/determineLinkType.js";
 
 describe("ActivityCollector::determineLinkType", () => {
   let window;

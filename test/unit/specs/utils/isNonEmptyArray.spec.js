@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isNonEmptyArray from "../../../../src/utils/isNonEmptyArray.js";
+import isNonEmptyArray from "../../../../packages/core/src/utils/isNonEmptyArray.js";
 
 describe("isNonEmptyArray", () => {
   it("returns true when array with values", () => {

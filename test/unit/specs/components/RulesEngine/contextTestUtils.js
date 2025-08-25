@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { vi, expect } from "vitest";
-import createContextProvider from "../../../../../src/components/RulesEngine/createContextProvider.js";
-import createOnResponseHandler from "../../../../../src/components/RulesEngine/createOnResponseHandler.js";
-import createEventRegistry from "../../../../../src/components/RulesEngine/createEventRegistry.js";
-import createDecisionProvider from "../../../../../src/components/RulesEngine/createDecisionProvider.js";
-import { injectGetBrowser } from "../../../../../src/utils/index.js";
+import createContextProvider from "../../../../../packages/core/src/components/RulesEngine/createContextProvider.js";
+import createOnResponseHandler from "../../../../../packages/core/src/components/RulesEngine/createOnResponseHandler.js";
+import createEventRegistry from "../../../../../packages/core/src/components/RulesEngine/createEventRegistry.js";
+import createDecisionProvider from "../../../../../packages/core/src/components/RulesEngine/createDecisionProvider.js";
+import { injectGetBrowser } from "../../../../../packages/core/src/utils/index.js";
 
 export const proposition = {
   id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",

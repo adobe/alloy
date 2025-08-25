@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import toError from "../../../../src/utils/toError.js";
+import toError from "../../../../packages/core/src/utils/toError.js";
 
 describe("toError", () => {
   it("returns an error if value is not an error", () => {

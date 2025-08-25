@@ -14,7 +14,7 @@ import {
   TYPE_ERROR,
   NETWORK_ERROR,
   isNetworkError,
-} from "../../../../src/utils/networkErrors.js";
+} from "../../../../packages/core/src/utils/networkErrors.js";
 
 describe("Network Errors", () => {
   describe("isNetworkError", () => {

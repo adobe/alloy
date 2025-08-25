@@ -13,12 +13,12 @@ import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   appendNode,
   createNode,
-} from "../../../../../../src/utils/dom/index.js";
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
+} from "../../../../../../packages/core/src/utils/dom/index.js";
+import { initDomActionsModules } from "../../../../../../packages/core/src/components/Personalization/dom-actions/index.js";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
-import createRenderStatusHandler from "../../../../../../src/components/Personalization/handlers/createRenderStatusHandler.js";
-import { DOM_ACTION_CUSTOM_CODE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
+import createRenderStatusHandler from "../../../../../../packages/core/src/components/Personalization/handlers/createRenderStatusHandler.js";
+import { DOM_ACTION_CUSTOM_CODE } from "../../../../../../packages/core/src/components/Personalization/dom-actions/initDomActionsModules.js";
 
 describe("Personalization::actions::customCode", () => {
   let decorateProposition;

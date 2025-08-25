@@ -13,13 +13,13 @@ governing permissions and limitations under the License.
 import {
   ADOBE_JOURNEY_OPTIMIZER,
   ADOBE_TARGET,
-} from "../../../src/constants/decisionProvider.js";
-import createInteractionStorage from "../../../src/components/Personalization/createInteractionStorage.js";
-import createDecorateProposition from "../../../src/components/Personalization/handlers/createDecorateProposition.js";
+} from "../../../packages/core/src/constants/decisionProvider.js";
+import createInteractionStorage from "../../../packages/core/src/components/Personalization/createInteractionStorage.js";
+import createDecorateProposition from "../../../packages/core/src/components/Personalization/handlers/createDecorateProposition.js";
 import {
   ALWAYS,
   NEVER,
-} from "../../../src/constants/propositionInteractionType.js";
+} from "../../../packages/core/src/constants/propositionInteractionType.js";
 
 export default ({
   autoCollectPropositionInteractions = {

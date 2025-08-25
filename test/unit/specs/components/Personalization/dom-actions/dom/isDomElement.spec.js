@@ -14,9 +14,9 @@ import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   appendNode,
   createNode,
-} from "../../../../../../../src/utils/dom/index.js";
+} from "../../../../../../../packages/core/src/utils/dom/index.js";
 import cleanUpDomChanges from "../../../../../helpers/cleanUpDomChanges.js";
-import isDomElement from "../../../../../../../src/components/Personalization/dom-actions/dom/isDomElement.js";
+import isDomElement from "../../../../../../../packages/core/src/components/Personalization/dom-actions/dom/isDomElement.js";
 
 describe("Personalization::DOM::isDomElement", () => {
   const testElementId = "superfluous123";

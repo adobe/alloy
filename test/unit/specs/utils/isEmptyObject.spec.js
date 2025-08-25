@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import isEmptyObject from "../../../../src/utils/isEmptyObject.js";
+import isEmptyObject from "../../../../packages/core/src/utils/isEmptyObject.js";
 
 const nonEmptyObjects = [
   "abc",

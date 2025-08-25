@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect } from "vitest";
-import createIdentityPayload from "../../../../../../src/components/Identity/getIdentity/createIdentityRequestPayload.js";
+import createIdentityPayload from "../../../../../../packages/core/src/components/Identity/getIdentity/createIdentityRequestPayload.js";
 import describeRequestPayload from "../../../../helpers/describeRequestPayload.js";
 
 describe("createIdentityRequestPayload", () => {

@@ -13,11 +13,11 @@ import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import {
   selectNodes,
   removeNode,
-} from "../../../../../../src/utils/dom/index.js";
+} from "../../../../../../packages/core/src/utils/dom/index.js";
 import {
   hideElements,
   showElements,
-} from "../../../../../../src/components/Personalization/flicker/index.js";
+} from "../../../../../../packages/core/src/components/Personalization/flicker/index.js";
 
 describe("Personalization::flicker", () => {
   beforeEach(() => {
