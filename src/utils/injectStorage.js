@@ -10,8 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+/** @import { Storage, StorageCreator } from './types.js' */
+
 import baseNamespace from "../constants/namespace.js";
 
+/**
+ * Creates a storage interface for a specific storage type with namespaced keys.
+ *
+ * @param {Object} context - The context object (typically window) that provides storage APIs.
+ * @param {string} storageType - The type of storage to use ('localStorage' or 'sessionStorage').
+ * @param {string} namespace - The namespace prefix to prepend to all storage keys.
+ * @returns {Storage}
+ */
 const getStorageByType = (context, storageType, namespace) => {
   // When storage is disabled on Safari, the mere act of referencing
   // window.localStorage or window.sessionStorage throws an error.
@@ -61,6 +71,14 @@ const getStorageByType = (context, storageType, namespace) => {
   };
 };
 
+/**
+ * Creates a storage factory function that provides access to both session and persistent storage
+ * with namespaced keys. This is a higher-order function that returns a function which can be
+ * used to create storage instances with additional namespace suffixes.
+ *
+ * @param {Object} context - The context object (typically window) that provides storage APIs.
+ * @returns {StorageCreator}
+ */
 export default (context) => (additionalNamespace) => {
   const finalNamespace = baseNamespace + additionalNamespace;
   return {
