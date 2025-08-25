@@ -40,7 +40,7 @@ export default ({
       await consent.awaitConsent();
 
       const { skwcid, efid } = getUrlParams();
-      const isClickThru = !!(skwcid && efid);
+      const isClickThru = !!(skwcid || efid);
 
       if (isClickThru) {
         // wait for click through to complete
