@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { IN, OUT, PENDING } from "../../constants/consentStatus.js";
-import { GENERAL } from "../../constants/consentPurpose.js";
+import { IN, OUT, PENDING } from "../../constants/consentStatus";
+import { GENERAL } from "../../constants/consentPurpose";
 import {
   CONSENT_SOURCE_DEFAULT,
   CONSENT_SOURCE_INITIAL,
   CONSENT_SOURCE_NEW,
-} from "./createConsentStateMachine.js";
+} from "./createConsentStateMachine";
 
 export default ({ generalConsentState, logger }) => {
   const setConsent = (consentByPurpose, source) => {

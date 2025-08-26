@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { setAttribute } from "./dom/index.js";
+import { setAttribute } from "./dom/index";
 
 export default (container, attributes, decorateProposition) => {
   Object.keys(attributes).forEach((key) => {

@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import toInteger from "./toInteger.js";
+import toInteger from "./toInteger";
 
 /**
  * Add padString to the start of the string until it reaches the target length

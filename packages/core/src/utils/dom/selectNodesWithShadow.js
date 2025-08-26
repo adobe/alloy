@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import querySelectorAll from "./querySelectorAll.js";
-import SHADOW_SEPARATOR from "../../constants/shadowSeparator.js";
+import querySelectorAll from "./querySelectorAll";
+import SHADOW_SEPARATOR from "../../constants/shadowSeparator";
 
 const splitWithShadow = (selector) => {
   return selector.split(SHADOW_SEPARATOR);

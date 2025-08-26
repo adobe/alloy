@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import extractPayloadsFromEventHistoryOperations from "./utils/extractPayloadsFromEventHistoryOperations.js";
+import extractPayloadsFromEventHistoryOperations from "./utils/extractPayloadsFromEventHistoryOperations";
 
 export default ({ lifecycle, eventRegistry }) => {
   return ({

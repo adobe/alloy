@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, objectOf } from "../../utils/validation/index.js";
+import { boolean, objectOf } from "../../utils/validation/index";
 
 const configValidators = objectOf({
   thirdPartyCookiesEnabled: boolean().default(true),

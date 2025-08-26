@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { MESSAGE_IN_APP } from "../../constants/schema.js";
+import { MESSAGE_IN_APP } from "../../constants/schema";
 
 // When multiple In-App messages propositions are returned, we need to show only one
 // of them (the one with lowest rank). This function keep track of the number of

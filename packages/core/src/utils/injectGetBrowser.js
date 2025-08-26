@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import lazy from "./lazy.js";
+import lazy from "./lazy";
 
 import {
   EDGE,
@@ -20,7 +20,7 @@ import {
   IE,
   SAFARI,
   UNKNOWN,
-} from "../constants/browser.js";
+} from "../constants/browser";
 
 const matchUserAgent = (regexs, userAgent) => {
   const keys = Object.keys(regexs);

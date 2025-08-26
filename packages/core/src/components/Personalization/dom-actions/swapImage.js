@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { SRC } from "../../../constants/elementAttribute.js";
-import { removeAttribute, setAttribute } from "./dom/index.js";
-import { isImage, loadImage } from "./images.js";
+import { SRC } from "../../../constants/elementAttribute";
+import { removeAttribute, setAttribute } from "./dom/index";
+import { isImage, loadImage } from "./images";
 
 export default (container, url, decorateProposition) => {
   if (!isImage(container)) {

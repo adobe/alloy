@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isSupportedAnchorElement from "./isSupportedAnchorElement.js";
-import elementHasClickHandler from "./elementHasClickHandler.js";
-import isInputSubmitElement from "./isInputSubmitElement.js";
-import isButtonSubmitElement from "./isButtonSubmitElement.js";
+import isSupportedAnchorElement from "./isSupportedAnchorElement";
+import elementHasClickHandler from "./elementHasClickHandler";
+import isInputSubmitElement from "./isInputSubmitElement";
+import isButtonSubmitElement from "./isButtonSubmitElement";
 
 export default (element) => {
   let node = element;

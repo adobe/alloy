@@ -9,10 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import isBlankString from "../../utils/isBlankString.js";
-import MediaEvents from "./constants/eventTypes.js";
-import { isNonEmptyArray } from "../../utils/index.js";
-import PlaybackState from "./constants/playbackState.js";
+import isBlankString from "../../utils/isBlankString";
+import MediaEvents from "./constants/eventTypes";
+import { isNonEmptyArray } from "../../utils/index";
+import PlaybackState from "./constants/playbackState";
 
 export default ({ mediaSessionCacheManager, config, trackMediaEvent }) => {
   return ({ response, playerId, getPlayerDetails }) => {

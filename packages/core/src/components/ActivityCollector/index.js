@@ -10,22 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import attachClickActivityCollector from "./attachClickActivityCollector.js";
-import configValidators from "./configValidators.js";
-import createInjectClickedElementProperties from "./createInjectClickedElementProperties.js";
-import createRecallAndInjectClickedElementProperties from "./createRecallAndInjectClickedElementProperties.js";
-import createGetClickedElementProperties from "./createGetClickedElementProperties.js";
-import createClickActivityStorage from "./createClickActivityStorage.js";
-import createStorePageViewProperties from "./createStorePageViewProperties.js";
-import validateClickCollectionConfig from "./validateClickCollectionConfig.js";
-import getLinkName from "./getLinkName.js";
-import getLinkRegion from "./getLinkRegion.js";
-import getAbsoluteUrlFromAnchorElement from "./utils/dom/getAbsoluteUrlFromAnchorElement.js";
-import findClickableElement from "./utils/dom/findClickableElement.js";
-import determineLinkType from "./utils/determineLinkType.js";
-import hasPageName from "./utils/hasPageName.js";
-import createTransientStorage from "./utils/createTransientStorage.js";
-import { injectStorage } from "../../utils/index.js";
+import attachClickActivityCollector from "./attachClickActivityCollector";
+import configValidators from "./configValidators";
+import createInjectClickedElementProperties from "./createInjectClickedElementProperties";
+import createRecallAndInjectClickedElementProperties from "./createRecallAndInjectClickedElementProperties";
+import createGetClickedElementProperties from "./createGetClickedElementProperties";
+import createClickActivityStorage from "./createClickActivityStorage";
+import createStorePageViewProperties from "./createStorePageViewProperties";
+import validateClickCollectionConfig from "./validateClickCollectionConfig";
+import getLinkName from "./getLinkName";
+import getLinkRegion from "./getLinkRegion";
+import getAbsoluteUrlFromAnchorElement from "./utils/dom/getAbsoluteUrlFromAnchorElement";
+import findClickableElement from "./utils/dom/findClickableElement";
+import determineLinkType from "./utils/determineLinkType";
+import hasPageName from "./utils/hasPageName";
+import createTransientStorage from "./utils/createTransientStorage";
+import { injectStorage } from "../../utils/index";
 
 const getClickedElementProperties = createGetClickedElementProperties({
   window,

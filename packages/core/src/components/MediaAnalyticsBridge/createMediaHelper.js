@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { number, objectOf, string } from "../../utils/validation/index.js";
+import { number, objectOf, string } from "../../utils/validation/index";
 
 export default ({ logger }) => {
   const createMediaObject = (

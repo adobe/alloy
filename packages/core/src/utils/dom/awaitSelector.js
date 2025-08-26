@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isFunction from "../isFunction.js";
-import isNonEmptyArray from "../isNonEmptyArray.js";
-import selectNodes from "./selectNodes.js";
+import isFunction from "../isFunction";
+import isNonEmptyArray from "../isNonEmptyArray";
+import selectNodes from "./selectNodes";
 
 const MUTATION_OBSERVER = "MutationObserver";
 const RAF = "requestAnimationFrame";

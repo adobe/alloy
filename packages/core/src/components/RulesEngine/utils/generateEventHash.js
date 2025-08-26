@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import fnv1a32Hex from "../../../utils/fnv1a32Hex.js";
+import fnv1a32Hex from "../../../utils/fnv1a32Hex";
 
 /**
  * Generates an event history hash from an object by removing keys with empty values, sorting the keys,

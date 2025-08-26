@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { loadScript } from "../../../utils/dom/index.js";
-import { ID5_SCRIPT_URL } from "../constants/index.js";
+import { loadScript } from "../../../utils/dom/index";
+import { ID5_SCRIPT_URL } from "../constants/index";
 
 let id5Id = "";
 let inProgressId5Promise = null;

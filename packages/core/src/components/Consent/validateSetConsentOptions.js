@@ -9,11 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { objectOf, anything, arrayOf } from "../../utils/validation/index.js";
-import {
-  validateIdentityMap,
-  validateConfigOverride,
-} from "../../utils/index.js";
+import { objectOf, anything, arrayOf } from "../../utils/validation/index";
+import { validateIdentityMap, validateConfigOverride } from "../../utils/index";
 
 export default objectOf({
   consent: arrayOf(anything()).required().nonEmpty(),

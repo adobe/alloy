@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { fnv1a32Hex, sortObjectKeysRecursively } from "../../utils/index.js";
+import { fnv1a32Hex, sortObjectKeysRecursively } from "../../utils/index";
 
 export default (obj) =>
   fnv1a32Hex(JSON.stringify(sortObjectKeysRecursively(obj)));

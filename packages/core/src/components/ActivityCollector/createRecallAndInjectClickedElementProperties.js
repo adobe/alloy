@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createClickedElementProperties from "./createClickedElementProperties.js";
-import activityMapExtensionEnabled from "./utils/activityMapExtensionEnabled.js";
+import createClickedElementProperties from "./createClickedElementProperties";
+import activityMapExtensionEnabled from "./utils/activityMapExtensionEnabled";
 
 export default ({ clickActivityStorage }) => {
   return (event) => {

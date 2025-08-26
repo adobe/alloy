@@ -12,4 +12,4 @@ governing permissions and limitations under the License.
 
 // Compatibility layer - import and execute from packages/core
 // eslint-disable-next-line import/extensions
-import "./packages/core/src/baseCode.js";
+import "@adobe/alloy-core/src/baseCode.js";

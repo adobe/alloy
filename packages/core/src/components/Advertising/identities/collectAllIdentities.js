@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import collectSurferId from "./collectSurferId.js";
-import { getRampId } from "./collectRampId.js";
-import { getID5Id } from "./collectID5Id.js";
-import { ID5_ID, RAMP_ID, SURFER_ID } from "../constants/index.js";
-import { isThrottled } from "../utils/helpers.js";
+import collectSurferId from "./collectSurferId";
+import { getRampId } from "./collectRampId";
+import { getID5Id } from "./collectID5Id";
+import { ID5_ID, RAMP_ID, SURFER_ID } from "../constants/index";
+import { isThrottled } from "../utils/helpers";
 
 const collectAllIdentities = (
   logger,

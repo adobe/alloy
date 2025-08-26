@@ -17,12 +17,12 @@ import {
   arrayOf,
   enumOf,
   mapOfValues,
-} from "./validation/index.js";
+} from "./validation/index";
 import {
   AMBIGUOUS,
   AUTHENTICATED,
   LOGGED_OUT,
-} from "../constants/identityMapAuthenticatedState.js";
+} from "../constants/identityMapAuthenticatedState";
 
 export default mapOfValues(
   arrayOf(

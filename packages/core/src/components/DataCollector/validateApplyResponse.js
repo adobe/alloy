@@ -16,7 +16,7 @@ import {
   mapOfValues,
   objectOf,
   string,
-} from "../../utils/validation/index.js";
+} from "../../utils/validation/index";
 
 export default ({ options }) => {
   const validator = objectOf({
