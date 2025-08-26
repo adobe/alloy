@@ -59,7 +59,7 @@ export default () => {
     [DOM_ACTION_REMOVE]: createAction(removeNode, true),
     [DOM_ACTION_INSERT_AFTER]: createAction(insertHtmlAfter),
     [DOM_ACTION_INSERT_BEFORE]: createAction(insertHtmlBefore),
-    [DOM_ACTION_REPLACE_HTML]: createAction(replaceHtml),
+    [DOM_ACTION_REPLACE_HTML]: createAction(replaceHtml, true),
     [DOM_ACTION_PREPEND_HTML]: createAction(prependHtml),
     [DOM_ACTION_APPEND_HTML]: createAction(appendHtml),
     [DOM_ACTION_COLLECT_INTERACTIONS]: createAction(collectInteractions, true),
