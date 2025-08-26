@@ -32,4 +32,13 @@ describe("ActivityCollector::findClickableElement", () => {
     parentElement.appendChild(element);
     expect(findClickableElement(element)).toBe(parentElement);
   });
+  it("returns null if the BODY node is reached", () => {
+    const element = document.createElement("div");
+    const parentElement = document.createElement("body");
+    const grandParentElement = document.createElement("html");
+    grandParentElement.setAttribute("onClick", "clickity");
+    grandParentElement.appendChild(parentElement);
+    parentElement.appendChild(element);
+    expect(findClickableElement(element)).toBeNull();
+  });
 });
