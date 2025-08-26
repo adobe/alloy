@@ -29,7 +29,7 @@ const config = compose(
 
 createFixture({
   title:
-    "C300002: Click-through conversion with ef_id parameter should NOT send advertising.enrichment_ct event (requires both parameters)",
+    "C300002: Click-through conversion with ef_id parameter should send advertising.enrichment_ct event",
   requestHooks: [networkLogger.edgeEndpointLogs],
   url: `${TEST_PAGE_URL}?test=advertising-clickthrough-efid&ef_id=test_experiment_456`,
 });
@@ -40,7 +40,7 @@ test.meta({
   TEST_RUN: "Regression",
 });
 
-test("Test C300002: Click-through conversion with ef_id parameter should NOT send advertising.enrichment_ct event (requires both s_kwcid and ef_id)", async () => {
+test("Test C300002: Click-through conversion with ef_id parameter should send advertising.enrichment_ct event", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
 
@@ -53,7 +53,7 @@ test("Test C300002: Click-through conversion with ef_id parameter should NOT sen
   );
   await t
     .expect(conversionRequest)
-    .notOk(
-      "Should NOT find an advertising.enrichment_ct conversion request when only ef_id is present",
+    .ok(
+      "Should find an advertising.enrichment_ct conversion request when ef_id is present",
     );
 });
