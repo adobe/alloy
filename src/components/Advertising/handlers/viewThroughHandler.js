@@ -41,7 +41,7 @@ export default async function handleViewThrough({
       );
       const xdm = {
         eventType: AD_CONVERSION_VIEW_EVENT_TYPE,
-        timestamp: Date.now().toISOString(),
+        timestamp: new Date().toISOString(),
       };
       event.setUserXdm(xdm);
 
