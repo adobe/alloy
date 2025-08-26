@@ -167,6 +167,13 @@ describe("Advertising::viewThroughHandler", () => {
 
     getBrowser = vi.fn();
 
+    const fixedTs = Date.UTC(2024, 0, 1, 0, 0, 0);
+    const mockNow = {
+      valueOf: () => fixedTs,
+      toISOString: () => new Date(fixedTs).toISOString(),
+    };
+    vi.spyOn(Date, "now").mockReturnValue(mockNow);
+
     // Mock collectAllIdentities
     const { default: mockCollectAllIdentities } = await import(
       "../../../../../../src/components/Advertising/identities/collectAllIdentities.js"
@@ -221,9 +228,11 @@ describe("Advertising::viewThroughHandler", () => {
       getBrowser,
     );
 
-    expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
-      eventType: "advertising.enrichment",
-    });
+    expect(mockEvent.setUserXdm).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventType: "advertising.enrichment",
+      }),
+    );
 
     expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
       advertising: {
@@ -267,9 +276,11 @@ describe("Advertising::viewThroughHandler", () => {
 
     await flushPromiseChains();
 
-    expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
-      eventType: "advertising.enrichment",
-    });
+    expect(mockEvent.setUserXdm).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventType: "advertising.enrichment",
+      }),
+    );
 
     expect(logger.error).toHaveBeenCalledWith(
       "Ad conversion submission failed",

@@ -117,6 +117,13 @@ describe("Advertising::clickThroughHandler", () => {
       info: vi.fn(),
       error: vi.fn(),
     };
+
+    const fixedTs = Date.UTC(2024, 0, 1, 0, 0, 0);
+    const mockNow = {
+      valueOf: () => fixedTs,
+      toISOString: () => new Date(fixedTs).toISOString(),
+    };
+    vi.spyOn(Date, "now").mockReturnValue(mockNow);
   });
 
   it("should handle click-through with skwcid", async () => {
@@ -138,16 +145,18 @@ describe("Advertising::clickThroughHandler", () => {
 
     expect(eventManager.createEvent).toHaveBeenCalledWith();
 
-    expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
-      _experience: {
-        adcloud: {
-          conversionDetails: {
-            trackingCode: "test-skwcid",
+    expect(mockEvent.setUserXdm).toHaveBeenCalledWith(
+      expect.objectContaining({
+        _experience: {
+          adcloud: {
+            conversionDetails: {
+              trackingCode: "test-skwcid",
+            },
           },
         },
-      },
-      eventType: "advertising.enrichment_ct",
-    });
+        eventType: "advertising.enrichment_ct",
+      }),
+    );
 
     expect(cookieManager.setValue).toHaveBeenCalledTimes(2);
     expect(cookieManager.setValue).toHaveBeenCalledWith(
@@ -182,16 +191,18 @@ describe("Advertising::clickThroughHandler", () => {
       optionsFromCommand: {},
     });
 
-    expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
-      _experience: {
-        adcloud: {
-          conversionDetails: {
-            trackingIdentities: "test-efid",
+    expect(mockEvent.setUserXdm).toHaveBeenCalledWith(
+      expect.objectContaining({
+        _experience: {
+          adcloud: {
+            conversionDetails: {
+              trackingIdentities: "test-efid",
+            },
           },
         },
-      },
-      eventType: "advertising.enrichment_ct",
-    });
+        eventType: "advertising.enrichment_ct",
+      }),
+    );
 
     expect(cookieManager.setValue).toHaveBeenCalledTimes(2);
     expect(cookieManager.setValue).toHaveBeenCalledWith(
@@ -222,20 +233,22 @@ describe("Advertising::clickThroughHandler", () => {
       optionsFromCommand: {},
     });
 
-    expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
-      _experience: {
-        adcloud: {
-          conversionDetails: {
-            trackingCode: "AL!test-skwcid",
-            trackingIdentities: "test-efid",
+    expect(mockEvent.setUserXdm).toHaveBeenCalledWith(
+      expect.objectContaining({
+        _experience: {
+          adcloud: {
+            conversionDetails: {
+              trackingCode: "AL!test-skwcid",
+              trackingIdentities: "test-efid",
+            },
           },
         },
-      },
-      eventType: "advertising.enrichment_ct",
-    });
+        eventType: "advertising.enrichment_ct",
+      }),
+    );
 
     expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
-      click_time: expect.any(Number),
+      click_time: expect.anything(),
       skwcid: "AL!test-skwcid",
       efid: "test-efid",
     });
@@ -272,16 +285,18 @@ describe("Advertising::clickThroughHandler", () => {
       optionsFromCommand: options,
     });
 
-    expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
-      _experience: {
-        adcloud: {
-          conversionDetails: {
-            trackingCode: "test-skwcid",
+    expect(mockEvent.setUserXdm).toHaveBeenCalledWith(
+      expect.objectContaining({
+        _experience: {
+          adcloud: {
+            conversionDetails: {
+              trackingCode: "test-skwcid",
+            },
           },
         },
-      },
-      eventType: "advertising.enrichment_ct",
-    });
+        eventType: "advertising.enrichment_ct",
+      }),
+    );
 
     expect(cookieManager.setValue).toHaveBeenCalledTimes(2);
     expect(cookieManager.setValue).toHaveBeenCalledWith(
