@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { getNonce } from "../../dom-actions/dom/index.js";
-import { parseAnchor, removeElementById } from "../utils.js";
-import { TEXT_HTML } from "../../../../constants/contentType.js";
-import { isNonEmptyString } from "../../../../utils/index.js";
-import { createNode } from "../../../../utils/dom/index.js";
-import { objectOf } from "../../../../utils/validation/index.js";
-import { PropositionEventType } from "../../../../constants/propositionEventType.js";
-import { EVENT_TYPE_TRUE, INTERACT } from "../../../../constants/eventType.js";
-import createRedirect from "../../dom-actions/createRedirect.js";
+import { getNonce } from "../../dom-actions/dom/index";
+import { parseAnchor, removeElementById } from "../utils";
+import { TEXT_HTML } from "../../../../constants/contentType";
+import { isNonEmptyString } from "../../../../utils/index";
+import { createNode } from "../../../../utils/dom/index";
+import { objectOf } from "../../../../utils/validation/index";
+import { PropositionEventType } from "../../../../constants/propositionEventType";
+import { EVENT_TYPE_TRUE, INTERACT } from "../../../../constants/eventType";
+import createRedirect from "../../dom-actions/createRedirect";
 
 const MESSAGING_CONTAINER_ID = "alloy-messaging-container";
 const OVERLAY_CONTAINER_ID = "alloy-overlay-container";

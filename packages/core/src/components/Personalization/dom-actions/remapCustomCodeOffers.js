@@ -14,7 +14,7 @@ governing permissions and limitations under the License.
  * Preprocess customCode actions before rendering, so that offer selectors are remapped appropriately for
  * target offers, to align with the way it works in at.js.
  */
-import { DOM_ACTION_CUSTOM_CODE } from "./initDomActionsModules.js";
+import { DOM_ACTION_CUSTOM_CODE } from "./initDomActionsModules";
 
 const TARGET_BODY_SELECTOR = "BODY > *:eq(0)";
 

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 /** @import { RequestPayload, Identity } from './types.js' */
 
-import { createMerger, prepareConfigOverridesForEdge } from "../index.js";
+import { createMerger, prepareConfigOverridesForEdge } from "../index";
 
 /**
  * createMerger creates a function that does a deep merge. Example:

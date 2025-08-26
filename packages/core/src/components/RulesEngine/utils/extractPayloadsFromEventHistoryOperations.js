@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 /** @import { PropositionList,  EventPayload } from '../types.js' */
-import { EVENT_HISTORY_OPERATION } from "../../../constants/schema.js";
+import { EVENT_HISTORY_OPERATION } from "../../../constants/schema";
 
 /**
  * Extracts event history operations from a proposition list and filters them out.

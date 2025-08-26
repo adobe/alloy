@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyString, isNonEmptyArray } from "../../utils/index.js";
-import { buildPageSurface, normalizeSurfaces } from "./utils/surfaceUtils.js";
-import PAGE_WIDE_SCOPE from "../../constants/pageWideScope.js";
+import { isNonEmptyString, isNonEmptyArray } from "../../utils/index";
+import { buildPageSurface, normalizeSurfaces } from "./utils/surfaceUtils";
+import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
 import {
   DEFAULT_CONTENT_ITEM,
   DOM_ACTION,
@@ -22,7 +22,7 @@ import {
   REDIRECT_ITEM,
   RULESET_ITEM,
   MESSAGE_CONTENT_CARD,
-} from "../../constants/schema.js";
+} from "../../constants/schema";
 
 const addPageWideScope = (scopes) => {
   if (!scopes.includes(PAGE_WIDE_SCOPE)) {

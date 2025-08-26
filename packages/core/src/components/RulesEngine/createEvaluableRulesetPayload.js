@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import RulesEngine from "@adobe/aep-rules-engine";
-import { JSON_CONTENT_ITEM, RULESET_ITEM } from "../../constants/schema.js";
-import { DISPLAY } from "../../constants/eventType.js";
-import { PropositionEventType } from "../../constants/propositionEventType.js";
-import { generateEventHash, getActivityId } from "./utils/index.js";
+import { JSON_CONTENT_ITEM, RULESET_ITEM } from "../../constants/schema";
+import { DISPLAY } from "../../constants/eventType";
+import { PropositionEventType } from "../../constants/propositionEventType";
+import { generateEventHash, getActivityId } from "./utils/index";
 
-import flattenArray from "../../utils/flattenArray.js";
-import createConsequenceAdapter from "./createConsequenceAdapter.js";
+import flattenArray from "../../utils/flattenArray";
+import createConsequenceAdapter from "./createConsequenceAdapter";
 
 const isRulesetItem = (item) => {
   const { schema, data } = item;

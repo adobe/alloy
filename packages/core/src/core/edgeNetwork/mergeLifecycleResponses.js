@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assignConcatArrayValues } from "../../utils/index.js";
+import { assignConcatArrayValues } from "../../utils/index";
 
 export default (returnValues) => {
   // Merges all returned objects from all `onResponse` callbacks into

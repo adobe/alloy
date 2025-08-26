@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createInstanceFunction from "./createInstanceFunction.js";
+import createInstanceFunction from "./createInstanceFunction";
 import {
   getApexDomain,
   injectStorage,
@@ -19,43 +19,43 @@ import {
   createLoggingCookieJar,
   injectFireReferrerHideableImage,
   injectGetBrowser,
-} from "../utils/index.js";
-import createLogController from "./createLogController.js";
-import createLifecycle from "./createLifecycle.js";
-import createComponentRegistry from "./createComponentRegistry.js";
-import injectSendNetworkRequest from "./network/injectSendNetworkRequest.js";
-import injectExtractEdgeInfo from "./edgeNetwork/injectExtractEdgeInfo.js";
-import createIdentity from "./identity/createIdentity.js";
-import createConsent from "./consent/createConsent.js";
-import createConsentStateMachine from "./consent/createConsentStateMachine.js";
-import createEvent from "./createEvent.js";
-import injectCreateResponse from "./injectCreateResponse.js";
-import injectExecuteCommand from "./injectExecuteCommand.js";
-import validateCommandOptions from "./validateCommandOptions.js";
-import buildAndValidateConfig from "./buildAndValidateConfig.js";
-import initializeComponents from "./initializeComponents.js";
-import createConfig from "./config/createConfig.js";
-import createCoreConfigs from "./config/createCoreConfigs.js";
-import injectHandleError from "./injectHandleError.js";
-import injectSendFetchRequest from "./network/requestMethods/injectSendFetchRequest.js";
-import injectSendBeaconRequest from "./network/requestMethods/injectSendBeaconRequest.js";
-import createLogger from "./createLogger.js";
-import createEventManager from "./createEventManager.js";
-import createCookieTransfer from "./createCookieTransfer.js";
-import injectShouldTransferCookie from "./injectShouldTransferCookie.js";
+} from "../utils/index";
+import createLogController from "./createLogController";
+import createLifecycle from "./createLifecycle";
+import createComponentRegistry from "./createComponentRegistry";
+import injectSendNetworkRequest from "./network/injectSendNetworkRequest";
+import injectExtractEdgeInfo from "./edgeNetwork/injectExtractEdgeInfo";
+import createIdentity from "./identity/createIdentity";
+import createConsent from "./consent/createConsent";
+import createConsentStateMachine from "./consent/createConsentStateMachine";
+import createEvent from "./createEvent";
+import injectCreateResponse from "./injectCreateResponse";
+import injectExecuteCommand from "./injectExecuteCommand";
+import validateCommandOptions from "./validateCommandOptions";
+import buildAndValidateConfig from "./buildAndValidateConfig";
+import initializeComponents from "./initializeComponents";
+import createConfig from "./config/createConfig";
+import createCoreConfigs from "./config/createCoreConfigs";
+import injectHandleError from "./injectHandleError";
+import injectSendFetchRequest from "./network/requestMethods/injectSendFetchRequest";
+import injectSendBeaconRequest from "./network/requestMethods/injectSendBeaconRequest";
+import createLogger from "./createLogger";
+import createEventManager from "./createEventManager";
+import createCookieTransfer from "./createCookieTransfer";
+import injectShouldTransferCookie from "./injectShouldTransferCookie";
 import {
   createDataCollectionRequest,
   createDataCollectionRequestPayload,
   createGetAssuranceValidationTokenParams,
-} from "../utils/request/index.js";
-import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkRequest.js";
-import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsAndErrors.js";
-import injectGetLocationHint from "./edgeNetwork/injectGetLocationHint.js";
-import isRequestRetryable from "./network/isRequestRetryable.js";
-import getRequestRetryDelay from "./network/getRequestRetryDelay.js";
-import injectApplyResponse from "./edgeNetwork/injectApplyResponse.js";
-import getMonitors from "./getMonitors.js";
-import * as requiredComponents from "./requiredComponentCreators.js";
+} from "../utils/request/index";
+import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkRequest";
+import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsAndErrors";
+import injectGetLocationHint from "./edgeNetwork/injectGetLocationHint";
+import isRequestRetryable from "./network/isRequestRetryable";
+import getRequestRetryDelay from "./network/getRequestRetryDelay";
+import injectApplyResponse from "./edgeNetwork/injectApplyResponse";
+import getMonitors from "./getMonitors";
+import * as requiredComponents from "./requiredComponentCreators";
 
 const createNamespacedStorage = injectStorage(window);
 

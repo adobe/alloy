@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assertValid } from "./utils.js";
-import isObject from "../isObject.js";
-import isEmptyObject from "../isEmptyObject.js";
+import { assertValid } from "./utils";
+import isObject from "../isObject";
+import isEmptyObject from "../isEmptyObject";
 
 export default (message) => (value, path) => {
   if (isObject(value)) {

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 /** @import { ConsentRequestPayload } from './types.js' */
 
-import { createRequestPayload } from "../../utils/request/index.js";
+import { createRequestPayload } from "../../utils/request/index";
 
 /**
  * @function

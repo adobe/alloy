@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 /** @import { Logger } from '../../core/types.js' */
 /** @import { ConsentStateMachineUtils, ConsentStateMachine } from './types.js' */
 
-import { defer } from "../../utils/index.js";
+import { defer } from "../../utils/index";
 
 export const DECLINED_CONSENT = "The user declined consent.";
 export const DECLINED_CONSENT_ERROR_CODE = "declinedConsent";

@@ -23,9 +23,9 @@ import {
   ID5_ID,
   RAMP_ID,
   DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
-} from "../constants/index.js";
+} from "../constants/index";
 
-import { queryString } from "../../../utils/index.js";
+import { queryString } from "../../../utils/index";
 
 const getUrlParams = () => {
   const parsedParams = queryString.parse(window.location.search);

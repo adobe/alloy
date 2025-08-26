@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { getNamespacedCookieName } from "../../utils/index.js";
-import { CLUSTER } from "../../constants/cookieNameKey.js";
-import { MBOX_EDGE_CLUSTER } from "../../constants/legacyCookies.js";
+import { getNamespacedCookieName } from "../../utils/index";
+import { CLUSTER } from "../../constants/cookieNameKey";
+import { MBOX_EDGE_CLUSTER } from "../../constants/legacyCookies";
 
 export default ({ orgId, cookieJar }) => {
   const clusterCookieName = getNamespacedCookieName(orgId, CLUSTER);

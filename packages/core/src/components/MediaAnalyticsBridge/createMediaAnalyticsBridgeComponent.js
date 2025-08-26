@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { noop, uuid } from "../../utils/index.js";
+import { noop, uuid } from "../../utils/index";
 import {
   AD_METADATA_KEYS as AdMetadataKeys,
   AUDIO_METADATA_KEYS as AudioMetadataKeys,
@@ -20,7 +20,7 @@ import {
   PLAYER_STATE as PlayerState,
   STREAM_TYPE as StreamType,
   VIDEO_METADATA_KEYS as VideoMetadataKeys,
-} from "./constants/constants.js";
+} from "./constants/constants";
 
 export default ({
   trackMediaEvent,

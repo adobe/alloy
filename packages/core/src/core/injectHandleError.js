@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { toError, updateErrorMessage } from "../utils/index.js";
-import { DECLINED_CONSENT_ERROR_CODE } from "./consent/createConsentStateMachine.js";
+import { toError, updateErrorMessage } from "../utils/index";
+import { DECLINED_CONSENT_ERROR_CODE } from "./consent/createConsentStateMachine";
 
 export default ({ errorPrefix, logger }) =>
   (error, operation) => {

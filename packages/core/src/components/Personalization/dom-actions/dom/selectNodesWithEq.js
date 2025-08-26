@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { selectNodes } from "../../../../utils/dom/index.js";
-import { isNotEqSelector, splitWithEq } from "./helperForEq.js";
+import { selectNodes } from "../../../../utils/dom/index";
+import { isNotEqSelector, splitWithEq } from "./helperForEq";
 
 // Trying to match ID or CSS class
 const CSS_IDENTIFIER_PATTERN = /(#|\.)(-?\w+)/g;

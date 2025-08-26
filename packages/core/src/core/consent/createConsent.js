@@ -12,13 +12,13 @@ governing permissions and limitations under the License.
 
 /** @import { ConsentManager } from './types.js' */
 
-import { IN, OUT, PENDING } from "../../constants/consentStatus.js";
-import { GENERAL } from "../../constants/consentPurpose.js";
+import { IN, OUT, PENDING } from "../../constants/consentStatus";
+import { GENERAL } from "../../constants/consentPurpose";
 import {
   CONSENT_SOURCE_DEFAULT,
   CONSENT_SOURCE_INITIAL,
   CONSENT_SOURCE_NEW,
-} from "./createConsentStateMachine.js";
+} from "./createConsentStateMachine";
 
 /**
  * @function

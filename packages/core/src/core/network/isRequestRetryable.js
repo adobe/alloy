@@ -15,7 +15,7 @@ import {
   SERVICE_UNAVAILABLE,
   BAD_GATEWAY,
   GATEWAY_TIMEOUT,
-} from "../../constants/httpStatusCode.js";
+} from "../../constants/httpStatusCode";
 
 const MAX_RETRIES = 3;
 

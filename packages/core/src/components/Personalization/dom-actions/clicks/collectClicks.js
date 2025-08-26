@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import matchesSelectorWithEq from "../dom/matchesSelectorWithEq.js";
-import { VIEW_SCOPE_TYPE } from "../../constants/scopeType.js";
-import { cleanMetas, dedupeMetas } from "../../utils/metaUtils.js";
+import matchesSelectorWithEq from "../dom/matchesSelectorWithEq";
+import { VIEW_SCOPE_TYPE } from "../../constants/scopeType";
+import { cleanMetas, dedupeMetas } from "../../utils/metaUtils";
 
 const getMetasIfMatches = (clickedElement, selector, getClickMetas) => {
   const { documentElement } = document;

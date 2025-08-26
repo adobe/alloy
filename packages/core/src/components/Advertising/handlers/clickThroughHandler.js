@@ -19,7 +19,7 @@ import {
   TRACKING_CODE,
   TRACKING_IDENTITIES,
   LAST_CONVERSION_TIME_KEY_EXPIRES,
-} from "../constants/index.js";
+} from "../constants/index";
 
 /**
  * Handles click-through ad conversions

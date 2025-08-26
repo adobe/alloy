@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { groupBy, isNonEmptyArray } from "../../utils/index.js";
-import PAGE_WIDE_SCOPE from "../../constants/pageWideScope.js";
+import { groupBy, isNonEmptyArray } from "../../utils/index";
+import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 

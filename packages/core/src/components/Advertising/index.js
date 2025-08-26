@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createComponent from "./createComponent.js";
-import configValidators from "./configValidators.js";
+import createComponent from "./createComponent";
+import configValidators from "./configValidators";
 import {
   createDataCollectionRequest,
   createDataCollectionRequestPayload,
-} from "../../utils/request/index.js";
-import createAdConversionHandler from "./handlers/createAdConversionHandler.js";
-import createCookieManager from "./utils/advertisingCookieManager.js";
+} from "../../utils/request/index";
+import createAdConversionHandler from "./handlers/createAdConversionHandler";
+import createCookieManager from "./utils/advertisingCookieManager";
 
 const createAdvertising = ({
   logger,

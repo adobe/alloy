@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { deepAssign, isFunction, toInteger } from "../../utils/index.js";
+import { deepAssign, isFunction, toInteger } from "../../utils/index";
 
 const getScreenOrientationViaProperty = (window) => {
   const {

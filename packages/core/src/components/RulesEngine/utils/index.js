@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as generateEventHash } from "./generateEventHash.js";
-export { default as getExpirationDate } from "./getExpirationDate.js";
-export { default as createEventPruner } from "./createEventPruner.js";
-export { default as hasExperienceData } from "./hasExperienceData.js";
-export { getActivityId, getDecisionProvider } from "./getPropositionData.js";
+export { default as generateEventHash } from "./generateEventHash";
+export { default as getExpirationDate } from "./getExpirationDate";
+export { default as createEventPruner } from "./createEventPruner";
+export { default as hasExperienceData } from "./hasExperienceData";
+export { getActivityId, getDecisionProvider } from "./getPropositionData";
 export {
   createRestoreStorage,
   createSaveStorage,
   createInMemoryStorage,
   clearLocalStorage,
-} from "./storage.js";
+} from "./storage";

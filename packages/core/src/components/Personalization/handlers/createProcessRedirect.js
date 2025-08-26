@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { hideElements, showElements } from "../flicker/index.js";
+import { hideElements, showElements } from "../flicker/index";
 
 const REDIRECT_HIDING_ELEMENT = "BODY";
 export default ({ logger, executeRedirect, collect }) =>

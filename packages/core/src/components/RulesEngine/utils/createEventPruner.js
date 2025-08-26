@@ -12,8 +12,8 @@ governing permissions and limitations under the License.
 import {
   EVENT_HISTORY_MAX_RECORDS,
   EVENT_HISTORY_RETENTION_PERIOD,
-} from "../constants/index.js";
-import getExpirationDate from "./getExpirationDate.js";
+} from "../constants/index";
+import getExpirationDate from "./getExpirationDate";
 
 /**
  * Creates an event pruner function that filters events based on retention period and maximum count

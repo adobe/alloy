@@ -17,8 +17,8 @@ import {
   number,
   objectOf,
   string,
-} from "../../utils/validation/index.js";
-import { validateConfigOverride } from "../../utils/index.js";
+} from "../../utils/validation/index";
+import { validateConfigOverride } from "../../utils/index";
 
 export default ({ options }) => {
   const sessionValidator = anyOf(

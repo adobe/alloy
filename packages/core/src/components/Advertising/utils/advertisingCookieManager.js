@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { getNamespacedCookieName, cookieJar } from "../../../utils/index.js";
-import createLoggingCookieJar from "../../../utils/createLoggingCookieJar.js";
+import { getNamespacedCookieName, cookieJar } from "../../../utils/index";
+import createLoggingCookieJar from "../../../utils/createLoggingCookieJar";
 import {
   ADVERTISING_COOKIE_KEY,
   DEFAULT_COOKIE_EXPIRATION_MINUTES,
   DEFAULT_THROTTLE_MINUTES,
-} from "../constants/index.js";
+} from "../constants/index";
 
 export default ({ orgId, logger }) => {
   const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });

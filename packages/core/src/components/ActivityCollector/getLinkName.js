@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import truncateWhiteSpace from "./utils/truncateWhiteSpace.js";
-import isSupportedTextNode from "./utils/dom/isSupportedTextNode.js";
+import truncateWhiteSpace from "./utils/truncateWhiteSpace";
+import isSupportedTextNode from "./utils/dom/isSupportedTextNode";
 
 /**
  * Orders and returns specified node and its child nodes in arrays of supported

@@ -20,15 +20,15 @@ import {
   createSaveStorage,
   createEventPruner,
   generateEventHash,
-} from "./utils/index.js";
-import { EVENT_TYPE_TRUE } from "../../constants/eventType.js";
-import { ADOBE_JOURNEY_OPTIMIZER } from "../../constants/decisionProvider.js";
+} from "./utils/index";
+import { EVENT_TYPE_TRUE } from "../../constants/eventType";
+import { ADOBE_JOURNEY_OPTIMIZER } from "../../constants/decisionProvider";
 import {
   EVENT_HISTORY_STORAGE_KEY,
   EVENT_HISTORY_MAX_LENGTH,
   INSERT_OPERATION,
   INSERT_IF_NOT_EXISTS_OPERATION,
-} from "./constants/index.js";
+} from "./constants/index";
 
 /**
  * Creates an event registry to track and manage events

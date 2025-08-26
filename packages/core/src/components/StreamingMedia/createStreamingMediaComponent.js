@@ -9,9 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { noop } from "../../utils/index.js";
-import validateSessionOptions from "./validateMediaSessionOptions.js";
-import validateMediaEventOptions from "./validateMediaEventOptions.js";
+import { noop } from "../../utils/index";
+import validateSessionOptions from "./validateMediaSessionOptions";
+import validateMediaEventOptions from "./validateMediaEventOptions";
 
 export default ({
   config,

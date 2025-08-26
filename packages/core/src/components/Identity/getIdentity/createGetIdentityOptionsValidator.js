@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { validateConfigOverride } from "../../../utils/index.js";
-import { objectOf, enumOf, arrayOf } from "../../../utils/validation/index.js";
-import ecidNamespace from "../../../constants/ecidNamespace.js";
-import coreNamespace from "../../../constants/coreNamespace.js";
+import { validateConfigOverride } from "../../../utils/index";
+import { objectOf, enumOf, arrayOf } from "../../../utils/validation/index";
+import ecidNamespace from "../../../constants/ecidNamespace";
+import coreNamespace from "../../../constants/coreNamespace";
 
 /**
  * Verifies user provided event options.
