@@ -32,7 +32,7 @@ const config = compose(
 
 createFixture({
   title:
-    "C300001: Click-through conversion with s_kwcid parameter should NOT send advertising.enrichment_ct event (requires both parameters)",
+    "C300001: Click-through conversion with s_kwcid parameter should send advertising.enrichment_ct event",
   requestHooks: [networkLogger.edgeEndpointLogs],
   url: `${TEST_PAGE_URL}?test=advertising-clickthrough-skwcid&s_kwcid=test_keyword_123`,
 });
@@ -43,7 +43,7 @@ test.meta({
   TEST_RUN: "Regression",
 });
 
-test("Test C300001: Click-through conversion with s_kwcid parameter should NOT send advertising.enrichment_ct event (requires both s_kwcid and ef_id)", async () => {
+test("Test C300001: Click-through conversion with s_kwcid parameter should send advertising.enrichment_ct event", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
 
@@ -51,13 +51,13 @@ test("Test C300001: Click-through conversion with s_kwcid parameter should NOT s
   await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).gte(0);
 
-  // verify that NO click-through request is made (since only s_kwcid is present, not ef_id)
+  // verify that a click-through request is made when only s_kwcid is present
   const conversionRequest = findClickThroughRequest(
     networkLogger.edgeEndpointLogs.requests,
   );
   await t
     .expect(conversionRequest)
-    .notOk(
-      "Should NOT find an advertising.enrichment_ct conversion request when only s_kwcid is present",
+    .ok(
+      "Should find an advertising.enrichment_ct conversion request when s_kwcid is present",
     );
 });

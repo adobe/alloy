@@ -44,7 +44,6 @@ export default async function handleClickThrough({
   logger.info(LOG_AD_CONVERSION_START, { skwcid, efid });
 
   const event = eventManager.createEvent();
-
   if (
     typeof skwcid !== "undefined" &&
     typeof efid !== "undefined" &&
@@ -70,6 +69,7 @@ export default async function handleClickThrough({
       },
     },
     eventType: AD_CONVERSION_CLICK_EVENT_TYPE,
+    timestamp: new Date().toISOString(),
   };
 
   event.setUserXdm(xdm);
