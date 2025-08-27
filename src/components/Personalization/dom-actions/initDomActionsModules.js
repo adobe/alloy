@@ -47,21 +47,21 @@ export const DOM_ACTION_COLLECT_INTERACTIONS = "collectInteractions";
 
 export default () => {
   return {
-    [DOM_ACTION_SET_HTML]: createAction(setHtml),
+    [DOM_ACTION_SET_HTML]: createAction(setHtml, true),
     [DOM_ACTION_CUSTOM_CODE]: createAction(prependHtml),
-    [DOM_ACTION_SET_TEXT]: createAction(setText),
-    [DOM_ACTION_SET_ATTRIBUTE]: createAction(setAttributes),
-    [DOM_ACTION_SET_IMAGE_SOURCE]: createAction(swapImage),
-    [DOM_ACTION_SET_STYLE]: createAction(setStyles),
-    [DOM_ACTION_MOVE]: createAction(move),
-    [DOM_ACTION_RESIZE]: createAction(resize),
+    [DOM_ACTION_SET_TEXT]: createAction(setText, true),
+    [DOM_ACTION_SET_ATTRIBUTE]: createAction(setAttributes, true),
+    [DOM_ACTION_SET_IMAGE_SOURCE]: createAction(swapImage, true),
+    [DOM_ACTION_SET_STYLE]: createAction(setStyles, true),
+    [DOM_ACTION_MOVE]: createAction(move, true),
+    [DOM_ACTION_RESIZE]: createAction(resize, true),
     [DOM_ACTION_REARRANGE]: createAction(rearrangeChildren),
-    [DOM_ACTION_REMOVE]: createAction(removeNode),
+    [DOM_ACTION_REMOVE]: createAction(removeNode, true),
     [DOM_ACTION_INSERT_AFTER]: createAction(insertHtmlAfter),
     [DOM_ACTION_INSERT_BEFORE]: createAction(insertHtmlBefore),
-    [DOM_ACTION_REPLACE_HTML]: createAction(replaceHtml),
+    [DOM_ACTION_REPLACE_HTML]: createAction(replaceHtml, true),
     [DOM_ACTION_PREPEND_HTML]: createAction(prependHtml),
     [DOM_ACTION_APPEND_HTML]: createAction(appendHtml),
-    [DOM_ACTION_COLLECT_INTERACTIONS]: createAction(collectInteractions),
+    [DOM_ACTION_COLLECT_INTERACTIONS]: createAction(collectInteractions, true),
   };
 };
