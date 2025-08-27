@@ -23,6 +23,7 @@ describe("makeSendPushSubscriptionRequest", () => {
   let mockStorage;
   let mockLogger;
   let mockSendEdgeNetworkRequest;
+  let mockSetUserData;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -51,6 +52,7 @@ describe("makeSendPushSubscriptionRequest", () => {
   });
 
   const callMakeSendPushSubscriptionRequest = () => {
+    mockSetUserData = vi.fn();
     return makeSendPushSubscriptionRequest({
       config: {
         vapidPublicKey: "test-vapid-key",
@@ -63,7 +65,7 @@ describe("makeSendPushSubscriptionRequest", () => {
       },
       eventManager: {
         createEvent: () => ({
-          setUserData: vi.fn(),
+          setUserData: mockSetUserData,
           finalize: vi.fn(),
         }),
       },
@@ -80,6 +82,9 @@ describe("makeSendPushSubscriptionRequest", () => {
 
     await callMakeSendPushSubscriptionRequest();
     expect(mockSendEdgeNetworkRequest).toHaveBeenCalled();
+    expect(
+      mockSetUserData.mock.calls[0][0].pushNotificationDetails[0].token,
+    ).not.toContain("ecid");
   });
 
   it("does not make an edge call if the subscription details are not changed", async () => {
