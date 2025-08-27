@@ -62,12 +62,13 @@ export default async ({
     window,
   });
 
-  const serializedPushSubscriptionDetails = `${ecid}${JSON.stringify(
+  const serializedPushSubscriptionDetails = JSON.stringify(
     sortObjectKeysRecursively(pushSubscriptionDetails),
-  )}`;
-  const cachedSubscriptionDetails = storage.getItem(SUBSCRIPTION_DETAILS);
+  );
 
-  if (serializedPushSubscriptionDetails === cachedSubscriptionDetails) {
+  const cacheValue = `${ecid}${serializedPushSubscriptionDetails}`;
+
+  if (cacheValue === storage.getItem(SUBSCRIPTION_DETAILS)) {
     logger.info(
       "Subscription details have not changed. Not sending to the server.",
     );
@@ -75,7 +76,7 @@ export default async ({
     return;
   }
 
-  storage.setItem(SUBSCRIPTION_DETAILS, serializedPushSubscriptionDetails);
+  storage.setItem(SUBSCRIPTION_DETAILS, cacheValue);
 
   const payload = await createSendPushSubscriptionPayload({
     eventManager,
