@@ -55,7 +55,7 @@ export default () => {
     [DOM_ACTION_SET_STYLE]: createAction(setStyles, true),
     [DOM_ACTION_MOVE]: createAction(move, true),
     [DOM_ACTION_RESIZE]: createAction(resize, true),
-    [DOM_ACTION_REARRANGE]: createAction(rearrangeChildren, true),
+    [DOM_ACTION_REARRANGE]: createAction(rearrangeChildren),
     [DOM_ACTION_REMOVE]: createAction(removeNode, true),
     [DOM_ACTION_INSERT_AFTER]: createAction(insertHtmlAfter),
     [DOM_ACTION_INSERT_BEFORE]: createAction(insertHtmlBefore),
