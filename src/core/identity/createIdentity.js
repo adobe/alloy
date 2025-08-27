@@ -10,8 +10,45 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+/** @import { IdentityManager } from './types.js' */
+/** @import { Logger } from '../types.js' */
+/** @import { CookieJar } from '../../utils/types.js' */
+
 import createDecodeKndctrCookie from "../../utils/createDecodeKndctrCookie.js";
 
+/**
+ * Creates an identity management service for handling ECID (Experience Cloud ID) resolution and tracking.
+ *
+ * This factory function creates an identity manager service that manages the state of identity resolution,
+ * provides methods to check for existing identity cookies, and handles the asynchronous nature
+ * of identity acquisition in Adobe Experience Platform Web SDK.
+ *
+ * @function
+ *
+ * @param {Object} options
+ * @param {Logger} options.logger
+ * @param {CookieJar} options.loggingCookieJar
+ * @param {{orgId: string}} options.config
+ *
+ * @returns {IdentityManager}
+ *
+ * @example
+ * // Create an identity service
+ * const identityManager = createIdentity({
+ *   logger: myLogger,
+ *   loggingCookieJar: myCookieJar,
+ *   config: { orgId: 'myOrgId@AdobeOrg' }
+ * });
+ *
+ * // Initialize and check for existing identity
+ * identityManager.initialize();
+ *
+ * // Wait for identity to be available
+ * await identityManager.awaitIdentity();
+ *
+ * // Get ECID from cookie
+ * const ecid = identityManager.getEcidFromCookie();
+ */
 export default ({ logger, loggingCookieJar, config }) => {
   let awaitIdentityResolve = null;
 

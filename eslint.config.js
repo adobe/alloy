@@ -230,6 +230,7 @@ export default defineConfig([
     },
     rules: {
       ...react.configs.recommended.rules,
+      "react/prop-types": "off",
     },
   },
   // Vite plugins are ESM-only and confuse eslint-plugin-import; disable the

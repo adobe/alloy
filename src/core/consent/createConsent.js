@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+/** @import { ConsentManager } from './types.js' */
+
 import { IN, OUT, PENDING } from "../../constants/consentStatus.js";
 import { GENERAL } from "../../constants/consentPurpose.js";
 import {
@@ -18,6 +20,15 @@ import {
   CONSENT_SOURCE_NEW,
 } from "./createConsentStateMachine.js";
 
+/**
+ * @function
+ *
+ * @param {Object} options
+ * @param {ConsentStateMachine} options.generalConsentState
+ * @param {Logger} options.logger
+ *
+ * @returns {ConsentManager}
+ */
 export default ({ generalConsentState, logger }) => {
   const setConsent = (consentByPurpose, source) => {
     switch (consentByPurpose[GENERAL]) {
