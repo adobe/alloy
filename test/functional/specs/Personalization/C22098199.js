@@ -142,7 +142,7 @@ const createTest = (action) => async () => {
   },
 );
 
-test.only("setHtml propositions should be able to be re-rendered multiple times.", async () => {
+test("setHtml propositions should be able to be re-rendered multiple times.", async () => {
   const config = compose(orgMainConfigMain, debugEnabled);
   const propositionId = uuid();
   const itemId = uuid();
