@@ -8,6 +8,8 @@
     "outDir": "types",
     "declarationMap": true,
     "checkJs": false,
-    "target": "ES2020"
+    "target": "ES2020",
+    "moduleResolution": "node",
+    "skipLibCheck": true
   }
 }
