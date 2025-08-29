@@ -48,7 +48,6 @@ self.addEventListener("push", (event) => {
       (button, index) => ({
         action: `action_${index}`,
         title: button.label,
-        type: button.type,
       }),
     );
   }
