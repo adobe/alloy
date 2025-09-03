@@ -14,13 +14,16 @@ import {
 } from "../utils/helpers.js";
 import { SURFER_ID, ID5_ID, RAMP_ID } from "../constants/index.js";
 import { AUTO, WAIT } from "../../../constants/consentStatus.js";
+import { CHROME } from "../../../constants/browser.js";
 
 const isAdvertisingDisabled = (advertising) => {
-  return ![AUTO, WAIT].includes(advertising?.handleAdvertisingData);
+  return ![AUTO, WAIT].includes(
+    advertising?.handleAdvertisingData?.toLowerCase(),
+  );
 };
 
 const waitForAdvertisingId = (advertising) => {
-  return advertising?.handleAdvertisingData === WAIT;
+  return advertising?.handleAdvertisingData?.toLowerCase() === WAIT;
 };
 
 /**
@@ -56,6 +59,17 @@ export default async function handleOnBeforeSendEvent({
   try {
     const useShortTimeout = waitForAdvertisingId(advertising);
 
+    let rampIdPromise = null;
+
+    if (!getBrowser || getBrowser() !== CHROME) {
+      rampIdPromise = getRampId(
+        logger,
+        componentConfig.rampIdJSPath,
+        cookieManager,
+        useShortTimeout,
+        useShortTimeout,
+      );
+    }
     const [surferIdResult, id5IdResult, rampIdResult] =
       await Promise.allSettled([
         collectSurferId(cookieManager, getBrowser, useShortTimeout),
@@ -65,13 +79,7 @@ export default async function handleOnBeforeSendEvent({
           useShortTimeout,
           useShortTimeout,
         ),
-        getRampId(
-          logger,
-          componentConfig.rampIdJSPath,
-          cookieManager,
-          useShortTimeout,
-          useShortTimeout,
-        ),
+        rampIdPromise,
       ]);
 
     const availableIds = {};

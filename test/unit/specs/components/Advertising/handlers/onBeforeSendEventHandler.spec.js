@@ -179,7 +179,8 @@ describe("Advertising::onBeforeSendEventHandler", () => {
       dspEnabled: true,
     };
 
-    getBrowser = vi.fn().mockReturnValue("Chrome");
+    // Default to a non-Chrome browser so RampID is collected by default
+    getBrowser = vi.fn().mockReturnValue("Firefox");
 
     // Get and reset mock functions - these are already mocked at module level
     const surferIdModule = await import(
