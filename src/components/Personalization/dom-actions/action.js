@@ -42,9 +42,12 @@ const renderContent = ({
   decorateProposition,
   renderFunc,
   renderStatusHandler,
+  alwaysRender,
 }) => {
   const executions = containers
-    .filter(renderStatusHandler.shouldRender)
+    .filter(
+      (element) => alwaysRender || renderStatusHandler.shouldRender(element),
+    )
     .map(async (container) => {
       await renderFunc(container, content, decorateProposition);
       renderStatusHandler.markAsRendered(container);
@@ -57,8 +60,9 @@ const renderContent = ({
  * Creates an action function that renders content into a container element.
  *
  * @param {Function} renderFunc - The function that performs the rendering.
+ * @param {boolean} alwaysRender - Whether to always render the content, even if it has already been rendered.
  */
-export const createAction = (renderFunc) => {
+export const createAction = (renderFunc, alwaysRender = false) => {
   /**
    * Renders content into a container element.
    *
@@ -84,6 +88,7 @@ export const createAction = (renderFunc) => {
         decorateProposition,
         renderFunc,
         renderStatusHandler,
+        alwaysRender,
       });
     } finally {
       showElements(prehidingSelector);

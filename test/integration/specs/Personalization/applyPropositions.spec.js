@@ -15,7 +15,6 @@ import {
   test,
   expect,
   beforeEach,
-  afterEach,
 } from "../../helpers/testsSetup/extend.js";
 
 describe("applyPropositions", () => {
@@ -28,87 +27,12 @@ describe("applyPropositions", () => {
     testElement.className = testElementClass;
     testElement.innerHTML = "Original content";
     document.body.appendChild(testElement);
-  });
-
-  afterEach(() => {
-    document.body.removeChild(testElement);
+    return () => {
+      document.body.removeChild(testElement);
+    };
   });
 
   // TGT-52945 and PLATIR-51065
-  test("html-content-item should work", async ({ alloy }) => {
-    alloy("configure", {
-      ...alloyConfig,
-      debugEnabled: true,
-    });
-
-    const propositions = [
-      {
-        id: "AT:eyJhY3Rpdml0eUlkIjoiMTY1NjkxNCIsImV4cGVyaWVuY2VJZCI6IjAifQ==",
-        scope: "web://example.com",
-        scopeDetails: {
-          decisionProvider: "TGT",
-          activity: {
-            id: "0",
-          },
-          experience: {
-            id: "0",
-          },
-        },
-        items: [
-          {
-            id: "910278",
-            schema: "https://ns.adobe.com/personalization/html-content-item",
-            data: {
-              id: "910278",
-              format: "text/html",
-              content:
-                '<img style="display: block; user-select: none; margin: auto; background-color: rgb(230, 230, 230); transition: background-color 300ms; --darkreader-inline-bgcolor: #26292b;" src="https://http.cat/200.jpg" data-darkreader-inline-bgcolor="" width="750" height="600">',
-              selector: "div.heroimage",
-              type: "setHtml",
-            },
-            meta: {
-              "experience.id": "0",
-              "activity.name": "App TC: Form Based Composer Activity",
-              "activity.id": "1656914",
-              "experience.name": "Experience A",
-              "geo.zip": "23224",
-              "option.id": "2",
-              "geo.ispName": "comcast cable communications inc.",
-              "profile.productPurchasedId": "",
-              "offer.name":
-                "/app_tc_form_basedcomposeractivity/experiences/0/pages/0/zones/0/1729542513711",
-              "profile.clientHasPurchasedMTP": "false",
-              "offer.id": "910278",
-            },
-          },
-        ],
-      },
-    ];
-    const metadata = {
-      "web://example.com": {
-        selector: testElementSelector,
-        actionType: "setHtml",
-      },
-    };
-
-    expect(async () => {
-      const result = await alloy("applyPropositions", {
-        propositions,
-        metadata,
-      });
-
-      // verify basic result structure
-      expect(result).toBeDefined();
-      expect(result.propositions).toBeDefined();
-      expect(result.propositions.length).toBe(1);
-      expect(result.propositions[0].renderAttempted).toBe(true);
-
-      // Check that the content was actually applied
-      expect(testElement.innerHTML).toContain("http.cat/200.jpg");
-      document.body.removeChild(testElement);
-    }).not.toThrow();
-  });
-
   test("html-content-item and metadata should work", async ({ alloy }) => {
     alloy("configure", {
       ...alloyConfig,
@@ -166,18 +90,19 @@ describe("applyPropositions", () => {
       },
     };
 
-    expect(async () => {
-      const result = await alloy("applyPropositions", {
-        propositions,
-        metadata,
-      });
-
-      expect(result).toBeDefined();
-      expect(result.propositions).toBeDefined();
-      expect(result.propositions.length).toBe(1);
-      expect(result.propositions[0].renderAttempted).toBe(true);
-
-      expect(testElement.innerHTML).toContain("http.cat/200.jpg");
-    }).not.toThrow();
+    const resultPromise = alloy("applyPropositions", {
+      propositions,
+      metadata,
+    });
+    expect(resultPromise).resolves.toBeDefined();
+    expect(resultPromise).resolves.toHaveProperty("propositions");
+    expect(resultPromise).resolves.toHaveProperty("propositions.length", 1);
+    expect(resultPromise).resolves.toHaveProperty(
+      "propositions[0].renderAttempted",
+      true,
+    );
+    await expect
+      .poll(() => testElement.innerHTML)
+      .toContain("http.cat/200.jpg");
   });
 });

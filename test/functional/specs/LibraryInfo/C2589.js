@@ -57,6 +57,7 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
     "getMediaAnalyticsTracker",
     "sendEvent",
     "sendMediaEvent",
+    "sendPushSubscription",
     "setConsent",
     "setDebug",
     "subscribeRulesetItems",

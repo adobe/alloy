@@ -10,6 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+/** @import { EdgeRequestExecutor } from './types.js' */
+/** @import { ResponseCreator } from '../types.js' */
+
 import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain.js";
 import apiVersion from "../../constants/apiVersion.js";
 import { createCallbackAggregator, noop } from "../../utils/index.js";
@@ -21,6 +24,22 @@ const isDemdexBlockedError = (error, request) => {
   return request.getUseIdThirdPartyDomain() && isNetworkError(error);
 };
 
+/**
+ * @function
+ *
+ * @param {object} options
+ * @param {{edgeDomain: string, edgeBasePath: string, datastreamId: string}} options.config
+ * @param {object} options.lifecycle
+ * @param {object} options.cookieTransfer
+ * @param {function(object): Promise<Object>} options.sendNetworkRequest
+ * @param {ResponseCreator} options.createResponse
+ * @param {function(object): void} options.processWarningsAndErrors
+ * @param {function(): string|undefined} options.getLocationHint
+ * @param {function(): string} options.getAssuranceValidationTokenParams
+
+ *
+ * @returns {EdgeRequestExecutor} A function that sends edge network requests with lifecycle management
+ */
 export default ({
   config,
   lifecycle,

@@ -15,10 +15,11 @@ import deepAssign from "./deepAssign.js";
 /**
  * Creates a function that, when passed an object of updates, will merge
  * the updates onto the current value of a payload property.
- * @param {Object} content The base object to modify
- * @param {String } key The property to merge updates into. This
- * can be a dot-notation property path.
- * @returns {Function}
+ *
+ * @param {object} content The base object to modify
+ * @param {string} key The property to merge updates into. This can be a dot-notation property path.
+ *
+ * @returns {function(object): void}
  */
 export default (content, key) => (updates) => {
   const propertyPath = key.split(".");

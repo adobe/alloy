@@ -141,3 +141,70 @@ const createTest = (action) => async () => {
     );
   },
 );
+
+test("setHtml propositions should be able to be re-rendered multiple times.", async () => {
+  const config = compose(orgMainConfigMain, debugEnabled);
+  const propositionId = uuid();
+  const itemId = uuid();
+
+  const targetHeadline = "Target Modified Headline";
+  const originalHeadline = "Original Headline";
+  const propositions = createPropositions({
+    propositionId,
+    items: [
+      {
+        id: itemId,
+        schema: "https://ns.adobe.com/personalization/dom-action",
+        data: {
+          type: "setHtml",
+          content: `<h1>${targetHeadline}</h1>`,
+          selector: `#${containerId}`,
+        },
+      },
+    ],
+  });
+
+  const spaPageBody = `
+  <div id="container">
+    <h1 id="page-header">Hello World!</h1>
+    <div id="${containerId}">
+      <h1>${originalHeadline}</h1>
+    </div>
+  </div>
+  `;
+
+  await addHtmlToBody(spaPageBody, true);
+
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+
+  await alloy.applyPropositions({
+    propositions,
+  });
+
+  const container = Selector(`#${containerId}`).addCustomDOMProperties({
+    innerHTML: (el) => el.innerHTML,
+  });
+
+  await t.expect(container.innerHTML).contains(targetHeadline);
+
+  // "Navigate" to new SPA view
+  await t.eval(() => {
+    const targetContainer = document.getElementById("target-container");
+    if (targetContainer) {
+      targetContainer.innerHTML = `<h1>Sports/Politics Content</h1>`;
+    }
+  });
+
+  // Verify "navigation" worked
+  await t.expect(container.innerHTML).contains("Sports/Politics Content");
+
+  // "Navigate" back
+  await alloy.applyPropositions({
+    propositions,
+  });
+
+  // TODO: This fails, but it should pass. applyPropositions should be able to be called multiple times and work every time.
+  await t.expect(container.innerHTML).notContains("Sports/Politics Content");
+  await t.expect(container.innerHTML).contains(targetHeadline);
+});
