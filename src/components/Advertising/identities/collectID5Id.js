@@ -14,7 +14,7 @@ import { ID5_SCRIPT_URL } from "../constants/index.js";
 
 let id5Id = "";
 let inProgressId5Promise = null;
-const SHORT_TIMEOUT_MS = 5000;
+const SHORT_TIMEOUT_MS = 2000;
 const DEFAULT_TIMEOUT_MS = 30000;
 
 const initiateID5Call = (partnerId, useShortTimeout, logger) => {
