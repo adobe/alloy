@@ -29,6 +29,17 @@ export const base64ToBytes = (base64String) => {
 /**
  * Takes a Uint8Array and returns a base64 string.
  * @param {Uint8Array} bytes
+ * @param {Object} [options={}] - Options for encoding
+ * @param {boolean} [options.urlSafe=false] - Whether to return URL-safe base64 (no padding, + becomes -, / becomes _)
  * @returns {string}
  */
-export const bytesToBase64 = (bytes) => btoa(String.fromCharCode(...bytes));
+export const bytesToBase64 = (bytes, options = {}) => {
+  const { urlSafe = false } = options || {};
+  const base64 = btoa(String.fromCharCode(...bytes));
+
+  if (urlSafe) {
+    return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+  }
+
+  return base64;
+};

@@ -95,8 +95,12 @@ const getPushSubscriptionDetails = async ({ vapidPublicKey, window }) => {
     return {
       endpoint: subscription.endpoint,
       keys: {
-        p256dh: bytesToBase64(new Uint8Array(subscription.getKey("p256dh"))),
-        auth: bytesToBase64(new Uint8Array(subscription.getKey("auth"))),
+        p256dh: bytesToBase64(new Uint8Array(subscription.getKey("p256dh")), {
+          urlSafe: true,
+        }),
+        auth: bytesToBase64(new Uint8Array(subscription.getKey("auth")), {
+          urlSafe: true,
+        }),
       },
     };
   } catch (e) {

@@ -153,8 +153,8 @@ describe("getPushSubscriptionDetails", () => {
       expect(result).toEqual({
         endpoint: "https://fcm.googleapis.com/fcm/send/test-endpoint",
         keys: {
-          p256dh: "AQIDBA==",
-          auth: "BQYHCA==",
+          p256dh: "AQIDBA",
+          auth: "BQYHCA",
         },
       });
 
@@ -197,8 +197,8 @@ describe("getPushSubscriptionDetails", () => {
       expect(result).toEqual({
         endpoint: "https://fcm.googleapis.com/fcm/send/test-endpoint",
         keys: {
-          p256dh: "AQIDBA==",
-          auth: "BQYHCA==",
+          p256dh: "AQIDBA",
+          auth: "BQYHCA",
         },
       });
     });
