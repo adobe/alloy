@@ -29,6 +29,7 @@ export default ({
   logger,
   fetch,
   buildEndpointUrl,
+                  lifecycle
 }) => {
   const { edgeDomain, edgeBasePath, datastreamId, onBeforeEventSend } = config;
   const sendConversationServiceRequest = createSendConversationServiceRequest({
@@ -68,38 +69,21 @@ export default ({
 
     const ecid = decodeKndctrCookie();
 
-    event.mergeXdm({
+ /*   event.mergeXdm({
       identityMap: {
         ECID: [
           {
             id: ecid,
           },
         ],
-      },
-      web: {
-        webPageDetails: {
-          URL: window.location.href || window.location,
-        },
-        webReferrer: {
-          URL: window.document.referrer,
-        },
-      },
-    });
+      }
+    });*/
 
     event.mergeXdm({...xdm});
 
     if(message) {
       streamingEnabled = true;
     }
-
-    try {
-      // NOTE: this calls onBeforeEventSend callback (if configured)
-      event.finalize(onBeforeEventSend);
-    } catch (error) {
-      onStreamResponse({ error });
-      throw error;
-    }
-    payload.addEvent(event);
     const url = buildEndpointUrl({
       edgeDomain,
       edgeBasePath,
@@ -107,34 +91,45 @@ export default ({
       request,
     });
     return consent.awaitConsent().then(() => {
-      return sendConversationServiceRequest({
-        requestId: uuid(),
-        url,
-        request,
-        onStreamResponse,
-        streamingEnabled
-      }).then(response => {
-        if(response.status === 204) {
-          return;
-        }
-          console.log("response", response);
-          const onStreamResponseCallback = (event) => {
-            if(event.error) {
-              onStreamResponse({ error });
+      return lifecycle
+        .onBeforeEvent({
+          event
+        }).then(() => {
+          try {
+            // NOTE: this calls onBeforeEventSend callback (if configured)
+            event.finalize(onBeforeEventSend);
+          } catch (error) {
+            onStreamResponse({ error });
+            throw error;
+          }
+          payload.addEvent(event);
+          return sendConversationServiceRequest({
+            requestId: uuid(),
+            url,
+            request,
+            onStreamResponse,
+            streamingEnabled
+          }).then(response => {
+            if(response.status === 204) {
+              return;
             }
-            const substr = event.data.replace("data: ", "");
-            const response = extractResponse(substr);
-            logger.info("onStreamResponse callback called with", response);
-            onStreamResponse(response);
-          };
+            const onStreamResponseCallback = (event) => {
+              if(event.error) {
+                onStreamResponse({ error });
+              }
+              const substr = event.data.replace("data: ", "");
+              const response = extractResponse(substr);
+              logger.info("onStreamResponse callback called with", response);
+              onStreamResponse(response);
+            };
 
-          const streamParser = createStreamParser();
+            const streamParser = createStreamParser();
 
-          streamParser(
-            response.body,
-            onStreamResponseCallback
-          );
-
+            streamParser(
+              response.body,
+              onStreamResponseCallback
+            );
+          });
       });
     });
   };

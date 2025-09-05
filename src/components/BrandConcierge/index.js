@@ -25,6 +25,7 @@ const createConciergeComponent = ({
   instanceName,
   sendEdgeNetworkRequest,
   config,
+  lifecycle
 }) => {
   const session = {};
   const { fetch } = window;
@@ -45,6 +46,7 @@ const createConciergeComponent = ({
     config,
     fetch,
     buildEndpointUrl,
+    lifecycle
   });
 
   return {
