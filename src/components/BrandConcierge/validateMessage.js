@@ -22,13 +22,17 @@ export default ({ options }) => {
       message: string().required(),
     }),
     objectOf({
-      feedback: objectOf({
-        conversationId: string(),
+      xdm: objectOf({
         interactionId: string(),
-        classification: string(),
-        comment: string(),
-        reasons: arrayOf(string()),
-      }),
+        conversationId: string(),
+        conversation: objectOf({
+          feedback: objectOf({
+            classification: string(),
+            comment: string(),
+            reasons: arrayOf(string()),
+          }),
+        })
+      })
     }).required(),
   ]);
 

@@ -153,7 +153,7 @@ const styles = {
 };
 const webAgentURL =
   "https://experience-stage.adobe.net/solutions/experience-platform-brand-concierge-web-agent/static-assets/main.js";
-const DATASTREAM_ID = "51ee226f-9327-4b97-99fb-d5f9877d8198";
+const DATASTREAM_ID = "3849362c-f325-4418-8cc8-993342b254f7";
 const BRAND_CONCIERGE_URL =
   "https://edge-int.adobedc.net/brand-concierge/conversations?sessionId=" +
   Date.now() +
@@ -238,7 +238,7 @@ function parseEventFromBuffer(eventData) {
  * @param {Function} onError - Error callback (error) => void
  * @param {Function} onComplete - Completion callback () => void
  */
-async function parseStream(stream, onEvent, onError) {
+async function parseStream(stream, onEvent) {
   const reader = stream.getReader();
   const decoder = new TextDecoder("utf-8");
   let buffer = "";
@@ -278,7 +278,7 @@ async function parseStream(stream, onEvent, onError) {
       }
     }
   } catch (error) {
-    if (onError) onError(error);
+   onEvent({error});
   } finally {
     reader.releaseLock();
   }
@@ -295,37 +295,7 @@ const extractResponse = (data) => {
 
   const { payload = [] } = handle[0];
 
-  if (payload.length === 0) {
-    return null;
-  }
-
-  const {
-    response = {},
-    state = "",
-    conversationId,
-    interactionId,
-  } = payload[0];
-
-  if (Object.keys(response).length === 0) {
-    return null;
-  }
-
-  const {
-    message = "",
-    promptSuggestions = [],
-    multimodalElements = [],
-    sources,
-  } = response;
-
-  return {
-    message,
-    multimodalElements,
-    promptSuggestions,
-    state,
-    sources,
-    conversationId,
-    interactionId,
-  };
+  return payload;
 };
 
 const executeRequest = async (
@@ -343,11 +313,8 @@ const executeRequest = async (
       },
       body: stringifiedPayload,
     }).then((response) => {
-      const onComplete = (e) => {
-        console.log("oncomplete event, e", e);
-      };
       console.log("Fetch response received, response:", response.body);
-      parseStream(response.body, onStreamResponseCallback, onFailureCallback);
+      parseStream(response.body, onStreamResponseCallback);
     });
   } catch (error) {
     console.log("error occurred", error);
@@ -391,12 +358,17 @@ const sendBrandConciergeEvent = ({ message, onStreamResponse }) => {
     console.log("error", error);
     onStreamResponse({ error });
   };
-  const onStreamResponseCallback = ({ data }) => {
-    const substr = data.replace("data: ", "");
+  const onStreamResponseCallback = (event) => {
+    if(event.error) {
+      onStreamResponse({ error });
+    }
+    console.log("event", event);
+    const substr = event.data.replace("data: ", "");
     const response = extractResponse(substr);
-    console.log("onStreamResponse called with", response);
-    onStreamResponse({ response });
+    console.log("response", response)
+    onStreamResponse(response);
   };
+
   return executeRequest(
     BRAND_CONCIERGE_URL + "&requestId=" + Date.now(),
     JSON.stringify(payload),

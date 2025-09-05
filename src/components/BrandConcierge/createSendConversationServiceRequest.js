@@ -9,25 +9,24 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { noop, stackError } from "../../utils/index.js";
-import createStreamParser from "./createStreamParser.js";
-
+import { stackError } from "../../utils/index.js";
 export default ({
   logger,
   isRequestRetryable,
   getRequestRetryDelay,
   fetch,
 }) => {
-  return async ({
-    requestId,
-    url,
-    request,
-    onStreamResponseCallback = noop,
-    onFailureCallback = noop,
-  }) => {
+  return async ({ requestId, url, request, streamingEnabled = true }) => {
     const payload = request.getPayload();
     const stringifiedPayload = JSON.stringify(payload);
     const parsedPayload = JSON.parse(stringifiedPayload);
+
+    const headers = { "Content-Type": "text/plain"};
+    if (streamingEnabled) {
+      headers["Accept"] = "text/event-stream";
+    } else {
+      headers["Accept"] = "text/plain";
+    }
 
     logger.logOnBeforeNetworkRequest({
       url,
@@ -37,12 +36,9 @@ export default ({
 
     const executeRequest = async (retriesAttempted = 0) => {
       try {
-        await fetch(url, {
+        return await fetch(url, {
           method: "POST",
-          headers: {
-            "Content-Type": "text/plain",
-            Accept: "text/event-stream",
-          },
+          headers: headers,
           body: stringifiedPayload,
         }).then((response) => {
           if (!response.ok) {
@@ -65,14 +61,7 @@ export default ({
 
             throw new Error(`Request failed with status ${response.status}`);
           }
-
-          const parser = createStreamParser();
-
-          parser.parseStream(
-            response.body,
-            onStreamResponseCallback,
-            onFailureCallback,
-          );
+        return response;
         });
       } catch (error) {
         logger.logOnNetworkError({
@@ -81,7 +70,6 @@ export default ({
           payload: parsedPayload,
           error,
         });
-        onFailureCallback(error);
         throw stackError({ error, message: "Network request failed." });
       }
     };

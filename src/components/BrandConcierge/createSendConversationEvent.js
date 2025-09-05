@@ -13,11 +13,12 @@ import { createDataCollectionRequestPayload } from "../../utils/request/index.js
 import createConversationServiceRequest from "./createConversationServiceRequest.js";
 import createGetEcidFromCookie from "../../utils/createDecodeKndctrCookie.js";
 import { getPageSurface } from "./utils.js";
-import createEventSource from "./createEventSource.js";
 import isRequestRetryable from "../../core/network/isRequestRetryable.js";
 import getRequestRetryDelay from "../../core/network/getRequestRetryDelay.js";
 import uuid from "../../utils/uuid.js";
+import createStreamParser from "./createStreamParser.js";
 import extractResponse from "./extractResponse.js";
+import createSendConversationServiceRequest from "./createSendConversationServiceRequest.js";
 
 export default ({
   consent,
@@ -29,8 +30,8 @@ export default ({
   fetch,
   buildEndpointUrl,
 }) => {
-  const { edgeDomain, edgeBasePath, datastreamId } = config;
-  const eventSource = createEventSource({
+  const { edgeDomain, edgeBasePath, datastreamId, onBeforeEventSend } = config;
+  const sendConversationServiceRequest = createSendConversationServiceRequest({
     logger,
     isRequestRetryable,
     getRequestRetryDelay,
@@ -47,18 +48,9 @@ export default ({
   });
   return (options) => {
     //const sessionId = getConciergeSessionCookie({loggingCookieJar, config}) || uuid();
+    let streamingEnabled = false;
+    const { message, onStreamResponse, xdm } = options;
 
-    const { message, onStreamResponse, feedback } = options;
-    const onFailureCallback = (error) => {
-      console.log("error", error);
-      onStreamResponse({ error });
-    };
-    const onStreamResponseCallback = ({ data }) => {
-      const substr = data.replace("data: ", "");
-      const response = extractResponse(substr);
-      console.log("onStreamResponse called with", response);
-      onStreamResponse({ response });
-    };
     const payload = createDataCollectionRequestPayload();
     const request = createConversationServiceRequest({
       payload,
@@ -66,19 +58,13 @@ export default ({
     });
 
     const event = eventManager.createEvent();
-
-    const pageSurface = getPageSurface();
-    const conversation = {
-      surfaces: [pageSurface],
-    };
     if (message) {
-      conversation.message = message;
+      const pageSurface = getPageSurface();
+      event.mergeQuery({ conversation: {
+          surfaces: [pageSurface],
+          message
+        }});
     }
-    if (feedback) {
-      conversation.feedback = feedback;
-    }
-
-    event.mergeQuery({ conversation });
 
     const ecid = decodeKndctrCookie();
 
@@ -100,7 +86,19 @@ export default ({
       },
     });
 
-    event.finalize();
+    event.mergeXdm({...xdm});
+
+    if(message) {
+      streamingEnabled = true;
+    }
+
+    try {
+      // NOTE: this calls onBeforeEventSend callback (if configured)
+      event.finalize(onBeforeEventSend);
+    } catch (error) {
+      onStreamResponse({ error });
+      throw error;
+    }
     payload.addEvent(event);
     const url = buildEndpointUrl({
       edgeDomain,
@@ -109,12 +107,34 @@ export default ({
       request,
     });
     return consent.awaitConsent().then(() => {
-      return eventSource({
+      return sendConversationServiceRequest({
         requestId: uuid(),
         url,
         request,
-        onStreamResponseCallback,
-        onFailureCallback,
+        onStreamResponse,
+        streamingEnabled
+      }).then(response => {
+        if(response.status === 204) {
+          return;
+        }
+          console.log("response", response);
+          const onStreamResponseCallback = (event) => {
+            if(event.error) {
+              onStreamResponse({ error });
+            }
+            const substr = event.data.replace("data: ", "");
+            const response = extractResponse(substr);
+            logger.info("onStreamResponse callback called with", response);
+            onStreamResponse(response);
+          };
+
+          const streamParser = createStreamParser();
+
+          streamParser(
+            response.body,
+            onStreamResponseCallback
+          );
+
       });
     });
   };

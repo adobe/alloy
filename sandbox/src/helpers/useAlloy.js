@@ -56,7 +56,7 @@ const setup = ({
 };
 
 const defaultConfiguration = {
-  datastreamId: "51ee226f-9327-4b97-99fb-d5f9877d8198",
+  datastreamId: "3849362c-f325-4418-8cc8-993342b254f7",
   orgId: "745F37C35E4B776E0A49421B@AdobeOrg",
   debugEnabled: true,
   edgeDomain: "edge-int.adobedc.net",

@@ -19,20 +19,5 @@ export default (data) => {
 
   const { payload = [] } = handle[0];
 
-  if (payload.length === 0) {
-    return null;
-  }
-
-  const {
-    response = {},
-    state = "",
-    conversationId,
-    interactionId,
-  } = payload[0];
-
-  if (Object.keys(response).length === 0) {
-    return null;
-  }
-
-  return { ...response, state, conversationId, interactionId };
+  return payload;
 };
