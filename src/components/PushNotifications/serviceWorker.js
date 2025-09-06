@@ -40,7 +40,6 @@ self.addEventListener("push", (event) => {
     icon: webData.media,
     image: webData.media,
     data: webData,
-    tag: Date.now(),
     actions: [],
   };
 
@@ -63,6 +62,7 @@ self.addEventListener("notificationclick", (event) => {
 
   const data = event.notification.data;
   let targetUrl = null;
+
   if (event.action) {
     const actionIndex = parseInt(event.action.replace("action_", ""), 10);
     if (data?.actions?.buttons[actionIndex]) {
@@ -93,15 +93,4 @@ self.addEventListener("notificationclick", (event) => {
       }),
     );
   }
-});
-
-self.addEventListener("notificationclose", (event) => {
-  console.log("Notification close", event);
-});
-
-self.addEventListener("message", (message) => {
-  self.registration.showNotification(
-    "Notification from message data",
-    message.data.data,
-  );
 });
