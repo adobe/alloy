@@ -33,7 +33,7 @@ const SUBSCRIPTION_DETAILS = "subscriptionDetails";
  * @function
  *
  * @param {Object} options
- * @param {{vapidPublicKey: string}} options.config
+ * @param {{vapidPublicKey: string, appId: string}} options.config
  * @param {Storage} options.storage
  * @param {Logger} options.logger
  * @param {EventManager} options.eventManager
@@ -45,7 +45,7 @@ const SUBSCRIPTION_DETAILS = "subscriptionDetails";
  * @returns {Promise<void>}
  */
 export default async ({
-  config: { vapidPublicKey },
+  config: { vapidPublicKey, appId },
   storage,
   logger,
   sendEdgeNetworkRequest,
@@ -82,7 +82,7 @@ export default async ({
     eventManager,
     ecid,
     serializedPushSubscriptionDetails,
-    window,
+    appId,
   });
 
   const request = createSendPushSubscriptionRequest({

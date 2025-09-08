@@ -22,16 +22,17 @@ import makeSendPushSubscriptionRequest from "./request/makeSendPushSubscriptionR
 
 const isComponentConfigured = ({
   orgId,
-  pushNotifications: { vapidPublicKey } = {
+  pushNotifications: { vapidPublicKey, appId } = {
     vapidPublicKey: undefined,
+    appId: undefined,
   },
-}) => orgId && vapidPublicKey;
+}) => orgId && vapidPublicKey && appId;
 
 /**
  * @function
  *
  * @param {Object} options
- * @param {{ orgId: string, pushNotifications: { vapidPublicKey: string }}} options.config
+ * @param {{ orgId: string, pushNotifications: { vapidPublicKey: string, appId: string }}} options.config
  * @param {StorageCreator} options.createNamespacedStorage
  * @param {EventManager} options.eventManager
  * @param {Logger} options.logger
@@ -55,14 +56,15 @@ const createPushNotifications = ({
         run: async () => {
           if (!isComponentConfigured(config)) {
             throw new Error(
-              "Push notifications module is not configured. No VAPID public key was provided.",
+              "Push notifications module is not configured. VAPID public key and application ID are required.",
             );
           }
 
           const {
             orgId,
-            pushNotifications: { vapidPublicKey } = {
+            pushNotifications: { vapidPublicKey, appId } = {
               vapidPublicKey: undefined,
+              appId: undefined,
             },
           } = config || {};
 
@@ -73,6 +75,7 @@ const createPushNotifications = ({
           return makeSendPushSubscriptionRequest({
             config: {
               vapidPublicKey,
+              appId,
             },
             storage: storage.persistent,
             logger,
@@ -93,6 +96,7 @@ createPushNotifications.namespace = "Push Notifications";
 createPushNotifications.configValidators = objectOf({
   pushNotifications: objectOf({
     vapidPublicKey: string().required(),
+    appId: string().required(),
   }).noUnknownFields(),
 });
 

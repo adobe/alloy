@@ -28,6 +28,7 @@ export default function Home() {
         onBeforeEventSend: () => {},
 
         pushNotifications: {
+          appId: "test.mobile.webPush",
           vapidPublicKey:
             "BBNXFX_qxm8d7ry08dh0qt-CLMdiXamv7KlvLz0p4nCTxW3ePvrMb1x_VL-tg4TINPPZaJoNX4FQvthuAOR1VuI",
           // "BHeILyEYArRYKNvme32HbtARmFs5WlHb1PWKG_JfGQpAWv6L2Gc1Jzo9NvVGvVgHk7T-tU5VnXkq860L8bpdMzE",

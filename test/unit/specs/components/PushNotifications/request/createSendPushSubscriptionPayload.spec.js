@@ -23,14 +23,15 @@ describe("createSendPushSubscriptionPayload", () => {
   let mockEvent;
   let mockEventManager;
   let mockPayload;
-  let mockWindow;
   let ecid;
   let serializedPushSubscriptionDetails;
+  let appId;
 
   beforeEach(() => {
     vi.clearAllMocks();
 
     ecid = "12345678901234567890123456789012345678";
+    appId = "my-app-id";
     serializedPushSubscriptionDetails = JSON.stringify({
       endpoint: "https://fcm.googleapis.com/fcm/send/test-endpoint",
       keys: {
@@ -52,27 +53,21 @@ describe("createSendPushSubscriptionPayload", () => {
       addEvent: vi.fn(),
     };
 
-    mockWindow = {
-      location: {
-        host: "example.com",
-      },
-    };
-
     vi.mocked(createDataCollectionRequestPayload).mockReturnValue(mockPayload);
   });
 
-  it("creates event with correct push notification details", async () => {
+  it("creates event with correct push notification details using provided appId", async () => {
     await createSendPushSubscriptionPayload({
       ecid,
       eventManager: mockEventManager,
       serializedPushSubscriptionDetails,
-      window: mockWindow,
+      appId,
     });
 
     expect(mockEvent.setUserData).toHaveBeenCalledWith({
       pushNotificationDetails: [
         {
-          appID: "example.com",
+          appID: appId,
           token: serializedPushSubscriptionDetails,
           platform: "web",
           denylisted: false,
