@@ -22,7 +22,7 @@ describe("PushNotifications configValidators", () => {
     }).not.toThrow();
   });
 
-  it("should require both vapidPublicKey and appId when pushNotifications is provided", () => {
+  it("should throw when pushNotifications is empty object", () => {
     const { configValidators } = createPushNotifications;
 
     expect(() => {
@@ -30,6 +30,10 @@ describe("PushNotifications configValidators", () => {
         pushNotifications: {},
       });
     }).toThrow();
+  });
+
+  it("should throw when only vapidPublicKey is provided", () => {
+    const { configValidators } = createPushNotifications;
 
     expect(() => {
       configValidators({
@@ -38,6 +42,10 @@ describe("PushNotifications configValidators", () => {
         },
       });
     }).toThrow();
+  });
+
+  it("should throw when only appId is provided", () => {
+    const { configValidators } = createPushNotifications;
 
     expect(() => {
       configValidators({
@@ -46,6 +54,10 @@ describe("PushNotifications configValidators", () => {
         },
       });
     }).toThrow();
+  });
+
+  it("should not throw when both vapidPublicKey and appId are provided", () => {
+    const { configValidators } = createPushNotifications;
 
     expect(() => {
       configValidators({
@@ -57,7 +69,7 @@ describe("PushNotifications configValidators", () => {
     }).not.toThrow();
   });
 
-  it("should reject non-string values", () => {
+  it("should throw when vapidPublicKey is not a string", () => {
     const { configValidators } = createPushNotifications;
 
     expect(() => {
@@ -68,6 +80,10 @@ describe("PushNotifications configValidators", () => {
         },
       });
     }).toThrow();
+  });
+
+  it("should throw when appId is not a string", () => {
+    const { configValidators } = createPushNotifications;
 
     expect(() => {
       configValidators({
@@ -79,7 +95,7 @@ describe("PushNotifications configValidators", () => {
     }).toThrow();
   });
 
-  it("should reject unknown fields", () => {
+  it("should throw when unknown fields are provided", () => {
     const { configValidators } = createPushNotifications;
 
     expect(() => {
