@@ -55,9 +55,7 @@ const createPushNotifications = ({
       sendPushSubscription: {
         run: async () => {
           if (!isComponentConfigured(config)) {
-            throw new Error(
-              "Push notifications module is not configured. VAPID public key and application ID are required.",
-            );
+            throw new Error("Push notifications module is not configured.");
           }
 
           const {
