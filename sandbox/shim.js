@@ -278,7 +278,7 @@ async function parseStream(stream, onEvent) {
       }
     }
   } catch (error) {
-   onEvent({error});
+    onEvent({error});
   } finally {
     reader.releaseLock();
   }
@@ -302,14 +302,14 @@ const executeRequest = async (
   url,
   stringifiedPayload,
   onStreamResponseCallback,
-  onFailureCallback,
+  streamingEnabled = true
 ) => {
   try {
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "text/plain",
-        Accept: "text/event-stream",
+        Accept: streamingEnabled ? "text/event-stream": "text/plain",
       },
       body: stringifiedPayload,
     }).then((response) => {
@@ -318,12 +318,29 @@ const executeRequest = async (
     });
   } catch (error) {
     console.log("error occurred", error);
-    onFailureCallback(error);
+    onStreamResponseCallback({error});
     throw new Error("Network request failed.");
   }
 };
 
-const sendBrandConciergeEvent = ({ message, onStreamResponse }) => {
+const sendBrandConciergeEvent = ({ message, onStreamResponse, xdm = {} }) => {
+  const streamingEnabled = xdm != {};
+  xdm.identity =  {
+    ECID: [
+      {
+        id: "64395793505733346863180552286287786759", //here you should use a mocked ECID
+      },
+    ],
+  };
+  xdm.web = {
+    webPageDetails: {
+      URL: "https://bc-conversation-service-dev.corp.ethos11-stage-va7.ethos.adobe.net/brand-concierge/pages/745F37C35E4B776E0A49421B@AdobeOrg/index.html", // here is amocked URL
+    },
+    webReferrer: {
+      URL: "",
+    },
+  };
+
   const payload = {
     events: [
       {
@@ -333,39 +350,19 @@ const sendBrandConciergeEvent = ({ message, onStreamResponse }) => {
             message: message,
           },
         },
-        xdm: {
-          identityMap: {
-            ECID: [
-              {
-                id: "64395793505733346863180552286287786759", //here you should use a mocked ECID
-              },
-            ],
-          },
-          web: {
-            webPageDetails: {
-              URL: "https://bc-conversation-service-dev.corp.ethos11-stage-va7.ethos.adobe.net/brand-concierge/pages/745F37C35E4B776E0A49421B@AdobeOrg/index.html", // here is amocked URL
-            },
-            webReferrer: {
-              URL: "",
-            },
-          },
-        },
+        xdm
       },
     ],
   };
 
-  const onFailureCallback = (error) => {
-    console.log("error", error);
-    onStreamResponse({ error });
-  };
+
   const onStreamResponseCallback = (event) => {
     if(event.error) {
       onStreamResponse({ error });
     }
-    console.log("event", event);
     const substr = event.data.replace("data: ", "");
     const response = extractResponse(substr);
-    console.log("response", response)
+
     onStreamResponse(response);
   };
 
@@ -373,7 +370,7 @@ const sendBrandConciergeEvent = ({ message, onStreamResponse }) => {
     BRAND_CONCIERGE_URL + "&requestId=" + Date.now(),
     JSON.stringify(payload),
     onStreamResponseCallback,
-    onFailureCallback,
+    streamingEnabled
   );
 };
 
