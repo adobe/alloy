@@ -69,7 +69,7 @@ export default ({
 
     const ecid = decodeKndctrCookie();
 
- /*   event.mergeXdm({
+    event.mergeXdm({
       identityMap: {
         ECID: [
           {
@@ -77,7 +77,7 @@ export default ({
           },
         ],
       }
-    });*/
+    });
 
     event.mergeXdm({...xdm});
 

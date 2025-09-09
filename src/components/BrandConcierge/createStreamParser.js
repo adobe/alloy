@@ -36,7 +36,7 @@ export default () => {
         if (done) break;
 
         buffer += decoder.decode(value, { stream: true });
-        const events = buffer.split("\n\n");
+        const events = buffer.split("\r\n");
         buffer = events.pop() || ""; // Keep incomplete data in the buffer
 
         for (const eventData of events) {
