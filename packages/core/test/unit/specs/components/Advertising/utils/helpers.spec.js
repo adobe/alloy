@@ -20,16 +20,16 @@ import {
   markIdsAsConverted,
   isThrottled,
   shouldThrottle,
-} from "../../../../../../packages/core/src/components/Advertising/utils/helpers.js";
+} from "../../../../../../src/components/Advertising/utils/helpers.js";
 import {
   LAST_CLICK_COOKIE_KEY,
   DISPLAY_CLICK_COOKIE_KEY,
   DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
   AD_CONVERSION_VIEW_EVENT_TYPE,
-} from "../../../../../../packages/core/src/components/Advertising/constants/index.js";
+} from "../../../../../../src/components/Advertising/constants/index.js";
 
 // Mock DOM utilities
-vi.mock("../../../../../../packages/core/src/utils/dom/index.js", () => ({
+vi.mock("../../../../../../src/utils/dom/index.js", () => ({
   awaitSelector: vi.fn(),
   loadScript: vi.fn().mockResolvedValue(),
   createNode: vi.fn(),
