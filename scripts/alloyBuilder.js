@@ -27,7 +27,7 @@ const packageJsonContent = fs.readFileSync(
 );
 const { version } = JSON.parse(packageJsonContent);
 
-let sourceRootPath = safePathJoin(getProjectRoot(), "src");
+let sourceRootPath = safePathJoin(getProjectRoot(), "packages/core/src");
 if (!fs.existsSync(sourceRootPath)) {
   sourceRootPath = safePathJoin(getProjectRoot(), "libEs6");
 }
