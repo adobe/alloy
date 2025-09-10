@@ -484,7 +484,7 @@ var Visitor = (function () {
 	----------------------------------------------------------------
 
 	1. Child sends a handshake to parent and waits 50ms
-	2. Parent checks for AMCV cookie. If exists, then it's a returning visitor OR call getMarketingCloudID
+	2. Parent checks for AMCV cookie. If exists, then it's a returning visitor OR call getMarketingCloudID 
 	   and make sure the returning value is empty string?
 	3. Parent respond with the following: "HAND_SHAKE_SUCCESSFUL{MCMID:123,MCAAMB:12huyg312b,MCAAMLH:9,MCAID:124}"
 	4. Populate Child state
@@ -513,7 +513,7 @@ var Visitor = (function () {
 	3. No support for setCustomerIDs.
 
 
-	TODO:
+	TODO: 
 
 	- What should we do with getLocationHint???
 	- Debug hooks
@@ -2361,10 +2361,10 @@ var Visitor = (function () {
   /*
 	crc32 · JavaScript Function to Calculate CRC32 of a String
 	Description
-	  Below is a JavaScript function to calculate CRC32 of a string.
-	  The string can be either ASCII or Unicode.
-	  Unicode strings will be encoded in UTF-8.
-	  The polynomial used in calculation is 0xedb88320.
+	  Below is a JavaScript function to calculate CRC32 of a string. 
+	  The string can be either ASCII or Unicode. 
+	  Unicode strings will be encoded in UTF-8. 
+	  The polynomial used in calculation is 0xedb88320. 
 	  This polynomial is used in Ethernet, Gzip, PNG, SATA and many other technologies.
 	*/
   var crc32 = (function () {
@@ -6312,7 +6312,7 @@ var Visitor = (function () {
 
     applyInitConfig();
     guardApis();
-    /* variable to make sure we run configs only once in an instance
+    /* variable to make sure we run configs only once in an instance 
 	    in case of opt-in pre approval */
 
     var ranConfig;
