@@ -12,24 +12,24 @@ governing permissions and limitations under the License.
 import { createDataCollectionRequestPayload } from "../../utils/request/index.js";
 import createConversationServiceRequest from "./createConversationServiceRequest.js";
 import createGetEcidFromCookie from "../../utils/createDecodeKndctrCookie.js";
-import { getPageSurface } from "./utils.js";
+import {getConciergeSessionCookie, getPageSurface} from "./utils.js";
 import isRequestRetryable from "../../core/network/isRequestRetryable.js";
 import getRequestRetryDelay from "../../core/network/getRequestRetryDelay.js";
 import uuid from "../../utils/uuid.js";
 import createStreamParser from "./createStreamParser.js";
-import extractResponse from "./extractResponse.js";
 import createSendConversationServiceRequest from "./createSendConversationServiceRequest.js";
 
 export default ({
   consent,
-  session,
   eventManager,
   loggingCookieJar,
   config,
   logger,
   fetch,
   buildEndpointUrl,
-                  lifecycle
+  lifecycle,
+  cookieTransfer,
+  createResponse
 }) => {
   const { edgeDomain, edgeBasePath, datastreamId, onBeforeEventSend } = config;
   const sendConversationServiceRequest = createSendConversationServiceRequest({
@@ -39,8 +39,6 @@ export default ({
     fetch,
     config,
   });
-  // const BC_SESSION_COOKIE_NAME = "bc_session_id";
-  // const IDENTITY_COOKIE_NAME = "identity";
 
   const decodeKndctrCookie = createGetEcidFromCookie({
     orgId: config.orgId,
@@ -48,14 +46,13 @@ export default ({
     logger,
   });
   return (options) => {
-    //const sessionId = getConciergeSessionCookie({loggingCookieJar, config}) || uuid();
     let streamingEnabled = false;
     const { message, onStreamResponse, xdm } = options;
-
+    const sessionId = getConciergeSessionCookie({loggingCookieJar, config});
     const payload = createDataCollectionRequestPayload();
     const request = createConversationServiceRequest({
       payload,
-      sessionId: session.id,
+      sessionId: sessionId || uuid()
     });
 
     const event = eventManager.createEvent();
@@ -118,9 +115,13 @@ export default ({
                 onStreamResponse({ error });
               }
               const substr = event.data.replace("data: ", "");
-              const response = extractResponse(substr);
-              logger.info("onStreamResponse callback called with", response);
-              onStreamResponse(response);
+              const responseJson = JSON.parse(substr);
+              const response = createResponse({ content: responseJson});
+
+              cookieTransfer.responseToCookies(response);
+
+              logger.info("onStreamResponse callback called with", response.getPayloadsByType("brand-concierge:conversation"));
+              onStreamResponse(response.getPayloadsByType("brand-concierge:conversation"));
             };
 
             const streamParser = createStreamParser();

@@ -9,14 +9,16 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import uuid from "../../utils/uuid.js";
-import { executeRemoteScript } from "./utils.js";
-const CONCIERGE_CLIENT_ID_PREFIX = `adobe-brand-concierge-client-`;
+import {executeRemoteScript, getConciergeSessionCookieName} from "./utils.js";
+import {CONCIERGE_CLIENT_ID_PREFIX} from "./constants.js";
 
-export default ({ session, logger, instanceName }) => {
+export default ({ logger, instanceName, loggingCookieJar, config }) => {
   return (options) => {
     if (options.selector) {
-      session.id = uuid();
+      if(!options.stickySession) {
+        loggingCookieJar.remove(getConciergeSessionCookieName(config));
+      }
+
       const scriptLoaded = document.getElementById(
         CONCIERGE_CLIENT_ID_PREFIX + instanceName,
       );

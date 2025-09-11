@@ -16,6 +16,10 @@ import createBootstrapConcierge from "./createBootstrapConcierge.js";
 import { getPageSurface } from "./utils.js";
 import createBuildEndpointUrl from "./createBuildEndpointUrl.js";
 import queryString from "@adobe/reactor-query-string";
+import {cookieJar, getApexDomain} from "../../utils/index.js";
+import createCookieTransfer from "../../core/createCookieTransfer.js";
+import injectExtractEdgeInfo from "../../core/edgeNetwork/injectExtractEdgeInfo.js";
+import injectCreateResponse from "../../core/injectCreateResponse.js";
 
 const createConciergeComponent = ({
   loggingCookieJar,
@@ -27,16 +31,25 @@ const createConciergeComponent = ({
   config,
   lifecycle
 }) => {
-  const session = {};
   const { fetch } = window;
+  const apexDomain = getApexDomain(window, cookieJar);
+  const cookieTransfer = createCookieTransfer({
+    cookieJar: loggingCookieJar,
+    shouldTransferCookie: false,
+    apexDomain,
+    dateProvider: () => new Date(),
+  });
+  const extractEdgeInfo = injectExtractEdgeInfo({ logger });
+  const createResponse = injectCreateResponse({ extractEdgeInfo });
+
   const buildEndpointUrl = createBuildEndpointUrl({ queryString });
   const bootstrapConcierge = createBootstrapConcierge({
-    session,
     logger,
     instanceName,
+    loggingCookieJar,
+    config
   });
   const sendConversationEvent = createSendConversationEvent({
-    session,
     loggingCookieJar,
     logger,
     eventManager,
@@ -46,7 +59,9 @@ const createConciergeComponent = ({
     config,
     fetch,
     buildEndpointUrl,
-    lifecycle
+    lifecycle,
+    cookieTransfer,
+    createResponse
   });
 
   return {

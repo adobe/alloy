@@ -9,13 +9,14 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { objectOf, string } from "../../utils/validation/index.js";
+import {boolean, objectOf, string} from "../../utils/validation/index.js";
 
 export default ({ options, logger }) => {
   const brandConciergeConfigValidator = objectOf({
     src: string().required(),
     stylingConfigurations: objectOf({}),
     selector: string().required(),
+    stickySession: boolean().default(false),
   });
 
   return brandConciergeConfigValidator(options);

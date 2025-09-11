@@ -10,6 +10,7 @@ export default function Concierge() {
       selector: "#brand-concierge-mount",
       src: "https://experience-stage.adobe.net/solutions/experience-platform-brand-concierge-web-agent/static-assets/main.js",
       stylingConfigurations: styles,
+      stickySession: true
     });
   }, []);
 
