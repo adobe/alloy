@@ -56,6 +56,7 @@ describe("makeSendPushSubscriptionRequest", () => {
     return makeSendPushSubscriptionRequest({
       config: {
         vapidPublicKey: "test-vapid-key",
+        appId: "test-app-id",
       },
       storage: mockStorage,
       logger: mockLogger,
