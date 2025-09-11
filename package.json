@@ -88,7 +88,7 @@
     "js-cookie": "3.0.5",
     "rollup": "^4.50.1",
     "rollup-plugin-license": "^3.6.0",
-    "uuid": "^13.0.0"
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@adobe/alloy": "^2.29.0",
