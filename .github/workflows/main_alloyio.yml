@@ -25,6 +25,9 @@ jobs:
       - name: Install packages
         run: npm ci
 
+      - name: Build alloy.js
+        run: npx rollup -c --environment SANDBOX
+
       - name: Build sandbox
         run: |
           cd sandbox
