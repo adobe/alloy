@@ -12,6 +12,9 @@ governing permissions and limitations under the License.
 */
 
 import babel from "@babel/core";
+import terser from "@rollup/plugin-terser";
+import license from "rollup-plugin-license";
+import { fileURLToPath } from "url";
 import { checkbox, input, select } from "@inquirer/prompts";
 import { Command, InvalidOptionArgumentError, Option } from "commander";
 import fs from "fs";
@@ -20,6 +23,8 @@ import { rollup } from "rollup";
 import { buildConfig } from "../rollup.config.js";
 import entryPointGeneratorBabelPlugin from "./helpers/entryPointGeneratorBabelPlugin.js";
 import { getProjectRoot, safePathJoin } from "./helpers/path.js";
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const packageJsonContent = fs.readFileSync(
   safePathJoin(getProjectRoot(), "package.json"),
@@ -128,6 +133,49 @@ const build = async (argv) => {
   );
 };
 
+const buildPushNotificationsServiceWorker = async (argv) => {
+  const outputPath = path.join(
+    argv.outputDir,
+    `alloyPushNotificationsServiceWorker${argv.minify ? ".min" : ""}.js`,
+  );
+
+  const plugins = [];
+  if (argv.minify) {
+    plugins.push(terser());
+    plugins.push(
+      license({
+        cwd: path.join(dirname, ".."),
+        banner: {
+          content: {
+            file: path.join(dirname, "..", "license_banner"),
+          },
+        },
+      }),
+    );
+  }
+  const rollupConfig = {
+    input: `${sourceRootPath}/components/PushNotifications/serviceWorker.js`,
+    output: [
+      {
+        file: outputPath,
+        format: "es",
+      },
+    ],
+    plugins,
+  };
+
+  const bundle = await rollup(rollupConfig);
+  await bundle.write(rollupConfig.output[0]);
+
+  console.log(
+    `🎉 Wrote ${
+      path.isAbsolute(argv.outputDir)
+        ? rollupConfig.output[0].file
+        : path.relative(process.cwd(), rollupConfig.output[0].file)
+    } (${getFileSizeInKB(rollupConfig.output[0].file)}).`,
+  );
+};
+
 const getMakeBuildCommand = () => {
   const optionalComponentsParameters = getComponents().optional;
   return new Command("build")
@@ -190,6 +238,76 @@ const getMakeBuildCommand = () => {
     });
 };
 
+const getPushNotificationsServiceWorkerBuildCommand = () =>
+  new Command("build-pushnotifications-sw")
+    .description("Build the push notification service worker.")
+    .addOption(
+      new Option("-m, --minify", "enable code minification").default(false),
+    )
+    .addOption(
+      new Option(
+        "-o, --outputDir <dir>",
+        "the output directory for the generated build",
+      )
+        .default(getProjectRoot())
+        .argParser((value) => {
+          if (!path.isAbsolute(value)) {
+            value = path.join(process.cwd(), value);
+          }
+
+          try {
+            const stats = fs.statSync(value);
+            if (!stats.isDirectory()) {
+              throw new InvalidOptionArgumentError(
+                `Output directory "${value}" is not a valid directory path.`,
+              );
+            }
+          } catch (error) {
+            throw new InvalidOptionArgumentError(
+              `Output directory "${value}" is not a valid directory path. ${error.message}`,
+            );
+          }
+
+          return value.replace(new RegExp(`${path.sep}+$`, "g"), "");
+        }),
+    )
+    .action((opts) => {
+      return buildPushNotificationsServiceWorker(opts);
+    });
+
+const getInteractivePushNotificationsServiceWorkerBuildCommand = () =>
+  new Command("interactive-build-pushnotifications-sw")
+    .description(
+      "Interactive process that will ask a series of questions and then it will generate a push notification service worker build.",
+    )
+    .action(async () => {
+      try {
+        const opts = {
+          minify: await select({
+            message: "How would you like your service worker JavaScript to be?",
+            choices: [
+              { name: "Minified", value: true },
+              { name: "Unminified", value: false },
+            ],
+          }),
+          outputDir: await input({
+            message: "Where would you like to save the service worker build?",
+            default: process.cwd(),
+          }),
+        };
+
+        buildPushNotificationsServiceWorker(opts);
+      } catch (error) {
+        if (error.isTtyError) {
+          console.error(
+            "Prompt couldn't be rendered in the current environment",
+          );
+        } else if (error.name !== "ExitPromptError") {
+          console.error("An error occurred: ", error);
+        }
+      }
+    });
+
 const getInteractiveBuildCommand = () =>
   new Command("interactive-build")
     .description(
@@ -241,5 +359,7 @@ program
   .version(version);
 
 program.addCommand(getMakeBuildCommand());
+program.addCommand(getPushNotificationsServiceWorkerBuildCommand());
 program.addCommand(getInteractiveBuildCommand(), { isDefault: true });
+program.addCommand(getInteractivePushNotificationsServiceWorkerBuildCommand());
 program.parse();

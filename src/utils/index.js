@@ -32,6 +32,11 @@ export { default as getNamespacedCookieName } from "./getNamespacedCookieName.js
 export { default as groupBy } from "./groupBy.js";
 export { default as injectAreThirdPartyCookiesSupportedByDefault } from "./injectAreThirdPartyCookiesSupportedByDefault.js";
 export { default as injectDoesIdentityCookieExist } from "./injectDoesIdentityCookieExist.js";
+export {
+  openIndexedDb,
+  getFromIndexedDbStore,
+  putToIndexedDbStore,
+} from "./indexedDb.js";
 export { default as injectGetBrowser } from "./injectGetBrowser.js";
 export { default as injectStorage } from "./injectStorage.js";
 export { default as intersection } from "./intersection.js";

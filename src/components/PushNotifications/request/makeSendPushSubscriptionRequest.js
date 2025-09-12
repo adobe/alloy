@@ -20,6 +20,7 @@ import { sortObjectKeysRecursively } from "../../../utils/index.js";
 import getPushSubscriptionDetails from "../helpers/getPushSubscriptionDetails.js";
 import createSendPushSubscriptionRequest from "./createSendPushSubscriptionRequest.js";
 import createSendPushSubscriptionPayload from "./createSendPushSubscriptionPayload.js";
+import saveToIndexedDb from "../helpers/saveToIndexedDb.js";
 
 const SUBSCRIPTION_DETAILS = "subscriptionDetails";
 
@@ -33,7 +34,7 @@ const SUBSCRIPTION_DETAILS = "subscriptionDetails";
  * @function
  *
  * @param {Object} options
- * @param {{vapidPublicKey: string}} options.config
+ * @param {{vapidPublicKey: string, appId: string}} options.config
  * @param {Storage} options.storage
  * @param {Logger} options.logger
  * @param {EventManager} options.eventManager
@@ -45,7 +46,7 @@ const SUBSCRIPTION_DETAILS = "subscriptionDetails";
  * @returns {Promise<void>}
  */
 export default async ({
-  config: { vapidPublicKey },
+  config: { vapidPublicKey, appId },
   storage,
   logger,
   sendEdgeNetworkRequest,
@@ -82,7 +83,7 @@ export default async ({
     eventManager,
     ecid,
     serializedPushSubscriptionDetails,
-    window,
+    appId,
   });
 
   const request = createSendPushSubscriptionRequest({
@@ -91,4 +92,6 @@ export default async ({
 
   await consent.awaitConsent();
   await sendEdgeNetworkRequest({ request });
+
+  await saveToIndexedDb({ ecid }, logger);
 };
