@@ -19,18 +19,22 @@ export default function Home() {
   useAlloy({
     configurations: {
       alloy: {
-        orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
-        datastreamId: "9db94cb5-a892-4ae9-b117-a667a4ed67a8",
+        orgId: "745F37C35E4B776E0A49421B@AdobeOrg",
+        datastreamId: "5aba15dc-b57b-41eb-99a5-5b7b083f2120",
         thirdPartyCookiesEnabled: false,
         targetMigrationEnabled: false,
         clickCollectionEnabled: false,
         personalizationStorageEnabled: false,
+        edgeDomain: "edge-int.adobedc.net",
         onBeforeEventSend: () => {},
 
         pushNotifications: {
+          appId: "test.mobile.webPush",
+          trackingDatasetId: "6580392272792a2c680b4cff",
           vapidPublicKey:
-            "BBNXFX_qxm8d7ry08dh0qt-CLMdiXamv7KlvLz0p4nCTxW3ePvrMb1x_VL-tg4TINPPZaJoNX4FQvthuAOR1VuI",
-          // "BHeILyEYArRYKNvme32HbtARmFs5WlHb1PWKG_JfGQpAWv6L2Gc1Jzo9NvVGvVgHk7T-tU5VnXkq860L8bpdMzE",
+            // "BBNXFX_qxm8d7ry08dh0qt-CLMdiXamv7KlvLz0p4nCTxW3ePvrMb1x_VL-tg4TINPPZaJoNX4FQvthuAOR1VuI",
+            // "BHeILyEYArRYKNvme32HbtARmFs5WlHb1PWKG_JfGQpAWv6L2Gc1Jzo9NvVGvVgHk7T-tU5VnXkq860L8bpdMzE",
+            "BCVENRqkmTWSZrgUBpZE20F3hiLBKxoSCkm-wF4UA_KYGocR6QEFY34NtENQNmWls6_XGy8BF-Pji-NsL-Rr0I4",
         },
       },
     },

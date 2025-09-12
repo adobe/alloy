@@ -86,6 +86,8 @@ const sendTrackingCall = async ({ xdm }) => {
 
     const url = `https://${edgeDomain}/${edgeBasePath}/v1/interact?configId=${datastreamId}`;
 
+    // delete xdm._experience.decisioning;
+
     const payload = {
       events: [
         {
@@ -94,6 +96,7 @@ const sendTrackingCall = async ({ xdm }) => {
               ECID: [{ id: ecid }],
             },
             timestamp: new Date().toISOString(),
+            eventType: "pushTracking.applicationOpened",
             ...xdm,
           },
           meta: {
@@ -175,10 +178,10 @@ self.addEventListener("push", async (event) => {
     );
   }
 
-  await self.registration.showNotification(webData.title, notificationOptions);
+  return self.registration.showNotification(webData.title, notificationOptions);
 });
 
-self.addEventListener("notificationclick", async (event) => {
+self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
   const data = event.notification.data;
@@ -188,7 +191,7 @@ self.addEventListener("notificationclick", async (event) => {
     const actionIndex = parseInt(event.action.replace("action_", ""), 10);
     if (data?.actions?.buttons[actionIndex]) {
       const button = data.actions.buttons[actionIndex];
-      if (button.type === "WEBURL" && button.uri) {
+      if (canHandleUrl(button.type) && button.uri) {
         targetUrl = button.uri;
       }
     }
@@ -197,12 +200,12 @@ self.addEventListener("notificationclick", async (event) => {
   }
 
   // eslint-disable-next-line no-underscore-dangle
-  sendTrackingCall({ xdm: data._xdm }).catch((error) => {
+  sendTrackingCall({ xdm: data._xdm.mixins }).catch((error) => {
     logger.error("Failed to send tracking call:", error);
   });
 
   if (targetUrl) {
-    event.waitUntil(
+    return event.waitUntil(
       self.clients.matchAll({ type: "window" }).then((clientList) => {
         for (const client of clientList) {
           if (client.url === targetUrl && "focus" in client) {
