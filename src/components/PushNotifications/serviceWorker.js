@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 /* eslint-disable no-console */
+/* eslint-disable no-underscore-dangle */
 
 import { getFromIndexedDbStore, openIndexedDb } from "../../utils/indexedDb.js";
 
@@ -86,7 +87,24 @@ const sendTrackingCall = async ({ xdm }) => {
 
     const url = `https://${edgeDomain}/${edgeBasePath}/v1/interact?configId=${datastreamId}`;
 
-    // delete xdm._experience.decisioning;
+    xdm._experience.customerJourneyManagement = {
+      ...xdm._experience.customerJourneyManagement,
+      pushChannelContext: {
+        platform: "web",
+      },
+      messageProfile: {
+        channel: {
+          _id: "https://ns.adobe.com/xdm/channels/push",
+        },
+      },
+    };
+
+    const messageId =
+      xdm?._experience?.customerJourneyManagement?.messageExecution?.messageID;
+
+    if (!messageId) {
+      throw new Error("Message ID not found.");
+    }
 
     const payload = {
       events: [
@@ -96,6 +114,15 @@ const sendTrackingCall = async ({ xdm }) => {
               ECID: [{ id: ecid }],
             },
             timestamp: new Date().toISOString(),
+            pushNotificationTracking: {
+              pushProviderMessageID: messageId,
+              pushProvider: "chrome",
+            },
+            application: {
+              launches: {
+                value: 1,
+              },
+            },
             eventType: "pushTracking.applicationOpened",
             ...xdm,
           },
@@ -169,6 +196,12 @@ self.addEventListener("push", async (event) => {
     actions: [],
   };
 
+  Object.keys(notificationOptions).forEach((k) => {
+    if (notificationOptions[k] == null) {
+      delete notificationOptions[k];
+    }
+  });
+
   if (webData.actions && webData.actions.buttons) {
     notificationOptions.actions = webData.actions.buttons.map(
       (button, index) => ({
@@ -199,7 +232,6 @@ self.addEventListener("notificationclick", (event) => {
     targetUrl = data.interaction.uri;
   }
 
-  // eslint-disable-next-line no-underscore-dangle
   sendTrackingCall({ xdm: data._xdm.mixins }).catch((error) => {
     logger.error("Failed to send tracking call:", error);
   });
