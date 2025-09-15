@@ -1,3 +1,5 @@
+import { v4 } from "uuid";
+
 /*
 Copyright 2025 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -95,7 +97,7 @@ const getDataFromIndexedDb = async () => {
   }
 };
 
-const sendTrackingCall = async ({ xdm }) => {
+const sendTrackingCall = async ({ xdm, applicationOpened }) => {
   const configData = await getDataFromIndexedDb();
   const { ecid, edgeDomain, edgeBasePath, datastreamId, datasetId } =
     configData || {};
@@ -131,6 +133,18 @@ const sendTrackingCall = async ({ xdm }) => {
 
     const url = `https://${edgeDomain}/${edgeBasePath}/v1/interact?configId=${datastreamId}`;
 
+    xdm._experience.customerJourneyManagement = {
+      ...xdm._experience.customerJourneyManagement,
+      pushChannelContext: {
+        platform: "web",
+      },
+      messageProfile: {
+        channel: {
+          _id: "https://ns.adobe.com/xdm/channels/push",
+        },
+      },
+    };
+
     const payload = {
       events: [
         {
@@ -139,6 +153,16 @@ const sendTrackingCall = async ({ xdm }) => {
               ECID: [{ id: ecid }],
             },
             timestamp: new Date().toISOString(),
+            pushNotificationTracking: {
+              pushProviderMessageID: v4(),
+              pushProvider: "chrome",
+            },
+            application: {
+              launches: {
+                value: applicationOpened ? 1 : 0,
+              },
+            },
+            eventType: "pushTracking.applicationOpened",
             ...xdm,
           },
           meta: {
@@ -167,7 +191,6 @@ const sendTrackingCall = async ({ xdm }) => {
       return false;
     }
 
-    logger.info("Tracking call was successful.");
     return true;
   } catch (error) {
     logger.error("Error sending tracking call:", error);
@@ -211,6 +234,12 @@ self.addEventListener("push", async (event) => {
     actions: [],
   };
 
+  Object.keys(notificationOptions).forEach((k) => {
+    if (notificationOptions[k] == null) {
+      delete notificationOptions[k];
+    }
+  });
+
   if (webData.actions && webData.actions.buttons) {
     notificationOptions.actions = webData.actions.buttons.map(
       (button, index) => ({
@@ -220,10 +249,10 @@ self.addEventListener("push", async (event) => {
     );
   }
 
-  await self.registration.showNotification(webData.title, notificationOptions);
+  return self.registration.showNotification(webData.title, notificationOptions);
 });
 
-self.addEventListener("notificationclick", async (event) => {
+self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
   const data = event.notification.data;
@@ -233,7 +262,7 @@ self.addEventListener("notificationclick", async (event) => {
     const actionIndex = parseInt(event.action.replace("action_", ""), 10);
     if (data?.actions?.buttons[actionIndex]) {
       const button = data.actions.buttons[actionIndex];
-      if (button.type === "WEBURL" && button.uri) {
+      if (canHandleUrl(button.type) && button.uri) {
         targetUrl = button.uri;
       }
     }
@@ -241,13 +270,15 @@ self.addEventListener("notificationclick", async (event) => {
     targetUrl = data.interaction.uri;
   }
 
-  // eslint-disable-next-line no-underscore-dangle
-  sendTrackingCall({ xdm: data._xdm }).catch((error) => {
+  sendTrackingCall({
+    xdm: data._xdm.mixins,
+    applicationOpened: true,
+  }).catch((error) => {
     logger.error("Failed to send tracking call:", error);
   });
 
   if (targetUrl) {
-    event.waitUntil(
+    return event.waitUntil(
       self.clients.matchAll({ type: "window" }).then((clientList) => {
         for (const client of clientList) {
           if (client.url === targetUrl && "focus" in client) {

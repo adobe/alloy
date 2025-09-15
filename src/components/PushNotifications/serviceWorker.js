@@ -14,6 +14,7 @@ governing permissions and limitations under the License.
 /* eslint-disable no-underscore-dangle */
 
 import { getFromIndexedDbStore, openIndexedDb } from "../../utils/indexedDb.js";
+import uuidv4 from "../../utils/uuid.js";
 
 import {
   DB_NAME,
@@ -51,7 +52,7 @@ const getDataFromIndexedDb = async () => {
   }
 };
 
-const sendTrackingCall = async ({ xdm }) => {
+const sendTrackingCall = async ({ xdm, applicationOpened }) => {
   const configData = await getDataFromIndexedDb();
   const { ecid, edgeDomain, edgeBasePath, datastreamId, datasetId } =
     configData || {};
@@ -99,13 +100,6 @@ const sendTrackingCall = async ({ xdm }) => {
       },
     };
 
-    const messageId =
-      xdm?._experience?.customerJourneyManagement?.messageExecution?.messageID;
-
-    if (!messageId) {
-      throw new Error("Message ID not found.");
-    }
-
     const payload = {
       events: [
         {
@@ -115,12 +109,12 @@ const sendTrackingCall = async ({ xdm }) => {
             },
             timestamp: new Date().toISOString(),
             pushNotificationTracking: {
-              pushProviderMessageID: messageId,
+              pushProviderMessageID: uuidv4(),
               pushProvider: "chrome",
             },
             application: {
               launches: {
-                value: 1,
+                value: applicationOpened ? 1 : 0,
               },
             },
             eventType: "pushTracking.applicationOpened",
@@ -152,7 +146,6 @@ const sendTrackingCall = async ({ xdm }) => {
       return false;
     }
 
-    logger.info("Tracking call was successful.");
     return true;
   } catch (error) {
     logger.error("Error sending tracking call:", error);
@@ -232,7 +225,10 @@ self.addEventListener("notificationclick", (event) => {
     targetUrl = data.interaction.uri;
   }
 
-  sendTrackingCall({ xdm: data._xdm.mixins }).catch((error) => {
+  sendTrackingCall({
+    xdm: data._xdm.mixins,
+    applicationOpened: true,
+  }).catch((error) => {
     logger.error("Failed to send tracking call:", error);
   });
 
