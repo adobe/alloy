@@ -1,5 +1,3 @@
-import { v4 } from "uuid";
-
 /*
 Copyright 2025 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -38,6 +36,69 @@ const getFromIndexedDbStore = (db, storeName, key) => {
     request.onsuccess = () => resolve(request.result);
   });
 };
+
+const byteToHex = [];
+for (let i = 0; i < 256; ++i) {
+  byteToHex.push((i + 0x100).toString(16).slice(1));
+}
+function unsafeStringify(arr, offset = 0) {
+  return (
+    byteToHex[arr[offset + 0]] +
+    byteToHex[arr[offset + 1]] +
+    byteToHex[arr[offset + 2]] +
+    byteToHex[arr[offset + 3]] +
+    "-" +
+    byteToHex[arr[offset + 4]] +
+    byteToHex[arr[offset + 5]] +
+    "-" +
+    byteToHex[arr[offset + 6]] +
+    byteToHex[arr[offset + 7]] +
+    "-" +
+    byteToHex[arr[offset + 8]] +
+    byteToHex[arr[offset + 9]] +
+    "-" +
+    byteToHex[arr[offset + 10]] +
+    byteToHex[arr[offset + 11]] +
+    byteToHex[arr[offset + 12]] +
+    byteToHex[arr[offset + 13]] +
+    byteToHex[arr[offset + 14]] +
+    byteToHex[arr[offset + 15]]
+  ).toLowerCase();
+}
+
+let getRandomValues;
+const rnds8 = new Uint8Array(16);
+function rng() {
+  if (!getRandomValues) {
+    if (typeof crypto === "undefined" || !crypto.getRandomValues) {
+      throw new Error(
+        "crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported",
+      );
+    }
+    getRandomValues = crypto.getRandomValues.bind(crypto);
+  }
+  return getRandomValues(rnds8);
+}
+
+const randomUUID =
+  typeof crypto !== "undefined" &&
+  crypto.randomUUID &&
+  crypto.randomUUID.bind(crypto);
+var native = { randomUUID };
+
+function v4(options, buf, offset) {
+  if (native.randomUUID && true && !options) {
+    return native.randomUUID();
+  }
+  options = options || {};
+  const rnds = options.random ?? options.rng?.() ?? rng();
+  if (rnds.length < 16) {
+    throw new Error("Random bytes length must be >= 16");
+  }
+  rnds[6] = (rnds[6] & 0x0f) | 0x40;
+  rnds[8] = (rnds[8] & 0x3f) | 0x80;
+  return unsafeStringify(rnds);
+}
 
 /*
 Copyright 2025 Adobe. All rights reserved.
@@ -97,12 +158,24 @@ const getDataFromIndexedDb = async () => {
   }
 };
 
-const sendTrackingCall = async ({ xdm, applicationOpened }) => {
+const sendTrackingCall = async ({
+  xdm,
+  actionLabel,
+  applicationLaunches = 0,
+}) => {
   const configData = await getDataFromIndexedDb();
-  const { ecid, edgeDomain, edgeBasePath, datastreamId, datasetId } =
+  const { browser, ecid, edgeDomain, edgeBasePath, datastreamId, datasetId } =
     configData || {};
+  let customActionData = {};
+
+  if (actionLabel) {
+    customActionData = {
+      customAction: { actionID: actionLabel },
+    };
+  }
 
   const requiredFields = [
+    { name: "browser", errorField: "Browser" },
     { name: "ecid", errorField: "ECID" },
     {
       name: "edgeDomain",
@@ -133,18 +206,6 @@ const sendTrackingCall = async ({ xdm, applicationOpened }) => {
 
     const url = `https://${edgeDomain}/${edgeBasePath}/v1/interact?configId=${datastreamId}`;
 
-    xdm._experience.customerJourneyManagement = {
-      ...xdm._experience.customerJourneyManagement,
-      pushChannelContext: {
-        platform: "web",
-      },
-      messageProfile: {
-        channel: {
-          _id: "https://ns.adobe.com/xdm/channels/push",
-        },
-      },
-    };
-
     const payload = {
       events: [
         {
@@ -154,16 +215,32 @@ const sendTrackingCall = async ({ xdm, applicationOpened }) => {
             },
             timestamp: new Date().toISOString(),
             pushNotificationTracking: {
+              ...customActionData,
               pushProviderMessageID: v4(),
-              pushProvider: "chrome",
+              pushProvider: browser.toLowerCase(),
             },
             application: {
               launches: {
-                value: applicationOpened ? 1 : 0,
+                value: applicationLaunches,
               },
             },
-            eventType: "pushTracking.applicationOpened",
-            ...xdm,
+            eventType: actionLabel
+              ? "pushTracking.customAction"
+              : "pushTracking.applicationLaunches",
+            _experience: {
+              ...xdm._experience,
+              customerJourneyManagement: {
+                ...xdm._experience.customerJourneyManagement,
+                pushChannelContext: {
+                  platform: "web",
+                },
+                messageProfile: {
+                  channel: {
+                    _id: "https://ns.adobe.com/xdm/channels/push",
+                  },
+                },
+              },
+            },
           },
           meta: {
             collect: {
@@ -257,11 +334,13 @@ self.addEventListener("notificationclick", (event) => {
 
   const data = event.notification.data;
   let targetUrl = null;
+  let actionLabel = null;
 
   if (event.action) {
     const actionIndex = parseInt(event.action.replace("action_", ""), 10);
     if (data?.actions?.buttons[actionIndex]) {
       const button = data.actions.buttons[actionIndex];
+      actionLabel = button.label.toLowerCase();
       if (canHandleUrl(button.type) && button.uri) {
         targetUrl = button.uri;
       }
@@ -272,7 +351,8 @@ self.addEventListener("notificationclick", (event) => {
 
   sendTrackingCall({
     xdm: data._xdm.mixins,
-    applicationOpened: true,
+    actionLabel,
+    applicationLaunches: 1,
   }).catch((error) => {
     logger.error("Failed to send tracking call:", error);
   });
@@ -295,7 +375,15 @@ self.addEventListener("notificationclick", (event) => {
 
 self.addEventListener("notificationclose", (event) => {
   logger.info("Notification close", event); // TODO: remove
-  // TODO: add tracking here
+
+  const data = event.notification.data;
+
+  sendTrackingCall({
+    xdm: data._xdm.mixins,
+    actionLabel: "delete",
+  }).catch((error) => {
+    logger.error("Failed to send tracking call:", error);
+  });
 });
 
 self.addEventListener("message", (message) => {

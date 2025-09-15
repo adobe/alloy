@@ -52,12 +52,24 @@ const getDataFromIndexedDb = async () => {
   }
 };
 
-const sendTrackingCall = async ({ xdm, applicationOpened }) => {
+const sendTrackingCall = async ({
+  xdm,
+  actionLabel,
+  applicationLaunches = 0,
+}) => {
   const configData = await getDataFromIndexedDb();
-  const { ecid, edgeDomain, edgeBasePath, datastreamId, datasetId } =
+  const { browser, ecid, edgeDomain, edgeBasePath, datastreamId, datasetId } =
     configData || {};
+  let customActionData = {};
+
+  if (actionLabel) {
+    customActionData = {
+      customAction: { actionID: actionLabel },
+    };
+  }
 
   const requiredFields = [
+    { name: "browser", errorField: "Browser" },
     { name: "ecid", errorField: "ECID" },
     {
       name: "edgeDomain",
@@ -88,18 +100,6 @@ const sendTrackingCall = async ({ xdm, applicationOpened }) => {
 
     const url = `https://${edgeDomain}/${edgeBasePath}/v1/interact?configId=${datastreamId}`;
 
-    xdm._experience.customerJourneyManagement = {
-      ...xdm._experience.customerJourneyManagement,
-      pushChannelContext: {
-        platform: "web",
-      },
-      messageProfile: {
-        channel: {
-          _id: "https://ns.adobe.com/xdm/channels/push",
-        },
-      },
-    };
-
     const payload = {
       events: [
         {
@@ -109,16 +109,32 @@ const sendTrackingCall = async ({ xdm, applicationOpened }) => {
             },
             timestamp: new Date().toISOString(),
             pushNotificationTracking: {
+              ...customActionData,
               pushProviderMessageID: uuidv4(),
-              pushProvider: "chrome",
+              pushProvider: browser.toLowerCase(),
             },
             application: {
               launches: {
-                value: applicationOpened ? 1 : 0,
+                value: applicationLaunches,
               },
             },
-            eventType: "pushTracking.applicationOpened",
-            ...xdm,
+            eventType: actionLabel
+              ? "pushTracking.customAction"
+              : "pushTracking.applicationLaunches",
+            _experience: {
+              ...xdm._experience,
+              customerJourneyManagement: {
+                ...xdm._experience.customerJourneyManagement,
+                pushChannelContext: {
+                  platform: "web",
+                },
+                messageProfile: {
+                  channel: {
+                    _id: "https://ns.adobe.com/xdm/channels/push",
+                  },
+                },
+              },
+            },
           },
           meta: {
             collect: {
@@ -212,11 +228,13 @@ self.addEventListener("notificationclick", (event) => {
 
   const data = event.notification.data;
   let targetUrl = null;
+  let actionLabel = null;
 
   if (event.action) {
     const actionIndex = parseInt(event.action.replace("action_", ""), 10);
     if (data?.actions?.buttons[actionIndex]) {
       const button = data.actions.buttons[actionIndex];
+      actionLabel = button.label.toLowerCase();
       if (canHandleUrl(button.type) && button.uri) {
         targetUrl = button.uri;
       }
@@ -227,7 +245,8 @@ self.addEventListener("notificationclick", (event) => {
 
   sendTrackingCall({
     xdm: data._xdm.mixins,
-    applicationOpened: true,
+    actionLabel,
+    applicationLaunches: 1,
   }).catch((error) => {
     logger.error("Failed to send tracking call:", error);
   });
@@ -250,7 +269,15 @@ self.addEventListener("notificationclick", (event) => {
 
 self.addEventListener("notificationclose", (event) => {
   logger.info("Notification close", event); // TODO: remove
-  // TODO: add tracking here
+
+  const data = event.notification.data;
+
+  sendTrackingCall({
+    xdm: data._xdm.mixins,
+    actionLabel: "delete",
+  }).catch((error) => {
+    logger.error("Failed to send tracking call:", error);
+  });
 });
 
 self.addEventListener("message", (message) => {

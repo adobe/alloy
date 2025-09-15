@@ -50,6 +50,7 @@ const createPushNotifications = ({
   logger,
   consent,
   identity,
+  getBrowser,
   sendEdgeNetworkRequest,
 }) => {
   return {
@@ -68,6 +69,7 @@ const createPushNotifications = ({
               edgeDomain,
               edgeBasePath,
               datasetId: trackingDatasetId,
+              browser: getBrowser(),
             },
             logger,
           );

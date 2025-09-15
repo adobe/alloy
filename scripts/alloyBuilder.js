@@ -13,6 +13,8 @@ governing permissions and limitations under the License.
 
 import babel from "@babel/core";
 import terser from "@rollup/plugin-terser";
+import resolve from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
 import license from "rollup-plugin-license";
 import { fileURLToPath } from "url";
 import { checkbox, input, select } from "@inquirer/prompts";
@@ -139,7 +141,15 @@ const buildPushNotificationsServiceWorker = async (argv) => {
     `alloyPushNotificationsServiceWorker${argv.minify ? ".min" : ""}.js`,
   );
 
-  const plugins = [];
+  const plugins = [
+    resolve({
+      preferBuiltins: false,
+      // Support the browser field in dependencies' package.json.
+      // Useful for the uuid package.
+      mainFields: ["module", "main", "browser"],
+    }),
+    commonjs(),
+  ];
   if (argv.minify) {
     plugins.push(terser());
     plugins.push(
