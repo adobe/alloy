@@ -6,12 +6,12 @@ import setupAlloy from "../alloy/setup.js";
 import setupBaseCode from "../alloy/setupBaseCode.js";
 import cleanAlloy from "../alloy/clean.js";
 
+const worker = createWorker();
+
 // Extend the test with MSW worker
 export const test = baseTest.extend({
   worker: [
     async ({}, use) => {
-      const worker = createWorker();
-
       // Start the worker before each test
       await worker.start({
         onUnhandledRequest: "bypass",
@@ -22,7 +22,7 @@ export const test = baseTest.extend({
       await use(worker);
 
       // Clean up after test
-      worker.stop();
+      worker.resetHandlers();
     },
     { auto: true }, // Apply to all tests even if not explicitly using worker
   ],

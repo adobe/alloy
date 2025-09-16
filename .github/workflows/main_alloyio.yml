@@ -25,6 +25,10 @@ jobs:
       - name: Install packages
         run: npm ci
 
+        # TODO: Test me
+      - name: Build alloy.js
+        run: npx rollup -c --environment SANDBOX
+
       - name: Build sandbox
         run: npm --workspace=@adobe/alloy-sandbox-browser run build
 
