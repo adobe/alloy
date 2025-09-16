@@ -25,7 +25,7 @@ export const openIndexedDb = (dbName, dbVersion, upgradeCallback) => {
     request.onsuccess = () => resolve(request.result);
 
     request.onupgradeneeded = (event) => {
-      const db = event.target.result;
+      const db = /** @type {IDBOpenDBRequest} */ (event.target).result;
       if (upgradeCallback) {
         upgradeCallback(db);
       }

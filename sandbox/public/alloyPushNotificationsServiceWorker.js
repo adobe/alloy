@@ -10,6 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+/**
+ * @param {string} dbName
+ * @param {number} dbVersion
+ * @param {Function} [upgradeCallback] - Optional callback function to handle database upgrades.
+ *   Called with the database instance when the database is being upgraded.
+ * @returns {Promise<IDBDatabase>}
+ */
 const openIndexedDb = (dbName, dbVersion, upgradeCallback) => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(dbName, dbVersion);
@@ -18,7 +25,7 @@ const openIndexedDb = (dbName, dbVersion, upgradeCallback) => {
     request.onsuccess = () => resolve(request.result);
 
     request.onupgradeneeded = (event) => {
-      const db = event.target.result;
+      const db = /** @type {IDBOpenDBRequest} */ (event.target).result;
       if (upgradeCallback) {
         upgradeCallback(db);
       }
@@ -26,6 +33,13 @@ const openIndexedDb = (dbName, dbVersion, upgradeCallback) => {
   });
 };
 
+/**
+ * @param {IDBDatabase} db
+ * @param {string} storeName
+ * @param {string|number|Date|ArrayBuffer|Array} key
+ *
+ * @returns {Promise<any>}
+ */
 const getFromIndexedDbStore = (db, storeName, key) => {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction([storeName], "readonly");
@@ -129,13 +143,114 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const loggerNamespace = "[alloy][pushNotificationWorker]";
+/* eslint-disable no-console */
+/* eslint-disable no-underscore-dangle */
+
+// @ts-check
+/// <reference lib="webworker" />
+
+/** @type {ServiceWorkerGlobalScope} */
+// @ts-ignore
+const sw = self;
+
+/**
+ * @typedef {Object} CustomerJourneyManagement
+ * @property {Object} messageExecution
+ * @property {string} messageExecution.messageExecutionID
+ * @property {string} messageExecution.messageID
+ * @property {string} messageExecution.messageType
+ * @property {string} messageExecution.campaignID
+ * @property {string} messageExecution.campaignVersionID
+ * @property {string} messageExecution.batchInstanceID
+ * @property {Object} [pushChannelContext]
+ * @property {"web"} [pushChannelContext.platform]
+ * @property {Object} [messageProfile]
+ * @property {Object} [messageProfile.channel]
+ * @property {string} [messageProfile.channel._id]
+ */
+
+/**
+ * @typedef {Object} Decisioning
+ * @property {Object[]} propositions
+ * @property {Object} propositions[].scopeDetails
+ * @property {string} propositions[].scopeDetails.correlationID
+ */
+
+/**
+ * @typedef {Object} XdmTrackingContext
+ * @property {Object} _experience
+ * @property {CustomerJourneyManagement} _experience.customerJourneyManagement
+ * @property {Decisioning} _experience.decisioning
+ */
+
+/**
+ * @typedef {Object} PushNotificationData
+ * @property {Object} web
+ * @property {string} web.title
+ * @property {string} web.body
+ * @property {string|null} web.media
+ * @property {Object} web.interaction
+ * @property {string} web.interaction.type
+ * @property {string|null} web.interaction.uri
+ * @property {Object} web.actions
+ * @property {Object[]} web.actions.buttons
+ * @property {string} web.actions.buttons[].label
+ * @property {string} web.actions.buttons[].type
+ * @property {string} web.actions.buttons[].uri
+ * @property {string} web.priority
+ * @property {Object} web._xdm
+ * @property {XdmTrackingContext} web._xdm.mixins
+ */
+
+/**
+ * @typedef {Object} TrackingDataPayload
+ * @property {Object[]} events
+ * @property {Object} events[].xdm
+ * @property {Object} events[].xdm.identityMap
+ * @property {Object[]} events[].xdm.identityMap.ECID
+ * @property {string} events[].xdm.identityMap.ECID[].id
+ * @property {string} events[].xdm.timestamp
+ * @property {Object} events[].xdm.pushNotificationTracking
+ * @property {string} events[].xdm.pushNotificationTracking.pushProviderMessageID
+ * @property {string} events[].xdm.pushNotificationTracking.pushProvider
+ * @property {Object} [events[].xdm.pushNotificationTracking.customAction]
+ * @property {string} [events[].xdm.pushNotificationTracking.customAction.actionID]
+ * @property {Object} events[].xdm.application
+ * @property {Object} events[].xdm.application.launches
+ * @property {number} events[].xdm.application.launches.value
+ * @property {string} events[].xdm.eventType
+ * @property {Object} events[].xdm._experience
+ * @property {CustomerJourneyManagement} events[].xdm._experience.customerJourneyManagement
+ * @property {Decisioning} events[].xdm._experience.decisioning
+ * @property {Object} events[].meta
+ * @property {Object} events[].meta.collect
+ * @property {string} events[].meta.collect.datasetId
+ */
+
+/**
+ * @type {Object}
+ * @property {string} namespace
+ * @property {Function} info
+ * @property {Function} error
+ */
 const logger = {
-  info: (...args) => console.log(loggerNamespace, ...args),
-  error: (...args) => console.error(loggerNamespace, ...args),
+  namespace: "[alloy][pushNotificationWorker]",
+  info: (...args) => console.log(logger.namespace, ...args),
+  error: (...args) => console.error(logger.namespace, ...args),
 };
+
+/**
+ * @param {string} type
+ * @returns {boolean}
+ */
 const canHandleUrl = (type) => ["DEEPLINK", "WEBURL"].includes(type);
 
+/**
+ * @async
+ * @function getDataFromIndexedDb
+ * @returns {Promise<Object|undefined>}
+ * @throws {Error}
+ */
 const getDataFromIndexedDb = async () => {
   try {
     const db = await openIndexedDb(DB_NAME, DB_VERSION, (db) => {
@@ -158,6 +273,17 @@ const getDataFromIndexedDb = async () => {
   }
 };
 
+/**
+ * @async
+ * @function sendTrackingCall
+ * @param {Object} options
+ * @param {Object} options.xdm
+ * @param {string} [options.actionLabel]
+ * @param {number} [options.applicationLaunches=0]
+ *
+ * @returns {Promise<boolean>}
+ * @throws {Error}
+ */
 const sendTrackingCall = async ({
   xdm,
   actionLabel,
@@ -206,6 +332,7 @@ const sendTrackingCall = async ({
 
     const url = `https://${edgeDomain}/${edgeBasePath}/v1/interact?configId=${datastreamId}`;
 
+    /** @type {TrackingDataPayload} */
     const payload = {
       events: [
         {
@@ -275,25 +402,35 @@ const sendTrackingCall = async ({
   }
 };
 
-self.addEventListener("install", () => {
-  self.skipWaiting();
+/**
+ * @listens install
+ */
+sw.addEventListener("install", () => {
+  sw.skipWaiting();
 });
 
-self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
+/**
+ * @listens activate
+ * @param {ExtendableEvent} event
+ */
+sw.addEventListener("activate", (event) => {
+  event.waitUntil(sw.clients.claim());
 });
 
-self.addEventListener("push", async (event) => {
-  logger.info("push", event); // TODO: remove
-
+/**
+ * @listens push
+ * @param {PushEvent} event
+ * @returns {Promise<void>}
+ */
+sw.addEventListener("push", async (event) => {
   if (!event.data) {
     return;
   }
 
+  /** @type {PushNotificationData} */
   let notificationData;
   try {
     notificationData = event.data.json();
-    logger.info("notificationData", notificationData); // TODO: remove
   } catch {
     return;
   }
@@ -326,10 +463,15 @@ self.addEventListener("push", async (event) => {
     );
   }
 
-  return self.registration.showNotification(webData.title, notificationOptions);
+  return sw.registration.showNotification(webData.title, notificationOptions);
 });
 
-self.addEventListener("notificationclick", (event) => {
+/**
+ * @listens notificationclick
+ * @param {NotificationEvent} event
+ * @returns {Promise<void>}
+ */
+sw.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
   const data = event.notification.data;
@@ -359,23 +501,25 @@ self.addEventListener("notificationclick", (event) => {
 
   if (targetUrl) {
     return event.waitUntil(
-      self.clients.matchAll({ type: "window" }).then((clientList) => {
+      sw.clients.matchAll({ type: "window" }).then((clientList) => {
         for (const client of clientList) {
           if (client.url === targetUrl && "focus" in client) {
             return client.focus();
           }
         }
-        if (self.clients.openWindow) {
-          return self.clients.openWindow(targetUrl);
+        if (sw.clients.openWindow) {
+          return sw.clients.openWindow(targetUrl);
         }
       }),
     );
   }
 });
 
-self.addEventListener("notificationclose", (event) => {
-  logger.info("Notification close", event); // TODO: remove
-
+/**
+ * @listens notificationclose
+ * @param {NotificationEvent} event
+ */
+sw.addEventListener("notificationclose", (event) => {
   const data = event.notification.data;
 
   sendTrackingCall({
@@ -384,11 +528,4 @@ self.addEventListener("notificationclose", (event) => {
   }).catch((error) => {
     logger.error("Failed to send tracking call:", error);
   });
-});
-
-self.addEventListener("message", (message) => {
-  self.registration.showNotification(
-    "Notification from message data",
-    message.data.data,
-  );
 });

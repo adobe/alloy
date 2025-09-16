@@ -13,6 +13,13 @@ governing permissions and limitations under the License.
 /* eslint-disable no-console */
 /* eslint-disable no-underscore-dangle */
 
+// @ts-check
+/// <reference lib="webworker" />
+
+/** @type {ServiceWorkerGlobalScope} */
+// @ts-ignore
+const sw = self;
+
 import { getFromIndexedDbStore, openIndexedDb } from "../../utils/indexedDb.js";
 import uuidv4 from "../../utils/uuid.js";
 
@@ -275,16 +282,16 @@ const sendTrackingCall = async ({
 /**
  * @listens install
  */
-self.addEventListener("install", () => {
-  self.skipWaiting();
+sw.addEventListener("install", () => {
+  sw.skipWaiting();
 });
 
 /**
  * @listens activate
  * @param {ExtendableEvent} event
  */
-self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
+sw.addEventListener("activate", (event) => {
+  event.waitUntil(sw.clients.claim());
 });
 
 /**
@@ -292,9 +299,7 @@ self.addEventListener("activate", (event) => {
  * @param {PushEvent} event
  * @returns {Promise<void>}
  */
-self.addEventListener("push", async (event) => {
-  logger.info("push", event); // TODO: remove
-
+sw.addEventListener("push", async (event) => {
   if (!event.data) {
     return;
   }
@@ -303,7 +308,6 @@ self.addEventListener("push", async (event) => {
   let notificationData;
   try {
     notificationData = event.data.json();
-    logger.info("notificationData", notificationData); // TODO: remove
   } catch {
     return;
   }
@@ -336,7 +340,7 @@ self.addEventListener("push", async (event) => {
     );
   }
 
-  return self.registration.showNotification(webData.title, notificationOptions);
+  return sw.registration.showNotification(webData.title, notificationOptions);
 });
 
 /**
@@ -344,7 +348,7 @@ self.addEventListener("push", async (event) => {
  * @param {NotificationEvent} event
  * @returns {Promise<void>}
  */
-self.addEventListener("notificationclick", (event) => {
+sw.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
   const data = event.notification.data;
@@ -374,14 +378,14 @@ self.addEventListener("notificationclick", (event) => {
 
   if (targetUrl) {
     return event.waitUntil(
-      self.clients.matchAll({ type: "window" }).then((clientList) => {
+      sw.clients.matchAll({ type: "window" }).then((clientList) => {
         for (const client of clientList) {
           if (client.url === targetUrl && "focus" in client) {
             return client.focus();
           }
         }
-        if (self.clients.openWindow) {
-          return self.clients.openWindow(targetUrl);
+        if (sw.clients.openWindow) {
+          return sw.clients.openWindow(targetUrl);
         }
       }),
     );
@@ -392,9 +396,7 @@ self.addEventListener("notificationclick", (event) => {
  * @listens notificationclose
  * @param {NotificationEvent} event
  */
-self.addEventListener("notificationclose", (event) => {
-  logger.info("Notification close", event); // TODO: remove
-
+sw.addEventListener("notificationclose", (event) => {
   const data = event.notification.data;
 
   sendTrackingCall({
