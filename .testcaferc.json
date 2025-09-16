@@ -1,5 +1,5 @@
 {
-  "src": "packages/core/test/functional/specs/**/*.{mjs,js}",
+  "src": "packages/**/test/functional/specs/**/*.{mjs,js}",
   "skipJsErrors": true,
   "disablePageCaching": true
 }
