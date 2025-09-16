@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+/** @import { Logger } from '../../../core/types.js' */
+
 import {
   openIndexedDb,
   getFromIndexedDbStore,
@@ -18,6 +20,12 @@ import {
 
 import { DB_NAME, DB_VERSION, STORE_NAME, INDEX_KEY } from "./constants.js";
 
+/**
+ * @param {Object} data
+ * @param {Logger} logger
+ *
+ * @returns {Promise<void>}
+ */
 export default async function saveToIndexedDB(data, logger) {
   try {
     const db = await openIndexedDb(DB_NAME, DB_VERSION, (db) => {

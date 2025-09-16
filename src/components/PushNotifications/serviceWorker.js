@@ -23,13 +23,104 @@ import {
   INDEX_KEY,
 } from "./helpers/constants.js";
 
-const loggerNamespace = "[alloy][pushNotificationWorker]";
+/**
+ * @typedef {Object} CustomerJourneyManagement
+ * @property {Object} messageExecution
+ * @property {string} messageExecution.messageExecutionID
+ * @property {string} messageExecution.messageID
+ * @property {string} messageExecution.messageType
+ * @property {string} messageExecution.campaignID
+ * @property {string} messageExecution.campaignVersionID
+ * @property {string} messageExecution.batchInstanceID
+ * @property {Object} [pushChannelContext]
+ * @property {"web"} [pushChannelContext.platform]
+ * @property {Object} [messageProfile]
+ * @property {Object} [messageProfile.channel]
+ * @property {string} [messageProfile.channel._id]
+ */
+
+/**
+ * @typedef {Object} Decisioning
+ * @property {Object[]} propositions
+ * @property {Object} propositions[].scopeDetails
+ * @property {string} propositions[].scopeDetails.correlationID
+ */
+
+/**
+ * @typedef {Object} XdmTrackingContext
+ * @property {Object} _experience
+ * @property {CustomerJourneyManagement} _experience.customerJourneyManagement
+ * @property {Decisioning} _experience.decisioning
+ */
+
+/**
+ * @typedef {Object} PushNotificationData
+ * @property {Object} web
+ * @property {string} web.title
+ * @property {string} web.body
+ * @property {string|null} web.media
+ * @property {Object} web.interaction
+ * @property {string} web.interaction.type
+ * @property {string|null} web.interaction.uri
+ * @property {Object} web.actions
+ * @property {Object[]} web.actions.buttons
+ * @property {string} web.actions.buttons[].label
+ * @property {string} web.actions.buttons[].type
+ * @property {string} web.actions.buttons[].uri
+ * @property {string} web.priority
+ * @property {Object} web._xdm
+ * @property {XdmTrackingContext} web._xdm.mixins
+ */
+
+/**
+ * @typedef {Object} TrackingDataPayload
+ * @property {Object[]} events
+ * @property {Object} events[].xdm
+ * @property {Object} events[].xdm.identityMap
+ * @property {Object[]} events[].xdm.identityMap.ECID
+ * @property {string} events[].xdm.identityMap.ECID[].id
+ * @property {string} events[].xdm.timestamp
+ * @property {Object} events[].xdm.pushNotificationTracking
+ * @property {string} events[].xdm.pushNotificationTracking.pushProviderMessageID
+ * @property {string} events[].xdm.pushNotificationTracking.pushProvider
+ * @property {Object} [events[].xdm.pushNotificationTracking.customAction]
+ * @property {string} [events[].xdm.pushNotificationTracking.customAction.actionID]
+ * @property {Object} events[].xdm.application
+ * @property {Object} events[].xdm.application.launches
+ * @property {number} events[].xdm.application.launches.value
+ * @property {string} events[].xdm.eventType
+ * @property {Object} events[].xdm._experience
+ * @property {CustomerJourneyManagement} events[].xdm._experience.customerJourneyManagement
+ * @property {Decisioning} events[].xdm._experience.decisioning
+ * @property {Object} events[].meta
+ * @property {Object} events[].meta.collect
+ * @property {string} events[].meta.collect.datasetId
+ */
+
+/**
+ * @type {Object}
+ * @property {string} namespace
+ * @property {Function} info
+ * @property {Function} error
+ */
 const logger = {
-  info: (...args) => console.log(loggerNamespace, ...args),
-  error: (...args) => console.error(loggerNamespace, ...args),
+  namespace: "[alloy][pushNotificationWorker]",
+  info: (...args) => console.log(logger.namespace, ...args),
+  error: (...args) => console.error(logger.namespace, ...args),
 };
+
+/**
+ * @param {string} type
+ * @returns {boolean}
+ */
 const canHandleUrl = (type) => ["DEEPLINK", "WEBURL"].includes(type);
 
+/**
+ * @async
+ * @function getDataFromIndexedDb
+ * @returns {Promise<Object|undefined>}
+ * @throws {Error}
+ */
 const getDataFromIndexedDb = async () => {
   try {
     const db = await openIndexedDb(DB_NAME, DB_VERSION, (db) => {
@@ -52,6 +143,17 @@ const getDataFromIndexedDb = async () => {
   }
 };
 
+/**
+ * @async
+ * @function sendTrackingCall
+ * @param {Object} options
+ * @param {Object} options.xdm
+ * @param {string} [options.actionLabel]
+ * @param {number} [options.applicationLaunches=0]
+ *
+ * @returns {Promise<boolean>}
+ * @throws {Error}
+ */
 const sendTrackingCall = async ({
   xdm,
   actionLabel,
@@ -100,6 +202,7 @@ const sendTrackingCall = async ({
 
     const url = `https://${edgeDomain}/${edgeBasePath}/v1/interact?configId=${datastreamId}`;
 
+    /** @type {TrackingDataPayload} */
     const payload = {
       events: [
         {
@@ -169,14 +272,26 @@ const sendTrackingCall = async ({
   }
 };
 
+/**
+ * @listens install
+ */
 self.addEventListener("install", () => {
   self.skipWaiting();
 });
 
+/**
+ * @listens activate
+ * @param {ExtendableEvent} event
+ */
 self.addEventListener("activate", (event) => {
   event.waitUntil(self.clients.claim());
 });
 
+/**
+ * @listens push
+ * @param {PushEvent} event
+ * @returns {Promise<void>}
+ */
 self.addEventListener("push", async (event) => {
   logger.info("push", event); // TODO: remove
 
@@ -184,6 +299,7 @@ self.addEventListener("push", async (event) => {
     return;
   }
 
+  /** @type {PushNotificationData} */
   let notificationData;
   try {
     notificationData = event.data.json();
@@ -223,6 +339,11 @@ self.addEventListener("push", async (event) => {
   return self.registration.showNotification(webData.title, notificationOptions);
 });
 
+/**
+ * @listens notificationclick
+ * @param {NotificationEvent} event
+ * @returns {Promise<void>}
+ */
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
@@ -267,6 +388,10 @@ self.addEventListener("notificationclick", (event) => {
   }
 });
 
+/**
+ * @listens notificationclose
+ * @param {NotificationEvent} event
+ */
 self.addEventListener("notificationclose", (event) => {
   logger.info("Notification close", event); // TODO: remove
 
@@ -278,11 +403,4 @@ self.addEventListener("notificationclose", (event) => {
   }).catch((error) => {
     logger.error("Failed to send tracking call:", error);
   });
-});
-
-self.addEventListener("message", (message) => {
-  self.registration.showNotification(
-    "Notification from message data",
-    message.data.data,
-  );
 });
