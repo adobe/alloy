@@ -87,9 +87,6 @@ jobs:
       - name: Store Alloy version into env
         uses: nyaa8/package-version@v1
 
-      - name: NPM Install
-        run: npm install
-
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
