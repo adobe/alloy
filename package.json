@@ -48,7 +48,7 @@
     "build": "pnpm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,BUNDLESIZE && echo \"Base Code:\" && cat distTest/baseCode.min.js",
     "build:watch": "pnpm run clean && rollup -c --watch --environment BASE_CODE_MIN,STANDALONE",
     "build:custom": "node scripts/alloyBuilder.js",
-    "prepare": "husky && cd sandbox && pnpm install",
+    "prepare": "husky",
     "prepack": "pnpm run clean && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6 && pnpm run types",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
     "add-license": "./scripts/add-license.js"
