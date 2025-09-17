@@ -129,6 +129,9 @@ importers:
       lint-staged:
         specifier: ^16.1.6
         version: 16.1.6
+      minimatch:
+        specifier: ^10.0.3
+        version: 10.0.3
       msw:
         specifier: ^2.11.2
         version: 2.11.2(@types/node@24.5.1)(typescript@5.9.2)

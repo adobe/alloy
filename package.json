@@ -115,6 +115,7 @@
     "happy-dom": "^18.0.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.6",
+    "minimatch": "^10.0.3",
     "msw": "^2.11.2",
     "playwright": "^1.55.0",
     "prettier": "^3.6.2",
