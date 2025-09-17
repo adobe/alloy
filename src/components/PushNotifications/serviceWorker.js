@@ -363,7 +363,7 @@ sw.addEventListener("notificationclick", (event) => {
     const actionIndex = parseInt(event.action.replace("action_", ""), 10);
     if (data?.actions?.buttons[actionIndex]) {
       const button = data.actions.buttons[actionIndex];
-      actionLabel = button.label.toLowerCase();
+      actionLabel = button.label;
       if (canHandleUrl(button.type) && button.uri) {
         targetUrl = button.uri;
       }
