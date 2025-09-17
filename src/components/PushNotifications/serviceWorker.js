@@ -303,7 +303,7 @@ sw.addEventListener("activate", (event) => {
  * @param {PushEvent} event
  * @returns {Promise<void>}
  */
-sw.addEventListener("push", (event) => {
+sw.addEventListener("push", async (event) => {
   if (!event.data) {
     return;
   }
@@ -344,9 +344,7 @@ sw.addEventListener("push", (event) => {
     );
   }
 
-  event.waitUntil(
-    sw.registration.showNotification(webData.title, notificationOptions),
-  );
+  return sw.registration.showNotification(webData.title, notificationOptions);
 });
 
 /**
@@ -407,7 +405,7 @@ sw.addEventListener("notificationclose", (event) => {
 
   sendTrackingCall({
     xdm: data._xdm.mixins,
-    actionLabel: "delete",
+    actionLabel: "Dismiss",
   }).catch((error) => {
     logger.error("Failed to send tracking call:", error);
   });
