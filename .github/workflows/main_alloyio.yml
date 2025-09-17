@@ -34,7 +34,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build alloy.js
-        run: pnpm dlx rollup -c --environment SANDBOX
+        run: pnpm exec rollup -c --environment SANDBOX
 
       - name: Build sandbox
         run: |
