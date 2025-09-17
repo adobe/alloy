@@ -60,13 +60,22 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: "pnpm"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.0
+          run_install: false
 
       - name: Clear cache
         uses: actions/cache@v4
-        id: npm-cache
+        id: pnpm-cache
         with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }}
+          path: "~/.pnpm-store"
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ secrets.NPM_CACHE_VERSION }}
 
       - name: Download sauce config into tags
         uses: actions/download-artifact@v4
@@ -88,11 +97,10 @@ jobs:
         uses: nyaa8/package-version@v1
 
       - name: Install dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: npm run test:functional:build:prod
+        run: pnpm run test:functional:build:prod
         env:
           ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
 

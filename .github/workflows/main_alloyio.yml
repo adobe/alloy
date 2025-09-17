@@ -20,18 +20,26 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: "npm"
+          cache: "pnpm"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.0
+          run_install: false
 
       - name: Install packages
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build alloy.js
-        run: npx rollup -c --environment SANDBOX
+        run: pnpm dlx rollup -c --environment SANDBOX
 
       - name: Build sandbox
         run: |
           cd sandbox
-          npm run build
+          pnpm run build
 
       - name: Upload artifact for deployment job
         uses: Azure/static-web-apps-deploy@v1

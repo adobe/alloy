@@ -16,11 +16,12 @@ const updateDevDependency = async ({
   logger,
   version,
 }) => {
-  const {
-    dependencies: {
-      "@adobe/alloy": { version: installedVersion },
-    },
-  } = JSON.parse(execSync(`pnpm ls @adobe/alloy --json`).toString());
+  const pnpmLsOutput = JSON.parse(
+    execSync(`pnpm ls @adobe/alloy --json`).toString(),
+  );
+  const rootWorkspace = pnpmLsOutput[0];
+  const installedVersion =
+    rootWorkspace?.dependencies?.["@adobe/alloy"]?.version;
   if (installedVersion === version) {
     logger.warn(`Dependency @adobe/alloy@${version} already installed.`);
   } else {

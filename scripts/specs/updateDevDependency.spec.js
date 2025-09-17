@@ -30,9 +30,11 @@ describe("updateDevDependency", () => {
 
   it("installs the dev dependency", async () => {
     execSync.mockReturnValue(
-      JSON.stringify({
-        dependencies: { "@adobe/alloy": { version: "1.2.2" } },
-      }),
+      JSON.stringify([
+        {
+          dependencies: { "@adobe/alloy": { version: "1.2.2" } },
+        },
+      ]),
     );
     exec.mockReturnValue(Promise.resolve());
     await updateDevDependency(container);
@@ -47,9 +49,11 @@ describe("updateDevDependency", () => {
 
   it("doesn't install the dev dependency", async () => {
     execSync.mockReturnValue(
-      JSON.stringify({
-        dependencies: { "@adobe/alloy": { version: "1.2.3" } },
-      }),
+      JSON.stringify([
+        {
+          dependencies: { "@adobe/alloy": { version: "1.2.3" } },
+        },
+      ]),
     );
     await updateDevDependency(container);
 
