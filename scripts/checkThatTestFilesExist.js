@@ -15,7 +15,7 @@ governing permissions and limitations under the License.
 import fs from "fs";
 import path from "path";
 import recursive from "recursive-readdir";
-import pkg from "minimatch";
+import { Minimatch } from "minimatch";
 import { fileURLToPath } from "url";
 import { safePathJoin } from "./helpers/path.js";
 
@@ -27,7 +27,6 @@ const ignorePatterns = [
   "standalone.js",
 ];
 
-const { Minimatch } = pkg;
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
