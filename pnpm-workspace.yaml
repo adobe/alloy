@@ -1,2 +1,10 @@
 packages:
   - sandbox
+minimumReleaseAge: 2880 # 2 days
+minimumReleaseAgeExclude:
+  - "@adobe/alloy"
+  - "@adobe/aep-rules-engine"
+onlyBuiltDependencies:
+  - msw
+  - esbuild
+verifyDepsBeforeRun: warn
