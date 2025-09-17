@@ -230,7 +230,7 @@ const sendTrackingCall = async ({
             },
             eventType: actionLabel
               ? "pushTracking.customAction"
-              : "pushTracking.applicationLaunches",
+              : "pushTracking.applicationOpened",
             _experience: {
               ...xdm._experience,
               customerJourneyManagement: {
@@ -299,7 +299,7 @@ sw.addEventListener("activate", (event) => {
  * @param {PushEvent} event
  * @returns {Promise<void>}
  */
-sw.addEventListener("push", async (event) => {
+sw.addEventListener("push", (event) => {
   if (!event.data) {
     return;
   }
@@ -340,7 +340,9 @@ sw.addEventListener("push", async (event) => {
     );
   }
 
-  return sw.registration.showNotification(webData.title, notificationOptions);
+  event.waitUntil(
+    sw.registration.showNotification(webData.title, notificationOptions),
+  );
 });
 
 /**
@@ -377,7 +379,7 @@ sw.addEventListener("notificationclick", (event) => {
   });
 
   if (targetUrl) {
-    return event.waitUntil(
+    event.waitUntil(
       sw.clients.matchAll({ type: "window" }).then((clientList) => {
         for (const client of clientList) {
           if (client.url === targetUrl && "focus" in client) {
