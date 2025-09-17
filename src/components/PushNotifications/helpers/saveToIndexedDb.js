@@ -28,11 +28,15 @@ import { DB_NAME, DB_VERSION, STORE_NAME, INDEX_KEY } from "./constants.js";
  */
 export default async function saveToIndexedDB(data, logger) {
   try {
-    const db = await openIndexedDb(DB_NAME, DB_VERSION, (db) => {
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: "id" });
-      }
-    });
+    const db = await openIndexedDb(
+      DB_NAME,
+      DB_VERSION,
+      (/** @type {IDBDatabase} */ db) => {
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.createObjectStore(STORE_NAME, { keyPath: "id" });
+        }
+      },
+    );
 
     const existingConfigData = await getFromIndexedDbStore(
       db,
