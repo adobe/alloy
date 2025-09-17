@@ -226,13 +226,11 @@ const getMakeBuildCommand = () => {
             const stats = fs.statSync(value);
             if (!stats.isDirectory()) {
               throw new InvalidOptionArgumentError(
-                `Output directory "${value}" is not a valid directory path.`,
+                `"${value}" is not a valid directory path.`,
               );
             }
           } catch (error) {
-            throw new InvalidOptionArgumentError(
-              `Output directory "${value}" is not a valid directory path. ${error.message}`,
-            );
+            throw new InvalidOptionArgumentError(error.message);
           }
 
           return value.replace(new RegExp(`${path.sep}+$`, "g"), "");
@@ -269,13 +267,11 @@ const getPushNotificationsServiceWorkerBuildCommand = () =>
             const stats = fs.statSync(value);
             if (!stats.isDirectory()) {
               throw new InvalidOptionArgumentError(
-                `Output directory "${value}" is not a valid directory path.`,
+                `"${value}" is not a valid directory path.`,
               );
             }
           } catch (error) {
-            throw new InvalidOptionArgumentError(
-              `Output directory "${value}" is not a valid directory path. ${error.message}`,
-            );
+            throw new InvalidOptionArgumentError(error.message);
           }
 
           return value.replace(new RegExp(`${path.sep}+$`, "g"), "");
