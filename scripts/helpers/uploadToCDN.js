@@ -21,7 +21,7 @@ const uploadToCDN = async ({ exec, logger, urlExists, version }) => {
   // We don't do a check here because there is no harm in re-building and re-uploading the files.
 
   logger.info("Building files for CDN");
-  await exec("build", "npm run build");
+  await exec("build", "pnpm run build");
 
   const ftpCommands = `-mkdir ${version}
 cd ${version}
