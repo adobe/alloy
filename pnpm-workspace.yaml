@@ -1,6 +1,6 @@
 packages:
   - sandbox
-minimumReleaseAge: 2160 # 36 hours
+minimumReleaseAge: 2880 # 2 days
 minimumReleaseAgeExclude:
   - "@adobe/alloy"
   - "@adobe/aep-rules-engine"
