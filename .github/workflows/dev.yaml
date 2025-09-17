@@ -10,23 +10,12 @@ jobs:
     name: "Linting files"
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Node.js version
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: "pnpm"
       - uses: actions/checkout@v4
-      - name: Enable Corepack
-        run: corepack enable
       - uses: pnpm/action-setup@v4
+      - name: Set up Node.js version
+        uses: actions/setup-node@v5
         with:
-          version: 10.17.0
-          run_install: false
-      - uses: actions/cache@v4
-        id: pnpm-cache
-        with:
-          path: "~/.pnpm-store"
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ secrets.NPM_CACHE_VERSION }} # increment NPM_CACHE_VERSION secret to force cache reset
+          node-version-file: .nvmrc
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Linting
@@ -36,23 +25,12 @@ jobs:
     name: "Test"
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Node.js version
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: "pnpm"
       - uses: actions/checkout@v4
-      - name: Enable Corepack
-        run: corepack enable
       - uses: pnpm/action-setup@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
         with:
-          version: 10.17.0
-          run_install: false
-      - uses: actions/cache@v4
-        id: pnpm-cache
-        with:
-          path: "~/.pnpm-store"
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ secrets.NPM_CACHE_VERSION }} # increment NPM_CACHE_VERSION secret to force cache reset
+          node-version-file: .nvmrc
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Build Alloy

@@ -57,25 +57,9 @@ jobs:
         with:
           ref: ${{ steps.last_release.outputs.tag_name }}
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: "pnpm"
-
-      - name: Enable Corepack
-        run: corepack enable
-
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10.17.0
-          run_install: false
 
-      - name: Clear cache
-        uses: actions/cache@v4
-        id: pnpm-cache
-        with:
-          path: "~/.pnpm-store"
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ secrets.NPM_CACHE_VERSION }}
+      - uses: actions/setup-node@v5
 
       - name: Download sauce config into tags
         uses: actions/download-artifact@v4

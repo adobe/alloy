@@ -30,26 +30,15 @@ jobs:
     if: ${{ contains(github.event.inputs.version, '-') == false }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22.4.x
-          cache: "pnpm"
-      - name: Enable Corepack
-        run: corepack enable
       - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
         with:
-          version: 10.17.0
-          run_install: false
+          node-version-file: .nvmrc
       - uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: |
             ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
             ${{ secrets.CDN_PRIVATE_KEY }}
-      - uses: actions/cache@v4
-        id: pnpm-cache
-        with:
-          path: "~/.pnpm-store"
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ secrets.NPM_CACHE_VERSION }} # increment NPM_CACHE_VERSION secret to force cache reset
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - run: ./scripts/deploy.js ${{ github.event.inputs.version }} latest
@@ -69,26 +58,15 @@ jobs:
     if: ${{ contains(github.event.inputs.version, '-') }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22.4.x
-          cache: "pnpm"
-      - name: Enable Corepack
-        run: corepack enable
       - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
         with:
-          version: 10.17.0
-          run_install: false
+          node-version-file: .nvmrc
       - uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: |
             ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
             ${{ secrets.CDN_PRIVATE_KEY }}
-      - uses: actions/cache@v4
-        id: pnpm-cache
-        with:
-          path: "~/.pnpm-store"
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ secrets.NPM_CACHE_VERSION }} # increment NPM_CACHE_VERSION secret to force cache reset
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - run: ./scripts/deploy.js ${{ github.event.inputs.version }} next

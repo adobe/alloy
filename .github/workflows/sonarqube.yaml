@@ -15,23 +15,16 @@ jobs:
     continue-on-error: true # Entire job becomes a warning
 
     steps:
+      - uses: pnpm/action-setup@v4
+
       - name: Set up Node.js version
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: latest
-          cache: "pnpm"
+          node-version-file: .nvmrc
 
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
-
-      - name: Enable Corepack
-        run: corepack enable
-
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10.17.0
-          run_install: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
