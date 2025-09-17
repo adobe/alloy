@@ -8,12 +8,7 @@ Our guidelines vary depending on the type of contribution: New Feature, Enhancem
 
 ## Development Setup
 
-This project uses pnpm as the package manager. To get started:
-
-1. Enable Corepack: `corepack enable`
-2. Install dependencies: `pnpm install`
-3. Build the project: `pnpm run build`
-4. Run tests: `pnpm run test`
+This project uses `pnpm` as the package manager and targets the latest lts version of Node.js.
 
 ## Contributor license agreement
 
