@@ -58,6 +58,8 @@ jobs:
           ref: ${{ steps.last_release.outputs.tag_name }}
 
       - uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - uses: actions/setup-node@v5
 

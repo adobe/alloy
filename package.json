@@ -3,7 +3,6 @@
   "version": "2.29.0",
   "description": "Adobe Experience Platform Web SDK",
   "type": "module",
-  "packageManager": "pnpm@10.17.0",
   "main": "libEs5/index.js",
   "module": "libEs6/index.js",
   "types": "types/index.d.ts",
