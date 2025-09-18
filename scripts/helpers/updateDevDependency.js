@@ -16,17 +16,18 @@ const updateDevDependency = async ({
   logger,
   version,
 }) => {
-  const {
-    dependencies: {
-      "@adobe/alloy": { version: installedVersion },
-    },
-  } = JSON.parse(execSync(`npm ls @adobe/alloy --json`).toString());
+  const pnpmLsOutput = JSON.parse(
+    execSync(`pnpm ls @adobe/alloy --json`).toString(),
+  );
+  const rootWorkspace = pnpmLsOutput[0];
+  const installedVersion =
+    rootWorkspace?.dependencies?.["@adobe/alloy"]?.version;
   if (installedVersion === version) {
     logger.warn(`Dependency @adobe/alloy@${version} already installed.`);
   } else {
     logger.info(`Installing @adobe/alloy@${version} as a dev dependency.`);
-    await exec("npm install", `npm install @adobe/alloy@${version} --save-dev`);
-    await exec("git add", `git add package.json package-lock.json`);
+    await exec("pnpm add", `pnpm add @adobe/alloy@${version} --save-dev`);
+    await exec("git add", `git add package.json pnpm-lock.yaml`);
     await exec(
       "git commit",
       `git commit -m "[skip ci] update self devDependency to ${version}"`,

@@ -33,7 +33,7 @@ describe("uploadToCDN", () => {
     urlExists.mockReturnValue(Promise.resolve(true));
     await uploadToCDN(container);
     expect(logger.info).toHaveBeenCalledWith("Building files for CDN");
-    expect(exec).toHaveBeenCalledWith("build", "npm run build");
+    expect(exec).toHaveBeenCalledWith("build", "pnpm run build");
     expect(logger.info).toHaveBeenCalledWith("Uploading files to CDN.");
     expect(exec).toHaveBeenCalledWith(
       "sftp",

@@ -20,12 +20,15 @@ const updatePackage = async ({
     logger.warn(`Version in package.json is already ${version}.`);
   } else {
     // build to update bundlesize.json
-    await exec("npm run build", "npm run build");
+    await exec("pnpm run build", "pnpm run build");
     logger.info(`Updating package.json with version ${version}.`);
-    await exec("npm version", `npm version ${version} --git-tag-version=false`);
+    await exec(
+      "pnpm version",
+      `pnpm version ${version} --git-tag-version=false`,
+    );
     await exec(
       "git add",
-      "git add package.json package-lock.json bundlesize.json",
+      "git add package.json pnpm-lock.yaml bundlesize.json",
     );
     await exec("git commit", `git commit -m "[skip ci] ${version}"`);
     await exec("git push", `git push gh-origin HEAD:${githubRef}`);

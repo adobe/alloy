@@ -16,6 +16,8 @@ libEs6
 artifacts
 __screenshots__/
 adobe-alloy-*.tgz
+package-lock.json
+**/package-lock.json
 
 # Ignore auto generated types
 types/

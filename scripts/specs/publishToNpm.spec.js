@@ -34,7 +34,7 @@ describe("publishToNpm", () => {
 
     expect(execSync).toHaveBeenCalledTimes(1);
     expect(execSync).toHaveBeenCalledWith(
-      "npm view @adobe/alloy@1.2.3 version --json",
+      "pnpm view @adobe/alloy@1.2.3 version --json",
     );
     expect(logger.warn).not.toHaveBeenCalled();
     expect(logger.info).toHaveBeenCalledWith("Publishing NPM package.");
@@ -47,7 +47,7 @@ describe("publishToNpm", () => {
 
     expect(execSync).toHaveBeenCalledTimes(1);
     expect(execSync).toHaveBeenCalledWith(
-      "npm view @adobe/alloy@1.2.3 version --json",
+      "pnpm view @adobe/alloy@1.2.3 version --json",
     );
 
     expect(logger.warn).toHaveBeenCalledTimes(1);
