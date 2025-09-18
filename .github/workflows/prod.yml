@@ -24,12 +24,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: 22
+          version: 10
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
       - name: Install dependencies
-        run: npm install @octokit/rest semver
+        run: pnpm add --global @octokit/rest semver
       - name: Upload sauce configs
         uses: actions/upload-artifact@v4.4.0
         with:
@@ -74,19 +77,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ matrix.tag.tag }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 22
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        id: npm-cache
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }}
+          node-version-file: .nvmrc
       - name: Install dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       - name: Store Alloy version
         uses: nyaa8/package-version@v1
       - name: Download sauce configs
@@ -101,8 +100,8 @@ jobs:
           path: .
       - name: Build
         run: |
-          echo "PACKAGE_VERSION=$(npm pkg get version | tr -d '\"')" >> $GITHUB_ENV
-          npm run test:functional:build:prod
+          echo "PACKAGE_VERSION=$(pnpm pkg get version | tr -d '\"')" >> $GITHUB_ENV
+          pnpm run test:functional:build:prod
         env:
           ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
           BASE_CODE_MIN: true
@@ -167,19 +166,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ matrix.tag.tag }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 22
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        id: npm-cache
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }}
+          node-version-file: .nvmrc
       - name: Install dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       - name: Store Alloy version
         uses: nyaa8/package-version@v1
       - name: Download sauce configs
@@ -194,8 +189,8 @@ jobs:
           path: .
       - name: Build
         run: |
-          echo "PACKAGE_VERSION=$(npm pkg get version | tr -d '\"')" >> $GITHUB_ENV
-          npm run test:functional:build:prod
+          echo "PACKAGE_VERSION=$(pnpm pkg get version | tr -d '\"')" >> $GITHUB_ENV
+          pnpm run test:functional:build:prod
         env:
           ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
           BASE_CODE_MIN: true
@@ -260,19 +255,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ matrix.tag.tag }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 22
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        id: npm-cache
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }}
+          node-version-file: .nvmrc
       - name: Install dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       - name: Store Alloy version
         uses: nyaa8/package-version@v1
       - name: Download sauce configs
@@ -287,8 +278,8 @@ jobs:
           path: .
       - name: Build
         run: |
-          echo "PACKAGE_VERSION=$(npm pkg get version | tr -d '\"')" >> $GITHUB_ENV
-          npm run test:functional:build:prod
+          echo "PACKAGE_VERSION=$(pnpm pkg get version | tr -d '\"')" >> $GITHUB_ENV
+          pnpm run test:functional:build:prod
         env:
           ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
           BASE_CODE_MIN: true

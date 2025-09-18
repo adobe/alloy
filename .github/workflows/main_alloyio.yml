@@ -16,22 +16,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js version
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: lts/*
-          cache: "npm"
+          version: 10
+
+      - name: Set up Node.js version
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
 
       - name: Install packages
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build alloy.js
-        run: npx rollup -c --environment SANDBOX
+        run: pnpm exec rollup -c --environment SANDBOX
 
       - name: Build sandbox
         run: |
           cd sandbox
-          npm run build
+          pnpm run build
 
       - name: Upload artifact for deployment job
         uses: Azure/static-web-apps-deploy@v1
