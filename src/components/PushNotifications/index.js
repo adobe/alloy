@@ -34,14 +34,15 @@ const isComponentConfigured = ({
  * @function
  *
  * @param {Object} options
- * @param {{ orgId: string, pushNotifications: { vapidPublicKey: string, appId: string, trackingDatasetId: string }}} options.config
+ * @param {{ orgId: string, datastreamId: string, edgeDomain: string, edgeBasePath: string, pushNotifications: { vapidPublicKey: string, appId: string, trackingDatasetId: string }}} options.config
  * @param {StorageCreator} options.createNamespacedStorage
  * @param {EventManager} options.eventManager
  * @param {Logger} options.logger
  * @param {ConsentManager} options.consent
  * @param {IdentityManager} options.identity
+ * @param {function(): string} options.getBrowser
  * @param {EdgeRequestExecutor} options.sendEdgeNetworkRequest
- * @returns {{  commands: { sendPushSubscription: object } }}
+ * @returns {{ lifecycle: object, commands: { sendPushSubscription: object } }}
  */
 const createPushNotifications = ({
   createNamespacedStorage,

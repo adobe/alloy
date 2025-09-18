@@ -51,6 +51,66 @@ const getFromIndexedDbStore = (db, storeName, key) => {
   });
 };
 
+/*
+Copyright 2025 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+const DB_NAME = "alloyPushNotifications";
+const DB_VERSION = 1;
+const STORE_NAME = "config";
+const INDEX_KEY = "alloyConfig";
+
+/*
+Copyright 2025 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+/**
+ * @param {ServiceWorkerLogger} logger
+ * @returns {Promise<Object|undefined>}
+ * @throws {Error}
+ */
+var readFromIndexedDb = async (logger) => {
+  try {
+    const db = await openIndexedDb(
+      DB_NAME,
+      DB_VERSION,
+      (/** @type {IDBDatabase} */ db) => {
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.createObjectStore(STORE_NAME, { keyPath: "id" });
+        }
+      },
+    );
+
+    const existingConfigData = await getFromIndexedDbStore(
+      db,
+      STORE_NAME,
+      INDEX_KEY,
+    );
+
+    db.close();
+
+    return existingConfigData;
+  } catch (error) {
+    logger.error("Failed to read data from IndexedDB", { error });
+  }
+};
+
 const byteToHex = [];
 for (let i = 0; i < 256; ++i) {
   byteToHex.push((i + 0x100).toString(16).slice(1));
@@ -126,174 +186,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const DB_NAME = "alloyPushNotifications";
-const DB_VERSION = 1;
-const STORE_NAME = "config";
-const INDEX_KEY = "alloyConfig";
-
-/*
-Copyright 2025 Adobe. All rights reserved.
-This file is licensed to you under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License. You may obtain a copy
-of the License at http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software distributed under
-the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-OF ANY KIND, either express or implied. See the License for the specific language
-governing permissions and limitations under the License.
-*/
-
-/* eslint-disable no-console */
-/* eslint-disable no-underscore-dangle */
-
-// @ts-check
-/// <reference lib="webworker" />
-
-/** @type {ServiceWorkerGlobalScope} */
-// @ts-ignore
-const sw = self;
-
-/**
- * @typedef {Object} CustomerJourneyManagement
- * @property {Object} messageExecution
- * @property {string} messageExecution.messageExecutionID
- * @property {string} messageExecution.messageID
- * @property {string} messageExecution.messageType
- * @property {string} messageExecution.campaignID
- * @property {string} messageExecution.campaignVersionID
- * @property {string} messageExecution.batchInstanceID
- * @property {Object} [pushChannelContext]
- * @property {"web"} [pushChannelContext.platform]
- * @property {Object} [messageProfile]
- * @property {Object} [messageProfile.channel]
- * @property {string} [messageProfile.channel._id]
- */
-
-/**
- * @typedef {Object} Decisioning
- * @property {Object[]} propositions
- * @property {Object} propositions[].scopeDetails
- * @property {string} propositions[].scopeDetails.correlationID
- */
-
-/**
- * @typedef {Object} XdmTrackingContext
- * @property {Object} _experience
- * @property {CustomerJourneyManagement} _experience.customerJourneyManagement
- * @property {Decisioning} _experience.decisioning
- */
-
-/**
- * @typedef {Object} PushNotificationData
- * @property {Object} web
- * @property {string} web.title
- * @property {string} web.body
- * @property {string|null} web.media
- * @property {Object} web.interaction
- * @property {string} web.interaction.type
- * @property {string|null} web.interaction.uri
- * @property {Object} web.actions
- * @property {Object[]} web.actions.buttons
- * @property {string} web.actions.buttons[].label
- * @property {string} web.actions.buttons[].type
- * @property {string} web.actions.buttons[].uri
- * @property {string} web.priority
- * @property {Object} web._xdm
- * @property {XdmTrackingContext} web._xdm.mixins
- */
-
-/**
- * @typedef {Object} TrackingDataPayload
- * @property {Object[]} events
- * @property {Object} events[].xdm
- * @property {Object} events[].xdm.identityMap
- * @property {Object[]} events[].xdm.identityMap.ECID
- * @property {string} events[].xdm.identityMap.ECID[].id
- * @property {string} events[].xdm.timestamp
- * @property {Object} events[].xdm.pushNotificationTracking
- * @property {string} events[].xdm.pushNotificationTracking.pushProviderMessageID
- * @property {string} events[].xdm.pushNotificationTracking.pushProvider
- * @property {Object} [events[].xdm.pushNotificationTracking.customAction]
- * @property {string} [events[].xdm.pushNotificationTracking.customAction.actionID]
- * @property {Object} events[].xdm.application
- * @property {Object} events[].xdm.application.launches
- * @property {number} events[].xdm.application.launches.value
- * @property {string} events[].xdm.eventType
- * @property {Object} events[].xdm._experience
- * @property {CustomerJourneyManagement} events[].xdm._experience.customerJourneyManagement
- * @property {Decisioning} events[].xdm._experience.decisioning
- * @property {Object} events[].meta
- * @property {Object} events[].meta.collect
- * @property {string} events[].meta.collect.datasetId
- */
-
-/**
- * @type {Object}
- * @property {string} namespace
- * @property {Function} info
- * @property {Function} error
- */
-const logger = {
-  namespace: "[alloy][pushNotificationWorker]",
-  info: (...args) => console.log(logger.namespace, ...args),
-  error: (...args) => console.error(logger.namespace, ...args),
-};
-
-/**
- * @param {string} type
- * @returns {boolean}
- */
-const canHandleUrl = (type) => ["DEEPLINK", "WEBURL"].includes(type);
-
 /**
  * @async
- * @function getDataFromIndexedDb
- * @returns {Promise<Object|undefined>}
- * @throws {Error}
- */
-const getDataFromIndexedDb = async () => {
-  try {
-    const db = await openIndexedDb(
-      DB_NAME,
-      DB_VERSION,
-      (/** @type {IDBDatabase} */ db) => {
-        if (!db.objectStoreNames.contains(STORE_NAME)) {
-          db.createObjectStore(STORE_NAME, { keyPath: "id" });
-        }
-      },
-    );
-
-    const existingConfigData = await getFromIndexedDbStore(
-      db,
-      STORE_NAME,
-      INDEX_KEY,
-    );
-
-    db.close();
-
-    return existingConfigData;
-  } catch (error) {
-    logger.error("Failed to read data from IndexedDB", { error });
-  }
-};
-
-/**
- * @async
- * @function sendTrackingCall
+ * @function
  * @param {Object} options
  * @param {Object} options.xdm
  * @param {string} [options.actionLabel]
  * @param {number} [options.applicationLaunches=0]
+ * @param {Object} utils
+ * @param {ServiceWorkerLogger} utils.logger
+ * @param {Function} utils.fetch
  *
  * @returns {Promise<boolean>}
  * @throws {Error}
  */
-const sendTrackingCall = async ({
-  xdm,
-  actionLabel,
-  applicationLaunches = 0,
-}) => {
-  const configData = await getDataFromIndexedDb();
+var makeSendServiceWorkerTrackingData = async (
+  { xdm, actionLabel, applicationLaunches = 0 },
+  { logger, fetch },
+) => {
+  const configData = await readFromIndexedDb(logger);
   const { browser, ecid, edgeDomain, edgeBasePath, datastreamId, datasetId } =
     configData || {};
   let customActionData = {};
@@ -406,27 +317,113 @@ const sendTrackingCall = async ({
   }
 };
 
-/**
- * @listens install
- */
-sw.addEventListener("install", () => {
-  sw.skipWaiting();
-});
+/*
+Copyright 2025 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
 
 /**
- * @listens activate
- * @param {ExtendableEvent} event
+ * @param {string} type
+ * @returns {boolean}
  */
-sw.addEventListener("activate", (event) => {
-  event.waitUntil(sw.clients.claim());
-});
+const canHandleUrl = (type) => ["DEEPLINK", "WEBURL"].includes(type);
 
 /**
- * @listens push
- * @param {PushEvent} event
+ * @function
+ *
+ * @param {Object} options
+ * @param {ServiceWorkerGlobalScope} options.sw
+ * @param {NotificationEvent} options.event
+ * @param {Function} options.fetch
+ * @param {ServiceWorkerLogger} options.logger
+ */
+var serviceWorkerNotificationClickListener = ({ event, sw, logger, fetch }) => {
+  event.notification.close();
+
+  const data = event.notification.data;
+  let targetUrl = null;
+  let actionLabel = null;
+
+  if (event.action) {
+    const actionIndex = parseInt(event.action.replace("action_", ""), 10);
+    if (data?.actions?.buttons[actionIndex]) {
+      const button = data.actions.buttons[actionIndex];
+      actionLabel = button.label;
+      if (canHandleUrl(button.type) && button.uri) {
+        targetUrl = button.uri;
+      }
+    }
+  } else if (canHandleUrl(data?.interaction?.type) && data?.interaction?.uri) {
+    targetUrl = data.interaction.uri;
+  }
+
+  makeSendServiceWorkerTrackingData(
+    {
+      // eslint-disable-next-line no-underscore-dangle
+      xdm: data._xdm.mixins,
+      actionLabel,
+      applicationLaunches: 1,
+    },
+    {
+      logger,
+      fetch,
+    },
+  ).catch((error) => {
+    logger.error("Failed to send tracking call:", error);
+  });
+
+  if (targetUrl) {
+    event.waitUntil(
+      sw.clients.matchAll({ type: "window" }).then((clientList) => {
+        for (const client of clientList) {
+          if (client.url === targetUrl && "focus" in client) {
+            return client.focus();
+          }
+        }
+        if (sw.clients.openWindow) {
+          return sw.clients.openWindow(targetUrl);
+        }
+      }),
+    );
+  }
+};
+
+/*
+Copyright 2025 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+// @ts-check
+/// <reference lib="webworker" />
+
+/** @import {  PushNotificationData  } from '../types.js' */
+/** @import { ServiceWorkerLogger } from '../types.js' */
+
+/**
+ * @async
+ * @function
+ *
+ * @param {Object} options
+ * @param {ServiceWorkerGlobalScope} options.sw
+ * @param {PushEvent} options.event
+ * @param {ServiceWorkerLogger} options.logger
  * @returns {Promise<void>}
  */
-sw.addEventListener("push", async (event) => {
+var serviceWorkerPushListener = async ({ sw, event, logger }) => {
   if (!event.data) {
     return;
   }
@@ -435,7 +432,8 @@ sw.addEventListener("push", async (event) => {
   let notificationData;
   try {
     notificationData = event.data.json();
-  } catch {
+  } catch (error) {
+    logger.error("Error decoding notification JSON data:", error);
     return;
   }
 
@@ -468,56 +466,70 @@ sw.addEventListener("push", async (event) => {
   }
 
   return sw.registration.showNotification(webData.title, notificationOptions);
+};
+
+/*
+Copyright 2025 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+/* eslint-disable no-console */
+/* eslint-disable no-underscore-dangle */
+
+// @ts-check
+/// <reference lib="webworker" />
+
+/** @type {ServiceWorkerGlobalScope} */
+// @ts-ignore
+const sw = self;
+
+/**
+ * @type {ServiceWorkerLogger}
+ */
+const logger = {
+  namespace: "[alloy][pushNotificationWorker]",
+  info: (...args) => console.log(logger.namespace, ...args),
+  error: (...args) => console.error(logger.namespace, ...args),
+};
+
+/**
+ * @listens install
+ */
+sw.addEventListener("install", () => {
+  sw.skipWaiting();
 });
+
+/**
+ * @listens activate
+ * @param {ExtendableEvent} event
+ */
+sw.addEventListener("activate", (event) => {
+  event.waitUntil(sw.clients.claim());
+});
+
+/**
+ * @listens push
+ * @param {PushEvent} event
+ * @returns {Promise<void>}
+ */
+sw.addEventListener("push", (event) =>
+  serviceWorkerPushListener({ event, logger, sw }),
+);
 
 /**
  * @listens notificationclick
  * @param {NotificationEvent} event
- * @returns {Promise<void>}
  */
-sw.addEventListener("notificationclick", (event) => {
-  event.notification.close();
-
-  const data = event.notification.data;
-  let targetUrl = null;
-  let actionLabel = null;
-
-  if (event.action) {
-    const actionIndex = parseInt(event.action.replace("action_", ""), 10);
-    if (data?.actions?.buttons[actionIndex]) {
-      const button = data.actions.buttons[actionIndex];
-      actionLabel = button.label;
-      if (canHandleUrl(button.type) && button.uri) {
-        targetUrl = button.uri;
-      }
-    }
-  } else if (canHandleUrl(data?.interaction?.type) && data?.interaction?.uri) {
-    targetUrl = data.interaction.uri;
-  }
-
-  sendTrackingCall({
-    xdm: data._xdm.mixins,
-    actionLabel,
-    applicationLaunches: 1,
-  }).catch((error) => {
-    logger.error("Failed to send tracking call:", error);
-  });
-
-  if (targetUrl) {
-    event.waitUntil(
-      sw.clients.matchAll({ type: "window" }).then((clientList) => {
-        for (const client of clientList) {
-          if (client.url === targetUrl && "focus" in client) {
-            return client.focus();
-          }
-        }
-        if (sw.clients.openWindow) {
-          return sw.clients.openWindow(targetUrl);
-        }
-      }),
-    );
-  }
-});
+sw.addEventListener("notificationclick", (event) =>
+  serviceWorkerNotificationClickListener({ event, sw, logger, fetch }),
+);
 
 /**
  * @listens notificationclose
@@ -526,10 +538,16 @@ sw.addEventListener("notificationclick", (event) => {
 sw.addEventListener("notificationclose", (event) => {
   const data = event.notification.data;
 
-  sendTrackingCall({
-    xdm: data._xdm.mixins,
-    actionLabel: "Dismiss",
-  }).catch((error) => {
+  makeSendServiceWorkerTrackingData(
+    {
+      xdm: data._xdm.mixins,
+      actionLabel: "Dismiss",
+    },
+    {
+      logger,
+      fetch,
+    },
+  ).catch((error) => {
     logger.error("Failed to send tracking call:", error);
   });
 });
