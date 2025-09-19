@@ -19,26 +19,30 @@ governing permissions and limitations under the License.
 import { objectOf, string } from "../../utils/validation/index.js";
 import { sanitizeOrgIdForCookieName } from "../../utils/index.js";
 import makeSendPushSubscriptionRequest from "./request/makeSendPushSubscriptionRequest.js";
+import saveToIndexedDb from "./helpers/saveToIndexedDb.js";
 
 const isComponentConfigured = ({
   orgId,
-  pushNotifications: { vapidPublicKey } = {
+  pushNotifications: { vapidPublicKey, appId, trackingDatasetId } = {
     vapidPublicKey: undefined,
+    appId: undefined,
+    trackingDatasetId: undefined,
   },
-}) => orgId && vapidPublicKey;
+}) => orgId && vapidPublicKey && appId && trackingDatasetId;
 
 /**
  * @function
  *
  * @param {Object} options
- * @param {{ orgId: string, pushNotifications: { vapidPublicKey: string }}} options.config
+ * @param {{ orgId: string, datastreamId: string, edgeDomain: string, edgeBasePath: string, pushNotifications: { vapidPublicKey: string, appId: string, trackingDatasetId: string }}} options.config
  * @param {StorageCreator} options.createNamespacedStorage
  * @param {EventManager} options.eventManager
  * @param {Logger} options.logger
  * @param {ConsentManager} options.consent
  * @param {IdentityManager} options.identity
+ * @param {function(): string} options.getBrowser
  * @param {EdgeRequestExecutor} options.sendEdgeNetworkRequest
- * @returns {{  commands: { sendPushSubscription: object } }}
+ * @returns {{ lifecycle: object, commands: { sendPushSubscription: object } }}
  */
 const createPushNotifications = ({
   createNamespacedStorage,
@@ -47,22 +51,44 @@ const createPushNotifications = ({
   logger,
   consent,
   identity,
+  getBrowser,
   sendEdgeNetworkRequest,
 }) => {
   return {
+    lifecycle: {
+      async onComponentsRegistered() {
+        if (isComponentConfigured(config)) {
+          const {
+            datastreamId,
+            edgeDomain,
+            edgeBasePath,
+            pushNotifications: { trackingDatasetId },
+          } = config;
+          await saveToIndexedDb(
+            {
+              datastreamId,
+              edgeDomain,
+              edgeBasePath,
+              datasetId: trackingDatasetId,
+              browser: getBrowser(),
+            },
+            logger,
+          );
+        }
+      },
+    },
     commands: {
       sendPushSubscription: {
         run: async () => {
           if (!isComponentConfigured(config)) {
-            throw new Error(
-              "Push notifications module is not configured. No VAPID public key was provided.",
-            );
+            throw new Error("Push notifications module is not configured.");
           }
 
           const {
             orgId,
-            pushNotifications: { vapidPublicKey } = {
+            pushNotifications: { vapidPublicKey, appId } = {
               vapidPublicKey: undefined,
+              appId: undefined,
             },
           } = config || {};
 
@@ -73,6 +99,7 @@ const createPushNotifications = ({
           return makeSendPushSubscriptionRequest({
             config: {
               vapidPublicKey,
+              appId,
             },
             storage: storage.persistent,
             logger,
@@ -93,6 +120,8 @@ createPushNotifications.namespace = "Push Notifications";
 createPushNotifications.configValidators = objectOf({
   pushNotifications: objectOf({
     vapidPublicKey: string().required(),
+    appId: string().required(),
+    trackingDatasetId: string().required(),
   }).noUnknownFields(),
 });
 
