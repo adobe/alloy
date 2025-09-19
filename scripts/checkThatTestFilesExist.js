@@ -31,8 +31,8 @@ const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
 const baseDir = safePathJoin(dirname, "../");
-const srcDir = safePathJoin(dirname, "../src");
-const testDir = safePathJoin(dirname, "../packages/core/test/unit/specs");
+const srcDir = safePathJoin(dirname, "../packages/**/src");
+const testDir = safePathJoin(dirname, "../packages/**/test/unit/specs");
 const specExtension = ".spec.js";
 
 const ignoreMinimatches = ignorePatterns.map((ignorePattern) => {

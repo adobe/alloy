@@ -128,7 +128,7 @@ export default defineConfig([
   },
   {
     name: "alloy/tests",
-    files: ["packages/core/test/**/*.{cjs,js}"],
+    files: ["packages/**/test/**/*.{cjs,js}"],
     rules: {
       "import/extensions": [
         "error",
@@ -141,7 +141,7 @@ export default defineConfig([
   {
     name: "alloy/tests/vitest",
     files: [
-      "packages/core/test/{unit,integration}/**/*.{cjs,js}",
+      "packages/**/test/{unit,integration}/**/*.{cjs,js}",
       "scripts/specs/**/*.{cjs,js}",
     ],
     settings: {
@@ -154,7 +154,7 @@ export default defineConfig([
   },
   {
     name: "alloy/tests/functional",
-    files: ["packages/core/test/functional/**/*.{cjs,js}"],
+    files: ["packages/**/test/functional/**/*.{cjs,js}"],
     languageOptions: {
       globals: {
         test: "readonly",
@@ -197,7 +197,8 @@ export default defineConfig([
   {
     name: "alloy/configs",
     files: [
-      "sandbox/vite.config.mjs",
+      "sandboxes/**/vite.config.mjs",
+      "packages/**/rollup.config.js",
       "rollup.config.js",
       "eslint.config.js",
       "vitest.config.js",

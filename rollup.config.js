@@ -222,7 +222,8 @@ export const buildConfig = ({
     variant === SANDBOX ||
     variant === CUSTOM_BUILD
   ) {
-    const destDirectory = variant === SANDBOX ? "sandbox/public/" : "dist/";
+    const destDirectory =
+      variant === SANDBOX ? "sandboxes/browser/public/" : "dist/";
 
     return {
       input,
