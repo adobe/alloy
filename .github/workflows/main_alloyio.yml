@@ -33,7 +33,7 @@ jobs:
         run: pnpm exec rollup -c --environment SANDBOX
 
       - name: Build sandbox
-        run: pnpm --workspace-root=@adobe/alloy-sandbox-browser run build
+        run: pnpm --filter @adobe/alloy-sandbox-browser run build
 
       - name: Upload artifact for deployment job
         uses: Azure/static-web-apps-deploy@v1
