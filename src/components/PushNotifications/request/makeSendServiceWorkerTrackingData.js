@@ -27,7 +27,7 @@ import uuidv4 from "../../../utils/uuid.js";
  * @param {number} [options.applicationLaunches=0]
  * @param {Object} utils
  * @param {ServiceWorkerLogger} utils.logger
- * @param {Function} utils.fetch
+ * @param {(url: string, options: object) => Promise<Response>} utils.fetch
  *
  * @returns {Promise<boolean>}
  * @throws {Error}

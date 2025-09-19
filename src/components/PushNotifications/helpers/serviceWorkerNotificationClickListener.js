@@ -29,7 +29,7 @@ const canHandleUrl = (type) => ["DEEPLINK", "WEBURL"].includes(type);
  * @param {Object} options
  * @param {ServiceWorkerGlobalScope} options.sw
  * @param {NotificationEvent} options.event
- * @param {Function} options.fetch
+ * @param {(url: string, options: object) => Promise<Response>} options.fetch
  * @param {ServiceWorkerLogger} options.logger
  */
 export default ({ event, sw, logger, fetch }) => {
