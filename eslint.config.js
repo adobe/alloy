@@ -18,7 +18,10 @@ import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended"
 import react from "eslint-plugin-react";
 // eslint-disable-next-line import/no-unresolved -- eslint parses this a file, but it's a depenedency
 import { defineConfig, globalIgnores } from "eslint/config";
+import { glob } from "glob";
 import globals from "globals";
+
+const allComponentPaths = glob.sync("packages/core/src/components/*/");
 
 export default defineConfig([
   importPlugin.flatConfigs.recommended,
@@ -106,6 +109,82 @@ export default defineConfig([
       // We enable the rule in src/.eslintrc.js since that's the only place we
       // want to disallow importing extraneous dependencies.
       "import/prefer-default-export": "off",
+    },
+  },
+  {
+    name: "alloy/core-src",
+    files: ["packages/core/src/**/*.{cjs,js}"],
+    rules: {
+      "import/no-extraneous-dependencies": "error",
+      "import/extensions": [
+        "error",
+        "ignorePackages",
+        {
+          js: "never",
+          mjs: "never",
+          jsx: "never",
+        },
+      ],
+      "import/no-restricted-paths": [
+        "error",
+        {
+          zones: [
+            // prevent components from importing from other components, but allow
+            // importing from themselves and specific media-related cross-imports
+            ...allComponentPaths.map((componentPath, _, allPaths) => ({
+              target: componentPath + "/",
+              from: [
+                "packages/core/src/core",
+                "packages/core/src/baseCode",
+                ...allPaths
+                  .filter((p) => {
+                    // Allow MediaAnalyticsBridge <-> StreamingMedia imports
+                    if (
+                      componentPath.includes("MediaAnalyticsBridge") &&
+                      p.includes("StreamingMedia")
+                    )
+                      return false;
+                    if (
+                      componentPath.includes("StreamingMedia") &&
+                      p.includes("MediaAnalyticsBridge")
+                    )
+                      return false;
+                    // Allow imports from Context by media components
+                    if (
+                      (componentPath.includes("MediaAnalyticsBridge") ||
+                        componentPath.includes("StreamingMedia")) &&
+                      p.includes("Context")
+                    )
+                      return false;
+                    return p !== componentPath;
+                  })
+                  .map((p) => p + "/"),
+              ],
+            })),
+            {
+              target: "packages/core/src/core",
+              from: "packages/core/src/baseCode",
+            },
+            {
+              target: "packages/core/src/utils",
+              from: [
+                "packages/core/src/core",
+                "packages/core/src/components",
+                "packages/core/src/baseCode",
+              ],
+            },
+            {
+              target: "packages/core/src/constants",
+              from: [
+                "packages/core/src/core",
+                "packages/core/src/components",
+                "packages/core/src/utils",
+                "packages/core/src/baseCode",
+              ],
+            },
+          ],
+        },
+      ],
     },
   },
   {
