@@ -47,7 +47,7 @@ export default ({
   });
   return (options) => {
     let streamingEnabled = false;
-    const { message, onStreamResponse, xdm } = options;
+    const { message, onStreamResponse, xdm, data } = options;
     const sessionId = getConciergeSessionCookie({loggingCookieJar, config});
     const payload = createDataCollectionRequestPayload();
     const request = createConversationServiceRequest({
@@ -56,11 +56,12 @@ export default ({
     });
 
     const event = eventManager.createEvent();
-    if (message) {
+    if (message || data) {
       const pageSurface = getPageSurface();
       event.mergeQuery({ conversation: {
           surfaces: [pageSurface],
-          message
+          message,
+          data
         }});
     }
 
@@ -112,7 +113,7 @@ export default ({
             }
             const onStreamResponseCallback = (event) => {
               if(event.error) {
-                onStreamResponse({ error });
+                onStreamResponse({ error: event.error });
               }
               const substr = event.data.replace("data: ", "");
               const responseJson = JSON.parse(substr);

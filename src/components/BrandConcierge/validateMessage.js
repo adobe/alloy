@@ -34,6 +34,12 @@ export default ({ options }) => {
         })
       })
     }).required(),
+    objectOf({
+      data: objectOf({
+        type: string().required(),
+        payload: objectOf({})
+      }).required()
+    }),
   ]);
 
   return brandConciergeEventValidator(options);
