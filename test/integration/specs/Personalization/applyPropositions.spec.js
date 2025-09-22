@@ -90,19 +90,14 @@ describe("applyPropositions", () => {
       },
     };
 
-    const resultPromise = alloy("applyPropositions", {
+    const result = await alloy("applyPropositions", {
       propositions,
       metadata,
     });
-    expect(resultPromise).resolves.toBeDefined();
-    expect(resultPromise).resolves.toHaveProperty("propositions");
-    expect(resultPromise).resolves.toHaveProperty("propositions.length", 1);
-    expect(resultPromise).resolves.toHaveProperty(
-      "propositions[0].renderAttempted",
-      true,
-    );
-    await expect
-      .poll(() => testElement.innerHTML)
-      .toContain("http.cat/200.jpg");
+    expect(result).toBeDefined();
+    expect(result).toHaveProperty("propositions");
+    expect(result).toHaveProperty("propositions.length", 1);
+    expect(result).toHaveProperty("propositions[0].renderAttempted", true);
+    expect(testElement.innerHTML).toContain("http.cat/200.jpg");
   });
 });
