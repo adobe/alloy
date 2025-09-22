@@ -29,7 +29,7 @@ import createDataCollectionRequestPayload from "../../../utils/request/createDat
  * @param {string} options.ecid
  * @param {EventManager} options.eventManager
  * @param {string} options.serializedPushSubscriptionDetails
- * @param {Window} options.window
+ * @param {string} options.appId
  *
  * @returns {Promise<DataCollectionRequestPayload>}
  */
@@ -37,14 +37,14 @@ export default async ({
   ecid,
   eventManager,
   serializedPushSubscriptionDetails,
-  window,
+  appId,
 }) => {
   const event = eventManager.createEvent();
 
   event.setUserData({
     pushNotificationDetails: [
       {
-        appID: window.location.host,
+        appID: appId,
         token: serializedPushSubscriptionDetails,
         platform: "web",
         denylisted: false,
