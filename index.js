@@ -11,7 +11,5 @@ governing permissions and limitations under the License.
 */
 
 // Compatibility layer - re-export everything from packages/core
-// eslint-disable-next-line import/extensions
-export * from "@adobe/alloy-core/src/index.js";
-// eslint-disable-next-line import/extensions
-export { default as baseCode } from "@adobe/alloy-core/src/baseCode/index.js";
+export * from "@adobe/alloy-core/src/index";
+export { default as baseCode } from "@adobe/alloy-core/src/baseCode/index";
