@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
+/* eslint-disable import/no-relative-packages */
 // Compatibility layer - re-export everything from packages/core
-export * from "@adobe/alloy-core/src/index";
-export { default as baseCode } from "@adobe/alloy-core/src/baseCode/index";
+export * from "./packages/core/src/index";
+export { default as baseCode } from "./packages/core/src/baseCode/index";
