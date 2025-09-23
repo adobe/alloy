@@ -247,8 +247,8 @@ const getMakeBuildCommand = () => {
 };
 
 const getPushNotificationsServiceWorkerBuildCommand = () =>
-  new Command("build-pushnotifications-sw")
-    .description("Build the push notification service worker.")
+  new Command("build-sw")
+    .description("Build the s ervice worker.")
     .addOption(
       new Option("-m, --minify", "enable code minification").default(false),
     )
@@ -282,9 +282,9 @@ const getPushNotificationsServiceWorkerBuildCommand = () =>
     });
 
 const getInteractivePushNotificationsServiceWorkerBuildCommand = () =>
-  new Command("interactive-build-pushnotifications-sw")
+  new Command("interactive-build-sw")
     .description(
-      "Interactive process that will ask a series of questions and then it will generate a push notification service worker build.",
+      "Interactive process that will ask a series of questions and then it will generate a service worker build.",
     )
     .action(async () => {
       try {
