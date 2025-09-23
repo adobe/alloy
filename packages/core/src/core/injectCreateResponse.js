@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 /** @import { ResponseCreator } from './types.js' */
 
-import { ADOBE_EDGE } from "../constants/httpHeaderNames";
+import { ADOBE_EDGE } from "../constants/httpHeaderNames.js";
 
 /**
  * Creates a representation of a gateway response with the addition of

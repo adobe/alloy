@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createNode from "./dom/createNode";
-import { IMG } from "../constants/tagName";
+import createNode from "./dom/createNode.js";
+import { IMG } from "../constants/tagName.js";
 
 /**
  * Fires an image pixel from the current document's window.

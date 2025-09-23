@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import fireImageInDocument from "./fireImage";
+import fireImageInDocument from "./fireImage.js";
 import {
   appendNode as appendNodeToDocument,
   awaitSelector as awaitSelectorInDocument,
   createNode as createNodeInDocument,
-} from "./dom/index";
-import { BODY, IFRAME } from "../constants/tagName";
+} from "./dom/index.js";
+import { BODY, IFRAME } from "../constants/tagName.js";
 
 const IFRAME_ATTRS = {
   name: "Adobe Alloy",

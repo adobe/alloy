@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNumber from "../isNumber";
-import { assertValid } from "./utils";
+import isNumber from "../isNumber.js";
+import { assertValid } from "./utils.js";
 
 export default (value, path) => {
   assertValid(isNumber(value), value, path, "a number");

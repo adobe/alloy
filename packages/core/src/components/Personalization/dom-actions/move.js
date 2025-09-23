@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { setStyle } from "./dom/index";
-import { addPxIfMissing } from "./dom/util";
+import { setStyle } from "./dom/index.js";
+import { addPxIfMissing } from "./dom/util.js";
 
 export default (container, styles, decorateProposition) => {
   const { priority, ...style } = styles;

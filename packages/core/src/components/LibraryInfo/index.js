@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import libraryVersion from "../../constants/libraryVersion";
-import { CONFIGURE, SET_DEBUG } from "../../constants/coreCommands";
+import libraryVersion from "../../constants/libraryVersion.js";
+import { CONFIGURE, SET_DEBUG } from "../../constants/coreCommands.js";
 
 const prepareLibraryInfo = ({ config, componentRegistry }) => {
   const allCommands = [

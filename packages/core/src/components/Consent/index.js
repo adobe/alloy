@@ -15,16 +15,16 @@ import {
   cookieJar,
   injectDoesIdentityCookieExist,
   sanitizeOrgIdForCookieName,
-} from "../../utils/index";
-import createComponent from "./createComponent";
-import createConsentHashStore from "./createConsentHashStore";
-import createConsentRequestPayload from "./createConsentRequestPayload";
-import createConsentRequest from "./createConsentRequest";
-import createStoredConsent from "./createStoredConsent";
-import injectSendSetConsentRequest from "./injectSendSetConsentRequest";
-import parseConsentCookie from "./parseConsentCookie";
-import validateSetConsentOptions from "./validateSetConsentOptions";
-import configValidators from "./configValidators";
+} from "../../utils/index.js";
+import createComponent from "./createComponent.js";
+import createConsentHashStore from "./createConsentHashStore.js";
+import createConsentRequestPayload from "./createConsentRequestPayload.js";
+import createConsentRequest from "./createConsentRequest.js";
+import createStoredConsent from "./createStoredConsent.js";
+import injectSendSetConsentRequest from "./injectSendSetConsentRequest.js";
+import parseConsentCookie from "./parseConsentCookie.js";
+import validateSetConsentOptions from "./validateSetConsentOptions.js";
+import configValidators from "./configValidators.js";
 
 const createConsent = ({
   config,

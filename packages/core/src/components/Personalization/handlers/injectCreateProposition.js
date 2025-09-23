@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import PAGE_WIDE_SCOPE from "../../../constants/pageWideScope";
+import PAGE_WIDE_SCOPE from "../../../constants/pageWideScope.js";
 import {
   PAGE_SCOPE_TYPE,
   PROPOSITION_SCOPE_TYPE,
   VIEW_SCOPE_TYPE,
-} from "../constants/scopeType";
+} from "../constants/scopeType.js";
 
 export default ({ preprocess, isPageWideSurface }) => {
   const createItem = (item, proposition) => {

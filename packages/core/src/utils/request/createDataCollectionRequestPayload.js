@@ -12,9 +12,9 @@ governing permissions and limitations under the License.
 
 /** @import { DataCollectionRequestPayload } from './types.js' */
 
-import createRequestPayload from "./createRequestPayload";
-import createAddIdentity from "./createAddIdentity";
-import createHasIdentity from "./createHasIdentity";
+import createRequestPayload from "./createRequestPayload.js";
+import createAddIdentity from "./createAddIdentity.js";
+import createHasIdentity from "./createHasIdentity.js";
 
 /**
  * @function

@@ -16,9 +16,9 @@ import {
   openIndexedDb,
   getFromIndexedDbStore,
   putToIndexedDbStore,
-} from "../../../utils/indexedDb";
+} from "../../../utils/indexedDb.js";
 
-import { DB_NAME, DB_VERSION, STORE_NAME, INDEX_KEY } from "./constants";
+import { DB_NAME, DB_VERSION, STORE_NAME, INDEX_KEY } from "./constants.js";
 
 /**
  * @param {Object} data

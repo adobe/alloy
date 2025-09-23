@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 /** @import { Request, RequestPayload } from './types.js' */
 
-import { uuid } from "../index";
+import { uuid } from "../index.js";
 
 /**
  * Creates a request object with methods to access and modify request properties.

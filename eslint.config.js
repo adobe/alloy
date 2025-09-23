@@ -118,11 +118,8 @@ export default defineConfig([
       "import/no-extraneous-dependencies": "error",
       "import/extensions": [
         "error",
-        "ignorePackages",
         {
-          js: "never",
-          mjs: "never",
-          jsx: "never",
+          js: "always",
         },
       ],
       "import/no-restricted-paths": [
@@ -136,6 +133,8 @@ export default defineConfig([
               from: [
                 "packages/core/src/core",
                 "packages/core/src/baseCode",
+                // ...allPaths.filter((p) => p !== componentPath),
+                // TODO: Figure out why this was changed.
                 ...allPaths
                   .filter((p) => {
                     // Allow MediaAnalyticsBridge <-> StreamingMedia imports

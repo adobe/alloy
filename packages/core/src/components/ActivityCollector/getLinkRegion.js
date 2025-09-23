@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import truncateWhiteSpace from "./utils/truncateWhiteSpace";
-import { isNonEmptyString } from "../../utils/index";
+import truncateWhiteSpace from "./utils/truncateWhiteSpace.js";
+import { isNonEmptyString } from "../../utils/index.js";
 
 const semanticElements = /^(HEADER|MAIN|FOOTER|NAV)$/i;
 

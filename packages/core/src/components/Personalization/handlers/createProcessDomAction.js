@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createDecorateProposition from "./createDecorateProposition";
-import createRenderStatusHandler from "./createRenderStatusHandler";
-import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules";
+import createDecorateProposition from "./createDecorateProposition.js";
+import createRenderStatusHandler from "./createRenderStatusHandler.js";
+import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules.js";
 
 export default ({
     modules,

@@ -16,11 +16,11 @@ governing permissions and limitations under the License.
 /** @import { ConsentManager } from '../../../core/consent/types.js' */
 /** @import { EdgeRequestExecutor } from '../../../core/edgeNetwork/types.js' */
 
-import { sortObjectKeysRecursively } from "../../../utils";
-import getPushSubscriptionDetails from "../helpers/getPushSubscriptionDetails";
-import createSendPushSubscriptionRequest from "./createSendPushSubscriptionRequest";
-import createSendPushSubscriptionPayload from "./createSendPushSubscriptionPayload";
-import saveToIndexedDb from "../helpers/saveToIndexedDb";
+import { sortObjectKeysRecursively } from "../../../utils/index.js";
+import getPushSubscriptionDetails from "../helpers/getPushSubscriptionDetails.js";
+import createSendPushSubscriptionRequest from "./createSendPushSubscriptionRequest.js";
+import createSendPushSubscriptionPayload from "./createSendPushSubscriptionPayload.js";
+import saveToIndexedDb from "../helpers/saveToIndexedDb.js";
 
 const SUBSCRIPTION_DETAILS = "subscriptionDetails";
 

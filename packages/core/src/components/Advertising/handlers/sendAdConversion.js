@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import handleClickThrough from "./clickThroughHandler";
-import handleViewThrough from "./viewThroughHandler";
-import { getUrlParams, normalizeAdvertiser } from "../utils/helpers";
+import handleClickThrough from "./clickThroughHandler.js";
+import handleViewThrough from "./viewThroughHandler.js";
+import { getUrlParams, normalizeAdvertiser } from "../utils/helpers.js";
 
 /**
  * Creates a handler for sending ad conversions.

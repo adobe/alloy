@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createSendAdConversion from "./handlers/sendAdConversion";
-import handleOnBeforeSendEvent from "./handlers/onBeforeSendEventHandler";
+import createSendAdConversion from "./handlers/sendAdConversion.js";
+import handleOnBeforeSendEvent from "./handlers/onBeforeSendEventHandler.js";
 
 export default ({
   logger,

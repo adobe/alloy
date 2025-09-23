@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createMediaEventManager from "../StreamingMedia/createMediaEventManager";
-import createMediaSessionCacheManager from "../StreamingMedia/createMediaSessionCacheManager";
-import createTrackMediaEvent from "../StreamingMedia/createTrackMediaEvent";
-import createTrackMediaSession from "../StreamingMedia/createTrackMediaSession";
-import createMediaResponseHandler from "../StreamingMedia/createMediaResponseHandler";
-import createMediaAnalyticsBridgeComponent from "./createMediaAnalyticsBridgeComponent";
-import createMediaHelper from "./createMediaHelper";
-import createGetInstance from "./createGetInstance";
-import injectTimestamp from "../Context/injectTimestamp";
+import createMediaEventManager from "../StreamingMedia/createMediaEventManager.js";
+import createMediaSessionCacheManager from "../StreamingMedia/createMediaSessionCacheManager.js";
+import createTrackMediaEvent from "../StreamingMedia/createTrackMediaEvent.js";
+import createTrackMediaSession from "../StreamingMedia/createTrackMediaSession.js";
+import createMediaResponseHandler from "../StreamingMedia/createMediaResponseHandler.js";
+import createMediaAnalyticsBridgeComponent from "./createMediaAnalyticsBridgeComponent.js";
+import createMediaHelper from "./createMediaHelper.js";
+import createGetInstance from "./createGetInstance.js";
+import injectTimestamp from "../Context/injectTimestamp.js";
 
 const createMediaAnalyticsBridge = ({
   eventManager,

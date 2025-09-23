@@ -9,10 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import MediaEvents from "./constants/eventTypes";
-import createMediaRequest from "./createMediaRequest";
-import { toInteger } from "../../utils/index";
-import { createDataCollectionRequestPayload } from "../../utils/request/index";
+import MediaEvents from "./constants/eventTypes.js";
+import createMediaRequest from "./createMediaRequest.js";
+import { toInteger } from "../../utils/index.js";
+import { createDataCollectionRequestPayload } from "../../utils/request/index.js";
 
 export default ({
   config,

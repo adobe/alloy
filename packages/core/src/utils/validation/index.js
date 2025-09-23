@@ -68,31 +68,35 @@ governing permissions and limitations under the License.
  * nullSafeChain allows you to chain a validator in a null-safe way.
  */
 
-import { chain, nullSafeChain, reverseNullSafeChainJoinErrors } from "./utils";
+import {
+  chain,
+  nullSafeChain,
+  reverseNullSafeChainJoinErrors,
+} from "./utils.js";
 
-import booleanValidator from "./booleanValidator";
-import callbackValidator from "./callbackValidator";
-import createAnyOfValidator from "./createAnyOfValidator";
-import createArrayOfValidator from "./createArrayOfValidator";
-import createDefaultValidator from "./createDefaultValidator";
-import createDeprecatedValidator from "./createDeprecatedValidator";
-import createLiteralValidator from "./createLiteralValidator";
-import createMapOfValuesValidator from "./createMapOfValuesValidator";
-import createMinimumValidator from "./createMinimumValidator";
-import createMaximumValidator from "./createMaximumValidator";
-import createNoUnknownFieldsValidator from "./createNoUnknownFieldsValidator";
-import createNonEmptyValidator from "./createNonEmptyValidator";
-import createObjectOfValidator from "./createObjectOfValidator";
-import createRenamedValidator from "./createRenamedValidator";
-import createUniqueValidator from "./createUniqueValidator";
-import createUniqueItemsValidator from "./createUniqueItemsValidator";
-import domainValidator from "./domainValidator";
-import integerValidator from "./integerValidator";
-import numberValidator from "./numberValidator";
-import regexpValidator from "./regexpValidator";
-import requiredValidator from "./requiredValidator";
-import stringValidator from "./stringValidator";
-import matchesRegexpValidator from "./matchesRegexpValidator";
+import booleanValidator from "./booleanValidator.js";
+import callbackValidator from "./callbackValidator.js";
+import createAnyOfValidator from "./createAnyOfValidator.js";
+import createArrayOfValidator from "./createArrayOfValidator.js";
+import createDefaultValidator from "./createDefaultValidator.js";
+import createDeprecatedValidator from "./createDeprecatedValidator.js";
+import createLiteralValidator from "./createLiteralValidator.js";
+import createMapOfValuesValidator from "./createMapOfValuesValidator.js";
+import createMinimumValidator from "./createMinimumValidator.js";
+import createMaximumValidator from "./createMaximumValidator.js";
+import createNoUnknownFieldsValidator from "./createNoUnknownFieldsValidator.js";
+import createNonEmptyValidator from "./createNonEmptyValidator.js";
+import createObjectOfValidator from "./createObjectOfValidator.js";
+import createRenamedValidator from "./createRenamedValidator.js";
+import createUniqueValidator from "./createUniqueValidator.js";
+import createUniqueItemsValidator from "./createUniqueItemsValidator.js";
+import domainValidator from "./domainValidator.js";
+import integerValidator from "./integerValidator.js";
+import numberValidator from "./numberValidator.js";
+import regexpValidator from "./regexpValidator.js";
+import requiredValidator from "./requiredValidator.js";
+import stringValidator from "./stringValidator.js";
+import matchesRegexpValidator from "./matchesRegexpValidator.js";
 
 // The base validator does no validation and just returns the value unchanged
 const base = (value) => value;

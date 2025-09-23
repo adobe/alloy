@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createNode from "./createNode";
-import appendNode from "./appendNode";
+import createNode from "./createNode.js";
+import appendNode from "./appendNode.js";
 
 let nonce;
 

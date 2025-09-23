@@ -15,7 +15,7 @@ import {
   string,
   arrayOf,
   boolean,
-} from "../../utils/validation/index";
+} from "../../utils/validation/index.js";
 
 export default objectOf({
   advertising: objectOf({

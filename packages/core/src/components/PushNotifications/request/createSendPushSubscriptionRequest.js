@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 /** @import { DataCollectionRequestPayload, Request } from '../../../utils/request/types.js' */
 
-import { createRequest } from "../../../utils/request/index";
+import { createRequest } from "../../../utils/request/index.js";
 
 /**
  * @function

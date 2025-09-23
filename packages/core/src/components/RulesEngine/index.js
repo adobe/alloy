@@ -9,23 +9,23 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { noop, sanitizeOrgIdForCookieName } from "../../utils/index";
-import createOnResponseHandler from "./createOnResponseHandler";
-import createDecisionProvider from "./createDecisionProvider";
-import createApplyResponse from "./createApplyResponse";
-import createEventRegistry from "./createEventRegistry";
-import createContextProvider from "./createContextProvider";
-import createSubscribeRulesetItems from "./createSubscribeRulesetItems";
+import { noop, sanitizeOrgIdForCookieName } from "../../utils/index.js";
+import createOnResponseHandler from "./createOnResponseHandler.js";
+import createDecisionProvider from "./createDecisionProvider.js";
+import createApplyResponse from "./createApplyResponse.js";
+import createEventRegistry from "./createEventRegistry.js";
+import createContextProvider from "./createContextProvider.js";
+import createSubscribeRulesetItems from "./createSubscribeRulesetItems.js";
 import {
   CONTEXT_KEY,
   CONTEXT_EVENT_SOURCE,
   CONTEXT_EVENT_TYPE,
-} from "./constants/index";
-import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand";
-import { clearLocalStorage, createInMemoryStorage } from "./utils/storage";
-import { objectOf, boolean } from "../../utils/validation/index";
-import createCollect from "../../utils/createCollect";
-import { mergeDecisionsMeta } from "../../utils/event";
+} from "./constants/index.js";
+import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand.js";
+import { clearLocalStorage, createInMemoryStorage } from "./utils/storage.js";
+import { objectOf, boolean } from "../../utils/validation/index.js";
+import createCollect from "../../utils/createCollect.js";
+import { mergeDecisionsMeta } from "../../utils/event.js";
 
 const createRulesEngine = ({
   config,

@@ -13,12 +13,12 @@ governing permissions and limitations under the License.
 /** @import { EdgeRequestExecutor } from './types.js' */
 /** @import { ResponseCreator } from '../types.js' */
 
-import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain";
-import apiVersion from "../../constants/apiVersion";
-import { createCallbackAggregator, noop } from "../../utils/index";
-import { isNetworkError } from "../../utils/networkErrors";
-import mergeLifecycleResponses from "./mergeLifecycleResponses";
-import handleRequestFailure from "./handleRequestFailure";
+import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain.js";
+import apiVersion from "../../constants/apiVersion.js";
+import { createCallbackAggregator, noop } from "../../utils/index.js";
+import { isNetworkError } from "../../utils/networkErrors.js";
+import mergeLifecycleResponses from "./mergeLifecycleResponses.js";
+import handleRequestFailure from "./handleRequestFailure.js";
 
 const isDemdexBlockedError = (error, request) => {
   return request.getUseIdThirdPartyDomain() && isNetworkError(error);

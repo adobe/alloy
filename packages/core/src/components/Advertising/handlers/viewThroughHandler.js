@@ -4,17 +4,17 @@ Licensed under the Apache License, Version 2.0.
 http://www.apache.org/licenses/LICENSE-2.0
 */
 
-import collectAllIdentities from "../identities/collectAllIdentities";
+import collectAllIdentities from "../identities/collectAllIdentities.js";
 import {
   LOG_ERROR_RESOLVING_ID,
   LOG_AD_CONVERSION_FAILED,
   AD_CONVERSION_VIEW_EVENT_TYPE,
-} from "../constants/index";
+} from "../constants/index.js";
 import {
   isAnyIdUnused,
   appendAdvertisingIdQueryToEvent,
   markIdsAsConverted,
-} from "../utils/helpers";
+} from "../utils/helpers.js";
 
 export default async function handleViewThrough({
   eventManager,

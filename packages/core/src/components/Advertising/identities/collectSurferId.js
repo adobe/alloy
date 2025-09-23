@@ -12,9 +12,9 @@ import {
   SURFER_TRUSTED_ORIGIN,
   SURFER_PARAM_KEY,
   DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
-} from "../constants/index";
-import createNode from "../../../utils/dom/createNode";
-import { injectAreThirdPartyCookiesSupportedByDefault } from "../../../utils/index";
+} from "../constants/index.js";
+import createNode from "../../../utils/dom/createNode.js";
+import { injectAreThirdPartyCookiesSupportedByDefault } from "../../../utils/index.js";
 
 let surferId = "";
 let displayClickCookie = "";

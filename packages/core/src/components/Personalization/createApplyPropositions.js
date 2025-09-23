@@ -10,16 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { defer, isEmptyObject, isNonEmptyArray } from "../../utils/index";
+import { defer, isEmptyObject, isNonEmptyArray } from "../../utils/index.js";
 import {
   DEFAULT_CONTENT_ITEM,
   DOM_ACTION,
   HTML_CONTENT_ITEM,
   JSON_CONTENT_ITEM,
   MESSAGE_IN_APP,
-} from "../../constants/schema";
-import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
-import { DOM_ACTION_COLLECT_INTERACTIONS } from "./dom-actions/initDomActionsModules";
+} from "../../constants/schema.js";
+import PAGE_WIDE_SCOPE from "../../constants/pageWideScope.js";
+import { DOM_ACTION_COLLECT_INTERACTIONS } from "./dom-actions/initDomActionsModules.js";
 
 const isInteractionTrackingItem = (schema, actionType) =>
   schema === JSON_CONTENT_ITEM &&

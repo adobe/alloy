@@ -9,10 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { selectNodes, createNode } from "../../../utils/dom/index";
-import { SCRIPT } from "../../../constants/tagName";
-import { SRC } from "../../../constants/elementAttribute";
-import { getAttribute, getNonce } from "./dom/index";
+import { selectNodes, createNode } from "../../../utils/dom/index.js";
+import { SCRIPT } from "../../../constants/tagName.js";
+import { SRC } from "../../../constants/elementAttribute.js";
+import { getAttribute, getNonce } from "./dom/index.js";
 
 const getPromise = (url, script) => {
   return new Promise((resolve, reject) => {

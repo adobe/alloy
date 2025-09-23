@@ -15,10 +15,10 @@ import {
   string,
   callback,
   objectOf,
-} from "../../utils/validation/index";
-import { noop, validateConfigOverride } from "../../utils/index";
-import { EDGE as EDGE_DOMAIN } from "../../constants/domain";
-import EDGE_BASE_PATH from "../../constants/edgeBasePath";
+} from "../../utils/validation/index.js";
+import { noop, validateConfigOverride } from "../../utils/index.js";
+import { EDGE as EDGE_DOMAIN } from "../../constants/domain.js";
+import EDGE_BASE_PATH from "../../constants/edgeBasePath.js";
 
 export default () =>
   objectOf({

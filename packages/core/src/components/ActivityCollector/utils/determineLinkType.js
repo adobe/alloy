@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isDownloadLink from "./dom/isDownloadLink";
-import isExitLink from "./dom/isExitLink";
-import isNonEmptyString from "../../../utils/isNonEmptyString";
+import isDownloadLink from "./dom/isDownloadLink.js";
+import isExitLink from "./dom/isExitLink.js";
+import isNonEmptyString from "../../../utils/isNonEmptyString.js";
 
 export default (window, config, linkUrl, clickedObj) => {
   let linkType = "other";

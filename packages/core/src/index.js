@@ -16,13 +16,18 @@ governing permissions and limitations under the License.
 
 /** @import { AlloyMonitor } from './types.js' */
 
-import { createExecuteCommand } from "./core/index";
-import createLogger from "./core/createLogger";
-import createLogController from "./core/createLogController";
-import { injectStorage } from "./utils/index";
-import { arrayOf, objectOf, string, callback } from "./utils/validation/index";
-import getMonitors from "./core/getMonitors";
-import * as optionalComponents from "./core/componentCreators";
+import { createExecuteCommand } from "./core/index.js";
+import createLogger from "./core/createLogger.js";
+import createLogController from "./core/createLogController.js";
+import { injectStorage } from "./utils/index.js";
+import {
+  arrayOf,
+  objectOf,
+  string,
+  callback,
+} from "./utils/validation/index.js";
+import getMonitors from "./core/getMonitors.js";
+import * as optionalComponents from "./core/componentCreators.js";
 
 const { console } = window;
 const createNamespacedStorage = injectStorage(window);

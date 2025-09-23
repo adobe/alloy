@@ -10,18 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { VIEW_SCOPE_TYPE } from "../../constants/scopeType";
-import getAttribute from "../dom/getAttribute";
+import { VIEW_SCOPE_TYPE } from "../../constants/scopeType.js";
+import getAttribute from "../dom/getAttribute.js";
 import {
   CLICK_LABEL_DATA_ATTRIBUTE,
   CLICK_TOKEN_DATA_ATTRIBUTE,
   INTERACT_ID_DATA_ATTRIBUTE,
-} from "../../handlers/createDecorateProposition";
-import { cleanMetas } from "../../utils/metaUtils";
+} from "../../handlers/createDecorateProposition.js";
+import { cleanMetas } from "../../utils/metaUtils.js";
 import {
   ALWAYS,
   DECORATED_ELEMENTS_ONLY,
-} from "../../../../constants/propositionInteractionType";
+} from "../../../../constants/propositionInteractionType.js";
 
 const getInteractionDetail = (clickedElement) => {
   const { documentElement } = document;

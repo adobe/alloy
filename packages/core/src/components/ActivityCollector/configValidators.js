@@ -15,7 +15,7 @@ import {
   callback,
   objectOf,
   string,
-} from "../../utils/validation/index";
+} from "../../utils/validation/index.js";
 
 const DEFAULT_DOWNLOAD_QUALIFIER =
   "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$";

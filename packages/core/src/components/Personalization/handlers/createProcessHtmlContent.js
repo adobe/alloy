@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createDecorateProposition from "./createDecorateProposition";
-import createRenderStatusHandler from "./createRenderStatusHandler";
+import createDecorateProposition from "./createDecorateProposition.js";
+import createRenderStatusHandler from "./createRenderStatusHandler.js";
 
 export default ({
     modules,

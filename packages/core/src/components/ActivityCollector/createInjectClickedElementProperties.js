@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import activityMapExtensionEnabled from "./utils/activityMapExtensionEnabled";
-import isDifferentDomains from "./utils/isDifferentDomains";
+import activityMapExtensionEnabled from "./utils/activityMapExtensionEnabled.js";
+import isDifferentDomains from "./utils/isDifferentDomains.js";
 
 const isDissallowedLinkType = (clickCollection, linkType) => {
   return (

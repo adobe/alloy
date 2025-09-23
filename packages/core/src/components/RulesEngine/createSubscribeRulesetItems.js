@@ -14,12 +14,12 @@ import {
   callback as callbackType,
   objectOf,
   string,
-} from "../../utils/validation/index";
-import createSubscription from "../../utils/createSubscription";
+} from "../../utils/validation/index.js";
+import createSubscription from "../../utils/createSubscription.js";
 import {
   getEventType,
   PropositionEventType,
-} from "../../constants/propositionEventType";
+} from "../../constants/propositionEventType.js";
 
 const validateOptions = ({ options }) => {
   const validator = objectOf({

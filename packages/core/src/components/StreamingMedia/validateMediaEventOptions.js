@@ -16,8 +16,8 @@ import {
   number,
   objectOf,
   string,
-} from "../../utils/validation/index";
-import EventTypes from "./constants/eventTypes";
+} from "../../utils/validation/index.js";
+import EventTypes from "./constants/eventTypes.js";
 
 export default ({ options }) => {
   const validator = anyOf(

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 /** @import { PushSubscription } from '../types.js' */
 
-import { base64ToBytes, bytesToBase64 } from "../../../utils/index";
+import { base64ToBytes, bytesToBase64 } from "../../../utils/index.js";
 
 /**
  * Gets push subscription details for the current browser.

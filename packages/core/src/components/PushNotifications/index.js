@@ -16,10 +16,10 @@ governing permissions and limitations under the License.
 /** @import { ConsentManager } from '../../core/consent/types.js' */
 /** @import { EdgeRequestExecutor } from '../../core/edgeNetwork/types.js' */
 
-import { objectOf, string } from "../../utils/validation";
-import { sanitizeOrgIdForCookieName } from "../../utils";
-import makeSendPushSubscriptionRequest from "./request/makeSendPushSubscriptionRequest";
-import saveToIndexedDb from "./helpers/saveToIndexedDb";
+import { objectOf, string } from "../../utils/validation/index.js";
+import { sanitizeOrgIdForCookieName } from "../../utils/index.js";
+import makeSendPushSubscriptionRequest from "./request/makeSendPushSubscriptionRequest.js";
+import saveToIndexedDb from "./helpers/saveToIndexedDb.js";
 
 const isComponentConfigured = ({
   orgId,

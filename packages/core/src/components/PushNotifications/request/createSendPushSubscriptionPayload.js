@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 /** @import { EventManager } from "../../../core/types.js" */
 /** @import { DataCollectionRequestPayload } from "../../../utils/request/types.js" */
 
-import createDataCollectionRequestPayload from "../../../utils/request/createDataCollectionRequestPayload";
+import createDataCollectionRequestPayload from "../../../utils/request/createDataCollectionRequestPayload.js";
 
 /**
  * Creates a data collection request payload for sending push subscription details to Adobe Experience Platform.

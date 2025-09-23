@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { IN, OUT, PENDING } from "../../constants/consentStatus";
-import { objectOf, enumOf } from "../../utils/validation/index";
+import { IN, OUT, PENDING } from "../../constants/consentStatus.js";
+import { objectOf, enumOf } from "../../utils/validation/index.js";
 
 export default objectOf({
   defaultConsent: enumOf(IN, OUT, PENDING).default(IN),

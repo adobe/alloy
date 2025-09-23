@@ -14,7 +14,7 @@ import {
   objectOf,
   arrayOf,
   string,
-} from "../../utils/validation/index";
+} from "../../utils/validation/index.js";
 
 export const EMPTY_PROPOSITIONS = { propositions: [] };
 

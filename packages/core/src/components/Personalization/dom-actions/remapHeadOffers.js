@@ -16,12 +16,12 @@ governing permissions and limitations under the License.
  * Offer content should also be filtered, so that only tags allowed in HEAD are preserved.
  */
 
-import { selectNodes } from "../../../utils/dom/index";
-import { is } from "./scripts";
-import { createFragment, selectNodesWithEq } from "./dom/index";
-import isBlankString from "../../../utils/isBlankString";
-import { HEAD } from "../../../constants/tagName";
-import { DOM_ACTION_APPEND_HTML } from "./initDomActionsModules";
+import { selectNodes } from "../../../utils/dom/index.js";
+import { is } from "./scripts.js";
+import { createFragment, selectNodesWithEq } from "./dom/index.js";
+import isBlankString from "../../../utils/isBlankString.js";
+import { HEAD } from "../../../constants/tagName.js";
+import { DOM_ACTION_APPEND_HTML } from "./initDomActionsModules.js";
 
 const HEAD_TAGS_SELECTOR = "SCRIPT,LINK,STYLE";
 

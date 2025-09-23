@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNamespacedCookieName } from "../utils/index";
-import { AT_QA_MODE, MBOX } from "../constants/legacyCookies";
+import { isNamespacedCookieName } from "../utils/index.js";
+import { AT_QA_MODE, MBOX } from "../constants/legacyCookies.js";
 
 export default ({ orgId, targetMigrationEnabled }) =>
   (name) => {

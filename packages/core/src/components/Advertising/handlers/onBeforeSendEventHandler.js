@@ -4,17 +4,17 @@ Licensed under the Apache License, Version 2.0.
 http://www.apache.org/licenses/LICENSE-2.0
 */
 
-import collectSurferId from "../identities/collectSurferId";
-import { getID5Id } from "../identities/collectID5Id";
-import { getRampId } from "../identities/collectRampId";
+import collectSurferId from "../identities/collectSurferId.js";
+import { getID5Id } from "../identities/collectID5Id.js";
+import { getRampId } from "../identities/collectRampId.js";
 import {
   appendAdvertisingIdQueryToEvent,
   getUrlParams,
   isThrottled,
-} from "../utils/helpers";
-import { SURFER_ID, ID5_ID, RAMP_ID } from "../constants/index";
-import { AUTO, WAIT } from "../../../constants/consentStatus";
-import { CHROME } from "../../../constants/browser";
+} from "../utils/helpers.js";
+import { SURFER_ID, ID5_ID, RAMP_ID } from "../constants/index.js";
+import { AUTO, WAIT } from "../../../constants/consentStatus.js";
+import { CHROME } from "../../../constants/browser.js";
 
 const isAdvertisingDisabled = (advertising) => {
   return ![AUTO, WAIT].includes(

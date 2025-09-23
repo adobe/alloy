@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 /** @import { Storage, StorageCreator } from './types.js' */
 
-import baseNamespace from "../constants/namespace";
+import baseNamespace from "../constants/namespace.js";
 
 /**
  * Creates a storage interface for a specific storage type with namespaced keys.

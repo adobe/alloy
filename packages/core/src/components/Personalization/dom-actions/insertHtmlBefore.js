@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createFragment, getChildNodes, insertBefore } from "./dom/index";
-import { loadImages } from "./images";
-import addNonceToInlineStyleElements from "./addNonceToInlineStyleElements";
+import { createFragment, getChildNodes, insertBefore } from "./dom/index.js";
+import { loadImages } from "./images.js";
+import addNonceToInlineStyleElements from "./addNonceToInlineStyleElements.js";
 import {
   executeInlineScripts,
   executeRemoteScripts,
   getInlineScripts,
   getRemoteScriptsUrls,
-} from "./scripts";
+} from "./scripts.js";
 
 export default (container, html, decorateProposition) => {
   const fragment = createFragment(html);

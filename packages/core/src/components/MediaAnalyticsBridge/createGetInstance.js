@@ -9,17 +9,17 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { EVENT, MEDIA_EVENTS_INTERNAL } from "./constants/constants";
+import { EVENT, MEDIA_EVENTS_INTERNAL } from "./constants/constants.js";
 import {
   isEmptyObject,
   isNil,
   isNonEmptyArray,
   isNumber,
-} from "../../utils/index";
+} from "../../utils/index.js";
 import {
   adsToXdmKeys,
   mediaToXdmKeys,
-} from "./constants/mediaKeysToXdmConverter";
+} from "./constants/mediaKeysToXdmConverter.js";
 
 export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
   let trackerState = null;

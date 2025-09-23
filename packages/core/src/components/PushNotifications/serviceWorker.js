@@ -12,9 +12,9 @@ governing permissions and limitations under the License.
 
 /** @import { ServiceWorkerLogger } from './types.js' */
 
-import serviceWorkerNotificationClickListener from "./helpers/serviceWorkerNotificationClickListener";
-import serviceWorkerPushListener from "./helpers/serviceWorkerPushListener";
-import makeSendServiceWorkerTrackingData from "./request/makeSendServiceWorkerTrackingData";
+import serviceWorkerNotificationClickListener from "./helpers/serviceWorkerNotificationClickListener.js";
+import serviceWorkerPushListener from "./helpers/serviceWorkerPushListener.js";
+import makeSendServiceWorkerTrackingData from "./request/makeSendServiceWorkerTrackingData.js";
 
 /* eslint-disable no-console */
 /* eslint-disable no-underscore-dangle */

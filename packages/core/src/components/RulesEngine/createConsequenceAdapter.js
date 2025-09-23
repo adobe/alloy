@@ -9,9 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import inAppMessageConsequenceAdapter from "./consequenceAdapters/inAppMessageConsequenceAdapter";
-import schemaTypeConsequenceAdapter from "./consequenceAdapters/schemaTypeConsequenceAdapter";
-import { CJM_IN_APP_MESSAGE_TYPE, SCHEMA } from "./constants/index";
+import inAppMessageConsequenceAdapter from "./consequenceAdapters/inAppMessageConsequenceAdapter.js";
+import schemaTypeConsequenceAdapter from "./consequenceAdapters/schemaTypeConsequenceAdapter.js";
+import { CJM_IN_APP_MESSAGE_TYPE, SCHEMA } from "./constants/index.js";
 
 const adapters = {
   [CJM_IN_APP_MESSAGE_TYPE]: inAppMessageConsequenceAdapter,

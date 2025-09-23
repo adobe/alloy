@@ -15,8 +15,8 @@ governing permissions and limitations under the License.
 /** @import { ServiceWorkerLogger } from '../types.js' */
 /** @import { TrackingDataPayload   } from '../types.js' */
 
-import readFromIndexedDb from "../helpers/readFromIndexedDb";
-import uuidv4 from "../../../utils/uuid";
+import readFromIndexedDb from "../helpers/readFromIndexedDb.js";
+import uuidv4 from "../../../utils/uuid.js";
 
 /**
  * @async

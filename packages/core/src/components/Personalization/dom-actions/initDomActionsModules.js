@@ -10,22 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { removeNode } from "../../../utils/dom/index";
-import setHtml from "./setHtml";
-import prependHtml from "./prependHtml";
-import { createAction } from "./action";
-import setText from "./setText";
-import setAttributes from "./setAttributes";
-import swapImage from "./swapImage";
-import setStyles from "./setStyles";
-import move from "./move";
-import rearrangeChildren from "./rearrangeChildren";
-import insertHtmlAfter from "./insertHtmlAfter";
-import insertHtmlBefore from "./insertHtmlBefore";
-import replaceHtml from "./replaceHtml";
-import appendHtml from "./appendHtml";
-import collectInteractions from "./collectInteractions";
-import resize from "./resize";
+import { removeNode } from "../../../utils/dom/index.js";
+import setHtml from "./setHtml.js";
+import prependHtml from "./prependHtml.js";
+import { createAction } from "./action.js";
+import setText from "./setText.js";
+import setAttributes from "./setAttributes.js";
+import swapImage from "./swapImage.js";
+import setStyles from "./setStyles.js";
+import move from "./move.js";
+import rearrangeChildren from "./rearrangeChildren.js";
+import insertHtmlAfter from "./insertHtmlAfter.js";
+import insertHtmlBefore from "./insertHtmlBefore.js";
+import replaceHtml from "./replaceHtml.js";
+import appendHtml from "./appendHtml.js";
+import collectInteractions from "./collectInteractions.js";
+import resize from "./resize.js";
 
 export const DOM_ACTION_SET_HTML = "setHtml";
 export const DOM_ACTION_CUSTOM_CODE = "customCode";

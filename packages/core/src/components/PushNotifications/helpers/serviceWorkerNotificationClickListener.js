@@ -15,7 +15,7 @@ governing permissions and limitations under the License.
 
 /** @import { ServiceWorkerLogger } from '../types.js' */
 
-import makeSendServiceWorkerTrackingData from "../request/makeSendServiceWorkerTrackingData";
+import makeSendServiceWorkerTrackingData from "../request/makeSendServiceWorkerTrackingData.js";
 
 /**
  * @param {string} type

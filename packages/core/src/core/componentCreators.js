@@ -14,13 +14,13 @@ governing permissions and limitations under the License.
 // The exports names must have the camel case format. If you need to add a required
 // module, you should add it to the core/requiredComponentCreators.js file.
 
-export { default as activityCollector } from "../components/ActivityCollector/index";
-export { default as audiences } from "../components/Audiences/index";
-export { default as consent } from "../components/Consent/index";
-export { default as eventMerge } from "../components/EventMerge/index";
-export { default as mediaAnalyticsBridge } from "../components/MediaAnalyticsBridge/index";
-export { default as personalization } from "../components/Personalization/index";
-export { default as rulesEngine } from "../components/RulesEngine/index";
-export { default as streamingMedia } from "../components/StreamingMedia/index";
-export { default as advertising } from "../components/Advertising/index";
-export { default as pushNotifications } from "../components/PushNotifications/index";
+export { default as activityCollector } from "../components/ActivityCollector/index.js";
+export { default as audiences } from "../components/Audiences/index.js";
+export { default as consent } from "../components/Consent/index.js";
+export { default as eventMerge } from "../components/EventMerge/index.js";
+export { default as mediaAnalyticsBridge } from "../components/MediaAnalyticsBridge/index.js";
+export { default as personalization } from "../components/Personalization/index.js";
+export { default as rulesEngine } from "../components/RulesEngine/index.js";
+export { default as streamingMedia } from "../components/StreamingMedia/index.js";
+export { default as advertising } from "../components/Advertising/index.js";
+export { default as pushNotifications } from "../components/PushNotifications/index.js";

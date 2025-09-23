@@ -10,17 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as createFragment } from "./createFragment";
-export { selectNodesWithEq } from "./selectNodesWithEq";
-export { default as getElementById } from "./getElementById";
-export { default as setAttribute } from "./setAttribute";
-export { default as getAttribute } from "./getAttribute";
-export { default as removeAttribute } from "./removeAttribute";
-export { default as setStyle } from "./setStyle";
-export { default as insertAfter } from "./insertAfter";
-export { default as insertBefore } from "./insertBefore";
-export { default as getNextSibling } from "./getNextSibling";
-export { default as getChildren } from "./getChildren";
-export { default as getChildNodes } from "./getChildNodes";
-export { default as getFirstChild } from "./getFirstChild";
-export { default as getNonce } from "./getNonce";
+export { default as createFragment } from "./createFragment.js";
+export { selectNodesWithEq } from "./selectNodesWithEq.js";
+export { default as getElementById } from "./getElementById.js";
+export { default as setAttribute } from "./setAttribute.js";
+export { default as getAttribute } from "./getAttribute.js";
+export { default as removeAttribute } from "./removeAttribute.js";
+export { default as setStyle } from "./setStyle.js";
+export { default as insertAfter } from "./insertAfter.js";
+export { default as insertBefore } from "./insertBefore.js";
+export { default as getNextSibling } from "./getNextSibling.js";
+export { default as getChildren } from "./getChildren.js";
+export { default as getChildNodes } from "./getChildNodes.js";
+export { default as getFirstChild } from "./getFirstChild.js";
+export { default as getNonce } from "./getNonce.js";

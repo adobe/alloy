@@ -14,7 +14,7 @@ governing permissions and limitations under the License.
 /** @import { Logger } from '../types.js' */
 /** @import { CookieJar } from '../../utils/types.js' */
 
-import createDecodeKndctrCookie from "../../utils/createDecodeKndctrCookie";
+import createDecodeKndctrCookie from "../../utils/createDecodeKndctrCookie.js";
 
 /**
  * Creates an identity management service for handling ECID (Experience Cloud ID) resolution and tracking.

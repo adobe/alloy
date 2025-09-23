@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import PAGE_WIDE_SCOPE from "../constants/pageWideScope";
-import { createCallbackAggregator, noop } from "../utils/index";
-import { createRequestParams } from "../utils/request/index";
+import PAGE_WIDE_SCOPE from "../constants/pageWideScope.js";
+import { createCallbackAggregator, noop } from "../utils/index.js";
+import { createRequestParams } from "../utils/request/index.js";
 
 const EVENT_CANCELLATION_MESSAGE =
   "Event was canceled because the onBeforeEventSend callback returned false.";

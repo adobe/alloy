@@ -12,8 +12,11 @@ governing permissions and limitations under the License.
 
 /** @import { ServiceWorkerLogger } from '../types.js' */
 
-import { getFromIndexedDbStore, openIndexedDb } from "../../../utils/indexedDb";
-import { DB_NAME, DB_VERSION, STORE_NAME, INDEX_KEY } from "./constants";
+import {
+  getFromIndexedDbStore,
+  openIndexedDb,
+} from "../../../utils/indexedDb.js";
+import { DB_NAME, DB_VERSION, STORE_NAME, INDEX_KEY } from "./constants.js";
 
 /**
  * @param {ServiceWorkerLogger} logger

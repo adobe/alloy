@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { PERSONALIZATION_DECISIONS_HANDLE } from "../../constants/decisionProvider";
-import flattenObject from "../../utils/flattenObject";
+import { PERSONALIZATION_DECISIONS_HANDLE } from "../../constants/decisionProvider.js";
+import flattenObject from "../../utils/flattenObject.js";
 
 export default ({
   renderDecisions,

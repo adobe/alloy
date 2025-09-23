@@ -9,13 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { getAttribute, setAttribute } from "../dom-actions/dom/index";
-import { noop } from "../../../utils/index";
-import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules";
+import { getAttribute, setAttribute } from "../dom-actions/dom/index.js";
+import { noop } from "../../../utils/index.js";
+import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules.js";
 import {
   ALWAYS,
   DECORATED_ELEMENTS_ONLY,
-} from "../../../constants/propositionInteractionType";
+} from "../../../constants/propositionInteractionType.js";
 
 export const INTERACT_ID_DATA_ATTRIBUTE = "data-aep-interact-id";
 export const CLICK_LABEL_DATA_ATTRIBUTE = "data-aep-click-label";

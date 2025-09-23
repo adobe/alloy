@@ -15,8 +15,8 @@ import {
   WEBAPP,
   SURFACE_TYPE_DELIMITER,
   FRAGMENT_DELIMITER,
-} from "../constants/surface";
-import { isNil, isNonEmptyString } from "../../../utils/index";
+} from "../constants/surface.js";
+import { isNil, isNonEmptyString } from "../../../utils/index.js";
 
 const SURFACE_REGEX = /^(\w+):\/\/([^/#]+)(\/[^#]*)?(#.*)?$/;
 const AUTHORITY_REGEX =
