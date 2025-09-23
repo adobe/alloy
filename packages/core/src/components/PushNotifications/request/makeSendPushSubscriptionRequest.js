@@ -16,10 +16,11 @@ governing permissions and limitations under the License.
 /** @import { ConsentManager } from '../../../core/consent/types.js' */
 /** @import { EdgeRequestExecutor } from '../../../core/edgeNetwork/types.js' */
 
-import { sortObjectKeysRecursively } from "../../../utils/index";
+import { sortObjectKeysRecursively } from "../../../utils";
 import getPushSubscriptionDetails from "../helpers/getPushSubscriptionDetails";
 import createSendPushSubscriptionRequest from "./createSendPushSubscriptionRequest";
 import createSendPushSubscriptionPayload from "./createSendPushSubscriptionPayload";
+import saveToIndexedDb from "../helpers/saveToIndexedDb";
 
 const SUBSCRIPTION_DETAILS = "subscriptionDetails";
 
@@ -33,7 +34,7 @@ const SUBSCRIPTION_DETAILS = "subscriptionDetails";
  * @function
  *
  * @param {Object} options
- * @param {{vapidPublicKey: string}} options.config
+ * @param {{vapidPublicKey: string, appId: string}} options.config
  * @param {Storage} options.storage
  * @param {Logger} options.logger
  * @param {EventManager} options.eventManager
@@ -45,7 +46,7 @@ const SUBSCRIPTION_DETAILS = "subscriptionDetails";
  * @returns {Promise<void>}
  */
 export default async ({
-  config: { vapidPublicKey },
+  config: { vapidPublicKey, appId },
   storage,
   logger,
   sendEdgeNetworkRequest,
@@ -82,7 +83,7 @@ export default async ({
     eventManager,
     ecid,
     serializedPushSubscriptionDetails,
-    window,
+    appId,
   });
 
   const request = createSendPushSubscriptionRequest({
@@ -91,4 +92,6 @@ export default async ({
 
   await consent.awaitConsent();
   await sendEdgeNetworkRequest({ request });
+
+  await saveToIndexedDb({ ecid }, logger);
 };

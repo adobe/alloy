@@ -14,7 +14,7 @@ export const registerServiceWorker = async () => {
     }
 
     const registration = await navigator.serviceWorker.register(
-      "/pushNotificationsServiceWorker.js",
+      "/alloyPushNotificationsServiceWorker.js",
       { scope: "/pushNotifications" },
     );
 
@@ -36,7 +36,7 @@ export const unregisterServiceWorker = async () => {
     }
 
     const registration = await navigator.serviceWorker.getRegistration(
-      "/pushNotificationsServiceWorker.js",
+      "/alloyPushNotificationsServiceWorker.js",
     );
     if (registration) {
       const r = await registration.unregister();

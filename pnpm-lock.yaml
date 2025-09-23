@@ -57,6 +57,9 @@ importers:
         specifier: ^11.1.0
         version: 11.1.0
     devDependencies:
+      '@adobe/alloy':
+        specifier: 2.30.0-beta.0
+        version: 'link:'
       '@babel/cli':
         specifier: ^7.28.3
         version: 7.28.3(@babel/core@7.28.4)

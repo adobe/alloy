@@ -9,19 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-console.log("HELLO FROM PUSH NOTIFICATIONS SERVICE WORKER");
 
-// Make sure you have basic event listeners
-self.addEventListener("install", (event) => {
-  console.log("PUSH NOTIFICATIONS SERVICE WORKER INSTALLED");
-  self.skipWaiting();
-});
-
-self.addEventListener("activate", (event) => {
-  console.log("PUSH NOTIFICATIONS SERVICE WORKER ACTIVATED");
-  event.waitUntil(self.clients.claim());
-});
-
-self.addEventListener("push", (event) => {
-  console.log("Push received:", event);
-});
+export const DB_NAME = "alloyPushNotifications";
+export const DB_VERSION = 1;
+export const STORE_NAME = "config";
+export const INDEX_KEY = "alloyConfig";
