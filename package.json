@@ -23,8 +23,8 @@
   },
   "scripts": {
     "clean": "rimraf dist distTest libEs5 libEs6 types",
-    "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{sandboxes/**/src,packages/**/src,test,scripts}/**/*.{js,cjs,mjs,jsx}\"",
-    "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandboxes/**/src,packages/**/src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
+    "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/src,test,scripts}/**/*.{js,cjs,mjs,jsx}\"",
+    "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
     "types": "tsc",
     "test": "pnpm exec playwright install chromium && vitest run && pnpm run test:scripts",
     "test:coverage": "rimraf coverage && pnpm exec playwright install chromium && vitest run --coverage",
@@ -56,13 +56,13 @@
     "./*.{cjs,mjs,js,jsx}": [
       "eslint --cache --fix"
     ],
-    "./{packages/core/src,test,scripts}/**/*.{cjs,mjs,js,jsx}": [
+    "./{packages/*/src,test,scripts}/**/*.{cjs,mjs,js,jsx}": [
       "eslint --cache --fix"
     ],
     "./*.{html,js,cjs,mjs,jsx}": [
       "prettier --write"
     ],
-    "./{sandboxes/browser,packages/core/src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}": [
+    "./{sandboxes/browser,packages/*/src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}": [
       "prettier --write"
     ]
   },
