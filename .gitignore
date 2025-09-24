@@ -3,6 +3,7 @@ dist
 coverage
 sandbox/public/alloy.js
 sandbox/public/alloy.js.map
+sandbox/public/alloyServiceWorker.js
 sandbox/build
 .sonarlint
 .env

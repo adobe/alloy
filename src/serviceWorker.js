@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { ServiceWorkerLogger } from './types.js' */
+/** @import { ServiceWorkerLogger } from './components/PushNotifications/types.js' */
 
-import serviceWorkerNotificationClickListener from "./helpers/serviceWorkerNotificationClickListener.js";
-import serviceWorkerPushListener from "./helpers/serviceWorkerPushListener.js";
-import makeSendServiceWorkerTrackingData from "./request/makeSendServiceWorkerTrackingData.js";
+import serviceWorkerNotificationClickListener from "./components/PushNotifications/helpers/serviceWorkerNotificationClickListener.js";
+import serviceWorkerPushListener from "./components/PushNotifications/helpers/serviceWorkerPushListener.js";
+import makeSendServiceWorkerTrackingData from "./components/PushNotifications/request/makeSendServiceWorkerTrackingData.js";
 
 /* eslint-disable no-console */
 /* eslint-disable no-underscore-dangle */
