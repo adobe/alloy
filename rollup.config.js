@@ -131,6 +131,10 @@ const NPM_PACKAGE_LOCAL = "NPM_PACKAGE_LOCAL";
 const NPM_PACKAGE_PROD = "NPM_PACKAGE_PROD";
 // build the standalone distrobution, but exclude some (specified) modules
 const CUSTOM_BUILD = "CUSTOM_BUILD";
+// build the service worker (used for push notifications feature).
+const SERVICE_WORKER = "SERVICE_WORKER";
+// build the service worker (used for push notifications feature).
+const SANDBOX_SERVICE_WORKER = "SANDBOX_SERVICE_WORKER";
 // Add "_MIN" to the end of the option name to build the minified version
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -144,13 +148,18 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
       mainFields: ["module", "main", "browser"],
     }),
     commonjs(),
-    babel({
-      envName: "rollup",
-      babelHelpers: "bundled",
-      configFile: path.resolve(dirname, "babel.config.js"),
-      plugins: babelPlugins,
-    }),
   ];
+
+  if (variant !== SERVICE_WORKER && variant !== SANDBOX_SERVICE_WORKER) {
+    plugins.push(
+      babel({
+        envName: "rollup",
+        babelHelpers: "bundled",
+        configFile: path.resolve(dirname, "babel.config.js"),
+        plugins: babelPlugins,
+      }),
+    );
+  }
 
   if (INCLUDE_BUNDLESIZE) {
     plugins.push(
@@ -178,7 +187,11 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
       plugins.push(terser());
     }
   }
-  if (variant === STANDALONE || variant === CUSTOM_BUILD) {
+  if (
+    variant === STANDALONE ||
+    variant === CUSTOM_BUILD ||
+    variant === SERVICE_WORKER
+  ) {
     plugins.push(
       license({
         cwd: dirname,
@@ -204,6 +217,22 @@ export const buildConfig = ({
   const plugins = buildPlugins({ variant, minify, babelPlugins });
   const minifiedExtension = minify ? ".min" : "";
 
+  if (variant === SERVICE_WORKER || variant === SANDBOX_SERVICE_WORKER) {
+    const destDirectory =
+      variant === SANDBOX_SERVICE_WORKER ? "sandbox/public/" : "dist/";
+    return {
+      input: `${dirname}/src/serviceWorker.js`,
+      output: [
+        {
+          file:
+            file || `${destDirectory}alloyServiceWorker${minifiedExtension}.js`,
+          format: "es",
+        },
+      ],
+      plugins,
+    };
+  }
+
   if (variant === BASE_CODE) {
     return {
       input: "src/baseCode.js",
@@ -217,13 +246,13 @@ export const buildConfig = ({
       plugins,
     };
   }
+
   if (
     variant === STANDALONE ||
     variant === SANDBOX ||
     variant === CUSTOM_BUILD
   ) {
     const destDirectory = variant === SANDBOX ? "sandbox/public/" : "dist/";
-
     return {
       input,
       output: [
@@ -269,5 +298,7 @@ addConfig(STANDALONE);
 addConfig(SANDBOX);
 addConfig(NPM_PACKAGE_LOCAL);
 addConfig(NPM_PACKAGE_PROD);
+addConfig(SERVICE_WORKER);
+addConfig(SANDBOX_SERVICE_WORKER);
 
 export default config;
