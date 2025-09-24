@@ -19,7 +19,7 @@ jobs:
     name: Fetch releases
     runs-on: ubuntu-latest
     outputs:
-      matrixInput: ${{ steps.list-tags.outputs.matrixInput }}
+      MATRIX_INPUT: ${{ steps.retrieve-tags.outputs.MATRIX_INPUT }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -45,6 +45,7 @@ jobs:
           path: .sauceignore
           include-hidden-files: true
       - name: Retrieve tags
+        id: retrieve-tags
         run: |-
           TAGS_TO_TEST=$(node -e "import('./scripts/getTestingTags.js').then(m => m.default().then(tags => console.log(JSON.stringify(tags))))")
           echo "Tags to test: $TAGS_TO_TEST"
