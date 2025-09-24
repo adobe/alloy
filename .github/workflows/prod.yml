@@ -49,7 +49,7 @@ jobs:
           TAGS_TO_TEST=$(node -e "import('./scripts/getTestingTags.js').then(m => m.default().then(tags => console.log(JSON.stringify(tags))))")
           echo "Tags to test: $TAGS_TO_TEST"
           MATRIX_INPUT="{\"include\":$TAGS_TO_TEST}"
-          echo "MATRIX_INPUT='$MATRIX_INPUT'" >> $GITHUB_OUTPUT
+          echo "MATRIX_INPUT=$MATRIX_INPUT" >> "$GITHUB_OUTPUT"
 
   alloy-prod-e2e-safari:
     name: Safari
