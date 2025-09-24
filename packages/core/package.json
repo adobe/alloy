@@ -9,6 +9,9 @@
     "url": "git+https://github.com/adobe/alloy.git",
     "directory": "packages/core"
   },
+  "exports": {
+    ".": "./src/index.js"
+  },
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
   "dependencies": {

@@ -17,10 +17,4 @@ export default defineConfig({
     outDir: "build",
     sourcemap: true,
   },
-  resolve: {
-    alias: {
-      // Resolve workspace package to root directory for compatibility layers
-      "@adobe/alloy": path.resolve(dirname, "../../"),
-    },
-  },
 });
