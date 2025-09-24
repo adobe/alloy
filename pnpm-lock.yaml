@@ -159,6 +159,9 @@ importers:
       testcafe:
         specifier: ^3.7.2
         version: 3.7.2
+      testcafe-browser-provider-playwright:
+        specifier: ^1.1.0
+        version: 1.1.0(playwright@1.55.0)
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
@@ -4029,6 +4032,11 @@ packages:
   test-exclude@7.0.1:
     resolution: {integrity: sha512-pFYqmTw68LXVjeWJMST4+borgQP2AyMNbg1BpZh9LbyhUeNkeaPF9gzfPGUAnSMV3qPYdWUwDIjjCLiSDOl7vg==}
     engines: {node: '>=18'}
+
+  testcafe-browser-provider-playwright@1.1.0:
+    resolution: {integrity: sha512-uGOiurBBmQLmcK296p4eD49Lw+zktllZCKNnWKnj8D5tM1PUquZk+GiITiv/9QUPxycw4AU7ENuyv5z0Wiipmw==}
+    peerDependencies:
+      playwright: 1.x
 
   testcafe-browser-tools@2.0.26:
     resolution: {integrity: sha512-nTKSJhBzn9BmnOs0xVzXMu8dN2Gu13Ca3x3SJr/zF6ZdKjXO82JlbHu55dt5MFoWjzAQmwlqBkSxPaYicsTgUw==}
@@ -8639,6 +8647,10 @@ snapshots:
       '@istanbuljs/schema': 0.1.3
       glob: 10.4.5
       minimatch: 9.0.5
+
+  testcafe-browser-provider-playwright@1.1.0(playwright@1.55.0):
+    dependencies:
+      playwright: 1.55.0
 
   testcafe-browser-tools@2.0.26:
     dependencies:
