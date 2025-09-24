@@ -1,4 +1,4 @@
-name: Alloy Prod
+name: Production regression tests
 on:
   schedule:
     - cron: "45 20 * * 1-6"
