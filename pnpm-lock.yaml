@@ -58,8 +58,8 @@ importers:
         version: 11.1.0
     devDependencies:
       '@adobe/alloy':
-        specifier: 2.30.0-beta.3
-        version: 'link:'
+        specifier: 2.30.0
+        version: 2.30.0(@types/babel__core@7.20.5)(@types/node@24.5.1)(@vitest/browser@3.2.4)(picomatch@4.0.3)(vitest@3.2.4)
       '@babel/cli':
         specifier: ^7.28.3
         version: 7.28.3(@babel/core@7.28.4)
@@ -232,6 +232,10 @@ packages:
 
   '@adobe/aep-rules-engine@3.1.1':
     resolution: {integrity: sha512-YeFDDSEM4wjwTNM4drKTIbYvfSdYS3DmeOgb1SxZfSXTcVg8vdxcd5blE2wKO42Qa4KUJK+ziK7ABvbHoO7T8Q==}
+
+  '@adobe/alloy@2.30.0':
+    resolution: {integrity: sha512-A2MFFUB2aurYdGt12q3Vov263Gu2KSvMO+CgWxufsK/W7dQIaJfUuu02qQrxtul/Ar7JK8FsIwNWR/ct9fjJjA==}
+    hasBin: true
 
   '@adobe/css-tools@4.4.4':
     resolution: {integrity: sha512-Elp+iwUx5rN5+Y8xLt5/GRoG20WGoDCQ/1Fb+1LiGtvwbDavuSk0jhD/eZdckHAuzcDzccnkv+rEjyWfRx18gg==}
@@ -4486,7 +4490,8 @@ snapshots:
 
   '@adobe/css-tools@4.4.4': {}
 
-  '@adobe/reactor-cookie@1.1.0':
+  '@adobe/alloy@2.30.0(@types/babel__core@7.20.5)(@types/node@24.5.1)(@vitest/browser@3.2.4)(picomatch@4.0.3)(vitest@3.2.4)':
+
     dependencies:
       js-cookie: 2.2.1
 
