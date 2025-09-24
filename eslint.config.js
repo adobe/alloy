@@ -16,7 +16,6 @@ import compatPlugin from "eslint-plugin-compat";
 import importPlugin from "eslint-plugin-import";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import react from "eslint-plugin-react";
-// eslint-disable-next-line import/no-unresolved -- eslint parses this a file, but it's a depenedency
 import { defineConfig, globalIgnores } from "eslint/config";
 import { glob } from "glob";
 import globals from "globals";
@@ -68,6 +67,10 @@ export default defineConfig([
       "no-await-in-loop": "error",
       "default-case": "error",
       "prefer-object-spread": "error", // disallow certain syntax forms
+      "import/no-unresolved": [
+        "error",
+        { ignore: ["eslint/config", "@adobe/alloy-core"] },
+      ],
       // https://eslint.org/docs/rules/no-restricted-syntax
       "no-restricted-syntax": [
         "error",
