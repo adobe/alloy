@@ -211,7 +211,7 @@ export const buildConfig = ({
   variant = STANDALONE,
   minify = false,
   babelPlugins = [],
-  input = `${dirname}/src/standalone.js`,
+  input = `${dirname}/packages/core/src/standalone.js`,
   file,
 }) => {
   const plugins = buildPlugins({ variant, minify, babelPlugins });
@@ -219,9 +219,11 @@ export const buildConfig = ({
 
   if (variant === SERVICE_WORKER || variant === SANDBOX_SERVICE_WORKER) {
     const destDirectory =
-      variant === SANDBOX_SERVICE_WORKER ? "sandbox/public/" : "dist/";
+      variant === SANDBOX_SERVICE_WORKER
+        ? "sandboxes/browser/public/"
+        : "dist/";
     return {
-      input: `${dirname}/src/serviceWorker.js`,
+      input: `${dirname}/packages/core/src/serviceWorker.js`,
       output: [
         {
           file:
@@ -235,7 +237,7 @@ export const buildConfig = ({
 
   if (variant === BASE_CODE) {
     return {
-      input: "src/baseCode.js",
+      input: `${dirname}/packages/core/src/baseCode.js`,
       output: [
         {
           file: `distTest/baseCode${minifiedExtension}.js`,
@@ -252,7 +254,9 @@ export const buildConfig = ({
     variant === SANDBOX ||
     variant === CUSTOM_BUILD
   ) {
-    const destDirectory = variant === SANDBOX ? "sandbox/public/" : "dist/";
+    const destDirectory =
+      variant === SANDBOX ? "sandboxes/browser/public/" : "dist/";
+
     return {
       input,
       output: [
@@ -271,7 +275,7 @@ export const buildConfig = ({
     variant === NPM_PACKAGE_LOCAL ? "npmPackageLocal" : "npmPackageProd";
 
   return {
-    input: `test/functional/helpers/${filename}.js`,
+    input: `packages/core/test/functional/helpers/${filename}.js`,
     output: [
       {
         file: `distTest/${filename}${minifiedExtension}.js`,

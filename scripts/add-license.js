@@ -24,7 +24,7 @@ const SOURCE_TEMPLATE = "source-header.handlebars";
 const GIT_DELETED = "Deleted";
 const SOURCE_FILE_EXTENSIONS = ["js", "ts", "cjs", "mjs"];
 const IGNORE_PATTERNS = [
-  /\/sandbox\//gi,
+  /\/sandboxes\//gi,
   /\/scripts\//gi,
   /launch.+\.js/gi,
   /at\.js/gi,

@@ -23,8 +23,8 @@
   },
   "scripts": {
     "clean": "rimraf dist distTest libEs5 libEs6 types",
-    "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{src,test,scripts,sandbox}/**/*.{js,cjs,mjs,jsx}\"",
-    "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandbox,src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
+    "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/src,test,scripts}/**/*.{js,cjs,mjs,jsx}\"",
+    "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
     "types": "tsc",
     "test": "pnpm exec playwright install chromium && vitest run && pnpm run test:scripts",
     "test:coverage": "rimraf coverage && pnpm exec playwright install chromium && vitest run --coverage",
@@ -36,19 +36,19 @@
     "test:integration:debug": "pnpm exec playwright install chromium && vitest --no-file-parallelism --project=integration --browser=chromium --browser.provider=playwright --browser.headless=false",
     "test:integration:watch": "pnpm exec playwright install chromium && vitest --project=integration",
     "test:integration:coverage": "pnpm exec playwright install chromium && vitest run --coverage --project=integration",
-    "test:functional": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome",
+    "test:functional": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chromium",
     "test:functional:custom": "node scripts/helpers/runFunctionalTests.js",
-    "test:functional:watch": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ./scripts/watchFunctionalTests.js --browsers chrome",
-    "test:functional:debug": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe --inspect-brk chrome",
+    "test:functional:watch": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ./scripts/watchFunctionalTests.js --browsers chromium",
+    "test:functional:debug": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe --inspect-brk chromium",
     "test:functional:build:int": "rollup -c --environment BASE_CODE_MIN,STANDALONE,NPM_PACKAGE_LOCAL",
     "test:functional:build:prod": "rollup -c --environment BASE_CODE_MIN,NPM_PACKAGE_PROD",
     "test:scripts": "vitest run --config=./scripts/specs/vitest.config.js",
-    "dev": "concurrently --names build,sandbox \"rollup -c -w --environment SANDBOX,SANDBOX_SERVICE_WORKER\" \"cd sandbox && export REACT_APP_NONCE=321 && pnpm start\"",
+    "dev": "concurrently --names build,sandbox \"rollup -c -w --environment SANDBOX,SANDBOX_SERVICE_WORKER\" \"REACT_APP_NONCE=123 pnpm run --filter @adobe/alloy-sandbox-browser start\"",
     "build": "pnpm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,SERVICE_WORKER,SERVICE_WORKER_MIN,BUNDLESIZE && echo \"Base Code:\" && cat distTest/baseCode.min.js",
     "build:watch": "pnpm run clean && rollup -c --watch --environment BASE_CODE_MIN,STANDALONE",
     "build:custom": "node scripts/alloyBuilder.js",
     "prepare": "husky",
-    "prepack": "pnpm run clean && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6 && pnpm run types",
+    "prepack": "pnpm run clean && babel packages/core/src -d libEs5 --env-name npmEs5 && babel packages/core/src -d libEs6 --env-name npmEs6 && echo '{\"type\":\"commonjs\"}' > libEs5/package.json && echo '{\"type\":\"module\"}' > libEs6/package.json && pnpm run types",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
     "add-license": "./scripts/add-license.js"
   },
@@ -56,13 +56,13 @@
     "./*.{cjs,mjs,js,jsx}": [
       "eslint --cache --fix"
     ],
-    "./{src,test,scripts}/**/*.{cjs,mjs,js,jsx}": [
+    "./{packages/*/src,test,scripts}/**/*.{cjs,mjs,js,jsx}": [
       "eslint --cache --fix"
     ],
     "./*.{html,js,cjs,mjs,jsx}": [
       "prettier --write"
     ],
-    "./{sandbox,src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}": [
+    "./{sandboxes/browser,packages/*/src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}": [
       "prettier --write"
     ]
   },
@@ -125,6 +125,7 @@
     "semver": "^7.7.2",
     "staged-git-files": "^1.3.0",
     "testcafe": "^3.7.2",
+    "testcafe-browser-provider-playwright": "^1.1.0",
     "typescript": "^5.9.2",
     "url-exists-nodejs": "^0.2.4",
     "vitest": "^3.2.4"

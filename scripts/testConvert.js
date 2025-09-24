@@ -48,18 +48,18 @@ exec("mkdir -p ./vtest/unit");
 // exec("rm -rf ./vtest/unit/*");
 //
 if (!fs.existsSync("./vtest/unit/constants")) {
-  exec("cp -r ./test/unit/constants ./vtest/unit/constants");
+  exec("cp -r ./packages/core/test/unit/constants ./vtest/unit/constants");
 }
 
 if (!fs.existsSync("./vtest/unit/helpers")) {
-  exec("cp -r ./test/unit/helpers ./vtest/unit/helpers");
+  exec("cp -r ./packages/core/test/unit/helpers ./vtest/unit/helpers");
 }
 exec("mkdir -p ./vtest/unit/specs");
 
 const t = babel.types;
 const f = [];
 getFilesRecursively("./vtest/unit/helpers", f);
-getFilesRecursively("./test/unit/specs", f);
+getFilesRecursively("./packages/core/test/unit/specs", f);
 
 f.sort((a, b) => {
   const z = [
@@ -83,7 +83,9 @@ f.sort((a, b) => {
 
 for (let fileIndex = start; fileIndex < f.length; fileIndex += 1) {
   const filePath = f[fileIndex];
-  const newDir = path.dirname(filePath).replace(/^test\/unit/, "vtest/unit");
+  const newDir = path
+    .dirname(filePath)
+    .replace(/^packages\/core\/test\/unit/, "vtest/unit");
   const newFilePath = path.join(newDir, path.basename(filePath));
 
   if (!fs.existsSync(newFilePath)) {

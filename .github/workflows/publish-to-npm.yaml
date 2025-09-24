@@ -17,7 +17,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: "Publish to NPM"
-        uses: JS-DevTools/npm-publish@v3
-        with:
-          token: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
-          access: "public"
+        run: pnpm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}

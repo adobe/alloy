@@ -1,0 +1,27 @@
+{
+  "name": "@adobe/alloy-core",
+  "version": "2.29.0-beta.1",
+  "description": "Adobe Experience Platform Web SDK Core (Internal Package)",
+  "type": "module",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adobe/alloy.git",
+    "directory": "packages/core"
+  },
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "author": "Adobe Inc.",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@adobe/aep-rules-engine": "^3.1.1",
+    "@adobe/reactor-cookie": "^1.1.0",
+    "@adobe/reactor-load-script": "^1.1.1",
+    "@adobe/reactor-object-assign": "^2.0.0",
+    "@adobe/reactor-query-string": "^2.0.0",
+    "css.escape": "^1.5.1",
+    "js-cookie": "3.0.5",
+    "uuid": "^11.1.0"
+  }
+}

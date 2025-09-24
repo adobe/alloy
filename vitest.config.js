@@ -19,7 +19,7 @@ export default defineConfig({
         extends: false,
         test: {
           name: "unit",
-          include: ["test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
+          include: ["packages/core/test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
           isolate: false,
           browser: {
             provider: "playwright",
@@ -38,7 +38,9 @@ export default defineConfig({
         extends: false,
         test: {
           name: "integration",
-          include: ["test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
+          include: [
+            "packages/core/test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)",
+          ],
           isolate: false,
           browser: {
             provider: "playwright",
@@ -56,7 +58,7 @@ export default defineConfig({
     ],
 
     coverage: {
-      include: ["src/**/*"],
+      include: ["packages/core/src/**/*"],
       reporter: ["lcov", "html", "text"],
     },
   },
