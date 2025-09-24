@@ -48,7 +48,8 @@ jobs:
         run: |-
           TAGS_TO_TEST=$(node -e "import('./scripts/getTestingTags.js').then(m => m.default().then(tags => console.log(JSON.stringify(tags))))")
           echo "Tags to test: $TAGS_TO_TEST"
-          echo "matrixInput={"include":$TAGS_TO_TEST}" >> $GITHUB_OUTPUT
+          MATRIX_INPUT="{\"include\":$TAGS_TO_TEST}"
+          echo "MATRIX_INPUT='$MATRIX_INPUT'" >> $GITHUB_OUTPUT
 
   alloy-prod-e2e-safari:
     name: Safari
@@ -58,7 +59,7 @@ jobs:
     strategy:
       max-parallel: 10
       fail-fast: false
-      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
+      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.MATRIX_INPUT) }}
     continue-on-error: true
     steps:
       - name: Checkout code
