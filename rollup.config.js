@@ -223,7 +223,7 @@ export const buildConfig = ({
         ? "sandboxes/browser/public/"
         : "dist/";
     return {
-      input: `${dirname}/src/serviceWorker.js`,
+      input: `${dirname}/packages/core/src/serviceWorker.js`,
       output: [
         {
           file:
@@ -237,7 +237,7 @@ export const buildConfig = ({
 
   if (variant === BASE_CODE) {
     return {
-      input: "packages/core/src/baseCode.js",
+      input: `${dirname}/packages/core/src/baseCode.js`,
       output: [
         {
           file: `distTest/baseCode${minifiedExtension}.js`,
