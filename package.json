@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy",
-  "version": "2.30.0-beta.0",
+  "version": "2.30.0-beta.3",
   "description": "Adobe Experience Platform Web SDK",
   "type": "module",
   "main": "libEs5/index.js",
@@ -43,8 +43,8 @@
     "test:functional:build:int": "rollup -c --environment BASE_CODE_MIN,STANDALONE,NPM_PACKAGE_LOCAL",
     "test:functional:build:prod": "rollup -c --environment BASE_CODE_MIN,NPM_PACKAGE_PROD",
     "test:scripts": "vitest run --config=./scripts/specs/vitest.config.js",
-    "dev": "concurrently --names build,sandbox \"rollup -c -w --environment SANDBOX\" \"cd sandboxes/browser && export REACT_APP_NONCE=321 && pnpm start\"",
-    "build": "pnpm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,BUNDLESIZE && echo \"Base Code:\" && cat distTest/baseCode.min.js",
+    "dev": "concurrently --names build,sandbox \"rollup -c -w --environment SANDBOX,SANDBOX_SERVICE_WORKER\" \"REACT_APP_NONCE=123 pnpm run --filter @adobe/alloy-sandbox-browser start\"",
+    "build": "pnpm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,SERVICE_WORKER,SERVICE_WORKER_MIN,BUNDLESIZE && echo \"Base Code:\" && cat distTest/baseCode.min.js",
     "build:watch": "pnpm run clean && rollup -c --watch --environment BASE_CODE_MIN,STANDALONE",
     "build:custom": "node scripts/alloyBuilder.js",
     "prepare": "husky",
@@ -91,7 +91,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@adobe/alloy": "2.30.0-beta.0",
+    "@adobe/alloy": "2.30.0-beta.3",
     "@babel/cli": "^7.28.3",
     "@babel/plugin-transform-modules-commonjs": "^7.27.1",
     "@eslint/js": "^9.35.0",

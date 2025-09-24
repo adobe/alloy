@@ -1,4 +1,4 @@
-name: Alloy Prod
+name: Production regression tests
 on:
   schedule:
     - cron: "45 20 * * 1-6"
@@ -19,7 +19,7 @@ jobs:
     name: Fetch releases
     runs-on: ubuntu-latest
     outputs:
-      matrixInput: ${{ steps.list-tags.outputs.matrixInput }}
+      MATRIX_INPUT: ${{ steps.retrieve-tags.outputs.MATRIX_INPUT }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,8 +31,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
-      - name: Install dependencies
-        run: pnpm add --global @octokit/rest semver
+      - run: pnpm i --frozen-lockfile
       - name: Upload sauce configs
         uses: actions/upload-artifact@v4.4.0
         with:
@@ -46,21 +45,12 @@ jobs:
           path: .sauceignore
           include-hidden-files: true
       - name: Retrieve tags
-        id: list-tags
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const path = require('path');
-            const getTestingTagsPath = path.resolve(process.env.GITHUB_WORKSPACE, 'scripts', 'getTestingTags.js');
-            const { default: getTestingTags } = await import(getTestingTagsPath);
-            const tagsToTest = await getTestingTags();
-            console.log("Tags to test:", tagsToTest); // Add this line for debugging
-            if (tagsToTest.length === 0) {
-              throw new Error("No tags found to test.");
-            }
-            const matrixInput = { include: tagsToTest.map(tag => ({tag: tag.tag, nodeVersion: tag.nodeVersion})) };
-            core.setOutput("matrixInput", JSON.stringify(matrixInput));
-            console.log("matrixInput: ", matrixInput);
+        id: retrieve-tags
+        run: |-
+          TAGS_TO_TEST=$(node -e "import('./scripts/getTestingTags.js').then(m => m.default().then(tags => console.log(JSON.stringify(tags))))")
+          echo "Tags to test: $TAGS_TO_TEST"
+          MATRIX_INPUT="{\"include\":$TAGS_TO_TEST}"
+          echo "MATRIX_INPUT=$MATRIX_INPUT" >> "$GITHUB_OUTPUT"
 
   alloy-prod-e2e-safari:
     name: Safari
@@ -70,7 +60,7 @@ jobs:
     strategy:
       max-parallel: 10
       fail-fast: false
-      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
+      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.MATRIX_INPUT) }}
     continue-on-error: true
     steps:
       - name: Checkout code
