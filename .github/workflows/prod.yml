@@ -31,8 +31,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
-      - name: Install dependencies
-        run: pnpm add --global @octokit/rest semver
+      - run: pnpm i --frozen-lockfile
       - name: Upload sauce configs
         uses: actions/upload-artifact@v4.4.0
         with:
@@ -46,21 +45,10 @@ jobs:
           path: .sauceignore
           include-hidden-files: true
       - name: Retrieve tags
-        id: list-tags
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const path = require('path');
-            const getTestingTagsPath = path.resolve(process.env.GITHUB_WORKSPACE, 'scripts', 'getTestingTags.js');
-            const { default: getTestingTags } = await import(getTestingTagsPath);
-            const tagsToTest = await getTestingTags();
-            console.log("Tags to test:", tagsToTest); // Add this line for debugging
-            if (tagsToTest.length === 0) {
-              throw new Error("No tags found to test.");
-            }
-            const matrixInput = { include: tagsToTest.map(tag => ({tag: tag.tag, nodeVersion: tag.nodeVersion})) };
-            core.setOutput("matrixInput", JSON.stringify(matrixInput));
-            console.log("matrixInput: ", matrixInput);
+        run: |-
+          TAGS_TO_TEST=$(node -e "import('./scripts/getTestingTags.js').then(m => m.default().then(tags => console.log(JSON.stringify(tags))))")
+          echo "Tags to test: $TAGS_TO_TEST"
+          echo "matrixInput={"include":$TAGS_TO_TEST}" >> $GITHUB_OUTPUT
 
   alloy-prod-e2e-safari:
     name: Safari
