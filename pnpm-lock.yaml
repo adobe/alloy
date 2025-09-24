@@ -58,8 +58,8 @@ importers:
         version: 11.1.0
     devDependencies:
       '@adobe/alloy':
-        specifier: 2.30.0-beta.0
-        version: 2.30.0-beta.0(@types/babel__core@7.20.5)(@types/node@24.5.1)(@vitest/browser@3.2.4)(picomatch@4.0.3)(vitest@3.2.4)
+        specifier: 2.30.0-beta.2
+        version: 2.30.0-beta.2(@types/babel__core@7.20.5)(@types/node@24.5.1)(@vitest/browser@3.2.4)(picomatch@4.0.3)(vitest@3.2.4)
       '@babel/cli':
         specifier: ^7.28.3
         version: 7.28.3(@babel/core@7.28.4)
@@ -200,8 +200,8 @@ packages:
   '@adobe/aep-rules-engine@3.1.1':
     resolution: {integrity: sha512-YeFDDSEM4wjwTNM4drKTIbYvfSdYS3DmeOgb1SxZfSXTcVg8vdxcd5blE2wKO42Qa4KUJK+ziK7ABvbHoO7T8Q==}
 
-  '@adobe/alloy@2.30.0-beta.0':
-    resolution: {integrity: sha512-KQFIcVfsGhaLl1/AraxKxOhHoLVY3cXgRAHQhfrKzKfCV8tHiiepb9BPRrhby8B+USQkdJfdClQOQwH+/LZyeg==}
+  '@adobe/alloy@2.30.0-beta.2':
+    resolution: {integrity: sha512-Wup5rWIFGsKgGJzxGI6jGXHcorLVYeg2F5FeSv3GE1JQeDPNcsOrL8gy3LKLWvBnEAkjisucjpEZFIMkv+ECbA==}
     hasBin: true
 
   '@adobe/css-tools@4.4.4':
@@ -4435,7 +4435,7 @@ snapshots:
       - supports-color
       - vitest
 
-  '@adobe/alloy@2.30.0-beta.0(@types/babel__core@7.20.5)(@types/node@24.5.1)(@vitest/browser@3.2.4)(picomatch@4.0.3)(vitest@3.2.4)':
+  '@adobe/alloy@2.30.0-beta.2(@types/babel__core@7.20.5)(@types/node@24.5.1)(@vitest/browser@3.2.4)(picomatch@4.0.3)(vitest@3.2.4)':
     dependencies:
       '@adobe/aep-rules-engine': 3.1.1(@vitest/browser@3.2.4)(vitest@3.2.4)
       '@adobe/reactor-query-string': 2.0.0
