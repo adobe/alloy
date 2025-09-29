@@ -8,6 +8,14 @@ Alloy is the code name for the Adobe Experience Platform Web SDK. It allows for 
 
 For documentation on how to use Alloy, please see the [user documentation](https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/home).
 
+## Organization
+
+This repo contains multiple projects. Each one is in a subdirectory and has its own `package.json` file.
+
+- [`sandboxes/`](./sandboxes) - Contains sample projects that demonstrate how to use Alloy in different scenarios.
+  - [`browser/` - `@adobe/alloy-sandbox-browser`](./sandboxes/browser) - the web browser sandbox
+- [`packages/`](./packages)
+  - [`core/` - `@adobe/alloy-core`](./packages/core) - Contains the core "business logic" for interacting with the Adobe Experience Platform Edge Network.
 
 ## Contribution
 

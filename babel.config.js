@@ -44,7 +44,7 @@ const transformModulesCommonjsPlugin = [
   },
 ];
 
-const npmIgnoreFiles = ["src/baseCode.js"];
+const npmIgnoreFiles = ["packages/core/src/baseCode.js"];
 
 export default {
   env: {
