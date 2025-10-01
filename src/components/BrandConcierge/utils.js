@@ -11,8 +11,7 @@ governing permissions and limitations under the License.
 */
 import createGetPageLocation from "../../utils/dom/createGetPageLocation.js";
 import { buildPageSurface } from "../../utils/surfaceUtils.js";
-import { sanitizeOrgIdForCookieName } from "../../utils/index.js";
-import COOKIE_NAME_PREFIX from "../../constants/cookieNamePrefix.js";
+import { getNamespacedCookieName } from "../../utils/index.js";
 import { BC_SESSION_COOKIE_NAME } from "./constants.js";
 
 export const getPageSurface = () => {
@@ -48,11 +47,11 @@ export const executeRemoteScript = (url, id) => {
   document.head.appendChild(script);
   return promise;
 };
-export const getConciergeSessionCookieName = (config) => {
-  const sanitizedOrgId = sanitizeOrgIdForCookieName(config.orgId);
-  return `${COOKIE_NAME_PREFIX}_${sanitizedOrgId}_${BC_SESSION_COOKIE_NAME}`;
-};
+
 export const getConciergeSessionCookie = ({ loggingCookieJar, config }) => {
-  const cookieName = getConciergeSessionCookieName(config);
+  const cookieName = getNamespacedCookieName(
+    config.orgId,
+    BC_SESSION_COOKIE_NAME,
+  );
   return loggingCookieJar.get(cookieName);
 };

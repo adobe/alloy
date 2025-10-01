@@ -200,6 +200,8 @@ export const createExecuteCommand = ({
           createNamespacedStorage,
           apexDomain,
           getBrowser,
+          cookieTransfer,
+          createResponse,
         };
       },
     });

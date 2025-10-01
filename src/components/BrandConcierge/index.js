@@ -16,10 +16,6 @@ import createBootstrapConcierge from "./createBootstrapConcierge.js";
 import { getPageSurface } from "./utils.js";
 import createBuildEndpointUrl from "./createBuildEndpointUrl.js";
 import queryString from "@adobe/reactor-query-string";
-import {cookieJar, getApexDomain} from "../../utils/index.js";
-import createCookieTransfer from "../../core/createCookieTransfer.js";
-import injectExtractEdgeInfo from "../../core/edgeNetwork/injectExtractEdgeInfo.js";
-import injectCreateResponse from "../../core/injectCreateResponse.js";
 
 const createConciergeComponent = ({
   loggingCookieJar,
@@ -29,25 +25,18 @@ const createConciergeComponent = ({
   instanceName,
   sendEdgeNetworkRequest,
   config,
-  lifecycle
+  lifecycle,
+  cookieTransfer,
+  createResponse,
 }) => {
   const { fetch } = window;
-  const apexDomain = getApexDomain(window, cookieJar);
-  const cookieTransfer = createCookieTransfer({
-    cookieJar: loggingCookieJar,
-    shouldTransferCookie: false,
-    apexDomain,
-    dateProvider: () => new Date(),
-  });
-  const extractEdgeInfo = injectExtractEdgeInfo({ logger });
-  const createResponse = injectCreateResponse({ extractEdgeInfo });
 
   const buildEndpointUrl = createBuildEndpointUrl({ queryString });
   const bootstrapConcierge = createBootstrapConcierge({
     logger,
     instanceName,
     loggingCookieJar,
-    config
+    config,
   });
   const sendConversationEvent = createSendConversationEvent({
     loggingCookieJar,
@@ -61,7 +50,7 @@ const createConciergeComponent = ({
     buildEndpointUrl,
     lifecycle,
     cookieTransfer,
-    createResponse
+    createResponse,
   });
 
   return {
@@ -80,13 +69,6 @@ const createConciergeComponent = ({
           return {
             concierge: { ...configurationPayload },
           };
-        }
-
-        const conversationPayload = response.getPayloadsByType(
-          "brand-concierge:conversation",
-        );
-        if (conversationPayload.length > 0) {
-          return conversationPayload[0];
         }
       },
     },

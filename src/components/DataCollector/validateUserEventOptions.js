@@ -47,7 +47,7 @@ export default ({ options }) => {
       decisionContext: objectOf({}),
     }).default({ sendDisplayEvent: true }),
     conversation: objectOf({
-      fetchExperience: boolean().default(false),
+      fetchConversationalExperience: boolean().default(false),
     }),
     datasetId: string(),
     mergeId: string(),
