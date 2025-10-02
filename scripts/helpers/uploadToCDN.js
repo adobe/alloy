@@ -23,10 +23,14 @@ const uploadToCDN = async ({ exec, logger, urlExists, version }) => {
   logger.info("Building files for CDN");
   await exec("build", "pnpm run build");
 
+  // When sftp commands are run in batch mode (-b flag), commands prefixed with "-" do not fail the
+  // entire script. By prefixing mkdir with "-", this will not fail if the directory already exists.
   const ftpCommands = `-mkdir ${version}
 cd ${version}
 put ./dist/alloy.js
 put ./dist/alloy.min.js
+put ./dist/alloyServiceWorker.js
+put ./dist/alloyServiceWorker.min.js
 bye
 `;
   logger.info("Uploading files to CDN.");
