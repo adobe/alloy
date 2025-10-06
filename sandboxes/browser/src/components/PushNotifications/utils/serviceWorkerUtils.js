@@ -1,5 +1,10 @@
 /* eslint-disable compat/compat */
 
+const serviceWorkerPath = new URL(
+  "../../../../../../packages/core/src/serviceWorker.js",
+  import.meta.url,
+);
+
 export const isServiceWorkerRegistered = async () =>
   (await navigator.serviceWorker.getRegistration()) != null;
 
@@ -14,8 +19,8 @@ export const registerServiceWorker = async () => {
     }
 
     const registration = await navigator.serviceWorker.register(
-      "/alloyServiceWorker.js",
-      { scope: "/pushNotifications" },
+      serviceWorkerPath,
+      { scope: "/", type: "module" },
     );
 
     return registration;
@@ -35,9 +40,8 @@ export const unregisterServiceWorker = async () => {
       throw new Error("Push notifications are not supported in this browser.");
     }
 
-    const registration = await navigator.serviceWorker.getRegistration(
-      "/alloyServiceWorker.js",
-    );
+    const registration =
+      await navigator.serviceWorker.getRegistration(serviceWorkerPath);
     if (registration) {
       const r = await registration.unregister();
       if (!r) {
