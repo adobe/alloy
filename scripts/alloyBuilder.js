@@ -138,7 +138,7 @@ const build = async (argv) => {
 const buildPushNotificationsServiceWorker = async (argv) => {
   const outputPath = path.join(
     argv.outputDir,
-    `alloyPushNotificationsServiceWorker${argv.minify ? ".min" : ""}.js`,
+    `alloyServiceWorker${argv.minify ? ".min" : ""}.js`,
   );
 
   const plugins = [
@@ -164,7 +164,7 @@ const buildPushNotificationsServiceWorker = async (argv) => {
     );
   }
   const rollupConfig = {
-    input: `${sourceRootPath}/components/PushNotifications/serviceWorker.js`,
+    input: `${sourceRootPath}/serviceWorker.js`,
     output: [
       {
         file: outputPath,
