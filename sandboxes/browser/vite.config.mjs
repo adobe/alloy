@@ -9,9 +9,15 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
+    headers: {
+      "Service-Worker-Allowed": "/",
+    },
   },
   html: {
     cspNonce: crypto.randomUUID(),
+  },
+  fs: {
+    allow: [".."],
   },
   build: {
     outDir: "build",
