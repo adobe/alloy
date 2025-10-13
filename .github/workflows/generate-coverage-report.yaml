@@ -1,4 +1,4 @@
-name: SonarQube
+name: Generate Coverage Report
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     name: Build and analyze
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     continue-on-error: true # Entire job becomes a warning
 
     steps:
@@ -37,7 +37,9 @@ jobs:
       - name: Run Unit Test with coverage
         run: pnpm run test:coverage
 
-      - uses: sonarsource/sonarqube-scan-action@v6
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonar-coverage-report
+          path: coverage/lcov.info
+          retention-days: 30
