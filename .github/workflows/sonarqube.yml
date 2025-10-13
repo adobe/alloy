@@ -24,7 +24,7 @@ jobs:
           workflow_conclusion: success
           branch: main
           name: sonar-coverage-report
-          path: coverage
+          path: .
           if_no_artifact_found: fail
 
       - name: SonarQube Scan
