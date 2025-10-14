@@ -16,11 +16,12 @@ import {
 } from "./constants.js";
 import { getNamespacedCookieName } from "../../utils/index.js";
 
-export default ({ logger, instanceName, loggingCookieJar, config }) => {
+export default ({ logger, instanceName, loggingCookieJar, config, apexDomain }) => {
   return (options) => {
     if (!options.stickySession) {
       loggingCookieJar.remove(
         getNamespacedCookieName(config.orgId, BC_SESSION_COOKIE_NAME),
+        {domain: apexDomain}
       );
     }
 

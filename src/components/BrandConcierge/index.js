@@ -28,6 +28,7 @@ const createConciergeComponent = ({
   lifecycle,
   cookieTransfer,
   createResponse,
+  apexDomain
 }) => {
   const { fetch } = window;
 
@@ -37,6 +38,7 @@ const createConciergeComponent = ({
     instanceName,
     loggingCookieJar,
     config,
+    apexDomain
   });
   const sendConversationEvent = createSendConversationEvent({
     loggingCookieJar,

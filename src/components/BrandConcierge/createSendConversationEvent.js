@@ -79,7 +79,7 @@ export default ({
 
     event.mergeXdm({...xdm});
 
-    if(message) {
+    if (message || data) {
       streamingEnabled = true;
     }
     const url = buildEndpointUrl({
