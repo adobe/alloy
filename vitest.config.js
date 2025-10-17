@@ -94,7 +94,7 @@ export default defineConfig({
     coverage: {
       include: ["packages/core/src/**/*"],
       reporter: isCI ? ["lcov"] : ["lcov", "html", "text"],
-      all: false,
+      all: true,
       clean: true,
       cleanOnRerun: true,
       reportsDirectory: "./coverage",
