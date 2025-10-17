@@ -14,6 +14,10 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
+    reporter: process.env.CI ? "verbose" : "default",
+    logHeapUsage: process.env.CI,
+    slowTestThreshold: process.env.CI ? 5000 : 300,
+    testTimeout: 30000,
     projects: [
       {
         extends: false,
