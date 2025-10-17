@@ -37,7 +37,12 @@ jobs:
       - name: Run Unit Test with coverage
         env:
           CI: true
-        run: pnpm run test:coverage
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 0
+          PLAYWRIGHT_BROWSERS_PATH: 0
+        run: |
+          # Only install Chromium, skip FFMPEG
+          pnpm exec playwright install chromium --no-shell
+          pnpm run test:coverage
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
