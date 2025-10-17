@@ -20,6 +20,8 @@ export default defineConfig({
     logHeapUsage: isCI,
     slowTestThreshold: isCI ? 5000 : 300,
     testTimeout: 30000,
+    teardownTimeout: 10000,
+    fileParallelism: !isCI,
     projects: [
       {
         extends: false,
