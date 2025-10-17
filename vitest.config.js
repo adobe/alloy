@@ -21,6 +21,14 @@ export default defineConfig({
     testTimeout: 30000,
     teardownTimeout: 10000,
     fileParallelism: !isCI,
+    pool: "forks",
+    poolOptions: isCI
+      ? {
+          forks: {
+            singleFork: true,
+          },
+        }
+      : undefined,
     projects: [
       {
         extends: false,
