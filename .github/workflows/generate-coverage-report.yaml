@@ -34,14 +34,20 @@ jobs:
       - name: Build Alloy
         run: pnpm run build
 
+      - name: Clean up build artifacts to save space
+        run: |
+          # Remove large build artifacts not needed for tests
+          rm -rf dist distTest libEs5 libEs6 || true
+          df -h
+
       - name: Run Unit Test with coverage
         env:
           CI: true
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 0
           PLAYWRIGHT_BROWSERS_PATH: 0
         run: |
-          # Only install Chromium, skip FFMPEG
-          pnpm exec playwright install chromium --no-shell
+          # Install Chromium (includes headless shell needed by Vitest)
+          pnpm exec playwright install chromium
           pnpm run test:coverage
 
       - name: Upload coverage artifact
