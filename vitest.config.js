@@ -12,8 +12,23 @@ governing permissions and limitations under the License.
 // eslint-disable-next-line import/no-unresolved
 import { defineConfig } from "vitest/config";
 
+const isCI = process.env.CI === "true" || process.env.GITHUB_ACTIONS === "true";
+// eslint-disable-next-line no-console
+console.debug(`[vitest] ${isCI ? "CI" : "local"} environment detected.`);
+
 export default defineConfig({
   test: {
+    testTimeout: 30000,
+    teardownTimeout: 10000,
+    fileParallelism: !isCI,
+    pool: "forks",
+    poolOptions: isCI
+      ? {
+          forks: {
+            singleFork: true,
+          },
+        }
+      : undefined,
     projects: [
       {
         extends: false,
@@ -60,6 +75,10 @@ export default defineConfig({
     coverage: {
       include: ["packages/core/src/**/*"],
       reporter: ["lcov", "html", "text"],
+      all: false,
+      clean: true,
+      cleanOnRerun: true,
+      reportsDirectory: "./coverage",
     },
   },
 });

@@ -35,7 +35,14 @@ jobs:
         run: pnpm run build
 
       - name: Run Unit Test with coverage
-        run: pnpm run test:coverage
+        env:
+          CI: true
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 0
+          PLAYWRIGHT_BROWSERS_PATH: 0
+        run: |
+          # Install Chromium (includes headless shell needed by Vitest)
+          pnpm exec playwright install chromium --only-shell
+          pnpm run test:coverage
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
