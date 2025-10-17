@@ -13,6 +13,8 @@ governing permissions and limitations under the License.
 import { defineConfig } from "vitest/config";
 
 const isCI = process.env.CI === "true" || process.env.GITHUB_ACTIONS === "true";
+// eslint-disable-next-line no-console
+console.debug(`[vitest] ${isCI ? "CI" : "local"} environment detected.`);
 
 export default defineConfig({
   test: {
