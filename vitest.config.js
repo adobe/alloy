@@ -24,6 +24,14 @@ export default defineConfig({
     testTimeout: 30000,
     teardownTimeout: 10000,
     fileParallelism: !isCI,
+    pool: "forks",
+    poolOptions: isCI
+      ? {
+          forks: {
+            singleFork: true,
+          },
+        }
+      : undefined,
     projects: [
       {
         extends: false,
@@ -41,6 +49,14 @@ export default defineConfig({
             enabled: true,
             headless: true,
             screenshotFailures: false,
+            ...(isCI && {
+              providerOptions: {
+                timeout: 10000,
+                launch: {
+                  args: ["--disable-dev-shm-usage", "--no-sandbox"],
+                },
+              },
+            }),
           },
         },
       },
@@ -62,6 +78,14 @@ export default defineConfig({
             enabled: true,
             headless: true,
             screenshotFailures: false,
+            ...(isCI && {
+              providerOptions: {
+                timeout: 10000,
+                launch: {
+                  args: ["--disable-dev-shm-usage", "--no-sandbox"],
+                },
+              },
+            }),
           },
         },
       },
@@ -70,6 +94,10 @@ export default defineConfig({
     coverage: {
       include: ["packages/core/src/**/*"],
       reporter: isCI ? ["lcov"] : ["lcov", "html", "text"],
+      all: false,
+      clean: true,
+      cleanOnRerun: true,
+      reportsDirectory: "./coverage",
     },
   },
 });
