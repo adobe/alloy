@@ -20,6 +20,7 @@ export default defineConfig({
   test: {
     testTimeout: 30000,
     teardownTimeout: 10000,
+    fileParallelism: !isCI,
     projects: [
       {
         extends: false,
