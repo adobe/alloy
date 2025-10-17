@@ -35,6 +35,8 @@ jobs:
         run: pnpm run build
 
       - name: Run Unit Test with coverage
+        env:
+          CI: true
         run: pnpm run test:coverage
 
       - name: Upload coverage artifact

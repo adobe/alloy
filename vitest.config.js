@@ -12,11 +12,13 @@ governing permissions and limitations under the License.
 // eslint-disable-next-line import/no-unresolved
 import { defineConfig } from "vitest/config";
 
+const isCI = process.env.CI === "true" || process.env.GITHUB_ACTIONS === "true";
+
 export default defineConfig({
   test: {
-    reporter: process.env.CI ? "verbose" : "default",
-    logHeapUsage: process.env.CI,
-    slowTestThreshold: process.env.CI ? 5000 : 300,
+    reporter: isCI ? "verbose" : "default",
+    logHeapUsage: isCI,
+    slowTestThreshold: isCI ? 5000 : 300,
     testTimeout: 30000,
     projects: [
       {
@@ -63,7 +65,7 @@ export default defineConfig({
 
     coverage: {
       include: ["packages/core/src/**/*"],
-      reporter: process.env.CI ? ["lcov"] : ["lcov", "html", "text"],
+      reporter: isCI ? ["lcov"] : ["lcov", "html", "text"],
     },
   },
 });
