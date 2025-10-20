@@ -77,7 +77,7 @@ importers:
         version: 24.5.1
       '@vitest/browser':
         specifier: ^3.2.4
-        version: 3.2.4(msw@2.11.2(@types/node@24.5.1)(typescript@5.9.2))(playwright@1.55.0)(vite@6.3.6(@types/node@24.5.1)(terser@5.44.0)(yaml@2.8.1))(vitest@3.2.4)
+        version: 3.2.4(msw@2.11.2(@types/node@24.5.1)(typescript@5.9.2))(playwright@1.55.1)(vite@6.3.6(@types/node@24.5.1)(terser@5.44.0)(yaml@2.8.1))(vitest@3.2.4)
       '@vitest/coverage-v8':
         specifier: ^3.2.4
         version: 3.2.4(@vitest/browser@3.2.4)(vitest@3.2.4)
@@ -137,7 +137,7 @@ importers:
         version: 2.11.2(@types/node@24.5.1)(typescript@5.9.2)
       playwright:
         specifier: ^1.55.0
-        version: 1.55.0
+        version: 1.55.1
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
@@ -161,7 +161,7 @@ importers:
         version: 3.7.2
       testcafe-browser-provider-playwright:
         specifier: ^1.1.0
-        version: 1.1.0(playwright@1.55.0)
+        version: 1.1.0(playwright@1.55.1)
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
@@ -3504,13 +3504,13 @@ packages:
     resolution: {integrity: sha512-nDywThFk1i4BQK4twPQ6TA4RT8bDY96yeuCVBWL3ePARCiEKDRSrNGbFIgUJpLp+XeIR65v8ra7WuJOFUBtkMA==}
     engines: {node: '>=8'}
 
-  playwright-core@1.55.0:
-    resolution: {integrity: sha512-GvZs4vU3U5ro2nZpeiwyb0zuFaqb9sUiAJuyrWpcGouD8y9/HLgGbNRjIph7zU9D3hnPaisMl9zG9CgFi/biIg==}
+  playwright-core@1.55.1:
+    resolution: {integrity: sha512-Z6Mh9mkwX+zxSlHqdr5AOcJnfp+xUWLCt9uKV18fhzA8eyxUd8NUWzAjxUh55RZKSYwDGX0cfaySdhZJGMoJ+w==}
     engines: {node: '>=18'}
     hasBin: true
 
-  playwright@1.55.0:
-    resolution: {integrity: sha512-sdCWStblvV1YU909Xqx0DhOjPZE4/5lJsIS84IfN9dAZfcl/CIZ5O8l3o0j7hPMjDvqoTF8ZUcc+i/GL5erstA==}
+  playwright@1.55.1:
+    resolution: {integrity: sha512-cJW4Xd/G3v5ovXtJJ52MAOclqeac9S/aGGgRzLabuF8TnIb6xHvMzKIa6JmrRzUkeXJgfL1MhukP0NK6l39h3A==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -6005,7 +6005,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/browser@3.2.4(msw@2.11.2(@types/node@24.5.1)(typescript@5.9.2))(playwright@1.55.0)(vite@6.3.6(@types/node@24.5.1)(terser@5.44.0)(yaml@2.8.1))(vitest@3.2.4)':
+  '@vitest/browser@3.2.4(msw@2.11.2(@types/node@24.5.1)(typescript@5.9.2))(playwright@1.55.1)(vite@6.3.6(@types/node@24.5.1)(terser@5.44.0)(yaml@2.8.1))(vitest@3.2.4)':
     dependencies:
       '@testing-library/dom': 10.4.1
       '@testing-library/user-event': 14.6.1(@testing-library/dom@10.4.1)
@@ -6017,7 +6017,7 @@ snapshots:
       vitest: 3.2.4(@types/node@24.5.1)(@vitest/browser@3.2.4)(happy-dom@20.0.0)(msw@2.11.2(@types/node@24.5.1)(typescript@5.9.2))(terser@5.44.0)(yaml@2.8.1)
       ws: 8.18.3
     optionalDependencies:
-      playwright: 1.55.0
+      playwright: 1.55.1
     transitivePeerDependencies:
       - bufferutil
       - msw
@@ -6041,7 +6041,7 @@ snapshots:
       tinyrainbow: 2.0.0
       vitest: 3.2.4(@types/node@24.5.1)(@vitest/browser@3.2.4)(happy-dom@20.0.0)(msw@2.11.2(@types/node@24.5.1)(typescript@5.9.2))(terser@5.44.0)(yaml@2.8.1)
     optionalDependencies:
-      '@vitest/browser': 3.2.4(msw@2.11.2(@types/node@24.5.1)(typescript@5.9.2))(playwright@1.55.0)(vite@6.3.6(@types/node@24.5.1)(terser@5.44.0)(yaml@2.8.1))(vitest@3.2.4)
+      '@vitest/browser': 3.2.4(msw@2.11.2(@types/node@24.5.1)(typescript@5.9.2))(playwright@1.55.1)(vite@6.3.6(@types/node@24.5.1)(terser@5.44.0)(yaml@2.8.1))(vitest@3.2.4)
     transitivePeerDependencies:
       - supports-color
 
@@ -8033,11 +8033,11 @@ snapshots:
     dependencies:
       find-up: 3.0.0
 
-  playwright-core@1.55.0: {}
+  playwright-core@1.55.1: {}
 
-  playwright@1.55.0:
+  playwright@1.55.1:
     dependencies:
-      playwright-core: 1.55.0
+      playwright-core: 1.55.1
     optionalDependencies:
       fsevents: 2.3.2
 
@@ -8648,9 +8648,9 @@ snapshots:
       glob: 10.4.5
       minimatch: 9.0.5
 
-  testcafe-browser-provider-playwright@1.1.0(playwright@1.55.0):
+  testcafe-browser-provider-playwright@1.1.0(playwright@1.55.1):
     dependencies:
-      playwright: 1.55.0
+      playwright: 1.55.1
 
   testcafe-browser-tools@2.0.26:
     dependencies:
@@ -9086,7 +9086,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.5.1
-      '@vitest/browser': 3.2.4(msw@2.11.2(@types/node@24.5.1)(typescript@5.9.2))(playwright@1.55.0)(vite@6.3.6(@types/node@24.5.1)(terser@5.44.0)(yaml@2.8.1))(vitest@3.2.4)
+      '@vitest/browser': 3.2.4(msw@2.11.2(@types/node@24.5.1)(typescript@5.9.2))(playwright@1.55.1)(vite@6.3.6(@types/node@24.5.1)(terser@5.44.0)(yaml@2.8.1))(vitest@3.2.4)
       happy-dom: 20.0.0
     transitivePeerDependencies:
       - jiti
