@@ -18,7 +18,7 @@ import { baseCode as initializeAlloy } from "@adobe/alloy-core";
 import getUrlParameter from "./getUrlParameter";
 import includeScript from "./includeScript";
 
-const setup = ({
+const setup = async ({
   instanceNames,
   options: { keepExistingMonitors = false, onAlloySetupCompleted },
 }) => {
@@ -34,13 +34,8 @@ const setup = ({
 
   initializeAlloy(window, instanceNames);
 
-  const alloyScriptPath = new URL(
-    "../../../../packages/core/src/standalone.js",
-    import.meta.url,
-  );
-
   if (getUrlParameter("includeVisitor") === "true") {
-    includeScript(
+    await includeScript(
       "https://github.com/Adobe-Marketing-Cloud/id-service/releases/download/4.5.1/visitorapi.min.js",
     ).then(() => {
       // eslint-disable-next-line no-undef
@@ -48,10 +43,11 @@ const setup = ({
         doesOptInApply: getUrlParameter("legacyOptIn") === "true",
       });
       // Alloy only looks for window.Visitor when it initially loads, so only load Alloy after Visitor loaded.
-      includeScript(alloyScriptPath, { module: true });
+      alloyScript();
+      return import("../../../../packages/core/src/standalone.js");
     });
   } else {
-    includeScript(alloyScriptPath, { module: true });
+    await import("../../../../packages/core/src/standalone.js");
   }
 
   if (onAlloySetupCompleted) {
@@ -107,8 +103,8 @@ export default ({
   configurations = {},
   options = {},
 } = {}) => {
-  useEffect(() => {
-    setup({ instanceNames, options });
+  useEffect(async () => {
+    await setup({ instanceNames, options });
     Object.entries(instanceNames).forEach(([, instanceName]) => {
       configureInstance(instanceName, configurations[instanceName]);
     });
