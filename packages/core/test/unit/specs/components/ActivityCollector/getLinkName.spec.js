@@ -122,6 +122,26 @@ describe("ActivityCollector::getLinkName", () => {
         childNodes: [createNodeWithAttribute("IMG", "src", "image.jpg")],
       }),
     ).toBe("image.jpg");
+    expect(
+      getLinkName({
+        nodeName: "A",
+        childNodes: [
+          createNodeWithAttribute("SVG", "xmlns", "http://www.w3.org/2000/svg"),
+          createNodeWithAttribute("SVG", "aria-label", "aria-label"),
+          createNodeWithAttribute("SVG", "name", "name"),
+        ],
+      }),
+    ).toBe("aria-label");
+    expect(
+      getLinkName({
+        nodeName: "A",
+        name: "name",
+        childNodes: [
+          createNodeWithAttribute("SVG", "xmlns", "http://www.w3.org/2000/svg"),
+          createNodeWithAttribute("SVG", "name", "name"),
+        ],
+      }),
+    ).toBe("name");
   });
   it("Truncates excess whitespace in link-name", () => {
     expect(

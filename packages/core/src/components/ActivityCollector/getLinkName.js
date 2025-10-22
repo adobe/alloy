@@ -86,6 +86,16 @@ const getChildrenAttributes = (nodes) => {
           getNodeAttributeValue(supportedNode, "src", "IMG"),
         );
       }
+      if (!attributes.ariaLabel) {
+        attributes.ariaLabel = truncateWhiteSpace(
+          supportedNode.getAttribute("aria-label"),
+        );
+      }
+      if (!attributes.name) {
+        attributes.name = truncateWhiteSpace(
+          supportedNode.getAttribute("name"),
+        );
+      }
     }
     if (supportedNode.nodeValue) {
       attributes.texts.push(supportedNode.nodeValue);
@@ -126,7 +136,9 @@ export default (node) => {
         attributesMap.alt ||
         attributesMap.title ||
         attributesMap.inputValue ||
-        attributesMap.imgSrc;
+        attributesMap.imgSrc ||
+        attributesMap.ariaLabel ||
+        attributesMap.name;
     }
   }
   return nodeText || "";
