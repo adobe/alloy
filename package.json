@@ -28,6 +28,7 @@
     "types": "tsc",
     "test": "pnpm exec playwright install chromium && vitest run && pnpm run test:scripts",
     "test:coverage": "rimraf coverage && pnpm exec playwright install chromium && vitest run --coverage",
+    "test:coverage:ci": "rimraf coverage && vitest run --coverage",
     "test:unit": "pnpm exec playwright install chromium && vitest run --project=unit",
     "test:unit:debug": "pnpm exec playwright install chromium && vitest --no-file-parallelism --project=unit --browser=chromium --browser.provider=playwright --browser.headless=false",
     "test:unit:watch": "pnpm exec playwright install chromium && vitest --project=unit",
