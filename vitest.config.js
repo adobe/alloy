@@ -16,8 +16,6 @@ const isCi = !!process.env.CI;
 
 export default defineConfig({
   test: {
-    fileParallelism: !isCi,
-
     projects: [
       {
         extends: false,
