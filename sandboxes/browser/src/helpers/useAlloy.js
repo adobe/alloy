@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 /* eslint-disable no-underscore-dangle */
 
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 
 import { baseCode as initializeAlloy } from "@adobe/alloy-core";
 import getUrlParameter from "./getUrlParameter";
