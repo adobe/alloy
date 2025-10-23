@@ -106,11 +106,11 @@ export default ({
   configurations = {},
   options = {},
 } = {}) => {
-  const configureInstances = useCallback(() => {
+  const configureInstances = () => {
     Object.entries(instanceNames).forEach(([, instanceName]) => {
       configureInstance(instanceName, configurations[instanceName]);
     });
-  });
+  };
   useEffect(async () => {
     await setup({ instanceNames, options, configureInstances });
   }, []);
