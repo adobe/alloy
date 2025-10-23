@@ -1,4 +1,4 @@
-name: Generate Coverage Report
+name: Generate Coverage Report and SonarQube Analysis
 
 on:
   push:
@@ -9,15 +9,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build and analyze
+  coverage:
+    name: Generate Coverage Report
     runs-on: ubuntu-latest
-    continue-on-error: true # Entire job becomes a warning
+    continue-on-error: true
 
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
         with:
@@ -43,3 +43,26 @@ jobs:
           name: sonar-coverage-report
           path: coverage/lcov.info
           retention-days: 30
+
+  sonarqube:
+    name: SonarQube Analysis
+    runs-on: atscloud
+    needs: coverage
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: sonar-coverage-report
+          path: coverage
+
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
