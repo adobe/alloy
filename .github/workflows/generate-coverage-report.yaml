@@ -35,7 +35,7 @@ jobs:
         run: pnpm run build
 
       - name: Run Unit Test with coverage
-        run: pnpm run test:coverage
+        run: pnpm run test:coverage -- --no-file-parallelism
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
