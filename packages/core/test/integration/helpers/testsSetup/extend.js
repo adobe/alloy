@@ -8,15 +8,19 @@ import cleanAlloy from "../alloy/clean.js";
 
 const worker = createWorker();
 
+let workerStarted = false;
+
 // Extend the test with MSW worker
 export const test = baseTest.extend({
   worker: [
     async ({}, use) => {
-      // Start the worker before each test
-      await worker.start({
-        onUnhandledRequest: "bypass",
-        quiet: true,
-      });
+      if (!workerStarted) {
+        await worker.start({
+          onUnhandledRequest: "bypass",
+          quiet: true,
+        });
+        workerStarted = true;
+      }
 
       // Make worker available in the test context
       await use(worker);
