@@ -12,6 +12,8 @@ governing permissions and limitations under the License.
 // eslint-disable-next-line import/no-unresolved
 import { defineConfig } from "vitest/config";
 
+const isCi = !!process.env.CI;
+
 export default defineConfig({
   test: {
     projects: [
@@ -59,7 +61,7 @@ export default defineConfig({
 
     coverage: {
       include: ["packages/core/src/**/*"],
-      reporter: ["lcov"],
+      reporter: isCi ? ["lcov"] : ["lcov", "html", "text"],
     },
   },
 });
