@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 /* eslint-disable no-underscore-dangle */
 
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
 import { baseCode as initializeAlloy } from "@adobe/alloy-core";
 import getUrlParameter from "./getUrlParameter";
@@ -21,6 +21,7 @@ import includeScript from "./includeScript";
 const setup = async ({
   instanceNames,
   options: { keepExistingMonitors = false, onAlloySetupCompleted },
+  configureInstances,
 }) => {
   if (!keepExistingMonitors) {
     delete window.__alloyMonitors;
@@ -33,6 +34,7 @@ const setup = async ({
   });
 
   initializeAlloy(window, instanceNames);
+  configureInstances();
 
   if (getUrlParameter("includeVisitor") === "true") {
     await includeScript(
@@ -104,10 +106,12 @@ export default ({
   configurations = {},
   options = {},
 } = {}) => {
-  useEffect(async () => {
-    await setup({ instanceNames, options });
+  const configureInstances = useCallback(() => {
     Object.entries(instanceNames).forEach(([, instanceName]) => {
       configureInstance(instanceName, configurations[instanceName]);
     });
+  });
+  useEffect(async () => {
+    await setup({ instanceNames, options, configureInstances });
   }, []);
 };
