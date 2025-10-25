@@ -9,5 +9,4 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-export const CONCIERGE_CLIENT_ID_PREFIX = `adobe-brand-concierge-client-`;
 export const BC_SESSION_COOKIE_NAME = "bc_session_id";
