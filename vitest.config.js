@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 // eslint-disable-next-line import/no-unresolved
 import { defineConfig } from "vitest/config";
+import { playwright } from "@vitest/browser-playwright";
 
 const isCi = !!process.env.CI;
 
@@ -24,7 +25,7 @@ export default defineConfig({
           include: ["packages/core/test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
           isolate: false,
           browser: {
-            provider: "playwright",
+            provider: playwright(),
             instances: [
               {
                 browser: "chromium",
@@ -46,7 +47,7 @@ export default defineConfig({
           ],
           isolate: false,
           browser: {
-            provider: "playwright",
+            provider: playwright(),
             instances: [
               {
                 browser: "chromium",
