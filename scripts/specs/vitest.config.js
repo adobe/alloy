@@ -7,6 +7,6 @@ export default defineProject({
     include: ["scripts/specs/*.{test,spec}.?(c|m)[jt]s?(x)"],
     isolate: false,
     pool: "threads",
-    environment: "happy-dom",
+    environment: "node",
   },
 });
