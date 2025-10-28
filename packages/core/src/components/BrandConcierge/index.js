@@ -11,12 +11,11 @@ governing permissions and limitations under the License.
 */
 import validateMessage from "./validateMessage.js";
 import createSendConversationEvent from "./createSendConversationEvent.js";
-import { getPageSurface } from "./utils.js";
 import createBuildEndpointUrl from "./createBuildEndpointUrl.js";
 import queryString from "@adobe/reactor-query-string";
-import {getNamespacedCookieName} from "../../utils/index.js";
-import {BC_SESSION_COOKIE_NAME} from "./constants.js";
-import {boolean, objectOf} from "../../utils/validation/index.js";
+import { getNamespacedCookieName } from "../../utils/index.js";
+import { BC_SESSION_COOKIE_NAME } from "./constants.js";
+import { boolean, objectOf } from "../../utils/validation/index.js";
 
 const createConciergeComponent = ({
   loggingCookieJar,
@@ -29,13 +28,13 @@ const createConciergeComponent = ({
   lifecycle,
   cookieTransfer,
   createResponse,
-  apexDomain
+  apexDomain,
 }) => {
   const { fetch } = window;
   if (!config.stickyConversationSession) {
     loggingCookieJar.remove(
       getNamespacedCookieName(config.orgId, BC_SESSION_COOKIE_NAME),
-      {domain: apexDomain}
+      { domain: apexDomain },
     );
   }
 
@@ -57,14 +56,6 @@ const createConciergeComponent = ({
   });
 
   return {
-    lifecycle: {
-      onBeforeEvent({ event, conversation }) {
-        if (conversation) {
-          const surfaces = getPageSurface();
-          event.mergeQuery({ conversation: { ...conversation, surfaces } });
-        }
-      }
-    },
     commands: {
       sendConversationEvent: {
         optionsValidator: (options) => validateMessage({ logger, options }),
@@ -75,6 +66,6 @@ const createConciergeComponent = ({
 };
 createConciergeComponent.namespace = "BrandConcierge";
 createConciergeComponent.configValidators = objectOf({
-  stickyConversationSession: boolean().default(false)
+  stickyConversationSession: boolean().default(false),
 });
 export default createConciergeComponent;

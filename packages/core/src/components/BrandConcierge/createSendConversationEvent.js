@@ -12,9 +12,7 @@ governing permissions and limitations under the License.
 import { createDataCollectionRequestPayload } from "../../utils/request/index.js";
 import createConversationServiceRequest from "./createConversationServiceRequest.js";
 import createGetEcidFromCookie from "../../utils/createDecodeKndctrCookie.js";
-import {getConciergeSessionCookie, getPageSurface} from "./utils.js";
-import isRequestRetryable from "../../core/network/isRequestRetryable.js";
-import getRequestRetryDelay from "../../core/network/getRequestRetryDelay.js";
+import { getConciergeSessionCookie, getPageSurface } from "./utils.js";
 import uuid from "../../utils/uuid.js";
 import createStreamParser from "./createStreamParser.js";
 import createSendConversationServiceRequest from "./createSendConversationServiceRequest.js";
@@ -29,13 +27,11 @@ export default ({
   buildEndpointUrl,
   lifecycle,
   cookieTransfer,
-  createResponse
+  createResponse,
 }) => {
   const { edgeDomain, edgeBasePath, datastreamId, onBeforeEventSend } = config;
   const sendConversationServiceRequest = createSendConversationServiceRequest({
     logger,
-    isRequestRetryable,
-    getRequestRetryDelay,
     fetch,
     config,
   });
@@ -48,21 +44,24 @@ export default ({
   return (options) => {
     let streamingEnabled = false;
     const { message, onStreamResponse, xdm, data } = options;
-    const sessionId = getConciergeSessionCookie({loggingCookieJar, config});
+    const sessionId =
+      getConciergeSessionCookie({ loggingCookieJar, config }) || uuid();
     const payload = createDataCollectionRequestPayload();
     const request = createConversationServiceRequest({
       payload,
-      sessionId: sessionId || uuid()
+      sessionId: sessionId,
     });
 
     const event = eventManager.createEvent();
     if (message || data) {
       const pageSurface = getPageSurface();
-      event.mergeQuery({ conversation: {
+      event.mergeQuery({
+        conversation: {
           surfaces: [pageSurface],
           message,
-          data
-        }});
+          data,
+        },
+      });
     }
 
     const ecid = decodeKndctrCookie();
@@ -74,10 +73,10 @@ export default ({
             id: ecid,
           },
         ],
-      }
+      },
     });
 
-    event.mergeXdm({...xdm});
+    event.mergeXdm({ ...xdm });
 
     if (message || data) {
       streamingEnabled = true;
@@ -91,8 +90,9 @@ export default ({
     return consent.awaitConsent().then(() => {
       return lifecycle
         .onBeforeEvent({
-          event
-        }).then(() => {
+          event,
+        })
+        .then(() => {
           try {
             // NOTE: this calls onBeforeEventSend callback (if configured)
             event.finalize(onBeforeEventSend);
@@ -106,33 +106,35 @@ export default ({
             url,
             request,
             onStreamResponse,
-            streamingEnabled
-          }).then(response => {
-            if(response.status === 204) {
+            streamingEnabled,
+          }).then((response) => {
+            if (response.status === 204) {
               return;
             }
             const onStreamResponseCallback = (event) => {
-              if(event.error) {
+              if (event.error) {
                 onStreamResponse({ error: event.error });
               }
               const substr = event.data.replace("data: ", "");
               const responseJson = JSON.parse(substr);
-              const response = createResponse({ content: responseJson});
+              const response = createResponse({ content: responseJson });
 
               cookieTransfer.responseToCookies(response);
 
-              logger.info("onStreamResponse callback called with", response.getPayloadsByType("brand-concierge:conversation"));
-              onStreamResponse(response.getPayloadsByType("brand-concierge:conversation"));
+              logger.info(
+                "onStreamResponse callback called with",
+                response.getPayloadsByType("brand-concierge:conversation"),
+              );
+              onStreamResponse(
+                response.getPayloadsByType("brand-concierge:conversation"),
+              );
             };
 
             const streamParser = createStreamParser();
 
-            streamParser(
-              response.body,
-              onStreamResponseCallback
-            );
+            streamParser(response.body, onStreamResponseCallback);
           });
-      });
+        });
     });
   };
 };

@@ -1,19 +1,25 @@
-import React, { useEffect } from "react";
+import React from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useAlloy from "./helpers/useAlloy";
 import { styles } from "./acom-hackathon";
+import includeScript from "./helpers/includeScript";
 export default function Concierge() {
   useAlloy();
+  includeScript(
+    "https://experience-stage.adobe.net/solutions/experience-platform-brand-concierge-web-agent/static-assets/main.js",
+  ).then(() => {
+    window.bc_styles = styles;
 
-  useEffect(() => {
-    window.alloy("bootstrapConversationalExperience", {
-      selector: "#brand-concierge-mount",
-      src: "https://experience-stage.adobe.net/solutions/experience-platform-brand-concierge-web-agent/static-assets/main.js",
-      stylingConfigurations: styles,
-      stickySession: false,
-    });
+    window.dispatchEvent(
+      new CustomEvent("alloy-brand-concierge-instance", {
+        detail: {
+          instanceName: "alloy",
+          stylingConfigurations: window.bc_styles,
+          selector: "#brand-concierge-mount",
+        },
+      }),
+    );
   });
-
   return (
     <div>
       <ContentSecurityPolicy />

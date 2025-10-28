@@ -10,22 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { stackError } from "../../utils/index.js";
-export default ({
-  logger,
-  isRequestRetryable,
-  getRequestRetryDelay,
-  fetch,
-}) => {
+export default ({ logger, fetch }) => {
   return async ({ requestId, url, request, streamingEnabled = true }) => {
     const payload = request.getPayload();
     const stringifiedPayload = JSON.stringify(payload);
     const parsedPayload = JSON.parse(stringifiedPayload);
 
-    const headers = { "Content-Type": "text/plain"};
+    const headers = { "Content-Type": "text/plain" };
     if (streamingEnabled) {
-      headers["Accept"] = "text/event-stream";
+      headers.Accept = "text/event-stream";
     } else {
-      headers["Accept"] = "text/plain";
+      headers.Accept = "text/plain";
     }
 
     logger.logOnBeforeNetworkRequest({
@@ -34,7 +29,7 @@ export default ({
       payload: parsedPayload,
     });
 
-    const executeRequest = async (retriesAttempted = 0) => {
+    const executeRequest = async () => {
       try {
         return await fetch(url, {
           method: "POST",
@@ -42,26 +37,11 @@ export default ({
           body: stringifiedPayload,
         }).then((response) => {
           if (!response.ok) {
-            const requestIsRetryable = isRequestRetryable({
-              response,
-              retriesAttempted,
-            });
-
-            if (requestIsRetryable) {
-              const requestRetryDelay = getRequestRetryDelay({
-                response,
-                retriesAttempted,
-              });
-              return new Promise((resolve) => {
-                setTimeout(() => {
-                  resolve(executeRequest(retriesAttempted + 1));
-                }, requestRetryDelay);
-              });
-            }
+            // implement retry
 
             throw new Error(`Request failed with status ${response.status}`);
           }
-        return response;
+          return response;
         });
       } catch (error) {
         logger.logOnNetworkError({

@@ -19,35 +19,6 @@ export const getPageSurface = () => {
   return buildPageSurface(pageLocation);
 };
 
-const getPromise = (url, script) => {
-  return new Promise((resolve, reject) => {
-    script.onload = () => {
-      resolve(script);
-    };
-    script.onerror = () => {
-      reject(new Error(`Failed to load script: ${url}`));
-    };
-  });
-};
-export const executeRemoteScript = (url, id) => {
-  if (!id) {
-    return;
-  }
-  // Check if a script with the same ID already exists
-  const existingScript = document.getElementById(id);
-  const script = document.createElement("script");
-  script.src = url;
-  script.async = true;
-  script.id = id;
-  if (existingScript) {
-    const promise = getPromise(url, script);
-    return promise;
-  }
-  const promise = getPromise(url, script);
-  document.head.appendChild(script);
-  return promise;
-};
-
 export const getConciergeSessionCookie = ({ loggingCookieJar, config }) => {
   const cookieName = getNamespacedCookieName(
     config.orgId,
