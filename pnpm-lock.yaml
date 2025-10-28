@@ -8,12 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@adobe/aep-rules-engine':
-        specifier: ^3.1.1
-        version: 3.1.1(@vitest/browser@3.2.4(msw@2.11.6(@types/node@24.9.1)(typescript@5.9.3))(playwright@1.56.1)(vite@7.1.11(@types/node@24.9.1)(terser@5.44.0)(yaml@2.8.1))(vitest@4.0.3))(vitest@4.0.3)
-      '@adobe/reactor-query-string':
-        specifier: ^2.0.0
-        version: 2.0.0
       '@babel/core':
         specifier: ^7.28.5
         version: 7.28.5
@@ -41,21 +35,12 @@ importers:
       commander:
         specifier: ^14.0.2
         version: 14.0.2
-      css.escape:
-        specifier: ^1.5.1
-        version: 1.5.1
-      js-cookie:
-        specifier: 3.0.5
-        version: 3.0.5
       rollup:
         specifier: ^4.52.5
         version: 4.52.5
       rollup-plugin-license:
         specifier: ^3.6.0
         version: 3.6.0(picomatch@4.0.3)(rollup@4.52.5)
-      uuid:
-        specifier: ^11.1.0
-        version: 11.1.0
     devDependencies:
       '@adobe/alloy':
         specifier: 2.30.0
@@ -80,7 +65,7 @@ importers:
         version: 4.0.3(msw@2.11.6(@types/node@24.9.1)(typescript@5.9.3))(playwright@1.56.1)(vite@6.4.1(@types/node@24.9.1)(terser@5.44.0)(yaml@2.8.1))(vitest@4.0.3)
       '@vitest/coverage-v8':
         specifier: ^4.0.3
-        version: 4.0.3(vitest@4.0.3)
+        version: 4.0.3(@vitest/browser@4.0.3(msw@2.11.6(@types/node@24.9.1)(typescript@5.9.3))(vite@6.4.1(@types/node@24.9.1)(terser@5.44.0)(yaml@2.8.1))(vitest@4.0.3))(vitest@4.0.3)
       '@vitest/eslint-plugin':
         specifier: ^1.3.24
         version: 1.3.24(eslint@9.38.0)(typescript@5.9.3)(vitest@4.0.3)
@@ -178,21 +163,9 @@ importers:
       '@adobe/aep-rules-engine':
         specifier: ^3.1.1
         version: 3.1.1(@vitest/browser@3.2.4(msw@2.11.6(@types/node@24.9.1)(typescript@5.9.3))(playwright@1.56.1)(vite@7.1.11(@types/node@24.9.1)(terser@5.44.0)(yaml@2.8.1))(vitest@4.0.3))(vitest@4.0.3)
-      '@adobe/reactor-cookie':
-        specifier: ^1.1.0
-        version: 1.1.0
-      '@adobe/reactor-load-script':
-        specifier: ^1.1.1
-        version: 1.1.1
-      '@adobe/reactor-object-assign':
-        specifier: ^2.0.0
-        version: 2.0.0
       '@adobe/reactor-query-string':
         specifier: ^2.0.0
         version: 2.0.0
-      css.escape:
-        specifier: ^1.5.1
-        version: 1.5.1
       js-cookie:
         specifier: 3.0.5
         version: 3.0.5
@@ -232,18 +205,6 @@ packages:
 
   '@adobe/css-tools@4.4.4':
     resolution: {integrity: sha512-Elp+iwUx5rN5+Y8xLt5/GRoG20WGoDCQ/1Fb+1LiGtvwbDavuSk0jhD/eZdckHAuzcDzccnkv+rEjyWfRx18gg==}
-
-  '@adobe/reactor-cookie@1.1.0':
-    resolution: {integrity: sha512-JlC0In45XJOrGuTnfLxj5Hmz9VFJO0hKJHnfc6Qtsrqw2vpKKHmfB8qMExtUw2HJ8iVQd3t+/q3h9wjfvUnVMA==}
-
-  '@adobe/reactor-load-script@1.1.1':
-    resolution: {integrity: sha512-zshG46a+KpTPrSO2C5YJCZa1XEel2DNZijtsitHHsGMChQkSx6lfVH3JH2vuqUxCSq8bKC2eyBKcoDZkEZImgg==}
-
-  '@adobe/reactor-object-assign@2.0.0':
-    resolution: {integrity: sha512-h3BMNk19QDJdyVLDL67fkvjbB4UDZcj5iQ5SeWQ77elGigJmhgo3wL/SegZA+qODwCLKYMGmoRzkDQEfblt0HA==}
-
-  '@adobe/reactor-promise@2.0.0':
-    resolution: {integrity: sha512-kP5jg4J77Rtl9TpNmADaXRWvy3ST+9MDHUlkDtuwuFNL6IKG3L4V930zcM0u0lTntskTd/gAJadTJaWOn1mBCQ==}
 
   '@adobe/reactor-query-string@2.0.0':
     resolution: {integrity: sha512-rGNnmKjpjA898mOHP5xU05geL50uwQDCxx6Ekh8C+l4Pem5OJIZJN/weqTgzVVxp9F+mRdPixFW5PqCEZrnTuA==}
@@ -2194,9 +2155,6 @@ packages:
     resolution: {integrity: sha512-65Mtei8+EkSIK+5Ie4gpWXoJ/5bgpqPXFknHHXAyhDqKsEAAzUslGd8mOeawbfcuQ8fADNKcF4xQA3fqlZJ8Ig==}
     engines: {iojs: '>=1.0.0', node: '>=0.5.2'}
 
-  css.escape@1.5.1:
-    resolution: {integrity: sha512-YUifsXXuknHlUsmlgyY0PKzgPOr7/FjCePfHNt0jxm83wHZi44VDMQ7/fGNkjY3/jV1MC+1CmZbaHzugyeRtpg==}
-
   data-view-buffer@1.0.2:
     resolution: {integrity: sha512-EmKO5V3OLXh1rtK2wgXRansaK1/mtVdTUEiEI0W8RkvgT05kfxaH29PliLnpLP73yYO6142Q72QNa8Wx/A5CqQ==}
     engines: {node: '>= 0.4'}
@@ -3087,9 +3045,6 @@ packages:
   jackspeak@4.1.1:
     resolution: {integrity: sha512-zptv57P3GpL+O0I7VdMJNBZCu+BPHVQUk55Ft8/QCJjTVxrnJHuVuX/0Bl2A6/+2oyR/ZMEuFKwmzqqZ/U5nPQ==}
     engines: {node: 20 || >=22}
-
-  js-cookie@2.2.1:
-    resolution: {integrity: sha512-HvdH2LzI/EAZcUwA8+0nKNtWHqS+ZmijLA30RwZA0bo7ToCckjK5MkGhjED9KoRcXO6BaGI3I9UIzSA1FKFPOQ==}
 
   js-cookie@3.0.5:
     resolution: {integrity: sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==}
@@ -4619,18 +4574,6 @@ snapshots:
       - vitest
 
   '@adobe/css-tools@4.4.4': {}
-
-  '@adobe/reactor-cookie@1.1.0':
-    dependencies:
-      js-cookie: 2.2.1
-
-  '@adobe/reactor-load-script@1.1.1':
-    dependencies:
-      '@adobe/reactor-promise': 2.0.0
-
-  '@adobe/reactor-object-assign@2.0.0': {}
-
-  '@adobe/reactor-promise@2.0.0': {}
 
   '@adobe/reactor-query-string@2.0.0': {}
 
@@ -6286,7 +6229,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/coverage-v8@4.0.3(vitest@4.0.3)':
+  '@vitest/coverage-v8@4.0.3(@vitest/browser@4.0.3(msw@2.11.6(@types/node@24.9.1)(typescript@5.9.3))(vite@6.4.1(@types/node@24.9.1)(terser@5.44.0)(yaml@2.8.1))(vitest@4.0.3))(vitest@4.0.3)':
     dependencies:
       '@bcoe/v8-coverage': 1.0.2
       '@vitest/utils': 4.0.3
@@ -6300,6 +6243,8 @@ snapshots:
       std-env: 3.9.0
       tinyrainbow: 3.0.3
       vitest: 4.0.3(@types/node@24.9.1)(@vitest/browser-playwright@4.0.3)(happy-dom@20.0.8)(msw@2.11.6(@types/node@24.9.1)(typescript@5.9.3))(terser@5.44.0)(yaml@2.8.1)
+    optionalDependencies:
+      '@vitest/browser': 4.0.3(msw@2.11.6(@types/node@24.9.1)(typescript@5.9.3))(vite@6.4.1(@types/node@24.9.1)(terser@5.44.0)(yaml@2.8.1))(vitest@4.0.3)
     transitivePeerDependencies:
       - supports-color
 
@@ -6786,8 +6731,6 @@ snapshots:
       which: 2.0.2
 
   crypto-md5@1.0.0: {}
-
-  css.escape@1.5.1: {}
 
   data-view-buffer@1.0.2:
     dependencies:
@@ -7840,8 +7783,6 @@ snapshots:
   jackspeak@4.1.1:
     dependencies:
       '@isaacs/cliui': 8.0.2
-
-  js-cookie@2.2.1: {}
 
   js-cookie@3.0.5: {}
 

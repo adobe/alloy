@@ -73,8 +73,6 @@
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
   "dependencies": {
-    "@adobe/aep-rules-engine": "^3.1.1",
-    "@adobe/reactor-query-string": "^2.0.0",
     "@babel/core": "^7.28.5",
     "@babel/plugin-transform-template-literals": "^7.27.1",
     "@babel/preset-env": "^7.28.5",
@@ -84,11 +82,8 @@
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^0.4.4",
     "commander": "^14.0.2",
-    "css.escape": "^1.5.1",
-    "js-cookie": "3.0.5",
     "rollup": "^4.52.5",
-    "rollup-plugin-license": "^3.6.0",
-    "uuid": "^11.1.0"
+    "rollup-plugin-license": "^3.6.0"
   },
   "devDependencies": {
     "@adobe/alloy": "2.30.0",
