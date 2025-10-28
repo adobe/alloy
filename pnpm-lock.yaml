@@ -43,7 +43,7 @@ importers:
         version: 3.6.0(picomatch@4.0.3)(rollup@4.52.5)
     devDependencies:
       '@adobe/alloy':
-        specifier: 2.30.0
+        specifier: workspace:*
         version: 'link:'
       '@babel/cli':
         specifier: ^7.28.3
