@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useAlloy from "./helpers/useAlloy";
 import useSendPageViewEvent from "./helpers/useSendPageViewEvent";

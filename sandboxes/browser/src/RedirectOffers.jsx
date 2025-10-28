@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useAlloy from "./helpers/useAlloy";
 

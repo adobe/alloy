@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import NotificationPermissionsPanel from "./components/PushNotifications/NotificationPermissionsPanel";
 import useAlloy from "./helpers/useAlloy";

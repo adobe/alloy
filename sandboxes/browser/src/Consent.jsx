@@ -1,4 +1,3 @@
-import React from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import "./Consent.css";
 import Configuration from "./components/Configuration";

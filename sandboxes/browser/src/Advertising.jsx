@@ -1,4 +1,3 @@
-import React from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import NotificationPermissionsPanel from "./components/PushNotifications/NotificationPermissionsPanel";
 import useAlloy from "./helpers/useAlloy";
@@ -112,7 +111,7 @@ export default function Advertising() {
                     log("Surfer ID: " + result.surfer_id);
                   }
                 })
-                .catch(function (error) {
+                .catch((error) => {
                   log(
                     "❌ Error retrieving advertising identities: " +
                       error.message,

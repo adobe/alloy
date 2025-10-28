@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, Route, Routes, useMatch } from "react-router-dom";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import {
