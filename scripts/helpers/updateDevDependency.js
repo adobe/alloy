@@ -26,7 +26,7 @@ const updateDevDependency = async ({
     logger.warn(`Dependency @adobe/alloy@${version} already installed.`);
   } else {
     logger.info(`Installing @adobe/alloy@${version} as a dev dependency.`);
-    await exec("pnpm add", `pnpm add @adobe/alloy@${version} --save-dev`);
+    await exec("pnpm add", `pnpm -w add @adobe/alloy@${version} --save-dev`);
     await exec("git add", `git add package.json pnpm-lock.yaml`);
     await exec(
       "git commit",
