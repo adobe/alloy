@@ -32,6 +32,7 @@ const readIdentityCookie = () => {
   if (!value) {
     return "None";
   }
+  console.log(value, value.substring(0, 60), "s");
   const decoded = atob(value.substring(0, 60));
   return decoded.substring(2, 40);
 };

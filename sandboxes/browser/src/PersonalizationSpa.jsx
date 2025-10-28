@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Switch, Route, useRouteMatch, Link } from "react-router-dom";
+import { Routes, Route, useMatch, Link } from "react-router-dom";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useAlloy from "./helpers/useAlloy";
 import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
@@ -80,7 +80,7 @@ export default function Personalization() {
 
   useSendPageViewEvent();
 
-  const match = useRouteMatch();
+  const match = useMatch(window.location.pathname);
 
   return (
     isAlloyConfigured && (
@@ -96,26 +96,26 @@ export default function Personalization() {
         </p>
         <ul>
           <li>
-            <Link to={`${match.url}/products`}>Products</Link>
+            <Link to={`${match.pathname}/products`}>Products</Link>
           </li>
           <li>
-            <Link to={`${match.url}/cart`}>Cart</Link>
+            <Link to={`${match.pathname}/cart`}>Cart</Link>
           </li>
           <li>
-            <Link to={`${match.url}/promotion`}>Promotion</Link>
+            <Link to={`${match.pathname}/promotion`}>Promotion</Link>
           </li>
         </ul>
-        <Switch>
-          <Route path={`${match.path}/products`}>
-            <Products />
-          </Route>
-          <Route path={`${match.path}/cart`}>
-            <Cart />
-          </Route>
-          <Route path={`${match.path}/promotion`}>
-            <Promotion />
-          </Route>
-        </Switch>
+        <Routes>
+          <Route
+            path={`${match.pattern.path}/products`}
+            element={<Products />}
+          />
+          <Route path={`${match.pattern.path}/cart`} element={<Cart />} />
+          <Route
+            path={`${match.pattern.path}/promotion`}
+            element={<Promotion />}
+          />
+        </Routes>
       </div>
     )
   );

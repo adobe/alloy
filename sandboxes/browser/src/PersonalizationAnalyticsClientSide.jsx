@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
+import { Link, Route, Routes, useMatch } from "react-router-dom";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import {
   getFormBasedOffer,
@@ -62,7 +62,8 @@ export default function PersonalizationAnalyticsClientSide() {
     personalizationEvent({ renderDecisions: true });
   }, []);
 
-  const match = useRouteMatch();
+  const match = useMatch(window.location.pathname);
+  console.log(match);
 
   return (
     isAlloyConfigured && (
@@ -109,20 +110,19 @@ export default function PersonalizationAnalyticsClientSide() {
         <p> This section is to simulate a SPA use case. </p>
         <ul>
           <li>
-            <Link to={`${match.url}/products`}>Products</Link>
+            <Link to={`${match.pathname}/products`}>Products</Link>
           </li>
           <li>
-            <Link to={`${match.url}/cart`}>Cart</Link>
+            <Link to={`${match.pathname}/cart`}>Cart</Link>
           </li>
         </ul>
-        <Switch>
-          <Route path={`${match.path}/products`}>
-            <Products />
-          </Route>
-          <Route path={`${match.path}/cart`}>
-            <Cart />
-          </Route>
-        </Switch>
+        <Routes>
+          <Route
+            path={`${match.pattern.path}/products`}
+            element={<Products />}
+          />
+          <Route path={`${match.pattern.path}/cart`} element={<Cart />} />
+        </Routes>
       </div>
     )
   );
