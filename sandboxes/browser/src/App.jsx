@@ -34,6 +34,7 @@ import ConfigOverrides from "./ConfigOverrides";
 import InAppMessages from "./components/InAppMessagesDemo/InAppMessages";
 import ContentCards from "./components/ContentCardsDemo/ContentCards";
 import PushNotifications from "./PushNotifications";
+import Concierge from "./Concierge";
 
 const BasicExample = () => {
   return (
@@ -111,6 +112,9 @@ const BasicExample = () => {
             <li>
               <Link to="/pushNotifications">Push Notifications</Link>
             </li>
+            <li>
+              <Link to="/concierge">Concierge</Link>
+            </li>
           </ul>
           <hr />
 
@@ -143,6 +147,7 @@ const BasicExample = () => {
           <Route path="/inAppMessages" component={InAppMessages} />
           <Route path="/contentCards" component={ContentCards} />
           <Route path="/pushNotifications" component={PushNotifications} />
+          <Route path="/concierge" component={Concierge} />
         </div>
       </Router>
       <AlloyVersion />

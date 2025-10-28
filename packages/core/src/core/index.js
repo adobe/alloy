@@ -56,6 +56,9 @@ import getRequestRetryDelay from "./network/getRequestRetryDelay.js";
 import injectApplyResponse from "./edgeNetwork/injectApplyResponse.js";
 import getMonitors from "./getMonitors.js";
 import * as requiredComponents from "./requiredComponentCreators.js";
+import createBuildEndpointUrl from "../utils/request/createBuildEndpointUrl.js";
+import apiVersion from "../constants/apiVersion.js";
+import queryString from "@adobe/reactor-query-string";
 
 const createNamespacedStorage = injectStorage(window);
 
@@ -129,6 +132,12 @@ export const createExecuteCommand = ({
     const extractEdgeInfo = injectExtractEdgeInfo({ logger });
     const createResponse = injectCreateResponse({ extractEdgeInfo });
     const getLocationHint = injectGetLocationHint({ orgId, cookieJar });
+    const buildEndpointUrl = createBuildEndpointUrl({
+      getLocationHint,
+      getAssuranceValidationTokenParams,
+      apiVersion,
+      queryString,
+    });
     const sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
       config,
       lifecycle,
@@ -136,8 +145,7 @@ export const createExecuteCommand = ({
       sendNetworkRequest,
       createResponse,
       processWarningsAndErrors,
-      getLocationHint,
-      getAssuranceValidationTokenParams,
+      buildEndpointUrl,
     });
 
     const applyResponse = injectApplyResponse({
@@ -174,6 +182,8 @@ export const createExecuteCommand = ({
       getImmediatelyAvailableTools(componentName) {
         const componentLogger = createComponentLogger(componentName);
         return {
+          loggingCookieJar,
+          instanceName,
           config,
           componentRegistry,
           consent,
@@ -190,6 +200,8 @@ export const createExecuteCommand = ({
           createNamespacedStorage,
           apexDomain,
           getBrowser,
+          cookieTransfer,
+          createResponse,
         };
       },
     });

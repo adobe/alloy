@@ -36,8 +36,8 @@ export default ({ window, createNamespacedStorage }) => {
     }
     const clientId = getOrCreateAssuranceClientId(storage);
     const validationToken = `${validationSessionId}|${clientId}`;
-    return `&${queryString.stringify({
+    return {
       adobeAepValidationToken: validationToken,
-    })}`;
+    };
   };
 };
