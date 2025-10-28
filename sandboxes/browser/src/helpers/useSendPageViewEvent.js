@@ -22,7 +22,6 @@ export default ({
   xdm = {},
   decisionScopes,
   setPropositions,
-  conversation = null, // conversation is optional, so default to null
 } = {}) => {
   useEffect(() => {
     xdm.eventType = "page-view";
@@ -38,7 +37,6 @@ export default ({
     window[instanceName]("sendEvent", {
       renderDecisions,
       decisionScopes, // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
-      conversation,
       xdm,
       data,
     }).then((res) => {
