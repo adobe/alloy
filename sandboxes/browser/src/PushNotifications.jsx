@@ -86,9 +86,7 @@ export default function Home() {
 
           <button
             onClick={() => {
-              localStorage.removeItem(
-                "com.adobe.alloy.97D1F3F459CE0AD80A495CBE_AdobeOrg.pushNotifications.subscriptionDetails",
-              );
+              localStorage.clear();
             }}
           >
             Clear subscription cache
