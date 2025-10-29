@@ -55,7 +55,7 @@ importers:
         version: 11.1.0
     devDependencies:
       '@adobe/alloy':
-        specifier: workspace:*
+        specifier: next
         version: 'link:'
       '@babel/cli':
         specifier: ^7.28.3
