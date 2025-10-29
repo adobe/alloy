@@ -1,10 +1,16 @@
 const sessionId = Date.now();
 const BRAND_CONCIERGE_URL =
-  "https://edge-int.adobedc.net/brand-concierge/conversations?sessionId=" + sessionId;
+  "https://edge-int.adobedc.net/brand-concierge/conversations?sessionId=" +
+  sessionId;
 
-window.bootstrapConversationalExperience = ({previewConfigs, styles, ecid, webAgentURL, selector}) => {
-  const preview = {...previewConfigs };
-
+window.bootstrapConversationalExperience = ({
+  previewConfigs,
+  styles,
+  ecid,
+  webAgentURL,
+  selector,
+}) => {
+  const preview = { ...previewConfigs };
 
   function parseEventFromBuffer(eventData) {
     const lines = eventData.split("\n");
@@ -62,8 +68,8 @@ window.bootstrapConversationalExperience = ({previewConfigs, styles, ecid, webAg
     if (handle.length === 0) {
       return null;
     }
-    for(let i=0; i < handle.length; i++) {
-      if(handle[i].type === "brand-concierge:conversation") {
+    for (let i = 0; i < handle.length; i++) {
+      if (handle[i].type === "brand-concierge:conversation") {
         return handle[i].payload;
       }
     }
@@ -74,28 +80,28 @@ window.bootstrapConversationalExperience = ({previewConfigs, styles, ecid, webAg
     url,
     stringifiedPayload,
     onStreamResponseCallback,
-    streamingEnabled = true
+    streamingEnabled = true,
   ) => {
     try {
       return await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "text/plain",
-          Accept: streamingEnabled ? "text/event-stream": "text/plain",
+          Accept: streamingEnabled ? "text/event-stream" : "text/plain",
         },
         body: stringifiedPayload,
       }).then((response) => {
         parseStream(response.body, onStreamResponseCallback);
       });
     } catch (error) {
-      onStreamResponseCallback({error});
+      onStreamResponseCallback({ error });
       throw new Error("Network request failed.");
     }
   };
 
   const sendBrandConciergeEvent = ({ message, onStreamResponse, xdm = {} }) => {
     const streamingEnabled = xdm != {};
-    xdm.identityMap =  {
+    xdm.identityMap = {
       ECID: [
         {
           id: ecid, //here you should use a mocked ECID
@@ -110,17 +116,16 @@ window.bootstrapConversationalExperience = ({previewConfigs, styles, ecid, webAg
             conversation: {
               surfaces: [""], //here is a mocked surface the one they choose when configuring the Concierge
               message: message,
-              preview
+              preview,
             },
           },
-          xdm
+          xdm,
         },
       ],
     };
 
-
     const onStreamResponseCallback = (event) => {
-      if(event.error) {
+      if (event.error) {
         onStreamResponse({ error: event.error });
       }
       const substr = event.data.replace("data: ", "");
@@ -133,7 +138,7 @@ window.bootstrapConversationalExperience = ({previewConfigs, styles, ecid, webAg
       BRAND_CONCIERGE_URL + "&requestId=" + Date.now(),
       JSON.stringify(payload),
       onStreamResponseCallback,
-      streamingEnabled
+      streamingEnabled,
     );
   };
 
@@ -165,5 +170,4 @@ window.bootstrapConversationalExperience = ({previewConfigs, styles, ecid, webAg
     );
   });
   loadScript(webAgentURL);
-
-}
+};

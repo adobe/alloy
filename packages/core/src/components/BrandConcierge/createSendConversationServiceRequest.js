@@ -29,29 +29,50 @@ export default ({ logger, fetch }) => {
       payload: parsedPayload,
     });
 
-    const executeRequest = async () => {
+    const fetchWithRetries = async (attemptNumber = 1) => {
+      const maxAttempts = 4;
+      const retryDelays = [2000, 3000, 5000];
+
       try {
-        return await fetch(url, {
+        const response = await fetch(url, {
           method: "POST",
           headers: headers,
           body: stringifiedPayload,
-        }).then((response) => {
-          if (!response.ok) {
-            // implement retry
-
-            throw new Error(`Request failed with status ${response.status}`);
-          }
-          return response;
         });
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        return response;
       } catch (error) {
+        if (attemptNumber < maxAttempts) {
+          const delay = retryDelays[attemptNumber - 1];
+          logger.logOnNetworkError({
+            requestId,
+            url,
+            payload: parsedPayload,
+            error: new Error(
+              `Attempt ${attemptNumber} failed, retrying in ${delay}ms: ${error.message}`,
+            ),
+          });
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          return fetchWithRetries(attemptNumber + 1);
+        }
         logger.logOnNetworkError({
           requestId,
           url,
           payload: parsedPayload,
           error,
         });
-        throw stackError({ error, message: "Network request failed." });
+        throw stackError({
+          error,
+          message: "Network request failed after all retries.",
+        });
       }
+    };
+    const executeRequest = async () => {
+      return fetchWithRetries();
     };
 
     return executeRequest();
