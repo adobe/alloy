@@ -10,60 +10,93 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 export default () => {
+  // SSE streams are always UTF-8 encoded per specification
+  const ENCODING = "utf-8";
+  // SSE spec allows three line ending styles: CRLF (\r\n), LF (\n), or CR (\r)
+  const LINE_ENDING_REGEX = /\r\n|\r|\n/;
+  // Events are separated by blank lines (double line endings)
+  const EVENT_SEPARATOR_REGEX = /\r\n\r\n|\n\n|\r\r/;
+
   /**
-   * Parse a single event from buffer data
-   * @param {string} eventData - Raw event data
-   * @returns {Object|null} - Parsed SSE event or null
+   * Parse a single SSE event from raw event data.
+   * Follows the Server-Sent Events specification (https://html.spec.whatwg.org/multipage/server-sent-events.html)
+   *
+   * @param {string} eventData - Raw event data (multi-line string containing SSE fields)
+   * @returns {Object|null} - Parsed SSE event with structure { type, data, id } or null if invalid
    */
-  function parseEventFromBuffer(eventData) {
-    const lines = eventData.split("\n");
-    let eventType = "message";
-    let data = "";
+  const parseEventFromBuffer = (eventData) => {
+    const lines = eventData.split(LINE_ENDING_REGEX);
+    const parsedEvent = {};
 
     for (const line of lines) {
-      if (line.startsWith("event:")) {
-        eventType = line.substring(6).trim();
-      } else if (line.startsWith("data:")) {
-        data += line.substring(5).trim() + "\n";
+      const trimmedLine = line.trim();
+
+      if (!trimmedLine) {
+        continue;
+      }
+
+      const colonIndex = trimmedLine.indexOf(":");
+
+      if (colonIndex === -1) {
+        continue;
+      }
+
+      const field = trimmedLine.substring(0, colonIndex).trim();
+      const value = trimmedLine.substring(colonIndex + 1).trim();
+
+      if (field === "data") {
+        parsedEvent.data = (parsedEvent.data || "") + value;
+      } else if (field === "event") {
+        parsedEvent.type = value;
+      } else if (field === "id") {
+        parsedEvent.id = value;
       }
     }
 
-    return data ? { type: eventType, data: data.trim() } : null;
-  }
+    return parsedEvent.data ? parsedEvent : null;
+  };
+
   /**
-   * Parse SSE stream using callbacks
+   * Parse SSE stream using callbacks.
+   * Uses modern async iteration (for await...of) for clean, performant stream processing.
+   *
    * @param {ReadableStream} stream - The readable stream from fetch response
-   * @param {Function} onEvent - Callback function called for each event
+   * @param {Function} onEvent - Callback function called for each parsed event
    */
   return async (stream, onEvent) => {
-    const reader = stream.getReader();
-    const decoder = new TextDecoder("utf-8");
+    const decoder = new TextDecoder(ENCODING);
     let buffer = "";
 
     try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const events = buffer.split("\r\n");
-        buffer = events.pop() || ""; // Keep incomplete data in the buffer
+      for await (const chunk of stream) {
+        buffer += decoder.decode(chunk, { stream: true });
+        const events = buffer.split(EVENT_SEPARATOR_REGEX);
+        buffer = events.pop() || "";
 
         for (const eventData of events) {
-          const event = parseEventFromBuffer(eventData);
-          if (event) onEvent(event);
+          const trimmedEvent = eventData.trim();
+
+          if (trimmedEvent) {
+            const event = parseEventFromBuffer(trimmedEvent);
+
+            if (event) {
+              onEvent(event);
+            }
+          }
         }
       }
 
-      // Process any remaining data in the buffer
-      if (buffer.trim()) {
-        const event = parseEventFromBuffer(buffer);
-        if (event) onEvent(event);
+      const trimmedBuffer = buffer.trim();
+
+      if (trimmedBuffer) {
+        const event = parseEventFromBuffer(trimmedBuffer);
+
+        if (event !== null) {
+          onEvent(event);
+        }
       }
     } catch (error) {
       onEvent({ error });
-    } finally {
-      reader.releaseLock();
     }
-  }
+  };
 };

@@ -31,14 +31,14 @@ export default ({ options }) => {
             comment: string(),
             reasons: arrayOf(string()),
           }),
-        })
-      })
+        }),
+      }),
     }).required(),
     objectOf({
       data: objectOf({
         type: string().required(),
-        payload: objectOf({})
-      }).required()
+        payload: objectOf({}),
+      }).required(),
     }),
   ]);
 
