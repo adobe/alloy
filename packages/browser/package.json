@@ -9,5 +9,13 @@
     "directory": "packages/browser"
   },
   "author": "Adobe Inc.",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.js",
+    "./baseCode.js": "./src/baseCode/index.js",
+    "./standalone.js": "./src/baseCode.js"
+  },
+  "dependencies": {
+    "@adobe/alloy-core": "workspace:^"
+  }
 }

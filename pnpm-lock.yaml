@@ -56,7 +56,7 @@ importers:
     devDependencies:
       '@adobe/alloy':
         specifier: next
-        version: 'link:'
+        version: link:packages/browser
       '@babel/cli':
         specifier: ^7.28.3
         version: 7.28.3(@babel/core@7.28.5)
@@ -166,6 +166,12 @@ importers:
       '@rollup/rollup-linux-x64-gnu':
         specifier: ^4.52.5
         version: 4.52.5
+
+  packages/browser:
+    dependencies:
+      '@adobe/alloy-core':
+        specifier: workspace:^
+        version: link:../core
 
   packages/core:
     dependencies:

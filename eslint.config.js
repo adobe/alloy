@@ -144,7 +144,7 @@ export default defineConfig([
   },
   {
     name: "alloy/core-src",
-    files: ["packages/core/src/**/*.{cjs,js}"],
+    files: ["packages/*/src/**/*.{cjs,js}"],
     rules: {
       "import/no-extraneous-dependencies": [
         "error",
