@@ -160,7 +160,7 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
   if (INCLUDE_BUNDLESIZE) {
     plugins.push(
       bundleSizePlugin({
-        output: "bundlesize.json",
+        outputFile: path.resolve(dirname, "bundlesize.json"),
       }),
     );
   }
@@ -207,7 +207,7 @@ export const buildConfig = ({
   variant = STANDALONE,
   minify = false,
   babelPlugins = [],
-  input = `${dirname}/packages/core/src/standalone.js`,
+  input = `${dirname}/src/standalone.js`,
   file,
 }) => {
   const plugins = buildPlugins({ variant, minify, babelPlugins });
@@ -215,10 +215,10 @@ export const buildConfig = ({
 
   if (variant === SERVICE_WORKER) {
     return {
-      input: `${dirname}/packages/core/src/serviceWorker.js`,
+      input: `${dirname}/src/serviceWorker.js`,
       output: [
         {
-          file: file || `dist/alloyServiceWorker${minifiedExtension}.js`,
+          file: file || `${dirname}/dist/alloyServiceWorker${minifiedExtension}.js`,
           format: "es",
         },
       ],
@@ -228,10 +228,10 @@ export const buildConfig = ({
 
   if (variant === BASE_CODE) {
     return {
-      input: `${dirname}/packages/core/src/baseCode.js`,
+      input: `${dirname}/src/baseCode.js`,
       output: [
         {
-          file: `distTest/baseCode${minifiedExtension}.js`,
+          file: `${dirname}/distTest/baseCode${minifiedExtension}.js`,
           format: "cjs",
           strict: false,
         },
@@ -245,7 +245,7 @@ export const buildConfig = ({
       input,
       output: [
         {
-          file: file || `dist/alloy${minifiedExtension}.js`,
+          file: file || `${dirname}/dist/alloy${minifiedExtension}.js`,
           format: "iife",
         },
       ],
@@ -258,10 +258,10 @@ export const buildConfig = ({
     variant === NPM_PACKAGE_LOCAL ? "npmPackageLocal" : "npmPackageProd";
 
   return {
-    input: `packages/core/test/functional/helpers/${filename}.js`,
+    input: `${dirname}/test/functional/helpers/${filename}.js`,
     output: [
       {
-        file: `distTest/${filename}${minifiedExtension}.js`,
+        file: `${dirname}/distTest/${filename}${minifiedExtension}.js`,
         format: "iife",
       },
     ],

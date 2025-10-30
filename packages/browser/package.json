@@ -10,6 +10,11 @@
   },
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
+  "scripts": {
+    "build:clean": "rimraf dist distTest",
+    "build": "pnpm run build:clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,SERVICE_WORKER,SERVICE_WORKER_MIN,BUNDLESIZE",
+    "build:watch": "rollup -c --watch"
+  },
   "exports": {
     ".": "./src/index.js",
     "./baseCode.js": "./src/baseCode/index.js",
@@ -18,5 +23,17 @@
   },
   "dependencies": {
     "@adobe/alloy-core": "workspace:^"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/plugin-transform-template-literals": "^7.27.1",
+    "@babel/preset-env": "^7.28.5",
+    "@rollup/plugin-babel": "^6.1.0",
+    "@rollup/plugin-commonjs": "^28.0.9",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.52.5",
+    "rollup-plugin-license": "^3.6.0"
   }
 }
