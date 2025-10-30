@@ -15,3 +15,4 @@ governing permissions and limitations under the License.
 import { createInstance } from "@adobe/alloy";
 
 window.alloyCreateInstance = createInstance;
+
