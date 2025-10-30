@@ -13,10 +13,15 @@ governing permissions and limitations under the License.
 */
 
 import fs from "fs";
+import path from "path";
 import { glob } from "glob";
 import createTestCafe from "testcafe";
+import { fileURLToPath } from "url";
 
-fs.readFile("dist/alloy.js", "utf8", (readFileErr, alloyData) => {
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const workspaceRoot = path.join(__dirname, "../../../");
+
+fs.readFile(path.join(workspaceRoot, "packages/browser/dist/alloy.js"), "utf8", (readFileErr, alloyData) => {
   if (readFileErr) {
     console.error(`readFile error: ${readFileErr}`);
     return;
@@ -59,7 +64,7 @@ fs.readFile("dist/alloy.js", "utf8", (readFileErr, alloyData) => {
 
   // Generate a glob pattern to match only the included components' test specs
   const includedComponentsPattern = adjustedComponentNames.join("|");
-  const testSpecsGlobPattern = `packages/core/test/functional/specs/@(${includedComponentsPattern})/**/*.js`;
+  const testSpecsGlobPattern = `${workspaceRoot}packages/browser/test/functional/specs/@(${includedComponentsPattern})/**/*.js`;
 
   glob(testSpecsGlobPattern, (globErr, files) => {
     if (globErr) {
