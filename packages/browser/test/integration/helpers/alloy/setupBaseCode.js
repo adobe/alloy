@@ -11,11 +11,12 @@ governing permissions and limitations under the License.
 
 // eslint-disable-next-line import/no-unresolved
 import { server } from "vitest/browser";
+
 const { readFile } = server.commands;
 
 export default async () => {
   const alloyBaseCode = await readFile(
-    `${server.config.root}/distTest/baseCode.min.js`,
+    `${server.config.root}/packages/browser/distTest/baseCode.min.js`,
   );
 
   document.body.innerHTML = "Alloy Test Page";
@@ -24,12 +25,4 @@ export default async () => {
   alloyBaseCodeScriptTag.textContent = alloyBaseCode;
 
   document.body.appendChild(alloyBaseCodeScriptTag);
-
-  const alloyScriptTag = document.createElement("script");
-  alloyScriptTag.type = "text/javascript";
-  alloyScriptTag.setAttribute("async", true);
-  alloyScriptTag.src = "/dist/alloy.js";
-
-  document.body.appendChild(alloyScriptTag);
-  return window.alloy;
 };
