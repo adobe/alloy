@@ -1,9 +1,8 @@
 {
   "name": "@adobe/alloy-core",
-  "version": "2.29.0-beta.1",
+  "version": "1.1.0",
   "description": "Adobe Experience Platform Web SDK Core (Internal Package)",
   "type": "module",
-  "private": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/adobe/alloy.git",
