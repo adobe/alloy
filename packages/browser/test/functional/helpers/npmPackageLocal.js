@@ -13,3 +13,4 @@ governing permissions and limitations under the License.
 import { createInstance } from "../../../src/index.js";
 
 window.alloyCreateInstance = createInstance;
+
