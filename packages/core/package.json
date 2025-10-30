@@ -9,7 +9,8 @@
     "directory": "packages/core"
   },
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index.js",
+    "./createEventListeners.js": "./src/createEventListeners.js"
   },
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
