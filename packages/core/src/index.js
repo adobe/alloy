@@ -29,8 +29,6 @@ import {
 import getMonitors from "./core/getMonitors.js";
 import * as optionalComponents from "./core/componentCreators.js";
 
-export { default as baseCode } from "./baseCode/index.js";
-
 const { console } = window;
 const createNamespacedStorage = injectStorage(window);
 
