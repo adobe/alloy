@@ -13,7 +13,13 @@
   "scripts": {
     "build:clean": "rimraf dist distTest",
     "build": "pnpm run build:clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,SERVICE_WORKER,SERVICE_WORKER_MIN,BUNDLESIZE",
-    "build:watch": "rollup -c --watch"
+    "build:watch": "rollup -c --watch",
+    "test:functional": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chromium",
+    "test:functional:custom": "node ./scripts/runFunctionalTests.js",
+    "test:functional:watch": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ../../scripts/watchFunctionalTests.js --browsers chromium",
+    "test:functional:debug": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe --inspect-brk chromium",
+    "test:functional:build:int": "rollup -c --environment BASE_CODE_MIN,NPM_PACKAGE_LOCAL,NPM_PACKAGE_LOCAL_MIN",
+    "test:functional:build:prod": "rollup -c --environment NPM_PACKAGE_PROD,NPM_PACKAGE_PROD_MIN"
   },
   "exports": {
     ".": "./src/index.js",
