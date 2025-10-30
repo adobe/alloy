@@ -1,0 +1,32 @@
+{
+  "distTest/baseCode.min.js": {
+    "uncompressedSize": 199,
+    "gzippedSize": 164,
+    "brotiliSize": 133
+  },
+  "/Users/cmcbride/homebase/code/github.com/adobe/alloy/.worktrees/alloy-browser-package/packages/browser/distTest/baseCode.min.js": {
+    "uncompressedSize": 199,
+    "gzippedSize": 164,
+    "brotiliSize": 133
+  },
+  "/Users/cmcbride/homebase/code/github.com/adobe/alloy/.worktrees/alloy-browser-package/packages/browser/dist/alloy.js": {
+    "uncompressedSize": 699826,
+    "gzippedSize": 112126,
+    "brotiliSize": 86457
+  },
+  "/Users/cmcbride/homebase/code/github.com/adobe/alloy/.worktrees/alloy-browser-package/packages/browser/dist/alloy.min.js": {
+    "uncompressedSize": 145497,
+    "gzippedSize": 48086,
+    "brotiliSize": 41687
+  },
+  "/Users/cmcbride/homebase/code/github.com/adobe/alloy/.worktrees/alloy-browser-package/packages/browser/dist/alloyServiceWorker.js": {
+    "uncompressedSize": 18201,
+    "gzippedSize": 4287,
+    "brotiliSize": 3633
+  },
+  "/Users/cmcbride/homebase/code/github.com/adobe/alloy/.worktrees/alloy-browser-package/packages/browser/dist/alloyServiceWorker.min.js": {
+    "uncompressedSize": 5542,
+    "gzippedSize": 2589,
+    "brotiliSize": 2184
+  }
+}
