@@ -13,7 +13,8 @@
   "exports": {
     ".": "./src/index.js",
     "./baseCode.js": "./src/baseCode/index.js",
-    "./standalone.js": "./src/baseCode.js"
+    "./standalone.js": "./src/baseCode.js",
+    "./serviceWorker.js": "./src/serviceWorker.js"
   },
   "dependencies": {
     "@adobe/alloy-core": "workspace:^"

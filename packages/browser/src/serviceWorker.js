@@ -10,14 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { ServiceWorkerLogger } from './components/PushNotifications/types.js' */
-
-import serviceWorkerNotificationClickListener from "./components/PushNotifications/helpers/serviceWorkerNotificationClickListener.js";
-import serviceWorkerPushListener from "./components/PushNotifications/helpers/serviceWorkerPushListener.js";
-import makeSendServiceWorkerTrackingData from "./components/PushNotifications/request/makeSendServiceWorkerTrackingData.js";
+import createEventListeners from "@adobe/alloy-core/createEventListeners.js";
 
 /* eslint-disable no-console */
-/* eslint-disable no-underscore-dangle */
 
 // @ts-check
 /// <reference lib="webworker" />
@@ -34,6 +29,14 @@ const logger = {
   info: (...args) => console.log(logger.namespace, ...args),
   error: (...args) => console.error(logger.namespace, ...args),
 };
+
+const eventListeners = createEventListeners({
+  sw,
+  platform: {
+    logger,
+    fetch,
+  },
+});
 
 /**
  * @listens install
@@ -56,7 +59,7 @@ sw.addEventListener("activate", (event) => {
  * @returns {Promise<void>}
  */
 sw.addEventListener("push", (event) =>
-  serviceWorkerPushListener({ event, logger, sw }),
+  eventListeners.pushNotifications.onPush(event),
 );
 
 /**
@@ -64,7 +67,7 @@ sw.addEventListener("push", (event) =>
  * @param {NotificationEvent} event
  */
 sw.addEventListener("notificationclick", (event) =>
-  serviceWorkerNotificationClickListener({ event, sw, logger, fetch }),
+  eventListeners.pushNotifications.onNotificationClick(event),
 );
 
 /**
@@ -72,18 +75,5 @@ sw.addEventListener("notificationclick", (event) =>
  * @param {NotificationEvent} event
  */
 sw.addEventListener("notificationclose", (event) => {
-  const data = event.notification.data;
-
-  makeSendServiceWorkerTrackingData(
-    {
-      xdm: data._xdm.mixins,
-      actionLabel: "Dismiss",
-    },
-    {
-      logger,
-      fetch,
-    },
-  ).catch((error) => {
-    logger.error("Failed to send tracking call:", error);
-  });
+  eventListeners.pushNotifications.onNotificationClose(event);
 });
