@@ -14,7 +14,7 @@ import { defineConfig } from "vitest/config";
 import { playwright } from "@vitest/browser-playwright";
 
 const isCi = !!process.env.CI;
-const fileParallelism = !!process.env.fileParallelism;
+const fileParallelism = process.env.FILE_PARALLELISM !== "false";
 
 export default defineConfig({
   test: {
