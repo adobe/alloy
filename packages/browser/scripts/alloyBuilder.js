@@ -24,20 +24,42 @@ import path from "path";
 import { rollup } from "rollup";
 import { buildConfig } from "../rollup.config.js";
 import entryPointGeneratorBabelPlugin from "./helpers/entryPointGeneratorBabelPlugin.js";
-import { getProjectRoot, safePathJoin } from "./helpers/path.js";
+import {
+  optionalComponentNames,
+  requiredComponentNames,
+} from "@adobe/alloy-core/componentMetadata.js";
+import {
+  getBrowserPackageRoot,
+  getProjectRoot,
+  safePathJoin,
+} from "./helpers/path.js";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
+const browserPackageRoot = getBrowserPackageRoot();
+
 const packageJsonContent = fs.readFileSync(
-  safePathJoin(getProjectRoot(), "package.json"),
+  safePathJoin(browserPackageRoot, "package.json"),
   "utf8",
 );
 const { version } = JSON.parse(packageJsonContent);
 
-let sourceRootPath = safePathJoin(getProjectRoot(), "packages/core/src");
-if (!fs.existsSync(sourceRootPath)) {
-  sourceRootPath = safePathJoin(getProjectRoot(), "libEs6");
-}
+const resolveSourceRootPath = () => {
+  const candidates = ["src", "libEs6"];
+
+  for (const candidate of candidates) {
+    const candidatePath = safePathJoin(browserPackageRoot, candidate);
+    if (fs.existsSync(candidatePath)) {
+      return candidatePath;
+    }
+  }
+
+  throw new Error(
+    "Unable to locate source directory. Expected to find 'src' or 'libEs6' within the browser package.",
+  );
+};
+
+const sourceRootPath = resolveSourceRootPath();
 
 const arrayDifference = (arr1, arr2) => arr1.filter((x) => !arr2.includes(x));
 
@@ -46,33 +68,10 @@ const camelCaseToTitleCase = (str) => {
 };
 
 const getComponents = (() => {
-  const components = {};
-  [
-    {
-      filePath: safePathJoin(sourceRootPath, "core/componentCreators.js"),
-      key: "optional",
-    },
-    {
-      filePath: safePathJoin(
-        sourceRootPath,
-        "core/requiredComponentCreators.js",
-      ),
-      key: "required",
-    },
-  ].forEach(({ filePath, key }) => {
-    const code = fs.readFileSync(filePath, "utf-8");
-    const c = [];
-
-    babel.traverse(babel.parse(code), {
-      Identifier(p) {
-        if (p.node.name !== "default") {
-          c.push(p.node.name);
-        }
-      },
-    });
-
-    components[key] = c;
-  });
+  const components = {
+    optional: optionalComponentNames,
+    required: requiredComponentNames,
+  };
 
   return () => components;
 })();
@@ -124,8 +123,6 @@ const build = async (argv) => {
   const bundle = await rollup(rollupConfig);
   await bundle.write(rollupConfig.output[0]);
 
-  fs.unlinkSync(inputFile);
-
   console.log(
     `🎉 Wrote ${
       path.isAbsolute(argv.outputDir)
@@ -157,7 +154,7 @@ const buildPushNotificationsServiceWorker = async (argv) => {
         cwd: path.join(dirname, ".."),
         banner: {
           content: {
-            file: path.join(dirname, "..", "license_banner"),
+            file: path.join(dirname, "..", "LICENSE_BANNER"),
           },
         },
       }),
