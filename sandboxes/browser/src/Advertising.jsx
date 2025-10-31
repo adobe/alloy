@@ -7,6 +7,7 @@ const log = (message) => {
   const entry = document.createElement("div");
   entry.textcontent = message;
   output.appendChild(entry);
+  // eslint-disable-next-line no-console
   console.log(message);
 };
 
@@ -45,8 +46,9 @@ export default function Advertising() {
             onClick={() => {
               log("checking component registration...");
 
-              alloy("getlibraryinfo")
-                .then(function (info) {
+              window
+                .alloy("getlibraryinfo")
+                .then((info) => {
                   log("components: " + info.components.join(", "));
                   log("commands: " + info.commands.join(", "));
 
@@ -62,7 +64,7 @@ export default function Advertising() {
                     log("❌ sendAdConversion command is NOT available");
                   }
                 })
-                .catch(function (error) {
+                .catch((error) => {
                   log("❌ Error: " + error.message);
                 });
             }}
@@ -74,15 +76,16 @@ export default function Advertising() {
             onClick={() => {
               log("Testing sendAdConversion command...");
 
-              alloy("sendAdConversion", {
-                viewThruEnabled: true,
-                clickThruEnabled: false,
-              })
-                .then(function (result) {
+              window
+                .alloy("sendAdConversion", {
+                  viewThruEnabled: true,
+                  clickThruEnabled: false,
+                })
+                .then((result) => {
                   log("✅ Ad conversion successful!");
                   log("Result: " + JSON.stringify(result));
                 })
-                .catch(function (error) {
+                .catch((error) => {
                   log("❌ Error sending ad conversion: " + error.message);
                 });
             }}
@@ -94,8 +97,9 @@ export default function Advertising() {
             onClick={() => {
               log("Retrieving advertising identities...");
 
-              alloy("getAdvertisingIdentity")
-                .then(function (result) {
+              window
+                .alloy("getAdvertisingIdentity")
+                .then((result) => {
                   log("✅ Advertising identities retrieved!");
                   log("IDs: " + JSON.stringify(result));
 

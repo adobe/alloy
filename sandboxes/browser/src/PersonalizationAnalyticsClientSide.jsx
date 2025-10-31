@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, Route, Routes, useMatch } from "react-router-dom";
+import { Link, Route, Routes, useMatch } from "react-router";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import {
   getFormBasedOffer,

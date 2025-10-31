@@ -253,7 +253,7 @@ export default defineConfig([
     },
   },
   {
-    name: "alloy/sandbox",
+    name: "alloy/browser-sandbox",
     files: ["sandboxes/browser/src/**/*.{js,jsx}"],
     settings: {
       react: {
@@ -278,6 +278,7 @@ export default defineConfig([
     },
     rules: {
       ...react.configs.recommended.rules,
+      ...react.configs["jsx-runtime"].rules,
       "react/prop-types": "off",
     },
   },
