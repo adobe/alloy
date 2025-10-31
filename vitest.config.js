@@ -14,7 +14,6 @@ import { defineConfig } from "vitest/config";
 import { playwright } from "@vitest/browser-playwright";
 
 const isCi = !!process.env.CI;
-const fileParallelism = process.env.fileParallelism || true;
 
 export default defineConfig({
   test: {
@@ -35,7 +34,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             screenshotFailures: false,
-            fileParallelism,
+            fileParallelism: !isCi,
           },
         },
       },
@@ -57,7 +56,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             screenshotFailures: false,
-            fileParallelism,
+            fileParallelism: !isCi,
           },
         },
       },
