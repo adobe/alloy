@@ -36,6 +36,7 @@ describe("Context::createComponent", () => {
   beforeEach(() => {
     event = {
       mergeXdm: vi.fn(),
+      mergeData: vi.fn(),
     };
   });
   it("enables the configured contexts", async () => {
@@ -53,6 +54,7 @@ describe("Context::createComponent", () => {
       b: "2",
       c: "3",
     });
+    expect(event.mergeData).toHaveBeenCalledWith({});
   });
   it("ignores unknown contexts", async () => {
     const config = createConfig({
@@ -68,6 +70,7 @@ describe("Context::createComponent", () => {
       a: "1",
       c: "3",
     });
+    expect(event.mergeData).toHaveBeenCalledWith({});
   });
   it("can disable non-required contexts", async () => {
     const config = createConfig({
@@ -82,5 +85,6 @@ describe("Context::createComponent", () => {
     expect(event.mergeXdm).toHaveBeenCalledWith({
       c: "3",
     });
+    expect(event.mergeData).toHaveBeenCalledWith({});
   });
 });
