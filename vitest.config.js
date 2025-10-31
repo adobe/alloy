@@ -16,9 +16,6 @@ import { playwright } from "@vitest/browser-playwright";
 const isCi = !!process.env.CI;
 const fileParallelism = !!process.env.fileParallelism;
 
-// eslint-disable-next-line no-console
-console.log("CI", isCi, "fileParallelism", fileParallelism);
-
 export default defineConfig({
   test: {
     projects: [
