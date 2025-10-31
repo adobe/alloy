@@ -17,9 +17,6 @@
     "scripts/helpers/versionBabelPlugin.js",
     "scripts/helpers/path.js"
   ],
-  "bin": {
-    "alloyBuilder": "scripts/alloyBuilder.js"
-  },
   "scripts": {
     "clean": "rimraf dist distTest libEs5 libEs6 types",
     "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/src,test,scripts}/**/*.{js,cjs,mjs,jsx}\"",
@@ -45,7 +42,7 @@
     "dev": "REACT_APP_NONCE=123 pnpm run --filter @adobe/alloy-sandbox-browser start",
     "build": "pnpm --filter @adobe/alloy build",
     "build:watch": "pnpm --filter @adobe/alloy build:watch",
-    "build:custom": "node scripts/alloyBuilder.js",
+    "build:custom": "pnpm --filter @adobe/alloy build:custom",
     "prepare": "husky",
     "prepack": "pnpm run clean && babel packages/core/src -d libEs5 --env-name npmEs5 && babel packages/core/src -d libEs6 --env-name npmEs6 && echo '{\"type\":\"commonjs\"}' > libEs5/package.json && echo '{\"type\":\"module\"}' > libEs6/package.json && pnpm run types",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js"
@@ -70,27 +67,8 @@
   },
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
-  "dependencies": {
-    "@adobe/aep-rules-engine": "^3.1.1",
-    "@adobe/reactor-query-string": "^2.0.0",
-    "@babel/core": "^7.28.5",
-    "@babel/plugin-transform-template-literals": "^7.27.1",
-    "@babel/preset-env": "^7.28.5",
-    "@inquirer/prompts": "^7.9.0",
-    "@rollup/plugin-babel": "^6.1.0",
-    "@rollup/plugin-commonjs": "^29.0.0",
-    "@rollup/plugin-node-resolve": "^16.0.3",
-    "@rollup/plugin-terser": "^0.4.4",
-    "commander": "^14.0.2",
-    "js-cookie": "3.0.5",
-    "rollup": "^4.52.5",
-    "rollup-plugin-license": "^3.6.0",
-    "uuid": "^13.0.0"
-  },
   "devDependencies": {
     "@adobe/alloy": "next",
-    "@babel/cli": "^7.28.3",
-    "@babel/plugin-transform-modules-commonjs": "^7.27.1",
     "@changesets/cli": "^2.29.8",
     "@eslint/js": "^9.38.0",
     "@octokit/rest": "^22.0.1",
