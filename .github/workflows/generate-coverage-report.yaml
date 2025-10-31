@@ -36,6 +36,8 @@ jobs:
 
       - name: Run Unit Test with coverage
         run: pnpm run test:coverage
+        env:
+          FILE_PARALLELISM: false
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
