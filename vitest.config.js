@@ -14,6 +14,10 @@ import { defineConfig } from "vitest/config";
 import { playwright } from "@vitest/browser-playwright";
 
 const isCi = !!process.env.CI;
+const fileParallelism = !!process.env.fileParallelism;
+
+// eslint-disable-next-line no-console
+console.log("CI", isCi, "fileParallelism", fileParallelism);
 
 export default defineConfig({
   test: {
@@ -34,7 +38,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             screenshotFailures: false,
-            fileParallelism: !isCi,
+            fileParallelism,
           },
         },
       },
@@ -56,7 +60,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             screenshotFailures: false,
-            fileParallelism: !isCi,
+            fileParallelism,
           },
         },
       },
