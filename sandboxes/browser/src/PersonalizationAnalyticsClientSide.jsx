@@ -63,7 +63,6 @@ export default function PersonalizationAnalyticsClientSide() {
   }, []);
 
   const match = useMatch(window.location.pathname);
-  console.log(match);
 
   return (
     isAlloyConfigured && (
