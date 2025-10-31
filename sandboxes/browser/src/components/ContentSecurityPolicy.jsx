@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import React from "react";
+import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 
 export default function ContentSecurityPolicy() {
-  const [nonce, setNonce] = React.useState("");
-  React.useEffect(() => {
+  const [nonce, setNonce] = useState("");
+  useEffect(() => {
     const getNonce = () =>
       document.querySelector('meta[property="nonce"]')?.getAttribute("nonce") ||
       document.querySelector("script[nonce]")?.getAttribute("nonce") ||

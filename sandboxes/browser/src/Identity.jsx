@@ -10,14 +10,12 @@
  governing permissions and limitations under the License.
  */
 
-/* eslint-disable no-console, func-names */
-
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useAlloy from "./helpers/useAlloy";
 
 const readCookies = () => {
   const cookies = {};
-  document.cookie.split(";").forEach(function (c) {
+  document.cookie.split(";").forEach((c) => {
     const ct = c.trim();
     const index = ct.indexOf("=");
     const key = ct.slice(0, index);
@@ -37,14 +35,16 @@ const readIdentityCookie = () => {
 };
 
 const getIdentity = (setIdentity) => () => {
-  window.alloy("getIdentity", { namespaces: ["ECID"] }).then(function (result) {
+  window.alloy("getIdentity", { namespaces: ["ECID"] }).then((result) => {
     if (result.identity) {
+      // eslint-disable-next-line no-console
       console.log(
         "Sandbox: Get Identity command has completed.",
         result.identity.ECID,
       );
       setIdentity(result.identity.ECID);
     } else {
+      // eslint-disable-next-line no-console
       console.log(
         "Sandbox: Get Identity command has completed but no identity was provided in the result (possibly due to lack of consent).",
       );

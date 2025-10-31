@@ -111,7 +111,7 @@ export default ({
       configureInstance(instanceName, configurations[instanceName]);
     });
   };
-  useEffect(async () => {
-    await setup({ instanceNames, options, configureInstances });
+  useEffect(() => {
+    setup({ instanceNames, options, configureInstances });
   }, []);
 };

@@ -1,6 +1,6 @@
 /* eslint-disable func-names */
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const KONDUCTOR_COOKIE_PREFIX = "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_";
 const LEGACY_IDENTITY_COOKIE = "AMCV_5BFE274A5F6980A50A495C08%40AdobeOrg";
