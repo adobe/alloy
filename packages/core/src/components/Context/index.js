@@ -18,7 +18,7 @@ import injectTimestamp from "./injectTimestamp.js";
 import implementationDetails from "./implementationDetails.js";
 import createComponent from "./createComponent.js";
 import injectHighEntropyUserAgentHints from "./injectHighEntropyUserAgentHints.js";
-import injectReferrer from "./injectReferrer.js";
+import injectOneTimeAnalyticsReferrer from "./injectOneTimeAnalyticsReferrer.js";
 import { arrayOf, objectOf, string } from "../../utils/validation/index.js";
 
 const web = injectWeb(window);
@@ -27,7 +27,7 @@ const environment = injectEnvironment(window);
 const placeContext = injectPlaceContext(() => new Date());
 const timestamp = injectTimestamp(() => new Date());
 const highEntropyUserAgentHints = injectHighEntropyUserAgentHints(navigator);
-const referrer = injectReferrer(window);
+const oneTimeAnalyticsReferrer = injectOneTimeAnalyticsReferrer(window);
 
 const defaultEnabledContexts = {
   web,
@@ -37,7 +37,7 @@ const defaultEnabledContexts = {
 };
 const defaultDisabledContexts = {
   highEntropyUserAgentHints,
-  referrer,
+  oneTimeAnalyticsReferrer,
 };
 const optionalContexts = {
   ...defaultEnabledContexts,

@@ -10,18 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { deepAssign } from "../../utils/index.js";
-
 export default (window) => {
-  return (xdm) => {
-    const web = {
-      webPageDetails: {
-        URL: window.location.href || window.location,
+  return (event) => {
+    event.mergeXdm({
+      web: {
+        webPageDetails: {
+          URL: window.location.href || window.location,
+        },
+        webReferrer: {
+          URL: window.document.referrer,
+        },
       },
-      webReferrer: {
-        URL: window.document.referrer,
-      },
-    };
-    deepAssign(xdm, { web });
+    });
   };
 };

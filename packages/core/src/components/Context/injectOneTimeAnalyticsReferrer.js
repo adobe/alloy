@@ -10,12 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { deepAssign } from "../../utils/index.js";
-
 export default (window) => {
   let lastReferrerSent = null;
 
-  return (xdm, data, event) => {
+  return (event) => {
     const content = event.getContent();
     const eventType = content.xdm?.eventType;
 
@@ -23,10 +21,17 @@ export default (window) => {
       return;
     }
 
-    const currentReferrer = window.document.referrer;
+    // Allow customers to explicitly set the referrer (for SPA view changes)
+    // Otherwise, use document.referrer
+    // eslint-disable-next-line no-underscore-dangle
+    const explicitReferrer = content.data?.__adobe?.analytics?.referrer;
+    const currentReferrer =
+      explicitReferrer !== undefined
+        ? explicitReferrer
+        : window.document.referrer;
 
     if (currentReferrer === lastReferrerSent) {
-      deepAssign(data, {
+      event.mergeData({
         __adobe: {
           analytics: {
             referrer: "",
@@ -36,7 +41,7 @@ export default (window) => {
       return;
     }
 
-    deepAssign(data, {
+    event.mergeData({
       __adobe: {
         analytics: {
           referrer: currentReferrer,

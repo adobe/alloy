@@ -26,16 +26,9 @@ export default (config, logger, optionalContexts, requiredContexts) => {
     namespace: "Context",
     lifecycle: {
       onBeforeEvent({ event }) {
-        const xdm = {};
-        const data = {};
         return Promise.all(
-          contexts.map((context) =>
-            Promise.resolve(context(xdm, data, event, logger)),
-          ),
-        ).then(() => {
-          event.mergeXdm(xdm);
-          event.mergeData(data);
-        });
+          contexts.map((context) => Promise.resolve(context(event, logger))),
+        );
       },
     },
   };

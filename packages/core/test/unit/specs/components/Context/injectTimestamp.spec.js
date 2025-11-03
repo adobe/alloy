@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { beforeEach, describe, it, expect } from "vitest";
+import { beforeEach, describe, it, expect, vi } from "vitest";
 import injectTimestamp from "../../../../../src/components/Context/injectTimestamp.js";
 
 describe("Context::injectTimestamp", () => {
@@ -22,9 +22,11 @@ describe("Context::injectTimestamp", () => {
     };
   });
   it("adds timestamp", () => {
-    const xdm = {};
-    injectTimestamp(dateProvider)(xdm);
-    expect(xdm).toEqual({
+    const event = {
+      mergeXdm: vi.fn(),
+    };
+    injectTimestamp(dateProvider)(event);
+    expect(event.mergeXdm).toHaveBeenCalledWith({
       timestamp: "2019-11-25T10:09:42.000Z",
     });
   });

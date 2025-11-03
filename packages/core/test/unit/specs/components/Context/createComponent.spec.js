@@ -19,14 +19,14 @@ describe("Context::createComponent", () => {
     log() {},
     warn() {},
   };
-  const context1 = (xdm) => {
-    xdm.a = "1";
+  const context1 = (event) => {
+    event.mergeXdm({ a: "1" });
   };
-  const context2 = (xdm) => {
-    xdm.b = "2";
+  const context2 = (event) => {
+    event.mergeXdm({ b: "2" });
   };
-  const requiredContext = (xdm) => {
-    xdm.c = "3";
+  const requiredContext = (event) => {
+    event.mergeXdm({ c: "3" });
   };
   const availableContexts = {
     context1,
@@ -49,12 +49,10 @@ describe("Context::createComponent", () => {
     await component.lifecycle.onBeforeEvent({
       event,
     });
-    expect(event.mergeXdm).toHaveBeenCalledWith({
-      a: "1",
-      b: "2",
-      c: "3",
-    });
-    expect(event.mergeData).toHaveBeenCalledWith({});
+    expect(event.mergeXdm).toHaveBeenCalledTimes(3);
+    expect(event.mergeXdm).toHaveBeenCalledWith({ a: "1" });
+    expect(event.mergeXdm).toHaveBeenCalledWith({ b: "2" });
+    expect(event.mergeXdm).toHaveBeenCalledWith({ c: "3" });
   });
   it("ignores unknown contexts", async () => {
     const config = createConfig({
@@ -66,11 +64,9 @@ describe("Context::createComponent", () => {
     await component.lifecycle.onBeforeEvent({
       event,
     });
-    expect(event.mergeXdm).toHaveBeenCalledWith({
-      a: "1",
-      c: "3",
-    });
-    expect(event.mergeData).toHaveBeenCalledWith({});
+    expect(event.mergeXdm).toHaveBeenCalledTimes(2);
+    expect(event.mergeXdm).toHaveBeenCalledWith({ a: "1" });
+    expect(event.mergeXdm).toHaveBeenCalledWith({ c: "3" });
   });
   it("can disable non-required contexts", async () => {
     const config = createConfig({
@@ -82,9 +78,7 @@ describe("Context::createComponent", () => {
     await component.lifecycle.onBeforeEvent({
       event,
     });
-    expect(event.mergeXdm).toHaveBeenCalledWith({
-      c: "3",
-    });
-    expect(event.mergeData).toHaveBeenCalledWith({});
+    expect(event.mergeXdm).toHaveBeenCalledTimes(1);
+    expect(event.mergeXdm).toHaveBeenCalledWith({ c: "3" });
   });
 });
