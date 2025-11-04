@@ -28,6 +28,7 @@
     "build": "pnpm run build:clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,SERVICE_WORKER,SERVICE_WORKER_MIN,BUNDLESIZE",
     "build:watch": "rollup -c --watch",
     "build:custom": "node scripts/alloyBuilder.js",
+    "test:integration": "pnpm -w test:integration",
     "test:functional": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chromium",
     "test:functional:custom": "node ./scripts/runFunctionalTests.js",
     "test:functional:watch": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ../../scripts/watchFunctionalTests.js --browsers chromium",

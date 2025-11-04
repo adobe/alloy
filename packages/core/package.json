@@ -13,6 +13,11 @@
     "./createEventListeners.js": "./src/createEventListeners.js",
     "./componentMetadata.js": "./src/componentMetadata.js"
   },
+  "scripts": {
+    "test:unit": "pnpm -w test:unit",
+    "test:unit:debug": "pnpm -w test:unit:debug",
+    "test:unit:watch": "pnpm -w test:unit:watch"
+  },
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
   "dependencies": {
