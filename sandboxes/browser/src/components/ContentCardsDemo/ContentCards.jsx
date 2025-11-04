@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./ContentCards.css";
 import { deleteAllCookies, getAlloyTestConfigs } from "../utils";

@@ -1,4 +1,3 @@
-import React from "react";
 import useAlloy from "./helpers/useAlloy";
 import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
 
