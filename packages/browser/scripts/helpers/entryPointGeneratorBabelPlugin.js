@@ -21,7 +21,7 @@ export default (t, includedModules) => ({
                 t.ArrayExpression(
                   includedModules.map((module) =>
                     t.MemberExpression(
-                      t.Identifier("components"),
+                      t.Identifier("optionalComponents"),
                       t.Identifier(module),
                     ),
                   ),
