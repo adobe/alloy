@@ -58,6 +58,7 @@
     "rollup-plugin-license": "^3.6.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.28.3",
     "glob": "^11.0.3",
     "msw": "^2.11.6",
     "read-cache": "^1.0.0",
