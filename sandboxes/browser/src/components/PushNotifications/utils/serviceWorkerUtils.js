@@ -1,10 +1,6 @@
 /* eslint-disable compat/compat */
 
-const serviceWorkerPath = new URL(
-  "../../../../../../packages/core/src/serviceWorker.js",
-  import.meta.url,
-);
-
+const serviceWorkerPath = "/alloyServiceWorker.js";
 export const isServiceWorkerRegistered = async () =>
   (await navigator.serviceWorker.getRegistration()) != null;
 
