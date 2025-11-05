@@ -75,7 +75,7 @@ describe("makeSendServiceWorkerTrackingData", () => {
 
       expect(result).toBe(true);
       expect(mockFetch).toHaveBeenCalledWith(
-        "https://edge.adobedc.net/ee/v1/interact?configId=test-datastream-id",
+        "https://edge.adobedc.net/ee/v1/interact?configId=test-datastream-id&requestId=mock-uuid-1234",
         {
           method: "POST",
           headers: {
