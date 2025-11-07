@@ -79,7 +79,7 @@ export default () => {
           if (trimmedEvent) {
             const event = parseEventFromBuffer(trimmedEvent);
 
-            if (event) {
+            if (event !== null) {
               onEvent(event);
             }
           }
