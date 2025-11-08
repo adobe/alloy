@@ -14,6 +14,7 @@ governing permissions and limitations under the License.
 /** @import { ResponseCreator } from '../types.js' */
 
 import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain.js";
+import apiVersion from "../../constants/apiVersion.js";
 import { createCallbackAggregator, noop } from "../../utils/index.js";
 import { isNetworkError } from "../../utils/networkErrors.js";
 import mergeLifecycleResponses from "./mergeLifecycleResponses.js";
@@ -46,10 +47,32 @@ export default ({
   sendNetworkRequest,
   createResponse,
   processWarningsAndErrors,
-  buildEndpointUrl,
+  getLocationHint,
+  getAssuranceValidationTokenParams,
 }) => {
   const { edgeDomain, edgeBasePath, datastreamId } = config;
   let hasDemdexFailed = false;
+
+  const buildEndpointUrl = (endpointDomain, request) => {
+    const locationHint = getLocationHint();
+    const edgeBasePathWithLocationHint = locationHint
+      ? `${edgeBasePath}/${locationHint}${request.getEdgeSubPath()}`
+      : `${edgeBasePath}${request.getEdgeSubPath()}`;
+    const configId = request.getDatastreamIdOverride() || datastreamId;
+
+    if (configId !== datastreamId) {
+      request.getPayload().mergeMeta({
+        sdkConfig: {
+          datastream: {
+            original: datastreamId,
+          },
+        },
+      });
+    }
+
+    return `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${configId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
+  };
+
   /**
    * Sends a network request that is aware of payload interfaces,
    * lifecycle methods, configured edge domains, response structures, etc.
@@ -79,12 +102,7 @@ export default ({
             ? edgeDomain
             : ID_THIRD_PARTY_DOMAIN;
 
-        const url = buildEndpointUrl({
-          edgeBasePath,
-          endpointDomain,
-          request,
-          datastreamId,
-        });
+        const url = buildEndpointUrl(endpointDomain, request);
         const payload = request.getPayload();
         cookieTransfer.cookiesToPayload(payload, endpointDomain);
 
