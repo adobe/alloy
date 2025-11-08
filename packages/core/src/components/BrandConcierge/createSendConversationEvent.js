@@ -11,11 +11,9 @@ governing permissions and limitations under the License.
 */
 import { createDataCollectionRequestPayload } from "../../utils/request/index.js";
 import createConversationServiceRequest from "./createConversationServiceRequest.js";
-import createGetEcidFromCookie from "../../utils/createDecodeKndctrCookie.js";
 import { getConciergeSessionCookie, getPageSurface } from "./utils.js";
 import uuid from "../../utils/uuid.js";
 import createStreamParser from "./createStreamParser.js";
-import createSendConversationServiceRequest from "./createSendConversationServiceRequest.js";
 
 export default ({
   consent,
@@ -23,23 +21,14 @@ export default ({
   loggingCookieJar,
   config,
   logger,
-  fetch,
+  sendConversationServiceRequest,
   buildEndpointUrl,
   cookieTransfer,
   createResponse,
+  decodeKndctrCookie,
 }) => {
   const { edgeDomain, edgeBasePath, datastreamId, onBeforeEventSend } = config;
-  const sendConversationServiceRequest = createSendConversationServiceRequest({
-    logger,
-    fetch,
-    config,
-  });
 
-  const decodeKndctrCookie = createGetEcidFromCookie({
-    orgId: config.orgId,
-    cookieJar: loggingCookieJar,
-    logger,
-  });
   return (options) => {
     let streamingEnabled = false;
     const { message, onStreamResponse, xdm, data } = options;

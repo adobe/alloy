@@ -16,6 +16,8 @@ import queryString from "@adobe/reactor-query-string";
 import { getNamespacedCookieName } from "../../utils/index.js";
 import { BC_SESSION_COOKIE_NAME } from "./constants.js";
 import { boolean, objectOf } from "../../utils/validation/index.js";
+import createGetEcidFromCookie from "../../utils/createDecodeKndctrCookie.js";
+import createSendConversationServiceRequest from "./createSendConversationServiceRequest.js";
 
 const createConciergeComponent = ({
   loggingCookieJar,
@@ -39,7 +41,17 @@ const createConciergeComponent = ({
   }
 
   const buildEndpointUrl = createBuildEndpointUrl({ queryString });
+  const sendConversationServiceRequest = createSendConversationServiceRequest({
+    logger,
+    fetch,
+    config,
+  });
 
+  const decodeKndctrCookie = createGetEcidFromCookie({
+    orgId: config.orgId,
+    cookieJar: loggingCookieJar,
+    logger,
+  });
   const sendConversationEvent = createSendConversationEvent({
     loggingCookieJar,
     logger,
@@ -48,17 +60,18 @@ const createConciergeComponent = ({
     instanceName,
     sendEdgeNetworkRequest,
     config,
-    fetch,
     buildEndpointUrl,
     lifecycle,
     cookieTransfer,
     createResponse,
+    sendConversationServiceRequest,
+    decodeKndctrCookie,
   });
 
   return {
     commands: {
       sendConversationEvent: {
-        optionsValidator: (options) => validateMessage({ logger, options }),
+        optionsValidator: (options) => validateMessage({ options }),
         run: sendConversationEvent,
       },
     },
