@@ -87,6 +87,7 @@ export default ({
             throw error;
           }
           payload.addEvent(event);
+          cookieTransfer.cookiesToPayload(payload, edgeDomain);
           return sendConversationServiceRequest({
             requestId: uuid(),
             url,
