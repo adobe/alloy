@@ -118,7 +118,15 @@ export default defineConfig([
     name: "alloy/core-src",
     files: ["packages/core/src/**/*.{cjs,js}"],
     rules: {
-      "import/no-extraneous-dependencies": "error",
+      "import/no-extraneous-dependencies": [
+        "error",
+        {
+          devDependencies: [
+            "vitest.config.js",
+            // Add other files that import devDependencies for which you don't want to see esLint errors.
+          ],
+        },
+      ],
       "import/extensions": [
         "error",
         {
@@ -245,11 +253,11 @@ export default defineConfig([
     },
   },
   {
-    name: "alloy/sandbox",
+    name: "alloy/browser-sandbox",
     files: ["sandboxes/browser/src/**/*.{js,jsx}"],
     settings: {
       react: {
-        version: "17.0.2",
+        version: "19.0.0",
       },
     },
     languageOptions: {
@@ -270,6 +278,7 @@ export default defineConfig([
     },
     rules: {
       ...react.configs.recommended.rules,
+      ...react.configs["jsx-runtime"].rules,
       "react/prop-types": "off",
     },
   },
