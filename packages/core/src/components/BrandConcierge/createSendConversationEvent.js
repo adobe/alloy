@@ -25,7 +25,7 @@ export default ({
   cookieTransfer,
   createResponse,
   decodeKndctrCookie,
-  lifecycle
+  lifecycle,
 }) => {
   const { edgeDomain, edgeBasePath, datastreamId, onBeforeEventSend } = config;
 
@@ -75,53 +75,54 @@ export default ({
       datastreamId,
       request,
     });
-      return lifecycle
-        .onBeforeEvent({
-          event
-        }).then(() => {
-          try {
-            // NOTE: this calls onBeforeEventSend callback (if configured)
-            event.finalize(onBeforeEventSend);
-          } catch (error) {
-            onStreamResponse({error});
-            throw error;
+    return lifecycle
+      .onBeforeEvent({
+        event,
+      })
+      .then(() => {
+        try {
+          // NOTE: this calls onBeforeEventSend callback (if configured)
+          event.finalize(onBeforeEventSend);
+        } catch (error) {
+          onStreamResponse({ error });
+          throw error;
+        }
+        payload.addEvent(event);
+        cookieTransfer.cookiesToPayload(payload, edgeDomain);
+        return sendConversationServiceRequest({
+          requestId: uuid(),
+          url,
+          request,
+          onStreamResponse,
+          streamingEnabled,
+        }).then((response) => {
+          if (response.status === 204) {
+            return;
           }
-          payload.addEvent(event);
-          cookieTransfer.cookiesToPayload(payload, edgeDomain);
-          return sendConversationServiceRequest({
-            requestId: uuid(),
-            url,
-            request,
-            onStreamResponse,
-            streamingEnabled,
-          }).then((response) => {
-            if (response.status === 204) {
+          const onStreamResponseCallback = (event) => {
+            if (event.error) {
+              onStreamResponse({ error: event.error });
               return;
             }
-            const onStreamResponseCallback = (event) => {
-              if (event.error) {
-                onStreamResponse({error: event.error});
-                return;
-              }
-              const substr = event.data.replace("data: ", "");
-              const responseJson = JSON.parse(substr);
-              const response = createResponse({content: responseJson});
+            const substr = event.data.replace("data: ", "");
+            const responseJson = JSON.parse(substr);
+            const response = createResponse({ content: responseJson });
 
-              cookieTransfer.responseToCookies(response);
+            cookieTransfer.responseToCookies(response);
 
-              logger.info(
-                "onStreamResponse callback called with",
-                response.getPayloadsByType("brand-concierge:conversation"),
-              );
-              onStreamResponse(
-                response.getPayloadsByType("brand-concierge:conversation"),
-              );
-            };
+            logger.info(
+              "onStreamResponse callback called with",
+              response.getPayloadsByType("brand-concierge:conversation"),
+            );
+            onStreamResponse(
+              response.getPayloadsByType("brand-concierge:conversation"),
+            );
+          };
 
-            const streamParser = createStreamParser();
+          const streamParser = createStreamParser();
 
-            streamParser(response.body, onStreamResponseCallback);
-          });
+          streamParser(response.body, onStreamResponseCallback);
         });
+      });
   };
 };

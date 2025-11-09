@@ -1,4 +1,3 @@
-import React from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useAlloy from "./helpers/useAlloy";
 import { styles } from "./acom-hackathon";
