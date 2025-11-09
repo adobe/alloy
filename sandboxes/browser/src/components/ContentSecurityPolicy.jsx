@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import React from "react";
+import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 
 export default function ContentSecurityPolicy() {
-  const [nonce, setNonce] = React.useState("");
-  React.useEffect(() => {
+  const [nonce, setNonce] = useState("");
+  useEffect(() => {
     const getNonce = () =>
       document.querySelector('meta[property="nonce"]')?.getAttribute("nonce") ||
       document.querySelector("script[nonce]")?.getAttribute("nonce") ||
@@ -38,11 +38,10 @@ export default function ContentSecurityPolicy() {
         // cdn.tt.omtrdc.net is necessary for Target VEC to function properly.
         // *.sc.omtrdc.net is necessary for Analytics Data Insertion API to function properly
         content={`default-src 'self' blob:;
-              script-src 'self'${nonce ? ` 'nonce-${nonce}'` : ""} experience-stage.adobe.net localhost:8080 experience.adobe.net cdn.jsdelivr.net assets.adobedtm.com cdn.tt.omtrdc.net cdn.experience.adobe.net localhost:8081;
+              script-src 'self'${nonce ? ` 'nonce-${nonce}'` : ""} cdn.jsdelivr.net assets.adobedtm.com cdn.tt.omtrdc.net;
               style-src 'self' 'unsafe-inline';
               img-src * data:;
-              frame-src localhost:8081;
-              connect-src 'self' *.alloyio.com *.adobedc.net *.demdex.net *.sc.omtrdc.net localhost:8080 localhost:8081`}
+              connect-src 'self' *.alloyio.com *.adobedc.net *.demdex.net *.sc.omtrdc.net`}
       />
     </Helmet>
   );

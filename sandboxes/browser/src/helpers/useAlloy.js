@@ -59,10 +59,16 @@ const setup = async ({
 };
 
 const defaultConfiguration = {
-  datastreamId: "3849362c-f325-4418-8cc8-993342b254f7",
-  orgId: "745F37C35E4B776E0A49421B@AdobeOrg",
+  datastreamId:
+    getUrlParameter("datastreamId") ||
+    getUrlParameter("edgeConfigId") ||
+    "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
+  orgId: "5BFE274A5F6980A50A495C08@AdobeOrg", // UnifiedJS QE Only
   debugEnabled: true,
-  edgeDomain: "edge-int.adobedc.net",
+  edgeDomain:
+    window.location.host.indexOf("alloyio.com") !== -1
+      ? "firstparty.alloyio.com"
+      : undefined,
   edgeBasePath: getUrlParameter("edgeBasePath") || "ee",
   onBeforeEventSend: (options) => {
     const x = options.xdm;
@@ -89,7 +95,6 @@ const defaultConfiguration = {
 };
 
 const configureInstance = (instanceName, configuration = {}) => {
-  console.log("config", defaultConfiguration, configuration);
   window[instanceName]("configure", {
     ...defaultConfiguration,
     ...configuration,
@@ -106,7 +111,7 @@ export default ({
       configureInstance(instanceName, configurations[instanceName]);
     });
   };
-  useEffect(async () => {
-    await setup({ instanceNames, options, configureInstances });
+  useEffect(() => {
+    setup({ instanceNames, options, configureInstances });
   }, []);
 };
