@@ -46,16 +46,11 @@ export default ({
       onBeforeEvent({
         event,
         renderDecisions,
-        conversationOnly = false,
         decisionScopes = [],
         personalization = {},
         onResponse = noop,
         onRequestFailure = noop,
       }) {
-        // if it's a conversational event ignore the logic to fetch propositions
-        if (conversationOnly) {
-          return Promise.resolve();
-        }
         // Include propositions on all responses, overridden with data as needed
         onResponse(() => ({ propositions: [] }));
         onRequestFailure(() => showContainers());
