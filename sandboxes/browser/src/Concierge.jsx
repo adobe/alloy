@@ -1,4 +1,3 @@
-import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useAlloy from "./helpers/useAlloy";
 import { styles } from "./acom-hackathon";
 import includeScript from "./helpers/includeScript";
@@ -40,7 +39,6 @@ export default function Concierge() {
 
   return (
     <div>
-      <ContentSecurityPolicy />
       <h1>Concierge Demo Page</h1>
       <p>
         This page will be used to test the Concierge feature of the Adobe
