@@ -21,27 +21,22 @@ describe("createSendConversationEvent", () => {
     mockEvent = {
       mergeQuery: vi.fn(),
       mergeXdm: vi.fn(),
-      finalize: vi.fn()
+      finalize: vi.fn(),
+      mergeMeta: vi.fn()
     };
 
     mockDependencies = {
       loggingCookieJar: {
         get: vi.fn(),
-        set: vi.fn()
       },
       logger: {
         info: vi.fn(),
-        warn: vi.fn(),
-        error: vi.fn(),
-        logOnBeforeNetworkRequest: vi.fn(),
-        logOnNetworkError: vi.fn()
       },
       eventManager: {
         createEvent: vi.fn().mockReturnValue(mockEvent)
       },
       consent: {
-        suspend: vi.fn(),
-        resume: vi.fn()
+       current: vi.fn().mockReturnValue({state: "in"})
       },
       instanceName: "test-instance",
       sendEdgeNetworkRequest: vi.fn(),

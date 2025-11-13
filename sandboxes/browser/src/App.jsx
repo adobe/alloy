@@ -146,7 +146,7 @@ const BasicExample = () => {
             <Route path="inAppMessages" element={<InAppMessages />} />
             <Route path="contentCards" element={<ContentCards />} />
             <Route path="pushNotifications" element={<PushNotifications />} />
-            <Route path="concierge" component={Concierge} />
+            <Route path="concierge" element={<Concierge />} />
           </Routes>
         </div>
       </Router>
