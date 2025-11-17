@@ -69,6 +69,15 @@ const createConciergeComponent = ({
   });
 
   return {
+    lifecycle: {
+      onBeforeEvent({ event }) {
+        const parsedParams = queryString.parse(window.location.search);
+        if (parsedParams.source) {
+          const source = parsedParams.source;
+          event.mergeXdm({ channel: { referringSource: source } });
+        }
+      },
+    },
     commands: {
       sendConversationEvent: {
         optionsValidator: (options) => validateMessage({ options }),
