@@ -34,6 +34,7 @@ import InAppMessages from "./components/InAppMessagesDemo/InAppMessages";
 import ContentCards from "./components/ContentCardsDemo/ContentCards";
 import PushNotifications from "./PushNotifications";
 import Advertising from "./Advertising";
+import Concierge from "./Concierge";
 
 const BasicExample = () => {
   return (
@@ -109,6 +110,9 @@ const BasicExample = () => {
             <li>
               <Link to="pushNotifications">Push Notifications</Link>
             </li>
+            <li>
+              <Link to="concierge">Concierge</Link>
+            </li>
           </ul>
           <hr />
           <Routes>
@@ -142,6 +146,7 @@ const BasicExample = () => {
             <Route path="inAppMessages" element={<InAppMessages />} />
             <Route path="contentCards" element={<ContentCards />} />
             <Route path="pushNotifications" element={<PushNotifications />} />
+            <Route path="concierge" component={Concierge} />
           </Routes>
         </div>
       </Router>
