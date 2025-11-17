@@ -2,6 +2,7 @@ import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useAlloy from "./helpers/useAlloy";
 import { styles } from "./acom-hackathon";
 import includeScript from "./helpers/includeScript";
+import { useEffect } from "react";
 export default function Concierge() {
   useAlloy({
     configurations: {
