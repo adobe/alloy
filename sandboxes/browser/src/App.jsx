@@ -33,6 +33,7 @@ import ConfigOverrides from "./ConfigOverrides";
 import InAppMessages from "./components/InAppMessagesDemo/InAppMessages";
 import ContentCards from "./components/ContentCardsDemo/ContentCards";
 import PushNotifications from "./PushNotifications";
+import ReferrerTest from "./ReferrerTest";
 import Advertising from "./Advertising";
 
 const BasicExample = () => {
@@ -109,6 +110,9 @@ const BasicExample = () => {
             <li>
               <Link to="pushNotifications">Push Notifications</Link>
             </li>
+            <li>
+              <Link to="/referrerTest">Referrer Context Test</Link>
+            </li>
           </ul>
           <hr />
           <Routes>
@@ -142,6 +146,7 @@ const BasicExample = () => {
             <Route path="inAppMessages" element={<InAppMessages />} />
             <Route path="contentCards" element={<ContentCards />} />
             <Route path="pushNotifications" element={<PushNotifications />} />
+            <Route path="referrerTest" element={<ReferrerTest />} />
           </Routes>
         </div>
       </Router>

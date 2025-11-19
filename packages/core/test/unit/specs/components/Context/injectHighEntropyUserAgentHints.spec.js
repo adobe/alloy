@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import injectHighEntropyUserAgentHints from "../../../../../src/components/Context/injectHighEntropyUserAgentHints.js";
 
 describe("Context::injectHighEntropyUserAgentHints", () => {
@@ -29,9 +29,11 @@ describe("Context::injectHighEntropyUserAgentHints", () => {
     },
   };
   it("works", () => {
-    const xdm = {};
-    injectHighEntropyUserAgentHints(navigator)(xdm, console).then(() => {
-      expect(xdm).toEqual({
+    const event = {
+      mergeXdm: vi.fn(),
+    };
+    injectHighEntropyUserAgentHints(navigator)(event, console).then(() => {
+      expect(event.mergeXdm).toHaveBeenCalledWith({
         environment: {
           browserDetails: {
             userAgentClientHints: {
