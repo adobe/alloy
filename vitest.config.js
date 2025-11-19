@@ -11,6 +11,10 @@ governing permissions and limitations under the License.
 */
 // eslint-disable-next-line import/no-unresolved
 import { defineConfig } from "vitest/config";
+import { playwright } from "@vitest/browser-playwright";
+
+const isCi = !!process.env.CI;
+const fileParallelism = process.env.FILE_PARALLELISM !== "false";
 
 export default defineConfig({
   test: {
@@ -22,7 +26,7 @@ export default defineConfig({
           include: ["packages/core/test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
           isolate: false,
           browser: {
-            provider: "playwright",
+            provider: playwright(),
             instances: [
               {
                 browser: "chromium",
@@ -31,6 +35,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             screenshotFailures: false,
+            fileParallelism,
           },
         },
       },
@@ -43,7 +48,7 @@ export default defineConfig({
           ],
           isolate: false,
           browser: {
-            provider: "playwright",
+            provider: playwright(),
             instances: [
               {
                 browser: "chromium",
@@ -52,6 +57,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             screenshotFailures: false,
+            fileParallelism,
           },
         },
       },
@@ -59,7 +65,7 @@ export default defineConfig({
 
     coverage: {
       include: ["packages/core/src/**/*"],
-      reporter: ["lcov", "html", "text"],
+      reporter: isCi ? ["lcov"] : ["lcov", "html", "text"],
     },
   },
 });

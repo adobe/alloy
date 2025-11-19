@@ -10,8 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import React from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, Routes } from "react-router";
 
 import Home from "./Home";
 import Consent from "./Consent";
@@ -35,6 +34,7 @@ import InAppMessages from "./components/InAppMessagesDemo/InAppMessages";
 import ContentCards from "./components/ContentCardsDemo/ContentCards";
 import PushNotifications from "./PushNotifications";
 import ReferrerTest from "./ReferrerTest";
+import Advertising from "./Advertising";
 
 const BasicExample = () => {
   return (
@@ -46,108 +46,108 @@ const BasicExample = () => {
               <Link to="/">Home</Link>
             </li>
             <li>
-              <Link to="/consent">Consent</Link>
+              <Link to="consent">Consent</Link>
             </li>
             <li>
-              <Link to="/personalization">Personalization</Link>
+              <Link to="personalization">Personalization</Link>
             </li>
             <li>
-              <Link to="/personalizationSpa">Personalization - SPA</Link>
+              <Link to="personalizationSpa">Personalization - SPA</Link>
             </li>
             <li>
-              <Link to="/personalizationAjo">Personalization - AJO</Link>
+              <Link to="personalizationAjo">Personalization - AJO</Link>
             </li>
             <li>
-              <Link to="/personalizationA4TClientSide">
+              <Link to="personalizationA4TClientSide">
                 Personalization - A4T Client Side
               </Link>
             </li>
             <li>
-              <Link to="/personalizationProfile">
-                Personalization - Profile
-              </Link>
+              <Link to="personalizationProfile">Personalization - Profile</Link>
             </li>
             <li>
-              <Link to="/personalizationFormBased">
+              <Link to="personalizationFormBased">
                 Personalization - Form Based
               </Link>
             </li>
             <li>
-              <Link to="/links">Links</Link>
+              <Link to="links">Links</Link>
             </li>
             <li>
-              <Link to="/eventMerge">Event-Merge</Link>
+              <Link to="eventMerge">Event-Merge</Link>
             </li>
             <li>
-              <Link to="/largePayload">Large Payload</Link>
+              <Link to="largePayload">Large Payload</Link>
             </li>
             <li>
-              <Link to="/orgTwo">Multiple Orgs</Link>
+              <Link to="orgTwo">Multiple Orgs</Link>
             </li>
             <li>
               {/* Anchor tag to ensure app is reloaded with unsafe CSP */}
-              <a href="/dualTag">Dual Tag</a>
+              <a href="dualTag">Dual Tag</a>
             </li>
             <li>
-              <a href="/legacy.html">Legacy Visitor ID</a>
+              <a href="legacy.html">Legacy Visitor ID</a>
             </li>
             <li>
-              <a href="/redirectOffers">Redirect Offers</a>
+              <a href="redirectOffers">Redirect Offers</a>
             </li>
             <li>
-              <a href="/identity">Identity</a>
+              <a href="identity">Identity</a>
             </li>
             <li>
-              <a href="/configOverrides">Config Overrides</a>
+              <a href="configOverrides">Config Overrides</a>
             </li>
             <li>
-              <a href="/advertisingTest">Advertising Test</a>
+              <a href="advertising">Advertising</a>
             </li>
             <li>
-              <Link to="/inAppMessages">In-app Messages</Link>
+              <Link to="inAppMessages">In-app Messages</Link>
             </li>
             <li>
-              <Link to="/contentCards">Content Cards</Link>
+              <Link to="contentCards">Content Cards</Link>
             </li>
             <li>
-              <Link to="/pushNotifications">Push Notifications</Link>
+              <Link to="pushNotifications">Push Notifications</Link>
             </li>
             <li>
               <Link to="/referrerTest">Referrer Context Test</Link>
             </li>
           </ul>
           <hr />
-
-          <Route exact path="/" component={Home} />
-          <Route path="/consent" component={Consent} />
-          <Route path="/personalization" component={Personalization} />
-          <Route path="/personalizationSpa" component={PersonalizationSpa} />
-          <Route path="/personalizationAjo" component={PersonalizationAjo} />
-          <Route
-            path="/personalizationA4TClientSide"
-            component={PersonalizationAnalyticsClientSide}
-          />
-          <Route
-            path="/personalizationProfile"
-            component={PersonalizationProfile}
-          />
-          <Route
-            path="/personalizationFormBased"
-            component={PersonalizationFormBased}
-          />
-          <Route path="/links" component={Links} />
-          <Route path="/eventMerge" component={EventMerge} />
-          <Route path="/largePayload" component={LargePayload} />
-          <Route path="/orgTwo" component={OrgTwo} />
-          <Route path="/dualTag" component={DualTag} />
-          <Route path="/redirectOffers" component={RedirectOffers} />
-          <Route path="/redirectedNewPage" component={RedirectedNewPage} />
-          <Route path="/identity" component={Identity} />
-          <Route path="/configOverrides" component={ConfigOverrides} />
-          <Route path="/inAppMessages" component={InAppMessages} />
-          <Route path="/contentCards" component={ContentCards} />
-          <Route path="/pushNotifications" component={PushNotifications} />
-          <Route path="/referrerTest" component={ReferrerTest} />
+          <Routes>
+            <Route exact path="/" element={<Home />} />
+            <Route path="advertising" element={<Advertising />} />
+            <Route path="consent" element={<Consent />} />
+            <Route path="personalization" element={<Personalization />} />
+            <Route path="personalizationSpa" element={<PersonalizationSpa />} />
+            <Route path="personalizationAjo" element={<PersonalizationAjo />} />
+            <Route
+              path="personalizationA4TClientSide"
+              element={<PersonalizationAnalyticsClientSide />}
+            />
+            <Route
+              path="personalizationProfile"
+              element={<PersonalizationProfile />}
+            />
+            <Route
+              path="personalizationFormBased"
+              element={<PersonalizationFormBased />}
+            />
+            <Route path="links" element={<Links />} />
+            <Route path="eventMerge" element={<EventMerge />} />
+            <Route path="largePayload" element={<LargePayload />} />
+            <Route path="orgTwo" element={<OrgTwo />} />
+            <Route path="dualTag" element={<DualTag />} />
+            <Route path="redirectOffers" element={<RedirectOffers />} />
+            <Route path="redirectedNewPage" element={<RedirectedNewPage />} />
+            <Route path="identity" element={<Identity />} />
+            <Route path="configOverrides" element={<ConfigOverrides />} />
+            <Route path="inAppMessages" element={<InAppMessages />} />
+            <Route path="contentCards" element={<ContentCards />} />
+            <Route path="pushNotifications" element={<PushNotifications />} />
+            <Route path="referrerTest" element={<ReferrerTest />} />
+          </Routes>
         </div>
       </Router>
       <AlloyVersion />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import NotificationPermissionsPanel from "./components/PushNotifications/NotificationPermissionsPanel";
 import useAlloy from "./helpers/useAlloy";
@@ -12,29 +12,27 @@ const sendPushSubscription = () => {
   window.alloy("sendPushSubscription");
 };
 
-export default function Home() {
+export default function PushNotifications() {
   const [serviceWorkerRegistered, setServiceWorkerRegistered] = useState(null);
   const [recheck, setRecheck] = useState(0);
 
   useAlloy({
     configurations: {
       alloy: {
-        orgId: "745F37C35E4B776E0A49421B@AdobeOrg",
-        datastreamId: "5aba15dc-b57b-41eb-99a5-5b7b083f2120",
+        orgId: "906E3A095DC834230A495FD6@AdobeOrg",
+        datastreamId: "07240eaa-207e-4d84-8a00-48d0e9a90474",
         thirdPartyCookiesEnabled: false,
         targetMigrationEnabled: false,
         clickCollectionEnabled: false,
         personalizationStorageEnabled: false,
-        edgeDomain: "edge-int.adobedc.net",
         onBeforeEventSend: () => {},
 
         pushNotifications: {
-          appId: "test.mobile.webPush",
-          trackingDatasetId: "628c1b9a80e2a21b9983b019",
+          appId: "serbanapp",
+          trackingDatasetId: "600ab4dd2c6dbf194ada59de",
           vapidPublicKey:
-            // "BBNXFX_qxm8d7ry08dh0qt-CLMdiXamv7KlvLz0p4nCTxW3ePvrMb1x_VL-tg4TINPPZaJoNX4FQvthuAOR1VuI",
-            // "BHeILyEYArRYKNvme32HbtARmFs5WlHb1PWKG_JfGQpAWv6L2Gc1Jzo9NvVGvVgHk7T-tU5VnXkq860L8bpdMzE",
-            "BCVENRqkmTWSZrgUBpZE20F3hiLBKxoSCkm-wF4UA_KYGocR6QEFY34NtENQNmWls6_XGy8BF-Pji-NsL-Rr0I4",
+            "BJeXbY4fhMcwctZov_87f240uAkwXp3cUhDquEx_TgOHhXmudYdSM3VXh4_O49zYLS3EHjtdG4WGuWsZe04WhDg",
+          // "BCVENRqkmTWSZrgUBpZE20F3hiLBKxoSCkm-wF4UA_KYGocR6QEFY34NtENQNmWls6_XGy8BF-Pji-NsL-Rr0I4", // stage
         },
       },
     },
@@ -86,9 +84,7 @@ export default function Home() {
 
           <button
             onClick={() => {
-              localStorage.removeItem(
-                "com.adobe.alloy.97D1F3F459CE0AD80A495CBE_AdobeOrg.pushNotifications.subscriptionDetails",
-              );
+              localStorage.clear();
             }}
           >
             Clear subscription cache

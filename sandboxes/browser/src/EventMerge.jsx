@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
 
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useAlloy from "./helpers/useAlloy";
 import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
 
 export default function EventMerge() {
-  const [eventMergeIdPromise, setEventMergeIdPromise] = React.useState(null);
+  const [eventMergeIdPromise, setEventMergeIdPromise] = useState(null);
 
   useAlloy();
   useSendPageViewEvent();

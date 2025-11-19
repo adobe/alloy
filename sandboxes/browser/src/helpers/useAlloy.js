@@ -21,6 +21,7 @@ import includeScript from "./includeScript";
 const setup = async ({
   instanceNames,
   options: { keepExistingMonitors = false, onAlloySetupCompleted },
+  configureInstances,
 }) => {
   if (!keepExistingMonitors) {
     delete window.__alloyMonitors;
@@ -33,6 +34,7 @@ const setup = async ({
   });
 
   initializeAlloy(window, instanceNames);
+  configureInstances();
 
   if (getUrlParameter("includeVisitor") === "true") {
     await includeScript(
@@ -104,10 +106,12 @@ export default ({
   configurations = {},
   options = {},
 } = {}) => {
-  useEffect(async () => {
-    await setup({ instanceNames, options });
+  const configureInstances = () => {
     Object.entries(instanceNames).forEach(([, instanceName]) => {
       configureInstance(instanceName, configurations[instanceName]);
     });
+  };
+  useEffect(() => {
+    setup({ instanceNames, options, configureInstances });
   }, []);
 };

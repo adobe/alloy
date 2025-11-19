@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+// eslint-disable-next-line import/no-unresolved
 import { v4 as uuidv4 } from "uuid";
 
 export default uuidv4;

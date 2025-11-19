@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./InAppMessagesStyle.css";
 import { deleteAllCookies, getAlloyTestConfigs } from "../utils";
