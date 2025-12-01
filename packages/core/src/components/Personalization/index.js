@@ -62,13 +62,23 @@ import {
   ADOBE_TARGET,
 } from "../../constants/decisionProvider.js";
 
-const createPersonalization = ({ config, logger, eventManager, consent }) => {
+const createPersonalization = ({
+  config,
+  logger,
+  eventManager,
+  consent,
+  identityMapStorage,
+}) => {
   const {
     targetMigrationEnabled,
     prehidingStyle,
     autoCollectPropositionInteractions,
   } = config;
-  const collect = createCollect({ eventManager, mergeDecisionsMeta });
+  const collect = createCollect({
+    eventManager,
+    mergeDecisionsMeta,
+    identityMapStorage,
+  });
 
   const showContainers = createShowContainers(logger);
   const hideContainers = createHideContainers(logger);

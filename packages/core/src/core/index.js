@@ -19,6 +19,7 @@ import {
   createLoggingCookieJar,
   injectFireReferrerHideableImage,
   injectGetBrowser,
+  createIdentityMapStorage,
 } from "../utils/index.js";
 import createLogController from "./createLogController.js";
 import createLifecycle from "./createLifecycle.js";
@@ -156,6 +157,8 @@ export const createExecuteCommand = ({
     const identity = createIdentity({ config, logger, loggingCookieJar });
     identity.initialize();
 
+    const identityMapStorage = createIdentityMapStorage();
+
     const eventManager = createEventManager({
       config,
       logger,
@@ -178,6 +181,7 @@ export const createExecuteCommand = ({
           componentRegistry,
           consent,
           identity,
+          identityMapStorage,
           eventManager,
           fireReferrerHideableImage,
           logger: componentLogger,
