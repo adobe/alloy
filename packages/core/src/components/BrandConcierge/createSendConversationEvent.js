@@ -26,6 +26,7 @@ export default ({
   createResponse,
   decodeKndctrCookie,
   lifecycle,
+  consent,
 }) => {
   const { edgeDomain, edgeBasePath, datastreamId, onBeforeEventSend } = config;
 
@@ -51,6 +52,13 @@ export default ({
         },
       });
     }
+
+    const { state } = consent.current();
+    event.mergeMeta({
+      consent: {
+        state: state,
+      },
+    });
 
     const ecid = decodeKndctrCookie();
 
