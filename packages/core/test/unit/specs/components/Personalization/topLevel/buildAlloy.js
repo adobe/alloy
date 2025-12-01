@@ -29,6 +29,7 @@ import createClickStorage from "../../../../../../src/components/Personalization
 import createApplyPropositions from "../../../../../../src/components/Personalization/createApplyPropositions.js";
 import createSetTargetMigration from "../../../../../../src/components/Personalization/createSetTargetMigration.js";
 import { createCallbackAggregator } from "../../../../../../src/utils/index.js";
+import { isPageWideSurface } from "../../../../../../src/utils/surfaceUtils.js";
 import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition.js";
 import createProcessPropositions from "../../../../../../src/components/Personalization/handlers/createProcessPropositions.js";
 import createAsyncArray from "../../../../../../src/components/Personalization/utils/createAsyncArray.js";
@@ -37,7 +38,6 @@ import createProcessDomAction from "../../../../../../src/components/Personaliza
 import createProcessHtmlContent from "../../../../../../src/components/Personalization/handlers/createProcessHtmlContent.js";
 import createProcessRedirect from "../../../../../../src/components/Personalization/handlers/createProcessRedirect.js";
 import processDefaultContent from "../../../../../../src/components/Personalization/handlers/processDefaultContent.js";
-import { isPageWideSurface } from "../../../../../../src/components/Personalization/utils/surfaceUtils.js";
 import createOnDecisionHandler from "../../../../../../src/components/Personalization/createOnDecisionHandler.js";
 import createNotificationHandler from "../../../../../../src/components/Personalization/createNotificationHandler.js";
 import {
