@@ -48,7 +48,7 @@ export const DOM_ACTION_COLLECT_INTERACTIONS = "collectInteractions";
 export default () => {
   return {
     [DOM_ACTION_SET_HTML]: createAction(setHtml, true),
-    [DOM_ACTION_CUSTOM_CODE]: createAction(prependHtml),
+    [DOM_ACTION_CUSTOM_CODE]: createAction(prependHtml, true),
     [DOM_ACTION_SET_TEXT]: createAction(setText, true),
     [DOM_ACTION_SET_ATTRIBUTE]: createAction(setAttributes, true),
     [DOM_ACTION_SET_IMAGE_SOURCE]: createAction(swapImage, true),

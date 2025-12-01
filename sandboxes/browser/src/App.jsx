@@ -33,6 +33,7 @@ import ConfigOverrides from "./ConfigOverrides";
 import InAppMessages from "./components/InAppMessagesDemo/InAppMessages";
 import ContentCards from "./components/ContentCardsDemo/ContentCards";
 import PushNotifications from "./PushNotifications";
+import ReferrerTest from "./ReferrerTest";
 import Advertising from "./Advertising";
 import Concierge from "./Concierge";
 
@@ -113,6 +114,9 @@ const BasicExample = () => {
             <li>
               <Link to="concierge">Concierge</Link>
             </li>
+            <li>
+              <Link to="/referrerTest">Referrer Context Test</Link>
+            </li>
           </ul>
           <hr />
           <Routes>
@@ -147,6 +151,7 @@ const BasicExample = () => {
             <Route path="contentCards" element={<ContentCards />} />
             <Route path="pushNotifications" element={<PushNotifications />} />
             <Route path="concierge" component={Concierge} />
+            <Route path="referrerTest" element={<ReferrerTest />} />
           </Routes>
         </div>
       </Router>

@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { beforeEach, describe, it, expect } from "vitest";
+import { beforeEach, describe, it, expect, vi } from "vitest";
 import injectDevice from "../../../../../src/components/Context/injectDevice.js";
 
 describe("Context::injectDevice", () => {
@@ -23,9 +23,11 @@ describe("Context::injectDevice", () => {
     };
   });
   const run = () => {
-    const xdm = {};
-    injectDevice(window)(xdm);
-    return xdm;
+    const event = {
+      mergeXdm: vi.fn(),
+    };
+    injectDevice(window)(event);
+    return event.mergeXdm.mock.calls[0]?.[0] || {};
   };
   it("handles the happy path", () => {
     window.screen.orientation = {

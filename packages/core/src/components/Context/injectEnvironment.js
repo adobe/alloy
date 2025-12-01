@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { deepAssign, toInteger } from "../../utils/index.js";
+import { toInteger } from "../../utils/index.js";
 
 export default (window) => {
-  return (xdm) => {
+  return (event) => {
     const {
       document: { documentElement: { clientWidth, clientHeight } = {} },
     } = window;
@@ -33,6 +33,6 @@ export default (window) => {
       environment.browserDetails.viewportHeight = viewportHeight;
     }
 
-    deepAssign(xdm, { environment });
+    event.mergeXdm({ environment });
   };
 };
