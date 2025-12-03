@@ -101,5 +101,3 @@ export const createInstance = (options = {}) => {
     components: Object.values(optionalComponents),
   });
 };
-
-export { optionalComponents as components };

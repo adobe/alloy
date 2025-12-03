@@ -9,30 +9,87 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+const COMPONENT_SOURCE = "@adobe/alloy-core/core/componentCreators.js";
+
+const createComponentArrayExpression = (t, includedModules) => {
+  return t.ArrayExpression(includedModules.map((module) => t.Identifier(module)));
+};
+
+const createComponentImport = (t, includedModules) => {
+  if (!includedModules.length) {
+    return null;
+  }
+
+  const specifiers = includedModules.map((module) =>
+    t.importSpecifier(t.identifier(module), t.identifier(module)),
+  );
+
+  return t.importDeclaration(specifiers, t.stringLiteral(COMPONENT_SOURCE));
+};
+
+const removeOptionalComponentsImport = (path) => {
+  const importPaths = path
+    .get("body")
+    .filter(
+      (child) =>
+        child.isImportDeclaration() &&
+        child.node.source.value === COMPONENT_SOURCE,
+    );
+
+  importPaths.forEach((importPath) => {
+    importPath.remove();
+  });
+};
+
+const insertComponentImport = (path, importNode) => {
+  if (!importNode) {
+    return;
+  }
+
+  const importDeclarations = path
+    .get("body")
+    .filter((child) => child.isImportDeclaration());
+
+  if (importDeclarations.length === 0) {
+    path.unshiftContainer("body", importNode);
+    return;
+  }
+
+  importDeclarations[importDeclarations.length - 1].insertAfter(importNode);
+};
+
 export default (t, includedModules) => ({
   visitor: {
-    CallExpression(path) {
-      if (path.node.callee.name === "initializeStandalone") {
-        path.replaceWith(
-          t.CallExpression(t.Identifier("initializeStandalone"), [
-            t.ObjectExpression([
-              t.ObjectProperty(
-                t.Identifier("components"),
-                t.ArrayExpression(
-                  includedModules.map((module) =>
-                    t.MemberExpression(
-                      t.Identifier("optionalComponents"),
-                      t.Identifier(module),
-                    ),
-                  ),
-                ),
-              ),
-            ]),
-          ]),
-        );
-
-        path.stop();
+    // rewrite the imports
+    Program: {
+      enter(path, state) {
+        state.componentsArray = createComponentArrayExpression(t, includedModules);
+        removeOptionalComponentsImport(path);
+      },
+      exit(path, state) {
+        const importNode = createComponentImport(t, includedModules);
+        insertComponentImport(path, importNode);
+        state.componentsArray = null;
+      },
+    },
+    // pass in the new, smaller components array to `initializeStandalone`
+    CallExpression(path, state) {
+      if (path.node.callee.name !== "initializeStandalone") {
+        return;
       }
+
+      const arrayExpression =
+        state.componentsArray || createComponentArrayExpression(t, includedModules);
+
+      path.replaceWith(
+        t.CallExpression(t.Identifier("initializeStandalone"), [
+          t.ObjectExpression([
+            t.ObjectProperty(t.Identifier("components"), arrayExpression),
+          ]),
+        ]),
+      );
+
+      path.stop();
     },
   },
 });
