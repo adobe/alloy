@@ -35,8 +35,8 @@ if (alloyEnv === PRODUCTION) {
 const rootDir = path.join(__dirname, "../../../../");
 const baseCodePath = path.join(rootDir, "distTest/baseCode.min.js");
 const localAlloyLibraryPath = path.join(rootDir, "dist/alloy.js");
-const localNpmLibraryPath = path.join(rootDir, "distTest/npmPackageLocal.js");
-const prodNpmLibraryPath = path.join(rootDir, "distTest/npmPackageProd.js");
+const localNpmLibraryPath = path.join(rootDir, "distTest/functionalTestLocal.js");
+const prodNpmLibraryPath = path.join(rootDir, "distTest/functionalTestProd.js");
 const remoteAlloyLibraryUrl = `https://cdn1.adoberesources.net/alloy/${alloyProdVersion}/alloy.js`;
 
 // We use this getter for retrieving the library code instead of just loading

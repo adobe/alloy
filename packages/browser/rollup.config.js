@@ -123,10 +123,10 @@ const bundleSizePlugin = (_options = {}) => {
 const BASE_CODE = "BASE_CODE";
 // build the standalone distribution
 const STANDALONE = "STANDALONE";
-// build the npm package entrypoint (createInstance)
-const NPM_PACKAGE_LOCAL = "NPM_PACKAGE_LOCAL";
-// build from the published npm package
-const NPM_PACKAGE_PROD = "NPM_PACKAGE_PROD";
+// build the npm package entrypoint (createInstance) for functional tests
+const FUNCTIONAL_TEST_LOCAL = "FUNCTIONAL_TEST_LOCAL";
+// build from the published npm package for functional tests
+const FUNCTIONAL_TEST_PROD = "FUNCTIONAL_TEST_PROD";
 // build the standalone distrobution, but exclude some (specified) modules
 const CUSTOM_BUILD = "CUSTOM_BUILD";
 // build the service worker (used for push notifications feature).
@@ -253,9 +253,9 @@ export const buildConfig = ({
     };
   }
 
-  // NPM_PACKAGE_LOCAL or NPM_PACKAGE_PROD
+  // FUNCTIONAL_TEST_LOCAL or FUNCTIONAL_TEST_PROD
   const filename =
-    variant === NPM_PACKAGE_LOCAL ? "npmPackageLocal" : "npmPackageProd";
+    variant === FUNCTIONAL_TEST_LOCAL ? "functionalTestLocal" : "functionalTestProd";
 
   return {
     input: `${dirname}/test/functional/helpers/${filename}.js`,
@@ -282,8 +282,8 @@ const addConfig = (variant) => {
 
 addConfig(BASE_CODE);
 addConfig(STANDALONE);
-addConfig(NPM_PACKAGE_LOCAL);
-addConfig(NPM_PACKAGE_PROD);
+addConfig(FUNCTIONAL_TEST_LOCAL);
+addConfig(FUNCTIONAL_TEST_PROD);
 addConfig(SERVICE_WORKER);
 
 export default config;
