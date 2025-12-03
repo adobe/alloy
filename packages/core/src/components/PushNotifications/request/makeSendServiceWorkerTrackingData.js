@@ -77,7 +77,7 @@ export default async (
       }
     }
 
-    const url = `https://${edgeDomain}/${edgeBasePath}/v1/interact?configId=${datastreamId}`;
+    const url = `https://${edgeDomain}/${edgeBasePath}/v1/interact?configId=${datastreamId}&requestId=${uuidv4()}`;
 
     /** @type {TrackingDataPayload} */
     const payload = {

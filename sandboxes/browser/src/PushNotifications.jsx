@@ -31,7 +31,7 @@ export default function PushNotifications() {
           appId: "serbanapp",
           trackingDatasetId: "600ab4dd2c6dbf194ada59de",
           vapidPublicKey:
-            "BErwge_xSx9XzOxKZxgocoT_jFbV5u1aoWrUjUPCe0KKvE_Ej0dQuNNxwH3wlA7DpVuNyPQJ3zRskD2pUSKRUjQ",
+            "BJeXbY4fhMcwctZov_87f240uAkwXp3cUhDquEx_TgOHhXmudYdSM3VXh4_O49zYLS3EHjtdG4WGuWsZe04WhDg",
           // "BCVENRqkmTWSZrgUBpZE20F3hiLBKxoSCkm-wF4UA_KYGocR6QEFY34NtENQNmWls6_XGy8BF-Pji-NsL-Rr0I4", // stage
         },
       },

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { deepAssign, noop } from "../../utils/index.js";
+import { noop } from "../../utils/index.js";
 import highEntropyUserAgentHints from "../../constants/highEntropyUserAgentClientHints.js";
 
 const browserSupportsUserAgentClientHints = (navigator) => {
@@ -21,7 +21,7 @@ export default (navigator) => {
   if (!browserSupportsUserAgentClientHints(navigator)) {
     return noop;
   }
-  return (xdm, logger) => {
+  return (event, logger) => {
     try {
       // eslint-disable-next-line compat/compat -- userAgentData support is checked before calling
       return navigator.userAgentData
@@ -37,7 +37,7 @@ export default (navigator) => {
               userAgentClientHints[hintName] = hints[hintName];
             }
           });
-          deepAssign(xdm, {
+          event.mergeXdm({
             environment: {
               browserDetails: {
                 userAgentClientHints,

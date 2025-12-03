@@ -10,14 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import implementationDetails from "../../../../../src/components/Context/implementationDetails.js";
 
 describe("Context::implementationDetails", () => {
   it("works", () => {
-    const xdm = {};
-    implementationDetails(xdm);
-    expect(xdm).toEqual({
+    const event = {
+      mergeXdm: vi.fn(),
+    };
+    implementationDetails(event);
+    expect(event.mergeXdm).toHaveBeenCalledWith({
       implementationDetails: {
         name: "https://ns.adobe.com/experience/alloy",
         version: "__VERSION__",

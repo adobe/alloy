@@ -9,15 +9,17 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import injectEnvironment from "../../../../../src/components/Context/injectEnvironment.js";
 
 describe("Context::injectEnvironment", () => {
   const run = (description, mywindow, expectedXdm) => {
     it(`${description}`, () => {
-      const xdm = {};
-      injectEnvironment(mywindow)(xdm);
-      expect(xdm).toEqual(expectedXdm);
+      const event = {
+        mergeXdm: vi.fn(),
+      };
+      injectEnvironment(mywindow)(event);
+      expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     });
   };
   run(

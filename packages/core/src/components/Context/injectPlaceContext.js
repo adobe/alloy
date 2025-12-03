@@ -9,10 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { deepAssign, toISOStringLocal, toInteger } from "../../utils/index.js";
+import { toISOStringLocal, toInteger } from "../../utils/index.js";
 
 export default (dateProvider) => {
-  return (xdm) => {
+  return (event) => {
     const date = dateProvider();
 
     const placeContext = {};
@@ -29,6 +29,6 @@ export default (dateProvider) => {
       placeContext.localTime = toISOStringLocal(date);
     }
 
-    deepAssign(xdm, { placeContext });
+    event.mergeXdm({ placeContext });
   };
 };

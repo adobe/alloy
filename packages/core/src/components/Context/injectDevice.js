@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { deepAssign, isFunction, toInteger } from "../../utils/index.js";
+import { isFunction, toInteger } from "../../utils/index.js";
 
 const getScreenOrientationViaProperty = (window) => {
   const {
@@ -48,7 +48,7 @@ const getScreenOrientationViaMediaQuery = (window) => {
 };
 
 export default (window) => {
-  return (xdm) => {
+  return (event) => {
     const {
       screen: { width, height },
     } = window;
@@ -71,7 +71,7 @@ export default (window) => {
       device.screenOrientation = orientation;
     }
     if (Object.keys(device).length > 0) {
-      deepAssign(xdm, { device });
+      event.mergeXdm({ device });
     }
   };
 };

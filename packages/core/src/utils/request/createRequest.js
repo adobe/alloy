@@ -48,6 +48,7 @@ export default (options) => {
     getUseSendBeacon,
     datastreamIdOverride,
     edgeSubPath,
+    requestParams = {},
   } = options;
 
   const id = uuid();
@@ -84,6 +85,9 @@ export default (options) => {
     },
     setIsIdentityEstablished() {
       isIdentityEstablished = true;
+    },
+    getRequestParams() {
+      return requestParams;
     },
   };
 };
