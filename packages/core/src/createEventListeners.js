@@ -53,11 +53,14 @@ const createEventListeners = ({ platform, sw }) => {
         const data = event.notification.data;
 
         try {
-          await makeSendServiceWorkerTrackingData({
-            /* eslint-disable-next-line no-underscore-dangle */
-            xdm: data._xdm.mixins,
-            actionLabel: "Dismiss",
-          });
+          await makeSendServiceWorkerTrackingData(
+            {
+              /* eslint-disable-next-line no-underscore-dangle */
+              xdm: data._xdm.mixins,
+              actionLabel: "Dismiss",
+            },
+            { logger: platform.logger, fetch: platform.fetch },
+          );
         } catch (error) {
           platform.logger.error("Failed to send tracking call:", error);
         }
