@@ -31,6 +31,7 @@ describe("createSendConversationEvent", () => {
       },
       logger: {
         info: vi.fn(),
+        error: vi.fn(),
       },
       eventManager: {
         createEvent: vi.fn().mockReturnValue(mockEvent)
@@ -188,5 +189,55 @@ describe("createSendConversationEvent", () => {
       expect(mockDependencies.sendConversationServiceRequest).toHaveBeenCalled();
       return resultPromise;
     });
+  });
+
+  it("handles stream timeout when no data is received within 10 seconds", async () => {
+    vi.useFakeTimers();
+    
+    const mockResponse = {
+      ok: true,
+      status: 200,
+      body: {
+        // Simulate an async iterator that never yields data
+        [Symbol.asyncIterator]: async function* () {
+          // Never yield anything - simulates a hanging stream
+          await new Promise(() => {}); // Promise that never resolves
+        }
+      }
+    };
+    mockDependencies.sendConversationServiceRequest.mockResolvedValue(mockResponse);
+
+    const sendConversationEvent = createSendConversationEvent(mockDependencies);
+    const onStreamResponse = vi.fn();
+    const options = {
+      message: "Hello, I need help",
+      onStreamResponse
+    };
+
+    const resultPromise = sendConversationEvent(options);
+
+    await flushPromiseChains();
+
+    // Fast-forward time by 10 seconds to trigger the timeout
+    vi.advanceTimersByTime(10000);
+    return resultPromise.then(res => {
+      // Verify that timeout error was logged
+      expect(mockDependencies.logger.error).toHaveBeenCalledWith(
+        "Stream error occurred",
+        expect.objectContaining({
+          message: "Stream timeout: No data received within 10 seconds"
+        })
+      );
+
+      // Verify that onStreamResponse was called with the timeout error
+      expect(onStreamResponse).toHaveBeenCalledWith({
+        error: expect.objectContaining({
+          message: "Stream timeout: No data received within 10 seconds"
+        })
+      });
+
+      vi.useRealTimers();
+    });
+    // await flushPromiseChains();
   });
 });
