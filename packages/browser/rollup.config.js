@@ -75,7 +75,7 @@ const bundleSizePlugin = (_options = {}) => {
           Object.values(bundle)
             .filter((outputFile) => outputFile.type === "chunk")
             .map(async (chunk) => ({
-              fileName: rollupOptions.file,
+              fileName: path.relative(dirname, rollupOptions.file),
               uncompressedSize: Buffer.from(chunk.code).byteLength,
               gzippedSize: await getGzippedSize(chunk.code, {
                 level: options.gzipCompressionLevel,
