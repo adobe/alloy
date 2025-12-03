@@ -10,8 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line import/no-unresolved
-// FIXME: Self-dependency is broken in monorepo, so this does not currently work.
 import { createInstance } from "@adobe/alloy";
 
 window.alloyCreateInstance = createInstance;
