@@ -81,7 +81,7 @@ fs.readFile(path.join(workspaceRoot, "packages/browser/dist/alloy.js"), "utf8", 
       const runner = testcafe.createRunner();
       runner
         .src(files)
-        .browsers("chrome")
+        .browsers("playwright:chromium")
         .run()
         .then((failedCount) => {
           console.log(`Tests finished. Failed count: ${failedCount}`);

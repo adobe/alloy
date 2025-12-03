@@ -29,17 +29,17 @@
     "build:watch": "rollup -c --watch",
     "build:custom": "node scripts/alloyBuilder.js",
     "test:integration": "pnpm -w test:integration",
-    "test:functional": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chromium",
+    "test:functional": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe playwright:chromium",
     "test:functional:custom": "node ./scripts/runFunctionalTests.js",
-    "test:functional:watch": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ../../scripts/watchFunctionalTests.js --browsers chromium",
-    "test:functional:debug": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe --inspect-brk chromium",
-    "test:functional:build:int": "rollup -c --environment BASE_CODE_MIN,NPM_PACKAGE_LOCAL,NPM_PACKAGE_LOCAL_MIN",
-    "test:functional:build:prod": "rollup -c --environment NPM_PACKAGE_PROD,NPM_PACKAGE_PROD_MIN"
+    "test:functional:watch": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ../../scripts/watchFunctionalTests.js --browsers playwright:chromium",
+    "test:functional:debug": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe --inspect-brk playwright:chromium",
+    "test:functional:build:int": "rollup -c --environment BASE_CODE_MIN,FUNCTIONAL_TEST_LOCAL,FUNCTIONAL_TEST_LOCAL_MIN",
+    "test:functional:build:prod": "rollup -c --environment FUNCTIONAL_TEST_PROD,FUNCTIONAL_TEST_PROD_MIN"
   },
   "exports": {
     ".": "./src/index.js",
     "./baseCode.js": "./src/baseCode/index.js",
-    "./standalone.js": "./src/baseCode.js",
+    "./standalone.js": "./src/standalone.js",
     "./serviceWorker.js": "./src/serviceWorker.js"
   },
   "dependencies": {
@@ -64,6 +64,7 @@
     "read-cache": "^1.0.0",
     "rimraf": "^6.1.0",
     "testcafe": "^3.7.2",
+    "testcafe-browser-provider-playwright": "^1.1.0",
     "uuid": "^13.0.0",
     "vitest": "^4.0.6"
   }

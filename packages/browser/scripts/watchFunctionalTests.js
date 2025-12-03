@@ -32,8 +32,8 @@ program.addOption(
     "-b, --browsers <browsers...>",
     "the browser used to run the tests",
   )
-    .choices(["chrome", "firefox", "safari"])
-    .default("chrome"),
+    .choices(["playwright:chromium", "playwright:firefox", "playwright:webkit", "chrome", "firefox", "safari"])
+    .default("playwright:chromium"),
 );
 
 program.addOption(
@@ -96,7 +96,7 @@ const effectByEventCode = {
   // of the loadConfigFile function, but that doesn't work.
   // See https://github.com/rollup/rollup/issues/4003
   process.env.STANDALONE = "true";
-  process.env.NPM_PACKAGE_LOCAL = "true";
+  process.env.FUNCTIONAL_TEST_LOCAL = "true";
   process.env.BASE_CODE_MIN = "true";
   const { options, warnings } = await loadConfigFile(
     path.join(dirname, "../rollup.config.js"),
