@@ -1,32 +1,27 @@
 {
-  "distTest/baseCode.min.js": {
-    "uncompressedSize": 199,
-    "gzippedSize": 164,
-    "brotiliSize": 133
-  },
-  "/Users/cmcbride/homebase/code/github.com/adobe/alloy/.worktrees/alloy-browser-package/packages/browser/distTest/baseCode.min.js": {
-    "uncompressedSize": 199,
-    "gzippedSize": 164,
-    "brotiliSize": 133
-  },
-  "/Users/cmcbride/homebase/code/github.com/adobe/alloy/.worktrees/alloy-browser-package/packages/browser/dist/alloy.js": {
+  "dist/alloy.js": {
     "uncompressedSize": 699907,
     "gzippedSize": 112139,
     "brotiliSize": 86519
   },
-  "/Users/cmcbride/homebase/code/github.com/adobe/alloy/.worktrees/alloy-browser-package/packages/browser/dist/alloy.min.js": {
+  "dist/alloy.min.js": {
     "uncompressedSize": 145521,
     "gzippedSize": 48081,
     "brotiliSize": 41675
   },
-  "/Users/cmcbride/homebase/code/github.com/adobe/alloy/.worktrees/alloy-browser-package/packages/browser/dist/alloyServiceWorker.js": {
+  "dist/alloyServiceWorker.js": {
     "uncompressedSize": 18265,
     "gzippedSize": 4300,
     "brotiliSize": 3627
   },
-  "/Users/cmcbride/homebase/code/github.com/adobe/alloy/.worktrees/alloy-browser-package/packages/browser/dist/alloyServiceWorker.min.js": {
+  "dist/alloyServiceWorker.min.js": {
     "uncompressedSize": 5538,
     "gzippedSize": 2590,
     "brotiliSize": 2177
+  },
+  "distTest/baseCode.min.js": {
+    "uncompressedSize": 199,
+    "gzippedSize": 164,
+    "brotiliSize": 133
   }
 }
