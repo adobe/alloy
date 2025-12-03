@@ -9,10 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import {
-  createCustomInstance,
-  components as optionalComponents,
-} from "./index.js";
+import { createCustomInstance } from "./index.js";
+import * as optionalComponents from "@adobe/alloy-core/core/componentCreators.js";
 
 // This file is used by rollup to create the browser version that is uploaded to cdn
 

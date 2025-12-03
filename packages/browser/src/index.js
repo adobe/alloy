@@ -10,8 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import * as core from "@adobe/alloy-core";
+import * as optionalComponents from "@adobe/alloy-core/core/componentCreators.js";
 
-const components = core.components;
+const components = optionalComponents;
 export { components };
 
 /** @type {core.createCustomInstance} */
