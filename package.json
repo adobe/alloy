@@ -13,8 +13,6 @@
     "babel.config.js",
     "rollup.config.js",
     ".browserslistrc",
-    "scripts/helpers/entryPointGeneratorBabelPlugin.js",
-    "scripts/helpers/versionBabelPlugin.js",
     "scripts/helpers/path.js"
   ],
   "scripts": {
