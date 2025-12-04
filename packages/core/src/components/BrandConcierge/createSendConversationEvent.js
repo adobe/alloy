@@ -14,6 +14,7 @@ import createConversationServiceRequest from "./createConversationServiceRequest
 import { getConciergeSessionCookie, getPageSurface } from "./utils.js";
 import uuid from "../../utils/uuid.js";
 import createStreamParser from "./createStreamParser.js";
+import createTimeoutWrapper from "./createTimeoutWrapper.js";
 
 export default ({
   eventManager,
@@ -109,6 +110,7 @@ export default ({
           }
           const onStreamResponseCallback = (event) => {
             if (event.error) {
+              logger.error("Stream error occurred", event.error);
               onStreamResponse({ error: event.error });
               return;
             }
@@ -127,9 +129,13 @@ export default ({
             );
           };
 
+          const wrappedCallback = createTimeoutWrapper({
+            onStreamResponseCallback,
+          });
+
           const streamParser = createStreamParser();
 
-          streamParser(response.body, onStreamResponseCallback);
+          streamParser(response.body, wrappedCallback);
         });
       });
   };
