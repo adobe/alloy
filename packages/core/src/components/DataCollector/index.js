@@ -14,7 +14,7 @@ import validateUserEventOptions from "./validateUserEventOptions.js";
 import validateApplyResponse from "./validateApplyResponse.js";
 import { deepAssign } from "../../utils/index.js";
 
-const createDataCollector = ({ eventManager, logger }) => {
+const createDataCollector = ({ eventManager, logger, identityMapStorage }) => {
   return {
     commands: {
       sendEvent: {
@@ -41,6 +41,10 @@ const createDataCollector = ({ eventManager, logger }) => {
 
           event.setUserXdm(xdm);
           event.setUserData(data);
+
+          if (xdm && xdm.identityMap) {
+            identityMapStorage.store(xdm.identityMap);
+          }
 
           if (type) {
             event.mergeXdm({

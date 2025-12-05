@@ -13,7 +13,7 @@ import { DISPLAY } from "../constants/eventType.js";
 import { getPropositionEventType } from "../constants/propositionEventType.js";
 import { isNonEmptyArray } from "./index.js";
 
-export default ({ eventManager, mergeDecisionsMeta }) => {
+export default ({ eventManager, mergeDecisionsMeta, identityMapStorage }) => {
   // Called when a decision is auto-rendered for the __view__ scope or a SPA view(display and empty display notification)
   return ({
     decisionsMeta = [],
@@ -41,6 +41,11 @@ export default ({ eventManager, mergeDecisionsMeta }) => {
     }
 
     event.mergeXdm(data);
+
+    const storedIdentityMap = identityMapStorage.get();
+    if (storedIdentityMap) {
+      event.mergeXdm({ identityMap: storedIdentityMap });
+    }
 
     if (documentMayUnload) {
       event.documentMayUnload();

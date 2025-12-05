@@ -77,6 +77,7 @@ const buildComponent = ({
   window,
   hideContainers,
   showContainers,
+  identityMapStorage,
 }) => {
   const initDomActionsModulesMocks = () => {
     return {
@@ -106,6 +107,7 @@ const buildComponent = ({
   const collect = createCollect({
     eventManager,
     mergeDecisionsMeta,
+    identityMapStorage,
   });
   const { storeInteractionMeta, getInteractionMetas } =
     createInteractionStorage();

@@ -4,7 +4,20 @@ import useSendPageViewEvent from "./helpers/useSendPageViewEvent";
 
 export default function Personalization() {
   useAlloy();
-  useSendPageViewEvent({ renderDecisions: true });
+  useSendPageViewEvent({
+    renderDecisions: true,
+    xdm: {
+      identityMap: {
+        CRM_ID: [
+          {
+            id: "test-user-12345",
+            primary: true,
+            authenticatedState: "authenticated",
+          },
+        ],
+      },
+    },
+  });
 
   return (
     <div>
