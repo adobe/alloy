@@ -47,8 +47,10 @@ describe("Personalization", () => {
     event = {
       mergeQuery: vi.fn(),
       getViewName: vi.fn(),
+      getUserIdentityMap: vi.fn(),
     };
     event.getViewName.mockReturnValue({});
+    event.getUserIdentityMap.mockReturnValue(undefined);
     logger = {
       info: vi.fn(),
       warn: vi.fn(),

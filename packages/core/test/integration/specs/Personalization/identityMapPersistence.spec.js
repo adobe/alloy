@@ -18,7 +18,7 @@ import {
 } from "../../helpers/testsSetup/extend.js";
 import { http, HttpResponse } from "msw";
 
-describe("identityMap persistence in automatic calls", () => {
+describe("identityMap in automatic display notifications", () => {
   let testElement;
 
   beforeEach(() => {
@@ -34,7 +34,7 @@ describe("identityMap persistence in automatic calls", () => {
     };
   });
 
-  test("display notifications include identityMap from sendEvent", async ({
+  test("display notifications include identityMap from the originating sendEvent", async ({
     worker,
     alloy,
     networkRecorder,
@@ -76,10 +76,7 @@ describe("identityMap persistence in automatic calls", () => {
 
     worker.use(personalizationResponseHandler);
 
-    await alloy("configure", {
-      ...alloyConfig,
-      debugEnabled: true,
-    });
+    await alloy("configure", alloyConfig);
 
     const customIdentityMap = {
       CRM_ID: [
@@ -125,14 +122,14 @@ describe("identityMap persistence in automatic calls", () => {
       const displayNotificationCall = displayCalls[0];
       const identityMap =
         displayNotificationCall.request.body.events[0].xdm.identityMap;
-      if (identityMap && identityMap.CRM_ID) {
-        expect(identityMap.CRM_ID[0].id).toBe("test-user-123");
-        expect(identityMap.CRM_ID[0].primary).toBe(true);
-      }
+      expect(identityMap).toBeDefined();
+      expect(identityMap.CRM_ID).toBeDefined();
+      expect(identityMap.CRM_ID[0].id).toBe("test-user-123");
+      expect(identityMap.CRM_ID[0].primary).toBe(true);
     }
   });
 
-  test("multiple sendEvents update stored identityMap", async ({
+  test("each sendEvent's display notification uses its own identityMap", async ({
     worker,
     alloy,
     networkRecorder,
@@ -174,10 +171,7 @@ describe("identityMap persistence in automatic calls", () => {
 
     worker.use(personalizationResponseHandler);
 
-    await alloy("configure", {
-      ...alloyConfig,
-      debugEnabled: true,
-    });
+    await alloy("configure", alloyConfig);
 
     const firstIdentityMap = {
       CRM_ID: [
@@ -196,10 +190,22 @@ describe("identityMap persistence in automatic calls", () => {
       },
     });
 
-    await networkRecorder.findCalls(/v1\/interact/, {
+    const firstBatchCalls = await networkRecorder.findCalls(/v1\/interact/, {
       retries: 10,
       delayMs: 50,
     });
+
+    const firstDisplayCall = firstBatchCalls.find(
+      (call) =>
+        call.request.body.events[0].xdm.eventType ===
+        "decisioning.propositionDisplay",
+    );
+
+    if (firstDisplayCall) {
+      expect(
+        firstDisplayCall.request.body.events[0].xdm.identityMap.CRM_ID[0].id,
+      ).toBe("user-first");
+    }
 
     networkRecorder.reset();
 
@@ -225,38 +231,31 @@ describe("identityMap persistence in automatic calls", () => {
       },
     });
 
-    const interactCalls = await networkRecorder.findCalls(/v1\/interact/, {
+    const secondBatchCalls = await networkRecorder.findCalls(/v1\/interact/, {
       retries: 10,
       delayMs: 50,
     });
 
-    expect(interactCalls.length).toBeGreaterThanOrEqual(1);
+    const secondDisplayCall = secondBatchCalls.find(
+      (call) =>
+        call.request.body.events[0].xdm.eventType ===
+        "decisioning.propositionDisplay",
+    );
 
-    const sendEventCall = interactCalls[0];
-    expect(
-      sendEventCall.request.body.events[0].xdm.identityMap.CRM_ID[0].id,
-    ).toBe("user-second");
-    expect(
-      sendEventCall.request.body.events[0].xdm.identityMap.EMAIL,
-    ).toBeDefined();
-
-    if (interactCalls.length > 1) {
-      const displayNotificationCall = interactCalls[1];
+    if (secondDisplayCall) {
       expect(
-        displayNotificationCall.request.body.events[0].xdm.identityMap.CRM_ID[0]
-          .id,
+        secondDisplayCall.request.body.events[0].xdm.identityMap.CRM_ID[0].id,
       ).toBe("user-second");
       expect(
-        displayNotificationCall.request.body.events[0].xdm.identityMap.EMAIL,
+        secondDisplayCall.request.body.events[0].xdm.identityMap.EMAIL,
       ).toBeDefined();
       expect(
-        displayNotificationCall.request.body.events[0].xdm.identityMap.EMAIL[0]
-          .id,
+        secondDisplayCall.request.body.events[0].xdm.identityMap.EMAIL[0].id,
       ).toBe("test@example.com");
     }
   });
 
-  test("sendEvent without identityMap does not affect stored value", async ({
+  test("sendEvent without identityMap results in display notification without identityMap", async ({
     worker,
     alloy,
     networkRecorder,
@@ -298,34 +297,7 @@ describe("identityMap persistence in automatic calls", () => {
 
     worker.use(personalizationResponseHandler);
 
-    await alloy("configure", {
-      ...alloyConfig,
-      debugEnabled: true,
-    });
-
-    const customIdentityMap = {
-      CRM_ID: [
-        {
-          id: "persistent-user",
-          primary: true,
-        },
-      ],
-    };
-
-    await alloy("sendEvent", {
-      renderDecisions: true,
-      xdm: {
-        identityMap: customIdentityMap,
-        eventType: "web.webpagedetails.pageViews",
-      },
-    });
-
-    await networkRecorder.findCalls(/v1\/interact/, {
-      retries: 10,
-      delayMs: 50,
-    });
-
-    networkRecorder.reset();
+    await alloy("configure", alloyConfig);
 
     await alloy("sendEvent", {
       renderDecisions: true,
@@ -339,18 +311,17 @@ describe("identityMap persistence in automatic calls", () => {
       delayMs: 50,
     });
 
-    if (interactCalls.length > 1) {
-      const displayNotificationCall = interactCalls[1];
+    const displayCalls = interactCalls.filter(
+      (call) =>
+        call.request.body.events[0].xdm.eventType ===
+        "decisioning.propositionDisplay",
+    );
+
+    if (displayCalls.length > 0) {
+      const displayNotificationCall = displayCalls[0];
       expect(
         displayNotificationCall.request.body.events[0].xdm.identityMap,
-      ).toBeDefined();
-      expect(
-        displayNotificationCall.request.body.events[0].xdm.identityMap.CRM_ID,
-      ).toBeDefined();
-      expect(
-        displayNotificationCall.request.body.events[0].xdm.identityMap.CRM_ID[0]
-          .id,
-      ).toBe("persistent-user");
+      ).toBeUndefined();
     }
   });
 });

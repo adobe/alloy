@@ -76,11 +76,6 @@ export default (decisions) => {
   };
   const hideContainers = vi.fn();
   const showContainers = vi.fn();
-  const identityMapStorage = {
-    get: vi.fn().mockReturnValue(undefined),
-    store: vi.fn(),
-    clear: vi.fn(),
-  };
   return {
     actions,
     config,
@@ -91,7 +86,6 @@ export default (decisions) => {
     window,
     hideContainers,
     showContainers,
-    identityMapStorage,
     response,
   };
 };

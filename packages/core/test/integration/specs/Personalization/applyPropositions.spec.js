@@ -34,10 +34,7 @@ describe("applyPropositions", () => {
 
   // TGT-52945 and PLATIR-51065
   test("html-content-item and metadata should work", async ({ alloy }) => {
-    alloy("configure", {
-      ...alloyConfig,
-      debugEnabled: true,
-    });
+    alloy("configure", alloyConfig);
 
     const propositions = [
       {

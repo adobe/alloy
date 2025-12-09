@@ -25,7 +25,13 @@ export default ({
   notificationHandler,
   consent,
 }) => {
-  return ({ cacheUpdate, personalizationDetails, event, onResponse }) => {
+  return ({
+    cacheUpdate,
+    personalizationDetails,
+    event,
+    onResponse,
+    identityMap,
+  }) => {
     const { state, wasSet } = consent.current();
     if (!(state === "out" && wasSet)) {
       if (personalizationDetails.isRenderDecisions()) {
@@ -42,6 +48,7 @@ export default ({
       personalizationDetails.isRenderDecisions(),
       personalizationDetails.isSendDisplayEvent(),
       personalizationDetails.getViewName(),
+      identityMap,
     );
 
     onResponse(({ response }) => {
@@ -56,7 +63,9 @@ export default ({
           },
         });
       }
-      const propositions = handles.map((handle) => createProposition(handle));
+      const propositions = handles.map((handle) =>
+        createProposition(handle, true, false, identityMap),
+      );
       const {
         page: pagePropositions = [],
         view: viewPropositions = [],

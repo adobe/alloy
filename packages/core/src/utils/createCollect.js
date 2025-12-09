@@ -13,7 +13,7 @@ import { DISPLAY } from "../constants/eventType.js";
 import { getPropositionEventType } from "../constants/propositionEventType.js";
 import { isNonEmptyArray } from "./index.js";
 
-export default ({ eventManager, mergeDecisionsMeta, identityMapStorage }) => {
+export default ({ eventManager, mergeDecisionsMeta }) => {
   // Called when a decision is auto-rendered for the __view__ scope or a SPA view(display and empty display notification)
   return ({
     decisionsMeta = [],
@@ -22,6 +22,7 @@ export default ({ eventManager, mergeDecisionsMeta, identityMapStorage }) => {
     eventType = DISPLAY,
     propositionEventTypes = [getPropositionEventType(eventType)],
     viewName,
+    identityMap,
   }) => {
     const event = eventManager.createEvent();
     const data = { eventType };
@@ -42,9 +43,8 @@ export default ({ eventManager, mergeDecisionsMeta, identityMapStorage }) => {
 
     event.mergeXdm(data);
 
-    const storedIdentityMap = identityMapStorage.get();
-    if (storedIdentityMap) {
-      event.mergeXdm({ identityMap: storedIdentityMap });
+    if (identityMap) {
+      event.mergeXdm({ identityMap });
     }
 
     if (documentMayUnload) {

@@ -62,13 +62,7 @@ import {
   ADOBE_TARGET,
 } from "../../constants/decisionProvider.js";
 
-const createPersonalization = ({
-  config,
-  logger,
-  eventManager,
-  consent,
-  identityMapStorage,
-}) => {
+const createPersonalization = ({ config, logger, eventManager, consent }) => {
   const {
     targetMigrationEnabled,
     prehidingStyle,
@@ -77,7 +71,6 @@ const createPersonalization = ({
   const collect = createCollect({
     eventManager,
     mergeDecisionsMeta,
-    identityMapStorage,
   });
 
   const showContainers = createShowContainers(logger);

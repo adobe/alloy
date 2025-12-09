@@ -16,7 +16,6 @@ import { PropositionEventType } from "../../../../src/constants/propositionEvent
 describe("Utils::createCollect", () => {
   let eventManager;
   let mergeDecisionsMeta;
-  let identityMapStorage;
   const decisionsMeta = [
     {
       id: 1,
@@ -33,17 +32,11 @@ describe("Utils::createCollect", () => {
       createEvent: vi.fn().mockReturnValue(event),
     };
     mergeDecisionsMeta = vi.fn();
-    identityMapStorage = {
-      get: vi.fn().mockReturnValue(undefined),
-      store: vi.fn(),
-      clear: vi.fn(),
-    };
   });
   it("collects and sends event with metadata", () => {
     const collect = createCollect({
       eventManager,
       mergeDecisionsMeta,
-      identityMapStorage,
     });
     collect({
       decisionsMeta,
@@ -61,45 +54,39 @@ describe("Utils::createCollect", () => {
     expect(eventManager.sendEvent).toHaveBeenCalled();
   });
 
-  it("includes stored identityMap in the event", () => {
-    const storedIdentityMap = {
+  it("includes identityMap in the event when provided", () => {
+    const identityMap = {
       CRM_ID: [{ id: "user123", primary: true }],
       ECID: [{ id: "ecid123" }],
     };
-    identityMapStorage.get.mockReturnValue(storedIdentityMap);
 
     const collect = createCollect({
       eventManager,
       mergeDecisionsMeta,
-      identityMapStorage,
     });
     collect({
       decisionsMeta,
+      identityMap,
     });
 
-    expect(identityMapStorage.get).toHaveBeenCalled();
     expect(event.mergeXdm).toHaveBeenCalledWith({
       eventType: "decisioning.propositionDisplay",
     });
     expect(event.mergeXdm).toHaveBeenCalledWith({
-      identityMap: storedIdentityMap,
+      identityMap,
     });
     expect(eventManager.sendEvent).toHaveBeenCalled();
   });
 
-  it("does not merge identityMap when storage is empty", () => {
-    identityMapStorage.get.mockReturnValue(undefined);
-
+  it("does not merge identityMap when not provided", () => {
     const collect = createCollect({
       eventManager,
       mergeDecisionsMeta,
-      identityMapStorage,
     });
     collect({
       decisionsMeta,
     });
 
-    expect(identityMapStorage.get).toHaveBeenCalled();
     expect(event.mergeXdm).toHaveBeenCalledTimes(1);
     expect(event.mergeXdm).toHaveBeenCalledWith({
       eventType: "decisioning.propositionDisplay",

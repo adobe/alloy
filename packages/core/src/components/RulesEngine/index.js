@@ -34,13 +34,11 @@ const createRulesEngine = ({
   consent,
   getBrowser,
   logger,
-  identityMapStorage,
 }) => {
   const { orgId, personalizationStorageEnabled } = config;
   const collect = createCollect({
     eventManager,
     mergeDecisionsMeta,
-    identityMapStorage,
   });
 
   const storage = createNamespacedStorage(
