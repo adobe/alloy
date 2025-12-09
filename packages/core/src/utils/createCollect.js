@@ -25,7 +25,7 @@ export default ({ eventManager, mergeDecisionsMeta }) => {
     identityMap,
   }) => {
     const event = eventManager.createEvent();
-    const data = { eventType };
+    const data = { eventType, identityMap };
 
     if (viewName) {
       data.web = {
@@ -42,10 +42,6 @@ export default ({ eventManager, mergeDecisionsMeta }) => {
     }
 
     event.mergeXdm(data);
-
-    if (identityMap) {
-      event.mergeXdm({ identityMap });
-    }
 
     if (documentMayUnload) {
       event.documentMayUnload();

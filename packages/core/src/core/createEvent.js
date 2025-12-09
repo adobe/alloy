@@ -177,7 +177,7 @@ export default () => {
       return userXdm.web.webPageDetails.viewName;
     },
     getUserIdentityMap() {
-      return userXdm && userXdm.identityMap ? userXdm.identityMap : undefined;
+      return userXdm?.identityMap;
     },
     toJSON() {
       if (!isFinalized) {

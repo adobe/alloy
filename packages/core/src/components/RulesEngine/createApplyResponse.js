@@ -26,7 +26,7 @@ export default ({ lifecycle, eventRegistry }) => {
         extractPayloadsFromEventHistoryOperations(propositions);
       eventRegistry.addEventPayloads(eventPayloads);
 
-      const identityMap = event ? event.getUserIdentityMap() : undefined;
+      const identityMap = event?.getUserIdentityMap();
 
       lifecycle.onDecision({
         renderDecisions,

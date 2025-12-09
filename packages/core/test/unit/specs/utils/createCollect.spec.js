@@ -71,8 +71,6 @@ describe("Utils::createCollect", () => {
 
     expect(event.mergeXdm).toHaveBeenCalledWith({
       eventType: "decisioning.propositionDisplay",
-    });
-    expect(event.mergeXdm).toHaveBeenCalledWith({
       identityMap,
     });
     expect(eventManager.sendEvent).toHaveBeenCalled();
