@@ -94,5 +94,11 @@ governing permissions and limitations under the License.
       errors: [{ messageId: "missing" }],
       output: `#!/usr/bin/env node\n\n${HEADER_2000}\n\nconsole.log("hi");`,
     },
+    {
+      code: `#!/usr/bin/env node`,
+      options: [{ year: 2000 }],
+      errors: [{ messageId: "missing" }],
+      output: `#!/usr/bin/env node\n\n${HEADER_2000}\n\n`,
+    },
   ],
 });

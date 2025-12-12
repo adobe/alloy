@@ -158,8 +158,21 @@ export default {
             const year = context.options?.[0]?.year ?? new Date().getFullYear();
             const headerBlock = renderHeader(year);
 
-            const replacement =
-              shebangEnd > 0 ? `\n${headerBlock}\n\n` : `${headerBlock}\n\n`;
+            const replacementPrefix = (() => {
+              if (shebangEnd === 0) {
+                return "";
+              }
+              // `shebangEnd` is the index immediately after the shebang line. When the file has a
+              // trailing `\n` for the shebang line, that character is included, so we only need one
+              // additional newline to create a blank line before the license header.
+              //
+              // If the file has a shebang but no trailing newline, we need to insert two newlines:
+              // one to end the shebang line and another to create the blank line separation.
+              const shebangHasTrailingNewline = text[shebangEnd - 1] === "\n";
+              return shebangHasTrailingNewline ? "\n" : "\n\n";
+            })();
+
+            const replacement = `${replacementPrefix}${headerBlock}\n\n`;
 
             const replaceStart = bomOffset + shebangEnd;
             const replaceEnd = replaceStart + leadingWhitespaceLength;
