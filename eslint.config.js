@@ -19,6 +19,8 @@ import react from "eslint-plugin-react";
 import { defineConfig, globalIgnores } from "eslint/config";
 import { glob } from "glob";
 import globals from "globals";
+// eslint-disable-next-line import/extensions
+import licensePlugin from "./scripts/eslint/eslintLicensePlugin.js";
 
 const allComponentPaths = glob.sync("packages/core/src/components/*/");
 
@@ -31,7 +33,29 @@ export default defineConfig([
     "sandboxes/**/build/",
     "sandboxes/**/public/",
     "node_modules/",
+    "launch*.js",
   ]),
+  {
+    name: "alloy/license-header",
+    files: ["**/*.{cjs,js,mjs,jsx}"],
+    ignores: [
+      "sandboxes/**",
+      "dist/**",
+      "distTest/**",
+      "packages/**/dist/**",
+      "packages/**/distTest/**",
+      "launch*.js",
+      "**/*.min.js",
+      "**/at.js",
+      "**/*AppMeasurement*",
+    ],
+    plugins: {
+      alloy: licensePlugin,
+    },
+    rules: {
+      "alloy/license-header": "error",
+    },
+  },
   {
     name: "alloy/shared",
     languageOptions: {
