@@ -10,6 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
 const COPYRIGHT_LINE_REGEX =
   /Copyright\s+\d{4}\s+Adobe\. All rights reserved\./;
 const REQUIRED_SUBSTRINGS = [
@@ -18,20 +22,28 @@ const REQUIRED_SUBSTRINGS = [
   "governing permissions and limitations under the License.",
 ];
 
-const SOURCE_HEADER_TEMPLATE = `/*
-Copyright {{year}} Adobe. All rights reserved.
-This file is licensed to you under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License. You may obtain a copy
-of the License at http://www.apache.org/licenses/LICENSE-2.0
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+const LICENSE_BANNER_PATH = path.resolve(dirname, "../../LICENSE_BANNER");
 
-Unless required by applicable law or agreed to in writing, software distributed under
-the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-OF ANY KIND, either express or implied. See the License for the specific language
-governing permissions and limitations under the License.
-*/`;
+let licenseBannerBodyCache;
+const getLicenseBannerBody = () => {
+  if (licenseBannerBodyCache) {
+    return licenseBannerBodyCache;
+  }
+
+  // LICENSE_BANNER is used for bundles, so we reuse it as the single source of truth
+  // for the license text and keep only the *year* file-specific.
+  const bannerText = fs.readFileSync(LICENSE_BANNER_PATH, "utf-8").trimEnd();
+  const lines = bannerText.split(/\r?\n/);
+  licenseBannerBodyCache = lines.slice(1).join("\n");
+  return licenseBannerBodyCache;
+};
 
 const renderHeader = (year) => {
-  return SOURCE_HEADER_TEMPLATE.replace("{{year}}", String(year)).trimEnd();
+  return `/*
+Copyright ${String(year)} Adobe. All rights reserved.
+${getLicenseBannerBody()}
+*/`.trimEnd();
 };
 
 const startsWithBom = (text) => text.startsWith("\uFEFF");
