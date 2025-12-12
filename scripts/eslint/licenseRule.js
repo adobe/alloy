@@ -25,20 +25,28 @@ const REQUIRED_SUBSTRINGS = [
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const LICENSE_BANNER_PATH = path.resolve(dirname, "../../LICENSE_BANNER");
 
+/** @type {string | undefined} */
 let licenseBannerBodyCache;
+/**
+ * Returns the body of the license banner.
+ * @returns {string}
+ */
 const getLicenseBannerBody = () => {
   if (licenseBannerBodyCache) {
     return licenseBannerBodyCache;
   }
-
-  // LICENSE_BANNER is used for bundles, so we reuse it as the single source of truth
-  // for the license text and keep only the *year* file-specific.
   const bannerText = fs.readFileSync(LICENSE_BANNER_PATH, "utf-8").trimEnd();
   const lines = bannerText.split(/\r?\n/);
+  // remove the first line (Copyright 2019 Adobe. All rights reserved.)
   licenseBannerBodyCache = lines.slice(1).join("\n");
   return licenseBannerBodyCache;
 };
 
+/**
+ * Renders the header for the license banner.
+ * @param {number} year
+ * @returns {string}
+ */
 const renderHeader = (year) => {
   return `/*
 Copyright ${String(year)} Adobe. All rights reserved.
@@ -46,8 +54,18 @@ ${getLicenseBannerBody()}
 */`.trimEnd();
 };
 
+/**
+ * Checks if the text starts with a byte order mark (BOM) character.
+ * @param {string} text
+ * @returns {boolean}
+ */
 const startsWithBom = (text) => text.startsWith("\uFEFF");
 
+/**
+ * Returns the index of the end of the shebang line.
+ * @param {string} text
+ * @returns {number}
+ */
 const getShebangEndIndex = (text) => {
   if (!text.startsWith("#!")) {
     return 0;
@@ -56,11 +74,21 @@ const getShebangEndIndex = (text) => {
   return newlineIndex === -1 ? text.length : newlineIndex + 1;
 };
 
+/**
+ * Returns the length of the leading whitespace in the text.
+ * @param {string} text
+ * @returns {number}
+ */
 const getLeadingWhitespaceLength = (text) => {
   const match = text.match(/^[\t \r\n]*/);
   return match ? match[0].length : 0;
 };
 
+/**
+ * Checks if the text has a license header at the start.
+ * @param {string} text
+ * @returns {boolean}
+ */
 const hasLicenseHeaderAtStart = (text) => {
   if (!text.startsWith("/*")) {
     return false;
@@ -76,7 +104,11 @@ const hasLicenseHeaderAtStart = (text) => {
   return REQUIRED_SUBSTRINGS.every((s) => comment.includes(s));
 };
 
-const licenseHeaderRule = {
+/**
+ * The rule for the license header.
+ * @type {import("eslint").Rule.RuleModule}
+ */
+export default {
   meta: {
     type: "layout",
     docs: {
@@ -100,7 +132,7 @@ const licenseHeaderRule = {
     },
   },
   create(context) {
-    const sourceCode = context.getSourceCode();
+    const sourceCode = context.sourceCode;
 
     return {
       Program(node) {
@@ -139,15 +171,5 @@ const licenseHeaderRule = {
         });
       },
     };
-  },
-};
-
-export default {
-  meta: {
-    name: "alloy",
-    version: "local",
-  },
-  rules: {
-    "license-header": licenseHeaderRule,
   },
 };

@@ -21,7 +21,7 @@ import {
   describe,
   it,
 } from "vitest";
-import alloyPlugin from "../eslint/eslintLicensePlugin.js";
+import rule from "../eslint/licenseRule.js";
 
 RuleTester.afterAll = afterAll;
 RuleTester.afterEach = afterEach;
@@ -36,8 +36,6 @@ const ruleTester = new RuleTester({
     sourceType: "module",
   },
 });
-
-const rule = alloyPlugin.rules["license-header"];
 
 const LICENSE_BANNER_PATH = path.resolve(process.cwd(), "LICENSE_BANNER");
 const getLicenseBannerBody = () => {
