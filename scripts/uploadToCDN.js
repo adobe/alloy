@@ -16,6 +16,7 @@ import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import urlExists from "url-exists-nodejs";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -59,3 +60,40 @@ execSync(
   { stdio: "inherit" },
 );
 console.log("CDN upload complete.");
+
+const cdnBase = `https://cdn1.adoberesources.net/alloy/${version}`;
+const verifyUrls = [`${cdnBase}/alloy.js`, `${cdnBase}/alloy.min.js`];
+
+/**
+ * @param {string[]} urls
+ * @returns {Promise<{ url: string, exists: boolean }[]>}
+ */
+const verifyCdnEndpoints = async (urls) => {
+  const results = await Promise.allSettled(
+    urls.map(async (url) => {
+      const exists = await urlExists(url);
+      return { url, exists };
+    }),
+  );
+
+  return results.map((result, index) => {
+    if (result.status === "fulfilled") {
+      return result.value;
+    }
+    // If the promise was rejected, return exists: false
+    return { url: urls[index], exists: false };
+  });
+};
+console.log("Verifying CDN endpoints...");
+const results = await verifyCdnEndpoints(verifyUrls);
+console.log(JSON.stringify(results, null, 2));
+if (results.some((result) => !result.exists)) {
+  throw new Error(
+    "CDN endpoint verification failed for urls: " +
+      results
+        .filter((result) => !result.exists)
+        .map((result) => result.url)
+        .join(", "),
+  );
+}
+console.log("CDN endpoint verification complete.");
