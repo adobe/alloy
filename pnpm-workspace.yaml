@@ -1,4 +1,5 @@
 packages:
+  - .
   - sandboxes/*
   - packages/*
 linkWorkspacePackages: true

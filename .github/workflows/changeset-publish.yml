@@ -1,0 +1,219 @@
+name: Changeset Publish
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency: changeset-publish-${{ github.ref }}
+
+jobs:
+  analyze:
+    # Avoid re-running when the bot pushes the version bump commit.
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    outputs:
+      has_releases: ${{ steps.release_plan.outputs.has_releases }}
+      is_prerelease: ${{ steps.pre.outputs.is_prerelease }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine prerelease mode
+        id: pre
+        run: |
+          if [ -f .changeset/pre.json ]; then
+            MODE=$(node -p "require('./.changeset/pre.json').mode")
+          else
+            MODE="none"
+          fi
+
+          if [ "${MODE}" = "pre" ]; then
+            echo "is_prerelease=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "is_prerelease=false" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Compute release plan
+        id: release_plan
+        run: |
+          shopt -s nullglob
+          FILES=(.changeset/*.md)
+
+          if [ ${#FILES[@]} -eq 0 ]; then
+            echo "has_releases=false" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          # `changeset status` writes JSON to the provided filename, relative to cwd.
+          pnpm dlx @changesets/cli status --output=changeset-status.json
+          HAS_RELEASES=$(node -e "const s=require('./changeset-status.json');console.log((s.releases || []).length > 0 ? 'true' : 'false');")
+          echo "has_releases=${HAS_RELEASES}" >> "${GITHUB_OUTPUT}"
+
+      - name: No release changesets, skipping publish
+        if: steps.release_plan.outputs.has_releases != 'true'
+        run: echo "No pending changesets; skipping publish."
+
+  publish_prerelease:
+    needs: analyze
+    if: needs.analyze.outputs.has_releases == 'true' && needs.analyze.outputs.is_prerelease == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Version packages
+        run: pnpm changeset version
+
+      - name: Update lockfile
+        run: pnpm install --no-frozen-lockfile --ignore-scripts
+
+      - name: Build packages (prepack)
+        run: pnpm run build
+
+      - name: Commit version changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore: publish [skip ci]"
+          fi
+
+      - name: Publish packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+        run: pnpm changeset publish --tag next
+
+      - name: Start ssh-agent for CDN
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: |
+            ${{ secrets.CDN_PRIVATE_KEY }}
+
+      - name: Upload browser artifacts to CDN
+        run: node scripts/uploadToCDN.js
+
+      - name: Commit and push new version number and tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore: re-enter prerelease mode [skip ci]"
+          fi
+          git push --follow-tags
+
+  publish_release:
+    needs: analyze
+    if: needs.analyze.outputs.has_releases == 'true' && needs.analyze.outputs.is_prerelease != 'true'
+    runs-on: ubuntu-latest
+    # Stable releases require a manual approval.
+    environment: Production
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Version packages
+        run: pnpm changeset version
+
+      - name: Update lockfile
+        run: pnpm install --no-frozen-lockfile --ignore-scripts
+
+      - name: Build packages (prepack)
+        run: pnpm run build
+
+      - name: Commit version changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore: publish [skip ci]"
+          fi
+
+      - name: Publish packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+        run: pnpm changeset publish
+
+      - name: Start ssh-agent for CDN
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: |
+            ${{ secrets.CDN_PRIVATE_KEY }}
+
+      - name: Upload browser artifacts to CDN
+        run: node scripts/uploadToCDN.js
+
+      - name: Re-enter beta prerelease for next cycle after a stable release
+        if: hashFiles('.changeset/pre.json') == ''
+        run: pnpm changeset pre enter beta
+
+      - name: Commit and push new version number and tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore: re-enter prerelease mode [skip ci]"
+          fi
+          git push --follow-tags
