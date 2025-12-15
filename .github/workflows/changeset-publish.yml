@@ -9,6 +9,7 @@ on:
 concurrency: changeset-publish-${{ github.ref }}
 
 jobs:
+  # Determine if there are changesets to publish and if we are in prerelease mode.
   analyze:
     # Avoid re-running when the bot pushes the version bump commit.
     if: github.actor != 'github-actions[bot]'
@@ -37,16 +38,17 @@ jobs:
             echo "is_prerelease=false" >> "${GITHUB_OUTPUT}"
           fi
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version-file: .nvmrc
-          registry-url: https://registry.npmjs.org
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
 
       - name: Compute release plan
         id: release_plan
@@ -60,7 +62,8 @@ jobs:
           fi
 
           # `changeset status` writes JSON to the provided filename, relative to cwd.
-          pnpm dlx @changesets/cli status --output=changeset-status.json
+          pnpm install --frozen-lockfile
+          pnpm exec changeset status --output=changeset-status.json
           HAS_RELEASES=$(node -e "const s=require('./changeset-status.json');console.log((s.releases || []).length > 0 ? 'true' : 'false');")
           echo "has_releases=${HAS_RELEASES}" >> "${GITHUB_OUTPUT}"
 
@@ -70,7 +73,10 @@ jobs:
 
   publish_prerelease:
     needs: analyze
-    if: needs.analyze.outputs.has_releases == 'true' && needs.analyze.outputs.is_prerelease == 'true'
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      needs.analyze.outputs.has_releases == 'true' &&
+      needs.analyze.outputs.is_prerelease == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -79,6 +85,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Verify main has not moved
+        run: |
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            echo "::error::origin/main has moved since this workflow started. Aborting to avoid conflicts."
+            exit 1
+          fi
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -142,7 +156,10 @@ jobs:
 
   publish_release:
     needs: analyze
-    if: needs.analyze.outputs.has_releases == 'true' && needs.analyze.outputs.is_prerelease != 'true'
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      needs.analyze.outputs.has_releases == 'true' &&
+      needs.analyze.outputs.is_prerelease != 'true'
     runs-on: ubuntu-latest
     # Stable releases require a manual approval.
     environment: Production
@@ -153,6 +170,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Verify main has not moved
+        run: |
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            echo "::error::origin/main has moved since this workflow started. Aborting to avoid conflicts."
+            exit 1
+          fi
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
