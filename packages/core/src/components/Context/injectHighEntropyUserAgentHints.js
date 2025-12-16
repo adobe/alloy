@@ -23,7 +23,7 @@ export default (navigator) => {
   }
   return (event, logger) => {
     try {
-      // eslint-disable-next-line compat/compat -- userAgentData support is checked before calling
+      // eslint-disable-next-line compat/compat -- Feature detection performed above
       return navigator.userAgentData
         .getHighEntropyValues(highEntropyUserAgentHints.map((hint) => hint[0]))
         .then((hints) => {
