@@ -116,7 +116,7 @@ jobs:
         run: pnpm install --no-frozen-lockfile --ignore-scripts
 
       - name: Build packages (prepack)
-        run: pnpm run build
+        run: pnpm -r run build
 
       - name: Commit version changes
         run: |
@@ -201,7 +201,7 @@ jobs:
         run: pnpm install --no-frozen-lockfile --ignore-scripts
 
       - name: Build packages (prepack)
-        run: pnpm run build
+        run: pnpm -r run build
 
       - name: Commit version changes
         run: |

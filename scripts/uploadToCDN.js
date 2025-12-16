@@ -21,10 +21,11 @@ import urlExists from "url-exists-nodejs";
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 const projectRoot = path.resolve(dirname, "..");
-const distDir = path.join(projectRoot, "dist");
+const browserPackageDir = path.join(projectRoot, "packages", "browser");
+const distDir = path.join(browserPackageDir, "dist");
 
 const { version } = JSON.parse(
-  fs.readFileSync(path.join(projectRoot, "package.json"), "utf8"),
+  fs.readFileSync(path.join(browserPackageDir, "package.json"), "utf8"),
 );
 
 if (!version) {
