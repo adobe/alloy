@@ -584,5 +584,37 @@ describe("createEvent", () => {
 
       vi.useRealTimers();
     });
+
+    it("clamps queueTimeMillis to 0 when timestamp is in the future", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2025-01-15T12:00:00.000Z"));
+
+      const subject = createEvent();
+      subject.mergeXdm({
+        timestamp: "2025-01-15T12:05:00.000Z",
+      });
+      subject.finalize();
+
+      const result = subject.toJSON();
+      expect(result.meta.queueTimeMillis).toBe(0);
+
+      vi.useRealTimers();
+    });
+
+    it("clamps queueTimeMillis to 5 minutes when queue time exceeds maximum", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2025-01-15T12:10:00.000Z"));
+
+      const subject = createEvent();
+      subject.mergeXdm({
+        timestamp: "2025-01-15T12:00:00.000Z",
+      });
+      subject.finalize();
+
+      const result = subject.toJSON();
+      expect(result.meta.queueTimeMillis).toBe(300000);
+
+      vi.useRealTimers();
+    });
   });
 });

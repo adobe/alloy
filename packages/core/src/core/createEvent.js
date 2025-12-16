@@ -16,6 +16,9 @@ import {
   isNonEmptyArray,
   deduplicateArray,
 } from "../utils/index.js";
+import clamp from "../utils/clamp.js";
+
+const MAX_QUEUE_TIME_MILLIS = 300000; // 5 minutes
 
 const getXdmPropositions = (xdm) => {
   return xdm &&
@@ -128,8 +131,9 @@ export default () => {
 
       if (content?.xdm?.timestamp) {
         const enqueuedTime = new Date(content.xdm.timestamp).getTime();
-        const queueTimeMillis = Date.now() - enqueuedTime;
+        let queueTimeMillis = Date.now() - enqueuedTime;
         delete content.xdm.timestamp;
+        queueTimeMillis = clamp(queueTimeMillis, 0, MAX_QUEUE_TIME_MILLIS);
         deepAssign(content, { meta: { queueTimeMillis } });
       }
 
