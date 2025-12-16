@@ -186,9 +186,9 @@ importers:
 
   sandboxes/browser:
     dependencies:
-      '@adobe/alloy-core':
+      '@adobe/alloy':
         specifier: workspace:*
-        version: link:../../packages/core
+        version: link:../../packages/browser
       react:
         specifier: ^19.2.0
         version: 19.2.0

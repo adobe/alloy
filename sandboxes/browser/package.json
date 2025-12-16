@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "pnpm@10.20.0",
   "dependencies": {
-    "@adobe/alloy-core": "workspace:*",
+    "@adobe/alloy": "workspace:*",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-helmet": "^6.1.0",
