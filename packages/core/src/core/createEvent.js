@@ -126,6 +126,13 @@ export default () => {
         event.mergeData(userData);
       }
 
+      if (content?.xdm?.timestamp) {
+        const enqueuedTime = new Date(content.xdm.timestamp).getTime();
+        const queueTimeMillis = Date.now() - enqueuedTime;
+        delete content.xdm.timestamp;
+        deepAssign(content, { meta: { queueTimeMillis } });
+      }
+
       // the event should already be considered finalized in case onBeforeEventSend throws an error
       isFinalized = true;
 

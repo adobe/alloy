@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { beforeEach, describe, it, expect } from "vitest";
+import { beforeEach, describe, it, expect, vi } from "vitest";
 import createEvent from "../../../../src/core/createEvent.js";
 
 describe("createEvent", () => {
@@ -488,6 +488,101 @@ describe("createEvent", () => {
           },
         },
       },
+    });
+  });
+  describe("queueTimeMillis", () => {
+    it("calculates queue time from timestamp and removes timestamp from xdm", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2025-01-15T12:00:00.500Z"));
+
+      const subject = createEvent();
+      subject.mergeXdm({
+        timestamp: "2025-01-15T12:00:00.000Z",
+        eventType: "test",
+      });
+      subject.finalize();
+
+      const result = subject.toJSON();
+      expect(result.xdm.timestamp).toBeUndefined();
+      expect(result.meta.queueTimeMillis).toBe(500);
+      expect(result.xdm.eventType).toBe("test");
+
+      vi.useRealTimers();
+    });
+
+    it("does not add queueTimeMillis when no timestamp exists", () => {
+      const subject = createEvent();
+      subject.mergeXdm({
+        eventType: "test",
+      });
+      subject.finalize();
+
+      const result = subject.toJSON();
+      expect(result.meta).toBeUndefined();
+      expect(result.xdm.eventType).toBe("test");
+    });
+
+    it("removes timestamp before onBeforeEventSend callback is called", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2025-01-15T12:00:01.000Z"));
+
+      let callbackXdm;
+      const callback = ({ xdm }) => {
+        callbackXdm = { ...xdm };
+      };
+
+      const subject = createEvent();
+      subject.mergeXdm({
+        timestamp: "2025-01-15T12:00:00.000Z",
+        eventType: "test",
+      });
+      subject.finalize(callback);
+
+      expect(callbackXdm.timestamp).toBeUndefined();
+      expect(callbackXdm.eventType).toBe("test");
+
+      vi.useRealTimers();
+    });
+
+    it("allows user to add their own timestamp in onBeforeEventSend", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2025-01-15T12:00:01.000Z"));
+
+      const callback = ({ xdm }) => {
+        xdm.timestamp = "2025-01-15T10:00:00.000Z";
+      };
+
+      const subject = createEvent();
+      subject.mergeXdm({
+        timestamp: "2025-01-15T12:00:00.000Z",
+      });
+      subject.finalize(callback);
+
+      const result = subject.toJSON();
+      expect(result.xdm.timestamp).toBe("2025-01-15T10:00:00.000Z");
+      expect(result.meta.queueTimeMillis).toBe(1000);
+
+      vi.useRealTimers();
+    });
+
+    it("merges queueTimeMillis with existing meta", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2025-01-15T12:00:00.100Z"));
+
+      const subject = createEvent();
+      subject.mergeMeta({
+        existing: "value",
+      });
+      subject.mergeXdm({
+        timestamp: "2025-01-15T12:00:00.000Z",
+      });
+      subject.finalize();
+
+      const result = subject.toJSON();
+      expect(result.meta.existing).toBe("value");
+      expect(result.meta.queueTimeMillis).toBe(100);
+
+      vi.useRealTimers();
     });
   });
 });
