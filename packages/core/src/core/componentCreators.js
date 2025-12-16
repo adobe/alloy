@@ -24,3 +24,4 @@ export { default as rulesEngine } from "../components/RulesEngine/index.js";
 export { default as streamingMedia } from "../components/StreamingMedia/index.js";
 export { default as advertising } from "../components/Advertising/index.js";
 export { default as pushNotifications } from "../components/PushNotifications/index.js";
+export { default as brandConcierge } from "../components/BrandConcierge/index.js";

@@ -174,6 +174,8 @@ export const createExecuteCommand = ({
       getImmediatelyAvailableTools(componentName) {
         const componentLogger = createComponentLogger(componentName);
         return {
+          loggingCookieJar,
+          instanceName,
           config,
           componentRegistry,
           consent,
@@ -190,6 +192,8 @@ export const createExecuteCommand = ({
           createNamespacedStorage,
           apexDomain,
           getBrowser,
+          cookieTransfer,
+          createResponse,
         };
       },
     });

@@ -35,6 +35,7 @@ import ContentCards from "./components/ContentCardsDemo/ContentCards";
 import PushNotifications from "./PushNotifications";
 import ReferrerTest from "./ReferrerTest";
 import Advertising from "./Advertising";
+import Concierge from "./Concierge";
 
 const BasicExample = () => {
   return (
@@ -111,6 +112,9 @@ const BasicExample = () => {
               <Link to="pushNotifications">Push Notifications</Link>
             </li>
             <li>
+              <Link to="concierge">Concierge</Link>
+            </li>
+            <li>
               <Link to="/referrerTest">Referrer Context Test</Link>
             </li>
           </ul>
@@ -147,6 +151,7 @@ const BasicExample = () => {
             <Route path="contentCards" element={<ContentCards />} />
             <Route path="pushNotifications" element={<PushNotifications />} />
             <Route path="referrerTest" element={<ReferrerTest />} />
+            <Route path="concierge" element={<Concierge />} />
           </Routes>
         </div>
       </Router>
