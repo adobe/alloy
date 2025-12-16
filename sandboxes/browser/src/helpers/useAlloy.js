@@ -14,7 +14,8 @@ governing permissions and limitations under the License.
 
 import { useEffect } from "react";
 
-import { baseCode as initializeAlloy } from "@adobe/alloy-core";
+// eslint-disable-next-line import/no-unresolved, import/extensions -- eslint-plugin-import doesn't support package subpath exports
+import initializeAlloy from "@adobe/alloy/baseCode.js";
 import getUrlParameter from "./getUrlParameter";
 import includeScript from "./includeScript";
 
@@ -45,12 +46,12 @@ const setup = async ({
         doesOptInApply: getUrlParameter("legacyOptIn") === "true",
       });
       // Alloy only looks for window.Visitor when it initially loads, so only load Alloy after Visitor loaded.
-      // eslint-disable-next-line import/extensions,import/no-relative-packages
-      return import("../../../../packages/core/src/standalone.js");
+      // eslint-disable-next-line import/no-unresolved, import/extensions -- eslint-plugin-import doesn't support package subpath exports
+      return import("@adobe/alloy/standalone.js");
     });
   } else {
-    // eslint-disable-next-line import/extensions,import/no-relative-packages
-    await import("../../../../packages/core/src/standalone.js");
+    // eslint-disable-next-line import/no-unresolved, import/extensions -- eslint-plugin-import doesn't support package subpath exports
+    await import("@adobe/alloy/standalone.js");
   }
 
   if (onAlloySetupCompleted) {
