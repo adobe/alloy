@@ -10,6 +10,33 @@ Our guidelines vary depending on the type of contribution: New Feature, Enhancem
 
 This project uses `pnpm` as the package manager and targets the latest lts version of Node.js.
 
+## Integration with [Changesets](https://github.com/changesets/changesets)
+
+This repo uses Changesets to drive **versioning + publishing** for `@adobe/alloy` and `@adobe/alloy-core`.
+
+### When you need a changeset
+
+Include a changeset for **consumer-facing** changes (bug fixes, new features, breaking changes, behavioral changes, etc.).
+
+Skip it for changes that should not result in a publish (docs-only, internal refactors, CI changes, tests-only, etc.).
+
+### Create a changeset
+
+1. Run: `pnpm changeset`
+2. Select the affected package(s): `@adobe/alloy` and/or `@adobe/alloy-core`
+3. Choose the bump (patch/minor/major) and write a short summary
+4. Commit the generated `.changeset/*.md` file with your PR
+
+### What happens on merge
+
+When changes land on `main`, CI publishes based on the accumulated changesets and uploads browser artifacts to the CDN.
+
+### Prerelease mode
+
+To switch from releasing betas to stable releases, or back to betas, use the following commands:
+- Beta -> Stable: `pnpm changeset pre exit`, commit, push.
+- Stable -> Beta: happens automatically as part of the release process in [.github/workflows/changeset-publish.yml](.github/workflows/changeset-publish.yml).
+
 ## Contributor license agreement
 
 All third-party contributions to this project must be accompanied by a signed contributor
