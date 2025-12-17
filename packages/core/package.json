@@ -10,7 +10,8 @@
     "directory": "packages/core"
   },
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index.js",
+    "./package.json": "./package.json"
   },
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
