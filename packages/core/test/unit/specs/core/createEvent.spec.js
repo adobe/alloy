@@ -491,7 +491,7 @@ describe("createEvent", () => {
     });
   });
   describe("queueTimeMillis", () => {
-    it("calculates queue time from timestamp and removes timestamp from xdm", () => {
+    it("calculates queue time from timestamp", () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date("2025-01-15T12:00:00.500Z"));
 
@@ -503,7 +503,6 @@ describe("createEvent", () => {
       subject.finalize();
 
       const result = subject.toJSON();
-      expect(result.xdm.timestamp).toBeUndefined();
       expect(result.meta.queueTimeMillis).toBe(500);
       expect(result.xdm.eventType).toBe("test");
 
@@ -522,7 +521,7 @@ describe("createEvent", () => {
       expect(result.xdm.eventType).toBe("test");
     });
 
-    it("removes timestamp before onBeforeEventSend callback is called", () => {
+    it("preserves timestamp in xdm for onBeforeEventSend callback", () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date("2025-01-15T12:00:01.000Z"));
 
@@ -538,13 +537,13 @@ describe("createEvent", () => {
       });
       subject.finalize(callback);
 
-      expect(callbackXdm.timestamp).toBeUndefined();
+      expect(callbackXdm.timestamp).toBe("2025-01-15T12:00:00.000Z");
       expect(callbackXdm.eventType).toBe("test");
 
       vi.useRealTimers();
     });
 
-    it("allows user to add their own timestamp in onBeforeEventSend", () => {
+    it("allows user to modify timestamp in onBeforeEventSend", () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date("2025-01-15T12:00:01.000Z"));
 

@@ -132,9 +132,8 @@ export default () => {
       if (content?.xdm?.timestamp) {
         const enqueuedTime = new Date(content.xdm.timestamp).getTime();
         let queueTimeMillis = Date.now() - enqueuedTime;
-        delete content.xdm.timestamp;
         queueTimeMillis = clamp(queueTimeMillis, 0, MAX_QUEUE_TIME_MILLIS);
-        deepAssign(content, { meta: { queueTimeMillis } });
+        event.mergeMeta({ queueTimeMillis });
       }
 
       // the event should already be considered finalized in case onBeforeEventSend throws an error

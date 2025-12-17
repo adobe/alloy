@@ -157,3 +157,22 @@ export const contentCardsAndEventHistoryOperations = http.post(
     throw new Error("Handler not configured properly");
   },
 );
+
+export const setConsentHandler = http.post(
+  /https:\/\/edge\.adobedc\.net\/ee\/v1\/privacy\/set-consent/,
+
+  async (req) => {
+    const url = new URL(req.request.url);
+    const configId = url.searchParams.get("configId");
+
+    if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
+      return HttpResponse.json({
+        requestId: "consent-request-id",
+        handle: [],
+      });
+    }
+
+    throw new Error("Handler not configured properly");
+  },
+);
+
