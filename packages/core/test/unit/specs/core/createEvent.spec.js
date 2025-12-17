@@ -15,8 +15,14 @@ import createEvent from "../../../../src/core/createEvent.js";
 
 describe("createEvent", () => {
   let event;
+  let logger;
   beforeEach(() => {
-    event = createEvent();
+    logger = {
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    };
+    event = createEvent({ logger });
   });
   it("deeply merges XDM with user-provided XDM merged last", () => {
     event.setUserXdm({
@@ -247,7 +253,7 @@ describe("createEvent", () => {
         xdm.a = "1";
         data.b = "2";
       };
-      const subject = createEvent();
+      const subject = createEvent({ logger });
       subject.finalize(callback);
       expect(subject.toJSON()).toEqual({
         xdm: {
@@ -263,7 +269,7 @@ describe("createEvent", () => {
         xdm.b = "2";
         data.b = "2";
       };
-      const subject = createEvent();
+      const subject = createEvent({ logger });
       subject.setUserData({
         a: "1",
       });
@@ -287,7 +293,7 @@ describe("createEvent", () => {
         delete xdm.a;
         delete data.a;
       };
-      const subject = createEvent();
+      const subject = createEvent({ logger });
       subject.setUserXdm({
         a: "1",
         b: "2",
@@ -311,7 +317,7 @@ describe("createEvent", () => {
         content.xdm = {};
         content.data = {};
       };
-      const subject = createEvent();
+      const subject = createEvent({ logger });
       subject.setUserXdm({
         a: "1",
         b: "2",
@@ -328,7 +334,7 @@ describe("createEvent", () => {
         delete content.xdm;
         delete content.data;
       };
-      const subject = createEvent();
+      const subject = createEvent({ logger });
       subject.setUserXdm({
         a: "1",
         b: "2",
@@ -348,7 +354,7 @@ describe("createEvent", () => {
         data.c = "3";
         throw new Error("Expected Error");
       };
-      const subject = createEvent();
+      const subject = createEvent({ logger });
       subject.setUserXdm({
         a: "1",
         b: "2",
@@ -373,7 +379,7 @@ describe("createEvent", () => {
       const callback = () => {
         return undefined;
       };
-      const subject = createEvent();
+      const subject = createEvent({ logger });
       subject.finalize(callback);
       expect(subject.shouldSend()).toBe(true);
     });
@@ -381,7 +387,7 @@ describe("createEvent", () => {
       const callback = () => {
         return true;
       };
-      const subject = createEvent();
+      const subject = createEvent({ logger });
       subject.finalize(callback);
       expect(subject.shouldSend()).toBe(true);
     });
@@ -389,7 +395,7 @@ describe("createEvent", () => {
       const callback = () => {
         throw new Error("Expected Error");
       };
-      const subject = createEvent();
+      const subject = createEvent({ logger });
       expect(() => subject.finalize(callback)).toThrowError("Expected Error");
       expect(subject.shouldSend()).toBe(false);
     });
@@ -397,7 +403,7 @@ describe("createEvent", () => {
       const callback = () => {
         return false;
       };
-      const subject = createEvent();
+      const subject = createEvent({ logger });
       subject.finalize(callback);
       expect(subject.shouldSend()).toBe(false);
     });
@@ -410,7 +416,7 @@ describe("createEvent", () => {
           b: "2",
         };
       };
-      const subject = createEvent();
+      const subject = createEvent({ logger });
       subject.setUserXdm({
         c: "3",
       });
@@ -429,7 +435,7 @@ describe("createEvent", () => {
     });
   });
   it("deduplicates propositions by id", () => {
-    const subject = createEvent();
+    const subject = createEvent({ logger });
     subject.mergeXdm({
       _experience: {
         decisioning: {
@@ -495,7 +501,7 @@ describe("createEvent", () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date("2025-01-15T12:00:00.500Z"));
 
-      const subject = createEvent();
+      const subject = createEvent({ logger });
       subject.mergeXdm({
         timestamp: "2025-01-15T12:00:00.000Z",
         eventType: "test",
@@ -510,7 +516,7 @@ describe("createEvent", () => {
     });
 
     it("does not add queueTimeMillis when no timestamp exists", () => {
-      const subject = createEvent();
+      const subject = createEvent({ logger });
       subject.mergeXdm({
         eventType: "test",
       });
@@ -530,7 +536,7 @@ describe("createEvent", () => {
         callbackXdm = { ...xdm };
       };
 
-      const subject = createEvent();
+      const subject = createEvent({ logger });
       subject.mergeXdm({
         timestamp: "2025-01-15T12:00:00.000Z",
         eventType: "test",
@@ -551,7 +557,7 @@ describe("createEvent", () => {
         xdm.timestamp = "2025-01-15T10:00:00.000Z";
       };
 
-      const subject = createEvent();
+      const subject = createEvent({ logger });
       subject.mergeXdm({
         timestamp: "2025-01-15T12:00:00.000Z",
       });
@@ -568,7 +574,7 @@ describe("createEvent", () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date("2025-01-15T12:00:00.100Z"));
 
-      const subject = createEvent();
+      const subject = createEvent({ logger });
       subject.mergeMeta({
         existing: "value",
       });
@@ -588,7 +594,7 @@ describe("createEvent", () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date("2025-01-15T12:00:00.000Z"));
 
-      const subject = createEvent();
+      const subject = createEvent({ logger });
       subject.mergeXdm({
         timestamp: "2025-01-15T12:05:00.000Z",
       });
@@ -604,7 +610,7 @@ describe("createEvent", () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date("2025-01-15T12:10:00.000Z"));
 
-      const subject = createEvent();
+      const subject = createEvent({ logger });
       subject.mergeXdm({
         timestamp: "2025-01-15T12:00:00.000Z",
       });
@@ -614,6 +620,20 @@ describe("createEvent", () => {
       expect(result.meta.queueTimeMillis).toBe(300000);
 
       vi.useRealTimers();
+    });
+
+    it("does not add queueTimeMillis when timestamp is invalid", () => {
+      const subject = createEvent({ logger });
+      subject.mergeXdm({
+        timestamp: "not-a-valid-timestamp",
+        eventType: "test",
+      });
+      subject.finalize();
+
+      const result = subject.toJSON();
+      expect(result.meta).toBeUndefined();
+      expect(result.xdm.eventType).toBe("test");
+      expect(result.xdm.timestamp).toBe("not-a-valid-timestamp");
     });
   });
 });

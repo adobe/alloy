@@ -33,7 +33,7 @@ const getXdmPropositions = (xdm) => {
     : [];
 };
 
-export default () => {
+export default ({ logger }) => {
   const content = {};
   let userXdm;
   let userData;
@@ -130,10 +130,19 @@ export default () => {
       }
 
       if (content?.xdm?.timestamp) {
-        const enqueuedTime = new Date(content.xdm.timestamp).getTime();
-        let queueTimeMillis = Date.now() - enqueuedTime;
-        queueTimeMillis = clamp(queueTimeMillis, 0, MAX_QUEUE_TIME_MILLIS);
-        event.mergeMeta({ queueTimeMillis });
+        try {
+          const enqueuedTime = new Date(content.xdm.timestamp).getTime();
+          if (!Number.isNaN(enqueuedTime)) {
+            const queueTimeMillis = clamp(
+              Date.now() - enqueuedTime,
+              0,
+              MAX_QUEUE_TIME_MILLIS,
+            );
+            event.mergeMeta({ queueTimeMillis });
+          }
+        } catch {
+          logger.error("Error parsing timestamp:", content.xdm.timestamp);
+        }
       }
 
       // the event should already be considered finalized in case onBeforeEventSend throws an error

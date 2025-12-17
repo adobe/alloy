@@ -214,7 +214,7 @@ const buildComponent = ({
 };
 export default (mocks) => {
   const component = buildComponent(mocks);
-  const { response } = mocks;
+  const { response, logger } = mocks;
   return {
     async sendEvent({
       xdm,
@@ -223,7 +223,7 @@ export default (mocks) => {
       decisionScopes,
       personalization,
     }) {
-      const event = createEvent();
+      const event = createEvent({ logger });
       event.setUserXdm(xdm);
       event.setUserData(data);
       const callbacks = createCallbackAggregator();

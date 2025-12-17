@@ -175,4 +175,3 @@ export const setConsentHandler = http.post(
     throw new Error("Handler not configured properly");
   },
 );
-

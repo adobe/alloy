@@ -23,6 +23,12 @@ import {
   ADOBE_TARGET,
 } from "../../../../../src/constants/decisionProvider.js";
 
+const logger = {
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+};
+
 describe("Personalization::createOnClickHandler", () => {
   let collectInteractions;
   let collectClicks;
@@ -49,7 +55,7 @@ describe("Personalization::createOnClickHandler", () => {
     getInteractionMetas = vi.fn();
     getClickMetas = vi.fn();
     getClickSelectors = vi.fn();
-    event = createEvent();
+    event = createEvent({ logger });
     vi.spyOn(event, "mergeXdm");
     autoCollectPropositionInteractions = {
       [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,

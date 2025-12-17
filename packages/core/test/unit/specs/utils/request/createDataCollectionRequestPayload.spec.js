@@ -10,10 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { createDataCollectionRequestPayload } from "../../../../../src/utils/request/index.js";
 import createEvent from "../../../../../src/core/createEvent.js";
 import describeRequestPayload from "../../../helpers/describeRequestPayload.js";
+
+const logger = {
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+};
 
 describe("createDataCollectionRequestPayload", () => {
   describeRequestPayload(createDataCollectionRequestPayload);
@@ -69,18 +75,18 @@ describe("createDataCollectionRequestPayload", () => {
   });
   it("returns that document may unload if any event reports that it may unload", () => {
     const payload = createDataCollectionRequestPayload();
-    const event1 = createEvent();
+    const event1 = createEvent({ logger });
     payload.addEvent(event1);
-    const event2 = createEvent();
+    const event2 = createEvent({ logger });
     event2.documentMayUnload();
     payload.addEvent(event2);
     expect(payload.getDocumentMayUnload()).toBe(true);
   });
   it("returns that document will not unload if no event reports that it may unload", () => {
     const payload = createDataCollectionRequestPayload();
-    const event1 = createEvent();
+    const event1 = createEvent({ logger });
     payload.addEvent(event1);
-    const event2 = createEvent();
+    const event2 = createEvent({ logger });
     payload.addEvent(event2);
     expect(payload.getDocumentMayUnload()).toBe(false);
   });

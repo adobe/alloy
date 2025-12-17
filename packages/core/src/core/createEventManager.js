@@ -32,7 +32,7 @@ export default ({
     config;
 
   return {
-    createEvent,
+    createEvent: () => createEvent({ logger }),
     /**
      * Sends an event. This includes running the event and payload through the
      * appropriate lifecycle hooks, sending the request to the server, and
