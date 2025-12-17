@@ -100,4 +100,111 @@ describe("deepAssign", () => {
       b: 2,
     });
   });
+
+  describe("prototype pollution protection", () => {
+    it("should not copy __proto__ key", () => {
+      const target = {};
+      const maliciousPayload = JSON.parse('{"__proto__": {"polluted": true}}');
+
+      deepAssign(target, maliciousPayload);
+
+      expect(target.__proto__).not.toHaveProperty("polluted");
+      expect({}.polluted).toBeUndefined();
+    });
+
+    it("should not copy constructor key", () => {
+      const target = {};
+      const source = {
+        constructor: {
+          polluted: true,
+        },
+      };
+
+      deepAssign(target, source);
+
+      expect(target.constructor).not.toHaveProperty("polluted");
+    });
+
+    it("should not copy prototype key", () => {
+      const target = {};
+      const source = {
+        prototype: {
+          polluted: true,
+        },
+      };
+
+      deepAssign(target, source);
+
+      expect(target.prototype).toBeUndefined();
+    });
+
+    it("should not copy dangerous keys in nested objects", () => {
+      const target = {
+        nested: {
+          safe: "value",
+        },
+      };
+      const source = {
+        nested: {
+          __proto__: {
+            polluted: true,
+          },
+          constructor: {
+            polluted: true,
+          },
+          safe: "updated",
+        },
+      };
+
+      deepAssign(target, source);
+
+      expect(target.nested.safe).toBe("updated");
+      expect(target.nested.__proto__).not.toHaveProperty("polluted");
+      expect(target.nested.constructor).not.toHaveProperty("polluted");
+    });
+
+    it("should copy safe keys while skipping dangerous ones", () => {
+      const target = {};
+      const source = {
+        safeKey: "safe",
+        __proto__: {
+          polluted: true,
+        },
+        anotherSafeKey: "also safe",
+        constructor: {
+          polluted: true,
+        },
+      };
+
+      const result = deepAssign(target, source);
+
+      expect(result.safeKey).toBe("safe");
+      expect(result.anotherSafeKey).toBe("also safe");
+      expect(result.__proto__).not.toHaveProperty("polluted");
+      expect(result.constructor).not.toHaveProperty("polluted");
+    });
+
+    it("should handle multiple sources with dangerous keys", () => {
+      const target = {};
+      const source1 = {
+        __proto__: {
+          polluted1: true,
+        },
+        safe1: "value1",
+      };
+      const source2 = {
+        constructor: {
+          polluted2: true,
+        },
+        safe2: "value2",
+      };
+
+      const result = deepAssign(target, source1, source2);
+
+      expect(result.safe1).toBe("value1");
+      expect(result.safe2).toBe("value2");
+      expect(result.__proto__).not.toHaveProperty("polluted1");
+      expect(result.constructor).not.toHaveProperty("polluted2");
+    });
+  });
 });

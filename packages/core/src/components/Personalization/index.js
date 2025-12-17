@@ -68,7 +68,10 @@ const createPersonalization = ({ config, logger, eventManager, consent }) => {
     prehidingStyle,
     autoCollectPropositionInteractions,
   } = config;
-  const collect = createCollect({ eventManager, mergeDecisionsMeta });
+  const collect = createCollect({
+    eventManager,
+    mergeDecisionsMeta,
+  });
 
   const showContainers = createShowContainers(logger);
   const hideContainers = createHideContainers(logger);

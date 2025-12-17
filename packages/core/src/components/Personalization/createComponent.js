@@ -84,11 +84,14 @@ export default ({
           );
           onRequestFailure(() => cacheUpdate.cancel());
 
+          const identityMap = event.getUserIdentityMap();
+
           fetchDataHandler({
             cacheUpdate,
             personalizationDetails,
             event,
             onResponse,
+            identityMap,
           });
         } else if (personalizationDetails.shouldUseCachedData()) {
           decisionsMetaPromises.push(

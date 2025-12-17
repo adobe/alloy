@@ -24,10 +24,7 @@ test("edgeConfigId is swapped with datastreamId when sendEvent command is sent",
   config.edgeConfigId = config.datastreamId;
   delete config.datastreamId;
 
-  alloy("configure", {
-    ...config,
-    debugEnabled: true,
-  });
+  alloy("configure", config);
 
   await alloy("sendEvent");
 

@@ -1,40 +1,39 @@
 <!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="stylesheet" href="/index.css" />
     <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta name="theme-color" content="#000000" />
 
     <title>Mock website hosting Alloy</title>
+  </head>
 
-</head>
+  <body>
+    <h1>Concierge Demo Page</h1>
+    <p>
+      This page will be used to test the Concierge feature of the Adobe
+      Experience Platform.
+    </p>
+    <div id="brand-concierge-mount"></div>
+  </body>
+  <script src="/shim.js"></script>
+  <script>
+    const ecid = "dummy_ecid_" + Date.now(); // this is a dummy ecid that we will use for preview purposes only
+    const webAgentURL =
+      "https://experience-stage.adobe.net/solutions/experience-platform-brand-concierge-web-agent/static-assets/main.js";
 
-<body>
-<h1>Concierge Demo Page</h1>
-<p>
-    This page will be used to test the Concierge feature of the Adobe
-    Experience Platform.
-</p>
-<div id="brand-concierge-mount"></div>
-</body>
-<script src="/shim.js"></script>
-<script>
-  const ecid = "dummy_ecid_" + Date.now(); // this is a dummy ecid that we will use for preview purposes only
-  const webAgentURL =
-    "https://experience-stage.adobe.net/solutions/experience-platform-brand-concierge-web-agent/static-assets/main.js";
-
-  const previewConfigs = {
+    const previewConfigs = {
       imsOrgId: "745F37C35E4B776E0A49421B@AdobeOrg",
       sandboxName: "agent-composer",
       conciergeId: "1550b506-8f99-4d79-b829-4c63bb265345",
       aoInstanceId: "acom_agent",
     };
-  const selector = "#brand-concierge-mount";
+    const selector = "#brand-concierge-mount";
     const styles = {
       metadata: {
         brandName: "Adobe.com Hackathon",
@@ -168,7 +167,8 @@
         "--card-text-color": "#292929",
         "--welcome-input-order": "3",
         "--welcome-cards-order": "2",
-        "--font-family": "'Adobe Clean', adobe-clean, 'Trebuchet MS', sans-serif",
+        "--font-family":
+          "'Adobe Clean', adobe-clean, 'Trebuchet MS', sans-serif",
         "--disclaimer-color": "#717171",
         "--disclaimer-font-size": "12px",
         "--disclaimer-font-weight": "400",
@@ -188,8 +188,12 @@
         "--message-blocker-background": "white",
       },
     };
-    window.bootstrapConversationalExperience({previewConfigs, styles, ecid, webAgentURL, selector});
-</script>
-
-
+    window.bootstrapConversationalExperience({
+      previewConfigs,
+      styles,
+      ecid,
+      webAgentURL,
+      selector,
+    });
+  </script>
 </html>
