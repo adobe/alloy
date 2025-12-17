@@ -36,6 +36,9 @@ describe("createProcessRedirect", () => {
       getNotification() {
         return meta;
       },
+      getIdentityMap() {
+        return undefined;
+      },
     };
     item = {
       getData() {

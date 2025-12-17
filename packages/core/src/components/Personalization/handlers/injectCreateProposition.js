@@ -60,6 +60,7 @@ export default ({ preprocess, isPageWideSurface }) => {
     payload,
     visibleInReturnedItems = true,
     shouldSuppressDisplay = false,
+    identityMap = undefined,
   ) => {
     const { id, scope, scopeDetails, items = [] } = payload;
     const { characteristics: { scopeType } = {} } = scopeDetails || {};
@@ -85,6 +86,9 @@ export default ({ preprocess, isPageWideSurface }) => {
       },
       getId() {
         return id;
+      },
+      getIdentityMap() {
+        return identityMap;
       },
       toJSON() {
         return payload;

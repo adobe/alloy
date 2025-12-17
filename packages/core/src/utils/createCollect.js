@@ -22,9 +22,10 @@ export default ({ eventManager, mergeDecisionsMeta }) => {
     eventType = DISPLAY,
     propositionEventTypes = [getPropositionEventType(eventType)],
     viewName,
+    identityMap,
   }) => {
     const event = eventManager.createEvent();
-    const data = { eventType };
+    const data = { eventType, identityMap };
 
     if (viewName) {
       data.web = {

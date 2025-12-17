@@ -26,11 +26,14 @@ export default ({ lifecycle, eventRegistry }) => {
         extractPayloadsFromEventHistoryOperations(propositions);
       eventRegistry.addEventPayloads(eventPayloads);
 
+      const identityMap = event?.getUserIdentityMap();
+
       lifecycle.onDecision({
         renderDecisions,
         propositions,
         event,
         personalization,
+        identityMap,
       });
     }
     return { propositions };
