@@ -123,7 +123,6 @@
     "testcafe": "^3.7.2",
     "testcafe-browser-provider-playwright": "^1.1.0",
     "typescript": "^5.9.3",
-    "url-exists-nodejs": "^0.2.4",
     "vitest": "^4.0.6"
   },
   "optionalDependencies": {
