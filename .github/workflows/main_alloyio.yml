@@ -29,7 +29,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build alloy.js
-        run: pnpm exec rollup -c --environment SANDBOX
+        run: pnpm --filter @adobe/alloy exec rollup -c --environment SANDBOX
 
       - name: Build sandbox
         run: pnpm --filter @adobe/alloy-sandbox-browser run build
