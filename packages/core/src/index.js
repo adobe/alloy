@@ -35,7 +35,6 @@ const createNamespacedStorage = injectStorage(window);
 /**
  * Creates a custom Alloy instance which can reduce the library size and increase performance.
  *
- * @type {(options: Object) => Function}
  * @param {Object} [options] - Configuration options for the instance.
  * @param {string} [options.name=alloy] - The name of the instance.
  * @param {Array<AlloyMonitor>} [options.monitors] - Monitors for the instance.
@@ -75,7 +74,6 @@ export const createCustomInstance = (options = {}) => {
 /**
  * Creates a new Alloy instance.
  *
- * @type {(options?: Object) => Function}
  * @param {Object} [options] - Configuration options for the instance.
  * @param {string} [options.name=alloy] - The name of the instance.
  * @param {Array<AlloyMonitor>} [options.monitors] - (Optional) Monitors for the instance.
