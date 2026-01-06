@@ -15,12 +15,12 @@ import * as optionalComponents from "@adobe/alloy-core/core/componentCreators.js
 const components = optionalComponents;
 export { components };
 
-/** @type {core.createCustomInstance} */
+/** @type {typeof core.createCustomInstance} */
 export const createCustomInstance = (options) => {
   return core.createCustomInstance(options);
 };
 
-/** @type {core.createInstance} */
+/** @type {typeof core.createInstance} */
 export const createInstance = (options) => {
   return core.createInstance(options);
 };

@@ -14,7 +14,7 @@ governing permissions and limitations under the License.
 // like the launch extension. Everything that is exported here can be used independently by other
 // npm projects.
 
-/** @import { AlloyMonitor } from './types.js' */
+/** @import { AlloyMonitor } from './core/types.js' */
 
 import { createExecuteCommand } from "./core/index.js";
 import createLogger from "./core/createLogger.js";
