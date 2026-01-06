@@ -17,6 +17,8 @@ import createEventListeners from "@adobe/alloy-core/createEventListeners.js";
 // @ts-check
 /// <reference lib="webworker" />
 
+/** @import { ServiceWorkerLogger } from '@adobe/alloy-core/types.js' */
+
 /** @type {ServiceWorkerGlobalScope} */
 // @ts-ignore
 const sw = self;

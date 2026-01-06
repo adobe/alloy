@@ -10,6 +10,7 @@
   },
   "exports": {
     ".": "./src/index.js",
+    "./types.js": "./src/types.js",
     "./createEventListeners.js": "./src/createEventListeners.js",
     "./componentMetadata.js": "./src/componentMetadata.js",
     "./core/componentCreators.js": "./src/core/componentCreators.js"
