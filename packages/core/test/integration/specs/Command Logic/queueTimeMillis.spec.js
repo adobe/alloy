@@ -17,12 +17,12 @@ import {
 import alloyConfig from "../../helpers/alloy/config.js";
 
 describe("queueTimeMillis", () => {
-  test("includes queueTimeMillis in event meta", async ({
+  test("includes queueTimeMillis in request meta", async ({
     alloy,
     worker,
     networkRecorder,
   }) => {
-    worker.use(...[sendEventHandler]);
+    worker.use(sendEventHandler);
 
     await alloy("configure", alloyConfig);
     await alloy("sendEvent", {
@@ -32,9 +32,8 @@ describe("queueTimeMillis", () => {
     });
 
     const { request } = await networkRecorder.findCall(/edge\.adobedc\.net/);
-    const event = request.body.events[0];
 
-    expect(event.meta.queueTimeMillis).toBeGreaterThanOrEqual(0);
+    expect(request.body.meta.queueTimeMillis).toBeGreaterThanOrEqual(0);
   });
 
   test("allows user to set their own timestamp via onBeforeEventSend", async ({
@@ -42,7 +41,7 @@ describe("queueTimeMillis", () => {
     worker,
     networkRecorder,
   }) => {
-    worker.use(...[sendEventHandler]);
+    worker.use(sendEventHandler);
 
     const customTimestamp = "2025-01-15T10:00:00.000Z";
 
@@ -62,27 +61,7 @@ describe("queueTimeMillis", () => {
     const event = request.body.events[0];
 
     expect(event.xdm.timestamp).toBe(customTimestamp);
-    expect(event.meta.queueTimeMillis).toBeGreaterThanOrEqual(0);
-  });
-
-  test("queueTimeMillis is merged with other event meta", async ({
-    alloy,
-    worker,
-    networkRecorder,
-  }) => {
-    worker.use(...[sendEventHandler]);
-
-    await alloy("configure", alloyConfig);
-    await alloy("sendEvent", {
-      xdm: {
-        eventType: "test.metaMerge",
-      },
-    });
-
-    const { request } = await networkRecorder.findCall(/edge\.adobedc\.net/);
-    const event = request.body.events[0];
-
-    expect(event.meta.queueTimeMillis).toBeGreaterThanOrEqual(0);
+    expect(request.body.meta.queueTimeMillis).toBeGreaterThanOrEqual(0);
   });
 
   test("queueTimeMillis reflects time waiting for consent", async ({
@@ -120,12 +99,13 @@ describe("queueTimeMillis", () => {
     await sendEventPromise;
 
     const { request } = await networkRecorder.findCall(/v1\/interact/);
-    const event = request.body.events[0];
 
-    expect(event.meta.queueTimeMillis).toBeGreaterThanOrEqual(waitTimeMs);
+    expect(request.body.meta.queueTimeMillis).toBeGreaterThanOrEqual(
+      waitTimeMs,
+    );
   });
 
-  test("queueTimeMillis is present on all events when running close together", async ({
+  test("queueTimeMillis reflects time waiting for identity", async ({
     alloy,
     worker,
     networkRecorder,
@@ -146,12 +126,8 @@ describe("queueTimeMillis", () => {
 
     expect(calls.length).toBe(3);
 
-    calls.forEach((call, index) => {
-      const event = call.request.body.events[0];
-      expect(event.meta.queueTimeMillis).toBeGreaterThanOrEqual(0);
-      expect(event.xdm.eventType).toBe(
-        ["test.first", "test.second", "test.third"][index],
-      );
+    calls.forEach((call) => {
+      expect(call.request.body.meta.queueTimeMillis).toBeGreaterThanOrEqual(0);
     });
   });
 });

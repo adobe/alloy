@@ -15,12 +15,6 @@ import createInjectClickedElementProperties from "../../../../../src/components/
 import createEvent from "../../../../../src/core/createEvent.js";
 import { downloadLinkQualifier as dlwValidator } from "../../../../../src/components/ActivityCollector/configValidators.js";
 
-const logger = {
-  info: vi.fn(),
-  warn: vi.fn(),
-  error: vi.fn(),
-};
-
 describe("ActivityCollector::createInjectClickedElementProperties", () => {
   const getClickedElementProperties = vi.fn();
   const clickActivityStorage = {
@@ -40,7 +34,7 @@ describe("ActivityCollector::createInjectClickedElementProperties", () => {
         config,
       },
     );
-    const event = createEvent({ logger });
+    const event = createEvent();
     getClickedElementProperties.mockReturnValue({
       xdm: {
         web: {
@@ -61,7 +55,7 @@ describe("ActivityCollector::createInjectClickedElementProperties", () => {
     expect(event.isEmpty()).toBe(false);
   });
   it("Does not extend event XDM data when clickCollectionEnabled is false", () => {
-    const event = createEvent({ logger });
+    const event = createEvent();
     const config = {
       downloadLinkQualifier,
       clickCollectionEnabled: false,
@@ -89,7 +83,7 @@ describe("ActivityCollector::createInjectClickedElementProperties", () => {
     expect(event.isEmpty()).toBe(true);
   });
   it("Does not extend event XDM data with link information for unsupported anchor elements", () => {
-    const event = createEvent({ logger });
+    const event = createEvent();
     const config = {
       downloadLinkQualifier,
       clickCollectionEnabled: true,

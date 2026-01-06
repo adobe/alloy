@@ -16,9 +16,6 @@ import {
   isNonEmptyArray,
   deduplicateArray,
 } from "../utils/index.js";
-import clamp from "../utils/clamp.js";
-
-const MAX_QUEUE_TIME_MILLIS = 300000; // 5 minutes
 
 const getXdmPropositions = (xdm) => {
   return xdm &&
@@ -33,8 +30,9 @@ const getXdmPropositions = (xdm) => {
     : [];
 };
 
-export default ({ logger }) => {
+export default () => {
   const content = {};
+  const enqueuedAt = Date.now();
   let userXdm;
   let userData;
   let documentMayUnload = false;
@@ -129,22 +127,6 @@ export default ({ logger }) => {
         event.mergeData(userData);
       }
 
-      if (content?.xdm?.timestamp) {
-        try {
-          const enqueuedTime = new Date(content.xdm.timestamp).getTime();
-          if (!Number.isNaN(enqueuedTime)) {
-            const queueTimeMillis = clamp(
-              Date.now() - enqueuedTime,
-              0,
-              MAX_QUEUE_TIME_MILLIS,
-            );
-            event.mergeMeta({ queueTimeMillis });
-          }
-        } catch {
-          logger.error("Error parsing timestamp:", content.xdm.timestamp);
-        }
-      }
-
       // the event should already be considered finalized in case onBeforeEventSend throws an error
       isFinalized = true;
 
@@ -177,6 +159,9 @@ export default ({ logger }) => {
     },
     getDocumentMayUnload() {
       return documentMayUnload;
+    },
+    getEnqueuedAt() {
+      return enqueuedAt;
     },
     isEmpty() {
       return (

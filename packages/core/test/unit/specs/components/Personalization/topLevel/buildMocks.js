@@ -61,7 +61,7 @@ export default (decisions) => {
   };
   const sendEvent = vi.fn();
   const eventManager = {
-    createEvent: () => createEvent({ logger }),
+    createEvent,
     async sendEvent(event) {
       event.finalize();
       sendEvent(event.toJSON());
