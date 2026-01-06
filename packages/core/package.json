@@ -9,11 +9,26 @@
     "directory": "packages/core"
   },
   "exports": {
-    ".": "./src/index.js",
-    "./types.js": "./src/types.js",
-    "./createEventListeners.js": "./src/createEventListeners.js",
-    "./componentMetadata.js": "./src/componentMetadata.js",
-    "./core/componentCreators.js": "./src/core/componentCreators.js"
+    ".": {
+      "types": "./src/index.js",
+      "default": "./src/index.js"
+    },
+    "./types.js": {
+      "types": "./src/types.js",
+      "default": "./src/types.js"
+    },
+    "./createEventListeners.js": {
+      "types": "./src/createEventListeners.js",
+      "default": "./src/createEventListeners.js"
+    },
+    "./componentMetadata.js": {
+      "types": "./src/componentMetadata.js",
+      "default": "./src/componentMetadata.js"
+    },
+    "./core/componentCreators.js": {
+      "types": "./src/core/componentCreators.js",
+      "default": "./src/core/componentCreators.js"
+    }
   },
   "scripts": {
     "test:unit": "pnpm -w test:unit",
