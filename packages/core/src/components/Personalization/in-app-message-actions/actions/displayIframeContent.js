@@ -283,7 +283,7 @@ export const displayHTMLContentInIframe = (settings = {}, interact) => {
 
 export default (settings, collect) => {
   return new Promise((resolve) => {
-    const { meta } = settings;
+    const { meta, identityMap } = settings;
     displayHTMLContentInIframe(settings, (action, propositionAction) => {
       const propositionEventTypes = {};
       propositionEventTypes[PropositionEventType.INTERACT] = EVENT_TYPE_TRUE;
@@ -297,6 +297,7 @@ export default (settings, collect) => {
         propositionAction,
         eventType: INTERACT,
         propositionEventTypes: Object.keys(propositionEventTypes),
+        identityMap,
       });
     });
 

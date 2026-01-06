@@ -36,7 +36,10 @@ const createRulesEngine = ({
   logger,
 }) => {
   const { orgId, personalizationStorageEnabled } = config;
-  const collect = createCollect({ eventManager, mergeDecisionsMeta });
+  const collect = createCollect({
+    eventManager,
+    mergeDecisionsMeta,
+  });
 
   const storage = createNamespacedStorage(
     `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`,

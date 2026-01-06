@@ -176,6 +176,9 @@ export default () => {
 
       return userXdm.web.webPageDetails.viewName;
     },
+    getUserIdentityMap() {
+      return userXdm?.identityMap;
+    },
     toJSON() {
       if (!isFinalized) {
         throw new Error("toJSON called before finalize");

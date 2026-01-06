@@ -13,13 +13,19 @@ governing permissions and limitations under the License.
 import isNil from "./isNil.js";
 import isObject from "./isObject.js";
 
+// Keys that should never be copied to prevent prototype pollution.
+const DANGEROUS_KEYS = ["__proto__", "constructor", "prototype"];
+
 const deepAssignObject = (target, source) => {
   Object.keys(source).forEach((key) => {
+    if (DANGEROUS_KEYS.includes(key)) {
+      return;
+    }
+
     if (isObject(target[key]) && isObject(source[key])) {
       deepAssignObject(target[key], source[key]);
       return;
     }
-
     target[key] = source[key];
   });
 };

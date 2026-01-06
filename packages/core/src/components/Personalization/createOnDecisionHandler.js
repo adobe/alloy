@@ -35,7 +35,13 @@ export default ({
   createProposition,
   notificationHandler,
 }) => {
-  return ({ renderDecisions, propositions, event, personalization = {} }) => {
+  return ({
+    renderDecisions,
+    propositions,
+    event,
+    personalization = {},
+    identityMap,
+  }) => {
     if (!renderDecisions) {
       return Promise.resolve();
     }
@@ -46,7 +52,12 @@ export default ({
     const shouldSuppressDisplay = createShouldSuppressDisplay();
 
     const propositionsToExecute = propositions.map((proposition) =>
-      createProposition(proposition, true, shouldSuppressDisplay(proposition)),
+      createProposition(
+        proposition,
+        true,
+        shouldSuppressDisplay(proposition),
+        identityMap,
+      ),
     );
 
     const { render, returnedPropositions } = processPropositions(
@@ -57,6 +68,7 @@ export default ({
       renderDecisions,
       sendDisplayEvent,
       viewName,
+      identityMap,
     );
 
     const propositionsById = propositionsToExecute.reduce(

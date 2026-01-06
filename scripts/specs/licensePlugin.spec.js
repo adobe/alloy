@@ -54,15 +54,18 @@ const HEADER_2000 = buildHeader(2000);
 ruleTester.run("license-header", rule, {
   valid: [
     {
+      name: "header with import statement",
       code: `${HEADER_2000}\n\nimport foo from "foo";`,
       options: [{ year: 2000 }],
     },
     {
+      name: "header with shebang",
       code: `#!/usr/bin/env node\n\n${HEADER_2000}\n\nconsole.log("hi");`,
       options: [{ year: 2000 }],
     },
     // Some historical files omit the blank line after the License URL.
     {
+      name: "header without blank line after URL",
       code: `/*
 Copyright 2000 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -77,24 +80,28 @@ governing permissions and limitations under the License.
   ],
   invalid: [
     {
+      name: "missing header with import",
       code: `import foo from "foo";`,
       options: [{ year: 2000 }],
       errors: [{ messageId: "missing" }],
       output: `${HEADER_2000}\n\nimport foo from "foo";`,
     },
     {
+      name: "missing header with eslint comment",
       code: `/* eslint-disable no-console */\nconsole.log("hi");`,
       options: [{ year: 2000 }],
       errors: [{ messageId: "missing" }],
       output: `${HEADER_2000}\n\n/* eslint-disable no-console */\nconsole.log("hi");`,
     },
     {
+      name: "missing header with shebang and code",
       code: `#!/usr/bin/env node\n\nconsole.log("hi");`,
       options: [{ year: 2000 }],
       errors: [{ messageId: "missing" }],
       output: `#!/usr/bin/env node\n\n${HEADER_2000}\n\nconsole.log("hi");`,
     },
     {
+      name: "missing header with shebang only",
       code: `#!/usr/bin/env node`,
       options: [{ year: 2000 }],
       errors: [{ messageId: "missing" }],

@@ -34,6 +34,7 @@ describe("RulesEngine:createApplyResponse", () => {
   it("calls lifecycle.onDecision with propositions", () => {
     const mockEvent = {
       getViewName: () => undefined,
+      getUserIdentityMap: () => undefined,
     };
     const personalization = {};
 
@@ -48,12 +49,14 @@ describe("RulesEngine:createApplyResponse", () => {
       propositions: [proposition],
       event: mockEvent,
       personalization: {},
+      identityMap: undefined,
     });
   });
 
   it("calls lifecycle.onDecision with viewName", () => {
     const mockEvent = {
       getViewName: () => "oh hai",
+      getUserIdentityMap: () => undefined,
     };
 
     applyResponse({
@@ -68,6 +71,7 @@ describe("RulesEngine:createApplyResponse", () => {
       propositions: [proposition],
       event: mockEvent,
       personalization: {},
+      identityMap: undefined,
     });
   });
 
@@ -75,6 +79,7 @@ describe("RulesEngine:createApplyResponse", () => {
     // this use case is necessary for content cards with no items
     const mockEvent = {
       getViewName: () => undefined,
+      getUserIdentityMap: () => undefined,
     };
 
     applyResponse({
@@ -89,6 +94,7 @@ describe("RulesEngine:createApplyResponse", () => {
       propositions: [],
       event: mockEvent,
       personalization: {},
+      identityMap: undefined,
     });
   });
 });

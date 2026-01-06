@@ -241,6 +241,18 @@ describe("createEvent", () => {
     });
     expect(event.getViewName()).toBe("cart");
   });
+  it("returns undefined when identityMap does not exist", () => {
+    expect(event.getUserIdentityMap()).toBe(undefined);
+    event.setUserXdm({});
+    expect(event.getUserIdentityMap()).toBe(undefined);
+  });
+  it("returns identityMap when identityMap exists", () => {
+    const identityMap = {
+      CRM_ID: [{ id: "test-user", primary: true }],
+    };
+    event.setUserXdm({ identityMap });
+    expect(event.getUserIdentityMap()).toEqual(identityMap);
+  });
   describe("applyCallback", () => {
     it("can add fields to empty xdm", () => {
       const callback = ({ xdm, data }) => {
