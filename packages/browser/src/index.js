@@ -9,18 +9,5 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import * as core from "@adobe/alloy-core";
-import * as optionalComponents from "@adobe/alloy-core/core/componentCreators.js";
-
-const components = optionalComponents;
-export { components };
-
-/** @type {typeof core.createCustomInstance} */
-export const createCustomInstance = (options) => {
-  return core.createCustomInstance(options);
-};
-
-/** @type {typeof core.createInstance} */
-export const createInstance = (options) => {
-  return core.createInstance(options);
-};
+export { createInstance, createCustomInstance } from "@adobe/alloy-core";
+export * as components from "@adobe/alloy-core/core/componentCreators.js";
