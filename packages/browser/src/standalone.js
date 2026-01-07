@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { WindowWithAlloy } from './types.js' */
+/** @import { WindowWithAlloy, AlloyQueueItem } from './types.js' */
 
 import { createCustomInstance } from "./index.js";
 import * as optionalComponents from "@adobe/alloy-core/core/componentCreators.js";
@@ -25,8 +25,10 @@ const initializeStandalone = async ({ components }) => {
   }
   for (const name of instanceNames) {
     const instance = createCustomInstance({ name, components });
-    const execute = ([resolve, reject, [commandName, options]]) =>
-      instance(commandName, options).then(resolve, reject);
+    const execute = (/** @type {AlloyQueueItem} */ item) => {
+      const [resolve, reject, [commandName, options]] = item;
+      return instance(commandName, options).then(resolve, reject);
+    };
     const queue = window[name].q;
     queue.push = execute;
     queue.forEach(execute);

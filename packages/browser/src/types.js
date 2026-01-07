@@ -11,10 +11,8 @@ governing permissions and limitations under the License.
 */
 
 /**
- * @typedef {object} AlloyQueueItem
- * @property {Function} resolve
- * @property {Function} reject
- * @property {any} userProvidedArgs
+ * @typedef {[(value: any) => any, (value:any) => any, [string, object?]]} AlloyQueueItem
+ * An array containing [resolve, reject, [commandName, options]]
  */
 
 /**
@@ -22,7 +20,7 @@ governing permissions and limitations under the License.
  * A function that executes Alloy commands and returns a Promise,
  * with a queue property for pre-initialization commands.
  * @param {string} commandName
- * @param {Object} [options]
+ * @param {object} [options]
  * @returns {Promise<any>}
  */
 
