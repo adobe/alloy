@@ -30,7 +30,6 @@ import {
 } from "@adobe/alloy-core/componentMetadata.js";
 import {
   getBrowserPackageRoot,
-  getProjectRoot,
   safePathJoin,
 } from "./helpers/path.js";
 
@@ -213,7 +212,7 @@ const getMakeBuildCommand = () => {
         "-o, --outputDir <dir>",
         "the output directory for the generated build",
       )
-        .default(getProjectRoot())
+        .default(process.cwd())
         .argParser((value) => {
           if (!path.isAbsolute(value)) {
             value = path.join(process.cwd(), value);
@@ -254,7 +253,7 @@ const getPushNotificationsServiceWorkerBuildCommand = () =>
         "-o, --outputDir <dir>",
         "the output directory for the generated build",
       )
-        .default(getProjectRoot())
+        .default(process.cwd())
         .argParser((value) => {
           if (!path.isAbsolute(value)) {
             value = path.join(process.cwd(), value);
