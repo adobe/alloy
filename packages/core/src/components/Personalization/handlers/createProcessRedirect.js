@@ -26,6 +26,7 @@ export default ({ logger, executeRedirect, collect }) =>
       return collect({
         decisionsMeta: [item.getProposition().getNotification()],
         documentMayUnload: true,
+        identityMap: item.getProposition().getIdentityMap(),
       })
         .then(() => {
           logger.logOnContentRendering({

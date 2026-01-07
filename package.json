@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy",
-  "version": "2.30.1-beta.15",
+  "version": "2.30.1-beta.18",
   "description": "Adobe Experience Platform Web SDK",
   "type": "module",
   "main": "libEs5/index.js",
@@ -49,8 +49,7 @@
     "build:custom": "node scripts/alloyBuilder.js",
     "prepare": "husky",
     "prepack": "pnpm run clean && babel packages/core/src -d libEs5 --env-name npmEs5 && babel packages/core/src -d libEs6 --env-name npmEs6 && echo '{\"type\":\"commonjs\"}' > libEs5/package.json && echo '{\"type\":\"module\"}' > libEs6/package.json && pnpm run types",
-    "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
-    "add-license": "./scripts/add-license.js"
+    "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js"
   },
   "lint-staged": {
     "./*.{cjs,mjs,js,jsx}": [
@@ -110,7 +109,6 @@
     "eslint-plugin-react": "^7.37.5",
     "glob": "^11.0.3",
     "globals": "^16.5.0",
-    "handlebars": "^4.7.8",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.6",
     "minimatch": "^10.1.1",
@@ -121,7 +119,6 @@
     "recursive-readdir": "^2.2.3",
     "rimraf": "^6.1.0",
     "semver": "^7.7.3",
-    "staged-git-files": "^1.3.0",
     "testcafe": "^3.7.2",
     "testcafe-browser-provider-playwright": "^1.1.0",
     "typescript": "^5.9.3",

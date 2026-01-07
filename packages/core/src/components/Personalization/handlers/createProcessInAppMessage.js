@@ -81,6 +81,7 @@ export default ({ modules, logger }) => {
           : modules[type]({
               ...data,
               meta,
+              identityMap: proposition.getIdentityMap(),
             });
       },
       setRenderAttempted: true,

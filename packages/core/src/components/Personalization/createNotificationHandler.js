@@ -14,7 +14,7 @@ import { SUPPRESS } from "../../constants/eventType.js";
 import isNonEmptyArray from "../../utils/isNonEmptyArray.js";
 
 export default (collect, renderedPropositions) => {
-  return (isRenderDecisions, isSendDisplayEvent, viewName) => {
+  return (isRenderDecisions, isSendDisplayEvent, viewName, identityMap) => {
     if (!isRenderDecisions) {
       // If we aren't rendering anything, then we don't need to sendDisplayEvents.
       return () => undefined;
@@ -31,6 +31,7 @@ export default (collect, renderedPropositions) => {
         collect({
           decisionsMeta: decisionsMetaDisplay,
           viewName,
+          identityMap,
         });
       }
 
@@ -40,6 +41,7 @@ export default (collect, renderedPropositions) => {
           eventType: SUPPRESS,
           propositionAction: { reason: "Conflict" },
           viewName,
+          identityMap,
         });
       }
     };

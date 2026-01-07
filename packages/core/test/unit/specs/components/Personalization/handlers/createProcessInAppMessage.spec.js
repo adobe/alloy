@@ -28,6 +28,7 @@ describe("Personalization::handlers::createProcessInAppMessage", () => {
         return {
           getNotification: () => meta,
           shouldSuppressDisplay: () => false,
+          getIdentityMap: () => undefined,
         };
       },
     };
@@ -100,6 +101,7 @@ describe("Personalization::handlers::createProcessInAppMessage", () => {
     expect(modules.defaultContent).toHaveBeenCalledWith({
       ...data,
       meta,
+      identityMap: undefined,
     });
   });
   it("handles an invalid in app message type, and logs", () => {

@@ -1,5 +1,5 @@
 /*
-Copyright 2024 Adobe. All rights reserved.
+Copyright 2025 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -19,6 +19,8 @@ import react from "eslint-plugin-react";
 import { defineConfig, globalIgnores } from "eslint/config";
 import { glob } from "glob";
 import globals from "globals";
+// eslint-disable-next-line import/extensions
+import license from "./scripts/eslint/licenseRule.js";
 
 const allComponentPaths = glob.sync("packages/core/src/components/*/");
 
@@ -31,7 +33,33 @@ export default defineConfig([
     "sandboxes/**/build/",
     "sandboxes/**/public/",
     "node_modules/",
+    "launch*.js",
   ]),
+  {
+    name: "alloy/license-header",
+    files: ["**/*.{cjs,js,mjs,jsx}"],
+    ignores: [
+      "sandboxes/**",
+      "dist/**",
+      "distTest/**",
+      "packages/**/dist/**",
+      "packages/**/distTest/**",
+      "launch*.js",
+      "**/*.min.js",
+      "**/at.js",
+      "**/*AppMeasurement*",
+    ],
+    plugins: {
+      local: {
+        rules: {
+          license,
+        },
+      },
+    },
+    rules: {
+      "local/license": "error",
+    },
+  },
   {
     name: "alloy/shared",
     languageOptions: {

@@ -42,6 +42,7 @@ describe("RulesEngine:createOnResponseHandler", () => {
   it("calls lifecycle.onDecision with propositions based on decisionContext", () => {
     const event = {
       getViewName: () => undefined,
+      getUserIdentityMap: () => undefined,
       hasQuery: () => true,
       getContent: () => ({
         query: {},
@@ -227,11 +228,13 @@ describe("RulesEngine:createOnResponseHandler", () => {
           scope: "web://target.jasonwaters.dev/aep.html",
         },
       ],
+      identityMap: undefined,
     });
   });
   it("calls lifecycle.onDecision with propositions based on xdm and event data", () => {
     const event = {
       getViewName: () => "home",
+      getUserIdentityMap: () => undefined,
       hasQuery: () => true,
       getContent: () => ({
         query: {},
@@ -390,6 +393,7 @@ describe("RulesEngine:createOnResponseHandler", () => {
       ],
       event,
       personalization,
+      identityMap: undefined,
     });
   });
 });

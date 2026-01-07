@@ -22,10 +22,11 @@ describe("Utils::createCollect", () => {
       decisionId: "foo",
     },
   ];
-  const event = {
-    mergeXdm: vi.fn(),
-  };
+  let event;
   beforeEach(() => {
+    event = {
+      mergeXdm: vi.fn(),
+    };
     eventManager = {
       sendEvent: vi.fn().mockReturnValue(undefined),
       createEvent: vi.fn().mockReturnValue(event),
@@ -51,5 +52,42 @@ describe("Utils::createCollect", () => {
       undefined,
     );
     expect(eventManager.sendEvent).toHaveBeenCalled();
+  });
+
+  it("includes identityMap in the event when provided", () => {
+    const identityMap = {
+      CRM_ID: [{ id: "user123", primary: true }],
+      ECID: [{ id: "ecid123" }],
+    };
+
+    const collect = createCollect({
+      eventManager,
+      mergeDecisionsMeta,
+    });
+    collect({
+      decisionsMeta,
+      identityMap,
+    });
+
+    expect(event.mergeXdm).toHaveBeenCalledWith({
+      eventType: "decisioning.propositionDisplay",
+      identityMap,
+    });
+    expect(eventManager.sendEvent).toHaveBeenCalled();
+  });
+
+  it("does not merge identityMap when not provided", () => {
+    const collect = createCollect({
+      eventManager,
+      mergeDecisionsMeta,
+    });
+    collect({
+      decisionsMeta,
+    });
+
+    expect(event.mergeXdm).toHaveBeenCalledTimes(1);
+    expect(event.mergeXdm).toHaveBeenCalledWith({
+      eventType: "decisioning.propositionDisplay",
+    });
   });
 });
