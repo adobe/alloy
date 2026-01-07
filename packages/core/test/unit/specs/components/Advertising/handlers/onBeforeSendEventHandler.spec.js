@@ -13,65 +13,6 @@ governing permissions and limitations under the License.
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import handleOnBeforeSendEvent from "../../../../../../src/components/Advertising/handlers/onBeforeSendEventHandler.js";
 
-// Mock network operations to prevent real network calls
-vi.mock("fetch", () => vi.fn());
-
-// Mock globalThis fetch and other network APIs
-Object.defineProperty(globalThis, "fetch", {
-  value: vi.fn(() =>
-    Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve({ success: true }),
-    }),
-  ),
-  writable: true,
-});
-
-// Mock XMLHttpRequest
-Object.defineProperty(globalThis, "XMLHttpRequest", {
-  value: class MockXMLHttpRequest {
-    open() {
-      this.readyState = 4;
-    }
-
-    send() {
-      this.status = 200;
-    }
-
-    setRequestHeader() {
-      this.headers = {};
-    }
-  },
-  writable: true,
-});
-
-// Mock DOM operations to prevent network calls from script loading
-if (typeof globalThis.document !== "undefined") {
-  globalThis.document.createElement = vi.fn(() => ({
-    src: "",
-    height: 0,
-    width: 0,
-    frameBorder: 0,
-    style: { display: "none" },
-    addEventListener: vi.fn(),
-    onerror: vi.fn(),
-  }));
-  if (globalThis.document.body) {
-    globalThis.document.body.appendChild = vi.fn();
-  }
-  if (globalThis.document.head) {
-    globalThis.document.head.appendChild = vi.fn();
-  }
-}
-
-if (typeof globalThis.window !== "undefined") {
-  globalThis.window.addEventListener = vi.fn();
-  globalThis.window.removeEventListener = vi.fn();
-  globalThis.window.attachEvent = vi.fn();
-  globalThis.window.detachEvent = vi.fn();
-  globalThis.window.ats = undefined;
-  globalThis.window.ID5 = undefined;
-}
 
 // Mock identity collectors to return resolved promises immediately
 vi.mock(

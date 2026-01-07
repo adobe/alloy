@@ -13,26 +13,6 @@ governing permissions and limitations under the License.
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import createAdConversionHandler from "../../../../../../src/components/Advertising/handlers/createAdConversionHandler.js";
 
-// Mock network operations to prevent real network calls
-vi.mock("fetch", () => vi.fn());
-Object.defineProperty(globalThis, "fetch", {
-  value: vi.fn(() =>
-    Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve({ success: true }),
-    }),
-  ),
-  writable: true,
-});
-
-// Mock dependencies
-vi.mock(
-  "../../../../../../src/utils/request/createDataCollectionRequestPayload.js",
-);
-vi.mock(
-  "../../../../../../src/utils/request/createDataCollectionRequest.js",
-);
-
 describe("Advertising::createAdConversionHandler", () => {
   let eventManager;
   let sendEdgeNetworkRequest;
@@ -42,7 +22,7 @@ describe("Advertising::createAdConversionHandler", () => {
   let createDataCollectionRequestPayload;
   let createDataCollectionRequest;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     eventManager = {
       createEvent: vi.fn(),
     };
@@ -60,20 +40,9 @@ describe("Advertising::createAdConversionHandler", () => {
       warn: vi.fn(),
     };
 
-    // Mock the request creation functions
-    const mockCreateDataCollectionRequestPayload = await import(
-      "../../../../../../src/utils/request/createDataCollectionRequestPayload.js"
-    );
-    const mockCreateDataCollectionRequest = await import(
-      "../../../../../../src/utils/request/createDataCollectionRequest.js"
-    );
-
-    createDataCollectionRequestPayload =
-      mockCreateDataCollectionRequestPayload.default;
-    createDataCollectionRequest = mockCreateDataCollectionRequest.default;
-
-    createDataCollectionRequestPayload.mockReset();
-    createDataCollectionRequest.mockReset();
+    // Inject mocks directly to avoid brittle module-mocking under isolate=false.
+    createDataCollectionRequestPayload = vi.fn();
+    createDataCollectionRequest = vi.fn();
 
     handler = createAdConversionHandler({
       sendEdgeNetworkRequest,
@@ -133,6 +102,16 @@ describe("Advertising::createAdConversionHandler", () => {
       const mockEvent = {
         finalize: vi.fn(),
       };
+      const mockPayload = {
+        addEvent: vi.fn(),
+      };
+      const mockRequest = {
+        body: { events: [] },
+        getUseIdThirdPartyDomain: vi.fn().mockReturnValue(false),
+      };
+
+      createDataCollectionRequestPayload.mockReturnValue(mockPayload);
+      createDataCollectionRequest.mockReturnValue(mockRequest);
 
       const consentError = new Error("Consent denied");
       consent.awaitConsent.mockRejectedValue(consentError);
