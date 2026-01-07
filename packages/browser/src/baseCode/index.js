@@ -10,11 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/* eslint no-param-reassign: 0 */
 /* eslint no-underscore-dangle: 0 */
-/* eslint prefer-rest-params: 0 */
-/* eslint no-var: 0 */
 /* eslint-disable func-names */
+
+/** @import { WindowWithAlloy } from '../types.js' */
 
 /**
  * This is the code, once minified, that an Alloy consumer copies and pastes
@@ -31,6 +30,9 @@ governing permissions and limitations under the License.
  *
  * Take particular care to write well-minifiable code, as consumers are
  * particularly sensitive to base code size.
+ *
+ * @param {WindowWithAlloy} window
+ * @param {string[]} instanceNames
  */
 
 export default (window, instanceNames) => {

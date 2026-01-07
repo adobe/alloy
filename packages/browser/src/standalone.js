@@ -9,6 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+/** @import { WindowWithAlloy } from './types.js' */
+
 import { createCustomInstance } from "./index.js";
 import * as optionalComponents from "@adobe/alloy-core/core/componentCreators.js";
 
@@ -16,7 +19,7 @@ import * as optionalComponents from "@adobe/alloy-core/core/componentCreators.js
 
 const initializeStandalone = async ({ components }) => {
   // eslint-disable-next-line no-underscore-dangle
-  const instanceNames = window.__alloyNS;
+  const instanceNames = /** @type {WindowWithAlloy} */ (window).__alloyNS;
   if (!instanceNames) {
     return;
   }

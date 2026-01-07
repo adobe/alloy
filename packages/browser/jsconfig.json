@@ -7,5 +7,5 @@
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "distTest"]
+  "exclude": ["node_modules", "dist", "distTest", "src/input.js"]
 }
