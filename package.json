@@ -7,7 +7,7 @@
     "clean": "pnpm -r --if-present run clean && rimraf coverage",
     "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/src,test,scripts}/**/*.{js,cjs,mjs,jsx}\"",
     "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
-    "types": "tsc",
+    "types": "tsc -p tsconfig.build-types.json",
     "test": "pnpm exec playwright install chromium && vitest run && pnpm run test:scripts",
     "test:coverage": "rimraf coverage && pnpm exec playwright install chromium && vitest run --coverage",
     "test:unit": "pnpm exec playwright install chromium && vitest run --project=unit",
