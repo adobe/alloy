@@ -31,3 +31,4 @@
 - [ ] I have signed the [Adobe Open Source CLA](https://opensource.adobe.com/cla.html) or I'm an Adobe employee.
 - [ ] I have made any necessary test changes and all tests pass.
 - [ ] I have run the Sandbox successfully.
+- [ ] I have added a Changeset (`pnpm changeset`) or it is not necessary because this PR is not consumer-facing.
