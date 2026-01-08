@@ -32,7 +32,7 @@ const getXdmPropositions = (xdm) => {
 
 export default () => {
   const content = {};
-  const enqueuedAt = Date.now();
+  const createdAt = Date.now();
   let userXdm;
   let userData;
   let documentMayUnload = false;
@@ -160,8 +160,8 @@ export default () => {
     getDocumentMayUnload() {
       return documentMayUnload;
     },
-    getEnqueuedAt() {
-      return enqueuedAt;
+    getCreatedAt() {
+      return createdAt;
     },
     isEmpty() {
       return (

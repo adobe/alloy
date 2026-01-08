@@ -559,7 +559,7 @@ describe("injectSendEdgeNetworkRequest", () => {
       vi.setSystemTime(new Date("2025-01-15T12:00:01.000Z"));
 
       const events = [
-        { getEnqueuedAt: () => new Date("2025-01-15T12:00:00.000Z").getTime() },
+        { getCreatedAt: () => new Date("2025-01-15T12:00:00.000Z").getTime() },
       ];
       payload.getEvents = vi.fn().mockReturnValue(events);
 
@@ -578,9 +578,9 @@ describe("injectSendEdgeNetworkRequest", () => {
       vi.setSystemTime(new Date("2025-01-15T12:00:02.000Z"));
 
       const events = [
-        { getEnqueuedAt: () => new Date("2025-01-15T12:00:01.000Z").getTime() },
-        { getEnqueuedAt: () => new Date("2025-01-15T12:00:00.000Z").getTime() },
-        { getEnqueuedAt: () => new Date("2025-01-15T12:00:01.500Z").getTime() },
+        { getCreatedAt: () => new Date("2025-01-15T12:00:01.000Z").getTime() },
+        { getCreatedAt: () => new Date("2025-01-15T12:00:00.000Z").getTime() },
+        { getCreatedAt: () => new Date("2025-01-15T12:00:01.500Z").getTime() },
       ];
       payload.getEvents = vi.fn().mockReturnValue(events);
 
@@ -621,7 +621,7 @@ describe("injectSendEdgeNetworkRequest", () => {
       vi.setSystemTime(new Date("2025-01-15T12:00:00.000Z"));
 
       const events = [
-        { getEnqueuedAt: () => new Date("2025-01-15T12:05:00.000Z").getTime() },
+        { getCreatedAt: () => new Date("2025-01-15T12:05:00.000Z").getTime() },
       ];
       payload.getEvents = vi.fn().mockReturnValue(events);
 
@@ -640,7 +640,7 @@ describe("injectSendEdgeNetworkRequest", () => {
       vi.setSystemTime(new Date("2025-01-15T12:10:00.000Z"));
 
       const events = [
-        { getEnqueuedAt: () => new Date("2025-01-15T12:00:00.000Z").getTime() },
+        { getCreatedAt: () => new Date("2025-01-15T12:00:00.000Z").getTime() },
       ];
       payload.getEvents = vi.fn().mockReturnValue(events);
 
@@ -659,7 +659,7 @@ describe("injectSendEdgeNetworkRequest", () => {
       vi.setSystemTime(new Date("2025-01-15T12:00:00.000Z"));
 
       const events = [
-        { getEnqueuedAt: () => new Date("2025-01-15T12:00:00.000Z").getTime() },
+        { getCreatedAt: () => new Date("2025-01-15T12:00:00.000Z").getTime() },
       ];
       payload.getEvents = vi.fn().mockReturnValue(events);
 

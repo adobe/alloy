@@ -64,6 +64,34 @@ describe("queueTimeMillis", () => {
     expect(request.body.meta.queueTimeMillis).toBeGreaterThanOrEqual(0);
   });
 
+  test("queueTimeMillis is unaffected by changes to xdm.timestamp", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    const pastTimestamp = "2020-01-01T00:00:00.000Z";
+
+    await alloy("configure", {
+      ...alloyConfig,
+      onBeforeEventSend: ({ xdm }) => {
+        xdm.timestamp = pastTimestamp;
+      },
+    });
+    await alloy("sendEvent", {
+      xdm: {
+        eventType: "test.modifyTimestamp",
+      },
+    });
+
+    const { request } = await networkRecorder.findCall(/edge\.adobedc\.net/);
+    const event = request.body.events[0];
+
+    expect(event.xdm.timestamp).toBe(pastTimestamp);
+    expect(request.body.meta.queueTimeMillis).toBeLessThan(5000);
+  });
+
   test("queueTimeMillis reflects time waiting for consent", async ({
     alloy,
     worker,

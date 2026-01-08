@@ -34,10 +34,10 @@ const calculateQueueTimeMillis = (payload) => {
 
   // In practice, there should only be one event in the payload, in the future if this changes we'll need to
   // evaluate what timestamp to use (earliest, average, latest), or move the queueTime to the event meta
-  const earliestEnqueuedAt = Math.min(
-    ...events.map((event) => event.getEnqueuedAt()),
+  const earliestCreatedAt = Math.min(
+    ...events.map((event) => event.getCreatedAt()),
   );
-  return clamp(Date.now() - earliestEnqueuedAt, 0, MAX_QUEUE_TIME_MILLIS);
+  return clamp(Date.now() - earliestCreatedAt, 0, MAX_QUEUE_TIME_MILLIS);
 };
 
 const isDemdexBlockedError = (error, request) => {

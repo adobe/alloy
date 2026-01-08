@@ -502,13 +502,13 @@ describe("createEvent", () => {
       },
     });
   });
-  describe("getEnqueuedAt", () => {
+  describe("getCreatedAt", () => {
     it("returns the timestamp when the event was created", () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date("2025-01-15T12:00:00.000Z"));
 
       const subject = createEvent();
-      expect(subject.getEnqueuedAt()).toBe(
+      expect(subject.getCreatedAt()).toBe(
         new Date("2025-01-15T12:00:00.000Z").getTime(),
       );
 
@@ -517,8 +517,8 @@ describe("createEvent", () => {
 
     it("returns a consistent value across multiple calls", () => {
       const subject = createEvent();
-      const firstCall = subject.getEnqueuedAt();
-      const secondCall = subject.getEnqueuedAt();
+      const firstCall = subject.getCreatedAt();
+      const secondCall = subject.getCreatedAt();
       expect(firstCall).toBe(secondCall);
     });
   });
