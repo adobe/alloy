@@ -35,6 +35,9 @@ export default () => {
       content.events = content.events || [];
       content.events.push(event);
     },
+    getEvents: () => {
+      return content.events || [];
+    },
     getDocumentMayUnload: () => {
       return (content.events || []).some((event) =>
         event.getDocumentMayUnload(),

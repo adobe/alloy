@@ -32,6 +32,7 @@ const getXdmPropositions = (xdm) => {
 
 export default () => {
   const content = {};
+  const createdAt = Date.now();
   let userXdm;
   let userData;
   let documentMayUnload = false;
@@ -158,6 +159,9 @@ export default () => {
     },
     getDocumentMayUnload() {
       return documentMayUnload;
+    },
+    getCreatedAt() {
+      return createdAt;
     },
     isEmpty() {
       return (
