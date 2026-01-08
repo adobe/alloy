@@ -27,9 +27,9 @@ jobs:
         id: pre
         run: |
           if [ -f .changeset/pre.json ]; then
-            MODE=$(node -p "require('./.changeset/pre.json').mode")
+            MODE=$(jq -r '.mode' .changeset/pre.json)
           else
-            MODE="none"
+            MODE=""
           fi
 
           if [ "${MODE}" = "pre" ]; then
@@ -64,19 +64,18 @@ jobs:
           # `changeset status` writes JSON to the provided filename, relative to cwd.
           pnpm install --frozen-lockfile
           pnpm exec changeset status --output=changeset-status.json
-          HAS_RELEASES=$(node -e "const s=require('./changeset-status.json');console.log((s.releases || []).length > 0 ? 'true' : 'false');")
+          HAS_RELEASES=$(jq -r 'if (.releases // []) | length > 0 then "true" else "false" end' changeset-status.json)
           echo "has_releases=${HAS_RELEASES}" >> "${GITHUB_OUTPUT}"
 
       - name: No release changesets, skipping publish
         if: steps.release_plan.outputs.has_releases != 'true'
         run: echo "No pending changesets; skipping publish."
 
-  publish_prerelease:
+  publish:
     needs: analyze
     if: >-
       github.ref == 'refs/heads/main' &&
-      needs.analyze.outputs.has_releases == 'true' &&
-      needs.analyze.outputs.is_prerelease == 'true'
+      needs.analyze.outputs.has_releases == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -109,7 +108,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Version packages
+      - name: Version packages & generate CHANGELOG.md files
         run: pnpm changeset version
 
       - name: Update lockfile
@@ -118,7 +117,7 @@ jobs:
       - name: Build packages (prepack)
         run: pnpm run build
 
-      - name: Commit version changes
+      - name: Commit version changes & CHANGELOG.md files
         run: |
           if [ -n "$(git status --porcelain)" ]; then
             git config user.name "github-actions[bot]"
@@ -127,92 +126,15 @@ jobs:
             git commit -m "chore: publish [skip ci]"
           fi
 
-      - name: Publish packages
+      - name: Publish packages (alpha/beta -> npm tag: next)
+        if: needs.analyze.outputs.is_prerelease == 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
         run: pnpm changeset publish --tag next
 
-      - name: Start ssh-agent for CDN
-        uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: |
-            ${{ secrets.CDN_PRIVATE_KEY }}
-
-      - name: Upload browser artifacts to CDN
-        run: node scripts/uploadToCDN.js
-
-      - name: Commit and push new version number and tag
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add -A
-            git commit -m "chore: re-enter prerelease mode [skip ci]"
-          fi
-          git push --follow-tags
-
-  publish_release:
-    needs: analyze
-    if: >-
-      github.ref == 'refs/heads/main' &&
-      needs.analyze.outputs.has_releases == 'true' &&
-      needs.analyze.outputs.is_prerelease != 'true'
-    runs-on: ubuntu-latest
-    # Stable releases require a manual approval.
-    environment: Production
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Verify main has not moved
-        run: |
-          git fetch origin main
-          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
-            echo "::error::origin/main has moved since this workflow started. Aborting to avoid conflicts."
-            exit 1
-          fi
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-          registry-url: https://registry.npmjs.org
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Version packages
-        run: pnpm changeset version
-
-      - name: Update lockfile
-        run: pnpm install --no-frozen-lockfile --ignore-scripts
-
-      - name: Build packages (prepack)
-        run: pnpm run build
-
-      - name: Commit version changes
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add -A
-            git commit -m "chore: publish [skip ci]"
-          fi
-
-      - name: Publish packages
+      - name: Publish packages (stable -> npm tag: latest)
+        if: needs.analyze.outputs.is_prerelease != 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
@@ -227,11 +149,11 @@ jobs:
       - name: Upload browser artifacts to CDN
         run: node scripts/uploadToCDN.js
 
-      - name: Re-enter alpha prerelease for next cycle after a stable release
-        if: hashFiles('.changeset/pre.json') == ''
+      - name: Re-enter alpha prerelease mode for next cycle after a stable release
+        if: needs.analyze.outputs.is_prerelease != 'true'
         run: pnpm changeset pre enter alpha
 
-      - name: Commit and push new version number and tag
+      - name: Commit and push changes + tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -239,6 +161,6 @@ jobs:
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add -A
-            git commit -m "chore: re-enter prerelease mode [skip ci]"
+            git commit -m "chore: post-publish [skip ci]"
           fi
           git push --follow-tags
