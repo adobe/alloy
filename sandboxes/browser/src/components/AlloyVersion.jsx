@@ -9,25 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { useEffect, useState } from "react";
+import { version } from "@adobe/alloy-core/package.json";
 
 /**
  * Display the Alloy version in a footer in the bottom right.
  */
 export default function AlloyVersion() {
-  const [version, setVersion] = useState("0.0.0");
-
-  useEffect(() => {
-    // eslint-disable-next-line no-underscore-dangle
-    const instanceName = window.__alloyNS[0] || "alloy";
-
-    window[instanceName]("getLibraryInfo").then(
-      ({ libraryInfo: { version: v } }) => {
-        setVersion(v);
-      },
-    );
-  }, []);
-
   return (
     <div
       style={{

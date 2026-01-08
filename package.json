@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy",
-  "version": "2.30.1-beta.18",
+  "version": "2.30.1-beta.20",
   "description": "Adobe Experience Platform Web SDK",
   "type": "module",
   "main": "libEs5/index.js",
@@ -44,7 +44,7 @@
     "test:functional:build:prod": "rollup -c --environment BASE_CODE_MIN,NPM_PACKAGE_PROD",
     "test:scripts": "vitest run --config=./scripts/specs/vitest.config.js",
     "dev": "concurrently --names build,sandbox \"rollup -c -w --environment SANDBOX_SERVICE_WORKER\" \"REACT_APP_NONCE=123 pnpm run --filter @adobe/alloy-sandbox-browser start\"",
-    "build": "pnpm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,SERVICE_WORKER,SERVICE_WORKER_MIN,BUNDLESIZE && echo \"Base Code:\" && cat distTest/baseCode.min.js",
+    "build": "pnpm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,SERVICE_WORKER,SERVICE_WORKER_MIN && echo \"Base Code:\" && cat distTest/baseCode.min.js",
     "build:watch": "pnpm run clean && rollup -c --watch --environment BASE_CODE_MIN,STANDALONE",
     "build:custom": "node scripts/alloyBuilder.js",
     "prepare": "husky",
