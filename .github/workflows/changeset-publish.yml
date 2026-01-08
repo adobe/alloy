@@ -227,9 +227,9 @@ jobs:
       - name: Upload browser artifacts to CDN
         run: node scripts/uploadToCDN.js
 
-      - name: Re-enter beta prerelease for next cycle after a stable release
+      - name: Re-enter alpha prerelease for next cycle after a stable release
         if: hashFiles('.changeset/pre.json') == ''
-        run: pnpm changeset pre enter beta
+        run: pnpm changeset pre enter alpha
 
       - name: Commit and push new version number and tag
         env:
