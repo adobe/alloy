@@ -77,6 +77,8 @@ jobs:
       github.ref == 'refs/heads/main' &&
       needs.analyze.outputs.has_releases == 'true'
     runs-on: ubuntu-latest
+    # Pause for manual approval before publishing (prerelease or stable).
+    environment: Production
     permissions:
       contents: write
       pull-requests: read
