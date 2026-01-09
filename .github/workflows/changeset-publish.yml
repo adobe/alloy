@@ -63,7 +63,7 @@ jobs:
 
           # `changeset status` writes JSON to the provided filename, relative to cwd.
           pnpm install --frozen-lockfile
-          pnpm exec changeset status --output=changeset-status.json
+          pnpm exec changeset status --verbose --output=changeset-status.json
           HAS_RELEASES=$(jq -r 'if (.releases // []) | length > 0 then "true" else "false" end' changeset-status.json)
           echo "has_releases=${HAS_RELEASES}" >> "${GITHUB_OUTPUT}"
 
