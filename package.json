@@ -92,6 +92,7 @@
     "@adobe/alloy": "next",
     "@babel/cli": "^7.28.3",
     "@babel/plugin-transform-modules-commonjs": "^7.27.1",
+    "@changesets/changelog-github": "^0.5.2",
     "@changesets/cli": "^2.29.8",
     "@eslint/js": "^9.38.0",
     "@octokit/rest": "^22.0.1",

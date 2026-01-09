@@ -79,6 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -109,6 +110,8 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Version packages & generate CHANGELOG.md files
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: pnpm changeset version
 
       - name: Update lockfile
@@ -164,3 +167,45 @@ jobs:
             git commit -m "chore: post-publish [skip ci]"
           fi
           git push --follow-tags
+
+      - name: Create GitHub Release (notes from CHANGELOG.md)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          TAG="@adobe/alloy@${VERSION}"
+
+          if ! git rev-parse "${TAG}" >/dev/null 2>&1; then
+            echo "Tag ${TAG} not found locally; skipping GitHub release."
+            exit 0
+          fi
+
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "GitHub release ${TAG} already exists; skipping."
+            exit 0
+          fi
+
+          if [ ! -f CHANGELOG.md ]; then
+            echo "::error::CHANGELOG.md not found; cannot create GitHub release notes."
+            exit 1
+          fi
+
+          # Generate GitHub release notes
+          NOTES_FILE="$(mktemp)"
+          awk -v ver="${VERSION}" '
+            $0 == "## " ver { in_section=1; next }
+            in_section && /^## / { exit }
+            in_section { print }
+          ' CHANGELOG.md > "${NOTES_FILE}"
+
+          if [ ! -s "${NOTES_FILE}" ]; then
+            echo "::error::Could not extract notes for version ${VERSION} from CHANGELOG.md"
+            exit 1
+          fi
+
+          FLAGS=()
+          if [ "${{ needs.analyze.outputs.is_prerelease }}" = "true" ]; then
+            FLAGS+=(--prerelease)
+          fi
+
+          gh release create "${TAG}" --title "${TAG}" --notes-file "${NOTES_FILE}" "${FLAGS[@]}"
