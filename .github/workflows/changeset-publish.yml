@@ -157,15 +157,41 @@ jobs:
             git commit -m "chore: publish [skip ci]"
           fi
 
-      - name: "Publish packages (alpha/beta -> npm tag: next)"
+      - name: "Publish prerelease packages (alpha/beta)"
         if: needs.analyze.outputs.is_prerelease == 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
         run: |
           VERSION=$(jq -r '.version' package.json)
-          echo "Publishing prerelease packages (npm tag: next). Root version: ${VERSION}"
-          pnpm changeset publish --tag next
+          echo "Publishing prerelease packages (pre mode). Root version: ${VERSION}"
+          pnpm changeset publish
+
+      - name: "Tag prerelease packages (npm dist-tag: next)"
+        if: needs.analyze.outputs.is_prerelease == 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+        run: |
+          if [ ! -f changeset-status.json ]; then
+            echo "::error::changeset-status.json not found; cannot tag prerelease packages."
+            exit 1
+          fi
+
+          TAG_ENTRIES=$(jq -r '.releases // [] | .[] | "\(.name)@\(.newVersion)"' changeset-status.json)
+
+          if [ -z "${TAG_ENTRIES}" ]; then
+            echo "No releases in changeset-status.json; skipping dist-tagging."
+            exit 0
+          fi
+
+          echo "Applying npm dist-tag next to prerelease packages:"
+          echo "${TAG_ENTRIES}" | sed 's/^/- /'
+          while IFS= read -r pkg; do
+            if [ -n "${pkg}" ]; then
+              npm dist-tag add "${pkg}" next
+            fi
+          done <<< "${TAG_ENTRIES}"
 
       - name: "Publish packages (stable -> npm tag: latest)"
         if: needs.analyze.outputs.is_prerelease != 'true'
