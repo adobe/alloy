@@ -27,14 +27,22 @@ jobs:
         id: pre
         run: |
           if [ -f .changeset/pre.json ]; then
-            MODE=$(jq -r '.mode' .changeset/pre.json)
+            MODE=$(jq -r '.mode // empty' .changeset/pre.json)
+            TAG=$(jq -r '.tag // empty' .changeset/pre.json)
           else
             MODE=""
+            TAG=""
           fi
 
           if [ "${MODE}" = "pre" ]; then
+            echo "Prerelease mode: pre (tag: ${TAG:-n/a})"
             echo "is_prerelease=true" >> "${GITHUB_OUTPUT}"
           else
+            if [ -n "${MODE}" ]; then
+              echo "Prerelease mode: ${MODE}"
+            else
+              echo "Prerelease mode: stable"
+            fi
             echo "is_prerelease=false" >> "${GITHUB_OUTPUT}"
           fi
 
@@ -64,6 +72,14 @@ jobs:
           # `changeset status` writes JSON to the provided filename, relative to cwd.
           pnpm install --frozen-lockfile
           pnpm exec changeset status --verbose --output=changeset-status.json
+          echo "Release plan (changeset-status.json):"
+          jq . changeset-status.json
+          if jq -e '(.releases // []) | length > 0' changeset-status.json >/dev/null; then
+            echo "Release summary:"
+            jq -r '.releases[] | "- \(.name) -> \(.newVersion) (\(.type))"' changeset-status.json
+          else
+            echo "Release summary: none"
+          fi
           HAS_RELEASES=$(jq -r 'if (.releases // []) | length > 0 then "true" else "false" end' changeset-status.json)
           echo "has_releases=${HAS_RELEASES}" >> "${GITHUB_OUTPUT}"
 
@@ -114,7 +130,17 @@ jobs:
       - name: Version packages & generate CHANGELOG.md files
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pnpm changeset version
+        run: |
+          pnpm exec changeset status --verbose --output=changeset-status.json
+          if jq -e '(.releases // []) | length > 0' changeset-status.json >/dev/null; then
+            echo "Release summary:"
+            jq -r '.releases[] | "- \(.name) -> \(.newVersion) (\(.type))"' changeset-status.json
+          else
+            echo "Release summary: none"
+          fi
+          pnpm changeset version
+          VERSION=$(jq -r '.version' package.json)
+          echo "Root version after versioning: ${VERSION}"
 
       - name: Update lockfile
         run: pnpm install --no-frozen-lockfile --ignore-scripts
@@ -136,14 +162,20 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
-        run: pnpm changeset publish --tag next
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          echo "Publishing prerelease packages (npm tag: next). Root version: ${VERSION}"
+          pnpm changeset publish --tag next
 
       - name: "Publish packages (stable -> npm tag: latest)"
         if: needs.analyze.outputs.is_prerelease != 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
-        run: pnpm changeset publish
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          echo "Publishing stable packages (npm tag: latest). Root version: ${VERSION}"
+          pnpm changeset publish
 
       - name: Start ssh-agent for CDN
         uses: webfactory/ssh-agent@v0.9.1
@@ -210,4 +242,7 @@ jobs:
             FLAGS+=(--prerelease)
           fi
 
+          echo "Creating GitHub release ${TAG} (prerelease: ${{ needs.analyze.outputs.is_prerelease }})"
+          echo "Release notes preview:"
+          head -n 20 "${NOTES_FILE}"
           gh release create "${TAG}" --title "${TAG}" --notes-file "${NOTES_FILE}" "${FLAGS[@]}"
