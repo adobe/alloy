@@ -131,14 +131,14 @@ jobs:
             git commit -m "chore: publish [skip ci]"
           fi
 
-      - name: Publish packages (alpha/beta -> npm tag: next)
+      - name: "Publish packages (alpha/beta -> npm tag: next)"
         if: needs.analyze.outputs.is_prerelease == 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
         run: pnpm changeset publish --tag next
 
-      - name: Publish packages (stable -> npm tag: latest)
+      - name: "Publish packages (stable -> npm tag: latest)"
         if: needs.analyze.outputs.is_prerelease != 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
