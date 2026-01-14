@@ -11,26 +11,48 @@ governing permissions and limitations under the License.
 */
 
 /* eslint-env node */
-/* global require, module, process */
+/* global process */
 // Wrapper around changesets to use @changesets/changelog-github when there is a GITHUB_TOKEN
 // and @changesets/cli/changelog otherwise.
 
-const defaultChangelog = require("@changesets/cli/changelog");
+import * as defaultChangelogModule from "@changesets/cli/changelog";
 
-let githubChangelog;
-try {
-  githubChangelog = require("@changesets/changelog-github");
-} catch {
-  githubChangelog = null;
-}
+const githubChangelogPromise = import("@changesets/changelog-github").catch(
+  () => null,
+);
 
-const canUseGithubChangelog = () =>
-  Boolean(githubChangelog && process.env.GITHUB_TOKEN);
+const unwrapModule = (module) => module?.default ?? module;
 
-module.exports = {
+const defaultChangelog = unwrapModule(defaultChangelogModule);
+
+const getGithubChangelogIfAvailable = async () => {
+  const githubModule = await githubChangelogPromise;
+  if (!githubModule) {
+    return null;
+  }
+
+  const githubImpl = unwrapModule(githubModule);
+
+  if (!process.env.GITHUB_TOKEN) {
+    return null;
+  }
+
+  if (typeof githubImpl.getReleaseLine !== "function") {
+    return null;
+  }
+
+  if (typeof githubImpl.getDependencyReleaseLine !== "function") {
+    return null;
+  }
+
+  return githubImpl;
+};
+
+export default {
   getReleaseLine: async (changeset, type, options) => {
-    if (canUseGithubChangelog()) {
-      return githubChangelog.getReleaseLine(changeset, type, options);
+    const githubImpl = await getGithubChangelogIfAvailable();
+    if (githubImpl) {
+      return githubImpl.getReleaseLine(changeset, type, options);
     }
     return defaultChangelog.getReleaseLine(changeset, type, options);
   },
@@ -39,8 +61,9 @@ module.exports = {
     dependenciesUpdated,
     options,
   ) => {
-    if (canUseGithubChangelog()) {
-      return githubChangelog.getDependencyReleaseLine(
+    const githubImpl = await getGithubChangelogIfAvailable();
+    if (githubImpl) {
+      return githubImpl.getDependencyReleaseLine(
         changesets,
         dependenciesUpdated,
         options,
