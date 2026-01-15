@@ -203,6 +203,10 @@ jobs:
           echo "Publishing stable packages (npm tag: latest). Root version: ${VERSION}"
           pnpm changeset publish
 
+      # rebuilding because `pnpm changeset publish` wipes out build artifacts
+      - name: Rebuild browser artifacts for CDN upload
+        run: pnpm run build
+
       - name: Start ssh-agent for CDN
         uses: webfactory/ssh-agent@v0.9.1
         with:
