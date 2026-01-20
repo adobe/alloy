@@ -16,6 +16,7 @@ import injectCreateProposition from "../../../../../src/components/Personalizati
 import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 import defer from "../../../../../src/utils/defer.js";
 import createNotificationHandler from "../../../../../src/components/Personalization/createNotificationHandler.js";
+import { REDIRECT_ITEM } from "../../../../../src/constants/schema.js";
 
 describe("Personalization::createFetchDataHandler", () => {
   let prehidingStyle;
@@ -245,5 +246,241 @@ describe("Personalization::createFetchDataHandler", () => {
       ],
       viewName: undefined,
     });
+  });
+
+  it("should not show containers when there is one page proposition with only REDIRECT_ITEM", async () => {
+    personalizationDetails.isRenderDecisions.mockReturnValue(true);
+    const renderDeferred = defer();
+    processPropositions = () => {
+      return {
+        render: () => renderDeferred.promise,
+        returnedPropositions: [
+          {
+            id: "redirect-handle",
+            scope: "__view__",
+            items: [
+              {
+                schema: REDIRECT_ITEM,
+                data: { content: "https://example.com" },
+              },
+            ],
+            renderAttempted: true,
+          },
+        ],
+        returnedDecisions: [],
+      };
+    };
+    run();
+    response.getPayloadsByType.mockReturnValue([
+      {
+        id: "redirect-handle",
+        scope: "__view__",
+        items: [
+          {
+            schema: REDIRECT_ITEM,
+            data: { content: "https://example.com" },
+          },
+        ],
+      },
+    ]);
+    cacheUpdate.update.mockReturnValue([]);
+    expect(showContainers).not.toHaveBeenCalled();
+    returnResponse();
+    // showContainers should NOT be called because we have a single redirect item
+    expect(showContainers).not.toHaveBeenCalled();
+    renderDeferred.resolve([
+      {
+        id: "redirect-handle",
+      },
+    ]);
+    await flushPromiseChains();
+    // Still should not be called after render completes
+    expect(showContainers).not.toHaveBeenCalled();
+  });
+
+  it("should show containers when there is one page proposition with multiple REDIRECT_ITEMs", async () => {
+    personalizationDetails.isRenderDecisions.mockReturnValue(true);
+    const renderDeferred = defer();
+    processPropositions = () => {
+      return {
+        render: () => renderDeferred.promise,
+        returnedPropositions: [
+          {
+            id: "redirect-handle",
+            scope: "__view__",
+            items: [
+              {
+                schema: REDIRECT_ITEM,
+                data: { content: "https://example.com" },
+              },
+              {
+                schema: REDIRECT_ITEM,
+                data: { content: "https://example2.com" },
+              },
+            ],
+            renderAttempted: true,
+          },
+        ],
+        returnedDecisions: [],
+      };
+    };
+    run();
+    response.getPayloadsByType.mockReturnValue([
+      {
+        id: "redirect-handle",
+        scope: "__view__",
+        items: [
+          {
+            schema: REDIRECT_ITEM,
+            data: { content: "https://example.com" },
+          },
+          {
+            schema: REDIRECT_ITEM,
+            data: { content: "https://example2.com" },
+          },
+        ],
+      },
+    ]);
+    cacheUpdate.update.mockReturnValue([]);
+    expect(showContainers).not.toHaveBeenCalled();
+    returnResponse();
+    // showContainers should NOT be called because all items are redirects
+    expect(showContainers).not.toHaveBeenCalled();
+    renderDeferred.resolve([
+      {
+        id: "redirect-handle",
+      },
+    ]);
+    await flushPromiseChains();
+    // Still should not be called after render completes
+    expect(showContainers).not.toHaveBeenCalled();
+  });
+
+  it("should show containers when there is one page proposition with mixed item types", async () => {
+    personalizationDetails.isRenderDecisions.mockReturnValue(true);
+    const renderDeferred = defer();
+    processPropositions = () => {
+      return {
+        render: () => renderDeferred.promise,
+        returnedPropositions: [
+          {
+            id: "mixed-handle",
+            scope: "__view__",
+            items: [
+              {
+                schema: REDIRECT_ITEM,
+                data: { content: "https://example.com" },
+              },
+              {
+                schema: "https://ns.adobe.com/personalization/dom-action",
+                data: { type: "setHtml" },
+              },
+            ],
+            renderAttempted: true,
+          },
+        ],
+        returnedDecisions: [],
+      };
+    };
+    run();
+    response.getPayloadsByType.mockReturnValue([
+      {
+        id: "mixed-handle",
+        scope: "__view__",
+        items: [
+          {
+            schema: REDIRECT_ITEM,
+            data: { content: "https://example.com" },
+          },
+          {
+            schema: "https://ns.adobe.com/personalization/dom-action",
+            data: { type: "setHtml" },
+          },
+        ],
+      },
+    ]);
+    cacheUpdate.update.mockReturnValue([]);
+    expect(showContainers).not.toHaveBeenCalled();
+    returnResponse();
+    // showContainers SHOULD be called because we have mixed item types
+    expect(showContainers).toHaveBeenCalled();
+    renderDeferred.resolve([
+      {
+        id: "mixed-handle",
+      },
+    ]);
+    await flushPromiseChains();
+  });
+
+  it("should show containers when there are multiple page propositions", async () => {
+    personalizationDetails.isRenderDecisions.mockReturnValue(true);
+    const renderDeferred = defer();
+    processPropositions = () => {
+      return {
+        render: () => renderDeferred.promise,
+        returnedPropositions: [
+          {
+            id: "redirect-handle",
+            scope: "__view__",
+            items: [
+              {
+                schema: REDIRECT_ITEM,
+                data: { content: "https://example.com" },
+              },
+            ],
+            renderAttempted: true,
+          },
+          {
+            id: "other-handle",
+            scope: "__view__",
+            items: [
+              {
+                schema: "https://ns.adobe.com/personalization/dom-action",
+                data: { type: "setHtml" },
+              },
+            ],
+            renderAttempted: true,
+          },
+        ],
+        returnedDecisions: [],
+      };
+    };
+    run();
+    response.getPayloadsByType.mockReturnValue([
+      {
+        id: "redirect-handle",
+        scope: "__view__",
+        items: [
+          {
+            schema: REDIRECT_ITEM,
+            data: { content: "https://example.com" },
+          },
+        ],
+      },
+      {
+        id: "other-handle",
+        scope: "__view__",
+        items: [
+          {
+            schema: "https://ns.adobe.com/personalization/dom-action",
+            data: { type: "setHtml" },
+          },
+        ],
+      },
+    ]);
+    cacheUpdate.update.mockReturnValue([]);
+    expect(showContainers).not.toHaveBeenCalled();
+    returnResponse();
+    // showContainers SHOULD be called because we have multiple propositions
+    expect(showContainers).toHaveBeenCalled();
+    renderDeferred.resolve([
+      {
+        id: "redirect-handle",
+      },
+      {
+        id: "other-handle",
+      },
+    ]);
+    await flushPromiseChains();
   });
 });
