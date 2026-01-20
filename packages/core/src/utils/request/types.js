@@ -49,6 +49,7 @@ governing permissions and limitations under the License.
  * @property {function(string, Identity): void} options.addIdentity
  * @property {function(string): boolean} options.hasIdentity
  * @property {function(object): void} addEvent
+ * @property {function(): Array} getEvents
  * @property {function(): boolean} getDocumentMayUnload
  * @property {function(): object} toJSON
  */

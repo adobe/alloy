@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { beforeEach, describe, it, expect } from "vitest";
+import { beforeEach, describe, it, expect, vi } from "vitest";
 import createEvent from "../../../../src/core/createEvent.js";
 
 describe("createEvent", () => {
@@ -500,6 +500,26 @@ describe("createEvent", () => {
           },
         },
       },
+    });
+  });
+  describe("getCreatedAt", () => {
+    it("returns the timestamp when the event was created", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2025-01-15T12:00:00.000Z"));
+
+      const subject = createEvent();
+      expect(subject.getCreatedAt()).toBe(
+        new Date("2025-01-15T12:00:00.000Z").getTime(),
+      );
+
+      vi.useRealTimers();
+    });
+
+    it("returns a consistent value across multiple calls", () => {
+      const subject = createEvent();
+      const firstCall = subject.getCreatedAt();
+      const secondCall = subject.getCreatedAt();
+      expect(firstCall).toBe(secondCall);
     });
   });
 });
