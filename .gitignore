@@ -17,3 +17,4 @@ adobe-alloy-*.tgz
 # Ignore auto generated types
 types/
 .scannerwork
+changeset-status.json
