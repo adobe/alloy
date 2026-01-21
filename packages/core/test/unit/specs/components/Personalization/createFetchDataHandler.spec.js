@@ -298,7 +298,7 @@ describe("Personalization::createFetchDataHandler", () => {
     expect(showContainers).not.toHaveBeenCalled();
   });
 
-  it("should show containers when there is one page proposition with multiple REDIRECT_ITEMs", async () => {
+  it("should not show containers when there is one page proposition with multiple REDIRECT_ITEMs", async () => {
     personalizationDetails.isRenderDecisions.mockReturnValue(true);
     const renderDeferred = defer();
     processPropositions = () => {
