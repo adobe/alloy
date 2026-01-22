@@ -1,0 +1,13 @@
+{
+  "requestId": "media-session-request-id",
+  "handle": [
+    {
+      "payload": [
+        {
+          "sessionId": "test-session-id-12345"
+        }
+      ],
+      "type": "media-analytics:new-session"
+    }
+  ]
+}
