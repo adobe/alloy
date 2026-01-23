@@ -186,6 +186,9 @@ importers:
       '@adobe/alloy':
         specifier: workspace:*
         version: link:../../packages/browser
+      '@adobe/alloy-core':
+        specifier: workspace:*
+        version: link:../../packages/core
       react:
         specifier: ^19.2.0
         version: 19.2.0
