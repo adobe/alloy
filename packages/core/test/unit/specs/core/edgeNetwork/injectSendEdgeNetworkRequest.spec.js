@@ -552,4 +552,130 @@ describe("injectSendEdgeNetworkRequest", () => {
       });
     });
   });
+
+  describe("queueTimeMillis", () => {
+    it("merges queueTimeMillis into request meta when payload has events", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2025-01-15T12:00:01.000Z"));
+
+      const events = [
+        { getCreatedAt: () => new Date("2025-01-15T12:00:00.000Z").getTime() },
+      ];
+      payload.getEvents = vi.fn().mockReturnValue(events);
+
+      return sendEdgeNetworkRequest({
+        request,
+      }).then(() => {
+        expect(payload.mergeMeta).toHaveBeenCalledWith({
+          queueTimeMillis: 1000,
+        });
+        vi.useRealTimers();
+      });
+    });
+
+    it("uses the earliest enqueuedAt time when multiple events exist", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2025-01-15T12:00:02.000Z"));
+
+      const events = [
+        { getCreatedAt: () => new Date("2025-01-15T12:00:01.000Z").getTime() },
+        { getCreatedAt: () => new Date("2025-01-15T12:00:00.000Z").getTime() },
+        { getCreatedAt: () => new Date("2025-01-15T12:00:01.500Z").getTime() },
+      ];
+      payload.getEvents = vi.fn().mockReturnValue(events);
+
+      return sendEdgeNetworkRequest({
+        request,
+      }).then(() => {
+        expect(payload.mergeMeta).toHaveBeenCalledWith({
+          queueTimeMillis: 2000,
+        });
+        vi.useRealTimers();
+      });
+    });
+
+    it("does not merge queueTimeMillis when payload has no getEvents method", () => {
+      return sendEdgeNetworkRequest({
+        request,
+      }).then(() => {
+        expect(payload.mergeMeta).not.toHaveBeenCalledWith(
+          expect.objectContaining({ queueTimeMillis: expect.any(Number) }),
+        );
+      });
+    });
+
+    it("does not merge queueTimeMillis when payload has no events", () => {
+      payload.getEvents = vi.fn().mockReturnValue([]);
+
+      return sendEdgeNetworkRequest({
+        request,
+      }).then(() => {
+        expect(payload.mergeMeta).not.toHaveBeenCalledWith(
+          expect.objectContaining({ queueTimeMillis: expect.any(Number) }),
+        );
+      });
+    });
+
+    it("clamps queueTimeMillis to 0 when enqueuedAt is in the future", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2025-01-15T12:00:00.000Z"));
+
+      const events = [
+        { getCreatedAt: () => new Date("2025-01-15T12:05:00.000Z").getTime() },
+      ];
+      payload.getEvents = vi.fn().mockReturnValue(events);
+
+      return sendEdgeNetworkRequest({
+        request,
+      }).then(() => {
+        expect(payload.mergeMeta).toHaveBeenCalledWith({
+          queueTimeMillis: 0,
+        });
+        vi.useRealTimers();
+      });
+    });
+
+    it("clamps queueTimeMillis to 5 minutes when queue time exceeds maximum", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2025-01-15T12:10:00.000Z"));
+
+      const events = [
+        { getCreatedAt: () => new Date("2025-01-15T12:00:00.000Z").getTime() },
+      ];
+      payload.getEvents = vi.fn().mockReturnValue(events);
+
+      return sendEdgeNetworkRequest({
+        request,
+      }).then(() => {
+        expect(payload.mergeMeta).toHaveBeenCalledWith({
+          queueTimeMillis: 300000,
+        });
+        vi.useRealTimers();
+      });
+    });
+
+    it("calculates queueTimeMillis after onBeforeRequest completes", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2025-01-15T12:00:00.000Z"));
+
+      const events = [
+        { getCreatedAt: () => new Date("2025-01-15T12:00:00.000Z").getTime() },
+      ];
+      payload.getEvents = vi.fn().mockReturnValue(events);
+
+      lifecycle.onBeforeRequest.mockImplementation(() => {
+        vi.setSystemTime(new Date("2025-01-15T12:00:01.000Z"));
+        return Promise.resolve();
+      });
+
+      return sendEdgeNetworkRequest({
+        request,
+      }).then(() => {
+        expect(payload.mergeMeta).toHaveBeenCalledWith({
+          queueTimeMillis: 1000,
+        });
+        vi.useRealTimers();
+      });
+    });
+  });
 });

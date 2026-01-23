@@ -16,16 +16,28 @@ import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import urlExists from "url-exists-nodejs";
+
+/**
+ * Check if a URL exists.
+ * @param {string} url
+ * @returns {Promise<boolean>}
+ */
+const urlExists = async (url) => {
+  try {
+    const response = await fetch(url, { method: "HEAD" });
+    return response.ok;
+  } catch {
+    return false;
+  }
+};
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 const projectRoot = path.resolve(dirname, "..");
-const browserPackageDir = path.join(projectRoot, "packages", "browser");
-const distDir = path.join(browserPackageDir, "dist");
+const distDir = path.join(projectRoot, "dist");
 
 const { version } = JSON.parse(
-  fs.readFileSync(path.join(browserPackageDir, "package.json"), "utf8"),
+  fs.readFileSync(path.join(projectRoot, "package.json"), "utf8"),
 );
 
 if (!version) {

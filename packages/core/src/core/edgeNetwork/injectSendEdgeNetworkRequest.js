@@ -17,8 +17,28 @@ import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain.
 import apiVersion from "../../constants/apiVersion.js";
 import { createCallbackAggregator, noop } from "../../utils/index.js";
 import { isNetworkError } from "../../utils/networkErrors.js";
+import clamp from "../../utils/clamp.js";
 import mergeLifecycleResponses from "./mergeLifecycleResponses.js";
 import handleRequestFailure from "./handleRequestFailure.js";
+
+const MAX_QUEUE_TIME_MILLIS = 300000; // 5 minutes
+
+const calculateQueueTimeMillis = (payload) => {
+  if (typeof payload.getEvents !== "function") {
+    return undefined;
+  }
+  const events = payload.getEvents();
+  if (events.length === 0) {
+    return undefined;
+  }
+
+  // In practice, there should only be one event in the payload, in the future if this changes we'll need to
+  // evaluate what timestamp to use (earliest, average, latest), or move the queueTime to the event meta
+  const earliestCreatedAt = Math.min(
+    ...events.map((event) => event.getCreatedAt()),
+  );
+  return clamp(Date.now() - earliestCreatedAt, 0, MAX_QUEUE_TIME_MILLIS);
+};
 
 const isDemdexBlockedError = (error, request) => {
   return request.getUseIdThirdPartyDomain() && isNetworkError(error);
@@ -104,6 +124,12 @@ export default ({
 
         const url = buildEndpointUrl(endpointDomain, request);
         const payload = request.getPayload();
+
+        const queueTimeMillis = calculateQueueTimeMillis(payload);
+        if (queueTimeMillis !== undefined) {
+          payload.mergeMeta({ queueTimeMillis });
+        }
+
         cookieTransfer.cookiesToPayload(payload, endpointDomain);
 
         return sendNetworkRequest({

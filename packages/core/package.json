@@ -9,6 +9,7 @@
     "directory": "packages/core"
   },
   "exports": {
+    "./package.json": "./package.json",
     ".": {
       "types": "./src/index.js",
       "default": "./src/index.js"
