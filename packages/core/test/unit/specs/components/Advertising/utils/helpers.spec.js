@@ -28,19 +28,6 @@ import {
   AD_CONVERSION_VIEW_EVENT_TYPE,
 } from "../../../../../../src/components/Advertising/constants/index.js";
 
-// Mock DOM utilities
-vi.mock("../../../../../../src/utils/dom/index.js", () => ({
-  awaitSelector: vi.fn(),
-  loadScript: vi.fn().mockResolvedValue(),
-  createNode: vi.fn(),
-  appendNode: vi.fn(),
-  matchesSelector: vi.fn(),
-  querySelectorAll: vi.fn(),
-  removeNode: vi.fn(),
-  selectNodes: vi.fn(),
-  selectNodesWithShadow: vi.fn(),
-}));
-
 describe("Advertising::helpers", () => {
   let mockEvent;
   let mockCookieManager;

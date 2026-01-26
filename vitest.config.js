@@ -44,7 +44,7 @@ export default defineConfig({
         test: {
           name: "integration",
           include: [
-            "packages/core/test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)",
+            "packages/*/test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)",
           ],
           isolate: false,
           browser: {

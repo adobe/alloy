@@ -12,36 +12,30 @@ governing permissions and limitations under the License.
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-vi.mock("../../../../../src/utils/createDecodeKndctrCookie.js", () => ({
-  default: vi.fn(),
-}));
-
 import createIdentity from "../../../../../src/core/identity/createIdentity.js";
-import createDecodeKndctrCookie from "../../../../../src/utils/createDecodeKndctrCookie.js";
 
 describe("createIdentity", () => {
   let mockLogger;
   let mockLoggingCookieJar;
   let mockConfig;
-  let mockDecodeKndctrCookie;
 
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mockLogger = {};
-    mockLoggingCookieJar = {};
+    mockLogger = { warn: vi.fn() };
+    mockLoggingCookieJar = { get: vi.fn() };
 
     mockConfig = {
       orgId: "TEST_ORG_ID@AdobeOrg",
     };
-
-    mockDecodeKndctrCookie = vi.fn();
-    createDecodeKndctrCookie.mockReturnValue(mockDecodeKndctrCookie);
   });
 
   describe("initialize", () => {
     it("should resolve the await identity promise immediatelly when ecid cookie is already present", async () => {
-      mockDecodeKndctrCookie.mockReturnValue("integration-test-ecid");
+      // Valid kndctr cookie payload (from createDecodeKndctrCookie unit tests).
+      mockLoggingCookieJar.get.mockReturnValue(
+        "CiYxNDAxNTI0NjEzODM4MjI2ODk1MTgwNTkyMTYxNjkxNTc0MzEyOFISCIelhf%5FOMRABGAEqA09SMjAA8AHX%5F4DZlzI%3D",
+      );
 
       const identity = createIdentity({
         logger: mockLogger,

@@ -12,17 +12,11 @@ governing permissions and limitations under the License.
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
 
-vi.mock(
-  "../../../../../../src/utils/request/createDataCollectionRequestPayload.js",
-);
-
 import createSendPushSubscriptionPayload from "../../../../../../src/components/PushNotifications/request/createSendPushSubscriptionPayload.js";
-import createDataCollectionRequestPayload from "../../../../../../src/utils/request/createDataCollectionRequestPayload.js";
 
 describe("createSendPushSubscriptionPayload", () => {
   let mockEvent;
   let mockEventManager;
-  let mockPayload;
   let ecid;
   let serializedPushSubscriptionDetails;
   let appId;
@@ -48,12 +42,6 @@ describe("createSendPushSubscriptionPayload", () => {
     mockEventManager = {
       createEvent: vi.fn().mockReturnValue(mockEvent),
     };
-
-    mockPayload = {
-      addEvent: vi.fn(),
-    };
-
-    vi.mocked(createDataCollectionRequestPayload).mockReturnValue(mockPayload);
   });
 
   it("creates event with correct push notification details using provided appId", async () => {

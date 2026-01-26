@@ -12,18 +12,14 @@ governing permissions and limitations under the License.
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
 
-vi.mock(
-  "../../../../../../src/components/PushNotifications/helpers/getPushSubscriptionDetails.js",
-);
-
 import makeSendPushSubscriptionRequest from "../../../../../../src/components/PushNotifications/request/makeSendPushSubscriptionRequest.js";
-import getPushSubscriptionDetails from "../../../../../../src/components/PushNotifications/helpers/getPushSubscriptionDetails.js";
 
 describe("makeSendPushSubscriptionRequest", () => {
   let mockStorage;
   let mockLogger;
   let mockSendEdgeNetworkRequest;
   let mockSetUserData;
+  let mockGetPushSubscriptionDetails;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -46,7 +42,7 @@ describe("makeSendPushSubscriptionRequest", () => {
 
     mockSendEdgeNetworkRequest = vi.fn().mockResolvedValue();
 
-    vi.mocked(getPushSubscriptionDetails).mockResolvedValue({
+    mockGetPushSubscriptionDetails = vi.fn().mockResolvedValue({
       endpoint: "test",
     });
   });
@@ -75,6 +71,7 @@ describe("makeSendPushSubscriptionRequest", () => {
         getEcidFromCookie: vi.fn().mockReturnValue("ecid"),
       },
       window: { location: { host: "somehost" } },
+      getPushSubscriptionDetails: mockGetPushSubscriptionDetails,
     });
   };
 

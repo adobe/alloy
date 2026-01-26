@@ -13,15 +13,17 @@ governing permissions and limitations under the License.
 /* eslint-disable no-underscore-dangle */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
+import uuidV4Regex from "../../../../constants/uuidV4Regex.js";
 
 vi.mock(
   "../../../../../../src/components/PushNotifications/helpers/readFromIndexedDb.js",
+  () => ({
+    default: vi.fn(),
+  }),
 );
-vi.mock("../../../../../../src/utils/uuid.js");
 
 import makeSendServiceWorkerTrackingData from "../../../../../../src/components/PushNotifications/request/makeSendServiceWorkerTrackingData.js";
 import readFromIndexedDb from "../../../../../../src/components/PushNotifications/helpers/readFromIndexedDb.js";
-import uuidv4 from "../../../../../../src/utils/uuid.js";
 
 describe("makeSendServiceWorkerTrackingData", () => {
   let mockLogger;
@@ -47,7 +49,6 @@ describe("makeSendServiceWorkerTrackingData", () => {
     };
 
     vi.mocked(readFromIndexedDb).mockResolvedValue(mockConfigData);
-    vi.mocked(uuidv4).mockReturnValue("mock-uuid-1234");
   });
 
   describe("successful tracking data sending", () => {
@@ -75,7 +76,9 @@ describe("makeSendServiceWorkerTrackingData", () => {
 
       expect(result).toBe(true);
       expect(mockFetch).toHaveBeenCalledWith(
-        "https://edge.adobedc.net/ee/v1/interact?configId=test-datastream-id&requestId=mock-uuid-1234",
+        expect.stringMatching(
+          /^https:\/\/edge\.adobedc\.net\/ee\/v1\/interact\?configId=test-datastream-id&requestId=/,
+        ),
         {
           method: "POST",
           headers: {
@@ -88,6 +91,9 @@ describe("makeSendServiceWorkerTrackingData", () => {
       );
 
       const callArgs = mockFetch.mock.calls[0];
+      const url = callArgs[0];
+      const requestId = new URL(url).searchParams.get("requestId");
+      expect(requestId).toMatch(uuidV4Regex);
       const payload = JSON.parse(callArgs[1].body);
 
       expect(payload.events[0].xdm.identityMap.ECID[0].id).toBe(
@@ -98,7 +104,7 @@ describe("makeSendServiceWorkerTrackingData", () => {
       );
       expect(
         payload.events[0].xdm.pushNotificationTracking.pushProviderMessageID,
-      ).toBe("mock-uuid-1234");
+      ).toMatch(uuidV4Regex);
       expect(payload.events[0].xdm.application.launches.value).toBe(1);
       expect(
         payload.events[0].xdm._experience.customerJourneyManagement
