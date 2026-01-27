@@ -47,12 +47,13 @@ describe("StreamingMedia::createMediaEventManager", () => {
       setTimestamp,
     });
   });
-  it("should create a media event with user xdm", () => {
+  it("should create a media event with user xdm and call setTimestamp with the event", () => {
     const options = {
       xdm: {},
     };
     const event = {
       setUserXdm: vi.fn(),
+      mergeXdm: vi.fn(),
       toJSON: () => ({
         a: 1,
       }),
@@ -62,6 +63,7 @@ describe("StreamingMedia::createMediaEventManager", () => {
       options,
     });
     expect(result.toJSON()).toEqual(event.toJSON());
+    expect(setTimestamp).toHaveBeenCalledWith(event);
   });
   it("should create a media session with player name, channel, and version", () => {
     const options = {

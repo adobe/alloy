@@ -25,7 +25,7 @@ export default ({
     createMediaEvent({ options }) {
       const event = eventManager.createEvent();
       const { xdm } = options;
-      setTimestamp(xdm);
+      setTimestamp(event);
       event.setUserXdm(xdm);
 
       if (xdm.eventType === MediaEvents.AD_START) {
