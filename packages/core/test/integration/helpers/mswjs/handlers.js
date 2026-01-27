@@ -196,7 +196,7 @@ export const mediaSessionHandler = http.post(
 );
 
 export const mediaEventHandler = http.post(
-  /https:\/\/edge.adobedc.net\/ee\/va\/.*\/?v1\//,
+  /https:\/\/edge.adobedc.net\/ee(\/[^/]+)?\/va\/v1\//,
 
   async () => {
     return new HttpResponse(null, { status: 204 });
