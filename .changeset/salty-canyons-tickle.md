@@ -1,0 +1,4 @@
+---
+"@adobe/alloy-core": patch
+---
+

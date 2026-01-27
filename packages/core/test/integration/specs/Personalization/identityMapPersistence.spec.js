@@ -18,6 +18,62 @@ import {
 } from "../../helpers/testsSetup/extend.js";
 import { http, HttpResponse } from "msw";
 
+const createPersonalizationHandler = () => {
+  return http.post(
+    /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
+    async ({ request }) => {
+      const body = await request.json();
+      const eventType = body.events?.[0]?.xdm?.eventType;
+
+      // If this is a display notification, return empty response
+      if (eventType === "decisioning.propositionDisplay") {
+        return HttpResponse.json({
+          requestId: `display-notification-ack-${Date.now()}`,
+          handle: [],
+        });
+      }
+
+      // This is a sendEvent requesting personalization
+      const surfaces = body.events?.[0]?.query?.personalization?.surfaces || [];
+
+      // Use the first surface, or default to __view__
+      const scope = surfaces[0] || "__view__";
+
+      const requestId = `test-request-id-${Date.now()}`;
+      return HttpResponse.json({
+        requestId,
+        handle: [
+          {
+            type: "personalization:decisions",
+            payload: [
+              {
+                id: `${requestId}-proposition-id`,
+                scope,
+                scopeDetails: {
+                  decisionProvider: "TGT",
+                  activity: { id: "123" },
+                },
+                items: [
+                  {
+                    id: `${requestId}-item-id`,
+                    schema: "https://ns.adobe.com/personalization/dom-action",
+                    data: {
+                      type: "setHtml",
+                      selector: "#test-element",
+                      content: `<div>Test Content ${requestId}</div>`,
+                    },
+                  },
+                ],
+              },
+            ],
+            eventIndex: 0,
+          },
+        ],
+      });
+    },
+  );
+};
+
 describe("identityMap in automatic display notifications", () => {
   let testElement;
 
@@ -39,42 +95,7 @@ describe("identityMap in automatic display notifications", () => {
     alloy,
     networkRecorder,
   }) => {
-    const personalizationResponseHandler = http.post(
-      /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
-      async () => {
-        return HttpResponse.json({
-          requestId: "test-request-id",
-          handle: [
-            {
-              type: "personalization:decisions",
-              payload: [
-                {
-                  id: "test-proposition-id",
-                  scope: "__view__",
-                  scopeDetails: {
-                    decisionProvider: "TGT",
-                    activity: { id: "123" },
-                  },
-                  items: [
-                    {
-                      id: "test-item-id",
-                      schema: "https://ns.adobe.com/personalization/dom-action",
-                      data: {
-                        type: "setHtml",
-                        selector: "#test-element",
-                        content: "<div>Test Content</div>",
-                      },
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        });
-      },
-    );
-
-    worker.use(personalizationResponseHandler);
+    worker.use(createPersonalizationHandler());
 
     await alloy("configure", alloyConfig);
 
@@ -97,38 +118,35 @@ describe("identityMap in automatic display notifications", () => {
     });
 
     const interactCalls = await networkRecorder.findCalls(/v1\/interact/, {
-      retries: 15,
+      retries: 30,
       delayMs: 100,
     });
 
-    expect(interactCalls.length).toBeGreaterThanOrEqual(1);
+    expect(interactCalls.length).toBeGreaterThanOrEqual(2);
 
-    const sendEventCall = interactCalls[0];
+    const sendEventCall = interactCalls.find(
+      (call) =>
+        call.request.body.events[0].xdm.eventType ===
+        "web.webpagedetails.pageViews",
+    );
+    expect(sendEventCall).toBeDefined();
     expect(sendEventCall.request.body.events[0].xdm.identityMap).toBeDefined();
-    expect(
-      sendEventCall.request.body.events[0].xdm.identityMap.CRM_ID,
-    ).toBeDefined();
     expect(
       sendEventCall.request.body.events[0].xdm.identityMap.CRM_ID[0].id,
     ).toBe("test-user-123");
 
-    const displayCalls = interactCalls.filter(
+    const displayCall = interactCalls.find(
       (call) =>
         call.request.body.events[0].xdm.eventType ===
         "decisioning.propositionDisplay",
     );
 
-    if (displayCalls.length > 0) {
-      const displayNotificationCall = displayCalls[0];
-      const identityMap =
-        displayNotificationCall.request.body.events[0].xdm.identityMap;
-      // identityMap should be included in display notifications when provided in the originating sendEvent
-      if (identityMap) {
-        expect(identityMap.CRM_ID).toBeDefined();
-        expect(identityMap.CRM_ID[0].id).toBe("test-user-123");
-        expect(identityMap.CRM_ID[0].primary).toBe(true);
-      }
-    }
+    expect(displayCall).toBeDefined();
+    const identityMap = displayCall.request.body.events[0].xdm.identityMap;
+    expect(identityMap).toBeDefined();
+    expect(identityMap.CRM_ID).toBeDefined();
+    expect(identityMap.CRM_ID[0].id).toBe("test-user-123");
+    expect(identityMap.CRM_ID[0].primary).toBe(true);
   });
 
   test("each sendEvent's display notification uses its own identityMap", async ({
@@ -136,125 +154,70 @@ describe("identityMap in automatic display notifications", () => {
     alloy,
     networkRecorder,
   }) => {
-    const personalizationResponseHandler = http.post(
-      /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
-      async () => {
-        return HttpResponse.json({
-          requestId: "test-request-id",
-          handle: [
-            {
-              type: "personalization:decisions",
-              payload: [
-                {
-                  id: "test-proposition-id",
-                  scope: "__view__",
-                  scopeDetails: {
-                    decisionProvider: "TGT",
-                    activity: { id: "123" },
-                  },
-                  items: [
-                    {
-                      id: "test-item-id",
-                      schema: "https://ns.adobe.com/personalization/dom-action",
-                      data: {
-                        type: "setHtml",
-                        selector: "#test-element",
-                        content: "<div>Test Content</div>",
-                      },
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        });
-      },
-    );
-
-    worker.use(personalizationResponseHandler);
+    worker.use(createPersonalizationHandler());
 
     await alloy("configure", alloyConfig);
 
-    const firstIdentityMap = {
-      CRM_ID: [
-        {
-          id: "user-first",
-          primary: true,
-        },
-      ],
-    };
-
+    // Use different surfaces to get unique page-wide propositions
     await alloy("sendEvent", {
       renderDecisions: true,
+      personalization: {
+        surfaces: ["web://test.com/page1"],
+      },
       xdm: {
-        identityMap: firstIdentityMap,
+        identityMap: {
+          CRM_ID: [{ id: "user-first", primary: true }],
+        },
         eventType: "web.webpagedetails.pageViews",
       },
     });
 
-    const firstBatchCalls = await networkRecorder.findCalls(/v1\/interact/, {
-      retries: 10,
-      delayMs: 50,
-    });
-
-    const firstDisplayCall = firstBatchCalls.find(
-      (call) =>
-        call.request.body.events[0].xdm.eventType ===
-        "decisioning.propositionDisplay",
-    );
-
-    if (firstDisplayCall) {
-      const firstIdentityMapResult =
-        firstDisplayCall.request.body.events[0].xdm.identityMap;
-      if (firstIdentityMapResult) {
-        expect(firstIdentityMapResult.CRM_ID[0].id).toBe("user-first");
-      }
-    }
-
-    networkRecorder.reset();
-
-    const secondIdentityMap = {
-      CRM_ID: [
-        {
-          id: "user-second",
-          primary: true,
-        },
-      ],
-      EMAIL: [
-        {
-          id: "test@example.com",
-        },
-      ],
-    };
-
     await alloy("sendEvent", {
       renderDecisions: true,
+      personalization: {
+        surfaces: ["web://test.com/page2"],
+      },
       xdm: {
-        identityMap: secondIdentityMap,
+        identityMap: {
+          CRM_ID: [{ id: "user-second", primary: true }],
+          EMAIL: [{ id: "test@example.com" }],
+        },
         eventType: "commerce.productViews",
       },
     });
 
-    const secondBatchCalls = await networkRecorder.findCalls(/v1\/interact/, {
-      retries: 10,
-      delayMs: 50,
+    const allCalls = await networkRecorder.findCalls(/v1\/interact/, {
+      retries: 50,
+      delayMs: 100,
     });
 
-    const secondDisplayCall = secondBatchCalls.find(
+    const displayCalls = allCalls.filter(
       (call) =>
         call.request.body.events[0].xdm.eventType ===
         "decisioning.propositionDisplay",
     );
 
-    if (secondDisplayCall) {
-      const secondIdentityMapResult =
-        secondDisplayCall.request.body.events[0].xdm.identityMap;
-      if (secondIdentityMapResult) {
-        expect(secondIdentityMapResult.CRM_ID[0].id).toBe("user-second");
-        expect(secondIdentityMapResult.EMAIL).toBeDefined();
-        expect(secondIdentityMapResult.EMAIL[0].id).toBe("test@example.com");
-      }
-    }
+    expect(displayCalls.length).toBeGreaterThanOrEqual(2);
+
+    const firstDisplayCall = displayCalls.find(
+      (call) =>
+        call.request.body.events[0].xdm.identityMap?.CRM_ID?.[0]?.id ===
+        "user-first",
+    );
+
+    const secondDisplayCall = displayCalls.find(
+      (call) =>
+        call.request.body.events[0].xdm.identityMap?.CRM_ID?.[0]?.id ===
+        "user-second",
+    );
+
+    expect(
+      firstDisplayCall.request.body.events[0].xdm.identityMap.CRM_ID[0].id,
+    ).toBe("user-first");
+
+    expect(
+      secondDisplayCall.request.body.events[0].xdm.identityMap.CRM_ID[0].id,
+    ).toBe("user-second");
   });
 
   test("sendEvent without identityMap results in display notification without identityMap", async ({
@@ -262,42 +225,7 @@ describe("identityMap in automatic display notifications", () => {
     alloy,
     networkRecorder,
   }) => {
-    const personalizationResponseHandler = http.post(
-      /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
-      async () => {
-        return HttpResponse.json({
-          requestId: "test-request-id",
-          handle: [
-            {
-              type: "personalization:decisions",
-              payload: [
-                {
-                  id: "test-proposition-id",
-                  scope: "__view__",
-                  scopeDetails: {
-                    decisionProvider: "TGT",
-                    activity: { id: "123" },
-                  },
-                  items: [
-                    {
-                      id: "test-item-id",
-                      schema: "https://ns.adobe.com/personalization/dom-action",
-                      data: {
-                        type: "setHtml",
-                        selector: "#test-element",
-                        content: "<div>Test Content</div>",
-                      },
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        });
-      },
-    );
-
-    worker.use(personalizationResponseHandler);
+    worker.use(createPersonalizationHandler());
 
     await alloy("configure", alloyConfig);
 
@@ -308,22 +236,18 @@ describe("identityMap in automatic display notifications", () => {
       },
     });
 
-    const interactCalls = await networkRecorder.findCalls(/v1\/interact/, {
-      retries: 10,
-      delayMs: 50,
+    const allCalls = await networkRecorder.findCalls(/v1\/interact/, {
+      retries: 40,
+      delayMs: 100,
     });
 
-    const displayCalls = interactCalls.filter(
+    const displayCall = allCalls.find(
       (call) =>
         call.request.body.events[0].xdm.eventType ===
         "decisioning.propositionDisplay",
     );
 
-    if (displayCalls.length > 0) {
-      const displayNotificationCall = displayCalls[0];
-      expect(
-        displayNotificationCall.request.body.events[0].xdm.identityMap,
-      ).toBeUndefined();
-    }
+    expect(displayCall).toBeDefined();
+    expect(displayCall.request.body.events[0].xdm.identityMap).toBeUndefined();
   });
 });
