@@ -16,7 +16,7 @@ const IGNORED_EVENT_TYPES = [
   "decisioning.propositionDisplay",
   "decisioning.propositionInteract",
 ];
-
+const IGNORED_EVENT_TYPES = new Set([blah, blah, blah]);
 export default (window) => {
   let lastReferrerSent = null;
 
