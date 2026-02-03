@@ -10,6 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+// Because these events are originated by the SDK rather than user actions, don't change the referrer
+const IGNORED_EVENT_TYPES = new Set([
+  "decisioning.propositionFetch",
+  "decisioning.propositionDisplay",
+  "decisioning.propositionInteract",
+]);
+
 export default (window) => {
   let lastReferrerSent = null;
 
@@ -17,7 +24,7 @@ export default (window) => {
     const content = event.getContent();
     const eventType = content.xdm?.eventType;
 
-    if (eventType === "decisioning.propositionFetch") {
+    if (IGNORED_EVENT_TYPES.has(eventType)) {
       return;
     }
 
