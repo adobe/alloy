@@ -202,3 +202,73 @@ export const mediaEventHandler = http.post(
     return new HttpResponse(null, { status: 204 });
   },
 );
+
+export const customCodeHandler = http.post(
+  /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
+
+  async (req) => {
+    const url = new URL(req.request.url);
+    const configId = url.searchParams.get("configId");
+
+    if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
+      const requestBody = await req.request.json();
+
+      // Check if request contains query.personalization.schemas
+      const hasSchemas =
+        requestBody?.events?.[0]?.query?.personalization?.schemas;
+
+      // If schemas are present, return response with custom code activity
+      if (hasSchemas && hasSchemas.length > 0) {
+        return HttpResponse.text(
+          await readFile(
+            `${server.config.root}/packages/core/test/integration/helpers/mocks/targetCustomCodeAction.json`,
+          ),
+        );
+      }
+
+      // Otherwise, return response without custom code activity
+      return HttpResponse.text(
+        await readFile(
+          `${server.config.root}/packages/core/test/integration/helpers/mocks/emptyEventResponse.json`,
+        ),
+      );
+    }
+
+    throw new Error("Handler not configured properly");
+  },
+);
+
+export const prependHtmlHandler = http.post(
+  /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
+
+  async (req) => {
+    const url = new URL(req.request.url);
+    const configId = url.searchParams.get("configId");
+
+    if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
+      const requestBody = await req.request.json();
+
+      // Check if request contains query.personalization.schemas
+      const hasSchemas =
+        requestBody?.events?.[0]?.query?.personalization?.schemas;
+
+      // If schemas are present, return response with prependHtml activity
+      if (hasSchemas && hasSchemas.length > 0) {
+        return HttpResponse.text(
+          await readFile(
+            `${server.config.root}/packages/core/test/integration/helpers/mocks/targetPrependHtmlAction.json`,
+          ),
+        );
+      }
+
+      // Otherwise, return response without prependHtml activity
+      return HttpResponse.text(
+        await readFile(
+          `${server.config.root}/packages/core/test/integration/helpers/mocks/emptyEventResponse.json`,
+        ),
+      );
+    }
+
+    throw new Error("Handler not configured properly");
+  },
+);
