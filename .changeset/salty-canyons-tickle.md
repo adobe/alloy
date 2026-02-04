@@ -1,4 +1,3 @@
 ---
-"@adobe/alloy-core": patch
+"@adobe/alloy": patch
 ---
-
