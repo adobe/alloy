@@ -7,6 +7,12 @@
     "@adobe/alloy-sandbox-browser": "0.1.0"
   },
   "changesets": [
-    "free-pianos-run"
+    "free-pianos-run",
+    "huge-rabbits-crash",
+    "loud-tables-judge",
+    "open-coins-rush",
+    "salty-canyons-tickle",
+    "small-tables-push",
+    "violet-signs-go"
   ]
 }
