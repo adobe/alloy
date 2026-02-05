@@ -78,4 +78,28 @@ describe("utils:prepareConfigOverridesForEdge", () => {
       }),
     ).toBeNull();
   });
+
+  it("should remove enabled: true, but leave other true values", () => {
+    expect(
+      prepareConfigOverridesForEdge({
+        com_adobe_experience_platform: {
+          enabled: true,
+        },
+        com_adobe_analytics: {
+          enabled: true,
+          reportSuites: ["rs1"],
+        },
+        other_key: {
+          other_value: true,
+        }
+      }),
+    ).toEqual({
+      com_adobe_analytics: {
+        reportSuites: ["rs1"],
+      },
+      other_key: {
+        other_value: true,
+      },
+    });
+  });
 });

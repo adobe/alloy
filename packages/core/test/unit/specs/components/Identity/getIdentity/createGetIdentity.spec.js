@@ -22,6 +22,7 @@ describe("Identity::createGetIdentity", () => {
     sendEdgeNetworkRequest = vi.fn();
     requestPayload = {
       mergeConfigOverride: vi.fn(),
+      finalizeConfigOverrides: vi.fn(),
       type: vi.fn().mockReturnValue("payload"),
     };
     createIdentityRequestPayload = vi.fn().mockReturnValue(requestPayload);
@@ -46,10 +47,12 @@ describe("Identity::createGetIdentity", () => {
   it("each getIdentity call should create new payloads and requests", () => {
     const payload1 = {
       mergeConfigOverride: vi.fn(),
+      finalizeConfigOverrides: vi.fn(),
       type: vi.fn().mockReturnValue("payload1"),
     };
     const payload2 = {
       mergeConfigOverride: vi.fn(),
+      finalizeConfigOverrides: vi.fn(),
       type: vi.fn().mockReturnValue("payload2"),
     };
     const request1 = {

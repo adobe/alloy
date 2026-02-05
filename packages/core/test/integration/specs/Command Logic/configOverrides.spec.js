@@ -46,4 +46,67 @@ describe("Config overrides", () => {
       },
     });
   });
+
+  test("should allow you to disable a service in the base config, but enable it in a send event call", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(...[sendEventHandler]);
+
+    const config = structuredClone(alloyConfig);
+    await alloy("configure", {
+      ...config,
+      edgeConfigOverrides: {
+        com_adobe_analytics: {
+          enabled: false,
+        },
+      },
+    });
+
+    await alloy("sendEvent", {
+      edgeConfigOverrides: {
+        com_adobe_analytics: {
+          enabled: true,
+        },
+      },
+    });
+
+    const call = await networkRecorder.findCall(/edge\.adobedc\.net/);
+    expect(call.request?.body?.meta?.configOverrides).toBeNull();
+  });
+
+  test("should allow you to disable a service in the base config, but enable it in a send event call with extra parameters", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(...[sendEventHandler]);
+
+    const config = structuredClone(alloyConfig);
+    await alloy("configure", {
+      ...config,
+      edgeConfigOverrides: {
+        com_adobe_analytics: {
+          enabled: false,
+        },
+      },
+    });
+
+    await alloy("sendEvent", {
+      edgeConfigOverrides: {
+        com_adobe_analytics: {
+          enabled: true,
+          reportSuites: ["reportSuite1"],
+        },
+      },
+    });
+
+    const call = await networkRecorder.findCall(/edge\.adobedc\.net/);
+    expect(call.request?.body?.meta?.configOverrides).toEqual({
+      com_adobe_analytics: {
+        reportSuites: ["reportSuite1"],
+      },
+    });
+  });
 });
