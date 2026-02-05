@@ -88,8 +88,14 @@ export default (options) => {
     mergeMeta: createMerger(content, "meta"),
     mergeState: createMerger(content, "meta.state"),
     mergeQuery: createMerger(content, "query"),
-    mergeConfigOverride: (updates) =>
-      mergeConfigOverrides(prepareConfigOverridesForEdge(updates)),
+    mergeConfigOverride: (updates) => mergeConfigOverrides(updates),
+    finalizeConfigOverrides: () => {
+      if (content.meta?.configOverrides) {
+        content.meta.configOverrides = prepareConfigOverridesForEdge(
+          content.meta.configOverrides,
+        );
+      }
+    },
     addIdentity,
     hasIdentity,
     toJSON() {

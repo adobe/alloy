@@ -19,6 +19,7 @@ describe("createRequestParams", () => {
   beforeEach(() => {
     payload = {
       mergeConfigOverride: vi.fn(),
+      finalizeConfigOverrides: vi.fn(),
     };
   });
   it("returns the payload and datastreamIdOverride", () => {
@@ -61,5 +62,12 @@ describe("createRequestParams", () => {
     expect(payload.mergeConfigOverride).toHaveBeenCalledWith({
       a: "e",
     });
+  });
+  it("finalizes the config overrides", () => {
+    payload.finalizeConfigOverrides = vi.fn();
+    createRequestParams({
+      payload,
+    });
+    expect(payload.finalizeConfigOverrides).toHaveBeenCalled();
   });
 });

@@ -25,11 +25,13 @@ export default (configuration) => {
     return null;
   }
   // remove entries that are empty strings or arrays
-  const configOverrides = filterObject(configuration, (value) => {
+  const configOverrides = filterObject(configuration, (value, key) => {
     if (isNil(value)) {
       return false;
     }
-    if (isBoolean(value)) {
+    // We want to remove all the { enabled: true } values, but leave any other boolean values.
+    // Experience Edge will not accept { enabled: true } values as true is the default for "enabled".
+    if (isBoolean(value) && (key !== "enabled" || value === false)) {
       return true;
     }
     if (isNumber(value)) {

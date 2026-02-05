@@ -26,6 +26,7 @@ describe("Consent:injectSendSetConsentRequest", () => {
       setConsent: vi.fn(),
       addIdentity: vi.fn(),
       mergeConfigOverride: vi.fn(),
+      finalizeConfigOverrides: vi.fn(),
     };
     createConsentRequestPayload = vi.fn().mockReturnValue(requestPayload);
     request = {

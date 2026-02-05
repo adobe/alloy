@@ -40,7 +40,7 @@ const filterObject = (obj, predicate) => {
       return { ...result, [key]: filteredValue };
     }
     // value is not an object, test predicate
-    if (predicate(value)) {
+    if (predicate(value, key)) {
       return { ...result, [key]: value };
     }
     return result;
