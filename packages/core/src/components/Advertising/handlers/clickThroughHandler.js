@@ -11,18 +11,22 @@ governing permissions and limitations under the License.
 */
 
 import {
-  LAST_CLICK_COOKIE_KEY,
   LAST_CONVERSION_TIME_KEY,
   LOG_AD_CONVERSION_START,
+  LOG_CONVERSION_TIME_UPDATED,
+  LOG_SENDING_CONVERSION,
   LOG_AD_CONVERSION_FAILED,
   AD_CONVERSION_CLICK_EVENT_TYPE,
   TRACKING_CODE,
   TRACKING_IDENTITIES,
-  LAST_CONVERSION_TIME_KEY_EXPIRES,
 } from "../constants/index.js";
 
 /**
- * Handles click-through ad conversions
+ * Handles click-through ad conversions.
+ * Note: The LAST_CLICK_COOKIE_KEY cookie (containing skwcid/efid) is written
+ * inside createAdConversionHandler.trackAdConversion() AFTER consent is granted,
+ * to ensure no ad-tracking cookies are set without user consent.
+ *
  * @param {Object} params - All required parameters
  * @param {Object} params.eventManager - Event manager for creating events
  * @param {Object} params.cookieManager - Session manager for cookie operations
@@ -30,7 +34,6 @@ import {
  * @param {Object} params.logger - Logger instance
  * @param {string} params.skwcid - Search keyword click ID
  * @param {string} params.efid - EF ID parameter
- * @param {Object} params.optionsFromCommand - Additional options from command
  * @returns {Promise} Result of the ad conversion tracking
  */
 export default async function handleClickThrough({
@@ -44,18 +47,6 @@ export default async function handleClickThrough({
   logger.info(LOG_AD_CONVERSION_START, { skwcid, efid });
 
   const event = eventManager.createEvent();
-  if (
-    typeof skwcid !== "undefined" &&
-    typeof efid !== "undefined" &&
-    skwcid.startsWith("AL!")
-  ) {
-    const clickData = {
-      click_time: Date.now(),
-      ...(typeof skwcid !== "undefined" && { skwcid }),
-      ...(typeof efid !== "undefined" && { efid }),
-    };
-    cookieManager.setValue(LAST_CLICK_COOKIE_KEY, clickData);
-  }
 
   const xdm = {
     _experience: {
@@ -74,14 +65,16 @@ export default async function handleClickThrough({
 
   event.setUserXdm(xdm);
 
-  cookieManager.setValue(LAST_CONVERSION_TIME_KEY);
-  cookieManager.setValue(
-    LAST_CONVERSION_TIME_KEY_EXPIRES,
-    Date.now() + 91 * 24 * 60 * 60 * 1000,
-  ); //expires in 91 days
+  cookieManager.setValue(LAST_CONVERSION_TIME_KEY, Date.now());
+  logger.info(LOG_CONVERSION_TIME_UPDATED);
 
+  logger.info(LOG_SENDING_CONVERSION, xdm);
   try {
-    return await adConversionHandler.trackAdConversion({ event });
+    return await adConversionHandler.trackAdConversion({
+      event,
+      skwcid,
+      efid,
+    });
   } catch (error) {
     logger.error(LOG_AD_CONVERSION_FAILED, error);
     throw error;

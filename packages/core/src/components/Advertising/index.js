@@ -18,7 +18,6 @@ import {
 } from "../../utils/request/index.js";
 import createAdConversionHandler from "./handlers/createAdConversionHandler.js";
 import createCookieManager from "./utils/advertisingCookieManager.js";
-import createConsentAwareCookieManager from "./utils/createConsentAwareCookieManager.js";
 
 const createAdvertising = ({
   logger,
@@ -28,13 +27,9 @@ const createAdvertising = ({
   consent,
   getBrowser,
 }) => {
-  const baseCookieManager = createCookieManager({
+  const cookieManager = createCookieManager({
     orgId: config.orgId,
     logger,
-  });
-  const cookieManager = createConsentAwareCookieManager({
-    baseCookieManager,
-    consent,
   });
 
   const adConversionHandler = createAdConversionHandler({
@@ -44,6 +39,7 @@ const createAdvertising = ({
     createDataCollectionRequest,
     createDataCollectionRequestPayload,
     logger,
+    cookieManager,
   });
   return createComponent({
     logger,
