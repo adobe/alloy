@@ -14,5 +14,8 @@ import { number, objectOf, boolean } from "../../utils/validation/index.js";
 
 export default objectOf({
   stickyConversationSession: boolean().default(false),
-  streamTimeout: number().integer().minimum(0).default(STREAM_START_TIMEOUT_MS),
+  streamTimeout: number()
+    .integer()
+    .minimum(STREAM_START_TIMEOUT_MS)
+    .default(STREAM_START_TIMEOUT_MS),
 });
