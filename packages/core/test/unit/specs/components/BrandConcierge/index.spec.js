@@ -124,14 +124,21 @@ describe("BrandConcierge config validators", () => {
     validConfigurations: [
       { stickyConversationSession: true },
       { stickyConversationSession: false },
+      { streamTimeout: 5000 },
+      { streamTimeout: 0 },
+      { stickyConversationSession: true, streamTimeout: 10000 },
       {}
     ],
     invalidConfigurations: [
       { stickyConversationSession: "invalid" },
-      { stickyConversationSession: 123 }
+      { stickyConversationSession: 123 },
+      { streamTimeout: "invalid" },
+      { streamTimeout: -1 },
+      { streamTimeout: 1.5 }
     ],
     defaultValues: {
-      stickyConversationSession: false
+      stickyConversationSession: false,
+      streamTimeout: 15000
     }
   });
 });

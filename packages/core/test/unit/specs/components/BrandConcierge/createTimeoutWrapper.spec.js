@@ -23,7 +23,7 @@ describe("createTimeoutWrapper", () => {
 
   it("calls callback immediately when data arrives before timeout", () => {
     const mockCallback = vi.fn();
-    const wrappedCallback = createTimeoutWrapper({ onStreamResponseCallback: mockCallback });
+    const wrappedCallback = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
 
     const testData = { data: "test data" };
     wrappedCallback(testData);
@@ -34,7 +34,7 @@ describe("createTimeoutWrapper", () => {
 
   it("clears timeout when first data arrives", () => {
     const mockCallback = vi.fn();
-    const wrappedCallback = createTimeoutWrapper({ onStreamResponseCallback: mockCallback });
+    const wrappedCallback = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
 
     wrappedCallback({ data: "first chunk" });
     
@@ -48,7 +48,7 @@ describe("createTimeoutWrapper", () => {
 
   it("calls callback with error when timeout occurs", () => {
     const mockCallback = vi.fn();
-    createTimeoutWrapper({ onStreamResponseCallback: mockCallback });
+    createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
 
     // Advance time to trigger timeout
     vi.advanceTimersByTime(10000);
@@ -63,7 +63,7 @@ describe("createTimeoutWrapper", () => {
 
   it("ignores subsequent calls after timeout fires", () => {
     const mockCallback = vi.fn();
-    const wrappedCallback = createTimeoutWrapper({ onStreamResponseCallback: mockCallback });
+    const wrappedCallback = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
 
     // Trigger timeout
     vi.advanceTimersByTime(10000);
@@ -79,7 +79,7 @@ describe("createTimeoutWrapper", () => {
 
   it("allows multiple calls before timeout", () => {
     const mockCallback = vi.fn();
-    const wrappedCallback = createTimeoutWrapper({ onStreamResponseCallback: mockCallback });
+    const wrappedCallback = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
 
     wrappedCallback({ data: "chunk 1" });
     wrappedCallback({ data: "chunk 2" });
@@ -93,7 +93,7 @@ describe("createTimeoutWrapper", () => {
 
   it("handles error events from stream", () => {
     const mockCallback = vi.fn();
-    const wrappedCallback = createTimeoutWrapper({ onStreamResponseCallback: mockCallback });
+    const wrappedCallback = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
 
     const streamError = { error: new Error("Stream error") };
     wrappedCallback(streamError);
@@ -103,7 +103,7 @@ describe("createTimeoutWrapper", () => {
 
   it("does not timeout if first call happens just before timeout", () => {
     const mockCallback = vi.fn();
-    const wrappedCallback = createTimeoutWrapper({ onStreamResponseCallback: mockCallback });
+    const wrappedCallback = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
 
     // Advance to just before timeout
     vi.advanceTimersByTime(9999);

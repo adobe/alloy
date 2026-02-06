@@ -9,7 +9,6 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { STREAM_START_TIMEOUT_MS } from "./constants.js";
 
 /**
  * Creates a wrapper around a callback that implements a timeout for the first call.
@@ -19,8 +18,7 @@ import { STREAM_START_TIMEOUT_MS } from "./constants.js";
  * @param {Function} callback - The callback function to wrap
  * @returns {Function} Wrapped callback function
  */
-export default ({ onStreamResponseCallback }) => {
-  const timeoutMs = STREAM_START_TIMEOUT_MS;
+export default ({ onStreamResponseCallback, streamTimeout }) => {
   let firstCallMade = false;
   let timedOut = false;
 
@@ -34,7 +32,7 @@ export default ({ onStreamResponseCallback }) => {
         },
       });
     }
-  }, timeoutMs);
+  }, streamTimeout);
 
   return (event) => {
     if (timedOut) {

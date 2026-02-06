@@ -29,7 +29,13 @@ export default ({
   lifecycle,
   consent,
 }) => {
-  const { edgeDomain, edgeBasePath, datastreamId, onBeforeEventSend } = config;
+  const {
+    edgeDomain,
+    edgeBasePath,
+    datastreamId,
+    onBeforeEventSend,
+    streamTimeout,
+  } = config;
 
   return (options) => {
     let streamingEnabled = false;
@@ -131,6 +137,7 @@ export default ({
 
           const wrappedCallback = createTimeoutWrapper({
             onStreamResponseCallback,
+            streamTimeout,
           });
 
           const streamParser = createStreamParser();

@@ -14,12 +14,15 @@ import {
   arrayOf,
   objectOf,
   string,
+  callback,
 } from "../../utils/validation/index.js";
+import { noop } from "../../utils/index.js";
 
 export default ({ options }) => {
   const brandConciergeEventValidator = anyOf([
     objectOf({
       message: string().required(),
+      onStreamResponse: callback().default(noop),
     }),
     objectOf({
       xdm: objectOf({
@@ -39,6 +42,7 @@ export default ({ options }) => {
         type: string().required(),
         payload: objectOf({}),
       }).required(),
+      onStreamResponse: callback().default(noop),
     }),
   ]);
 
