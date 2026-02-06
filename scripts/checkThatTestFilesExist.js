@@ -15,7 +15,8 @@ governing permissions and limitations under the License.
 import fs from "fs";
 import path from "path";
 import recursive from "recursive-readdir";
-import pkg from "minimatch";
+import { Minimatch } from "minimatch";
+import { globSync } from "glob";
 import { fileURLToPath } from "url";
 import { safePathJoin } from "./helpers/path.js";
 
@@ -27,53 +28,117 @@ const ignorePatterns = [
   "standalone.js",
 ];
 
-const { Minimatch } = pkg;
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
 const baseDir = safePathJoin(dirname, "../");
-const srcDir = safePathJoin(dirname, "../src");
-const testDir = safePathJoin(dirname, "../test/unit/specs");
+const packagesRoot = safePathJoin(dirname, "../packages");
 const specExtension = ".spec.js";
 
 const ignoreMinimatches = ignorePatterns.map((ignorePattern) => {
   return new Minimatch(ignorePattern);
 });
 
-const shouldFileBeIgnored = (file) => {
+const srcDirMatcher = new Minimatch(path.join("packages", "*", "src"));
+const testDirMatcher = new Minimatch(
+  path.join("packages", "*", "test", "unit", "specs"),
+);
+
+const directoryGlobOptions = {
+  onlyDirectories: true,
+  absolute: true,
+  ignore: ["**/node_modules/**"],
+};
+
+const allPackageDirs = fs.existsSync(packagesRoot)
+  ? globSync(path.join(packagesRoot, "**"), directoryGlobOptions)
+  : [];
+
+const srcDirs = allPackageDirs.filter((dir) =>
+  srcDirMatcher.match(path.relative(baseDir, dir)),
+);
+
+const testDirsByPackage = new Map(
+  allPackageDirs
+    .filter((dir) => testDirMatcher.match(path.relative(baseDir, dir)))
+    .map((dir) => {
+      const relativeToPackages = path.relative(packagesRoot, dir);
+      const [packageName] = relativeToPackages.split(path.sep);
+      return [packageName, dir];
+    }),
+);
+
+const legacySrcDir = safePathJoin(dirname, "../src");
+if (fs.existsSync(legacySrcDir)) {
+  srcDirs.push(legacySrcDir);
+}
+
+const legacyTestDir = safePathJoin(dirname, "../test/unit/specs");
+if (fs.existsSync(legacyTestDir)) {
+  testDirsByPackage.set("__legacy__", legacyTestDir);
+}
+
+const uniqueSrcDirs = [...new Set(srcDirs)];
+
+const createShouldFileBeIgnored = (srcRoot) => (file) => {
   return ignoreMinimatches.some((minimatch) => {
-    return minimatch.match(path.relative(srcDir, file));
+    return minimatch.match(path.relative(srcRoot, file));
   });
 };
 
-/**
- * Ensures that for every source file there's an accompanying spec file.
- * If not, the missing spec files will be listed and the process will
- * exit with an exit code of 1.
- */
-recursive(srcDir, [shouldFileBeIgnored]).then((srcFiles) => {
-  const missingTestFiles = srcFiles
-    .map((srcFile) => {
-      const pathRelativeToSrcDir = path.relative(srcDir, srcFile);
-      const pathRelativeToTestDir = path.join(
-        path.dirname(pathRelativeToSrcDir),
-        `${path.basename(
-          pathRelativeToSrcDir,
-          path.extname(pathRelativeToSrcDir),
-        )}${specExtension}`,
-      );
-      return safePathJoin(testDir, pathRelativeToTestDir);
-    })
-    .filter((testFile) => {
-      return !fs.existsSync(testFile);
-    });
-
-  if (missingTestFiles.length) {
-    console.error("Test files are missing for their respective source files:");
-    missingTestFiles.forEach((missingTestFile) => {
-      const pathRelativeToBaseDir = path.relative(baseDir, missingTestFile);
-      console.error(`- ${pathRelativeToBaseDir}`);
-    });
-    process.exitCode = 1;
+const findTestDirForSrc = (srcRoot) => {
+  if (srcRoot.startsWith(packagesRoot)) {
+    const relativeToPackages = path.relative(packagesRoot, srcRoot);
+    const [packageName] = relativeToPackages.split(path.sep);
+    return (
+      testDirsByPackage.get(packageName) ||
+      path.join(packagesRoot, packageName, "test", "unit", "specs")
+    );
   }
-});
+
+  return testDirsByPackage.get("__legacy__") || legacyTestDir;
+};
+
+const missingTestFiles = new Set();
+
+const processSrcDir = async (srcRoot) => {
+  const shouldIgnore = createShouldFileBeIgnored(srcRoot);
+  const srcFiles = await recursive(srcRoot, [shouldIgnore]);
+  const testRoot = findTestDirForSrc(srcRoot);
+
+  srcFiles.forEach((srcFile) => {
+    const pathRelativeToSrcDir = path.relative(srcRoot, srcFile);
+    const pathRelativeToTestDir = path.join(
+      path.dirname(pathRelativeToSrcDir),
+      `${path.basename(
+        pathRelativeToSrcDir,
+        path.extname(pathRelativeToSrcDir),
+      )}${specExtension}`,
+    );
+    const testFile = safePathJoin(testRoot, pathRelativeToTestDir);
+
+    if (!fs.existsSync(testFile)) {
+      missingTestFiles.add(testFile);
+    }
+  });
+};
+
+Promise.all(uniqueSrcDirs.map((srcRoot) => processSrcDir(srcRoot)))
+  .then(() => {
+    if (missingTestFiles.size) {
+      console.error(
+        "Test files are missing for their respective source files:",
+      );
+      Array.from(missingTestFiles)
+        .sort()
+        .forEach((missingTestFile) => {
+          const pathRelativeToBaseDir = path.relative(baseDir, missingTestFile);
+          console.error(`- ${pathRelativeToBaseDir}`);
+        });
+      process.exitCode = 1;
+    }
+  })
+  .catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });

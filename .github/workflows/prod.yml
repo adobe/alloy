@@ -1,4 +1,4 @@
-name: Alloy Prod
+name: Production regression tests
 on:
   schedule:
     - cron: "45 20 * * 1-6"
@@ -19,17 +19,19 @@ jobs:
     name: Fetch releases
     runs-on: ubuntu-latest
     outputs:
-      matrixInput: ${{ steps.list-tags.outputs.matrixInput }}
+      MATRIX_INPUT: ${{ steps.retrieve-tags.outputs.MATRIX_INPUT }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: 22
-      - name: Install dependencies
-        run: npm install @octokit/rest semver
+          version: 10
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+      - run: pnpm i --frozen-lockfile
       - name: Upload sauce configs
         uses: actions/upload-artifact@v4.4.0
         with:
@@ -43,21 +45,12 @@ jobs:
           path: .sauceignore
           include-hidden-files: true
       - name: Retrieve tags
-        id: list-tags
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const path = require('path');
-            const getTestingTagsPath = path.resolve(process.env.GITHUB_WORKSPACE, 'scripts', 'getTestingTags.js');
-            const { default: getTestingTags } = await import(getTestingTagsPath);
-            const tagsToTest = await getTestingTags();
-            console.log("Tags to test:", tagsToTest); // Add this line for debugging
-            if (tagsToTest.length === 0) {
-              throw new Error("No tags found to test.");
-            }
-            const matrixInput = { include: tagsToTest.map(tag => ({tag: tag.tag, nodeVersion: tag.nodeVersion})) };
-            core.setOutput("matrixInput", JSON.stringify(matrixInput));
-            console.log("matrixInput: ", matrixInput);
+        id: retrieve-tags
+        run: |-
+          TAGS_TO_TEST=$(node -e "import('./scripts/getTestingTags.js').then(m => m.default().then(tags => console.log(JSON.stringify(tags))))")
+          echo "Tags to test: $TAGS_TO_TEST"
+          MATRIX_INPUT="{\"include\":$TAGS_TO_TEST}"
+          echo "MATRIX_INPUT=$MATRIX_INPUT" >> "$GITHUB_OUTPUT"
 
   alloy-prod-e2e-safari:
     name: Safari
@@ -67,26 +60,22 @@ jobs:
     strategy:
       max-parallel: 10
       fail-fast: false
-      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
+      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.MATRIX_INPUT) }}
     continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: ${{ matrix.tag.tag }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 22
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        id: npm-cache
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }}
+          node-version-file: .nvmrc
       - name: Install dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       - name: Store Alloy version
         uses: nyaa8/package-version@v1
       - name: Download sauce configs
@@ -101,8 +90,8 @@ jobs:
           path: .
       - name: Build
         run: |
-          echo "PACKAGE_VERSION=$(npm pkg get version | tr -d '\"')" >> $GITHUB_ENV
-          npm run test:functional:build:prod
+          echo "PACKAGE_VERSION=$(pnpm pkg get version | tr -d '\"')" >> $GITHUB_ENV
+          pnpm run test:functional:build:prod
         env:
           ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
           BASE_CODE_MIN: true
@@ -160,26 +149,22 @@ jobs:
     strategy:
       max-parallel: 10
       fail-fast: false
-      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
+      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.MATRIX_INPUT) }}
     continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: ${{ matrix.tag.tag }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 22
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        id: npm-cache
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }}
+          node-version-file: .nvmrc
       - name: Install dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       - name: Store Alloy version
         uses: nyaa8/package-version@v1
       - name: Download sauce configs
@@ -194,8 +179,8 @@ jobs:
           path: .
       - name: Build
         run: |
-          echo "PACKAGE_VERSION=$(npm pkg get version | tr -d '\"')" >> $GITHUB_ENV
-          npm run test:functional:build:prod
+          echo "PACKAGE_VERSION=$(pnpm pkg get version | tr -d '\"')" >> $GITHUB_ENV
+          pnpm run test:functional:build:prod
         env:
           ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
           BASE_CODE_MIN: true
@@ -253,26 +238,22 @@ jobs:
     strategy:
       max-parallel: 10
       fail-fast: false
-      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
+      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.MATRIX_INPUT) }}
     continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: ${{ matrix.tag.tag }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 22
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        id: npm-cache
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }}
+          node-version-file: .nvmrc
       - name: Install dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       - name: Store Alloy version
         uses: nyaa8/package-version@v1
       - name: Download sauce configs
@@ -287,8 +268,8 @@ jobs:
           path: .
       - name: Build
         run: |
-          echo "PACKAGE_VERSION=$(npm pkg get version | tr -d '\"')" >> $GITHUB_ENV
-          npm run test:functional:build:prod
+          echo "PACKAGE_VERSION=$(pnpm pkg get version | tr -d '\"')" >> $GITHUB_ENV
+          pnpm run test:functional:build:prod
         env:
           ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
           BASE_CODE_MIN: true

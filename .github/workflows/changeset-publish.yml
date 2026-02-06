@@ -1,0 +1,279 @@
+name: Changeset Publish
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency: changeset-publish-${{ github.ref }}
+
+jobs:
+  # Determine if there are changesets to publish and if we are in prerelease mode.
+  analyze:
+    # Avoid re-running when the bot pushes the version bump commit.
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    outputs:
+      has_releases: ${{ steps.release_plan.outputs.has_releases }}
+      is_prerelease: ${{ steps.pre.outputs.is_prerelease }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ssh-key: ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
+
+      - name: Determine prerelease mode
+        id: pre
+        run: |
+          if [ -f .changeset/pre.json ]; then
+            MODE=$(jq -r '.mode // empty' .changeset/pre.json)
+            TAG=$(jq -r '.tag // empty' .changeset/pre.json)
+          else
+            MODE=""
+            TAG=""
+          fi
+
+          if [ "${MODE}" = "pre" ]; then
+            echo "Prerelease mode: pre (tag: ${TAG:-n/a})"
+            echo "is_prerelease=true" >> "${GITHUB_OUTPUT}"
+          else
+            if [ -n "${MODE}" ]; then
+              echo "Prerelease mode: ${MODE}"
+            else
+              echo "Prerelease mode: stable"
+            fi
+            echo "is_prerelease=false" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Compute release plan
+        id: release_plan
+        run: |
+          shopt -s nullglob
+          FILES=(.changeset/*.md)
+
+          if [ ${#FILES[@]} -eq 0 ]; then
+            echo "has_releases=false" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          # `changeset status` writes JSON to the provided filename, relative to cwd.
+          pnpm install --frozen-lockfile
+          pnpm exec changeset status --verbose --output=changeset-status.json
+          echo "Release plan (changeset-status.json):"
+          jq . changeset-status.json
+          if jq -e '(.releases // []) | length > 0' changeset-status.json >/dev/null; then
+            echo "Release summary:"
+            jq -r '.releases[] | "- \(.name) -> \(.newVersion) (\(.type))"' changeset-status.json
+          else
+            echo "Release summary: none"
+          fi
+          HAS_RELEASES=$(jq -r 'if (.releases // []) | length > 0 then "true" else "false" end' changeset-status.json)
+          echo "has_releases=${HAS_RELEASES}" >> "${GITHUB_OUTPUT}"
+
+      - name: No release changesets, skipping publish
+        if: steps.release_plan.outputs.has_releases != 'true'
+        run: echo "No pending changesets; skipping publish."
+
+  publish:
+    needs: analyze
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      needs.analyze.outputs.has_releases == 'true'
+    runs-on: ubuntu-latest
+    # Pause for manual approval before publishing (prerelease or stable).
+    environment: Production
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ssh-key: ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
+
+      - name: Verify main has not moved
+        run: |
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            echo "::error::origin/main has moved since this workflow started. Aborting to avoid conflicts."
+            exit 1
+          fi
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Version packages & generate CHANGELOG.md files
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pnpm exec changeset status --verbose --output=changeset-status.json
+          if jq -e '(.releases // []) | length > 0' changeset-status.json >/dev/null; then
+            echo "Release summary:"
+            jq -r '.releases[] | "- \(.name) -> \(.newVersion) (\(.type))"' changeset-status.json
+          else
+            echo "Release summary: none"
+          fi
+          pnpm changeset version
+          VERSION=$(jq -r '.version' package.json)
+          echo "Root version after versioning: ${VERSION}"
+
+      - name: Update lockfile
+        run: pnpm install --no-frozen-lockfile --ignore-scripts
+
+      - name: Build packages (prepack)
+        run: pnpm run build
+
+      - name: Commit version changes & CHANGELOG.md files
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore: publish [skip ci]"
+          fi
+
+      - name: "Publish prerelease packages (beta)"
+        if: needs.analyze.outputs.is_prerelease == 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          echo "Publishing prerelease packages (pre mode). Root version: ${VERSION}"
+          pnpm changeset publish
+
+      - name: "Tag prerelease packages (npm dist-tag: next)"
+        if: needs.analyze.outputs.is_prerelease == 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+        run: |
+          if [ ! -f changeset-status.json ]; then
+            echo "::error::changeset-status.json not found; cannot tag prerelease packages."
+            exit 1
+          fi
+
+          TAG_ENTRIES=$(jq -r '.releases // [] | .[] | "\(.name)@\(.newVersion)"' changeset-status.json)
+
+          if [ -z "${TAG_ENTRIES}" ]; then
+            echo "No releases in changeset-status.json; skipping dist-tagging."
+            exit 0
+          fi
+
+          echo "Applying npm dist-tag next to prerelease packages:"
+          echo "${TAG_ENTRIES}" | sed 's/^/- /'
+          while IFS= read -r pkg; do
+            if [ -n "${pkg}" ]; then
+              npm dist-tag add "${pkg}" next
+            fi
+          done <<< "${TAG_ENTRIES}"
+
+      - name: "Publish packages (stable -> npm tag: latest)"
+        if: needs.analyze.outputs.is_prerelease != 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          echo "Publishing stable packages (npm tag: latest). Root version: ${VERSION}"
+          pnpm changeset publish
+
+      # rebuilding because `pnpm changeset publish` wipes out build artifacts
+      - name: Rebuild browser artifacts for CDN upload
+        run: pnpm run build
+
+      - name: Start ssh-agent for CDN
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: |
+            ${{ secrets.CDN_PRIVATE_KEY }}
+
+      - name: Upload browser artifacts to CDN
+        run: node scripts/uploadToCDN.js
+
+      - name: Re-enter beta prerelease mode for next cycle after a stable release
+        if: needs.analyze.outputs.is_prerelease != 'true'
+        run: pnpm changeset pre enter beta
+
+      - name: Commit and push changes + tags
+        run: |
+          git remote set-url origin "git@github.com:${{ github.repository }}.git"
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore: post-publish [skip ci]"
+          fi
+          git push --follow-tags
+
+      - name: Create GitHub Release (notes from CHANGELOG.md)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          TAG="@adobe/alloy@${VERSION}"
+
+          if ! git rev-parse "${TAG}" >/dev/null 2>&1; then
+            echo "Tag ${TAG} not found locally; skipping GitHub release."
+            exit 0
+          fi
+
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "GitHub release ${TAG} already exists; skipping."
+            exit 0
+          fi
+
+          if [ ! -f CHANGELOG.md ]; then
+            echo "::error::CHANGELOG.md not found; cannot create GitHub release notes."
+            exit 1
+          fi
+
+          # Generate GitHub release notes
+          NOTES_FILE="$(mktemp)"
+          awk -v ver="${VERSION}" '
+            $0 == "## " ver { in_section=1; next }
+            in_section && /^## / { exit }
+            in_section { print }
+          ' CHANGELOG.md > "${NOTES_FILE}"
+
+          if [ ! -s "${NOTES_FILE}" ]; then
+            echo "::error::Could not extract notes for version ${VERSION} from CHANGELOG.md"
+            exit 1
+          fi
+
+          FLAGS=()
+          if [ "${{ needs.analyze.outputs.is_prerelease }}" = "true" ]; then
+            FLAGS+=(--prerelease)
+          fi
+
+          echo "Creating GitHub release ${TAG} (prerelease: ${{ needs.analyze.outputs.is_prerelease }})"
+          echo "Release notes preview:"
+          head -n 20 "${NOTES_FILE}"
+          gh release create "${TAG}" --title "${TAG}" --notes-file "${NOTES_FILE}" "${FLAGS[@]}"

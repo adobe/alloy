@@ -57,16 +57,13 @@ jobs:
         with:
           ref: ${{ steps.last_release.outputs.tag_name }}
 
-      - uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: 22
+          version: 10
 
-      - name: Clear cache
-        uses: actions/cache@v4
-        id: npm-cache
+      - uses: actions/setup-node@v5
         with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }}
+          node-version-file: .nvmrc
 
       - name: Download sauce config into tags
         uses: actions/download-artifact@v4
@@ -87,15 +84,11 @@ jobs:
       - name: Store Alloy version into env
         uses: nyaa8/package-version@v1
 
-      - name: NPM Install
-        run: npm install
-
       - name: Install dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: npm run test:functional:build:prod
+        run: pnpm run test:functional:build:prod
         env:
           ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
 

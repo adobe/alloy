@@ -11,6 +11,10 @@ governing permissions and limitations under the License.
 */
 // eslint-disable-next-line import/no-unresolved
 import { defineConfig } from "vitest/config";
+import { playwright } from "@vitest/browser-playwright";
+
+const isCi = !!process.env.CI;
+const fileParallelism = process.env.FILE_PARALLELISM !== "false";
 
 export default defineConfig({
   test: {
@@ -19,10 +23,10 @@ export default defineConfig({
         extends: false,
         test: {
           name: "unit",
-          include: ["test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
+          include: ["packages/core/test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
           isolate: false,
           browser: {
-            provider: "playwright",
+            provider: playwright(),
             instances: [
               {
                 browser: "chromium",
@@ -31,6 +35,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             screenshotFailures: false,
+            fileParallelism,
           },
         },
       },
@@ -38,10 +43,12 @@ export default defineConfig({
         extends: false,
         test: {
           name: "integration",
-          include: ["test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
+          include: [
+            "packages/core/test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)",
+          ],
           isolate: false,
           browser: {
-            provider: "playwright",
+            provider: playwright(),
             instances: [
               {
                 browser: "chromium",
@@ -50,14 +57,15 @@ export default defineConfig({
             enabled: true,
             headless: true,
             screenshotFailures: false,
+            fileParallelism,
           },
         },
       },
     ],
 
     coverage: {
-      include: ["src/**/*"],
-      reporter: ["lcov", "html", "text"],
+      include: ["packages/core/src/**/*"],
+      reporter: isCi ? ["lcov"] : ["lcov", "html", "text"],
     },
   },
 });

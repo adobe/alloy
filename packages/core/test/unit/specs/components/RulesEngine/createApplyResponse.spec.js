@@ -1,0 +1,100 @@
+/*
+Copyright 2023 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+import { vi, describe, it, expect, beforeEach } from "vitest";
+import createApplyResponse from "../../../../../src/components/RulesEngine/createApplyResponse.js";
+
+describe("RulesEngine:createApplyResponse", () => {
+  const proposition = {
+    id: "AT:eyJhY3Rpdml0eUlkIjoiMTQxMDY0IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
+    scope: "__view__",
+    items: [],
+  };
+
+  let lifecycle;
+  let eventRegistry;
+  let applyResponse;
+
+  beforeEach(() => {
+    lifecycle = {
+      onDecision: vi.fn().mockReturnValue(Promise.resolve()),
+    };
+    eventRegistry = { addEventPayloads: vi.fn() };
+    applyResponse = createApplyResponse({ lifecycle, eventRegistry });
+  });
+
+  it("calls lifecycle.onDecision with propositions", () => {
+    const mockEvent = {
+      getViewName: () => undefined,
+      getUserIdentityMap: () => undefined,
+    };
+    const personalization = {};
+
+    applyResponse({
+      propositions: [proposition],
+      event: mockEvent,
+      personalization,
+    });
+
+    expect(lifecycle.onDecision).toHaveBeenCalledWith({
+      renderDecisions: false,
+      propositions: [proposition],
+      event: mockEvent,
+      personalization: {},
+      identityMap: undefined,
+    });
+  });
+
+  it("calls lifecycle.onDecision with viewName", () => {
+    const mockEvent = {
+      getViewName: () => "oh hai",
+      getUserIdentityMap: () => undefined,
+    };
+
+    applyResponse({
+      renderDecisions: true,
+      event: mockEvent,
+      personalization: {},
+      propositions: [proposition],
+    });
+
+    expect(lifecycle.onDecision).toHaveBeenCalledWith({
+      renderDecisions: true,
+      propositions: [proposition],
+      event: mockEvent,
+      personalization: {},
+      identityMap: undefined,
+    });
+  });
+
+  it("call lifecycle.onDecision even if no propositions", () => {
+    // this use case is necessary for content cards with no items
+    const mockEvent = {
+      getViewName: () => undefined,
+      getUserIdentityMap: () => undefined,
+    };
+
+    applyResponse({
+      renderDecisions: true,
+      propositions: [],
+      event: mockEvent,
+      personalization: {},
+    });
+
+    expect(lifecycle.onDecision).toHaveBeenCalledWith({
+      renderDecisions: true,
+      propositions: [],
+      event: mockEvent,
+      personalization: {},
+      identityMap: undefined,
+    });
+  });
+});

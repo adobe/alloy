@@ -1,5 +1,5 @@
 /*
-Copyright 2024 Adobe. All rights reserved.
+Copyright 2025 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -16,19 +16,50 @@ import compatPlugin from "eslint-plugin-compat";
 import importPlugin from "eslint-plugin-import";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import react from "eslint-plugin-react";
-// eslint-disable-next-line import/no-unresolved -- eslint parses this a file, but it's a depenedency
 import { defineConfig, globalIgnores } from "eslint/config";
 import { glob } from "glob";
 import globals from "globals";
+// eslint-disable-next-line import/extensions
+import license from "./scripts/eslint/licenseRule.js";
 
-const allComponentPaths = glob.sync("src/components/*/");
+const allComponentPaths = glob.sync("packages/core/src/components/*/");
 
 export default defineConfig([
   importPlugin.flatConfigs.recommended,
   pluginJs.configs.recommended,
   eslintPluginPrettierRecommended,
   compatPlugin.configs["flat/recommended"],
-  globalIgnores(["sandbox/build/", "sandbox/public/", "node_modules/"]),
+  globalIgnores([
+    "sandboxes/**/build/",
+    "sandboxes/**/public/",
+    "node_modules/",
+    "launch*.js",
+  ]),
+  {
+    name: "alloy/license-header",
+    files: ["**/*.{cjs,js,mjs,jsx}"],
+    ignores: [
+      "sandboxes/**",
+      "dist/**",
+      "distTest/**",
+      "packages/**/dist/**",
+      "packages/**/distTest/**",
+      "launch*.js",
+      "**/*.min.js",
+      "**/at.js",
+      "**/*AppMeasurement*",
+    ],
+    plugins: {
+      local: {
+        rules: {
+          license,
+        },
+      },
+    },
+    rules: {
+      "local/license": "error",
+    },
+  },
   {
     name: "alloy/shared",
     languageOptions: {
@@ -64,6 +95,10 @@ export default defineConfig([
       "no-await-in-loop": "error",
       "default-case": "error",
       "prefer-object-spread": "error", // disallow certain syntax forms
+      "import/no-unresolved": [
+        "error",
+        { ignore: ["eslint/config", "@adobe/alloy-core"] },
+      ],
       // https://eslint.org/docs/rules/no-restricted-syntax
       "no-restricted-syntax": [
         "error",
@@ -108,10 +143,18 @@ export default defineConfig([
     },
   },
   {
-    name: "alloy/src",
-    files: ["src/**/*.{cjs,js}"],
+    name: "alloy/core-src",
+    files: ["packages/core/src/**/*.{cjs,js}"],
     rules: {
-      "import/no-extraneous-dependencies": "error",
+      "import/no-extraneous-dependencies": [
+        "error",
+        {
+          devDependencies: [
+            "vitest.config.js",
+            // Add other files that import devDependencies for which you don't want to see esLint errors.
+          ],
+        },
+      ],
       "import/extensions": [
         "error",
         {
@@ -123,26 +166,59 @@ export default defineConfig([
         {
           zones: [
             // prevent components from importing from other components, but allow
-            // importing from themselves
+            // importing from themselves and specific media-related cross-imports
             ...allComponentPaths.map((componentPath, _, allPaths) => ({
-              target: componentPath,
+              target: componentPath + "/",
               from: [
-                "src/core",
-                "src/baseCode",
-                ...allPaths.filter((p) => p !== componentPath),
+                "packages/core/src/core",
+                "packages/core/src/baseCode",
+                // ...allPaths.filter((p) => p !== componentPath),
+                // TODO: Figure out why this was changed.
+                ...allPaths
+                  .filter((p) => {
+                    // Allow MediaAnalyticsBridge <-> StreamingMedia imports
+                    if (
+                      componentPath.includes("MediaAnalyticsBridge") &&
+                      p.includes("StreamingMedia")
+                    )
+                      return false;
+                    if (
+                      componentPath.includes("StreamingMedia") &&
+                      p.includes("MediaAnalyticsBridge")
+                    )
+                      return false;
+                    // Allow imports from Context by media components
+                    if (
+                      (componentPath.includes("MediaAnalyticsBridge") ||
+                        componentPath.includes("StreamingMedia")) &&
+                      p.includes("Context")
+                    )
+                      return false;
+                    return p !== componentPath;
+                  })
+                  .map((p) => p + "/"),
               ],
             })),
             {
-              target: "src/core",
-              from: "src/baseCode",
+              target: "packages/core/src/core",
+              from: "packages/core/src/baseCode",
             },
             {
-              target: "src/utils",
-              from: ["src/core", "src/components", "src/baseCode"],
+              target: "packages/core/src/utils",
+              from: [
+                "packages/core/src/core",
+                "packages/core/src/components",
+                "packages/core/src/baseCode",
+              ],
             },
             {
-              target: "src/constants",
-              from: ["src/core", "src/components", "src/utils", "src/baseCode"],
+              target: "packages/core/src/constants",
+              from: [
+                "packages/core/src/core",
+                "packages/core/src/components",
+                "packages/core/src/utils",
+                "packages/core/src/baseCode",
+              ],
             },
           ],
         },
@@ -169,7 +245,7 @@ export default defineConfig([
   },
   {
     name: "alloy/tests",
-    files: ["test/**/*.{cjs,js}"],
+    files: ["packages/**/test/**/*.{cjs,js}"],
     rules: {
       "import/extensions": [
         "error",
@@ -182,7 +258,7 @@ export default defineConfig([
   {
     name: "alloy/tests/vitest",
     files: [
-      "test/{unit,integration}/**/*.{cjs,js}",
+      "packages/**/test/{unit,integration}/**/*.{cjs,js}",
       "scripts/specs/**/*.{cjs,js}",
     ],
     settings: {
@@ -195,7 +271,7 @@ export default defineConfig([
   },
   {
     name: "alloy/tests/functional",
-    files: ["test/functional/**/*.{cjs,js}"],
+    files: ["packages/**/test/functional/**/*.{cjs,js}"],
     languageOptions: {
       globals: {
         test: "readonly",
@@ -205,11 +281,11 @@ export default defineConfig([
     },
   },
   {
-    name: "alloy/sandbox",
-    files: ["sandbox/src/**/*.{js,jsx}"],
+    name: "alloy/browser-sandbox",
+    files: ["sandboxes/browser/src/**/*.{js,jsx}"],
     settings: {
       react: {
-        version: "17.0.2",
+        version: "19.0.0",
       },
     },
     languageOptions: {
@@ -230,6 +306,7 @@ export default defineConfig([
     },
     rules: {
       ...react.configs.recommended.rules,
+      ...react.configs["jsx-runtime"].rules,
       "react/prop-types": "off",
     },
   },
@@ -238,7 +315,8 @@ export default defineConfig([
   {
     name: "alloy/configs",
     files: [
-      "sandbox/vite.config.mjs",
+      "sandboxes/**/vite.config.mjs",
+      "packages/**/rollup.config.js",
       "rollup.config.js",
       "eslint.config.js",
       "vitest.config.js",

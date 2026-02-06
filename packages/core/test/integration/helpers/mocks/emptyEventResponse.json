@@ -1,0 +1,86 @@
+{
+  "requestId": "55f52626-f253-45b7-80a6-dc16d288c12f-27d15f32767345c0",
+  "handle": [
+    {
+      "payload": [
+        {
+          "id": "56475161841051406291527557158775615545",
+          "namespace": {
+            "code": "ECID"
+          }
+        }
+      ],
+      "type": "identity:result"
+    },
+    {
+      "payload": [
+        {
+          "id": "AT:eyJhY3Rpdml0eUlkIjoiNjQ5MzI4IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
+          "scope": "__view__",
+          "scopeDetails": {
+            "decisionProvider": "TGT",
+            "activity": {
+              "id": "649328"
+            },
+            "experience": {
+              "id": "0"
+            },
+            "strategies": [
+              {
+                "step": "conversion",
+                "trafficType": "0"
+              }
+            ],
+            "characteristics": {
+              "eventToken": "47dHg7YL02f/1EWuN2CBPZ3BNhkKdJh9FdggP2851ycBZZ2+/ie/Kn9WfoJ0yMY35rO1vg8N0dsj7MC3pP21j2NvyhN4BOR/sAW/6xfz4u4=",
+              "analyticsToken": "649328:0:0|32767"
+            },
+            "correlationID": "649328:0:0"
+          },
+          "items": [
+            {
+              "id": "0",
+              "schema": "https://ns.adobe.com/personalization/default-content-item",
+              "meta": {}
+            }
+          ]
+        }
+      ],
+      "type": "personalization:decisions",
+      "eventIndex": 0
+    },
+    {
+      "payload": [
+        {
+          "scope": "Target",
+          "hint": "35",
+          "ttlSeconds": 1800
+        },
+        {
+          "scope": "AAM",
+          "hint": "9",
+          "ttlSeconds": 1800
+        },
+        {
+          "scope": "EdgeNetwork",
+          "hint": "or2",
+          "ttlSeconds": 1800
+        }
+      ],
+      "type": "locationHint:result"
+    },
+    {
+      "payload": [
+        {
+          "key": "kndctr_97D1F3F459CE0AD80A495CBE_AdobeOrg_cluster",
+          "value": "or2",
+          "maxAge": 1800,
+          "attrs": {
+            "SameSite": "None"
+          }
+        }
+      ],
+      "type": "state:store"
+    }
+  ]
+}

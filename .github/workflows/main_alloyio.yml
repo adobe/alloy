@@ -16,29 +16,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js version
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: lts/*
-          cache: "npm"
+          version: 10
+
+      - name: Set up Node.js version
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
 
       - name: Install packages
-        run: npm ci
+        run: pnpm install --frozen-lockfile
+
+      - name: Build alloy.js
+        run: pnpm exec rollup -c --environment SANDBOX
 
       - name: Build sandbox
-        run: |
-          cd sandbox
-          npm run build
+        run: pnpm --filter @adobe/alloy-sandbox-browser run build
 
       - name: Upload artifact for deployment job
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_AGREEABLE_RIVER_0EC96991E }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "/sandbox/build" # App source code path
-          api_location: "" # Api source code path - optional
-          output_location: "/sandbox/build" # Built app content directory - optional
-          ###### End of Repository/Build Configurations ######
+          skip_app_build: true
+          app_location: "/sandboxes/browser/build"

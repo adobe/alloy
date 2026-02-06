@@ -1,9 +1,6 @@
 node_modules
 dist
 coverage
-sandbox/public/alloy.js
-sandbox/public/alloy.js.map
-sandbox/build
 .sonarlint
 .env
 .eslintcache
@@ -20,3 +17,4 @@ adobe-alloy-*.tgz
 # Ignore auto generated types
 types/
 .scannerwork
+changeset-status.json

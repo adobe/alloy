@@ -1,5 +1,5 @@
 {
-  "include": ["src/**/*"],
+  "include": ["packages/core/src/**/*"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "allowJs": true,
