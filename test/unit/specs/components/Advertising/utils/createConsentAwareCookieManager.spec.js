@@ -191,9 +191,15 @@ describe("Advertising::createConsentAwareCookieManager", () => {
         consent,
       });
 
+      // A write while pending triggers the consent listener.
+      manager.setValue("queuedKey", "queuedVal");
+      expect(baseCookieManager.setValue).not.toHaveBeenCalled();
+
       // Grant consent.
       resolveConsent();
       await flushPromiseChains();
+
+      baseCookieManager.setValue.mockClear();
 
       // After consent, writes should go through immediately.
       manager.setValue("laterKey", "laterVal");
@@ -246,7 +252,10 @@ describe("Advertising::createConsentAwareCookieManager", () => {
         consent,
       });
 
-      // No pending write for this key → should read from base.
+      // Trigger a write so the listener is attached.
+      manager.setValue("someKey", "someVal");
+
+      // No pending write for "otherKey" → should read from base.
       expect(manager.getValue("otherKey")).toBe("fromCookie");
 
       // Clean up
@@ -300,6 +309,9 @@ describe("Advertising::createConsentAwareCookieManager", () => {
         consent,
       });
 
+      // A write while pending triggers the consent listener.
+      manager.setValue("queuedKey", "queuedVal");
+
       rejectConsent(new Error("The user declined consent."));
       await flushPromiseChains();
 
@@ -307,6 +319,95 @@ describe("Advertising::createConsentAwareCookieManager", () => {
       const result = manager.setValue("lateKey", "lateVal");
       expect(result).toBe(false);
       expect(baseCookieManager.setValue).not.toHaveBeenCalled();
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Initialization order edge case: wrapper created before consent is initialized
+  // ---------------------------------------------------------------------------
+  describe("when wrapper is created before consent component initializes", () => {
+    it("should queue writes when consent transitions from initial 'in' to 'pending'", async () => {
+      let resolveConsent;
+      // Simulate the initial consent state before the Consent component
+      // has called initializeConsent(). The consent state machine's
+      // current() returns { state: "in" } initially (awaitInitial).
+      // After the Consent component initializes with defaultConsent:"pending",
+      // it transitions to "pending".
+      let currentState = "in";
+
+      const consent = {
+        current: () => ({ state: currentState, wasSet: false }),
+        awaitConsent: () =>
+          new Promise((resolve) => {
+            resolveConsent = resolve;
+          }),
+      };
+
+      // Wrapper created while consent state is still "in" (initial).
+      const manager = createConsentAwareCookieManager({
+        baseCookieManager,
+        consent,
+      });
+
+      // Consent component initializes with defaultConsent: "pending".
+      currentState = "pending";
+
+      // Writes should now be queued, not written.
+      manager.setValue("key1", "val1");
+      expect(baseCookieManager.setValue).not.toHaveBeenCalled();
+
+      // Grant consent.
+      resolveConsent();
+      await flushPromiseChains();
+
+      expect(baseCookieManager.setValue).toHaveBeenCalledWith(
+        "key1",
+        "val1",
+        undefined,
+      );
+    });
+
+    it("should discard writes when consent transitions from initial 'in' to 'out'", () => {
+      // Same scenario but consent goes to "out" instead.
+      let currentState = "in";
+
+      const consent = {
+        current: () => ({ state: currentState, wasSet: false }),
+        awaitConsent: () =>
+          Promise.reject(new Error("The user declined consent.")),
+      };
+
+      const manager = createConsentAwareCookieManager({
+        baseCookieManager,
+        consent,
+      });
+
+      // Consent component initializes with defaultConsent: "out".
+      currentState = "out";
+
+      const result = manager.setValue("key1", "val1");
+      expect(result).toBe(false);
+      expect(baseCookieManager.setValue).not.toHaveBeenCalled();
+    });
+
+    it("should write immediately if consent is still 'in' when setValue is called", () => {
+      const consent = {
+        current: () => ({ state: "in", wasSet: false }),
+        awaitConsent: () => Promise.resolve(),
+      };
+
+      const manager = createConsentAwareCookieManager({
+        baseCookieManager,
+        consent,
+      });
+
+      // Consent stays "in" (defaultConsent: "in" or not yet changed).
+      manager.setValue("key1", "val1");
+      expect(baseCookieManager.setValue).toHaveBeenCalledWith(
+        "key1",
+        "val1",
+        undefined,
+      );
     });
   });
 });

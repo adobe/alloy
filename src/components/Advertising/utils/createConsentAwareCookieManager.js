@@ -14,10 +14,14 @@ governing permissions and limitations under the License.
  * Wraps an advertising cookie manager so that cookie writes are gated on
  * user consent.
  *
- * - Consent already "in"  → writes go through immediately.
- * - Consent "pending"     → writes are queued and flushed once consent is
- *                           granted, or discarded if consent is denied.
- * - Consent "out"         → writes are silently discarded.
+ * - Consent "in"      → writes go through immediately.
+ * - Consent "pending"  → writes are queued and flushed once consent is
+ *                        granted, or discarded if consent is denied.
+ * - Consent "out"      → writes are silently discarded.
+ *
+ * Consent state is evaluated at **call time** (not construction time) because
+ * the Advertising component may be created before the Consent component has
+ * called `consent.initializeConsent()`.
  *
  * Reads always check the pending-write queue first so that values written
  * during the "pending" window are still visible to callers within the same
@@ -31,15 +35,21 @@ governing permissions and limitations under the License.
  */
 export default ({ baseCookieManager, consent }) => {
   const pendingWrites = new Map();
+  let consentListenerAttached = false;
+  // Once the awaitConsent() promise settles we cache the outcome so
+  // subsequent setValue calls do not need to re-evaluate.
+  let resolvedConsentState = null; // null | "in" | "out"
 
-  const { state } = consent.current();
-  let consentState = state; // "in" | "out" | "pending"
+  const attachConsentListener = () => {
+    if (consentListenerAttached) {
+      return;
+    }
+    consentListenerAttached = true;
 
-  if (consentState === "pending") {
     consent
       .awaitConsent()
       .then(() => {
-        consentState = "in";
+        resolvedConsentState = "in";
         // Flush every queued write in insertion order.
         pendingWrites.forEach(({ value, options }, key) => {
           baseCookieManager.setValue(key, value, options);
@@ -47,11 +57,11 @@ export default ({ baseCookieManager, consent }) => {
         pendingWrites.clear();
       })
       .catch(() => {
-        consentState = "out";
+        resolvedConsentState = "out";
         // Consent denied – discard all pending writes.
         pendingWrites.clear();
       });
-  }
+  };
 
   return {
     /**
@@ -72,13 +82,30 @@ export default ({ baseCookieManager, consent }) => {
      * write is silently discarded.
      */
     setValue(key, value, options) {
-      if (consentState === "in") {
+      // Fast path: if the consent promise has already settled, use the
+      // cached result without re-evaluating.
+      if (resolvedConsentState === "in") {
         return baseCookieManager.setValue(key, value, options);
       }
-      if (consentState === "out") {
+      if (resolvedConsentState === "out") {
         return false;
       }
-      // consentState === "pending" – queue for later.
+
+      // Check the live consent state. This is evaluated at call time
+      // rather than at construction time because the Consent component
+      // may not have been initialized yet when this wrapper was created.
+      const { state } = consent.current();
+
+      if (state === "in") {
+        return baseCookieManager.setValue(key, value, options);
+      }
+      if (state === "out") {
+        return false;
+      }
+
+      // state === "pending" – queue the write and ensure we have a
+      // listener that will flush or discard when consent settles.
+      attachConsentListener();
       pendingWrites.set(key, { value, options });
       return true;
     },
