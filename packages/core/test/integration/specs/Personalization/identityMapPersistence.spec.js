@@ -16,6 +16,7 @@ import {
   expect,
   beforeEach,
 } from "../../helpers/testsSetup/extend.js";
+import { networkRecorder } from "../../helpers/mswjs/networkRecorder.js";
 import { http, HttpResponse } from "msw";
 
 const createPersonalizationHandler = () => {
@@ -78,6 +79,8 @@ describe("identityMap in automatic display notifications", () => {
   let testElement;
 
   beforeEach(() => {
+    networkRecorder.reset();
+
     testElement = document.createElement("div");
     testElement.id = "test-element";
     testElement.innerHTML = "Original content";
@@ -189,6 +192,7 @@ describe("identityMap in automatic display notifications", () => {
     const allCalls = await networkRecorder.findCalls(/v1\/interact/, {
       retries: 50,
       delayMs: 100,
+      minCalls: 4,
     });
 
     const displayCalls = allCalls.filter(

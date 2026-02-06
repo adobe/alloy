@@ -120,9 +120,10 @@ class NetworkRecorder {
    * @param {Object} [options] - Search options
    * @param {number} [options.retries=5] - Number of retries if no calls are found
    * @param {number} [options.delayMs] - Milliseconds to delay between retries
+   * @param {number} [options.minCalls] - Minimum number of complete matching calls required before returning; keeps retrying until this many are present or retries exhausted
    * @returns {Promise<NetworkCall[]>} - Array of matching call objects
    */
-  async findCalls(pattern, { retries = 5, delayMs } = {}) {
+  async findCalls(pattern, { retries = 5, delayMs, minCalls } = {}) {
     if (!pattern) {
       return [];
     }
@@ -142,7 +143,11 @@ class NetworkRecorder {
         (call) => call.request && pattern.test(call.request.url),
       );
 
-      if (calls.length > 0 && calls.every((c) => c.response)) {
+      const complete = calls.filter((call) => call.request && call.response);
+      const enough =
+        minCalls != null ? complete.length >= minCalls : complete.length > 0;
+
+      if (enough) {
         break;
       }
 
