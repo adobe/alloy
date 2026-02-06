@@ -1,5 +1,5 @@
 ---
-"@adobe/alloy-core": patch
+"@adobe/alloy": patch
 ---
 
 No user-facing changes
