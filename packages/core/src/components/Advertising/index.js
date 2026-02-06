@@ -39,7 +39,6 @@ const createAdvertising = ({
     createDataCollectionRequest,
     createDataCollectionRequestPayload,
     logger,
-    cookieManager,
   });
   return createComponent({
     logger,
@@ -48,6 +47,7 @@ const createAdvertising = ({
     cookieManager,
     adConversionHandler,
     getBrowser,
+    consent,
   });
 };
 

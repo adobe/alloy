@@ -26,12 +26,17 @@ export default ({
   logger,
   componentConfig,
   getBrowser,
+  consent,
 }) => {
   const activeAdvertiserIds = componentConfig?.advertiserSettings
     ? normalizeAdvertiser(componentConfig.advertiserSettings)
     : "";
 
   return async () => {
+    // Wait for consent before any ad conversion processing.
+    // This ensures no advertising cookies are set without user consent.
+    await consent.awaitConsent();
+
     const { skwcid, efid } = getUrlParams();
     const isClickThru = !!(skwcid || efid);
 

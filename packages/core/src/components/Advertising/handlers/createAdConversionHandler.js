@@ -10,11 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  LAST_CLICK_COOKIE_KEY,
-  LOG_COOKIE_WRITTEN,
-} from "../constants/index.js";
-
 /**
  * Creates a specialized handler for ad conversion events.
  * This follows a similar pattern to the media event handling in the StreamingMedia component.
@@ -25,15 +20,11 @@ export default ({
   createDataCollectionRequest,
   createDataCollectionRequestPayload,
   logger,
-  cookieManager,
 }) => {
   /**
-   * Tracks an ad conversion event by sending it directly to the Edge Network.
-   * For click-through conversions, writes the click data cookie (skwcid/efid)
-   * only AFTER consent is granted, ensuring no ad-tracking cookies are set
-   * without user consent.
+   * Tracks an ad conversion event by sending it directly to the Edge Network
    */
-  const trackAdConversion = ({ event, skwcid, efid }) => {
+  const trackAdConversion = ({ event }) => {
     const dataCollectionRequestPayload = createDataCollectionRequestPayload();
     dataCollectionRequestPayload.addEvent(event);
     event.finalize();
@@ -42,23 +33,12 @@ export default ({
     });
 
     return consent.awaitConsent().then(() => {
-      // Write the AdCloud click cookie only after consent is granted
-      if (cookieManager && (skwcid || efid)) {
-        const clickData = {
-          click_time: Date.now(),
-          ...(skwcid && { skwcid }),
-          ...(efid && { efid }),
-        };
-        cookieManager.setValue(LAST_CLICK_COOKIE_KEY, clickData);
-        logger.info(LOG_COOKIE_WRITTEN, clickData);
-      }
-
       return sendEdgeNetworkRequest({ request })
         .then(() => {
           return { success: true };
         })
         .catch((error) => {
-          logger.debug("Failed to send ad conversion event", error);
+          logger.error("Failed to send ad conversion event", error);
           throw error;
         });
     });

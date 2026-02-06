@@ -12,9 +12,6 @@ governing permissions and limitations under the License.
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import createAdConversionHandler from "../../../../../../src/components/Advertising/handlers/createAdConversionHandler.js";
-import {
-  LAST_CLICK_COOKIE_KEY,
-} from "../../../../../../src/components/Advertising/constants/index.js";
 
 // Mock network operations to prevent real network calls
 vi.mock("fetch", () => vi.fn());
@@ -28,16 +25,28 @@ Object.defineProperty(globalThis, "fetch", {
   writable: true,
 });
 
+// Mock dependencies
+vi.mock(
+  "../../../../../../src/utils/request/createDataCollectionRequestPayload.js",
+);
+vi.mock(
+  "../../../../../../src/utils/request/createDataCollectionRequest.js",
+);
+
 describe("Advertising::createAdConversionHandler", () => {
+  let eventManager;
   let sendEdgeNetworkRequest;
   let consent;
   let logger;
-  let cookieManager;
   let handler;
   let createDataCollectionRequestPayload;
   let createDataCollectionRequest;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    eventManager = {
+      createEvent: vi.fn(),
+    };
+
     sendEdgeNetworkRequest = vi.fn();
 
     consent = {
@@ -51,13 +60,20 @@ describe("Advertising::createAdConversionHandler", () => {
       warn: vi.fn(),
     };
 
-    cookieManager = {
-      setValue: vi.fn(),
-      getValue: vi.fn(),
-    };
+    // Mock the request creation functions
+    const mockCreateDataCollectionRequestPayload = await import(
+      "../../../../../../src/utils/request/createDataCollectionRequestPayload.js"
+    );
+    const mockCreateDataCollectionRequest = await import(
+      "../../../../../../src/utils/request/createDataCollectionRequest.js"
+    );
 
-    createDataCollectionRequestPayload = vi.fn();
-    createDataCollectionRequest = vi.fn();
+    createDataCollectionRequestPayload =
+      mockCreateDataCollectionRequestPayload.default;
+    createDataCollectionRequest = mockCreateDataCollectionRequest.default;
+
+    createDataCollectionRequestPayload.mockReset();
+    createDataCollectionRequest.mockReset();
 
     handler = createAdConversionHandler({
       sendEdgeNetworkRequest,
@@ -65,7 +81,6 @@ describe("Advertising::createAdConversionHandler", () => {
       createDataCollectionRequest,
       createDataCollectionRequestPayload,
       logger,
-      cookieManager,
     });
   });
 
@@ -118,13 +133,6 @@ describe("Advertising::createAdConversionHandler", () => {
       const mockEvent = {
         finalize: vi.fn(),
       };
-
-      const mockPayload = {
-        addEvent: vi.fn(),
-      };
-
-      createDataCollectionRequestPayload.mockReturnValue(mockPayload);
-      createDataCollectionRequest.mockReturnValue({});
 
       const consentError = new Error("Consent denied");
       consent.awaitConsent.mockRejectedValue(consentError);
@@ -181,110 +189,6 @@ describe("Advertising::createAdConversionHandler", () => {
       await handler.trackAdConversion({ event: mockEvent, options });
 
       expect(createDataCollectionRequestPayload).toHaveBeenCalled();
-    });
-  });
-
-  describe("click cookie consent gating", () => {
-    let mockEvent;
-    let mockPayload;
-    let mockRequest;
-
-    beforeEach(() => {
-      mockEvent = { finalize: vi.fn() };
-      mockPayload = { addEvent: vi.fn() };
-      mockRequest = { body: { events: [] } };
-
-      createDataCollectionRequestPayload.mockReturnValue(mockPayload);
-      createDataCollectionRequest.mockReturnValue(mockRequest);
-      sendEdgeNetworkRequest.mockResolvedValue({ status: "success" });
-    });
-
-    it("should write LAST_CLICK_COOKIE_KEY after consent when skwcid and efid are provided", async () => {
-      await handler.trackAdConversion({
-        event: mockEvent,
-        skwcid: "AL!12345",
-        efid: "test-efid",
-      });
-
-      expect(consent.awaitConsent).toHaveBeenCalled();
-      expect(cookieManager.setValue).toHaveBeenCalledWith(
-        LAST_CLICK_COOKIE_KEY,
-        expect.objectContaining({
-          click_time: expect.any(Number),
-          skwcid: "AL!12345",
-          efid: "test-efid",
-        }),
-      );
-    });
-
-    it("should write LAST_CLICK_COOKIE_KEY after consent when only skwcid is provided", async () => {
-      await handler.trackAdConversion({
-        event: mockEvent,
-        skwcid: "AL!12345",
-      });
-
-      expect(cookieManager.setValue).toHaveBeenCalledWith(
-        LAST_CLICK_COOKIE_KEY,
-        expect.objectContaining({
-          click_time: expect.any(Number),
-          skwcid: "AL!12345",
-        }),
-      );
-    });
-
-    it("should write LAST_CLICK_COOKIE_KEY after consent when only efid is provided", async () => {
-      await handler.trackAdConversion({
-        event: mockEvent,
-        efid: "test-efid",
-      });
-
-      expect(cookieManager.setValue).toHaveBeenCalledWith(
-        LAST_CLICK_COOKIE_KEY,
-        expect.objectContaining({
-          click_time: expect.any(Number),
-          efid: "test-efid",
-        }),
-      );
-    });
-
-    it("should NOT write LAST_CLICK_COOKIE_KEY when neither skwcid nor efid are provided", async () => {
-      await handler.trackAdConversion({ event: mockEvent });
-
-      expect(cookieManager.setValue).not.toHaveBeenCalled();
-    });
-
-    it("should NOT write LAST_CLICK_COOKIE_KEY when consent is denied", async () => {
-      consent.awaitConsent.mockRejectedValue(new Error("Consent denied"));
-
-      await expect(
-        handler.trackAdConversion({
-          event: mockEvent,
-          skwcid: "AL!12345",
-          efid: "test-efid",
-        }),
-      ).rejects.toThrow("Consent denied");
-
-      expect(cookieManager.setValue).not.toHaveBeenCalled();
-    });
-
-    it("should write cookie BEFORE sending network request", async () => {
-      const callOrder = [];
-
-      cookieManager.setValue.mockImplementation(() => {
-        callOrder.push("cookie_write");
-      });
-      sendEdgeNetworkRequest.mockImplementation(() => {
-        callOrder.push("network_request");
-        return Promise.resolve({ status: "success" });
-      });
-
-      await handler.trackAdConversion({
-        event: mockEvent,
-        skwcid: "AL!12345",
-        efid: "test-efid",
-      });
-
-      expect(callOrder).toEqual(["cookie_write", "network_request"]);
     });
   });
 
@@ -350,12 +254,10 @@ describe("Advertising::createAdConversionHandler", () => {
     it("should create handler with all required dependencies", () => {
       expect(() => {
         createAdConversionHandler({
+          eventManager,
           sendEdgeNetworkRequest,
           consent,
-          createDataCollectionRequest,
-          createDataCollectionRequestPayload,
           logger,
-          cookieManager,
         });
       }).not.toThrow();
     });

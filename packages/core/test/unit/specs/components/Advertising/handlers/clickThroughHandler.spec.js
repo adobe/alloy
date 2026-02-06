@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import handleClickThrough from "../../../../../../src/components/Advertising/handlers/clickThroughHandler.js";
 import {
+  LAST_CLICK_COOKIE_KEY,
   LAST_CONVERSION_TIME_KEY,
 } from "../../../../../../src/components/Advertising/constants/index.js";
 
@@ -139,6 +140,7 @@ describe("Advertising::clickThroughHandler", () => {
       logger,
       skwcid: "test-skwcid",
       efid: undefined,
+      optionsFromCommand: {},
     });
 
     expect(eventManager.createEvent).toHaveBeenCalledWith();
@@ -156,19 +158,17 @@ describe("Advertising::clickThroughHandler", () => {
       }),
     );
 
-    // Only LAST_CONVERSION_TIME_KEY is written here (timestamp);
-    // LAST_CLICK_COOKIE_KEY is now written in createAdConversionHandler after consent
-    expect(cookieManager.setValue).toHaveBeenCalledTimes(1);
+    expect(cookieManager.setValue).toHaveBeenCalledTimes(2);
     expect(cookieManager.setValue).toHaveBeenCalledWith(
       LAST_CONVERSION_TIME_KEY,
-      expect.any(Object),
+    );
+    expect(cookieManager.setValue).toHaveBeenCalledWith(
+      "lastConversionTimeExpires",
+      expect.any(Number),
     );
 
-    // skwcid and efid are passed through to trackAdConversion
     expect(adConversionHandler.trackAdConversion).toHaveBeenCalledWith({
       event: mockEvent,
-      skwcid: "test-skwcid",
-      efid: undefined,
     });
 
     expect(result).toEqual({ status: "success" });
@@ -188,6 +188,7 @@ describe("Advertising::clickThroughHandler", () => {
       logger,
       skwcid: undefined,
       efid: "test-efid",
+      optionsFromCommand: {},
     });
 
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith(
@@ -203,18 +204,14 @@ describe("Advertising::clickThroughHandler", () => {
       }),
     );
 
-    expect(cookieManager.setValue).toHaveBeenCalledTimes(1);
+    expect(cookieManager.setValue).toHaveBeenCalledTimes(2);
     expect(cookieManager.setValue).toHaveBeenCalledWith(
       LAST_CONVERSION_TIME_KEY,
-      expect.any(Object),
     );
-
-    // skwcid and efid are passed through to trackAdConversion
-    expect(adConversionHandler.trackAdConversion).toHaveBeenCalledWith({
-      event: mockEvent,
-      skwcid: undefined,
-      efid: "test-efid",
-    });
+    expect(cookieManager.setValue).toHaveBeenCalledWith(
+      "lastConversionTimeExpires",
+      expect.any(Number),
+    );
 
     expect(result).toEqual({ status: "success" });
   });
@@ -233,6 +230,7 @@ describe("Advertising::clickThroughHandler", () => {
       logger,
       skwcid: "AL!test-skwcid",
       efid: "test-efid",
+      optionsFromCommand: {},
     });
 
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith(
@@ -249,19 +247,20 @@ describe("Advertising::clickThroughHandler", () => {
       }),
     );
 
-    // No LAST_CLICK_COOKIE_KEY write here — moved to createAdConversionHandler
-    expect(cookieManager.setValue).toHaveBeenCalledTimes(1);
-    expect(cookieManager.setValue).toHaveBeenCalledWith(
-      LAST_CONVERSION_TIME_KEY,
-      expect.any(Object),
-    );
-
-    // skwcid and efid are passed through to trackAdConversion
-    expect(adConversionHandler.trackAdConversion).toHaveBeenCalledWith({
-      event: mockEvent,
+    expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
+      click_time: expect.anything(),
       skwcid: "AL!test-skwcid",
       efid: "test-efid",
     });
+
+    expect(cookieManager.setValue).toHaveBeenCalledTimes(3);
+    expect(cookieManager.setValue).toHaveBeenCalledWith(
+      LAST_CONVERSION_TIME_KEY,
+    );
+    expect(cookieManager.setValue).toHaveBeenCalledWith(
+      "lastConversionTimeExpires",
+      expect.any(Number),
+    );
   });
 
   it("should include options from command", async () => {
@@ -299,10 +298,13 @@ describe("Advertising::clickThroughHandler", () => {
       }),
     );
 
-    expect(cookieManager.setValue).toHaveBeenCalledTimes(1);
+    expect(cookieManager.setValue).toHaveBeenCalledTimes(2);
     expect(cookieManager.setValue).toHaveBeenCalledWith(
       LAST_CONVERSION_TIME_KEY,
-      expect.any(Object),
+    );
+    expect(cookieManager.setValue).toHaveBeenCalledWith(
+      "lastConversionTimeExpires",
+      expect.any(Number),
     );
   });
 
@@ -329,30 +331,5 @@ describe("Advertising::clickThroughHandler", () => {
     ).rejects.toThrow("Tracking failed");
 
     expect(logger.error).toHaveBeenCalled();
-  });
-
-  it("should not write LAST_CLICK_COOKIE_KEY directly", async () => {
-    const mockEvent = {
-      setUserXdm: vi.fn(),
-      finalize: vi.fn(),
-    };
-    eventManager.createEvent.mockReturnValue(mockEvent);
-
-    await handleClickThrough({
-      eventManager,
-      cookieManager,
-      adConversionHandler,
-      logger,
-      skwcid: "AL!test-skwcid",
-      efid: "test-efid",
-    });
-
-    // LAST_CLICK_COOKIE_KEY (_les_lsc) should NOT be written by clickThroughHandler
-    // It is now written by createAdConversionHandler after consent is granted
-    const cookieKeys = cookieManager.setValue.mock.calls.map(
-      (call) => call[0],
-    );
-    expect(cookieKeys).not.toContain("_les_lsc");
-    expect(cookieKeys).toEqual([LAST_CONVERSION_TIME_KEY]);
   });
 });
