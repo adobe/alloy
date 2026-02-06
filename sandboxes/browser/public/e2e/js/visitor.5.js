@@ -22,9 +22,7 @@ var Visitor = (function () {
 
   function createCommonjsModule(fn, module) {
     return (
-      (module = { exports: {} }),
-      fn(module, module.exports),
-      module.exports
+      (module = { exports: {} }), fn(module, module.exports), module.exports
     );
   }
 
@@ -1104,11 +1102,11 @@ var Visitor = (function () {
       j = 10; /* The first nibble can't have the left-most bit set because we are deailing with signed 64bit numbers. */ // TODO Extract this portion into a separate function.
     if (1 == b) {
       for (c += "ABCDEF", f = 0; 16 > f; f++)
-        ((g = Math.floor(Math.random() * h)),
+        (g = Math.floor(Math.random() * h)),
           (d += c.substring(g, g + 1)),
           (g = Math.floor(Math.random() * h)),
           (e += c.substring(g, g + 1)),
-          (h = 16));
+          (h = 16);
       return d + "-" + e;
     }
     /*
@@ -1117,7 +1115,7 @@ var Visitor = (function () {
      *    ^---------------- The 4th digit could actually be a 3 if we wanted to add more max checks
      *                      but we set the max to 2 to avoid them
      */ for (f = 0; 19 > f; f++)
-      ((g = Math.floor(Math.random() * i)),
+      (g = Math.floor(Math.random() * i)),
         (d += c.substring(g, g + 1)),
         0 === f && 9 == g
           ? (i = 3)
@@ -1130,7 +1128,7 @@ var Visitor = (function () {
           ? (j = 3)
           : (1 == f || 2 == f) && 10 != j && 2 > g
             ? (j = 10)
-            : 2 < f && (j = 10));
+            : 2 < f && (j = 10);
     return d + e;
   };
 

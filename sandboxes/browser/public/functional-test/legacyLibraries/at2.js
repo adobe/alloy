@@ -4,7 +4,7 @@
  * at.js 2.9.0 | (c) Adobe Systems Incorporated | All rights reserved
  * zepto.js | (c) 2010-2016 Thomas Fuchs | zeptojs.com/license
  */
-((window.adobe = window.adobe || {}),
+(window.adobe = window.adobe || {}),
   (window.adobe.target = (function () {
     "use strict";
     var t = window,
@@ -247,7 +247,7 @@
                 let e = 0;
                 const { length: n } = t,
                   r = Array(n);
-                for (; e < n; ) ((r[e] = t[e]), (e += 1));
+                for (; e < n; ) (r[e] = t[e]), (e += 1);
                 return r;
               })(t)
           : ((e = T(t)), (n = t), L((t) => n[t], e));
@@ -378,7 +378,7 @@
         },
         getAndClearEntries: function () {
           const e = t;
-          return ((t = []), e);
+          return (t = []), e;
         },
         hasEntries: function () {
           return t.length > 0;
@@ -396,7 +396,7 @@
               ? self
               : {};
     var It = (function (t, e) {
-      return (t((e = { exports: {} }), e.exports), e.exports);
+      return t((e = { exports: {} }), e.exports), e.exports;
     })(function (t) {
       (function () {
         var e, n, r, o, i, c;
@@ -434,29 +434,29 @@
         n = {};
       function r(e) {
         const n = (gt(t[e]) ? t[e] : 0) + 1;
-        return ((t[e] = n), "" + e + n);
+        return (t[e] = n), "" + e + n;
       }
       return {
         timeStart: function (t) {
           let n =
             arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
           const o = n ? r(t) : t;
-          return (mt(e[o]) && (e[o] = It()), o);
+          return mt(e[o]) && (e[o] = It()), o;
         },
         timeEnd: function (t) {
           let r =
             arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 0;
           if (mt(e[t])) return -1;
           const o = It() - e[t] - r;
-          return ((n[t] = o), o);
+          return (n[t] = o), o;
         },
         getTimings: () => n,
         getTiming: (t) => n[t],
         clearTiming: function (r) {
-          (delete t[r], delete e[r], delete n[r]);
+          delete t[r], delete e[r], delete n[r];
         },
         reset: function () {
-          ((t = {}), (e = {}), (n = {}));
+          (t = {}), (e = {}), (n = {});
         },
       };
     })();
@@ -618,7 +618,7 @@
     }
     function ne(t, e, n) {
       let r = "";
-      ("file:" === t.location.protocol || (r = ee(t.location.hostname)),
+      "file:" === t.location.protocol || (r = ee(t.location.hostname)),
         (n.cookieDomain = r),
         (n.enabled =
           (function (t) {
@@ -636,15 +636,15 @@
             q((n) => {
               m(e[n]) || (t[n] = e[n]);
             }, te));
-        })(n, t.targetGlobalSettings || {}));
+        })(n, t.targetGlobalSettings || {});
     }
     function re(t) {
       ne(Wt, Kt, t);
       const e = "file:" === Wt.location.protocol;
-      ((Qt = h({}, t)),
+      (Qt = h({}, t)),
         (Qt.deviceIdLifetime = t.deviceIdLifetime / 1e3),
         (Qt.sessionIdLifetime = t.sessionIdLifetime / 1e3),
-        (Qt.scheme = Qt.secureOnly || e ? "https:" : ""));
+        (Qt.scheme = Qt.secureOnly || e ? "https:" : "");
     }
     function oe() {
       return Qt;
@@ -671,14 +671,14 @@
         function o() {}
         function i(e, n, i) {
           if ("undefined" != typeof document) {
-            ("number" == typeof (i = t({ path: "/" }, o.defaults, i)).expires &&
+            "number" == typeof (i = t({ path: "/" }, o.defaults, i)).expires &&
               (i.expires = new Date(1 * new Date() + 864e5 * i.expires)),
-              (i.expires = i.expires ? i.expires.toUTCString() : ""));
+              (i.expires = i.expires ? i.expires.toUTCString() : "");
             try {
               var c = JSON.stringify(n);
               /^[\{\[]/.test(c) && (n = c);
             } catch (t) {}
-            ((n = r.write
+            (n = r.write
               ? r.write(n, e)
               : encodeURIComponent(String(n)).replace(
                   /%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g,
@@ -686,7 +686,7 @@
                 )),
               (e = encodeURIComponent(String(e))
                 .replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent)
-                .replace(/[\(\)]/g, escape)));
+                .replace(/[\(\)]/g, escape));
             var s = "";
             for (var u in i)
               i[u] &&
@@ -754,9 +754,9 @@
           return "";
       }
     };
-    ((ue.decode = ue.parse =
+    (ue.decode = ue.parse =
       function (t, e, n, r) {
-        ((e = e || "&"), (n = n || "="));
+        (e = e || "&"), (n = n || "=");
         var o = {};
         if ("string" != typeof t || 0 === t.length) return o;
         var i = /\+/g;
@@ -772,7 +772,7 @@
             d,
             p = t[u].replace(i, "%20"),
             h = p.indexOf(n);
-          (h >= 0
+          h >= 0
             ? ((a = p.substr(0, h)), (f = p.substr(h + 1)))
             : ((a = p), (f = "")),
             (l = decodeURIComponent(a)),
@@ -781,7 +781,7 @@
               ? Array.isArray(o[l])
                 ? o[l].push(d)
                 : (o[l] = [o[l], d])
-              : (o[l] = d));
+              : (o[l] = d);
         }
         return o;
       }),
@@ -808,7 +808,7 @@
                 ? encodeURIComponent(fe(r)) + n + encodeURIComponent(fe(t))
                 : ""
           );
-        }));
+        });
     var le = ue,
       de = {
         parse: function (t) {
@@ -856,7 +856,7 @@
       if (ge[t]) return ge[t];
       me.href = t;
       const e = Ot(me.href);
-      return ((e.queryKey = ve(e.query)), (ge[t] = e), ge[t]);
+      return (e.queryKey = ve(e.query)), (ge[t] = e), ge[t];
     }
     const { get: Se, set: Ee, remove: Te } = se;
     function Ce(t, e, n) {
@@ -909,7 +909,7 @@
     function qe(t) {
       const { name: e, value: n, expires: r, domain: o, secure: i } = t,
         c = Ie();
-      ((c[e] = Ce(e, n, Math.ceil(r + rt() / 1e3))), Ae(c, o, i));
+      (c[e] = Ce(e, n, Math.ceil(r + rt() / 1e3))), Ae(c, o, i);
     }
     function Me(t, e, n) {
       return (
@@ -939,7 +939,7 @@
             r = h({ domain: e, secure: n }, n ? { sameSite: "None" } : {});
           Ee("at_check", "true", r);
           const o = "true" === Se("at_check");
-          return (Te("at_check"), o);
+          return Te("at_check"), o;
         })() &&
         !Me(Wt, Kt, "mboxDisable")
       );
@@ -977,19 +977,19 @@
       const r = t[Zt] || [];
       if (((t[Zt] = r), !n)) return;
       const o = r.push;
-      ((r.version = "1"),
+      (r.version = "1"),
         (r.settings = (function (t) {
           return ct((e, n) => ((e[n] = t[n]), e), {}, te);
         })(e)),
         (r.clientTraces = []),
         (r.serverTraces = []),
         (r.push = function (t) {
-          (r.serverTraces.push(h({ timestamp: rt() }, t)), o.call(this, t));
-        }));
+          r.serverTraces.push(h({ timestamp: rt() }, t)), o.call(this, t);
+        });
     }
     function ze(t, e, n, r) {
-      ("serverTraces" === e && t[Zt].push(n),
-        r && "serverTraces" !== e && t[Zt][e].push(h({ timestamp: rt() }, n)));
+      "serverTraces" === e && t[Zt].push(n),
+        r && "serverTraces" !== e && t[Zt][e].push(h({ timestamp: rt() }, n));
     }
     function $e(t) {
       ze(Wt, "serverTraces", t, De());
@@ -1006,11 +1006,11 @@
       if (!(this instanceof We))
         throw new TypeError("Promises must be constructed via new");
       if ("function" != typeof t) throw new TypeError("not a function");
-      ((this._state = 0),
+      (this._state = 0),
         (this._handled = !1),
         (this._value = void 0),
         (this._deferreds = []),
-        nn(t, this));
+        nn(t, this);
     }
     function Xe(t, e) {
       for (; 3 === t._state; ) t = t._value;
@@ -1037,7 +1037,7 @@
         if (e && ("object" == typeof e || "function" == typeof e)) {
           var n = e.then;
           if (e instanceof We)
-            return ((t._state = 3), (t._value = e), void tn(t));
+            return (t._state = 3), (t._value = e), void tn(t);
           if ("function" == typeof n)
             return void nn(
               ((r = n),
@@ -1048,14 +1048,14 @@
               t,
             );
         }
-        ((t._state = 1), (t._value = e), tn(t));
+        (t._state = 1), (t._value = e), tn(t);
       } catch (e) {
         Qe(t, e);
       }
       var r, o;
     }
     function Qe(t, e) {
-      ((t._state = 2), (t._value = e), tn(t));
+      (t._state = 2), (t._value = e), tn(t);
     }
     function tn(t) {
       2 === t._state &&
@@ -1068,9 +1068,9 @@
       t._deferreds = null;
     }
     function en(t, e, n) {
-      ((this.onFulfilled = "function" == typeof t ? t : null),
+      (this.onFulfilled = "function" == typeof t ? t : null),
         (this.onRejected = "function" == typeof e ? e : null),
-        (this.promise = n));
+        (this.promise = n);
     }
     function nn(t, e) {
       var n = !1;
@@ -1085,15 +1085,15 @@
         );
       } catch (t) {
         if (n) return;
-        ((n = !0), Qe(e, t));
+        (n = !0), Qe(e, t);
       }
     }
-    ((We.prototype["catch"] = function (t) {
+    (We.prototype["catch"] = function (t) {
       return this.then(null, t);
     }),
       (We.prototype.then = function (t, e) {
         var n = new this.constructor(Ke);
-        return (Xe(this, new en(t, e, n)), n);
+        return Xe(this, new en(t, e, n)), n;
       }),
       (We.prototype.finally = function (t) {
         var e = this.constructor;
@@ -1129,7 +1129,7 @@
                     n,
                   );
               }
-              ((r[t] = c), 0 == --o && e(r));
+              (r[t] = c), 0 == --o && e(r);
             } catch (t) {
               n(t);
             }
@@ -1167,7 +1167,7 @@
         "undefined" != typeof console &&
           console &&
           console.warn("Possible Unhandled Promise Rejection:", t);
-      }));
+      });
     var rn = a(Object.freeze({ __proto__: null, default: We })),
       on =
         ("undefined" != typeof window && window.Promise) ||
@@ -1307,7 +1307,7 @@
             var n,
               r = t ? t.length : 0;
             for (n = 0; n < r; n++) this[n] = t[n];
-            ((this.length = r), (this.selector = e || ""));
+            (this.length = r), (this.selector = e || "");
           }
           function F(t, n, r) {
             for (e in n)
@@ -1360,10 +1360,10 @@
             const o = r.parentNode;
             if (!o) return;
             const i = t.createElement("script");
-            ((i.innerHTML = e),
+            (i.innerHTML = e),
               J(n) && i.setAttribute("nonce", n),
               o.appendChild(i),
-              o.removeChild(i));
+              o.removeChild(i);
           }
           return (
             (I.matches = function (t, e) {
@@ -1426,7 +1426,7 @@
               if (!t) return I.Z();
               if ("string" == typeof t)
                 if ("<" == (t = t.trim())[0] && h.test(t))
-                  ((r = I.fragment(t, RegExp.$1, e)), (t = null));
+                  (r = I.fragment(t, RegExp.$1, e)), (t = null);
                 else {
                   if (void 0 !== e) return n(e).find(t);
                   r = I.qsa(f, t);
@@ -1435,13 +1435,13 @@
                 if (q(t)) return n(f).ready(t);
                 if (I.isZ(t)) return t;
                 if (_(t))
-                  ((o = t),
+                  (o = t),
                     (r = u.call(o, function (t) {
                       return null != t;
-                    })));
-                else if (D(t)) ((r = [t]), (t = null));
+                    }));
+                else if (D(t)) (r = [t]), (t = null);
                 else if (h.test(t))
-                  ((r = I.fragment(t.trim(), RegExp.$1, e)), (t = null));
+                  (r = I.fragment(t.trim(), RegExp.$1, e)), (t = null);
                 else {
                   if (void 0 !== e) return n(e).find(t);
                   r = I.qsa(f, t);
@@ -1569,7 +1569,7 @@
                   e,
                   n = [];
                 for (t = 0; t < arguments.length; t++)
-                  ((e = arguments[t]), (n[t] = I.isZ(e) ? e.toArray() : e));
+                  (e = arguments[t]), (n[t] = I.isZ(e) ? e.toArray() : e);
                 return s.apply(I.isZ(this) ? this.toArray() : this, n);
               },
               map: function (t) {
@@ -1704,7 +1704,7 @@
                 for (var e = [], r = this; r.length > 0; )
                   r = n.map(r, function (t) {
                     if ((t = t.parentNode) && !P(t) && e.indexOf(t) < 0)
-                      return (e.push(t), t);
+                      return e.push(t), t;
                   });
                 return z(e, t);
               },
@@ -1747,7 +1747,7 @@
               show: function () {
                 return this.each(function () {
                   var t, e, n;
-                  ("none" == this.style.display && (this.style.display = ""),
+                  "none" == this.style.display && (this.style.display = ""),
                     "none" ==
                       getComputedStyle(this, "").getPropertyValue("display") &&
                       (this.style.display =
@@ -1761,7 +1761,7 @@
                           e.parentNode.removeChild(e),
                           "none" == n && (n = "block"),
                           (l[t] = n)),
-                        l[t])));
+                        l[t]));
                 });
               },
               replaceWith: function (t) {
@@ -1920,8 +1920,8 @@
                       o = $(this, e, t, r.offset()),
                       i = r.offsetParent().offset(),
                       c = { top: o.top - i.top, left: o.left - i.left };
-                    ("static" == r.css("position") && (c.position = "relative"),
-                      r.css(c));
+                    "static" == r.css("position") && (c.position = "relative"),
+                      r.css(c);
                   });
                 if (!this.length) return null;
                 if (
@@ -2000,13 +2000,12 @@
                       if ("className" in this) {
                         r = [];
                         var o = G(this);
-                        ($(this, t, e, o)
+                        $(this, t, e, o)
                           .split(/\s+/g)
                           .forEach(function (t) {
                             n(this).hasClass(t) || r.push(t);
                           }, this),
-                          r.length &&
-                            G(this, o + (o ? " " : "") + r.join(" ")));
+                          r.length && G(this, o + (o ? " " : "") + r.join(" "));
                       }
                     })
                   : this;
@@ -2015,13 +2014,13 @@
                 return this.each(function (e) {
                   if ("className" in this) {
                     if (void 0 === t) return G(this, "");
-                    ((r = G(this)),
+                    (r = G(this)),
                       $(this, t, e, r)
                         .split(/\s+/g)
                         .forEach(function (t) {
                           r = r.replace(V(t), " ");
                         }),
-                      G(this, r.trim()));
+                      G(this, r.trim());
                   }
                 });
               },
@@ -2128,7 +2127,7 @@
             }),
             ["after", "prepend", "before", "append"].forEach(function (t, e) {
               var r = e % 2;
-              ((n.fn[t] = function () {
+              (n.fn[t] = function () {
                 var t,
                   o,
                   i = n.map(arguments, function (e) {
@@ -2150,7 +2149,7 @@
                 return i.length < 1
                   ? this
                   : this.each(function (t, s) {
-                      ((o = r ? s : s.parentNode),
+                      (o = r ? s : s.parentNode),
                         (s =
                           0 == e
                             ? s.nextSibling
@@ -2158,7 +2157,7 @@
                               ? s.firstChild
                               : 2 == e
                                 ? s
-                                : null));
+                                : null);
                       const u = n.contains(f.documentElement, o),
                         a = /^(text|application)\/(javascript|ecmascript)$/,
                         l = oe(),
@@ -2167,7 +2166,7 @@
                       i.forEach(function (t) {
                         if (c) t = t.cloneNode(!0);
                         else if (!o) return n(t).remove();
-                        (J(d) &&
+                        J(d) &&
                           "SCRIPT" === t.tagName &&
                           t.setAttribute("nonce", d),
                           J(p) &&
@@ -2181,14 +2180,14 @@
                                 (t.type && !a.test(t.type.toLowerCase())) ||
                                 t.src ||
                                 X(f, t.innerHTML, t.nonce);
-                            }));
+                            });
                       });
                     });
               }),
                 (n.fn[r ? t + "To" : "insert" + (e ? "Before" : "After")] =
                   function (e) {
-                    return (n(e)[t](this), this);
-                  }));
+                    return n(e)[t](this), this;
+                  });
             }),
             (I.Z.prototype = B.prototype = n.fn),
             (I.uniq = i),
@@ -2248,7 +2247,7 @@
               n.split(/\s/).forEach(function (n) {
                 if ("ready" == n) return e(document).ready(r);
                 var c = p(n);
-                ((c.fn = r),
+                (c.fn = r),
                   (c.sel = i),
                   c.e in f &&
                     (r = function (t) {
@@ -2256,9 +2255,9 @@
                       if (!n || (n !== this && !e.contains(this, n)))
                         return c.fn.apply(this, arguments);
                     }),
-                  (c.del = s));
+                  (c.del = s);
                 var a = s || r;
-                ((c.proxy = function (e) {
+                (c.proxy = function (e) {
                   if (!(e = S(e)).isImmediatePropagationStopped()) {
                     e.data = o;
                     var n = a.apply(
@@ -2266,28 +2265,27 @@
                       null == e._args ? [e] : [e].concat(e._args),
                     );
                     return (
-                      !1 === n && (e.preventDefault(), e.stopPropagation()),
-                      n
+                      !1 === n && (e.preventDefault(), e.stopPropagation()), n
                     );
                   }
                 }),
                   (c.i = d.length),
                   d.push(c),
                   "addEventListener" in t &&
-                    t.addEventListener(m(c.e), c.proxy, h(c, u)));
+                    t.addEventListener(m(c.e), c.proxy, h(c, u));
               });
             }
             function v(t, e, n, r, o) {
               var i = l(t);
               (e || "").split(/\s/).forEach(function (e) {
                 d(t, e, n, r).forEach(function (e) {
-                  (delete c[i][e.i],
+                  delete c[i][e.i],
                     "removeEventListener" in t &&
-                      t.removeEventListener(m(e.e), e.proxy, h(e, o)));
+                      t.removeEventListener(m(e.e), e.proxy, h(e, o));
                 });
               });
             }
-            ((s.click = s.mousedown = s.mouseup = s.mousemove = "MouseEvents"),
+            (s.click = s.mousedown = s.mouseup = s.mousemove = "MouseEvents"),
               (e.event = { add: g, remove: v }),
               (e.proxy = function (t, n) {
                 var c = 2 in arguments && r.call(arguments, 2);
@@ -2298,7 +2296,7 @@
                       c ? c.concat(r.call(arguments)) : arguments,
                     );
                   };
-                  return ((s._zid = l(t)), s);
+                  return (s._zid = l(t)), s;
                 }
                 if (i(n))
                   return c
@@ -2314,7 +2312,7 @@
               }),
               (e.fn.one = function (t, e, n, r) {
                 return this.on(t, e, n, r, 1);
-              }));
+              });
             var y = function () {
                 return !0;
               },
@@ -2329,14 +2327,14 @@
               };
             function S(t, n) {
               if (n || !t.isDefaultPrevented) {
-                (n || (n = t),
+                n || (n = t),
                   e.each(w, function (e, r) {
                     var o = n[e];
-                    ((t[e] = function () {
-                      return ((this[r] = y), o && o.apply(n, arguments));
+                    (t[e] = function () {
+                      return (this[r] = y), o && o.apply(n, arguments);
                     }),
-                      (t[r] = b));
-                  }));
+                      (t[r] = b);
+                  });
                 try {
                   t.timeStamp || (t.timeStamp = new Date().getTime());
                 } catch (t) {}
@@ -2355,17 +2353,17 @@
               for (e in t) x.test(e) || void 0 === t[e] || (n[e] = t[e]);
               return S(n, t);
             }
-            ((e.fn.delegate = function (t, e, n) {
+            (e.fn.delegate = function (t, e, n) {
               return this.on(e, t, n);
             }),
               (e.fn.undelegate = function (t, e, n) {
                 return this.off(e, t, n);
               }),
               (e.fn.live = function (t, n) {
-                return (e(document.body).delegate(this.selector, t, n), this);
+                return e(document.body).delegate(this.selector, t, n), this;
               }),
               (e.fn.die = function (t, n) {
-                return (e(document.body).undelegate(this.selector, t, n), this);
+                return e(document.body).undelegate(this.selector, t, n), this;
               }),
               (e.fn.on = function (t, n, c, s, u) {
                 var a,
@@ -2383,9 +2381,9 @@
                     (void 0 !== s && !1 !== c) || ((s = c), (c = void 0)),
                     !1 === s && (s = b),
                     l.each(function (o, i) {
-                      (u &&
+                      u &&
                         (a = function (t) {
-                          return (v(i, t.type, s), s.apply(this, arguments));
+                          return v(i, t.type, s), s.apply(this, arguments);
                         }),
                         n &&
                           (f = function (t) {
@@ -2403,7 +2401,7 @@
                                 )
                               );
                           }),
-                        g(i, t, s, c, n, f || a));
+                        g(i, t, s, c, n, f || a);
                     }));
               }),
               (e.fn.off = function (t, n, r) {
@@ -2436,14 +2434,14 @@
                 var r, o;
                 return (
                   this.each(function (c, s) {
-                    (((r = E(i(t) ? e.Event(t) : t))._args = n),
+                    ((r = E(i(t) ? e.Event(t) : t))._args = n),
                       (r.target = s),
                       e.each(d(s, t.type || t), function (t, e) {
                         if (
                           ((o = e.proxy(r)), r.isImmediatePropagationStopped())
                         )
                           return !1;
-                      }));
+                      });
                   }),
                   o
                 );
@@ -2462,8 +2460,8 @@
                 if (e)
                   for (var o in e)
                     "bubbles" == o ? (r = !!e[o]) : (n[o] = e[o]);
-                return (n.initEvent(t, r, !0), S(n));
-              }));
+                return n.initEvent(t, r, !0), S(n);
+              });
           })(e),
           (function () {
             try {
@@ -2489,11 +2487,11 @@
                   s,
                   u = i;
                 try {
-                  (u
+                  u
                     ? r.test(u) &&
                       ((s = t(e).addClass(o)), (u = "." + o + " " + u))
                     : (u = "*"),
-                    (c = n(e, u)));
+                    (c = n(e, u));
                 } catch (t) {
                   throw t;
                 } finally {
@@ -2508,9 +2506,9 @@
                 var c = n[o].trim();
                 if (0 === c.indexOf(">")) {
                   var s = ":host ";
-                  ((r instanceof Element || r instanceof HTMLDocument) &&
+                  (r instanceof Element || r instanceof HTMLDocument) &&
                     (s = ":scope "),
-                    (c = s + c));
+                    (c = s + c);
                 }
                 var u = i(r, c);
                 if (0 === u.length || !u[0] || !u[0].shadowRoot) return u;
@@ -2538,7 +2536,7 @@
           e.splice(0, t);
         }).observe(t, { characterData: !0 }),
         (n) => {
-          (e.push(n), (t.textContent = t.textContent.length > 0 ? "" : "a"));
+          e.push(n), (t.textContent = t.textContent.length > 0 ? "" : "a");
         }
       );
     }
@@ -2612,10 +2610,10 @@
         : -1 !== Wt.navigator.userAgent.indexOf("MSIE 10") &&
           on._setImmediateFn((t) => {
             let e = cn("<script>");
-            (e.on("readystatechange", () => {
-              (e.on("readystatechange", null), e.remove(), (e = null), t());
+            e.on("readystatechange", () => {
+              e.on("readystatechange", null), e.remove(), (e = null), t();
             }),
-              cn(Kt.documentElement).append(e));
+              cn(Kt.documentElement).append(e);
           }));
     const wn = Dt();
     function Sn(t) {
@@ -2636,9 +2634,9 @@
           { search: e } = t;
         return ve(e).mboxSession;
       })();
-      if (J(t)) return (Sn(t), Ne("session"));
+      if (J(t)) return Sn(t), Ne("session");
       const e = Ne("session");
-      return ($(e) ? Sn(wn) : Sn(e), Ne("session"));
+      return $(e) ? Sn(wn) : Sn(e), Ne("session");
     }
     function Tn() {
       return Ne("PC");
@@ -2694,7 +2692,7 @@
             const n = t(),
               r = e(),
               o = {};
-            return ((o.sessionId = n), J(r) ? ((o.deviceId = r), o) : o);
+            return (o.sessionId = n), J(r) ? ((o.deviceId = r), o) : o;
           })(En, Tn),
         };
       return (
@@ -2713,7 +2711,7 @@
     }
     function _n(t, e) {
       const n = Nn("at-request-succeeded", t);
-      ((n.redirect = e), In(Wt, Kt, "at-request-succeeded", n));
+      (n.redirect = e), In(Wt, Kt, "at-request-succeeded", n);
     }
     function An(t) {
       const e = Nn("at-request-failed", t);
@@ -2742,18 +2740,18 @@
     var Ln = on,
       jn = function (t) {
         var e = document.createElement("script");
-        ((e.src = t), (e.async = !0));
+        (e.src = t), (e.async = !0);
         var n = (function (t, e) {
           return new Ln(function (n, r) {
-            ((e.onload = function () {
+            (e.onload = function () {
               n(e);
             }),
               (e.onerror = function () {
                 r(new Error("Failed to load script " + t));
-              }));
+              });
           });
         })(t, e);
-        return (document.getElementsByTagName("head")[0].appendChild(e), n);
+        return document.getElementsByTagName("head")[0].appendChild(e), n;
       };
     function Vn(t) {
       return M(t) && 1 === t.nodeType && !Q(t);
@@ -2788,19 +2786,19 @@
           c = z(t),
           s = c.indexOf(":eq(");
         for (; -1 !== s; )
-          ((n = z(c.substring(0, s))),
+          (n = z(c.substring(0, s))),
             (r = z(c.substring(s))),
             (i = r.indexOf(")")),
             (o = z(r.substring(Hn, i))),
             (c = z(r.substring(i + 1))),
             (s = c.indexOf(":eq(")),
-            n && o && e.push({ sel: n, eq: Number(o) }));
-        return (c && e.push({ sel: c }), e);
+            n && o && e.push({ sel: n, eq: Number(o) });
+        return c && e.push({ sel: c }), e;
       })(e);
       return ct(
         (t, e) => {
           const { sel: n, eq: r } = e;
-          return ((t = t.find(n)), Z(r) && (t = t.eq(r)), t);
+          return (t = t.find(n)), Z(r) && (t = t.eq(r)), t;
         },
         cn(Kt),
         n,
@@ -2821,9 +2819,9 @@
     const Gn = "clickHandlerForExperienceEditor";
     function Kn() {
       if (!Re()) return;
-      ((Wt._AT = Wt._AT || {}), (Wt._AT.querySelectorAll = Fn));
+      (Wt._AT = Wt._AT || {}), (Wt._AT.querySelectorAll = Fn);
       const t = oe().authoringScriptUrl;
-      (Be("Loading target-vec.js"),
+      Be("Loading target-vec.js"),
         jn(t)
           .then(() => {
             Kt.addEventListener(
@@ -2834,7 +2832,7 @@
               !0,
             );
           })
-          ["catch"](() => Ue("Unable to load target-vec.js")));
+          ["catch"](() => Ue("Unable to load target-vec.js"));
     }
     const Wn = (t) => !m(t);
     function Xn(t) {
@@ -2853,7 +2851,7 @@
       const r = {};
       r.activityIndex = n;
       const o = Xn(e[1]);
-      return (m(o) || (r.experienceIndex = o), r);
+      return m(o) || (r.experienceIndex = o), r;
     }
     function tr(t) {
       return O(Wn, nt(Qn, t));
@@ -2871,7 +2869,7 @@
       const c = e.at_preview_evaluate_as_false_audience_ids;
       J(c) && (r.evaluateAsFalseAudienceIds = Yn(c));
       const s = e.at_preview_index;
-      return (U(s) || (r.previewIndexes = g((u = s)) ? tr(u) : tr([u])), r);
+      return U(s) || (r.previewIndexes = g((u = s)) ? tr(u) : tr([u])), r;
       var u;
     }
     function nr(t) {
@@ -3005,7 +3003,7 @@
         : [];
     }
     function yr(t) {
-      return (Be("Visitor API requests error", t), {});
+      return Be("Visitor API requests error", t), {};
     }
     function br(t, e, n) {
       if (m(t)) return dn({});
@@ -3032,7 +3030,7 @@
             const n = ["MCMID", "MCAAMB", "MCAAMLH"];
             e && n.push("MCOPTOUT");
             const r = {};
-            return (t.getVisitorValues((t) => h(r, t), n), r);
+            return t.getVisitorValues((t) => h(r, t), n), r;
           })(t, e);
     }
     function wr() {
@@ -3081,9 +3079,9 @@
     }
     function Nr(t, e, n, r, o, i) {
       const c = {};
-      ((c[t] = e), (c[n] = r), (c[o] = i));
+      (c[t] = e), (c[n] = r), (c[o] = i);
       const s = {};
-      return ((s.dataProvider = c), s);
+      return (s.dataProvider = c), s;
     }
     function Or(t) {
       const e = t.name,
@@ -3102,16 +3100,16 @@
       )
         .then((t) => {
           const r = Nr("name", e, "version", n, "params", t);
-          return (Be("Data provider", Jt, r), Je(r), t);
+          return Be("Data provider", Jt, r), Je(r), t;
         })
         ["catch"]((t) => {
           const r = Nr("name", e, "version", n, zt, t);
-          return (Be("Data provider", zt, r), Je(r), {});
+          return Be("Data provider", zt, r), Je(r), {};
         });
     }
     function _r(t) {
       const e = ct((t, e) => h(t, e), {}, t);
-      return (Cr("dataProviders", e), e);
+      return Cr("dataProviders", e), e;
     }
     function Ar(t) {
       if (
@@ -3192,7 +3190,7 @@
             : x(e)
               ? (function (t, e) {
                   const n = {};
-                  return (m(e) ? Dr(t, [], n, S) : Dr(t, [], n, e), n);
+                  return m(e) ? Dr(t, [], n, S) : Dr(t, [], n, e), n;
                 })(e)
               : {};
     }
@@ -3239,7 +3237,7 @@
       t = 1;
       const { screen: e } = Wt,
         { systemXDPI: n, logicalXDPI: r } = e;
-      return (!m(n) && !m(r) && n > r && (t = n / r), t);
+      return !m(n) && !m(r) && n > r && (t = n / r), t;
     }
     function Fr(t) {
       if (!g(t) || 0 === t.length) return "";
@@ -3282,7 +3280,7 @@
       }
     }
     function Jr(t) {
-      return (Cr("clientHints", t), t);
+      return Cr("clientHints", t), t;
     }
     function Zr(t) {
       return dn(t).then(Jr);
@@ -3349,7 +3347,7 @@
       return ct(
         (t, n, r) => {
           const o = e ? Yr(r) : r;
-          return ((e && !Wr(r)) || $(o) || (t[o] = m(n) ? "" : n), t);
+          return (e && !Wr(r)) || $(o) || (t[o] = m(n) ? "" : n), t;
         },
         {},
         t,
@@ -3359,7 +3357,7 @@
       let { url: e, headers: n, body: r, timeout: o, async: i } = t;
       return ln((t, c) => {
         let s = new window.XMLHttpRequest();
-        ((s = (function (t, e, n) {
+        (s = (function (t, e, n) {
           return (
             (t.onload = () => {
               const r = 1223 === t.status ? 204 : t.status;
@@ -3368,9 +3366,9 @@
               let o;
               try {
                 const e = It();
-                ((o = JSON.parse(t.responseText)),
+                (o = JSON.parse(t.responseText)),
                   (o.parsingTime = It() - e),
-                  (o.responseSize = new Blob([t.responseText]).size));
+                  (o.responseSize = new Blob([t.responseText]).size);
               } catch (t) {
                 return void n(new Error("Malformed response JSON"));
               }
@@ -3415,7 +3413,7 @@
                 t
               );
             })(s, o, c)),
-          s.send(JSON.stringify(r)));
+          s.send(JSON.stringify(r));
       }).then((t) => {
         const { response: e } = t,
           { status: n, message: r } = e;
@@ -3561,9 +3559,9 @@
     }
     function vo(t, e, n, r, o) {
       const i = {};
-      (J(e) && (i.tntId = e),
+      J(e) && (i.tntId = e),
         J(n) && (i.thirdPartyId = n),
-        J(t.thirdPartyId) && (i.thirdPartyId = t.thirdPartyId));
+        J(t.thirdPartyId) && (i.thirdPartyId = t.thirdPartyId);
       const c = r.MCMID;
       return (
         J(c) && (i.marketingCloudVisitorId = c),
@@ -3588,7 +3586,7 @@
             o = parseInt(r, 10);
           isNaN(o) || (n.locationHint = o);
           const i = e.MCAAMB;
-          return (J(i) && (n.blob = i), n);
+          return J(i) && (n.blob = i), n;
         })(t.audienceManager, e);
       return (
         U(r) || (n.audienceManager = r),
@@ -3637,7 +3635,7 @@
         const e = nt(z, at(",", t.productPurchasedId));
         return O(J, e);
       })(t);
-      return (U(i) || (e.purchasedProductIds = i), e);
+      return U(i) || (e.purchasedProductIds = i), e;
     }
     function So(t, e) {
       const n = {},
@@ -3655,7 +3653,7 @@
             const r = (function (t) {
               return t.categoryId;
             })(t);
-            return (m(r) || (e.categoryId = r), e);
+            return m(r) || (e.categoryId = r), e;
           })(e),
           t.product || {},
         );
@@ -3676,10 +3674,7 @@
         u = h({}, c === o ? e : n, Vr(c)),
         a = So(t, u);
       return (
-        m(i) || (a.index = i),
-        J(c) && (a.name = c),
-        U(s) || (a.address = s),
-        a
+        m(i) || (a.index = i), J(c) && (a.name = c), U(s) || (a.address = s), a
       );
     }
     function To(t, e, n) {
@@ -3698,7 +3693,7 @@
               (function (t, e) {
                 const { name: n, address: r } = t,
                   o = So(t, e);
-                return (J(n) && (o.name = n), U(r) || (o.address = r), o);
+                return J(n) && (o.name = n), U(r) || (o.address = r), o;
               })(t, e),
             c,
           )),
@@ -3744,14 +3739,14 @@
           if (!m(t) && J(t.token)) return t;
           const n = {},
             r = e.at_property;
-          return (J(r) && (n.token = r), n);
+          return J(r) && (n.token = r), n;
         })(t.property, r),
         a = yo(t.experienceCloud || {}, e),
         f = (function (t) {
           if (!m(t) && J(t.authorizationToken)) return t;
           const e = {},
             n = Mr();
-          return (J(n) && (e.authorizationToken = n), e);
+          return J(n) && (e.authorizationToken = n), e;
         })(t.trace),
         l = bo(t.preview),
         d = xo(t.qaMode),
@@ -3825,9 +3820,7 @@
         Je({ request: t }),
         io(t, e, dt).then(
           (e) => (
-            Be("response", e),
-            Je({ response: e }),
-            { request: t, response: e }
+            Be("response", e), Je({ response: e }), { request: t, response: e }
           ),
         )
       );
@@ -3898,7 +3891,7 @@
           { tntId: n } = t;
         kn(n);
       }
-      return (kn(null), t);
+      return kn(null), t;
     }
     function ii() {
       let t =
@@ -3911,7 +3904,7 @@
         { execute: n = {}, prefetch: r = {}, notifications: o = {} } = e,
         { pageLoad: i = {}, mboxes: c = [] } = n,
         { mboxes: s = [], views: u = [] } = r;
-      return (ii(i), q(ii, c), q(ii, s), q(ii, u), q(ii, o), t);
+      return ii(i), q(ii, c), q(ii, s), q(ii, u), q(ii, o), t;
     }
     function si(t) {
       const e = t.queryKey,
@@ -3919,7 +3912,7 @@
       if (!P(n)) return e;
       if ($(n)) return e;
       const r = Math.round(rt() / 1e3);
-      return ((e.adobe_mc_sdid = n.replace(/\|TS=\d+/, "|TS=" + r)), e);
+      return (e.adobe_mc_sdid = n.replace(/\|TS=\d+/, "|TS=" + r)), e;
     }
     function ui(t) {
       return t.queryKey;
@@ -3973,7 +3966,7 @@
         a = n.async;
       return ln((e, n) => {
         let f = new t.XMLHttpRequest();
-        ((f = (function (t, e, n) {
+        (f = (function (t, e, n) {
           return (
             (t.onload = () => {
               const r = 1223 === t.status ? 204 : t.status;
@@ -3996,7 +3989,7 @@
           })(f, n)),
           f.open(r, o, a),
           (f = (function (t, e) {
-            return (!0 === e && (t.withCredentials = e), t);
+            return !0 === e && (t.withCredentials = e), t;
           })(f, s)),
           (f = (function (t, e) {
             return (
@@ -4016,7 +4009,7 @@
                 t
               );
             })(f, u, n)),
-          f.send(c));
+          f.send(c);
       });
     }
     function pi(t) {
@@ -4043,7 +4036,7 @@
       const n = t.response;
       if ($(n)) return null;
       const r = { type: "html" };
-      return ((r.content = n), r);
+      return (r.content = n), r;
     }
     const gi = /CLKTRK#(\S+)/,
       vi = /CLKTRK#(\S+)\s/;
@@ -4208,7 +4201,7 @@
       if (U(f)) return l;
       const d = f[0],
         p = d.content;
-      return ($(p) || (l.url = p), l);
+      return $(p) || (l.url = p), l;
     }
     function Ti() {
       let t =
@@ -4230,10 +4223,10 @@
       return _([u, a, f, l, d]);
     }
     function ki(t, e) {
-      ((t.parameters = e.parameters),
+      (t.parameters = e.parameters),
         (t.profileParameters = e.profileParameters),
         (t.order = e.order),
-        (t.product = e.product));
+        (t.product = e.product);
     }
     function Ii(t, e) {
       const n = e[0],
@@ -4249,9 +4242,9 @@
           return dn(
             (function (t) {
               const e = t.content;
-              if ($(e)) return (Be("Action has no url", t), null);
+              if ($(e)) return Be("Action has no url", t), null;
               const n = h({}, t);
-              return ((n.content = fi(e, {})), n);
+              return (n.content = fi(e, {})), n;
             })(t),
           );
         case "dynamic":
@@ -4270,7 +4263,7 @@
               const n = O(bi, nt(wi, e));
               if (U(n)) return null;
               const r = h({}, t);
-              return ((r.content = n), r);
+              return (r.content = n), r;
             })(t),
           );
         default:
@@ -4318,10 +4311,7 @@
           var i;
         })(t, n, r),
         a = { name: r, state: o, analytics: i };
-      return (
-        m(u) || ki(a, u),
-        hn([Oi(c, Qo), _i(s, ti)]).then((t) => Ii(a, t))
-      );
+      return m(u) || ki(a, u), hn([Oi(c, Qo), _i(s, ti)]).then((t) => Ii(a, t));
     }
     function Mi(t, e) {
       const { name: n, state: r, analytics: o, options: i, metrics: c } = e,
@@ -4331,10 +4321,7 @@
           return U(n) ? null : n[0];
         })(t),
         u = { name: n.toLowerCase(), state: r, analytics: o };
-      return (
-        m(s) || ki(u, s),
-        hn([Oi(i, Qo), _i(c, ei)]).then((t) => Ii(u, t))
-      );
+      return m(s) || ki(u, s), hn([Oi(i, Qo), _i(c, ei)]).then((t) => Ii(u, t));
     }
     function Pi(t) {
       if (m(t) || $(t.id)) return dn(null);
@@ -4351,7 +4338,7 @@
         s = t[6],
         u = {},
         a = {};
-      (x(e) && (a.pageLoad = e), U(n) || (a.mboxes = n));
+      x(e) && (a.pageLoad = e), U(n) || (a.mboxes = n);
       const f = {};
       return (
         U(r) || (f.mboxes = r),
@@ -4443,7 +4430,7 @@
           return _([s, u, a, f]);
         })(t),
         n = {};
-      return (U(e) || (n.responseTokens = e), n);
+      return U(e) || (n.responseTokens = e), n;
     }
     function Vi(t) {
       const e = oe().globalMboxName,
@@ -4451,12 +4438,12 @@
         o = x(t.params) ? t.params : {},
         i = {},
         c = {};
-      (n === e ? (c.pageLoad = {}) : (c.mboxes = [{ index: 0, name: n }]),
-        (i.execute = c));
+      n === e ? (c.pageLoad = {}) : (c.mboxes = [{ index: 0, name: n }]),
+        (i.execute = c);
       const s = Co(n, i);
       if (!U(s)) {
         const t = {};
-        ((t.analytics = s), (i.experienceCloud = t));
+        (t.analytics = s), (i.experienceCloud = t);
       }
       return (
         On({ mbox: n }),
@@ -4478,11 +4465,7 @@
           )
           ["catch"]((t) =>
             (function (t, e) {
-              return (
-                Ue("request failed", e),
-                An({ mbox: t, error: e }),
-                pn(e)
-              );
+              return Ue("request failed", e), An({ mbox: t, error: e }), pn(e);
             })(n, t),
           )
       );
@@ -4495,12 +4478,12 @@
         ((r.impressionId =
           r.impressionId ||
           (function (t) {
-            return ((!t && so) || (so = Dt()), so);
+            return (!t && so) || (so = Dt()), so;
           })(i)),
         !U(c))
       ) {
         const t = r.experienceCloud || {};
-        ((t.analytics = c), (r.experienceCloud = t));
+        (t.analytics = c), (r.experienceCloud = t);
       }
       return (
         On({}),
@@ -4521,7 +4504,7 @@
           )
           ["catch"]((t) =>
             (function (t) {
-              return (Ue("request failed", t), An({ error: t }), pn(t));
+              return Ue("request failed", t), An({ error: t }), pn(t);
             })(t),
           )
       );
@@ -4554,10 +4537,10 @@
           const e = n(t);
           U(e) || (i.disconnect(), r(e));
         });
-        (ft(() => {
-          (i.disconnect(), o(Zi(t)));
+        ft(() => {
+          i.disconnect(), o(Zi(t));
         }, e),
-          i.observe(Kt, { childList: !0, subtree: !0 }));
+          i.observe(Kt, { childList: !0, subtree: !0 });
       });
     }
     function Ki() {
@@ -4565,24 +4548,24 @@
     }
     function Wi(t, e, n) {
       return ln((r, o) => {
-        (!(function e() {
+        !(function e() {
           const o = n(t);
           U(o) ? Wt.requestAnimationFrame(e) : r(o);
         })(),
           ft(() => {
             o(Zi(t));
-          }, e));
+          }, e);
       });
     }
     function Xi(t, e, n) {
       return ln((r, o) => {
-        (!(function e() {
+        !(function e() {
           const o = n(t);
           U(o) ? ft(e, 100) : r(o);
         })(),
           ft(() => {
             o(Zi(t));
-          }, e));
+          }, e);
       });
     }
     function Yi(t) {
@@ -4607,24 +4590,24 @@
       return J(Fi("data-at-src", t));
     }
     function ec(t) {
-      return (q((t) => Ji(Vt, "data-at-src", t), j(Zn("img", t))), t);
+      return q((t) => Ji(Vt, "data-at-src", t), j(Zn("img", t))), t;
     }
     function nc(t) {
-      return (q((t) => Ji("data-at-src", Vt, t), j(Zn("img", t))), t);
+      return q((t) => Ji("data-at-src", Vt, t), j(Zn("img", t))), t;
     }
     function rc(t) {
-      return (Be("Loading image", t), Fi(Vt, zi(Vt, t, cn("<img/>"))));
+      return Be("Loading image", t), Fi(Vt, zi(Vt, t, cn("<img/>")));
     }
     function oc(t) {
       const e = O(tc, j(Zn("img", t)));
-      return (U(e) || q(rc, nt(Qi, e)), t);
+      return U(e) || q(rc, nt(Qi, e)), t;
     }
     function ic(t) {
       const e = Fi(Vt, t);
       return J(e) ? e : null;
     }
     function cc(t, e) {
-      return (Ue("Unexpected error", e), Je({ action: t, error: e }), t);
+      return Ue("Unexpected error", e), Je({ action: t, error: e }), t;
     }
     function sc(t, e) {
       const n = Fn(e[jt]),
@@ -4649,9 +4632,7 @@
                   (t, e) =>
                     t.then(
                       () => (
-                        Be("Script load", e),
-                        Je({ remoteScript: e }),
-                        jn(e)
+                        Be("Script load", e), Je({ remoteScript: e }), jn(e)
                       ),
                     ),
                   dn(),
@@ -4690,7 +4671,7 @@
       return t.indexOf("px") === t.length - 2 ? t : t + "px";
     }
     function fc(t, e) {
-      return ((n = sr(e)), Fn(t).html(n));
+      return (n = sr(e)), Fn(t).html(n);
       var n;
     }
     function lc(t) {
@@ -4709,12 +4690,12 @@
       return cr(sr(e), t);
     }
     function pc(t, e) {
-      return ((n = sr(e)), Fn(t).prepend(n));
+      return (n = sr(e)), Fn(t).prepend(n);
       var n;
     }
     function hc(t, e) {
       const n = Jn(t);
-      return (rr(ir(sr(e), t)), n);
+      return rr(ir(sr(e), t)), n;
     }
     function mc(t, e) {
       return Fn(ir(sr(e), t)).prev();
@@ -4748,10 +4729,7 @@
         r = Number(n.from),
         o = Number(n.to);
       if (isNaN(r) && isNaN(o))
-        return (
-          Be('Rearrange has incorrect "from" and "to" indexes', t),
-          pn(t)
-        );
+        return Be('Rearrange has incorrect "from" and "to" indexes', t), pn(t);
       const i = j(Fn(e).children());
       const c = i[r],
         s = i[o];
@@ -4767,33 +4745,33 @@
       switch (e[Rt]) {
         case "setHtml":
           return (function (t) {
-            return (Be("Rendering action", t), sc(fc, t));
+            return Be("Rendering action", t), sc(fc, t);
           })(e);
         case "setText":
           return lc(e);
         case "appendHtml":
           return (function (t) {
-            return (Be("Rendering action", t), sc(dc, t));
+            return Be("Rendering action", t), sc(dc, t);
           })(e);
         case "prependHtml":
           return (function (t) {
-            return (Be("Rendering action", t), sc(pc, t));
+            return Be("Rendering action", t), sc(pc, t);
           })(e);
         case "replaceHtml":
           return (function (t) {
-            return (Be("Rendering action", t), sc(hc, t));
+            return Be("Rendering action", t), sc(hc, t);
           })(e);
         case "insertBefore":
           return (function (t) {
-            return (Be("Rendering action", t), sc(mc, t));
+            return Be("Rendering action", t), sc(mc, t);
           })(e);
         case "insertAfter":
           return (function (t) {
-            return (Be("Rendering action", t), sc(gc, t));
+            return Be("Rendering action", t), sc(gc, t);
           })(e);
         case "customCode":
           return (function (t) {
-            return (Be("Rendering action", t), sc(vc, t));
+            return Be("Rendering action", t), sc(vc, t);
           })(e);
         case "setAttribute":
           return (function (t) {
@@ -4849,7 +4827,7 @@
         case "remove":
           return (function (t) {
             const e = Fn(t[jt]);
-            return (Be("Rendering action", t), Je({ action: t }), rr(e), dn(t));
+            return Be("Rendering action", t), Je({ action: t }), rr(e), dn(t);
           })(e);
         case "rearrange":
           return bc(e);
@@ -4898,9 +4876,9 @@
               ),
             )
             ["catch"]((e) => {
-              (Ue("Unexpected error", e), Je({ action: t, error: e }), Ec(t));
+              Ue("Unexpected error", e), Je({ action: t, error: e }), Ec(t);
               const n = h({}, t);
-              return ((n[zt] = !0), n);
+              return (n[zt] = !0), n;
             })
         : (Ec(t), t);
     }
@@ -4919,7 +4897,7 @@
           .then(() => t)
           ["catch"](() => {
             const e = h({}, t);
-            return ((e[zt] = !0), e);
+            return (e[zt] = !0), e;
           });
       })(t).then(Tc);
     }
@@ -4929,7 +4907,7 @@
     function Nc(t) {
       const e = t.name,
         n = kr("views") || {};
-      ((n[e] = t), Cr("views", n));
+      (n[e] = t), Cr("views", n);
     }
     function Oc(t) {
       let e =
@@ -4946,7 +4924,7 @@
         n = { context: { beacon: !0 } };
       if (!U(e)) {
         const t = {};
-        ((t.analytics = e), (n.experienceCloud = t));
+        (t.analytics = e), (n.experienceCloud = t);
       }
       return n;
     }
@@ -4954,7 +4932,7 @@
       const r = (function (t, e) {
         return Io(t, e, fo());
       })(_c(t), e);
-      return ((r.notifications = n), r);
+      return (r.notifications = n), r;
     }
     function qc(t, e, n) {
       const r = Dt(),
@@ -4969,7 +4947,7 @@
           order: s,
           product: u,
         };
-      return (U(n) || (a.tokens = n), a);
+      return U(n) || (a.tokens = n), a;
     }
     function Mc(t) {
       const e = oo(oe());
@@ -4981,11 +4959,11 @@
           : (function (t, e, n) {
               const r = { "Content-Type": ["text/plain"] },
                 o = { method: "POST" };
-              ((o.url = e),
+              (o.url = e),
                 (o.data = n),
                 (o.credentials = !0),
                 (o.async = !1),
-                (o.headers = r));
+                (o.headers = r);
               try {
                 t(o);
               } catch (t) {
@@ -5002,18 +4980,18 @@
       const r = Vr(oe().globalMboxName),
         o = qc(So({}, r), e, [n]),
         i = Ac(Dt(), r, [o]);
-      (Be("Event handler notification", t, o),
+      Be("Event handler notification", t, o),
         Je({ source: t, event: e, request: i }),
-        Mc(i));
+        Mc(i);
     }
     function Dc(t, e, n) {
       const r = Vr(t),
         o = qc(So({}, r), e, [n]);
       o.mbox = { name: t };
       const i = Ac(Dt(), r, [o]);
-      (Be("Mbox event handler notification", t, o),
+      Be("Mbox event handler notification", t, o),
         Je({ mbox: t, event: e, request: i }),
-        Mc(i));
+        Mc(i);
     }
     function Rc(t) {
       const e = oe().globalMboxName,
@@ -5029,7 +5007,7 @@
               (function (t, e, n) {
                 const { name: r, state: o } = t,
                   i = qc(t, e, n);
-                return ((i.mbox = { name: r, state: o }), i);
+                return (i.mbox = { name: r, state: o }), i;
               })(e, r, i),
             );
         }, t),
@@ -5037,32 +5015,32 @@
       )
         return;
       const o = Ac(e, {}, n);
-      (Be("Mboxes rendered notification", n),
+      Be("Mboxes rendered notification", n),
         Je({ source: "prefetchMboxes", event: "rendered", request: o }),
-        Mc(o));
+        Mc(o);
     }
     function Lc(t, e, n) {
       const r = Vr(oe().globalMboxName),
         o = qc(So({}, r), e, [n]);
       o.view = { name: t };
       const i = Ac(Dt(), r, [o]);
-      (Be("View event handler notification", t, o),
+      Be("View event handler notification", t, o),
         Je({ view: t, event: e, request: i }),
-        Mc(i));
+        Mc(i);
     }
     function jc(t) {
       const { viewName: e, impressionId: n } = t,
         r = Vr(oe().globalMboxName),
         o = qc(So({}, r), Gt, []);
-      ((o.view = { name: e }),
+      (o.view = { name: e }),
         Be("View triggered notification", e),
         (function (t, e, n) {
           return No(_c(t), e).then((t) => ((t.notifications = n), t));
         })(e, r, [o]).then((t) => {
-          ((t.impressionId = n),
+          (t.impressionId = n),
             Je({ view: e, event: "triggered", request: t }),
-            Mc(t));
-        }));
+            Mc(t);
+        });
     }
     function Vc(t) {
       if (m(t)) return;
@@ -5075,13 +5053,13 @@
         (function (t, e, n) {
           const { name: r, state: o } = t,
             i = qc(t, e, n);
-          return ((i.view = { name: r, state: o }), i);
+          return (i.view = { name: r, state: o }), i;
         })(c, Gt, r),
       ]);
-      ((s.impressionId = i),
+      (s.impressionId = i),
         Be("View rendered notification", o, r),
         Je({ view: o, event: "rendered", request: s }),
-        Mc(s));
+        Mc(s);
     }
     const Hc = {},
       Uc = _o("metrics"),
@@ -5092,20 +5070,20 @@
       const r = T(Hc);
       U(r) ||
         q((t) => {
-          (q((r) => {
+          q((r) => {
             const o = Hc[t][r];
             !(function (t, e, n) {
               Fn(n).off(t, e);
             })(e, o, n);
           }, T(Hc[t])),
-            delete Hc[t]);
+            delete Hc[t];
         }, r);
     }
     function $c(t, e, n, r) {
       const { type: o, selector: i, eventToken: c } = n,
         s = D(o + ":" + i + ":" + c),
         u = () => r(t, o, c);
-      (!(function (t, e) {
+      !(function (t, e) {
         "click" === t && Ui("at-element-click-tracking", e);
       })(o, i),
         e
@@ -5114,10 +5092,10 @@
             })(t, s) ||
             (zc(t, o, i),
             (function (t, e, n) {
-              ((Hc[t] = Hc[t] || {}), (Hc[t][e] = n));
+              (Hc[t] = Hc[t] || {}), (Hc[t][e] = n);
             })(t, s, u),
             Ic(o, u, i))
-          : Ic(o, u, i));
+          : Ic(o, u, i);
     }
     function Jc(t, e, n, r) {
       return (function (t) {
@@ -5163,12 +5141,12 @@
     function ns(t) {
       const e = nt(Qc, t);
       var n;
-      ((n = Vo(e)), ar(oe(), n));
+      (n = Vo(e)), ar(oe(), n);
     }
     function rs(t) {
       const e = nt(Qc, t);
       var n;
-      ((n = jo(e)), fr(oe(), n));
+      (n = jo(e)), fr(oe(), n);
     }
     function os(t) {
       const e = O(Ro, Ho(t));
@@ -5199,11 +5177,7 @@
       const r = { status: Jt, [t]: e },
         o = nt(Go, O(Do, n)),
         i = {};
-      return (
-        U(o) || ((r.status = zt), (i.errors = o)),
-        U(i) || (r.data = i),
-        r
-      );
+      return U(o) || ((r.status = zt), (i.errors = o)), U(i) || (r.data = i), r;
     }
     function fs(t, e, n) {
       return hn(us((t) => cs(t, !0), t))
@@ -5249,21 +5223,21 @@
       U(r) || hs(r);
     }
     function gs(t) {
-      (ns(os(t)), zn("#at-views") && rr("#at-views"));
+      ns(os(t)), zn("#at-views") && rr("#at-views");
     }
     var vs = { exports: {} };
     function ys() {}
-    ((ys.prototype = {
+    (ys.prototype = {
       on: function (t, e, n) {
         var r = this.e || (this.e = {});
-        return ((r[t] || (r[t] = [])).push({ fn: e, ctx: n }), this);
+        return (r[t] || (r[t] = [])).push({ fn: e, ctx: n }), this;
       },
       once: function (t, e, n) {
         var r = this;
         function o() {
-          (r.off(t, o), e.apply(n, arguments));
+          r.off(t, o), e.apply(n, arguments);
         }
-        return ((o._ = e), this.on(t, o, n));
+        return (o._ = e), this.on(t, o, n);
       },
       emit: function (t) {
         for (
@@ -5284,11 +5258,11 @@
         if (r && e)
           for (var i = 0, c = r.length; i < c; i++)
             r[i].fn !== e && r[i].fn._ !== e && o.push(r[i]);
-        return (o.length ? (n[t] = o) : delete n[t], this);
+        return o.length ? (n[t] = o) : delete n[t], this;
       },
     }),
       (vs.exports = ys),
-      (vs.exports.TinyEmitter = ys));
+      (vs.exports.TinyEmitter = ys);
     const bs = new (0, vs.exports)();
     function xs(t, e) {
       !(function (t, e, n) {
@@ -5430,14 +5404,10 @@
                   (e.cssSelector = t.cssSelector),
                   t.attribute === Vt)
                 )
-                  return (
-                    (e.type = "setImageSource"),
-                    (e.content = t.value),
-                    e
-                  );
+                  return (e.type = "setImageSource"), (e.content = t.value), e;
                 e.type = "setAttribute";
                 const n = {};
-                return ((n[t.attribute] = t.value), (e.content = n), e);
+                return (n[t.attribute] = t.value), (e.content = n), e;
               })(t),
             );
             break;
@@ -5463,9 +5433,7 @@
               (function (t) {
                 const e = { type: "remove" };
                 return (
-                  (e.selector = t.selector),
-                  (e.cssSelector = t.cssSelector),
-                  e
+                  (e.selector = t.selector), (e.cssSelector = t.cssSelector), e
                 );
               })(t),
             );
@@ -5474,7 +5442,7 @@
             o.push(
               (function (t) {
                 const e = {};
-                ((e.from = t.from), (e.to = t.to));
+                (e.from = t.from), (e.to = t.to);
                 const n = { type: "rearrange" };
                 return (
                   (n.selector = t.selector),
@@ -5502,7 +5470,7 @@
       !U(n) && (i.options = n);
       if ((!U(r) && (i.metrics = r), U(i))) return e;
       const c = {};
-      return ((c.pageLoad = i), (e.execute = c), e);
+      return (c.pageLoad = i), (e.execute = c), e;
     }
     function Ts(t, e, n) {
       return n
@@ -5533,48 +5501,48 @@
               return n;
             const c = {},
               s = [i];
-            return ((c.mboxes = s), (n.execute = c), n);
+            return (c.mboxes = s), (n.execute = c), n;
           })(t, e);
     }
     const Cs = (t) => !U(O(Do, t));
     function ks(t) {
       const { status: e, data: n } = t,
         r = { status: e, pageLoad: !0 };
-      return (m(n) || (r.data = n), r);
+      return m(n) || (r.data = n), r;
     }
     function Is(t) {
       const { status: e, mbox: n, data: r } = t,
         { name: o } = n,
         i = { status: e, mbox: o };
-      return (m(r) || (i.data = r), i);
+      return m(r) || (i.data = r), i;
     }
     function Ns(t) {
       const { status: e, view: n, data: r } = t,
         { name: o } = n,
         i = { status: e, view: o };
-      return (m(r) || (i.data = r), i);
+      return m(r) || (i.data = r), i;
     }
     function Os(t) {
       const { status: e, data: n } = t,
         r = { status: e, prefetchMetrics: !0 };
-      return (m(n) || (r.data = n), r);
+      return m(n) || (r.data = n), r;
     }
     function _s(t) {
       if (m(t)) return [null];
       const e = nt(ks, [t]);
-      return (Cs(e) && Ue("Page load rendering failed", t), e);
+      return Cs(e) && Ue("Page load rendering failed", t), e;
     }
     function As(t) {
       if (m(t)) return [null];
       const e = nt(Is, t);
-      return (Cs(e) && Ue("Mboxes rendering failed", t), e);
+      return Cs(e) && Ue("Mboxes rendering failed", t), e;
     }
     function qs(t) {
       let e =
         arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : Rc;
       if (m(t)) return [null];
       const n = nt(Is, t);
-      return (Cs(n) && Ue("Mboxes rendering failed", t), e(t), n);
+      return Cs(n) && Ue("Mboxes rendering failed", t), e(t), n;
     }
     function Ms(t) {
       let e =
@@ -5588,7 +5556,7 @@
     function Ps(t) {
       if (m(t)) return [null];
       const e = nt(Os, [t]);
-      return (Cs(e) && Ue("Prefetch rendering failed", t), e);
+      return Cs(e) && Ue("Prefetch rendering failed", t), e;
     }
     function Ds(t) {
       const e = _([_s(t[0]), As(t[1]), qs(t[2]), Ps(t[3])]),
@@ -5606,8 +5574,8 @@
         q((e) => {
           if ("html" !== e.type) return;
           const { content: n } = e;
-          ((e.type = "actions"),
-            (e.content = [{ type: "setHtml", selector: t, content: n }]));
+          (e.type = "actions"),
+            (e.content = [{ type: "setHtml", selector: t, content: n }]);
         }, n);
     }
     function js(t, e) {
@@ -5615,7 +5583,7 @@
       if (U(n)) return;
       const { name: r } = e;
       q((e) => {
-        ((e.name = r), (e.selector = e.selector || t));
+        (e.name = r), (e.selector = e.selector || t);
       }, n);
     }
     function Vs(t, e) {
@@ -5644,7 +5612,7 @@
       const e = [],
         { execute: n = {} } = t,
         { pageLoad: r = {}, mboxes: o = [] } = n;
-      (U(r)
+      U(r)
         ? e.push(dn(null))
         : e.push(
             (function (t) {
@@ -5657,7 +5625,7 @@
               (function (t) {
                 return hn(nt(ds, t));
               })(o),
-            ));
+            );
       const { prefetch: i = {} } = t,
         { mboxes: c = [], metrics: s = [] } = i;
       return (
@@ -5704,7 +5672,7 @@
       let e = arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
       const { selector: n, response: r } = t;
       if ($s(r))
-        return (Be(Ft), zs(n), dr(), Dn({}), xs("no-offers-event"), dn());
+        return Be(Ft), zs(n), dr(), Dn({}), xs("no-offers-event"), dn();
       const o = Vs(n, r),
         i = Ei(o);
       if (!U(i)) {
@@ -5731,24 +5699,24 @@
     }
     const Zs = "[page-init]";
     function Gs(t) {
-      (Ue(Zs, "View delivery error", t),
+      Ue(Zs, "View delivery error", t),
         xs("no-offers-event"),
         Je({ source: Zs, error: t }),
-        dr());
+        dr();
     }
     function Ks(t) {
       let e = arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
       const n = { selector: "head", response: t };
-      (Be(Zs, "response", t),
+      Be(Zs, "response", t),
         Je({ source: Zs, response: t }),
-        Js(n, e)["catch"](Gs));
+        Js(n, e)["catch"](Gs);
     }
     function Ws(t) {
       const e = (function (t) {
           return t.serverState;
         })(t),
         { request: n, response: r } = e;
-      (Be(Zs, "Using server state"), Je({ source: Zs, serverState: e }));
+      Be(Zs, "Using server state"), Je({ source: Zs, serverState: e });
       const o = (function (t, e) {
         const n = h({}, e),
           { execute: r, prefetch: o } = n,
@@ -5762,7 +5730,7 @@
           n
         );
       })(t, r);
-      (ms(o),
+      ms(o),
         (function (t) {
           const { prefetch: e = {} } = t,
             { views: n = [] } = e;
@@ -5774,11 +5742,10 @@
         })(n),
         Ri({ request: n, response: o })
           .then((t) => Ks(t, !0))
-          ["catch"](Gs));
+          ["catch"](Gs);
     }
     function Xs() {
-      if (!Pe() && !Re())
-        return (Ue(Zs, Ht), void Je({ source: Zs, error: Ht }));
+      if (!Pe() && !Re()) return Ue(Zs, Ht), void Je({ source: Zs, error: Ht });
       const t = oe();
       if (
         (function (t) {
@@ -5807,7 +5774,7 @@
         r.prefetch = t;
       }
       const o = t.timeout;
-      (Be(Zs, "request", r), Je({ source: Zs, request: r }));
+      Be(Zs, "request", r), Je({ source: Zs, request: r });
       const i = { request: r, timeout: o };
       yn() && !bn()
         ? xn()
@@ -5823,7 +5790,7 @@
     }
     function Qs(t) {
       const e = { valid: !1 };
-      return ((e[zt] = t), e);
+      return (e[zt] = t), e;
     }
     function tu(t) {
       return $(t)
@@ -6069,7 +6036,7 @@
         n = [],
         r = [],
         { options: o = [], metrics: i = [] } = t;
-      (q((t) => {
+      q((t) => {
         const { type: o } = t;
         switch (o) {
           case "html":
@@ -6086,9 +6053,9 @@
         }
       }, o),
         U(e) || r.push({ action: "setContent", content: e.join("") }),
-        U(n) || r.push({ action: "setJson", content: n }));
+        U(n) || r.push({ action: "setJson", content: n });
       const c = ru(i);
-      return (U(c) || r.push.apply(r, c), r);
+      return U(c) || r.push.apply(r, c), r;
     }
     const iu = "[getOffer()]";
     function cu(t, e) {
@@ -6097,7 +6064,7 @@
           { pageLoad: n = {} } = e,
           { mboxes: r = [] } = e,
           o = [];
-        return (o.push.apply(o, ou(n)), o.push.apply(o, _(nt(ou, r))), o);
+        return o.push.apply(o, ou(n)), o.push.apply(o, _(nt(ou, r))), o;
       })(e);
       t[Jt](n);
     }
@@ -6115,7 +6082,7 @@
         })(t),
         n = e[zt];
       if (!e[$t])
-        return (Ue(iu, n), void Je({ source: iu, options: t, error: n }));
+        return Ue(iu, n), void Je({ source: iu, options: t, error: n });
       if (!Pe() && !Re())
         return (
           ft(t[zt]("warning", Ht)),
@@ -6128,13 +6095,13 @@
             const n = e.status || "unknown";
             t[zt](n, e);
           })(t, e);
-      (Be(iu, t),
+      Be(iu, t),
         Je({ source: iu, options: t }),
         yn() && !bn()
           ? xn().then(() => {
               Vi(t).then(r)["catch"](o);
             })
-          : Vi(t).then(r)["catch"](o));
+          : Vi(t).then(r)["catch"](o);
     }
     const uu = "[getOffers()]";
     function au(t) {
@@ -6171,40 +6138,36 @@
         o = r[zt];
       if (!r[$t])
         return (
-          Ue(fu, t, o),
-          Je({ source: fu, options: t, error: o }),
-          void zs(e)
+          Ue(fu, t, o), Je({ source: fu, options: t, error: o }), void zs(e)
         );
       if (!Pe() && !Re())
         return (
-          Ue(fu, Ht),
-          Je({ source: fu, options: t, error: Ht }),
-          void zs(e)
+          Ue(fu, Ht), Je({ source: fu, options: t, error: Ht }), void zs(e)
         );
-      ((t.selector = e),
+      (t.selector = e),
         Be(fu, t),
         Je({ source: fu, options: t }),
         (function (t) {
           const { mbox: e, selector: n, offer: r } = t,
             o = oe(),
             i = e === o.globalMboxName;
-          if (U(r)) return (Be(Ft), zs(n), dr(), void Dn({ mbox: e }));
+          if (U(r)) return Be(Ft), zs(n), dr(), void Dn({ mbox: e });
           const c = Vs(n, Ts(e, r, i)),
             s = Ei(c);
           if (!U(s)) {
             const { url: t } = s;
-            return (Be("Redirect action", s), Rn({ url: t }), void Bs(Wt, t));
+            return Be("Redirect action", s), Rn({ url: t }), void Bs(Wt, t);
           }
-          (qn({ mbox: e }),
+          qn({ mbox: e }),
             ms(c),
             Us(c)
               .then((t) => {
                 U(t) || Mn({ mbox: e, execution: t });
               })
-              ["catch"]((t) => Pn({ error: t })));
-        })(t));
+              ["catch"]((t) => Pn({ error: t }));
+        })(t);
       const i = Nt.timeEnd(n);
-      (Nt.clearTiming(n), window.__target_telemetry.addRenderEntry(n, i));
+      Nt.clearTiming(n), window.__target_telemetry.addRenderEntry(n, i);
     }
     function du(t) {
       const e = Fs(t.selector),
@@ -6223,8 +6186,7 @@
             Je({ source: "[applyOffers()]", options: t }),
             Js(t).then(() => {
               const t = Nt.timeEnd(n);
-              (Nt.clearTiming(n),
-                window.__target_telemetry.addRenderEntry(n, t));
+              Nt.clearTiming(n), window.__target_telemetry.addRenderEntry(n, t);
             }))
           : (Ue("[applyOffers()]", Ht),
             Je({ source: "[applyOffers()]", options: t, error: Ht }),
@@ -6260,8 +6222,8 @@
           Ue("[sendNotifications()]", Ht),
           void Je({ source: "[sendNotifications()]", options: t, error: Ht })
         );
-      (Be("[sendNotifications()]", t),
-        Je({ source: "[sendNotifications()]", options: t }));
+      Be("[sendNotifications()]", t),
+        Je({ source: "[sendNotifications()]", options: t });
       const { notifications: c } = r,
         s = Ac(n, {}, c);
       !yn() || bn()
@@ -6281,9 +6243,9 @@
           o = h({}, Vr(e), r),
           i = qc(So({}, o), n, []);
         if (((i.mbox = { name: e }), Mc(Ac(e, o, [i]))))
-          return (Be("Track event request succeeded", t), void t[Jt]());
-        (Ue("Track event request failed", t),
-          t[zt]("unknown", "Track event request failed"));
+          return Be("Track event request succeeded", t), void t[Jt]();
+        Ue("Track event request failed", t),
+          t[zt]("unknown", "Track event request failed");
       })(t);
     }
     function gu(t) {
@@ -6292,7 +6254,7 @@
         r = j(Fn(e)),
         o = () =>
           (function (t) {
-            return (mu(t), !t.preventDefault);
+            return mu(t), !t.preventDefault;
           })(t);
       q((t) => Ic(n, o, t), r);
     }
@@ -6304,7 +6266,7 @@
         })(t),
         n = e[zt];
       if (!e[$t])
-        return (Ue(hu, n), void Je({ source: hu, options: t, error: n }));
+        return Ue(hu, n), void Je({ source: hu, options: t, error: n });
       const r = (function (t, e) {
         const n = e.mbox,
           r = h({}, e),
@@ -6323,7 +6285,7 @@
           ft(r[zt]("warning", Ht)),
           void Je({ source: hu, options: t, error: Ht })
         );
-      (Be(hu, r),
+      Be(hu, r),
         Je({ source: hu, options: r }),
         (function (t) {
           const e = t[Rt],
@@ -6331,7 +6293,7 @@
           return J(e) && (J(n) || Vn(n));
         })(r)
           ? gu(r)
-          : mu(r));
+          : mu(r);
     }
     const yu = [];
     let bu = 0;
@@ -6347,7 +6309,7 @@
             U(t) || Mn({ execution: t });
           })
           ["catch"]((t) => {
-            (Ue("View rendering failed", t), Pn({ error: t }));
+            Ue("View rendering failed", t), Pn({ error: t });
           })
       );
     }
@@ -6360,7 +6322,7 @@
       }
     }
     function Su() {
-      ((bu = 1), wu());
+      (bu = 1), wu();
     }
     function Eu(t, e) {
       if (!oe().viewsEnabled)
@@ -6393,15 +6355,15 @@
             Wt._AT.currentView = e;
           })(r)
         );
-      (Be("[triggerView()]", n, r),
+      Be("[triggerView()]", n, r),
         Je({ source: "[triggerView()]", view: n, options: r }),
         (function (t) {
-          (yu.push(t), 0 !== bu && wu());
-        })(r));
+          yu.push(t), 0 !== bu && wu();
+        })(r);
     }
-    (ws("cache-updated-event", Su),
+    ws("cache-updated-event", Su),
       ws("no-offers-event", Su),
-      ws("redirect-offer-event", Su));
+      ws("redirect-offer-event", Su);
     const Tu =
         "function has been deprecated. Please use getOffer() and applyOffer() functions instead.",
       Cu =
@@ -6439,7 +6401,7 @@
       function e(t) {
         const e = localStorage.getItem(t);
         let n = parseInt(e, 10);
-        return (Number.isNaN(n) && (n = -1), n);
+        return Number.isNaN(n) && (n = -1), n;
       }
       function n(t, e) {
         localStorage.setItem(t, e);
@@ -6447,7 +6409,7 @@
       function r(e) {
         const n = t(e),
           r = localStorage.getItem(n);
-        return (localStorage.removeItem(n), r);
+        return localStorage.removeItem(n), r;
       }
       return {
         addEntry: function (r) {
@@ -6456,7 +6418,7 @@
           })(
             (function () {
               const t = e("tgt:tlm:upper") + 1;
-              return (n("tgt:tlm:upper", t), t);
+              return n("tgt:tlm:upper", t), t;
             })(),
             r,
           );
@@ -6470,7 +6432,7 @@
               const n = r(e);
               n && t.push(JSON.parse(n));
             }
-            return (n("tgt:tlm:lower", i), t);
+            return n("tgt:tlm:lower", i), t;
           })();
         },
         hasEntries: function () {
@@ -6503,7 +6465,7 @@
         )
           return (
             (function (t) {
-              ((t.adobe = t.adobe || {}),
+              (t.adobe = t.adobe || {}),
                 (t.adobe.target = {
                   VERSION: "",
                   event: {},
@@ -6519,11 +6481,11 @@
                 }),
                 (t.mboxCreate = vt),
                 (t.mboxDefine = vt),
-                (t.mboxUpdate = vt));
+                (t.mboxUpdate = vt);
             })(t),
             void Ue(Ht)
           );
-        ((t.__target_telemetry = (function () {
+        (t.__target_telemetry = (function () {
           let t =
               !(arguments.length > 0 && void 0 !== arguments[0]) ||
               arguments[0],
@@ -6625,7 +6587,7 @@
               try {
                 const t = window.localStorage,
                   e = "__storage_test__";
-                return (t.setItem(e, e), t.removeItem(e), !0);
+                return t.setItem(e, e), t.removeItem(e), !0;
               } catch (t) {
                 return !1;
               }
@@ -6659,7 +6621,7 @@
           (function () {
             const t = Nn("at-library-loaded", {});
             In(Wt, Kt, "at-library-loaded", t);
-          })());
+          })();
       },
     };
   })()),
@@ -6694,6 +6656,6 @@
     decisioningMethod: "server-side",
     legacyBrowserSupport: !1,
     allowHighEntropyClientHints: !1,
-  }));
+  });
 
 //No Custom JavaScript
