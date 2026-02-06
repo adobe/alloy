@@ -73,7 +73,7 @@ describe("Config overrides", () => {
     });
 
     const call = await networkRecorder.findCall(/edge\.adobedc\.net/);
-    expect(call.request?.body?.meta?.configOverrides).toBeNull();
+    expect(call.request?.body?.meta?.configOverrides).toBeUndefined();
   });
 
   test("should allow you to disable a service in the base config, but enable it in a send event call with extra parameters", async ({

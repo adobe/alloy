@@ -91,9 +91,14 @@ export default (options) => {
     mergeConfigOverride: (updates) => mergeConfigOverrides(updates),
     finalizeConfigOverrides: () => {
       if (content.meta?.configOverrides) {
-        content.meta.configOverrides = prepareConfigOverridesForEdge(
+        const prepared = prepareConfigOverridesForEdge(
           content.meta.configOverrides,
         );
+        if (prepared === null) {
+          delete content.meta.configOverrides;
+        } else {
+          content.meta.configOverrides = prepared;
+        }
       }
     },
     addIdentity,

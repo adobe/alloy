@@ -103,11 +103,25 @@ describe("createRequestPayload", () => {
 
   describe("finalizeConfigOverrides", () => {
     it("calls prepareConfigOverridesForEdge and replaces content.meta.configOverrides when present", () => {
-      content.meta = { configOverrides: { a: { enabled: true }, b: {}, c: { rs: "foo" } } };
+      content.meta = {
+        configOverrides: { a: { enabled: true }, b: {}, c: { rs: "foo" } },
+      };
 
       payload.finalizeConfigOverrides();
 
       expect(content.meta.configOverrides).toEqual({ c: { rs: "foo" } });
+    });
+
+    it("deletes configOverrides when prepareConfigOverridesForEdge returns null", () => {
+      content.meta = {
+        configOverrides: { a: { enabled: true } },
+        other: "data",
+      };
+
+      payload.finalizeConfigOverrides();
+
+      expect(content.meta.configOverrides).toBeUndefined();
+      expect(content.meta.other).toBe("data");
     });
 
     it("does nothing when content.meta.configOverrides is absent", () => {
