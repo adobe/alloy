@@ -47,6 +47,7 @@ const createAdvertising = ({
     cookieManager,
     adConversionHandler,
     getBrowser,
+    consent,
   });
 };
 
