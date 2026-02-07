@@ -11,37 +11,67 @@ governing permissions and limitations under the License.
 */
 
 /**
- * Creates a wrapper around a callback that implements a timeout for the first call.
- * If the callback is not invoked within the specified timeout, an error is passed to it.
+ * Creates a wrapper around a callback that implements a rolling timeout.
+ * The timeout resets on every data event or ping. If no activity occurs
+ * within the timeout period, an error is passed to the callback.
  * After timeout fires, all subsequent calls are ignored.
  *
- * @param {Function} callback - The callback function to wrap
- * @returns {Function} Wrapped callback function
+ * @param {Object} options - Configuration options
+ * @param {Function} options.onStreamResponseCallback - The callback function to wrap
+ * @param {number} options.streamTimeout - Timeout duration in milliseconds
+ * @returns {Object} Object with onEvent, onPing, and onComplete handler functions
  */
 export default ({ onStreamResponseCallback, streamTimeout }) => {
-  let firstCallMade = false;
   let timedOut = false;
+  let timeoutId;
 
-  const timeoutId = setTimeout(() => {
-    // Double-check firstCallMade right before firing
-    if (!firstCallMade) {
+  const resetTimeout = () => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
       timedOut = true;
       onStreamResponseCallback({
         error: {
           message: "Stream timeout: No data received within 10 seconds",
         },
       });
-    }
-  }, streamTimeout);
+    }, streamTimeout);
+  };
 
-  return (event) => {
-    if (timedOut) {
-      return;
-    }
-    if (!firstCallMade) {
-      firstCallMade = true;
+  // Start initial timeout
+  resetTimeout();
+
+  return {
+    /**
+     * Handle data events from the stream parser.
+     * Resets the timeout and forwards the event to the callback.
+     *
+     * @param {Object} event - The parsed SSE event
+     */
+    onEvent: (event) => {
+      if (timedOut) {
+        return;
+      }
+      resetTimeout();
+      onStreamResponseCallback(event);
+    },
+
+    /**
+     * Handle ping events from the stream parser.
+     * Resets the timeout but does not forward anything to the callback.
+     */
+    onPing: () => {
+      if (timedOut) {
+        return;
+      }
+      resetTimeout();
+    },
+
+    /**
+     * Handle stream completion.
+     * Clears the timeout since the stream has ended successfully.
+     */
+    onComplete: () => {
       clearTimeout(timeoutId);
-    }
-    onStreamResponseCallback(event);
+    },
   };
 };
