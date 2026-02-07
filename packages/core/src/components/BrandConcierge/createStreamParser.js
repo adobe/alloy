@@ -16,6 +16,21 @@ export default () => {
   const LINE_ENDING_REGEX = /\r\n|\r|\n/;
   // Events are separated by blank lines (double line endings)
   const EVENT_SEPARATOR_REGEX = /\r\n\r\n|\n\n|\r\r/;
+  // Ping comment format: `: ping` (colon followed immediately by "ping")
+  const PING_COMMENT = ": ping";
+
+  /**
+   * Check if an event block is a ping comment.
+   * Ping comments are SSE comments in the format `:ping`
+   *
+   * @param {string} eventData - Raw event data
+   * @returns {boolean} - True if this is a ping comment
+   */
+  const isPingComment = (eventData) => {
+    const trimmed = eventData.trim();
+
+    return trimmed.startsWith(PING_COMMENT);
+  };
 
   /**
    * Parse a single SSE event from raw event data.
@@ -61,9 +76,12 @@ export default () => {
    * Uses modern async iteration (for await...of) for clean, performant stream processing.
    *
    * @param {ReadableStream} stream - The readable stream from fetch response
-   * @param {Function} onEvent - Callback function called for each parsed event
+   * @param {Object} callbacks - Callback functions for stream events
+   * @param {Function} callbacks.onEvent - Callback function called for each parsed event
+   * @param {Function} callbacks.onPing - Callback function called for ping comments
+   * @param {Function} callbacks.onComplete - Callback function called when stream ends
    */
-  return async (stream, onEvent) => {
+  return async (stream, { onEvent, onPing, onComplete }) => {
     const decoder = new TextDecoder(ENCODING);
     let buffer = "";
 
@@ -73,30 +91,49 @@ export default () => {
         const events = buffer.split(EVENT_SEPARATOR_REGEX);
         buffer = events.pop() || "";
 
-        for (const eventData of events) {
-          const trimmedEvent = eventData.trim();
+        for (const event of events) {
+          const trimmedEvent = event.trim();
 
-          if (trimmedEvent) {
-            const event = parseEventFromBuffer(trimmedEvent);
+          if (!trimmedEvent) {
+            continue;
+          }
 
-            if (event !== null) {
-              onEvent(event);
-            }
+          if (isPingComment(trimmedEvent)) {
+            onPing();
+            continue;
+          }
+
+          const parsedEvent = parseEventFromBuffer(trimmedEvent);
+
+          if (parsedEvent !== null) {
+            onEvent(parsedEvent);
           }
         }
       }
 
       const trimmedBuffer = buffer.trim();
 
-      if (trimmedBuffer) {
-        const event = parseEventFromBuffer(trimmedBuffer);
-
-        if (event !== null) {
-          onEvent(event);
-        }
+      if (!trimmedBuffer) {
+        onComplete();
+        return;
       }
+
+      if (isPingComment(trimmedBuffer)) {
+        onPing();
+        onComplete();
+        return;
+      }
+
+      const event = parseEventFromBuffer(trimmedBuffer);
+
+      if (event !== null) {
+        onEvent(event);
+      }
+
+      onComplete();
     } catch (error) {
       onEvent({ error });
+      onComplete();
     }
   };
 };
