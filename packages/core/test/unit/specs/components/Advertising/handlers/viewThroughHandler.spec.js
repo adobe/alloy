@@ -83,32 +83,32 @@ vi.mock(
 vi.mock(
   "../../../../../../src/components/Advertising/utils/helpers.js",
   () => ({
-    appendAdvertisingIdQueryToEvent: vi.fn((availableIds, event) => {
-      // Mock the actual behavior
-      const query = {
-        advertising: {
-          conversion: {
-            StitchIds: {},
+    appendAdvertisingIdQueryToEvent: vi.fn(
+      (availableIds, event, cookieManager, componentConfig, addEventType) => {
+        const query = {
+          advertising: {
+            stitchIds: {
+              ...(availableIds.surferId && {
+                surferId: availableIds.surferId,
+              }),
+              ...(availableIds.id5Id && { id5: availableIds.id5Id }),
+              ...(availableIds.rampId && {
+                rampIdEnv: availableIds.rampId,
+              }),
+              ipAddress: "DUMMY_IP_ADDRESS",
+            },
+            advIds: "",
+            ...(addEventType && { eventType: "advertising.enrichment" }),
           },
-        },
-      };
+        };
 
-      if (availableIds.surferId) {
-        query.advertising.conversion.StitchIds.SurferId = availableIds.surferId;
-      }
-      if (availableIds.id5Id) {
-        query.advertising.conversion.StitchIds.ID5 = availableIds.id5Id;
-      }
-      if (availableIds.rampId) {
-        query.advertising.conversion.StitchIds.RampIDEnv = availableIds.rampId;
-      }
-
-      event.mergeQuery(query);
-      return event;
-    }),
+        event.mergeQuery(query);
+        return event;
+      },
+    ),
     normalizeAdvertiser: vi.fn((advertiserSettings) => {
       if (!advertiserSettings || !Array.isArray(advertiserSettings)) {
-        return "UNKNOWN";
+        return "";
       }
 
       return advertiserSettings
@@ -236,11 +236,12 @@ describe("Advertising::viewThroughHandler", () => {
 
     expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
       advertising: {
-        conversion: {
-          StitchIds: {
-            SurferId: "test-surfer-id",
-          },
+        stitchIds: {
+          surferId: "test-surfer-id",
+          ipAddress: "DUMMY_IP_ADDRESS",
         },
+        advIds: "",
+        eventType: "advertising.enrichment",
       },
     });
 

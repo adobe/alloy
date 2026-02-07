@@ -33,14 +33,15 @@ export default ({
     : "";
 
   return async () => {
-    // Wait for consent before any ad conversion processing.
-    // This ensures no advertising cookies are set without user consent.
-    await consent.awaitConsent();
-
-    const { skwcid, efid } = getUrlParams();
-    const isClickThru = !!(skwcid || efid);
-
     try {
+      // Wait for consent before any ad conversion processing.
+      // This ensures no advertising cookies are set without user consent.
+      // If consent is declined, awaitConsent() rejects and we exit gracefully.
+      await consent.awaitConsent();
+
+      const { skwcid, efid } = getUrlParams();
+      const isClickThru = !!(skwcid || efid);
+
       if (isClickThru) {
         // wait for click through to complete
         return handleClickThrough({
