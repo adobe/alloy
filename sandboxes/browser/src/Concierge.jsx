@@ -1,5 +1,4 @@
 import useAlloy from "./helpers/useAlloy";
-import { styles } from "./acom-hackathon";
 import includeScript from "./helpers/includeScript";
 import { useEffect } from "react";
 export default function Concierge() {
@@ -7,10 +6,10 @@ export default function Concierge() {
     configurations: {
       alloy: {
         defaultConsent: "in",
-        edgeDomain: "edge.adobedc.net",
+        edgeDomain: "edge-int.adobedc.net",
         edgeBasePath: "ee",
-        datastreamId: "913eac4d-900b-45e8-9ee7-306216765cd2",
-        orgId: "9E1005A551ED61CA0A490D45@AdobeOrg",
+        datastreamId: "6acf9d12-5018-4f84-8224-aac4900782f0",
+        orgId: "745F37C35E4B776E0A49421B@AdobeOrg",
         debugEnabled: true,
         idMigrationEnabled: false,
         thirdPartyCookiesEnabled: false,
@@ -32,8 +31,17 @@ export default function Concierge() {
   });
 
   useEffect(async () => {
-    await includeScript("main.js").then(() => {
-      window.bc_styles = styles;
+    await includeScript("styleConfigurations.js");
+    await includeScript(
+      "https://experience-stage.adobe.net/solutions/experience-platform-brand-concierge-web-agent/static-assets/main.js",
+    ).then(() => {
+      if (window.adobe.concierge.bootstrap) {
+        window.adobe.concierge.bootstrap({
+          instanceName: "alloy",
+          selector: "#brand-concierge-mount",
+          stylingConfigurations: window.styleConfiguration,
+        });
+      }
     });
   }, []);
 
