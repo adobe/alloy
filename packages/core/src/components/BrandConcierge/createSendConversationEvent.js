@@ -34,7 +34,7 @@ export default ({
     edgeBasePath,
     datastreamId,
     onBeforeEventSend,
-    streamTimeout,
+    concierge,
   } = config;
 
   return (options) => {
@@ -140,7 +140,7 @@ export default ({
 
           const timeoutWrapper = createTimeoutWrapper({
             onStreamResponseCallback,
-            streamTimeout,
+            streamTimeout: concierge.streamTimeout,
           });
 
           const streamParser = createStreamParser();

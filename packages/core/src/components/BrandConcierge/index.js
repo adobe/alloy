@@ -33,7 +33,7 @@ const createConciergeComponent = ({
   apexDomain,
 }) => {
   const { fetch } = window;
-  if (!config.stickyConversationSession) {
+  if (!config.concierge.stickyConversationSession) {
     loggingCookieJar.remove(
       getNamespacedCookieName(config.orgId, BC_SESSION_COOKIE_NAME),
       { domain: apexDomain },
