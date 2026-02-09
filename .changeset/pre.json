@@ -1,5 +1,5 @@
 {
-  "mode": "pre",
+  "mode": "exit",
   "tag": "beta",
   "initialVersions": {
     "@adobe/alloy": "2.30.1-beta.15",
