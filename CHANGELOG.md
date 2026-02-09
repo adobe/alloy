@@ -1,5 +1,11 @@
 # @adobe/alloy
 
+## 2.31.0-beta.24
+
+### Minor Changes
+
+- [#1440](https://github.com/adobe/alloy/pull/1440) [`3c380f7`](https://github.com/adobe/alloy/commit/3c380f7ccde8591246b48502e1134cda68f8aae0) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Add changeset to increment minor version number as we merged in features before using changesets
+
 ## 2.30.1-beta.23
 
 ### Patch Changes

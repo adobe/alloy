@@ -7,6 +7,7 @@
     "@adobe/alloy-sandbox-browser": "0.1.0"
   },
   "changesets": [
+    "floppy-moose-trade",
     "free-pianos-run",
     "huge-rabbits-crash",
     "loud-tables-judge",
