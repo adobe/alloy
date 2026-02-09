@@ -47,7 +47,7 @@ describe("createSendConversationEvent", () => {
         edgeDomain: "edge.adobedc.net",
         edgeBasePath: "/ee",
         datastreamId: "test-datastream",
-        concierge: {
+        conversation: {
           streamTimeout: 10000
         }
       },

@@ -13,7 +13,7 @@ import { STREAM_START_TIMEOUT_MS } from "./constants.js";
 import { number, objectOf, boolean } from "../../utils/validation/index.js";
 
 export default objectOf({
-  concierge: objectOf({
+  conversation: objectOf({
     stickyConversationSession: boolean().default(false),
     streamTimeout: number()
       .integer()

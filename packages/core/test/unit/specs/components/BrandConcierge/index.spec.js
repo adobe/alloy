@@ -45,7 +45,7 @@ describe("BrandConcierge", () => {
       config: {
         orgId: "testorgid@AdobeOrg",
         edgeConfigId: "test-edge-config-id",
-        concierge: {
+        conversation: {
           stickyConversationSession: false
         }
       },
@@ -77,7 +77,7 @@ describe("BrandConcierge", () => {
   it("removes session cookie when stickyConversationSession is false", () => {
     const configWithSticky = {
       ...mockDependencies.config,
-      concierge: {
+      conversation: {
         stickyConversationSession: false
       }
     };
@@ -96,7 +96,7 @@ describe("BrandConcierge", () => {
   it("does not remove session cookie when stickyConversationSession is true", () => {
     const configWithSticky = {
       ...mockDependencies.config,
-      concierge: {
+      conversation: {
         stickyConversationSession: true
       }
     };
@@ -128,25 +128,25 @@ describe("BrandConcierge config validators", () => {
   testConfigValidators({
     configValidators: createConciergeComponent.configValidators,
     validConfigurations: [
-      {concierge: { stickyConversationSession: true }},
-      {concierge: { stickyConversationSession: false }},
-      {concierge: { streamTimeout: 10000 }},
-      {concierge: { streamTimeout: 20000 }},
-      {concierge: { stickyConversationSession: true, streamTimeout: 10000 }},
+      {conversation: { stickyConversationSession: true }},
+      {conversation: { stickyConversationSession: false }},
+      {conversation: { streamTimeout: 10000 }},
+      {conversation: { streamTimeout: 20000 }},
+      {conversation: { stickyConversationSession: true, streamTimeout: 10000 }},
       {}
     ],
     invalidConfigurations: [
-      {concierge: { stickyConversationSession: "invalid" }},
-      {concierge: { stickyConversationSession: 123 }},
-      {concierge: { streamTimeout: "invalid" }},
-      {concierge: { streamTimeout: -1 }},
-      {concierge: { streamTimeout: 1.5 }}
+      {conversation: { stickyConversationSession: "invalid" }},
+      {conversation: { stickyConversationSession: 123 }},
+      {conversation: { streamTimeout: "invalid" }},
+      {conversation: { streamTimeout: -1 }},
+      {conversation: { streamTimeout: 1.5 }}
     ],
     defaultValues: {}
   });
   it("provides default values for concierge configuration", () => {
     const config = createConciergeComponent.configValidators({});
-    expect(config.concierge.stickyConversationSession).toBe(false);
-    expect(config.concierge.streamTimeout).toBe(10000);
+    expect(config.conversation.stickyConversationSession).toBe(false);
+    expect(config.conversation.streamTimeout).toBe(10000);
   });
 });
