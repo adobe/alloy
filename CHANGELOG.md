@@ -1,5 +1,13 @@
 # @adobe/alloy
 
+## 2.30.1-beta.23
+
+### Patch Changes
+
+- [#1436](https://github.com/adobe/alloy/pull/1436) [`b3767ce`](https://github.com/adobe/alloy/commit/b3767ce72555cf67a93b1910cd1caa8d566be9ce) Thanks [@dompuiu](https://github.com/dompuiu)! - Handle the case when prepartedConfigOverrides returns null.
+
+- [#1437](https://github.com/adobe/alloy/pull/1437) [`2fd9ac8`](https://github.com/adobe/alloy/commit/2fd9ac89019d7eab69d4cdf986f595fb6e0f247e) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! -
+
 ## 2.30.1-beta.22
 
 ### Patch Changes
