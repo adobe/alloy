@@ -20,6 +20,7 @@ export default ({
   cookieManager,
   adConversionHandler,
   getBrowser,
+  consent,
 }) => {
   const componentConfig = config.advertising;
 
@@ -30,12 +31,15 @@ export default ({
     logger,
     componentConfig,
     getBrowser,
+    consent,
   });
 
   return {
     lifecycle: {
       onComponentsRegistered() {
-        return sendAdConversionHandler();
+        // Fire-and-forget: don't return the promise so we don't block
+        // the configure command from resolving while waiting for consent.
+        sendAdConversionHandler();
       },
       onBeforeEvent: ({ event, advertising = {} }) => {
         return handleOnBeforeSendEvent({

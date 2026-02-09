@@ -37,6 +37,7 @@ describe("Advertising::createComponent", () => {
   let eventManager;
   let cookieManager;
   let adConversionHandler;
+  let consent;
   let component;
 
   beforeEach(() => {
@@ -71,6 +72,10 @@ describe("Advertising::createComponent", () => {
       trackAdConversion: vi.fn(),
     };
 
+    consent = {
+      awaitConsent: vi.fn().mockResolvedValue(),
+    };
+
     // Reset mocks
     vi.mocked(handleOnBeforeSendEvent).mockReset();
 
@@ -80,6 +85,7 @@ describe("Advertising::createComponent", () => {
       eventManager,
       cookieManager,
       adConversionHandler,
+      consent,
     });
   });
 
