@@ -123,6 +123,7 @@ describe("identityMap in automatic display notifications", () => {
     const interactCalls = await networkRecorder.findCalls(/v1\/interact/, {
       retries: 30,
       delayMs: 100,
+      minCalls: 2,
     });
 
     expect(interactCalls.length).toBeGreaterThanOrEqual(2);
@@ -243,6 +244,7 @@ describe("identityMap in automatic display notifications", () => {
     const allCalls = await networkRecorder.findCalls(/v1\/interact/, {
       retries: 40,
       delayMs: 100,
+      minCalls: 2,
     });
 
     const displayCall = allCalls.find(
