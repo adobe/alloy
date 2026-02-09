@@ -1,0 +1,10 @@
+{
+  "mode": "pre",
+  "tag": "beta",
+  "initialVersions": {
+    "@adobe/alloy": "2.31.0",
+    "@adobe/alloy-core": "2.29.0",
+    "@adobe/alloy-sandbox-browser": "0.1.0"
+  },
+  "changesets": []
+}
