@@ -39,4 +39,33 @@ describe("Advertising - Clickthrough (both)", () => {
       experimentId: "test_experiment_456",
     });
   });
+
+  test("should handle duplicate s_kwcid values by using the first value", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(...[sendEventHandler]);
+
+    const url = new URL(window.location.href);
+    url.searchParams.append("s_kwcid", "AL!first-keyword");
+    url.searchParams.append("s_kwcid", "AL!second-keyword");
+    url.searchParams.set("ef_id", "test_experiment_456");
+    window.history.replaceState({}, "", url.toString());
+
+    await alloy("configure", {
+      ...alloyConfig,
+      ...createAdvertisingConfig(),
+    });
+
+    await alloy("sendEvent");
+
+    const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/);
+    const conversionCall = findClickThroughCall(calls);
+    expect(conversionCall).toBeTruthy();
+    validateClickThroughCall(conversionCall, {
+      sampleGroupId: "AL!first-keyword",
+      experimentId: "test_experiment_456",
+    });
+  });
 });
