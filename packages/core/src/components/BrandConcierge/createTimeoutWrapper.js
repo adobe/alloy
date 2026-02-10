@@ -31,7 +31,7 @@ export default ({ onStreamResponseCallback, streamTimeout }) => {
       timedOut = true;
       onStreamResponseCallback({
         error: {
-          message: "Stream timeout: No data received within 10 seconds",
+          message: `Stream timeout: No data received within ${streamTimeout / 1000} seconds`,
         },
       });
     }, streamTimeout);
