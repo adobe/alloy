@@ -41,17 +41,22 @@ export default async function handleClickThrough({
   skwcid,
   efid,
 }) {
-  logger.info(LOG_AD_CONVERSION_START, { skwcid, efid });
+  const normalizedSkwcid = Array.isArray(skwcid) ? skwcid[0] : skwcid;
+
+  logger.info(LOG_AD_CONVERSION_START, { skwcid: normalizedSkwcid, efid });
 
   const event = eventManager.createEvent();
   if (
-    typeof skwcid !== "undefined" &&
+    typeof normalizedSkwcid !== "undefined" &&
     typeof efid !== "undefined" &&
-    skwcid.startsWith("AL!")
+    typeof normalizedSkwcid === "string" &&
+    normalizedSkwcid.startsWith("AL!")
   ) {
     const clickData = {
       click_time: Date.now(),
-      ...(typeof skwcid !== "undefined" && { skwcid }),
+      ...(typeof normalizedSkwcid !== "undefined" && {
+        skwcid: normalizedSkwcid,
+      }),
       ...(typeof efid !== "undefined" && { efid }),
     };
     cookieManager.setValue(LAST_CLICK_COOKIE_KEY, clickData);
@@ -61,7 +66,9 @@ export default async function handleClickThrough({
     _experience: {
       adcloud: {
         conversionDetails: {
-          ...(typeof skwcid !== "undefined" && { [TRACKING_CODE]: skwcid }),
+          ...(typeof normalizedSkwcid !== "undefined" && {
+            [TRACKING_CODE]: normalizedSkwcid,
+          }),
           ...(typeof efid !== "undefined" && {
             [TRACKING_IDENTITIES]: efid,
           }),
