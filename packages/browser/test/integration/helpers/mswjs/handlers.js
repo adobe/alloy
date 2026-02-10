@@ -186,7 +186,7 @@ export const mediaSessionHandler = http.post(
     if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
       return HttpResponse.text(
         await readFile(
-          `${server.config.root}/packages/core/test/integration/helpers/mocks/mediaSessionResponse.json`,
+          `${server.config.root}/packages/browser/test/integration/helpers/mocks/mediaSessionResponse.json`,
         ),
       );
     }
@@ -221,7 +221,7 @@ export const customCodeHandler = http.post(
       if (hasSchemas && hasSchemas.length > 0) {
         return HttpResponse.text(
           await readFile(
-            `${server.config.root}/packages/core/test/integration/helpers/mocks/targetCustomCodeAction.json`,
+            `${server.config.root}/packages/browser/test/integration/helpers/mocks/targetCustomCodeAction.json`,
           ),
         );
       }
@@ -229,7 +229,7 @@ export const customCodeHandler = http.post(
       // Otherwise, return response without custom code activity
       return HttpResponse.text(
         await readFile(
-          `${server.config.root}/packages/core/test/integration/helpers/mocks/emptyEventResponse.json`,
+          `${server.config.root}/packages/browser/test/integration/helpers/mocks/emptyEventResponse.json`,
         ),
       );
     }
@@ -256,7 +256,7 @@ export const prependHtmlHandler = http.post(
       if (hasSchemas && hasSchemas.length > 0) {
         return HttpResponse.text(
           await readFile(
-            `${server.config.root}/packages/core/test/integration/helpers/mocks/targetPrependHtmlAction.json`,
+            `${server.config.root}/packages/browser/test/integration/helpers/mocks/targetPrependHtmlAction.json`,
           ),
         );
       }
@@ -264,7 +264,7 @@ export const prependHtmlHandler = http.post(
       // Otherwise, return response without prependHtml activity
       return HttpResponse.text(
         await readFile(
-          `${server.config.root}/packages/core/test/integration/helpers/mocks/emptyEventResponse.json`,
+          `${server.config.root}/packages/browser/test/integration/helpers/mocks/emptyEventResponse.json`,
         ),
       );
     }
