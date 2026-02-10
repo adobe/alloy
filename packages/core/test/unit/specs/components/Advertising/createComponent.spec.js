@@ -74,6 +74,7 @@ describe("Advertising::createComponent", () => {
 
     consent = {
       awaitConsent: vi.fn().mockResolvedValue(),
+      current: vi.fn().mockReturnValue({ state: "in", wasSet: true }),
     };
 
     // Reset mocks
@@ -141,6 +142,26 @@ describe("Advertising::createComponent", () => {
       advertising: {},
       getBrowser: undefined,
     });
+  });
+
+  it("should skip onBeforeSendEvent when consent is out", async () => {
+    consent.current.mockReturnValue({ state: "out", wasSet: true });
+
+    const event = { mergeQuery: vi.fn() };
+
+    await component.lifecycle.onBeforeEvent({ event });
+
+    expect(handleOnBeforeSendEvent).not.toHaveBeenCalled();
+  });
+
+  it("should skip onBeforeSendEvent when consent is pending", async () => {
+    consent.current.mockReturnValue({ state: "pending", wasSet: false });
+
+    const event = { mergeQuery: vi.fn() };
+
+    await component.lifecycle.onBeforeEvent({ event });
+
+    expect(handleOnBeforeSendEvent).not.toHaveBeenCalled();
   });
 
   it("should maintain shared state across calls", async () => {
