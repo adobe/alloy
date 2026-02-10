@@ -28,8 +28,8 @@ import {
  * @param {Object} params.cookieManager - Session manager for cookie operations
  * @param {Object} params.adConversionHandler - Handler for sending ad conversion events
  * @param {Object} params.logger - Logger instance
- * @param {string} params.skwcid - Search keyword click ID
- * @param {string} params.efid - EF ID parameter
+ * @param {string | string[]} params.skwcid - Search keyword click ID
+ * @param {string | string[]} params.efid - EF ID parameter
  * @param {Object} params.optionsFromCommand - Additional options from command
  * @returns {Promise} Result of the ad conversion tracking
  */
@@ -38,26 +38,24 @@ export default async function handleClickThrough({
   cookieManager,
   adConversionHandler,
   logger,
-  skwcid,
-  efid,
+  skwcid: rawSkwcid,
+  efid: rawEfId,
 }) {
-  const normalizedSkwcid = Array.isArray(skwcid) ? skwcid[0] : skwcid;
+  const skwcid = Array.isArray(rawSkwcid) ? rawSkwcid[0] : rawSkwcid;
+  const efid = Array.isArray(rawEfId) ? rawEfId[0] : rawEfId;
 
-  logger.info(LOG_AD_CONVERSION_START, { skwcid: normalizedSkwcid, efid });
+  logger.info(LOG_AD_CONVERSION_START, { skwcid: skwcid, efid });
 
   const event = eventManager.createEvent();
   if (
-    typeof normalizedSkwcid !== "undefined" &&
+    typeof skwcid !== "undefined" &&
     typeof efid !== "undefined" &&
-    typeof normalizedSkwcid === "string" &&
-    normalizedSkwcid.startsWith("AL!")
+    skwcid.startsWith("AL!")
   ) {
     const clickData = {
       click_time: Date.now(),
-      ...(typeof normalizedSkwcid !== "undefined" && {
-        skwcid: normalizedSkwcid,
-      }),
-      ...(typeof efid !== "undefined" && { efid }),
+      skwcid,
+      efid,
     };
     cookieManager.setValue(LAST_CLICK_COOKIE_KEY, clickData);
   }
@@ -66,8 +64,8 @@ export default async function handleClickThrough({
     _experience: {
       adcloud: {
         conversionDetails: {
-          ...(typeof normalizedSkwcid !== "undefined" && {
-            [TRACKING_CODE]: normalizedSkwcid,
+          ...(typeof skwcid !== "undefined" && {
+            [TRACKING_CODE]: skwcid,
           }),
           ...(typeof efid !== "undefined" && {
             [TRACKING_IDENTITIES]: efid,
