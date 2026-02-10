@@ -60,4 +60,14 @@ describe("utils:filterObject", () => {
       },
     });
   });
+  it("should pass the key to the predicate", () => {
+    const obj = {
+      a: 5,
+      b: 6,
+    };
+    const predicate = (_value, key) => key === "b";
+    expect(filterObject(obj, predicate)).toEqual({
+      b: 6,
+    });
+  });
 });

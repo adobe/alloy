@@ -39,5 +39,8 @@ export default ({ localConfigOverrides, globalConfigOverrides, payload }) => {
   ) {
     payload.mergeConfigOverride(localConfigOverridesWithoutDatastreamId);
   }
+
+  payload.finalizeConfigOverrides();
+
   return requestParams;
 };

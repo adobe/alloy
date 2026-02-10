@@ -15,9 +15,9 @@ import createBuildEndpointUrl from "./createBuildEndpointUrl.js";
 import queryString from "@adobe/reactor-query-string";
 import { getNamespacedCookieName } from "../../utils/index.js";
 import { BC_SESSION_COOKIE_NAME } from "./constants.js";
-import { boolean, objectOf } from "../../utils/validation/index.js";
 import createGetEcidFromCookie from "../../utils/createDecodeKndctrCookie.js";
 import createSendConversationServiceRequest from "./createSendConversationServiceRequest.js";
+import configValidators from "./configValidators.js";
 
 const createConciergeComponent = ({
   loggingCookieJar,
@@ -33,7 +33,7 @@ const createConciergeComponent = ({
   apexDomain,
 }) => {
   const { fetch } = window;
-  if (!config.stickyConversationSession) {
+  if (!config.conversation.stickyConversationSession) {
     loggingCookieJar.remove(
       getNamespacedCookieName(config.orgId, BC_SESSION_COOKIE_NAME),
       { domain: apexDomain },
@@ -87,7 +87,5 @@ const createConciergeComponent = ({
   };
 };
 createConciergeComponent.namespace = "BrandConcierge";
-createConciergeComponent.configValidators = objectOf({
-  stickyConversationSession: boolean().default(false),
-});
+createConciergeComponent.configValidators = configValidators;
 export default createConciergeComponent;

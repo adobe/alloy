@@ -29,7 +29,13 @@ export default ({
   lifecycle,
   consent,
 }) => {
-  const { edgeDomain, edgeBasePath, datastreamId, onBeforeEventSend } = config;
+  const {
+    edgeDomain,
+    edgeBasePath,
+    datastreamId,
+    onBeforeEventSend,
+    conversation,
+  } = config;
 
   return (options) => {
     let streamingEnabled = false;
@@ -96,8 +102,10 @@ export default ({
           onStreamResponse({ error });
           throw error;
         }
+
         payload.addEvent(event);
         cookieTransfer.cookiesToPayload(payload, edgeDomain);
+
         return sendConversationServiceRequest({
           requestId: uuid(),
           url,
@@ -108,6 +116,7 @@ export default ({
           if (response.status === 204) {
             return;
           }
+
           const onStreamResponseCallback = (event) => {
             if (event.error) {
               logger.error("Stream error occurred", event.error);
@@ -129,13 +138,14 @@ export default ({
             );
           };
 
-          const wrappedCallback = createTimeoutWrapper({
+          const timeoutWrapper = createTimeoutWrapper({
             onStreamResponseCallback,
+            streamTimeout: conversation.streamTimeout,
           });
 
           const streamParser = createStreamParser();
 
-          streamParser(response.body, wrappedCallback);
+          streamParser(response.body, timeoutWrapper);
         });
       });
   };

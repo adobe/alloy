@@ -16,10 +16,14 @@ import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 describe("createStreamParser", () => {
   let streamParser;
   let onEvent;
+  let onPing;
+  let onComplete;
 
   beforeEach(() => {
     streamParser = createStreamParser();
     onEvent = vi.fn();
+    onPing = vi.fn();
+    onComplete = vi.fn();
   });
 
   it("creates a stream parser function", () => {
@@ -33,7 +37,7 @@ describe("createStreamParser", () => {
       yield new TextEncoder().encode('data: {"text": " World"}\n\n');
     }
 
-    await streamParser(mockStream(), onEvent);
+    await streamParser(mockStream(), { onEvent, onPing, onComplete });
 
     expect(onEvent).toHaveBeenCalledTimes(2);
     expect(onEvent).toHaveBeenCalledWith({ data: '{"text": "Hello"}' });
@@ -47,7 +51,7 @@ describe("createStreamParser", () => {
       yield new TextEncoder().encode('data: invalid json\n\n');
     }
 
-    await streamParser(mockStream(), onEvent);
+    await streamParser(mockStream(), { onEvent, onPing, onComplete });
 
     expect(onEvent).toHaveBeenCalledTimes(2);
     expect(onEvent).toHaveBeenCalledWith({ data: '{"text": "Hello"}' });
@@ -61,23 +65,65 @@ describe("createStreamParser", () => {
       throw new Error("Stream reading failed");
     }
 
-    await streamParser(mockStream(), onEvent);
+    await streamParser(mockStream(), { onEvent, onPing, onComplete });
 
     expect(onEvent).toHaveBeenCalledWith({ data: '{"text": "Hello"}' });
     expect(onEvent).toHaveBeenCalledWith({ error: expect.any(Error) });
   });
 
-  it("ignores empty or comment lines", async () => {
+  it("ignores empty lines and non-ping comments", async () => {
     async function* mockStream() {
       yield new TextEncoder().encode(': this is a comment\n\n');
       yield new TextEncoder().encode('\n\n');
       yield new TextEncoder().encode('data: {"text": "Hello"}\n\n');
     }
 
-    await streamParser(mockStream(), onEvent);
+    await streamParser(mockStream(), { onEvent, onPing, onComplete });
 
     expect(onEvent).toHaveBeenCalledTimes(1);
     expect(onEvent).toHaveBeenCalledWith({ data: '{"text": "Hello"}' });
+  });
+
+  it("calls onPing callback when ping comment is received", async () => {
+
+    async function* mockStream() {
+      yield new TextEncoder().encode(': ping\n\n');
+      yield new TextEncoder().encode('data: {"text": "Hello"}\n\n');
+    }
+
+    await streamParser(mockStream(), { onEvent, onPing, onComplete });
+
+    expect(onPing).toHaveBeenCalledTimes(1);
+    expect(onEvent).toHaveBeenCalledTimes(1);
+    expect(onEvent).toHaveBeenCalledWith({ data: '{"text": "Hello"}' });
+  });
+
+  it("handles multiple ping comments", async () => {
+    async function* mockStream() {
+      yield new TextEncoder().encode(': ping\n\n');
+      yield new TextEncoder().encode(': ping\n\n');
+      yield new TextEncoder().encode('data: {"text": "Hello"}\n\n');
+      yield new TextEncoder().encode(': ping\n\n');
+    }
+
+    await streamParser(mockStream(), { onEvent, onPing, onComplete });
+
+    expect(onPing).toHaveBeenCalledTimes(3);
+    expect(onEvent).toHaveBeenCalledTimes(1);
+  });
+
+  it("only treats ': ping' as ping comment", async () => {
+    async function* mockStream() {
+      yield new TextEncoder().encode(': ping\n\n');     // This IS a ping (space after colon)
+      yield new TextEncoder().encode(':ping\n\n');      // This is NOT (no space after colon)
+      yield new TextEncoder().encode(': pinging\n\n');  // This IS a ping (startsWith ': ping')
+      yield new TextEncoder().encode(': PING\n\n');     // This is NOT (uppercase)
+    }
+
+    await streamParser(mockStream(), { onEvent, onPing, onComplete });
+
+    expect(onPing).toHaveBeenCalledTimes(2);  // ': ping' and ': pinging' count
+    expect(onEvent).toHaveBeenCalledTimes(0); // None have data fields
   });
 
   it("handles event types and IDs", async () => {
@@ -85,7 +131,7 @@ describe("createStreamParser", () => {
       yield new TextEncoder().encode('event: message\ndata: {"text": "Hello"}\nid: 123\n\n');
     }
 
-    await streamParser(mockStream(), onEvent);
+    await streamParser(mockStream(), { onEvent, onPing, onComplete });
 
     expect(onEvent).toHaveBeenCalledTimes(1);
     expect(onEvent).toHaveBeenCalledWith({
@@ -100,7 +146,7 @@ describe("createStreamParser", () => {
       yield new TextEncoder().encode('data: line 1\ndata: line 2\n\n');
     }
 
-    await streamParser(mockStream(), onEvent);
+    await streamParser(mockStream(), { onEvent, onPing, onComplete });
 
     expect(onEvent).toHaveBeenCalledTimes(1);
     expect(onEvent).toHaveBeenCalledWith({ data: 'line 1line 2' });
@@ -111,9 +157,52 @@ describe("createStreamParser", () => {
       yield new TextEncoder().encode('data: {"text": "Hello"}');
     }
 
-    await streamParser(mockStream(), onEvent);
+    await streamParser(mockStream(), { onEvent, onPing, onComplete });
 
     expect(onEvent).toHaveBeenCalledTimes(1);
     expect(onEvent).toHaveBeenCalledWith({ data: '{"text": "Hello"}' });
+  });
+
+  it("calls onComplete when stream ends with data", async () => {
+    async function* mockStream() {
+      yield new TextEncoder().encode('data: {"text": "Hello"}\n\n');
+    }
+
+    await streamParser(mockStream(), { onEvent, onPing, onComplete });
+
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onComplete when stream ends with empty buffer", async () => {
+    async function* mockStream() {
+      yield new TextEncoder().encode('data: {"text": "Hello"}\n\n');
+    }
+
+    await streamParser(mockStream(), { onEvent, onPing, onComplete });
+
+    expect(onEvent).toHaveBeenCalledTimes(1);
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onComplete when stream ends with ping", async () => {
+    async function* mockStream() {
+      yield new TextEncoder().encode(': ping');
+    }
+
+    await streamParser(mockStream(), { onEvent, onPing, onComplete });
+
+    expect(onPing).toHaveBeenCalledTimes(1);
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onComplete after onEvent when stream errors", async () => {
+    async function* mockStream() {
+      throw new Error("Stream error");
+    }
+
+    await streamParser(mockStream(), { onEvent, onPing, onComplete });
+
+    expect(onEvent).toHaveBeenCalledWith({ error: expect.any(Error) });
+    expect(onComplete).toHaveBeenCalledTimes(1);
   });
 });

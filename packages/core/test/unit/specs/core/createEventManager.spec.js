@@ -64,6 +64,7 @@ describe("createEventManager", () => {
     requestPayload = {
       addEvent: vi.fn(),
       mergeConfigOverride: vi.fn(),
+      finalizeConfigOverrides: vi.fn(),
     };
     const createDataCollectionRequestPayload = () => {
       return requestPayload;

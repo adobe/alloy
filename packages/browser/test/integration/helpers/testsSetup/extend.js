@@ -33,9 +33,8 @@ export const test = baseTest.extend({
 
   networkRecorder: [
     async ({}, use) => {
-      // Make networkRecorder available in the test context
+      networkRecorder.reset();
       await use(networkRecorder);
-
       networkRecorder.reset();
     },
     { auto: true }, // Apply to all tests even if not explicitly using networkRecorder

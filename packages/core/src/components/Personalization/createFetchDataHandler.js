@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 import { groupBy, isNonEmptyArray } from "../../utils/index.js";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope.js";
+import { REDIRECT_ITEM } from "../../constants/schema.js";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 
@@ -84,6 +85,7 @@ export default ({
             [...pagePropositions, ...currentViewPropositions],
             nonRenderedPropositions,
           ));
+
         if (isNonEmptyArray(pagePropositions)) {
           logger.logOnContentRendering({
             status: "rendering-started",
@@ -117,7 +119,16 @@ export default ({
         // Render could take a long time especially if one of the renders
         // is waiting for html to appear on the page. We show the containers
         // immediately, and whatever renders quickly will not have flicker.
-        showContainers();
+        // However, skip showing containers if there's only one page proposition with a single REDIRECT_ITEM
+        const shouldSkipShowContainers =
+          pagePropositions.length === 1 &&
+          pagePropositions[0]
+            .getItems()
+            .every((p) => p.getSchema() === REDIRECT_ITEM);
+
+        if (!shouldSkipShowContainers) {
+          showContainers();
+        }
       } else {
         ({ returnedPropositions, returnedDecisions } = processPropositions(
           [],

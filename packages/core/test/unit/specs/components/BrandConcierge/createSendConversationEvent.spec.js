@@ -46,7 +46,10 @@ describe("createSendConversationEvent", () => {
         edgeConfigId: "test-edge-config-id",
         edgeDomain: "edge.adobedc.net",
         edgeBasePath: "/ee",
-        datastreamId: "test-datastream"
+        datastreamId: "test-datastream",
+        conversation: {
+          streamTimeout: 10000
+        }
       },
       buildEndpointUrl: vi.fn().mockReturnValue("https://test.adobe.io/conversation"),
       lifecycle: {

@@ -21,7 +21,10 @@ import { is } from "./scripts.js";
 import { createFragment, selectNodesWithEq } from "./dom/index.js";
 import isBlankString from "../../../utils/isBlankString.js";
 import { HEAD } from "../../../constants/tagName.js";
-import { DOM_ACTION_APPEND_HTML } from "./initDomActionsModules.js";
+import {
+  DOM_ACTION_APPEND_HTML,
+  DOM_ACTION_CUSTOM_CODE,
+} from "./initDomActionsModules.js";
 
 const HEAD_TAGS_SELECTOR = "SCRIPT,LINK,STYLE";
 
@@ -34,6 +37,11 @@ const filterHeadContent = (content) => {
 export default (action) => {
   const result = { ...action };
   const { content, selector } = result;
+
+  // Custom code actions have a "HEAD" selector, but are handled differently.
+  if (result.type === DOM_ACTION_CUSTOM_CODE) {
+    return result;
+  }
 
   if (isBlankString(content)) {
     return result;

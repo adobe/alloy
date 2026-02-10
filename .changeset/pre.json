@@ -2,11 +2,9 @@
   "mode": "pre",
   "tag": "beta",
   "initialVersions": {
-    "@adobe/alloy": "2.30.1-beta.15",
-    "@adobe/alloy-core": "2.29.0-beta.1",
+    "@adobe/alloy": "2.31.0",
+    "@adobe/alloy-core": "2.29.0",
     "@adobe/alloy-sandbox-browser": "0.1.0"
   },
-  "changesets": [
-    "free-pianos-run"
-  ]
+  "changesets": []
 }

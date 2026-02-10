@@ -70,9 +70,8 @@ describe("Advertising::viewThroughHandler", () => {
     vi.spyOn(Date, "now").mockReturnValue(fixedTs);
 
     // Mock collectAllIdentities
-    const { default: mockCollectAllIdentities } = await import(
-      "../../../../../../src/components/Advertising/identities/collectAllIdentities.js"
-    );
+    const { default: mockCollectAllIdentities } =
+      await import("../../../../../../src/components/Advertising/identities/collectAllIdentities.js");
     collectAllIdentities = mockCollectAllIdentities;
     collectAllIdentities.mockReset();
   });
