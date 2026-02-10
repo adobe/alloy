@@ -1,5 +1,11 @@
 # @adobe/alloy
 
+## 2.31.1-beta.0
+
+### Patch Changes
+
+- [#1444](https://github.com/adobe/alloy/pull/1444) [`98cdde5`](https://github.com/adobe/alloy/commit/98cdde510de22e46946261e7dd17ea67921a9ab6) Thanks [@ninaceban](https://github.com/ninaceban)! - Fixed a bug where in Safari the Brand Concierge streams were not parsed
+
 ## 2.31.0
 
 ### Minor Changes
