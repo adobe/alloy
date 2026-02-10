@@ -12,49 +12,111 @@ window.bootstrapConversationalExperience = ({
 }) => {
   const preview = { ...previewConfigs };
 
+  // SSE spec allows three line ending styles: CRLF (\r\n), LF (\n), or CR (\r)
+  const LINE_ENDING_REGEX = /\r\n|\r|\n/;
+  // Events are separated by blank lines (double line endings)
+  const EVENT_SEPARATOR_REGEX = /\r\n\r\n|\n\n|\r\r/;
+  // Ping comment format: `: ping` (colon followed immediately by "ping")
+  const PING_COMMENT = ": ping";
+
+  const isPingComment = (eventData) => {
+    const trimmed = eventData.trim();
+    return trimmed.startsWith(PING_COMMENT);
+  };
+
   function parseEventFromBuffer(eventData) {
-    const lines = eventData.split("\n");
-    let eventType = "message";
-    let data = "";
+    const lines = eventData.split(LINE_ENDING_REGEX);
+    const parsedEvent = {};
 
     for (const line of lines) {
-      if (line.startsWith("event:")) {
-        eventType = line.substring(6).trim();
-      } else if (line.startsWith("data:")) {
-        data += line.substring(5).trim() + "\n";
+      const trimmedLine = line.trim();
+
+      if (!trimmedLine) {
+        continue;
+      }
+
+      const colonIndex = trimmedLine.indexOf(":");
+
+      if (colonIndex === -1) {
+        continue;
+      }
+
+      const field = trimmedLine.substring(0, colonIndex).trim();
+      const value = trimmedLine.substring(colonIndex + 1).trim();
+
+      if (field === "data") {
+        parsedEvent.data = (parsedEvent.data || "") + value;
+      } else if (field === "event") {
+        parsedEvent.type = value;
+      } else if (field === "id") {
+        parsedEvent.id = value;
       }
     }
 
-    return data ? { type: eventType, data: data.trim() } : null;
+    return parsedEvent.data ? parsedEvent : null;
   }
 
-  const parseStream = async (stream, onEvent) => {
+  const parseStream = async (stream, { onEvent, onPing, onComplete }) => {
     const reader = stream.getReader();
     const decoder = new TextDecoder("utf-8");
     let buffer = "";
 
     try {
       while (true) {
+        // eslint-disable-next-line no-await-in-loop
         const { done, value } = await reader.read();
-        if (done) break;
+
+        if (done) {
+          break;
+        }
 
         buffer += decoder.decode(value, { stream: true });
-        const events = buffer.split("\r\n");
-        buffer = events.pop() || ""; // Keep incomplete data in the buffer
+        const events = buffer.split(EVENT_SEPARATOR_REGEX);
+        buffer = events.pop() || "";
 
-        for (const eventData of events) {
-          const event = parseEventFromBuffer(eventData);
-          if (event) onEvent(event);
+        for (const event of events) {
+          const trimmedEvent = event.trim();
+
+          if (!trimmedEvent) {
+            continue;
+          }
+
+          if (isPingComment(trimmedEvent)) {
+            onPing();
+            continue;
+          }
+
+          const parsedEvent = parseEventFromBuffer(trimmedEvent);
+
+          if (parsedEvent !== null) {
+            onEvent(parsedEvent);
+          }
         }
       }
 
-      // Process any remaining data in the buffer
-      if (buffer.trim()) {
-        const event = parseEventFromBuffer(buffer);
-        if (event) onEvent(event);
+      const trimmedBuffer = buffer.trim();
+
+      if (!trimmedBuffer) {
+        onComplete();
+        return;
       }
+
+      if (isPingComment(trimmedBuffer)) {
+        onPing();
+        onComplete();
+        return;
+      }
+
+      const event = parseEventFromBuffer(trimmedBuffer);
+
+      if (event !== null) {
+        onEvent(event);
+      }
+
+      onComplete();
     } catch (error) {
       onEvent({ error });
+      onComplete();
     } finally {
       reader.releaseLock();
     }
@@ -91,7 +153,11 @@ window.bootstrapConversationalExperience = ({
         },
         body: stringifiedPayload,
       }).then((response) => {
-        parseStream(response.body, onStreamResponseCallback);
+        parseStream(response.body, {
+          onEvent: onStreamResponseCallback,
+          onPing: () => {},
+          onComplete: () => {},
+        });
       });
     } catch (error) {
       onStreamResponseCallback({ error });

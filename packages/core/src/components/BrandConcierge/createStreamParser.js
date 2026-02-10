@@ -73,7 +73,7 @@ export default () => {
 
   /**
    * Parse SSE stream using callbacks.
-   * Uses modern async iteration (for await...of) for clean, performant stream processing.
+   * Uses ReadableStreamDefaultReader for cross-browser compatibility (Safari 11+, Firefox, Chrome).
    *
    * @param {ReadableStream} stream - The readable stream from fetch response
    * @param {Object} callbacks - Callback functions for stream events
@@ -82,12 +82,20 @@ export default () => {
    * @param {Function} callbacks.onComplete - Callback function called when stream ends
    */
   return async (stream, { onEvent, onPing, onComplete }) => {
+    const reader = stream.getReader();
     const decoder = new TextDecoder(ENCODING);
     let buffer = "";
 
     try {
-      for await (const chunk of stream) {
-        buffer += decoder.decode(chunk, { stream: true });
+      while (true) {
+        // eslint-disable-next-line no-await-in-loop
+        const { done, value } = await reader.read();
+
+        if (done) {
+          break;
+        }
+
+        buffer += decoder.decode(value, { stream: true });
         const events = buffer.split(EVENT_SEPARATOR_REGEX);
         buffer = events.pop() || "";
 
@@ -134,6 +142,8 @@ export default () => {
     } catch (error) {
       onEvent({ error });
       onComplete();
+    } finally {
+      reader.releaseLock();
     }
   };
 };
