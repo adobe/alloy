@@ -56,7 +56,11 @@ describe("Streaming Media Events", () => {
       }),
     });
 
-    const sessionCall = await networkRecorder.findCall(/edge\.adobedc\.net/);
+    const sessionCalls = await networkRecorder.findCalls(/edge\.adobedc\.net/);
+    const sessionCall = sessionCalls.find(
+      (call) =>
+        call.request.body?.events?.[0]?.xdm?.eventType === "media.sessionStart",
+    );
     expect(sessionCall).toBeDefined();
     expect(sessionCall.request.body.events[0].xdm.timestamp).toBeDefined();
     expect(sessionCall.request.body.events[0].xdm.eventType).toBe(
@@ -71,9 +75,10 @@ describe("Streaming Media Events", () => {
     });
 
     const mediaEventCalls = await networkRecorder.findCalls(/\/va\//);
-    expect(mediaEventCalls.length).toBeGreaterThan(0);
-
-    const playEvent = mediaEventCalls[0];
+    const playEvent = mediaEventCalls.find(
+      (call) => call.request.body?.events?.[0]?.xdm?.eventType === "media.play",
+    );
+    expect(playEvent).toBeDefined();
     expect(playEvent.request.body.events[0].xdm.timestamp).toBeDefined();
     expect(playEvent.request.body.events[0].xdm.eventType).toBe("media.play");
   });
