@@ -29,6 +29,9 @@ export default ({
     // not recursive (it doesn't call toJSON() on the event objects).
     // Parsing the result of JSON.stringify(), however, gives the
     // fully recursive raw data.
+    if (typeof payload.finalizeConfigOverrides === "function") {
+      payload.finalizeConfigOverrides();
+    }
     const stringifiedPayload = JSON.stringify(payload);
     const parsedPayload = JSON.parse(stringifiedPayload);
 

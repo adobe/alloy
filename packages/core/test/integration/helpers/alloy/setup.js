@@ -30,6 +30,12 @@ export default async () => {
   alloyScriptTag.setAttribute("async", true);
   alloyScriptTag.src = "/dist/alloy.js";
 
-  document.body.appendChild(alloyScriptTag);
+  await new Promise((resolve, reject) => {
+    alloyScriptTag.onload = () => resolve();
+    alloyScriptTag.onerror = () =>
+      reject(new Error("Failed to load /dist/alloy.js"));
+    document.body.appendChild(alloyScriptTag);
+  });
+
   return window.alloy;
 };

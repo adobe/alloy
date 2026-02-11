@@ -4,7 +4,7 @@
     {
       "payload": [
         {
-          "sessionId": "test-session-id-12345"
+          "sessionId": "test-session-id-123456789012345678901234"
         }
       ],
       "type": "media-analytics:new-session"
