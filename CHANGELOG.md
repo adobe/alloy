@@ -1,5 +1,11 @@
 # @adobe/alloy
 
+## 2.31.1-beta.2
+
+### Patch Changes
+
+- [#1443](https://github.com/adobe/alloy/pull/1443) [`5e5b811`](https://github.com/adobe/alloy/commit/5e5b811e02e449e5c3ab82824be0f26a23c14172) Thanks [@carterworks](https://github.com/carterworks)! - Fixed an issue where there are multiple s_kwcid or ef_id parameters in url"
+
 ## 2.31.1-beta.1
 
 ### Patch Changes
