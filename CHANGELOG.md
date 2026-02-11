@@ -1,5 +1,11 @@
 # @adobe/alloy
 
+## 2.31.1-beta.1
+
+### Patch Changes
+
+- [#1442](https://github.com/adobe/alloy/pull/1442) [`e27bf44`](https://github.com/adobe/alloy/commit/e27bf44310fc161c05bd22e7ac3aa0100a5b600d) Thanks [@adhir111](https://github.com/adhir111)! - Added consent gating to the Advertising component to ensure no advertising cookies are written before user consent is resolved.
+
 ## 2.31.1-beta.0
 
 ### Patch Changes
