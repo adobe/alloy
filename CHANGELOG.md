@@ -1,5 +1,33 @@
 # @adobe/alloy
 
+## 2.31.1
+
+### Patch Changes
+
+- [#1442](https://github.com/adobe/alloy/pull/1442) [`e27bf44`](https://github.com/adobe/alloy/commit/e27bf44310fc161c05bd22e7ac3aa0100a5b600d) Thanks [@adhir111](https://github.com/adhir111)! - Added consent gating to the Advertising component to ensure no advertising cookies are written before user consent is resolved.
+
+- [#1443](https://github.com/adobe/alloy/pull/1443) [`5e5b811`](https://github.com/adobe/alloy/commit/5e5b811e02e449e5c3ab82824be0f26a23c14172) Thanks [@carterworks](https://github.com/carterworks)! - Fixed an issue where there are multiple s_kwcid or ef_id parameters in url"
+
+- [#1444](https://github.com/adobe/alloy/pull/1444) [`98cdde5`](https://github.com/adobe/alloy/commit/98cdde510de22e46946261e7dd17ea67921a9ab6) Thanks [@ninaceban](https://github.com/ninaceban)! - Fixed a bug where in Safari the Brand Concierge streams were not parsed
+
+## 2.31.1-beta.2
+
+### Patch Changes
+
+- [#1443](https://github.com/adobe/alloy/pull/1443) [`5e5b811`](https://github.com/adobe/alloy/commit/5e5b811e02e449e5c3ab82824be0f26a23c14172) Thanks [@carterworks](https://github.com/carterworks)! - Fixed an issue where there are multiple s_kwcid or ef_id parameters in url"
+
+## 2.31.1-beta.1
+
+### Patch Changes
+
+- [#1442](https://github.com/adobe/alloy/pull/1442) [`e27bf44`](https://github.com/adobe/alloy/commit/e27bf44310fc161c05bd22e7ac3aa0100a5b600d) Thanks [@adhir111](https://github.com/adhir111)! - Added consent gating to the Advertising component to ensure no advertising cookies are written before user consent is resolved.
+
+## 2.31.1-beta.0
+
+### Patch Changes
+
+- [#1444](https://github.com/adobe/alloy/pull/1444) [`98cdde5`](https://github.com/adobe/alloy/commit/98cdde510de22e46946261e7dd17ea67921a9ab6) Thanks [@ninaceban](https://github.com/ninaceban)! - Fixed a bug where in Safari the Brand Concierge streams were not parsed
+
 ## 2.31.0
 
 ### Minor Changes

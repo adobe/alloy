@@ -279,4 +279,41 @@ describe("Advertising::clickThroughHandler", () => {
 
     expect(logger.error).toHaveBeenCalled();
   });
+
+  it("should handle duplicate s_kwcid values by using the first value", async () => {
+    const mockEvent = {
+      setUserXdm: vi.fn(),
+      finalize: vi.fn(),
+    };
+    eventManager.createEvent.mockReturnValue(mockEvent);
+
+    const result = await handleClickThrough({
+      eventManager,
+      cookieManager,
+      adConversionHandler,
+      logger,
+      skwcid: ["AL!first-value", "AL!second-value"],
+      efid: "test-efid",
+      optionsFromCommand: {},
+    });
+
+    expect(mockEvent.setUserXdm).toHaveBeenCalledWith(
+      expect.objectContaining({
+        _experience: {
+          adcloud: {
+            conversionDetails: {
+              trackingCode: "AL!first-value",
+              trackingIdentities: "test-efid",
+            },
+          },
+        },
+      }),
+    );
+    expect(cookieManager.setValue).toHaveBeenCalledWith(LAST_CLICK_COOKIE_KEY, {
+      click_time: expect.anything(),
+      skwcid: "AL!first-value",
+      efid: "test-efid",
+    });
+    expect(result).toEqual({ status: "success" });
+  });
 });

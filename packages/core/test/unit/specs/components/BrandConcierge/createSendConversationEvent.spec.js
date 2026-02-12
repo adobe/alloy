@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import createSendConversationEvent from "../../../../../src/components/BrandConcierge/createSendConversationEvent.js";
 import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
+import createMockReadableStream from "./helpers/createMockReadableStream.js";
 
 describe("createSendConversationEvent", () => {
   let mockDependencies;
@@ -77,7 +78,7 @@ describe("createSendConversationEvent", () => {
     const mockResponse = {
       ok: true,
       status: 200,
-      body: "mock-stream-body"
+      body: createMockReadableStream([]),
     };
     mockDependencies.sendConversationServiceRequest.mockResolvedValue(mockResponse);
 
@@ -117,7 +118,7 @@ describe("createSendConversationEvent", () => {
     const mockResponse = {
       ok: true,
       status: 200,
-      body: "mock-stream-body"
+      body: createMockReadableStream([]),
     };
     mockDependencies.sendConversationServiceRequest.mockResolvedValue(mockResponse);
 
@@ -156,7 +157,7 @@ describe("createSendConversationEvent", () => {
     const mockResponse = {
       ok: true,
       status: 200,
-      body: "mock-stream-body"
+      body: createMockReadableStream([]),
     };
     mockDependencies.sendConversationServiceRequest.mockResolvedValue(mockResponse);
 
@@ -196,17 +197,19 @@ describe("createSendConversationEvent", () => {
 
   it("handles stream timeout when no data is received within 10 seconds", async () => {
     vi.useFakeTimers();
-    
+
     const mockResponse = {
       ok: true,
       status: 200,
       body: {
-        // Simulate an async iterator that never yields data
-        [Symbol.asyncIterator]: async function* () {
-          // Never yield anything - simulates a hanging stream
-          await new Promise(() => {}); // Promise that never resolves
-        }
-      }
+        getReader() {
+          return {
+            // Simulate a reader that never returns data (hanging stream)
+            read: () => new Promise(() => {}), // Promise that never resolves
+            releaseLock: () => {},
+          };
+        },
+      },
     };
     mockDependencies.sendConversationServiceRequest.mockResolvedValue(mockResponse);
 
