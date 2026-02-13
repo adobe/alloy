@@ -16,7 +16,6 @@ import {
   prependHtmlHandler,
 } from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
-import waitFor from "../../helpers/utils/waitFor.js";
 
 describe("Target Custom Code SPA", () => {
   test("custom code runs twice when sendEvent is called twice with renderDecisions and viewName", async ({
@@ -47,8 +46,7 @@ describe("Target Custom Code SPA", () => {
     // Verify custom code ran once after first call
     expect(window.customCodeExecutionCount).toBe(1);
 
-    await waitFor(50);
-
+    // Second sendEvent call (simulating SPA navigation back to same view)
     await alloy("sendEvent", {
       renderDecisions: true,
       xdm: {
