@@ -10,66 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { vi, describe, it, expect, beforeEach } from "vitest";
+import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 import handleClickThrough from "../../../../../../src/components/Advertising/handlers/clickThroughHandler.js";
 import {
   LAST_CLICK_COOKIE_KEY,
   LAST_CONVERSION_TIME_KEY,
 } from "../../../../../../src/components/Advertising/constants/index.js";
 
-// Mock network operations to prevent real network calls
-vi.mock("fetch", () => vi.fn());
-
-// Mock globalThis fetch and other network APIs
-Object.defineProperty(globalThis, "fetch", {
-  value: vi.fn(() =>
-    Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve({ success: true }),
-    }),
-  ),
-  writable: true,
+afterEach(() => {
+  // Ensure Date.now and other spies don't leak into other files when isolate=false.
+  vi.restoreAllMocks();
 });
-
-// Mock XMLHttpRequest
-Object.defineProperty(globalThis, "XMLHttpRequest", {
-  value: class MockXMLHttpRequest {
-    open() {
-      this.readyState = 4;
-    }
-
-    send() {
-      this.status = 200;
-    }
-
-    setRequestHeader() {
-      this.headers = {};
-    }
-  },
-  writable: true,
-});
-
-// Mock DOM operations to prevent network calls from script loading
-if (typeof globalThis.document !== "undefined") {
-  globalThis.document.createElement = vi.fn(() => ({
-    src: "",
-    onload: null,
-    onerror: null,
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-  }));
-  if (globalThis.document.head) {
-    globalThis.document.head.appendChild = vi.fn();
-  }
-  if (globalThis.document.body) {
-    globalThis.document.body.appendChild = vi.fn();
-  }
-}
-
-if (typeof globalThis.window !== "undefined") {
-  globalThis.window.addEventListener = vi.fn();
-  globalThis.window.removeEventListener = vi.fn();
-}
 
 // Mock helpers with all functions that might make network calls
 vi.mock(
@@ -119,11 +70,7 @@ describe("Advertising::clickThroughHandler", () => {
     };
 
     const fixedTs = Date.UTC(2024, 0, 1, 0, 0, 0);
-    const mockNow = {
-      valueOf: () => fixedTs,
-      toISOString: () => new Date(fixedTs).toISOString(),
-    };
-    vi.spyOn(Date, "now").mockReturnValue(mockNow);
+    vi.spyOn(Date, "now").mockReturnValue(fixedTs);
   });
 
   it("should handle click-through with skwcid", async () => {

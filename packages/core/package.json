@@ -1,17 +1,35 @@
 {
   "name": "@adobe/alloy-core",
-  "version": "2.29.0",
+  "version": "1.1.0",
   "description": "Adobe Experience Platform Web SDK Core (Internal Package)",
   "type": "module",
-  "private": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/adobe/alloy.git",
     "directory": "packages/core"
   },
   "exports": {
-    ".": "./src/index.js",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./src/index.js",
+      "default": "./src/index.js"
+    },
+    "./types.js": {
+      "types": "./src/types.js",
+      "default": "./src/types.js"
+    },
+    "./createEventListeners.js": {
+      "types": "./src/createEventListeners.js",
+      "default": "./src/createEventListeners.js"
+    },
+    "./componentMetadata.js": {
+      "types": "./src/componentMetadata.js",
+      "default": "./src/componentMetadata.js"
+    },
+    "./core/componentCreators.js": {
+      "types": "./src/core/componentCreators.js",
+      "default": "./src/core/componentCreators.js"
+    }
   },
   "author": "Adobe Inc.",
   "license": "Apache-2.0",

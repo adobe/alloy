@@ -20,14 +20,6 @@ vi.mock(
   }),
 );
 
-// Mock the sendAdConversion handler
-vi.mock(
-  "../../../../../src/components/Advertising/handlers/sendAdConversion.js",
-  () => ({
-    default: vi.fn(() => vi.fn()),
-  }),
-);
-
 import createComponent from "../../../../../src/components/Advertising/createComponent.js";
 import handleOnBeforeSendEvent from "../../../../../src/components/Advertising/handlers/onBeforeSendEventHandler.js";
 

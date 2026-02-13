@@ -55,7 +55,7 @@ const getPushSubscriptionDetails = async ({ vapidPublicKey, window }) => {
   }
 
   const serviceWorkerRegistration =
-    // eslint-disable-next-line compat/compat
+    // eslint-disable-next-line compat/compat -- Service worker support is required for push notifications
     await window.navigator.serviceWorker.getRegistration();
 
   if (!serviceWorkerRegistration) {

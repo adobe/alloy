@@ -28,7 +28,6 @@ export default defineConfig([
   importPlugin.flatConfigs.recommended,
   pluginJs.configs.recommended,
   eslintPluginPrettierRecommended,
-  compatPlugin.configs["flat/recommended"],
   globalIgnores([
     "sandboxes/**/build/",
     "sandboxes/**/public/",
@@ -144,7 +143,7 @@ export default defineConfig([
   },
   {
     name: "alloy/core-src",
-    files: ["packages/core/src/**/*.{cjs,js}"],
+    files: ["packages/*/src/**/*.{cjs,js}"],
     rules: {
       "import/no-extraneous-dependencies": [
         "error",
@@ -225,6 +224,26 @@ export default defineConfig([
       ],
     },
   },
+
+  {
+    name: "alloy/browser",
+    files: [
+      "packages/browser/**/*.{cjs,js,mjs,jsx}",
+      "sandboxes/browser/**/*.{cjs,js,mjs,jsx}",
+      "packages/core/**/*.{cjs,js,mjs,jsx}", // TODO: Remove this once browser APIs are removed from core.
+    ],
+    plugins: {
+      compat: compatPlugin,
+    },
+    rules: {
+      ...compatPlugin.configs["flat/recommended"].rules,
+    },
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+    },
+  },
   {
     name: "alloy/scripts",
     files: ["scripts/**/*.{cjs,js}"],
@@ -303,11 +322,13 @@ export default defineConfig([
     },
     plugins: {
       react,
+      compat: compatPlugin,
     },
     rules: {
       ...react.configs.recommended.rules,
       ...react.configs["jsx-runtime"].rules,
       "react/prop-types": "off",
+      ...compatPlugin.configs["flat/recommended"].rules,
     },
   },
   // Vite plugins are ESM-only and confuse eslint-plugin-import; disable the

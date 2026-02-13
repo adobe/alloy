@@ -17,7 +17,7 @@ governing permissions and limitations under the License.
 /** @import { EdgeRequestExecutor } from '../../../core/edgeNetwork/types.js' */
 
 import { sortObjectKeysRecursively } from "../../../utils/index.js";
-import getPushSubscriptionDetails from "../helpers/getPushSubscriptionDetails.js";
+import getPushSubscriptionDetailsDefault from "../helpers/getPushSubscriptionDetails.js";
 import createSendPushSubscriptionRequest from "./createSendPushSubscriptionRequest.js";
 import createSendPushSubscriptionPayload from "./createSendPushSubscriptionPayload.js";
 import saveToIndexedDb from "../helpers/saveToIndexedDb.js";
@@ -54,6 +54,7 @@ export default async ({
   eventManager,
   identity,
   window,
+  getPushSubscriptionDetails = getPushSubscriptionDetailsDefault,
 }) => {
   await identity.awaitIdentity();
   const ecid = identity.getEcidFromCookie();
