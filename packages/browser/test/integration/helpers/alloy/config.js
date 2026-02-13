@@ -17,4 +17,5 @@ export default {
   edgeDomain: import.meta.env.VITE_EDGE_DOMAIN || "edge.adobedc.net",
   edgeBasePath: import.meta.env.VITE_EDGE_BASE_PATH || "ee",
   thirdPartyCookiesEnabled: false,
+  debugEnabled: false,
 };

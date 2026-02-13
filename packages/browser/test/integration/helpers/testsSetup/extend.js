@@ -43,7 +43,7 @@ export const test = baseTest.extend({
   alloy: [
     async ({}, use) => {
       await setupBaseCode();
-      const alloy = setupAlloy();
+      const alloy = await setupAlloy();
 
       // Make alloy available in the test context
       await use(alloy);
