@@ -18,10 +18,69 @@ To remove all web browser specific code from `@adobe/core` and into `@adobe/allo
 
 These API usages need to organized into platform-agnostic "capabilities". They should not just be polyfills of browser APIs, because different platforms will have different needs. For example, an edge worker does not need to send a beacon or a push notification. A Node.js runtime may need to deal with many identities, rather than just one.
 
+## Principles
+
+- **Gradual migration:** Keep PRs small and reviewable. Prefer one capability domain (or one tightly related slice) per PR.
+- **Browser behavior first:** During migration, preserve current browser behavior and test coverage. Do not block progress on full non-browser support.
+- **No large rewrites:** Prefer adapter layers and dependency injection over broad refactors in a single change.
+- **Temporary dual-paths are acceptable:** It is okay to keep browser defaults/fallbacks while capability wiring is being introduced.
+- **Portability is a final milestone:** `@adobe/alloy-core` does not need to be usable in Node/worker runtimes until the migration is complete.
+
+## Plan
+
+This plan is intentionally incremental to reduce reviewer burden. Earlier phases may still rely on browser globals; non-browser runtime support is only expected in the final phase.
+
+### Phase 1 - Scaffolding (no behavior change)
+
+- Thread a `platform` object through core instance creation.
+- Keep current browser defaults and exports working.
+- Add types/contracts for capabilities, but do not require all capabilities yet.
+
+### Phase 2 - Capability extraction by domain
+
+- Migrate call sites capability-by-capability, one domain at a time.
+- For each domain: add/adjust capability interface, wire browser adapter, migrate usages, keep tests green.
+
+### Phase 3 - Component and bootstrap ownership split
+
+- Move browser-only bootstrap responsibilities to `packages/browser`.
+- Keep core focused on command execution, lifecycle orchestration, request/response handling, and shared logic.
+- Define which components are core-owned vs browser-owned and update composition points accordingly.
+
+### Phase 4 - Cleanup and portability hardening
+
+- Remove temporary browser fallbacks/shims from core.
+- Remove direct browser-global reads from core module scope/runtime paths.
+- Move browser-only dependencies from core into browser package where applicable.
+- Add final non-browser readiness checks (for example, Node import smoke tests).
+
+At the end of Phase 4, core should be portable and usable outside browser environments.
+
 ## Capabilities
 
-### Network
+### State (`window.*` values)
 
+This migration will have to happen last, after all `window.*` APIs are moved to capabilities. This will largely be niche and use-case specific.
+
+**Bootstrap-specific APIs:** `window.__alloyNS`, `window.__alloyMonitors`, `window[instanceName].q`
+
+**Core needs:**
+
+- Read pre-init command queue (snippet pattern)
+- Read/merge monitor hooks for logging/debugging
+
+**Examples in the current codebase:**
+
+- **Snippet bootstrap queue:** `window.__alloyNS` is read to discover instance names, and `window[instanceName].q` is drained/rebound to real instance execution (`packages/core/src/core/index.js`, `packages/browser/src/standalone.js`, `packages/browser/src/baseCode/index.js`).
+- **Global monitors:** `window.__alloyMonitors` is read and merged with configured monitors for logging hooks (`packages/core/src/core/getMonitors.js`).
+- **Legacy Visitor + opt-in bridge:** `window.Visitor` and `window.adobe.optIn` are used to fetch ECID and gate behavior by legacy opt-in (`packages/core/src/components/Identity/visitorService/getVisitor.js`, `packages/core/src/components/Identity/visitorService/awaitVisitorOptIn.js`).
+- **Advertising partner globals:** `window.ID5` and `window.ats` are used as third-party SDK entry points for identity resolution (`packages/core/src/components/Advertising/identities/collectID5Id.js`, `packages/core/src/components/Advertising/identities/collectRampId.js`).
+
+These are not just browser APIs; they are ambient global-state contracts with snippets and third-party libraries. They likely need a dedicated capability (or browser-only adapters) rather than direct `window.*` access from core.
+
+Browser-specific bootstrapping should likely stay in `packages/browser`, with core accepting normalized inputs (for example, `monitors[]` and drained queued commands) rather than reading globals directly.
+
+### Network
 
 **APIs:** `fetch`, `navigator.sendBeacon`, `Blob`
 
@@ -38,7 +97,7 @@ interface NetworkCapability {
   sendRequest(
     url: string,
     body: string,
-    options: {useSendBeacon?: boolean}
+    options: { useSendBeacon?: boolean },
   ): Promise<NetworkResponse>;
 }
 ```
@@ -125,7 +184,7 @@ interface ContextCapability {
   getReferrer(): string;
   getUserAgent(): string;
   getHighEntropyHints?(): Promise<Record<string, unknown>>;
-  getViewport(): {width: number; height: number};
+  getViewport(): { width: number; height: number };
   getScreenOrientation?(): "portrait" | "landscape" | undefined;
 }
 ```
@@ -133,17 +192,6 @@ interface ContextCapability {
 #### Open Questions:
 
 Context will differ greatly by platform. This could be a use-case that argue that capabilities _and components_ should be able to be injected into core.
-
-### Globals / Bootstrap
-
-**APIs:** `window.__alloyNS`, `window.__alloyMonitors`, `window[instanceName].q`
-
-**Core needs:**
-
-- Read pre-init command queue (snippet pattern)
-- Read/merge monitor hooks for logging/debugging
-
-This is browser-specific bootstrapping — probably stays in `packages/browser`, not injected into core. Core just accepts `monitors[]` as a config option.
 
 ### Service Worker / Push (optional, browser-only)
 
@@ -176,7 +224,3 @@ The browser uses the `uuid` package, but other environments could use built-in `
 
 - **Push notifications:** Keep entirely in browser package, or split (config/request building in core, SW lifecycle in browser)?
 - **Context:** Could be "read-only" data passed in at init rather than a capability object with methods. Simpler for non-browser runtimes.
-
-```
-
-```
