@@ -34,6 +34,7 @@ export default defineConfig([
     "sandboxes/**/public/",
     "node_modules/",
     "launch*.js",
+    "packages/reactor-extension/**",
   ]),
   {
     name: "alloy/license-header",
@@ -227,7 +228,7 @@ export default defineConfig([
   },
   {
     name: "alloy/scripts",
-    files: ["scripts/**/*.{cjs,js}"],
+    files: ["scripts/**/*.{cjs,mjs,js}"],
     languageOptions: {
       globals: {
         ...globals.node,

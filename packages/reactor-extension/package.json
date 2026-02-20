@@ -32,8 +32,8 @@
     "sandbox": "./scripts/buildExtensionManifest.mjs && reactor-sandbox",
     "test": "pnpm exec playwright install chromium && vitest run && pnpm run test:functional",
     "test:coverage": "pnpm run clean && rimraf coverage && pnpm run build:alloy:preinstalled && pnpm exec playwright install chromium && vitest run --coverage",
-    "test:unit": "pnpm run build:alloy:preinstalled && pnpm exec playwright install chromium && vitest run --project=unit",
-    "test:unit:watch": "pnpm run build:alloy:preinstalled && pnpm exec playwright install chromium && vitest --project=unit",
+    "test:unit": "pnpm run --filter @adobe/alloy run build:lib && pnpm run build:alloy:preinstalled && pnpm exec playwright install chromium && vitest run --project=unit",
+    "test:unit:watch": "pnpm run --filter @adobe/alloy run build:lib && pnpm run build:alloy:preinstalled && pnpm exec playwright install chromium && vitest --project=unit",
     "test:integration": "pnpm exec playwright install chromium && vitest run --project=integration",
     "test:integration:watch": "pnpm exec playwright install chromium && vitest --project=integration",
     "test:integration:debug": "pnpm exec playwright install chromium && vitest --project=integration --browser=chromium --browser.provider=playwright --browser.headless=false",
@@ -62,7 +62,7 @@
     ]
   },
   "dependencies": {
-    "@adobe/alloy": "2.31.1",
+    "@adobe/alloy": "workspace:*",
     "@adobe/react-spectrum": "^3.45.0",
     "@react-stately/data": "^3.14.1",
     "@spectrum-icons/illustrations": "^3.6.26",

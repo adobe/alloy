@@ -144,6 +144,25 @@ jobs:
           VERSION=$(jq -r '.version' package.json)
           echo "Root version after versioning: ${VERSION}"
 
+      - name: Bump extension when @adobe/alloy was released
+        if: hashFiles('packages/reactor-extension/package.json') != ''
+        run: |
+          ALLOY_NEW=$(jq -r '.releases[] | select(.name=="@adobe/alloy") | .newVersion' changeset-status.json)
+          if [ -z "${ALLOY_NEW}" ] || [ "${ALLOY_NEW}" = "null" ]; then
+            echo "No @adobe/alloy release in this run; skipping extension bump."
+            exit 0
+          fi
+          export ALLOY_NEW
+          cd packages/reactor-extension
+          node -e "
+            const fs = require('fs');
+            const p = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            p.dependencies['@adobe/alloy'] = process.env.ALLOY_NEW;
+            fs.writeFileSync('package.json', JSON.stringify(p, null, 2));
+          "
+          pnpm version patch --no-commit-hooks
+          cd ../..
+
       - name: Update lockfile
         run: pnpm install --no-frozen-lockfile --ignore-scripts
 
@@ -217,6 +236,31 @@ jobs:
 
       - name: Upload browser artifacts to CDN
         run: node scripts/uploadToCDN.js
+
+      - name: Package and deploy extension to Reactor (when @adobe/alloy was released)
+        if: hashFiles('packages/reactor-extension/package.json') != ''
+        env:
+          REACTOR_IO_INTEGRATION_CLIENT_SECRET: ${{ secrets.REACTOR_IO_INTEGRATION_CLIENT_SECRET }}
+        run: |
+          if ! jq -e '.releases[] | select(.name=="@adobe/alloy")' changeset-status.json >/dev/null; then
+            echo "@adobe/alloy was not in this release; skipping extension deploy."
+            exit 0
+          fi
+          EXT_VERSION=$(node -p "require('./packages/reactor-extension/package.json').version")
+          pnpm --filter reactor-extension run build
+          node scripts/deployExtensionToReactor.mjs "${EXT_VERSION}"
+
+      - name: Restore extension workspace protocol for @adobe/alloy
+        if: hashFiles('packages/reactor-extension/package.json') != ''
+        run: |
+          if ! jq -e '.releases[] | select(.name=="@adobe/alloy")' changeset-status.json >/dev/null; then exit 0; fi
+          node -e "
+            const fs = require('fs');
+            const p = JSON.parse(fs.readFileSync('packages/reactor-extension/package.json', 'utf8'));
+            if (p.dependencies['@adobe/alloy']) p.dependencies['@adobe/alloy'] = 'workspace:*';
+            fs.writeFileSync('packages/reactor-extension/package.json', JSON.stringify(p, null, 2));
+          "
+          git add packages/reactor-extension/package.json
 
       - name: Re-enter beta prerelease mode for next cycle after a stable release
         if: needs.analyze.outputs.is_prerelease != 'true'

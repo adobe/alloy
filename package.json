@@ -23,19 +23,24 @@
   },
   "scripts": {
     "clean": "rimraf dist distTest libEs5 libEs6 types",
-    "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/src,test,scripts}/**/*.{js,cjs,mjs,jsx}\"",
-    "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
+    "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/src,packages/*/scripts,test,scripts}/**/*.{js,cjs,mjs,jsx}\"",
+    "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/src,packages/*/scripts,packages/*/test,test,scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
+    "format:check": "prettier --check \"*.{html,js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/src,packages/*/scripts,test,scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
     "types": "tsc",
     "test": "pnpm exec playwright install chromium && vitest run && pnpm run test:scripts",
     "test:coverage": "rimraf coverage && pnpm exec playwright install chromium && vitest run --coverage",
-    "test:unit": "pnpm exec playwright install chromium && vitest run --project=unit",
-    "test:unit:debug": "pnpm exec playwright install chromium && vitest --no-file-parallelism --project=unit --browser=chromium --browser.provider=playwright --browser.headless=false",
-    "test:unit:watch": "pnpm exec playwright install chromium && vitest --project=unit",
-    "test:unit:coverage": "pnpm exec playwright install chromium && vitest run --coverage --project=unit",
-    "test:integration": "pnpm exec playwright install chromium && vitest run --project=integration",
-    "test:integration:debug": "pnpm exec playwright install chromium && vitest --no-file-parallelism --project=integration --browser=chromium --browser.provider=playwright --browser.headless=false",
-    "test:integration:watch": "pnpm exec playwright install chromium && vitest --project=integration",
-    "test:integration:coverage": "pnpm exec playwright install chromium && vitest run --coverage --project=integration",
+    "test:unit": "pnpm exec playwright install chromium && vitest run --config ./vitest.config.js --project=unit --project=reactor-extension/unit",
+    "test:unit:core": "pnpm exec playwright install chromium && vitest run --config ./vitest.config.js --project=unit",
+    "test:unit:extension": "pnpm exec playwright install chromium && vitest run --config ./vitest.config.js --project=reactor-extension/unit",
+    "test:unit:debug": "pnpm exec playwright install chromium && vitest --config ./vitest.config.js --project=unit --project=reactor-extension/unit --no-file-parallelism --browser=chromium --browser.provider=playwright --browser.headless=false",
+    "test:unit:watch": "pnpm exec playwright install chromium && vitest --config ./vitest.config.js --project=unit --project=reactor-extension/unit",
+    "test:unit:coverage": "pnpm exec playwright install chromium && vitest run --config ./vitest.config.js --project=unit --project=reactor-extension/unit --coverage",
+    "test:integration": "pnpm exec playwright install chromium && vitest run --config ./vitest.config.js --project=integration --project=reactor-extension/integration",
+    "test:integration:core": "pnpm exec playwright install chromium && vitest run --config ./vitest.config.js --project=integration",
+    "test:integration:extension": "pnpm exec playwright install chromium && vitest run --config ./vitest.config.js --project=reactor-extension/integration",
+    "test:integration:debug": "pnpm exec playwright install chromium && vitest --config ./vitest.config.js --project=integration --project=reactor-extension/integration --no-file-parallelism --browser=chromium --browser.provider=playwright --browser.headless=false",
+    "test:integration:watch": "pnpm exec playwright install chromium && vitest --config ./vitest.config.js --project=integration --project=reactor-extension/integration",
+    "test:integration:coverage": "pnpm exec playwright install chromium && vitest run --config ./vitest.config.js --project=integration --project=reactor-extension/integration --coverage",
     "test:functional": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chromium",
     "test:functional:custom": "node scripts/helpers/runFunctionalTests.js",
     "test:functional:watch": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ./scripts/watchFunctionalTests.js --browsers chromium",
@@ -47,21 +52,27 @@
     "build": "pnpm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,SERVICE_WORKER,SERVICE_WORKER_MIN && echo \"Base Code:\" && cat distTest/baseCode.min.js",
     "build:watch": "pnpm run clean && rollup -c --watch --environment BASE_CODE_MIN,STANDALONE",
     "build:custom": "node scripts/alloyBuilder.js",
+    "build:extension": "pnpm run build && pnpm --filter reactor-extension run build",
+    "test:extension": "pnpm --filter reactor-extension run test",
+    "package:extension": "pnpm --filter reactor-extension run package",
+    "sandbox:extension": "pnpm --filter reactor-extension run sandbox",
+    "dev:extension": "pnpm --filter reactor-extension run dev",
     "prepare": "husky",
-    "prepack": "pnpm run clean && babel packages/core/src -d libEs5 --env-name npmEs5 && babel packages/core/src -d libEs6 --env-name npmEs6 && echo '{\"type\":\"commonjs\"}' > libEs5/package.json && echo '{\"type\":\"module\"}' > libEs6/package.json && pnpm run types",
+    "build:lib": "babel packages/core/src -d libEs5 --env-name npmEs5 && babel packages/core/src -d libEs6 --env-name npmEs6 && echo '{\"type\":\"commonjs\"}' > libEs5/package.json && echo '{\"type\":\"module\"}' > libEs6/package.json",
+    "prepack": "pnpm run clean && pnpm run build:lib && pnpm run types",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js"
   },
   "lint-staged": {
     "./*.{cjs,mjs,js,jsx}": [
       "eslint --cache --fix"
     ],
-    "./{packages/*/src,test,scripts}/**/*.{cjs,mjs,js,jsx}": [
+    "./{packages/*/src,packages/*/scripts,packages/*/test,test,scripts}/**/*.{cjs,mjs,js,jsx}": [
       "eslint --cache --fix"
     ],
     "./*.{html,js,cjs,mjs,jsx}": [
       "prettier --write"
     ],
-    "./{sandboxes/browser,packages/*/src,test,scripts}/**/*.{html,js,cjs,mjs,jsx}": [
+    "./{sandboxes/browser,packages/*/src,packages/*/scripts,packages/*/test,test,scripts}/**/*.{html,js,cjs,mjs,jsx}": [
       "prettier --write"
     ]
   },
@@ -100,6 +111,8 @@
     "@vitest/browser-playwright": "^4.0.6",
     "@vitest/coverage-v8": "^4.0.6",
     "@vitest/eslint-plugin": "^1.4.0",
+    "@vitejs/plugin-react": "^5.1.1",
+    "happy-dom": "^20.0.10",
     "chalk": "^5.6.2",
     "concurrently": "^9.2.1",
     "date-fns": "^4.1.0",

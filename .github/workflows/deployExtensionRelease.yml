@@ -1,0 +1,113 @@
+name: Deploy Extension Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Extension version (e.g. 2.34.2)"
+        required: true
+
+jobs:
+  validate:
+    name: Validate version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: adobe/project-card-release-automation/validate-version@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ github.event.inputs.version }}
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: validate
+    if: ${{ contains(github.event.inputs.version, '-') == false }}
+    environment: Production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Version extension
+        run: pnpm version ${{ github.event.inputs.version }} --no-commit-hooks
+        working-directory: packages/reactor-extension
+      - name: Build extension (refresh extension.json)
+        run: pnpm --filter reactor-extension run build
+      - name: Commit and push
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "gh-actions-$GITHUB_ACTOR@github.com"
+          git remote set-url origin "git@github.com:${{ github.repository }}.git"
+          git add packages/reactor-extension/package.json
+          git diff --staged --quiet || git commit -m "[skip ci] extension ${{ github.event.inputs.version }}"
+          git push origin HEAD:${{ github.ref_name }}
+      - name: Package and deploy to Reactor
+        env:
+          REACTOR_IO_INTEGRATION_CLIENT_SECRET: ${{ secrets.REACTOR_IO_INTEGRATION_CLIENT_SECRET }}
+        run: node scripts/deployExtensionToReactor.mjs ${{ github.event.inputs.version }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: extension-package
+          path: packages/reactor-extension/package-adobe-alloy-${{ github.event.inputs.version }}.zip
+      - name: Record release
+        uses: adobe/project-card-release-automation/record-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ github.event.inputs.version }}
+
+  prerelease:
+    name: Prerelease
+    runs-on: ubuntu-latest
+    needs: validate
+    if: ${{ contains(github.event.inputs.version, '-') }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Version extension
+        run: pnpm version ${{ github.event.inputs.version }} --no-commit-hooks
+        working-directory: packages/reactor-extension
+      - name: Build extension (refresh extension.json)
+        run: pnpm --filter reactor-extension run build
+      - name: Commit and push
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "gh-actions-$GITHUB_ACTOR@github.com"
+          git remote set-url origin "git@github.com:${{ github.repository }}.git"
+          git add packages/reactor-extension/package.json
+          git diff --staged --quiet || git commit -m "[skip ci] extension ${{ github.event.inputs.version }}"
+          git push origin HEAD:${{ github.ref_name }}
+      - name: Package and deploy to Reactor
+        env:
+          REACTOR_IO_INTEGRATION_CLIENT_SECRET: ${{ secrets.REACTOR_IO_INTEGRATION_CLIENT_SECRET }}
+        run: node scripts/deployExtensionToReactor.mjs ${{ github.event.inputs.version }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: extension-package
+          path: packages/reactor-extension/package-adobe-alloy-${{ github.event.inputs.version }}.zip
+      - name: Record release
+        uses: adobe/project-card-release-automation/record-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ github.event.inputs.version }}

@@ -1,3 +1,0 @@
-STAGED_ONLY=true pnpm run add-license
-lint-staged
-pnpm run test:unit
