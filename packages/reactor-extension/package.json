@@ -16,7 +16,7 @@
     "build:extensionManifest": "./scripts/buildExtensionManifest.mjs --verbose",
     "build:lib": "./scripts/buildLib.mjs",
     "build:views": "./scripts/buildViews.mjs",
-    "build": "conc --pad-prefix --names \"alloy,fixtures,manifest,lib,views\" \"pnpm run build:alloy\" \"pnpm run build:componentFixtures\" \"pnpm run build:extensionManifest\" \"pnpm run build:lib\" \"pnpm run build:views\"",
+    "build": "conc --pad-prefix --names \"alloy,alloy-preinstalled,fixtures,manifest,lib,views\" \"pnpm run build:alloy\" \"pnpm run build:alloy:preinstalled\" \"pnpm run build:componentFixtures\" \"pnpm run build:extensionManifest\" \"pnpm run build:lib\" \"pnpm run build:views\"",
     "watch:lib": "./scripts/buildLib.mjs --watch",
     "watch:views": "./scripts/buildViews.mjs --watch",
     "watch": "conc --pad-prefix --names \"alloy,fixtures,manifest,lib,views\" \"pnpm run build:alloy\" \"pnpm run build:componentFixtures\" \"pnpm run build:extensionManifest\" \"pnpm run watch:lib\" \"pnpm run watch:views\"",
