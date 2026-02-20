@@ -356,9 +356,9 @@ describe("Instance Manager", () => {
 
       // In preinstalled mode, we don't add instance name to __alloyNS
       // The external instance already exists on window
-      // eslint-disable-next-line no-underscore-dangle
+
       expect(mockWindow.__alloyNS).toBeDefined();
-      // eslint-disable-next-line no-underscore-dangle
+
       expect(mockWindow.__alloyNS).not.toContain("alloy3");
     });
 
@@ -397,7 +397,6 @@ describe("Instance Manager", () => {
     it("adds instance to window.__alloyNS in managed mode", () => {
       build();
 
-      // eslint-disable-next-line no-underscore-dangle
       expect(mockWindow.__alloyNS).toContain("alloy3");
     });
 

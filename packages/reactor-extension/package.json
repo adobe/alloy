@@ -24,7 +24,7 @@
     "dev": "pnpm run build && conc --pad-prefix --names \"watch,sandbox\" \"pnpm run watch\" \"pnpm run sandbox\"",
     "format:check": "prettier --check \"*.{js,jsx,html,mjs,cjs}\" \"{src,test,scripts}/**/*.{js,jsx,html,mjs,cjs}\"",
     "format": "prettier --write \"*.{js,jsx,html,mjs,cjs}\" \"{src,test,scripts}/**/*.{js,jsx,html,mjs,cjs}\"",
-    "lint": "eslint \"*.{js,jsx}\" \"{src,test,scripts}/**/*.{js,jsx}\" --cache --fix",
+    "lint": "pnpm -C ../.. exec eslint --cache --fix \"packages/reactor-extension/**/*.{cjs,js,jsx}\"",
     "package": "pnpm run clean && NODE_ENV=production ./scripts/createExtensionPackage.mjs",
     "precommit-msg": "echo 'Running pre-commit scripts...' && exit 0",
     "prepare": "husky",

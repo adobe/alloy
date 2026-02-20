@@ -725,7 +725,7 @@ describe("overridesBridge", () => {
       });
     });
 
-    it("should convert from booleans to 'Enabled' and 'Disabled' ", () => {
+    it("should convert from booleans to 'Enabled' and 'Disabled'", () => {
       const enabledEdgeConfigOverrides = envs.reduce(
         (acc, env) => ({
           ...acc,

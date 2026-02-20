@@ -38,7 +38,6 @@ const wasPreinstalled = (initInfo) => {
 };
 
 export const createUniqueNameTest = () => {
-  // eslint-disable-next-line func-names
   return function (instance, testContext) {
     const { path: instancePath, parent: instances } = testContext;
     return validateDuplicateValue({
@@ -122,7 +121,7 @@ export const bridge = {
       edgeDomain: string().required("Please specify an edge domain."),
     })
     .test("uniqueName", createUniqueNameTest())
-    // eslint-disable-next-line func-names
+
     .test("uniqueOrgId", function (instance, testContext) {
       const { path: instancePath, parent: instances } = testContext;
       return validateDuplicateValue({

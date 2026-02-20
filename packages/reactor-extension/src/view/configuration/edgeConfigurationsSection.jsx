@@ -556,7 +556,7 @@ export const bridge = {
     })
     // TestCafe doesn't allow this to be an arrow function because of
     // how it scopes "this".
-    // eslint-disable-next-line func-names
+
     .test("uniqueEdgeConfigId", function (instance, testContext) {
       const { path: instancePath, parent: instances } = testContext;
 

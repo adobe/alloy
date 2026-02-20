@@ -19,14 +19,10 @@ import {
 
 const getXdmPropositions = (xdm) => {
   return xdm &&
-    // eslint-disable-next-line no-underscore-dangle
     xdm._experience &&
-    // eslint-disable-next-line no-underscore-dangle
     xdm._experience.decisioning &&
-    // eslint-disable-next-line no-underscore-dangle
     isNonEmptyArray(xdm._experience.decisioning.propositions)
-    ? // eslint-disable-next-line no-underscore-dangle
-      xdm._experience.decisioning.propositions
+    ? xdm._experience.decisioning.propositions
     : [];
 };
 
@@ -119,7 +115,6 @@ export default () => {
         this.mergeXdm(userXdm);
       }
       if (newPropositions.length > 0) {
-        // eslint-disable-next-line no-underscore-dangle
         content.xdm._experience.decisioning.propositions = newPropositions;
       }
 
