@@ -41,6 +41,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Build Alloy (dist, distTest for integration tests)
         run: pnpm run build
+      - name: Build Alloy lib (libEs5, libEs6 for extension and tests)
+        run: pnpm run build:lib
       - name: Build all packages
         run: pnpm -r run build
       - name: Run Test
