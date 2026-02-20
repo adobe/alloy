@@ -42,7 +42,7 @@ jobs:
         run: pnpm version ${{ github.event.inputs.version }} --no-commit-hooks
         working-directory: packages/reactor-extension
       - name: Build extension (refresh extension.json)
-        run: pnpm --filter reactor-extension run build
+        run: pnpm --filter reactor-extension-alloy run build
       - name: Commit and push
         run: |
           git config user.name "$GITHUB_ACTOR"
@@ -89,7 +89,7 @@ jobs:
         run: pnpm version ${{ github.event.inputs.version }} --no-commit-hooks
         working-directory: packages/reactor-extension
       - name: Build extension (refresh extension.json)
-        run: pnpm --filter reactor-extension run build
+        run: pnpm --filter reactor-extension-alloy run build
       - name: Commit and push
         run: |
           git config user.name "$GITHUB_ACTOR"

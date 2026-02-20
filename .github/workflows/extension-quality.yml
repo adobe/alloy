@@ -32,11 +32,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Build all packages
-        run: pnpm -r run build
+        run: pnpm run build:all
       - name: Run ${{ matrix.check }}
         run: |
           if [ "${{ matrix.check }}" = "build" ]; then
-            pnpm --filter reactor-extension run build
+            pnpm run build:all
           else
             pnpm run ${{ matrix.check }}
           fi
@@ -64,6 +64,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Build all packages
-        run: pnpm -r run build
+        run: pnpm run build:all
       - name: Run test:${{ matrix.test }}
-        run: pnpm --filter reactor-extension run test:${{ matrix.test }}
+        run: pnpm --filter reactor-extension-alloy run test:${{ matrix.test }}

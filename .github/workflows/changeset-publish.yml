@@ -247,7 +247,7 @@ jobs:
             exit 0
           fi
           EXT_VERSION=$(node -p "require('./packages/reactor-extension/package.json').version")
-          pnpm --filter reactor-extension run build
+          pnpm --filter reactor-extension-alloy run build
           node scripts/deployExtensionToReactor.mjs "${EXT_VERSION}"
 
       - name: Restore extension workspace protocol for @adobe/alloy
