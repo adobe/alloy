@@ -152,16 +152,9 @@ jobs:
             echo "No @adobe/alloy release in this run; skipping extension bump."
             exit 0
           fi
-          export ALLOY_NEW
           cd packages/reactor-extension
-          node -e "
-            const fs = require('fs');
-            const p = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-            p.dependencies['@adobe/alloy'] = process.env.ALLOY_NEW;
-            fs.writeFileSync('package.json', JSON.stringify(p, null, 2));
-          "
+          pnpm add @adobe/alloy@$ALLOY_NEW
           pnpm version patch --no-commit-hooks
-          cd ../..
 
       - name: Update lockfile
         run: pnpm install --no-frozen-lockfile --ignore-scripts
