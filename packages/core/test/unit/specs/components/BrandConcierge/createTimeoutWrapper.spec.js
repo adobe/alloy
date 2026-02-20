@@ -23,7 +23,10 @@ describe("createTimeoutWrapper", () => {
 
   it("returns object with onEvent, onPing, and onComplete handlers", () => {
     const mockCallback = vi.fn();
-    const wrapper = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
+    const wrapper = createTimeoutWrapper({
+      onStreamResponseCallback: mockCallback,
+      streamTimeout: 10000,
+    });
 
     expect(typeof wrapper.onEvent).toBe("function");
     expect(typeof wrapper.onPing).toBe("function");
@@ -32,7 +35,10 @@ describe("createTimeoutWrapper", () => {
 
   it("calls callback immediately when data arrives before timeout", () => {
     const mockCallback = vi.fn();
-    const wrapper = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
+    const wrapper = createTimeoutWrapper({
+      onStreamResponseCallback: mockCallback,
+      streamTimeout: 10000,
+    });
 
     const testData = { data: "test data" };
     wrapper.onEvent(testData);
@@ -43,7 +49,10 @@ describe("createTimeoutWrapper", () => {
 
   it("resets timeout when data arrives", () => {
     const mockCallback = vi.fn();
-    const wrapper = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
+    const wrapper = createTimeoutWrapper({
+      onStreamResponseCallback: mockCallback,
+      streamTimeout: 10000,
+    });
 
     // Advance to just before timeout
     vi.advanceTimersByTime(9000);
@@ -60,7 +69,10 @@ describe("createTimeoutWrapper", () => {
 
   it("resets timeout when ping arrives", () => {
     const mockCallback = vi.fn();
-    const wrapper = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
+    const wrapper = createTimeoutWrapper({
+      onStreamResponseCallback: mockCallback,
+      streamTimeout: 10000,
+    });
 
     // Advance to just before timeout
     vi.advanceTimersByTime(9000);
@@ -80,14 +92,17 @@ describe("createTimeoutWrapper", () => {
     expect(mockCallback).toHaveBeenCalledTimes(1);
     expect(mockCallback).toHaveBeenCalledWith({
       error: expect.objectContaining({
-        message: "Stream timeout: No data received within 10 seconds"
-      })
+        message: "Stream timeout: No data received within 10 seconds",
+      }),
     });
   });
 
   it("ping does not forward to callback", () => {
     const mockCallback = vi.fn();
-    const wrapper = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
+    const wrapper = createTimeoutWrapper({
+      onStreamResponseCallback: mockCallback,
+      streamTimeout: 10000,
+    });
 
     wrapper.onPing();
     wrapper.onPing();
@@ -99,7 +114,10 @@ describe("createTimeoutWrapper", () => {
 
   it("calls callback with error when timeout occurs", () => {
     const mockCallback = vi.fn();
-    createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
+    createTimeoutWrapper({
+      onStreamResponseCallback: mockCallback,
+      streamTimeout: 10000,
+    });
 
     // Advance time to trigger timeout
     vi.advanceTimersByTime(10000);
@@ -107,14 +125,17 @@ describe("createTimeoutWrapper", () => {
     expect(mockCallback).toHaveBeenCalledTimes(1);
     expect(mockCallback).toHaveBeenCalledWith({
       error: expect.objectContaining({
-        message: "Stream timeout: No data received within 10 seconds"
-      })
+        message: "Stream timeout: No data received within 10 seconds",
+      }),
     });
   });
 
   it("ignores subsequent onEvent calls after timeout fires", () => {
     const mockCallback = vi.fn();
-    const wrapper = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
+    const wrapper = createTimeoutWrapper({
+      onStreamResponseCallback: mockCallback,
+      streamTimeout: 10000,
+    });
 
     // Trigger timeout
     vi.advanceTimersByTime(10000);
@@ -130,7 +151,10 @@ describe("createTimeoutWrapper", () => {
 
   it("ignores subsequent onPing calls after timeout fires", () => {
     const mockCallback = vi.fn();
-    const wrapper = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
+    const wrapper = createTimeoutWrapper({
+      onStreamResponseCallback: mockCallback,
+      streamTimeout: 10000,
+    });
 
     // Trigger timeout
     vi.advanceTimersByTime(10000);
@@ -146,7 +170,10 @@ describe("createTimeoutWrapper", () => {
 
   it("allows multiple data calls with timeout reset between each", () => {
     const mockCallback = vi.fn();
-    const wrapper = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
+    const wrapper = createTimeoutWrapper({
+      onStreamResponseCallback: mockCallback,
+      streamTimeout: 10000,
+    });
 
     wrapper.onEvent({ data: "chunk 1" });
     vi.advanceTimersByTime(5000);
@@ -166,7 +193,10 @@ describe("createTimeoutWrapper", () => {
 
   it("handles error events from stream", () => {
     const mockCallback = vi.fn();
-    const wrapper = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
+    const wrapper = createTimeoutWrapper({
+      onStreamResponseCallback: mockCallback,
+      streamTimeout: 10000,
+    });
 
     const streamError = { error: new Error("Stream error") };
     wrapper.onEvent(streamError);
@@ -176,7 +206,10 @@ describe("createTimeoutWrapper", () => {
 
   it("does not timeout if data arrives just before timeout", () => {
     const mockCallback = vi.fn();
-    const wrapper = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
+    const wrapper = createTimeoutWrapper({
+      onStreamResponseCallback: mockCallback,
+      streamTimeout: 10000,
+    });
 
     // Advance to just before timeout
     vi.advanceTimersByTime(9999);
@@ -193,7 +226,10 @@ describe("createTimeoutWrapper", () => {
 
   it("does not timeout if ping arrives just before timeout", () => {
     const mockCallback = vi.fn();
-    const wrapper = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
+    const wrapper = createTimeoutWrapper({
+      onStreamResponseCallback: mockCallback,
+      streamTimeout: 10000,
+    });
 
     // Advance to just before timeout
     vi.advanceTimersByTime(9999);
@@ -209,22 +245,25 @@ describe("createTimeoutWrapper", () => {
 
   it("maintains rolling timeout with mixed ping and data events", () => {
     const mockCallback = vi.fn();
-    const wrapper = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
+    const wrapper = createTimeoutWrapper({
+      onStreamResponseCallback: mockCallback,
+      streamTimeout: 10000,
+    });
 
     // T=0: Start
-    vi.advanceTimersByTime(3000);  // T=3s
+    vi.advanceTimersByTime(3000); // T=3s
 
     // Ping at T=3s
     wrapper.onPing();
-    vi.advanceTimersByTime(4000);  // T=7s
+    vi.advanceTimersByTime(4000); // T=7s
 
     // Data at T=7s
     wrapper.onEvent({ data: "chunk 1" });
-    vi.advanceTimersByTime(5000);  // T=12s
+    vi.advanceTimersByTime(5000); // T=12s
 
     // Ping at T=12s
     wrapper.onPing();
-    vi.advanceTimersByTime(8000);  // T=20s
+    vi.advanceTimersByTime(8000); // T=20s
 
     // Data at T=20s
     wrapper.onEvent({ data: "chunk 2" });
@@ -237,7 +276,10 @@ describe("createTimeoutWrapper", () => {
 
   it("clears timeout when onComplete is called", () => {
     const mockCallback = vi.fn();
-    const wrapper = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
+    const wrapper = createTimeoutWrapper({
+      onStreamResponseCallback: mockCallback,
+      streamTimeout: 10000,
+    });
 
     // Receive some data
     wrapper.onEvent({ data: "chunk 1" });
@@ -255,7 +297,10 @@ describe("createTimeoutWrapper", () => {
 
   it("clears timeout when onComplete is called even with no data", () => {
     const mockCallback = vi.fn();
-    const wrapper = createTimeoutWrapper({ onStreamResponseCallback: mockCallback, streamTimeout: 10000 });
+    const wrapper = createTimeoutWrapper({
+      onStreamResponseCallback: mockCallback,
+      streamTimeout: 10000,
+    });
 
     // Stream completes immediately with no data
     wrapper.onComplete();

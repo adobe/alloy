@@ -13,10 +13,7 @@ governing permissions and limitations under the License.
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import buildAndValidateConfig from "../../../../src/core/buildAndValidateConfig.js";
 import createConfig from "../../../../src/core/config/createConfig.js";
-import {
-  boolean,
-  objectOf,
-} from "../../../../src/utils/validation/index.js";
+import { boolean, objectOf } from "../../../../src/utils/validation/index.js";
 
 describe("buildAndValidateConfig", () => {
   let options;

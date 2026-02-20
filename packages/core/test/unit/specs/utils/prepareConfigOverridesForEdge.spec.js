@@ -91,7 +91,7 @@ describe("utils:prepareConfigOverridesForEdge", () => {
         },
         other_key: {
           other_value: true,
-        }
+        },
       }),
     ).toEqual({
       com_adobe_analytics: {
