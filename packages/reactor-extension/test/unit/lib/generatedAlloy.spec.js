@@ -19,10 +19,12 @@ import { describe, it, expect, beforeAll, beforeEach, vi } from "vitest";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import { createRequire } from "module";
 import vm from "vm";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
 
 describe("Generated alloy.js (preinstalled mode)", () => {
   let mockWindow;
@@ -54,6 +56,7 @@ describe("Generated alloy.js (preinstalled mode)", () => {
       module: moduleObj,
       window: mockWindow,
       globalThis: mockWindow,
+      require,
       setTimeout: global.setTimeout,
       Date: global.Date,
       Promise: global.Promise,
