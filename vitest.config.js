@@ -12,6 +12,8 @@ governing permissions and limitations under the License.
 // eslint-disable-next-line import/no-unresolved
 import { defineConfig } from "vitest/config";
 import { playwright } from "@vitest/browser-playwright";
+// eslint-disable-next-line import/no-unresolved
+import react from "@vitejs/plugin-react";
 
 const isCi = !!process.env.CI;
 const fileParallelism = process.env.FILE_PARALLELISM !== "false";
@@ -61,10 +63,48 @@ export default defineConfig({
           },
         },
       },
+      {
+        extends: false,
+        test: {
+          name: "reactor-extension/unit",
+          include: [
+            "packages/reactor-extension/test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)",
+          ],
+          isolate: false,
+          environment: "happy-dom",
+        },
+      },
+      {
+        extends: false,
+        plugins: [
+          react({
+            jsxRuntime: "automatic",
+          }),
+        ],
+        test: {
+          name: "reactor-extension/integration",
+          include: [
+            "packages/reactor-extension/test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)",
+          ],
+          isolate: true,
+          browser: {
+            enabled: true,
+            instances: [{ browser: "chromium" }],
+            provider: playwright(),
+            headless: true,
+            screenshotFailures: false,
+            locators: { testIdAttribute: "data-test-id" },
+            viewport: { width: 1000, height: 1000 },
+          },
+          setupFiles: [
+            "packages/reactor-extension/test/integration/helpers/setup.js",
+          ],
+        },
+      },
     ],
 
     coverage: {
-      include: ["packages/core/src/**/*"],
+      include: ["packages/*/src/**/*"],
       reporter: isCi ? ["lcov"] : ["lcov", "html", "text"],
     },
   },

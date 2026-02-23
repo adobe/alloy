@@ -1,0 +1,82 @@
+apiVersion: v1alpha
+kind: testcafe
+sauce:
+  region: us-west-1
+  sauceignore: .sauceignore
+  concurrency: 5
+  retries: 3
+nodeVersion: lts
+defaults:
+  timeout: 30m
+metadata:
+  name: Alloy Reactor Extension - Chrome
+rootDir: ./
+env:
+  NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
+  SAUCE_USERNAME: $SAUCE_USERNAME
+  SAUCE_ACCESS_KEY: $SAUCE_ACCESS_KEY
+  SAUCE_CLIENT_TIMEOUT: 300s
+  EDGE_E2E_PRIVATE_KEY_CONTENTS: $EDGE_E2E_PRIVATE_KEY_CONTENTS
+  EDGE_E2E_CLIENT_SECRET: $EDGE_E2E_CLIENT_SECRET
+  REACTOR_IO_INTEGRATION_PRIVATE_KEY_CONTENTS: $REACTOR_IO_INTEGRATION_PRIVATE_KEY_CONTENTS
+  REACTOR_IO_INTEGRATION_CLIENT_SECRET: $REACTOR_IO_INTEGRATION_CLIENT_SECRET
+testcafe:
+  version: 3.6.2
+speed: 1
+selectorTimeout: 2000
+disablePageCaching: false
+timeZone: New_York
+pageRequestTimeout: 1000
+retryTestPages: true
+quarantineMode: false
+npm:
+  dependencies:
+    - react
+    - react-dom
+    - uuid
+    - "@adobe/reactor-sandbox"
+    - "@adobe/auth-token"
+    - "@adobe/reactor-turbine"
+
+suites:
+  - name: "Component Tests"
+    esm: true
+    browserName: "chrome"
+    browserVersion: "129"
+    src:
+      - "test/functional/specs/component/**/*.spec.mjs"
+    platformName: "Windows 11"
+
+  - name: "Runtime Tests"
+    esm: true
+    browserName: "chrome"
+    browserVersion: "129"
+    src:
+      - "test/functional/specs/runtime/**/*.spec.mjs"
+    platformName: "Windows 11"
+
+  - name: "View Action Tests"
+    esm: true
+    browserName: "chrome"
+    browserVersion: "129"
+    src:
+      - "test/functional/specs/view/actions/**/*.spec.mjs"
+    platformName: "Windows 11"
+
+  - name: "View Configuration Tests"
+    esm: true
+    browserName: "chrome"
+    browserVersion: "129"
+    src:
+      - "test/functional/specs/view/configuration/**/*.spec.mjs"
+    platformName: "Windows 11"
+
+  - name: "View Data Elements Tests"
+    esm: true
+    browserName: "chrome"
+    browserVersion: "129"
+    src:
+      - "test/functional/specs/view/dataElements/**/*.spec.mjs"
+    platformName: "Windows 11"
+    screenResolution: "1024x768"
+

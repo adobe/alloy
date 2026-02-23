@@ -22,6 +22,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Linting
         run: pnpm run lint
+      - name: Format check
+        run: pnpm run format:check
 
   unit-test:
     name: "Test"
@@ -37,8 +39,10 @@ jobs:
           node-version-file: .nvmrc
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build Alloy
+      - name: Build Alloy (libEs5, libEs6, dist, distTest)
         run: pnpm run build
+      - name: Build all packages
+        run: pnpm -r run build
       - name: Run Test
         run: pnpm run test
         env:

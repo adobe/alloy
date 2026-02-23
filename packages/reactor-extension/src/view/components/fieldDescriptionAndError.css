@@ -1,0 +1,21 @@
+.FieldDescriptionAndError-description,
+.FieldDescriptionAndError-error {
+  /* These styles were largely copied from React-Spectrum's labeling of fields,
+  since the description and error look very similar. */
+  box-sizing: border-box;
+  color: var(--spectrum-alias-label-text-color,var(--spectrum-global-color-gray-700));
+  padding-top: var(--spectrum-global-dimension-size-50);
+  padding-bottom: var(--spectrum-global-dimension-size-50);
+
+  font-size: var(--spectrum-global-dimension-font-size-75);
+  font-weight: var(--spectrum-global-font-weight-regular,400);
+  line-height: var(--spectrum-global-font-line-height-small,1.3);
+
+  -webkit-font-smoothing: subpixel-antialiased;
+  -moz-osx-font-smoothing: auto;
+  font-smoothing: subpixel-antialiased;
+}
+
+.FieldDescriptionAndError-error {
+  color: var(--spectrum-semantic-negative-color-default, var(--spectrum-global-color-red-500))
+}

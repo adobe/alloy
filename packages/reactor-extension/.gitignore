@@ -1,0 +1,12 @@
+node_modules
+dist
+componentFixtureDist
+.cache
+coverage
+.sandbox
+.eslintcache
+.parcel-cache
+.token-cache.json
+extension.json
+package-adobe-alloy-*.zip
+benchmark*

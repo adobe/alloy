@@ -29,9 +29,7 @@ Object.defineProperty(globalThis, "fetch", {
 vi.mock(
   "../../../../../../src/utils/request/createDataCollectionRequestPayload.js",
 );
-vi.mock(
-  "../../../../../../src/utils/request/createDataCollectionRequest.js",
-);
+vi.mock("../../../../../../src/utils/request/createDataCollectionRequest.js");
 
 describe("Advertising::createAdConversionHandler", () => {
   let eventManager;

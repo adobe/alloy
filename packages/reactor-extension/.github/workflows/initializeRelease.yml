@@ -1,0 +1,18 @@
+name: Initialize Intended Release
+on:
+  workflow_dispatch:
+    inputs:
+      type:
+        description: "Release Type [major|minor|patch]"
+        required: true
+
+jobs:
+  initializeIntendedRelease:
+    name: "Initialize Intended Release"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: adobe/project-card-release-automation/initialize-card@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          releaseType: ${{ github.event.inputs.type }}
+          projectNumber: 1

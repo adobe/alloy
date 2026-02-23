@@ -1,0 +1,19 @@
+minimumReleaseAge: 2880 # 2 days
+minimumReleaseAgeExclude:
+  - "@adobe/alloy"
+  - "@adobe/reactor-sandbox"
+  - "@adobe/reactor-turbine"
+  - "@adobe/reactor-turbine-schemas"
+verifyDepsBeforeRun: warn
+ignoredBuiltDependencies:
+  - core-js
+  - lmdb
+  - msgpackr-extract
+onlyBuiltDependencies:
+  - "@parcel/watcher"
+  - "@swc/core"
+  - esbuild
+  - msw
+  - puppeteer
+packages:
+  - scripts/helpers/parcel-transformer-extension-name

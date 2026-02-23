@@ -1,0 +1,51 @@
+/*
+Copyright 2019 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+/* Simplifies centering things vertically in the middle of the view (like loading errors) or
+creating columns that are the full height of the view and separately scrollable. */
+html {
+  height: 100%
+}
+
+/* Typically, body has margin automatically provided by the browser,
+but because we're using a height of 100% on the html element,
+the bottom margin of the body extends outside of the HTML element
+for some reason, so content ends up flush with the bottom of the
+window (a bad thing). Using box sizing of border-box doesn't fix the
+issue. Instead, we'll switch margin to padding. */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html
+body,
+#root,
+.react-spectrum-provider {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.react-spectrum-provider.with-padding {
+  padding: 8px;
+}
+
+.formik-field textarea {
+  min-height: var(--spectrum-global-dimension-size-4600) !important
+}
+
+.spectrum-accessibility-overrides {
+   *[class*="spectrum-HelpText--neutral"][class*="is-disabled"] *[class*="spectrum-HelpText-text"] {
+    color: var(--spectrum-alias-label-text-color, var(--spectrum-global-color-gray-700));
+  }
+}

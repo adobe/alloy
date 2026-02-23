@@ -24,32 +24,34 @@ describe("createSendConversationServiceRequest", () => {
       status: 200,
       body: {
         getReader: vi.fn().mockReturnValue({
-          read: vi.fn().mockResolvedValue({ done: true, value: undefined })
-        })
-      }
+          read: vi.fn().mockResolvedValue({ done: true, value: undefined }),
+        }),
+      },
     };
 
     mockDependencies = {
       logger: {
         logOnBeforeNetworkRequest: vi.fn(),
-        logOnNetworkError: vi.fn()
+        logOnNetworkError: vi.fn(),
       },
-      fetch: vi.fn().mockResolvedValue(mockResponse)
+      fetch: vi.fn().mockResolvedValue(mockResponse),
     };
 
     mockRequest = {
-      getPayload: vi.fn().mockReturnValue({ message: "test message" })
+      getPayload: vi.fn().mockReturnValue({ message: "test message" }),
     };
   });
 
   it("creates a send conversation service request function", () => {
-    const sendConversationServiceRequest = createSendConversationServiceRequest(mockDependencies);
+    const sendConversationServiceRequest =
+      createSendConversationServiceRequest(mockDependencies);
 
     expect(typeof sendConversationServiceRequest).toBe("function");
   });
 
   it("makes fetch request with correct parameters", async () => {
-    const sendConversationServiceRequest = createSendConversationServiceRequest(mockDependencies);
+    const sendConversationServiceRequest =
+      createSendConversationServiceRequest(mockDependencies);
     const requestId = "test-request-id";
     const url = "https://test.adobe.io/conversation";
 
@@ -57,21 +59,22 @@ describe("createSendConversationServiceRequest", () => {
       requestId,
       url,
       request: mockRequest,
-      streamingEnabled: true
+      streamingEnabled: true,
     });
 
     expect(mockDependencies.fetch).toHaveBeenCalledWith(url, {
       method: "POST",
       headers: {
         "Content-Type": "text/plain",
-        "Accept": "text/event-stream"
+        Accept: "text/event-stream",
       },
-      body: JSON.stringify({ message: "test message" })
+      body: JSON.stringify({ message: "test message" }),
     });
   });
 
   it("uses correct headers for non-streaming requests", async () => {
-    const sendConversationServiceRequest = createSendConversationServiceRequest(mockDependencies);
+    const sendConversationServiceRequest =
+      createSendConversationServiceRequest(mockDependencies);
     const requestId = "test-request-id";
     const url = "https://test.adobe.io/conversation";
 
@@ -79,34 +82,37 @@ describe("createSendConversationServiceRequest", () => {
       requestId,
       url,
       request: mockRequest,
-      streamingEnabled: false
+      streamingEnabled: false,
     });
 
     expect(mockDependencies.fetch).toHaveBeenCalledWith(url, {
       method: "POST",
       headers: {
         "Content-Type": "text/plain",
-        "Accept": "text/plain"
+        Accept: "text/plain",
       },
-      body: JSON.stringify({ message: "test message" })
+      body: JSON.stringify({ message: "test message" }),
     });
   });
 
   it("logs network request before sending", async () => {
-    const sendConversationServiceRequest = createSendConversationServiceRequest(mockDependencies);
+    const sendConversationServiceRequest =
+      createSendConversationServiceRequest(mockDependencies);
     const requestId = "test-request-id";
     const url = "https://test.adobe.io/conversation";
 
     await sendConversationServiceRequest({
       requestId,
       url,
-      request: mockRequest
+      request: mockRequest,
     });
 
-    expect(mockDependencies.logger.logOnBeforeNetworkRequest).toHaveBeenCalledWith({
+    expect(
+      mockDependencies.logger.logOnBeforeNetworkRequest,
+    ).toHaveBeenCalledWith({
       url,
       requestId,
-      payload: { message: "test message" }
+      payload: { message: "test message" },
     });
   });
 
@@ -116,7 +122,7 @@ describe("createSendConversationServiceRequest", () => {
 
     const failedResponse = {
       ok: false,
-      status: 500
+      status: 500,
     };
 
     mockDependencies.fetch
@@ -124,14 +130,15 @@ describe("createSendConversationServiceRequest", () => {
       .mockResolvedValueOnce(failedResponse)
       .mockResolvedValueOnce(mockResponse);
 
-    const sendConversationServiceRequest = createSendConversationServiceRequest(mockDependencies);
+    const sendConversationServiceRequest =
+      createSendConversationServiceRequest(mockDependencies);
     const requestId = "test-request-id";
     const url = "https://test.adobe.io/conversation";
 
     const resultPromise = sendConversationServiceRequest({
       requestId,
       url,
-      request: mockRequest
+      request: mockRequest,
     });
 
     // Fast-forward through all the timers (2s + 3s delays)
@@ -152,21 +159,22 @@ describe("createSendConversationServiceRequest", () => {
 
     const failedResponse = {
       ok: false,
-      status: 500
+      status: 500,
     };
 
     mockDependencies.fetch
       .mockResolvedValueOnce(failedResponse)
       .mockResolvedValueOnce(mockResponse);
 
-    const sendConversationServiceRequest = createSendConversationServiceRequest(mockDependencies);
+    const sendConversationServiceRequest =
+      createSendConversationServiceRequest(mockDependencies);
     const requestId = "test-request-id";
     const url = "https://test.adobe.io/conversation";
 
     const resultPromise = sendConversationServiceRequest({
       requestId,
       url,
-      request: mockRequest
+      request: mockRequest,
     });
 
     await vi.runAllTimersAsync();
@@ -176,7 +184,7 @@ describe("createSendConversationServiceRequest", () => {
       requestId,
       url,
       payload: { message: "test message" },
-      error: expect.any(Error)
+      error: expect.any(Error),
     });
 
     vi.useRealTimers();
@@ -188,20 +196,21 @@ describe("createSendConversationServiceRequest", () => {
 
     const failedResponse = {
       ok: false,
-      status: 500
+      status: 500,
     };
 
     mockDependencies.fetch.mockResolvedValue(failedResponse);
 
-    const sendConversationServiceRequest = createSendConversationServiceRequest(mockDependencies);
+    const sendConversationServiceRequest =
+      createSendConversationServiceRequest(mockDependencies);
     const requestId = "test-request-id";
     const url = "https://test.adobe.io/conversation";
 
     const resultPromise = sendConversationServiceRequest({
       requestId,
       url,
-      request: mockRequest
-    }).catch(error => error); // Catch the error to prevent unhandled rejection
+      request: mockRequest,
+    }).catch((error) => error); // Catch the error to prevent unhandled rejection
 
     // Process timers and promises
     await vi.runAllTimersAsync();
