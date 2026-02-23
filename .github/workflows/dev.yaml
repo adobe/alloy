@@ -39,10 +39,8 @@ jobs:
           node-version-file: .nvmrc
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build Alloy (dist, distTest for integration tests)
+      - name: Build Alloy (libEs5, libEs6, dist, distTest)
         run: pnpm run build
-      - name: Build Alloy lib (libEs5, libEs6 for extension and tests)
-        run: pnpm run build:lib
       - name: Build all packages
         run: pnpm -r run build
       - name: Run Test
