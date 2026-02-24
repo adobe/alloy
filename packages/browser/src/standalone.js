@@ -17,7 +17,7 @@ import * as optionalComponents from "@adobe/alloy-core/core/componentCreators.js
 
 // This file is used by rollup to create the browser version that is uploaded to cdn
 
-const initializeStandalone = async ({ components }) => {
+const initializeStandalone = ({ components }) => {
   // eslint-disable-next-line no-underscore-dangle
   const instanceNames = /** @type {WindowWithAlloy} */ (window).__alloyNS;
   if (!instanceNames) {
