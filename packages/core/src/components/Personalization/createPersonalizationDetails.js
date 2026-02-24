@@ -21,6 +21,7 @@ import {
   REDIRECT_ITEM,
   RULESET_ITEM,
   MESSAGE_CONTENT_CARD,
+  INBOX_ITEM,
 } from "../../constants/schema.js";
 import {
   buildPageSurface,
@@ -102,6 +103,7 @@ export default ({
         RULESET_ITEM,
         MESSAGE_IN_APP,
         MESSAGE_CONTENT_CARD,
+        INBOX_ITEM,
       ];
 
       if (scopes.includes(PAGE_WIDE_SCOPE)) {

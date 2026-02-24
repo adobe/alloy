@@ -14,6 +14,7 @@ import { getActivityId } from "./utils/index.js";
 
 export default ({ eventRegistry }) => {
   const payloadsBasedOnActivityId = {};
+  const passthroughPayloads = [];
 
   const addPayload = (payload) => {
     const activityId = getActivityId(payload);
@@ -28,6 +29,8 @@ export default ({ eventRegistry }) => {
 
     if (evaluableRulesetPayload.isEvaluable) {
       payloadsBasedOnActivityId[activityId] = evaluableRulesetPayload;
+    } else if (Array.isArray(payload.items) && payload.items.length > 0) {
+      passthroughPayloads.push(payload);
     }
   };
 
@@ -36,9 +39,11 @@ export default ({ eventRegistry }) => {
       payloadsBasedOnActivityId,
     ).sort(({ rank: rankA }, { rank: rankB }) => rankA - rankB);
 
-    return sortedPayloadsBasedOnActivityId
+    const evaluatedPayloads = sortedPayloadsBasedOnActivityId
       .map((payload) => payload.evaluate(context))
       .filter((payload) => payload.items.length > 0);
+
+    return [...evaluatedPayloads, ...passthroughPayloads];
   };
 
   const addPayloads = (personalizationPayloads) => {

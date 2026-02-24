@@ -1,15 +1,52 @@
-/* Card.css */
+/* Content Cards container and cards */
+.content-cards-container {
+  margin: 24px 0;
+  max-width: 1000px;
+  border: 2px dashed #6b7280;
+  border-radius: 12px;
+  padding: 24px;
+  background-color: #f9fafb;
+}
+
+.content-cards-container__title {
+  margin: 0 0 8px 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.content-cards-container__description {
+  margin: 0 0 20px 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.content-cards-container__empty {
+  padding: 32px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  background-color: #f3f4f6;
+}
+
+.content-cards-container__list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .pretty-card {
-    color: black;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 16px;
-    margin: 16px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    background-color: lightblue;
-    transition: transform 0.2s;
+  color: black;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: lightblue;
+  transition: transform 0.2s;
 }
 
 .pretty-card:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }

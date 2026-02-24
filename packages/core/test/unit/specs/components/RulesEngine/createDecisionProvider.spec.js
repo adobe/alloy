@@ -444,8 +444,8 @@ describe("RulesEngine:createDecisionProvider", () => {
       },
     ]);
   });
-  it("ignores payloads that aren't json-ruleset type", () => {
-    decisionProvider.addPayload({
+  it("passes through payloads that have items but no ruleset items (e.g. inbox-only or TGT dom-action)", () => {
+    const passthroughPayload = {
       id: "AT:eyJhY3Rpdml0eUlkIjoiMTQxMDY0IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
       scope: "__view__",
       scopeDetails: {
@@ -480,7 +480,8 @@ describe("RulesEngine:createDecisionProvider", () => {
           },
         },
       ],
-    });
-    expect(decisionProvider.evaluate()).toEqual([]);
+    };
+    decisionProvider.addPayload(passthroughPayload);
+    expect(decisionProvider.evaluate()).toEqual([passthroughPayload]);
   });
 });
