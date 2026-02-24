@@ -14,6 +14,7 @@
     "alloyBuilder": "scripts/alloyBuilder.js"
   },
   "files": [
+    "src",
     "dist",
     "scripts/alloyBuilder.js",
     "scripts/helpers/entryPointGeneratorBabelPlugin.js",
