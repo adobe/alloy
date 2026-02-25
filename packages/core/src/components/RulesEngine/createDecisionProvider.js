@@ -9,8 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { INBOX_ITEM } from "../../constants/schema.js";
 import createEvaluableRulesetPayload from "./createEvaluableRulesetPayload.js";
 import { getActivityId } from "./utils/index.js";
+
+const hasInboxItem = (payload) =>
+  Array.isArray(payload.items) &&
+  payload.items.some((item) => item.schema === INBOX_ITEM);
 
 export default ({ eventRegistry }) => {
   const payloadsBasedOnActivityId = {};
@@ -29,7 +34,7 @@ export default ({ eventRegistry }) => {
 
     if (evaluableRulesetPayload.isEvaluable) {
       payloadsBasedOnActivityId[activityId] = evaluableRulesetPayload;
-    } else if (Array.isArray(payload.items) && payload.items.length > 0) {
+    } else if (hasInboxItem(payload)) {
       passthroughPayloads.push(payload);
     }
   };

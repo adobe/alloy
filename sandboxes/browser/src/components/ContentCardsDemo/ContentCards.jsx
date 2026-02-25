@@ -542,13 +542,6 @@ const prettyDate = (value) => {
   return output;
 };
 
-const getContentString = (value) => {
-  if (value == null) return "";
-  if (typeof value === "string") return value;
-  if (typeof value === "object" && value.content != null) return value.content;
-  return String(value);
-};
-
 const createContentCard = (proposition, item) => {
   const { data = {} } = item;
   const {
@@ -559,7 +552,7 @@ const createContentCard = (proposition, item) => {
     displayedDate,
   } = data;
 
-  const flat = {
+  return {
     ...content,
     meta,
     qualifiedDate,
@@ -567,13 +560,6 @@ const createContentCard = (proposition, item) => {
     publishedDate,
     getProposition: () => proposition,
   };
-  if (flat.title != null && typeof flat.title === "object") {
-    flat.title = getContentString(flat.title);
-  }
-  if (flat.body != null && typeof flat.body === "object") {
-    flat.body = getContentString(flat.body);
-  }
-  return flat;
 };
 
 const extractContentCards = (propositions) =>
@@ -763,53 +749,35 @@ export default function ContentCards() {
           Reset
         </button>
       </div>
-      <section
-        className="content-cards-container"
-        aria-label="Content cards example container"
-      >
-        <h3 className="content-cards-container__title">Content Cards</h3>
-        <p className="content-cards-container__description">
-          Cards returned from <code>subscribeRulesetItems</code> (content-card
-          schema) appear below. Use Response Source and the action buttons to
-          trigger or reset data.
-        </p>
-        <div id="content-cards" className="content-cards-container__list">
-          {contentCards.length === 0 ? (
-            <div className="content-cards-container__empty">
-              No content cards yet. Select a response source and load the page
-              (or trigger an event) to see cards here.
-            </div>
-          ) : (
-            contentCards.map((item, index) => (
-              <div
-                key={index}
-                className="pretty-card"
-                onClick={() => onClickedContentCard([item])}
+      <div style={{ margin: "30px 0", maxWidth: "1000px" }}>
+        <h3>Content Cards</h3>
+        <div id="content-cards">
+          {contentCards.map((item, index) => (
+            <div
+              key={index}
+              className="pretty-card"
+              onClick={() => onClickedContentCard([item])}
+            >
+              <button
+                onClick={(evt) => {
+                  evt.stopPropagation();
+                  dismissContentCard([item]);
+                }}
               >
-                <button
-                  type="button"
-                  onClick={(evt) => {
-                    evt.stopPropagation();
-                    dismissContentCard([item]);
-                  }}
-                >
-                  dismiss
-                </button>
-                <p>{item.title}</p>
-                <p>
-                  {item.imageUrl && (
-                    <img src={item.imageUrl} alt="Item Image" />
-                  )}
-                </p>
-                <p>{item.body}</p>
-                <p>Published: {prettyDate(item.publishedDate)}</p>
-                <p>Qualified: {prettyDate(item.qualifiedDate)}</p>
-                <p>Displayed: {prettyDate(item.displayedDate)}</p>
-              </div>
-            ))
-          )}
+                dismiss
+              </button>
+              <p>{item.title}</p>
+              <p>
+                {item.imageUrl && <img src={item.imageUrl} alt="Item Image" />}
+              </p>
+              <p>{item.body}</p>
+              <p>Published: {prettyDate(item.publishedDate)}</p>
+              <p>Qualified: {prettyDate(item.qualifiedDate)}</p>
+              <p>Displayed: {prettyDate(item.displayedDate)}</p>
+            </div>
+          ))}
         </div>
-      </section>
+      </div>
     </div>
   );
 }

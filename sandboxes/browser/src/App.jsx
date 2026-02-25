@@ -32,6 +32,7 @@ import AlloyVersion from "./components/AlloyVersion";
 import ConfigOverrides from "./ConfigOverrides";
 import InAppMessages from "./components/InAppMessagesDemo/InAppMessages";
 import ContentCards from "./components/ContentCardsDemo/ContentCards";
+import MessageInbox from "./components/MessageInboxDemo/MessageInbox";
 import PushNotifications from "./PushNotifications";
 import ReferrerTest from "./ReferrerTest";
 import Advertising from "./Advertising";
@@ -109,6 +110,9 @@ const BasicExample = () => {
               <Link to="contentCards">Content Cards</Link>
             </li>
             <li>
+              <Link to="messageInbox">Message Inbox</Link>
+            </li>
+            <li>
               <Link to="pushNotifications">Push Notifications</Link>
             </li>
             <li>
@@ -149,6 +153,7 @@ const BasicExample = () => {
             <Route path="configOverrides" element={<ConfigOverrides />} />
             <Route path="inAppMessages" element={<InAppMessages />} />
             <Route path="contentCards" element={<ContentCards />} />
+            <Route path="messageInbox" element={<MessageInbox />} />
             <Route path="pushNotifications" element={<PushNotifications />} />
             <Route path="referrerTest" element={<ReferrerTest />} />
             <Route path="concierge" element={<Concierge />} />
