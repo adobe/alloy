@@ -15,136 +15,145 @@ governing permissions and limitations under the License.
 /** @import { ServiceWorkerLogger } from '../types.js' */
 /** @import { TrackingDataPayload   } from '../types.js' */
 
-import readFromIndexedDb from "../helpers/readFromIndexedDb.js";
-import uuidv4 from "../../../utils/uuid.js";
-
 /**
- * @async
- * @function
- * @param {Object} options
- * @param {Object} options.xdm
- * @param {string} [options.actionLabel]
- * @param {number} [options.applicationLaunches=0]
- * @param {Object} utils
- * @param {ServiceWorkerLogger} utils.logger
- * @param {(url: string, options: object) => Promise<Response>} utils.fetch
+ * @param {Object} dependencies
+ * @param {(logger: ServiceWorkerLogger) => Promise<Object>} dependencies.readFromIndexedDb
+ * @param {() => string} dependencies.uuidv4
  *
- * @returns {Promise<boolean>}
- * @throws {Error}
+ * @returns {(options: { xdm: Object, actionLabel?: string, applicationLaunches?: number }, utils: { logger: ServiceWorkerLogger, fetch: (url: string, options: object) => Promise<Response> }) => Promise<boolean>}
  */
-export default async (
-  { xdm, actionLabel, applicationLaunches = 0 },
-  { logger, fetch },
-) => {
-  const configData = await readFromIndexedDb(logger);
-  const { browser, ecid, edgeDomain, edgeBasePath, datastreamId, datasetId } =
-    configData || {};
-  let customActionData = {};
+export const createMakeSendServiceWorkerTrackingData = ({
+  readFromIndexedDb,
+  uuidv4,
+}) => {
+  /**
+   * @async
+   * @function
+   * @param {Object} options
+   * @param {Object} options.xdm
+   * @param {string} [options.actionLabel]
+   * @param {number} [options.applicationLaunches=0]
+   * @param {Object} utils
+   * @param {ServiceWorkerLogger} utils.logger
+   * @param {(url: string, options: object) => Promise<Response>} utils.fetch
+   *
+   * @returns {Promise<boolean>}
+   * @throws {Error}
+   */
+  return async (
+    { xdm, actionLabel, applicationLaunches = 0 },
+    { logger, fetch },
+  ) => {
+    const configData = await readFromIndexedDb(logger);
+    const { browser, ecid, edgeDomain, edgeBasePath, datastreamId, datasetId } =
+      configData || {};
+    let customActionData = {};
 
-  if (actionLabel) {
-    customActionData = {
-      customAction: { actionID: actionLabel },
-    };
-  }
-
-  const requiredFields = [
-    { name: "browser", errorField: "Browser" },
-    { name: "ecid", errorField: "ECID" },
-    {
-      name: "edgeDomain",
-      errorField: "Edge domain",
-    },
-    {
-      name: "edgeBasePath",
-      errorField: "Edge base path",
-    },
-    {
-      name: "datastreamId",
-      errorField: "Datastream ID",
-    },
-    {
-      name: "datasetId",
-      errorField: "Dataset ID",
-    },
-  ];
-
-  try {
-    for (const field of requiredFields) {
-      if (!configData[field.name]) {
-        throw new Error(
-          `Cannot send tracking call. ${field.errorField} is missing.`,
-        );
-      }
+    if (actionLabel) {
+      customActionData = {
+        customAction: { actionID: actionLabel },
+      };
     }
 
-    const url = `https://${edgeDomain}/${edgeBasePath}/v1/interact?configId=${datastreamId}&requestId=${uuidv4()}`;
+    const requiredFields = [
+      { name: "browser", errorField: "Browser" },
+      { name: "ecid", errorField: "ECID" },
+      {
+        name: "edgeDomain",
+        errorField: "Edge domain",
+      },
+      {
+        name: "edgeBasePath",
+        errorField: "Edge base path",
+      },
+      {
+        name: "datastreamId",
+        errorField: "Datastream ID",
+      },
+      {
+        name: "datasetId",
+        errorField: "Dataset ID",
+      },
+    ];
 
-    /** @type {TrackingDataPayload} */
-    const payload = {
-      events: [
-        {
-          xdm: {
-            identityMap: {
-              ECID: [{ id: ecid }],
-            },
-            timestamp: new Date().toISOString(),
-            pushNotificationTracking: {
-              ...customActionData,
-              pushProviderMessageID: uuidv4(),
-              pushProvider: browser.toLowerCase(),
-            },
-            application: {
-              launches: {
-                value: applicationLaunches,
+    try {
+      for (const field of requiredFields) {
+        if (!configData[field.name]) {
+          throw new Error(
+            `Cannot send tracking call. ${field.errorField} is missing.`,
+          );
+        }
+      }
+
+      const url = `https://${edgeDomain}/${edgeBasePath}/v1/interact?configId=${datastreamId}&requestId=${uuidv4()}`;
+
+      /** @type {TrackingDataPayload} */
+      const payload = {
+        events: [
+          {
+            xdm: {
+              identityMap: {
+                ECID: [{ id: ecid }],
               },
-            },
-            eventType: actionLabel
-              ? "pushTracking.customAction"
-              : "pushTracking.applicationOpened",
-            _experience: {
-              ...xdm._experience,
-              customerJourneyManagement: {
-                ...xdm._experience.customerJourneyManagement,
-                pushChannelContext: {
-                  platform: "web",
+              timestamp: new Date().toISOString(),
+              pushNotificationTracking: {
+                ...customActionData,
+                pushProviderMessageID: uuidv4(),
+                pushProvider: browser.toLowerCase(),
+              },
+              application: {
+                launches: {
+                  value: applicationLaunches,
                 },
-                messageProfile: {
-                  channel: {
-                    _id: "https://ns.adobe.com/xdm/channels/push",
+              },
+              eventType: actionLabel
+                ? "pushTracking.customAction"
+                : "pushTracking.applicationOpened",
+              _experience: {
+                ...xdm._experience,
+                customerJourneyManagement: {
+                  ...xdm._experience.customerJourneyManagement,
+                  pushChannelContext: {
+                    platform: "web",
+                  },
+                  messageProfile: {
+                    channel: {
+                      _id: "https://ns.adobe.com/xdm/channels/push",
+                    },
                   },
                 },
               },
             },
-          },
-          meta: {
-            collect: {
-              datasetId,
+            meta: {
+              collect: {
+                datasetId,
+              },
             },
           },
+        ],
+      };
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "content-type": "text/plain; charset=UTF-8",
         },
-      ],
-    };
+        body: JSON.stringify(payload),
+      });
 
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "content-type": "text/plain; charset=UTF-8",
-      },
-      body: JSON.stringify(payload),
-    });
+      if (!response.ok) {
+        logger.error(
+          "Tracking call failed: ",
+          response.status,
+          response.statusText,
+        );
+        return false;
+      }
 
-    if (!response.ok) {
-      logger.error(
-        "Tracking call failed: ",
-        response.status,
-        response.statusText,
-      );
+      return true;
+    } catch (error) {
+      logger.error("Error sending tracking call:", error);
       return false;
     }
-
-    return true;
-  } catch (error) {
-    logger.error("Error sending tracking call:", error);
-    return false;
-  }
+  };
 };

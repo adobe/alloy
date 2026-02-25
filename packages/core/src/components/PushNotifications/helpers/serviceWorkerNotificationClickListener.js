@@ -15,7 +15,9 @@ governing permissions and limitations under the License.
 
 /** @import { ServiceWorkerLogger } from '../types.js' */
 
-import makeSendServiceWorkerTrackingData from "../request/makeSendServiceWorkerTrackingData.js";
+import { createMakeSendServiceWorkerTrackingData } from "../request/makeSendServiceWorkerTrackingData.js";
+import readFromIndexedDb from "./readFromIndexedDb.js";
+import uuidv4 from "../../../utils/uuid.js";
 
 /**
  * @param {string} type
@@ -24,61 +26,82 @@ import makeSendServiceWorkerTrackingData from "../request/makeSendServiceWorkerT
 const canHandleUrl = (type) => ["DEEPLINK", "WEBURL"].includes(type);
 
 /**
- * @function
- *
- * @param {Object} options
- * @param {ServiceWorkerGlobalScope} options.sw
- * @param {NotificationEvent} options.event
- * @param {(url: string, options: object) => Promise<Response>} options.fetch
- * @param {ServiceWorkerLogger} options.logger
+ * @param {Object} dependencies
+ * @param {(options: { xdm: Object, actionLabel?: string, applicationLaunches?: number }, utils: { logger: ServiceWorkerLogger, fetch: (url: string, options: object) => Promise<Response> }) => Promise<boolean>} dependencies.makeSendServiceWorkerTrackingData
  */
-export default ({ event, sw, logger, fetch }) => {
-  event.notification.close();
+export const createServiceWorkerNotificationClickListener = ({
+  makeSendServiceWorkerTrackingData,
+}) => {
+  /**
+   * @function
+   *
+   * @param {Object} options
+   * @param {ServiceWorkerGlobalScope} options.sw
+   * @param {NotificationEvent} options.event
+   * @param {(url: string, options: object) => Promise<Response>} options.fetch
+   * @param {ServiceWorkerLogger} options.logger
+   */
+  return ({ event, sw, logger, fetch }) => {
+    event.notification.close();
 
-  const data = event.notification.data;
-  let targetUrl = null;
-  let actionLabel = null;
+    const data = event.notification.data;
+    let targetUrl = null;
+    let actionLabel = null;
 
-  if (event.action) {
-    const actionIndex = parseInt(event.action.replace("action_", ""), 10);
-    if (data?.actions?.buttons[actionIndex]) {
-      const button = data.actions.buttons[actionIndex];
-      actionLabel = button.label;
-      if (canHandleUrl(button.type) && button.uri) {
-        targetUrl = button.uri;
+    if (event.action) {
+      const actionIndex = parseInt(event.action.replace("action_", ""), 10);
+      if (data?.actions?.buttons[actionIndex]) {
+        const button = data.actions.buttons[actionIndex];
+        actionLabel = button.label;
+        if (canHandleUrl(button.type) && button.uri) {
+          targetUrl = button.uri;
+        }
       }
+    } else if (
+      canHandleUrl(data?.interaction?.type) &&
+      data?.interaction?.uri
+    ) {
+      targetUrl = data.interaction.uri;
     }
-  } else if (canHandleUrl(data?.interaction?.type) && data?.interaction?.uri) {
-    targetUrl = data.interaction.uri;
-  }
 
-  makeSendServiceWorkerTrackingData(
-    {
-      // eslint-disable-next-line no-underscore-dangle
-      xdm: data._xdm.mixins,
-      actionLabel,
-      applicationLaunches: 1,
-    },
-    {
-      logger,
-      fetch,
-    },
-  ).catch((error) => {
-    logger.error("Failed to send tracking call:", error);
+    makeSendServiceWorkerTrackingData(
+      {
+        // eslint-disable-next-line no-underscore-dangle
+        xdm: data._xdm.mixins,
+        actionLabel,
+        applicationLaunches: 1,
+      },
+      {
+        logger,
+        fetch,
+      },
+    ).catch((error) => {
+      logger.error("Failed to send tracking call:", error);
+    });
+
+    if (targetUrl) {
+      event.waitUntil(
+        sw.clients.matchAll({ type: "window" }).then((clientList) => {
+          for (const client of clientList) {
+            if (client.url === targetUrl && "focus" in client) {
+              return client.focus();
+            }
+          }
+          if (sw.clients.openWindow) {
+            return sw.clients.openWindow(targetUrl);
+          }
+        }),
+      );
+    }
+  };
+};
+
+const makeSendServiceWorkerTrackingData =
+  createMakeSendServiceWorkerTrackingData({
+    readFromIndexedDb,
+    uuidv4,
   });
 
-  if (targetUrl) {
-    event.waitUntil(
-      sw.clients.matchAll({ type: "window" }).then((clientList) => {
-        for (const client of clientList) {
-          if (client.url === targetUrl && "focus" in client) {
-            return client.focus();
-          }
-        }
-        if (sw.clients.openWindow) {
-          return sw.clients.openWindow(targetUrl);
-        }
-      }),
-    );
-  }
-};
+export default createServiceWorkerNotificationClickListener({
+  makeSendServiceWorkerTrackingData,
+});

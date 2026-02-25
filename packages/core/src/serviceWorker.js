@@ -14,7 +14,9 @@ governing permissions and limitations under the License.
 
 import serviceWorkerNotificationClickListener from "./components/PushNotifications/helpers/serviceWorkerNotificationClickListener.js";
 import serviceWorkerPushListener from "./components/PushNotifications/helpers/serviceWorkerPushListener.js";
-import makeSendServiceWorkerTrackingData from "./components/PushNotifications/request/makeSendServiceWorkerTrackingData.js";
+import { createMakeSendServiceWorkerTrackingData } from "./components/PushNotifications/request/makeSendServiceWorkerTrackingData.js";
+import readFromIndexedDb from "./components/PushNotifications/helpers/readFromIndexedDb.js";
+import uuidv4 from "./utils/uuid.js";
 
 /* eslint-disable no-console */
 /* eslint-disable no-underscore-dangle */
@@ -34,6 +36,12 @@ const logger = {
   info: (...args) => console.log(logger.namespace, ...args),
   error: (...args) => console.error(logger.namespace, ...args),
 };
+
+const makeSendServiceWorkerTrackingData =
+  createMakeSendServiceWorkerTrackingData({
+    readFromIndexedDb,
+    uuidv4,
+  });
 
 /**
  * @listens install

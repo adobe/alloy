@@ -14,18 +14,14 @@ governing permissions and limitations under the License.
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
 
-vi.mock(
-  "../../../../../../src/components/PushNotifications/helpers/readFromIndexedDb.js",
-);
-vi.mock("../../../../../../src/utils/uuid.js");
-
-import makeSendServiceWorkerTrackingData from "../../../../../../src/components/PushNotifications/request/makeSendServiceWorkerTrackingData.js";
-import readFromIndexedDb from "../../../../../../src/components/PushNotifications/helpers/readFromIndexedDb.js";
-import uuidv4 from "../../../../../../src/utils/uuid.js";
+import { createMakeSendServiceWorkerTrackingData } from "../../../../../../src/components/PushNotifications/request/makeSendServiceWorkerTrackingData.js";
 
 describe("makeSendServiceWorkerTrackingData", () => {
   let mockLogger;
   let mockFetch;
+  let mockReadFromIndexedDb;
+  let mockUuidv4;
+  let makeSendServiceWorkerTrackingData;
   let mockConfigData;
 
   beforeEach(() => {
@@ -36,6 +32,8 @@ describe("makeSendServiceWorkerTrackingData", () => {
     };
 
     mockFetch = vi.fn();
+    mockReadFromIndexedDb = vi.fn();
+    mockUuidv4 = vi.fn();
 
     mockConfigData = {
       browser: "Chrome",
@@ -46,8 +44,14 @@ describe("makeSendServiceWorkerTrackingData", () => {
       datasetId: "test-dataset-id",
     };
 
-    vi.mocked(readFromIndexedDb).mockResolvedValue(mockConfigData);
-    vi.mocked(uuidv4).mockReturnValue("mock-uuid-1234");
+    mockReadFromIndexedDb.mockResolvedValue(mockConfigData);
+    mockUuidv4.mockReturnValue("mock-uuid-1234");
+    makeSendServiceWorkerTrackingData = createMakeSendServiceWorkerTrackingData(
+      {
+        readFromIndexedDb: mockReadFromIndexedDb,
+        uuidv4: mockUuidv4,
+      },
+    );
   });
 
   describe("successful tracking data sending", () => {
@@ -150,7 +154,7 @@ describe("makeSendServiceWorkerTrackingData", () => {
       it(`returns false when ${field} is missing`, async () => {
         const incompleteConfigData = { ...mockConfigData };
         delete incompleteConfigData[field];
-        vi.mocked(readFromIndexedDb).mockResolvedValue(incompleteConfigData);
+        mockReadFromIndexedDb.mockResolvedValue(incompleteConfigData);
 
         const xdm = {
           _experience: {

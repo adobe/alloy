@@ -14,18 +14,15 @@ governing permissions and limitations under the License.
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
 
-vi.mock(
-  "../../../../../../src/components/PushNotifications/request/makeSendServiceWorkerTrackingData.js",
-);
-
-import serviceWorkerNotificationClickListener from "../../../../../../src/components/PushNotifications/helpers/serviceWorkerNotificationClickListener.js";
-import makeSendServiceWorkerTrackingData from "../../../../../../src/components/PushNotifications/request/makeSendServiceWorkerTrackingData.js";
+import { createServiceWorkerNotificationClickListener } from "../../../../../../src/components/PushNotifications/helpers/serviceWorkerNotificationClickListener.js";
 
 describe("serviceWorkerNotificationClickListener", () => {
   let mockEvent;
   let mockSw;
   let mockLogger;
   let mockFetch;
+  let mockMakeSendServiceWorkerTrackingData;
+  let serviceWorkerNotificationClickListener;
   let mockClient;
   let mockWaitUntil;
 
@@ -49,6 +46,12 @@ describe("serviceWorkerNotificationClickListener", () => {
     };
 
     mockFetch = vi.fn();
+    mockMakeSendServiceWorkerTrackingData = vi.fn().mockResolvedValue(true);
+    serviceWorkerNotificationClickListener =
+      createServiceWorkerNotificationClickListener({
+        makeSendServiceWorkerTrackingData:
+          mockMakeSendServiceWorkerTrackingData,
+      });
     mockWaitUntil = vi.fn();
 
     mockEvent = {
@@ -65,8 +68,6 @@ describe("serviceWorkerNotificationClickListener", () => {
       action: null,
       waitUntil: mockWaitUntil,
     };
-
-    vi.mocked(makeSendServiceWorkerTrackingData).mockResolvedValue(true);
   });
 
   describe("tracking data sending", () => {
@@ -78,7 +79,7 @@ describe("serviceWorkerNotificationClickListener", () => {
         fetch: mockFetch,
       });
 
-      expect(makeSendServiceWorkerTrackingData).toHaveBeenCalledWith(
+      expect(mockMakeSendServiceWorkerTrackingData).toHaveBeenCalledWith(
         {
           xdm: mockEvent.notification.data._xdm.mixins,
           actionLabel: null,
@@ -110,7 +111,7 @@ describe("serviceWorkerNotificationClickListener", () => {
         fetch: mockFetch,
       });
 
-      expect(makeSendServiceWorkerTrackingData).toHaveBeenCalledWith(
+      expect(mockMakeSendServiceWorkerTrackingData).toHaveBeenCalledWith(
         {
           xdm: mockEvent.notification.data._xdm.mixins,
           actionLabel: "View Details",
@@ -125,7 +126,7 @@ describe("serviceWorkerNotificationClickListener", () => {
 
     it("logs error when tracking data sending fails", async () => {
       const testError = new Error("Network error");
-      vi.mocked(makeSendServiceWorkerTrackingData).mockRejectedValue(testError);
+      mockMakeSendServiceWorkerTrackingData.mockRejectedValue(testError);
 
       serviceWorkerNotificationClickListener({
         event: mockEvent,
