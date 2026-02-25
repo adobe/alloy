@@ -10,30 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createSendAdConversion from "./handlers/sendAdConversion.js";
-import handleOnBeforeSendEvent from "./handlers/onBeforeSendEventHandler.js";
-
-export default ({
-  logger,
-  config,
-  eventManager,
-  cookieManager,
-  adConversionHandler,
-  getBrowser,
-  consent,
-}) => {
-  const componentConfig = config.advertising;
-
-  const sendAdConversionHandler = createSendAdConversion({
-    eventManager,
-    cookieManager,
-    adConversionHandler,
-    logger,
-    componentConfig,
-    getBrowser,
-    consent,
-  });
-
+export default ({ handleOnBeforeSendEvent, sendAdConversionHandler }) => {
   return {
     lifecycle: {
       onComponentsRegistered() {
@@ -41,22 +18,7 @@ export default ({
         // the configure command from resolving while waiting for consent.
         sendAdConversionHandler();
       },
-      onBeforeEvent: ({ event, advertising = {} }) => {
-        const { state } = consent.current();
-        if (state !== "in") {
-          // Consent not yet granted — skip advertising ID resolution
-          // but don't block the sendEvent call.
-          return;
-        }
-        return handleOnBeforeSendEvent({
-          cookieManager,
-          logger,
-          event,
-          componentConfig,
-          advertising,
-          getBrowser,
-        });
-      },
+      onBeforeEvent: handleOnBeforeSendEvent,
     },
   };
 };
