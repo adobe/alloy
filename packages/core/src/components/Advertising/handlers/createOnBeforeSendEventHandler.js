@@ -25,14 +25,20 @@ const waitForAdvertisingId = (advertising) => {
 };
 
 /**
- * @param {Object} params
- * @param {Object} params.cookieManager
- * @param {Object} params.logger
- * @param {Object} params.state
- * @param {Object} params.event
- * @param {Object} params.componentConfig
- * @param {Object} params.advertising
- * @param {Function} params.getBrowser
+ * Creates an onBeforeSendEvent handler that appends advertising IDs to events.
+ *
+ * @param {Object} dependencies
+ * @param {Object} dependencies
+ * @param {Object} dependencies.logger
+ * @param {Object} dependencies.componentConfig
+ * @param {Function} dependencies.getBrowser
+ * @param {Object} dependencies.consent
+ * @param {Function} dependencies.collectSurferId
+ * @param {Function} dependencies.getID5Id
+ * @param {Function} dependencies.getRampId
+ * @param {Function} dependencies.appendAdvertisingIdQueryToEvent
+ * @param {Function} dependencies.getUrlParams
+ * @param {Function} dependencies.isThrottled
  */
 export default ({
   cookieManager,
@@ -49,6 +55,11 @@ export default ({
 }) => {
   /**
    * Appends advertising identity IDs to AEP event query if not already added.
+   *
+   * @param {Object} options
+   * @param {Object} options.event
+   * @param {Object} [options.advertising={}]
+   * @returns {Promise<void>}
    */
   return async ({ event, advertising = {} }) => {
     const { state } = consent.current();
