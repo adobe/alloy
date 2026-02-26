@@ -28,7 +28,7 @@ const waitForAdvertisingId = (advertising) => {
  * Creates an onBeforeSendEvent handler that appends advertising IDs to events.
  *
  * @param {Object} dependencies
- * @param {Object} dependencies
+ * @param {Object} dependencies.cookieManager
  * @param {Object} dependencies.logger
  * @param {Object} dependencies.componentConfig
  * @param {Function} dependencies.getBrowser
