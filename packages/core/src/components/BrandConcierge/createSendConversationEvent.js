@@ -36,6 +36,7 @@ export default ({
     onBeforeEventSend,
     conversation,
   } = config;
+  const { edgeSubPath } = conversation;
 
   return (options) => {
     let streamingEnabled = false;
@@ -46,6 +47,7 @@ export default ({
     const request = createConversationServiceRequest({
       payload,
       sessionId: sessionId,
+      edgeSubPath,
     });
 
     const event = eventManager.createEvent();

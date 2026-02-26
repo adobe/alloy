@@ -11,10 +11,15 @@ governing permissions and limitations under the License.
 */
 import { createRequest } from "../../utils/request/index.js";
 
-export default ({ payload, action = "conversations", sessionId }) => {
+export default ({
+  payload,
+  action = "conversations",
+  sessionId,
+  edgeSubPath = "/brand-concierge",
+}) => {
   return createRequest({
     payload: payload,
-    edgeSubPath: "/brand-concierge",
+    edgeSubPath,
     requestParams: { sessionId },
     getAction() {
       return action;
