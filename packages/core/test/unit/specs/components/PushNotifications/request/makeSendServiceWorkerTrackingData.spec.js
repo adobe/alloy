@@ -50,6 +50,8 @@ describe("makeSendServiceWorkerTrackingData", () => {
       {
         readFromIndexedDb: mockReadFromIndexedDb,
         uuidv4: mockUuidv4,
+        logger: mockLogger,
+        fetch: mockFetch,
       },
     );
   });
@@ -72,10 +74,10 @@ describe("makeSendServiceWorkerTrackingData", () => {
         },
       };
 
-      const result = await makeSendServiceWorkerTrackingData(
-        { xdm, applicationLaunches: 1 },
-        { logger: mockLogger, fetch: mockFetch },
-      );
+      const result = await makeSendServiceWorkerTrackingData({
+        xdm,
+        applicationLaunches: 1,
+      });
 
       expect(result).toBe(true);
       expect(mockFetch).toHaveBeenCalledWith(
@@ -122,10 +124,11 @@ describe("makeSendServiceWorkerTrackingData", () => {
         },
       };
 
-      const result = await makeSendServiceWorkerTrackingData(
-        { xdm, actionLabel: "Adobe.com", applicationLaunches: 0 },
-        { logger: mockLogger, fetch: mockFetch },
-      );
+      const result = await makeSendServiceWorkerTrackingData({
+        xdm,
+        actionLabel: "Adobe.com",
+        applicationLaunches: 0,
+      });
 
       expect(result).toBe(true);
 
@@ -162,10 +165,7 @@ describe("makeSendServiceWorkerTrackingData", () => {
           },
         };
 
-        const result = await makeSendServiceWorkerTrackingData(
-          { xdm },
-          { logger: mockLogger, fetch: mockFetch },
-        );
+        const result = await makeSendServiceWorkerTrackingData({ xdm });
 
         expect(result).toBe(false);
         expect(mockLogger.error).toHaveBeenCalledWith(
@@ -200,10 +200,7 @@ describe("makeSendServiceWorkerTrackingData", () => {
       },
     };
 
-    await makeSendServiceWorkerTrackingData(
-      { xdm },
-      { logger: mockLogger, fetch: mockFetch },
-    );
+    await makeSendServiceWorkerTrackingData({ xdm });
 
     const callArgs = mockFetch.mock.calls[0];
     const payload = JSON.parse(callArgs[1].body);

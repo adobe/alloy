@@ -19,12 +19,15 @@ governing permissions and limitations under the License.
  * @param {Object} dependencies
  * @param {(logger: ServiceWorkerLogger) => Promise<Object>} dependencies.readFromIndexedDb
  * @param {() => string} dependencies.uuidv4
- *
+ * @param {ServiceWorkerLogger} dependencies.logger
+ * @param {(url: string, options: object) => Promise<Response>} dependencies.fetch
  * @returns {(options: { xdm: Object, actionLabel?: string, applicationLaunches?: number }, utils: { logger: ServiceWorkerLogger, fetch: (url: string, options: object) => Promise<Response> }) => Promise<boolean>}
  */
 export const createMakeSendServiceWorkerTrackingData = ({
   readFromIndexedDb,
   uuidv4,
+  logger,
+  fetch,
 }) => {
   /**
    * @async
@@ -33,17 +36,11 @@ export const createMakeSendServiceWorkerTrackingData = ({
    * @param {Object} options.xdm
    * @param {string} [options.actionLabel]
    * @param {number} [options.applicationLaunches=0]
-   * @param {Object} utils
-   * @param {ServiceWorkerLogger} utils.logger
-   * @param {(url: string, options: object) => Promise<Response>} utils.fetch
    *
    * @returns {Promise<boolean>}
    * @throws {Error}
    */
-  return async (
-    { xdm, actionLabel, applicationLaunches = 0 },
-    { logger, fetch },
-  ) => {
+  return async ({ xdm, actionLabel, applicationLaunches = 0 }) => {
     const configData = await readFromIndexedDb(logger);
     const { browser, ecid, edgeDomain, edgeBasePath, datastreamId, datasetId } =
       configData || {};

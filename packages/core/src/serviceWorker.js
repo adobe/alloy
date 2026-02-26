@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 /** @import { ServiceWorkerLogger } from './components/PushNotifications/types.js' */
 
-import serviceWorkerNotificationClickListener from "./components/PushNotifications/helpers/serviceWorkerNotificationClickListener.js";
+import { createServiceWorkerNotificationClickListener } from "./components/PushNotifications/helpers/serviceWorkerNotificationClickListener.js";
 import serviceWorkerPushListener from "./components/PushNotifications/helpers/serviceWorkerPushListener.js";
 import { createMakeSendServiceWorkerTrackingData } from "./components/PushNotifications/request/makeSendServiceWorkerTrackingData.js";
 import readFromIndexedDb from "./components/PushNotifications/helpers/readFromIndexedDb.js";
@@ -41,6 +41,15 @@ const makeSendServiceWorkerTrackingData =
   createMakeSendServiceWorkerTrackingData({
     readFromIndexedDb,
     uuidv4,
+    logger,
+    fetch,
+  });
+
+const serviceWorkerNotificationClickListener =
+  createServiceWorkerNotificationClickListener({
+    makeSendServiceWorkerTrackingData,
+    sw,
+    logger,
   });
 
 /**
@@ -63,16 +72,14 @@ sw.addEventListener("activate", (event) => {
  * @param {PushEvent} event
  * @returns {Promise<void>}
  */
-sw.addEventListener("push", (event) =>
-  serviceWorkerPushListener({ event, logger, sw }),
-);
+sw.addEventListener("push", (event) => serviceWorkerPushListener({ event }));
 
 /**
  * @listens notificationclick
  * @param {NotificationEvent} event
  */
 sw.addEventListener("notificationclick", (event) =>
-  serviceWorkerNotificationClickListener({ event, sw, logger, fetch }),
+  serviceWorkerNotificationClickListener({ event }),
 );
 
 /**
@@ -82,16 +89,10 @@ sw.addEventListener("notificationclick", (event) =>
 sw.addEventListener("notificationclose", (event) => {
   const data = event.notification.data;
 
-  makeSendServiceWorkerTrackingData(
-    {
-      xdm: data._xdm.mixins,
-      actionLabel: "Dismiss",
-    },
-    {
-      logger,
-      fetch,
-    },
-  ).catch((error) => {
+  makeSendServiceWorkerTrackingData({
+    xdm: data._xdm.mixins,
+    actionLabel: "Dismiss",
+  }).catch((error) => {
     logger.error("Failed to send tracking call:", error);
   });
 });

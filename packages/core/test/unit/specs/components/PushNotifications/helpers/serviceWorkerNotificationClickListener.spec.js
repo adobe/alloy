@@ -20,7 +20,6 @@ describe("serviceWorkerNotificationClickListener", () => {
   let mockEvent;
   let mockSw;
   let mockLogger;
-  let mockFetch;
   let mockMakeSendServiceWorkerTrackingData;
   let serviceWorkerNotificationClickListener;
   let mockClient;
@@ -45,12 +44,13 @@ describe("serviceWorkerNotificationClickListener", () => {
       error: vi.fn(),
     };
 
-    mockFetch = vi.fn();
     mockMakeSendServiceWorkerTrackingData = vi.fn().mockResolvedValue(true);
     serviceWorkerNotificationClickListener =
       createServiceWorkerNotificationClickListener({
         makeSendServiceWorkerTrackingData:
           mockMakeSendServiceWorkerTrackingData,
+        sw: mockSw,
+        logger: mockLogger,
       });
     mockWaitUntil = vi.fn();
 
@@ -72,24 +72,13 @@ describe("serviceWorkerNotificationClickListener", () => {
 
   describe("tracking data sending", () => {
     it("sends tracking data with application launches when no action is taken", async () => {
-      serviceWorkerNotificationClickListener({
-        event: mockEvent,
-        sw: mockSw,
-        logger: mockLogger,
-        fetch: mockFetch,
-      });
+      serviceWorkerNotificationClickListener({ event: mockEvent });
 
-      expect(mockMakeSendServiceWorkerTrackingData).toHaveBeenCalledWith(
-        {
-          xdm: mockEvent.notification.data._xdm.mixins,
-          actionLabel: null,
-          applicationLaunches: 1,
-        },
-        {
-          logger: mockLogger,
-          fetch: mockFetch,
-        },
-      );
+      expect(mockMakeSendServiceWorkerTrackingData).toHaveBeenCalledWith({
+        xdm: mockEvent.notification.data._xdm.mixins,
+        actionLabel: null,
+        applicationLaunches: 1,
+      });
     });
 
     it("sends tracking data with action label when action button is clicked", () => {
@@ -104,36 +93,20 @@ describe("serviceWorkerNotificationClickListener", () => {
         ],
       };
 
-      serviceWorkerNotificationClickListener({
-        event: mockEvent,
-        sw: mockSw,
-        logger: mockLogger,
-        fetch: mockFetch,
-      });
+      serviceWorkerNotificationClickListener({ event: mockEvent });
 
-      expect(mockMakeSendServiceWorkerTrackingData).toHaveBeenCalledWith(
-        {
-          xdm: mockEvent.notification.data._xdm.mixins,
-          actionLabel: "View Details",
-          applicationLaunches: 1,
-        },
-        {
-          logger: mockLogger,
-          fetch: mockFetch,
-        },
-      );
+      expect(mockMakeSendServiceWorkerTrackingData).toHaveBeenCalledWith({
+        xdm: mockEvent.notification.data._xdm.mixins,
+        actionLabel: "View Details",
+        applicationLaunches: 1,
+      });
     });
 
     it("logs error when tracking data sending fails", async () => {
       const testError = new Error("Network error");
       mockMakeSendServiceWorkerTrackingData.mockRejectedValue(testError);
 
-      serviceWorkerNotificationClickListener({
-        event: mockEvent,
-        sw: mockSw,
-        logger: mockLogger,
-        fetch: mockFetch,
-      });
+      serviceWorkerNotificationClickListener({ event: mockEvent });
 
       await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -155,12 +128,7 @@ describe("serviceWorkerNotificationClickListener", () => {
         ],
       };
 
-      serviceWorkerNotificationClickListener({
-        event: mockEvent,
-        sw: mockSw,
-        logger: mockLogger,
-        fetch: mockFetch,
-      });
+      serviceWorkerNotificationClickListener({ event: mockEvent });
 
       const waitUntilCallback = mockWaitUntil.mock.calls[0][0];
       await waitUntilCallback;
@@ -180,12 +148,7 @@ describe("serviceWorkerNotificationClickListener", () => {
         ],
       };
 
-      serviceWorkerNotificationClickListener({
-        event: mockEvent,
-        sw: mockSw,
-        logger: mockLogger,
-        fetch: mockFetch,
-      });
+      serviceWorkerNotificationClickListener({ event: mockEvent });
 
       const waitUntilCallback = mockWaitUntil.mock.calls[0][0];
       await waitUntilCallback;
@@ -205,12 +168,7 @@ describe("serviceWorkerNotificationClickListener", () => {
         ],
       };
 
-      serviceWorkerNotificationClickListener({
-        event: mockEvent,
-        sw: mockSw,
-        logger: mockLogger,
-        fetch: mockFetch,
-      });
+      serviceWorkerNotificationClickListener({ event: mockEvent });
 
       expect(mockWaitUntil).not.toHaveBeenCalled();
     });
@@ -223,12 +181,7 @@ describe("serviceWorkerNotificationClickListener", () => {
         uri: "https://example.com/main",
       };
 
-      serviceWorkerNotificationClickListener({
-        event: mockEvent,
-        sw: mockSw,
-        logger: mockLogger,
-        fetch: mockFetch,
-      });
+      serviceWorkerNotificationClickListener({ event: mockEvent });
 
       expect(mockWaitUntil).toHaveBeenCalled();
     });
@@ -239,12 +192,7 @@ describe("serviceWorkerNotificationClickListener", () => {
         uri: "myapp://main/path",
       };
 
-      serviceWorkerNotificationClickListener({
-        event: mockEvent,
-        sw: mockSw,
-        logger: mockLogger,
-        fetch: mockFetch,
-      });
+      serviceWorkerNotificationClickListener({ event: mockEvent });
 
       expect(mockWaitUntil).toHaveBeenCalled();
     });
@@ -255,12 +203,7 @@ describe("serviceWorkerNotificationClickListener", () => {
         uri: "https://example.com/main",
       };
 
-      serviceWorkerNotificationClickListener({
-        event: mockEvent,
-        sw: mockSw,
-        logger: mockLogger,
-        fetch: mockFetch,
-      });
+      serviceWorkerNotificationClickListener({ event: mockEvent });
 
       expect(mockWaitUntil).not.toHaveBeenCalled();
     });
@@ -268,12 +211,7 @@ describe("serviceWorkerNotificationClickListener", () => {
     it("handles main notification without interaction", () => {
       delete mockEvent.notification.data.interaction;
 
-      serviceWorkerNotificationClickListener({
-        event: mockEvent,
-        sw: mockSw,
-        logger: mockLogger,
-        fetch: mockFetch,
-      });
+      serviceWorkerNotificationClickListener({ event: mockEvent });
 
       expect(mockWaitUntil).not.toHaveBeenCalled();
     });
@@ -286,12 +224,7 @@ describe("serviceWorkerNotificationClickListener", () => {
         uri: "https://example.com/page",
       };
 
-      serviceWorkerNotificationClickListener({
-        event: mockEvent,
-        sw: mockSw,
-        logger: mockLogger,
-        fetch: mockFetch,
-      });
+      serviceWorkerNotificationClickListener({ event: mockEvent });
 
       const waitUntilCallback = mockWaitUntil.mock.calls[0][0];
       await waitUntilCallback;
@@ -308,12 +241,7 @@ describe("serviceWorkerNotificationClickListener", () => {
         uri: "https://example.com/new-page",
       };
 
-      serviceWorkerNotificationClickListener({
-        event: mockEvent,
-        sw: mockSw,
-        logger: mockLogger,
-        fetch: mockFetch,
-      });
+      serviceWorkerNotificationClickListener({ event: mockEvent });
 
       const waitUntilCallback = mockWaitUntil.mock.calls[0][0];
       await waitUntilCallback;

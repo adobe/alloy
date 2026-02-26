@@ -15,10 +15,6 @@ governing permissions and limitations under the License.
 
 /** @import { ServiceWorkerLogger } from '../types.js' */
 
-import { createMakeSendServiceWorkerTrackingData } from "../request/makeSendServiceWorkerTrackingData.js";
-import readFromIndexedDb from "./readFromIndexedDb.js";
-import uuidv4 from "../../../utils/uuid.js";
-
 /**
  * @param {string} type
  * @returns {boolean}
@@ -27,21 +23,22 @@ const canHandleUrl = (type) => ["DEEPLINK", "WEBURL"].includes(type);
 
 /**
  * @param {Object} dependencies
- * @param {(options: { xdm: Object, actionLabel?: string, applicationLaunches?: number }, utils: { logger: ServiceWorkerLogger, fetch: (url: string, options: object) => Promise<Response> }) => Promise<boolean>} dependencies.makeSendServiceWorkerTrackingData
+ * @param {(options: { xdm: Object, actionLabel?: string, applicationLaunches?: number }) => Promise<boolean>} dependencies.makeSendServiceWorkerTrackingData
+ * @param {ServiceWorkerGlobalScope} dependencies.sw
+ * @param {ServiceWorkerLogger} dependencies.logger
  */
 export const createServiceWorkerNotificationClickListener = ({
   makeSendServiceWorkerTrackingData,
+  sw,
+  logger,
 }) => {
   /**
    * @function
    *
    * @param {Object} options
-   * @param {ServiceWorkerGlobalScope} options.sw
    * @param {NotificationEvent} options.event
-   * @param {(url: string, options: object) => Promise<Response>} options.fetch
-   * @param {ServiceWorkerLogger} options.logger
    */
-  return ({ event, sw, logger, fetch }) => {
+  return ({ event }) => {
     event.notification.close();
 
     const data = event.notification.data;
@@ -64,18 +61,12 @@ export const createServiceWorkerNotificationClickListener = ({
       targetUrl = data.interaction.uri;
     }
 
-    makeSendServiceWorkerTrackingData(
-      {
-        // eslint-disable-next-line no-underscore-dangle
-        xdm: data._xdm.mixins,
-        actionLabel,
-        applicationLaunches: 1,
-      },
-      {
-        logger,
-        fetch,
-      },
-    ).catch((error) => {
+    makeSendServiceWorkerTrackingData({
+      // eslint-disable-next-line no-underscore-dangle
+      xdm: data._xdm.mixins,
+      actionLabel,
+      applicationLaunches: 1,
+    }).catch((error) => {
       logger.error("Failed to send tracking call:", error);
     });
 
@@ -95,13 +86,3 @@ export const createServiceWorkerNotificationClickListener = ({
     }
   };
 };
-
-const makeSendServiceWorkerTrackingData =
-  createMakeSendServiceWorkerTrackingData({
-    readFromIndexedDb,
-    uuidv4,
-  });
-
-export default createServiceWorkerNotificationClickListener({
-  makeSendServiceWorkerTrackingData,
-});
