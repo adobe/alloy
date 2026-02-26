@@ -209,6 +209,57 @@ describe("createSendConversationEvent", () => {
     });
   });
 
+  it("passes voiceEnabled from options to the service request", async () => {
+    const mockResponse = {
+      ok: true,
+      status: 200,
+      body: createMockReadableStream([]),
+    };
+    mockDependencies.sendConversationServiceRequest.mockResolvedValue(
+      mockResponse,
+    );
+
+    const sendConversationEvent = createSendConversationEvent(mockDependencies);
+    const options = {
+      message: "Hello",
+      onStreamResponse: vi.fn(),
+      voiceEnabled: true,
+    };
+
+    const resultPromise = sendConversationEvent(options);
+
+    return flushPromiseChains().then(() => {
+      const callArgs = mockDependencies.buildEndpointUrl.mock.calls[0][0];
+      expect(callArgs.request.getEdgeSubPath()).toBe("/brand-concierge-voice");
+      return resultPromise;
+    });
+  });
+
+  it("defaults to text subpath when voiceEnabled is not provided", async () => {
+    const mockResponse = {
+      ok: true,
+      status: 200,
+      body: createMockReadableStream([]),
+    };
+    mockDependencies.sendConversationServiceRequest.mockResolvedValue(
+      mockResponse,
+    );
+
+    const sendConversationEvent = createSendConversationEvent(mockDependencies);
+    const options = {
+      message: "Hello",
+      onStreamResponse: vi.fn(),
+    };
+
+    const resultPromise = sendConversationEvent(options);
+
+    return flushPromiseChains().then(() => {
+      const callArgs = mockDependencies.buildEndpointUrl.mock.calls[0][0];
+      expect(callArgs.request.getEdgeSubPath()).toBe("/brand-concierge");
+      return resultPromise;
+    });
+  });
+
   it("handles stream timeout when no data is received within 10 seconds", async () => {
     vi.useFakeTimers();
 

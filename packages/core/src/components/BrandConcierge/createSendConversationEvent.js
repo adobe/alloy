@@ -36,16 +36,22 @@ export default ({
     onBeforeEventSend,
     conversation,
   } = config;
-
   return (options) => {
     let streamingEnabled = false;
-    const { message, onStreamResponse, xdm, data } = options;
+    const {
+      message,
+      onStreamResponse,
+      xdm,
+      data,
+      voiceEnabled = false,
+    } = options;
     const sessionId =
       getConciergeSessionCookie({ loggingCookieJar, config }) || uuid();
     const payload = createDataCollectionRequestPayload();
     const request = createConversationServiceRequest({
       payload,
       sessionId: sessionId,
+      voiceEnabled,
     });
 
     const event = eventManager.createEvent();
