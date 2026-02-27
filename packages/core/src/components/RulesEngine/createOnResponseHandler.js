@@ -10,8 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { INBOX_ITEM } from "../../constants/schema.js";
 import { PERSONALIZATION_DECISIONS_HANDLE } from "../../constants/decisionProvider.js";
 import flattenObject from "../../utils/flattenObject.js";
+
+const extractInboxPropositions = (payloads) =>
+  payloads.filter(
+    (payload) =>
+      Array.isArray(payload.items) &&
+      payload.items.length > 0 &&
+      payload.items.every((item) => item.schema === INBOX_ITEM),
+  );
 
 export default ({
   renderDecisions,
@@ -27,16 +36,20 @@ export default ({
   };
 
   return ({ response }) => {
-    decisionProvider.addPayloads(
-      response.getPayloadsByType(PERSONALIZATION_DECISIONS_HANDLE),
+    const personalizationPayloads = response.getPayloadsByType(
+      PERSONALIZATION_DECISIONS_HANDLE,
     );
+    decisionProvider.addPayloads(personalizationPayloads);
 
     // only evaluate events that include a personalization query
     if (!event.hasQuery()) {
       return { propositions: [] };
     }
 
-    const propositions = decisionProvider.evaluate(context);
+    const inboxPropositions = extractInboxPropositions(personalizationPayloads);
+
+    const evaluatedPropositions = decisionProvider.evaluate(context);
+    const propositions = [...evaluatedPropositions, ...inboxPropositions];
 
     return applyResponse({
       renderDecisions,

@@ -396,4 +396,65 @@ describe("RulesEngine:createOnResponseHandler", () => {
       identityMap: undefined,
     });
   });
+
+  it("converts inbox-only payloads to propositions and passes them to applyResponse with evaluated propositions", () => {
+    const event = {
+      getViewName: () => undefined,
+      getUserIdentityMap: () => undefined,
+      hasQuery: () => true,
+      getContent: () => ({ query: {}, xdm: {}, data: {} }),
+    };
+    const responseHandler = createOnResponseHandler({
+      renderDecisions: true,
+      decisionProvider,
+      applyResponse,
+      event,
+      personalization: {},
+      decisionContext: {},
+    });
+    const inboxPayload = {
+      id: "66e05490-5e91-45c4-8eee-339784032940",
+      scope: "mobileapp://com.app/trendingnow",
+      scopeDetails: {
+        decisionProvider: "AJO",
+        activity: { id: "99db8aff4-82af-460e-8524-73e1441afdfa#id" },
+      },
+      items: [
+        {
+          id: "569d1166-d3e0-4aea-b9a7-6de8ebdf3aec",
+          schema: "https://ns.adobe.com/personalization/inbox-item",
+          data: {
+            content: {
+              heading: { content: "Trending Now Inbox" },
+              capacity: 10,
+            },
+          },
+        },
+      ],
+    };
+    const response = {
+      getPayloadsByType: () => [inboxPayload],
+    };
+    responseHandler({ response });
+    expect(lifecycle.onDecision).toHaveBeenCalledWith(
+      expect.objectContaining({
+        propositions: [
+          expect.objectContaining({
+            id: inboxPayload.id,
+            items: [
+              expect.objectContaining({
+                schema: "https://ns.adobe.com/personalization/inbox-item",
+                data: expect.objectContaining({
+                  content: {
+                    heading: { content: "Trending Now Inbox" },
+                    capacity: 10,
+                  },
+                }),
+              }),
+            ],
+          }),
+        ],
+      }),
+    );
+  });
 });

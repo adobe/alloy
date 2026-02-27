@@ -444,14 +444,13 @@ describe("RulesEngine:createDecisionProvider", () => {
       },
     ]);
   });
-  it("returns payloads that contain inbox items as evaluable propositions (no rules engine)", () => {
+  it("does not add payloads that contain only inbox items (handled in response handler)", () => {
     const inboxPayload = {
       id: "66e05490-5e91-45c4-8eee-339784032940",
       scope: "mobileapp://com.app/trendingnow",
       scopeDetails: {
         decisionProvider: "AJO",
         activity: { id: "99db8aff4-82af-460e-8524-73e1441afdfa#id" },
-        correlationID: "za380bc9-aea0-486e-85f4-5904cc53124d-0",
       },
       items: [
         {
@@ -468,26 +467,7 @@ describe("RulesEngine:createDecisionProvider", () => {
       ],
     };
     decisionProvider.addPayload(inboxPayload);
-    const result = decisionProvider.evaluate();
-    expect(result).toHaveLength(1);
-    expect(result[0]).toMatchObject({
-      id: inboxPayload.id,
-      scope: inboxPayload.scope,
-      items: [
-        {
-          id: "569d1166-d3e0-4aea-b9a7-6de8ebdf3aec",
-          schema: "https://ns.adobe.com/personalization/inbox-item",
-          data: {
-            content: {
-              heading: { content: "Trending Now Inbox" },
-              layout: { orientation: "horizontal" },
-              capacity: 10,
-            },
-            qualifiedDate: expect.any(Number),
-          },
-        },
-      ],
-    });
+    expect(decisionProvider.evaluate()).toEqual([]);
   });
 
   it("does not add payloads that have items but no inbox or ruleset items (e.g. TGT dom-action only)", () => {

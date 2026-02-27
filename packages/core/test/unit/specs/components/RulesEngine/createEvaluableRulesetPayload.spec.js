@@ -361,45 +361,4 @@ describe("RulesEngine:createEvaluableRulesetPayload", () => {
       scope: "web://mywebsite.com",
     });
   });
-
-  it("returns payloads with only inbox items as evaluable, evaluate() returns those items with qualifiedDate/displayedDate", () => {
-    const payload = {
-      id: "66e05490-5e91-45c4-8eee-339784032940",
-      scopeDetails: {
-        decisionProvider: "AJO",
-        activity: { id: "99db8aff4-82af-460e-8524-73e1441afdfa#id" },
-      },
-      items: [
-        {
-          id: "569d1166-d3e0-4aea-b9a7-6de8ebdf3aec",
-          schema: "https://ns.adobe.com/personalization/inbox-item",
-          data: {
-            content: {
-              heading: { content: "Trending Now Inbox" },
-              capacity: 10,
-            },
-          },
-        },
-      ],
-    };
-    const evaluable = createEvaluableRulesetPayload(payload, eventRegistry);
-    expect(evaluable.isEvaluable).toBe(true);
-    const result = evaluable.evaluate({});
-    expect(result).toMatchObject({
-      id: payload.id,
-      items: [
-        {
-          id: "569d1166-d3e0-4aea-b9a7-6de8ebdf3aec",
-          schema: "https://ns.adobe.com/personalization/inbox-item",
-          data: {
-            content: {
-              heading: { content: "Trending Now Inbox" },
-              capacity: 10,
-            },
-            qualifiedDate: expect.any(Number),
-          },
-        },
-      ],
-    });
-  });
 });
