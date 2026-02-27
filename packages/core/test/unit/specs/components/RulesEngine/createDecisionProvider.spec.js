@@ -444,7 +444,7 @@ describe("RulesEngine:createDecisionProvider", () => {
       },
     ]);
   });
-  it("passes through payloads that contain inbox items but are not evaluable rulesets", () => {
+  it("returns payloads that contain inbox items as evaluable propositions (no rules engine)", () => {
     const inboxPayload = {
       id: "66e05490-5e91-45c4-8eee-339784032940",
       scope: "mobileapp://com.app/trendingnow",
@@ -468,10 +468,29 @@ describe("RulesEngine:createDecisionProvider", () => {
       ],
     };
     decisionProvider.addPayload(inboxPayload);
-    expect(decisionProvider.evaluate()).toEqual([inboxPayload]);
+    const result = decisionProvider.evaluate();
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({
+      id: inboxPayload.id,
+      scope: inboxPayload.scope,
+      items: [
+        {
+          id: "569d1166-d3e0-4aea-b9a7-6de8ebdf3aec",
+          schema: "https://ns.adobe.com/personalization/inbox-item",
+          data: {
+            content: {
+              heading: { content: "Trending Now Inbox" },
+              layout: { orientation: "horizontal" },
+              capacity: 10,
+            },
+            qualifiedDate: expect.any(Number),
+          },
+        },
+      ],
+    });
   });
 
-  it("does not pass through payloads that have items but no inbox items (e.g. TGT dom-action only)", () => {
+  it("does not add payloads that have items but no inbox or ruleset items (e.g. TGT dom-action only)", () => {
     const tgtPayload = {
       id: "AT:eyJhY3Rpdml0eUlkIjoiMTQxMDY0IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
       scope: "__view__",

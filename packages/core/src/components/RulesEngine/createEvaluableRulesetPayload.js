@@ -10,7 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import RulesEngine from "@adobe/aep-rules-engine";
-import { JSON_CONTENT_ITEM, RULESET_ITEM } from "../../constants/schema.js";
+import {
+  INBOX_ITEM,
+  JSON_CONTENT_ITEM,
+  RULESET_ITEM,
+} from "../../constants/schema.js";
 import { DISPLAY } from "../../constants/eventType.js";
 import { PropositionEventType } from "../../constants/propositionEventType.js";
 import { generateEventHash, getActivityId } from "./utils/index.js";
@@ -45,6 +49,8 @@ const isRulesetItem = (item) => {
   }
 };
 
+const isInboxItem = (item) => item?.schema === INBOX_ITEM;
+
 export default (payload, eventRegistry) => {
   const consequenceAdapter = createConsequenceAdapter();
   const activityId = getActivityId(payload);
@@ -66,9 +72,32 @@ export default (payload, eventRegistry) => {
     );
   };
 
+  const inboxItems = Array.isArray(payload.items)
+    ? payload.items.filter(isInboxItem)
+    : [];
+
   const evaluate = (context) => {
     const displayEvent = eventRegistry.getEvent(DISPLAY, activityId);
     const displayedDate = displayEvent?.timestamps[0];
+
+    if (items.length === 0 && inboxItems.length > 0) {
+      const event = eventRegistry.addEvent({
+        eventType: PropositionEventType.TRIGGER,
+        eventId: activityId,
+      });
+      const qualifiedDate = event.timestamps[0];
+      return {
+        ...payload,
+        items: inboxItems.map((item) => ({
+          ...item,
+          data: {
+            ...item.data,
+            qualifiedDate,
+            displayedDate,
+          },
+        })),
+      };
+    }
 
     const qualifyingItems = flattenArray(
       items.map((item) => item.execute(context)),
@@ -101,6 +130,6 @@ export default (payload, eventRegistry) => {
   return {
     rank: payload?.scopeDetails?.rank || Infinity,
     evaluate,
-    isEvaluable: items.length > 0,
+    isEvaluable: items.length > 0 || inboxItems.length > 0,
   };
 };

@@ -9,17 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { INBOX_ITEM } from "../../constants/schema.js";
 import createEvaluableRulesetPayload from "./createEvaluableRulesetPayload.js";
 import { getActivityId } from "./utils/index.js";
 
-const hasInboxItem = (payload) =>
-  Array.isArray(payload.items) &&
-  payload.items.some((item) => item.schema === INBOX_ITEM);
-
 export default ({ eventRegistry }) => {
   const payloadsBasedOnActivityId = {};
-  const passthroughPayloads = [];
 
   const addPayload = (payload) => {
     const activityId = getActivityId(payload);
@@ -34,8 +28,6 @@ export default ({ eventRegistry }) => {
 
     if (evaluableRulesetPayload.isEvaluable) {
       payloadsBasedOnActivityId[activityId] = evaluableRulesetPayload;
-    } else if (hasInboxItem(payload)) {
-      passthroughPayloads.push(payload);
     }
   };
 
@@ -44,11 +36,9 @@ export default ({ eventRegistry }) => {
       payloadsBasedOnActivityId,
     ).sort(({ rank: rankA }, { rank: rankB }) => rankA - rankB);
 
-    const evaluatedPayloads = sortedPayloadsBasedOnActivityId
+    return sortedPayloadsBasedOnActivityId
       .map((payload) => payload.evaluate(context))
       .filter((payload) => payload.items.length > 0);
-
-    return [...evaluatedPayloads, ...passthroughPayloads];
   };
 
   const addPayloads = (personalizationPayloads) => {
