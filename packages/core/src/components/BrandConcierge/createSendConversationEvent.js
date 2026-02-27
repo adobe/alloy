@@ -36,7 +36,7 @@ export default ({
     onBeforeEventSend,
     conversation,
   } = config;
-  const { edgeSubPath } = conversation;
+  const { voiceEnabled } = conversation;
 
   return (options) => {
     let streamingEnabled = false;
@@ -47,7 +47,7 @@ export default ({
     const request = createConversationServiceRequest({
       payload,
       sessionId: sessionId,
-      edgeSubPath,
+      voiceEnabled,
     });
 
     const event = eventManager.createEvent();

@@ -134,15 +134,15 @@ describe("BrandConcierge config validators", () => {
   testConfigValidators({
     configValidators: createConciergeComponent.configValidators,
     validConfigurations: [
-      { conversation: { edgeSubPath: "/brand-concierge" } },
-      { conversation: { edgeSubPath: "/custom-brand-concierge" } },
+      { conversation: { voiceEnabled: true } },
+      { conversation: { voiceEnabled: false } },
       { conversation: { stickyConversationSession: true } },
       { conversation: { stickyConversationSession: false } },
       { conversation: { streamTimeout: 10000 } },
       { conversation: { streamTimeout: 20000 } },
       {
         conversation: {
-          edgeSubPath: "/custom-brand-concierge",
+          voiceEnabled: true,
           stickyConversationSession: true,
           streamTimeout: 10000,
         },
@@ -150,8 +150,8 @@ describe("BrandConcierge config validators", () => {
       {},
     ],
     invalidConfigurations: [
-      { conversation: { edgeSubPath: "" } },
-      { conversation: { edgeSubPath: 123 } },
+      { conversation: { voiceEnabled: "true" } },
+      { conversation: { voiceEnabled: 123 } },
       { conversation: { stickyConversationSession: "invalid" } },
       { conversation: { stickyConversationSession: 123 } },
       { conversation: { streamTimeout: "invalid" } },
@@ -162,7 +162,7 @@ describe("BrandConcierge config validators", () => {
   });
   it("provides default values for concierge configuration", () => {
     const config = createConciergeComponent.configValidators({});
-    expect(config.conversation.edgeSubPath).toBe("/brand-concierge");
+    expect(config.conversation.voiceEnabled).toBe(false);
     expect(config.conversation.stickyConversationSession).toBe(false);
     expect(config.conversation.streamTimeout).toBe(10000);
   });

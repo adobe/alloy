@@ -85,7 +85,7 @@ describe("createConversationServiceRequest", () => {
     });
   });
 
-  it("uses correct edge subpath", () => {
+  it("uses default edge subpath when voice is disabled", () => {
     const request = createConversationServiceRequest({
       payload: mockPayload,
       sessionId: mockSessionId,
@@ -94,13 +94,13 @@ describe("createConversationServiceRequest", () => {
     expect(request.getEdgeSubPath()).toBe("/brand-concierge");
   });
 
-  it("allows custom edge subpath", () => {
+  it("uses voice edge subpath when voice is enabled", () => {
     const request = createConversationServiceRequest({
       payload: mockPayload,
       sessionId: mockSessionId,
-      edgeSubPath: "/custom-brand-concierge",
+      voiceEnabled: true,
     });
 
-    expect(request.getEdgeSubPath()).toBe("/custom-brand-concierge");
+    expect(request.getEdgeSubPath()).toBe("/brand-concierge-voice");
   });
 });

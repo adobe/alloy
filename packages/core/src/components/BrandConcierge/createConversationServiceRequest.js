@@ -15,8 +15,12 @@ export default ({
   payload,
   action = "conversations",
   sessionId,
-  edgeSubPath = "/brand-concierge",
+  voiceEnabled = false,
 }) => {
+  const edgeSubPath = voiceEnabled
+    ? "/brand-concierge-voice"
+    : "/brand-concierge";
+
   return createRequest({
     payload: payload,
     edgeSubPath,
