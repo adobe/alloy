@@ -20,6 +20,7 @@ describe("Advertising - Clickthrough (duplicate s_kwcid)", () => {
   }) => {
     worker.use(...[sendEventHandler]);
 
+    // FIXME: Mutates shared URL state and never restores it; leaks across specs.
     const url = new URL(window.location.origin + window.location.pathname);
     url.searchParams.append("s_kwcid", "AL!first-keyword");
     url.searchParams.append("s_kwcid", "AL!second-keyword");

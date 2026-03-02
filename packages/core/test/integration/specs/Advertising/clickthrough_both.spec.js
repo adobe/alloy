@@ -19,6 +19,7 @@ describe("Advertising - Clickthrough (both)", () => {
   }) => {
     worker.use(...[sendEventHandler]);
 
+    // FIXME: Mutates shared URL state and never restores it; leaks across specs.
     const url = new URL(window.location.href);
     url.searchParams.set("s_kwcid", "test_keyword_123");
     url.searchParams.set("ef_id", "test_experiment_456");

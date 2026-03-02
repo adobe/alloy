@@ -28,6 +28,7 @@ import {
   AD_CONVERSION_VIEW_EVENT_TYPE,
 } from "../../../../../../src/components/Advertising/constants/index.js";
 
+// FIXME: Module mocks are leaky; use dependency injection instead.
 // Mock DOM utilities
 vi.mock("../../../../../../src/utils/dom/index.js", () => ({
   awaitSelector: vi.fn(),
@@ -78,6 +79,7 @@ describe("Advertising::helpers", () => {
 
   describe("getUrlParams", () => {
     afterEach(() => {
+      // FIXME: Mutates shared URL state; this must stay paired with robust cleanup.
       window.history.pushState({}, "", "/");
     });
 

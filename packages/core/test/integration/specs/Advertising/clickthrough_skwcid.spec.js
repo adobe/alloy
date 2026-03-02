@@ -23,6 +23,7 @@ describe("Advertising - Clickthrough (s_kwcid)", () => {
     worker.use(...[sendEventHandler]);
 
     // Simulate URL param BEFORE configure so component startup can detect it
+    // FIXME: Mutates shared URL state and never restores it; leaks across specs.
     const url = new URL(window.location.href);
     url.searchParams.set("s_kwcid", "test_keyword_123");
     window.history.replaceState({}, "", url.toString());

@@ -28,6 +28,7 @@ Object.defineProperty(globalThis, "fetch", {
   writable: true,
 });
 
+// FIXME: Overwrites runtime globals without guaranteed restoration.
 // Mock XMLHttpRequest
 Object.defineProperty(globalThis, "XMLHttpRequest", {
   value: class MockXMLHttpRequest {
@@ -46,6 +47,7 @@ Object.defineProperty(globalThis, "XMLHttpRequest", {
   writable: true,
 });
 
+// FIXME: Mutates document/window globals at module scope; leaks into unrelated specs.
 // Mock DOM operations to prevent network calls from script loading
 if (typeof globalThis.document !== "undefined") {
   globalThis.document.createElement = vi.fn(() => ({
@@ -66,6 +68,7 @@ if (typeof globalThis.document !== "undefined") {
 }
 
 if (typeof globalThis.window !== "undefined") {
+  // FIXME: Mutates document/window globals at module scope; leaks into unrelated specs.
   globalThis.window.addEventListener = vi.fn();
   globalThis.window.removeEventListener = vi.fn();
   globalThis.window.attachEvent = vi.fn();
@@ -74,11 +77,13 @@ if (typeof globalThis.window !== "undefined") {
   globalThis.window.ID5 = undefined;
 }
 
+// FIXME: Module mocks are leaky; use dependency injection instead.
 // Mock dependencies
 vi.mock(
   "../../../../../../src/components/Advertising/identities/collectAllIdentities.js",
 );
 
+// FIXME: Module mocks are leaky; use dependency injection instead.
 // Mock helpers to prevent network calls
 vi.mock(
   "../../../../../../src/components/Advertising/utils/helpers.js",
@@ -167,6 +172,7 @@ describe("Advertising::viewThroughHandler", () => {
 
     getBrowser = vi.fn();
 
+    // FIXME: Date.now spy is never restored in this file.
     const fixedTs = Date.UTC(2024, 0, 1, 0, 0, 0);
     const mockNow = {
       valueOf: () => fixedTs,

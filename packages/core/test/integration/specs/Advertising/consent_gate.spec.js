@@ -43,6 +43,7 @@ const clearUrlParams = () => {
 };
 
 const cleanupAll = () => {
+  // FIXME: Cleanup is manually invoked in tests (not afterEach); failures can leak shared state.
   clearUrlParams();
   clearCookie("advertising");
   clearCookie("consent");
@@ -212,6 +213,7 @@ describe("Advertising - Consent gate", () => {
         event.preventDefault();
       }
     };
+    // FIXME: Listener cleanup is not in finally; assertion failures can leak this handler.
     window.addEventListener("unhandledrejection", suppressDeclined);
 
     cleanupAll();

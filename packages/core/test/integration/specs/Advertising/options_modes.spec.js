@@ -17,6 +17,7 @@ const getNamespacedAdvertisingCookieName = () => {
 
 const setAdvertisingCookie = (value) => {
   const name = getNamespacedAdvertisingCookieName();
+  // FIXME: Writes process-global cookie state and this file never clears it between tests.
   document.cookie = `${name}=${value}; path=/`;
 };
 

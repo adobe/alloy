@@ -17,9 +17,11 @@ import {
   LAST_CONVERSION_TIME_KEY,
 } from "../../../../../../src/components/Advertising/constants/index.js";
 
+// FIXME: Module-level global mutation leaks across files.
 // Mock network operations to prevent real network calls
 vi.mock("fetch", () => vi.fn());
 
+// FIXME: Overwrites runtime globals without guaranteed restoration.
 // Mock globalThis fetch and other network APIs
 Object.defineProperty(globalThis, "fetch", {
   value: vi.fn(() =>
@@ -31,6 +33,7 @@ Object.defineProperty(globalThis, "fetch", {
   writable: true,
 });
 
+// FIXME: Overwrites runtime globals without guaranteed restoration.
 // Mock XMLHttpRequest
 Object.defineProperty(globalThis, "XMLHttpRequest", {
   value: class MockXMLHttpRequest {
@@ -49,6 +52,7 @@ Object.defineProperty(globalThis, "XMLHttpRequest", {
   writable: true,
 });
 
+// FIXME: Mutates document/window globals at module scope; leaks into unrelated specs.
 // Mock DOM operations to prevent network calls from script loading
 if (typeof globalThis.document !== "undefined") {
   globalThis.document.createElement = vi.fn(() => ({
@@ -71,6 +75,7 @@ if (typeof globalThis.window !== "undefined") {
   globalThis.window.removeEventListener = vi.fn();
 }
 
+// FIXME: Module mocks are leaky; use dependency injection instead.
 // Mock helpers with all functions that might make network calls
 vi.mock(
   "../../../../../../src/components/Advertising/utils/helpers.js",
@@ -118,6 +123,7 @@ describe("Advertising::clickThroughHandler", () => {
       error: vi.fn(),
     };
 
+    // FIXME: Date.now spy is never restored in this file.
     const fixedTs = Date.UTC(2024, 0, 1, 0, 0, 0);
     const mockNow = {
       valueOf: () => fixedTs,

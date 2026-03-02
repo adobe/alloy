@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import createAdConversionHandler from "../../../../../../src/components/Advertising/handlers/createAdConversionHandler.js";
 
+// FIXME: Module-level global mutation leaks across files.
 // Mock network operations to prevent real network calls
 vi.mock("fetch", () => vi.fn());
 Object.defineProperty(globalThis, "fetch", {
@@ -25,13 +26,12 @@ Object.defineProperty(globalThis, "fetch", {
   writable: true,
 });
 
+// FIXME: Module mocks are leaky; use dependency injection instead.
 // Mock dependencies
 vi.mock(
   "../../../../../../src/utils/request/createDataCollectionRequestPayload.js",
 );
-vi.mock(
-  "../../../../../../src/utils/request/createDataCollectionRequest.js",
-);
+vi.mock("../../../../../../src/utils/request/createDataCollectionRequest.js");
 
 describe("Advertising::createAdConversionHandler", () => {
   let eventManager;
