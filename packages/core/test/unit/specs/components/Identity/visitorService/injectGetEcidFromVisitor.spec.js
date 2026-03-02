@@ -29,6 +29,7 @@ Visitor.getInstance = () => {
 const orgId = "456org";
 describe("getEcidFromVisitor", () => {
   beforeEach(() => {
+    // FIXME: Mutates global window.Visitor state; keep cleanup robust to avoid cross-spec leaks.
     window.Visitor = undefined;
   });
   afterAll(() => {

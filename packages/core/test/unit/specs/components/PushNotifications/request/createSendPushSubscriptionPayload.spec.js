@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
 
+// FIXME: Module mocks are leaky; use dependency injection instead.
 vi.mock(
   "../../../../../../src/utils/request/createDataCollectionRequestPayload.js",
 );

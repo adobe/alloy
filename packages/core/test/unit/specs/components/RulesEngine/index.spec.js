@@ -34,6 +34,7 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
       awaitConsent: vi.fn().mockReturnValue(awaitConsentDeferred.promise),
     };
     getBrowser = vi.fn().mockReturnValue("foo");
+    // FIXME: Mutates global window.referrer and never restores original value in this file.
     window.referrer =
       "https://www.google.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer";
 

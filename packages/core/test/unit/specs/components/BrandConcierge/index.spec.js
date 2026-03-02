@@ -17,6 +17,7 @@ describe("BrandConcierge", () => {
   let mockDependencies;
 
   beforeEach(() => {
+    // FIXME: Mutates global fetch and never restores original value in this file.
     // Mock window.fetch
     window.fetch = vi.fn();
 
@@ -24,21 +25,21 @@ describe("BrandConcierge", () => {
       loggingCookieJar: {
         remove: vi.fn(),
         get: vi.fn(),
-        set: vi.fn()
+        set: vi.fn(),
       },
       logger: {
         info: vi.fn(),
         warn: vi.fn(),
         error: vi.fn(),
         logOnBeforeNetworkRequest: vi.fn(),
-        logOnNetworkError: vi.fn()
+        logOnNetworkError: vi.fn(),
       },
       eventManager: {
-        createEvent: vi.fn()
+        createEvent: vi.fn(),
       },
       consent: {
         suspend: vi.fn(),
-        resume: vi.fn()
+        resume: vi.fn(),
       },
       instanceName: "test-instance",
       sendEdgeNetworkRequest: vi.fn(),
@@ -46,19 +47,19 @@ describe("BrandConcierge", () => {
         orgId: "testorgid@AdobeOrg",
         edgeConfigId: "test-edge-config-id",
         conversation: {
-          stickyConversationSession: false
-        }
+          stickyConversationSession: false,
+        },
       },
       lifecycle: {
         onBeforeEvent: vi.fn(),
         onBeforeRequest: vi.fn(),
-        onRequestFailure: vi.fn()
+        onRequestFailure: vi.fn(),
       },
       cookieTransfer: {
-        cookiesToPayload: vi.fn()
+        cookiesToPayload: vi.fn(),
       },
       createResponse: vi.fn(),
-      apexDomain: "adobe.com"
+      apexDomain: "adobe.com",
     };
   });
 
@@ -78,18 +79,18 @@ describe("BrandConcierge", () => {
     const configWithSticky = {
       ...mockDependencies.config,
       conversation: {
-        stickyConversationSession: false
-      }
+        stickyConversationSession: false,
+      },
     };
 
     createConciergeComponent({
       ...mockDependencies,
-      config: configWithSticky
+      config: configWithSticky,
     });
 
     expect(mockDependencies.loggingCookieJar.remove).toHaveBeenCalledWith(
       "kndctr_testorgid_AdobeOrg_bc_session_id",
-      { domain: "adobe.com" }
+      { domain: "adobe.com" },
     );
   });
 
@@ -97,13 +98,13 @@ describe("BrandConcierge", () => {
     const configWithSticky = {
       ...mockDependencies.config,
       conversation: {
-        stickyConversationSession: true
-      }
+        stickyConversationSession: true,
+      },
     };
 
     createConciergeComponent({
       ...mockDependencies,
-      config: configWithSticky
+      config: configWithSticky,
     });
 
     expect(mockDependencies.loggingCookieJar.remove).not.toHaveBeenCalled();
@@ -112,15 +113,21 @@ describe("BrandConcierge", () => {
   it("sendConversationEvent command has options validator", () => {
     const component = createConciergeComponent(mockDependencies);
 
-    expect(component.commands.sendConversationEvent.optionsValidator).toBeDefined();
-    expect(typeof component.commands.sendConversationEvent.optionsValidator).toBe("function");
+    expect(
+      component.commands.sendConversationEvent.optionsValidator,
+    ).toBeDefined();
+    expect(
+      typeof component.commands.sendConversationEvent.optionsValidator,
+    ).toBe("function");
   });
 
   it("sendConversationEvent command has run function", () => {
     const component = createConciergeComponent(mockDependencies);
 
     expect(component.commands.sendConversationEvent.run).toBeDefined();
-    expect(typeof component.commands.sendConversationEvent.run).toBe("function");
+    expect(typeof component.commands.sendConversationEvent.run).toBe(
+      "function",
+    );
   });
 });
 
@@ -128,21 +135,23 @@ describe("BrandConcierge config validators", () => {
   testConfigValidators({
     configValidators: createConciergeComponent.configValidators,
     validConfigurations: [
-      {conversation: { stickyConversationSession: true }},
-      {conversation: { stickyConversationSession: false }},
-      {conversation: { streamTimeout: 10000 }},
-      {conversation: { streamTimeout: 20000 }},
-      {conversation: { stickyConversationSession: true, streamTimeout: 10000 }},
-      {}
+      { conversation: { stickyConversationSession: true } },
+      { conversation: { stickyConversationSession: false } },
+      { conversation: { streamTimeout: 10000 } },
+      { conversation: { streamTimeout: 20000 } },
+      {
+        conversation: { stickyConversationSession: true, streamTimeout: 10000 },
+      },
+      {},
     ],
     invalidConfigurations: [
-      {conversation: { stickyConversationSession: "invalid" }},
-      {conversation: { stickyConversationSession: 123 }},
-      {conversation: { streamTimeout: "invalid" }},
-      {conversation: { streamTimeout: -1 }},
-      {conversation: { streamTimeout: 1.5 }}
+      { conversation: { stickyConversationSession: "invalid" } },
+      { conversation: { stickyConversationSession: 123 } },
+      { conversation: { streamTimeout: "invalid" } },
+      { conversation: { streamTimeout: -1 } },
+      { conversation: { streamTimeout: 1.5 } },
     ],
-    defaultValues: {}
+    defaultValues: {},
   });
   it("provides default values for concierge configuration", () => {
     const config = createConciergeComponent.configValidators({});

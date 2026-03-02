@@ -18,6 +18,7 @@ const logger = {
 };
 describe("awaitVisitorOptIn", () => {
   beforeEach(() => {
+    // FIXME: Mutates global window.adobe state; keep cleanup robust to avoid cross-spec leaks.
     window.adobe = undefined;
   });
   afterAll(() => {

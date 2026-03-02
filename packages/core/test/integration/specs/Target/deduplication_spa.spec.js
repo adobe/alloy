@@ -23,6 +23,7 @@ describe("Target Custom Code SPA", () => {
     worker,
   }) => {
     // Counter to track custom code executions
+    // FIXME: Mutates shared window state; cleanup is manual and not protected by finally.
     window.customCodeExecutionCount = 0;
 
     // Use the custom code handler
@@ -62,6 +63,7 @@ describe("Target Custom Code SPA", () => {
     // and once from cached/persisted offers on second call
     expect(window.customCodeExecutionCount).toBe(2);
 
+    // FIXME: Cleanup runs only on happy path; failures can leak shared window state.
     // Clean up
     delete window.customCodeExecutionCount;
   });
