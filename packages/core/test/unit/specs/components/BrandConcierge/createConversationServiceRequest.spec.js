@@ -19,7 +19,7 @@ describe("createConversationServiceRequest", () => {
 
   beforeEach(() => {
     mockPayload = {
-      message: "test message"
+      message: "test message",
     };
     mockSessionId = "test-session-123";
   });
@@ -29,7 +29,7 @@ describe("createConversationServiceRequest", () => {
     return createConversationServiceRequest({
       payload: mockPayload,
       sessionId: mockSessionId,
-      ...options
+      ...options,
     });
   };
 
@@ -38,7 +38,7 @@ describe("createConversationServiceRequest", () => {
   it("creates a request with proper payload", () => {
     const request = createConversationServiceRequest({
       payload: mockPayload,
-      sessionId: mockSessionId
+      sessionId: mockSessionId,
     });
 
     expect(request).toBeDefined();
@@ -49,7 +49,7 @@ describe("createConversationServiceRequest", () => {
   it("provides the appropriate action", () => {
     const request = createConversationServiceRequest({
       payload: mockPayload,
-      sessionId: mockSessionId
+      sessionId: mockSessionId,
     });
 
     expect(request.getAction()).toBe("conversations");
@@ -59,7 +59,7 @@ describe("createConversationServiceRequest", () => {
     const request = createConversationServiceRequest({
       payload: mockPayload,
       action: "custom-action",
-      sessionId: mockSessionId
+      sessionId: mockSessionId,
     });
 
     expect(request.getAction()).toBe("custom-action");
@@ -68,7 +68,7 @@ describe("createConversationServiceRequest", () => {
   it("never uses sendBeacon", () => {
     const request = createConversationServiceRequest({
       payload: mockPayload,
-      sessionId: mockSessionId
+      sessionId: mockSessionId,
     });
 
     expect(request.getUseSendBeacon()).toBe(false);
@@ -77,18 +77,18 @@ describe("createConversationServiceRequest", () => {
   it("includes sessionId in request parameters", () => {
     const request = createConversationServiceRequest({
       payload: mockPayload,
-      sessionId: mockSessionId
+      sessionId: mockSessionId,
     });
 
     expect(request.getRequestParams()).toEqual({
-      sessionId: mockSessionId
+      sessionId: mockSessionId,
     });
   });
 
   it("uses correct edge subpath", () => {
     const request = createConversationServiceRequest({
       payload: mockPayload,
-      sessionId: mockSessionId
+      sessionId: mockSessionId,
     });
 
     expect(request.getEdgeSubPath()).toBe("/brand-concierge");

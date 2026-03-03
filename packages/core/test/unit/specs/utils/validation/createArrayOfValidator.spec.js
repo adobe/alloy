@@ -11,10 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe } from "vitest";
-import {
-  arrayOf,
-  string,
-} from "../../../../../src/utils/validation/index.js";
+import { arrayOf, string } from "../../../../../src/utils/validation/index.js";
 import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::arrayOf", () => {

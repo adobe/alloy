@@ -51,7 +51,7 @@ describe("Advertising::index", () => {
     };
     getBrowser = vi.fn().mockReturnValue("Firefox");
     getUrlParams = vi.fn().mockReturnValue({ skwcid: null, efid: null });
-    
+
     advertising = createAdvertising({
       logger,
       config,
