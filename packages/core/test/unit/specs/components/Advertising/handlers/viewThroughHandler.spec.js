@@ -12,122 +12,15 @@ governing permissions and limitations under the License.
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import handleViewThrough from "../../../../../../src/components/Advertising/handlers/viewThroughHandler.js";
+import collectAllIdentities from "../../../../../../src/components/Advertising/identities/collectAllIdentities.js";
 import flushPromiseChains from "../../../../helpers/flushPromiseChains.js";
-
-// Mock network operations to prevent real network calls
-vi.mock("fetch", () => vi.fn());
-
-// Mock globalThis fetch and other network APIs
-Object.defineProperty(globalThis, "fetch", {
-  value: vi.fn(() =>
-    Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve({ success: true }),
-    }),
-  ),
-  writable: true,
-});
-
-// FIXME: Overwrites runtime globals without guaranteed restoration.
-// Mock XMLHttpRequest
-Object.defineProperty(globalThis, "XMLHttpRequest", {
-  value: class MockXMLHttpRequest {
-    open() {
-      this.readyState = 4;
-    }
-
-    send() {
-      this.status = 200;
-    }
-
-    setRequestHeader() {
-      this.headers = {};
-    }
-  },
-  writable: true,
-});
-
-// FIXME: Mutates document/window globals at module scope; leaks into unrelated specs.
-// Mock DOM operations to prevent network calls from script loading
-if (typeof globalThis.document !== "undefined") {
-  globalThis.document.createElement = vi.fn(() => ({
-    src: "",
-    height: 0,
-    width: 0,
-    frameBorder: 0,
-    style: { display: "none" },
-    addEventListener: vi.fn(),
-    onerror: vi.fn(),
-  }));
-  if (globalThis.document.body) {
-    globalThis.document.body.appendChild = vi.fn();
-  }
-  if (globalThis.document.head) {
-    globalThis.document.head.appendChild = vi.fn();
-  }
-}
-
-if (typeof globalThis.window !== "undefined") {
-  // FIXME: Mutates document/window globals at module scope; leaks into unrelated specs.
-  globalThis.window.addEventListener = vi.fn();
-  globalThis.window.removeEventListener = vi.fn();
-  globalThis.window.attachEvent = vi.fn();
-  globalThis.window.detachEvent = vi.fn();
-  globalThis.window.ats = undefined;
-  globalThis.window.ID5 = undefined;
-}
 
 // FIXME: Module mocks are leaky; use dependency injection instead.
 // Mock dependencies
 vi.mock(
-  "../../../../../../src/components/Advertising/identities/collectAllIdentities.js",
-);
-
-// FIXME: Module mocks are leaky; use dependency injection instead.
-// Mock helpers to prevent network calls
-vi.mock(
-  "../../../../../../src/components/Advertising/utils/helpers.js",
-  () => ({
-    appendAdvertisingIdQueryToEvent: vi.fn(
-      (availableIds, event, cookieManager, componentConfig, addEventType) => {
-        const query = {
-          advertising: {
-            stitchIds: {
-              ...(availableIds.surferId && {
-                surferId: availableIds.surferId,
-              }),
-              ...(availableIds.id5Id && { id5: availableIds.id5Id }),
-              ...(availableIds.rampId && {
-                rampIdEnv: availableIds.rampId,
-              }),
-              ipAddress: "DUMMY_IP_ADDRESS",
-            },
-            advIds: "",
-            ...(addEventType && { eventType: "advertising.enrichment" }),
-          },
-        };
-
-        event.mergeQuery(query);
-        return event;
-      },
-    ),
-    normalizeAdvertiser: vi.fn((advertiserSettings) => {
-      if (!advertiserSettings || !Array.isArray(advertiserSettings)) {
-        return "";
-      }
-
-      return advertiserSettings
-        .filter((item) => item && item.enabled === true && item.advertiserId)
-        .map((item) => item.advertiserId)
-        .join(", ");
-    }),
-    getUrlParams: vi.fn(() => ({ skwcid: null, efid: null })),
-    isAnyIdUnused: vi.fn(() => true),
-    markIdsAsConverted: vi.fn(),
-    isThrottled: vi.fn(() => false),
-    shouldThrottle: vi.fn(() => false),
-    createConversionEvent: vi.fn(),
-  }),
+  import(
+    "../../../../../../src/components/Advertising/identities/collectAllIdentities.js"
+  ),
 );
 
 describe("Advertising::viewThroughHandler", () => {
@@ -136,10 +29,9 @@ describe("Advertising::viewThroughHandler", () => {
   let logger;
   let componentConfig;
   let adConversionHandler;
-  let collectAllIdentities;
   let getBrowser;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     eventManager = {
       createEvent: vi.fn(() => ({
         mergeQuery: vi.fn(),
@@ -172,20 +64,7 @@ describe("Advertising::viewThroughHandler", () => {
 
     getBrowser = vi.fn();
 
-    // FIXME: Date.now spy is never restored in this file.
-    const fixedTs = Date.UTC(2024, 0, 1, 0, 0, 0);
-    const mockNow = {
-      valueOf: () => fixedTs,
-      toISOString: () => new Date(fixedTs).toISOString(),
-    };
-    vi.spyOn(Date, "now").mockReturnValue(mockNow);
-
-    // Mock collectAllIdentities
-    const { default: mockCollectAllIdentities } = await import(
-      "../../../../../../src/components/Advertising/identities/collectAllIdentities.js"
-    );
-    collectAllIdentities = mockCollectAllIdentities;
-    collectAllIdentities.mockReset();
+    vi.mocked(collectAllIdentities).mockReset();
   });
 
   it("should handle empty identity promises", async () => {
