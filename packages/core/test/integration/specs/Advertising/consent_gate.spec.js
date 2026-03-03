@@ -15,6 +15,7 @@ import { test, describe, expect } from "../../helpers/testsSetup/extend.js";
 import { sendEventHandler } from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
 import { createAdvertisingConfig } from "../../helpers/advertising.js";
+import { withTemporaryUrl } from "../../helpers/utils/location.js";
 import waitFor from "../../helpers/utils/waitFor.js";
 
 const getNamespacedCookieName = (key) => {
@@ -35,16 +36,8 @@ const clearCookie = (key) => {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
 };
 
-const clearUrlParams = () => {
-  const url = new URL(window.location.href);
-  url.searchParams.delete("s_kwcid");
-  url.searchParams.delete("ef_id");
-  window.history.replaceState({}, "", url.toString());
-};
-
 const cleanupAll = () => {
   // FIXME: Cleanup is manually invoked in tests (not afterEach); failures can leak shared state.
-  clearUrlParams();
   clearCookie("advertising");
   clearCookie("consent");
 };
@@ -90,24 +83,26 @@ describe("Advertising - Consent gate", () => {
     worker.use(sendEventHandler, setConsentAcceptHandler);
 
     // Set URL params for click-through BEFORE configure
-    const url = new URL(window.location.href);
-    url.searchParams.set("s_kwcid", "AL!test_kwcid_123");
-    url.searchParams.set("ef_id", "test_efid_456");
-    window.history.replaceState({}, "", url.toString());
+    await withTemporaryUrl(async ({ currentHref, applyUrl }) => {
+      const url = new URL(currentHref);
+      url.searchParams.set("s_kwcid", "AL!test_kwcid_123");
+      url.searchParams.set("ef_id", "test_efid_456");
+      applyUrl(url);
 
-    // Configure with consent pending — advertising component should NOT
-    // write any cookies until consent is granted.
-    await alloy("configure", {
-      ...alloyConfig,
-      ...createAdvertisingConfig(),
-      defaultConsent: "pending",
+      // Configure with consent pending — advertising component should NOT
+      // write any cookies until consent is granted.
+      await alloy("configure", {
+        ...alloyConfig,
+        ...createAdvertisingConfig(),
+        defaultConsent: "pending",
+      });
+
+      // Wait enough time for the component to have set cookies if it were going to.
+      await waitFor(500);
+
+      // Verify: NO advertising cookie should exist while consent is pending.
+      expect(getAdvertisingCookie()).toBeNull();
     });
-
-    // Wait enough time for the component to have set cookies if it were going to.
-    await waitFor(500);
-
-    // Verify: NO advertising cookie should exist while consent is pending.
-    expect(getAdvertisingCookie()).toBeNull();
 
     cleanupAll();
   });
@@ -144,55 +139,59 @@ describe("Advertising - Consent gate", () => {
     worker.use(sendEventHandler, setConsentAcceptHandler);
 
     // Set URL params for click-through
-    const url = new URL(window.location.href);
-    url.searchParams.set("s_kwcid", "AL!test_kwcid_789");
-    url.searchParams.set("ef_id", "test_efid_012");
-    window.history.replaceState({}, "", url.toString());
+    await withTemporaryUrl(async ({ currentHref, applyUrl }) => {
+      const url = new URL(currentHref);
+      url.searchParams.set("s_kwcid", "AL!test_kwcid_789");
+      url.searchParams.set("ef_id", "test_efid_012");
+      applyUrl(url);
 
-    await alloy("configure", {
-      ...alloyConfig,
-      ...createAdvertisingConfig(),
-      defaultConsent: "pending",
+      await alloy("configure", {
+        ...alloyConfig,
+        ...createAdvertisingConfig(),
+        defaultConsent: "pending",
+      });
+
+      // Verify no cookies yet
+      await waitFor(300);
+      expect(getAdvertisingCookie()).toBeNull();
+
+      // Grant consent — the mock returns a state:store handle that sets the
+      // consent cookie, which makes the SDK transition consent to "in".
+      await alloy("setConsent", {
+        consent: [
+          {
+            standard: "Adobe",
+            version: "1.0",
+            value: { general: "in" },
+          },
+        ],
+      });
+
+      // Wait for the fire-and-forget conversion flow to complete.
+      // After consent transitions to "in", sendAdConversion resumes,
+      // writes cookies, and sends the conversion network call.
+      await waitFor(3000);
+
+      // Verify: advertising cookie should now exist (written during click-through)
+      const cookieValue = getAdvertisingCookie();
+      expect(cookieValue).not.toBeNull();
+
+      // Verify a click-through conversion call was made
+      const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/, {
+        retries: 10,
+        delayMs: 200,
+      });
+      const conversionCall = calls.find((call) => {
+        const body =
+          typeof call.request.body === "string"
+            ? JSON.parse(call.request.body)
+            : call.request.body;
+        return (
+          body?.events?.[0]?.xdm?.eventType === "advertising.enrichment_ct"
+        );
+      });
+      expect(conversionCall).toBeTruthy();
     });
-
-    // Verify no cookies yet
-    await waitFor(300);
-    expect(getAdvertisingCookie()).toBeNull();
-
-    // Grant consent — the mock returns a state:store handle that sets the
-    // consent cookie, which makes the SDK transition consent to "in".
-    await alloy("setConsent", {
-      consent: [
-        {
-          standard: "Adobe",
-          version: "1.0",
-          value: { general: "in" },
-        },
-      ],
-    });
-
-    // Wait for the fire-and-forget conversion flow to complete.
-    // After consent transitions to "in", sendAdConversion resumes,
-    // writes cookies, and sends the conversion network call.
-    await waitFor(3000);
-
-    // Verify: advertising cookie should now exist (written during click-through)
-    const cookieValue = getAdvertisingCookie();
-    expect(cookieValue).not.toBeNull();
-
-    // Verify a click-through conversion call was made
-    const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/, {
-      retries: 10,
-      delayMs: 200,
-    });
-    const conversionCall = calls.find((call) => {
-      const body =
-        typeof call.request.body === "string"
-          ? JSON.parse(call.request.body)
-          : call.request.body;
-      return body?.events?.[0]?.xdm?.eventType === "advertising.enrichment_ct";
-    });
-    expect(conversionCall).toBeTruthy();
 
     cleanupAll();
   });
@@ -249,51 +248,55 @@ describe("Advertising - Consent gate", () => {
     worker.use(sendEventHandler, setConsentDeclineHandler);
 
     // Set URL params for click-through
-    const url = new URL(window.location.href);
-    url.searchParams.set("s_kwcid", "AL!test_kwcid_reject");
-    url.searchParams.set("ef_id", "test_efid_reject");
-    window.history.replaceState({}, "", url.toString());
+    await withTemporaryUrl(async ({ currentHref, applyUrl }) => {
+      const url = new URL(currentHref);
+      url.searchParams.set("s_kwcid", "AL!test_kwcid_reject");
+      url.searchParams.set("ef_id", "test_efid_reject");
+      applyUrl(url);
 
-    await alloy("configure", {
-      ...alloyConfig,
-      ...createAdvertisingConfig(),
-      defaultConsent: "pending",
+      await alloy("configure", {
+        ...alloyConfig,
+        ...createAdvertisingConfig(),
+        defaultConsent: "pending",
+      });
+
+      // Verify no cookies yet
+      await waitFor(300);
+      expect(getAdvertisingCookie()).toBeNull();
+
+      // Decline consent
+      await alloy("setConsent", {
+        consent: [
+          {
+            standard: "Adobe",
+            version: "1.0",
+            value: { general: "out" },
+          },
+        ],
+      });
+
+      // Wait to ensure nothing fires after decline
+      await waitFor(500);
+
+      // Verify: NO advertising cookie should exist after decline
+      expect(getAdvertisingCookie()).toBeNull();
+
+      // Verify no conversion calls were made (only consent call should exist)
+      const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/, {
+        retries: 3,
+        delayMs: 100,
+      });
+      const conversionCall = calls.find((call) => {
+        const body =
+          typeof call.request.body === "string"
+            ? JSON.parse(call.request.body)
+            : call.request.body;
+        return (
+          body?.events?.[0]?.xdm?.eventType === "advertising.enrichment_ct"
+        );
+      });
+      expect(conversionCall).toBeFalsy();
     });
-
-    // Verify no cookies yet
-    await waitFor(300);
-    expect(getAdvertisingCookie()).toBeNull();
-
-    // Decline consent
-    await alloy("setConsent", {
-      consent: [
-        {
-          standard: "Adobe",
-          version: "1.0",
-          value: { general: "out" },
-        },
-      ],
-    });
-
-    // Wait to ensure nothing fires after decline
-    await waitFor(500);
-
-    // Verify: NO advertising cookie should exist after decline
-    expect(getAdvertisingCookie()).toBeNull();
-
-    // Verify no conversion calls were made (only consent call should exist)
-    const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/, {
-      retries: 3,
-      delayMs: 100,
-    });
-    const conversionCall = calls.find((call) => {
-      const body =
-        typeof call.request.body === "string"
-          ? JSON.parse(call.request.body)
-          : call.request.body;
-      return body?.events?.[0]?.xdm?.eventType === "advertising.enrichment_ct";
-    });
-    expect(conversionCall).toBeFalsy();
 
     cleanupAll();
     window.removeEventListener("unhandledrejection", suppressDeclined);
