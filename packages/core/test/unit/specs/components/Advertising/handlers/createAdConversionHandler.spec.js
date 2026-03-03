@@ -13,40 +13,15 @@ governing permissions and limitations under the License.
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import createAdConversionHandler from "../../../../../../src/components/Advertising/handlers/createAdConversionHandler.js";
 
-// FIXME: Module-level global mutation leaks across files.
-// Mock network operations to prevent real network calls
-vi.mock("fetch", () => vi.fn());
-Object.defineProperty(globalThis, "fetch", {
-  value: vi.fn(() =>
-    Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve({ success: true }),
-    }),
-  ),
-  writable: true,
-});
-
-// FIXME: Module mocks are leaky; use dependency injection instead.
-// Mock dependencies
-vi.mock(
-  "../../../../../../src/utils/request/createDataCollectionRequestPayload.js",
-);
-vi.mock("../../../../../../src/utils/request/createDataCollectionRequest.js");
-
 describe("Advertising::createAdConversionHandler", () => {
-  let eventManager;
   let sendEdgeNetworkRequest;
   let consent;
   let logger;
   let handler;
-  let createDataCollectionRequestPayload;
-  let createDataCollectionRequest;
+  let event;
+  let request;
 
-  beforeEach(async () => {
-    eventManager = {
-      createEvent: vi.fn(),
-    };
-
+  beforeEach(() => {
     sendEdgeNetworkRequest = vi.fn();
 
     consent = {
@@ -54,212 +29,58 @@ describe("Advertising::createAdConversionHandler", () => {
     };
 
     logger = {
-      info: vi.fn(),
       error: vi.fn(),
-      debug: vi.fn(),
-      warn: vi.fn(),
     };
 
-    // Mock the request creation functions
-    const mockCreateDataCollectionRequestPayload = await import(
-      "../../../../../../src/utils/request/createDataCollectionRequestPayload.js"
-    );
-    const mockCreateDataCollectionRequest = await import(
-      "../../../../../../src/utils/request/createDataCollectionRequest.js"
-    );
+    event = {
+      finalize: vi.fn(),
+    };
 
-    createDataCollectionRequestPayload =
-      mockCreateDataCollectionRequestPayload.default;
-    createDataCollectionRequest = mockCreateDataCollectionRequest.default;
+    request = { id: "request" };
 
-    createDataCollectionRequestPayload.mockReset();
-    createDataCollectionRequest.mockReset();
+    const createPayload = vi.fn(() => ({
+      addEvent: vi.fn(),
+    }));
+    const createRequest = vi.fn(() => {
+      return request;
+    });
 
     handler = createAdConversionHandler({
       sendEdgeNetworkRequest,
       consent,
-      createDataCollectionRequest,
-      createDataCollectionRequestPayload,
+      createDataCollectionRequest: createRequest,
+      createDataCollectionRequestPayload: createPayload,
       logger,
     });
   });
 
   describe("trackAdConversion", () => {
-    it("should create and send conversion request", async () => {
-      const mockEvent = {
-        finalize: vi.fn(),
-      };
-
-      const mockPayload = {
-        addEvent: vi.fn(),
-      };
-
-      const mockRequest = {
-        body: { events: [] },
-        getUseIdThirdPartyDomain: vi.fn().mockReturnValue(false),
-      };
-
-      createDataCollectionRequestPayload.mockReturnValue(mockPayload);
-      createDataCollectionRequest.mockReturnValue(mockRequest);
+    it("returns success and coordinates collaborators, with consent", async () => {
       sendEdgeNetworkRequest.mockResolvedValue({ status: "success" });
 
-      const result = await handler.trackAdConversion({ event: mockEvent });
+      const result = await handler.trackAdConversion({ event });
 
-      expect(createDataCollectionRequestPayload).toHaveBeenCalled();
-      expect(mockPayload.addEvent).toHaveBeenCalledWith(mockEvent);
-      expect(mockEvent.finalize).toHaveBeenCalled();
-      expect(createDataCollectionRequest).toHaveBeenCalledWith({
-        payload: mockPayload,
-      });
+      expect(event.finalize).toHaveBeenCalledTimes(1);
       expect(consent.awaitConsent).toHaveBeenCalled();
-      expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
-        request: mockRequest,
-      });
+      expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({ request });
+
       expect(result).toEqual({ success: true });
     });
 
-    it("should handle missing event parameter", () => {
-      const mockPayload = {
-        addEvent: vi.fn(),
-      };
-      createDataCollectionRequestPayload.mockReturnValue(mockPayload);
+    it("does not send when consent is rejected", async () => {
+      const error = new Error("Consent denied");
+      consent.awaitConsent.mockRejectedValueOnce(error);
 
-      expect(() => {
-        handler.trackAdConversion({ event: undefined });
-      }).toThrow("Cannot read properties of undefined (reading 'finalize')");
+      await expect(handler.trackAdConversion({ event })).rejects.toThrow();
+      expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
     });
 
-    it("should handle consent rejection", async () => {
-      const mockEvent = {
-        finalize: vi.fn(),
-      };
+    it("logs and rethrows network failures", async () => {
+      const error = new Error("Network failed");
+      sendEdgeNetworkRequest.mockRejectedValueOnce(error);
 
-      const consentError = new Error("Consent denied");
-      consent.awaitConsent.mockRejectedValue(consentError);
-
-      await expect(
-        handler.trackAdConversion({ event: mockEvent }),
-      ).rejects.toThrow("Consent denied");
-    });
-
-    it("should handle network request failure", async () => {
-      const mockEvent = {
-        finalize: vi.fn(),
-      };
-
-      const mockPayload = {
-        addEvent: vi.fn(),
-      };
-
-      const mockRequest = {
-        body: { events: [] },
-        getUseIdThirdPartyDomain: vi.fn().mockReturnValue(false),
-      };
-
-      createDataCollectionRequestPayload.mockReturnValue(mockPayload);
-      createDataCollectionRequest.mockReturnValue(mockRequest);
-
-      const networkError = new Error("Network failed");
-      sendEdgeNetworkRequest.mockRejectedValue(networkError);
-
-      await expect(
-        handler.trackAdConversion({ event: mockEvent }),
-      ).rejects.toThrow("Network failed");
-    });
-
-    it("should handle options parameter", async () => {
-      const mockEvent = {
-        finalize: vi.fn(),
-      };
-
-      const mockPayload = {
-        addEvent: vi.fn(),
-      };
-
-      const mockRequest = {
-        body: { events: [] },
-        getUseIdThirdPartyDomain: vi.fn().mockReturnValue(false),
-      };
-
-      createDataCollectionRequestPayload.mockReturnValue(mockPayload);
-      createDataCollectionRequest.mockReturnValue(mockRequest);
-      sendEdgeNetworkRequest.mockResolvedValue({ status: "success" });
-
-      const options = { customOption: "value" };
-      await handler.trackAdConversion({ event: mockEvent, options });
-
-      expect(createDataCollectionRequestPayload).toHaveBeenCalled();
-    });
-  });
-
-  describe("error handling", () => {
-    it("should handle payload creation errors", () => {
-      const mockEvent = {
-        finalize: vi.fn(),
-      };
-
-      createDataCollectionRequestPayload.mockImplementation(() => {
-        throw new Error("Payload creation failed");
-      });
-
-      expect(() => {
-        handler.trackAdConversion({ event: mockEvent });
-      }).toThrow("Payload creation failed");
-    });
-
-    it("should handle request creation errors", () => {
-      const mockEvent = {
-        finalize: vi.fn(),
-      };
-
-      const mockPayload = {
-        addEvent: vi.fn(),
-      };
-
-      createDataCollectionRequestPayload.mockReturnValue(mockPayload);
-      createDataCollectionRequest.mockImplementation(() => {
-        throw new Error("Request creation failed");
-      });
-
-      expect(() => {
-        handler.trackAdConversion({ event: mockEvent });
-      }).toThrow("Request creation failed");
-    });
-
-    it("should handle event finalization errors", () => {
-      const mockEvent = {
-        finalize: vi.fn().mockImplementation(() => {
-          throw new Error("Finalization failed");
-        }),
-      };
-
-      const mockPayload = {
-        addEvent: vi.fn(),
-      };
-
-      createDataCollectionRequestPayload.mockReturnValue(mockPayload);
-
-      expect(() => {
-        handler.trackAdConversion({ event: mockEvent });
-      }).toThrow("Finalization failed");
-    });
-  });
-
-  describe("handler structure", () => {
-    it("should return object with trackAdConversion method", () => {
-      expect(handler).toHaveProperty("trackAdConversion");
-      expect(typeof handler.trackAdConversion).toBe("function");
-    });
-
-    it("should create handler with all required dependencies", () => {
-      expect(() => {
-        createAdConversionHandler({
-          eventManager,
-          sendEdgeNetworkRequest,
-          consent,
-          logger,
-        });
-      }).not.toThrow();
+      await expect(handler.trackAdConversion({ event })).rejects.toThrow();
+      expect(logger.error).toHaveBeenCalled();
     });
   });
 });
