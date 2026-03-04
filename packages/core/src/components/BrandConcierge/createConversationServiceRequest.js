@@ -11,6 +11,9 @@ governing permissions and limitations under the License.
 */
 import { createRequest } from "../../utils/request/index.js";
 
+const BRAND_CONCIERGE_PATH = "/brand-concierge";
+const VOICE_BRAND_CONCIERGE_PATH = "/brand-concierge-voice";
+
 export default ({
   payload,
   action = "conversations",
@@ -18,8 +21,8 @@ export default ({
   voiceEnabled = false,
 }) => {
   const edgeSubPath = voiceEnabled
-    ? "/brand-concierge-voice"
-    : "/brand-concierge";
+    ? VOICE_BRAND_CONCIERGE_PATH
+    : BRAND_CONCIERGE_PATH;
 
   return createRequest({
     payload: payload,
