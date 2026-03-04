@@ -19,6 +19,9 @@ vi.mock(
   import(
     "../../../../../../src/components/Advertising/identities/collectAllIdentities.js"
   ),
+  () => ({
+    default: vi.fn(),
+  }),
 );
 
 describe("Advertising::viewThroughHandler", () => {
@@ -61,8 +64,6 @@ describe("Advertising::viewThroughHandler", () => {
     };
 
     getBrowser = vi.fn();
-
-    vi.mocked(collectAllIdentities).mockReset();
   });
 
   it("should handle empty identity promises", async () => {
