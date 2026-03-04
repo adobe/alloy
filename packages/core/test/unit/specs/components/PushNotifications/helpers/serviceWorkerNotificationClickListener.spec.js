@@ -14,7 +14,7 @@ governing permissions and limitations under the License.
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
 
-import { createServiceWorkerNotificationClickListener } from "../../../../../../src/components/PushNotifications/helpers/serviceWorkerNotificationClickListener.js";
+import createServiceWorkerNotificationClickListener from "../../../../../../src/components/PushNotifications/helpers/serviceWorkerNotificationClickListener.js";
 
 describe("serviceWorkerNotificationClickListener", () => {
   let mockEvent;

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 /** @import { ServiceWorkerLogger } from './components/PushNotifications/types.js' */
 
-import { createServiceWorkerNotificationClickListener } from "./components/PushNotifications/helpers/serviceWorkerNotificationClickListener.js";
+import createServiceWorkerNotificationClickListener from "./components/PushNotifications/helpers/serviceWorkerNotificationClickListener.js";
 import serviceWorkerPushListener from "./components/PushNotifications/helpers/serviceWorkerPushListener.js";
 import { createMakeSendServiceWorkerTrackingData } from "./components/PushNotifications/request/makeSendServiceWorkerTrackingData.js";
 import readFromIndexedDb from "./components/PushNotifications/helpers/readFromIndexedDb.js";

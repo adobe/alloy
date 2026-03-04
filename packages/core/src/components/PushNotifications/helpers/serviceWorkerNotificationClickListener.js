@@ -27,11 +27,7 @@ const canHandleUrl = (type) => ["DEEPLINK", "WEBURL"].includes(type);
  * @param {ServiceWorkerGlobalScope} dependencies.sw
  * @param {ServiceWorkerLogger} dependencies.logger
  */
-export const createServiceWorkerNotificationClickListener = ({
-  makeSendServiceWorkerTrackingData,
-  sw,
-  logger,
-}) => {
+export default ({ makeSendServiceWorkerTrackingData, sw, logger }) => {
   /**
    * @function
    *
