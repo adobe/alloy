@@ -27,7 +27,7 @@ import {
   DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
   AD_CONVERSION_VIEW_EVENT_TYPE,
 } from "../../../../../../src/components/Advertising/constants/index.js";
-import { withTemporaryUrl } from "../../../../helpers/utils/location.js";
+import { queryString } from "../../../../../../src/utils/index.js";
 
 describe("Advertising::helpers", () => {
   let mockEvent;
@@ -60,44 +60,37 @@ describe("Advertising::helpers", () => {
 
   describe("getUrlParams", () => {
     it("should return URL parameters when present", () => {
-      return withTemporaryUrl(({ currentHref, applyUrl }) => {
-        const url = new URL(currentHref);
-        url.search = "?s_kwcid=test_kwcid&ef_id=test_efid";
-        applyUrl(url);
+      vi.spyOn(queryString, "parse").mockReturnValue({
+        s_kwcid: "test_kwcid",
+        ef_id: "test_efid",
+      });
 
-        const result = getUrlParams();
+      const result = getUrlParams();
 
-        expect(result).toEqual({
-          skwcid: "test_kwcid",
-          efid: "test_efid",
-        });
+      expect(result).toEqual({
+        skwcid: "test_kwcid",
+        efid: "test_efid",
       });
     });
 
     it("should return undefined values when parameters are not present", () => {
-      return withTemporaryUrl(({ currentHref, applyUrl }) => {
-        const url = new URL(currentHref);
-        url.search = "?foo=bar";
-        applyUrl(url);
-
-        const result = getUrlParams();
-
-        expect(result.skwcid).toBeUndefined();
-        expect(result.efid).toBeUndefined();
+      vi.spyOn(queryString, "parse").mockReturnValue({
+        foo: "bar",
       });
+
+      const result = getUrlParams();
+
+      expect(result.skwcid).toBeUndefined();
+      expect(result.efid).toBeUndefined();
     });
 
     it("should handle empty search string", () => {
-      return withTemporaryUrl(({ currentHref, applyUrl }) => {
-        const url = new URL(currentHref);
-        url.search = "";
-        applyUrl(url);
+      vi.spyOn(queryString, "parse").mockReturnValue({});
 
-        const result = getUrlParams();
+      const result = getUrlParams();
 
-        expect(result.skwcid).toBeUndefined();
-        expect(result.efid).toBeUndefined();
-      });
+      expect(result.skwcid).toBeUndefined();
+      expect(result.efid).toBeUndefined();
     });
   });
 
