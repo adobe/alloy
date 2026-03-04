@@ -21,7 +21,7 @@ governing permissions and limitations under the License.
  * @param {() => string} dependencies.uuidv4
  * @param {ServiceWorkerLogger} dependencies.logger
  * @param {(url: string, options: object) => Promise<Response>} dependencies.fetch
- * @returns {(options: { xdm: Object, actionLabel?: string, applicationLaunches?: number }, utils: { logger: ServiceWorkerLogger, fetch: (url: string, options: object) => Promise<Response> }) => Promise<boolean>}
+ * @returns {(options: { xdm: Object, actionLabel?: string, applicationLaunches?: number }) => Promise<boolean>}
  */
 export const createMakeSendServiceWorkerTrackingData = ({
   readFromIndexedDb,
