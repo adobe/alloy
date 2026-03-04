@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// FIXME: Module mocks are leaky; use dependency injection instead.
 vi.mock("../../../../../src/utils/createDecodeKndctrCookie.js", () => ({
   default: vi.fn(),
 }));
@@ -27,8 +26,6 @@ describe("createIdentity", () => {
   let mockDecodeKndctrCookie;
 
   beforeEach(() => {
-    vi.clearAllMocks();
-
     mockLogger = {};
     mockLoggingCookieJar = {};
 

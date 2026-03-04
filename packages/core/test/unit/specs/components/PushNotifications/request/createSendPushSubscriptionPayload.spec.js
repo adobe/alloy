@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
 
-// FIXME: Module mocks are leaky; use dependency injection instead.
 vi.mock(
   "../../../../../../src/utils/request/createDataCollectionRequestPayload.js",
 );
@@ -29,8 +28,6 @@ describe("createSendPushSubscriptionPayload", () => {
   let appId;
 
   beforeEach(() => {
-    vi.clearAllMocks();
-
     ecid = "12345678901234567890123456789012345678";
     appId = "my-app-id";
     serializedPushSubscriptionDetails = JSON.stringify({

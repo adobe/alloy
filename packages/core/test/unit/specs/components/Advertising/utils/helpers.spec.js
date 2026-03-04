@@ -28,28 +28,12 @@ import {
   AD_CONVERSION_VIEW_EVENT_TYPE,
 } from "../../../../../../src/components/Advertising/constants/index.js";
 
-// FIXME: Module mocks are leaky; use dependency injection instead.
-// Mock DOM utilities
-vi.mock("../../../../../../src/utils/dom/index.js", () => ({
-  awaitSelector: vi.fn(),
-  loadScript: vi.fn().mockResolvedValue(),
-  createNode: vi.fn(),
-  appendNode: vi.fn(),
-  matchesSelector: vi.fn(),
-  querySelectorAll: vi.fn(),
-  removeNode: vi.fn(),
-  selectNodes: vi.fn(),
-  selectNodesWithShadow: vi.fn(),
-}));
-
 describe("Advertising::helpers", () => {
   let mockEvent;
   let mockCookieManager;
   let mockLogger;
 
   beforeEach(() => {
-    // Reset modules to clear any cached state
-    vi.resetModules();
     // Mock event object
     mockEvent = {
       mergeQuery: vi.fn(),
@@ -67,14 +51,10 @@ describe("Advertising::helpers", () => {
       warn: vi.fn(),
       error: vi.fn(),
     };
-
-    // Reset all mocks
-    vi.clearAllMocks();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
-    vi.unstubAllGlobals();
   });
 
   describe("getUrlParams", () => {

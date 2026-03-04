@@ -15,8 +15,6 @@ import handleViewThrough from "../../../../../../src/components/Advertising/hand
 import collectAllIdentities from "../../../../../../src/components/Advertising/identities/collectAllIdentities.js";
 import flushPromiseChains from "../../../../helpers/flushPromiseChains.js";
 
-// FIXME: Module mocks are leaky; use dependency injection instead.
-// Mock dependencies
 vi.mock(
   import(
     "../../../../../../src/components/Advertising/identities/collectAllIdentities.js"

@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
 
-// FIXME: Module mocks are leaky; use dependency injection instead.
 vi.mock(
   "../../../../../../src/components/PushNotifications/helpers/getPushSubscriptionDetails.js",
 );
@@ -27,8 +26,6 @@ describe("makeSendPushSubscriptionRequest", () => {
   let mockSetUserData;
 
   beforeEach(() => {
-    vi.clearAllMocks();
-
     mockStorage = {
       cache: {},
       // eslint-disable-next-line func-names
