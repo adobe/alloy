@@ -72,7 +72,9 @@ sw.addEventListener("activate", (event) => {
  * @param {PushEvent} event
  * @returns {Promise<void>}
  */
-sw.addEventListener("push", (event) => serviceWorkerPushListener({ event }));
+sw.addEventListener("push", (event) =>
+  serviceWorkerPushListener({ event, sw, logger }),
+);
 
 /**
  * @listens notificationclick
