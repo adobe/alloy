@@ -28,9 +28,9 @@ export default (dateProvider) => {
     ) {
       placeContext.localTime = toISOStringLocal(date);
     }
-    const localTimezoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    if (localTimezoneName) {
-      placeContext.localTimezoneName = localTimezoneName;
+    const ianaTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (ianaTimezone) {
+      placeContext.ianaTimezone = ianaTimezone;
     }
 
     event.mergeXdm({ placeContext });

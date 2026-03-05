@@ -80,7 +80,7 @@ describe("Context::injectPlaceContext", () => {
       },
     });
   });
-  it("includes localTimezoneName when Intl reports a timezone", () => {
+  it("includes ianaTimezone when Intl reports a timezone", () => {
     vi.mocked(Intl.DateTimeFormat).mockImplementation(() => {
       return {
         resolvedOptions: () => ({ timeZone: "America/New_York" }),
@@ -92,16 +92,16 @@ describe("Context::injectPlaceContext", () => {
     injectPlaceContext(() => date)(event);
     expect(event.mergeXdm).toHaveBeenCalledWith({
       placeContext: expect.objectContaining({
-        localTimezoneName: "America/New_York",
+        ianaTimezone: "America/New_York",
       }),
     });
   });
-  it("omits localTimezoneName when Intl reports an empty timezone", () => {
+  it("omits ianaTimezone when Intl reports an empty timezone", () => {
     const date = new Date("March 25, 2019 21:56:18");
     vi.spyOn(date, "getTimezoneOffset").mockReturnValue(4 * 60);
     const event = { mergeXdm: vi.fn() };
     injectPlaceContext(() => date)(event);
     const placeContext = event.mergeXdm.mock.calls[0][0].placeContext;
-    expect(placeContext).not.toHaveProperty("localTimezoneName");
+    expect(placeContext).not.toHaveProperty("ianaTimezone");
   });
 });
