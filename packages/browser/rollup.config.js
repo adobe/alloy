@@ -55,7 +55,7 @@ const bundleSizePlugin = (_options = {}) => {
    * @param {import("node:zlib").BrotliOptions={}} options
    * @returns {number} size in bytes
    */
-  const getBrotiliSize = async (source, opts = {}) => {
+  const getBrotliSize = async (source, opts = {}) => {
     const compressed = await brotliCompress(source, opts);
     const byteSize = Number.parseInt(compressed.byteLength, 10);
     return byteSize;
@@ -80,7 +80,7 @@ const bundleSizePlugin = (_options = {}) => {
               gzippedSize: await getGzippedSize(chunk.code, {
                 level: options.gzipCompressionLevel,
               }),
-              brotiliSize: await getBrotiliSize(chunk.code, {
+              brotiliSize: await getBrotliSize(chunk.code, {
                 params: {
                   [zlibConstants.BROTLI_PARAM_QUALITY]:
                     options.brotliCompressionLevel,
@@ -218,7 +218,8 @@ export const buildConfig = ({
       input: `${dirname}/src/serviceWorker.js`,
       output: [
         {
-          file: file || `${dirname}/dist/alloyServiceWorker${minifiedExtension}.js`,
+          file:
+            file || `${dirname}/dist/alloyServiceWorker${minifiedExtension}.js`,
           format: "es",
         },
       ],
@@ -255,7 +256,9 @@ export const buildConfig = ({
 
   // FUNCTIONAL_TEST_LOCAL or FUNCTIONAL_TEST_PROD
   const filename =
-    variant === FUNCTIONAL_TEST_LOCAL ? "functionalTestLocal" : "functionalTestProd";
+    variant === FUNCTIONAL_TEST_LOCAL
+      ? "functionalTestLocal"
+      : "functionalTestProd";
 
   return {
     input: `${dirname}/test/functional/helpers/${filename}.js`,
