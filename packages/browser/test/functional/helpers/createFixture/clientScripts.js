@@ -35,7 +35,10 @@ if (alloyEnv === PRODUCTION) {
 const rootDir = path.join(__dirname, "../../../../");
 const baseCodePath = path.join(rootDir, "distTest/baseCode.min.js");
 const localAlloyLibraryPath = path.join(rootDir, "dist/alloy.js");
-const localNpmLibraryPath = path.join(rootDir, "distTest/functionalTestLocal.js");
+const localNpmLibraryPath = path.join(
+  rootDir,
+  "distTest/functionalTestLocal.js",
+);
 const prodNpmLibraryPath = path.join(rootDir, "distTest/functionalTestProd.js");
 const remoteAlloyLibraryUrl = `https://cdn1.adoberesources.net/alloy/${alloyProdVersion}/alloy.js`;
 

@@ -19,12 +19,9 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain.js";
 
 const networkLogger = createNetworkLogger();
-const config = compose(
-  orgMainConfigMain,
-  {
-    stickyConversationSession: false,
-  },
-);
+const config = compose(orgMainConfigMain, {
+  stickyConversationSession: false,
+});
 
 createFixture({
   title: "BrandConcierge - sendConversationEvent",
@@ -41,10 +38,10 @@ test.meta({
 test("Test 1: C2590433 - Send conversational event with message only", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  
+
   let streamResponseCalled = false;
   let capturedResponse = null;
-  
+
   await alloy.sendConversationEvent({
     message: "Hello, I need help with my order",
     onStreamResponse: (response) => {
@@ -59,15 +56,19 @@ test("Test 1: C2590433 - Send conversational event with message only", async () 
   const requestBody = JSON.parse(request.request.body);
 
   // Verify message is in the query parameter
-  await t.expect(requestBody.query.conversation.message).eql("Hello, I need help with my order");
+  await t
+    .expect(requestBody.query.conversation.message)
+    .eql("Hello, I need help with my order");
   await t.expect(requestBody.query.conversation.surfaces).ok();
-  
+
   // Verify event has ECID in identityMap
   await t.expect(requestBody.events[0].xdm.identityMap.ECID).ok();
   await t.expect(requestBody.events[0].xdm.identityMap.ECID.length).gte(1);
-  
+
   // Verify onStreamResponse was called with data
-  await t.expect(streamResponseCalled).ok("onStreamResponse callback should be called");
+  await t
+    .expect(streamResponseCalled)
+    .ok("onStreamResponse callback should be called");
 });
 
 test.meta({
@@ -100,9 +101,11 @@ test("Test 2: C2590434 - Send conversational event with data object", async () =
   // Verify data is in the query parameter
   await t.expect(requestBody.query.conversation.data.type).eql("feedback");
   await t.expect(requestBody.query.conversation.data.payload.rating).eql(5);
-  await t.expect(requestBody.query.conversation.data.payload.comment).eql("Great service!");
+  await t
+    .expect(requestBody.query.conversation.data.payload.comment)
+    .eql("Great service!");
   await t.expect(requestBody.query.conversation.surfaces).ok();
-  
+
   // Verify event has ECID in identityMap
   await t.expect(requestBody.events[0].xdm.identityMap.ECID).ok();
   await t.expect(requestBody.events[0].xdm.identityMap.ECID.length).gte(1);
@@ -139,11 +142,17 @@ test("Test 3: C2590435 - Send conversational event with feedback in XDM", async 
   const requestBody = JSON.parse(request.request.body);
 
   // Verify XDM data is properly merged
-  await t.expect(requestBody.events[0].xdm.interactionId).eql("test-interaction-123");
-  await t.expect(requestBody.events[0].xdm.conversationId).eql("test-conversation-456");
+  await t
+    .expect(requestBody.events[0].xdm.interactionId)
+    .eql("test-interaction-123");
+  await t
+    .expect(requestBody.events[0].xdm.conversationId)
+    .eql("test-conversation-456");
   await t.expect(requestBody.events[0].xdm.conversation.feedback.rating).eql(4);
-  await t.expect(requestBody.events[0].xdm.conversation.feedback.comment).eql("Good bot response");
-  
+  await t
+    .expect(requestBody.events[0].xdm.conversation.feedback.comment)
+    .eql("Good bot response");
+
   // Verify event has ECID in identityMap
   await t.expect(requestBody.events[0].xdm.identityMap.ECID).ok();
   await t.expect(requestBody.events[0].xdm.identityMap.ECID.length).gte(1);
@@ -206,6 +215,8 @@ test("Test 5: C2590437 - Send conversational event with missing required data fi
   }
 
   // Verify that an error was thrown
-  await t.expect(errorThrown).ok("Should throw error for missing required data.type field");
+  await t
+    .expect(errorThrown)
+    .ok("Should throw error for missing required data.type field");
   await t.expect(errorMessage).contains("", "Error message should be present");
 });

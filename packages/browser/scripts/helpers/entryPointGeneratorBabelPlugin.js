@@ -12,7 +12,9 @@ governing permissions and limitations under the License.
 const COMPONENT_SOURCE = "@adobe/alloy-core/core/componentCreators.js";
 
 const createComponentArrayExpression = (t, includedModules) => {
-  return t.ArrayExpression(includedModules.map((module) => t.Identifier(module)));
+  return t.ArrayExpression(
+    includedModules.map((module) => t.Identifier(module)),
+  );
 };
 
 const createComponentImport = (t, includedModules) => {
@@ -63,7 +65,10 @@ export default (t, includedModules) => ({
     // rewrite the imports
     Program: {
       enter(path, state) {
-        state.componentsArray = createComponentArrayExpression(t, includedModules);
+        state.componentsArray = createComponentArrayExpression(
+          t,
+          includedModules,
+        );
         removeOptionalComponentsImport(path);
       },
       exit(path, state) {
@@ -79,7 +84,8 @@ export default (t, includedModules) => ({
       }
 
       const arrayExpression =
-        state.componentsArray || createComponentArrayExpression(t, includedModules);
+        state.componentsArray ||
+        createComponentArrayExpression(t, includedModules);
 
       path.replaceWith(
         t.CallExpression(t.Identifier("initializeStandalone"), [

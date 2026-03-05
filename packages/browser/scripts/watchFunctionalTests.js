@@ -32,7 +32,14 @@ program.addOption(
     "-b, --browsers <browsers...>",
     "the browser used to run the tests",
   )
-    .choices(["playwright:chromium", "playwright:firefox", "playwright:webkit", "chrome", "firefox", "safari"])
+    .choices([
+      "playwright:chromium",
+      "playwright:firefox",
+      "playwright:webkit",
+      "chrome",
+      "firefox",
+      "safari",
+    ])
     .default("playwright:chromium"),
 );
 

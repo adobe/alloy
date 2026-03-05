@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import handleOnBeforeSendEvent from "../../../../../../src/components/Advertising/handlers/onBeforeSendEventHandler.js";
 
-
 // Mock identity collectors to return resolved promises immediately
 vi.mock(
   "../../../../../../src/components/Advertising/identities/collectSurferId.js",
@@ -124,15 +123,12 @@ describe("Advertising::onBeforeSendEventHandler", () => {
     getBrowser = vi.fn().mockReturnValue("Firefox");
 
     // Get and reset mock functions - these are already mocked at module level
-    const surferIdModule = await import(
-      "../../../../../../src/components/Advertising/identities/collectSurferId.js"
-    );
-    const id5IdModule = await import(
-      "../../../../../../src/components/Advertising/identities/collectID5Id.js"
-    );
-    const rampIdModule = await import(
-      "../../../../../../src/components/Advertising/identities/collectRampId.js"
-    );
+    const surferIdModule =
+      await import("../../../../../../src/components/Advertising/identities/collectSurferId.js");
+    const id5IdModule =
+      await import("../../../../../../src/components/Advertising/identities/collectID5Id.js");
+    const rampIdModule =
+      await import("../../../../../../src/components/Advertising/identities/collectRampId.js");
 
     getSurferId = vi.mocked(surferIdModule.default);
     getID5Id = vi.mocked(id5IdModule.getID5Id);

@@ -28,10 +28,7 @@ import {
   optionalComponentNames,
   requiredComponentNames,
 } from "@adobe/alloy-core/componentMetadata.js";
-import {
-  getBrowserPackageRoot,
-  safePathJoin,
-} from "./helpers/path.js";
+import { getBrowserPackageRoot, safePathJoin } from "./helpers/path.js";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
