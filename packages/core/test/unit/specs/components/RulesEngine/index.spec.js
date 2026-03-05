@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { vi, beforeEach, describe, it, expect } from "vitest";
+import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import createRulesEngine from "../../../../../src/components/RulesEngine/index.js";
 import { defer } from "../../../../../src/utils/index.js";
 import {
@@ -26,6 +26,7 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
   let getBrowser;
   let persistentStorage;
   let createNamespacedStorage;
+  let originalReferrer;
 
   beforeEach(() => {
     mergeData = vi.fn();
@@ -34,7 +35,7 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
       awaitConsent: vi.fn().mockReturnValue(awaitConsentDeferred.promise),
     };
     getBrowser = vi.fn().mockReturnValue("foo");
-    // FIXME: Mutates global window.referrer and never restores original value in this file.
+    originalReferrer = window.referrer;
     window.referrer =
       "https://www.google.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer";
 
@@ -54,6 +55,10 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
       getViewName: () => undefined,
       mergeData,
     };
+  });
+
+  afterEach(() => {
+    window.referrer = originalReferrer;
   });
 
   const setUpDecisionEngine = ({ personalizationStorageEnabled }) => {

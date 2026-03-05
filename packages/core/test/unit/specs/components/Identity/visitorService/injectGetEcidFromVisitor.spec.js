@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { vi, beforeEach, afterAll, describe, it, expect } from "vitest";
+import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import injectGetEcidFromVisitor from "../../../../../../src/components/Identity/visitorService/injectGetEcidFromVisitor.js";
 
 const logger = {
@@ -28,12 +28,14 @@ Visitor.getInstance = () => {
 };
 const orgId = "456org";
 describe("getEcidFromVisitor", () => {
+  let originalVisitor;
+
   beforeEach(() => {
-    // FIXME: Mutates global window.Visitor state; keep cleanup robust to avoid cross-spec leaks.
+    originalVisitor = window.Visitor;
     window.Visitor = undefined;
   });
-  afterAll(() => {
-    window.Visitor = undefined;
+  afterEach(() => {
+    window.Visitor = originalVisitor;
   });
   describe("Visitor does not exist", () => {
     it("should return promise resolved with undefined", () => {
