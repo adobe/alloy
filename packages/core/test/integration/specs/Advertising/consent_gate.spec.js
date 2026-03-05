@@ -11,7 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import { http, HttpResponse } from "msw";
-import { test, describe, expect } from "../../helpers/testsSetup/extend.js";
+import {
+  test,
+  describe,
+  expect,
+  beforeEach,
+  afterEach,
+} from "../../helpers/testsSetup/extend.js";
 import { sendEventHandler } from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
 import { createAdvertisingConfig } from "../../helpers/advertising.js";
@@ -37,7 +43,6 @@ const clearCookie = (key) => {
 };
 
 const cleanupAll = () => {
-  // FIXME: Cleanup is manually invoked in tests (not afterEach); failures can leak shared state.
   clearCookie("advertising");
   clearCookie("consent");
 };
@@ -75,11 +80,18 @@ const setConsentAcceptHandler = http.post(
 );
 
 describe("Advertising - Consent gate", () => {
+  beforeEach(() => {
+    cleanupAll();
+  });
+
+  afterEach(() => {
+    cleanupAll();
+  });
+
   test("should not write advertising cookies while consent is pending (click-through)", async ({
     alloy,
     worker,
   }) => {
-    cleanupAll();
     worker.use(sendEventHandler, setConsentAcceptHandler);
 
     // Set URL params for click-through BEFORE configure
@@ -103,15 +115,12 @@ describe("Advertising - Consent gate", () => {
       // Verify: NO advertising cookie should exist while consent is pending.
       expect(getAdvertisingCookie()).toBeNull();
     });
-
-    cleanupAll();
   });
 
   test("should not write advertising cookies while consent is pending (view-through)", async ({
     alloy,
     worker,
   }) => {
-    cleanupAll();
     worker.use(sendEventHandler, setConsentAcceptHandler);
 
     // Configure with consent pending and advertiser settings for view-through
@@ -126,8 +135,6 @@ describe("Advertising - Consent gate", () => {
 
     // Verify: NO advertising cookie while consent is pending
     expect(getAdvertisingCookie()).toBeNull();
-
-    cleanupAll();
   });
 
   test("should write cookies and send conversion after consent is accepted (click-through)", async ({
@@ -135,7 +142,6 @@ describe("Advertising - Consent gate", () => {
     worker,
     networkRecorder,
   }) => {
-    cleanupAll();
     worker.use(sendEventHandler, setConsentAcceptHandler);
 
     // Set URL params for click-through
@@ -192,8 +198,6 @@ describe("Advertising - Consent gate", () => {
       });
       expect(conversionCall).toBeTruthy();
     });
-
-    cleanupAll();
   });
 
   // This test is last because declining consent triggers internal SDK
@@ -212,93 +216,91 @@ describe("Advertising - Consent gate", () => {
         event.preventDefault();
       }
     };
-    // FIXME: Listener cleanup is not in finally; assertion failures can leak this handler.
     window.addEventListener("unhandledrejection", suppressDeclined);
 
-    cleanupAll();
+    try {
+      const setConsentDeclineHandler = http.post(
+        /https:\/\/edge\.adobedc\.net\/ee\/(?:[^/]+\/)?v1\/privacy\/set-consent/,
+        async (req) => {
+          const url = new URL(req.request.url);
+          const configId = url.searchParams.get("configId");
 
-    const setConsentDeclineHandler = http.post(
-      /https:\/\/edge\.adobedc\.net\/ee\/(?:[^/]+\/)?v1\/privacy\/set-consent/,
-      async (req) => {
-        const url = new URL(req.request.url);
-        const configId = url.searchParams.get("configId");
+          if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
+            return HttpResponse.json({
+              requestId: "consent-request-id",
+              handle: [
+                {
+                  type: "state:store",
+                  payload: [
+                    {
+                      key: getNamespacedCookieName("consent"),
+                      value: "general=out",
+                      maxAge: 15552000,
+                    },
+                  ],
+                },
+              ],
+            });
+          }
 
-        if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
-          return HttpResponse.json({
-            requestId: "consent-request-id",
-            handle: [
-              {
-                type: "state:store",
-                payload: [
-                  {
-                    key: getNamespacedCookieName("consent"),
-                    value: "general=out",
-                    maxAge: 15552000,
-                  },
-                ],
-              },
-            ],
-          });
-        }
+          throw new Error("Handler not configured properly");
+        },
+      );
 
-        throw new Error("Handler not configured properly");
-      },
-    );
+      worker.use(sendEventHandler, setConsentDeclineHandler);
 
-    worker.use(sendEventHandler, setConsentDeclineHandler);
+      // Set URL params for click-through
+      await withTemporaryUrl(async ({ currentHref, applyUrl }) => {
+        const url = new URL(currentHref);
+        url.searchParams.set("s_kwcid", "AL!test_kwcid_reject");
+        url.searchParams.set("ef_id", "test_efid_reject");
+        applyUrl(url);
 
-    // Set URL params for click-through
-    await withTemporaryUrl(async ({ currentHref, applyUrl }) => {
-      const url = new URL(currentHref);
-      url.searchParams.set("s_kwcid", "AL!test_kwcid_reject");
-      url.searchParams.set("ef_id", "test_efid_reject");
-      applyUrl(url);
+        await alloy("configure", {
+          ...alloyConfig,
+          ...createAdvertisingConfig(),
+          defaultConsent: "pending",
+        });
 
-      await alloy("configure", {
-        ...alloyConfig,
-        ...createAdvertisingConfig(),
-        defaultConsent: "pending",
+        // Verify no cookies yet
+        await waitFor(300);
+        expect(getAdvertisingCookie()).toBeNull();
+
+        // Decline consent
+        await alloy("setConsent", {
+          consent: [
+            {
+              standard: "Adobe",
+              version: "1.0",
+              value: { general: "out" },
+            },
+          ],
+        });
+
+        // Wait to ensure nothing fires after decline
+        await waitFor(500);
+
+        // Verify: NO advertising cookie should exist after decline
+        expect(getAdvertisingCookie()).toBeNull();
+
+        // Verify no conversion calls were made (only consent call should exist)
+        const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/, {
+          retries: 3,
+          delayMs: 100,
+        });
+        const conversionCall = calls.find((call) => {
+          const body =
+            typeof call.request.body === "string"
+              ? JSON.parse(call.request.body)
+              : call.request.body;
+          return (
+            body?.events?.[0]?.xdm?.eventType === "advertising.enrichment_ct"
+          );
+        });
+        expect(conversionCall).toBeFalsy();
       });
-
-      // Verify no cookies yet
-      await waitFor(300);
-      expect(getAdvertisingCookie()).toBeNull();
-
-      // Decline consent
-      await alloy("setConsent", {
-        consent: [
-          {
-            standard: "Adobe",
-            version: "1.0",
-            value: { general: "out" },
-          },
-        ],
-      });
-
-      // Wait to ensure nothing fires after decline
-      await waitFor(500);
-
-      // Verify: NO advertising cookie should exist after decline
-      expect(getAdvertisingCookie()).toBeNull();
-
-      // Verify no conversion calls were made (only consent call should exist)
-      const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/, {
-        retries: 3,
-        delayMs: 100,
-      });
-      const conversionCall = calls.find((call) => {
-        const body =
-          typeof call.request.body === "string"
-            ? JSON.parse(call.request.body)
-            : call.request.body;
-        return (
-          body?.events?.[0]?.xdm?.eventType === "advertising.enrichment_ct"
-        );
-      });
-      expect(conversionCall).toBeFalsy();
-    });
-
-    cleanupAll();
-    window.removeEventListener("unhandledrejection", suppressDeclined);
+    } finally {
+      window.removeEventListener("unhandledrejection", suppressDeclined);
+    }
   });
 });
