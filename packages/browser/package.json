@@ -28,7 +28,7 @@
     "build:clean": "rimraf dist distTest",
     "build:types": "tsc -p jsconfig.json --declaration --emitDeclarationOnly --outDir dist/types --checkJs false --noEmit false",
     "build": "pnpm run build:clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,SERVICE_WORKER,SERVICE_WORKER_MIN,BUNDLESIZE && pnpm run build:types",
-    "build:watch": "rollup -c --watch",
+    "build:watch": "pnpm run build:clean && rollup -c --watch --environment BASE_CODE_MIN,STANDALONE",
     "build:custom": "node scripts/alloyBuilder.js",
     "test:functional": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe playwright:chromium",
     "test:functional:custom": "node ./scripts/runFunctionalTests.js",
