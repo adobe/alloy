@@ -19,6 +19,7 @@ import {
 } from "../../helpers/constants/configParts/index.js";
 
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+/* eslint-disable import/no-relative-packages */
 import {
   ADOBE_JOURNEY_OPTIMIZER,
   ADOBE_TARGET,
@@ -27,6 +28,7 @@ import {
   ALWAYS,
   NEVER,
 } from "../../../../../core/src/constants/propositionInteractionType.js";
+/* eslint-enable import/no-relative-packages */
 
 const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled, {
   onBeforeEventSend: () => {},

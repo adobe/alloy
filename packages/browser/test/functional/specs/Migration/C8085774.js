@@ -19,10 +19,12 @@ import {
   targetMigrationEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import { TEST_PAGE, TEST_PAGE_AT_JS_TWO } from "../../helpers/constants/url.js";
+/* eslint-disable import/no-relative-packages */
 import {
   MBOX_EDGE_CLUSTER,
   MBOX,
 } from "../../../../../core/src/constants/legacyCookies.js";
+/* eslint-enable import/no-relative-packages */
 import {
   assertKonductorReturnsCookieAndCookieIsSet,
   assertSameLocationHintIsUsed,

@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { Selector, t } from "testcafe";
+// eslint-disable-next-line import/no-relative-packages
 import uuid from "../../../../../core/src/utils/uuid.js";
 import createNetworkLogger from "../../helpers/networkLogger/index.js";
 import createFixture from "../../helpers/createFixture/index.js";
@@ -21,6 +22,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import getBaseConfig from "../../helpers/getBaseConfig.js";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
 import addHtmlToBody from "../../helpers/dom/addHtmlToBody.js";
+// eslint-disable-next-line import/no-relative-packages
 import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../../core/src/constants/decisionProvider.js";
 
 const networkLogger = createNetworkLogger();

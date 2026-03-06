@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { Selector, t } from "testcafe";
+/* eslint-disable import/no-relative-packages */
 import uuid from "../../../../../core/src/utils/uuid.js";
 import createNetworkLogger from "../../helpers/networkLogger/index.js";
 import createFixture from "../../helpers/createFixture/index.js";
@@ -32,6 +33,7 @@ import {
   NEVER,
 } from "../../../../../core/src/constants/propositionInteractionType.js";
 import { DOM_ACTION_COLLECT_INTERACTIONS } from "../../../../../core/src/components/Personalization/dom-actions/initDomActionsModules.js";
+/* eslint-enable import/no-relative-packages */
 import { responseStatus } from "../../helpers/assertions/index.js";
 
 const REASONABLE_WAIT_TIME = 250;
