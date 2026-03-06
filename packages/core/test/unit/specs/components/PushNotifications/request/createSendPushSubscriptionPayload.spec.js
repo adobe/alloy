@@ -22,8 +22,6 @@ describe("createSendPushSubscriptionPayload", () => {
   let appId;
 
   beforeEach(() => {
-    vi.clearAllMocks();
-
     ecid = "12345678901234567890123456789012345678";
     appId = "my-app-id";
     serializedPushSubscriptionDetails = JSON.stringify({

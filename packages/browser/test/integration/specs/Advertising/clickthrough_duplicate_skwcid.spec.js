@@ -18,6 +18,7 @@ import {
   findClickThroughCall,
   validateClickThroughCall,
 } from "../../helpers/advertising.js";
+import { withTemporaryUrl } from "../../helpers/utils/location.js";
 
 describe("Advertising - Clickthrough (duplicate s_kwcid)", () => {
   test("should use the first s_kwcid value when duplicates are present", async ({
@@ -27,25 +28,28 @@ describe("Advertising - Clickthrough (duplicate s_kwcid)", () => {
   }) => {
     worker.use(...[sendEventHandler]);
 
-    const url = new URL(window.location.origin + window.location.pathname);
-    url.searchParams.append("s_kwcid", "AL!first-keyword");
-    url.searchParams.append("s_kwcid", "AL!second-keyword");
-    url.searchParams.set("ef_id", "test_experiment_456");
-    window.history.replaceState({}, "", url.toString());
+    await withTemporaryUrl(async ({ currentHref, applyUrl }) => {
+      const currentUrl = new URL(currentHref);
+      const url = new URL(currentUrl.origin + currentUrl.pathname);
+      url.searchParams.append("s_kwcid", "AL!first-keyword");
+      url.searchParams.append("s_kwcid", "AL!second-keyword");
+      url.searchParams.set("ef_id", "test_experiment_456");
+      applyUrl(url);
 
-    await alloy("configure", {
-      ...alloyConfig,
-      ...createAdvertisingConfig(),
-    });
+      await alloy("configure", {
+        ...alloyConfig,
+        ...createAdvertisingConfig(),
+      });
 
-    await alloy("sendEvent");
+      await alloy("sendEvent");
 
-    const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/);
-    const conversionCall = findClickThroughCall(calls);
-    expect(conversionCall).toBeTruthy();
-    validateClickThroughCall(conversionCall, {
-      sampleGroupId: "AL!first-keyword",
-      experimentId: "test_experiment_456",
+      const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/);
+      const conversionCall = findClickThroughCall(calls);
+      expect(conversionCall).toBeTruthy();
+      validateClickThroughCall(conversionCall, {
+        sampleGroupId: "AL!first-keyword",
+        experimentId: "test_experiment_456",
+      });
     });
   });
 });

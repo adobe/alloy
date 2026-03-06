@@ -40,11 +40,9 @@ test("Test 1: C2590433 - Send conversational event with message only", async () 
   await alloy.configure(config);
 
   let streamResponseCalled = false;
-  const capturedResponse = null;
-
   await alloy.sendConversationEvent({
     message: "Hello, I need help with my order",
-    onStreamResponse: (response) => {
+    onStreamResponse: () => {
       streamResponseCalled = true;
     },
   });

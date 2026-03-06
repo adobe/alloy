@@ -18,6 +18,7 @@ import {
   findClickThroughCall,
   validateClickThroughCall,
 } from "../../helpers/advertising.js";
+import { withTemporaryUrl } from "../../helpers/utils/location.js";
 
 describe("Advertising - Clickthrough (both)", () => {
   test("should send advertising.enrichment_ct when both s_kwcid and ef_id are present", async ({
@@ -27,24 +28,26 @@ describe("Advertising - Clickthrough (both)", () => {
   }) => {
     worker.use(...[sendEventHandler]);
 
-    const url = new URL(window.location.href);
-    url.searchParams.set("s_kwcid", "test_keyword_123");
-    url.searchParams.set("ef_id", "test_experiment_456");
-    window.history.replaceState({}, "", url.toString());
+    await withTemporaryUrl(async ({ currentHref, applyUrl }) => {
+      const url = new URL(currentHref);
+      url.searchParams.set("s_kwcid", "test_keyword_123");
+      url.searchParams.set("ef_id", "test_experiment_456");
+      applyUrl(url);
 
-    await alloy("configure", {
-      ...alloyConfig,
-      ...createAdvertisingConfig(),
-    });
+      await alloy("configure", {
+        ...alloyConfig,
+        ...createAdvertisingConfig(),
+      });
 
-    await alloy("sendEvent");
+      await alloy("sendEvent");
 
-    const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/);
-    const conversionCall = findClickThroughCall(calls);
-    expect(conversionCall).toBeTruthy();
-    validateClickThroughCall(conversionCall, {
-      sampleGroupId: "test_keyword_123",
-      experimentId: "test_experiment_456",
+      const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/);
+      const conversionCall = findClickThroughCall(calls);
+      expect(conversionCall).toBeTruthy();
+      validateClickThroughCall(conversionCall, {
+        sampleGroupId: "test_keyword_123",
+        experimentId: "test_experiment_456",
+      });
     });
   });
 });

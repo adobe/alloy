@@ -10,40 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
+import { vi, describe, it, expect, beforeEach } from "vitest";
 import handleClickThrough from "../../../../../../src/components/Advertising/handlers/clickThroughHandler.js";
 import {
   LAST_CLICK_COOKIE_KEY,
   LAST_CONVERSION_TIME_KEY,
 } from "../../../../../../src/components/Advertising/constants/index.js";
-
-afterEach(() => {
-  // Ensure Date.now and other spies don't leak into other files when isolate=false.
-  vi.restoreAllMocks();
-});
-
-// Mock helpers with all functions that might make network calls
-vi.mock(
-  "../../../../../../src/components/Advertising/utils/helpers.js",
-  () => ({
-    normalizeAdvertiser: vi.fn((advertiserSettings) => {
-      if (!advertiserSettings || !Array.isArray(advertiserSettings)) {
-        return "UNKNOWN";
-      }
-
-      return advertiserSettings
-        .filter((item) => item && item.enabled === true && item.advertiserId)
-        .map((item) => item.advertiserId)
-        .join(", ");
-    }),
-    getUrlParams: vi.fn(() => ({ skwcid: null, efid: null })),
-    appendAdvertisingIdQueryToEvent: vi.fn(),
-    isAnyIdUnused: vi.fn(() => true),
-    markIdsAsConverted: vi.fn(),
-    isThrottled: vi.fn(() => false),
-    shouldThrottle: vi.fn(() => false),
-  }),
-);
 
 describe("Advertising::clickThroughHandler", () => {
   let eventManager;
@@ -68,9 +40,6 @@ describe("Advertising::clickThroughHandler", () => {
       info: vi.fn(),
       error: vi.fn(),
     };
-
-    const fixedTs = Date.UTC(2024, 0, 1, 0, 0, 0);
-    vi.spyOn(Date, "now").mockReturnValue(fixedTs);
   });
 
   it("should handle click-through with skwcid", async () => {

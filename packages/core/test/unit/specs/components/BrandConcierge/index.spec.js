@@ -9,15 +9,16 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { vi, beforeEach, describe, it, expect } from "vitest";
+import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import createConciergeComponent from "../../../../../src/components/BrandConcierge/index.js";
 import testConfigValidators from "../../../helpers/testConfigValidators.js";
 
 describe("BrandConcierge", () => {
   let mockDependencies;
+  let originalFetch;
 
   beforeEach(() => {
-    // Mock window.fetch
+    originalFetch = window.fetch;
     window.fetch = vi.fn();
 
     mockDependencies = {
@@ -60,6 +61,10 @@ describe("BrandConcierge", () => {
       createResponse: vi.fn(),
       apexDomain: "adobe.com",
     };
+  });
+
+  afterEach(() => {
+    window.fetch = originalFetch;
   });
 
   it("creates a brand concierge component", () => {

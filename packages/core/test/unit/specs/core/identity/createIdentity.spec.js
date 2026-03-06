@@ -32,7 +32,6 @@ describe("createIdentity", () => {
 
   describe("initialize", () => {
     it("should resolve the await identity promise immediatelly when ecid cookie is already present", async () => {
-      // Valid kndctr cookie payload (from createDecodeKndctrCookie unit tests).
       mockLoggingCookieJar.get.mockReturnValue(
         "CiYxNDAxNTI0NjEzODM4MjI2ODk1MTgwNTkyMTYxNjkxNTc0MzEyOFISCIelhf%5FOMRABGAEqA09SMjAA8AHX%5F4DZlzI%3D",
       );

@@ -23,11 +23,13 @@ import { TEXT_HTML } from "../../../../../../../src/constants/contentType.js";
 
 describe("DOM Actions on Iframe", () => {
   beforeEach(() => {
+    testResetCachedNonce();
     cleanUpDomChanges("alloy-messaging-container");
     cleanUpDomChanges("alloy-overlay-container");
     cleanUpDomChanges("alloy-content-iframe");
   });
   afterEach(() => {
+    testResetCachedNonce();
     cleanUpDomChanges("alloy-messaging-container");
     cleanUpDomChanges("alloy-overlay-container");
     cleanUpDomChanges("alloy-content-iframe");

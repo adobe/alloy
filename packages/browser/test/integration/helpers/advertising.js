@@ -55,9 +55,10 @@ const getRequestBody = (call) => {
 export const findClickThroughCall = (calls) =>
   calls.find((call) => {
     const body = getRequestBody(call);
-    const event = body.events?.[0];
-    return (
-      event?.xdm?.eventType === ADVERTISING_CONSTANTS.EVENT_TYPES.CLICK_THROUGH
+    return body.events?.some(
+      (event) =>
+        event?.xdm?.eventType ===
+        ADVERTISING_CONSTANTS.EVENT_TYPES.CLICK_THROUGH,
     );
   });
 

@@ -10,16 +10,34 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import serviceWorkerPushListener from "./components/PushNotifications/helpers/serviceWorkerPushListener.js";
-import serviceWorkerNotificationClickListener from "./components/PushNotifications/helpers/serviceWorkerNotificationClickListener.js";
-import makeSendServiceWorkerTrackingData from "./components/PushNotifications/request/makeSendServiceWorkerTrackingData.js";
+import createServiceWorkerNotificationClickListener from "./components/PushNotifications/helpers/serviceWorkerNotificationClickListener.js";
+import readFromIndexedDb from "./components/PushNotifications/helpers/readFromIndexedDb.js";
+import { createMakeSendServiceWorkerTrackingData } from "./components/PushNotifications/request/makeSendServiceWorkerTrackingData.js";
+import uuidv4 from "./utils/uuid.js";
 
 /**
  * @type {Object} PlatformCapabilities
  * @property {Logger} logger
+ * @property {(url: string, options: object) => Promise<Response>} fetch
  *
  * TODO: Remove dependency on sw (service worker)
  */
 const createEventListeners = ({ platform, sw }) => {
+  const makeSendServiceWorkerTrackingData =
+    createMakeSendServiceWorkerTrackingData({
+      readFromIndexedDb,
+      uuidv4,
+      logger: platform.logger,
+      fetch: platform.fetch,
+    });
+
+  const serviceWorkerNotificationClickListener =
+    createServiceWorkerNotificationClickListener({
+      makeSendServiceWorkerTrackingData,
+      sw,
+      logger: platform.logger,
+    });
+
   return {
     pushNotifications: {
       /**
@@ -38,12 +56,7 @@ const createEventListeners = ({ platform, sw }) => {
        * @param {NotificationEvent} event
        */
       onNotificationClick(event) {
-        serviceWorkerNotificationClickListener({
-          event,
-          sw,
-          logger: platform.logger,
-          fetch: platform.fetch,
-        });
+        serviceWorkerNotificationClickListener({ event });
       },
       /**
        *
@@ -53,14 +66,11 @@ const createEventListeners = ({ platform, sw }) => {
         const data = event.notification.data;
 
         try {
-          await makeSendServiceWorkerTrackingData(
-            {
-              /* eslint-disable-next-line no-underscore-dangle */
-              xdm: data._xdm.mixins,
-              actionLabel: "Dismiss",
-            },
-            { logger: platform.logger, fetch: platform.fetch },
-          );
+          await makeSendServiceWorkerTrackingData({
+            /* eslint-disable-next-line no-underscore-dangle */
+            xdm: data._xdm.mixins,
+            actionLabel: "Dismiss",
+          });
         } catch (error) {
           platform.logger.error("Failed to send tracking call:", error);
         }

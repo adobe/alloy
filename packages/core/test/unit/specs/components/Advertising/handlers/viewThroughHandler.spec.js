@@ -12,16 +12,18 @@ governing permissions and limitations under the License.
 
 import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import handleViewThrough from "../../../../../../src/components/Advertising/handlers/viewThroughHandler.js";
+import collectAllIdentities from "../../../../../../src/components/Advertising/identities/collectAllIdentities.js";
 import flushPromiseChains from "../../../../helpers/flushPromiseChains.js";
 
 afterEach(() => {
-  // Ensure Date.now and other spies don't leak into other files when isolate=false.
   vi.restoreAllMocks();
 });
 
-// Mock dependencies
 vi.mock(
-  "../../../../../../src/components/Advertising/identities/collectAllIdentities.js",
+  import("../../../../../../src/components/Advertising/identities/collectAllIdentities.js"),
+  () => ({
+    default: vi.fn(),
+  }),
 );
 
 describe("Advertising::viewThroughHandler", () => {
@@ -30,10 +32,9 @@ describe("Advertising::viewThroughHandler", () => {
   let logger;
   let componentConfig;
   let adConversionHandler;
-  let collectAllIdentities;
   let getBrowser;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     eventManager = {
       createEvent: vi.fn(() => ({
         mergeQuery: vi.fn(),
@@ -68,11 +69,6 @@ describe("Advertising::viewThroughHandler", () => {
 
     const fixedTs = Date.UTC(2024, 0, 1, 0, 0, 0);
     vi.spyOn(Date, "now").mockReturnValue(fixedTs);
-
-    // Mock collectAllIdentities
-    const { default: mockCollectAllIdentities } =
-      await import("../../../../../../src/components/Advertising/identities/collectAllIdentities.js");
-    collectAllIdentities = mockCollectAllIdentities;
     collectAllIdentities.mockReset();
   });
 

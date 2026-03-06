@@ -13,21 +13,15 @@ governing permissions and limitations under the License.
 /* eslint-disable no-underscore-dangle */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-import uuidV4Regex from "../../../../constants/uuidV4Regex.js";
 
-vi.mock(
-  "../../../../../../src/components/PushNotifications/helpers/readFromIndexedDb.js",
-  () => ({
-    default: vi.fn(),
-  }),
-);
-
-import makeSendServiceWorkerTrackingData from "../../../../../../src/components/PushNotifications/request/makeSendServiceWorkerTrackingData.js";
-import readFromIndexedDb from "../../../../../../src/components/PushNotifications/helpers/readFromIndexedDb.js";
+import { createMakeSendServiceWorkerTrackingData } from "../../../../../../src/components/PushNotifications/request/makeSendServiceWorkerTrackingData.js";
 
 describe("makeSendServiceWorkerTrackingData", () => {
   let mockLogger;
   let mockFetch;
+  let mockReadFromIndexedDb;
+  let mockUuidv4;
+  let makeSendServiceWorkerTrackingData;
   let mockConfigData;
 
   beforeEach(() => {
@@ -38,6 +32,8 @@ describe("makeSendServiceWorkerTrackingData", () => {
     };
 
     mockFetch = vi.fn();
+    mockReadFromIndexedDb = vi.fn();
+    mockUuidv4 = vi.fn();
 
     mockConfigData = {
       browser: "Chrome",
@@ -48,7 +44,16 @@ describe("makeSendServiceWorkerTrackingData", () => {
       datasetId: "test-dataset-id",
     };
 
-    vi.mocked(readFromIndexedDb).mockResolvedValue(mockConfigData);
+    mockReadFromIndexedDb.mockResolvedValue(mockConfigData);
+    mockUuidv4.mockReturnValue("mock-uuid-1234");
+    makeSendServiceWorkerTrackingData = createMakeSendServiceWorkerTrackingData(
+      {
+        readFromIndexedDb: mockReadFromIndexedDb,
+        uuidv4: mockUuidv4,
+        logger: mockLogger,
+        fetch: mockFetch,
+      },
+    );
   });
 
   describe("successful tracking data sending", () => {
@@ -69,16 +74,14 @@ describe("makeSendServiceWorkerTrackingData", () => {
         },
       };
 
-      const result = await makeSendServiceWorkerTrackingData(
-        { xdm, applicationLaunches: 1 },
-        { logger: mockLogger, fetch: mockFetch },
-      );
+      const result = await makeSendServiceWorkerTrackingData({
+        xdm,
+        applicationLaunches: 1,
+      });
 
       expect(result).toBe(true);
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringMatching(
-          /^https:\/\/edge\.adobedc\.net\/ee\/v1\/interact\?configId=test-datastream-id&requestId=/,
-        ),
+        "https://edge.adobedc.net/ee/v1/interact?configId=test-datastream-id&requestId=mock-uuid-1234",
         {
           method: "POST",
           headers: {
@@ -91,9 +94,6 @@ describe("makeSendServiceWorkerTrackingData", () => {
       );
 
       const callArgs = mockFetch.mock.calls[0];
-      const url = callArgs[0];
-      const requestId = new URL(url).searchParams.get("requestId");
-      expect(requestId).toMatch(uuidV4Regex);
       const payload = JSON.parse(callArgs[1].body);
 
       expect(payload.events[0].xdm.identityMap.ECID[0].id).toBe(
@@ -104,7 +104,7 @@ describe("makeSendServiceWorkerTrackingData", () => {
       );
       expect(
         payload.events[0].xdm.pushNotificationTracking.pushProviderMessageID,
-      ).toMatch(uuidV4Regex);
+      ).toBe("mock-uuid-1234");
       expect(payload.events[0].xdm.application.launches.value).toBe(1);
       expect(
         payload.events[0].xdm._experience.customerJourneyManagement
@@ -124,10 +124,11 @@ describe("makeSendServiceWorkerTrackingData", () => {
         },
       };
 
-      const result = await makeSendServiceWorkerTrackingData(
-        { xdm, actionLabel: "Adobe.com", applicationLaunches: 0 },
-        { logger: mockLogger, fetch: mockFetch },
-      );
+      const result = await makeSendServiceWorkerTrackingData({
+        xdm,
+        actionLabel: "Adobe.com",
+        applicationLaunches: 0,
+      });
 
       expect(result).toBe(true);
 
@@ -156,7 +157,7 @@ describe("makeSendServiceWorkerTrackingData", () => {
       it(`returns false when ${field} is missing`, async () => {
         const incompleteConfigData = { ...mockConfigData };
         delete incompleteConfigData[field];
-        vi.mocked(readFromIndexedDb).mockResolvedValue(incompleteConfigData);
+        mockReadFromIndexedDb.mockResolvedValue(incompleteConfigData);
 
         const xdm = {
           _experience: {
@@ -164,10 +165,7 @@ describe("makeSendServiceWorkerTrackingData", () => {
           },
         };
 
-        const result = await makeSendServiceWorkerTrackingData(
-          { xdm },
-          { logger: mockLogger, fetch: mockFetch },
-        );
+        const result = await makeSendServiceWorkerTrackingData({ xdm });
 
         expect(result).toBe(false);
         expect(mockLogger.error).toHaveBeenCalledWith(
@@ -202,10 +200,7 @@ describe("makeSendServiceWorkerTrackingData", () => {
       },
     };
 
-    await makeSendServiceWorkerTrackingData(
-      { xdm },
-      { logger: mockLogger, fetch: mockFetch },
-    );
+    await makeSendServiceWorkerTrackingData({ xdm });
 
     const callArgs = mockFetch.mock.calls[0];
     const payload = JSON.parse(callArgs[1].body);
