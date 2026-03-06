@@ -17,83 +17,6 @@ import {
   LAST_CONVERSION_TIME_KEY,
 } from "../../../../../../src/components/Advertising/constants/index.js";
 
-// Mock network operations to prevent real network calls
-vi.mock("fetch", () => vi.fn());
-
-// Mock globalThis fetch and other network APIs
-Object.defineProperty(globalThis, "fetch", {
-  value: vi.fn(() =>
-    Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve({ success: true }),
-    }),
-  ),
-  writable: true,
-});
-
-// Mock XMLHttpRequest
-Object.defineProperty(globalThis, "XMLHttpRequest", {
-  value: class MockXMLHttpRequest {
-    open() {
-      this.readyState = 4;
-    }
-
-    send() {
-      this.status = 200;
-    }
-
-    setRequestHeader() {
-      this.headers = {};
-    }
-  },
-  writable: true,
-});
-
-// Mock DOM operations to prevent network calls from script loading
-if (typeof globalThis.document !== "undefined") {
-  globalThis.document.createElement = vi.fn(() => ({
-    src: "",
-    onload: null,
-    onerror: null,
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-  }));
-  if (globalThis.document.head) {
-    globalThis.document.head.appendChild = vi.fn();
-  }
-  if (globalThis.document.body) {
-    globalThis.document.body.appendChild = vi.fn();
-  }
-}
-
-if (typeof globalThis.window !== "undefined") {
-  globalThis.window.addEventListener = vi.fn();
-  globalThis.window.removeEventListener = vi.fn();
-}
-
-// Mock helpers with all functions that might make network calls
-vi.mock(
-  "../../../../../../src/components/Advertising/utils/helpers.js",
-  () => ({
-    normalizeAdvertiser: vi.fn((advertiserSettings) => {
-      if (!advertiserSettings || !Array.isArray(advertiserSettings)) {
-        return "UNKNOWN";
-      }
-
-      return advertiserSettings
-        .filter((item) => item && item.enabled === true && item.advertiserId)
-        .map((item) => item.advertiserId)
-        .join(", ");
-    }),
-    getUrlParams: vi.fn(() => ({ skwcid: null, efid: null })),
-    appendAdvertisingIdQueryToEvent: vi.fn(),
-    isAnyIdUnused: vi.fn(() => true),
-    markIdsAsConverted: vi.fn(),
-    isThrottled: vi.fn(() => false),
-    shouldThrottle: vi.fn(() => false),
-  }),
-);
-
 describe("Advertising::clickThroughHandler", () => {
   let eventManager;
   let cookieManager;
@@ -117,13 +40,6 @@ describe("Advertising::clickThroughHandler", () => {
       info: vi.fn(),
       error: vi.fn(),
     };
-
-    const fixedTs = Date.UTC(2024, 0, 1, 0, 0, 0);
-    const mockNow = {
-      valueOf: () => fixedTs,
-      toISOString: () => new Date(fixedTs).toISOString(),
-    };
-    vi.spyOn(Date, "now").mockReturnValue(mockNow);
   });
 
   it("should handle click-through with skwcid", async () => {

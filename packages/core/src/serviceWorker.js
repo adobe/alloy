@@ -12,9 +12,11 @@ governing permissions and limitations under the License.
 
 /** @import { ServiceWorkerLogger } from './components/PushNotifications/types.js' */
 
-import serviceWorkerNotificationClickListener from "./components/PushNotifications/helpers/serviceWorkerNotificationClickListener.js";
+import createServiceWorkerNotificationClickListener from "./components/PushNotifications/helpers/serviceWorkerNotificationClickListener.js";
 import serviceWorkerPushListener from "./components/PushNotifications/helpers/serviceWorkerPushListener.js";
-import makeSendServiceWorkerTrackingData from "./components/PushNotifications/request/makeSendServiceWorkerTrackingData.js";
+import { createMakeSendServiceWorkerTrackingData } from "./components/PushNotifications/request/makeSendServiceWorkerTrackingData.js";
+import readFromIndexedDb from "./components/PushNotifications/helpers/readFromIndexedDb.js";
+import uuidv4 from "./utils/uuid.js";
 
 /* eslint-disable no-console */
 /* eslint-disable no-underscore-dangle */
@@ -34,6 +36,21 @@ const logger = {
   info: (...args) => console.log(logger.namespace, ...args),
   error: (...args) => console.error(logger.namespace, ...args),
 };
+
+const makeSendServiceWorkerTrackingData =
+  createMakeSendServiceWorkerTrackingData({
+    readFromIndexedDb,
+    uuidv4,
+    logger,
+    fetch,
+  });
+
+const serviceWorkerNotificationClickListener =
+  createServiceWorkerNotificationClickListener({
+    makeSendServiceWorkerTrackingData,
+    sw,
+    logger,
+  });
 
 /**
  * @listens install
@@ -56,7 +73,7 @@ sw.addEventListener("activate", (event) => {
  * @returns {Promise<void>}
  */
 sw.addEventListener("push", (event) =>
-  serviceWorkerPushListener({ event, logger, sw }),
+  serviceWorkerPushListener({ event, sw, logger }),
 );
 
 /**
@@ -64,7 +81,7 @@ sw.addEventListener("push", (event) =>
  * @param {NotificationEvent} event
  */
 sw.addEventListener("notificationclick", (event) =>
-  serviceWorkerNotificationClickListener({ event, sw, logger, fetch }),
+  serviceWorkerNotificationClickListener({ event }),
 );
 
 /**
@@ -74,16 +91,10 @@ sw.addEventListener("notificationclick", (event) =>
 sw.addEventListener("notificationclose", (event) => {
   const data = event.notification.data;
 
-  makeSendServiceWorkerTrackingData(
-    {
-      xdm: data._xdm.mixins,
-      actionLabel: "Dismiss",
-    },
-    {
-      logger,
-      fetch,
-    },
-  ).catch((error) => {
+  makeSendServiceWorkerTrackingData({
+    xdm: data._xdm.mixins,
+    actionLabel: "Dismiss",
+  }).catch((error) => {
     logger.error("Failed to send tracking call:", error);
   });
 });

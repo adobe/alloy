@@ -26,8 +26,6 @@ describe("createIdentity", () => {
   let mockDecodeKndctrCookie;
 
   beforeEach(() => {
-    vi.clearAllMocks();
-
     mockLogger = {};
     mockLoggingCookieJar = {};
 

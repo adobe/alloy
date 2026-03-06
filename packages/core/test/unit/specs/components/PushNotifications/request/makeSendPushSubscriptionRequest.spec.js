@@ -26,8 +26,6 @@ describe("makeSendPushSubscriptionRequest", () => {
   let mockSetUserData;
 
   beforeEach(() => {
-    vi.clearAllMocks();
-
     mockStorage = {
       cache: {},
       // eslint-disable-next-line func-names

@@ -124,7 +124,9 @@ describe("createStreamParser", () => {
 
   it("handles event types and IDs", async () => {
     const mockStream = createMockReadableStream([
-      new TextEncoder().encode('event: message\ndata: {"text": "Hello"}\nid: 123\n\n'),
+      new TextEncoder().encode(
+        'event: message\ndata: {"text": "Hello"}\nid: 123\n\n',
+      ),
     ]);
 
     await streamParser(mockStream, { onEvent, onPing, onComplete });

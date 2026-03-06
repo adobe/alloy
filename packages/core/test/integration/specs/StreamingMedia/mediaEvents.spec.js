@@ -24,6 +24,12 @@ const streamingMediaConfig = {
   },
 };
 
+const getEventFromCall = (call, eventType) => {
+  return call.request.body.events.find((event) => {
+    return event.xdm?.eventType === eventType;
+  });
+};
+
 describe("Streaming Media Events", () => {
   test("media events include timestamp in xdm", async ({
     alloy,
@@ -56,12 +62,19 @@ describe("Streaming Media Events", () => {
       }),
     });
 
-    const sessionCall = await networkRecorder.findCall(/edge\.adobedc\.net/);
+    const sessionCalls = await networkRecorder.findCalls(/edge\.adobedc\.net/);
+    expect(sessionCalls.length).toBeGreaterThan(0);
+    const sessionCall = sessionCalls.find((call) => {
+      return getEventFromCall(call, "media.sessionStart");
+    });
     expect(sessionCall).toBeDefined();
-    expect(sessionCall.request.body.events[0].xdm.timestamp).toBeDefined();
-    expect(sessionCall.request.body.events[0].xdm.eventType).toBe(
+    const sessionStartEvent = getEventFromCall(
+      sessionCall,
       "media.sessionStart",
     );
+    expect(sessionStartEvent).toBeDefined();
+    expect(sessionStartEvent.xdm.timestamp).toBeDefined();
+    expect(sessionStartEvent.xdm.eventType).toBe("media.sessionStart");
 
     await alloy("sendMediaEvent", {
       playerId: "player1",
@@ -73,8 +86,20 @@ describe("Streaming Media Events", () => {
     const mediaEventCalls = await networkRecorder.findCalls(/\/va\//);
     expect(mediaEventCalls.length).toBeGreaterThan(0);
 
-    const playEvent = mediaEventCalls[0];
-    expect(playEvent.request.body.events[0].xdm.timestamp).toBeDefined();
-    expect(playEvent.request.body.events[0].xdm.eventType).toBe("media.play");
+    const playCall = mediaEventCalls.find((call) => {
+      return getEventFromCall(call, "media.play");
+    });
+    expect(playCall).toBeDefined();
+    const playEvent = getEventFromCall(playCall, "media.play");
+    expect(playEvent).toBeDefined();
+    expect(playEvent.xdm.timestamp).toBeDefined();
+    expect(playEvent.xdm.eventType).toBe("media.play");
+
+    await alloy("sendMediaEvent", {
+      playerId: "player1",
+      xdm: {
+        eventType: "media.sessionComplete",
+      },
+    });
   });
 });

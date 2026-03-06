@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { afterEach, describe, it, expect } from "vitest";
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import addNonceToInlineStyleElements from "../../../../../../src/components/Personalization/dom-actions/addNonceToInlineStyleElements.js";
 import { testResetCachedNonce } from "../../../../../../src/components/Personalization/dom-actions/dom/getNonce.js";
 import { createFragment } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
@@ -23,11 +23,15 @@ import {
 } from "../../../../../../src/utils/dom/index.js";
 
 describe("Personalization::dom-actions::addNonceToInlineStyleElements", () => {
+  beforeEach(() => {
+    testResetCachedNonce();
+  });
+
   afterEach(() => {
+    testResetCachedNonce();
     selectNodes("#fooById").forEach(removeNode);
   });
   it("should add nonce to inline style elements if available", () => {
-    testResetCachedNonce();
     // Make sure a nonce is available to alloy
     appendNode(
       document.head,

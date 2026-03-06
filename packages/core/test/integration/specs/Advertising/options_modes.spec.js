@@ -2,7 +2,13 @@
 Copyright 2025 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 */
-import { test, describe, expect } from "../../helpers/testsSetup/extend.js";
+import {
+  test,
+  describe,
+  expect,
+  beforeEach,
+  afterEach,
+} from "../../helpers/testsSetup/extend.js";
 import { sendEventHandler } from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
 import {
@@ -20,7 +26,20 @@ const setAdvertisingCookie = (value) => {
   document.cookie = `${name}=${value}; path=/`;
 };
 
+const clearAdvertisingCookie = () => {
+  const name = getNamespacedAdvertisingCookieName();
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+};
+
 describe("Advertising - Modes (auto, wait, disabled)", () => {
+  beforeEach(() => {
+    clearAdvertisingCookie();
+  });
+
+  afterEach(() => {
+    clearAdvertisingCookie();
+  });
+
   test("auto mode should append cookie data immediately", async ({
     alloy,
     worker,

@@ -22,48 +22,49 @@ describe("Target Custom Code SPA", () => {
     alloy,
     worker,
   }) => {
-    // Counter to track custom code executions
-    window.customCodeExecutionCount = 0;
+    try {
+      // Counter to track custom code executions
+      window.customCodeExecutionCount = 0;
 
-    // Use the custom code handler
-    worker.use(customCodeHandler);
+      // Use the custom code handler
+      worker.use(customCodeHandler);
 
-    // Configure Alloy
-    await alloy("configure", alloyConfig);
+      // Configure Alloy
+      await alloy("configure", alloyConfig);
 
-    // First sendEvent call
-    await alloy("sendEvent", {
-      renderDecisions: true,
-      xdm: {
-        web: {
-          webPageDetails: {
-            viewName: "home",
+      // First sendEvent call
+      await alloy("sendEvent", {
+        renderDecisions: true,
+        xdm: {
+          web: {
+            webPageDetails: {
+              viewName: "home",
+            },
           },
         },
-      },
-    });
+      });
 
-    // Verify custom code ran once after first call
-    expect(window.customCodeExecutionCount).toBe(1);
+      // Verify custom code ran once after first call
+      expect(window.customCodeExecutionCount).toBe(1);
 
-    // Second sendEvent call (simulating SPA navigation back to same view)
-    await alloy("sendEvent", {
-      renderDecisions: true,
-      xdm: {
-        web: {
-          webPageDetails: {
-            viewName: "home",
+      // Second sendEvent call (simulating SPA navigation back to same view)
+      await alloy("sendEvent", {
+        renderDecisions: true,
+        xdm: {
+          web: {
+            webPageDetails: {
+              viewName: "home",
+            },
           },
         },
-      },
-    });
+      });
 
-    // Verify custom code ran twice - once from first response,
-    // and once from cached/persisted offers on second call
-    expect(window.customCodeExecutionCount).toBe(2);
-
-    // Clean up
-    delete window.customCodeExecutionCount;
+      // Verify custom code ran twice - once from first response,
+      // and once from cached/persisted offers on second call
+      expect(window.customCodeExecutionCount).toBe(2);
+    } finally {
+      delete window.customCodeExecutionCount;
+    }
   });
 
   test("prependHtml action only renders once when sendEvent is called twice with renderDecisions and viewName", async ({
