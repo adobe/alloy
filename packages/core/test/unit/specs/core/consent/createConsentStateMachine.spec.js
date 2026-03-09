@@ -99,7 +99,6 @@ describe("createConsentStateMachine", () => {
     });
   });
   [
-    ["in", "default"],
     [
       "in",
       "initial",
@@ -111,29 +110,36 @@ describe("createConsentStateMachine", () => {
       "out",
       "default",
       "User consent preferences not found. Default consent of out will be used.",
+      "warn",
     ],
     [
       "out",
       "initial",
       "Loaded user consent preferences. The user previously declined consent.",
+      "warn",
     ],
-    ["out", "new", "User declined consent."],
+    ["out", "new", "User declined consent.", "warn"],
     [
       "pending",
       "default",
       "User consent preferences not found. Default consent of pending will be used. Some commands may be delayed.",
       "info",
     ],
-    ["pending", "initial"],
-    ["pending", "new"],
-  ].forEach(([action, source, expectedMessage, logLevel = "warn"]) => {
+  ].forEach(([action, source, expectedMessage, logLevel]) => {
     it(`logs the correct messages when ${action} is called with source ${source}`, () => {
       subject[action](source);
-      if (expectedMessage) {
-        expect(logger[logLevel]).toHaveBeenCalledWith(expectedMessage);
-      } else {
-        expect(logger.warn).not.toHaveBeenCalled();
-      }
+      expect(logger[logLevel]).toHaveBeenCalledWith(expectedMessage);
+    });
+  });
+  [
+    ["in", "default"],
+    ["pending", "initial"],
+    ["pending", "new"],
+  ].forEach(([action, source]) => {
+    it(`does not log a message when ${action} is called with source ${source}`, () => {
+      subject[action](source);
+      expect(logger.info).not.toHaveBeenCalled();
+      expect(logger.warn).not.toHaveBeenCalled();
     });
   });
   [
