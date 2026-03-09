@@ -175,17 +175,15 @@ describe("injectSendNetworkRequest", () => {
       });
     });
   });
-  it("rejects the promise when a network error occurs", () => {
+  it("rejects the promise when a network error occurs", async () => {
     sendFetchRequest.mockReturnValue(Promise.reject(new Error("networkerror")));
-    return sendNetworkRequest({
-      payload,
-      url,
-      requestId,
-    }).catch((error) => {
-      expect(error.message).toEqual(
-        "Network request failed.\nCaused by: networkerror",
-      );
-    });
+    await expect(
+      sendNetworkRequest({
+        payload,
+        url,
+        requestId,
+      }),
+    ).rejects.toThrow("Network request failed.\nCaused by: networkerror");
   });
   it("resolves the promise for successful status and valid json", () => {
     return sendNetworkRequest({

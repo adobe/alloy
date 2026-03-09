@@ -10,15 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { vi, beforeEach, describe, it, expect } from "vitest";
+import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import handleViewThrough from "../../../../../../src/components/Advertising/handlers/viewThroughHandler.js";
 import collectAllIdentities from "../../../../../../src/components/Advertising/identities/collectAllIdentities.js";
 import flushPromiseChains from "../../../../helpers/flushPromiseChains.js";
 
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
 vi.mock(
-  import(
-    "../../../../../../src/components/Advertising/identities/collectAllIdentities.js"
-  ),
+  import("../../../../../../src/components/Advertising/identities/collectAllIdentities.js"),
   () => ({
     default: vi.fn(),
   }),
@@ -64,6 +66,10 @@ describe("Advertising::viewThroughHandler", () => {
     };
 
     getBrowser = vi.fn();
+
+    const fixedTs = Date.UTC(2024, 0, 1, 0, 0, 0);
+    vi.spyOn(Date, "now").mockReturnValue(fixedTs);
+    collectAllIdentities.mockReset();
   });
 
   it("should handle empty identity promises", async () => {
@@ -120,12 +126,12 @@ describe("Advertising::viewThroughHandler", () => {
 
     expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
       advertising: {
-        stitchIds: {
-          surferId: "test-surfer-id",
-          ipAddress: "DUMMY_IP_ADDRESS",
-        },
         advIds: "",
         eventType: "advertising.enrichment",
+        stitchIds: {
+          ipAddress: "DUMMY_IP_ADDRESS",
+          surferId: "test-surfer-id",
+        },
       },
     });
 

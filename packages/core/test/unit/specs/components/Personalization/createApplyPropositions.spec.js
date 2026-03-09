@@ -32,6 +32,10 @@ const METADATA = {
   },
 };
 
+const CLICK_DOM_ACTION_ITEM_ID = "442358";
+const HTML_CONTENT_ITEM_ID = "442359";
+const REMAINING_VIEW_DOM_ACTION_ITEM_ID = "442379";
+
 describe("Personalization::createApplyPropositions", () => {
   let processPropositions;
   let createProposition;
@@ -120,17 +124,25 @@ describe("Personalization::createApplyPropositions", () => {
       propositions: MIXED_PROPOSITIONS,
       metadata: METADATA,
     });
+    const clickActionPropositions = propositions.filter(
+      (proposition) => proposition.items[0].id === CLICK_DOM_ACTION_ITEM_ID,
+    );
+    const htmlContentPropositions = propositions.filter(
+      (proposition) => proposition.items[0].id === HTML_CONTENT_ITEM_ID,
+    );
+
     expect(propositions.length).toEqual(4);
     propositions.forEach((proposition) => {
       expect(proposition.items.length).toEqual(1);
-      if (proposition.items[0].id === "442358") {
-        expect(proposition.items[0].data.selector).toEqual("#root");
-        expect(proposition.items[0].data.type).toEqual("click");
-      } else if (proposition.items[0].id === "442359") {
-        expect(proposition.scope).toEqual("home");
-        expect(proposition.items[0].data.selector).toEqual("#home-item1");
-        expect(proposition.items[0].data.type).toEqual("setHtml");
-      }
+    });
+    clickActionPropositions.forEach((proposition) => {
+      expect(proposition.items[0].data.selector).toEqual("#root");
+      expect(proposition.items[0].data.type).toEqual("click");
+    });
+    htmlContentPropositions.forEach((proposition) => {
+      expect(proposition.scope).toEqual("home");
+      expect(proposition.items[0].data.selector).toEqual("#home-item1");
+      expect(proposition.items[0].data.type).toEqual("setHtml");
     });
     expect(processPropositions).toHaveBeenCalledTimes(1);
   });
@@ -142,7 +154,7 @@ describe("Personalization::createApplyPropositions", () => {
         scope: "home",
         items: [
           {
-            id: "442359",
+            id: HTML_CONTENT_ITEM_ID,
             schema: "https://ns.adobe.com/personalization/html-content-item",
             data: {
               content: "<p>Some custom content for the home page</p>",
@@ -151,7 +163,7 @@ describe("Personalization::createApplyPropositions", () => {
             },
           },
           {
-            id: "442358",
+            id: CLICK_DOM_ACTION_ITEM_ID,
             schema: "https://ns.adobe.com/personalization/dom-action",
             data: {
               type: "click",
@@ -167,7 +179,9 @@ describe("Personalization::createApplyPropositions", () => {
     });
     expect(result.propositions.length).toEqual(1);
     expect(result.propositions[0].items.length).toEqual(1);
-    expect(result.propositions[0].items[0].id).toEqual("442358");
+    expect(result.propositions[0].items[0].id).toEqual(
+      CLICK_DOM_ACTION_ITEM_ID,
+    );
     expect(result.propositions[0].renderAttempted).toBe(true);
   });
 
@@ -187,19 +201,30 @@ describe("Personalization::createApplyPropositions", () => {
     const result = await applyPropositions({
       propositions,
     });
+    const remainingViewPropositions = result.propositions.filter(
+      (proposition) => proposition.scope === "__view__",
+    );
+    const nonViewPropositions = result.propositions.filter(
+      (proposition) => proposition.scope !== "__view__",
+    );
+
     expect(result.propositions.length).toEqual(2);
     result.propositions.forEach((proposition) => {
       expect(proposition.renderAttempted).toBe(true);
-      if (proposition.scope === "__view__") {
-        expect(proposition.items[0].id).not.toEqual("442358");
-      } else {
-        expect(proposition.scope).toEqual("home");
-      }
+    });
+    remainingViewPropositions.forEach((proposition) => {
+      expect(proposition.items[0].id).not.toEqual(CLICK_DOM_ACTION_ITEM_ID);
+    });
+    nonViewPropositions.forEach((proposition) => {
+      expect(proposition.scope).toEqual("home");
     });
   });
 
   it("should ignore items with unsupported schemas", async () => {
-    const expectedItemIds = ["442358", "442379"];
+    const expectedItemIds = [
+      CLICK_DOM_ACTION_ITEM_ID,
+      REMAINING_VIEW_DOM_ACTION_ITEM_ID,
+    ];
 
     const { propositions } = await applyPropositions({
       propositions: MIXED_PROPOSITIONS,
@@ -222,18 +247,28 @@ describe("Personalization::createApplyPropositions", () => {
       propositions: originalPropositions,
       metadata: METADATA,
     });
-    let numReturnedPropositions = 0;
-    expect(originalPropositions).toEqual(MIXED_PROPOSITIONS);
-    result.propositions.forEach((proposition) => {
-      const [original] = originalPropositions.filter(
-        (originalProposition) => originalProposition.id === proposition.id,
+    const originalPropositionsById = new Map(
+      originalPropositions.map((originalProposition) => [
+        originalProposition.id,
+        originalProposition,
+      ]),
+    );
+    const returnedPropositionPairs = result.propositions.map((proposition) => ({
+      proposition,
+      originalProposition: originalPropositionsById.get(proposition.id),
+    }));
+    const returnedPropositionPairsWithOriginals =
+      returnedPropositionPairs.filter(({ originalProposition }) =>
+        Boolean(originalProposition),
       );
-      if (original) {
-        numReturnedPropositions += 1;
-        expect(proposition).not.toBe(original);
-      }
-    });
-    expect(numReturnedPropositions).toEqual(4);
+
+    expect(originalPropositions).toEqual(MIXED_PROPOSITIONS);
+    expect(returnedPropositionPairsWithOriginals).toHaveLength(4);
+    returnedPropositionPairsWithOriginals.forEach(
+      ({ proposition, originalProposition }) => {
+        expect(proposition).not.toBe(originalProposition);
+      },
+    );
   });
   it("concats viewName propositions", async () => {
     viewCache.getView.mockReturnValue(

@@ -14,21 +14,16 @@ import { describe, it, expect } from "vitest";
 import defer from "../../../../src/utils/defer.js";
 
 describe("defer", () => {
-  it("resolves an exposed promise", () => {
+  it("resolves an exposed promise", async () => {
     const deferred = defer();
-    deferred.promise.then((value) => {
-      expect(value).toBe("abc");
-    });
+    const promise = deferred.promise;
     deferred.resolve("abc");
+    await expect(promise).resolves.toBe("abc");
   });
-  it("rejects an exposed promise", () => {
+  it("rejects an exposed promise", async () => {
     const deferred = defer();
-    deferred.promise.then(
-      () => {},
-      (value) => {
-        expect(value).toBe("abc");
-      },
-    );
+    const promise = deferred.promise;
     deferred.reject("abc");
+    await expect(promise).rejects.toBe("abc");
   });
 });

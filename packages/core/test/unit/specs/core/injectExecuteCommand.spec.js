@@ -30,17 +30,27 @@ describe("injectExecuteCommand", () => {
       throw error;
     });
   });
-  it("rejects promise if configure is not the first command executed", () => {
+  it("rejects promise if configure is not the first command executed", async () => {
     const executeCommand = injectExecuteCommand({
       logger,
       handleError,
     });
-    return executeCommand("sendEvent").catch((error) => {
-      expect(error.message).toContain("The library must be configured first");
-      expect(handleError).toHaveBeenCalledWith(error, "sendEvent command");
-    });
+    const commandPromise = executeCommand("sendEvent");
+
+    await expect(commandPromise).rejects.toThrow(
+      "The library must be configured first",
+    );
+    expect(handleError).toHaveBeenCalledTimes(1);
+    expect(handleError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.stringContaining(
+          "The library must be configured first",
+        ),
+      }),
+      "sendEvent command",
+    );
   });
-  it("rejects promise if configure command is executed twice", () => {
+  it("rejects promise if configure command is executed twice", async () => {
     const configureCommand = () => Promise.resolve();
     const executeCommand = injectExecuteCommand({
       logger,
@@ -48,14 +58,22 @@ describe("injectExecuteCommand", () => {
       handleError,
     });
     executeCommand("configure");
-    return executeCommand("configure").catch((error) => {
-      expect(error.message).toContain(
-        "The library has already been configured",
-      );
-      expect(handleError).toHaveBeenCalledWith(error, "configure command");
-    });
+    const commandPromise = executeCommand("configure");
+
+    await expect(commandPromise).rejects.toThrow(
+      "The library has already been configured",
+    );
+    expect(handleError).toHaveBeenCalledTimes(1);
+    expect(handleError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.stringContaining(
+          "The library has already been configured",
+        ),
+      }),
+      "configure command",
+    );
   });
-  it("rejects promise if command doesn't exist", () => {
+  it("rejects promise if command doesn't exist", async () => {
     const componentRegistry = {
       getCommand() {},
       getCommandNames() {
@@ -69,12 +87,19 @@ describe("injectExecuteCommand", () => {
       handleError,
     });
     executeCommand("configure");
-    return executeCommand("bogus").catch((error) => {
-      expect(error.message).toBe(
-        "The bogus command does not exist. List of available commands: configure, setDebug, genuine.",
-      );
-      expect(handleError).toHaveBeenCalledWith(error, "bogus command");
-    });
+    const commandPromise = executeCommand("bogus");
+
+    await expect(commandPromise).rejects.toThrow(
+      "The bogus command does not exist. List of available commands: configure, setDebug, genuine.",
+    );
+    expect(handleError).toHaveBeenCalledTimes(1);
+    expect(handleError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message:
+          "The bogus command does not exist. List of available commands: configure, setDebug, genuine.",
+      }),
+      "bogus command",
+    );
   });
   it("never resolves/rejects promise to any other command after configure fails", () => {
     const configureError = new Error("Test configure command failed");
@@ -100,7 +125,7 @@ describe("injectExecuteCommand", () => {
       expect(sendEventRejectedSpy).not.toHaveBeenCalled();
     });
   });
-  it("reject promise if component command throws error", () => {
+  it("reject promise if component command throws error", async () => {
     const runCommandSpy = vi.fn().mockImplementation(() => {
       throw new Error("Unexpected error");
     });
@@ -121,12 +146,16 @@ describe("injectExecuteCommand", () => {
       validateCommandOptions: (options) => options,
     });
     executeCommand("configure");
-    return executeCommand("test", {}).catch(() => {
-      expect(handleError).toHaveBeenCalledWith(
-        new Error("Unexpected error"),
-        "test command",
-      );
-    });
+    const commandPromise = executeCommand("test", {});
+
+    await expect(commandPromise).rejects.toThrow("Unexpected error");
+    expect(handleError).toHaveBeenCalledTimes(1);
+    expect(handleError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: "Unexpected error",
+      }),
+      "test command",
+    );
   });
   it("executes component commands", () => {
     const validateCommandOptionsSpy = vi
@@ -281,24 +310,24 @@ describe("injectExecuteCommand", () => {
       });
     });
   });
-  it("logs onCommandRejected", () => {
+  it("logs onCommandRejected", async () => {
     const myerror = Error("bananas");
     const executeCommand = buildWithTestCommand(() => {
       expect(logger.logOnCommandRejected).not.toHaveBeenCalled();
       throw myerror;
     });
     executeCommand("configure");
-    return executeCommand("test", {
-      my: "options",
-    }).catch((error) => {
-      expect(error).toEqual(myerror);
-      expect(logger.logOnCommandRejected).toHaveBeenCalledWith({
-        commandName: "test",
-        options: {
-          my: "options",
-        },
-        error: myerror,
-      });
+    await expect(
+      executeCommand("test", {
+        my: "options",
+      }),
+    ).rejects.toBe(myerror);
+    expect(logger.logOnCommandRejected).toHaveBeenCalledWith({
+      commandName: "test",
+      options: {
+        my: "options",
+      },
+      error: myerror,
     });
   });
   it("logs onCommandResolved when handleError swallows the error", () => {

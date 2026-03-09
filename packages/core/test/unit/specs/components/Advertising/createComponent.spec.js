@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-
 import createComponent from "../../../../../src/components/Advertising/createComponent.js";
 
 describe("Advertising::createComponent", () => {

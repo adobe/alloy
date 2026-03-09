@@ -242,24 +242,24 @@ describe("createSendConversationEvent", () => {
 
     // Fast-forward time by 10 seconds to trigger the timeout
     vi.advanceTimersByTime(10000);
-    return resultPromise.then((res) => {
-      // Verify that timeout error was logged
-      expect(mockDependencies.logger.error).toHaveBeenCalledWith(
-        "Stream error occurred",
-        expect.objectContaining({
-          message: "Stream timeout: No data received within 10 seconds",
-        }),
-      );
+    await resultPromise;
 
-      // Verify that onStreamResponse was called with the timeout error
-      expect(onStreamResponse).toHaveBeenCalledWith({
-        error: expect.objectContaining({
-          message: "Stream timeout: No data received within 10 seconds",
-        }),
-      });
+    // Verify that timeout error was logged
+    expect(mockDependencies.logger.error).toHaveBeenCalledWith(
+      "Stream error occurred",
+      expect.objectContaining({
+        message: "Stream timeout: No data received within 10 seconds",
+      }),
+    );
 
-      vi.useRealTimers();
+    // Verify that onStreamResponse was called with the timeout error
+    expect(onStreamResponse).toHaveBeenCalledWith({
+      error: expect.objectContaining({
+        message: "Stream timeout: No data received within 10 seconds",
+      }),
     });
+
+    vi.useRealTimers();
     // await flushPromiseChains();
   });
 });
