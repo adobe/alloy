@@ -36,7 +36,7 @@ describe("Personalization::actions::move", () => {
   afterEach(() => {
     cleanUpDomChanges("move");
   });
-  it("should move personalized content", () => {
+  it("should move personalized content", async () => {
     const modules = initDomActionsModules();
     const { move } = modules;
     const element = createNode("div", {
@@ -54,20 +54,19 @@ describe("Personalization::actions::move", () => {
         a: 1,
       },
     };
-    move(
+    await move(
       settings,
       decorateProposition,
       createRenderStatusHandler("view", "test"),
-    ).then(() => {
-      expect(element.style.left).toEqual("100px");
-      expect(element.style.top).toEqual("100px");
-      expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
-        "trackingLabel",
-      );
-      expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
-    });
+    );
+    expect(element.style.left).toEqual("100px");
+    expect(element.style.top).toEqual("100px");
+    expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+      "trackingLabel",
+    );
+    expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
   });
-  it("should move personalized content even if coordinates are not properly formatted", () => {
+  it("should move personalized content even if coordinates are not properly formatted", async () => {
     const modules = initDomActionsModules();
     const { move } = modules;
     const element = createNode("div", {
@@ -85,17 +84,16 @@ describe("Personalization::actions::move", () => {
         a: 1,
       },
     };
-    move(
+    await move(
       settings,
       decorateProposition,
       createRenderStatusHandler("view", "test"),
-    ).then(() => {
-      expect(element.style.left).toEqual("100px");
-      expect(element.style.top).toEqual("100px");
-      expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
-        "trackingLabel",
-      );
-      expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
-    });
+    );
+    expect(element.style.left).toEqual("100px");
+    expect(element.style.top).toEqual("100px");
+    expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+      "trackingLabel",
+    );
+    expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
   });
 });

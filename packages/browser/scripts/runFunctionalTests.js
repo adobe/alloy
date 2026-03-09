@@ -18,8 +18,8 @@ import { glob } from "glob";
 import createTestCafe from "testcafe";
 import { fileURLToPath } from "url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const workspaceRoot = path.join(__dirname, "../../../");
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+const workspaceRoot = path.join(dirname, "../../../");
 
 fs.readFile(
   path.join(workspaceRoot, "packages/browser/dist/alloy.js"),
@@ -53,6 +53,7 @@ fs.readFile(
       activityCollector: "Activity Collector",
       identity: "Identity",
       audiences: "Audiences",
+      brandConcierge: "BrandConcierge",
       context: "Context",
       consent: "Consent",
       eventMerge: "EventMerge",

@@ -16,13 +16,11 @@ import { defer } from "../../../../src/utils/index.js";
 import flushPromiseChains from "../../helpers/flushPromiseChains.js";
 
 describe("createTaskQueue", () => {
-  it("executes a single task once even when it throws an error", () => {
+  it("executes a single task once even when it throws an error", async () => {
     const queue = createTaskQueue();
     const task1 = vi.fn().mockReturnValue(Promise.reject(Error("myerror")));
-    return queue.addTask(task1).catch((e) => {
-      expect(e.message).toEqual("myerror");
-      expect(task1).toHaveBeenCalledTimes(1);
-    });
+    await expect(queue.addTask(task1)).rejects.toThrow("myerror");
+    expect(task1).toHaveBeenCalledTimes(1);
   });
   it("executes tasks in sequence when first task succeeds", () => {
     const queue = createTaskQueue();

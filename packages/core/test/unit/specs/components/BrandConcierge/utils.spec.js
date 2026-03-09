@@ -9,11 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
-import {
-  getPageSurface,
-  getConciergeSessionCookie,
-} from "../../../../../src/components/BrandConcierge/utils.js";
+import { vi, beforeEach, describe, it, expect } from "vitest";
+import { getConciergeSessionCookie } from "../../../../../src/components/BrandConcierge/utils.js";
 
 describe("BrandConcierge utils", () => {
   describe("getConciergeSessionCookie", () => {

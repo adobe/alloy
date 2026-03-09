@@ -21,7 +21,7 @@ export default (description, validator, specObjects) => {
   describe(description, () => {
     specObjects.forEach(
       ({ value, expected = value, error = false, warning = false }) => {
-        if (error) {
+        if (error && warning) {
           it(`rejects ${JSON.stringify(value)}`, () => {
             const logger = {
               warn: vi.fn(),
@@ -35,11 +35,39 @@ export default (description, validator, specObjects) => {
                 "mykey",
               ),
             ).toThrowError(/'mykey[^']*'(:| is)/);
-            if (warning) {
-              expect(logger.warn).toHaveBeenCalled();
-            } else {
-              expect(logger.warn).not.toHaveBeenCalled();
-            }
+            expect(logger.warn).toHaveBeenCalled();
+          });
+        } else if (error) {
+          it(`rejects ${JSON.stringify(value)}`, () => {
+            const logger = {
+              warn: vi.fn(),
+            };
+            expect(() =>
+              validator.call(
+                {
+                  logger,
+                },
+                value,
+                "mykey",
+              ),
+            ).toThrowError(/'mykey[^']*'(:| is)/);
+            expect(logger.warn).not.toHaveBeenCalled();
+          });
+        } else if (warning) {
+          it(`transforms \`${JSON.stringify(value)}\` to \`${JSON.stringify(expected)}\``, () => {
+            const logger = {
+              warn: vi.fn(),
+            };
+            expect(
+              validator.call(
+                {
+                  logger,
+                },
+                value,
+                "mykey",
+              ),
+            ).toEqual(expected);
+            expect(logger.warn).toHaveBeenCalled();
           });
         } else {
           it(`transforms \`${JSON.stringify(value)}\` to \`${JSON.stringify(expected)}\``, () => {
@@ -55,11 +83,7 @@ export default (description, validator, specObjects) => {
                 "mykey",
               ),
             ).toEqual(expected);
-            if (warning) {
-              expect(logger.warn).toHaveBeenCalled();
-            } else {
-              expect(logger.warn).not.toHaveBeenCalled();
-            }
+            expect(logger.warn).not.toHaveBeenCalled();
           });
         }
       },

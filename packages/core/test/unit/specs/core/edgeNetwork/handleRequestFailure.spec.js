@@ -13,20 +13,18 @@ import { vi, describe, it, expect } from "vitest";
 import handleRequestFailure from "../../../../../src/core/edgeNetwork/handleRequestFailure.js";
 
 describe("handleRequestFailure", () => {
-  it("works", () => {
+  it("works", async () => {
     const onRequestFailureCallbackAggregator = {
       add: vi.fn(),
       call: vi.fn(),
     };
     onRequestFailureCallbackAggregator.call.mockReturnValue(Promise.resolve());
     const error = new Error("woopsie");
-    handleRequestFailure(onRequestFailureCallbackAggregator)(error).catch(
-      (err) => {
-        expect(onRequestFailureCallbackAggregator.call).toHaveBeenCalledWith({
-          error,
-        });
-        expect(err).toEqual(error);
-      },
-    );
+    await expect(
+      handleRequestFailure(onRequestFailureCallbackAggregator)(error),
+    ).rejects.toBe(error);
+    expect(onRequestFailureCallbackAggregator.call).toHaveBeenCalledWith({
+      error,
+    });
   });
 });

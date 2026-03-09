@@ -294,6 +294,9 @@ export default defineConfig([
   {
     name: "alloy/tests/functional",
     files: ["packages/**/test/functional/**/*.{cjs,js}"],
+    settings: {
+      "import/core-modules": ["@adobe/alloy", "testcafe", "uuid"],
+    },
     languageOptions: {
       globals: {
         test: "readonly",
