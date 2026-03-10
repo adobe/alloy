@@ -219,7 +219,7 @@ describe("injectApplyResponse", () => {
       });
     });
   });
-  it("catches when warnings and errors in response", () => {
+  it("catches when warnings and errors in response", async () => {
     const error = new Error("whoopsie");
     processWarningsAndErrors = vi.fn().mockImplementation(() => {
       throw error;
@@ -232,20 +232,18 @@ describe("injectApplyResponse", () => {
     });
     const runOnResponseCallbacks = vi.fn();
     const runOnRequestFailureCallbacks = vi.fn();
-    return applyResponse({
-      request,
-      responseHeaders,
-      responseBody,
-      runOnResponseCallbacks,
-      runOnRequestFailureCallbacks,
-    })
-      .catch((err) => {
-        expect(runOnRequestFailureCallbacks).toHaveBeenCalledWith({
-          error,
-        });
-        expect(err).toEqual(error);
-      })
-      .then(() => {});
+    await expect(
+      applyResponse({
+        request,
+        responseHeaders,
+        responseBody,
+        runOnResponseCallbacks,
+        runOnRequestFailureCallbacks,
+      }),
+    ).rejects.toBe(error);
+    expect(runOnRequestFailureCallbacks).toHaveBeenCalledWith({
+      error,
+    });
   });
   it("returns combined result", () => {
     const runOnResponseCallbacks = vi.fn().mockReturnValue(

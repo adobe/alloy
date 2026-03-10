@@ -37,17 +37,17 @@ describe("injectSendFetchRequest", () => {
       expect(fetchResult.headers.get).toHaveBeenCalledWith("Content-Type");
     });
   });
-  it("rejects returned promise upon network failure", () => {
+  it("rejects returned promise upon network failure", async () => {
     const fetch = vi
       .fn()
       .mockReturnValue(Promise.reject(new Error("No connection")));
     const sendFetchRequest = injectSendFetchRequest({
       fetch,
     });
-    return sendFetchRequest("http://example.com/endpoint", {
-      a: "b",
-    }).catch((error) => {
-      expect(error.message).toBe("No connection");
-    });
+    await expect(
+      sendFetchRequest("http://example.com/endpoint", {
+        a: "b",
+      }),
+    ).rejects.toThrow("No connection");
   });
 });

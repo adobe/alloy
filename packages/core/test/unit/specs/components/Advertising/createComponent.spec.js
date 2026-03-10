@@ -11,82 +11,20 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
-
-// Mock the onBeforeSendEventHandler
-vi.mock(
-  "../../../../../src/components/Advertising/handlers/onBeforeSendEventHandler.js",
-  () => ({
-    default: vi.fn(),
-  }),
-);
-
-// Mock the sendAdConversion handler
-vi.mock(
-  "../../../../../src/components/Advertising/handlers/sendAdConversion.js",
-  () => ({
-    default: vi.fn(() => vi.fn()),
-  }),
-);
-
 import createComponent from "../../../../../src/components/Advertising/createComponent.js";
-import handleOnBeforeSendEvent from "../../../../../src/components/Advertising/handlers/onBeforeSendEventHandler.js";
 
 describe("Advertising::createComponent", () => {
-  let logger;
-  let config;
-  let eventManager;
-  let cookieManager;
-  let adConversionHandler;
-  let consent;
+  let handleOnBeforeSendEvent;
+  let sendAdConversionHandler;
   let component;
 
   beforeEach(() => {
-    logger = {
-      info: vi.fn(),
-      error: vi.fn(),
-      debug: vi.fn(),
-      warn: vi.fn(),
-    };
-
-    config = {
-      advertising: {
-        advertiserSettings: [
-          { advertiserId: "123", enabled: true },
-          { advertiserId: "456", enabled: true },
-        ],
-        id5PartnerId: "test-partner",
-        rampIdJSPath: "/test-path",
-      },
-    };
-
-    eventManager = {
-      createEvent: vi.fn(),
-    };
-
-    cookieManager = {
-      getValue: vi.fn(),
-      setValue: vi.fn(),
-    };
-
-    adConversionHandler = {
-      trackAdConversion: vi.fn(),
-    };
-
-    consent = {
-      awaitConsent: vi.fn().mockResolvedValue(),
-      current: vi.fn().mockReturnValue({ state: "in", wasSet: true }),
-    };
-
-    // Reset mocks
-    vi.mocked(handleOnBeforeSendEvent).mockReset();
+    handleOnBeforeSendEvent = vi.fn();
+    sendAdConversionHandler = vi.fn();
 
     component = createComponent({
-      logger,
-      config,
-      eventManager,
-      cookieManager,
-      adConversionHandler,
-      consent,
+      handleOnBeforeSendEvent,
+      sendAdConversionHandler,
     });
   });
 
@@ -96,86 +34,23 @@ describe("Advertising::createComponent", () => {
     expect(component.lifecycle).toHaveProperty("onBeforeEvent");
     expect(typeof component.lifecycle.onComponentsRegistered).toBe("function");
     expect(typeof component.lifecycle.onBeforeEvent).toBe("function");
+    expect(component.lifecycle.onBeforeEvent).toBe(handleOnBeforeSendEvent);
   });
 
-  it("should call onBeforeSendEvent handler with correct parameters including options", async () => {
+  it("calls sendAdConversionHandler on registration", () => {
+    component.lifecycle.onComponentsRegistered();
+    expect(sendAdConversionHandler).toHaveBeenCalledTimes(1);
+  });
+
+  it("delegates onBeforeEvent to injected handler", async () => {
     const event = { mergeQuery: vi.fn() };
     const advertising = { handleAdvertisingData: "wait" };
 
     await component.lifecycle.onBeforeEvent({ event, advertising });
 
     expect(handleOnBeforeSendEvent).toHaveBeenCalledWith({
-      cookieManager,
-      logger,
       event,
-      componentConfig: config.advertising,
       advertising,
-      getBrowser: undefined,
     });
-  });
-
-  it("should handle onBeforeEvent with empty options", async () => {
-    const event = { mergeQuery: vi.fn() };
-
-    await component.lifecycle.onBeforeEvent({ event });
-
-    expect(handleOnBeforeSendEvent).toHaveBeenCalledWith({
-      cookieManager,
-      logger,
-      event,
-      componentConfig: config.advertising,
-      advertising: {},
-      getBrowser: undefined,
-    });
-  });
-
-  it("should handle onBeforeEvent with undefined options", async () => {
-    const event = { mergeQuery: vi.fn() };
-
-    await component.lifecycle.onBeforeEvent({ event, advertising: undefined });
-
-    expect(handleOnBeforeSendEvent).toHaveBeenCalledWith({
-      cookieManager,
-      logger,
-      event,
-      componentConfig: config.advertising,
-      advertising: {},
-      getBrowser: undefined,
-    });
-  });
-
-  it("should skip onBeforeSendEvent when consent is out", async () => {
-    consent.current.mockReturnValue({ state: "out", wasSet: true });
-
-    const event = { mergeQuery: vi.fn() };
-
-    await component.lifecycle.onBeforeEvent({ event });
-
-    expect(handleOnBeforeSendEvent).not.toHaveBeenCalled();
-  });
-
-  it("should skip onBeforeSendEvent when consent is pending", async () => {
-    consent.current.mockReturnValue({ state: "pending", wasSet: false });
-
-    const event = { mergeQuery: vi.fn() };
-
-    await component.lifecycle.onBeforeEvent({ event });
-
-    expect(handleOnBeforeSendEvent).not.toHaveBeenCalled();
-  });
-
-  it("should maintain shared state across calls", async () => {
-    const event = { mergeQuery: vi.fn() };
-
-    await component.lifecycle.onBeforeEvent({ event });
-    await component.lifecycle.onBeforeEvent({ event });
-
-    // Both calls should use the same state object
-    const firstCallState = vi.mocked(handleOnBeforeSendEvent).mock.calls[0][0]
-      .state;
-    const secondCallState = vi.mocked(handleOnBeforeSendEvent).mock.calls[1][0]
-      .state;
-
-    expect(firstCallState).toBe(secondCallState);
   });
 });

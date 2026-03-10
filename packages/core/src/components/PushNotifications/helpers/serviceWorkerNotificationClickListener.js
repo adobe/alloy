@@ -15,8 +15,6 @@ governing permissions and limitations under the License.
 
 /** @import { ServiceWorkerLogger } from '../types.js' */
 
-import makeSendServiceWorkerTrackingData from "../request/makeSendServiceWorkerTrackingData.js";
-
 /**
  * @param {string} type
  * @returns {boolean}
@@ -24,61 +22,63 @@ import makeSendServiceWorkerTrackingData from "../request/makeSendServiceWorkerT
 const canHandleUrl = (type) => ["DEEPLINK", "WEBURL"].includes(type);
 
 /**
- * @function
- *
- * @param {Object} options
- * @param {ServiceWorkerGlobalScope} options.sw
- * @param {NotificationEvent} options.event
- * @param {(url: string, options: object) => Promise<Response>} options.fetch
- * @param {ServiceWorkerLogger} options.logger
+ * @param {Object} dependencies
+ * @param {(options: { xdm: Object, actionLabel?: string, applicationLaunches?: number }) => Promise<boolean>} dependencies.makeSendServiceWorkerTrackingData
+ * @param {ServiceWorkerGlobalScope} dependencies.sw
+ * @param {ServiceWorkerLogger} dependencies.logger
  */
-export default ({ event, sw, logger, fetch }) => {
-  event.notification.close();
+export default ({ makeSendServiceWorkerTrackingData, sw, logger }) => {
+  /**
+   * @function
+   *
+   * @param {Object} options
+   * @param {NotificationEvent} options.event
+   */
+  return ({ event }) => {
+    event.notification.close();
 
-  const data = event.notification.data;
-  let targetUrl = null;
-  let actionLabel = null;
+    const data = event.notification.data;
+    let targetUrl = null;
+    let actionLabel = null;
 
-  if (event.action) {
-    const actionIndex = parseInt(event.action.replace("action_", ""), 10);
-    if (data?.actions?.buttons[actionIndex]) {
-      const button = data.actions.buttons[actionIndex];
-      actionLabel = button.label;
-      if (canHandleUrl(button.type) && button.uri) {
-        targetUrl = button.uri;
+    if (event.action) {
+      const actionIndex = parseInt(event.action.replace("action_", ""), 10);
+      if (data?.actions?.buttons[actionIndex]) {
+        const button = data.actions.buttons[actionIndex];
+        actionLabel = button.label;
+        if (canHandleUrl(button.type) && button.uri) {
+          targetUrl = button.uri;
+        }
       }
+    } else if (
+      canHandleUrl(data?.interaction?.type) &&
+      data?.interaction?.uri
+    ) {
+      targetUrl = data.interaction.uri;
     }
-  } else if (canHandleUrl(data?.interaction?.type) && data?.interaction?.uri) {
-    targetUrl = data.interaction.uri;
-  }
 
-  makeSendServiceWorkerTrackingData(
-    {
+    makeSendServiceWorkerTrackingData({
       // eslint-disable-next-line no-underscore-dangle
       xdm: data._xdm.mixins,
       actionLabel,
       applicationLaunches: 1,
-    },
-    {
-      logger,
-      fetch,
-    },
-  ).catch((error) => {
-    logger.error("Failed to send tracking call:", error);
-  });
+    }).catch((error) => {
+      logger.error("Failed to send tracking call:", error);
+    });
 
-  if (targetUrl) {
-    event.waitUntil(
-      sw.clients.matchAll({ type: "window" }).then((clientList) => {
-        for (const client of clientList) {
-          if (client.url === targetUrl && "focus" in client) {
-            return client.focus();
+    if (targetUrl) {
+      event.waitUntil(
+        sw.clients.matchAll({ type: "window" }).then((clientList) => {
+          for (const client of clientList) {
+            if (client.url === targetUrl && "focus" in client) {
+              return client.focus();
+            }
           }
-        }
-        if (sw.clients.openWindow) {
-          return sw.clients.openWindow(targetUrl);
-        }
-      }),
-    );
-  }
+          if (sw.clients.openWindow) {
+            return sw.clients.openWindow(targetUrl);
+          }
+        }),
+      );
+    }
+  };
 };

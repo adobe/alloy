@@ -27,19 +27,7 @@ import {
   DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
   AD_CONVERSION_VIEW_EVENT_TYPE,
 } from "../../../../../../src/components/Advertising/constants/index.js";
-
-// Mock DOM utilities
-vi.mock("../../../../../../src/utils/dom/index.js", () => ({
-  awaitSelector: vi.fn(),
-  loadScript: vi.fn().mockResolvedValue(),
-  createNode: vi.fn(),
-  appendNode: vi.fn(),
-  matchesSelector: vi.fn(),
-  querySelectorAll: vi.fn(),
-  removeNode: vi.fn(),
-  selectNodes: vi.fn(),
-  selectNodesWithShadow: vi.fn(),
-}));
+import { queryString } from "../../../../../../src/utils/index.js";
 
 describe("Advertising::helpers", () => {
   let mockEvent;
@@ -47,8 +35,6 @@ describe("Advertising::helpers", () => {
   let mockLogger;
 
   beforeEach(() => {
-    // Reset modules to clear any cached state
-    vi.resetModules();
     // Mock event object
     mockEvent = {
       mergeQuery: vi.fn(),
@@ -66,23 +52,18 @@ describe("Advertising::helpers", () => {
       warn: vi.fn(),
       error: vi.fn(),
     };
-
-    // Reset all mocks
-    vi.clearAllMocks();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
-    vi.unstubAllGlobals();
   });
 
   describe("getUrlParams", () => {
-    afterEach(() => {
-      window.history.pushState({}, "", "/");
-    });
-
     it("should return URL parameters when present", () => {
-      window.history.pushState({}, "", "?s_kwcid=test_kwcid&ef_id=test_efid");
+      vi.spyOn(queryString, "parse").mockReturnValue({
+        s_kwcid: "test_kwcid",
+        ef_id: "test_efid",
+      });
 
       const result = getUrlParams();
 
@@ -93,7 +74,9 @@ describe("Advertising::helpers", () => {
     });
 
     it("should return undefined values when parameters are not present", () => {
-      window.history.pushState({}, "", "?foo=bar");
+      vi.spyOn(queryString, "parse").mockReturnValue({
+        foo: "bar",
+      });
 
       const result = getUrlParams();
 
@@ -102,7 +85,7 @@ describe("Advertising::helpers", () => {
     });
 
     it("should handle empty search string", () => {
-      window.history.pushState({}, "", "");
+      vi.spyOn(queryString, "parse").mockReturnValue({});
 
       const result = getUrlParams();
 

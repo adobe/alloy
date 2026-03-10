@@ -1,0 +1,11 @@
+{
+  "extends": "../../jsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@adobe/alloy-core": ["../core/src/index.js"],
+      "@adobe/alloy-core/*": ["../core/src/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "distTest", "src/input.js"]
+}

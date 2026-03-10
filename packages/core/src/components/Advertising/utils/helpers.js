@@ -143,7 +143,7 @@ const isThrottled = (idType, cookieManager) => {
   );
   return Boolean(
     lastSuccessfulConversion &&
-      now - lastSuccessfulConversion < THROTTLE_WINDOW,
+    now - lastSuccessfulConversion < THROTTLE_WINDOW,
   );
 };
 

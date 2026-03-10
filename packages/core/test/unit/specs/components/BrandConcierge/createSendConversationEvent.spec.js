@@ -23,7 +23,7 @@ describe("createSendConversationEvent", () => {
       mergeQuery: vi.fn(),
       mergeXdm: vi.fn(),
       finalize: vi.fn(),
-      mergeMeta: vi.fn()
+      mergeMeta: vi.fn(),
     };
 
     mockDependencies = {
@@ -35,10 +35,10 @@ describe("createSendConversationEvent", () => {
         error: vi.fn(),
       },
       eventManager: {
-        createEvent: vi.fn().mockReturnValue(mockEvent)
+        createEvent: vi.fn().mockReturnValue(mockEvent),
       },
       consent: {
-       current: vi.fn().mockReturnValue({state: "in"})
+        current: vi.fn().mockReturnValue({ state: "in" }),
       },
       instanceName: "test-instance",
       sendEdgeNetworkRequest: vi.fn(),
@@ -49,22 +49,24 @@ describe("createSendConversationEvent", () => {
         edgeBasePath: "/ee",
         datastreamId: "test-datastream",
         conversation: {
-          streamTimeout: 10000
-        }
+          streamTimeout: 10000,
+        },
       },
-      buildEndpointUrl: vi.fn().mockReturnValue("https://test.adobe.io/conversation"),
+      buildEndpointUrl: vi
+        .fn()
+        .mockReturnValue("https://test.adobe.io/conversation"),
       lifecycle: {
         onBeforeEvent: vi.fn().mockResolvedValue(undefined),
         onBeforeRequest: vi.fn(),
-        onRequestFailure: vi.fn()
+        onRequestFailure: vi.fn(),
       },
       cookieTransfer: {
         cookiesToPayload: vi.fn(),
-        responseToCookies: vi.fn()
+        responseToCookies: vi.fn(),
       },
       createResponse: vi.fn(),
       sendConversationServiceRequest: vi.fn(),
-      decodeKndctrCookie: vi.fn().mockReturnValue("test-ecid-123")
+      decodeKndctrCookie: vi.fn().mockReturnValue("test-ecid-123"),
     };
   });
 
@@ -80,12 +82,14 @@ describe("createSendConversationEvent", () => {
       status: 200,
       body: createMockReadableStream([]),
     };
-    mockDependencies.sendConversationServiceRequest.mockResolvedValue(mockResponse);
+    mockDependencies.sendConversationServiceRequest.mockResolvedValue(
+      mockResponse,
+    );
 
     const sendConversationEvent = createSendConversationEvent(mockDependencies);
     const options = {
       message: "Hello, I need help with a product",
-      onStreamResponse: vi.fn()
+      onStreamResponse: vi.fn(),
     };
 
     const resultPromise = sendConversationEvent(options);
@@ -96,20 +100,22 @@ describe("createSendConversationEvent", () => {
         conversation: {
           surfaces: [expect.any(String)],
           message: "Hello, I need help with a product",
-          data: undefined
-        }
+          data: undefined,
+        },
       });
       expect(mockEvent.mergeXdm).toHaveBeenCalledWith({
         identityMap: {
           ECID: [
             {
-              id: "test-ecid-123"
-            }
-          ]
-        }
+              id: "test-ecid-123",
+            },
+          ],
+        },
       });
       expect(mockDependencies.lifecycle.onBeforeEvent).toHaveBeenCalled();
-      expect(mockDependencies.sendConversationServiceRequest).toHaveBeenCalled();
+      expect(
+        mockDependencies.sendConversationServiceRequest,
+      ).toHaveBeenCalled();
       return resultPromise;
     });
   });
@@ -120,15 +126,17 @@ describe("createSendConversationEvent", () => {
       status: 200,
       body: createMockReadableStream([]),
     };
-    mockDependencies.sendConversationServiceRequest.mockResolvedValue(mockResponse);
+    mockDependencies.sendConversationServiceRequest.mockResolvedValue(
+      mockResponse,
+    );
 
     const sendConversationEvent = createSendConversationEvent(mockDependencies);
     const options = {
       xdm: {
         interactionId: "test-interaction-id",
-        conversationId: "test-conversation-id"
+        conversationId: "test-conversation-id",
       },
-      onStreamResponse: vi.fn()
+      onStreamResponse: vi.fn(),
     };
 
     const resultPromise = sendConversationEvent(options);
@@ -139,16 +147,18 @@ describe("createSendConversationEvent", () => {
         identityMap: {
           ECID: [
             {
-              id: "test-ecid-123"
-            }
-          ]
-        }
+              id: "test-ecid-123",
+            },
+          ],
+        },
       });
       expect(mockEvent.mergeXdm).toHaveBeenCalledWith({
         interactionId: "test-interaction-id",
-        conversationId: "test-conversation-id"
+        conversationId: "test-conversation-id",
       });
-      expect(mockDependencies.sendConversationServiceRequest).toHaveBeenCalled();
+      expect(
+        mockDependencies.sendConversationServiceRequest,
+      ).toHaveBeenCalled();
       return resultPromise;
     });
   });
@@ -159,7 +169,9 @@ describe("createSendConversationEvent", () => {
       status: 200,
       body: createMockReadableStream([]),
     };
-    mockDependencies.sendConversationServiceRequest.mockResolvedValue(mockResponse);
+    mockDependencies.sendConversationServiceRequest.mockResolvedValue(
+      mockResponse,
+    );
 
     const sendConversationEvent = createSendConversationEvent(mockDependencies);
     const options = {
@@ -167,10 +179,10 @@ describe("createSendConversationEvent", () => {
         type: "feedback",
         payload: {
           rating: 5,
-          comment: "Great service!"
-        }
+          comment: "Great service!",
+        },
       },
-      onStreamResponse: vi.fn()
+      onStreamResponse: vi.fn(),
     };
 
     const resultPromise = sendConversationEvent(options);
@@ -185,12 +197,14 @@ describe("createSendConversationEvent", () => {
             type: "feedback",
             payload: {
               rating: 5,
-              comment: "Great service!"
-            }
-          }
-        }
+              comment: "Great service!",
+            },
+          },
+        },
       });
-      expect(mockDependencies.sendConversationServiceRequest).toHaveBeenCalled();
+      expect(
+        mockDependencies.sendConversationServiceRequest,
+      ).toHaveBeenCalled();
       return resultPromise;
     });
   });
@@ -211,13 +225,15 @@ describe("createSendConversationEvent", () => {
         },
       },
     };
-    mockDependencies.sendConversationServiceRequest.mockResolvedValue(mockResponse);
+    mockDependencies.sendConversationServiceRequest.mockResolvedValue(
+      mockResponse,
+    );
 
     const sendConversationEvent = createSendConversationEvent(mockDependencies);
     const onStreamResponse = vi.fn();
     const options = {
       message: "Hello, I need help",
-      onStreamResponse
+      onStreamResponse,
     };
 
     const resultPromise = sendConversationEvent(options);
@@ -226,24 +242,24 @@ describe("createSendConversationEvent", () => {
 
     // Fast-forward time by 10 seconds to trigger the timeout
     vi.advanceTimersByTime(10000);
-    return resultPromise.then(res => {
-      // Verify that timeout error was logged
-      expect(mockDependencies.logger.error).toHaveBeenCalledWith(
-        "Stream error occurred",
-        expect.objectContaining({
-          message: "Stream timeout: No data received within 10 seconds"
-        })
-      );
+    await resultPromise;
 
-      // Verify that onStreamResponse was called with the timeout error
-      expect(onStreamResponse).toHaveBeenCalledWith({
-        error: expect.objectContaining({
-          message: "Stream timeout: No data received within 10 seconds"
-        })
-      });
+    // Verify that timeout error was logged
+    expect(mockDependencies.logger.error).toHaveBeenCalledWith(
+      "Stream error occurred",
+      expect.objectContaining({
+        message: "Stream timeout: No data received within 10 seconds",
+      }),
+    );
 
-      vi.useRealTimers();
+    // Verify that onStreamResponse was called with the timeout error
+    expect(onStreamResponse).toHaveBeenCalledWith({
+      error: expect.objectContaining({
+        message: "Stream timeout: No data received within 10 seconds",
+      }),
     });
+
+    vi.useRealTimers();
     // await flushPromiseChains();
   });
 });

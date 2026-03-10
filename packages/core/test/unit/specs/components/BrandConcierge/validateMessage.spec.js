@@ -257,7 +257,6 @@ describe("BrandConcierge::validateMessage", () => {
         validateMessage({ options });
       }).toThrowError();
     });
-
   });
 
   describe("AnyOf Permissive Behavior", () => {

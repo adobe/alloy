@@ -19,14 +19,17 @@ describe("componentCreators", () => {
       acc.push(componentCreators[key]);
       return acc;
     }, []);
+    const componentCreatorsWithConfigValidators = c.filter(
+      (componentCreator) => componentCreator.configValidators !== undefined,
+    );
+
     expect(c).toEqual(expect.any(Array));
     c.forEach((componentCreator) => {
       expect(componentCreator).toEqual(expect.any(Function));
       expect(componentCreator.namespace).toEqual(expect.any(String));
-      if (componentCreator.configValidators) {
-        // should export a validator function
-        expect(componentCreator.configValidators).toEqual(expect.any(Function));
-      }
+    });
+    componentCreatorsWithConfigValidators.forEach((componentCreator) => {
+      expect(componentCreator.configValidators).toEqual(expect.any(Function));
     });
   });
 });

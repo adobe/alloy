@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
-import { getPageSurface, getConciergeSessionCookie } from "../../../../../src/components/BrandConcierge/utils.js";
+import { vi, beforeEach, describe, it, expect } from "vitest";
+import { getConciergeSessionCookie } from "../../../../../src/components/BrandConcierge/utils.js";
 
 describe("BrandConcierge utils", () => {
   describe("getConciergeSessionCookie", () => {
@@ -19,10 +19,10 @@ describe("BrandConcierge utils", () => {
 
     beforeEach(() => {
       mockLoggingCookieJar = {
-        get: vi.fn()
+        get: vi.fn(),
       };
       mockConfig = {
-        orgId: "test-org-id"
+        orgId: "test-org-id",
       };
     });
 
@@ -32,11 +32,11 @@ describe("BrandConcierge utils", () => {
 
       const result = getConciergeSessionCookie({
         loggingCookieJar: mockLoggingCookieJar,
-        config: mockConfig
+        config: mockConfig,
       });
 
       expect(mockLoggingCookieJar.get).toHaveBeenCalledWith(
-        "kndctr_test-org-id_bc_session_id"
+        "kndctr_test-org-id_bc_session_id",
       );
       expect(result).toBe(expectedCookieValue);
     });
@@ -46,11 +46,11 @@ describe("BrandConcierge utils", () => {
 
       getConciergeSessionCookie({
         loggingCookieJar: mockLoggingCookieJar,
-        config: mockConfig
+        config: mockConfig,
       });
 
       expect(mockLoggingCookieJar.get).toHaveBeenCalledWith(
-        "kndctr_different-org_bc_session_id"
+        "kndctr_different-org_bc_session_id",
       );
     });
   });

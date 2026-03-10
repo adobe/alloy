@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { afterEach, describe, it, expect } from "vitest";
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import { testResetCachedNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom/getNonce.js";
 import {
   selectNodes,
@@ -21,11 +21,15 @@ import {
 import { getNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 
 describe("Personalization::DOM::getNonce", () => {
+  beforeEach(() => {
+    testResetCachedNonce();
+  });
+
   afterEach(() => {
+    testResetCachedNonce();
     selectNodes("#fooById").forEach(removeNode);
   });
   it("should return the nonce if defined", () => {
-    testResetCachedNonce();
     appendNode(
       document.head,
       createNode("script", {
