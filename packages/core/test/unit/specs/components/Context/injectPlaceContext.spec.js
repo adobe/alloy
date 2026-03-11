@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { vi, describe, it, expect, beforeEach } from "vitest";
+import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 import injectPlaceContext from "../../../../../src/components/Context/injectPlaceContext.js";
 
 describe("Context::injectPlaceContext", () => {
@@ -20,6 +20,10 @@ describe("Context::injectPlaceContext", () => {
         resolvedOptions: () => ({ timeZone: "" }),
       };
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("adds placeContext", () => {
