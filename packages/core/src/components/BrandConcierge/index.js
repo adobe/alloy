@@ -14,6 +14,7 @@ import createSendConversationEvent from "./createSendConversationEvent.js";
 import createBuildEndpointUrl from "./createBuildEndpointUrl.js";
 import queryString from "@adobe/reactor-query-string";
 import { getConciergeSessionCookie } from "./utils.js";
+import { isNonEmptyString } from "../../utils/index.js";
 import createGetEcidFromCookie from "../../utils/createDecodeKndctrCookie.js";
 import createSendConversationServiceRequest from "./createSendConversationServiceRequest.js";
 import configValidators from "./configValidators.js";
@@ -67,9 +68,9 @@ const createConciergeComponent = ({
   return {
     lifecycle: {
       onBeforeEvent({ event }) {
-        const parsedParams = queryString.parse(window.location.search);
-        if (parsedParams.source) {
-          const source = parsedParams.source;
+        if (isNonEmptyString(config.conversation.sourcesParam)) {
+          const parsedParams = queryString.parse(window.location.search);
+          const source = parsedParams[config.conversation.sourcesParam];
           event.mergeXdm({ channel: { referringSource: source } });
         }
       },
