@@ -220,19 +220,16 @@ describe("createSendConversationEvent", () => {
     );
 
     const sendConversationEvent = createSendConversationEvent(mockDependencies);
-    const options = {
+    await sendConversationEvent({
       message: "Hello",
       onStreamResponse: vi.fn(),
       voiceEnabled: true,
-    };
-
-    const resultPromise = sendConversationEvent(options);
-
-    return flushPromiseChains().then(() => {
-      const callArgs = mockDependencies.buildEndpointUrl.mock.calls[0][0];
-      expect(callArgs.request.getEdgeSubPath()).toBe("/brand-concierge-voice");
-      return resultPromise;
     });
+
+    expect(mockDependencies.buildEndpointUrl).toHaveBeenCalledTimes(1);
+
+    const [{ request }] = mockDependencies.buildEndpointUrl.mock.calls[0];
+    expect(request.getEdgeSubPath()).toBe("/brand-concierge-voice");
   });
 
   it("defaults to text subpath when voiceEnabled is not provided", async () => {
@@ -246,18 +243,15 @@ describe("createSendConversationEvent", () => {
     );
 
     const sendConversationEvent = createSendConversationEvent(mockDependencies);
-    const options = {
+    await sendConversationEvent({
       message: "Hello",
       onStreamResponse: vi.fn(),
-    };
-
-    const resultPromise = sendConversationEvent(options);
-
-    return flushPromiseChains().then(() => {
-      const callArgs = mockDependencies.buildEndpointUrl.mock.calls[0][0];
-      expect(callArgs.request.getEdgeSubPath()).toBe("/brand-concierge");
-      return resultPromise;
     });
+
+    expect(mockDependencies.buildEndpointUrl).toHaveBeenCalledTimes(1);
+
+    const [{ request }] = mockDependencies.buildEndpointUrl.mock.calls[0];
+    expect(request.getEdgeSubPath()).toBe("/brand-concierge");
   });
 
   it("handles stream timeout when no data is received within 10 seconds", async () => {
