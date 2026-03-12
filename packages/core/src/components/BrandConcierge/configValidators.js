@@ -10,12 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { STREAM_START_TIMEOUT_MS } from "./constants.js";
-import {
-  number,
-  objectOf,
-  boolean,
-  string,
-} from "../../utils/validation/index.js";
+import { number, objectOf, boolean } from "../../utils/validation/index.js";
 
 export default objectOf({
   conversation: objectOf({
