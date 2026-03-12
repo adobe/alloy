@@ -24,10 +24,10 @@ export default objectOf({
       .integer()
       .minimum(STREAM_START_TIMEOUT_MS)
       .default(STREAM_START_TIMEOUT_MS),
-    sourcesParam: string().default(""),
+    collectSources: boolean().default(false),
   }).default({
     stickyConversationSession: false,
     streamTimeout: STREAM_START_TIMEOUT_MS,
-    sourcesParam: "",
+    collectSources: false,
   }),
 });

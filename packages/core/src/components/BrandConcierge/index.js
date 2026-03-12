@@ -14,10 +14,10 @@ import createSendConversationEvent from "./createSendConversationEvent.js";
 import createBuildEndpointUrl from "./createBuildEndpointUrl.js";
 import queryString from "@adobe/reactor-query-string";
 import { getConciergeSessionCookie } from "./utils.js";
-import { isNonEmptyString } from "../../utils/index.js";
 import createGetEcidFromCookie from "../../utils/createDecodeKndctrCookie.js";
 import createSendConversationServiceRequest from "./createSendConversationServiceRequest.js";
 import configValidators from "./configValidators.js";
+import { SOURCES_QUERY_PARAM } from "./constants.js";
 
 const createConciergeComponent = ({
   loggingCookieJar,
@@ -68,10 +68,12 @@ const createConciergeComponent = ({
   return {
     lifecycle: {
       onBeforeEvent({ event }) {
-        if (isNonEmptyString(config.conversation.sourcesParam)) {
+        if (config.conversation.collectSources) {
           const parsedParams = queryString.parse(window.location.search);
-          const source = parsedParams[config.conversation.sourcesParam];
-          event.mergeXdm({ channel: { referringSource: source } });
+          const source = parsedParams[SOURCES_QUERY_PARAM];
+          if (source) {
+            event.mergeXdm({ channel: { referringSource: source } });
+          }
         }
       },
     },

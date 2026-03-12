@@ -135,20 +135,26 @@ describe("BrandConcierge", () => {
   });
 
   describe("onBeforeEvent lifecycle", () => {
-    let originalLocation;
+    let originalSearch;
 
     beforeEach(() => {
-      originalLocation = window.location;
-      delete window.location;
-      window.location = { search: "" };
+      originalSearch = window.location.search;
     });
 
     afterEach(() => {
-      window.location = originalLocation;
+      window.history.replaceState(
+        {},
+        "",
+        window.location.pathname + originalSearch,
+      );
     });
 
-    it("merges referringSource into XDM when sourcesParam is configured and query param exists", () => {
-      window.location.search = "?src=email_campaign";
+    it("merges referringSource into XDM when collectSources is true and query param exists", () => {
+      window.history.replaceState(
+        {},
+        "",
+        "?adobe_brand_concierge_source=email_campaign",
+      );
 
       const component = createConciergeComponent({
         ...mockDependencies,
@@ -156,7 +162,7 @@ describe("BrandConcierge", () => {
           ...mockDependencies.config,
           conversation: {
             ...mockDependencies.config.conversation,
-            sourcesParam: "src",
+            collectSources: true,
           },
         },
       });
@@ -169,8 +175,12 @@ describe("BrandConcierge", () => {
       });
     });
 
-    it("does not merge referringSource when sourcesParam is empty string", () => {
-      window.location.search = "?source=email_campaign";
+    it("does not merge referringSource when collectSources is false", () => {
+      window.history.replaceState(
+        {},
+        "",
+        "?adobe_brand_concierge_source=email_campaign",
+      );
 
       const component = createConciergeComponent({
         ...mockDependencies,
@@ -178,7 +188,7 @@ describe("BrandConcierge", () => {
           ...mockDependencies.config,
           conversation: {
             ...mockDependencies.config.conversation,
-            sourcesParam: "",
+            collectSources: false,
           },
         },
       });
@@ -189,8 +199,12 @@ describe("BrandConcierge", () => {
       expect(event.mergeXdm).not.toHaveBeenCalled();
     });
 
-    it("does not merge referringSource when sourcesParam is not configured", () => {
-      window.location.search = "?source=email_campaign";
+    it("does not merge referringSource when collectSources is not configured", () => {
+      window.history.replaceState(
+        {},
+        "",
+        "?adobe_brand_concierge_source=email_campaign",
+      );
 
       const component = createConciergeComponent(mockDependencies);
 
@@ -200,8 +214,8 @@ describe("BrandConcierge", () => {
       expect(event.mergeXdm).not.toHaveBeenCalled();
     });
 
-    it("merges undefined referringSource when query param is not present", () => {
-      window.location.search = "?other=value";
+    it("does not merge referringSource when collectSources is true but query param is not present", () => {
+      window.history.replaceState({}, "", "?other=value");
 
       const component = createConciergeComponent({
         ...mockDependencies,
@@ -209,7 +223,7 @@ describe("BrandConcierge", () => {
           ...mockDependencies.config,
           conversation: {
             ...mockDependencies.config.conversation,
-            sourcesParam: "src",
+            collectSources: true,
           },
         },
       });
@@ -217,31 +231,7 @@ describe("BrandConcierge", () => {
       const event = { mergeXdm: vi.fn() };
       component.lifecycle.onBeforeEvent({ event });
 
-      expect(event.mergeXdm).toHaveBeenCalledWith({
-        channel: { referringSource: undefined },
-      });
-    });
-
-    it("uses the configured sourcesParam as the query parameter name", () => {
-      window.location.search = "?custom_source=social_media";
-
-      const component = createConciergeComponent({
-        ...mockDependencies,
-        config: {
-          ...mockDependencies.config,
-          conversation: {
-            ...mockDependencies.config.conversation,
-            sourcesParam: "custom_source",
-          },
-        },
-      });
-
-      const event = { mergeXdm: vi.fn() };
-      component.lifecycle.onBeforeEvent({ event });
-
-      expect(event.mergeXdm).toHaveBeenCalledWith({
-        channel: { referringSource: "social_media" },
-      });
+      expect(event.mergeXdm).not.toHaveBeenCalled();
     });
   });
 });
@@ -258,9 +248,8 @@ describe("BrandConcierge config validators", () => {
         conversation: { stickyConversationSession: true, streamTimeout: 10000 },
       },
       {},
-      { conversation: { sourcesParam: "src" } },
-      { conversation: { sourcesParam: "" } },
-      { conversation: { sourcesParam: "custom_source" } },
+      { conversation: { collectSources: true } },
+      { conversation: { collectSources: false } },
     ],
     invalidConfigurations: [
       { conversation: { stickyConversationSession: "invalid" } },
@@ -268,8 +257,8 @@ describe("BrandConcierge config validators", () => {
       { conversation: { streamTimeout: "invalid" } },
       { conversation: { streamTimeout: -1 } },
       { conversation: { streamTimeout: 1.5 } },
-      { conversation: { sourcesParam: 123 } },
-      { conversation: { sourcesParam: true } },
+      { conversation: { collectSources: "invalid" } },
+      { conversation: { collectSources: 123 } },
     ],
     defaultValues: {},
   });
@@ -277,6 +266,6 @@ describe("BrandConcierge config validators", () => {
     const config = createConciergeComponent.configValidators({});
     expect(config.conversation.stickyConversationSession).toBe(false);
     expect(config.conversation.streamTimeout).toBe(10000);
-    expect(config.conversation.sourcesParam).toBe("");
+    expect(config.conversation.collectSources).toBe(false);
   });
 });
