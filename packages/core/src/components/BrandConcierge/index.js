@@ -13,8 +13,7 @@ import validateMessage from "./validateMessage.js";
 import createSendConversationEvent from "./createSendConversationEvent.js";
 import createBuildEndpointUrl from "./createBuildEndpointUrl.js";
 import queryString from "@adobe/reactor-query-string";
-import { getNamespacedCookieName } from "../../utils/index.js";
-import { BC_SESSION_COOKIE_NAME } from "./constants.js";
+import { getConciergeSessionCookie } from "./utils.js";
 import createGetEcidFromCookie from "../../utils/createDecodeKndctrCookie.js";
 import createSendConversationServiceRequest from "./createSendConversationServiceRequest.js";
 import configValidators from "./configValidators.js";
@@ -30,15 +29,11 @@ const createConciergeComponent = ({
   lifecycle,
   cookieTransfer,
   createResponse,
-  apexDomain,
 }) => {
   const { fetch } = window;
-  if (!config.conversation.stickyConversationSession) {
-    loggingCookieJar.remove(
-      getNamespacedCookieName(config.orgId, BC_SESSION_COOKIE_NAME),
-      { domain: apexDomain },
-    );
-  }
+  const session = {
+    id: getConciergeSessionCookie({ loggingCookieJar, config }),
+  };
 
   const buildEndpointUrl = createBuildEndpointUrl({ queryString });
   const sendConversationServiceRequest = createSendConversationServiceRequest({
@@ -66,6 +61,7 @@ const createConciergeComponent = ({
     createResponse,
     sendConversationServiceRequest,
     decodeKndctrCookie,
+    session,
   });
 
   return {

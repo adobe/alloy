@@ -79,7 +79,7 @@ describe("BrandConcierge", () => {
     expect(createConciergeComponent.namespace).toBe("BrandConcierge");
   });
 
-  it("removes session cookie when stickyConversationSession is false", () => {
+  it("generates a new session id when stickyConversationSession is false", () => {
     const configWithSticky = {
       ...mockDependencies.config,
       conversation: {
@@ -92,13 +92,11 @@ describe("BrandConcierge", () => {
       config: configWithSticky,
     });
 
-    expect(mockDependencies.loggingCookieJar.remove).toHaveBeenCalledWith(
-      "kndctr_testorgid_AdobeOrg_bc_session_id",
-      { domain: "adobe.com" },
-    );
+    // When sticky is false, a new UUID is generated without reading the cookie
+    expect(mockDependencies.loggingCookieJar.get).not.toHaveBeenCalled();
   });
 
-  it("does not remove session cookie when stickyConversationSession is true", () => {
+  it("reads session cookie when stickyConversationSession is true", () => {
     const configWithSticky = {
       ...mockDependencies.config,
       conversation: {
@@ -111,7 +109,9 @@ describe("BrandConcierge", () => {
       config: configWithSticky,
     });
 
-    expect(mockDependencies.loggingCookieJar.remove).not.toHaveBeenCalled();
+    expect(mockDependencies.loggingCookieJar.get).toHaveBeenCalledWith(
+      "kndctr_testorgid_AdobeOrg_bc_session_id",
+    );
   });
 
   it("sendConversationEvent command has options validator", () => {
