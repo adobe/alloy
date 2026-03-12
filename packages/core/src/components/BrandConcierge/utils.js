@@ -15,6 +15,7 @@ import {
 } from "../../utils/index.js";
 import { buildPageSurface } from "../../utils/surfaceUtils.js";
 import { BC_SESSION_COOKIE_NAME } from "./constants.js";
+import uuid from "../../utils/uuid.js";
 
 export const getPageSurface = () => {
   const pageLocation = createGetPageLocation({ window: window });
@@ -22,9 +23,19 @@ export const getPageSurface = () => {
 };
 
 export const getConciergeSessionCookie = ({ loggingCookieJar, config }) => {
+  if (config.conversation.stickyConversationSession === false) {
+    return uuid();
+  }
+
   const cookieName = getNamespacedCookieName(
     config.orgId,
     BC_SESSION_COOKIE_NAME,
   );
-  return loggingCookieJar.get(cookieName);
+  const sessionId = loggingCookieJar.get(cookieName);
+
+  if (sessionId) {
+    return sessionId;
+  }
+
+  return uuid();
 };
