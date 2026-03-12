@@ -38,6 +38,7 @@ export default ({ options }) => {
           }),
         }),
       }),
+      voiceEnabled: boolean().default(false),
     }).required(),
     objectOf({
       data: objectOf({

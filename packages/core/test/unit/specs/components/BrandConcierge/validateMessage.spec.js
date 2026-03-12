@@ -308,6 +308,39 @@ describe("BrandConcierge::validateMessage", () => {
         validateMessage({ options });
       }).toThrowError();
     });
+
+    it("should throw when voiceEnabled is a string on message options", () => {
+      expect(() => {
+        validateMessage({ options: { message: "Hello", voiceEnabled: "yes" } });
+      }).toThrowError();
+    });
+
+    it("should throw when voiceEnabled is a string on xdm options", () => {
+      expect(() => {
+        validateMessage({
+          options: { xdm: { interactionId: "test-id" }, voiceEnabled: "yes" },
+        });
+      }).toThrowError();
+    });
+
+    it("should throw when voiceEnabled is a number on xdm options", () => {
+      expect(() => {
+        validateMessage({
+          options: { xdm: { interactionId: "test-id" }, voiceEnabled: 1 },
+        });
+      }).toThrowError();
+    });
+
+    it("should throw when voiceEnabled is a string on data options", () => {
+      expect(() => {
+        validateMessage({
+          options: {
+            data: { type: "action", payload: {} },
+            voiceEnabled: "yes",
+          },
+        });
+      }).toThrowError();
+    });
   });
 
   describe("AnyOf Permissive Behavior", () => {
