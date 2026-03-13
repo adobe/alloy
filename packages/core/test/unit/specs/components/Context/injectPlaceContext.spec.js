@@ -10,10 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { vi, describe, it, expect } from "vitest";
+import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 import injectPlaceContext from "../../../../../src/components/Context/injectPlaceContext.js";
 
 describe("Context::injectPlaceContext", () => {
+  beforeEach(() => {
+    vi.spyOn(Intl, "DateTimeFormat").mockImplementation(() => {
+      return {
+        resolvedOptions: () => ({ timeZone: "" }),
+      };
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("adds placeContext", () => {
     const date = new Date("March 25, 2019 21:56:18");
     vi.spyOn(date, "getTimezoneOffset").mockReturnValue(7 * 60);
@@ -71,5 +83,29 @@ describe("Context::injectPlaceContext", () => {
         localTimezoneOffset: -6000,
       },
     });
+  });
+  it("includes ianaTimezone when Intl reports a timezone", () => {
+    vi.mocked(Intl.DateTimeFormat).mockImplementation(() => {
+      return {
+        resolvedOptions: () => ({ timeZone: "America/New_York" }),
+      };
+    });
+    const date = new Date("March 25, 2019 21:56:18");
+    vi.spyOn(date, "getTimezoneOffset").mockReturnValue(4 * 60);
+    const event = { mergeXdm: vi.fn() };
+    injectPlaceContext(() => date)(event);
+    expect(event.mergeXdm).toHaveBeenCalledWith({
+      placeContext: expect.objectContaining({
+        ianaTimezone: "America/New_York",
+      }),
+    });
+  });
+  it("omits ianaTimezone when Intl reports an empty timezone", () => {
+    const date = new Date("March 25, 2019 21:56:18");
+    vi.spyOn(date, "getTimezoneOffset").mockReturnValue(4 * 60);
+    const event = { mergeXdm: vi.fn() };
+    injectPlaceContext(() => date)(event);
+    const placeContext = event.mergeXdm.mock.calls[0][0].placeContext;
+    expect(placeContext).not.toHaveProperty("ianaTimezone");
   });
 });
