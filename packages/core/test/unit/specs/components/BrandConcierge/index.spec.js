@@ -136,14 +136,16 @@ describe("BrandConcierge", () => {
 
   describe("onBeforeEvent lifecycle", () => {
     let originalSearch;
+    let originalState;
 
     beforeEach(() => {
       originalSearch = window.location.search;
+      originalState = window.history.state;
     });
 
     afterEach(() => {
       window.history.replaceState(
-        {},
+        originalState,
         "",
         window.location.pathname + originalSearch,
       );
