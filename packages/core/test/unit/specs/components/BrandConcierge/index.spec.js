@@ -133,6 +133,109 @@ describe("BrandConcierge", () => {
       "function",
     );
   });
+
+  describe("onBeforeEvent lifecycle", () => {
+    let originalSearch;
+    let originalState;
+
+    beforeEach(() => {
+      originalSearch = window.location.search;
+      originalState = window.history.state;
+    });
+
+    afterEach(() => {
+      window.history.replaceState(
+        originalState,
+        "",
+        window.location.pathname + originalSearch,
+      );
+    });
+
+    it("merges referringSource into XDM when collectSources is true and query param exists", () => {
+      window.history.replaceState(
+        {},
+        "",
+        "?adobe_brand_concierge_source=email_campaign",
+      );
+
+      const component = createConciergeComponent({
+        ...mockDependencies,
+        config: {
+          ...mockDependencies.config,
+          conversation: {
+            ...mockDependencies.config.conversation,
+            collectSources: true,
+          },
+        },
+      });
+
+      const event = { mergeXdm: vi.fn() };
+      component.lifecycle.onBeforeEvent({ event });
+
+      expect(event.mergeXdm).toHaveBeenCalledWith({
+        channel: { referringSource: "email_campaign" },
+      });
+    });
+
+    it("does not merge referringSource when collectSources is false", () => {
+      window.history.replaceState(
+        {},
+        "",
+        "?adobe_brand_concierge_source=email_campaign",
+      );
+
+      const component = createConciergeComponent({
+        ...mockDependencies,
+        config: {
+          ...mockDependencies.config,
+          conversation: {
+            ...mockDependencies.config.conversation,
+            collectSources: false,
+          },
+        },
+      });
+
+      const event = { mergeXdm: vi.fn() };
+      component.lifecycle.onBeforeEvent({ event });
+
+      expect(event.mergeXdm).not.toHaveBeenCalled();
+    });
+
+    it("does not merge referringSource when collectSources is not configured", () => {
+      window.history.replaceState(
+        {},
+        "",
+        "?adobe_brand_concierge_source=email_campaign",
+      );
+
+      const component = createConciergeComponent(mockDependencies);
+
+      const event = { mergeXdm: vi.fn() };
+      component.lifecycle.onBeforeEvent({ event });
+
+      expect(event.mergeXdm).not.toHaveBeenCalled();
+    });
+
+    it("does not merge referringSource when collectSources is true but query param is not present", () => {
+      window.history.replaceState({}, "", "?other=value");
+
+      const component = createConciergeComponent({
+        ...mockDependencies,
+        config: {
+          ...mockDependencies.config,
+          conversation: {
+            ...mockDependencies.config.conversation,
+            collectSources: true,
+          },
+        },
+      });
+
+      const event = { mergeXdm: vi.fn() };
+      component.lifecycle.onBeforeEvent({ event });
+
+      expect(event.mergeXdm).not.toHaveBeenCalled();
+    });
+  });
 });
 
 describe("BrandConcierge config validators", () => {
@@ -147,6 +250,8 @@ describe("BrandConcierge config validators", () => {
         conversation: { stickyConversationSession: true, streamTimeout: 10000 },
       },
       {},
+      { conversation: { collectSources: true } },
+      { conversation: { collectSources: false } },
     ],
     invalidConfigurations: [
       { conversation: { stickyConversationSession: "invalid" } },
@@ -154,6 +259,8 @@ describe("BrandConcierge config validators", () => {
       { conversation: { streamTimeout: "invalid" } },
       { conversation: { streamTimeout: -1 } },
       { conversation: { streamTimeout: 1.5 } },
+      { conversation: { collectSources: "invalid" } },
+      { conversation: { collectSources: 123 } },
     ],
     defaultValues: {},
   });
@@ -161,5 +268,6 @@ describe("BrandConcierge config validators", () => {
     const config = createConciergeComponent.configValidators({});
     expect(config.conversation.stickyConversationSession).toBe(false);
     expect(config.conversation.streamTimeout).toBe(10000);
+    expect(config.conversation.collectSources).toBe(false);
   });
 });

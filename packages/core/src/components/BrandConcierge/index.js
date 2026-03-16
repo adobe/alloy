@@ -17,6 +17,7 @@ import { getConciergeSessionCookie } from "./utils.js";
 import createGetEcidFromCookie from "../../utils/createDecodeKndctrCookie.js";
 import createSendConversationServiceRequest from "./createSendConversationServiceRequest.js";
 import configValidators from "./configValidators.js";
+import { SOURCES_QUERY_PARAM } from "./constants.js";
 
 const createConciergeComponent = ({
   loggingCookieJar,
@@ -67,10 +68,12 @@ const createConciergeComponent = ({
   return {
     lifecycle: {
       onBeforeEvent({ event }) {
-        const parsedParams = queryString.parse(window.location.search);
-        if (parsedParams.source) {
-          const source = parsedParams.source;
-          event.mergeXdm({ channel: { referringSource: source } });
+        if (config.conversation.collectSources) {
+          const parsedParams = queryString.parse(window.location.search);
+          const source = parsedParams[SOURCES_QUERY_PARAM];
+          if (source) {
+            event.mergeXdm({ channel: { referringSource: source } });
+          }
         }
       },
     },
