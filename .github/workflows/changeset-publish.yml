@@ -28,15 +28,13 @@ jobs:
         id: pre
         run: |
           if [ -f .changeset/pre.json ]; then
+            # @type {string} "pre" | "exit" | "" — changeset prerelease mode
             MODE=$(jq -r '.mode // empty' .changeset/pre.json)
-            TAG=$(jq -r '.tag // empty' .changeset/pre.json)
           else
             MODE=""
-            TAG=""
           fi
 
           if [ "${MODE}" = "pre" ]; then
-            echo "Prerelease mode: pre (tag: ${TAG:-n/a})"
             echo "is_prerelease=true" >> "${GITHUB_OUTPUT}"
           else
             if [ -n "${MODE}" ]; then
@@ -63,6 +61,7 @@ jobs:
         id: release_plan
         run: |
           shopt -s nullglob
+          # @type {string[]} glob-expanded file paths — e.g. (.changeset/few-pens-build.md ...)
           FILES=(.changeset/*.md)
 
           if [ ${#FILES[@]} -eq 0 ]; then
@@ -81,6 +80,7 @@ jobs:
           else
             echo "Release summary: none"
           fi
+          # @type {string} "true" | "false"
           HAS_RELEASES=$(jq -r 'if (.releases // []) | length > 0 then "true" else "false" end' changeset-status.json)
           echo "has_releases=${HAS_RELEASES}" >> "${GITHUB_OUTPUT}"
 
@@ -141,6 +141,7 @@ jobs:
             echo "Release summary: none"
           fi
           pnpm changeset version
+          # @type {string} semver — e.g. "2.31.2-beta.0"
           VERSION=$(jq -r '.version' package.json)
           echo "Root version after versioning: ${VERSION}"
 
@@ -165,6 +166,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
         run: |
+          # @type {string} semver — e.g. "2.31.2-beta.0"
           VERSION=$(jq -r '.version' package.json)
           echo "Publishing prerelease packages (pre mode). Root version: ${VERSION}"
           pnpm changeset publish
@@ -180,10 +182,12 @@ jobs:
             exit 1
           fi
 
+          # @type {json} string[] — e.g. ["@adobe/alloy", "@adobe/alloy-core"]
           PUBLIC=$(
             pnpm ls -r --json --depth -1 \
               | jq '[.[] | select(.private | not) | .name]'
           )
+          # @type {string} newline-delimited — e.g. "@adobe/alloy@2.31.2-beta.0"
           TAG_ENTRIES=$(
             jq -r --argjson pub "$PUBLIC" '
               .releases // []
@@ -212,6 +216,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
         run: |
+          # @type {string} semver — e.g. "2.31.2"
           VERSION=$(jq -r '.version' package.json)
           echo "Publishing stable packages (npm tag: latest). Root version: ${VERSION}"
           pnpm changeset publish
@@ -248,7 +253,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # @type {string} semver — e.g. "2.31.2-beta.0"
           VERSION=$(jq -r '.version' package.json)
+          # @type {string} git tag / release name — e.g. "@adobe/alloy@2.31.2-beta.0"
           TAG="@adobe/alloy@${VERSION}"
 
           if ! git rev-parse "${TAG}" >/dev/null 2>&1; then
@@ -266,7 +273,7 @@ jobs:
             exit 1
           fi
 
-          # Generate GitHub release notes
+          # @type {string} absolute file path — e.g. "/tmp/tmp.aBcDeFgH"
           NOTES_FILE="$(mktemp)"
           awk -v ver="${VERSION}" '
             $0 == "## " ver { in_section=1; next }
@@ -279,6 +286,7 @@ jobs:
             exit 1
           fi
 
+          # @type {string[]} gh release flags — e.g. (--prerelease) or ()
           FLAGS=()
           if [ "${{ needs.analyze.outputs.is_prerelease }}" = "true" ]; then
             FLAGS+=(--prerelease)
