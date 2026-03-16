@@ -65,7 +65,10 @@ export default defineConfig({
         extends: false,
         test: {
           name: "scripts-tests",
-          include: ["scripts/specs/*.{test,spec}.?(c|m)[jt]s?(x)"],
+          include: [
+            "scripts/**/*.{test,spec}.?(c|m)[jt]s?(x)",
+            ".github/scripts/*.(c|m)[jt]s?(x)",
+          ],
           isolate: false,
           pool: "threads",
           environment: "node",
