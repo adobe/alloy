@@ -180,7 +180,18 @@ jobs:
             exit 1
           fi
 
-          TAG_ENTRIES=$(jq -r '.releases // [] | .[] | "\(.name)@\(.newVersion)"' changeset-status.json)
+          PUBLIC=$(
+            pnpm ls -r --json --depth -1 \
+              | jq '[.[] | select(.private | not) | .name]'
+          )
+          TAG_ENTRIES=$(
+            jq -r --argjson pub "$PUBLIC" '
+              .releases // []
+              | .[]
+              | select(.name | IN($pub[]))
+              | "\(.name)@\(.newVersion)"
+            ' changeset-status.json
+          )
 
           if [ -z "${TAG_ENTRIES}" ]; then
             echo "No releases in changeset-status.json; skipping dist-tagging."
