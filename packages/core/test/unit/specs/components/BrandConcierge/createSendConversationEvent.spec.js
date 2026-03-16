@@ -67,6 +67,7 @@ describe("createSendConversationEvent", () => {
       createResponse: vi.fn(),
       sendConversationServiceRequest: vi.fn(),
       decodeKndctrCookie: vi.fn().mockReturnValue("test-ecid-123"),
+      session: { id: "test-session-id" },
     };
   });
 
