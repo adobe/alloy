@@ -6,10 +6,10 @@
   "scripts": {
     "clean": "pnpm -r --if-present run clean && rimraf coverage",
     "dev": "concurrently --names build,sandbox \"pnpm --filter @adobe/alloy run build:watch\" \"pnpm --filter @adobe/alloy-sandbox-browser run start\"",
-    "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/{src,test,scripts}}/**/*.{js,cjs,mjs,jsx}\"",
-    "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/{src,test,scripts}}/**/*.{html,js,cjs,mjs,jsx}\"",
+    "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/{src,test,scripts},scripts}/**/*.{js,cjs,mjs,jsx}\"",
+    "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/{src,test,scripts},scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
     "types": "tsc",
-    "test": "pnpm exec playwright install chromium && vitest run && pnpm run test:scripts",
+    "test": "pnpm exec playwright install chromium && vitest run",
     "test:coverage": "rimraf coverage && pnpm exec playwright install chromium && vitest run --coverage",
     "test:unit": "pnpm exec playwright install chromium && vitest run --project=unit",
     "test:unit:debug": "pnpm exec playwright install chromium && vitest --no-file-parallelism --project=unit --browser=chromium --browser.provider=playwright --browser.headless=false",
@@ -19,7 +19,7 @@
     "test:integration:debug": "pnpm exec playwright install chromium && vitest --no-file-parallelism --project=integration --browser=chromium --browser.provider=playwright --browser.headless=false",
     "test:integration:watch": "pnpm exec playwright install chromium && vitest --project=integration",
     "test:integration:coverage": "pnpm exec playwright install chromium && vitest run --coverage --project=integration",
-    "test:scripts": "vitest run --config=./scripts/specs/vitest.config.js",
+    "test:scripts": "vitest run --project scripts-tests",
     "prepare": "husky",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js"
   },
@@ -27,13 +27,13 @@
     "./*.{cjs,mjs,js,jsx}": [
       "eslint --cache --fix"
     ],
-    "./{packages/*/{src,test,scripts}}/**/*.{cjs,mjs,js,jsx}": [
+    "./{packages/*/{src,test,scripts},scripts}/**/*.{cjs,mjs,js,jsx}": [
       "eslint --cache --fix"
     ],
     "./*.{html,js,cjs,mjs,jsx}": [
       "prettier --write"
     ],
-    "./{sandboxes/*,packages/*/{src,test,scripts}}/**/*.{html,js,cjs,mjs,jsx}": [
+    "./{sandboxes/*,packages/*/{src,test,scripts},scripts}/**/*.{html,js,cjs,mjs,jsx}": [
       "prettier --write"
     ]
   },
