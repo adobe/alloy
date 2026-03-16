@@ -248,7 +248,6 @@ export default defineConfig([
     name: "alloy/scripts",
     files: [
       "scripts/**/*.{cjs,js,mjs}",
-      ".github/scripts/**/*.{cjs,js,mjs}",
       "packages/*/scripts/**/*.{cjs,js,mjs}",
     ],
     languageOptions: {
