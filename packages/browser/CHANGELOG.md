@@ -1,5 +1,16 @@
 # @adobe/alloy
 
+## 2.31.2-beta.0
+
+### Patch Changes
+
+- 3e22bcc: Added a fix so that we keep the sessionId in memory when session sticky is false.
+
+  This will allow users to run different sessions in different tabs.
+
+- 633f566: Include IANA timezone on the place context
+- 00d1187: Add configuration to Brand Concierge, to enable or disable sources data collection.
+
 ## 2.31.1
 
 ### Patch Changes
