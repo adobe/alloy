@@ -58,7 +58,15 @@
       "types": "./dist/types/browser/src/utils/deepAssign.d.ts",
       "default": "./src/utils/deepAssign.js"
     },
+    "./libEs6/utils/deepAssign.js": {
+      "types": "./dist/types/browser/src/utils/deepAssign.d.ts",
+      "default": "./src/utils/deepAssign.js"
+    },
     "./createEventMergeId": {
+      "types": "./dist/types/browser/src/createEventMergeId.d.ts",
+      "default": "./src/createEventMergeId.js"
+    },
+    "./libEs6/createEventMergeId.js": {
       "types": "./dist/types/browser/src/createEventMergeId.d.ts",
       "default": "./src/createEventMergeId.js"
     }
