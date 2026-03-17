@@ -11,8 +11,6 @@ concurrency: changeset-publish-${{ github.ref }}
 jobs:
   # Determine if there are changesets to publish and if we are in prerelease mode.
   analyze:
-    # Avoid re-running when the bot pushes the version bump commit.
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     outputs:
       has_releases: ${{ steps.release_plan.outputs.has_releases }}
@@ -129,7 +127,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Version packages & generate CHANGELOG.md files
+      - name: Version @adobe/alloy & generate CHANGELOG
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -142,13 +140,13 @@ jobs:
           fi
           pnpm changeset version
           # @type {string} semver — e.g. "2.31.2-beta.0"
-          VERSION=$(jq -r '.version' package.json)
-          echo "Root version after versioning: ${VERSION}"
+          VERSION=$(jq -r '.version' packages/browser/package.json)
+          echo "@adobe/alloy version after versioning: ${VERSION}"
 
       - name: Update lockfile
         run: pnpm install --no-frozen-lockfile --ignore-scripts
 
-      - name: Build packages (prepack)
+      - name: Build @adobe/alloy (browser)
         run: pnpm --filter @adobe/alloy run build
 
       - name: Commit version changes & CHANGELOG.md files
@@ -160,29 +158,29 @@ jobs:
             git commit -m "chore: publish [skip ci]"
           fi
 
-      - name: "Publish prerelease packages (beta)"
+      - name: "Publish @adobe/alloy prerelease (beta)"
         if: needs.analyze.outputs.is_prerelease == 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
         run: |
           # @type {string} semver — e.g. "2.31.2-beta.0"
-          VERSION=$(jq -r '.version' package.json)
-          echo "Publishing prerelease packages (pre mode). Root version: ${VERSION}"
+          VERSION=$(jq -r '.version' packages/browser/package.json)
+          echo "Publishing @adobe/alloy prerelease (pre mode). Version: ${VERSION}"
           pnpm changeset publish
 
-      - name: "Tag prerelease packages (npm dist-tag: next)"
+      - name: "Tag @adobe/alloy prerelease (npm dist-tag: next)"
         if: needs.analyze.outputs.is_prerelease == 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
         run: |
           if [ ! -f changeset-status.json ]; then
-            echo "::error::changeset-status.json not found; cannot tag prerelease packages."
+            echo "::error::changeset-status.json not found; cannot tag prerelease."
             exit 1
           fi
 
-          # @type {json} string[] — e.g. ["@adobe/alloy", "@adobe/alloy-core"]
+          # @type {json} string[] — e.g. ["@adobe/alloy"]
           PUBLIC=$(
             pnpm ls -r --json --depth -1 \
               | jq '[.[] | select(.private | not) | .name]'
@@ -202,7 +200,7 @@ jobs:
             exit 0
           fi
 
-          echo "Applying npm dist-tag next to prerelease packages:"
+          echo "Applying npm dist-tag next to @adobe/alloy prerelease:"
           echo "${TAG_ENTRIES}" | sed 's/^/- /'
           while IFS= read -r pkg; do
             if [ -n "${pkg}" ]; then
@@ -210,19 +208,19 @@ jobs:
             fi
           done <<< "${TAG_ENTRIES}"
 
-      - name: "Publish packages (stable -> npm tag: latest)"
+      - name: "Publish @adobe/alloy (stable -> npm tag: latest)"
         if: needs.analyze.outputs.is_prerelease != 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
         run: |
           # @type {string} semver — e.g. "2.31.2"
-          VERSION=$(jq -r '.version' package.json)
-          echo "Publishing stable packages (npm tag: latest). Root version: ${VERSION}"
+          VERSION=$(jq -r '.version' packages/browser/package.json)
+          echo "Publishing @adobe/alloy stable (npm tag: latest). Version: ${VERSION}"
           pnpm changeset publish
 
-      # rebuilding because `pnpm changeset publish` wipes out build artifacts
-      - name: Rebuild browser artifacts for CDN upload
+      # rebuilding because `changeset publish` wipes out build artifacts
+      - name: Rebuild @adobe/alloy browser artifacts for CDN upload
         run: pnpm --filter @adobe/alloy run build
 
       - name: Start ssh-agent for CDN
@@ -249,12 +247,12 @@ jobs:
           fi
           git push --follow-tags
 
-      - name: Create GitHub Release (notes from CHANGELOG.md)
+      - name: Create GitHub Release (notes from @adobe/alloy CHANGELOG)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # @type {string} semver — e.g. "2.31.2-beta.0"
-          VERSION=$(jq -r '.version' package.json)
+          VERSION=$(jq -r '.version' packages/browser/package.json)
           # @type {string} git tag / release name — e.g. "@adobe/alloy@2.31.2-beta.0"
           TAG="@adobe/alloy@${VERSION}"
 
@@ -268,8 +266,10 @@ jobs:
             exit 0
           fi
 
-          if [ ! -f CHANGELOG.md ]; then
-            echo "::error::CHANGELOG.md not found; cannot create GitHub release notes."
+          # @type {string} path to @adobe/alloy CHANGELOG
+          CHANGELOG="packages/browser/CHANGELOG.md"
+          if [ ! -f "${CHANGELOG}" ]; then
+            echo "::error::${CHANGELOG} not found; cannot create GitHub release notes."
             exit 1
           fi
 
@@ -279,10 +279,10 @@ jobs:
             $0 == "## " ver { in_section=1; next }
             in_section && /^## / { exit }
             in_section { print }
-          ' CHANGELOG.md > "${NOTES_FILE}"
+          ' "${CHANGELOG}" > "${NOTES_FILE}"
 
           if [ ! -s "${NOTES_FILE}" ]; then
-            echo "::error::Could not extract notes for version ${VERSION} from CHANGELOG.md"
+            echo "::error::Could not extract notes for version ${VERSION} from ${CHANGELOG}"
             exit 1
           fi
 

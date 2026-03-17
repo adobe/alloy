@@ -1,0 +1,58 @@
+name: Trigger stable release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  exit-prerelease:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ssh-key: ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
+
+      - name: Verify currently in prerelease mode
+        run: |
+          if [ ! -f .changeset/pre.json ]; then
+            echo "::error::No .changeset/pre.json found; not in prerelease mode."
+            exit 1
+          fi
+
+          # @type {string} "pre" | "exit" | ""
+          MODE=$(jq -r '.mode // empty' .changeset/pre.json)
+          if [ "${MODE}" != "pre" ]; then
+            echo "::error::Expected prerelease mode 'pre', got '${MODE}'. Already exited or not in prerelease."
+            exit 1
+          fi
+
+          echo "Currently in prerelease mode (tag: $(jq -r '.tag' .changeset/pre.json)). Proceeding to exit."
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Exit prerelease mode
+        run: pnpm changeset pre exit
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: exit prerelease mode for stable release"
+          git remote set-url origin "git@github.com:${{ github.repository }}.git"
+          git push

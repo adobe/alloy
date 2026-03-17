@@ -64,7 +64,7 @@ export default defineConfig({
       {
         extends: false,
         test: {
-          name: "scripts-tests",
+          name: "scripts",
           include: ["scripts/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
           isolate: false,
           pool: "threads",
