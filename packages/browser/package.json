@@ -54,21 +54,21 @@
       "types": "./dist/types/browser/src/serviceWorker.d.ts",
       "default": "./src/serviceWorker.js"
     },
-    "./utils/deepAssign": {
+    "./utils/deepAssign.js": {
       "types": "./dist/types/browser/src/utils/deepAssign.d.ts",
       "default": "./src/utils/deepAssign.js"
     },
-    "./libEs6/utils/deepAssign.js": {
+    "./libEs6/utils/deepAssign": {
       "types": "./dist/types/browser/src/utils/deepAssign.d.ts",
       "default": "./src/utils/deepAssign.js"
     },
-    "./createEventMergeId": {
+    "./utils/createEventMergeId.js": {
       "types": "./dist/types/browser/src/createEventMergeId.d.ts",
-      "default": "./src/createEventMergeId.js"
+      "default": "./src/utils/createEventMergeId.js"
     },
-    "./libEs6/createEventMergeId.js": {
+    "./libEs6/components/EventMerge/createEventMergeId": {
       "types": "./dist/types/browser/src/createEventMergeId.d.ts",
-      "default": "./src/createEventMergeId.js"
+      "default": "./src/utils/createEventMergeId.js"
     }
   },
   "dependencies": {
