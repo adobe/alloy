@@ -53,6 +53,14 @@
     "./serviceWorker.js": {
       "types": "./dist/types/browser/src/serviceWorker.d.ts",
       "default": "./src/serviceWorker.js"
+    },
+    "./utils/deepAssign": {
+      "types": "./dist/types/browser/src/utils/deepAssign.d.ts",
+      "default": "./src/utils/deepAssign.js"
+    },
+    "./createEventMergeId": {
+      "types": "./dist/types/browser/src/createEventMergeId.d.ts",
+      "default": "./src/createEventMergeId.js"
     }
   },
   "dependencies": {

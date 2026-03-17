@@ -29,6 +29,14 @@
     "./core/componentCreators.js": {
       "types": "./src/core/componentCreators.js",
       "default": "./src/core/componentCreators.js"
+    },
+    "./utils/deepAssign.js": {
+      "types": "./src/utils/deepAssign.js",
+      "default": "./src/utils/deepAssign.js"
+    },
+    "./components/EventMerge/createEventMergeId.js": {
+      "types": "./src/components/EventMerge/createEventMergeId.js",
+      "default": "./src/components/EventMerge/createEventMergeId.js"
     }
   },
   "author": "Adobe Inc.",
