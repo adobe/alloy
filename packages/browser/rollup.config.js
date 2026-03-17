@@ -131,9 +131,22 @@ const FUNCTIONAL_TEST_PROD = "FUNCTIONAL_TEST_PROD";
 const CUSTOM_BUILD = "CUSTOM_BUILD";
 // build the service worker (used for push notifications feature).
 const SERVICE_WORKER = "SERVICE_WORKER";
+// build bundled utility entrypoints for npm consumers.
+export const UTILITY_EXPORTS = "UTILITY_EXPORTS";
 // Add "_MIN" to the end of the option name to build the minified version
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
+
+export const utilityExportBuilds = [
+  {
+    input: `${dirname}/src/utils/deepAssign.js`,
+    file: `${dirname}/dist/utils/deepAssign.js`,
+  },
+  {
+    input: `${dirname}/src/utils/createEventMergeId.js`,
+    file: `${dirname}/dist/utils/createEventMergeId.js`,
+  },
+];
 
 const buildPlugins = ({ variant, minify, babelPlugins }) => {
   const plugins = [
@@ -186,7 +199,8 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
   if (
     variant === STANDALONE ||
     variant === CUSTOM_BUILD ||
-    variant === SERVICE_WORKER
+    variant === SERVICE_WORKER ||
+    variant === UTILITY_EXPORTS
   ) {
     plugins.push(
       license({
@@ -254,6 +268,19 @@ export const buildConfig = ({
     };
   }
 
+  if (variant === UTILITY_EXPORTS) {
+    return {
+      input,
+      output: [
+        {
+          file,
+          format: "es",
+        },
+      ],
+      plugins,
+    };
+  }
+
   // FUNCTIONAL_TEST_LOCAL or FUNCTIONAL_TEST_PROD
   const filename =
     variant === FUNCTIONAL_TEST_LOCAL
@@ -283,10 +310,19 @@ const addConfig = (variant) => {
   }
 };
 
+const addUtilityExportConfigs = () => {
+  if (process.env[UTILITY_EXPORTS]) {
+    utilityExportBuilds.forEach(({ input, file }) => {
+      config.push(buildConfig({ variant: UTILITY_EXPORTS, input, file }));
+    });
+  }
+};
+
 addConfig(BASE_CODE);
 addConfig(STANDALONE);
 addConfig(FUNCTIONAL_TEST_LOCAL);
 addConfig(FUNCTIONAL_TEST_PROD);
 addConfig(SERVICE_WORKER);
+addUtilityExportConfigs();
 
 export default config;
