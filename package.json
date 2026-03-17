@@ -19,7 +19,7 @@
     "test:integration:debug": "pnpm exec playwright install chromium && vitest --no-file-parallelism --project=integration --browser=chromium --browser.provider=playwright --browser.headless=false",
     "test:integration:watch": "pnpm exec playwright install chromium && vitest --project=integration",
     "test:integration:coverage": "pnpm exec playwright install chromium && vitest run --coverage --project=integration",
-    "test:scripts": "vitest run --project scripts-tests",
+    "test:scripts": "vitest run --project scripts",
     "prepare": "husky",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js"
   },
