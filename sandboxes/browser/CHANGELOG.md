@@ -1,5 +1,12 @@
 # @adobe/alloy-sandbox-browser
 
+## 0.1.1-beta.2
+
+### Patch Changes
+
+- Updated dependencies [292bb30]
+  - @adobe/alloy@2.31.2-beta.2
+
 ## 0.1.1-beta.1
 
 ### Patch Changes

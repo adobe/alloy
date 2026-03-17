@@ -1,5 +1,11 @@
 # @adobe/alloy
 
+## 2.31.2-beta.2
+
+### Patch Changes
+
+- 292bb30: Force a patch version
+
 ## 2.31.2-beta.1
 
 ### Patch Changes
