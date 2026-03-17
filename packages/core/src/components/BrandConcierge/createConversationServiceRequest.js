@@ -11,10 +11,22 @@ governing permissions and limitations under the License.
 */
 import { createRequest } from "../../utils/request/index.js";
 
-export default ({ payload, action = "conversations", sessionId }) => {
+const BRAND_CONCIERGE_PATH = "/brand-concierge";
+const VOICE_BRAND_CONCIERGE_PATH = "/brand-concierge-voice";
+
+export default ({
+  payload,
+  action = "conversations",
+  sessionId,
+  voiceEnabled = false,
+}) => {
+  const edgeSubPath = voiceEnabled
+    ? VOICE_BRAND_CONCIERGE_PATH
+    : BRAND_CONCIERGE_PATH;
+
   return createRequest({
     payload: payload,
-    edgeSubPath: "/brand-concierge",
+    edgeSubPath,
     requestParams: { sessionId },
     getAction() {
       return action;

@@ -36,14 +36,20 @@ export default ({
     onBeforeEventSend,
     conversation,
   } = config;
-
   return (options) => {
     let streamingEnabled = false;
-    const { message, onStreamResponse, xdm, data } = options;
+    const {
+      message,
+      onStreamResponse,
+      xdm,
+      data,
+      voiceEnabled = false,
+    } = options;
     const payload = createDataCollectionRequestPayload();
     const request = createConversationServiceRequest({
       payload,
       sessionId: session.id,
+      voiceEnabled,
     });
 
     const event = eventManager.createEvent();

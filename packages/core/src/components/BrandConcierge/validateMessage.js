@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 import {
   anyOf,
   arrayOf,
+  boolean,
   objectOf,
   string,
   callback,
@@ -23,6 +24,7 @@ export default ({ options }) => {
     objectOf({
       message: string().required(),
       onStreamResponse: callback().default(noop),
+      voiceEnabled: boolean().default(false),
     }),
     objectOf({
       xdm: objectOf({
@@ -36,6 +38,7 @@ export default ({ options }) => {
           }),
         }),
       }),
+      voiceEnabled: boolean().default(false),
     }).required(),
     objectOf({
       data: objectOf({
@@ -43,6 +46,7 @@ export default ({ options }) => {
         payload: objectOf({}),
       }).required(),
       onStreamResponse: callback().default(noop),
+      voiceEnabled: boolean().default(false),
     }),
   ]);
 
