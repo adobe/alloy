@@ -11,8 +11,6 @@ concurrency: changeset-publish-${{ github.ref }}
 jobs:
   # Determine if there are changesets to publish and if we are in prerelease mode.
   analyze:
-    # Avoid re-running when the bot pushes the version bump commit.
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     outputs:
       has_releases: ${{ steps.release_plan.outputs.has_releases }}
