@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createEventListeners from "@adobe/alloy-core/createEventListeners.js";
+// eslint-disable-next-line import/no-relative-packages -- TODO: Remove once we have a proper way to build @adobe/alloy-core with Reactor custom build
+import createEventListeners from "../../core/src/createEventListeners.js";
 
 /* eslint-disable no-console */
 

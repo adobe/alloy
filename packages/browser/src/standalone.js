@@ -13,7 +13,8 @@ governing permissions and limitations under the License.
 /** @import { WindowWithAlloy, AlloyQueueItem } from './types.js' */
 
 import { createCustomInstance } from "./index.js";
-import * as optionalComponents from "@adobe/alloy-core/core/componentCreators.js";
+// eslint-disable-next-line import/no-relative-packages -- TODO: Remove once we have a proper way to build @adobe/alloy-core with Reactor custom build
+import * as optionalComponents from "../../core/src/core/componentCreators.js";
 
 // This file is used by rollup to create the browser version that is uploaded to cdn
 

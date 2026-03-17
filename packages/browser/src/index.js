@@ -9,5 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-export { createInstance, createCustomInstance } from "@adobe/alloy-core";
-export * as components from "@adobe/alloy-core/core/componentCreators.js";
+// eslint-disable-next-line import/no-relative-packages -- TODO: Remove once we have a proper way to build @adobe/alloy-core with Reactor custom build
+export { createInstance, createCustomInstance } from "../../core/src/index.js";
+// eslint-disable-next-line import/no-relative-packages -- TODO: Remove once we have a proper way to build @adobe/alloy-core with Reactor custom build
+export * as components from "../../core/src/core/componentCreators.js";
