@@ -28,6 +28,10 @@ export default (dateProvider) => {
     ) {
       placeContext.localTime = toISOStringLocal(date);
     }
+    const ianaTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (ianaTimezone) {
+      placeContext.ianaTimezone = ianaTimezone;
+    }
 
     event.mergeXdm({ placeContext });
   };
