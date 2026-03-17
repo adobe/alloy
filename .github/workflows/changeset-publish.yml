@@ -142,8 +142,8 @@ jobs:
           fi
           pnpm changeset version
           # @type {string} semver — e.g. "2.31.2-beta.0"
-          VERSION=$(jq -r '.version' package.json)
-          echo "Root version after versioning: ${VERSION}"
+          VERSION=$(jq -r '.version' packages/browser/package.json)
+          echo "@adobe/alloy version after versioning: ${VERSION}"
 
       - name: Update lockfile
         run: pnpm install --no-frozen-lockfile --ignore-scripts
@@ -249,12 +249,12 @@ jobs:
           fi
           git push --follow-tags
 
-      - name: Create GitHub Release (notes from CHANGELOG.md)
+      - name: Create GitHub Release (notes from @adobe/alloy CHANGELOG)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # @type {string} semver — e.g. "2.31.2-beta.0"
-          VERSION=$(jq -r '.version' package.json)
+          VERSION=$(jq -r '.version' packages/browser/package.json)
           # @type {string} git tag / release name — e.g. "@adobe/alloy@2.31.2-beta.0"
           TAG="@adobe/alloy@${VERSION}"
 
@@ -268,8 +268,10 @@ jobs:
             exit 0
           fi
 
-          if [ ! -f CHANGELOG.md ]; then
-            echo "::error::CHANGELOG.md not found; cannot create GitHub release notes."
+          # @type {string} path to @adobe/alloy CHANGELOG
+          CHANGELOG="packages/browser/CHANGELOG.md"
+          if [ ! -f "${CHANGELOG}" ]; then
+            echo "::error::${CHANGELOG} not found; cannot create GitHub release notes."
             exit 1
           fi
 
@@ -279,10 +281,10 @@ jobs:
             $0 == "## " ver { in_section=1; next }
             in_section && /^## / { exit }
             in_section { print }
-          ' CHANGELOG.md > "${NOTES_FILE}"
+          ' "${CHANGELOG}" > "${NOTES_FILE}"
 
           if [ ! -s "${NOTES_FILE}" ]; then
-            echo "::error::Could not extract notes for version ${VERSION} from CHANGELOG.md"
+            echo "::error::Could not extract notes for version ${VERSION} from ${CHANGELOG}"
             exit 1
           fi
 
