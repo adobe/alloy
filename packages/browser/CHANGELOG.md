@@ -1,5 +1,11 @@
 # @adobe/alloy
 
+## 2.31.2-beta.1
+
+### Patch Changes
+
+- 9db9ef5: Added support for `voiceEnabled` option on the `sendConversationEvent` command so the SDK routes requests to the voice subpath on a per-call basis. Included unit test coverage for option validation and voice subpath routing behavior.
+
 ## 2.31.2-beta.0
 
 ### Patch Changes
