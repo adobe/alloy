@@ -1,5 +1,6 @@
 ---
 "@adobe/alloy-core": patch
+"@adobe/alloy": major
 ---
 
-Create `npm` package
+Create `@adobe/alloy-core` npm package
