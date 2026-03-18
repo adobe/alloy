@@ -3,7 +3,7 @@
   "tag": "beta",
   "initialVersions": {
     "@adobe/alloy": "2.31.1",
-    "@adobe/alloy-core": "2.29.0",
+    "@adobe/alloy-core": "1.1.0",
     "@adobe/alloy-sandbox-browser": "0.1.0",
     "adobe-alloy-monorepo": "0.0.1"
   },
