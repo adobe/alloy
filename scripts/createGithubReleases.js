@@ -25,6 +25,7 @@ governing permissions and limitations under the License.
  *
  * Usage:
  *   node scripts/createGithubReleases.js changeset-status.json
+ *   node scripts/createGithubReleases.js changeset-status.json --dry-run
  *
  * Requires:
  *   - GH_TOKEN env var (for `gh release create`)
@@ -86,9 +87,11 @@ export const extractChangelogEntry = (content, version) => {
  * Create GitHub releases for each released public package.
  * @param {CreateGithubReleasesDeps} deps
  * @param {{ releases?: Array<{ name: string, newVersion: string }> }} statusJson
+ * @param {{ dryRun?: boolean }} [options]
  * @returns {{ created: number, skipped: number }}
  */
-export const createGithubReleases = (deps, statusJson) => {
+export const createGithubReleases = (deps, statusJson, options = {}) => {
+  const { dryRun = false } = options;
   const {
     getPublicPackages,
     gitTagExists,
@@ -147,6 +150,13 @@ export const createGithubReleases = (deps, statusJson) => {
     }
 
     const isPrerelease = newVersion.includes("-");
+
+    if (dryRun) {
+      log(
+        `[dry-run] Would create GitHub release: ${tag} (prerelease: ${isPrerelease})`,
+      );
+      continue;
+    }
 
     log(`Creating GitHub release: ${tag} (prerelease: ${isPrerelease})`);
     ghReleaseCreate(tag, notes, isPrerelease);
@@ -224,7 +234,10 @@ export const ghReleaseCreate = (tag, notes, isPrerelease) => {
 };
 
 const main = () => {
-  const statusPath = process.argv[2] || "changeset-status.json";
+  const args = process.argv.slice(2);
+  const dryRun = args.includes("--dry-run");
+  const statusPath =
+    args.find((arg) => !arg.startsWith("--")) || "changeset-status.json";
 
   if (!fs.existsSync(statusPath)) {
     console.log(`${statusPath} not found; nothing to release.`);
@@ -244,6 +257,7 @@ const main = () => {
       warn: console.warn,
     },
     statusJson,
+    { dryRun },
   );
 };
 

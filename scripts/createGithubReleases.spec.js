@@ -186,6 +186,35 @@ describe("createGithubReleases", () => {
     );
   });
 
+  it("does not call ghReleaseCreate in dry-run mode", () => {
+    const deps = makeDeps();
+    const result = createGithubReleases(
+      deps,
+      {
+        releases: [{ name: "@adobe/alloy", newVersion: "2.22.0" }],
+      },
+      { dryRun: true },
+    );
+
+    expect(result).toEqual({ created: 0, skipped: 0 });
+    expect(deps.ghReleaseCreate).not.toHaveBeenCalled();
+  });
+
+  it("still reports what would be created in dry-run mode", () => {
+    const deps = makeDeps();
+    createGithubReleases(
+      deps,
+      {
+        releases: [{ name: "@adobe/alloy", newVersion: "2.22.0" }],
+      },
+      { dryRun: true },
+    );
+
+    expect(deps.log).toHaveBeenCalledWith(
+      expect.stringContaining("@adobe/alloy@2.22.0"),
+    );
+  });
+
   it("handles multiple packages with mixed outcomes", () => {
     const deps = makeDeps({
       gitTagExists: (tag) => tag.startsWith("@adobe/alloy@"),
