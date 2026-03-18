@@ -129,7 +129,7 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm --filter @adobe/alloy exec playwright install chromium
 
-      - name: Version @adobe/alloy & generate CHANGELOG
+      - name: Version packages & generate CHANGELOGs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -141,15 +141,16 @@ jobs:
             echo "Release summary: none"
           fi
           pnpm changeset version
-          # @type {string} semver — e.g. "2.31.2-beta.0"
-          VERSION=$(jq -r '.version' packages/browser/package.json)
-          echo "@adobe/alloy version after versioning: ${VERSION}"
+          echo "Package versions after versioning:"
+          for pkg in packages/*/package.json; do
+            jq -r '"- \(.name)@\(.version)"' "$pkg"
+          done
 
       - name: Update lockfile
         run: pnpm install --no-frozen-lockfile --ignore-scripts
 
-      - name: Build @adobe/alloy (browser)
-        run: pnpm --filter @adobe/alloy run build
+      - name: Build packages
+        run: pnpm -r --if-present run build
 
       - name: Commit version changes & CHANGELOG.md files
         run: |
@@ -160,18 +161,19 @@ jobs:
             git commit -m "chore: publish [skip ci]"
           fi
 
-      - name: "Publish @adobe/alloy prerelease (beta)"
+      - name: "Publish packages prerelease (beta)"
         if: needs.analyze.outputs.is_prerelease == 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
         run: |
-          # @type {string} semver — e.g. "2.31.2-beta.0"
-          VERSION=$(jq -r '.version' packages/browser/package.json)
-          echo "Publishing @adobe/alloy prerelease (pre mode). Version: ${VERSION}"
+          echo "Publishing prerelease (pre mode):"
+          for pkg in packages/*/package.json; do
+            jq -r '"- \(.name)@\(.version)"' "$pkg"
+          done
           pnpm changeset publish
 
-      - name: "Tag @adobe/alloy prerelease (npm dist-tag: next)"
+      - name: "Tag prereleases (npm dist-tag: next)"
         if: needs.analyze.outputs.is_prerelease == 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
@@ -202,7 +204,7 @@ jobs:
             exit 0
           fi
 
-          echo "Applying npm dist-tag next to @adobe/alloy prerelease:"
+          echo "Applying npm dist-tag next to prereleases:"
           echo "${TAG_ENTRIES}" | sed 's/^/- /'
           while IFS= read -r pkg; do
             if [ -n "${pkg}" ]; then
@@ -210,20 +212,21 @@ jobs:
             fi
           done <<< "${TAG_ENTRIES}"
 
-      - name: "Publish @adobe/alloy (stable -> npm tag: latest)"
+      - name: "Publish packages (stable -> npm tag: latest)"
         if: needs.analyze.outputs.is_prerelease != 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
         run: |
-          # @type {string} semver — e.g. "2.31.2"
-          VERSION=$(jq -r '.version' packages/browser/package.json)
-          echo "Publishing @adobe/alloy stable (npm tag: latest). Version: ${VERSION}"
+          echo "Publishing stable (npm tag: latest):"
+          for pkg in packages/*/package.json; do
+            jq -r '"- \(.name)@\(.version)"' "$pkg"
+          done
           pnpm changeset publish
 
       # rebuilding because `changeset publish` wipes out build artifacts
-      - name: Rebuild @adobe/alloy browser artifacts for CDN upload
-        run: pnpm --filter @adobe/alloy run build
+      - name: Rebuild browser artifacts for CDN upload
+        run: pnpm -r --if-present run build
 
       - name: Start ssh-agent for CDN
         uses: webfactory/ssh-agent@v0.9.1
