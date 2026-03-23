@@ -1,5 +1,25 @@
 # @adobe/alloy
 
+## 2.32.0
+
+### Minor Changes
+
+- f225f28: Create `@adobe/alloy-core` npm package
+
+### Patch Changes
+
+- 3e22bcc: Added a fix so that we keep the sessionId in memory when session sticky is false.
+
+  This will allow users to run different sessions in different tabs.
+
+- 9db9ef5: Added support for `voiceEnabled` option on the `sendConversationEvent` command so the SDK routes requests to the voice subpath on a per-call basis. Included unit test coverage for option validation and voice subpath routing behavior.
+- 633f566: Include IANA timezone on the place context
+- 00d1187: Add configuration to Brand Concierge, to enable or disable sources data collection.
+- 292bb30: Force a patch version
+- 366cc96: fixed a packaging issue where certain consumers of the NPM package were unable to use packaged utility functions.
+- Updated dependencies [f225f28]
+  - @adobe/alloy-core@1.1.1
+
 ## 2.32.0-beta.3
 
 ### Minor Changes
