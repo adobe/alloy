@@ -1,0 +1,11 @@
+{
+  "mode": "pre",
+  "tag": "beta",
+  "initialVersions": {
+    "adobe-alloy-monorepo": "0.0.1",
+    "@adobe/alloy": "2.32.0",
+    "@adobe/alloy-core": "1.1.1",
+    "@adobe/alloy-sandbox-browser": "0.1.1"
+  },
+  "changesets": []
+}
