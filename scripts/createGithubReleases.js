@@ -40,7 +40,7 @@ governing permissions and limitations under the License.
 
 // @ts-check
 
-import { execSync } from "child_process";
+import { execFileSync, execSync } from "child_process";
 import fs from "fs";
 import path from "path";
 
@@ -217,20 +217,11 @@ export const readFile = (filePath) => {
  * @param {boolean} isPrerelease
  */
 export const ghReleaseCreate = (tag, notes, isPrerelease) => {
-  const args = [
-    "gh",
-    "release",
-    "create",
-    `"${tag}"`,
-    "--title",
-    `"${tag}"`,
-    "--notes",
-    JSON.stringify(notes),
-  ];
+  const args = ["release", "create", tag, "--title", tag, "--notes", notes];
   if (isPrerelease) {
     args.push("--prerelease");
   }
-  execSync(args.join(" "), { stdio: "inherit" });
+  execFileSync("gh", args, { stdio: "inherit" });
 };
 
 const main = () => {
