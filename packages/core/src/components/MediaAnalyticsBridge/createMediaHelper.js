@@ -55,8 +55,8 @@ export default ({ logger }) => {
   const createAdBreakObject = (name, position, startTime) => {
     const adBreakObject = {
       friendlyName: name,
-      offset: position,
-      index: startTime,
+      offset: startTime,
+      index: position,
     };
     const validator = objectOf({
       friendlyName: string().nonEmpty(),
