@@ -74,8 +74,8 @@ describe("createMediaHelper", () => {
       const expectedResult = {
         advertisingPodDetails: {
           friendlyName: name,
-          offset: position,
-          index: startTime,
+          offset: startTime,
+          index: position,
         },
       };
       const result = mediaHelper.createAdBreakObject(name, position, startTime);
