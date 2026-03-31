@@ -10,6 +10,7 @@ logs
 distTest
 libEs5
 libEs6
+packages/browser/src/input.js
 artifacts
 __screenshots__/
 adobe-alloy-*.tgz

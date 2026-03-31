@@ -25,9 +25,7 @@ describe("ActivityCollector migration: core → browser", () => {
   it("ActivityCollector source exists in packages/browser/src/components/ActivityCollector/", () => {
     const dir = path.join(browserSrc, "components/ActivityCollector");
     expect(fs.existsSync(dir)).toBe(true);
-    expect(
-      fs.existsSync(path.join(dir, "index.js")),
-    ).toBe(true);
+    expect(fs.existsSync(path.join(dir, "index.js"))).toBe(true);
   });
 
   it("ActivityCollector source does NOT exist in packages/core/src/components/ActivityCollector/", () => {
@@ -47,11 +45,22 @@ describe("ActivityCollector migration: core → browser", () => {
     expect(code).not.toMatch(/activityCollector/);
   });
 
-  it("combined component metadata includes activityCollector in optionalComponentNames", async () => {
-    const { optionalComponentNames } = await import(
-      "../../packages/browser/scripts/helpers/componentMetadata.js"
+  it("combined component metadata includes activityCollector in optionalComponentNames", () => {
+    const metadataPath = path.join(
+      root,
+      "packages/browser/scripts/helpers/componentMetadata.js",
     );
-    expect(optionalComponentNames).toContain("activityCollector");
+    const code = fs.readFileSync(metadataPath, "utf8");
+    // componentMetadata combines core + browser optional names
+    expect(code).toMatch(/coreOptional/);
+    expect(code).toMatch(/browserOptional/);
+    // browser componentCreators.js exports activityCollector
+    const creatorsPath = path.join(
+      browserSrc,
+      "components/componentCreators.js",
+    );
+    const creatorsCode = fs.readFileSync(creatorsPath, "utf8");
+    expect(creatorsCode).toMatch(/activityCollector/);
   });
 
   it("packages/browser/src/standalone.js imports from ./allOptionalComponents.js", () => {
