@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import createClickActivityStorage from "../../../../../src/components/ActivityCollector/createClickActivityStorage.js";
-import { CLICK_ACTIVITY_DATA } from "../../../../../src/constants/sessionDataKeys.js";
+const CLICK_ACTIVITY_DATA = "clickData";
 
 describe("ActivityCollector::createClickActivityStorage", () => {
   let storage;
