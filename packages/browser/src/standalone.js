@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 /** @import { WindowWithAlloy, AlloyQueueItem } from './types.js' */
 
 import { createCustomInstance } from "./index.js";
-import * as optionalComponents from "@adobe/alloy-core/core/componentCreators.js";
+import * as optionalComponents from "./allOptionalComponents.js";
 
 // This file is used by rollup to create the browser version that is uploaded to cdn
 

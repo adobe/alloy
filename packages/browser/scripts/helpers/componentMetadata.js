@@ -34,7 +34,6 @@ const browserOptional = readComponentNames(
   path.resolve(browserSrcDir, "components/componentCreators.js"),
 );
 export const optionalComponentNames = Object.freeze([
-  ...coreOptional,
-  ...browserOptional,
+  ...new Set([...coreOptional, ...browserOptional]),
 ]);
 export { requiredComponentNames };

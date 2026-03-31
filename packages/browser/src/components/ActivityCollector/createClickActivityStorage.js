@@ -9,4 +9,25 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-export const CLICK_ACTIVITY_DATA = "clickData";
+
+const CLICK_ACTIVITY_DATA = "clickData";
+
+export default ({ storage }) => {
+  return {
+    save: (data) => {
+      const jsonData = JSON.stringify(data);
+      storage.setItem(CLICK_ACTIVITY_DATA, jsonData);
+    },
+    load: () => {
+      let jsonData = null;
+      const data = storage.getItem(CLICK_ACTIVITY_DATA);
+      if (data) {
+        jsonData = JSON.parse(data);
+      }
+      return jsonData;
+    },
+    remove: () => {
+      storage.removeItem(CLICK_ACTIVITY_DATA);
+    },
+  };
+};

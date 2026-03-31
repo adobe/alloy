@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import isDownloadLink from "./dom/isDownloadLink.js";
 import isExitLink from "./dom/isExitLink.js";
-import isNonEmptyString from "../../../utils/isNonEmptyString.js";
+import { isNonEmptyString } from "@adobe/alloy-core/utils";
 
 export default (window, config, linkUrl, clickedObj) => {
   let linkType = "other";

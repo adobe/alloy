@@ -9,7 +9,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const COMPONENT_SOURCE = "@adobe/alloy-core/core/componentCreators.js";
+const COMPONENT_SOURCE = "./allOptionalComponents.js";
 
 const createComponentArrayExpression = (t, includedModules) => {
   return t.ArrayExpression(
