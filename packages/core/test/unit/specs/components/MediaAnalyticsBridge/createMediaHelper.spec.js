@@ -28,23 +28,23 @@ describe("createMediaHelper", () => {
       const friendlyName = "testFriendlyName";
       const name = "testName";
       const length = 120;
-      const contentType = "video/mp4";
-      const streamType = "VOD";
+      const mediaStreamType = "vod";
+      const mediaType = "video";
       const expectedResult = {
         sessionDetails: {
           friendlyName,
           name,
           length,
-          contentType,
-          streamType,
+          streamType: mediaType,
+          contentType: mediaStreamType,
         },
       };
       const result = mediaHelper.createMediaObject(
         friendlyName,
         name,
         length,
-        contentType,
-        streamType,
+        mediaStreamType,
+        mediaType,
       );
       expect(result).toEqual(expectedResult);
     });
@@ -52,15 +52,15 @@ describe("createMediaHelper", () => {
       const friendlyName = "";
       const name = "";
       const length = "invalid";
-      const contentType = "";
-      const streamType = "";
+      const mediaStreamType = "";
+      const mediaType = "";
       const expectedResult = {};
       const result = mediaHelper.createMediaObject(
         friendlyName,
         name,
         length,
-        contentType,
-        streamType,
+        mediaStreamType,
+        mediaType,
       );
       expect(result).toEqual(expectedResult);
       expect(logger.warn).toHaveBeenCalled();
@@ -74,8 +74,8 @@ describe("createMediaHelper", () => {
       const expectedResult = {
         advertisingPodDetails: {
           friendlyName: name,
-          offset: position,
-          index: startTime,
+          offset: startTime,
+          index: position,
         },
       };
       const result = mediaHelper.createAdBreakObject(name, position, startTime);
@@ -128,9 +128,9 @@ describe("createMediaHelper", () => {
       const expectedResult = {
         chapterDetails: {
           friendlyName: name,
-          offset: position,
+          offset: startTime,
           length,
-          index: startTime,
+          index: position,
         },
       };
       const result = mediaHelper.createChapterObject(
@@ -188,26 +188,33 @@ describe("createMediaHelper", () => {
       };
       const result = mediaHelper.createQoEObject(
         bitrate,
-        droppedFrames,
-        framesPerSecond,
         timeToStart,
+        framesPerSecond,
+        droppedFrames,
       );
       expect(result).toEqual(expectedResult);
     });
     it("should log a warning and return an empty object when validation fails", () => {
       const bitrate = "invalid";
-      const droppedFrames = "invalid";
-      const fps = "invalid";
       const startupTime = "invalid";
+      const fps = "invalid";
+      const droppedFrames = "invalid";
       const expectedResult = {};
       const result = mediaHelper.createQoEObject(
         bitrate,
-        droppedFrames,
-        fps,
         startupTime,
+        fps,
+        droppedFrames,
       );
       expect(result).toEqual(expectedResult);
       expect(logger.warn).toHaveBeenCalled();
+    });
+  });
+  describe("version", () => {
+    it("should return the version", () => {
+      const expectedResult = `WEBSDK __VERSION__`;
+      const result = mediaHelper.version;
+      expect(result).toEqual(expectedResult);
     });
   });
 });

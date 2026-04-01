@@ -190,7 +190,7 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
       });
       return trackMediaEvent({ playerId: trackerState.playerId, xdm });
     },
-    trackEvent: (eventType, info, context) => {
+    trackEvent: (eventType, info, contextData) => {
       if (isEmptyObject(info)) {
         logger.warn("Invalid media object.");
         return {};
@@ -206,7 +206,7 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
       const xdm = createXdmObject({
         eventType,
         mediaDetails: info,
-        contextData: context,
+        contextData,
       });
 
       return trackMediaEvent({ playerId: trackerState.playerId, xdm });
