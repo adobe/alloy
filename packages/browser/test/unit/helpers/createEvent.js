@@ -10,7 +10,5 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// Re-export from core — used by ActivityCollector tests that depend on
-// core internals not exposed through package exports.
 // eslint-disable-next-line import/no-relative-packages
 export { default } from "../../../../core/src/core/createEvent.js";

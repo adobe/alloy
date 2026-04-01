@@ -51,10 +51,8 @@ describe("ActivityCollector migration: core → browser", () => {
       "packages/browser/scripts/helpers/componentMetadata.js",
     );
     const code = fs.readFileSync(metadataPath, "utf8");
-    // componentMetadata combines core + browser optional names
     expect(code).toMatch(/coreOptional/);
     expect(code).toMatch(/browserOptional/);
-    // browser componentCreators.js exports activityCollector
     const creatorsPath = path.join(
       browserSrc,
       "components/componentCreators.js",
