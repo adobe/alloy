@@ -14,14 +14,9 @@ import { vi, describe, it, expect } from "vitest";
 import injectHandleResponseForIdSyncs from "../../../../../src/components/Identity/injectHandleResponseForIdSyncs.js";
 
 describe("Identity::injectHandleResponseForIdSyncs", () => {
-  it("processes ID syncs", () => {
-    const processIdSyncsPromise = Promise.resolve();
-    const processIdSyncs = vi.fn().mockReturnValue(processIdSyncsPromise);
-    const idSyncPayloads = [
-      {
-        type: "idSync",
-      },
-    ];
+  it("kicks off ID syncs but does not return a promise", () => {
+    const processIdSyncs = vi.fn().mockReturnValue(Promise.resolve());
+    const idSyncPayloads = [{ type: "idSync" }];
     const response = {
       getPayloadsByType: vi.fn().mockReturnValue(idSyncPayloads),
     };
@@ -30,6 +25,6 @@ describe("Identity::injectHandleResponseForIdSyncs", () => {
     });
     const result = handleResponseForIdSyncs(response);
     expect(processIdSyncs).toHaveBeenCalledWith(idSyncPayloads);
-    expect(result).toBe(processIdSyncsPromise);
+    expect(result).toBeUndefined();
   });
 });
