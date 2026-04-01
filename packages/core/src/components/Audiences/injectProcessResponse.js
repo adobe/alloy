@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 export default ({ processDestinations }) => {
   return ({ response }) => {
-    // fire and forget: kick off syncs without blocking sendEvent
     const destinations = response.getPayloadsByType("activation:push");
     processDestinations(destinations);
   };

@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 export default ({ processIdSyncs }) => {
   return (response) => {
-    // fire and forget: kick off syncs without blocking sendEvent
     processIdSyncs(response.getPayloadsByType("identity:exchange"));
   };
 };
