@@ -10,8 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { noop } from "../../utils/index.js";
-
 const createResultLogMessage = (urlDestination, success) => {
   return `URL destination ${success ? "succeeded" : "failed"}: ${
     urlDestination.spec.url
@@ -45,19 +43,19 @@ export default ({
   const processUrls = (destinations) => {
     const urlDestinations = destinations.filter((dest) => dest.type === "url");
 
-    return Promise.all(
-      urlDestinations.map((urlDestination) => {
-        return fireReferrerHideableImage(urlDestination.spec)
-          .then(() => {
-            logger.info(createResultLogMessage(urlDestination, true));
-          })
-          .catch(() => {
-            // We intentionally do not throw an error if destinations fail. We
-            // consider it a non-critical failure and therefore do not want it to
-            // reject the promise handed back to the customer.
-          });
-      }),
-    ).then(noop);
+    return Promise.allSettled(
+      urlDestinations.map((urlDestination) =>
+        fireReferrerHideableImage(urlDestination.spec),
+      ),
+    ).then((results) => {
+      results.forEach((result, i) => {
+        if (result.status === "fulfilled") {
+          logger.info(createResultLogMessage(urlDestinations[i], true));
+        } else {
+          logger.warn(createResultLogMessage(urlDestinations[i], false));
+        }
+      });
+    });
   };
 
   return (destinations) => {
