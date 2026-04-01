@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
+import { noop } from "../../utils/index.js";
 const createResultLogMessage = (urlDestination, success) => {
   return `URL destination ${success ? "succeeded" : "failed"}: ${
     urlDestination.spec.url
@@ -45,17 +45,15 @@ export default ({
 
     return Promise.allSettled(
       urlDestinations.map((urlDestination) =>
-        fireReferrerHideableImage(urlDestination.spec),
+        fireReferrerHideableImage(urlDestination.spec)
+          .then(() => {
+            logger.info(createResultLogMessage(urlDestination, true));
+          })
+          .catch(() => {
+            logger.warn(createResultLogMessage(urlDestination, false));
+          }),
       ),
-    ).then((results) => {
-      results.forEach((result, i) => {
-        if (result.status === "fulfilled") {
-          logger.info(createResultLogMessage(urlDestinations[i], true));
-        } else {
-          logger.warn(createResultLogMessage(urlDestinations[i], false));
-        }
-      });
-    });
+    ).then(noop);
   };
 
   return (destinations) => {

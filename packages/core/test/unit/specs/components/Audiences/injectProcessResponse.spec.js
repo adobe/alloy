@@ -25,23 +25,26 @@ describe("injectProcessResponse", () => {
       getPayloadsByType: vi.fn().mockReturnValue(["An Edge Destination"]),
     };
   });
-  it("kicks off push destinations but does not return a promise", () => {
-    const result = processResponse({ response });
-    expect(processDestinations).toHaveBeenCalled();
-    expect(result).toBeUndefined();
+  it("fetches destinations from the response", () => {
+    return processResponse({
+      response,
+    }).then((result) => {
+      expect(processDestinations).toHaveBeenCalled();
+      expect(result).toEqual({
+        destinations: ["An Edge Destination"],
+      });
+    });
   });
-  it("does not wait for processDestinations to resolve", () => {
-    let resolved = false;
-    processDestinations.mockReturnValue(
-      new Promise((resolve) => {
-        setTimeout(() => {
-          resolved = true;
-          resolve();
-        }, 100);
-      }),
-    );
-    const result = processResponse({ response });
-    expect(result).toBeUndefined();
-    expect(resolved).toBe(false);
+  it("returns [] if no destinations were found", () => {
+    const responseWithNoDestinations = {
+      getPayloadsByType: vi.fn().mockReturnValue([]),
+    };
+    return processResponse({
+      response: responseWithNoDestinations,
+    }).then((result) => {
+      expect(result).toEqual({
+        destinations: [],
+      });
+    });
   });
 });
