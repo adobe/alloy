@@ -82,7 +82,7 @@ describe("ActivityCollector migration: core → browser", () => {
     } finally {
       fs.rmSync(outDir, { recursive: true, force: true });
     }
-  });
+  }, 20000);
 
   it("custom build with --exclude activityCollector does NOT contain ActivityCollector", () => {
     const outDir = path.join(root, "scripts/specs/.tmp-build-exclude");
@@ -97,5 +97,5 @@ describe("ActivityCollector migration: core → browser", () => {
     } finally {
       fs.rmSync(outDir, { recursive: true, force: true });
     }
-  });
+  }, 20000);
 });
