@@ -19,11 +19,9 @@
     "components.json",
     "scripts/alloyBuilder.js",
     "scripts/helpers/componentMetadata.js",
-    "scripts/helpers/entryPointGeneratorBabelPlugin.js",
+    "scripts/helpers/generateEntryPoint.js",
     "scripts/helpers/path.js",
     "rollup.config.js",
-    "babel.config.js",
-    ".browserslistrc",
     "LICENSE_BANNER"
   ],
   "scripts": {
@@ -75,12 +73,7 @@
   },
   "dependencies": {
     "@adobe/alloy-core": "workspace:^",
-    "@babel/core": "^7.28.5",
-    "@babel/plugin-transform-modules-commonjs": "^7.27.1",
-    "@babel/plugin-transform-template-literals": "^7.27.1",
-    "@babel/preset-env": "^7.28.5",
     "@inquirer/prompts": "^7.9.0",
-    "@rollup/plugin-babel": "^6.1.0",
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-replace": "^6.0.0",
@@ -90,7 +83,6 @@
     "rollup-plugin-license": "^3.6.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.28.3",
     "glob": "^11.0.3",
     "msw": "^2.11.6",
     "read-cache": "^1.0.0",
