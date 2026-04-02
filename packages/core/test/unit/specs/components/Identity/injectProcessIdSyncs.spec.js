@@ -20,6 +20,7 @@ describe("Identity::injectProcessIdSyncs", () => {
     fireReferrerHideableImage = vi.fn().mockReturnValue(Promise.resolve());
     logger = {
       info: vi.fn(),
+      warn: vi.fn(),
       error: vi.fn(),
     };
     processIdSyncs = injectProcessIdSyncs({
@@ -75,7 +76,7 @@ describe("Identity::injectProcessIdSyncs", () => {
       expect(logger.info).toHaveBeenCalledWith(
         "ID sync succeeded: http://test.zyx",
       );
-      expect(logger.error).toHaveBeenCalledWith(
+      expect(logger.warn).toHaveBeenCalledWith(
         "ID sync failed: http://test.abc",
       );
     });

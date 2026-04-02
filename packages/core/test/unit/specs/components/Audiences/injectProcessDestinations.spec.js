@@ -22,6 +22,7 @@ describe("Audiences::injectProcessDestinations", () => {
     fireReferrerHideableImage = vi.fn().mockReturnValue(Promise.resolve());
     logger = {
       info: vi.fn(),
+      warn: vi.fn(),
       error: vi.fn(),
     };
     cookieJar = {
@@ -152,6 +153,9 @@ describe("Audiences::injectProcessDestinations", () => {
       });
       expect(logger.info).toHaveBeenCalledWith(
         "URL destination succeeded: http://test.zyx",
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        "URL destination failed: http://test.abc",
       );
     });
   });
