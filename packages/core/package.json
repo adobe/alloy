@@ -30,6 +30,12 @@
       "types": "./src/core/componentCreators.js",
       "default": "./src/core/componentCreators.js"
     },
+    "./utils": {
+      "default": "./src/utils/index.js"
+    },
+    "./utils/validation": {
+      "default": "./src/utils/validation/index.js"
+    },
     "./utils/deepAssign.js": {
       "types": "./src/utils/deepAssign.js",
       "default": "./src/utils/deepAssign.js"

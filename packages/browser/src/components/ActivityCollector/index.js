@@ -25,7 +25,7 @@ import findClickableElement from "./utils/dom/findClickableElement.js";
 import determineLinkType from "./utils/determineLinkType.js";
 import hasPageName from "./utils/hasPageName.js";
 import createTransientStorage from "./utils/createTransientStorage.js";
-import { injectStorage } from "../../utils/index.js";
+import { injectStorage } from "@adobe/alloy-core/utils";
 
 const getClickedElementProperties = createGetClickedElementProperties({
   window,

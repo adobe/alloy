@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import truncateWhiteSpace from "./utils/truncateWhiteSpace.js";
-import { isNonEmptyString } from "../../utils/index.js";
+import { isNonEmptyString } from "@adobe/alloy-core/utils";
 
 const semanticElements = /^(HEADER|MAIN|FOOTER|NAV)$/i;
 

@@ -48,8 +48,8 @@
     "@eslint/js": "^9.39.2",
     "@octokit/rest": "^22.0.1",
     "@types/node": "^24.10.4",
-    "@vitest/browser-playwright": "^4.0.16",
-    "@vitest/coverage-v8": "^4.0.16",
+    "@vitest/browser-playwright": "^4.1.2",
+    "@vitest/coverage-v8": "^4.1.2",
     "@vitest/eslint-plugin": "^1.6.5",
     "baseline-browser-mapping": "^2.9.11",
     "chalk": "^5.6.2",
@@ -73,6 +73,6 @@
     "semver": "^7.7.3",
     "typescript": "^5.9.3",
     "url-exists-nodejs": "^0.2.4",
-    "vitest": "^4.0.16"
+    "vitest": "^4.1.2"
   }
 }

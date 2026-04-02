@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import attachClickActivityCollector from "../../../../../src/components/ActivityCollector/attachClickActivityCollector.js";
-import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 describe("ActivityCollector::attachClickActivityCollector", () => {
   const config = {};
@@ -70,52 +69,32 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
     clickHandler(clickEvent);
     expect(lifecycle.onClick).not.toHaveBeenCalled();
   });
-  it("Handles errors inside onClick lifecycle", () => {
+  it("Handles errors inside onClick lifecycle", async () => {
     const error = new Error("Bad thing happened.");
     lifecycle.onClick.mockReturnValue(Promise.reject(error));
     build();
-    return clickHandler({})
-      .then(() => {
-        return flushPromiseChains();
-      })
-      .then(() => {
-        expect(handleError).toHaveBeenCalledWith(error, "click collection");
-      });
+    await clickHandler({});
+    expect(handleError).toHaveBeenCalledWith(error, "click collection");
   });
-  it("Sends populated events", () => {
+  it("Sends populated events", async () => {
     build();
-    return clickHandler({})
-      .then(() => {
-        return flushPromiseChains();
-      })
-      .then(() => {
-        expect(eventManager.sendEvent).toHaveBeenCalled();
-      });
+    await clickHandler({});
+    expect(eventManager.sendEvent).toHaveBeenCalled();
   });
-  it("Does not send empty events", () => {
+  it("Does not send empty events", async () => {
     eventManager.createEvent.mockReturnValue({
       isEmpty: () => true,
       documentMayUnload: () => false,
     });
     build();
-    return clickHandler({})
-      .then(() => {
-        return flushPromiseChains();
-      })
-      .then(() => {
-        expect(eventManager.sendEvent).not.toHaveBeenCalled();
-      });
+    await clickHandler({});
+    expect(eventManager.sendEvent).not.toHaveBeenCalled();
   });
-  it("handles errors thrown in sendEvent", () => {
+  it("handles errors thrown in sendEvent", async () => {
     const error = new Error("Network Error");
     eventManager.sendEvent.mockReturnValue(Promise.reject(error));
     build();
-    return clickHandler({})
-      .then(() => {
-        return flushPromiseChains();
-      })
-      .then(() => {
-        expect(handleError).toHaveBeenCalledWith(error, "click collection");
-      });
+    await clickHandler({});
+    expect(handleError).toHaveBeenCalledWith(error, "click collection");
   });
 });
