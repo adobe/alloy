@@ -17,10 +17,11 @@ import replace from "@rollup/plugin-replace";
 import terser from "@rollup/plugin-terser";
 import license from "rollup-plugin-license";
 import { fileURLToPath } from "url";
-import { createRequire } from "module";
 import { gzip, brotliCompress as br, constants as zlibConstants } from "zlib";
 import { promisify } from "util";
 import { readFile, writeFile } from "fs/promises";
+import packageJson from "./package.json" with { type: "json" };
+const { version } = packageJson;
 
 const INCLUDE_BUNDLESIZE = process.env.BUNDLESIZE === "true";
 /**
@@ -137,8 +138,6 @@ export const UTILITY_EXPORTS = "UTILITY_EXPORTS";
 // Add "_MIN" to the end of the option name to build the minified version
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
-const require = createRequire(import.meta.url);
-const { version } = require("./package.json");
 
 export const utilityExportBuilds = [
   {

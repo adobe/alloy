@@ -14,10 +14,7 @@ import {
   optionalComponentNames as coreOptional,
   requiredComponentNames,
 } from "@adobe/alloy-core/componentMetadata.js";
-import { createRequire } from "module";
-
-const require = createRequire(import.meta.url);
-const browserManifest = require("../../components.json");
+import browserManifest from "../../components.json" with { type: "json" };
 
 const browserOptional = browserManifest.optional.map((c) => c.name);
 

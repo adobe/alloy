@@ -16,17 +16,14 @@ governing permissions and limitations under the License.
  * barrel file without updating the manifest.
  */
 
-import { createRequire } from "module";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { describe, expect, test } from "vitest";
+import coreManifest from "../packages/core/components.json" with { type: "json" };
+import browserManifest from "../packages/browser/components.json" with { type: "json" };
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
-const require = createRequire(import.meta.url);
-
-const coreManifest = require("../packages/core/components.json");
-const browserManifest = require("../packages/browser/components.json");
 
 /**
  * Reads the named re-exports from an ESM barrel file of the form:

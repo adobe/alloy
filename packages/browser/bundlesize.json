@@ -1,22 +1,22 @@
 {
   "dist/alloy.js": {
-    "uncompressedSize": 732352,
-    "gzippedSize": 118210,
-    "brotiliSize": 90757
+    "uncompressedSize": 740982,
+    "gzippedSize": 120763,
+    "brotiliSize": 93289
   },
   "dist/alloy.min.js": {
-    "uncompressedSize": 152957,
-    "gzippedSize": 50575,
-    "brotiliSize": 43776
+    "uncompressedSize": 153101,
+    "gzippedSize": 50786,
+    "brotiliSize": 43904
   },
   "dist/alloyServiceWorker.js": {
     "uncompressedSize": 20134,
-    "gzippedSize": 4658,
+    "gzippedSize": 4646,
     "brotiliSize": 3958
   },
   "dist/alloyServiceWorker.min.js": {
     "uncompressedSize": 5886,
-    "gzippedSize": 2737,
+    "gzippedSize": 2729,
     "brotiliSize": 2307
   },
   "distTest/baseCode.min.js": {
@@ -25,13 +25,13 @@
     "brotiliSize": 133
   },
   "dist/utils/deepAssign.js": {
-    "uncompressedSize": 3814,
-    "gzippedSize": 1036,
-    "brotiliSize": 802
+    "uncompressedSize": 3829,
+    "gzippedSize": 1044,
+    "brotiliSize": 810
   },
   "dist/utils/createEventMergeId.js": {
-    "uncompressedSize": 3007,
-    "gzippedSize": 1072,
-    "brotiliSize": 835
+    "uncompressedSize": 3219,
+    "gzippedSize": 1094,
+    "brotiliSize": 850
   }
 }
