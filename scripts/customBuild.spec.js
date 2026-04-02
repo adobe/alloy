@@ -58,7 +58,7 @@ const test = baseTest
     return await buildAlloy();
   });
 
-describe("Custom build", () => {
+describe("Custom build", { timeout: 20_000 }, () => {
   test("produces a bundle", async ({ defaultBundle }) => {
     expect(defaultBundle).toBeTruthy();
   });
@@ -76,6 +76,6 @@ describe("Custom build", () => {
       expect(bundle).toBeTruthy();
       expect(bundle).not.toContain("ActivityCollector");
       expect(bundle.length).toBeLessThan(defaultBundle.length);
-    }, 20000);
+    });
   });
 });
