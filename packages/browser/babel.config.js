@@ -23,10 +23,6 @@ governing permissions and limitations under the License.
  * "npmEs5" - Used for building libEs5 files when publishing to NPM
  * "npmEs6" - Used for building libEs6 files when publishing to NPM
  */
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-
-const cwd = dirname(fileURLToPath(import.meta.url));
 
 const transformTemplateLiteralsPlugin = [
   "@babel/plugin-transform-template-literals",
@@ -34,7 +30,6 @@ const transformTemplateLiteralsPlugin = [
     loose: true,
   },
 ];
-const versionPlugin = ["./scripts/helpers/versionBabelPlugin", { cwd }];
 
 const transformModulesCommonjsPlugin = [
   "@babel/plugin-transform-modules-commonjs",
@@ -57,20 +52,15 @@ export default {
           },
         ],
       ],
-      plugins: [transformTemplateLiteralsPlugin, versionPlugin],
+      plugins: [transformTemplateLiteralsPlugin],
     },
     npmEs5: {
       presets: [["@babel/preset-env"]],
       ignore: npmIgnoreFiles,
-      plugins: [
-        transformTemplateLiteralsPlugin,
-        versionPlugin,
-        transformModulesCommonjsPlugin,
-      ],
+      plugins: [transformTemplateLiteralsPlugin, transformModulesCommonjsPlugin],
     },
     npmEs6: {
       ignore: npmIgnoreFiles,
-      plugins: [versionPlugin],
     },
   },
 };

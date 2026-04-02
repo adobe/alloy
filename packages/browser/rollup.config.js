@@ -14,9 +14,11 @@ import path from "path";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import babel from "@rollup/plugin-babel";
+import replace from "@rollup/plugin-replace";
 import terser from "@rollup/plugin-terser";
 import license from "rollup-plugin-license";
 import { fileURLToPath } from "url";
+import { createRequire } from "module";
 import { gzip, brotliCompress as br, constants as zlibConstants } from "zlib";
 import { promisify } from "util";
 import { readFile, writeFile } from "fs/promises";
@@ -136,6 +138,8 @@ export const UTILITY_EXPORTS = "UTILITY_EXPORTS";
 // Add "_MIN" to the end of the option name to build the minified version
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
+const require = createRequire(import.meta.url);
+const { version } = require("./package.json");
 
 export const utilityExportBuilds = [
   {
@@ -150,6 +154,10 @@ export const utilityExportBuilds = [
 
 const buildPlugins = ({ variant, minify, babelPlugins }) => {
   const plugins = [
+    replace({
+      __VERSION__: version,
+      preventAssignment: true,
+    }),
     resolve({
       preferBuiltins: false,
       // Support the browser field in dependencies' package.json.
