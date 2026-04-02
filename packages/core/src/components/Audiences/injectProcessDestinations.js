@@ -9,7 +9,6 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { noop } from "../../utils/index.js";
 const createResultLogMessage = (urlDestination, success) => {
   return `URL destination ${success ? "succeeded" : "failed"}: ${
     urlDestination.spec.url
@@ -40,20 +39,19 @@ export default ({
     });
   };
 
-  const processUrls = (destinations) => {
+  const processUrls = async (destinations) => {
     const urlDestinations = destinations.filter((dest) => dest.type === "url");
 
-    return Promise.allSettled(
-      urlDestinations.map((urlDestination) =>
-        fireReferrerHideableImage(urlDestination.spec)
-          .then(() => {
-            logger.info(createResultLogMessage(urlDestination, true));
-          })
-          .catch(() => {
-            logger.warn(createResultLogMessage(urlDestination, false));
-          }),
-      ),
-    ).then(noop);
+    await Promise.allSettled(
+      urlDestinations.map(async (urlDestination) => {
+        try {
+          await fireReferrerHideableImage(urlDestination.spec);
+          logger.info(createResultLogMessage(urlDestination, true));
+        } catch {
+          logger.warn(createResultLogMessage(urlDestination, false));
+        }
+      }),
+    );
   };
 
   return (destinations) => {
