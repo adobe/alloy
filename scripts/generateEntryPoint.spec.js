@@ -61,8 +61,12 @@ describe("generateEntryPointSource", () => {
       "activityCollector",
     ];
     const source = generateEntryPointSource(allComponents);
-    allComponents.forEach((name) => {
-      expect(source).toContain(name);
-    });
+    const joined = allComponents.join(", ");
+    expect(source).toContain(
+      `import { ${joined} } from "./allOptionalComponents.js"`,
+    );
+    expect(source).toContain(
+      `initializeStandalone({ components: [${joined}] })`,
+    );
   });
 });
