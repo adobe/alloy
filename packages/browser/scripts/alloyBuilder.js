@@ -11,7 +11,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import babel from "@babel/core";
 import terser from "@rollup/plugin-terser";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
@@ -23,7 +22,7 @@ import fs from "fs";
 import path from "path";
 import { rollup } from "rollup";
 import { buildConfig } from "../rollup.config.js";
-import entryPointGeneratorBabelPlugin from "./helpers/entryPointGeneratorBabelPlugin.js";
+import { generateEntryPointSource } from "./helpers/generateEntryPoint.js";
 import {
   optionalComponentNames,
   requiredComponentNames,
@@ -91,14 +90,12 @@ const generateInputEntryFile = ({
   outputFile = "input.js",
   includedModules,
 }) => {
-  const output = babel.transformFileSync(inputPath, {
-    plugins: [entryPointGeneratorBabelPlugin(babel.types, includedModules)],
-  }).code;
+  const source = generateEntryPointSource(includedModules);
 
   const destinationDirectory = path.dirname(inputPath);
   const outputPath = safePathJoin(destinationDirectory, outputFile);
 
-  fs.writeFileSync(outputPath, output);
+  fs.writeFileSync(outputPath, source);
 
   return outputPath;
 };

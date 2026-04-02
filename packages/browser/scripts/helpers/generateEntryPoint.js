@@ -1,0 +1,75 @@
+/*
+Copyright 2026 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+/**
+ * Generates the source of a custom build entry point that imports only the
+ * specified optional components and passes them to initializeStandalone.
+ *
+ * This replaces the Babel AST transform previously done by
+ * entryPointGeneratorBabelPlugin.js.
+ *
+ * @param {string[]} includedModules - camelCase component names to include
+ * @returns {string} JavaScript source code for the entry file
+ */
+export const generateEntryPointSource = (includedModules) => {
+  const hasComponents = includedModules.length > 0;
+  const componentList = includedModules.join(", ");
+
+  const importLine = hasComponents
+    ? `import { ${componentList} } from "./allOptionalComponents.js";`
+    : "";
+
+  const componentsArray = hasComponents ? `[${componentList}]` : "[]";
+
+  return `\
+/*
+Copyright 2025 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+/** @import { WindowWithAlloy, AlloyQueueItem } from './types.js' */
+
+import { createCustomInstance } from "./index.js";
+${importLine}
+
+const initializeStandalone = ({ components }) => {
+  // eslint-disable-next-line no-underscore-dangle
+  const instanceNames = /** @type {WindowWithAlloy} */ window.__alloyNS;
+  if (!instanceNames) {
+    return;
+  }
+  for (const name of instanceNames) {
+    const instance = createCustomInstance({
+      name,
+      components,
+    });
+    const execute = (/** @type {AlloyQueueItem} */ item) => {
+      const [resolve, reject, [commandName, options]] = item;
+      return instance(commandName, options).then(resolve, reject);
+    };
+    const queue = window[name].q;
+    queue.push = execute;
+    queue.forEach(execute);
+  }
+};
+
+// Custom builds use scripts/helpers/generateEntryPoint.js to generate a modified version of this file.
+initializeStandalone({ components: ${componentsArray} });
+`;
+};

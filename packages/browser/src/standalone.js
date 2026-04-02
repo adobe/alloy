@@ -35,6 +35,5 @@ const initializeStandalone = ({ components }) => {
   }
 };
 
-// If you change this line, check if the custom build script is still working.
-// You might need to change the babel plugin in scripts/helpers/entryPointGeneratorBabelPlugin.js.
+// Custom builds use scripts/helpers/generateEntryPoint.js to generate a modified version of this file.
 initializeStandalone({ components: Object.values(optionalComponents) });
