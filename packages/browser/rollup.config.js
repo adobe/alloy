@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 import path from "path";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
-import babel from "@rollup/plugin-babel";
 import replace from "@rollup/plugin-replace";
 import terser from "@rollup/plugin-terser";
 import license from "rollup-plugin-license";
@@ -152,7 +151,7 @@ export const utilityExportBuilds = [
   },
 ];
 
-const buildPlugins = ({ variant, minify, babelPlugins }) => {
+const buildPlugins = ({ variant, minify }) => {
   const plugins = [
     replace({
       __VERSION__: version,
@@ -166,17 +165,6 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
     }),
     commonjs(),
   ];
-
-  if (variant !== SERVICE_WORKER) {
-    plugins.push(
-      babel({
-        envName: "rollup",
-        babelHelpers: "bundled",
-        configFile: path.resolve(dirname, "babel.config.js"),
-        plugins: babelPlugins,
-      }),
-    );
-  }
 
   if (INCLUDE_BUNDLESIZE) {
     plugins.push(
@@ -228,11 +216,10 @@ const buildPlugins = ({ variant, minify, babelPlugins }) => {
 export const buildConfig = ({
   variant = STANDALONE,
   minify = false,
-  babelPlugins = [],
   input = `${dirname}/src/standalone.js`,
   file,
 }) => {
-  const plugins = buildPlugins({ variant, minify, babelPlugins });
+  const plugins = buildPlugins({ variant, minify });
   const minifiedExtension = minify ? ".min" : "";
 
   if (variant === SERVICE_WORKER) {
