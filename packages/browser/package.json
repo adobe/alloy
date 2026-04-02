@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy",
-  "version": "2.32.0",
+  "version": "2.32.1-beta.0",
   "description": "Adobe Experience Platform Web SDK",
   "type": "module",
   "repository": {

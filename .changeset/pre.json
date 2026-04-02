@@ -7,5 +7,7 @@
     "@adobe/alloy-core": "1.1.1",
     "@adobe/alloy-sandbox-browser": "0.1.1"
   },
-  "changesets": []
+  "changesets": [
+    "violet-nights-yell"
+  ]
 }

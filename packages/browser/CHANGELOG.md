@@ -1,5 +1,12 @@
 # @adobe/alloy
 
+## 2.32.1-beta.0
+
+### Patch Changes
+
+- Updated dependencies [50307a9]
+  - @adobe/alloy-core@1.1.2-beta.0
+
 ## 2.32.0
 
 ### Minor Changes
