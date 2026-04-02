@@ -23,7 +23,7 @@ export default defineConfig({
         extends: false,
         test: {
           name: "unit",
-          include: ["packages/core/test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
+          include: ["packages/*/test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
           isolate: false,
           browser: {
             provider: playwright(),
@@ -74,7 +74,7 @@ export default defineConfig({
     ],
 
     coverage: {
-      include: ["packages/core/src/**/*"],
+      include: ["packages/core/src/**/*", "packages/browser/src/**/*"],
       reporter: isCi ? ["lcov"] : ["lcov", "html", "text"],
     },
   },

@@ -17,6 +17,7 @@
     "src",
     "dist",
     "scripts/alloyBuilder.js",
+    "scripts/helpers/componentMetadata.js",
     "scripts/helpers/entryPointGeneratorBabelPlugin.js",
     "scripts/helpers/path.js",
     "rollup.config.js",

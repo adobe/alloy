@@ -14,7 +14,6 @@ governing permissions and limitations under the License.
 // The exports names must have the camel case format. If you need to add a required
 // module, you should add it to the core/requiredComponentCreators.js file.
 
-export { default as activityCollector } from "../components/ActivityCollector/index.js";
 export { default as audiences } from "../components/Audiences/index.js";
 export { default as consent } from "../components/Consent/index.js";
 export { default as eventMerge } from "../components/EventMerge/index.js";

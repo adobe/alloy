@@ -27,7 +27,7 @@ import entryPointGeneratorBabelPlugin from "./helpers/entryPointGeneratorBabelPl
 import {
   optionalComponentNames,
   requiredComponentNames,
-} from "@adobe/alloy-core/componentMetadata.js";
+} from "./helpers/componentMetadata.js";
 import { getBrowserPackageRoot, safePathJoin } from "./helpers/path.js";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
