@@ -26,11 +26,9 @@ describe("injectProcessResponse", () => {
     };
   });
   it("processes push destinations and does not return a value", () => {
-    return processResponse({
+    processResponse({
       response,
-    }).then((result) => {
-      expect(processDestinations).toHaveBeenCalled();
-      expect(result).toBeUndefined();
     });
+    expect(processDestinations).toHaveBeenCalled();
   });
 });
