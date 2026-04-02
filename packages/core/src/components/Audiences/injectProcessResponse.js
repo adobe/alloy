@@ -14,9 +14,5 @@ export default ({ processDestinations }) => {
   return async ({ response }) => {
     const pushDestinations = response.getPayloadsByType("activation:push");
     await processDestinations(pushDestinations);
-
-    return {
-      destinations: response.getPayloadsByType("activation:pull"),
-    };
   };
 };
