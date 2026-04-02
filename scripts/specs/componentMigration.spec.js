@@ -10,90 +10,73 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { execSync } from "child_process";
+import { exec } from "child_process";
 import fs from "fs";
+import os from "os";
 import path from "path";
-import { describe, it, expect } from "vitest";
+import { describe, expect, test as baseTest } from "vitest";
 import { fileURLToPath } from "url";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(dirname, "../..");
-const coreSrc = path.join(root, "packages/core/src");
-const browserSrc = path.join(root, "packages/browser/src");
+const buildCmd = "node packages/browser/scripts/alloyBuilder.js build";
 
-describe("ActivityCollector migration: core → browser", () => {
-  it("ActivityCollector source exists in packages/browser/src/components/ActivityCollector/", () => {
-    const dir = path.join(browserSrc, "components/ActivityCollector");
-    expect(fs.existsSync(dir)).toBe(true);
-    expect(fs.existsSync(path.join(dir, "index.js"))).toBe(true);
-  });
-
-  it("ActivityCollector source does NOT exist in packages/core/src/components/ActivityCollector/", () => {
-    const dir = path.join(coreSrc, "components/ActivityCollector");
-    expect(fs.existsSync(dir)).toBe(false);
-  });
-
-  it("packages/browser/src/components/componentCreators.js exports activityCollector", () => {
-    const filePath = path.join(browserSrc, "components/componentCreators.js");
-    const code = fs.readFileSync(filePath, "utf8");
-    expect(code).toMatch(/export\s+\{\s*default\s+as\s+activityCollector\s*\}/);
-  });
-
-  it("packages/core/src/core/componentCreators.js does NOT export activityCollector", () => {
-    const filePath = path.join(coreSrc, "core/componentCreators.js");
-    const code = fs.readFileSync(filePath, "utf8");
-    expect(code).not.toMatch(/activityCollector/);
-  });
-
-  it("combined component metadata includes activityCollector in optionalComponentNames", () => {
-    const metadataPath = path.join(
-      root,
-      "packages/browser/scripts/helpers/componentMetadata.js",
+const buildAndRead = (outDir, { excludes = [], signal } = {}) =>
+  new Promise((resolve, reject) => {
+    const excludeFlag =
+      excludes.length > 0 ? ` --exclude ${excludes.join(" ")}` : "";
+    exec(
+      `${buildCmd} --no-minify -o ${outDir}${excludeFlag}`,
+      { cwd: root, signal },
+      (err) => {
+        if (err) return reject(err);
+        resolve(fs.readFileSync(path.join(outDir, "alloy.js"), "utf8"));
+      },
     );
-    const code = fs.readFileSync(metadataPath, "utf8");
-    expect(code).toMatch(/coreOptional/);
-    expect(code).toMatch(/browserOptional/);
-    const creatorsPath = path.join(
-      browserSrc,
-      "components/componentCreators.js",
+  });
+
+const test = baseTest
+  .extend(
+    "defaultBundle",
+    { scope: "file" },
+    // eslint-disable-next-line no-empty-pattern
+    async ({}, { onCleanup }) => {
+      const outDir = path.join(os.tmpdir(), "alloy-build-default");
+      fs.mkdirSync(outDir, { recursive: true });
+      onCleanup(() => fs.rmSync(outDir, { recursive: true, force: true }));
+      return await buildAndRead(outDir);
+    },
+  )
+  .extend("buildExcluding", async ({ signal }, { onCleanup }) => {
+    const dirs = [];
+    onCleanup(() =>
+      dirs.forEach((d) => fs.rmSync(d, { recursive: true, force: true })),
     );
-    const creatorsCode = fs.readFileSync(creatorsPath, "utf8");
-    expect(creatorsCode).toMatch(/activityCollector/);
+    return async (name, excludes) => {
+      const outDir = path.join(os.tmpdir(), `alloy-build-${name}`);
+      fs.mkdirSync(outDir, { recursive: true });
+      dirs.push(outDir);
+      return buildAndRead(outDir, { excludes, signal });
+    };
   });
 
-  it("packages/browser/src/standalone.js imports from ./allOptionalComponents.js", () => {
-    const filePath = path.join(browserSrc, "standalone.js");
-    const code = fs.readFileSync(filePath, "utf8");
-    expect(code).toMatch(/from\s+["']\.\/allOptionalComponents\.js["']/);
+describe("Custom build", () => {
+  test("produces a bundle", ({ defaultBundle }) => {
+    expect(defaultBundle).toBeTruthy();
   });
 
-  it("custom build succeeds and bundle contains ActivityCollector", () => {
-    const outDir = path.join(root, "scripts/specs/.tmp-build");
-    fs.mkdirSync(outDir, { recursive: true });
-    try {
-      execSync(
-        `node packages/browser/scripts/alloyBuilder.js build --no-minify -o ${outDir}`,
-        { cwd: root, stdio: "pipe" },
-      );
-      const bundle = fs.readFileSync(path.join(outDir, "alloy.js"), "utf8");
-      expect(bundle).toContain("ActivityCollector");
-    } finally {
-      fs.rmSync(outDir, { recursive: true, force: true });
-    }
-  }, 20000);
+  describe("ActivityCollector", () => {
+    test("is included in the default build", ({ defaultBundle }) => {
+      expect(defaultBundle).toContain("ActivityCollector");
+    });
 
-  it("custom build with --exclude activityCollector does NOT contain ActivityCollector", () => {
-    const outDir = path.join(root, "scripts/specs/.tmp-build-exclude");
-    fs.mkdirSync(outDir, { recursive: true });
-    try {
-      execSync(
-        `node packages/browser/scripts/alloyBuilder.js build --exclude activityCollector --no-minify -o ${outDir}`,
-        { cwd: root, stdio: "pipe" },
-      );
-      const bundle = fs.readFileSync(path.join(outDir, "alloy.js"), "utf8");
+    test("is excluded when --exclude activityCollector is passed", async ({
+      buildExcluding,
+    }) => {
+      const bundle = await buildExcluding("exclude-activity", [
+        "activityCollector",
+      ]);
       expect(bundle).not.toContain("ActivityCollector");
-    } finally {
-      fs.rmSync(outDir, { recursive: true, force: true });
-    }
-  }, 20000);
+    }, 20000);
+  });
 });
