@@ -18,9 +18,17 @@ import { describe, expect, test as baseTest } from "vitest";
 import { fileURLToPath } from "url";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
-const root = path.resolve(dirname, "../..");
+const root = path.resolve(dirname, "../");
 const buildCmd = "node packages/browser/scripts/alloyBuilder.js build";
 
+/**
+ * Run a custom alloy build and return the bundle source.
+ * @param {string} outDir - Directory to write build output into (must exist).
+ * @param {object} [options]
+ * @param {string[]} [options.excludes] - Component names to exclude from the build.
+ * @param {AbortSignal} [options.signal] - Signal to abort the build process.
+ * @returns {Promise<string>} The contents of the generated alloy.js bundle.
+ */
 const buildAndRead = (outDir, { excludes = [], signal } = {}) =>
   new Promise((resolve, reject) => {
     const excludeFlag =
@@ -37,46 +45,37 @@ const buildAndRead = (outDir, { excludes = [], signal } = {}) =>
 
 const test = baseTest
   .extend(
-    "defaultBundle",
+    "buildAlloy",
     { scope: "file" },
-    // eslint-disable-next-line no-empty-pattern
-    async ({}, { onCleanup }) => {
-      const outDir = path.join(os.tmpdir(), "alloy-build-default");
+    async ({ signal }, { onCleanup }) => {
+      const outDir = path.join(os.tmpdir(), `alloy-build-${Date.now()}`);
       fs.mkdirSync(outDir, { recursive: true });
       onCleanup(() => fs.rmSync(outDir, { recursive: true, force: true }));
-      return await buildAndRead(outDir);
+      return (excludes) => buildAndRead(outDir, { excludes, signal });
     },
   )
-  .extend("buildExcluding", async ({ signal }, { onCleanup }) => {
-    const dirs = [];
-    onCleanup(() =>
-      dirs.forEach((d) => fs.rmSync(d, { recursive: true, force: true })),
-    );
-    return async (name, excludes) => {
-      const outDir = path.join(os.tmpdir(), `alloy-build-${name}`);
-      fs.mkdirSync(outDir, { recursive: true });
-      dirs.push(outDir);
-      return buildAndRead(outDir, { excludes, signal });
-    };
+  .extend("defaultBundle", { scope: "file" }, async ({ buildAlloy }) => {
+    return await buildAlloy();
   });
 
 describe("Custom build", () => {
-  test("produces a bundle", ({ defaultBundle }) => {
+  test("produces a bundle", async ({ defaultBundle }) => {
     expect(defaultBundle).toBeTruthy();
   });
 
   describe("ActivityCollector", () => {
-    test("is included in the default build", ({ defaultBundle }) => {
+    test("is included in the default build", async ({ defaultBundle }) => {
       expect(defaultBundle).toContain("ActivityCollector");
     });
 
     test("is excluded when --exclude activityCollector is passed", async ({
-      buildExcluding,
+      buildAlloy,
+      defaultBundle,
     }) => {
-      const bundle = await buildExcluding("exclude-activity", [
-        "activityCollector",
-      ]);
+      const bundle = await buildAlloy(["activityCollector"]);
+      expect(bundle).toBeTruthy();
       expect(bundle).not.toContain("ActivityCollector");
+      expect(bundle.length).toBeLessThan(defaultBundle.length);
     }, 20000);
   });
 });
