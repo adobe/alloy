@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { exec } from "child_process";
 import fs from "fs";
-import os from "os";
+import { tmpdir } from "os";
 import path from "path";
 import { describe, expect, test as baseTest } from "vitest";
 import { fileURLToPath } from "url";
@@ -51,8 +51,7 @@ const test = baseTest
     "buildAlloy",
     { scope: "file" },
     async ({ signal }, { onCleanup }) => {
-      const outDir = path.join(os.tmpdir(), `alloy-build-${Date.now()}`);
-      fs.mkdirSync(outDir, { recursive: true });
+      const outDir = fs.mkdtempSync(path.join(tmpdir(), "alloy-build-"));
       onCleanup(() => fs.rmSync(outDir, { recursive: true, force: true }));
       return ({ excludes, minify } = {}) =>
         buildAndRead(outDir, { excludes, minify, signal });
