@@ -16,6 +16,7 @@
   "files": [
     "src",
     "dist",
+    "components.json",
     "scripts/alloyBuilder.js",
     "scripts/helpers/componentMetadata.js",
     "scripts/helpers/entryPointGeneratorBabelPlugin.js",

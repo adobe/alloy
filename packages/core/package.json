@@ -43,7 +43,8 @@
     "./components/EventMerge/createEventMergeId.js": {
       "types": "./src/components/EventMerge/createEventMergeId.js",
       "default": "./src/components/EventMerge/createEventMergeId.js"
-    }
+    },
+    "./components.json": "./components.json"
   },
   "author": "Adobe Inc.",
   "license": "Apache-2.0",

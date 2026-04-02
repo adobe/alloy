@@ -1,0 +1,9 @@
+{
+  "required": [],
+  "optional": [
+    {
+      "name": "activityCollector",
+      "path": "./src/components/ActivityCollector/index.js"
+    }
+  ]
+}
