@@ -69,7 +69,8 @@
     "./libEs6/components/EventMerge/createEventMergeId": {
       "types": "./dist/types/browser/src/utils/createEventMergeId.d.ts",
       "default": "./dist/utils/createEventMergeId.js"
-    }
+    },
+    "./components.json": "./components.json"
   },
   "dependencies": {
     "@adobe/alloy-core": "workspace:^",

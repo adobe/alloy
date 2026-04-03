@@ -85,46 +85,48 @@ const getFileSizeInKB = (filePath) => {
   return `${(fileSizeInBytes / 1024).toFixed(2)} K`;
 };
 
-const VIRTUAL_ENTRY = "\0alloy-entry";
+const generateInputEntryFile = ({
+  inputPath,
+  outputFile = "input.js",
+  includedModules,
+}) => {
+  const source = generateEntryPointSource(includedModules);
 
-const createVirtualEntryPlugin = (source) => ({
-  name: "alloy-virtual-entry",
-  resolveId(id, importer) {
-    if (id === VIRTUAL_ENTRY) return VIRTUAL_ENTRY;
-    if (importer === VIRTUAL_ENTRY && id.startsWith(".")) {
-      return path.resolve(sourceRootPath, id);
-    }
-  },
-  load(id) {
-    if (id === VIRTUAL_ENTRY) return source;
-  },
-});
+  const destinationDirectory = path.dirname(inputPath);
+  const outputPath = safePathJoin(destinationDirectory, outputFile);
+
+  fs.writeFileSync(outputPath, source);
+
+  return outputPath;
+};
 
 const build = async (argv) => {
-  const source = generateEntryPointSource(argv.include);
+  const inputFile = generateInputEntryFile({
+    inputPath: `${sourceRootPath}/standalone.js`,
+    includedModules: argv.include,
+  });
 
   const rollupConfig = buildConfig({
     variant: "CUSTOM_BUILD",
-    input: VIRTUAL_ENTRY,
+    input: inputFile,
     file: getOutputFilePath(argv),
     minify: argv.minify,
   });
 
-  rollupConfig.plugins = [
-    createVirtualEntryPlugin(source),
-    ...rollupConfig.plugins,
-  ];
+  try {
+    const bundle = await rollup(rollupConfig);
+    await bundle.write(rollupConfig.output[0]);
 
-  const bundle = await rollup(rollupConfig);
-  await bundle.write(rollupConfig.output[0]);
-
-  console.log(
-    `🎉 Wrote ${
-      path.isAbsolute(argv.outputDir)
-        ? rollupConfig.output[0].file
-        : path.relative(process.cwd(), rollupConfig.output[0].file)
-    } (${getFileSizeInKB(rollupConfig.output[0].file)}).`,
-  );
+    console.log(
+      `🎉 Wrote ${
+        path.isAbsolute(argv.outputDir)
+          ? rollupConfig.output[0].file
+          : path.relative(process.cwd(), rollupConfig.output[0].file)
+      } (${getFileSizeInKB(rollupConfig.output[0].file)}).`,
+    );
+  } finally {
+    fs.rmSync(inputFile, { force: true });
+  }
 };
 
 const buildPushNotificationsServiceWorker = async (argv) => {

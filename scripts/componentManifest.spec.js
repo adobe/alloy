@@ -16,18 +16,18 @@ governing permissions and limitations under the License.
  * barrel file without updating the manifest.
  */
 
+import { createRequire } from "module";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { describe, expect, test } from "vitest";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const readJson = (relPath) =>
-  JSON.parse(fs.readFileSync(path.resolve(dirname, relPath), "utf8"));
-
-const coreManifest = readJson("../packages/core/components.json");
-const browserManifest = readJson("../packages/browser/components.json");
+// createRequire is used here because Node's ESM resolver does not support
+// JSON import attributes through workspace package exports maps.
+const require = createRequire(import.meta.url);
+const coreManifest = require("../packages/core/components.json");
+const browserManifest = require("../packages/browser/components.json");
 
 /**
  * Reads the named re-exports from an ESM barrel file of the form:
