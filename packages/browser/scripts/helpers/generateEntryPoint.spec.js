@@ -11,8 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, expect, test } from "vitest";
-// eslint-disable-next-line import/no-relative-packages -- script tests live outside the package boundary
-import { generateEntryPointSource } from "../packages/browser/scripts/helpers/generateEntryPoint.js";
+import { generateEntryPointSource } from "./generateEntryPoint.js";
 
 describe("generateEntryPointSource", () => {
   test("imports all provided components from allOptionalComponents.js", () => {
