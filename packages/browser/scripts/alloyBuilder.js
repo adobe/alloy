@@ -39,22 +39,7 @@ const packageJsonContent = fs.readFileSync(
 );
 const { version } = JSON.parse(packageJsonContent);
 
-const resolveSourceRootPath = () => {
-  const candidates = ["src", "libEs6"];
-
-  for (const candidate of candidates) {
-    const candidatePath = safePathJoin(browserPackageRoot, candidate);
-    if (fs.existsSync(candidatePath)) {
-      return candidatePath;
-    }
-  }
-
-  throw new Error(
-    "Unable to locate source directory. Expected to find 'src' or 'libEs6' within the browser package.",
-  );
-};
-
-const sourceRootPath = resolveSourceRootPath();
+const sourceRootPath = safePathJoin(browserPackageRoot, "src");
 
 const arrayDifference = (arr1, arr2) => arr1.filter((x) => !arr2.includes(x));
 
