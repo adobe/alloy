@@ -39,10 +39,10 @@ describe("generateEntryPointSource", () => {
     expect(source).toContain("initializeStandalone({ components: [] })");
   });
 
-  test("always imports createCustomInstance from ./index.js", () => {
+  test("always imports initializeStandalone", () => {
     const source = generateEntryPointSource([]);
     expect(source).toContain(
-      `import { createCustomInstance } from "./index.js"`,
+      `import initializeStandalone from "./initializeStandalone.js"`,
     );
   });
 

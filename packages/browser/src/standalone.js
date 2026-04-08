@@ -10,30 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { WindowWithAlloy, AlloyQueueItem } from './types.js' */
-
-import { createCustomInstance } from "./index.js";
+import initializeStandalone from "./initializeStandalone.js";
 import * as optionalComponents from "./allOptionalComponents.js";
-
-// This file is used by rollup to create the browser version that is uploaded to cdn
-
-const initializeStandalone = ({ components }) => {
-  // eslint-disable-next-line no-underscore-dangle
-  const instanceNames = /** @type {WindowWithAlloy} */ (window).__alloyNS;
-  if (!instanceNames) {
-    return;
-  }
-  for (const name of instanceNames) {
-    const instance = createCustomInstance({ name, components });
-    const execute = (/** @type {AlloyQueueItem} */ item) => {
-      const [resolve, reject, [commandName, options]] = item;
-      return instance(commandName, options).then(resolve, reject);
-    };
-    const queue = window[name].q;
-    queue.push = execute;
-    queue.forEach(execute);
-  }
-};
 
 // Custom builds use scripts/helpers/generateEntryPoint.js to generate a modified version of this file.
 initializeStandalone({ components: Object.values(optionalComponents) });
