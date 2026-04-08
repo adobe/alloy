@@ -1,6 +1,7 @@
 This is the rough plan to migrate into the "Universal JavaScript SDK"
 
 - [x] create two packages - a `core` package for shared business logic and primatives, and a `browser` package for browser-specific functionality and APIs
+- [ ] Initialize nodejs sdk, with the understanding that it will not function until all the migrations are done
 - [ ] Migrate components whose purpose and functionality are entirely browser dependent. Ask "does this functionality work on a server?"
   - [x] `ActivityCollector`
   - [ ] `Context` -> rename to `BrowserContext`
