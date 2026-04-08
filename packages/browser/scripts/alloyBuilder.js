@@ -98,8 +98,9 @@ const build = async (argv) => {
     minify: argv.minify,
   });
 
+  let bundle;
   try {
-    const bundle = await rollup(rollupConfig);
+    bundle = await rollup(rollupConfig);
     await bundle.write(rollupConfig.output[0]);
 
     console.log(
@@ -110,6 +111,7 @@ const build = async (argv) => {
       } (${getFileSizeInKB(rollupConfig.output[0].file)}).`,
     );
   } finally {
+    await bundle?.close();
     fs.rmSync(inputFile, { force: true });
   }
 };
@@ -154,15 +156,19 @@ const buildPushNotificationsServiceWorker = async (argv) => {
   };
 
   const bundle = await rollup(rollupConfig);
-  await bundle.write(rollupConfig.output[0]);
+  try {
+    await bundle.write(rollupConfig.output[0]);
 
-  console.log(
-    `🎉 Wrote ${
-      path.isAbsolute(argv.outputDir)
-        ? rollupConfig.output[0].file
-        : path.relative(process.cwd(), rollupConfig.output[0].file)
-    } (${getFileSizeInKB(rollupConfig.output[0].file)}).`,
-  );
+    console.log(
+      `🎉 Wrote ${
+        path.isAbsolute(argv.outputDir)
+          ? rollupConfig.output[0].file
+          : path.relative(process.cwd(), rollupConfig.output[0].file)
+      } (${getFileSizeInKB(rollupConfig.output[0].file)}).`,
+    );
+  } finally {
+    await bundle.close();
+  }
 };
 
 const getMakeBuildCommand = () => {
