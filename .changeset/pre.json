@@ -8,6 +8,7 @@
     "@adobe/alloy-sandbox-browser": "0.1.1"
   },
   "changesets": [
+    "moody-seas-kneel",
     "violet-nights-yell"
   ]
 }
