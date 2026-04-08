@@ -1,5 +1,11 @@
 # @adobe/alloy-core
 
+## 1.1.2-beta.1
+
+### Patch Changes
+
+- 2760287: Include XDM in all Brand Concierge events
+
 ## 1.1.2-beta.0
 
 ### Patch Changes
