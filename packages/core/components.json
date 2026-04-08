@@ -1,35 +1,20 @@
 {
   "required": [
-    { "name": "context", "path": "./src/components/Context/index.js" },
-    { "name": "dataCollector", "path": "./src/components/DataCollector/index.js" },
-    { "name": "identity", "path": "./src/components/Identity/index.js" },
-    { "name": "libraryInfo", "path": "./src/components/LibraryInfo/index.js" }
+    { "name": "context" },
+    { "name": "dataCollector" },
+    { "name": "identity" },
+    { "name": "libraryInfo" }
   ],
   "optional": [
-    { "name": "audiences", "path": "./src/components/Audiences/index.js" },
-    { "name": "consent", "path": "./src/components/Consent/index.js" },
-    { "name": "eventMerge", "path": "./src/components/EventMerge/index.js" },
-    {
-      "name": "mediaAnalyticsBridge",
-      "path": "./src/components/MediaAnalyticsBridge/index.js"
-    },
-    {
-      "name": "personalization",
-      "path": "./src/components/Personalization/index.js"
-    },
-    { "name": "rulesEngine", "path": "./src/components/RulesEngine/index.js" },
-    {
-      "name": "streamingMedia",
-      "path": "./src/components/StreamingMedia/index.js"
-    },
-    { "name": "advertising", "path": "./src/components/Advertising/index.js" },
-    {
-      "name": "pushNotifications",
-      "path": "./src/components/PushNotifications/index.js"
-    },
-    {
-      "name": "brandConcierge",
-      "path": "./src/components/BrandConcierge/index.js"
-    }
+    { "name": "audiences" },
+    { "name": "consent" },
+    { "name": "eventMerge" },
+    { "name": "mediaAnalyticsBridge" },
+    { "name": "personalization" },
+    { "name": "rulesEngine" },
+    { "name": "streamingMedia" },
+    { "name": "advertising" },
+    { "name": "pushNotifications" },
+    { "name": "brandConcierge" }
   ]
 }
