@@ -19,25 +19,28 @@ import {
 } from "../../utils/validation/index.js";
 import { noop } from "../../utils/index.js";
 
+const xdmValidator = objectOf({
+  interactionId: string(),
+  conversationId: string(),
+  conversation: objectOf({
+    feedback: objectOf({
+      classification: string(),
+      comment: string(),
+      reasons: arrayOf(string()),
+    }),
+  }),
+});
+
 export default ({ options }) => {
   const brandConciergeEventValidator = anyOf([
     objectOf({
       message: string().required(),
+      xdm: xdmValidator,
       onStreamResponse: callback().default(noop),
       voiceEnabled: boolean().default(false),
     }),
     objectOf({
-      xdm: objectOf({
-        interactionId: string(),
-        conversationId: string(),
-        conversation: objectOf({
-          feedback: objectOf({
-            classification: string(),
-            comment: string(),
-            reasons: arrayOf(string()),
-          }),
-        }),
-      }),
+      xdm: xdmValidator,
       voiceEnabled: boolean().default(false),
     }).required(),
     objectOf({
