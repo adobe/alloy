@@ -10,12 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/**
- * Drift detection: ensures components.json manifests stay in sync with the
- * barrel files that export component creators. Fails CI if someone edits a
- * barrel file without updating the manifest.
- */
-
 import { createRequire } from "module";
 import fs from "fs";
 import path from "path";

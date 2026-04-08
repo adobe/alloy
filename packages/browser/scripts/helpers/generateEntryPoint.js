@@ -10,16 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/**
- * Generates the source of a custom build entry point that imports only the
- * specified optional components and passes them to initializeStandalone.
- *
- * The shared initializeStandalone logic lives in src/initializeStandalone.js;
- * this template only varies the component imports and the array passed in.
- *
- * @param {string[]} includedModules - camelCase component names to include
- * @returns {string} JavaScript source code for the entry file
- */
 export const generateEntryPointSource = (includedModules) => {
   const hasComponents = includedModules.length > 0;
   const componentList = includedModules.join(", ");
