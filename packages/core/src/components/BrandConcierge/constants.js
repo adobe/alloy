@@ -11,3 +11,4 @@ governing permissions and limitations under the License.
 */
 export const BC_SESSION_COOKIE_NAME = "bc_session_id";
 export const STREAM_START_TIMEOUT_MS = 10000;
+export const SOURCES_QUERY_PARAM = "adobe_brand_concierge_source";

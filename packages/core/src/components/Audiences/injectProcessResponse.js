@@ -11,20 +11,9 @@ governing permissions and limitations under the License.
 */
 
 export default ({ processDestinations }) => {
-  const processPushDestinations = ({ response }) => {
-    const destinations = response.getPayloadsByType("activation:push");
-    return processDestinations(destinations);
-  };
-
-  const retrievePullDestinations = ({ response }) => {
-    return {
-      destinations: response.getPayloadsByType("activation:pull"),
-    };
-  };
-
   return ({ response }) => {
-    return processPushDestinations({ response }).then(() =>
-      retrievePullDestinations({ response }),
-    );
+    const pushDestinations = response.getPayloadsByType("activation:push");
+    // fire and forget
+    processDestinations(pushDestinations);
   };
 };

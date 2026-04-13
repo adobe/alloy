@@ -67,6 +67,7 @@ describe("createSendConversationEvent", () => {
       createResponse: vi.fn(),
       sendConversationServiceRequest: vi.fn(),
       decodeKndctrCookie: vi.fn().mockReturnValue("test-ecid-123"),
+      session: { id: "test-session-id" },
     };
   });
 
@@ -209,6 +210,51 @@ describe("createSendConversationEvent", () => {
     });
   });
 
+  it("passes voiceEnabled from options to the service request", async () => {
+    const mockResponse = {
+      ok: true,
+      status: 200,
+      body: createMockReadableStream([]),
+    };
+    mockDependencies.sendConversationServiceRequest.mockResolvedValue(
+      mockResponse,
+    );
+
+    const sendConversationEvent = createSendConversationEvent(mockDependencies);
+    await sendConversationEvent({
+      message: "Hello",
+      onStreamResponse: vi.fn(),
+      voiceEnabled: true,
+    });
+
+    expect(mockDependencies.buildEndpointUrl).toHaveBeenCalledTimes(1);
+
+    const [{ request }] = mockDependencies.buildEndpointUrl.mock.calls[0];
+    expect(request.getEdgeSubPath()).toBe("/brand-concierge-voice");
+  });
+
+  it("defaults to text subpath when voiceEnabled is not provided", async () => {
+    const mockResponse = {
+      ok: true,
+      status: 200,
+      body: createMockReadableStream([]),
+    };
+    mockDependencies.sendConversationServiceRequest.mockResolvedValue(
+      mockResponse,
+    );
+
+    const sendConversationEvent = createSendConversationEvent(mockDependencies);
+    await sendConversationEvent({
+      message: "Hello",
+      onStreamResponse: vi.fn(),
+    });
+
+    expect(mockDependencies.buildEndpointUrl).toHaveBeenCalledTimes(1);
+
+    const [{ request }] = mockDependencies.buildEndpointUrl.mock.calls[0];
+    expect(request.getEdgeSubPath()).toBe("/brand-concierge");
+  });
+
   it("handles stream timeout when no data is received within 10 seconds", async () => {
     vi.useFakeTimers();
 
@@ -242,24 +288,24 @@ describe("createSendConversationEvent", () => {
 
     // Fast-forward time by 10 seconds to trigger the timeout
     vi.advanceTimersByTime(10000);
-    return resultPromise.then((res) => {
-      // Verify that timeout error was logged
-      expect(mockDependencies.logger.error).toHaveBeenCalledWith(
-        "Stream error occurred",
-        expect.objectContaining({
-          message: "Stream timeout: No data received within 10 seconds",
-        }),
-      );
+    await resultPromise;
 
-      // Verify that onStreamResponse was called with the timeout error
-      expect(onStreamResponse).toHaveBeenCalledWith({
-        error: expect.objectContaining({
-          message: "Stream timeout: No data received within 10 seconds",
-        }),
-      });
+    // Verify that timeout error was logged
+    expect(mockDependencies.logger.error).toHaveBeenCalledWith(
+      "Stream error occurred",
+      expect.objectContaining({
+        message: "Stream timeout: No data received within 10 seconds",
+      }),
+    );
 
-      vi.useRealTimers();
+    // Verify that onStreamResponse was called with the timeout error
+    expect(onStreamResponse).toHaveBeenCalledWith({
+      error: expect.objectContaining({
+        message: "Stream timeout: No data received within 10 seconds",
+      }),
     });
+
+    vi.useRealTimers();
     // await flushPromiseChains();
   });
 });

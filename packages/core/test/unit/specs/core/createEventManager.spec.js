@@ -309,62 +309,57 @@ describe("createEventManager", () => {
         expect(result).toEqual(mockResult);
       });
     });
-    it("includes override configuration, if provided", () => {
-      eventManager
-        .sendEvent(event, {
-          edgeConfigOverrides: {
-            com_adobe_experience_platform: {
-              event: {
-                datasetId: "456",
-              },
-            },
-            com_adobe_identity: {
-              idSyncContainerId: "123",
+    it("includes override configuration, if provided", async () => {
+      await eventManager.sendEvent(event, {
+        edgeConfigOverrides: {
+          com_adobe_experience_platform: {
+            event: {
+              datasetId: "456",
             },
           },
-        })
-        .then(() => {
-          expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
-            com_adobe_identity: {
-              idSyncContainerId: "123",
-            },
-            com_adobe_experience_platform: {
-              event: {
-                datasetId: "456",
-              },
-            },
-          });
-        });
+          com_adobe_identity: {
+            idSyncContainerId: "123",
+          },
+        },
+      });
+
+      expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
+        com_adobe_identity: {
+          idSyncContainerId: "123",
+        },
+        com_adobe_experience_platform: {
+          event: {
+            datasetId: "456",
+          },
+        },
+      });
     });
-    it("includes global override configuration, if provided", () => {
+    it("includes global override configuration, if provided", async () => {
       config.edgeConfigOverrides.com_adobe_identity = {
         idSyncContainerId: "123",
       };
-      eventManager
-        .sendEvent(event, {
-          edgeConfigOverrides: {},
-        })
-        .then(() => {
-          expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
-            com_adobe_identity: {
-              idSyncContainerId: "123",
-            },
-          });
-        });
+
+      await eventManager.sendEvent(event, {
+        edgeConfigOverrides: {},
+      });
+
+      expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
+        com_adobe_identity: {
+          idSyncContainerId: "123",
+        },
+      });
     });
-    it("includes the datastreamId override, if provided", () => {
-      eventManager
-        .sendEvent(event, {
-          edgeConfigOverrides: {
-            datastreamId: "456",
-          },
-        })
-        .then(() => {
-          expect(createDataCollectionRequest).toHaveBeenCalledWith({
-            payload: expect.any(Object),
-            datastreamIdOverride: "456",
-          });
-        });
+    it("includes the datastreamId override, if provided", async () => {
+      await eventManager.sendEvent(event, {
+        edgeConfigOverrides: {
+          datastreamId: "456",
+        },
+      });
+
+      expect(createDataCollectionRequest).toHaveBeenCalledWith({
+        payload: expect.any(Object),
+        datastreamIdOverride: "456",
+      });
     });
   });
 });

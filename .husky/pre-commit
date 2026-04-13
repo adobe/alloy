@@ -1,3 +1,2 @@
-npx lint-staged
-npm run test:scripts
-npm run test:unit
+pnpm lint-staged
+pnpm vitest run --project=unit --project=scripts

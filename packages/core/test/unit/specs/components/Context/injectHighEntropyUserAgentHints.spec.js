@@ -28,24 +28,23 @@ describe("Context::injectHighEntropyUserAgentHints", () => {
       },
     },
   };
-  it("works", () => {
+  it("works", async () => {
     const event = {
       mergeXdm: vi.fn(),
     };
-    injectHighEntropyUserAgentHints(navigator)(event, console).then(() => {
-      expect(event.mergeXdm).toHaveBeenCalledWith({
-        environment: {
-          browserDetails: {
-            userAgentClientHints: {
-              architecture: "x86",
-              bitness: "64",
-              model: "alloy",
-              platformVersion: "1.2.3",
-              wow64: false,
-            },
+    await injectHighEntropyUserAgentHints(navigator)(event, console);
+    expect(event.mergeXdm).toHaveBeenCalledWith({
+      environment: {
+        browserDetails: {
+          userAgentClientHints: {
+            architecture: "x86",
+            bitness: "64",
+            model: "alloy",
+            platformVersion: "1.2.3",
+            wow64: false,
           },
         },
-      });
+      },
     });
   });
 });

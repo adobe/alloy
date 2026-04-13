@@ -9,15 +9,16 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { vi, beforeEach, describe, it, expect } from "vitest";
+import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import createConciergeComponent from "../../../../../src/components/BrandConcierge/index.js";
 import testConfigValidators from "../../../helpers/testConfigValidators.js";
 
 describe("BrandConcierge", () => {
   let mockDependencies;
+  let originalFetch;
 
   beforeEach(() => {
-    // Mock window.fetch
+    originalFetch = window.fetch;
     window.fetch = vi.fn();
 
     mockDependencies = {
@@ -62,6 +63,10 @@ describe("BrandConcierge", () => {
     };
   });
 
+  afterEach(() => {
+    window.fetch = originalFetch;
+  });
+
   it("creates a brand concierge component", () => {
     const component = createConciergeComponent(mockDependencies);
 
@@ -74,7 +79,7 @@ describe("BrandConcierge", () => {
     expect(createConciergeComponent.namespace).toBe("BrandConcierge");
   });
 
-  it("removes session cookie when stickyConversationSession is false", () => {
+  it("generates a new session id when stickyConversationSession is false", () => {
     const configWithSticky = {
       ...mockDependencies.config,
       conversation: {
@@ -87,13 +92,11 @@ describe("BrandConcierge", () => {
       config: configWithSticky,
     });
 
-    expect(mockDependencies.loggingCookieJar.remove).toHaveBeenCalledWith(
-      "kndctr_testorgid_AdobeOrg_bc_session_id",
-      { domain: "adobe.com" },
-    );
+    // When sticky is false, a new UUID is generated without reading the cookie
+    expect(mockDependencies.loggingCookieJar.get).not.toHaveBeenCalled();
   });
 
-  it("does not remove session cookie when stickyConversationSession is true", () => {
+  it("reads session cookie when stickyConversationSession is true", () => {
     const configWithSticky = {
       ...mockDependencies.config,
       conversation: {
@@ -106,7 +109,9 @@ describe("BrandConcierge", () => {
       config: configWithSticky,
     });
 
-    expect(mockDependencies.loggingCookieJar.remove).not.toHaveBeenCalled();
+    expect(mockDependencies.loggingCookieJar.get).toHaveBeenCalledWith(
+      "kndctr_testorgid_AdobeOrg_bc_session_id",
+    );
   });
 
   it("sendConversationEvent command has options validator", () => {
@@ -128,6 +133,109 @@ describe("BrandConcierge", () => {
       "function",
     );
   });
+
+  describe("onBeforeEvent lifecycle", () => {
+    let originalSearch;
+    let originalState;
+
+    beforeEach(() => {
+      originalSearch = window.location.search;
+      originalState = window.history.state;
+    });
+
+    afterEach(() => {
+      window.history.replaceState(
+        originalState,
+        "",
+        window.location.pathname + originalSearch,
+      );
+    });
+
+    it("merges referringSource into XDM when collectSources is true and query param exists", () => {
+      window.history.replaceState(
+        {},
+        "",
+        "?adobe_brand_concierge_source=email_campaign",
+      );
+
+      const component = createConciergeComponent({
+        ...mockDependencies,
+        config: {
+          ...mockDependencies.config,
+          conversation: {
+            ...mockDependencies.config.conversation,
+            collectSources: true,
+          },
+        },
+      });
+
+      const event = { mergeXdm: vi.fn() };
+      component.lifecycle.onBeforeEvent({ event });
+
+      expect(event.mergeXdm).toHaveBeenCalledWith({
+        channel: { referringSource: "email_campaign" },
+      });
+    });
+
+    it("does not merge referringSource when collectSources is false", () => {
+      window.history.replaceState(
+        {},
+        "",
+        "?adobe_brand_concierge_source=email_campaign",
+      );
+
+      const component = createConciergeComponent({
+        ...mockDependencies,
+        config: {
+          ...mockDependencies.config,
+          conversation: {
+            ...mockDependencies.config.conversation,
+            collectSources: false,
+          },
+        },
+      });
+
+      const event = { mergeXdm: vi.fn() };
+      component.lifecycle.onBeforeEvent({ event });
+
+      expect(event.mergeXdm).not.toHaveBeenCalled();
+    });
+
+    it("does not merge referringSource when collectSources is not configured", () => {
+      window.history.replaceState(
+        {},
+        "",
+        "?adobe_brand_concierge_source=email_campaign",
+      );
+
+      const component = createConciergeComponent(mockDependencies);
+
+      const event = { mergeXdm: vi.fn() };
+      component.lifecycle.onBeforeEvent({ event });
+
+      expect(event.mergeXdm).not.toHaveBeenCalled();
+    });
+
+    it("does not merge referringSource when collectSources is true but query param is not present", () => {
+      window.history.replaceState({}, "", "?other=value");
+
+      const component = createConciergeComponent({
+        ...mockDependencies,
+        config: {
+          ...mockDependencies.config,
+          conversation: {
+            ...mockDependencies.config.conversation,
+            collectSources: true,
+          },
+        },
+      });
+
+      const event = { mergeXdm: vi.fn() };
+      component.lifecycle.onBeforeEvent({ event });
+
+      expect(event.mergeXdm).not.toHaveBeenCalled();
+    });
+  });
 });
 
 describe("BrandConcierge config validators", () => {
@@ -142,6 +250,8 @@ describe("BrandConcierge config validators", () => {
         conversation: { stickyConversationSession: true, streamTimeout: 10000 },
       },
       {},
+      { conversation: { collectSources: true } },
+      { conversation: { collectSources: false } },
     ],
     invalidConfigurations: [
       { conversation: { stickyConversationSession: "invalid" } },
@@ -149,6 +259,8 @@ describe("BrandConcierge config validators", () => {
       { conversation: { streamTimeout: "invalid" } },
       { conversation: { streamTimeout: -1 } },
       { conversation: { streamTimeout: 1.5 } },
+      { conversation: { collectSources: "invalid" } },
+      { conversation: { collectSources: 123 } },
     ],
     defaultValues: {},
   });
@@ -156,5 +268,6 @@ describe("BrandConcierge config validators", () => {
     const config = createConciergeComponent.configValidators({});
     expect(config.conversation.stickyConversationSession).toBe(false);
     expect(config.conversation.streamTimeout).toBe(10000);
+    expect(config.conversation.collectSources).toBe(false);
   });
 });

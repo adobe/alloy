@@ -34,7 +34,7 @@ When changes land on `main`, CI publishes based on the accumulated changesets an
 ### Prerelease mode
 
 To switch from releasing betas to stable releases, or back to betas, use the following commands:
-- Beta -> Stable: `pnpm changeset pre exit`, commit, push.
+- Beta -> Stable: Run the [Trigger stable release](.github/workflows/exit-prerelease.yml) workflow from the Actions tab. This exits prerelease mode and triggers a stable publish automatically.
 - Stable -> Beta: happens automatically as part of the release process in [.github/workflows/changeset-publish.yml](.github/workflows/changeset-publish.yml).
 
 ## Contributor license agreement

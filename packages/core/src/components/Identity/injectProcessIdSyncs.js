@@ -32,7 +32,7 @@ export default ({ fireReferrerHideableImage, logger }) =>
             // We intentionally do not throw an error if id syncs fail. We
             // consider it a non-critical failure and therefore do not want it to
             // reject the promise handed back to the customer.
-            logger.error(createResultLogMessage(idSync, false));
+            logger.warn(createResultLogMessage(idSync, false));
           });
       }),
     ).then(noop);

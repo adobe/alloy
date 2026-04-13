@@ -11,7 +11,7 @@
   "linked": [],
   "access": "public",
   "baseBranch": "main",
-  "updateInternalDependencies": "minor",
+  "updateInternalDependencies": "patch",
   "bumpVersionsWithWorkspaceProtocolOnly": true,
   "ignore": []
 }

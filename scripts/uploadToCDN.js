@@ -34,14 +34,15 @@ const urlExists = async (url) => {
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 const projectRoot = path.resolve(dirname, "..");
-const distDir = path.join(projectRoot, "dist");
+const browserPkgDir = path.join(projectRoot, "packages", "browser");
+const distDir = path.join(browserPkgDir, "dist");
 
 const { version } = JSON.parse(
-  fs.readFileSync(path.join(projectRoot, "package.json"), "utf8"),
+  fs.readFileSync(path.join(browserPkgDir, "package.json"), "utf8"),
 );
 
 if (!version) {
-  throw new Error("Unable to read package version for CDN upload.");
+  throw new Error("Unable to read @adobe/alloy version for CDN upload.");
 }
 
 const requiredFiles = [

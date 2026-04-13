@@ -31,10 +31,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build Alloy (dist, distTest for integration tests)
-        run: pnpm run build
-
-      - name: Build all packages
+      - name: Build Alloy
         run: pnpm -r run build
 
       - name: Run Unit Test with coverage

@@ -11,8 +11,6 @@ concurrency: changeset-publish-${{ github.ref }}
 jobs:
   # Determine if there are changesets to publish and if we are in prerelease mode.
   analyze:
-    # Avoid re-running when the bot pushes the version bump commit.
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     outputs:
       has_releases: ${{ steps.release_plan.outputs.has_releases }}
@@ -28,15 +26,13 @@ jobs:
         id: pre
         run: |
           if [ -f .changeset/pre.json ]; then
+            # @type {string} "pre" | "exit" | "" — changeset prerelease mode
             MODE=$(jq -r '.mode // empty' .changeset/pre.json)
-            TAG=$(jq -r '.tag // empty' .changeset/pre.json)
           else
             MODE=""
-            TAG=""
           fi
 
           if [ "${MODE}" = "pre" ]; then
-            echo "Prerelease mode: pre (tag: ${TAG:-n/a})"
             echo "is_prerelease=true" >> "${GITHUB_OUTPUT}"
           else
             if [ -n "${MODE}" ]; then
@@ -63,6 +59,7 @@ jobs:
         id: release_plan
         run: |
           shopt -s nullglob
+          # @type {string[]} glob-expanded file paths — e.g. (.changeset/few-pens-build.md ...)
           FILES=(.changeset/*.md)
 
           if [ ${#FILES[@]} -eq 0 ]; then
@@ -81,6 +78,7 @@ jobs:
           else
             echo "Release summary: none"
           fi
+          # @type {string} "true" | "false"
           HAS_RELEASES=$(jq -r 'if (.releases // []) | length > 0 then "true" else "false" end' changeset-status.json)
           echo "has_releases=${HAS_RELEASES}" >> "${GITHUB_OUTPUT}"
 
@@ -127,9 +125,11 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm --filter @adobe/alloy exec playwright install chromium
 
-      - name: Version packages & generate CHANGELOG.md files
+      - name: Version packages & generate CHANGELOGs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -141,8 +141,10 @@ jobs:
             echo "Release summary: none"
           fi
           pnpm changeset version
-          VERSION=$(jq -r '.version' package.json)
-          echo "Root version after versioning: ${VERSION}"
+          echo "Package versions after versioning:"
+          for pkg in packages/*/package.json; do
+            jq -r '"- \(.name)@\(.version)"' "$pkg"
+          done
 
       - name: Bump extension when @adobe/alloy was released
         if: hashFiles('packages/reactor-extension/package.json') != ''
@@ -159,8 +161,8 @@ jobs:
       - name: Update lockfile
         run: pnpm install --no-frozen-lockfile --ignore-scripts
 
-      - name: Build packages (prepack)
-        run: pnpm run build
+      - name: Build packages
+        run: pnpm -r --if-present run build
 
       - name: Commit version changes & CHANGELOG.md files
         run: |
@@ -171,35 +173,50 @@ jobs:
             git commit -m "chore: publish [skip ci]"
           fi
 
-      - name: "Publish prerelease packages (beta)"
+      - name: "Publish packages prerelease (beta)"
         if: needs.analyze.outputs.is_prerelease == 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
         run: |
-          VERSION=$(jq -r '.version' package.json)
-          echo "Publishing prerelease packages (pre mode). Root version: ${VERSION}"
+          echo "Publishing prerelease (pre mode):"
+          for pkg in packages/*/package.json; do
+            jq -r '"- \(.name)@\(.version)"' "$pkg"
+          done
           pnpm changeset publish
 
-      - name: "Tag prerelease packages (npm dist-tag: next)"
+      - name: "Tag prereleases (npm dist-tag: next)"
         if: needs.analyze.outputs.is_prerelease == 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
         run: |
           if [ ! -f changeset-status.json ]; then
-            echo "::error::changeset-status.json not found; cannot tag prerelease packages."
+            echo "::error::changeset-status.json not found; cannot tag prerelease."
             exit 1
           fi
 
-          TAG_ENTRIES=$(jq -r '.releases // [] | .[] | "\(.name)@\(.newVersion)"' changeset-status.json)
+          # @type {json} string[] — e.g. ["@adobe/alloy"]
+          PUBLIC=$(
+            pnpm ls -r --json --depth -1 \
+              | jq '[.[] | select(.private | not) | .name]'
+          )
+          # @type {string} newline-delimited — e.g. "@adobe/alloy@2.31.2-beta.0"
+          TAG_ENTRIES=$(
+            jq -r --argjson pub "$PUBLIC" '
+              .releases // []
+              | .[]
+              | select(.name | IN($pub[]))
+              | "\(.name)@\(.newVersion)"
+            ' changeset-status.json
+          )
 
           if [ -z "${TAG_ENTRIES}" ]; then
             echo "No releases in changeset-status.json; skipping dist-tagging."
             exit 0
           fi
 
-          echo "Applying npm dist-tag next to prerelease packages:"
+          echo "Applying npm dist-tag next to prereleases:"
           echo "${TAG_ENTRIES}" | sed 's/^/- /'
           while IFS= read -r pkg; do
             if [ -n "${pkg}" ]; then
@@ -213,13 +230,15 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
         run: |
-          VERSION=$(jq -r '.version' package.json)
-          echo "Publishing stable packages (npm tag: latest). Root version: ${VERSION}"
+          echo "Publishing stable (npm tag: latest):"
+          for pkg in packages/*/package.json; do
+            jq -r '"- \(.name)@\(.version)"' "$pkg"
+          done
           pnpm changeset publish
 
-      # rebuilding because `pnpm changeset publish` wipes out build artifacts
+      # rebuilding because `changeset publish` wipes out build artifacts
       - name: Rebuild browser artifacts for CDN upload
-        run: pnpm run build
+        run: pnpm --filter @adobe/alloy run build
 
       - name: Start ssh-agent for CDN
         uses: webfactory/ssh-agent@v0.9.1
@@ -270,47 +289,7 @@ jobs:
           fi
           git push --follow-tags
 
-      - name: Create GitHub Release (notes from CHANGELOG.md)
+      - name: Create GitHub Releases
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          VERSION=$(jq -r '.version' package.json)
-          TAG="@adobe/alloy@${VERSION}"
-
-          if ! git rev-parse "${TAG}" >/dev/null 2>&1; then
-            echo "Tag ${TAG} not found locally; skipping GitHub release."
-            exit 0
-          fi
-
-          if gh release view "${TAG}" >/dev/null 2>&1; then
-            echo "GitHub release ${TAG} already exists; skipping."
-            exit 0
-          fi
-
-          if [ ! -f CHANGELOG.md ]; then
-            echo "::error::CHANGELOG.md not found; cannot create GitHub release notes."
-            exit 1
-          fi
-
-          # Generate GitHub release notes
-          NOTES_FILE="$(mktemp)"
-          awk -v ver="${VERSION}" '
-            $0 == "## " ver { in_section=1; next }
-            in_section && /^## / { exit }
-            in_section { print }
-          ' CHANGELOG.md > "${NOTES_FILE}"
-
-          if [ ! -s "${NOTES_FILE}" ]; then
-            echo "::error::Could not extract notes for version ${VERSION} from CHANGELOG.md"
-            exit 1
-          fi
-
-          FLAGS=()
-          if [ "${{ needs.analyze.outputs.is_prerelease }}" = "true" ]; then
-            FLAGS+=(--prerelease)
-          fi
-
-          echo "Creating GitHub release ${TAG} (prerelease: ${{ needs.analyze.outputs.is_prerelease }})"
-          echo "Release notes preview:"
-          head -n 20 "${NOTES_FILE}"
-          gh release create "${TAG}" --title "${TAG}" --notes-file "${NOTES_FILE}" "${FLAGS[@]}"
+        run: node scripts/createGithubReleases.js changeset-status.json

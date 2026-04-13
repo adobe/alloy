@@ -11,14 +11,13 @@ governing permissions and limitations under the License.
 */
 import { createDataCollectionRequestPayload } from "../../utils/request/index.js";
 import createConversationServiceRequest from "./createConversationServiceRequest.js";
-import { getConciergeSessionCookie, getPageSurface } from "./utils.js";
+import { getPageSurface } from "./utils.js";
 import uuid from "../../utils/uuid.js";
 import createStreamParser from "./createStreamParser.js";
 import createTimeoutWrapper from "./createTimeoutWrapper.js";
 
 export default ({
   eventManager,
-  loggingCookieJar,
   config,
   logger,
   sendConversationServiceRequest,
@@ -28,6 +27,7 @@ export default ({
   decodeKndctrCookie,
   lifecycle,
   consent,
+  session,
 }) => {
   const {
     edgeDomain,
@@ -36,16 +36,20 @@ export default ({
     onBeforeEventSend,
     conversation,
   } = config;
-
   return (options) => {
     let streamingEnabled = false;
-    const { message, onStreamResponse, xdm, data } = options;
-    const sessionId =
-      getConciergeSessionCookie({ loggingCookieJar, config }) || uuid();
+    const {
+      message,
+      onStreamResponse,
+      xdm,
+      data,
+      voiceEnabled = false,
+    } = options;
     const payload = createDataCollectionRequestPayload();
     const request = createConversationServiceRequest({
       payload,
-      sessionId: sessionId,
+      sessionId: session.id,
+      voiceEnabled,
     });
 
     const event = eventManager.createEvent();
@@ -104,8 +108,9 @@ export default ({
         }
 
         payload.addEvent(event);
-        cookieTransfer.cookiesToPayload(payload, edgeDomain);
-
+        if (config.conversation.stickyConversationSession === true) {
+          cookieTransfer.cookiesToPayload(payload, edgeDomain);
+        }
         return sendConversationServiceRequest({
           requestId: uuid(),
           url,

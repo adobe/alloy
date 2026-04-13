@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 export default ({ processIdSyncs }) => {
   return (response) => {
-    return processIdSyncs(response.getPayloadsByType("identity:exchange"));
+    // no need to wait for response
+    processIdSyncs(response.getPayloadsByType("identity:exchange"));
   };
 };

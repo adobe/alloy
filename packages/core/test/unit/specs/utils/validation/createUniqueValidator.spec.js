@@ -28,13 +28,13 @@ describe("validation::createUnique", () => {
   ].forEach((values) => {
     it(`should reject ${JSON.stringify(values)}`, () => {
       const validator = string().unique();
-      values.forEach((value, i) => {
-        if (i + 1 === values.length) {
-          expect(() => validator(value, "mykey")).toThrowError();
-        } else {
-          expect(validator(value, "mykey")).toEqual(value);
-        }
+      const duplicateValue = values.at(-1);
+
+      values.slice(0, -1).forEach((value) => {
+        expect(validator(value, "mykey")).toEqual(value);
       });
+
+      expect(() => validator(duplicateValue, "mykey")).toThrowError();
     });
   });
   [null, undefined].forEach((value) => {

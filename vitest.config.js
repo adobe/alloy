@@ -25,7 +25,7 @@ export default defineConfig({
         extends: false,
         test: {
           name: "unit",
-          include: ["packages/core/test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
+          include: ["packages/*/test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
           isolate: false,
           browser: {
             provider: playwright(),
@@ -46,7 +46,7 @@ export default defineConfig({
         test: {
           name: "integration",
           include: [
-            "packages/core/test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)",
+            "packages/*/test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)",
           ],
           isolate: false,
           browser: {
@@ -99,6 +99,16 @@ export default defineConfig({
           setupFiles: [
             "packages/reactor-extension/test/integration/helpers/setup.js",
           ],
+        },
+      },
+      {
+        extends: false,
+        test: {
+          name: "scripts",
+          include: ["scripts/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
+          isolate: false,
+          pool: "threads",
+          environment: "node",
         },
       },
     ],

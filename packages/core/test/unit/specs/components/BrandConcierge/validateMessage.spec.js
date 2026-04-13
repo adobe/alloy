@@ -173,6 +173,57 @@ describe("BrandConcierge::validateMessage", () => {
         validateMessage({ options });
       }).not.toThrowError();
     });
+
+    it("should accept message with voiceEnabled true", () => {
+      const options = {
+        message: "Hello",
+        voiceEnabled: true,
+      };
+      expect(() => {
+        validateMessage({ options });
+      }).not.toThrowError();
+    });
+
+    it("should accept message with voiceEnabled false", () => {
+      const options = {
+        message: "Hello",
+        voiceEnabled: false,
+      };
+      expect(() => {
+        validateMessage({ options });
+      }).not.toThrowError();
+    });
+
+    it("should accept data with voiceEnabled true", () => {
+      const options = {
+        data: {
+          type: "action",
+          payload: {},
+        },
+        voiceEnabled: true,
+      };
+      expect(() => {
+        validateMessage({ options });
+      }).not.toThrowError();
+    });
+
+    it("should default voiceEnabled to false for message options", () => {
+      const options = { message: "Hello" };
+      const result = validateMessage({ options });
+      expect(result.voiceEnabled).toBe(false);
+    });
+
+    it("should preserve voiceEnabled true for data options", () => {
+      const options = {
+        data: {
+          type: "action",
+          payload: {},
+        },
+        voiceEnabled: true,
+      };
+      const result = validateMessage({ options });
+      expect(result.voiceEnabled).toBe(true);
+    });
   });
 
   describe("Error Cases - Invalid Types", () => {
@@ -255,6 +306,39 @@ describe("BrandConcierge::validateMessage", () => {
       };
       expect(() => {
         validateMessage({ options });
+      }).toThrowError();
+    });
+
+    it("should throw when voiceEnabled is a string on message options", () => {
+      expect(() => {
+        validateMessage({ options: { message: "Hello", voiceEnabled: "yes" } });
+      }).toThrowError();
+    });
+
+    it("should throw when voiceEnabled is a string on xdm options", () => {
+      expect(() => {
+        validateMessage({
+          options: { xdm: { interactionId: "test-id" }, voiceEnabled: "yes" },
+        });
+      }).toThrowError();
+    });
+
+    it("should throw when voiceEnabled is a number on xdm options", () => {
+      expect(() => {
+        validateMessage({
+          options: { xdm: { interactionId: "test-id" }, voiceEnabled: 1 },
+        });
+      }).toThrowError();
+    });
+
+    it("should throw when voiceEnabled is a string on data options", () => {
+      expect(() => {
+        validateMessage({
+          options: {
+            data: { type: "action", payload: {} },
+            voiceEnabled: "yes",
+          },
+        });
       }).toThrowError();
     });
   });
