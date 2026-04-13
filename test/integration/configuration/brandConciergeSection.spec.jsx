@@ -44,6 +44,7 @@ describe("Config brand concierge section", () => {
             conversation: {
               stickyConversationSession: true,
               streamTimeout: 20000, // 20 seconds in milliseconds
+              collectSources: true,
             },
           },
         ],
@@ -60,6 +61,9 @@ describe("Config brand concierge section", () => {
     // Stream timeout should be displayed in seconds (20000ms = 20s)
     const streamTimeoutField = spectrumNumberField("streamTimeoutDataTestId");
     expect(await streamTimeoutField.getNumericValue()).toBe(20);
+
+    const collectSourcesField = spectrumCheckbox("collectSourcesDataTestId");
+    expect(await collectSourcesField.isChecked()).toBe(true);
   });
 
   it("updates form values and saves to settings", async () => {
@@ -84,12 +88,16 @@ describe("Config brand concierge section", () => {
     const streamTimeoutField = spectrumNumberField("streamTimeoutDataTestId");
     await streamTimeoutField.fill(30);
 
+    const collectSourcesField = spectrumCheckbox("collectSourcesDataTestId");
+    await collectSourcesField.check();
+
     const settings = await extensionBridge.getSettings();
     expect(settings.instances[0].conversation.stickyConversationSession).toBe(
       true,
     );
     // Should be saved as milliseconds (30s = 30000ms)
     expect(settings.instances[0].conversation.streamTimeout).toBe(30000);
+    expect(settings.instances[0].conversation.collectSources).toBe(true);
   });
 
   it("does not emit brand concierge settings when component is disabled", async () => {
@@ -198,5 +206,26 @@ describe("Config brand concierge section", () => {
     // Default is 10 seconds, don't change it
     const settings = await extensionBridge.getSettings();
     expect(settings.instances[0].conversation?.streamTimeout).toBeUndefined();
+  });
+
+  it("does not save collectSources when it equals default value", async () => {
+    const view = await renderView(ConfigurationView);
+
+    extensionBridge.init(
+      buildSettings({
+        components: {
+          brandConcierge: true,
+        },
+      }),
+    );
+
+    await waitForConfigurationViewToLoad(view);
+
+    // Default is false, don't change it
+    const collectSourcesField = spectrumCheckbox("collectSourcesDataTestId");
+    expect(await collectSourcesField.isChecked()).toBe(false);
+
+    const settings = await extensionBridge.getSettings();
+    expect(settings.instances[0].conversation?.collectSources).toBeUndefined();
   });
 });

@@ -30,6 +30,7 @@ const getDefaultSettings = () => ({
   conversation: {
     stickyConversationSession: false,
     streamTimeout: STREAM_TIMEOUT_SECONDS,
+    collectSources: false,
   },
 });
 
@@ -45,7 +46,7 @@ export const bridge = {
       toObj: conversation,
       fromObj: instanceSettings.conversation || {},
       defaultsObj: getDefaultSettings().conversation,
-      keys: ["stickyConversationSession"],
+      keys: ["stickyConversationSession", "collectSources"],
     });
 
     // Convert streamTimeout from milliseconds to seconds for display
@@ -66,7 +67,7 @@ export const bridge = {
         toObj: conversation,
         fromObj: instanceValues.conversation,
         defaultsObj: getDefaultSettings().conversation,
-        keys: ["stickyConversationSession"],
+        keys: ["stickyConversationSession", "collectSources"],
       });
 
       // Convert streamTimeout from seconds to milliseconds for storage
@@ -95,6 +96,7 @@ export const bridge = {
           streamTimeout: number()
             .min(10, "The stream timeout must be at least 10 seconds.")
             .default(STREAM_TIMEOUT_SECONDS),
+          collectSources: boolean(),
         }),
     }),
   }),
@@ -145,6 +147,15 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
           description="If the conversation stream chunks are not returned within this timeout duration, a timeout error will be triggered."
           width="size-5000"
         />
+        <FormikCheckbox
+          data-test-id="collectSourcesDataTestId"
+          label=""
+          name={`${instanceFieldName}.conversation.collectSources`}
+          description="Collects the sources if a user navigated to the page from a Brand Concierge conversation link click."
+          width="size-5000"
+        >
+          Collect sources
+        </FormikCheckbox>
       </FormElementContainer>
     </>
   );
