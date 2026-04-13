@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@adobe/alloy':
-        specifier: 2.31.1
-        version: 2.31.1(@types/babel__core@7.20.5)(@types/node@24.10.0)(picomatch@4.0.3)(vitest@4.0.8)
+        specifier: 2.31.2-beta.2
+        version: 2.31.2-beta.2(@types/babel__core@7.20.5)(@types/node@24.10.0)(picomatch@4.0.3)(vitest@4.0.8)
       '@adobe/react-spectrum':
         specifier: ^3.45.0
         version: 3.45.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -246,8 +246,11 @@ packages:
   '@adobe/aep-rules-engine@3.1.1':
     resolution: {integrity: sha512-YeFDDSEM4wjwTNM4drKTIbYvfSdYS3DmeOgb1SxZfSXTcVg8vdxcd5blE2wKO42Qa4KUJK+ziK7ABvbHoO7T8Q==}
 
-  '@adobe/alloy@2.31.1':
-    resolution: {integrity: sha512-GjgQ7T5YI1AIKoIHyyIe+1XN8e5YA9x0BcIDT1A4FiptGlWJWAaveU9do41dBJq6qoWPZPNV8MkF5l04eMUqnw==}
+  '@adobe/alloy-core@1.1.0':
+    resolution: {integrity: sha512-52ZuM8etYsLTyx/5iVWb96ft5DYkPLiCU6JgG88J7ziiizduKNvHiIzfN5V6RLXTN1/jvdvBVms1X5vDnj0XXQ==}
+
+  '@adobe/alloy@2.31.2-beta.2':
+    resolution: {integrity: sha512-COTCfPFA6eUoTJwBFxZ85+ajV8z1gV8o5xg6Y1oU7NExI/bAtIrgKyZn5J7PPpxT8zx7Vy69e0371cwd6FBExw==}
     hasBin: true
 
   '@adobe/auth-token@1.0.1':
@@ -8285,11 +8288,22 @@ snapshots:
       - supports-color
       - vitest
 
-  '@adobe/alloy@2.31.1(@types/babel__core@7.20.5)(@types/node@24.10.0)(picomatch@4.0.3)(vitest@4.0.8)':
+  '@adobe/alloy-core@1.1.0(vitest@4.0.8)':
     dependencies:
       '@adobe/aep-rules-engine': 3.1.1(vitest@4.0.8)
       '@adobe/reactor-query-string': 2.0.0
+      js-cookie: 3.0.5
+      uuid: 13.0.0
+    transitivePeerDependencies:
+      - '@vitest/browser'
+      - supports-color
+      - vitest
+
+  '@adobe/alloy@2.31.2-beta.2(@types/babel__core@7.20.5)(@types/node@24.10.0)(picomatch@4.0.3)(vitest@4.0.8)':
+    dependencies:
+      '@adobe/alloy-core': 1.1.0(vitest@4.0.8)
       '@babel/core': 7.28.5
+      '@babel/plugin-transform-modules-commonjs': 7.27.1(@babel/core@7.28.5)
       '@babel/plugin-transform-template-literals': 7.27.1(@babel/core@7.28.5)
       '@babel/preset-env': 7.28.5(@babel/core@7.28.5)
       '@inquirer/prompts': 7.10.0(@types/node@24.10.0)
@@ -8298,12 +8312,8 @@ snapshots:
       '@rollup/plugin-node-resolve': 16.0.3(rollup@4.53.1)
       '@rollup/plugin-terser': 0.4.4(rollup@4.53.1)
       commander: 14.0.2
-      js-cookie: 3.0.5
       rollup: 4.53.1
       rollup-plugin-license: 3.6.0(picomatch@4.0.3)(rollup@4.53.1)
-      uuid: 13.0.0
-    optionalDependencies:
-      '@rollup/rollup-linux-x64-gnu': 4.53.1
     transitivePeerDependencies:
       - '@types/babel__core'
       - '@types/node'
@@ -10402,7 +10412,7 @@ snapshots:
       '@parcel/rust': 2.16.1
       '@parcel/utils': 2.16.1
       nullthrows: 1.1.1
-      semver: 7.7.3
+      semver: 7.7.4
     transitivePeerDependencies:
       - '@parcel/core'
       - napi-wasm
@@ -17738,7 +17748,7 @@ snapshots:
       globby: 11.1.0
       is-glob: 4.0.3
       minimatch: 9.0.5
-      semver: 7.7.3
+      semver: 7.7.4
       ts-api-utils: 1.4.3(typescript@4.7.4)
     optionalDependencies:
       typescript: 4.7.4
@@ -17755,7 +17765,7 @@ snapshots:
       fast-glob: 3.3.3
       is-glob: 4.0.3
       minimatch: 9.0.5
-      semver: 7.7.3
+      semver: 7.7.4
       ts-api-utils: 2.1.0(typescript@4.7.4)
       typescript: 4.7.4
     transitivePeerDependencies:
@@ -18873,7 +18883,7 @@ snapshots:
       '@one-ini/wasm': 0.1.1
       commander: 10.0.1
       minimatch: 9.0.1
-      semver: 7.7.3
+      semver: 7.7.4
 
   ee-first@1.1.1: {}
 
@@ -20431,7 +20441,7 @@ snapshots:
 
   make-dir@4.0.0:
     dependencies:
-      semver: 7.7.3
+      semver: 7.7.4
 
   match-requires@2.0.1:
     dependencies:
