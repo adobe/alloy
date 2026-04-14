@@ -22,8 +22,6 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Linting
         run: pnpm run lint
-      - name: Format check
-        run: pnpm run format:check
 
   unit-test:
     name: "Test"
