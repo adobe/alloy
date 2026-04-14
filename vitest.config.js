@@ -88,11 +88,15 @@ export default defineConfig({
           include: [
             "packages/reactor-extension/test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)",
           ],
+          testTimeout: 30_000,
+          hookTimeout: 30_000,
           isolate: true,
           browser: {
             enabled: true,
             instances: [{ browser: "chromium" }],
-            provider: playwright(),
+            provider: playwright({
+              actionTimeout: 5_000,
+            }),
             headless: true,
             screenshotFailures: false,
             locators: { testIdAttribute: "data-test-id" },

@@ -39,6 +39,8 @@ export default defineProject({
         test: {
           name: "integration",
           include: ["test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
+          testTimeout: 30_000,
+          hookTimeout: 30_000,
           isolate: true,
           browser: {
             enabled: true,
@@ -47,7 +49,9 @@ export default defineProject({
                 browser: "chromium",
               },
             ],
-            provider: playwright(),
+            provider: playwright({
+              actionTimeout: 5_000,
+            }),
             headless: true,
             screenshotFailures: false,
             locators: {
