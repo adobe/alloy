@@ -19,7 +19,6 @@ import react from "eslint-plugin-react";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import unusedImports from "eslint-plugin-unused-imports";
 import testingLibrary from "eslint-plugin-testing-library";
-import babelParser from "@babel/eslint-parser";
 import { defineConfig, globalIgnores } from "eslint/config";
 import { glob } from "glob";
 import globals from "globals";
@@ -51,6 +50,7 @@ export default defineConfig([
     "packages/reactor-extension/dist/**",
     "packages/reactor-extension/src/lib/runAlloy.js",
     "packages/core/test/**",
+    "packages/browser/test/**",
     "**/scripts/**/*.mjs",
   ]),
   // License: warn only; do not run on extension so --fix never adds header there
@@ -271,6 +271,13 @@ export default defineConfig([
     },
   },
   {
+    name: "alloy/browser-src",
+    files: ["packages/browser/src/**/*.{cjs,js,mjs,jsx}"],
+    rules: {
+      "import/named": "off",
+    },
+  },
+  {
     name: "alloy/scripts",
     files: [
       "scripts/**/*.{cjs,js,mjs}",
@@ -389,23 +396,21 @@ export default defineConfig([
   },
 
   // --- Extension-only: packages/reactor-extension (repo-relative paths) ---
-  // Only .js/.cjs/.jsx; .mjs in scripts/ are not linted (see globalIgnores)
   {
     name: "alloy/reactor-extension",
-    files: ["packages/reactor-extension/**/*.{cjs,js,jsx}"],
+    files: ["packages/reactor-extension/**/*.{cjs,js,mjs,jsx}"],
     settings: {
       react: {
         version: "19.0.0",
       },
     },
     languageOptions: {
-      parser: babelParser,
+      ecmaVersion: "latest",
       parserOptions: {
-        babelOptions: {
-          presets: ["@babel/preset-env", "@babel/preset-react"],
+        ecmaFeatures: {
+          jsx: true,
         },
       },
-      ecmaVersion: 2021,
       globals: {
         ...globals.browser,
         ...globals.node,
@@ -418,6 +423,19 @@ export default defineConfig([
       "jsx-a11y": jsxA11y,
     },
     rules: {
+      "no-underscore-dangle": [
+        "error",
+        {
+          allow: [
+            "_experience",
+            "__dirname",
+            "__filename",
+            "__alloyMonitors",
+            "__alloyNS",
+            "__adobe",
+          ],
+        },
+      ],
       "import/extensions": "off",
       "import/default": "off",
       "import/namespace": "off",
@@ -486,7 +504,7 @@ export default defineConfig([
       "func-names": "off",
       "no-underscore-dangle": [
         "error",
-        { allow: ["__alloyNS", "__alloyMonitors"] },
+        { allow: ["__alloyNS", "__alloyMonitors", "__adobe"] },
       ],
     },
   },
@@ -502,7 +520,7 @@ export default defineConfig([
   // Extension functional tests use testcafe/browser patterns; relax vitest assertion rules
   {
     name: "alloy/reactor-extension/functional-tests",
-    files: ["packages/reactor-extension/test/functional/**/*.{cjs,js,jsx}"],
+    files: ["packages/reactor-extension/test/functional/**/*.{cjs,js,mjs,jsx}"],
     rules: {
       "vitest/expect-expect": "off",
       "vitest/no-identical-title": "off",

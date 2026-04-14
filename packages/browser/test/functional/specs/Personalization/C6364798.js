@@ -127,7 +127,6 @@ const simulatePageLoad = async (alloy) => {
 
   await t
     .expect(
-      // eslint-disable-next-line no-underscore-dangle
       notificationRequestBody.events[0].xdm._experience.decisioning
         .propositions[0],
     )
@@ -138,14 +137,12 @@ const simulatePageLoad = async (alloy) => {
   );
   await t
     .expect(
-      // eslint-disable-next-line no-underscore-dangle
       notificationRequestBody.events[0].xdm._experience.decisioning
         .propositions[1],
     )
     .eql(productsViewDecisionsMeta[0]);
   await t
     .expect(
-      // eslint-disable-next-line no-underscore-dangle
       notificationRequestBody.events[0].xdm._experience.decisioning.propositions
         .length,
     )
@@ -153,7 +150,6 @@ const simulatePageLoad = async (alloy) => {
 
   await t
     .expect(
-      // eslint-disable-next-line no-underscore-dangle
       notificationRequestBody.events[0].xdm._experience.decisioning
         .propositionEventType.display,
     )
@@ -194,13 +190,11 @@ const simulateViewChange = async (alloy, personalizationPayload) => {
   );
   await t
     .expect(
-      // eslint-disable-next-line no-underscore-dangle
       viewChangeRequestBody.events[0].xdm._experience.decisioning.propositions,
     )
     .eql(cartViewDecisionsMeta);
   await t
     .expect(
-      // eslint-disable-next-line no-underscore-dangle
       viewChangeRequestBody.events[0].xdm._experience.decisioning
         .propositionEventType.display,
     )
@@ -237,7 +231,6 @@ const simulateViewChangeForNonExistingView = async (alloy) => {
   await t.expect(noViewViewChangeRequestBody.events[0].query).eql(undefined);
   await t
     .expect(
-      // eslint-disable-next-line no-underscore-dangle
       noViewViewChangeRequestBody.events[0].xdm._experience.decisioning
         .propositions,
     )

@@ -97,7 +97,6 @@ test("propositions are sorted ascending by rank", async () => {
     .eql("decisioning.propositionDisplay");
   await t
     .expect(
-      // eslint-disable-next-line no-underscore-dangle
       propositionDisplayEventBody.events[0].xdm._experience.decisioning
         .propositions[0].id,
     )
@@ -113,7 +112,6 @@ test("propositions are sorted ascending by rank", async () => {
     .eql("decisioning.propositionSuppressDisplay");
   await t
     .expect(
-      // eslint-disable-next-line no-underscore-dangle
       propositionSuppressDisplayEventBody.events[0].xdm._experience.decisioning
         .propositions[0].id,
     )

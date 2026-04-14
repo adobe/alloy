@@ -40,7 +40,7 @@ const getIsElementInViewport = (selector) => {
             threshold: 1.0,
           },
         );
-        // eslint-disable-next-line no-undef
+
         observer.observe(selector());
       });
     },

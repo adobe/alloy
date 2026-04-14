@@ -38,6 +38,7 @@ describe("Generated alloy.js (preinstalled mode)", () => {
     const distPath = path.resolve(__dirname, "../../../dist");
 
     alloyPath = path.join(distPath, "alloyPreinstalled.js");
+    // eslint-disable-next-line vitest/no-standalone-expect
     expect(fs.existsSync(alloyPath)).toBe(true);
 
     // Load the generated code once

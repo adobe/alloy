@@ -29,7 +29,6 @@ if (clientSecret) {
     orgId,
   };
 } else {
-  // eslint-disable-next-line no-console
   console.error(
     `Unable to obtain access. Please ensure that ${CLIENT_SECRET_ENV_VAR_NAME} is set.`,
   );

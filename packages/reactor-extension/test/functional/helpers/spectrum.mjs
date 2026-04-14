@@ -428,7 +428,7 @@ const componentWrappers = {
       (containerComponents, key) => ({
         ...containerComponents,
         // Using the function keyword here so this is defined
-        // eslint-disable-next-line object-shorthand
+
         [key]: function containerComponent(childTestId) {
           return that[key].call(
             this,

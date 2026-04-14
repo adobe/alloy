@@ -10,8 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/* eslint-disable vitest/expect-expect */
-
 import { t } from "testcafe";
 import initializeExtensionView from "../../../helpers/objectEditor/initializeExtensionView.mjs";
 import xdmTree from "../../../helpers/objectEditor/xdmTree.mjs";

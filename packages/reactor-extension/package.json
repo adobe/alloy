@@ -47,20 +47,6 @@
     "token": "node scripts/token.mjs",
     "version": "./scripts/version.sh"
   },
-  "lint-staged": {
-    "./*.{js,jsx}": [
-      "eslint --cache --fix"
-    ],
-    "./{src,test,scripts}/**/*.{js,jsx}": [
-      "eslint --cache --fix"
-    ],
-    "./*.{js,jsx,html}": [
-      "prettier --write"
-    ],
-    "./{src,test,scripts}/**/*.{js,jsx,html}": [
-      "prettier --write"
-    ]
-  },
   "dependencies": {
     "@adobe/alloy": "workspace:*",
     "@adobe/react-spectrum": "^3.45.0",

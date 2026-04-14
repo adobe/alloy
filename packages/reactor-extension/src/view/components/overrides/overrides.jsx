@@ -377,7 +377,7 @@ const Overrides = ({
                         description="When providing a data element, it should resolve to true to enable overrides, and false to provide no overrides."
                         onBlur={onDisable}
                       >
-                        {...EnabledMatchOptions}
+                        {EnabledMatchOptions}
                       </OverrideInput>
                     )}
                     {!isDisabled("enabled", true) && (
@@ -430,7 +430,7 @@ const Overrides = ({
                                 description={dataElementDescription}
                                 onBlur={onDisable}
                               >
-                                {...EnabledDisabledMatchOptions}
+                                {EnabledDisabledMatchOptions}
                               </OverrideInput>
                             )}
                             {visibleFields.has(
@@ -479,7 +479,7 @@ const Overrides = ({
                                 onBlur={onDisable}
                                 description={dataElementDescription}
                               >
-                                {...EnabledDisabledMatchOptions}
+                                {EnabledDisabledMatchOptions}
                               </OverrideInput>
                             )}
                           </ProductSubsection>
@@ -542,7 +542,7 @@ const Overrides = ({
                                 disabledDisplayValue="Disabled"
                                 description={dataElementDescription}
                               >
-                                {...EnabledDisabledMatchOptions}
+                                {EnabledDisabledMatchOptions}
                               </OverrideInput>
                             )}
                             {visibleFields.has(
@@ -603,7 +603,7 @@ const Overrides = ({
                                   }
                                   disabledDisplayValue="Disabled"
                                 >
-                                  {...EnabledDisabledOptions}
+                                  {EnabledDisabledOptions}
                                 </OverrideInput>
                               )}
                             {visibleFields.has(
@@ -635,7 +635,7 @@ const Overrides = ({
                                   }
                                   disabledDisplayValue="Disabled"
                                 >
-                                  {...EnabledDisabledOptions}
+                                  {EnabledDisabledOptions}
                                 </OverrideInput>
                               )}
                             {visibleFields.has(
@@ -667,7 +667,7 @@ const Overrides = ({
                                   }
                                   disabledDisplayValue="Disabled"
                                 >
-                                  {...EnabledDisabledOptions}
+                                  {EnabledDisabledOptions}
                                 </OverrideInput>
                               )}
                             {visibleFields.has(FIELD_NAMES.ajoEnabled) &&
@@ -694,7 +694,7 @@ const Overrides = ({
                                   }
                                   disabledDisplayValue="Disabled"
                                 >
-                                  {...EnabledDisabledOptions}
+                                  {EnabledDisabledOptions}
                                 </OverrideInput>
                               )}
                           </ProductSubsection>
@@ -718,7 +718,7 @@ const Overrides = ({
                               disabledDisplayValue="Disabled"
                               description={dataElementDescription}
                             >
-                              {...EnabledDisabledMatchOptions}
+                              {EnabledDisabledMatchOptions}
                             </OverrideInput>
                           </ProductSubsection>
                         )}
@@ -745,7 +745,7 @@ const Overrides = ({
                                 disabledDisplayValue="Disabled"
                                 description={dataElementDescription}
                               >
-                                {...EnabledDisabledMatchOptions}
+                                {EnabledDisabledMatchOptions}
                               </OverrideInput>
                             )}
                             {visibleFields.has(

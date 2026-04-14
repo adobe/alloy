@@ -2081,6 +2081,7 @@ describe("overridesBridge", () => {
         // Should not reach here
         throw new Error("Validation should have failed");
       } catch (error) {
+        // eslint-disable-next-line vitest/no-conditional-expect
         expect(error.message).toMatch(/Please/);
       }
     });
