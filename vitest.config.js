@@ -26,6 +26,7 @@ export default defineConfig({
         test: {
           name: "unit",
           include: ["packages/*/test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
+          exclude: ["packages/reactor-extension/**"],
           isolate: false,
           browser: {
             provider: playwright(),
@@ -48,6 +49,7 @@ export default defineConfig({
           include: [
             "packages/*/test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)",
           ],
+          exclude: ["packages/reactor-extension/**"],
           isolate: false,
           browser: {
             provider: playwright(),
