@@ -124,7 +124,7 @@ const getInitialFormStateFromDataElement = async ({
     context.dataElementId = dataElement.id;
 
     // Temporary fix to support the audienceManager property that should have been lowercased.
-    // eslint-disable-next-line no-underscore-dangle
+
     const adobe = data?.data?.__adobe || {};
     if (adobe.audienceManager) {
       adobe.audiencemanager = adobe.audienceManager;
@@ -152,6 +152,7 @@ const getInitialValues =
     } = initInfo;
     const {
       dataElementId,
+      dataElementName,
       transforms = {},
       schema: previouslySavedSchemaInfo,
       customCode = "",
@@ -177,7 +178,24 @@ const getInitialValues =
     context.dataElementsFirstPageCursor = dataElementsFirstPageCursor;
 
     let dataElement;
-    if (dataElementId) {
+    if (dataElementName) {
+      dataElement = dataElementsFirstPage.find(
+        (de) => de.name === dataElementName,
+      );
+      if (!dataElement) {
+        const { results } = await fetchDataElements({
+          orgId,
+          imsAccess,
+          propertyId,
+          search: dataElementName,
+        });
+        dataElement = results.find((de) => de.name === dataElementName);
+      }
+      if (dataElement) {
+        context.previouslySavedSchemaInfo = previouslySavedSchemaInfo;
+      }
+    }
+    if (!dataElement && dataElementId) {
       try {
         context.previouslySavedSchemaInfo = previouslySavedSchemaInfo;
         dataElement = await fetchDataElement({
@@ -252,6 +270,7 @@ const getSettings =
     };
 
     const response = {
+      dataElementName: dataElement?.name,
       dataElementId,
       data: xdm || data || {},
     };
@@ -562,7 +581,7 @@ UpdateVariable.propTypes = {
   formikProps: PropTypes.object,
 };
 
-const UpdateVariableView = () => {
+const UpdateVariableExtensionView = () => {
   const { current: context } = useRef({});
 
   return (
@@ -578,4 +597,4 @@ const UpdateVariableView = () => {
   );
 };
 
-export default UpdateVariableView;
+export default UpdateVariableExtensionView;

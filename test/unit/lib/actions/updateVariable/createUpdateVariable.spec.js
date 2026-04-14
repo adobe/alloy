@@ -9,7 +9,6 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
 import { describe, it, expect, beforeEach } from "vitest";
 import deepAssign from "../../../helpers/deepAssign";
 import createUpdateVariable from "../../../../../src/lib/actions/updateVariable/createUpdateVariable";
@@ -99,5 +98,136 @@ describe("Update variable", () => {
       transforms: { "": { clear: true } },
     });
     expect(variableStore).toEqual({ var1: { b: 2 } });
+  });
+
+  it("uses dataElementName as the store key when provided", () => {
+    updateVariable({
+      data: { a: 1 },
+      dataElementName: "myVariable",
+      dataElementId: "DE123",
+      transforms: {},
+    });
+    expect(variableStore).toEqual({ myVariable: { a: 1 } });
+    expect(variableStore.DE123).toBeUndefined();
+  });
+
+  it("falls back to dataElementId when dataElementName is not provided", () => {
+    updateVariable({
+      data: { a: 1 },
+      dataElementId: "DE123",
+      transforms: {},
+    });
+    expect(variableStore).toEqual({ DE123: { a: 1 } });
+  });
+
+  it("updates existing variable using dataElementName", () => {
+    variableStore.myVariable = { a: 1, b: 2 };
+    updateVariable({
+      data: { a: 3, c: 4 },
+      dataElementName: "myVariable",
+      dataElementId: "DE123",
+      transforms: {},
+    });
+    expect(variableStore).toEqual({ myVariable: { a: 3, b: 2, c: 4 } });
+  });
+
+  it("applies clear transform using dataElementName", () => {
+    variableStore.myVariable = { a: { b: { c: 3 } } };
+    updateVariable({
+      data: {},
+      dataElementName: "myVariable",
+      dataElementId: "DE123",
+      transforms: { "a.b": { clear: true } },
+    });
+    expect(variableStore).toEqual({ myVariable: { a: {} } });
+  });
+
+  describe("sequential updates should merge analytics events", () => {
+    it("merges events from sequential rules", () => {
+      updateVariable({
+        data: { __adobe: { analytics: { events: "event99" } } },
+        dataElementId: "v",
+        transforms: {},
+      });
+      updateVariable({
+        data: { __adobe: { analytics: { events: "event9" } } },
+        dataElementId: "v",
+        transforms: {},
+      });
+
+      expect(variableStore.v.__adobe.analytics.events).toBe("event99,event9");
+    });
+
+    it("merges events while preserving other analytics properties", () => {
+      updateVariable({
+        data: { __adobe: { analytics: { events: "event99", eVar1: "value" } } },
+        dataElementId: "v",
+        transforms: {},
+      });
+      updateVariable({
+        data: { __adobe: { analytics: { events: "event1" } } },
+        dataElementId: "v",
+        transforms: {},
+      });
+
+      expect(variableStore.v.__adobe.analytics.events).toBe("event99,event1");
+      expect(variableStore.v.__adobe.analytics.eVar1).toBe("value");
+    });
+
+    it("preserves serialized event syntax when merging", () => {
+      updateVariable({
+        data: {
+          __adobe: { analytics: { events: "event1:abc123=5" } },
+        },
+        dataElementId: "v",
+        transforms: {},
+      });
+      updateVariable({
+        data: { __adobe: { analytics: { events: "event9" } } },
+        dataElementId: "v",
+        transforms: {},
+      });
+
+      expect(variableStore.v.__adobe.analytics.events).toBe(
+        "event1:abc123=5,event9",
+      );
+    });
+
+    it("merges events across three sequential rules", () => {
+      updateVariable({
+        data: { __adobe: { analytics: { events: "event99" } } },
+        dataElementId: "v",
+        transforms: {},
+      });
+      updateVariable({
+        data: { __adobe: { analytics: { events: "event4" } } },
+        dataElementId: "v",
+        transforms: {},
+      });
+      updateVariable({
+        data: { __adobe: { analytics: { events: "event9" } } },
+        dataElementId: "v",
+        transforms: {},
+      });
+
+      expect(variableStore.v.__adobe.analytics.events).toBe(
+        "event99,event4,event9",
+      );
+    });
+
+    it("does not merge events when events path is cleared", () => {
+      updateVariable({
+        data: { __adobe: { analytics: { events: "event99" } } },
+        dataElementId: "v",
+        transforms: {},
+      });
+      updateVariable({
+        data: { __adobe: { analytics: { events: "event1" } } },
+        dataElementId: "v",
+        transforms: { "__adobe.analytics.events": { clear: true } },
+      });
+
+      expect(variableStore.v.__adobe.analytics.events).toBe("event1");
+    });
   });
 });
