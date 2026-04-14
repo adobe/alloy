@@ -11,7 +11,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import babel from "@babel/core";
 import terser from "@rollup/plugin-terser";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
@@ -23,7 +22,7 @@ import fs from "fs";
 import path from "path";
 import { rollup } from "rollup";
 import { buildConfig } from "../rollup.config.js";
-import entryPointGeneratorBabelPlugin from "./helpers/entryPointGeneratorBabelPlugin.js";
+import { generateEntryPointSource } from "./helpers/generateEntryPoint.js";
 import {
   optionalComponentNames,
   requiredComponentNames,
@@ -40,22 +39,7 @@ const packageJsonContent = fs.readFileSync(
 );
 const { version } = JSON.parse(packageJsonContent);
 
-const resolveSourceRootPath = () => {
-  const candidates = ["src", "libEs6"];
-
-  for (const candidate of candidates) {
-    const candidatePath = safePathJoin(browserPackageRoot, candidate);
-    if (fs.existsSync(candidatePath)) {
-      return candidatePath;
-    }
-  }
-
-  throw new Error(
-    "Unable to locate source directory. Expected to find 'src' or 'libEs6' within the browser package.",
-  );
-};
-
-const sourceRootPath = resolveSourceRootPath();
+const sourceRootPath = safePathJoin(browserPackageRoot, "src");
 
 const arrayDifference = (arr1, arr2) => arr1.filter((x) => !arr2.includes(x));
 
@@ -91,14 +75,12 @@ const generateInputEntryFile = ({
   outputFile = "input.js",
   includedModules,
 }) => {
-  const output = babel.transformFileSync(inputPath, {
-    plugins: [entryPointGeneratorBabelPlugin(babel.types, includedModules)],
-  }).code;
+  const source = generateEntryPointSource(includedModules);
 
   const destinationDirectory = path.dirname(inputPath);
   const outputPath = safePathJoin(destinationDirectory, outputFile);
 
-  fs.writeFileSync(outputPath, output);
+  fs.writeFileSync(outputPath, source);
 
   return outputPath;
 };
@@ -116,16 +98,22 @@ const build = async (argv) => {
     minify: argv.minify,
   });
 
-  const bundle = await rollup(rollupConfig);
-  await bundle.write(rollupConfig.output[0]);
+  let bundle;
+  try {
+    bundle = await rollup(rollupConfig);
+    await bundle.write(rollupConfig.output[0]);
 
-  console.log(
-    `🎉 Wrote ${
-      path.isAbsolute(argv.outputDir)
-        ? rollupConfig.output[0].file
-        : path.relative(process.cwd(), rollupConfig.output[0].file)
-    } (${getFileSizeInKB(rollupConfig.output[0].file)}).`,
-  );
+    console.log(
+      `🎉 Wrote ${
+        path.isAbsolute(argv.outputDir)
+          ? rollupConfig.output[0].file
+          : path.relative(process.cwd(), rollupConfig.output[0].file)
+      } (${getFileSizeInKB(rollupConfig.output[0].file)}).`,
+    );
+  } finally {
+    await bundle?.close();
+    fs.rmSync(inputFile, { force: true });
+  }
 };
 
 const buildPushNotificationsServiceWorker = async (argv) => {
@@ -168,15 +156,19 @@ const buildPushNotificationsServiceWorker = async (argv) => {
   };
 
   const bundle = await rollup(rollupConfig);
-  await bundle.write(rollupConfig.output[0]);
+  try {
+    await bundle.write(rollupConfig.output[0]);
 
-  console.log(
-    `🎉 Wrote ${
-      path.isAbsolute(argv.outputDir)
-        ? rollupConfig.output[0].file
-        : path.relative(process.cwd(), rollupConfig.output[0].file)
-    } (${getFileSizeInKB(rollupConfig.output[0].file)}).`,
-  );
+    console.log(
+      `🎉 Wrote ${
+        path.isAbsolute(argv.outputDir)
+          ? rollupConfig.output[0].file
+          : path.relative(process.cwd(), rollupConfig.output[0].file)
+      } (${getFileSizeInKB(rollupConfig.output[0].file)}).`,
+    );
+  } finally {
+    await bundle.close();
+  }
 };
 
 const getMakeBuildCommand = () => {

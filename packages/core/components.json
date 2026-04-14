@@ -1,0 +1,20 @@
+{
+  "required": [
+    { "name": "context" },
+    { "name": "dataCollector" },
+    { "name": "identity" },
+    { "name": "libraryInfo" }
+  ],
+  "optional": [
+    { "name": "audiences" },
+    { "name": "consent" },
+    { "name": "eventMerge" },
+    { "name": "mediaAnalyticsBridge" },
+    { "name": "personalization" },
+    { "name": "rulesEngine" },
+    { "name": "streamingMedia" },
+    { "name": "advertising" },
+    { "name": "pushNotifications" },
+    { "name": "brandConcierge" }
+  ]
+}

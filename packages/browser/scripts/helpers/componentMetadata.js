@@ -14,26 +14,12 @@ import {
   optionalComponentNames as coreOptional,
   requiredComponentNames,
 } from "@adobe/alloy-core/componentMetadata.js";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import browserManifest from "../../components.json" with { type: "json" };
 
-const dirname = path.dirname(fileURLToPath(import.meta.url));
-const browserSrcDir = path.resolve(dirname, "../../src");
+const browserOptional = browserManifest.optional.map((c) => c.name);
 
-const readComponentNames = (filePath) => {
-  const code = fs.readFileSync(filePath, "utf8");
-  const exportRegex = /export\s+\{\s*default\s+as\s+([\w$]+)\s*\}/g;
-  const names = [];
-  let match;
-  while ((match = exportRegex.exec(code)) !== null) names.push(match[1]);
-  return Object.freeze(names);
-};
-
-const browserOptional = readComponentNames(
-  path.resolve(browserSrcDir, "components/componentCreators.js"),
-);
 export const optionalComponentNames = Object.freeze([
   ...new Set([...coreOptional, ...browserOptional]),
 ]);
+
 export { requiredComponentNames };

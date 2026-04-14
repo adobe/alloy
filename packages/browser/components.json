@@ -1,0 +1,4 @@
+{
+  "required": [],
+  "optional": [{ "name": "activityCollector" }]
+}
