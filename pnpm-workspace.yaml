@@ -9,7 +9,17 @@ minimumReleaseAgeExclude:
   - "@adobe/alloy"
   - "@adobe/alloy-core"
   - "@adobe/aep-rules-engine"
+  - "@adobe/reactor-sandbox"
+  - "@adobe/reactor-turbine"
+  - "@adobe/reactor-turbine-schemas"
+ignoredBuiltDependencies:
+  - core-js
+  - lmdb
+  - msgpackr-extract
 onlyBuiltDependencies:
-  - msw
+  - "@parcel/watcher"
+  - "@swc/core"
   - esbuild
+  - msw
+  - puppeteer
 verifyDepsBeforeRun: warn

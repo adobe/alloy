@@ -4,10 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "pnpm -r --if-present run build",
     "clean": "pnpm -r --if-present run clean && rimraf coverage",
     "dev": "concurrently --names build,sandbox \"pnpm --filter @adobe/alloy run build:watch\" \"pnpm --filter @adobe/alloy-sandbox-browser run start\"",
     "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/{src,test,scripts},scripts}/**/*.{js,cjs,mjs,jsx}\"",
     "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/{src,test,scripts},scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
+    "format:check": "prettier --check \"*.{html,js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/{src,test,scripts},scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
     "types": "tsc",
     "test": "pnpm exec playwright install chromium && vitest run",
     "test:coverage": "rimraf coverage && pnpm exec playwright install chromium && vitest run --coverage",
@@ -24,7 +26,7 @@
     "test:functional:custom": "node scripts/helpers/runFunctionalTests.js",
     "test:functional:watch": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ./scripts/watchFunctionalTests.js --browsers chromium",
     "test:functional:debug": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe --inspect-brk chromium",
-    "test:extension": "pnpm --filter reactor-extension-alloy run test",
+    "test:extension": "pnpm exec playwright install chromium && vitest run --project=reactor-extension/unit --project=reactor-extension/integration",
     "package:extension": "pnpm --filter reactor-extension-alloy run package",
     "sandbox:extension": "pnpm --filter reactor-extension-alloy run sandbox",
     "dev:extension": "pnpm --filter reactor-extension-alloy run dev",
@@ -82,6 +84,7 @@
     "globals": "^16.5.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
+    "msw": "^2.12.2",
     "minimatch": "^10.1.1",
     "playwright": "^1.57.0",
     "prettier": "^3.7.4",
@@ -90,6 +93,7 @@
     "semver": "^7.7.3",
     "typescript": "^5.9.3",
     "url-exists-nodejs": "^0.2.4",
-    "vitest": "^4.1.2"
+    "vitest": "^4.1.2",
+    "vitest-browser-react": "^2.0.2"
   }
 }
