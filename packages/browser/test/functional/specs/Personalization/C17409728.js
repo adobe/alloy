@@ -420,7 +420,6 @@ test("Test C17409728: Includes rendered propositions as display notifications in
   );
   const hasPlatformDisplayNotifications = sendEventRequestBody.events.some(
     ({ xdm }) =>
-      // eslint-disable-next-line no-underscore-dangle
       xdm._experience?.decisioning?.propositionEventType?.display === 1,
   );
   await t

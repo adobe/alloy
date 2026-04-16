@@ -1,0 +1,35 @@
+.Alert {
+  box-sizing: border-box;
+  border: 2px solid;
+  border-radius: 4px;
+  padding: 24px;
+}
+.Alert--neutral {
+  border-color: var(--spectrum-global-color-static-gray-600);
+}
+.Alert--informative {
+  border-color: var(--spectrum-semantic-informative-color-default);
+}
+.Alert--positive {
+  border-color: var(--spectrum-semantic-positive-color-default);
+}
+.Alert--notice {
+  border-color: var(--spectrum-semantic-notice-color-default);
+}
+.Alert--negative {
+  border-color: var(--spectrum-semantic-negative-color-default);
+}
+
+.Alert-description {
+  color: var(--spectrum-alias-label-text-color, var(--spectrum-global-color-gray-700));
+
+  /* Paragraph elements (and possibly other elements?) will add block margin
+  on the top and bottom, which provides too much spacing. */
+  > :first-child {
+    margin-block-start: 0;
+  }
+
+  > :last-child {
+    margin-block-end: 0;
+  }
+}

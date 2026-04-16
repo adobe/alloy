@@ -215,7 +215,6 @@ export const createExecuteCommand = ({
 };
 
 export default ({ components }) => {
-  // eslint-disable-next-line no-underscore-dangle
   const instanceNames = window.__alloyNS;
 
   if (instanceNames) {

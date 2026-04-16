@@ -144,7 +144,7 @@ const simulateViewChange = async (alloy, personalizationPayload) => {
   const event = viewChangeRequestBody.events[0];
   const query = event.query;
   const web = event.xdm.web;
-  // eslint-disable-next-line no-underscore-dangle
+
   const experience = event.xdm._experience;
 
   // assert that no personalization query was attached to the request

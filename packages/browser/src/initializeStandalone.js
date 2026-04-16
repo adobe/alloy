@@ -15,7 +15,6 @@ governing permissions and limitations under the License.
 import { createCustomInstance } from "./index.js";
 
 const initializeStandalone = ({ components }) => {
-  // eslint-disable-next-line no-underscore-dangle
   const instanceNames = /** @type {WindowWithAlloy} */ (window).__alloyNS;
   if (!instanceNames) {
     return;

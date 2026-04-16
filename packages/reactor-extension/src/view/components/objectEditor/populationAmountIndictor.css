@@ -1,0 +1,29 @@
+.PopulationAmountIndicator {
+  --size: 15px;
+  --stroke-width: 9;
+  width: var(--size);
+  height: var(--size);
+  min-height: var(--size);
+  min-width: var(--size);
+  .PopulationAmountIndicator-baseRing {
+    stroke: var(--spectrum-gray-400);
+    stroke-width: var(--stroke-width);
+  }
+
+  .PopulationAmountIndicator-emphasisRing {
+    stroke: var(--spectrum-blue-900);
+    stroke-width: var(--stroke-width);
+
+    &.is-full {
+      stroke-dasharray: 100 0;
+    }
+
+    &.is-partial {
+      stroke-dasharray: 50 50;
+    }
+
+    &.is-empty {
+      stroke-dasharray: 0 200;
+    }
+  }
+}

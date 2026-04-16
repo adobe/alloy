@@ -1,0 +1,12 @@
+{
+  "plugins": ["version"],
+  "env": {
+    "production": {
+      "plugins": [
+        "babel-plugin-jsx-remove-data-test-id",
+        "@babel/plugin-transform-nullish-coalescing-operator",
+        "@babel/plugin-transform-optional-chaining"
+      ]
+    }
+  }
+}

@@ -1,4 +1,4 @@
-name: Alloy Dev
+name: Quality Checks
 on:
   push:
     branches: [main]
@@ -6,8 +6,30 @@ on:
   workflow_dispatch:
 
 jobs:
-  linting:
-    name: "Linting files"
+  quality-gate:
+    name: "Quality checks"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        check:
+          - build
+          - lint
+          - "format:check"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: Set up Node.js version
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run ${{ matrix.check }}
+  tests:
+    name: "Tests"
+    needs: quality-gate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,29 +40,9 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Linting
-        run: pnpm run lint
-
-  unit-test:
-    name: "Test"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
-      - name: Set up Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version-file: .nvmrc
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Build Alloy
-        run: pnpm -r run build
-      - name: Run Test
-        run: pnpm run test
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - run: pnpm run test
         env:
           BUILD_NUMBER: $GITHUB_RUN_NUMBER
           BUILD_ID: $GITHUB_RUN_ID

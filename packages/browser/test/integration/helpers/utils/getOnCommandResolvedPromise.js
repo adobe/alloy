@@ -10,8 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/* eslint-disable no-underscore-dangle */
-
 export default (commandName) =>
   new Promise((resolve) => {
     window.__alloyMonitors = window.__alloyMonitors || [];

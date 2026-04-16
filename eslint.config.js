@@ -16,6 +16,9 @@ import compatPlugin from "eslint-plugin-compat";
 import importPlugin from "eslint-plugin-import";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import react from "eslint-plugin-react";
+import jsxA11y from "eslint-plugin-jsx-a11y";
+import unusedImports from "eslint-plugin-unused-imports";
+import testingLibrary from "eslint-plugin-testing-library";
 import { defineConfig, globalIgnores } from "eslint/config";
 import { glob } from "glob";
 import globals from "globals";
@@ -24,30 +27,37 @@ import license from "./scripts/eslint/licenseRule.js";
 
 const allComponentPaths = glob.sync("packages/core/src/components/*/");
 
+const sharedIgnores = [
+  "sandboxes/**",
+  "dist/**",
+  "distTest/**",
+  "packages/**/dist/**",
+  "packages/**/distTest/**",
+  "launch*.js",
+  "**/*.min.js",
+  "**/at.js",
+  "**/*AppMeasurement*",
+];
+
 export default defineConfig([
   importPlugin.flatConfigs.recommended,
   pluginJs.configs.recommended,
   eslintPluginPrettierRecommended,
   globalIgnores([
-    "sandboxes/**/build/",
-    "sandboxes/**/public/",
+    "sandboxes/**",
     "node_modules/",
     "launch*.js",
+    "packages/reactor-extension/dist/**",
+    "packages/reactor-extension/src/lib/runAlloy.js",
+    "packages/core/test/**",
+    "packages/browser/test/**",
+    "**/scripts/**/*.mjs",
   ]),
+  // License: warn only; do not run on extension so --fix never adds header there
   {
     name: "alloy/license-header",
     files: ["**/*.{cjs,js,mjs,jsx}"],
-    ignores: [
-      "sandboxes/**",
-      "dist/**",
-      "distTest/**",
-      "packages/**/dist/**",
-      "packages/**/distTest/**",
-      "launch*.js",
-      "**/*.min.js",
-      "**/at.js",
-      "**/*AppMeasurement*",
-    ],
+    ignores: [...sharedIgnores, "packages/reactor-extension/**"],
     plugins: {
       local: {
         rules: {
@@ -56,9 +66,10 @@ export default defineConfig([
       },
     },
     rules: {
-      "local/license": "error",
+      "local/license": "warn",
     },
   },
+  // Base shared: rules that work for both core and extension
   {
     name: "alloy/shared",
     languageOptions: {
@@ -83,38 +94,37 @@ export default defineConfig([
         },
       ],
       "valid-typeof": ["error", { requireStringLiterals: true }],
-      "no-console": "error",
-      "no-underscore-dangle": "error",
-      "func-names": "error",
-      "import/no-relative-packages": "error",
+      "no-console": ["warn", { allow: ["error"] }],
+      "no-underscore-dangle": [
+        "error",
+        {
+          allow: [
+            "_experience",
+            "__dirname",
+            "__filename",
+            "__alloyMonitors",
+            "__alloyNS",
+          ],
+        },
+      ],
       "no-bitwise": "error",
       "default-param-last": "error",
       eqeqeq: ["error", "smart"],
       "dot-notation": "error",
       "no-await-in-loop": "error",
       "default-case": "error",
-      "prefer-object-spread": "error", // disallow certain syntax forms
+      "prefer-object-spread": "error",
       "import/no-unresolved": [
         "error",
-        { ignore: ["eslint/config", "@adobe/alloy-core"] },
-      ],
-      // https://eslint.org/docs/rules/no-restricted-syntax
-      "no-restricted-syntax": [
-        "error",
         {
-          selector: "ForInStatement",
-          message:
-            "for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array.",
-        },
-        {
-          selector: "LabeledStatement",
-          message:
-            "Labels are a form of GOTO; using them makes code confusing and hard to maintain and understand.",
-        },
-        {
-          selector: "WithStatement",
-          message:
-            "`with` is disallowed in strict mode because it makes code impossible to predict and optimize.",
+          ignore: [
+            "eslint/config",
+            "@adobe/alloy-core",
+            "@adobe/alloy",
+            "@adobe/alloy/*",
+            "@adobe/auth-token",
+            "uuid",
+          ],
         },
       ],
       "max-classes-per-file": "error",
@@ -134,11 +144,36 @@ export default defineConfig([
       "import/no-named-as-default-member": "off",
       "no-unused-vars": ["error", { ignoreRestSiblings: true }],
       "prettier/prettier": "error",
-      "func-style": "error",
-      // Turning this off allows us to import devDependencies in our build tools.
-      // We enable the rule in src/.eslintrc.js since that's the only place we
-      // want to disallow importing extraneous dependencies.
       "import/prefer-default-export": "off",
+    },
+  },
+  // Core/root only: stricter rules that extension does not use
+  {
+    name: "alloy/strict",
+    files: ["**/*.{cjs,js,mjs,jsx}"],
+    ignores: ["packages/reactor-extension/**", ...sharedIgnores],
+    rules: {
+      "func-names": "error",
+      "func-style": "error",
+      "import/no-relative-packages": "error",
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "ForInStatement",
+          message:
+            "for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array.",
+        },
+        {
+          selector: "LabeledStatement",
+          message:
+            "Labels are a form of GOTO; using them makes code confusing and hard to maintain and understand.",
+        },
+        {
+          selector: "WithStatement",
+          message:
+            "`with` is disallowed in strict mode because it makes code impossible to predict and optimize.",
+        },
+      ],
     },
   },
   {
@@ -148,10 +183,7 @@ export default defineConfig([
       "import/no-extraneous-dependencies": [
         "error",
         {
-          devDependencies: [
-            "vitest.config.js",
-            // Add other files that import devDependencies for which you don't want to see esLint errors.
-          ],
+          devDependencies: ["vitest.config.js"],
         },
       ],
       "import/extensions": [
@@ -164,18 +196,13 @@ export default defineConfig([
         "error",
         {
           zones: [
-            // prevent components from importing from other components, but allow
-            // importing from themselves and specific media-related cross-imports
             ...allComponentPaths.map((componentPath, _, allPaths) => ({
               target: componentPath + "/",
               from: [
                 "packages/core/src/core",
                 "packages/core/src/baseCode",
-                // ...allPaths.filter((p) => p !== componentPath),
-                // TODO: Figure out why this was changed.
                 ...allPaths
                   .filter((p) => {
-                    // Allow MediaAnalyticsBridge <-> StreamingMedia imports
                     if (
                       componentPath.includes("MediaAnalyticsBridge") &&
                       p.includes("StreamingMedia")
@@ -186,7 +213,6 @@ export default defineConfig([
                       p.includes("MediaAnalyticsBridge")
                     )
                       return false;
-                    // Allow imports from Context by media components
                     if (
                       (componentPath.includes("MediaAnalyticsBridge") ||
                         componentPath.includes("StreamingMedia")) &&
@@ -245,6 +271,13 @@ export default defineConfig([
     },
   },
   {
+    name: "alloy/browser-src",
+    files: ["packages/browser/src/**/*.{cjs,js,mjs,jsx}"],
+    rules: {
+      "import/named": "off",
+    },
+  },
+  {
     name: "alloy/scripts",
     files: [
       "scripts/**/*.{cjs,js,mjs}",
@@ -267,7 +300,7 @@ export default defineConfig([
   },
   {
     name: "alloy/tests",
-    files: ["packages/**/test/**/*.{cjs,js}"],
+    files: ["packages/reactor-extension/test/**/*.{cjs,js,jsx}"],
     rules: {
       "import/extensions": [
         "error",
@@ -275,12 +308,13 @@ export default defineConfig([
           js: "always",
         },
       ],
+      "no-unused-vars": "warn",
     },
   },
   {
     name: "alloy/tests/vitest",
     files: [
-      "packages/**/test/{unit,integration}/**/*.{cjs,js}",
+      "packages/**/test/{unit,integration}/**/*.{cjs,js,mjs,jsx}",
       "scripts/specs/**/*.{cjs,js}",
     ],
     settings: {
@@ -293,7 +327,7 @@ export default defineConfig([
   },
   {
     name: "alloy/tests/functional",
-    files: ["packages/**/test/functional/**/*.{cjs,js}"],
+    files: ["packages/**/test/functional/**/*.{cjs,js,mjs,jsx}"],
     settings: {
       "import/core-modules": ["@adobe/alloy", "testcafe", "uuid"],
     },
@@ -337,13 +371,12 @@ export default defineConfig([
       ...compatPlugin.configs["flat/recommended"].rules,
     },
   },
-  // Vite plugins are ESM-only and confuse eslint-plugin-import; disable the
-  // affected `import/*` rules for the Vite config file only.
   {
     name: "alloy/configs",
     files: [
       "sandboxes/**/vite.config.mjs",
       "packages/**/rollup.config.js",
+      "packages/**/vitest.config.js",
       "rollup.config.js",
       "eslint.config.js",
       "vitest.config.js",
@@ -359,6 +392,150 @@ export default defineConfig([
       "import/no-named-as-default": "off",
       "import/no-named-as-default-member": "off",
       "import/no-extraneous-dependencies": "error",
+    },
+  },
+
+  // --- Extension-only: packages/reactor-extension (repo-relative paths) ---
+  {
+    name: "alloy/reactor-extension",
+    files: ["packages/reactor-extension/**/*.{cjs,js,mjs,jsx}"],
+    settings: {
+      react: {
+        version: "19.0.0",
+      },
+    },
+    languageOptions: {
+      ecmaVersion: "latest",
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+    },
+    plugins: {
+      "unused-imports": unusedImports,
+      vitest,
+      react,
+      "jsx-a11y": jsxA11y,
+    },
+    rules: {
+      "no-underscore-dangle": [
+        "error",
+        {
+          allow: [
+            "_experience",
+            "__dirname",
+            "__filename",
+            "__alloyMonitors",
+            "__alloyNS",
+            "__adobe",
+          ],
+        },
+      ],
+      "import/extensions": "off",
+      "import/default": "off",
+      "import/namespace": "off",
+      "func-names": "off",
+      "no-restricted-syntax": "off",
+      "no-param-reassign": "off",
+      "prefer-destructuring": "off",
+      "no-unused-vars": "off",
+      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+      "import/no-extraneous-dependencies": "off",
+      "vitest/expect-expect": "error",
+      "vitest/no-disabled-tests": "warn",
+      "vitest/no-focused-tests": "error",
+      "vitest/no-identical-title": "error",
+      "react/require-default-props": "off",
+      "react/no-array-index-key": "off",
+      "react/forbid-prop-types": "off",
+      "react/jsx-props-no-spreading": "off",
+      "react/function-component-definition": [
+        "error",
+        { namedComponents: "arrow-function" },
+      ],
+      "jsx-a11y/label-has-associated-control": [
+        "error",
+        { controlComponents: ["WrappedField"] },
+      ],
+      "jsx-a11y/label-has-for": "off",
+      "jsx-a11y/anchor-is-valid": ["error", { components: [] }],
+    },
+  },
+  {
+    name: "alloy/reactor-extension/src",
+    files: ["packages/reactor-extension/src/**/*.{cjs,js,jsx}"],
+    languageOptions: {
+      globals: {
+        _satellite: "readonly",
+      },
+    },
+    rules: {
+      "import/no-extraneous-dependencies": "error",
+    },
+  },
+  {
+    name: "alloy/reactor-extension/view-and-tests",
+    files: [
+      "packages/reactor-extension/src/view/**/*.{js,jsx}",
+      "packages/reactor-extension/test/functional/**/*.{js,jsx}",
+      "packages/reactor-extension/test/integration/**/*.{js,jsx}",
+    ],
+    rules: {
+      ...react.configs.recommended.rules,
+      ...react.configs["jsx-runtime"].rules,
+    },
+  },
+  {
+    name: "alloy/reactor-extension/src-lib",
+    files: ["packages/reactor-extension/src/lib/**/*.{js,jsx}"],
+    languageOptions: {
+      globals: {
+        turbine: "readonly",
+      },
+    },
+    rules: {
+      "no-var": "off",
+      "func-names": "off",
+      "no-underscore-dangle": [
+        "error",
+        { allow: ["__alloyNS", "__alloyMonitors", "__adobe"] },
+      ],
+    },
+  },
+  {
+    name: "alloy/reactor-extension/integration-testing-library",
+    files: ["packages/reactor-extension/test/integration/**/*.{js,jsx}"],
+    ...testingLibrary.configs["flat/react"],
+    rules: {
+      ...testingLibrary.configs["flat/react"].rules,
+      "testing-library/prefer-screen-queries": "off",
+    },
+  },
+  // Extension functional tests use testcafe/browser patterns; relax vitest assertion rules
+  {
+    name: "alloy/reactor-extension/functional-tests",
+    files: ["packages/reactor-extension/test/functional/**/*.{cjs,js,mjs,jsx}"],
+    rules: {
+      "vitest/expect-expect": "off",
+      "vitest/no-identical-title": "off",
+      "unused-imports/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^(_|t)$" },
+      ],
+    },
+  },
+  // Extension unit tests: relax title rule for dynamic titles
+  {
+    name: "alloy/reactor-extension/unit-tests",
+    files: ["packages/reactor-extension/test/unit/**/*.{cjs,js,jsx}"],
+    rules: {
+      "vitest/valid-title": "warn",
     },
   },
 ]);

@@ -1,0 +1,37 @@
+.XdmTreeNodeTitle {
+  &.is-invalid {
+    color: var(--spectrum-negative-visual-color);
+
+    .XdmTreeNodeTitle-type {
+      &:before {
+        border-left-color: var(--spectrum-negative-visual-color);
+      }
+      color: inherit;
+    }
+  }
+}
+
+.XdmTreeNodeTitle-displayName {
+  white-space: nowrap;
+}
+
+.XdmTreeNodeTitle-type {
+  &:before {
+    content: " ";
+    border-left: 1.5px solid var(--spectrum-gray-500);
+    padding-left: 8px;
+  }
+  color: var(--spectrum-gray-600);
+}
+
+.ant-tree-treenode-disabled {
+  .XdmTreeNodeTitle {
+    color: var(--spectrum-gray-500);
+    &:before {
+      border-left-color: var(--spectrum-gray-500)
+    }
+    .XdmTreeNodeTitle-type {
+      color: var(--spectrum-gray-500);
+    }
+  }
+}
