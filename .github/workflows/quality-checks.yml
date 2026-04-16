@@ -41,6 +41,7 @@ jobs:
         with:
           node-version-file: .nvmrc
       - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
       - run: pnpm run test
         env:
           BUILD_NUMBER: $GITHUB_RUN_NUMBER
