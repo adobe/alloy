@@ -1,0 +1,26 @@
+{
+  "name": "@adobe/alloy-node",
+  "version": "0.0.0",
+  "description": "Adobe Experience Platform Web SDK - Node.js entrypoint",
+  "type": "module",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adobe/alloy.git",
+    "directory": "packages/node"
+  },
+  "author": "Adobe Inc.",
+  "license": "Apache-2.0",
+  "files": [
+    "src"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.js",
+      "default": "./src/index.js"
+    }
+  },
+  "dependencies": {
+    "@adobe/alloy-core": "workspace:^"
+  }
+}
