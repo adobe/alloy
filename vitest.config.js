@@ -25,6 +25,18 @@ export default defineConfig({
       {
         extends: false,
         test: {
+          name: "node-integration",
+          include: [
+            "packages/node/test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)",
+          ],
+          isolate: false,
+          pool: "threads",
+          environment: "node",
+        },
+      },
+      {
+        extends: false,
+        test: {
           name: "scripts",
           include: [
             "scripts/**/*.{test,spec}.?(c|m)[jt]s?(x)",
