@@ -21,6 +21,9 @@
       "default": "./src/index.js"
     }
   },
+  "scripts": {
+    "typecheck": "tsc -p jsconfig.json"
+  },
   "dependencies": {
     "@adobe/alloy-core": "workspace:^"
   }
