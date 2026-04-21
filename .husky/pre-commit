@@ -1,2 +1,2 @@
-pnpm lint-staged
+pnpm lint
 pnpm vitest run --project=unit --project=scripts
