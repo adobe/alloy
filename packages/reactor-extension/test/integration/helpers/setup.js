@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { afterEach, afterAll } from "vitest";
 import { worker } from "./mocks/browser";
 
-worker.start({
+await worker.start({
   onUnhandledRequest: "bypass",
   quiet: true,
 });

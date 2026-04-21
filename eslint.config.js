@@ -53,11 +53,11 @@ export default defineConfig([
     "packages/browser/test/**",
     "**/scripts/**/*.mjs",
   ]),
-  // License: warn only; do not run on extension so --fix never adds header there
+  // License: warn only
   {
     name: "alloy/license-header",
     files: ["**/*.{cjs,js,mjs,jsx}"],
-    ignores: [...sharedIgnores, "packages/reactor-extension/**"],
+    ignores: [...sharedIgnores],
     plugins: {
       local: {
         rules: {
@@ -147,11 +147,11 @@ export default defineConfig([
       "import/prefer-default-export": "off",
     },
   },
-  // Core/root only: stricter rules that extension does not use
+  // Stricter rules for all packages
   {
     name: "alloy/strict",
     files: ["**/*.{cjs,js,mjs,jsx}"],
-    ignores: ["packages/reactor-extension/**", ...sharedIgnores],
+    ignores: [...sharedIgnores],
     rules: {
       "func-names": "error",
       "func-style": "error",
@@ -300,7 +300,7 @@ export default defineConfig([
   },
   {
     name: "alloy/tests",
-    files: ["packages/reactor-extension/test/**/*.{cjs,js,jsx}"],
+    files: ["packages/**/test/**/*.{cjs,js,mjs,jsx}"],
     rules: {
       "import/extensions": [
         "error",
