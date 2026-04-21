@@ -11,10 +11,20 @@ governing permissions and limitations under the License.
 */
 import { createCustomInstance } from "@adobe/alloy-core";
 
-export { createCustomInstance };
-
+/**
+ * @alpha
+ *
+ * Node.js entrypoint for the Adobe Experience Platform Web SDK.
+ *
+ * NOT FUNCTIONAL. This package is a scaffold for the Universal JS
+ * migration. Importing it currently throws because `@adobe/alloy-core`
+ * still references browser globals (`window`, `document`, etc.) at
+ * module scope. See packages/browser/UNIVERSAL_JS_MIGRATION.md.
+ */
 export const createInstance = (options = {}) =>
   createCustomInstance({
     ...options,
     components: [],
   });
+
+export { createCustomInstance };
