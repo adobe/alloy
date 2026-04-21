@@ -294,7 +294,7 @@ const XdmObject = ({ initInfo, context, formikProps }) => {
   }, [selectedSandboxName]);
 
   useChanged(() => {
-    async function setNewSchema() {
+    const setNewSchema = async () => {
       setHasSchema(false);
       context.schema = null;
       setSelectedNodeId(null);
@@ -330,7 +330,7 @@ const XdmObject = ({ initInfo, context, formikProps }) => {
         });
         setHasSchema(true);
       }
-    }
+    };
 
     setNewSchema();
     context.missingSavedSandbox = false;

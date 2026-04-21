@@ -182,7 +182,7 @@ const ExtensionView = ({
   }
   if (getInitialValues) {
     useEffect(() => {
-      async function getData() {
+      const getData = async () => {
         if (initInfo) {
           try {
             const getInitialValuesPromise = getInitialValues({ initInfo });
@@ -196,7 +196,7 @@ const ExtensionView = ({
             reportAsyncError(e);
           }
         }
-      }
+      };
 
       getData();
     }, [initInfo]);

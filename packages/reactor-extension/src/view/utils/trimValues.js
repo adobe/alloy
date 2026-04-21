@@ -29,7 +29,7 @@ governing permissions and limitations under the License.
  * @param {T} value
  * @returns {T | undefined}
  */
-function trimValue(value) {
+const trimValue = (value) => {
   if (
     value == null ||
     (typeof value !== "object" && typeof value !== "string")
@@ -57,5 +57,5 @@ function trimValue(value) {
     }
   });
   return Object.keys(value).length === 0 ? undefined : value;
-}
+};
 export default trimValue;

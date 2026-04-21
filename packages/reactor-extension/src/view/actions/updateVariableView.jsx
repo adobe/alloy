@@ -383,7 +383,7 @@ const UpdateVariable = ({
 
   useChanged(
     useReportAsyncError(() => {
-      async function reloadDataElement() {
+      const reloadDataElement = async () => {
         setHasSchema(false);
         setSelectedNodeId(null);
         context.schemaLoadFailed = false;
@@ -414,7 +414,7 @@ const UpdateVariable = ({
             setSelectedNodeId(findFirstNodeIdForDepth(initialFormState, 3));
           }
         }
-      }
+      };
       reloadDataElement();
     }),
     [dataElement],

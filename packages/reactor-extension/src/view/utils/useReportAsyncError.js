@@ -27,7 +27,7 @@ const useReportAsyncError = (func) => {
 
   if (func) {
     return (...args) => {
-      async function fn() {
+      const fn = async () => {
         try {
           return await func(...args);
         } catch (e) {
@@ -38,7 +38,7 @@ const useReportAsyncError = (func) => {
           }
           throw e;
         }
-      }
+      };
 
       return fn();
     };
