@@ -1,0 +1,19 @@
+{
+	"name": "parcel-transformer-extension-name",
+	"version": "1.0.0",
+	"description": "A transformer plugin for Parcel that replaces __EXTENSION_NAME__ with the name from your extension.json",
+	"main": "index.js",
+	"dependencies": {
+		"@parcel/plugin": "^2.3.2"
+	},
+	"engines": {
+		"node": ">= 16.0.0",
+		"parcel": "^2.3.2"
+	},
+	"author": {
+		"name": "Adobe",
+		"url": "http://adobe.com",
+    "email": "reactor@adobe.com"
+	},
+	"license": "Apache-2.0"
+}

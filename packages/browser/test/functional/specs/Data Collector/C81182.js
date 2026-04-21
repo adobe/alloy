@@ -81,7 +81,7 @@ const assertRequestXdm = async (
   await t.expect(eventXdm.web.webInteraction).eql(expectedWebInteraction);
   await t.expect(eventData).eql(expectedData);
   await t
-    // eslint-disable-next-line no-underscore-dangle
+
     .expect(eventXdm._experience.decisioning)
     .eql(expectedExprienceDecisioning);
 };

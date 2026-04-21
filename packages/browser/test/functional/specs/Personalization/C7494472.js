@@ -118,7 +118,6 @@ test.skip("Test C7494472: AJO offers should be delivered", async () => {
     .eql("decisioning.propositionDisplay");
   await t
     .expect(
-      // eslint-disable-next-line no-underscore-dangle
       notificationRequestBody.events[0].xdm._experience.decisioning
         .propositions,
     )

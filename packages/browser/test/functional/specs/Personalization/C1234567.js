@@ -327,7 +327,6 @@ test("Test C1234567: Subscribes content cards", async () => {
     .eql("decisioning.propositionDisplay");
   await t
     .expect(
-      // eslint-disable-next-line no-underscore-dangle
       displayBody.events[0].xdm._experience.decisioning.propositions.length,
     )
     .gt(0);
@@ -347,7 +346,6 @@ test("Test C1234567: Subscribes content cards", async () => {
     .eql("decisioning.propositionInteract");
   await t
     .expect(
-      // eslint-disable-next-line no-underscore-dangle
       interactBody.events[0].xdm._experience.decisioning.propositions.length,
     )
     .gt(0);

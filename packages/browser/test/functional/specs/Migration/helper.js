@@ -93,7 +93,7 @@ export const fetchMboxOffer = ClientFunction(
       success(response) {
         return response;
       },
-      // eslint-disable-next-line no-console
+
       error: console.error,
     });
   },
