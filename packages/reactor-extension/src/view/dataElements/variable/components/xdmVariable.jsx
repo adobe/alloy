@@ -323,11 +323,6 @@ const XdmVariable = ({
                 firstPageCursor={schemasData.firstPageCursor}
                 alertTitle="No schemas found"
                 alertDescription="No schemas were found in this sandbox. Please add a schema first or choose a sandbox with at least one schema."
-                placeholder={
-                  missingSavedSchema
-                    ? "Saved schema unavailable"
-                    : "Select a schema"
-                }
               />
             </View>
             <Flex direction="row" marginTop="size-300">

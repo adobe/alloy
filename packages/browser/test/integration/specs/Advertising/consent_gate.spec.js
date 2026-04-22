@@ -20,7 +20,10 @@ import {
 } from "../../helpers/testsSetup/extend.js";
 import { sendEventHandler } from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
-import { createAdvertisingConfig } from "../../helpers/advertising.js";
+import {
+  createAdvertisingConfig,
+  getRequestBody,
+} from "../../helpers/advertising.js";
 import { withTemporaryUrl } from "../../helpers/utils/location.js";
 import waitFor from "../../helpers/utils/waitFor.js";
 
@@ -188,10 +191,7 @@ describe("Advertising - Consent gate", () => {
         delayMs: 200,
       });
       const conversionCall = calls.find((call) => {
-        const body =
-          typeof call.request.body === "string"
-            ? JSON.parse(call.request.body)
-            : call.request.body;
+        const body = getRequestBody(call);
         return (
           body?.events?.[0]?.xdm?.eventType === "advertising.enrichment_ct"
         );
@@ -289,10 +289,7 @@ describe("Advertising - Consent gate", () => {
           delayMs: 100,
         });
         const conversionCall = calls.find((call) => {
-          const body =
-            typeof call.request.body === "string"
-              ? JSON.parse(call.request.body)
-              : call.request.body;
+          const body = getRequestBody(call);
           return (
             body?.events?.[0]?.xdm?.eventType === "advertising.enrichment_ct"
           );

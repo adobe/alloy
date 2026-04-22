@@ -552,7 +552,6 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
                             name={`${instanceFieldName}.advertising.advertiserSettings.${index}.advertiserId`}
                             UNSAFE_style={{ width: "224px" }}
                             aria-label={`Advertiser ${index + 1}`}
-                            placeholder="Enter advertiser ID"
                             marginTop="size-0"
                             marginEnd="size-200"
                             isRequired

@@ -23,11 +23,7 @@ import {
 
 describe("overrides/utils.js", () => {
   describe("isDataElement", () => {
-    /**
-     * [testName, testValue, expectedResult]
-     * @type {[string, string, boolean][]}
-     */
-    [
+    it.each([
       ["should validate data element", "%my data element%", true],
       [
         "should validate data element with whitespace in front",
@@ -66,18 +62,12 @@ describe("overrides/utils.js", () => {
         "asdf%my data element%asdf",
         false,
       ],
-    ].forEach(([testName, testValue, expectedResult]) => {
-      it(testName, () => {
-        expect(isDataElement(testValue)).toBe(expectedResult);
-      });
+    ])("%s", (_testName, testValue, expectedResult) => {
+      expect(isDataElement(testValue)).toBe(expectedResult);
     });
   });
   describe("containsDataElements()", () => {
-    /**
-     * [testName, testValue, expectedResult]
-     * @type {[string, string, boolean][]}
-     */
-    [
+    it.each([
       ["should validate data element", "%my data element%", true],
       [
         "should validate data elements with characters in front",
@@ -111,10 +101,8 @@ describe("overrides/utils.js", () => {
         "my data element%",
         false,
       ],
-    ].forEach(([testName, testValue, expectedResult]) => {
-      it(testName, () => {
-        expect(containsDataElements(testValue)).toBe(expectedResult);
-      });
+    ])("%s", (_testName, testValue, expectedResult) => {
+      expect(containsDataElements(testValue)).toBe(expectedResult);
     });
   });
 
