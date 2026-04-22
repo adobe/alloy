@@ -5,10 +5,14 @@
     "adobe-alloy-monorepo": "0.0.1",
     "@adobe/alloy": "2.32.0",
     "@adobe/alloy-core": "1.1.1",
-    "@adobe/alloy-sandbox-browser": "0.1.1"
+    "@adobe/alloy-sandbox-browser": "0.1.1",
+    "reactor-extension-alloy": "2.34.2",
+    "parcel-transformer-extension-name": "1.0.0"
   },
   "changesets": [
+    "crisp-stamps-hide",
     "moody-seas-kneel",
+    "vast-needles-beam",
     "violet-nights-yell"
   ]
 }
