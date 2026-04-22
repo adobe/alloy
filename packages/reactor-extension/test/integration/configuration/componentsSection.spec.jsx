@@ -10,63 +10,96 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { describe, it, beforeEach, afterEach, expect } from "vitest";
-import renderView from "../helpers/renderView";
-import createExtensionBridge from "../helpers/createExtensionBridge";
-import ConfigurationView from "../../../src/view/configuration/configurationView";
-import { waitForConfigurationViewToLoad, toggleComponent } from "../helpers/ui";
-import { spectrumCheckbox } from "../helpers/form";
-import { buildSettings } from "../helpers/settingsUtils";
+import { describe, it, beforeEach, afterEach } from "vitest";
 
-let extensionBridge;
+import useView from "../helpers/useView";
+import ConfigurationView from "../../../src/view/configuration/configurationView";
+import configurationUI from "../helpers/ui/configurationUI";
+import { buildSettings } from "../helpers/settingsUtils";
+import field from "../helpers/field";
+
+let view;
+let ui;
+let driver;
+let cleanup;
+let personalizationComponentCheckbox;
+let consentComponentCheckbox;
+let pushNotificationsComponentCheckbox;
+let advertisingComponentCheckbox;
+let activityCollectorComponentCheckbox;
+let audiencesComponentCheckbox;
+let rulesEngineComponentCheckbox;
+let streamingMediaComponentCheckbox;
+let mediaAnalyticsBridgeComponentCheckbox;
+let eventMergeComponentCheckbox;
 
 describe("Config components section", () => {
-  beforeEach(() => {
-    extensionBridge = createExtensionBridge();
-    window.extensionBridge = extensionBridge;
+  beforeEach(async () => {
+    ({ view, driver, cleanup } = await useView(ConfigurationView));
+    ui = configurationUI(view);
+    personalizationComponentCheckbox = field(
+      view.getByTestId("personalizationComponentCheckbox"),
+    );
+    consentComponentCheckbox = field(
+      view.getByTestId("consentComponentCheckbox"),
+    );
+    pushNotificationsComponentCheckbox = field(
+      view.getByTestId("pushNotificationsComponentCheckbox"),
+    );
+    advertisingComponentCheckbox = field(
+      view.getByTestId("advertisingComponentCheckbox"),
+    );
+    activityCollectorComponentCheckbox = field(
+      view.getByTestId("activityCollectorComponentCheckbox"),
+    );
+    audiencesComponentCheckbox = field(
+      view.getByTestId("audiencesComponentCheckbox"),
+    );
+    rulesEngineComponentCheckbox = field(
+      view.getByTestId("rulesEngineComponentCheckbox"),
+    );
+    streamingMediaComponentCheckbox = field(
+      view.getByTestId("streamingMediaComponentCheckbox"),
+    );
+    mediaAnalyticsBridgeComponentCheckbox = field(
+      view.getByTestId("mediaAnalyticsBridgeComponentCheckbox"),
+    );
+    eventMergeComponentCheckbox = field(
+      view.getByTestId("eventMergeComponentCheckbox"),
+    );
   });
 
   afterEach(() => {
-    delete window.extensionBridge;
+    cleanup();
   });
 
   it("has all necessary components enabled by default", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init();
-
-    await waitForConfigurationViewToLoad(view);
-
-    const settings = await extensionBridge.getSettings();
+    await driver.init();
 
     // Only non-default components should be in settings (eventMerge is deprecated/not default)
-    expect(settings.components).toEqual({
-      eventMerge: false,
-    });
+    await driver
+      .expectSettings((s) => s.components)
+      .toEqual({
+        eventMerge: false,
+      });
   });
 
   it("tracks disabled state for components enabled by default", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init();
-
-    await waitForConfigurationViewToLoad(view);
+    await driver.init();
 
     // Toggle off consent and personalization components
-    await toggleComponent("consent");
-    await toggleComponent("personalization");
+    await ui.toggleComponent("consent");
+    await ui.toggleComponent("personalization");
 
-    const settings = await extensionBridge.getSettings();
-
-    expect(settings.components).toBeDefined();
-    expect(settings.components.personalization).toBe(false);
-    expect(settings.components.consent).toBe(false);
+    await driver.expectSettings((s) => s.components).toBeDefined();
+    await driver
+      .expectSettings((s) => s.components.personalization)
+      .toBe(false);
+    await driver.expectSettings((s) => s.components.consent).toBe(false);
   });
 
   it("restores disabled components from settings", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         components: {
           personalization: false,
@@ -75,47 +108,26 @@ describe("Config components section", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
-
     // Verify checkboxes are unchecked
-    const personalizationCheckbox = spectrumCheckbox(
-      "personalizationComponentCheckbox",
-    );
-    expect(await personalizationCheckbox.isChecked()).toBe(false);
-
-    const consentCheckbox = spectrumCheckbox("consentComponentCheckbox");
-    expect(await consentCheckbox.isChecked()).toBe(false);
+    await personalizationComponentCheckbox.expectUnchecked();
+    await consentComponentCheckbox.expectUnchecked();
   });
 
   it("does not include new components when creating a new configuration", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init();
-
-    await waitForConfigurationViewToLoad(view);
+    await driver.init();
 
     // Verify new beta components are unchecked
-    const pushNotificationsCheckbox = spectrumCheckbox(
-      "pushNotificationsComponentCheckbox",
-    );
-    expect(await pushNotificationsCheckbox.isChecked()).toBe(false);
+    await pushNotificationsComponentCheckbox.expectUnchecked();
+    await advertisingComponentCheckbox.expectUnchecked();
 
-    const advertisingCheckbox = spectrumCheckbox(
-      "advertisingComponentCheckbox",
-    );
-    expect(await advertisingCheckbox.isChecked()).toBe(false);
-
-    const settings = await extensionBridge.getSettings();
-    expect(settings.components).toBeDefined();
+    await driver.expectSettings((s) => s.components).toBeDefined();
     // Only eventMerge is saved as false (it's deprecated/not default)
     // Other beta components are not saved if they match their default (false)
-    expect(settings.components.eventMerge).toBe(false);
+    await driver.expectSettings((s) => s.components.eventMerge).toBe(false);
   });
 
   it("does not include new components when upgrading existing configuration", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         components: {
           eventMerge: false,
@@ -129,108 +141,55 @@ describe("Config components section", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
-
     // Verify new beta components are unchecked
-    const pushNotificationsCheckbox = spectrumCheckbox(
-      "pushNotificationsComponentCheckbox",
-    );
-    expect(await pushNotificationsCheckbox.isChecked()).toBe(false);
+    await pushNotificationsComponentCheckbox.expectUnchecked();
+    await advertisingComponentCheckbox.expectUnchecked();
 
-    const advertisingCheckbox = spectrumCheckbox(
-      "advertisingComponentCheckbox",
-    );
-    expect(await advertisingCheckbox.isChecked()).toBe(false);
-
-    const settings = await extensionBridge.getSettings();
-    expect(settings.components).toBeDefined();
-    expect(settings.components.eventMerge).toBe(false);
+    await driver.expectSettings((s) => s.components).toBeDefined();
+    await driver.expectSettings((s) => s.components.eventMerge).toBe(false);
   });
 
   it("enables default components by default for new configuration", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init();
-
-    await waitForConfigurationViewToLoad(view);
+    await driver.init();
 
     // Verify default components are checked
-    const activityCollectorCheckbox = spectrumCheckbox(
-      "activityCollectorComponentCheckbox",
-    );
-    expect(await activityCollectorCheckbox.isChecked()).toBe(true);
-
-    const audiencesCheckbox = spectrumCheckbox("audiencesComponentCheckbox");
-    expect(await audiencesCheckbox.isChecked()).toBe(true);
-
-    const consentCheckbox = spectrumCheckbox("consentComponentCheckbox");
-    expect(await consentCheckbox.isChecked()).toBe(true);
-
-    const personalizationCheckbox = spectrumCheckbox(
-      "personalizationComponentCheckbox",
-    );
-    expect(await personalizationCheckbox.isChecked()).toBe(true);
-
-    const rulesEngineCheckbox = spectrumCheckbox(
-      "rulesEngineComponentCheckbox",
-    );
-    expect(await rulesEngineCheckbox.isChecked()).toBe(true);
-
-    const streamingMediaCheckbox = spectrumCheckbox(
-      "streamingMediaComponentCheckbox",
-    );
-    expect(await streamingMediaCheckbox.isChecked()).toBe(true);
-
-    const mediaAnalyticsBridgeCheckbox = spectrumCheckbox(
-      "mediaAnalyticsBridgeComponentCheckbox",
-    );
-    expect(await mediaAnalyticsBridgeCheckbox.isChecked()).toBe(true);
+    await activityCollectorComponentCheckbox.expectChecked();
+    await audiencesComponentCheckbox.expectChecked();
+    await consentComponentCheckbox.expectChecked();
+    await personalizationComponentCheckbox.expectChecked();
+    await rulesEngineComponentCheckbox.expectChecked();
+    await streamingMediaComponentCheckbox.expectChecked();
+    await mediaAnalyticsBridgeComponentCheckbox.expectChecked();
   });
 
   it("allows toggling components on and off", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init();
-
-    await waitForConfigurationViewToLoad(view);
+    await driver.init();
 
     // Toggle off a component
-    await toggleComponent("audiences");
+    await ui.toggleComponent("audiences");
 
-    let settings = await extensionBridge.getSettings();
-    expect(settings.components.audiences).toBe(false);
+    await driver.expectSettings((s) => s.components.audiences).toBe(false);
 
     // Toggle it back on
-    await toggleComponent("audiences");
+    await ui.toggleComponent("audiences");
 
-    settings = await extensionBridge.getSettings();
-    expect(settings.components.audiences).toBeUndefined();
+    await driver.expectSettings((s) => s.components.audiences).toBeUndefined();
   });
 
   it("allows enabling beta components", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init();
-
-    await waitForConfigurationViewToLoad(view);
+    await driver.init();
 
     // Enable advertising component
-    await toggleComponent("advertising");
+    await ui.toggleComponent("advertising");
 
-    const settings = await extensionBridge.getSettings();
-    expect(settings.components.advertising).toBe(true);
+    await driver.expectSettings((s) => s.components.advertising).toBe(true);
 
     // Verify checkbox is checked
-    const advertisingCheckbox = spectrumCheckbox(
-      "advertisingComponentCheckbox",
-    );
-    expect(await advertisingCheckbox.isChecked()).toBe(true);
+    await advertisingComponentCheckbox.expectChecked();
   });
 
   it("preserves enabled beta components from settings", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         components: {
           advertising: true,
@@ -239,70 +198,55 @@ describe("Config components section", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
-
     // Verify beta components are checked
-    const advertisingCheckbox = spectrumCheckbox(
-      "advertisingComponentCheckbox",
-    );
-    expect(await advertisingCheckbox.isChecked()).toBe(true);
+    await advertisingComponentCheckbox.expectChecked();
+    await pushNotificationsComponentCheckbox.expectChecked();
 
-    const pushNotificationsCheckbox = spectrumCheckbox(
-      "pushNotificationsComponentCheckbox",
-    );
-    expect(await pushNotificationsCheckbox.isChecked()).toBe(true);
-
-    const settings = await extensionBridge.getSettings();
-    expect(settings.components.advertising).toBe(true);
-    expect(settings.components.pushNotifications).toBe(true);
+    await driver.expectSettings((s) => s.components.advertising).toBe(true);
+    await driver
+      .expectSettings((s) => s.components.pushNotifications)
+      .toBe(true);
   });
 
   it("allows disabling all components", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init();
-
-    await waitForConfigurationViewToLoad(view);
+    await driver.init();
 
     // Disable all default components
-    await toggleComponent("activityCollector");
-    await toggleComponent("audiences");
-    await toggleComponent("consent");
-    await toggleComponent("personalization");
-    await toggleComponent("rulesEngine");
-    await toggleComponent("streamingMedia");
-    await toggleComponent("mediaAnalyticsBridge");
+    await ui.toggleComponent("activityCollector");
+    await ui.toggleComponent("audiences");
+    await ui.toggleComponent("consent");
+    await ui.toggleComponent("personalization");
+    await ui.toggleComponent("rulesEngine");
+    await ui.toggleComponent("streamingMedia");
+    await ui.toggleComponent("mediaAnalyticsBridge");
 
-    const settings = await extensionBridge.getSettings();
-    expect(settings.components).toBeDefined();
-    expect(settings.components.activityCollector).toBe(false);
-    expect(settings.components.audiences).toBe(false);
-    expect(settings.components.consent).toBe(false);
-    expect(settings.components.personalization).toBe(false);
-    expect(settings.components.rulesEngine).toBe(false);
-    expect(settings.components.streamingMedia).toBe(false);
-    expect(settings.components.mediaAnalyticsBridge).toBe(false);
+    await driver.expectSettings((s) => s.components).toBeDefined();
+    await driver
+      .expectSettings((s) => s.components.activityCollector)
+      .toBe(false);
+    await driver.expectSettings((s) => s.components.audiences).toBe(false);
+    await driver.expectSettings((s) => s.components.consent).toBe(false);
+    await driver
+      .expectSettings((s) => s.components.personalization)
+      .toBe(false);
+    await driver.expectSettings((s) => s.components.rulesEngine).toBe(false);
+    await driver.expectSettings((s) => s.components.streamingMedia).toBe(false);
+    await driver
+      .expectSettings((s) => s.components.mediaAnalyticsBridge)
+      .toBe(false);
   });
 
   it("handles deprecated components correctly", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init();
-
-    await waitForConfigurationViewToLoad(view);
+    await driver.init();
 
     // eventMerge is deprecated and should be disabled by default for new configs
-    const eventMergeCheckbox = spectrumCheckbox("eventMergeComponentCheckbox");
-    expect(await eventMergeCheckbox.isChecked()).toBe(false);
+    await eventMergeComponentCheckbox.expectUnchecked();
 
-    const settings = await extensionBridge.getSettings();
-    expect(settings.components.eventMerge).toBe(false);
+    await driver.expectSettings((s) => s.components.eventMerge).toBe(false);
   });
 
   it("preserves deprecated components from existing configuration", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         components: {
           eventMerge: true,
@@ -310,36 +254,28 @@ describe("Config components section", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
-
     // Verify deprecated component is enabled from settings
-    const eventMergeCheckbox = spectrumCheckbox("eventMergeComponentCheckbox");
-    expect(await eventMergeCheckbox.isChecked()).toBe(true);
+    await eventMergeComponentCheckbox.expectChecked();
 
-    const settings = await extensionBridge.getSettings();
     // When eventMerge is true (its default value), it won't be in settings
     // because only non-default values are saved
-    expect(settings.components).toBeUndefined();
+    await driver.expectSettings((s) => s.components).toBeUndefined();
   });
 
   it("only saves non-default component states to settings", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init();
-
-    await waitForConfigurationViewToLoad(view);
+    await driver.init();
 
     // All default components are enabled, so no explicit component settings
-    const settings = await extensionBridge.getSettings();
-
     // The settings should only contain non-default values
     // eventMerge is deprecated (not default), so it's saved as false
-    expect(settings.components).toBeDefined();
-    expect(settings.components.eventMerge).toBe(false);
+    await driver.expectSettings((s) => s.components).toBeDefined();
+    await driver.expectSettings((s) => s.components.eventMerge).toBe(false);
 
     // Default components should not be in settings when enabled
-    expect(settings.components.activityCollector).toBeUndefined();
-    expect(settings.components.audiences).toBeUndefined();
-    expect(settings.components.consent).toBeUndefined();
+    await driver
+      .expectSettings((s) => s.components.activityCollector)
+      .toBeUndefined();
+    await driver.expectSettings((s) => s.components.audiences).toBeUndefined();
+    await driver.expectSettings((s) => s.components.consent).toBeUndefined();
   });
 });

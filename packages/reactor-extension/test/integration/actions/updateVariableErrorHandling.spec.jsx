@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { describe, it, beforeEach, afterEach, expect } from "vitest";
-import renderView from "../helpers/renderView";
-import createExtensionBridge from "../helpers/createExtensionBridge";
+import { describe, it, afterEach, expect } from "vitest";
+
+import useView from "../helpers/useView";
 import UpdateVariableView from "../../../src/view/actions/updateVariableView";
 import { worker } from "../helpers/mocks/browser";
 import {
@@ -20,24 +20,24 @@ import {
   dataElementsServerErrorHandlers,
   dataElementsEmptyHandlers,
 } from "../helpers/mocks/defaultHandlers";
+import field from "../helpers/field";
+import { suppressReactErrorBoundaryMessage } from "../helpers/errorSuppression";
 
-let extensionBridge;
+let view;
+let driver;
+let cleanup;
 
 describe("Update Variable Action Error Handling", () => {
-  beforeEach(() => {
-    extensionBridge = createExtensionBridge();
-    window.extensionBridge = extensionBridge;
-  });
-
   afterEach(() => {
-    delete window.extensionBridge;
+    if (cleanup) cleanup();
   });
 
   describe("Data elements API errors", () => {
     it("displays error when access token is invalid", async () => {
       worker.use(...dataElementsUnauthorizedHandlers);
-      const view = await renderView(UpdateVariableView);
-      extensionBridge.init();
+      suppressReactErrorBoundaryMessage();
+      ({ view, driver, cleanup } = await useView(UpdateVariableView));
+      await driver.init();
 
       await expect
         .element(view.getByText(/your access token appears to be invalid/i))
@@ -46,8 +46,9 @@ describe("Update Variable Action Error Handling", () => {
 
     it("displays error when data elements API returns server error", async () => {
       worker.use(...dataElementsServerErrorHandlers);
-      const view = await renderView(UpdateVariableView);
-      extensionBridge.init();
+      suppressReactErrorBoundaryMessage();
+      ({ view, driver, cleanup } = await useView(UpdateVariableView));
+      await driver.init();
 
       await expect
         .element(view.getByText(/failed to load data elements/i))
@@ -56,10 +57,10 @@ describe("Update Variable Action Error Handling", () => {
 
     it("shows no data elements alert when no variable data elements exist", async () => {
       worker.use(...dataElementsEmptyHandlers);
-      const view = await renderView(UpdateVariableView);
-      extensionBridge.init();
+      ({ view, driver, cleanup } = await useView(UpdateVariableView));
+      await driver.init();
 
-      await expect.element(view.getByTestId("noDataElements")).toBeVisible();
+      await field(view.getByTestId("noDataElements")).expectVisible();
     });
   });
 });

@@ -11,29 +11,42 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, beforeEach, afterEach, expect } from "vitest";
-import renderView from "../helpers/renderView";
-import createExtensionBridge from "../helpers/createExtensionBridge";
-import ConfigurationView from "../../../src/view/configuration/configurationView";
-import { waitForConfigurationViewToLoad, toggleComponent } from "../helpers/ui";
-import { spectrumCheckbox, spectrumNumberField } from "../helpers/form";
-import { buildSettings } from "../helpers/settingsUtils";
 
-let extensionBridge;
+import useView from "../helpers/useView";
+import ConfigurationView from "../../../src/view/configuration/configurationView";
+import configurationUI from "../helpers/ui/configurationUI";
+import { buildSettings } from "../helpers/settingsUtils";
+import field from "../helpers/field";
+
+let view;
+let ui;
+let driver;
+let cleanup;
+let stickyConversationSessionField;
+let streamTimeoutField;
+let brandConciergeComponentCheckbox;
+let collectSourcesField;
 
 describe("Config brand concierge section", () => {
-  beforeEach(() => {
-    extensionBridge = createExtensionBridge();
-    window.extensionBridge = extensionBridge;
+  beforeEach(async () => {
+    ({ view, driver, cleanup } = await useView(ConfigurationView));
+    ui = configurationUI(view);
+    stickyConversationSessionField = field(
+      view.getByTestId("stickyConversationSessionField"),
+    );
+    streamTimeoutField = field(view.getByTestId("streamTimeoutDataTestId"));
+    collectSourcesField = field(view.getByTestId("collectSourcesDataTestId"));
+    brandConciergeComponentCheckbox = field(
+      view.getByTestId("brandConciergeComponentCheckbox"),
+    );
   });
 
   afterEach(() => {
-    delete window.extensionBridge;
+    cleanup();
   });
 
   it("sets form values from settings", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         components: {
           brandConcierge: true,
@@ -51,25 +64,13 @@ describe("Config brand concierge section", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
-
-    const stickyConversationSessionField = spectrumCheckbox(
-      "stickyConversationSessionField",
-    );
-    expect(await stickyConversationSessionField.isChecked()).toBe(true);
-
-    // Stream timeout should be displayed in seconds (20000ms = 20s)
-    const streamTimeoutField = spectrumNumberField("streamTimeoutDataTestId");
-    expect(await streamTimeoutField.getNumericValue()).toBe(20);
-
-    const collectSourcesField = spectrumCheckbox("collectSourcesDataTestId");
-    expect(await collectSourcesField.isChecked()).toBe(true);
+    await stickyConversationSessionField.expectChecked();
+    await streamTimeoutField.expectValue("20");
+    await collectSourcesField.expectChecked();
   });
 
   it("updates form values and saves to settings", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         components: {
           brandConcierge: true,
@@ -77,33 +78,30 @@ describe("Config brand concierge section", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
+    await stickyConversationSessionField.click();
+    await streamTimeoutField.fill("30");
+    await collectSourcesField.click();
 
-    const stickyConversationSessionField = spectrumCheckbox(
-      "stickyConversationSessionField",
-    );
-    await stickyConversationSessionField.check();
+    await stickyConversationSessionField.expectChecked();
+    await streamTimeoutField.expectValue("30");
+    await collectSourcesField.expectChecked();
 
-    // Set stream timeout to 30 seconds (should save as 30000ms)
-    const streamTimeoutField = spectrumNumberField("streamTimeoutDataTestId");
-    await streamTimeoutField.fill(30);
+    await driver
+      .expectSettings(
+        (s) => s.instances[0].conversation.stickyConversationSession,
+      )
+      .toBe(true);
+    await driver
+      .expectSettings((s) => s.instances[0].conversation.streamTimeout)
+      .toBe(30000);
 
-    const collectSourcesField = spectrumCheckbox("collectSourcesDataTestId");
-    await collectSourcesField.check();
-
-    const settings = await extensionBridge.getSettings();
-    expect(settings.instances[0].conversation.stickyConversationSession).toBe(
-      true,
-    );
-    // Should be saved as milliseconds (30s = 30000ms)
-    expect(settings.instances[0].conversation.streamTimeout).toBe(30000);
-    expect(settings.instances[0].conversation.collectSources).toBe(true);
+    await driver
+      .expectSettings((s) => s.instances[0].conversation.collectSources)
+      .toBe(true);
   });
 
   it("does not emit brand concierge settings when component is disabled", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         components: {
           brandConcierge: true,
@@ -120,19 +118,16 @@ describe("Config brand concierge section", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
-    await toggleComponent("brandConcierge");
+    await ui.expand("Build options");
+    await brandConciergeComponentCheckbox.click();
 
-    const settings = await extensionBridge.getSettings();
-    expect(settings.instances[0].conversation).toBeUndefined();
+    await driver
+      .expectSettings((s) => s.instances[0].conversation)
+      .toBeUndefined();
   });
 
   it("shows alert panel when brand concierge component is disabled", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(buildSettings());
-    await waitForConfigurationViewToLoad(view);
-
+    await driver.init(buildSettings());
     await expect
       .element(
         view.getByRole("heading", {
@@ -143,9 +138,7 @@ describe("Config brand concierge section", () => {
   });
 
   it("shows alert when component is toggled off", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         components: {
           brandConcierge: true,
@@ -153,8 +146,8 @@ describe("Config brand concierge section", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
-    await toggleComponent("brandConcierge");
+    await ui.expand("Build options");
+    await brandConciergeComponentCheckbox.click();
 
     await expect
       .element(
@@ -166,9 +159,7 @@ describe("Config brand concierge section", () => {
   });
 
   it("converts stream timeout from milliseconds to seconds on load", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         components: {
           brandConcierge: true,
@@ -177,23 +168,18 @@ describe("Config brand concierge section", () => {
           {
             name: "alloy",
             conversation: {
-              streamTimeout: 45000, // 45 seconds in milliseconds
+              streamTimeout: 45000,
             },
           },
         ],
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
-
-    const streamTimeoutField = spectrumNumberField("streamTimeoutDataTestId");
-    expect(await streamTimeoutField.getNumericValue()).toBe(45);
+    await streamTimeoutField.expectValue("45");
   });
 
   it("does not save stream timeout when it equals default value", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         components: {
           brandConcierge: true,
@@ -201,17 +187,13 @@ describe("Config brand concierge section", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
-
-    // Default is 10 seconds, don't change it
-    const settings = await extensionBridge.getSettings();
-    expect(settings.instances[0].conversation?.streamTimeout).toBeUndefined();
+    await driver
+      .expectSettings((s) => s.instances[0].conversation?.streamTimeout)
+      .toBeUndefined();
   });
 
   it("does not save collectSources when it equals default value", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         components: {
           brandConcierge: true,
@@ -219,13 +201,10 @@ describe("Config brand concierge section", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
+    await collectSourcesField.expectUnchecked();
 
-    // Default is false, don't change it
-    const collectSourcesField = spectrumCheckbox("collectSourcesDataTestId");
-    expect(await collectSourcesField.isChecked()).toBe(false);
-
-    const settings = await extensionBridge.getSettings();
-    expect(settings.instances[0].conversation?.collectSources).toBeUndefined();
+    await driver
+      .expectSettings((s) => s.instances[0].conversation?.collectSources)
+      .toBeUndefined();
   });
 });

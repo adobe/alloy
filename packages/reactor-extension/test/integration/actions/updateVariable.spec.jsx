@@ -12,12 +12,10 @@ governing permissions and limitations under the License.
 
 import { describe, it, beforeEach, afterEach, expect } from "vitest";
 import { http, HttpResponse } from "msw";
-// eslint-disable-next-line import/no-unresolved
-import { page } from "vitest/browser";
-import renderView from "../helpers/renderView";
-import createExtensionBridge from "../helpers/createExtensionBridge";
+
+import useView from "../helpers/useView";
 import UpdateVariableView from "../../../src/view/actions/updateVariableView";
-import { spectrumComboBox } from "../helpers/form";
+import field from "../helpers/field";
 import { worker } from "../helpers/mocks/browser";
 
 const DELEGATE_DESCRIPTOR_ID = "__EXTENSION_NAME__::dataElements::variable";
@@ -76,65 +74,55 @@ const singleDataElementHandler = (id, dataElement) =>
     });
   });
 
-let extensionBridge;
+let view;
+let driver;
+let cleanup;
 
 describe("Update Variable action", () => {
   beforeEach(() => {
-    extensionBridge = createExtensionBridge();
-    window.extensionBridge = extensionBridge;
     worker.use(dataElementsHandler);
   });
 
   afterEach(() => {
-    delete window.extensionBridge;
+    if (cleanup) cleanup();
     worker.resetHandlers();
   });
 
   describe("dataElementName handling", () => {
     it("outputs dataElementName in settings when a data element is selected", async () => {
-      await renderView(UpdateVariableView);
+      ({ view, driver, cleanup } = await useView(UpdateVariableView));
+      await driver.init({});
 
-      extensionBridge.init({});
+      await expect.element(view.getByTestId("dataElementField")).toBeVisible();
 
-      await expect.element(page.getByTestId("dataElementField")).toBeVisible();
-
-      const dataElementField = spectrumComboBox("dataElementField");
+      const dataElementField = field(view.getByTestId("dataElementField"));
       await dataElementField.selectOption("My Data Variable");
 
-      await new Promise((resolve) => {
-        setTimeout(resolve, 300);
-      });
-
-      const settings = await extensionBridge.getSettings();
-      expect(settings.dataElementName).toBe("My Data Variable");
+      await driver
+        .expectSettings((s) => s.dataElementName)
+        .toBe("My Data Variable");
     });
 
     it("loads data element by name when dataElementName is in settings", async () => {
-      await renderView(UpdateVariableView);
-
-      extensionBridge.init({
+      ({ view, driver, cleanup } = await useView(UpdateVariableView));
+      await driver.init({
         settings: {
           dataElementName: "My Data Variable",
           data: {},
         },
       });
 
-      await expect.element(page.getByTestId("dataElementField")).toBeVisible();
+      await expect.element(view.getByTestId("dataElementField")).toBeVisible();
 
-      await new Promise((resolve) => {
-        setTimeout(resolve, 300);
-      });
-
-      const dataElementField = spectrumComboBox("dataElementField");
-      expect(await dataElementField.getValue()).toBe("My Data Variable");
+      const dataElementField = field(view.getByTestId("dataElementField"));
+      await dataElementField.expectValue("My Data Variable");
     });
 
     it("falls back to dataElementId when dataElementName is not found", async () => {
       worker.use(singleDataElementHandler("DE456", mockDataElements[1]));
 
-      await renderView(UpdateVariableView);
-
-      extensionBridge.init({
+      ({ view, driver, cleanup } = await useView(UpdateVariableView));
+      await driver.init({
         settings: {
           dataElementName: "Nonexistent Variable",
           dataElementId: "DE456",
@@ -142,44 +130,34 @@ describe("Update Variable action", () => {
         },
       });
 
-      await expect.element(page.getByTestId("dataElementField")).toBeVisible();
+      await expect.element(view.getByTestId("dataElementField")).toBeVisible();
 
-      await new Promise((resolve) => {
-        setTimeout(resolve, 300);
-      });
-
-      const dataElementField = spectrumComboBox("dataElementField");
-      expect(await dataElementField.getValue()).toBe("My Data Variable");
+      const dataElementField = field(view.getByTestId("dataElementField"));
+      await dataElementField.expectValue("My Data Variable");
     });
 
     it("loads data element by dataElementId when dataElementName is not provided (backward compatibility)", async () => {
       worker.use(singleDataElementHandler("DE456", mockDataElements[1]));
 
-      await renderView(UpdateVariableView);
-
-      extensionBridge.init({
+      ({ view, driver, cleanup } = await useView(UpdateVariableView));
+      await driver.init({
         settings: {
           dataElementId: "DE456",
           data: {},
         },
       });
 
-      await expect.element(page.getByTestId("dataElementField")).toBeVisible();
+      await expect.element(view.getByTestId("dataElementField")).toBeVisible();
 
-      await new Promise((resolve) => {
-        setTimeout(resolve, 300);
-      });
-
-      const dataElementField = spectrumComboBox("dataElementField");
-      expect(await dataElementField.getValue()).toBe("My Data Variable");
+      const dataElementField = field(view.getByTestId("dataElementField"));
+      await dataElementField.expectValue("My Data Variable");
     });
 
     it("prefers dataElementName over dataElementId when both are provided", async () => {
       worker.use(singleDataElementHandler("DE123", mockDataElements[0]));
 
-      await renderView(UpdateVariableView);
-
-      extensionBridge.init({
+      ({ view, driver, cleanup } = await useView(UpdateVariableView));
+      await driver.init({
         settings: {
           dataElementName: "My Data Variable",
           dataElementId: "DE123",
@@ -187,14 +165,10 @@ describe("Update Variable action", () => {
         },
       });
 
-      await expect.element(page.getByTestId("dataElementField")).toBeVisible();
+      await expect.element(view.getByTestId("dataElementField")).toBeVisible();
 
-      await new Promise((resolve) => {
-        setTimeout(resolve, 300);
-      });
-
-      const dataElementField = spectrumComboBox("dataElementField");
-      expect(await dataElementField.getValue()).toBe("My Data Variable");
+      const dataElementField = field(view.getByTestId("dataElementField"));
+      await dataElementField.expectValue("My Data Variable");
     });
   });
 });
