@@ -19,6 +19,7 @@ governing permissions and limitations under the License.
  *   pnpm run test -- --watch --mode=unit --package=extension
  *   pnpm run test -- --debug --mode=integration --package=core
  * Flags: --coverage, --watch, --debug, --mode=unit|integration, --package=core|extension|all
+ * (With --mode=integration, --package=core runs browser integration; core has no integration tests.)
  * Extra args are passed to vitest (e.g. path to a test file).
  */
 
@@ -49,27 +50,47 @@ const passthrough = argv.filter(
 );
 
 const PROJECTS = {
-  unit: ["unit", "reactor-extension/unit"],
-  integration: ["integration", "reactor-extension/integration"],
+  unit: {
+    // "core" = main packages (alloy + browser), not the extension
+    all: ["core/unit", "browser/unit", "reactor-extension/unit"],
+    core: ["core/unit", "browser/unit"],
+    extension: ["reactor-extension/unit"],
+  },
+  integration: {
+    all: ["browser/integration", "reactor-extension/integration"],
+    core: ["browser/integration"],
+    extension: ["reactor-extension/integration"],
+  },
 };
 
 const getProjects = () => {
   if (!mode) {
     return [
-      "unit",
-      "integration",
+      "core/unit",
+      "browser/unit",
+      "browser/integration",
       "reactor-extension/unit",
       "reactor-extension/integration",
     ];
   }
-  const both = PROJECTS[mode];
-  if (!both) {
+  const projects = PROJECTS[mode];
+  if (!projects) {
     console.error(`Invalid --mode=${mode}; use unit or integration`);
     process.exit(1);
   }
-  if (pkg === "core") return [both[0]];
-  if (pkg === "extension") return [both[1]];
-  return both;
+  if (!pkg || pkg === "all") {
+    return projects.all;
+  }
+  if (pkg === "core") {
+    return projects.core;
+  }
+  if (pkg === "extension") {
+    return projects.extension;
+  }
+  console.error(
+    `Invalid --package=${pkg}; use core, extension, or all (default)`,
+  );
+  process.exit(1);
 };
 
 const run = (cmd, args, opts = {}) => {

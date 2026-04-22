@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import { Selector, t } from "testcafe";
-import * as sandboxesMocks from "../../../helpers/endpointMocks/sandboxesMocks.mjs";
 import * as sandboxMocks from "../../../helpers/endpointMocks/sandboxesMocks.mjs";
 import * as schemasMocks from "../../../helpers/endpointMocks/schemasMocks.mjs";
 import * as schemaMocks from "../../../helpers/endpointMocks/schemaMocks.mjs";
@@ -327,7 +326,7 @@ test.requestHooks(
 });
 
 test.requestHooks(
-  sandboxesMocks.multipleWithoutDefault,
+  sandboxMocks.multipleWithoutDefault,
   schemaMocks.basic,
   schemasMocks.multiple,
 )(

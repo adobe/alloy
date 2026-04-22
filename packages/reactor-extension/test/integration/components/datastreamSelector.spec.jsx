@@ -11,30 +11,27 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, beforeEach, afterEach, expect } from "vitest";
-// eslint-disable-next-line import/no-unresolved
-import { page } from "vitest/browser";
-import renderView from "../helpers/renderView";
-import createExtensionBridge from "../helpers/createExtensionBridge";
-import ConfigurationView from "../../../src/view/configuration/configurationView";
-import { waitForConfigurationViewToLoad } from "../helpers/ui";
-import { buildSettings } from "../helpers/settingsUtils";
 
-let extensionBridge;
+import useView from "../helpers/useView";
+import ConfigurationView from "../../../src/view/configuration/configurationView";
+import { buildSettings } from "../helpers/settingsUtils";
+import field from "../helpers/field";
+
+let view;
+let driver;
+let cleanup;
 
 describe("Datastream Selector - Refresh Button", () => {
-  beforeEach(() => {
-    extensionBridge = createExtensionBridge();
-    window.extensionBridge = extensionBridge;
+  beforeEach(async () => {
+    ({ view, driver, cleanup } = await useView(ConfigurationView));
   });
 
   afterEach(() => {
-    delete window.extensionBridge;
+    cleanup();
   });
 
   it("displays refresh button next to datastream field", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         instances: [
           {
@@ -45,22 +42,16 @@ describe("Datastream Selector - Refresh Button", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
-
-    const refreshButton = page.getByRole("button", {
+    const refreshButton = view.getByRole("button", {
       name: "Refresh datastreams",
     });
 
-    await expect.element(refreshButton).toBeInTheDocument();
-
-    const refreshIcon = refreshButton.query().querySelector("svg");
-    expect(refreshIcon).toBeTruthy();
+    await expect.element(refreshButton).toBeVisible();
+    await expect.element(refreshButton.locator("svg")).toBeVisible();
   });
 
   it("refresh button is disabled while loading", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         instances: [
           {
@@ -71,26 +62,20 @@ describe("Datastream Selector - Refresh Button", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
-
-    const refreshButton = page.getByRole("button", {
-      name: "Refresh datastreams",
-    });
+    const refreshButton = field(
+      view.getByRole("button", {
+        name: "Refresh datastreams",
+      }),
+    );
 
     await refreshButton.click();
 
     // The button should eventually become enabled again after loading completes
-    await expect
-      .poll(() => refreshButton.element().disabled, {
-        timeout: 5000,
-      })
-      .toBe(false);
+    await refreshButton.expectEnabled();
   });
 
   it("refresh button reloads datastream list", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         instances: [
           {
@@ -101,32 +86,28 @@ describe("Datastream Selector - Refresh Button", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
+    const datastreamField = field(
+      view.getByTestId("productionDatastreamField"),
+    );
+    const refreshButton = field(
+      view.getByRole("button", {
+        name: "Refresh datastreams",
+      }),
+    );
 
-    const datastreamField = page.getByTestId("productionDatastreamField");
-    const refreshButton = page.getByRole("button", {
-      name: "Refresh datastreams",
-    });
-
-    await expect.element(datastreamField).toBeInTheDocument();
+    await datastreamField.expectVisible();
 
     await refreshButton.click();
 
     // Wait for reload to complete by polling the button's disabled state
-    await expect
-      .poll(() => refreshButton.element().disabled, {
-        timeout: 5000,
-      })
-      .toBe(false);
+    await refreshButton.expectEnabled();
 
     // Verify the field is still functional after refresh
-    await expect.element(datastreamField).toBeInTheDocument();
+    await datastreamField.expectVisible();
   });
 
   it("refresh button works independently for each environment", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         instances: [
           {
@@ -138,25 +119,15 @@ describe("Datastream Selector - Refresh Button", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
-
-    // Get all refresh buttons (one for each environment)
-    const allRefreshButtons = page.getByRole("button", {
+    const allRefreshButtons = view.getByRole("button", {
       name: /Refresh datastreams/,
     });
 
-    // Should have refresh buttons for production, staging, and development
-    const buttons = allRefreshButtons.elements();
-    expect(buttons.length).toBeGreaterThan(0);
+    await expect.element(allRefreshButtons.nth(0)).toBeVisible();
 
-    // Click the first refresh button
-    await buttons[0].click();
+    const firstRefreshButton = field(allRefreshButtons.nth(0));
+    await firstRefreshButton.click();
 
-    // Wait for loading to complete by polling the button's disabled state
-    await expect
-      .poll(() => buttons[0].disabled, {
-        timeout: 5000,
-      })
-      .toBe(false);
+    await firstRefreshButton.expectEnabled();
   });
 });

@@ -21,6 +21,7 @@ import alloyConfig from "../../helpers/alloy/config.js";
 import {
   createAdvertisingConfig,
   ADVERTISING_CONSTANTS,
+  getRequestBody,
 } from "../../helpers/advertising.js";
 
 const getNamespacedAdvertisingCookieName = () => {
@@ -77,10 +78,7 @@ describe("Advertising - Modes (auto, wait, disabled)", () => {
       delayMs: 50,
     });
     const foundWithSurfer = calls.some((call) => {
-      const body =
-        typeof call.request.body === "string"
-          ? JSON.parse(call.request.body)
-          : call.request.body;
+      const body = getRequestBody(call);
       const adv = body?.events?.[0]?.query?.advertising;
       return (
         adv?.stitchIds?.surferId ===
@@ -105,10 +103,7 @@ describe("Advertising - Modes (auto, wait, disabled)", () => {
     });
 
     const call = await networkRecorder.findCall(/edge\.adobedc\.net/);
-    const body =
-      typeof call.request.body === "string"
-        ? JSON.parse(call.request.body)
-        : call.request.body;
+    const body = getRequestBody(call);
     expect(body?.events?.length >= 1).toBe(true);
   });
 
@@ -136,10 +131,7 @@ describe("Advertising - Modes (auto, wait, disabled)", () => {
     });
 
     const call = await networkRecorder.findCall(/edge\.adobedc\.net/);
-    const body =
-      typeof call.request.body === "string"
-        ? JSON.parse(call.request.body)
-        : call.request.body;
+    const body = getRequestBody(call);
     const advertising = body?.events?.[0]?.query?.advertising;
     const stitchIds = advertising?.stitchIds;
     if (stitchIds) {

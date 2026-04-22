@@ -12,54 +12,46 @@ governing permissions and limitations under the License.
 
 import { describe, it, beforeEach, afterEach, expect } from "vitest";
 
-// eslint-disable-next-line import/no-unresolved
-import { page } from "vitest/browser";
-import renderView from "../helpers/renderView";
-import createExtensionBridge from "../helpers/createExtensionBridge";
+import useView from "../helpers/useView";
 import ConfigurationView from "../../../src/view/configuration/configurationView";
-import { waitForConfigurationViewToLoad } from "../helpers/ui";
 import { worker } from "../helpers/mocks/browser";
-import { spectrumRadio } from "../helpers/form";
 import {
   singleSandboxNoDefaultHandlers,
   sandboxUserRegionMissingHandlers,
 } from "../helpers/mocks/defaultHandlers";
+import field from "../helpers/field";
 
-let extensionBridge;
+let view;
+let driver;
+let cleanup;
+let productionSandboxField;
+let edgeConfigInputMethodSelectRadio;
 
 describe("Config Sandboxes", () => {
-  beforeEach(() => {
-    extensionBridge = createExtensionBridge();
-    window.extensionBridge = extensionBridge;
+  beforeEach(async () => {
+    ({ view, driver, cleanup } = await useView(ConfigurationView));
+    productionSandboxField = field(view.getByTestId("productionSandboxField"));
+    edgeConfigInputMethodSelectRadio = field(
+      view.getByTestId("edgeConfigInputMethodSelectRadio"),
+    );
   });
 
   afterEach(() => {
-    delete window.extensionBridge;
+    cleanup();
   });
 
   it("shows disabled sandbox dropdown when only one non default sandbox is returned", async () => {
     worker.use(...singleSandboxNoDefaultHandlers);
-    const view = await renderView(ConfigurationView);
+    await driver.init();
 
-    extensionBridge.init();
-
-    await waitForConfigurationViewToLoad(view);
-
-    const sandboxSelect = page.getByTestId("productionSandboxField");
-    await expect.element(sandboxSelect).toBeDisabled();
+    await productionSandboxField.expectDisabled();
   });
 
   it("shows alert panel when user region is missing", async () => {
     worker.use(...sandboxUserRegionMissingHandlers);
+    await driver.init();
 
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init();
-
-    await waitForConfigurationViewToLoad(view);
-
-    const selectRadio = spectrumRadio("edgeConfigInputMethodSelectRadio");
-    await selectRadio.click();
+    await edgeConfigInputMethodSelectRadio.click();
 
     await expect
       .element(

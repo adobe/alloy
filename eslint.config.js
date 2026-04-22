@@ -124,6 +124,8 @@ export default defineConfig([
             "@adobe/alloy/*",
             "@adobe/auth-token",
             "uuid",
+            "vitest/browser",
+            "vitest/config",
           ],
         },
       ],
@@ -174,6 +176,13 @@ export default defineConfig([
             "`with` is disallowed in strict mode because it makes code impossible to predict and optimize.",
         },
       ],
+    },
+  },
+  {
+    name: "alloy/vitest-root-config",
+    files: ["vitest.config.js"],
+    rules: {
+      "import/no-relative-packages": "off",
     },
   },
   {
@@ -515,6 +524,11 @@ export default defineConfig([
     rules: {
       ...testingLibrary.configs["flat/react"].rules,
       "testing-library/prefer-screen-queries": "off",
+      // field helper (and similar) use expect.* internally; these calls are assertions
+      "vitest/expect-expect": [
+        "error",
+        { assertFunctionNames: ["expect", "assert", "**.expect*"] },
+      ],
     },
   },
   // Extension functional tests use testcafe/browser patterns; relax vitest assertion rules
@@ -524,6 +538,7 @@ export default defineConfig([
     rules: {
       "vitest/expect-expect": "off",
       "vitest/no-identical-title": "off",
+      "vitest/no-disabled-tests": "off",
       "unused-imports/no-unused-vars": [
         "error",
         { argsIgnorePattern: "^(_|t)$" },

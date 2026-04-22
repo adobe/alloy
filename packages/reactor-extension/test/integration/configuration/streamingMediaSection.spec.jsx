@@ -11,29 +11,48 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, beforeEach, afterEach, expect } from "vitest";
-import renderView from "../helpers/renderView";
-import createExtensionBridge from "../helpers/createExtensionBridge";
-import ConfigurationView from "../../../src/view/configuration/configurationView";
-import { waitForConfigurationViewToLoad, toggleComponent } from "../helpers/ui";
-import { spectrumTextField, spectrumNumberField } from "../helpers/form";
-import { buildSettings } from "../helpers/settingsUtils";
 
-let extensionBridge;
+import useView from "../helpers/useView";
+import ConfigurationView from "../../../src/view/configuration/configurationView";
+import configurationUI from "../helpers/ui/configurationUI";
+import { buildSettings } from "../helpers/settingsUtils";
+import field from "../helpers/field";
+
+let view;
+let ui;
+let driver;
+let cleanup;
+let mediaChannelField;
+let mediaPlayerNameField;
+let mediaVersionField;
+let mediaAdPingIntervalField;
+let mediaMainPingIntervalField;
+let streamingMediaComponentCheckbox;
 
 describe("Config streaming media section", () => {
-  beforeEach(() => {
-    extensionBridge = createExtensionBridge();
-    window.extensionBridge = extensionBridge;
+  beforeEach(async () => {
+    ({ view, driver, cleanup } = await useView(ConfigurationView));
+    ui = configurationUI(view);
+    mediaChannelField = field(view.getByTestId("mediaChannelField"));
+    mediaPlayerNameField = field(view.getByTestId("mediaPlayerNameField"));
+    mediaVersionField = field(view.getByTestId("mediaVersionField"));
+    mediaAdPingIntervalField = field(
+      view.getByTestId("mediaAdPingIntervalField"),
+    );
+    mediaMainPingIntervalField = field(
+      view.getByTestId("mediaMainPingIntervalField"),
+    );
+    streamingMediaComponentCheckbox = field(
+      view.getByTestId("streamingMediaComponentCheckbox"),
+    );
   });
 
   afterEach(() => {
-    delete window.extensionBridge;
+    cleanup();
   });
 
   it("sets form values from settings", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         instances: [
           {
@@ -50,94 +69,55 @@ describe("Config streaming media section", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
-
-    const channelField = spectrumTextField("mediaChannelField");
-    expect(await channelField.getValue()).toBe("channel");
-
-    const playerNameField = spectrumTextField("mediaPlayerNameField");
-    expect(await playerNameField.getValue()).toBe("name");
-
-    const appVersionField = spectrumTextField("mediaVersionField");
-    expect(await appVersionField.getValue()).toBe("1.0");
-
-    const adPingIntervalField = spectrumNumberField("mediaAdPingIntervalField");
-    expect(await adPingIntervalField.getNumericValue()).toBe(8);
-
-    const mainPingIntervalField = spectrumNumberField(
-      "mediaMainPingIntervalField",
-    );
-    expect(await mainPingIntervalField.getNumericValue()).toBe(20);
+    await mediaChannelField.expectValue("channel");
+    await mediaPlayerNameField.expectValue("name");
+    await mediaVersionField.expectValue("1.0");
+    await mediaAdPingIntervalField.expectValue("8");
+    await mediaMainPingIntervalField.expectValue("20");
   });
 
   it("updates form values and saves to settings", async () => {
-    const view = await renderView(ConfigurationView);
+    await driver.init(buildSettings());
 
-    extensionBridge.init(buildSettings());
+    await mediaChannelField.fill("test-channel");
+    await mediaPlayerNameField.fill("test-player");
+    await mediaVersionField.fill("2.0");
+    await mediaAdPingIntervalField.fill("5");
+    await mediaMainPingIntervalField.fill("30");
 
-    await waitForConfigurationViewToLoad(view);
-
-    const channelField = spectrumTextField("mediaChannelField");
-    await channelField.fill("test-channel");
-
-    const playerNameField = spectrumTextField("mediaPlayerNameField");
-    await playerNameField.fill("test-player");
-
-    const appVersionField = spectrumTextField("mediaVersionField");
-    await appVersionField.fill("2.0");
-
-    const adPingIntervalField = spectrumNumberField("mediaAdPingIntervalField");
-    await adPingIntervalField.fill("5");
-
-    const mainPingIntervalField = spectrumNumberField(
-      "mediaMainPingIntervalField",
-    );
-    await mainPingIntervalField.fill("30");
-
-    // Get settings and verify
-    const settings = await extensionBridge.getSettings();
-    expect(settings.instances[0].streamingMedia).toMatchObject({
-      channel: "test-channel",
-      playerName: "test-player",
-      appVersion: "2.0",
-      adPingInterval: 5,
-      mainPingInterval: 30,
-    });
+    await driver
+      .expectSettings((s) => s.instances[0].streamingMedia)
+      .toMatchObject({
+        channel: "test-channel",
+        playerName: "test-player",
+        appVersion: "2.0",
+        adPingInterval: 5,
+        mainPingInterval: 30,
+      });
   });
 
   it("saves settings with only channel and player name provided", async () => {
-    const view = await renderView(ConfigurationView);
+    await driver.init(buildSettings());
 
-    extensionBridge.init(buildSettings());
+    await mediaChannelField.fill("test-channel");
+    await mediaPlayerNameField.fill("test-player");
 
-    await waitForConfigurationViewToLoad(view);
-
-    const channelField = spectrumTextField("mediaChannelField");
-    await channelField.fill("test-channel");
-
-    const playerNameField = spectrumTextField("mediaPlayerNameField");
-    await playerNameField.fill("test-player");
-
-    // Get settings and verify
-    const settings = await extensionBridge.getSettings();
-    expect(settings.instances[0].streamingMedia).toMatchObject({
-      channel: "test-channel",
-      playerName: "test-player",
-    });
+    await driver
+      .expectSettings((s) => s.instances[0].streamingMedia)
+      .toMatchObject({
+        channel: "test-channel",
+        playerName: "test-player",
+      });
   });
 
   it("shows alert panel when component is disabled", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         components: {
           streamingMedia: false,
         },
       }),
     );
-
-    await waitForConfigurationViewToLoad(view);
 
     await expect
       .element(
@@ -149,13 +129,10 @@ describe("Config streaming media section", () => {
   });
 
   it("hides form fields and shows alert when component is toggled off", async () => {
-    const view = await renderView(ConfigurationView);
+    await driver.init(buildSettings());
+    await ui.expand("Build options");
+    await streamingMediaComponentCheckbox.click();
 
-    extensionBridge.init(buildSettings());
-    await waitForConfigurationViewToLoad(view);
-    await toggleComponent("streamingMedia");
-
-    // Should now show alert panel
     await expect
       .element(
         view.getByRole("heading", {
@@ -167,213 +144,121 @@ describe("Config streaming media section", () => {
 
   describe("validation", () => {
     it("requires channel when player name is provided", async () => {
-      const view = await renderView(ConfigurationView);
-      extensionBridge.init(buildSettings());
-      await waitForConfigurationViewToLoad(view);
+      await driver.init(buildSettings());
+      await driver.expectValidate().toBe(true);
 
-      expect(await extensionBridge.validate()).toBe(true);
+      await mediaPlayerNameField.fill("test-player");
+      await mediaChannelField.clear();
 
-      const playerNameField = spectrumTextField("mediaPlayerNameField");
-      await playerNameField.fill("test-player");
+      await driver.expectValidate().toBe(false);
 
-      const channelField = spectrumTextField("mediaChannelField");
-      // Touch the channel field to trigger validation
-      await channelField.fill("");
-
-      expect(await channelField.hasError()).toBe(true);
-      expect(await channelField.getErrorMessage()).toBe(
-        "Please provide a channel name for streaming media.",
+      await mediaChannelField.expectError(
+        /please provide a channel name for streaming media/i,
       );
-
-      expect(await extensionBridge.validate()).toBe(false);
     });
 
     it("requires player name when channel is provided", async () => {
-      const view = await renderView(ConfigurationView);
-      extensionBridge.init(buildSettings());
-      await waitForConfigurationViewToLoad(view);
+      await driver.init(buildSettings());
+      await driver.expectValidate().toBe(true);
 
-      expect(await extensionBridge.validate()).toBe(true);
+      await mediaChannelField.fill("test-channel");
+      await mediaPlayerNameField.clear();
 
-      const channelField = spectrumTextField("mediaChannelField");
-      await channelField.fill("test-channel");
+      await driver.expectValidate().toBe(false);
 
-      const playerNameField = spectrumTextField("mediaPlayerNameField");
-      // Touch the player name field to trigger validation
-      await playerNameField.fill("");
-
-      expect(await playerNameField.hasError()).toBe(true);
-      expect(await playerNameField.getErrorMessage()).toBe(
-        "Please provide a player name for streaming media.",
+      await mediaPlayerNameField.expectError(
+        /please provide a player name for streaming media/i,
       );
-
-      expect(await extensionBridge.validate()).toBe(false);
     });
 
     it("validates ad ping interval minimum value", async () => {
-      const view = await renderView(ConfigurationView);
-      extensionBridge.init(buildSettings());
-      await waitForConfigurationViewToLoad(view);
+      await driver.init(buildSettings());
+      await driver.expectValidate().toBe(true);
 
-      expect(await extensionBridge.validate()).toBe(true);
+      await mediaChannelField.fill("test-channel");
+      await mediaPlayerNameField.fill("test-player");
+      await mediaAdPingIntervalField.fill("0");
 
-      const channelField = spectrumTextField("mediaChannelField");
-      await channelField.fill("test-channel");
+      await driver.expectValidate().toBe(false);
 
-      const playerNameField = spectrumTextField("mediaPlayerNameField");
-      await playerNameField.fill("test-player");
-
-      const adPingIntervalField = spectrumNumberField(
-        "mediaAdPingIntervalField",
+      await mediaAdPingIntervalField.expectError(
+        /the ad ping interval must be greater than 1 second/i,
       );
-      await adPingIntervalField.fill("0");
-
-      expect(await adPingIntervalField.hasError()).toBe(true);
-      expect(await adPingIntervalField.getErrorMessage()).toBe(
-        "The Ad Ping Interval must be greater than 1 second.",
-      );
-
-      expect(await extensionBridge.validate()).toBe(false);
     });
 
     it("validates ad ping interval maximum value", async () => {
-      const view = await renderView(ConfigurationView);
-      extensionBridge.init(buildSettings());
-      await waitForConfigurationViewToLoad(view);
+      await driver.init(buildSettings());
+      await driver.expectValidate().toBe(true);
 
-      expect(await extensionBridge.validate()).toBe(true);
+      await mediaChannelField.fill("test-channel");
+      await mediaPlayerNameField.fill("test-player");
+      await mediaAdPingIntervalField.fill("11");
 
-      const channelField = spectrumTextField("mediaChannelField");
-      await channelField.fill("test-channel");
+      await driver.expectValidate().toBe(false);
 
-      const playerNameField = spectrumTextField("mediaPlayerNameField");
-      await playerNameField.fill("test-player");
-
-      const adPingIntervalField = spectrumNumberField(
-        "mediaAdPingIntervalField",
+      await mediaAdPingIntervalField.expectError(
+        /the ad ping interval must be less than 10 seconds/i,
       );
-      await adPingIntervalField.fill("11");
-
-      expect(await adPingIntervalField.hasError()).toBe(true);
-      expect(await adPingIntervalField.getErrorMessage()).toBe(
-        "The Ad Ping Interval must be less than 10 seconds.",
-      );
-
-      expect(await extensionBridge.validate()).toBe(false);
     });
 
     it("validates main ping interval minimum value", async () => {
-      const view = await renderView(ConfigurationView);
-      extensionBridge.init(buildSettings());
-      await waitForConfigurationViewToLoad(view);
+      await driver.init(buildSettings());
+      await driver.expectValidate().toBe(true);
 
-      expect(await extensionBridge.validate()).toBe(true);
+      await mediaChannelField.fill("test-channel");
+      await mediaPlayerNameField.fill("test-player");
+      await mediaMainPingIntervalField.fill("9");
 
-      const channelField = spectrumTextField("mediaChannelField");
-      await channelField.fill("test-channel");
+      await driver.expectValidate().toBe(false);
 
-      const playerNameField = spectrumTextField("mediaPlayerNameField");
-      await playerNameField.fill("test-player");
-
-      const mainPingIntervalField = spectrumNumberField(
-        "mediaMainPingIntervalField",
+      await mediaMainPingIntervalField.expectError(
+        /the main ping interval must be greater than 10 seconds/i,
       );
-      await mainPingIntervalField.fill("9");
-
-      expect(await mainPingIntervalField.hasError()).toBe(true);
-      expect(await mainPingIntervalField.getErrorMessage()).toBe(
-        "The Main Ping Interval must be greater than 10 seconds.",
-      );
-
-      expect(await extensionBridge.validate()).toBe(false);
     });
 
     it("validates main ping interval maximum value", async () => {
-      const view = await renderView(ConfigurationView);
-      extensionBridge.init(buildSettings());
-      await waitForConfigurationViewToLoad(view);
+      await driver.init(buildSettings());
+      await driver.expectValidate().toBe(true);
 
-      expect(await extensionBridge.validate()).toBe(true);
+      await mediaChannelField.fill("test-channel");
+      await mediaPlayerNameField.fill("test-player");
+      await mediaMainPingIntervalField.fill("61");
 
-      const channelField = spectrumTextField("mediaChannelField");
-      await channelField.fill("test-channel");
+      await driver.expectValidate().toBe(false);
 
-      const playerNameField = spectrumTextField("mediaPlayerNameField");
-      await playerNameField.fill("test-player");
-
-      const mainPingIntervalField = spectrumNumberField(
-        "mediaMainPingIntervalField",
+      await mediaMainPingIntervalField.expectError(
+        /the main ping interval must be less than 60 seconds/i,
       );
-      await mainPingIntervalField.fill("61");
-
-      expect(await mainPingIntervalField.hasError()).toBe(true);
-      expect(await mainPingIntervalField.getErrorMessage()).toBe(
-        "The Main Ping Interval must be less than 60 seconds.",
-      );
-
-      expect(await extensionBridge.validate()).toBe(false);
     });
 
     it("accepts valid ad ping interval values", async () => {
-      const view = await renderView(ConfigurationView);
-      extensionBridge.init(buildSettings());
-      await waitForConfigurationViewToLoad(view);
+      await driver.init(buildSettings());
+      await driver.expectValidate().toBe(true);
 
-      expect(await extensionBridge.validate()).toBe(true);
+      await mediaChannelField.fill("test-channel");
+      await mediaPlayerNameField.fill("test-player");
+      await mediaAdPingIntervalField.fill("5");
 
-      const channelField = spectrumTextField("mediaChannelField");
-      await channelField.fill("test-channel");
-
-      const playerNameField = spectrumTextField("mediaPlayerNameField");
-      await playerNameField.fill("test-player");
-
-      const adPingIntervalField = spectrumNumberField(
-        "mediaAdPingIntervalField",
-      );
-      await adPingIntervalField.fill("5");
-
-      expect(await adPingIntervalField.hasError()).toBe(false);
-      expect(await extensionBridge.validate()).toBe(true);
+      await driver.expectValidate().toBe(true);
     });
 
     it("accepts valid main ping interval values", async () => {
-      const view = await renderView(ConfigurationView);
-      extensionBridge.init(buildSettings());
-      await waitForConfigurationViewToLoad(view);
+      await driver.init(buildSettings());
+      await driver.expectValidate().toBe(true);
 
-      expect(await extensionBridge.validate()).toBe(true);
+      await mediaChannelField.fill("test-channel");
+      await mediaPlayerNameField.fill("test-player");
+      await mediaMainPingIntervalField.fill("30");
 
-      const channelField = spectrumTextField("mediaChannelField");
-      await channelField.fill("test-channel");
-
-      const playerNameField = spectrumTextField("mediaPlayerNameField");
-      await playerNameField.fill("test-player");
-
-      const mainPingIntervalField = spectrumNumberField(
-        "mediaMainPingIntervalField",
-      );
-      await mainPingIntervalField.fill("30");
-
-      expect(await mainPingIntervalField.hasError()).toBe(false);
-      expect(await extensionBridge.validate()).toBe(true);
+      await driver.expectValidate().toBe(true);
     });
 
     it("disables interval fields when channel and player name are not provided", async () => {
-      const view = await renderView(ConfigurationView);
-      extensionBridge.init(buildSettings());
-      await waitForConfigurationViewToLoad(view);
+      await driver.init(buildSettings());
+      await driver.expectValidate().toBe(true);
 
-      expect(await extensionBridge.validate()).toBe(true);
-
-      const adPingIntervalField = spectrumNumberField(
-        "mediaAdPingIntervalField",
-      );
-      const mainPingIntervalField = spectrumNumberField(
-        "mediaMainPingIntervalField",
-      );
-
-      expect(await adPingIntervalField.isDisabled()).toBe(true);
-      expect(await mainPingIntervalField.isDisabled()).toBe(true);
+      await mediaAdPingIntervalField.expectDisabled();
+      await mediaMainPingIntervalField.expectDisabled();
     });
   });
 });

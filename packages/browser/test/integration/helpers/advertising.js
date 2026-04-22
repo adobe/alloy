@@ -39,7 +39,7 @@ export const createAdvertisingConfig = ({
   },
 });
 
-const getRequestBody = (call) => {
+export const getRequestBody = (call) => {
   const body = call?.request?.body;
   if (!body) return {};
   if (typeof body === "string") {
