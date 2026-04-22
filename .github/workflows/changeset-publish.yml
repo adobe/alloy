@@ -146,40 +146,6 @@ jobs:
             jq -r '"- \(.name)@\(.version)"' "$pkg"
           done
 
-      - name: Bump extension when @adobe/alloy is released
-        if: hashFiles('packages/reactor-extension/package.json') != ''
-        run: |
-          ALLOY_NEW=$(jq -r '.releases[] | select(.name=="@adobe/alloy") | .newVersion' changeset-status.json)
-          if [ -z "${ALLOY_NEW}" ] || [ "${ALLOY_NEW}" = "null" ]; then
-            echo "No @adobe/alloy release in this run; skipping extension bump."
-            exit 0
-          fi
-          cd packages/reactor-extension
-          pnpm add @adobe/alloy@"${ALLOY_NEW}"
-          pnpm version patch --no-git-tag-version --no-commit-hooks
-          EXT_VERSION=$(node -p "require('./package.json').version")
-          echo "Extension bumped to ${EXT_VERSION}, bundling @adobe/alloy@${ALLOY_NEW}"
-          cd ../..
-          # Update CHANGELOG.md
-          cat > /tmp/update-extension-changelog.js << 'JSEOF'
-          const fs = require('fs');
-          const extVersion = process.env.EXT_VERSION;
-          const alloyVersion = process.env.ALLOY_NEW;
-          const entry = '## ' + extVersion + '\n\n### Patch Changes\n\n- Updated bundled @adobe/alloy to ' + alloyVersion;
-          const changelog = 'packages/reactor-extension/CHANGELOG.md';
-          const existing = fs.existsSync(changelog) ? fs.readFileSync(changelog, 'utf8') : '# reactor-extension-alloy\n\n';
-          const [title, ...rest] = existing.split('\n\n');
-          fs.writeFileSync(changelog, [title, entry, ...rest].join('\n\n') + '\n');
-          JSEOF
-          ALLOY_NEW="${ALLOY_NEW}" EXT_VERSION="${EXT_VERSION}" node /tmp/update-extension-changelog.js
-          # Create tag in name@version format so createGithubReleases.js can handle it
-          git tag "reactor-extension-alloy@${EXT_VERSION}"
-          # Inject extension into changeset-status.json so createGithubReleases.js creates a GitHub Release
-          jq --arg name "reactor-extension-alloy" --arg ver "${EXT_VERSION}" \
-            '.releases += [{"name": $name, "newVersion": $ver}]' \
-            changeset-status.json > changeset-status.tmp.json \
-            && mv changeset-status.tmp.json changeset-status.json
-
       - name: Update lockfile
         run: pnpm install --no-frozen-lockfile --ignore-scripts
 
@@ -276,8 +242,8 @@ jobs:
         env:
           REACTOR_IO_INTEGRATION_CLIENT_SECRET: ${{ secrets.REACTOR_IO_INTEGRATION_CLIENT_SECRET }}
         run: |
-          if ! jq -e '.releases[] | select(.name=="@adobe/alloy")' changeset-status.json >/dev/null; then
-            echo "@adobe/alloy was not in this release; skipping extension deploy."
+          if ! jq -e '.releases[] | select(.name=="reactor-extension-alloy")' changeset-status.json >/dev/null; then
+            echo "reactor-extension-alloy was not in this release; skipping extension deploy."
             exit 0
           fi
           EXT_VERSION=$(node -p "require('./packages/reactor-extension/package.json').version")

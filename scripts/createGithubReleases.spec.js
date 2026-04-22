@@ -15,31 +15,23 @@ import path from "path";
 import { describe, it, expect, vi } from "vitest";
 import {
   extractChangelogEntry,
-  getPublicPackages,
+  getWorkspacePackages,
   gitTagExists,
   createGithubReleases,
 } from "./createGithubReleases.js";
 
-describe("getPublicPackages", () => {
-  it("returns a Map containing @adobe/alloy and @adobe/alloy-core", () => {
-    const result = getPublicPackages();
+describe("getWorkspacePackages", () => {
+  it("returns a Map containing all workspace packages including private ones", () => {
+    const result = getWorkspacePackages();
 
     expect(result).toBeInstanceOf(Map);
     expect(result.has("@adobe/alloy")).toBe(true);
     expect(result.has("@adobe/alloy-core")).toBe(true);
-  });
-
-  it("does not include private packages", () => {
-    const result = getPublicPackages();
-
-    for (const name of result.keys()) {
-      expect(name).not.toContain("sandbox");
-      expect(name).not.toBe("adobe-alloy-monorepo");
-    }
+    expect(result.has("reactor-extension-alloy")).toBe(true);
   });
 
   it("maps to directories that contain a package.json", () => {
-    const result = getPublicPackages();
+    const result = getWorkspacePackages();
 
     for (const dir of result.values()) {
       expect(fs.existsSync(path.join(dir, "package.json"))).toBe(true);
@@ -103,7 +95,7 @@ describe("createGithubReleases", () => {
   const CHANGELOG = `# Changelog\n\n## 2.22.0\n\n- Added streaming support\n\n## 2.21.0\n\n- Old\n`;
 
   const makeDeps = (overrides = {}) => ({
-    getPublicPackages: () =>
+    getWorkspacePackages: () =>
       new Map([
         ["@adobe/alloy", "/packages/alloy"],
         ["@adobe/alloy-core", "/packages/core"],
@@ -131,10 +123,10 @@ describe("createGithubReleases", () => {
     );
   });
 
-  it("skips private packages", () => {
-    const deps = makeDeps({ getPublicPackages: () => new Map() });
+  it("skips packages not in the workspace", () => {
+    const deps = makeDeps({ getWorkspacePackages: () => new Map() });
     const result = createGithubReleases(deps, {
-      releases: [{ name: "@adobe/private-pkg", newVersion: "1.0.0" }],
+      releases: [{ name: "some-external-pkg", newVersion: "1.0.0" }],
     });
 
     expect(result).toEqual({ created: 0, skipped: 1 });
