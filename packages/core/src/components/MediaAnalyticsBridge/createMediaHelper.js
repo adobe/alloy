@@ -11,190 +11,140 @@ governing permissions and limitations under the License.
 */
 
 import { number, objectOf, string } from "../../utils/validation/index.js";
+import LIBRARY_VERSION from "../../constants/libraryVersion.js";
+
+// Follows the same API as Javascript 3.x SDK
+// https://adobe-marketing-cloud.github.io/media-sdks/reference/javascript_3x/index.html
 
 export default ({ logger }) => {
-  const createMediaObject = (
-    friendlyName,
-    name,
-    length,
-    contentType,
-    streamType,
-  ) => {
-    const mediaObject = {
-      friendlyName,
-      name,
-      length,
-      streamType,
-      contentType,
-    };
+  // Schema keys define positional argument order. mapValidatedToXdm receives the same order after validation.
+  const withValidation = (helperName, schema, mapValidatedToXdm) => {
+    const validate = objectOf(schema);
+    const paramKeys = Object.keys(schema);
 
-    const validate = objectOf({
-      friendlyName: string().nonEmpty(),
+    return (...args) => {
+      const params = Object.fromEntries(
+        paramKeys.map((key, index) => [key, args[index]]),
+      );
+      try {
+        const validated = validate(params);
+        const validatedArgs = paramKeys.map((key) => validated[key]);
+        return mapValidatedToXdm(...validatedArgs);
+      } catch (error) {
+        logger.warn(
+          `An error occurred while creating the ${helperName}.`,
+          error,
+        );
+        return {};
+      }
+    };
+  };
+
+  const createMediaObject = withValidation(
+    "MediaObject",
+    {
       name: string().nonEmpty(),
+      id: string().nonEmpty(),
       length: number().required(),
       streamType: string().nonEmpty(),
-      contentType: string().nonEmpty(),
-    });
+      mediaType: string().nonEmpty(),
+    },
+    (name, id, length, streamType, mediaType) => ({
+      sessionDetails: {
+        friendlyName: name,
+        name: id,
+        length: Math.round(length),
+        contentType: streamType,
+        streamType: mediaType,
+      },
+    }),
+  );
 
-    try {
-      const result = validate(mediaObject);
-      const sessionDetails = {
-        name: result.name,
-        friendlyName: result.friendlyName,
-        length: Math.round(result.length),
-        streamType: result.streamType,
-        contentType: result.contentType,
-      };
-      return { sessionDetails };
-    } catch (error) {
-      logger.warn(`An error occurred while creating the Media Object.`, error);
-      return {};
-    }
-  };
-
-  const createAdBreakObject = (name, position, startTime) => {
-    const adBreakObject = {
-      friendlyName: name,
-      offset: position,
-      index: startTime,
-    };
-    const validator = objectOf({
-      friendlyName: string().nonEmpty(),
-      offset: number(),
-      index: number(),
-    });
-
-    try {
-      const result = validator(adBreakObject);
-      const advertisingPodDetails = {
-        friendlyName: result.friendlyName,
-        offset: result.offset,
-        index: result.index,
-      };
-
-      return { advertisingPodDetails };
-    } catch (error) {
-      logger.warn(
-        `An error occurred while creating the Ad Break Object.`,
-        error,
-      );
-      return {};
-    }
-  };
-  const createAdObject = (name, id, position, length) => {
-    const adObject = {
-      friendlyName: name,
-      name: id,
-      podPosition: position,
-      length,
-    };
-
-    const validator = objectOf({
-      friendlyName: string().nonEmpty(),
+  // Position and startTime swapped in original implementation.
+  const createAdBreakObject = withValidation(
+    "AdBreakObject",
+    {
       name: string().nonEmpty(),
-      podPosition: number(),
+      position: number(),
+      startTime: number(),
+    },
+    (name, position, startTime) => ({
+      advertisingPodDetails: {
+        friendlyName: name,
+        index: position,
+        offset: startTime,
+      },
+    }),
+  );
+
+  const createAdObject = withValidation(
+    "AdObject",
+    {
+      name: string().nonEmpty(),
+      id: string().nonEmpty(),
+      position: number(),
       length: number(),
-    });
+    },
+    (name, id, position, length) => ({
+      advertisingDetails: {
+        friendlyName: name,
+        name: id,
+        podPosition: position,
+        length,
+      },
+    }),
+  );
 
-    try {
-      const result = validator(adObject);
-      const advertisingDetails = {
-        friendlyName: result.friendlyName,
-        name: result.name,
-        podPosition: result.podPosition,
-        length: result.length,
-      };
-
-      return { advertisingDetails };
-    } catch (error) {
-      logger.warn(
-        `An error occurred while creating the Advertising Object.`,
-        error,
-      );
-      return {};
-    }
-  };
-  const createChapterObject = (name, position, length, startTime) => {
-    const chapterDetailsObject = {
-      friendlyName: name,
-      offset: position,
-      length,
-      index: startTime,
-    };
-
-    const validator = objectOf({
-      friendlyName: string().nonEmpty(),
-      offset: number(),
+  // Position and startTime swapped in original implementation.
+  const createChapterObject = withValidation(
+    "ChapterObject",
+    {
+      name: string().nonEmpty(),
+      position: number(),
       length: number(),
-      index: number(),
-    });
+      startTime: number(),
+    },
+    (name, position, length, startTime) => ({
+      chapterDetails: {
+        friendlyName: name,
+        index: position,
+        length,
+        offset: startTime,
+      },
+    }),
+  );
 
-    try {
-      const result = validator(chapterDetailsObject);
-      const chapterDetails = {
-        friendlyName: result.friendlyName,
-        offset: result.offset,
-        index: result.index,
-        length: result.length,
-      };
+  const STATE_NAME_REGEX = /^[a-zA-Z0-9_]{1,64}$/;
 
-      return { chapterDetails };
-    } catch (error) {
-      logger.warn(
-        `An error occurred while creating the Chapter Object.`,
-        error,
-      );
-      return {};
-    }
-  };
-  const createStateObject = (stateName) => {
-    const STATE_NAME_REGEX = /^[a-zA-Z0-9_]{1,64}$/;
+  const createStateObject = withValidation(
+    "StateObject",
+    {
+      stateName: string().matches(
+        STATE_NAME_REGEX,
+        "This is not a valid state name.",
+      ),
+    },
+    (stateName) => ({
+      name: stateName,
+    }),
+  );
 
-    const validator = string().matches(
-      STATE_NAME_REGEX,
-      "This is not a valid state name.",
-    );
-
-    try {
-      const result = validator(stateName);
-
-      return {
-        name: result,
-      };
-    } catch (error) {
-      logger.warn(`An error occurred while creating the State Object.`, error);
-      return {};
-    }
-  };
-  const createQoEObject = (bitrate, droppedFrames, fps, startupTime) => {
-    const qoeObject = {
-      bitrate,
-      droppedFrames,
-      fps,
-      startupTime,
-    };
-
-    const validator = objectOf({
+  // startupTime and droppedFrames swapped in original implementation.
+  const createQoEObject = withValidation(
+    "QoEObject",
+    {
       bitrate: number(),
-      droppedFrames: number(),
-      fps: number(),
       startupTime: number(),
-    });
-
-    try {
-      const result = validator(qoeObject);
-
-      return {
-        bitrate: result.bitrate,
-        droppedFrames: result.droppedFrames,
-        framesPerSecond: result.fps,
-        timeToStart: result.startupTime,
-      };
-    } catch (error) {
-      logger.warn(`An error occurred while creating the QOE Object.`, error);
-      return {};
-    }
-  };
+      fps: number(),
+      droppedFrames: number(),
+    },
+    (bitrate, startupTime, fps, droppedFrames) => ({
+      bitrate,
+      timeToStart: startupTime,
+      framesPerSecond: fps,
+      droppedFrames,
+    }),
+  );
 
   return {
     createMediaObject,
@@ -203,5 +153,6 @@ export default ({ logger }) => {
     createChapterObject,
     createStateObject,
     createQoEObject,
+    version: `WEBSDK ${LIBRARY_VERSION}`,
   };
 };

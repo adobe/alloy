@@ -31,4 +31,38 @@ describe("validation::default", () => {
       value: "hello",
     },
   ]);
+  /*
+  describeValidation("default object with default values", objectOf({
+    a: string().default("a default"),
+    b: string().default("b default"),
+  }).default({}),
+  [
+    {
+      value: null,
+      expected: {
+        a: "a default",
+        b: "b default",
+      },
+    },
+    {
+      value: undefined,
+      expected: {
+        a: "a default",
+        b: "b default",
+      },
+    },
+    {
+      value: {},
+      expected: {
+        a: "a default",
+        b: "b default",
+      },
+    },
+    {
+      value: {
+        a: "a value",
+        b: "b value",
+      },
+    },
+  ]);*/
 });
