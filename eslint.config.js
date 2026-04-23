@@ -349,6 +349,21 @@ export default defineConfig([
     },
   },
   {
+    name: "alloy/node-sandbox",
+    files: ["sandboxes/node/src/**/*.{cjs,js,mjs}"],
+    settings: {
+      "import/core-modules": ["@adobe/alloy-node"],
+    },
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      "no-console": "off",
+    },
+  },
+  {
     name: "alloy/browser-sandbox",
     files: ["sandboxes/browser/src/**/*.{js,jsx}"],
     settings: {
