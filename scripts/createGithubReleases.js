@@ -74,7 +74,7 @@ export const extractChangelogEntry = (content, version) => {
 
 /**
  * @typedef {object} CreateGithubReleasesDeps
- * @property {() => Map<string, string>} getPublicPackages  Returns name → dir path.
+ * @property {() => Map<string, string>} getWorkspacePackages  Returns name → dir path.
  * @property {(tag: string) => boolean}  gitTagExists
  * @property {(tag: string) => boolean}  ghReleaseExists
  * @property {(path: string) => string | null} readFile
@@ -93,7 +93,7 @@ export const extractChangelogEntry = (content, version) => {
 export const createGithubReleases = (deps, statusJson, options = {}) => {
   const { dryRun = false } = options;
   const {
-    getPublicPackages,
+    getWorkspacePackages,
     gitTagExists,
     ghReleaseExists,
     readFile,
@@ -109,7 +109,7 @@ export const createGithubReleases = (deps, statusJson, options = {}) => {
     return { created: 0, skipped: 0 };
   }
 
-  const publicPackages = getPublicPackages();
+  const workspacePackages = getWorkspacePackages();
 
   let created = 0;
   let skipped = 0;
@@ -117,10 +117,10 @@ export const createGithubReleases = (deps, statusJson, options = {}) => {
   for (const release of releases) {
     const { name, newVersion } = release;
     const tag = `${name}@${newVersion}`;
-    const pkgDir = publicPackages.get(name);
+    const pkgDir = workspacePackages.get(name);
 
     if (!pkgDir) {
-      log(`${tag}: not a public package, skipping.`);
+      log(`${tag}: not a workspace package, skipping.`);
       skipped += 1;
       continue;
     }
@@ -169,14 +169,14 @@ export const createGithubReleases = (deps, statusJson, options = {}) => {
 };
 
 /** @returns {Map<string, string>} package name → absolute directory path */
-export const getPublicPackages = () => {
+export const getWorkspacePackages = () => {
   const output = execSync("pnpm ls -r --json --depth -1", {
     encoding: "utf8",
   });
   const packages = JSON.parse(output);
   const result = new Map();
   for (const pkg of packages) {
-    if (!pkg.private && pkg.name) {
+    if (pkg.name) {
       result.set(pkg.name, pkg.path);
     }
   }
@@ -239,7 +239,7 @@ const main = () => {
 
   createGithubReleases(
     {
-      getPublicPackages,
+      getWorkspacePackages,
       gitTagExists,
       ghReleaseExists,
       readFile,

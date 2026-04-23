@@ -146,18 +146,6 @@ jobs:
             jq -r '"- \(.name)@\(.version)"' "$pkg"
           done
 
-      - name: Bump extension when @adobe/alloy was released
-        if: hashFiles('packages/reactor-extension/package.json') != ''
-        run: |
-          ALLOY_NEW=$(jq -r '.releases[] | select(.name=="@adobe/alloy") | .newVersion' changeset-status.json)
-          if [ -z "${ALLOY_NEW}" ] || [ "${ALLOY_NEW}" = "null" ]; then
-            echo "No @adobe/alloy release in this run; skipping extension bump."
-            exit 0
-          fi
-          cd packages/reactor-extension
-          pnpm add @adobe/alloy@$ALLOY_NEW
-          pnpm version patch --no-commit-hooks
-
       - name: Update lockfile
         run: pnpm install --no-frozen-lockfile --ignore-scripts
 
@@ -254,8 +242,8 @@ jobs:
         env:
           REACTOR_IO_INTEGRATION_CLIENT_SECRET: ${{ secrets.REACTOR_IO_INTEGRATION_CLIENT_SECRET }}
         run: |
-          if ! jq -e '.releases[] | select(.name=="@adobe/alloy")' changeset-status.json >/dev/null; then
-            echo "@adobe/alloy was not in this release; skipping extension deploy."
+          if ! jq -e '.releases[] | select(.name=="reactor-extension-alloy")' changeset-status.json >/dev/null; then
+            echo "reactor-extension-alloy was not in this release; skipping extension deploy."
             exit 0
           fi
           EXT_VERSION=$(node -p "require('./packages/reactor-extension/package.json').version")

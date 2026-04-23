@@ -33,20 +33,6 @@
     "prepare": "husky",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js"
   },
-  "lint-staged": {
-    "./*.{cjs,mjs,js,jsx}": [
-      "eslint --cache --fix"
-    ],
-    "./{packages/*/{src,test,scripts},scripts}/**/*.{cjs,mjs,js,jsx}": [
-      "eslint --cache --fix"
-    ],
-    "./*.{html,js,cjs,mjs,jsx}": [
-      "prettier --write"
-    ],
-    "./{sandboxes/*,packages/*/{src,test,scripts},scripts}/**/*.{html,js,cjs,mjs,jsx}": [
-      "prettier --write"
-    ]
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/adobe/alloy.git"
@@ -83,7 +69,6 @@
     "glob": "^11.1.0",
     "globals": "^16.5.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.7",
     "msw": "^2.12.2",
     "minimatch": "^10.1.1",
     "playwright": "^1.57.0",
