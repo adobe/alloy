@@ -109,7 +109,7 @@ export const createGithubReleases = (deps, statusJson, options = {}) => {
     return { created: 0, skipped: 0 };
   }
 
-  const publicPackages = getWorkspacePackages();
+  const workspacePackages = getWorkspacePackages();
 
   let created = 0;
   let skipped = 0;
@@ -117,7 +117,7 @@ export const createGithubReleases = (deps, statusJson, options = {}) => {
   for (const release of releases) {
     const { name, newVersion } = release;
     const tag = `${name}@${newVersion}`;
-    const pkgDir = publicPackages.get(name);
+    const pkgDir = workspacePackages.get(name);
 
     if (!pkgDir) {
       log(`${tag}: not a workspace package, skipping.`);
