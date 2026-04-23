@@ -14,24 +14,10 @@ import { createCustomInstance } from "@adobe/alloy-core";
 /**
  * @alpha
  *
- * Node.js entrypoint for the Adobe Experience Platform Web SDK.
+ * Node.js entrypoint for the Adobe Experience Platform Node SDK.
  *
- * NOT FUNCTIONAL. This package is a scaffold for the Universal JS
- * migration. Importing it currently throws because `@adobe/alloy-core`
- * still references browser globals (`window`, `document`, etc.) at
- * module scope. See packages/browser/UNIVERSAL_JS_MIGRATION.md.
- *
- * Current signature: `createInstance(options)` — forwards to
- * `createCustomInstance` with an empty components array. Core today does
- * not accept any second argument.
- *
- * Anticipated signature drift: the migration plan (UNIVERSAL_JS_MIGRATION.md
- * §"Core entry points") has core entry points growing a second
- * `platformServices` parameter (`network`, `storage`, `cookie`, `runtime`,
- * `legacy`, `globals`). Once that lands, this wrapper will construct and
- * inject node-flavored services and a node context component here. The
- * exported shape (`createInstance(options)`) is expected to stay stable
- * for consumers.
+ * NOT FUNCTIONAL. Because @adobe/alloy-core still references browser globals
+ * and APIs, this package will throw errors at runtime.
  */
 export const createInstance = (options = {}) =>
   createCustomInstance({
