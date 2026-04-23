@@ -90,7 +90,7 @@
     "rimraf": "^6.1.0",
     "testcafe": "^3.7.2",
     "testcafe-browser-provider-playwright": "^1.1.0",
-    "uuid": "^13.0.0",
+    "uuid": "^14.0.0",
     "vitest": "^4.0.6"
   }
 }
