@@ -28,7 +28,7 @@ import license from "./scripts/eslint/licenseRule.js";
 const allComponentPaths = glob.sync("packages/core/src/components/*/");
 
 const sharedIgnores = [
-  "sandboxes/**",
+  "sandboxes/browser/**",
   "dist/**",
   "distTest/**",
   "packages/**/dist/**",
@@ -44,7 +44,7 @@ export default defineConfig([
   pluginJs.configs.recommended,
   eslintPluginPrettierRecommended,
   globalIgnores([
-    "sandboxes/**",
+    "sandboxes/browser/**",
     "node_modules/",
     "launch*.js",
     "packages/reactor-extension/dist/**",
