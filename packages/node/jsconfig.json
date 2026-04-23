@@ -9,7 +9,10 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "maxNodeModuleJsDepth": 0,
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "@adobe/alloy-core": ["./src/alloy-core.d.ts"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
