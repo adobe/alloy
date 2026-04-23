@@ -9,104 +9,19 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-// eslint-disable-next-line import/no-unresolved
 import { defineConfig } from "vitest/config";
-import { playwright } from "@vitest/browser-playwright";
-// eslint-disable-next-line import/no-unresolved
-import react from "@vitejs/plugin-react";
+import { coreTestProjects } from "./packages/core/vitest.projects";
+import { browserTestProjects } from "./packages/browser/vitest.projects";
+import { reactorExtensionTestProjects } from "./packages/reactor-extension/vitest.projects";
 
 const isCi = !!process.env.CI;
-const fileParallelism = process.env.FILE_PARALLELISM !== "false";
 
 export default defineConfig({
   test: {
     projects: [
-      {
-        extends: false,
-        test: {
-          name: "unit",
-          include: ["packages/*/test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
-          exclude: ["packages/reactor-extension/**"],
-          isolate: false,
-          browser: {
-            provider: playwright(),
-            instances: [
-              {
-                browser: "chromium",
-              },
-            ],
-            enabled: true,
-            headless: true,
-            screenshotFailures: false,
-            fileParallelism,
-          },
-        },
-      },
-      {
-        extends: false,
-        test: {
-          name: "integration",
-          include: [
-            "packages/*/test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)",
-          ],
-          exclude: ["packages/reactor-extension/**"],
-          isolate: false,
-          browser: {
-            provider: playwright(),
-            instances: [
-              {
-                browser: "chromium",
-              },
-            ],
-            enabled: true,
-            headless: true,
-            screenshotFailures: false,
-            fileParallelism,
-          },
-        },
-      },
-      {
-        extends: false,
-        test: {
-          name: "reactor-extension/unit",
-          include: [
-            "packages/reactor-extension/test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)",
-          ],
-          isolate: false,
-          environment: "happy-dom",
-        },
-      },
-      {
-        extends: false,
-        plugins: [
-          react({
-            jsxRuntime: "automatic",
-          }),
-        ],
-        test: {
-          name: "reactor-extension/integration",
-          include: [
-            "packages/reactor-extension/test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)",
-          ],
-          testTimeout: 30_000,
-          hookTimeout: 30_000,
-          isolate: true,
-          browser: {
-            enabled: true,
-            instances: [{ browser: "chromium" }],
-            provider: playwright({
-              actionTimeout: 5_000,
-            }),
-            headless: true,
-            screenshotFailures: false,
-            locators: { testIdAttribute: "data-test-id" },
-            viewport: { width: 1000, height: 1000 },
-          },
-          setupFiles: [
-            "packages/reactor-extension/test/integration/helpers/setup.js",
-          ],
-        },
-      },
+      ...coreTestProjects,
+      ...browserTestProjects,
+      ...reactorExtensionTestProjects,
       {
         extends: false,
         test: {

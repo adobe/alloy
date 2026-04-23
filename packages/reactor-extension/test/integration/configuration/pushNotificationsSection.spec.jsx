@@ -11,29 +11,40 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, beforeEach, afterEach, expect } from "vitest";
-import renderView from "../helpers/renderView";
-import createExtensionBridge from "../helpers/createExtensionBridge";
-import ConfigurationView from "../../../src/view/configuration/configurationView";
-import { waitForConfigurationViewToLoad, toggleComponent } from "../helpers/ui";
-import { spectrumTextField } from "../helpers/form";
-import { buildSettings } from "../helpers/settingsUtils";
 
-let extensionBridge;
+import useView from "../helpers/useView";
+import ConfigurationView from "../../../src/view/configuration/configurationView";
+import configurationUI from "../helpers/ui/configurationUI";
+import { buildSettings } from "../helpers/settingsUtils";
+import field from "../helpers/field";
+
+let view;
+let ui;
+let driver;
+let cleanup;
+let vapidPublicKeyField;
+let appIdField;
+let trackingDatasetIdField;
+let pushNotificationsComponentCheckbox;
 
 describe("Config push notifications section", () => {
-  beforeEach(() => {
-    extensionBridge = createExtensionBridge();
-    window.extensionBridge = extensionBridge;
+  beforeEach(async () => {
+    ({ view, driver, cleanup } = await useView(ConfigurationView));
+    ui = configurationUI(view);
+    vapidPublicKeyField = field(view.getByTestId("vapidPublicKeyField"));
+    appIdField = field(view.getByTestId("appIdField"));
+    trackingDatasetIdField = field(view.getByTestId("trackingDatasetIdField"));
+    pushNotificationsComponentCheckbox = field(
+      view.getByTestId("pushNotificationsComponentCheckbox"),
+    );
   });
 
   afterEach(() => {
-    delete window.extensionBridge;
+    cleanup();
   });
 
   it("sets form values from settings", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         components: {
           pushNotifications: true,
@@ -52,22 +63,13 @@ describe("Config push notifications section", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
-
-    const vapidPublicKeyField = spectrumTextField("vapidPublicKeyField");
-    expect(await vapidPublicKeyField.getValue()).toBe("test-vapid-key");
-
-    const appIdField = spectrumTextField("appIdField");
-    expect(await appIdField.getValue()).toBe("test-app-id");
-
-    const trackingDatasetIdField = spectrumTextField("trackingDatasetIdField");
-    expect(await trackingDatasetIdField.getValue()).toBe("test-dataset-id");
+    await vapidPublicKeyField.expectValue("test-vapid-key");
+    await appIdField.expectValue("test-app-id");
+    await trackingDatasetIdField.expectValue("test-dataset-id");
   });
 
   it("updates form values and saves to settings", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         components: {
           pushNotifications: true,
@@ -75,30 +77,21 @@ describe("Config push notifications section", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
-
-    const vapidPublicKeyField = spectrumTextField("vapidPublicKeyField");
     await vapidPublicKeyField.fill("new-vapid-key");
-
-    const appIdField = spectrumTextField("appIdField");
     await appIdField.fill("new-app-id");
-
-    const trackingDatasetIdField = spectrumTextField("trackingDatasetIdField");
     await trackingDatasetIdField.fill("new-dataset-id");
 
-    // Get settings and verify
-    const settings = await extensionBridge.getSettings();
-    expect(settings.instances[0].pushNotifications).toMatchObject({
-      vapidPublicKey: "new-vapid-key",
-      appId: "new-app-id",
-      trackingDatasetId: "new-dataset-id",
-    });
+    await driver
+      .expectSettings((s) => s.instances[0].pushNotifications)
+      .toMatchObject({
+        vapidPublicKey: "new-vapid-key",
+        appId: "new-app-id",
+        trackingDatasetId: "new-dataset-id",
+      });
   });
 
   it("does not emit push notifications settings when component is disabled", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         components: {
           pushNotifications: true,
@@ -117,19 +110,16 @@ describe("Config push notifications section", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
-    await toggleComponent("pushNotifications");
+    await ui.expand("Build options");
+    await pushNotificationsComponentCheckbox.click();
 
-    const settings = await extensionBridge.getSettings();
-    expect(settings.instances[0].pushNotifications).toBeUndefined();
+    await driver
+      .expectSettings((s) => s.instances[0].pushNotifications)
+      .toBeUndefined();
   });
 
   it("shows alert panel when push notifications component is disabled", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(buildSettings());
-    await waitForConfigurationViewToLoad(view);
-
+    await driver.init(buildSettings());
     await expect
       .element(
         view.getByRole("heading", {
@@ -140,9 +130,7 @@ describe("Config push notifications section", () => {
   });
 
   it("hides form fields and shows alert when component is toggled off", async () => {
-    const view = await renderView(ConfigurationView);
-
-    extensionBridge.init(
+    await driver.init(
       buildSettings({
         components: {
           pushNotifications: true,
@@ -150,10 +138,9 @@ describe("Config push notifications section", () => {
       }),
     );
 
-    await waitForConfigurationViewToLoad(view);
-    await toggleComponent("pushNotifications");
+    await ui.expand("Build options");
+    await pushNotificationsComponentCheckbox.click();
 
-    // Should now show alert panel
     await expect
       .element(
         view.getByRole("heading", {
@@ -165,87 +152,53 @@ describe("Config push notifications section", () => {
 
   describe("validation", () => {
     it("requires VAPID public key", async () => {
-      const view = await renderView(ConfigurationView);
-      extensionBridge.init(buildSettings());
+      await driver.init(buildSettings());
 
-      await waitForConfigurationViewToLoad(view);
-      expect(await extensionBridge.validate()).toBe(true);
-      await toggleComponent("pushNotifications");
+      await driver.expectValidate().toBe(true);
+      await ui.expand("Build options");
+      await pushNotificationsComponentCheckbox.click();
 
-      const appIdField = spectrumTextField("appIdField");
       await appIdField.fill("test-app-id");
-
-      const trackingDatasetIdField = spectrumTextField(
-        "trackingDatasetIdField",
-      );
       await trackingDatasetIdField.fill("test-dataset-id");
+      await vapidPublicKeyField.clear();
 
-      const vapidPublicKeyField = spectrumTextField("vapidPublicKeyField");
-      // Touch the field to trigger validation
-      await vapidPublicKeyField.fill("");
+      await driver.expectValidate().toBe(false);
 
-      expect(await vapidPublicKeyField.hasError()).toBe(true);
-      expect(await vapidPublicKeyField.getErrorMessage()).toBe(
-        "Please provide a VAPID public key.",
+      await vapidPublicKeyField.expectError(
+        /please provide a vapid public key/i,
       );
-
-      expect(await extensionBridge.validate()).toBe(false);
     });
 
     it("requires application ID", async () => {
-      const view = await renderView(ConfigurationView);
-      extensionBridge.init(buildSettings());
+      await driver.init(buildSettings());
 
-      await waitForConfigurationViewToLoad(view);
-      expect(await extensionBridge.validate()).toBe(true);
-      await toggleComponent("pushNotifications");
+      await ui.expand("Build options");
+      await pushNotificationsComponentCheckbox.click();
 
-      const vapidPublicKeyField = spectrumTextField("vapidPublicKeyField");
       await vapidPublicKeyField.fill("test-vapid-key");
-
-      const trackingDatasetIdField = spectrumTextField(
-        "trackingDatasetIdField",
-      );
       await trackingDatasetIdField.fill("test-dataset-id");
+      await appIdField.clear();
 
-      const appIdField = spectrumTextField("appIdField");
-      // Touch the field to trigger validation
-      await appIdField.fill("");
+      await driver.expectValidate().toBe(false);
 
-      expect(await appIdField.hasError()).toBe(true);
-      expect(await appIdField.getErrorMessage()).toBe(
-        "Please provide an Application ID.",
-      );
-
-      expect(await extensionBridge.validate()).toBe(false);
+      await appIdField.expectError(/please provide an application id/i);
     });
 
     it("requires tracking dataset ID", async () => {
-      const view = await renderView(ConfigurationView);
-      extensionBridge.init(buildSettings());
+      await driver.init(buildSettings());
 
-      await waitForConfigurationViewToLoad(view);
-      expect(await extensionBridge.validate()).toBe(true);
-      await toggleComponent("pushNotifications");
+      await ui.expand("Build options");
+      await pushNotificationsComponentCheckbox.click();
 
-      const vapidPublicKeyField = spectrumTextField("vapidPublicKeyField");
       await vapidPublicKeyField.fill("test-vapid-key");
-
-      const appIdField = spectrumTextField("appIdField");
       await appIdField.fill("test-app-id");
+      await trackingDatasetIdField.clear();
 
-      const trackingDatasetIdField = spectrumTextField(
-        "trackingDatasetIdField",
+      await driver.expectValidate().toBe(false);
+
+      await trackingDatasetIdField.expectError(
+        /please provide a tracking dataset id/i,
       );
-      // Touch the field to trigger validation
-      await trackingDatasetIdField.fill("");
-
-      expect(await trackingDatasetIdField.hasError()).toBe(true);
-      expect(await trackingDatasetIdField.getErrorMessage()).toBe(
-        "Please provide a Tracking Dataset ID.",
-      );
-
-      expect(await extensionBridge.validate()).toBe(false);
     });
   });
 });

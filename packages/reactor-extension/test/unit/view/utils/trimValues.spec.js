@@ -14,78 +14,79 @@ import { describe, it, expect } from "vitest";
 import trimValue from "../../../../src/view/utils/trimValues";
 
 describe("trimValues", () => {
-  [
-    ["  test  ", "test"],
-    [{ test: "  test  " }, { test: "test" }, "nested object values"],
-    [["  test  "], ["test"], "arrays"],
-    [{ test: ["  test  "] }, { test: ["test"] }, "nested arrays"],
-    [1, 1, "numbers"],
-    [true, true, "booleans"],
-    [null, null, "null"],
-    [undefined, undefined, "undefined"],
-    [NaN, NaN, "NaN"],
-    ["", undefined, "empty string"],
-    [{ test: "" }, undefined, "empty string in object"],
-    [["", "test"], ["test"], "empty string in array"],
+  it.each(
     [
-      { test: ["", "test"] },
-      { test: ["test"] },
-      "empty string in nested array",
-    ],
-    [{}, undefined, "empty object"],
-    [[], undefined, "empty array"],
-    [{ test: {} }, undefined, "empty object in object"],
-    [{ test: [] }, undefined, "empty array in object"],
-    [{ test: [""] }, undefined, "empty string in array in object"],
-    [
-      { test: ["", "test"] },
-      { test: ["test"] },
-      "empty string in array in object",
-    ],
-    [
-      { test: { a: true, b: {} } },
-      { test: { a: true } },
-      "empty object in object",
-    ],
-    [
-      { test: { a: true, b: [] } },
-      { test: { a: true } },
-      "empty array in object",
-    ],
-    [
-      { test: { a: true, b: [""] } },
-      { test: { a: true } },
-      "empty string in array in object",
-    ],
-    [
-      { test: { a: true, b: ["", "test"] } },
-      { test: { a: true, b: ["test"] } },
-      "empty string in array in object",
-    ],
-    [
-      { test: { a: true, b: {} } },
-      { test: { a: true } },
-      "empty object in object",
-    ],
-    [
-      { test: { a: true, b: [] } },
-      { test: { a: true } },
-      "empty array in object",
-    ],
-    [
-      { test: { a: true, b: [""] } },
-      { test: { a: true } },
-      "empty string in array in object",
-    ],
-  ].forEach(([value, expected, description]) => {
-    let testTitle = "should trim";
-    if (description) {
-      testTitle += ` ${description}`;
-    } else {
-      testTitle += ` "${value}" to "${expected}"`;
-    }
-    it(testTitle, () => {
-      expect(trimValue(value)).toEqual(expected);
-    });
+      ["  test  ", "test"],
+      [{ test: "  test  " }, { test: "test" }, "nested object values"],
+      [["  test  "], ["test"], "arrays"],
+      [{ test: ["  test  "] }, { test: ["test"] }, "nested arrays"],
+      [1, 1, "numbers"],
+      [true, true, "booleans"],
+      [null, null, "null"],
+      [undefined, undefined, "undefined"],
+      [NaN, NaN, "NaN"],
+      ["", undefined, "empty string"],
+      [{ test: "" }, undefined, "empty string in object"],
+      [["", "test"], ["test"], "empty string in array"],
+      [
+        { test: ["", "test"] },
+        { test: ["test"] },
+        "empty string in nested array",
+      ],
+      [{}, undefined, "empty object"],
+      [[], undefined, "empty array"],
+      [{ test: {} }, undefined, "empty object in object"],
+      [{ test: [] }, undefined, "empty array in object"],
+      [{ test: [""] }, undefined, "empty string in array in object"],
+      [
+        { test: ["", "test"] },
+        { test: ["test"] },
+        "empty string in array in object",
+      ],
+      [
+        { test: { a: true, b: {} } },
+        { test: { a: true } },
+        "empty object in object",
+      ],
+      [
+        { test: { a: true, b: [] } },
+        { test: { a: true } },
+        "empty array in object",
+      ],
+      [
+        { test: { a: true, b: [""] } },
+        { test: { a: true } },
+        "empty string in array in object",
+      ],
+      [
+        { test: { a: true, b: ["", "test"] } },
+        { test: { a: true, b: ["test"] } },
+        "empty string in array in object",
+      ],
+      [
+        { test: { a: true, b: {} } },
+        { test: { a: true } },
+        "empty object in object",
+      ],
+      [
+        { test: { a: true, b: [] } },
+        { test: { a: true } },
+        "empty array in object",
+      ],
+      [
+        { test: { a: true, b: [""] } },
+        { test: { a: true } },
+        "empty string in array in object",
+      ],
+    ].map((row) => {
+      const [value, expected, description] =
+        row.length === 3 ? row : [row[0], row[1], undefined];
+      const title = description
+        ? `should trim ${description}`
+        : `should trim "${value}" to "${expected}"`;
+      return { title, value, expected };
+    }),
+  )("$title", ({ value, expected }) => {
+    expect(trimValue(value)).toEqual(expected);
   });
 });
