@@ -1,0 +1,19 @@
+{
+  "extends": "../../jsconfig.base.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "maxNodeModuleJsDepth": 0,
+    "noEmit": true,
+    "paths": {
+      "@adobe/alloy-core": ["./src/alloy-core.d.ts"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
