@@ -28,7 +28,7 @@ import license from "./scripts/eslint/licenseRule.js";
 const allComponentPaths = glob.sync("packages/core/src/components/*/");
 
 const sharedIgnores = [
-  "sandboxes/**",
+  "sandboxes/browser/**",
   "dist/**",
   "distTest/**",
   "packages/**/dist/**",
@@ -44,7 +44,7 @@ export default defineConfig([
   pluginJs.configs.recommended,
   eslintPluginPrettierRecommended,
   globalIgnores([
-    "sandboxes/**",
+    "sandboxes/browser/**",
     "node_modules/",
     "launch*.js",
     "packages/reactor-extension/dist/**",
@@ -346,6 +346,21 @@ export default defineConfig([
         fixture: "readonly",
         ...globals.node,
       },
+    },
+  },
+  {
+    name: "alloy/node-sandbox",
+    files: ["sandboxes/node/src/**/*.{cjs,js,mjs}"],
+    settings: {
+      "import/core-modules": ["@adobe/alloy-node"],
+    },
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      "no-console": "off",
     },
   },
   {

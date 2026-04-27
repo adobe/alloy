@@ -16,6 +16,7 @@ jobs:
           - build
           - lint
           - "format:check"
+          - typecheck
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

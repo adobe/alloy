@@ -11,6 +11,7 @@
     "format": "prettier --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/{src,test,scripts},scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
     "format:check": "prettier --check \"*.{html,js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/{src,test,scripts},scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
     "types": "tsc",
+    "typecheck": "pnpm --recursive --if-present run typecheck",
     "test": "pnpm exec playwright install chromium && vitest run",
     "test:coverage": "rimraf coverage && pnpm exec playwright install chromium && vitest run --coverage",
     "test:unit": "pnpm exec playwright install chromium && vitest run --project=core/unit --project=browser/unit --project=reactor-extension/unit",
