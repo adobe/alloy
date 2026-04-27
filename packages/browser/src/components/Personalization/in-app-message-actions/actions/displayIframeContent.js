@@ -17,7 +17,10 @@ import { isNonEmptyString } from "@adobe/alloy-core/utils";
 import { createNode } from "@adobe/alloy-core/utils/dom";
 import { objectOf } from "@adobe/alloy-core/utils/validation";
 import { PropositionEventType } from "@adobe/alloy-core/constants/propositionEventType.js";
-import { EVENT_TYPE_TRUE, INTERACT } from "@adobe/alloy-core/constants/eventType.js";
+import {
+  EVENT_TYPE_TRUE,
+  INTERACT,
+} from "@adobe/alloy-core/constants/eventType.js";
 import createRedirect from "../../dom-actions/createRedirect.js";
 
 const MESSAGING_CONTAINER_ID = "alloy-messaging-container";

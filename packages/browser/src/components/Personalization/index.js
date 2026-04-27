@@ -24,7 +24,10 @@ import { createHideContainers, createShowContainers } from "./flicker/index.js";
 import createFetchDataHandler from "./createFetchDataHandler.js";
 import collectClicks from "./dom-actions/clicks/collectClicks.js";
 import isAuthoringModeEnabled from "./utils/isAuthoringModeEnabled.js";
-import { mergeDecisionsMeta, mergeQuery } from "@adobe/alloy-core/utils/event.js";
+import {
+  mergeDecisionsMeta,
+  mergeQuery,
+} from "@adobe/alloy-core/utils/event.js";
 import createOnClickHandler from "./createOnClickHandler.js";
 import createViewCacheManager from "./createViewCacheManager.js";
 import createViewChangeHandler from "./createViewChangeHandler.js";

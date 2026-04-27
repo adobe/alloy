@@ -14,5 +14,4 @@ governing permissions and limitations under the License.
  * @typedef {import("./core/types.js").AlloyMonitor} AlloyMonitor
  */
 
-
 export const Types = {};
