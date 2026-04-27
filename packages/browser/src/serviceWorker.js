@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createEventListeners from "@adobe/alloy-core/createEventListeners.js";
+import createEventListeners from "./createEventListeners.js";
 
 /* eslint-disable no-console */
 
 // @ts-check
 /// <reference lib="webworker" />
 
-/** @import { ServiceWorkerLogger } from '@adobe/alloy-core/types.js' */
+/** @import { ServiceWorkerLogger } from './components/PushNotifications/types.js' */
 
 /** @type {ServiceWorkerGlobalScope} */
 // @ts-ignore
