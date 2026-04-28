@@ -72,6 +72,30 @@ const normalizeAdvertiser = (advertiserSettings) => {
     .join(", ");
 };
 
+const appendAdCloudIdentityToEvent = (idsToInclude, event) => {
+  const ID_SEPARATOR = "|";
+  // Fixed order: surferVal|hashedIP|id5Val|rampVal|adfId → xdm._experience.adcloud.stitchId
+  const ADCLOUD_ID_ORDER = ["surferId", "hashedIP", "id5Id", "rampId", "adfId"];
+  const currentUserXdm = event.getUserXdm() || {};
+  const concatenatedId = ADCLOUD_ID_ORDER.map(
+    (key) => idsToInclude[key] ?? "",
+  ).join(ID_SEPARATOR);
+
+  const existingExperience = currentUserXdm._experience || {};
+  const existingAdCloud = existingExperience.adcloud || {};
+
+  event.setUserXdm({
+    ...currentUserXdm,
+    _experience: {
+      ...existingExperience,
+      adcloud: {
+        ...existingAdCloud,
+        stitchId: concatenatedId,
+      },
+    },
+  });
+};
+
 const appendAdvertisingIdQueryToEvent = (
   idsToInclude,
   event,
@@ -156,6 +180,7 @@ export {
   normalizeAdvertiser,
   createManagedAsyncOperation,
   appendAdvertisingIdQueryToEvent,
+  appendAdCloudIdentityToEvent,
   isAnyIdUnused,
   markIdsAsConverted,
   isThrottled,

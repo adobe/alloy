@@ -16,6 +16,7 @@ import {
   normalizeAdvertiser,
   createManagedAsyncOperation,
   appendAdvertisingIdQueryToEvent,
+  appendAdCloudIdentityToEvent,
   isAnyIdUnused,
   markIdsAsConverted,
   isThrottled,
@@ -27,7 +28,19 @@ import {
   DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
   AD_CONVERSION_VIEW_EVENT_TYPE,
 } from "../../../../../../src/components/Advertising/constants/index.js";
-import { queryString } from "../../../../../../src/utils/index.js";
+
+// Mock DOM utilities
+vi.mock("../../../../../../src/utils/dom/index.js", () => ({
+  awaitSelector: vi.fn(),
+  loadScript: vi.fn().mockResolvedValue(),
+  createNode: vi.fn(),
+  appendNode: vi.fn(),
+  matchesSelector: vi.fn(),
+  querySelectorAll: vi.fn(),
+  removeNode: vi.fn(),
+  selectNodes: vi.fn(),
+  selectNodesWithShadow: vi.fn(),
+}));
 
 describe("Advertising::helpers", () => {
   let mockEvent;
@@ -35,6 +48,8 @@ describe("Advertising::helpers", () => {
   let mockLogger;
 
   beforeEach(() => {
+    // Reset modules to clear any cached state
+    vi.resetModules();
     // Mock event object
     mockEvent = {
       mergeQuery: vi.fn(),
@@ -52,18 +67,23 @@ describe("Advertising::helpers", () => {
       warn: vi.fn(),
       error: vi.fn(),
     };
+
+    // Reset all mocks
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   describe("getUrlParams", () => {
+    afterEach(() => {
+      window.history.pushState({}, "", "/");
+    });
+
     it("should return URL parameters when present", () => {
-      vi.spyOn(queryString, "parse").mockReturnValue({
-        s_kwcid: "test_kwcid",
-        ef_id: "test_efid",
-      });
+      window.history.pushState({}, "", "?s_kwcid=test_kwcid&ef_id=test_efid");
 
       const result = getUrlParams();
 
@@ -74,9 +94,7 @@ describe("Advertising::helpers", () => {
     });
 
     it("should return undefined values when parameters are not present", () => {
-      vi.spyOn(queryString, "parse").mockReturnValue({
-        foo: "bar",
-      });
+      window.history.pushState({}, "", "?foo=bar");
 
       const result = getUrlParams();
 
@@ -85,7 +103,7 @@ describe("Advertising::helpers", () => {
     });
 
     it("should handle empty search string", () => {
-      vi.spyOn(queryString, "parse").mockReturnValue({});
+      window.history.pushState({}, "", "");
 
       const result = getUrlParams();
 
@@ -225,6 +243,112 @@ describe("Advertising::helpers", () => {
 
       expect(result).toBe("success");
       expect(workerFn).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe("appendAdCloudIdentityToEvent", () => {
+    it("should set _experience.adcloud.stitchId when ids are provided", () => {
+      const event = {
+        getUserXdm: vi.fn().mockReturnValue(undefined),
+        setUserXdm: vi.fn(),
+      };
+      const idsToInclude = {
+        surferId: "s1",
+        id5Id: "id5",
+        rampId: "r1",
+      };
+
+      appendAdCloudIdentityToEvent(idsToInclude, event);
+
+      expect(event.getUserXdm).toHaveBeenCalled();
+      expect(event.setUserXdm).toHaveBeenCalledTimes(1);
+      const [setArg] = event.setUserXdm.mock.calls[0];
+      expect(setArg._experience.adcloud.stitchId).toBe("s1||id5|r1|");
+    });
+
+    it("should preserve existing userXdm when setting stitchId", () => {
+      const event = {
+        getUserXdm: vi.fn().mockReturnValue({ web: { page: "test" } }),
+        setUserXdm: vi.fn(),
+      };
+      const idsToInclude = { surferId: "s1" };
+
+      appendAdCloudIdentityToEvent(idsToInclude, event);
+
+      const [setArg] = event.setUserXdm.mock.calls[0];
+      expect(setArg.web).toEqual({ page: "test" });
+      expect(setArg._experience.adcloud.stitchId).toBe("s1||||");
+    });
+
+    it("should preserve identityMap and merge stitchId into _experience.adcloud", () => {
+      const event = {
+        getUserXdm: vi.fn().mockReturnValue({
+          identityMap: {
+            AdCloud: [{ id: "existing", namespace: { code: "AdCloud" } }],
+          },
+        }),
+        setUserXdm: vi.fn(),
+      };
+      const idsToInclude = { surferId: "new" };
+
+      appendAdCloudIdentityToEvent(idsToInclude, event);
+
+      const [setArg] = event.setUserXdm.mock.calls[0];
+      expect(setArg.identityMap.AdCloud).toHaveLength(1);
+      expect(setArg.identityMap.AdCloud[0].id).toBe("existing");
+      expect(setArg._experience.adcloud.stitchId).toBe("new||||");
+    });
+
+    it("should set stitchId with pipe-separated empty slots when no ids provided", () => {
+      const event = {
+        getUserXdm: vi.fn().mockReturnValue({}),
+        setUserXdm: vi.fn(),
+      };
+
+      appendAdCloudIdentityToEvent({}, event);
+
+      const [setArg] = event.setUserXdm.mock.calls[0];
+      expect(setArg._experience.adcloud.stitchId).toBe("||||");
+    });
+
+    it("should preserve other _experience.adcloud fields when setting stitchId", () => {
+      const event = {
+        getUserXdm: vi.fn().mockReturnValue({
+          _experience: {
+            adcloud: {
+              conversionDetails: { trackingCode: "AL!x" },
+            },
+          },
+        }),
+        setUserXdm: vi.fn(),
+      };
+      const idsToInclude = { surferId: "s1" };
+
+      appendAdCloudIdentityToEvent(idsToInclude, event);
+
+      const [setArg] = event.setUserXdm.mock.calls[0];
+      expect(setArg._experience.adcloud.conversionDetails).toEqual({
+        trackingCode: "AL!x",
+      });
+      expect(setArg._experience.adcloud.stitchId).toBe("s1||||");
+    });
+
+    it("should use fixed order surferId|hashedIP|id5Id|rampId|adfId for concatenation", () => {
+      const event = {
+        getUserXdm: vi.fn().mockReturnValue(undefined),
+        setUserXdm: vi.fn(),
+      };
+      const idsToInclude = {
+        hashedIP: "hp",
+        rampId: "r",
+        surferId: "s",
+        id5Id: "i",
+      };
+
+      appendAdCloudIdentityToEvent(idsToInclude, event);
+
+      const [setArg] = event.setUserXdm.mock.calls[0];
+      expect(setArg._experience.adcloud.stitchId).toBe("s|hp|i|r|");
     });
   });
 
