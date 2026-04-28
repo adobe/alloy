@@ -15,10 +15,7 @@ import {
   INTERACT_ID_DATA_ATTRIBUTE,
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
-import {
-  appendNode,
-  createNode,
-} from "@adobe/alloy-core/utils/dom";
+import { appendNode, createNode } from "@adobe/alloy-core/utils/dom";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest.js";
 import {

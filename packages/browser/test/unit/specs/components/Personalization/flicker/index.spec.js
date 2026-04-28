@@ -10,10 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { beforeEach, afterEach, describe, it, expect } from "vitest";
-import {
-  selectNodes,
-  removeNode,
-} from "@adobe/alloy-core/utils/dom";
+import { selectNodes, removeNode } from "@adobe/alloy-core/utils/dom";
 import {
   hideElements,
   showElements,

@@ -11,10 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { beforeEach, afterEach, describe, it, expect } from "vitest";
-import {
-  appendNode,
-  createNode,
-} from "@adobe/alloy-core/utils/dom";
+import { appendNode, createNode } from "@adobe/alloy-core/utils/dom";
 import cleanUpDomChanges from "../../../../../helpers/cleanUpDomChanges.js";
 import isDomElement from "../../../../../../../src/components/Personalization/dom-actions/dom/isDomElement.js";
 

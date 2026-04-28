@@ -12,10 +12,7 @@ governing permissions and limitations under the License.
 import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import createProcessDomAction from "../../../../../../src/components/Personalization/handlers/createProcessDomAction.js";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
-import {
-  appendNode,
-  createNode,
-} from "@adobe/alloy-core/utils/dom";
+import { appendNode, createNode } from "@adobe/alloy-core/utils/dom";
 import { DOM_ACTION } from "@adobe/alloy-core/constants/schema.js";
 import {
   ADOBE_JOURNEY_OPTIMIZER,
