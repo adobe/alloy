@@ -17,7 +17,6 @@ const components = {
   },
 
   advertising: {
-    beta: true,
     description:
       "This component enables Adobe Advertising integration with CJA.",
   },
@@ -72,7 +71,6 @@ const components = {
   },
 
   pushNotifications: {
-    beta: true,
     description:
       "This component enables web push notifications for Adobe Journey Optimizer.",
   },

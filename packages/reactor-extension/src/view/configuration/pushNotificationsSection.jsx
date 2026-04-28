@@ -19,7 +19,6 @@ import FormElementContainer from "../components/formElementContainer";
 import DataElementSelector from "../components/dataElementSelector";
 import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
 import Heading from "../components/typography/heading";
-import BetaBadge from "../components/betaBadge";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
 
@@ -93,9 +92,7 @@ const PushNotificationsSection = ({ instanceFieldName }) => {
   if (!pushNotificationsComponentEnabled) {
     return (
       <>
-        <SectionHeader>
-          Push Notifications <BetaBadge />
-        </SectionHeader>
+        <SectionHeader>Push Notifications</SectionHeader>
         <View width="size-6000">
           <InlineAlert variant="info">
             <Heading>Push Notifications component disabled</Heading>
@@ -111,9 +108,7 @@ const PushNotificationsSection = ({ instanceFieldName }) => {
 
   return (
     <>
-      <SectionHeader>
-        Push Notifications <BetaBadge />
-      </SectionHeader>
+      <SectionHeader>Push Notifications</SectionHeader>
       <Content width="size-5000" marginBottom="size-200">
         Push notifications require a service worker to function when your site
         isn&lsquo;t actively open. The service worker runs in the background and
