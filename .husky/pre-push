@@ -1,0 +1,1 @@
+pnpm vitest run --project=unit --project=scripts
