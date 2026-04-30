@@ -28,6 +28,7 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
   let appendAdvertisingIdQueryToEventFn;
   let getUrlParamsFn;
   let isThrottledFn;
+  let normalizeAdvertiserFn;
 
   beforeEach(() => {
     cookieManager = {
@@ -84,6 +85,10 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
     });
     getUrlParamsFn = vi.fn().mockReturnValue({ skwcid: null, efid: null });
     isThrottledFn = vi.fn().mockReturnValue(false);
+    // Default to a truthy advertiser id so the new "no advertiser" gate
+    // does not short-circuit the existing tests. Individual tests can
+    // override this via `normalizeAdvertiserFn.mockReturnValueOnce("")`.
+    normalizeAdvertiserFn = vi.fn().mockReturnValue("adv-1");
 
     onBeforeEvent = createOnBeforeSendEventHandler({
       cookieManager,
@@ -97,6 +102,7 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
       appendAdvertisingIdQueryToEvent: appendAdvertisingIdQueryToEventFn,
       getUrlParams: getUrlParamsFn,
       isThrottled: isThrottledFn,
+      normalizeAdvertiser: normalizeAdvertiserFn,
     });
   });
 
@@ -207,6 +213,67 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
     expect(collectSurferIdFn).not.toHaveBeenCalled();
     expect(getID5IdFn).not.toHaveBeenCalled();
     expect(getRampIdFn).not.toHaveBeenCalled();
+  });
+
+  describe("activeAdvertiserIds gate", () => {
+    it("returns early when advertiserSettings is missing", async () => {
+      normalizeAdvertiserFn.mockReturnValueOnce("");
+
+      await onBeforeEvent({
+        event,
+        advertising: { handleAdvertisingData: "auto" },
+      });
+
+      expect(collectSurferIdFn).not.toHaveBeenCalled();
+      expect(getID5IdFn).not.toHaveBeenCalled();
+      expect(getRampIdFn).not.toHaveBeenCalled();
+      expect(event.mergeQuery).not.toHaveBeenCalled();
+    });
+
+    it("returns early when advertiserSettings is an empty array", async () => {
+      normalizeAdvertiserFn.mockReturnValueOnce("");
+
+      await onBeforeEvent({
+        event,
+        advertising: { handleAdvertisingData: "auto" },
+      });
+
+      expect(collectSurferIdFn).not.toHaveBeenCalled();
+      expect(getID5IdFn).not.toHaveBeenCalled();
+      expect(getRampIdFn).not.toHaveBeenCalled();
+      expect(event.mergeQuery).not.toHaveBeenCalled();
+    });
+
+    it("returns early when all advertiser entries are disabled", async () => {
+      normalizeAdvertiserFn.mockReturnValueOnce("");
+
+      await onBeforeEvent({
+        event,
+        advertising: { handleAdvertisingData: "auto" },
+      });
+
+      expect(collectSurferIdFn).not.toHaveBeenCalled();
+      expect(getID5IdFn).not.toHaveBeenCalled();
+      expect(getRampIdFn).not.toHaveBeenCalled();
+      expect(event.mergeQuery).not.toHaveBeenCalled();
+    });
+
+    it("proceeds with identity resolution when at least one advertiser is enabled", async () => {
+      normalizeAdvertiserFn.mockReturnValueOnce("adv-1");
+      collectSurferIdFn.mockResolvedValue("test-surfer-id");
+      getID5IdFn.mockResolvedValue("test-id5-id");
+      getRampIdFn.mockResolvedValue("test-ramp-id");
+
+      await onBeforeEvent({
+        event,
+        advertising: { handleAdvertisingData: "auto" },
+      });
+
+      expect(collectSurferIdFn).toHaveBeenCalled();
+      expect(getID5IdFn).toHaveBeenCalled();
+      expect(getRampIdFn).toHaveBeenCalled();
+      expect(event.mergeQuery).toHaveBeenCalled();
+    });
   });
 
   it("logs when unexpected errors are thrown", async () => {
