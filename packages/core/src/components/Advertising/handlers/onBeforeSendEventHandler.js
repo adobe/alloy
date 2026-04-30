@@ -17,6 +17,7 @@ import {
   appendAdvertisingIdQueryToEvent,
   getUrlParams,
   isThrottled,
+  normalizeAdvertiser,
 } from "../utils/helpers.js";
 import { SURFER_ID, ID5_ID, RAMP_ID } from "../constants/index.js";
 import { AUTO, WAIT } from "../../../constants/consentStatus.js";
@@ -53,9 +54,15 @@ export default async function handleOnBeforeSendEvent({
 }) {
   const { skwcid, efid } = getUrlParams();
   const isClickThru = !!(skwcid && efid);
+  // Skip identity resolution when no enabled advertiser IDs are configured —
+  // there is nothing meaningful to enrich the event with downstream.
+  const activeAdvertiserIds = normalizeAdvertiser(
+    componentConfig?.advertiserSettings,
+  );
   if (
     isAdvertisingDisabled(advertising) ||
     isClickThru ||
+    !activeAdvertiserIds ||
     (isThrottled(SURFER_ID, cookieManager) &&
       isThrottled(ID5_ID, cookieManager) &&
       isThrottled(RAMP_ID, cookieManager))
