@@ -40,8 +40,7 @@
 
 ## Checklist:
 
-<!--- A changeset file is required for the PR. To add a changeset file, run `pnpm changset` and follow the prompts. -->
-<!--- If your changes are not consumer facing, you can open a PR without a changeset. -->
+<!--- Run `pnpm changeset` if this needs a release with a changelog entry, `pnpm changeset --empty` if it needs a release without one, or push without a changeset if no release is needed. -->
 <!--- For more information about the changesets or the release process, see https://github.com/adobe/alloy/wiki/Release-process -->
 <!--- Go over all the following points, and put an `x` in all the boxes that apply. -->
 <!--- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
