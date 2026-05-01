@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { object, string } from "yup";
-import { useField } from "formik";
+import { useEffect, useRef } from "react";
+import { useField, useFormikContext } from "formik";
 import { View, InlineAlert, Content, Link } from "@adobe/react-spectrum";
 import SectionHeader from "../components/sectionHeader";
 import FormElementContainer from "../components/formElementContainer";
@@ -84,10 +85,31 @@ export const bridge = {
   }),
 };
 
+const PUSH_NOTIFICATIONS_FIELDS = [
+  "vapidPublicKey",
+  "appId",
+  "trackingDatasetId",
+];
+
 const PushNotificationsSection = ({ instanceFieldName }) => {
   const [{ value: pushNotificationsComponentEnabled }] = useField(
     "components.pushNotifications",
   );
+  const { setFieldTouched } = useFormikContext();
+  const prevEnabled = useRef(pushNotificationsComponentEnabled);
+
+  useEffect(() => {
+    if (pushNotificationsComponentEnabled && !prevEnabled.current) {
+      PUSH_NOTIFICATIONS_FIELDS.forEach((field) => {
+        setFieldTouched(
+          `${instanceFieldName}.pushNotifications.${field}`,
+          false,
+          false,
+        );
+      });
+    }
+    prevEnabled.current = pushNotificationsComponentEnabled;
+  }, [pushNotificationsComponentEnabled]);
 
   if (!pushNotificationsComponentEnabled) {
     return (
