@@ -18,10 +18,6 @@
       "types": "./src/types.js",
       "default": "./src/types.js"
     },
-    "./createEventListeners.js": {
-      "types": "./src/createEventListeners.js",
-      "default": "./src/createEventListeners.js"
-    },
     "./componentMetadata.js": {
       "types": "./src/componentMetadata.js",
       "default": "./src/componentMetadata.js"
@@ -29,6 +25,15 @@
     "./core/componentCreators.js": {
       "types": "./src/core/componentCreators.js",
       "default": "./src/core/componentCreators.js"
+    },
+    "./core/createEvent.js": {
+      "default": "./src/core/createEvent.js"
+    },
+    "./core/config/createConfig.js": {
+      "default": "./src/core/config/createConfig.js"
+    },
+    "./core/injectCreateResponse.js": {
+      "default": "./src/core/injectCreateResponse.js"
     },
     "./utils": {
       "default": "./src/utils/index.js"
@@ -39,6 +44,21 @@
     "./utils/deepAssign.js": {
       "types": "./src/utils/deepAssign.js",
       "default": "./src/utils/deepAssign.js"
+    },
+    "./utils/dom": {
+      "default": "./src/utils/dom/index.js"
+    },
+    "./utils/dom/*.js": {
+      "default": "./src/utils/dom/*.js"
+    },
+    "./utils/request": {
+      "default": "./src/utils/request/index.js"
+    },
+    "./utils/*.js": {
+      "default": "./src/utils/*.js"
+    },
+    "./constants/*.js": {
+      "default": "./src/constants/*.js"
     },
     "./components/EventMerge/createEventMergeId.js": {
       "types": "./src/components/EventMerge/createEventMergeId.js",
