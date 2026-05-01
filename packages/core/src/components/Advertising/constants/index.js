@@ -26,6 +26,7 @@ export const EFID_PARAM = "ef_id";
 
 // Identity Types
 export const SURFER_ID = "surferId";
+export const HASHED_IP_ADDR = "hashedIPAddr";
 export const RAMP_ID = "rampId";
 export const ID5_ID = "id5Id";
 
@@ -56,6 +57,7 @@ export const SURFER_USER_ID = "1";
 export const SURFER_TIMEOUT_MS = 5000;
 export const SURFER_TRUSTED_ORIGIN = "www.everestjs.net";
 export const SURFER_PARAM_KEY = "gsurfer";
+export const SURFER_IP = "clientIp";
 
 // Error Messages
 export const ERROR_ID5_PARTNER_ID_REQUIRED = "ID5 partner ID is required";
