@@ -75,10 +75,11 @@ export default ({
     const activeAdvertiserIds = normalizeAdvertiser(
       componentConfig?.advertiserSettings,
     );
+    const hasAdvertiserIds = activeAdvertiserIds.length > 0;
     if (
       isAdvertisingDisabled(advertising) ||
       isClickThru ||
-      !activeAdvertiserIds ||
+      !hasAdvertiserIds ||
       (isThrottled(SURFER_ID, cookieManager) &&
         isThrottled(ID5_ID, cookieManager) &&
         isThrottled(RAMP_ID, cookieManager))

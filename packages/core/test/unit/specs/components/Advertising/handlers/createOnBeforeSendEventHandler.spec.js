@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import { CHROME } from "../../../../../../src/constants/browser.js";
 import createOnBeforeSendEventHandler from "../../../../../../src/components/Advertising/handlers/createOnBeforeSendEventHandler.js";
+import { normalizeAdvertiser as realNormalizeAdvertiser } from "../../../../../../src/components/Advertising/utils/helpers.js";
 
 describe("Advertising::createOnBeforeSendEventHandler", () => {
   let cookieManager;
@@ -216,10 +217,31 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
   });
 
   describe("activeAdvertiserIds gate", () => {
-    it("returns early when advertiserSettings is missing", async () => {
-      normalizeAdvertiserFn.mockReturnValueOnce("");
+    // Build a handler that uses the real normalizeAdvertiser so each test
+    // exercises a genuinely different advertiserSettings shape end-to-end.
+    const buildHandlerWith = (componentConfigOverride) =>
+      createOnBeforeSendEventHandler({
+        cookieManager,
+        logger,
+        componentConfig: componentConfigOverride,
+        getBrowser,
+        consent,
+        collectSurferId: collectSurferIdFn,
+        getID5Id: getID5IdFn,
+        getRampId: getRampIdFn,
+        appendAdvertisingIdQueryToEvent: appendAdvertisingIdQueryToEventFn,
+        getUrlParams: getUrlParamsFn,
+        isThrottled: isThrottledFn,
+        normalizeAdvertiser: realNormalizeAdvertiser,
+      });
 
-      await onBeforeEvent({
+    it("returns early when advertiserSettings is missing", async () => {
+      const handler = buildHandlerWith({
+        id5PartnerId: "test-partner",
+        rampIdJSPath: "/test-path",
+      });
+
+      await handler({
         event,
         advertising: { handleAdvertisingData: "auto" },
       });
@@ -231,9 +253,13 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
     });
 
     it("returns early when advertiserSettings is an empty array", async () => {
-      normalizeAdvertiserFn.mockReturnValueOnce("");
+      const handler = buildHandlerWith({
+        id5PartnerId: "test-partner",
+        rampIdJSPath: "/test-path",
+        advertiserSettings: [],
+      });
 
-      await onBeforeEvent({
+      await handler({
         event,
         advertising: { handleAdvertisingData: "auto" },
       });
@@ -245,9 +271,16 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
     });
 
     it("returns early when all advertiser entries are disabled", async () => {
-      normalizeAdvertiserFn.mockReturnValueOnce("");
+      const handler = buildHandlerWith({
+        id5PartnerId: "test-partner",
+        rampIdJSPath: "/test-path",
+        advertiserSettings: [
+          { advertiserId: "adv-1", enabled: false },
+          { advertiserId: "adv-2", enabled: false },
+        ],
+      });
 
-      await onBeforeEvent({
+      await handler({
         event,
         advertising: { handleAdvertisingData: "auto" },
       });
@@ -259,12 +292,20 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
     });
 
     it("proceeds with identity resolution when at least one advertiser is enabled", async () => {
-      normalizeAdvertiserFn.mockReturnValueOnce("adv-1");
       collectSurferIdFn.mockResolvedValue("test-surfer-id");
       getID5IdFn.mockResolvedValue("test-id5-id");
       getRampIdFn.mockResolvedValue("test-ramp-id");
 
-      await onBeforeEvent({
+      const handler = buildHandlerWith({
+        id5PartnerId: "test-partner",
+        rampIdJSPath: "/test-path",
+        advertiserSettings: [
+          { advertiserId: "adv-1", enabled: true },
+          { advertiserId: "adv-2", enabled: false },
+        ],
+      });
+
+      await handler({
         event,
         advertising: { handleAdvertisingData: "auto" },
       });
