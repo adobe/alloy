@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import { CHROME } from "../../../../../../src/constants/browser.js";
 import createOnBeforeSendEventHandler from "../../../../../../src/components/Advertising/handlers/createOnBeforeSendEventHandler.js";
+import { normalizeAdvertiser as realNormalizeAdvertiser } from "../../../../../../src/components/Advertising/utils/helpers.js";
 
 describe("Advertising::createOnBeforeSendEventHandler", () => {
   let cookieManager;
@@ -28,6 +29,7 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
   let appendAdvertisingIdQueryToEventFn;
   let getUrlParamsFn;
   let isThrottledFn;
+  let normalizeAdvertiserFn;
 
   beforeEach(() => {
     cookieManager = {
@@ -84,6 +86,10 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
     });
     getUrlParamsFn = vi.fn().mockReturnValue({ skwcid: null, efid: null });
     isThrottledFn = vi.fn().mockReturnValue(false);
+    // Default to a truthy advertiser id so the new "no advertiser" gate
+    // does not short-circuit the existing tests. Individual tests can
+    // override this via `normalizeAdvertiserFn.mockReturnValueOnce("")`.
+    normalizeAdvertiserFn = vi.fn().mockReturnValue("adv-1");
 
     onBeforeEvent = createOnBeforeSendEventHandler({
       cookieManager,
@@ -97,6 +103,7 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
       appendAdvertisingIdQueryToEvent: appendAdvertisingIdQueryToEventFn,
       getUrlParams: getUrlParamsFn,
       isThrottled: isThrottledFn,
+      normalizeAdvertiser: normalizeAdvertiserFn,
     });
   });
 
@@ -207,6 +214,107 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
     expect(collectSurferIdFn).not.toHaveBeenCalled();
     expect(getID5IdFn).not.toHaveBeenCalled();
     expect(getRampIdFn).not.toHaveBeenCalled();
+  });
+
+  describe("activeAdvertiserIds gate", () => {
+    // Build a handler that uses the real normalizeAdvertiser so each test
+    // exercises a genuinely different advertiserSettings shape end-to-end.
+    const buildHandlerWith = (componentConfigOverride) =>
+      createOnBeforeSendEventHandler({
+        cookieManager,
+        logger,
+        componentConfig: componentConfigOverride,
+        getBrowser,
+        consent,
+        collectSurferId: collectSurferIdFn,
+        getID5Id: getID5IdFn,
+        getRampId: getRampIdFn,
+        appendAdvertisingIdQueryToEvent: appendAdvertisingIdQueryToEventFn,
+        getUrlParams: getUrlParamsFn,
+        isThrottled: isThrottledFn,
+        normalizeAdvertiser: realNormalizeAdvertiser,
+      });
+
+    it("returns early when advertiserSettings is missing", async () => {
+      const handler = buildHandlerWith({
+        id5PartnerId: "test-partner",
+        rampIdJSPath: "/test-path",
+      });
+
+      await handler({
+        event,
+        advertising: { handleAdvertisingData: "auto" },
+      });
+
+      expect(collectSurferIdFn).not.toHaveBeenCalled();
+      expect(getID5IdFn).not.toHaveBeenCalled();
+      expect(getRampIdFn).not.toHaveBeenCalled();
+      expect(event.mergeQuery).not.toHaveBeenCalled();
+    });
+
+    it("returns early when advertiserSettings is an empty array", async () => {
+      const handler = buildHandlerWith({
+        id5PartnerId: "test-partner",
+        rampIdJSPath: "/test-path",
+        advertiserSettings: [],
+      });
+
+      await handler({
+        event,
+        advertising: { handleAdvertisingData: "auto" },
+      });
+
+      expect(collectSurferIdFn).not.toHaveBeenCalled();
+      expect(getID5IdFn).not.toHaveBeenCalled();
+      expect(getRampIdFn).not.toHaveBeenCalled();
+      expect(event.mergeQuery).not.toHaveBeenCalled();
+    });
+
+    it("returns early when all advertiser entries are disabled", async () => {
+      const handler = buildHandlerWith({
+        id5PartnerId: "test-partner",
+        rampIdJSPath: "/test-path",
+        advertiserSettings: [
+          { advertiserId: "adv-1", enabled: false },
+          { advertiserId: "adv-2", enabled: false },
+        ],
+      });
+
+      await handler({
+        event,
+        advertising: { handleAdvertisingData: "auto" },
+      });
+
+      expect(collectSurferIdFn).not.toHaveBeenCalled();
+      expect(getID5IdFn).not.toHaveBeenCalled();
+      expect(getRampIdFn).not.toHaveBeenCalled();
+      expect(event.mergeQuery).not.toHaveBeenCalled();
+    });
+
+    it("proceeds with identity resolution when at least one advertiser is enabled", async () => {
+      collectSurferIdFn.mockResolvedValue("test-surfer-id");
+      getID5IdFn.mockResolvedValue("test-id5-id");
+      getRampIdFn.mockResolvedValue("test-ramp-id");
+
+      const handler = buildHandlerWith({
+        id5PartnerId: "test-partner",
+        rampIdJSPath: "/test-path",
+        advertiserSettings: [
+          { advertiserId: "adv-1", enabled: true },
+          { advertiserId: "adv-2", enabled: false },
+        ],
+      });
+
+      await handler({
+        event,
+        advertising: { handleAdvertisingData: "auto" },
+      });
+
+      expect(collectSurferIdFn).toHaveBeenCalled();
+      expect(getID5IdFn).toHaveBeenCalled();
+      expect(getRampIdFn).toHaveBeenCalled();
+      expect(event.mergeQuery).toHaveBeenCalled();
+    });
   });
 
   it("logs when unexpected errors are thrown", async () => {
