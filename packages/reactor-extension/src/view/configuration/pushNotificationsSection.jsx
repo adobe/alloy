@@ -12,14 +12,14 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { object, string } from "yup";
-import { useField } from "formik";
+import { useEffect, useRef } from "react";
+import { useField, useFormikContext } from "formik";
 import { View, InlineAlert, Content, Link } from "@adobe/react-spectrum";
 import SectionHeader from "../components/sectionHeader";
 import FormElementContainer from "../components/formElementContainer";
 import DataElementSelector from "../components/dataElementSelector";
 import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
 import Heading from "../components/typography/heading";
-import BetaBadge from "../components/betaBadge";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
 
@@ -85,17 +85,36 @@ export const bridge = {
   }),
 };
 
+const PUSH_NOTIFICATIONS_FIELDS = [
+  "vapidPublicKey",
+  "appId",
+  "trackingDatasetId",
+];
+
 const PushNotificationsSection = ({ instanceFieldName }) => {
   const [{ value: pushNotificationsComponentEnabled }] = useField(
     "components.pushNotifications",
   );
+  const { setFieldTouched } = useFormikContext();
+  const prevEnabled = useRef(pushNotificationsComponentEnabled);
+
+  useEffect(() => {
+    if (pushNotificationsComponentEnabled && !prevEnabled.current) {
+      PUSH_NOTIFICATIONS_FIELDS.forEach((field) => {
+        setFieldTouched(
+          `${instanceFieldName}.pushNotifications.${field}`,
+          false,
+          false,
+        );
+      });
+    }
+    prevEnabled.current = pushNotificationsComponentEnabled;
+  }, [pushNotificationsComponentEnabled]);
 
   if (!pushNotificationsComponentEnabled) {
     return (
       <>
-        <SectionHeader>
-          Push Notifications <BetaBadge />
-        </SectionHeader>
+        <SectionHeader>Push Notifications</SectionHeader>
         <View width="size-6000">
           <InlineAlert variant="info">
             <Heading>Push Notifications component disabled</Heading>
@@ -111,9 +130,7 @@ const PushNotificationsSection = ({ instanceFieldName }) => {
 
   return (
     <>
-      <SectionHeader>
-        Push Notifications <BetaBadge />
-      </SectionHeader>
+      <SectionHeader>Push Notifications</SectionHeader>
       <Content width="size-5000" marginBottom="size-200">
         Push notifications require a service worker to function when your site
         isn&lsquo;t actively open. The service worker runs in the background and

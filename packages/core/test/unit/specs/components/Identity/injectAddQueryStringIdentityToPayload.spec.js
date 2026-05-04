@@ -18,6 +18,7 @@ import createConsentRequestPayload from "../../../../../src/components/Consent/c
 
 describe("Identity::injectAddQueryStringIdentityToPayload", () => {
   let locationSearch;
+  let locationHash;
   let dateProvider;
   let orgId;
   let logger;
@@ -27,6 +28,7 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
     dateProvider = () => date;
     locationSearch =
       "?foo=bar&adobe_mc=TS%3D1641432103%7CMCMID%3D77094828402023918047117570965393734545%7CMCORGID%3DFAF554945B90342F0A495E2C%40AdobeOrg&a=b";
+    locationHash = "";
     date = new Date(1641432103 * 1000);
     orgId = "FAF554945B90342F0A495E2C@AdobeOrg";
     logger = {
@@ -37,6 +39,7 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
   const run = () => {
     injectAddQueryStringIdentityToPayload({
       locationSearch,
+      locationHash,
       dateProvider,
       orgId,
       logger,
@@ -172,6 +175,52 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
       expect(payload.addIdentity).not.toHaveBeenCalled();
       expect(logger.warn).toHaveBeenCalled();
       expect(logger.info).toHaveBeenCalled();
+    });
+    it("reads an identity from the hash when not present in search", () => {
+      locationSearch = "";
+      locationHash = `#/some/path?adobe_mc=${encodeURIComponent("TS=1641432103|MCMID=77094828402023918047117570965393734545|MCORGID=FAF554945B90342F0A495E2C@AdobeOrg")}`;
+      run();
+      expect(payload.addIdentity).toHaveBeenNthCalledWith(1, "ECID", {
+        id: "77094828402023918047117570965393734545",
+      });
+    });
+    it("prefers the identity from search over the hash", () => {
+      locationHash = `#/some/path?adobe_mc=${encodeURIComponent("TS=1641432103|MCMID=identity-from-hash|MCORGID=FAF554945B90342F0A495E2C@AdobeOrg")}`;
+      run();
+      expect(payload.addIdentity).toHaveBeenNthCalledWith(1, "ECID", {
+        id: "77094828402023918047117570965393734545",
+      });
+    });
+    it("does not find identity when hash has no query string", () => {
+      locationSearch = "";
+      locationHash = "#/some/path-without-query-string";
+      run();
+      expect(payload.addIdentity).not.toHaveBeenCalled();
+    });
+    it("reads a double-encoded identity", () => {
+      const doubleEncoded = encodeURIComponent(
+        encodeURIComponent(
+          "TS=1641432103|MCMID=77094828402023918047117570965393734545|MCORGID=FAF554945B90342F0A495E2C@AdobeOrg",
+        ),
+      );
+      locationSearch = `?adobe_mc=${doubleEncoded}`;
+      run();
+      expect(payload.addIdentity).toHaveBeenNthCalledWith(1, "ECID", {
+        id: "77094828402023918047117570965393734545",
+      });
+    });
+    it("reads a double-encoded identity from the hash", () => {
+      const doubleEncoded = encodeURIComponent(
+        encodeURIComponent(
+          "TS=1641432103|MCMID=77094828402023918047117570965393734545|MCORGID=FAF554945B90342F0A495E2C@AdobeOrg",
+        ),
+      );
+      locationSearch = "";
+      locationHash = `#/some/path?adobe_mc=${doubleEncoded}`;
+      run();
+      expect(payload.addIdentity).toHaveBeenNthCalledWith(1, "ECID", {
+        id: "77094828402023918047117570965393734545",
+      });
     });
   });
 });

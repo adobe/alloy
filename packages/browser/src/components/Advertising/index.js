@@ -27,6 +27,7 @@ import {
   appendAdvertisingIdQueryToEvent,
   getUrlParams,
   isThrottled,
+  normalizeAdvertiser,
 } from "./utils/helpers.js";
 
 const createAdvertising = ({
@@ -62,6 +63,7 @@ const createAdvertising = ({
     appendAdvertisingIdQueryToEvent,
     getUrlParams,
     isThrottled,
+    normalizeAdvertiser,
   });
   const sendAdConversionHandler = createSendAdConversion({
     eventManager,

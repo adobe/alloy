@@ -39,6 +39,7 @@ const waitForAdvertisingId = (advertising) => {
  * @param {Function} dependencies.appendAdvertisingIdQueryToEvent
  * @param {Function} dependencies.getUrlParams
  * @param {Function} dependencies.isThrottled
+ * @param {Function} dependencies.normalizeAdvertiser
  */
 export default ({
   cookieManager,
@@ -52,6 +53,7 @@ export default ({
   appendAdvertisingIdQueryToEvent,
   getUrlParams,
   isThrottled,
+  normalizeAdvertiser,
 }) => {
   /**
    * Appends advertising identity IDs to AEP event query if not already added.
@@ -68,9 +70,16 @@ export default ({
     }
     const { skwcid, efid } = getUrlParams();
     const isClickThru = !!(skwcid && efid);
+    // Skip identity resolution when no enabled advertiser IDs are configured —
+    // there is nothing meaningful to enrich the event with downstream.
+    const activeAdvertiserIds = normalizeAdvertiser(
+      componentConfig?.advertiserSettings,
+    );
+    const hasAdvertiserIds = activeAdvertiserIds.length > 0;
     if (
       isAdvertisingDisabled(advertising) ||
       isClickThru ||
+      !hasAdvertiserIds ||
       (isThrottled(SURFER_ID, cookieManager) &&
         isThrottled(ID5_ID, cookieManager) &&
         isThrottled(RAMP_ID, cookieManager))

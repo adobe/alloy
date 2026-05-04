@@ -36,7 +36,6 @@ import FormikComboBox from "../components/formikReactSpectrum3/formikComboBox";
 import fetchAdvertisers from "../utils/fetchAdvertisers";
 import SINGLE_DATA_ELEMENT_REGEX from "../constants/singleDataElementRegex";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
-import BetaBadge from "../components/betaBadge";
 
 const ENABLED = "Enabled";
 const DISABLED = "Disabled";
@@ -723,9 +722,7 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
 
   return (
     <>
-      <SectionHeader learnMoreUrl="https://experienceleague.adobe.com/en/docs/experience-platform/tags/extensions/client/web-sdk/web-sdk-extension-configuration#general">
-        Adobe Advertising <BetaBadge />
-      </SectionHeader>
+      <SectionHeader>Adobe Advertising</SectionHeader>
       {renderContent()}
     </>
   );

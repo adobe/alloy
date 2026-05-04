@@ -88,6 +88,7 @@ const createIdentity = ({
   const addQueryStringIdentityToPayload = injectAddQueryStringIdentityToPayload(
     {
       locationSearch: window.document.location.search,
+      locationHash: window.document.location.hash,
       dateProvider: () => new Date(),
       orgId,
       logger,

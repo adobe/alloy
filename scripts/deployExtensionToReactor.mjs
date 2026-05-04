@@ -47,7 +47,7 @@ if (!version) {
 const zipName = `package-adobe-alloy-${version}.zip`;
 const zipPath = path.join(extensionDir, zipName);
 
-run("pnpm", ["--filter", "reactor-extension", "run", "package"], {
+run("pnpm", ["--filter", "reactor-extension-alloy", "run", "package"], {
   cwd: rootDir,
 });
 
