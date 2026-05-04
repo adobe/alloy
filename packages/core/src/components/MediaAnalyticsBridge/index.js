@@ -18,7 +18,7 @@ import createMediaResponseHandler from "../StreamingMedia/createMediaResponseHan
 import createMediaAnalyticsBridgeComponent from "./createMediaAnalyticsBridgeComponent.js";
 import createMediaHelper from "./createMediaHelper.js";
 import createGetInstance from "./createGetInstance.js";
-import injectTimestamp from "../Context/injectTimestamp.js";
+import injectTimestamp from "../../utils/injectTimestamp.js";
 
 const createMediaAnalyticsBridge = ({
   eventManager,

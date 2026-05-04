@@ -2,13 +2,12 @@ This is the rough plan to migrate into the "Universal JavaScript SDK"
 
 - [x] create two packages - a `core` package for shared business logic and primatives, and a `browser` package for browser-specific functionality and APIs
 - [x] Initialize nodejs sdk, with the understanding that it will not function until all the migrations are done
-- [ ] Migrate components whose purpose and functionality are entirely browser dependent. Ask "does this functionality work on a server?"
+- [x] Migrate components whose purpose and functionality are entirely browser dependent. Ask "does this functionality work on a server?"
   - [x] `ActivityCollector`
-  - [ ] `Context` -> rename to `BrowserContext`
-  - [ ] `Personalization` -> `BrowserPersonalization`
-  - [ ] `Advertising`
-  - [ ] `PushNotifications`
-    - Some of this probably could stay in core, like request/payload helpers stay in core, but browser apis would obviously need to be moved
+  - [x] `Context`
+  - [x] `Personalization`
+  - [x] `Advertising`
+  - [x] `PushNotifications`
 - [ ] Create platform-agnostic "capabilities" that are injected from platform package into core package
   - [ ] `network` (fetch, sendBeacon)
   - [ ] `storage` (make async, localStorage)
