@@ -9,16 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { readFileSync } from "fs";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
-
-const manifest = JSON.parse(
-  readFileSync(
-    join(dirname(fileURLToPath(import.meta.url)), "../components.json"),
-    "utf8",
-  ),
-);
+import manifest from "../components.json" with { type: "json" };
 
 export const optionalComponentNames = Object.freeze(
   manifest.optional.map((c) => c.name),

@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import path from "path";
-import { readFileSync } from "fs";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import replace from "@rollup/plugin-replace";
@@ -21,13 +20,7 @@ import { fileURLToPath } from "url";
 import { gzip, brotliCompress as br, constants as zlibConstants } from "zlib";
 import { promisify } from "util";
 import { readFile, writeFile } from "fs/promises";
-
-const packageJson = JSON.parse(
-  readFileSync(
-    path.join(path.dirname(fileURLToPath(import.meta.url)), "package.json"),
-    "utf8",
-  ),
-);
+import packageJson from "./package.json" with { type: "json" };
 const { version } = packageJson;
 
 const INCLUDE_BUNDLESIZE = process.env.BUNDLESIZE === "true";

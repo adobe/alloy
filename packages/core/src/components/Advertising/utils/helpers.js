@@ -72,24 +72,22 @@ const normalizeAdvertiser = (advertiserSettings) => {
     .join(", ");
 };
 
+/**
+ * Appends AdCloud identity data to the event XDM as _experience.adcloud.stitchId.
+ * @param {{ surferId?: string, hashedIP?: string, id5Id?: string, rampId?: string, adfId?: string }} idsToInclude
+ * @param {{ mergeXdm: (xdm: Object) => void }} event
+ */
 const appendAdCloudIdentityToEvent = (idsToInclude, event) => {
   const ID_SEPARATOR = "|";
   // Fixed order: surferVal|hashedIP|id5Val|rampVal|adfId → xdm._experience.adcloud.stitchId
   const ADCLOUD_ID_ORDER = ["surferId", "hashedIP", "id5Id", "rampId", "adfId"];
-  const currentUserXdm = event.getUserXdm() || {};
   const concatenatedId = ADCLOUD_ID_ORDER.map(
     (key) => idsToInclude[key] ?? "",
   ).join(ID_SEPARATOR);
 
-  const existingExperience = currentUserXdm._experience || {};
-  const existingAdCloud = existingExperience.adcloud || {};
-
-  event.setUserXdm({
-    ...currentUserXdm,
+  event.mergeXdm({
     _experience: {
-      ...existingExperience,
       adcloud: {
-        ...existingAdCloud,
         stitchId: concatenatedId,
       },
     },

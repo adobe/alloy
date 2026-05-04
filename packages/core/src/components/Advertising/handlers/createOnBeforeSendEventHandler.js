@@ -37,6 +37,8 @@ const waitForAdvertisingId = (advertising) => {
  * @param {Function} dependencies.getID5Id
  * @param {Function} dependencies.getRampId
  * @param {Function} dependencies.appendAdvertisingIdQueryToEvent
+ * @param {Function} dependencies.appendAdCloudIdentityToEvent
+ * @param {Function} dependencies.collectHashedIPAddr
  * @param {Function} dependencies.getUrlParams
  * @param {Function} dependencies.isThrottled
  */
@@ -50,6 +52,8 @@ export default ({
   getID5Id,
   getRampId,
   appendAdvertisingIdQueryToEvent,
+  appendAdCloudIdentityToEvent,
+  collectHashedIPAddr,
   getUrlParams,
   isThrottled,
 }) => {
@@ -81,7 +85,6 @@ export default ({
       const useShortTimeout = waitForAdvertisingId(advertising);
 
       let rampIdPromise = null;
-
       if (!getBrowser || getBrowser() !== CHROME) {
         rampIdPromise = getRampId(
           logger,
@@ -91,25 +94,34 @@ export default ({
           useShortTimeout,
         );
       }
-      const [surferIdResult, id5IdResult, rampIdResult] =
-        await Promise.allSettled([
-          collectSurferId(cookieManager, getBrowser, useShortTimeout),
-          getID5Id(
+      const id5Promise = componentConfig.id5PartnerId
+        ? getID5Id(
             logger,
             componentConfig.id5PartnerId,
             useShortTimeout,
             useShortTimeout,
-          ),
+          )
+        : Promise.resolve(null);
+
+      const [surferIdResult, hashedIPResult, id5IdResult, rampIdResult] =
+        await Promise.allSettled([
+          collectSurferId(cookieManager, getBrowser, useShortTimeout),
+          collectHashedIPAddr(),
+          id5Promise,
           rampIdPromise,
         ]);
 
       const availableIds = {};
-      if (
-        surferIdResult.status === "fulfilled" &&
-        surferIdResult.value &&
-        !isThrottled(SURFER_ID, cookieManager)
-      ) {
-        availableIds.surferId = surferIdResult.value;
+      const availableIdsForIdentity = {};
+
+      if (surferIdResult.status === "fulfilled" && surferIdResult.value) {
+        availableIdsForIdentity.surferId = surferIdResult.value;
+        if (!isThrottled(SURFER_ID, cookieManager)) {
+          availableIds.surferId = surferIdResult.value;
+        }
+      }
+      if (hashedIPResult.status === "fulfilled" && hashedIPResult.value) {
+        availableIdsForIdentity.hashedIP = hashedIPResult.value;
       }
       if (
         id5IdResult.status === "fulfilled" &&
@@ -125,7 +137,12 @@ export default ({
       ) {
         availableIds.rampId = rampIdResult.value;
       }
-      // If no IDs are available and any ID is throttled, return , because we dont have new info to send
+
+      if (Object.keys(availableIdsForIdentity).length !== 0) {
+        appendAdCloudIdentityToEvent(availableIdsForIdentity, event);
+      }
+
+      // If no IDs are available and any ID is throttled, skip — no new info to send
       if (
         Object.keys(availableIds).length === 0 &&
         (isThrottled(SURFER_ID, cookieManager) ||
@@ -134,6 +151,7 @@ export default ({
       ) {
         return;
       }
+
       appendAdvertisingIdQueryToEvent(
         availableIds,
         event,

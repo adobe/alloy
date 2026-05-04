@@ -23,8 +23,11 @@ import createSendAdConversion from "./handlers/sendAdConversion.js";
 import collectSurferId from "./identities/collectSurferId.js";
 import { getID5Id } from "./identities/collectID5Id.js";
 import { getRampId } from "./identities/collectRampId.js";
+import { initiateAdvertisingIdentityCall } from "./identities/initiateAdvertisingIdentityCall.js";
+import createHashedIpHandler from "./identities/createHashedIpHandler.js";
 import {
   appendAdvertisingIdQueryToEvent,
+  appendAdCloudIdentityToEvent,
   getUrlParams,
   isThrottled,
 } from "./utils/helpers.js";
@@ -42,6 +45,7 @@ const createAdvertising = ({
     orgId: config.orgId,
     logger,
   });
+  const hashedIpHandler = createHashedIpHandler({ cookieManager });
   const adConversionHandler = createAdConversionHandler({
     eventManager,
     sendEdgeNetworkRequest,
@@ -60,6 +64,9 @@ const createAdvertising = ({
     getID5Id,
     getRampId,
     appendAdvertisingIdQueryToEvent,
+    appendAdCloudIdentityToEvent,
+    collectHashedIPAddr: () =>
+      hashedIpHandler.collect(() => initiateAdvertisingIdentityCall()),
     getUrlParams,
     isThrottled,
   });

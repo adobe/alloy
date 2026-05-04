@@ -57,7 +57,9 @@ describe("Advertising::murmurHash128GuavaHex (Guava murmur3_128)", () => {
   });
 
   it("should be deterministic with same seed", () => {
-    expect(murmurHash128GuavaHex("ip", 42)).toBe(murmurHash128GuavaHex("ip", 42));
+    expect(murmurHash128GuavaHex("ip", 42)).toBe(
+      murmurHash128GuavaHex("ip", 42),
+    );
   });
 
   it("should handle string that looks like IP address", () => {

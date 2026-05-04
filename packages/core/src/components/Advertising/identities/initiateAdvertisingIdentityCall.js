@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import {
   DISPLAY_CLICK_COOKIE_KEY,
-  HASHED_IP_ADDR,
   SURFER_PIXEL_HOST,
   SURFER_USER_ID,
   SURFER_TIMEOUT_MS,
@@ -21,8 +20,6 @@ import {
   SURFER_IP,
 } from "../constants/index.js";
 import createNode from "../../../utils/dom/createNode.js";
-import murmurHash128GuavaHex from "../utils/murmurHash128GuavaHex.js";
-import { getHashedIPAddr, setHashedIPAddr } from "./collectHashedIP.js";
 
 let inProgressPromise = null;
 
@@ -107,7 +104,7 @@ export const initiateAdvertisingIdentityCall = () => {
             resolve({
               surferId: null,
               displayClickCookie: null,
-              hashedIPAddr: "",
+              clientIp: "",
             });
             return;
           }
@@ -117,18 +114,13 @@ export const initiateAdvertisingIdentityCall = () => {
           );
           let resolvedSurferId;
           let resolvedDisplayClickCookie;
-          let hashedIPAddr = "";
 
           const surferValue = hashParams.get(SURFER_PARAM_KEY);
           if (surferValue) {
             resolvedSurferId = surferValue;
           }
 
-          const surferIPValue = hashParams.get(SURFER_IP);
-          if (surferIPValue) {
-            hashedIPAddr = murmurHash128GuavaHex(surferIPValue);
-            setHashedIPAddr(hashedIPAddr);
-          }
+          const clientIp = hashParams.get(SURFER_IP) || "";
 
           const displayClickValue = hashParams.get(DISPLAY_CLICK_COOKIE_KEY);
           if (displayClickValue && displayClickValue !== "__LCC__") {
@@ -141,13 +133,13 @@ export const initiateAdvertisingIdentityCall = () => {
             resolve({
               surferId: resolvedSurferId,
               displayClickCookie: resolvedDisplayClickCookie,
-              hashedIPAddr,
+              clientIp,
             });
           } else {
             resolve({
               surferId: null,
               displayClickCookie: null,
-              hashedIPAddr: "",
+              clientIp: "",
             });
           }
         } catch (err) {
@@ -162,23 +154,4 @@ export const initiateAdvertisingIdentityCall = () => {
   });
 
   return inProgressPromise;
-};
-
-/**
- * Returns a promise that resolves with the hashed IP address (from cookie or iframe).
- * Implemented similarly to collectSurferId: cookie first, then initiateAdvertisingIdentityCall.
- * @param {Object} [cookieManager]
- * @returns {Promise<string>}
- */
-export const collectHashedIPAddr = (cookieManager) => {
-  if (cookieManager) {
-    const cookieHashedIPAddr = cookieManager.getValue(HASHED_IP_ADDR);
-    if (cookieHashedIPAddr) {
-      setHashedIPAddr(cookieHashedIPAddr);
-      return Promise.resolve(cookieHashedIPAddr);
-    }
-  }
-  return initiateAdvertisingIdentityCall().then(
-    (resolved) => resolved.hashedIPAddr || getHashedIPAddr() || "",
-  );
 };

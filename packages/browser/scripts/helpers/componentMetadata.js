@@ -10,20 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { readFileSync } from "fs";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
 import {
   optionalComponentNames as coreOptional,
   requiredComponentNames,
 } from "@adobe/alloy-core/componentMetadata.js";
-
-const browserManifest = JSON.parse(
-  readFileSync(
-    join(dirname(fileURLToPath(import.meta.url)), "../../components.json"),
-    "utf8",
-  ),
-);
+import browserManifest from "../../components.json" with { type: "json" };
 
 const browserOptional = browserManifest.optional.map((c) => c.name);
 

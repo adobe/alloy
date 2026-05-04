@@ -22,6 +22,7 @@ import {
   isThrottled,
   shouldThrottle,
 } from "../../../../../../src/components/Advertising/utils/helpers.js";
+import { queryString } from "../../../../../../src/utils/index.js";
 import {
   LAST_CLICK_COOKIE_KEY,
   DISPLAY_CLICK_COOKIE_KEY,
@@ -78,12 +79,11 @@ describe("Advertising::helpers", () => {
   });
 
   describe("getUrlParams", () => {
-    afterEach(() => {
-      window.history.pushState({}, "", "/");
-    });
-
     it("should return URL parameters when present", () => {
-      window.history.pushState({}, "", "?s_kwcid=test_kwcid&ef_id=test_efid");
+      vi.spyOn(queryString, "parse").mockReturnValue({
+        s_kwcid: "test_kwcid",
+        ef_id: "test_efid",
+      });
 
       const result = getUrlParams();
 
@@ -94,7 +94,7 @@ describe("Advertising::helpers", () => {
     });
 
     it("should return undefined values when parameters are not present", () => {
-      window.history.pushState({}, "", "?foo=bar");
+      vi.spyOn(queryString, "parse").mockReturnValue({ foo: "bar" });
 
       const result = getUrlParams();
 
@@ -103,7 +103,7 @@ describe("Advertising::helpers", () => {
     });
 
     it("should handle empty search string", () => {
-      window.history.pushState({}, "", "");
+      vi.spyOn(queryString, "parse").mockReturnValue({});
 
       const result = getUrlParams();
 
@@ -247,97 +247,29 @@ describe("Advertising::helpers", () => {
   });
 
   describe("appendAdCloudIdentityToEvent", () => {
-    it("should set _experience.adcloud.stitchId when ids are provided", () => {
-      const event = {
-        getUserXdm: vi.fn().mockReturnValue(undefined),
-        setUserXdm: vi.fn(),
-      };
-      const idsToInclude = {
-        surferId: "s1",
-        id5Id: "id5",
-        rampId: "r1",
-      };
+    it("should merge _experience.adcloud.stitchId when ids are provided", () => {
+      const event = { mergeXdm: vi.fn() };
+      const idsToInclude = { surferId: "s1", id5Id: "id5", rampId: "r1" };
 
       appendAdCloudIdentityToEvent(idsToInclude, event);
 
-      expect(event.getUserXdm).toHaveBeenCalled();
-      expect(event.setUserXdm).toHaveBeenCalledTimes(1);
-      const [setArg] = event.setUserXdm.mock.calls[0];
-      expect(setArg._experience.adcloud.stitchId).toBe("s1||id5|r1|");
-    });
-
-    it("should preserve existing userXdm when setting stitchId", () => {
-      const event = {
-        getUserXdm: vi.fn().mockReturnValue({ web: { page: "test" } }),
-        setUserXdm: vi.fn(),
-      };
-      const idsToInclude = { surferId: "s1" };
-
-      appendAdCloudIdentityToEvent(idsToInclude, event);
-
-      const [setArg] = event.setUserXdm.mock.calls[0];
-      expect(setArg.web).toEqual({ page: "test" });
-      expect(setArg._experience.adcloud.stitchId).toBe("s1||||");
-    });
-
-    it("should preserve identityMap and merge stitchId into _experience.adcloud", () => {
-      const event = {
-        getUserXdm: vi.fn().mockReturnValue({
-          identityMap: {
-            AdCloud: [{ id: "existing", namespace: { code: "AdCloud" } }],
-          },
-        }),
-        setUserXdm: vi.fn(),
-      };
-      const idsToInclude = { surferId: "new" };
-
-      appendAdCloudIdentityToEvent(idsToInclude, event);
-
-      const [setArg] = event.setUserXdm.mock.calls[0];
-      expect(setArg.identityMap.AdCloud).toHaveLength(1);
-      expect(setArg.identityMap.AdCloud[0].id).toBe("existing");
-      expect(setArg._experience.adcloud.stitchId).toBe("new||||");
+      expect(event.mergeXdm).toHaveBeenCalledWith({
+        _experience: { adcloud: { stitchId: "s1||id5|r1|" } },
+      });
     });
 
     it("should set stitchId with pipe-separated empty slots when no ids provided", () => {
-      const event = {
-        getUserXdm: vi.fn().mockReturnValue({}),
-        setUserXdm: vi.fn(),
-      };
+      const event = { mergeXdm: vi.fn() };
 
       appendAdCloudIdentityToEvent({}, event);
 
-      const [setArg] = event.setUserXdm.mock.calls[0];
-      expect(setArg._experience.adcloud.stitchId).toBe("||||");
-    });
-
-    it("should preserve other _experience.adcloud fields when setting stitchId", () => {
-      const event = {
-        getUserXdm: vi.fn().mockReturnValue({
-          _experience: {
-            adcloud: {
-              conversionDetails: { trackingCode: "AL!x" },
-            },
-          },
-        }),
-        setUserXdm: vi.fn(),
-      };
-      const idsToInclude = { surferId: "s1" };
-
-      appendAdCloudIdentityToEvent(idsToInclude, event);
-
-      const [setArg] = event.setUserXdm.mock.calls[0];
-      expect(setArg._experience.adcloud.conversionDetails).toEqual({
-        trackingCode: "AL!x",
+      expect(event.mergeXdm).toHaveBeenCalledWith({
+        _experience: { adcloud: { stitchId: "||||" } },
       });
-      expect(setArg._experience.adcloud.stitchId).toBe("s1||||");
     });
 
     it("should use fixed order surferId|hashedIP|id5Id|rampId|adfId for concatenation", () => {
-      const event = {
-        getUserXdm: vi.fn().mockReturnValue(undefined),
-        setUserXdm: vi.fn(),
-      };
+      const event = { mergeXdm: vi.fn() };
       const idsToInclude = {
         hashedIP: "hp",
         rampId: "r",
@@ -347,8 +279,9 @@ describe("Advertising::helpers", () => {
 
       appendAdCloudIdentityToEvent(idsToInclude, event);
 
-      const [setArg] = event.setUserXdm.mock.calls[0];
-      expect(setArg._experience.adcloud.stitchId).toBe("s|hp|i|r|");
+      expect(event.mergeXdm).toHaveBeenCalledWith({
+        _experience: { adcloud: { stitchId: "s|hp|i|r|" } },
+      });
     });
   });
 

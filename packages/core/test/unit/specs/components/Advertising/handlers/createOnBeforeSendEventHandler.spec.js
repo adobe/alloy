@@ -44,6 +44,7 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
 
     event = {
       mergeQuery: vi.fn(),
+      mergeXdm: vi.fn(),
     };
 
     componentConfig = {
@@ -95,6 +96,8 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
       getID5Id: getID5IdFn,
       getRampId: getRampIdFn,
       appendAdvertisingIdQueryToEvent: appendAdvertisingIdQueryToEventFn,
+      appendAdCloudIdentityToEvent: vi.fn(),
+      collectHashedIPAddr: vi.fn().mockResolvedValue(""),
       getUrlParams: getUrlParamsFn,
       isThrottled: isThrottledFn,
     });

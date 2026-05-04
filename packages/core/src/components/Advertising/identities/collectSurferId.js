@@ -13,11 +13,9 @@ governing permissions and limitations under the License.
 import {
   DISPLAY_CLICK_COOKIE_KEY,
   SURFER_ID,
-  HASHED_IP_ADDR,
   DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
 } from "../constants/index.js";
 import { injectAreThirdPartyCookiesSupportedByDefault } from "../../../utils/index.js";
-import { setHashedIPAddr } from "./collectHashedIP.js";
 import { initiateAdvertisingIdentityCall } from "./initiateAdvertisingIdentityCall.js";
 
 let surferId = "";
@@ -35,10 +33,6 @@ const collectSurferId = function collectSurferId(
     const cookieSurferId = cookieManager.getValue(SURFER_ID);
     if (cookieSurferId) {
       surferId = cookieSurferId;
-      const cookieHashedIPAddr = cookieManager.getValue(HASHED_IP_ADDR);
-      if (cookieHashedIPAddr) {
-        setHashedIPAddr(cookieHashedIPAddr);
-      }
       return Promise.resolve(cookieSurferId);
     }
   }
@@ -54,9 +48,6 @@ const collectSurferId = function collectSurferId(
         injectAreThirdPartyCookiesSupportedByDefault({ getBrowser })();
 
       if (cookieManager && resolvedId) {
-        if (resolvedId.hashedIPAddr) {
-          cookieManager.setValue(HASHED_IP_ADDR, resolvedId.hashedIPAddr);
-        }
         if (areThirdPartyCookiesSupported) {
           if (resolvedId.surferId) {
             cookieManager.setValue(SURFER_ID, resolvedId.surferId);
