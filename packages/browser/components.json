@@ -1,7 +1,6 @@
 {
-  "required": [],
+  "required": [{ "name": "context" }],
   "optional": [
-    { "name": "context" },
     { "name": "activityCollector" },
     { "name": "advertising" },
     { "name": "personalization" },

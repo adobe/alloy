@@ -10,7 +10,4 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as activityCollector } from "./ActivityCollector/index.js";
-export { default as advertising } from "./Advertising/index.js";
-export { default as personalization } from "./Personalization/index.js";
-export { default as pushNotifications } from "./PushNotifications/index.js";
+export { default as context } from "./Context/index.js";
