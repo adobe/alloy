@@ -207,8 +207,17 @@ export const createExtensionPackage = ({ verbose } = {}) => {
 
   const { packageJson, packageLockJson, vendor } = stageInstallable();
 
-  const zip = new AdmZip(packagePath);
-  // Create archive package.
+  // reactor-packager writes a streaming zip (archiver). Re-pack it from
+  // scratch so the final archive is internally consistent (no entries with
+  // bit-3 flag set without trailing data descriptors, which AdmZip's writer
+  // would otherwise emit when rewriting in place).
+  const stagingDir = path.join(cwd, "package-staging");
+  fs.rmSync(stagingDir, { recursive: true, force: true });
+  fs.mkdirSync(stagingDir, { recursive: true });
+  new AdmZip(packagePath).extractAllTo(stagingDir, true);
+
+  const zip = new AdmZip();
+  zip.addLocalFolder(stagingDir);
   console.log("Appending the extra files to the package...");
   zip.addFile("package.json", packageJson);
   zip.addFile("package-lock.json", packageLockJson);
@@ -246,6 +255,7 @@ export const createExtensionPackage = ({ verbose } = {}) => {
   zip.addFile("scripts/buildAlloyPreinstalled.mjs", buildPreinstalledScript);
 
   zip.writeZip(packagePath);
+  fs.rmSync(stagingDir, { recursive: true, force: true });
   console.log("Done");
   return packagePath;
 };

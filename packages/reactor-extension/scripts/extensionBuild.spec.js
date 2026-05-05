@@ -53,24 +53,21 @@ const buildAndRead = async (forgeDir, { env, flags = "", signal } = {}) => {
 
 const test = baseTest
   // eslint-disable-next-line no-empty-pattern
-  .extend("zipPath", { scope: "file" }, async ({}, { onCleanup }) => {
-    const zipPath = createExtensionPackage({ verbose: false });
-    onCleanup(() => fs.rmSync(zipPath, { force: true }));
-    return zipPath;
+  .extend("extensionPackage", { scope: "file" }, async ({}, { onCleanup }) => {
+    const extensionPackage = createExtensionPackage({ verbose: false });
+    onCleanup(() => fs.rmSync(extensionPackage, { force: true }));
+    return extensionPackage;
   })
   .extend(
     "forgeDir",
     { scope: "file" },
-    async ({ zipPath, signal }, { onCleanup }) => {
+    async ({ extensionPackage, signal }, { onCleanup }) => {
       const tmpDir = fs.mkdtempSync(
         path.join(os.tmpdir(), "forge-build-test-"),
       );
       onCleanup(() => fs.rmSync(tmpDir, { recursive: true, force: true }));
 
-      // The createExtensionPackage zip mixes entries from reactor-packager
-      // with ones AdmZip appended; AdmZip's own extractor chokes on the
-      // resulting data-descriptor mismatch, so shell out to unzip instead.
-      await execAsync(`unzip -q "${zipPath}" -d "${tmpDir}"`, { signal });
+      new AdmZip(extensionPackage).extractAllTo(tmpDir, true);
       fs.mkdirSync(path.join(tmpDir, "dist/lib"), { recursive: true });
 
       const cacheDir = path.join(os.tmpdir(), "forge-npm-cache");
@@ -116,10 +113,10 @@ describe(
 
     describe("createExtensionPackage()", () => {
       test("produces a zip containing package.json and package-lock.json", ({
-        zipPath,
+        extensionPackage,
       }) => {
-        expect(fs.existsSync(zipPath)).toBe(true);
-        const entries = new AdmZip(zipPath)
+        expect(fs.existsSync(extensionPackage)).toBe(true);
+        const entries = new AdmZip(extensionPackage)
           .getEntries()
           .map((e) => e.entryName);
         expect(entries).toContain("package.json");
@@ -129,9 +126,11 @@ describe(
       });
 
       test("zipped package.json has no workspace: protocol values", ({
-        zipPath,
+        extensionPackage,
       }) => {
-        const pkg = JSON.parse(new AdmZip(zipPath).readAsText("package.json"));
+        const pkg = JSON.parse(
+          new AdmZip(extensionPackage).readAsText("package.json"),
+        );
         const offenders = Object.entries(pkg.dependencies).filter(([, v]) =>
           String(v).startsWith("workspace:"),
         );
@@ -139,9 +138,9 @@ describe(
       });
 
       test("bundles @adobe/alloy and @adobe/alloy-core tarballs", ({
-        zipPath,
+        extensionPackage,
       }) => {
-        const entries = new AdmZip(zipPath)
+        const entries = new AdmZip(extensionPackage)
           .getEntries()
           .map((e) => e.entryName);
         expect(
