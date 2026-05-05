@@ -18,7 +18,8 @@ import { spawnSync } from "child_process";
 import fs from "fs";
 import path, { dirname } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
-import AdmZip from "adm-zip";
+import archiver from "archiver";
+import yauzl from "yauzl";
 import { Command } from "commander";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -184,7 +185,37 @@ const stageInstallable = () => {
   }
 };
 
-export const createExtensionPackage = ({ verbose } = {}) => {
+/**
+ * Stream every entry from `srcZipPath` into `archive` (an archiver instance).
+ * Resolves once all entries have been enqueued.
+ */
+const copyEntriesInto = (srcZipPath, archive) =>
+  new Promise((resolve, reject) => {
+    yauzl.open(srcZipPath, { lazyEntries: true }, (err, zipfile) => {
+      if (err) return reject(err);
+      zipfile.on("error", reject);
+      zipfile.on("end", resolve);
+      zipfile.readEntry();
+      zipfile.on("entry", (entry) => {
+        if (entry.fileName.endsWith("/")) {
+          zipfile.readEntry();
+          return;
+        }
+        zipfile.openReadStream(entry, (openErr, readStream) => {
+          if (openErr) return reject(openErr);
+          const chunks = [];
+          readStream.on("data", (c) => chunks.push(c));
+          readStream.on("error", reject);
+          readStream.on("end", () => {
+            archive.append(Buffer.concat(chunks), { name: entry.fileName });
+            zipfile.readEntry();
+          });
+        });
+      });
+    });
+  });
+
+export const createExtensionPackage = async ({ verbose } = {}) => {
   console.log("Running the clean process (`pnpm run clean`)...");
   execute("pnpm", ["run", "clean"], { cwd, verbose });
 
@@ -207,55 +238,54 @@ export const createExtensionPackage = ({ verbose } = {}) => {
 
   const { packageJson, packageLockJson, vendor } = stageInstallable();
 
-  // reactor-packager writes a streaming zip (archiver). Re-pack it from
-  // scratch so the final archive is internally consistent (no entries with
-  // bit-3 flag set without trailing data descriptors, which AdmZip's writer
-  // would otherwise emit when rewriting in place).
-  const stagingDir = path.join(cwd, "package-staging");
-  fs.rmSync(stagingDir, { recursive: true, force: true });
-  fs.mkdirSync(stagingDir, { recursive: true });
-  new AdmZip(packagePath).extractAllTo(stagingDir, true);
+  // Append manifest, lockfile, and vendored tarballs to the packager's zip by
+  // streaming its entries through yauzl into a fresh archiver zip (the same
+  // engine reactor-packager uses).
+  const tempPath = `${packagePath}.tmp`;
+  const output = fs.createWriteStream(tempPath);
+  const archive = archiver("zip");
+  const finished = new Promise((resolve, reject) => {
+    output.on("close", resolve);
+    output.on("error", reject);
+    archive.on("error", reject);
+  });
+  archive.pipe(output);
 
-  const zip = new AdmZip();
-  zip.addLocalFolder(stagingDir);
+  await copyEntriesInto(packagePath, archive);
+
   console.log("Appending the extra files to the package...");
-  zip.addFile("package.json", packageJson);
-  zip.addFile("package-lock.json", packageLockJson);
+  archive.append(packageJson, { name: "package.json" });
+  archive.append(packageLockJson, { name: "package-lock.json" });
   for (const { tgzName, tgz } of vendor) {
-    zip.addFile(`${VENDOR_DIR}/${tgzName}`, tgz);
+    archive.append(tgz, { name: `${VENDOR_DIR}/${tgzName}` });
   }
 
-  const alloy = fs.readFileSync(path.join(cwd, "src", "lib", "alloy.js"));
-  zip.addFile("alloy.js", alloy);
+  const extraFiles = [
+    ["alloy.js", path.join(cwd, "src", "lib", "alloy.js")],
+    [
+      "alloyPreinstalled.js",
+      path.join(cwd, "src", "lib", "alloyPreinstalled.js"),
+    ],
+    ["rollup.config.mjs", path.join(cwd, "rollup.config.mjs")],
+    [".browserslistrc", path.join(cwd, ".browserslistrc")],
+    ["scripts/buildAlloy.mjs", path.join(cwd, "scripts", "buildAlloy.mjs")],
+    [
+      "src/view/utils/alloyComponents.mjs",
+      path.join(cwd, "src", "view", "utils", "alloyComponents.mjs"),
+    ],
+    [
+      "scripts/buildAlloyPreinstalled.mjs",
+      path.join(cwd, "scripts", "buildAlloyPreinstalled.mjs"),
+    ],
+  ];
+  for (const [name, source] of extraFiles) {
+    archive.append(fs.readFileSync(source), { name });
+  }
 
-  const alloyPreinstalled = fs.readFileSync(
-    path.join(cwd, "src", "lib", "alloyPreinstalled.js"),
-  );
-  zip.addFile("alloyPreinstalled.js", alloyPreinstalled);
+  await archive.finalize();
+  await finished;
 
-  const rollupConfig = fs.readFileSync(path.join(cwd, "rollup.config.mjs"));
-  zip.addFile("rollup.config.mjs", rollupConfig);
-
-  const browsersListRcFile = fs.readFileSync(path.join(cwd, ".browserslistrc"));
-  zip.addFile(".browserslistrc", browsersListRcFile);
-
-  const buildScript = fs.readFileSync(
-    path.join(cwd, "scripts", "buildAlloy.mjs"),
-  );
-  zip.addFile("scripts/buildAlloy.mjs", buildScript);
-
-  const alloyComponents = fs.readFileSync(
-    path.join(cwd, "src", "view", "utils", "alloyComponents.mjs"),
-  );
-  zip.addFile("src/view/utils/alloyComponents.mjs", alloyComponents);
-
-  const buildPreinstalledScript = fs.readFileSync(
-    path.join(cwd, "scripts", "buildAlloyPreinstalled.mjs"),
-  );
-  zip.addFile("scripts/buildAlloyPreinstalled.mjs", buildPreinstalledScript);
-
-  zip.writeZip(packagePath);
-  fs.rmSync(stagingDir, { recursive: true, force: true });
+  fs.renameSync(tempPath, packagePath);
   console.log("Done");
   return packagePath;
 };
@@ -274,6 +304,6 @@ if (invokedAsCli) {
 
   program.action(createExtensionPackage);
 
-  program.parse();
+  await program.parseAsync();
   process.exit(0);
 }
