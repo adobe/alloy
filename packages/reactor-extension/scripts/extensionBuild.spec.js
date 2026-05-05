@@ -11,8 +11,9 @@ governing permissions and limitations under the License.
 */
 
 /**
- * This file tests the reactor-extension custom build process (packages/reactor-extension).
- * It simulates the createExtensionPackage.mjs script in the extension package.
+ * This file tests the reactor-extension custom build process. It uses
+ * createExtensionPackage.mjs's getPackageJson() to produce the manifest, then
+ * stages a forge-style directory and exercises buildAlloy.mjs against it.
  */
 
 import { exec } from "child_process";
@@ -23,11 +24,13 @@ import { promisify } from "util";
 import { describe, expect, test as baseTest } from "vitest";
 import { fileURLToPath } from "url";
 
+import { getPackageJson } from "./createExtensionPackage.mjs";
+
 const execAsync = promisify(exec);
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
-const alloyRoot = path.resolve(dirname, "..");
-const extensionRoot = path.resolve(alloyRoot, "packages/reactor-extension");
+const extensionRoot = path.resolve(dirname, "..");
+const alloyRoot = path.resolve(extensionRoot, "../..");
 
 /** @type {[source: string, dest: string][]} Files to copy from reactor-extension-alloy into the staged forge directory. */
 const filesToCopy = [
@@ -42,9 +45,10 @@ const filesToCopy = [
 
 /**
  * Stage a temp directory that mimics the forge builder environment after
- * unzipping the extension package and running npm install. The package.json
- * points @adobe/alloy at the local packages/browser via a file: dependency
- * so we test the in-development code rather than the published version.
+ * unzipping the extension package and running npm install. Uses the real
+ * createExtensionPackage.mjs#getPackageJson() to generate the manifest, then
+ * swaps @adobe/alloy to a file: dependency so we test the in-development code
+ * rather than the (possibly unpublished) version pnpm linked.
  * @param {string} tmpDir - Empty directory to populate.
  */
 const stageForgeDir = (tmpDir) => {
@@ -55,27 +59,9 @@ const stageForgeDir = (tmpDir) => {
 
   fs.mkdirSync(path.join(tmpDir, "dist/lib"), { recursive: true });
 
-  const extPkg = JSON.parse(
-    fs.readFileSync(path.join(extensionRoot, "package.json"), "utf8"),
-  );
-  const allDeps = { ...extPkg.dependencies, ...extPkg.devDependencies };
-
-  const pkg = {
-    name: "forge-build-test",
-    version: "0.0.0",
-    type: "module",
-    dependencies: {
-      "@adobe/alloy": `file:${path.join(alloyRoot, "packages/browser")}`,
-      "@babel/core": allDeps["@babel/core"] || "^7.28.0",
-      "@babel/preset-env": allDeps["@babel/preset-env"] || "^7.28.0",
-      "@rollup/plugin-commonjs":
-        allDeps["@rollup/plugin-commonjs"] || "^29.0.0",
-      "@rollup/plugin-node-resolve":
-        allDeps["@rollup/plugin-node-resolve"] || "^16.0.0",
-      commander: allDeps.commander || "^14.0.0",
-      rollup: allDeps.rollup || "^4.52.0",
-    },
-  };
+  const pkg = getPackageJson();
+  pkg.dependencies["@adobe/alloy"] =
+    `file:${path.join(alloyRoot, "packages/browser")}`;
 
   fs.writeFileSync(
     path.join(tmpDir, "package.json"),
@@ -129,6 +115,16 @@ describe(
   "Extension build (forge builder simulation)",
   { timeout: 60_000 },
   () => {
+    describe("getPackageJson()", () => {
+      test("emits no workspace: protocol values", () => {
+        const pkg = getPackageJson();
+        const offenders = Object.entries(pkg.dependencies).filter(([, v]) =>
+          String(v).startsWith("workspace:"),
+        );
+        expect(offenders).toEqual([]);
+      });
+    });
+
     describe("buildAlloy.mjs (standard build)", () => {
       test("produces a bundle with all default components", async ({
         defaultBundle,

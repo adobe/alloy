@@ -17,7 +17,7 @@ governing permissions and limitations under the License.
 import { spawnSync } from "child_process";
 import fs from "fs";
 import path, { dirname } from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 import AdmZip from "adm-zip";
 import { Command } from "commander";
 
@@ -61,7 +61,7 @@ const getExtensionPath = (extensionDescriptor) =>
     `package-${extensionDescriptor.name}-${extensionDescriptor.version}.zip`,
   );
 
-const getPackageJson = () => {
+export const getPackageJson = () => {
   console.log("Generating the package.json file...");
   const alloyPackageJson = JSON.parse(
     fs.readFileSync(path.join(cwd, "package.json"), "utf8"),
@@ -196,15 +196,20 @@ const createExtensionPackage = ({ verbose }) => {
   console.log("Done");
 };
 
-const program = new Command();
+const invokedAsCli =
+  process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
 
-program
-  .name("createExtensionPackage")
-  .description("Tool for generating the alloy extension package for Tags.");
+if (invokedAsCli) {
+  const program = new Command();
 
-program.option("-v, --verbose", "verbose mode", false);
+  program
+    .name("createExtensionPackage")
+    .description("Tool for generating the alloy extension package for Tags.");
 
-program.action(createExtensionPackage);
+  program.option("-v, --verbose", "verbose mode", false);
 
-program.parse();
-process.exit(0);
+  program.action(createExtensionPackage);
+
+  program.parse();
+  process.exit(0);
+}
