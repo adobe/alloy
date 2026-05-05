@@ -1,5 +1,18 @@
 # @adobe/alloy
 
+## 2.32.1-beta.1
+
+### Patch Changes
+
+- [#1476](https://github.com/adobe/alloy/pull/1476) [`92b0ffd`](https://github.com/adobe/alloy/commit/92b0ffd12dda580ebcfa0575d412bbcf205957be) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Fix param ordering for 3 media analytics bridge methods
+
+- [#1486](https://github.com/adobe/alloy/pull/1486) [`e120399`](https://github.com/adobe/alloy/commit/e12039919c68cd8479e7901e06896272e1f41cc4) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Move browser-specific components (Personalization, Context, Advertising, PushNotifications) from core package to browser package
+
+- [#1494](https://github.com/adobe/alloy/pull/1494) [`447f851`](https://github.com/adobe/alloy/commit/447f851aa09789deaeddc37516ac080fdbc49908) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Register required components (eg context) in browser package
+
+- Updated dependencies [[`e120399`](https://github.com/adobe/alloy/commit/e12039919c68cd8479e7901e06896272e1f41cc4), [`259138e`](https://github.com/adobe/alloy/commit/259138eb8743c8a22b60722ceafee7d1aabdb6d5), [`f2a616c`](https://github.com/adobe/alloy/commit/f2a616cfcaaf44020cba6ecb6b623d66ef305017)]:
+  - @adobe/alloy-core@1.1.2-beta.2
+
 ## 2.32.1-beta.0
 
 ### Patch Changes
