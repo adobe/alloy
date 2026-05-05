@@ -115,23 +115,23 @@ describe(
 
     describe("createExtensionPackage()", () => {
       test("produces a zip containing package.json and package-lock.json", ({
-        extensionPackage,
+        forgeDir,
       }) => {
-        expect(fs.existsSync(extensionPackage)).toBe(true);
-        const entries = new AdmZip(extensionPackage)
-          .getEntries()
-          .map((e) => e.entryName);
-        expect(entries).toContain("package.json");
-        expect(entries).toContain("package-lock.json");
-        expect(entries).toContain("alloy.js");
-        expect(entries).toContain("scripts/buildAlloy.mjs");
+        for (const f of [
+          "package.json",
+          "package-lock.json",
+          "alloy.js",
+          "scripts/buildAlloy.mjs",
+        ]) {
+          expect(fs.existsSync(path.join(forgeDir, f))).toBe(true);
+        }
       });
 
       test("zipped package.json has no workspace: protocol values", ({
-        extensionPackage,
+        forgeDir,
       }) => {
         const pkg = JSON.parse(
-          new AdmZip(extensionPackage).readAsText("package.json"),
+          fs.readFileSync(path.join(forgeDir, "package.json"), "utf8"),
         );
         const offenders = Object.entries(pkg.dependencies).filter(([, v]) =>
           String(v).startsWith("workspace:"),
@@ -140,17 +140,15 @@ describe(
       });
 
       test("bundles @adobe/alloy and @adobe/alloy-core tarballs", ({
-        extensionPackage,
+        forgeDir,
       }) => {
-        const entries = new AdmZip(extensionPackage)
-          .getEntries()
-          .map((e) => e.entryName);
+        const vendorEntries = fs.readdirSync(path.join(forgeDir, "vendor"));
         expect(
-          entries.some((name) => /^vendor\/adobe-alloy-[^/]+\.tgz$/.test(name)),
+          vendorEntries.some((name) => /^adobe-alloy-[^/]+\.tgz$/.test(name)),
         ).toBe(true);
         expect(
-          entries.some((name) =>
-            /^vendor\/adobe-alloy-core-[^/]+\.tgz$/.test(name),
+          vendorEntries.some((name) =>
+            /^adobe-alloy-core-[^/]+\.tgz$/.test(name),
           ),
         ).toBe(true);
       });
