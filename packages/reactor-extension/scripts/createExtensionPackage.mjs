@@ -16,6 +16,7 @@ governing permissions and limitations under the License.
 
 import { spawnSync } from "child_process";
 import fs from "fs";
+import os from "os";
 import path, { dirname } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import archiver from "archiver";
@@ -82,7 +83,7 @@ const getExtensionJson = () => {
  * @param {{ name: string, version: string }} extensionDescriptor
  * @returns {string}
  */
-const getExtensionPath = (extensionDescriptor) =>
+const getExtensionPackagePath = (extensionDescriptor) =>
   path.join(
     cwd,
     `package-${extensionDescriptor.name}-${extensionDescriptor.version}.zip`,
@@ -90,20 +91,22 @@ const getExtensionPath = (extensionDescriptor) =>
 
 /**
  * Build the manifest that ships in the extension zip.
- * @param {VendorEntry[]} [vendor] - Workspace packages bundled in the zip;
+ * @param {VendorEntry[]} [vendoredPackages] - Workspace packages bundled in the zip;
  *   their deps are rewritten to `file:vendor/<tgz>` so `npm install` resolves
  *   them locally rather than from the registry.
  * @returns {Record<string, unknown>}
  */
-export const getPackageJson = (vendor = []) => {
+export const getPackageJson = (vendoredPackages = []) => {
   console.log("Generating the package.json file...");
-  const alloyPackageJson = JSON.parse(
+  const reactorExtensionPackageJson = JSON.parse(
     fs.readFileSync(path.join(cwd, "package.json"), "utf8"),
   );
 
+  console.debug("CARTER", "alloyPackageJson", reactorExtensionPackageJson);
+
   const registryDependencies = {
-    ...alloyPackageJson.dependencies,
-    ...alloyPackageJson.devDependencies,
+    ...reactorExtensionPackageJson.dependencies,
+    ...reactorExtensionPackageJson.devDependencies,
   };
 
   const dependencyNames = [
@@ -120,7 +123,7 @@ export const getPackageJson = (vendor = []) => {
   for (const name of dependencyNames) {
     dependencies[name] = registryDependencies[name];
   }
-  for (const { name, tgzName } of vendor) {
+  for (const { name, tgzName } of vendoredPackages) {
     dependencies[name] = `file:${VENDOR_DIR}/${tgzName}`;
   }
 
@@ -169,16 +172,18 @@ const packVendoredWorkspacePackages = (destDir) => {
  * Run `npm install` in a temp directory laid out the same way as the final
  * zip (manifest + vendored tarballs in ./vendor) so the generated lockfile
  * matches what forge will resolve at install time.
- * @returns {{ packageJson: string, packageLockJson: Buffer, vendor: VendorEntryWithBuffer[] }}
+ * @returns {{ packageJson: string, packageLockJson: Buffer, vendoredPackages: VendorEntryWithBuffer[] }}
  */
-const stageInstallable = () => {
-  const tempDir = path.join(cwd, "temp");
-  fs.rmSync(tempDir, { recursive: true, force: true });
-  fs.mkdirSync(tempDir);
+const stageInstallablePackages = () => {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "reactor-extension-"));
 
   try {
-    const vendor = packVendoredWorkspacePackages(tempDir);
-    const packageJson = JSON.stringify(getPackageJson(vendor), null, 2);
+    const vendoredPackages = packVendoredWorkspacePackages(tempDir);
+    const packageJson = JSON.stringify(
+      getPackageJson(vendoredPackages),
+      null,
+      2,
+    );
     fs.writeFileSync(path.join(tempDir, "package.json"), packageJson);
 
     console.log("Generating the package-lock.json file (`npm i`)...");
@@ -187,12 +192,16 @@ const stageInstallable = () => {
     const packageLockJson = fs.readFileSync(
       path.join(tempDir, "package-lock.json"),
     );
-    const vendorWithBuffers = vendor.map((v) => ({
+    const vendorWithBuffers = vendoredPackages.map((v) => ({
       ...v,
       tgz: fs.readFileSync(path.join(tempDir, VENDOR_DIR, v.tgzName)),
     }));
 
-    return { packageJson, packageLockJson, vendor: vendorWithBuffers };
+    return {
+      packageJson,
+      packageLockJson,
+      vendoredPackages: vendorWithBuffers,
+    };
   } finally {
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
@@ -240,14 +249,14 @@ const getManifestFilepaths = () => {
 };
 
 /**
- * @param {{ packagePath: string, packageJson: string, packageLockJson: Buffer, vendor: VendorEntryWithBuffer[] }} options
+ * @param {{ packagePath: string, packageJson: string, packageLockJson: Buffer, vendoredPackages: VendorEntryWithBuffer[] }} options
  * @returns {Promise<void>}
  */
 const buildExtensionZip = async ({
   packagePath,
   packageJson,
   packageLockJson,
-  vendor,
+  vendoredPackages,
 }) => {
   const manifestFilepaths = getManifestFilepaths();
 
@@ -264,7 +273,7 @@ const buildExtensionZip = async ({
   }
   archive.append(packageJson, { name: "package.json" });
   archive.append(packageLockJson, { name: "package-lock.json" });
-  for (const { tgzName, tgz } of vendor) {
+  for (const { tgzName, tgz } of vendoredPackages) {
     archive.append(tgz, { name: `${VENDOR_DIR}/${tgzName}` });
   }
   for (const [name, src] of EXTRA_FILES) {
@@ -286,16 +295,17 @@ export const createExtensionPackage = async ({ verbose } = {}) => {
   console.log("Running the build process (`pnpm run build`)...");
   execute("pnpm", ["run", "build"], { cwd, verbose });
 
-  const packagePath = getExtensionPath(getExtensionJson());
+  const packagePath = getExtensionPackagePath(getExtensionJson());
 
-  const { packageJson, packageLockJson, vendor } = stageInstallable();
+  const { packageJson, packageLockJson, vendoredPackages } =
+    stageInstallablePackages();
 
   console.log("Building the extension zip...");
   await buildExtensionZip({
     packagePath,
     packageJson,
     packageLockJson,
-    vendor,
+    vendoredPackages,
   });
   console.log("Done");
   return packagePath;
