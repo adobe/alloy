@@ -102,8 +102,6 @@ export const getPackageJson = (vendoredPackages = []) => {
     fs.readFileSync(path.join(cwd, "package.json"), "utf8"),
   );
 
-  console.debug("CARTER", "alloyPackageJson", reactorExtensionPackageJson);
-
   const registryDependencies = {
     ...reactorExtensionPackageJson.dependencies,
     ...reactorExtensionPackageJson.devDependencies,
