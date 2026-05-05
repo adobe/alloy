@@ -72,6 +72,15 @@ export const getPackageJson = () => {
     ...alloyPackageJson.devDependencies,
   };
 
+  // @adobe/alloy is a workspace dep here; npm doesn't understand workspace:*,
+  // so substitute the linked package's actual version.
+  allDependencies["@adobe/alloy"] = JSON.parse(
+    fs.readFileSync(
+      path.join(cwd, "node_modules/@adobe/alloy/package.json"),
+      "utf8",
+    ),
+  ).version;
+
   const buildPackageJson = {
     name: "reactor-extension-alloy",
     version: "1.0.0",
