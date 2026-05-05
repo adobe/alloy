@@ -37,6 +37,15 @@ const VENDORED_PACKAGES = [
 ];
 const VENDOR_DIR = "vendor";
 
+/** @typedef {{ name: string, tgzName: string }} VendorEntry */
+/** @typedef {VendorEntry & { tgz: Buffer }} VendorEntryWithBuffer */
+
+/**
+ * @param {string} command
+ * @param {string[]} args
+ * @param {{ verbose?: boolean } & import('child_process').SpawnSyncOptions} [options]
+ * @returns {void}
+ */
 const execute = (
   command,
   args,
@@ -60,6 +69,7 @@ const execute = (
   }
 };
 
+/** @returns {Record<string, unknown>} */
 const getExtensionJson = () => {
   const extensonJsonContent = fs.readFileSync(
     path.join(cwd, "extension.json"),
@@ -68,6 +78,10 @@ const getExtensionJson = () => {
   return JSON.parse(extensonJsonContent);
 };
 
+/**
+ * @param {{ name: string, version: string }} extensionDescriptor
+ * @returns {string}
+ */
 const getExtensionPath = (extensionDescriptor) =>
   path.join(
     cwd,
@@ -76,9 +90,10 @@ const getExtensionPath = (extensionDescriptor) =>
 
 /**
  * Build the manifest that ships in the extension zip.
- * @param {Array<{name: string, tgzName: string}>} [vendor] - Workspace packages
- *   bundled in the zip; their deps are rewritten to `file:vendor/<tgz>` so
- *   `npm install` resolves them locally rather than from the registry.
+ * @param {VendorEntry[]} [vendor] - Workspace packages bundled in the zip;
+ *   their deps are rewritten to `file:vendor/<tgz>` so `npm install` resolves
+ *   them locally rather than from the registry.
+ * @returns {Record<string, unknown>}
  */
 export const getPackageJson = (vendor = []) => {
   console.log("Generating the package.json file...");
@@ -130,6 +145,8 @@ export const getPackageJson = (vendor = []) => {
 /**
  * Run `pnpm pack` on each VENDORED_PACKAGES entry and stage the tarballs in
  * `<destDir>/vendor/`.
+ * @param {string} destDir
+ * @returns {VendorEntry[]}
  */
 const packVendoredWorkspacePackages = (destDir) => {
   const vendorDir = path.join(destDir, VENDOR_DIR);
@@ -152,6 +169,7 @@ const packVendoredWorkspacePackages = (destDir) => {
  * Run `npm install` in a temp directory laid out the same way as the final
  * zip (manifest + vendored tarballs in ./vendor) so the generated lockfile
  * matches what forge will resolve at install time.
+ * @returns {{ packageJson: string, packageLockJson: Buffer, vendor: VendorEntryWithBuffer[] }}
  */
 const stageInstallable = () => {
   const tempDir = path.join(cwd, "temp");
@@ -199,6 +217,7 @@ const EXTRA_FILES = [
  * Run reactor-packager's getPackagePaths helper in a child process so its
  * glob/fs reads happen with cwd set to the extension dir. We can't chdir
  * in-process because vitest workers disallow it.
+ * @returns {string[]}
  */
 const getManifestFilepaths = () => {
   const r = spawnSync(
@@ -220,6 +239,10 @@ const getManifestFilepaths = () => {
   return JSON.parse(r.stdout);
 };
 
+/**
+ * @param {{ packagePath: string, packageJson: string, packageLockJson: Buffer, vendor: VendorEntryWithBuffer[] }} options
+ * @returns {Promise<void>}
+ */
 const buildExtensionZip = async ({
   packagePath,
   packageJson,
@@ -252,6 +275,10 @@ const buildExtensionZip = async ({
   await done;
 };
 
+/**
+ * @param {{ verbose?: boolean }} [options]
+ * @returns {Promise<string>} Absolute path to the produced zip file.
+ */
 export const createExtensionPackage = async ({ verbose } = {}) => {
   console.log("Running the clean process (`pnpm run clean`)...");
   execute("pnpm", ["run", "clean"], { cwd, verbose });
