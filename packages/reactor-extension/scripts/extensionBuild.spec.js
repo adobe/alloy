@@ -14,9 +14,9 @@ governing permissions and limitations under the License.
  * End-to-end test of the reactor-extension packaging pipeline. Calls
  * createExtensionPackage() to produce the real zip, extracts it into a temp
  * dir, runs `npm install` (the same step forge runs after unzipping), and
- * exercises buildAlloy.mjs against the result. The only deviation from
- * production is swapping @adobe/alloy to a local file: dependency so the
- * test does not depend on the in-development version being published.
+ * exercises buildAlloy.mjs against the result. The zip ships @adobe/alloy
+ * (and its workspace dep @adobe/alloy-core) as bundled tarballs, so this
+ * runs identically to forge with no in-test patching.
  */
 
 import { exec } from "child_process";
@@ -24,7 +24,6 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { promisify } from "util";
-import { fileURLToPath } from "url";
 import AdmZip from "adm-zip";
 import { describe, expect, test as baseTest } from "vitest";
 
@@ -34,25 +33,6 @@ import {
 } from "./createExtensionPackage.mjs";
 
 const execAsync = promisify(exec);
-
-const dirname = path.dirname(fileURLToPath(import.meta.url));
-const extensionRoot = path.resolve(dirname, "..");
-const alloyRoot = path.resolve(extensionRoot, "../..");
-
-/**
- * Patch the unzipped manifest so npm install resolves @adobe/alloy from the
- * local workspace rather than the registry. The lockfile referenced the
- * registry version; remove it so npm regenerates one against the file: dep.
- * @param {string} forgeDir - Directory containing the unzipped extension.
- */
-const pointAlloyAtLocalWorkspace = (forgeDir) => {
-  const pkgPath = path.join(forgeDir, "package.json");
-  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
-  pkg.dependencies["@adobe/alloy"] =
-    `file:${path.join(alloyRoot, "packages/browser")}`;
-  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
-  fs.rmSync(path.join(forgeDir, "package-lock.json"), { force: true });
-};
 
 /**
  * Run buildAlloy.mjs inside the staged forge dir and return the bundle source.
@@ -92,7 +72,6 @@ const test = baseTest
       // resulting data-descriptor mismatch, so shell out to unzip instead.
       await execAsync(`unzip -q "${zipPath}" -d "${tmpDir}"`, { signal });
       fs.mkdirSync(path.join(tmpDir, "dist/lib"), { recursive: true });
-      pointAlloyAtLocalWorkspace(tmpDir);
 
       const cacheDir = path.join(os.tmpdir(), "forge-npm-cache");
       await execAsync(`npm install --ignore-scripts --cache ${cacheDir}`, {
@@ -118,12 +97,20 @@ describe(
   { timeout: 180_000 },
   () => {
     describe("getPackageJson()", () => {
-      test("emits no workspace: protocol values", () => {
-        const pkg = getPackageJson();
-        const offenders = Object.entries(pkg.dependencies).filter(([, v]) =>
-          String(v).startsWith("workspace:"),
+      test("rewrites vendored deps to file: paths", () => {
+        const pkg = getPackageJson([
+          { name: "@adobe/alloy", tgzName: "adobe-alloy-1.2.3.tgz" },
+          {
+            name: "@adobe/alloy-core",
+            tgzName: "adobe-alloy-core-4.5.6.tgz",
+          },
+        ]);
+        expect(pkg.dependencies["@adobe/alloy"]).toBe(
+          "file:vendor/adobe-alloy-1.2.3.tgz",
         );
-        expect(offenders).toEqual([]);
+        expect(pkg.dependencies["@adobe/alloy-core"]).toBe(
+          "file:vendor/adobe-alloy-core-4.5.6.tgz",
+        );
       });
     });
 
@@ -149,6 +136,22 @@ describe(
           String(v).startsWith("workspace:"),
         );
         expect(offenders).toEqual([]);
+      });
+
+      test("bundles @adobe/alloy and @adobe/alloy-core tarballs", ({
+        zipPath,
+      }) => {
+        const entries = new AdmZip(zipPath)
+          .getEntries()
+          .map((e) => e.entryName);
+        expect(
+          entries.some((name) => /^vendor\/adobe-alloy-[^/]+\.tgz$/.test(name)),
+        ).toBe(true);
+        expect(
+          entries.some((name) =>
+            /^vendor\/adobe-alloy-core-[^/]+\.tgz$/.test(name),
+          ),
+        ).toBe(true);
       });
     });
 

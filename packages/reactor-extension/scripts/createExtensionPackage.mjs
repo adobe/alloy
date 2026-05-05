@@ -23,6 +23,19 @@ import { Command } from "commander";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const cwd = path.join(__dirname, "..");
+const monorepoRoot = path.resolve(cwd, "../..");
+
+// @adobe/alloy depends on @adobe/alloy-core via workspace:^. Both must be
+// vendored as tarballs so `npm install` succeeds inside the unzipped
+// extension regardless of whether either is published yet.
+const VENDORED_PACKAGES = [
+  { name: "@adobe/alloy", dir: path.join(monorepoRoot, "packages/browser") },
+  {
+    name: "@adobe/alloy-core",
+    dir: path.join(monorepoRoot, "packages/core"),
+  },
+];
+const VENDOR_DIR = "vendor";
 
 const execute = (
   command,
@@ -61,27 +74,42 @@ const getExtensionPath = (extensionDescriptor) =>
     `package-${extensionDescriptor.name}-${extensionDescriptor.version}.zip`,
   );
 
-export const getPackageJson = () => {
+/**
+ * Build the manifest that ships in the extension zip.
+ * @param {Array<{name: string, tgzName: string}>} [vendor] - Workspace packages
+ *   bundled in the zip; their deps are rewritten to `file:vendor/<tgz>` so
+ *   `npm install` resolves them locally rather than from the registry.
+ */
+export const getPackageJson = (vendor = []) => {
   console.log("Generating the package.json file...");
   const alloyPackageJson = JSON.parse(
     fs.readFileSync(path.join(cwd, "package.json"), "utf8"),
   );
 
-  const allDependencies = {
+  const registryDependencies = {
     ...alloyPackageJson.dependencies,
     ...alloyPackageJson.devDependencies,
   };
 
-  // @adobe/alloy is a workspace dep here; npm doesn't understand workspace:*,
-  // so substitute the linked package's actual version.
-  allDependencies["@adobe/alloy"] = JSON.parse(
-    fs.readFileSync(
-      path.join(cwd, "node_modules/@adobe/alloy/package.json"),
-      "utf8",
-    ),
-  ).version;
+  const dependencyNames = [
+    "@adobe/alloy",
+    "@babel/core",
+    "@babel/preset-env",
+    "@rollup/plugin-commonjs",
+    "@rollup/plugin-node-resolve",
+    "commander",
+    "rollup",
+  ];
 
-  const buildPackageJson = {
+  const dependencies = {};
+  for (const name of dependencyNames) {
+    dependencies[name] = registryDependencies[name];
+  }
+  for (const { name, tgzName } of vendor) {
+    dependencies[name] = `file:${VENDOR_DIR}/${tgzName}`;
+  }
+
+  return {
     name: "reactor-extension-alloy",
     version: "1.0.0",
     author: {
@@ -95,50 +123,64 @@ export const getPackageJson = () => {
     },
     license: "Apache-2.0",
     description: "Tool for generating custom alloy build based on user input.",
-    dependencies: {
-      "@adobe/alloy": "",
-      "@babel/core": "",
-      "@babel/preset-env": "",
-      "@rollup/plugin-commonjs": "",
-      "@rollup/plugin-node-resolve": "",
-      commander: "",
-      rollup: "",
-    },
+    dependencies,
   };
-
-  buildPackageJson.dependencies = Object.keys(
-    buildPackageJson.dependencies,
-  ).reduce((acc, value) => {
-    acc[value] = allDependencies[value];
-    return acc;
-  }, {});
-
-  return buildPackageJson;
 };
 
-const getPackageLockJson = (packageJson) => {
-  console.log("Generating the package-lock.json file...");
-  if (!fs.existsSync(path.join(cwd, "temp"))) {
-    fs.mkdirSync(path.join(cwd, "temp"));
-  }
+/**
+ * Run `pnpm pack` on each VENDORED_PACKAGES entry and stage the tarballs in
+ * `<destDir>/vendor/`.
+ * @param {string} destDir - Directory to stage tarballs in.
+ * @returns {Array<{name: string, tgzName: string}>}
+ */
+const packVendoredWorkspacePackages = (destDir) => {
+  const vendorDir = path.join(destDir, VENDOR_DIR);
+  fs.mkdirSync(vendorDir, { recursive: true });
+  return VENDORED_PACKAGES.map(({ name, dir }) => {
+    console.log(`Packing ${name}...`);
+    execute("pnpm", ["pack", "--pack-destination", vendorDir], { cwd: dir });
+    const pkg = JSON.parse(
+      fs.readFileSync(path.join(dir, "package.json"), "utf8"),
+    );
+    const tgzName = `${name.replace(/^@/, "").replace("/", "-")}-${pkg.version}.tgz`;
+    if (!fs.existsSync(path.join(vendorDir, tgzName))) {
+      throw new Error(`Expected packed tarball at ${vendorDir}/${tgzName}`);
+    }
+    return { name, tgzName };
+  });
+};
 
-  fs.writeFileSync(path.join(cwd, "temp", "package.json"), packageJson);
+/**
+ * Run `npm install` in a temp directory laid out the same way as the final
+ * zip (manifest + vendored tarballs in ./vendor) so the generated lockfile
+ * matches what forge will resolve at install time.
+ * @returns {{ packageJson: string, packageLockJson: Buffer, vendor: Array<{name:string,tgzName:string,tgz:Buffer}> }}
+ */
+const stageInstallable = () => {
+  const tempDir = path.join(cwd, "temp");
+  fs.rmSync(tempDir, { recursive: true, force: true });
+  fs.mkdirSync(tempDir);
 
   try {
+    const vendor = packVendoredWorkspacePackages(tempDir);
+    const packageJson = JSON.stringify(getPackageJson(vendor), null, 2);
+    fs.writeFileSync(path.join(tempDir, "package.json"), packageJson);
+
+    console.log("Generating the package-lock.json file (`npm i`)...");
     // Because this will be run by forgebuilder, use npm instead of pnpm
-    console.log("Install dependencies (`npm i`)...");
-    execute("npm", ["i"], { cwd: path.join(cwd, "temp") });
+    execute("npm", ["i"], { cwd: tempDir });
 
     const packageLockJson = fs.readFileSync(
-      path.join(cwd, "temp", "package-lock.json"),
+      path.join(tempDir, "package-lock.json"),
     );
+    const vendorWithBuffers = vendor.map((v) => ({
+      ...v,
+      tgz: fs.readFileSync(path.join(tempDir, VENDOR_DIR, v.tgzName)),
+    }));
 
-    fs.rmSync(path.join(cwd, "temp"), { recursive: true, force: true });
-
-    return packageLockJson;
-  } catch (e) {
-    fs.rmSync(path.join(cwd, "temp"), { recursive: true, force: true });
-    throw e;
+    return { packageJson, packageLockJson, vendor: vendorWithBuffers };
+  } finally {
+    fs.rmSync(tempDir, { recursive: true, force: true });
   }
 };
 
@@ -163,14 +205,16 @@ export const createExtensionPackage = ({ verbose } = {}) => {
     );
   }
 
-  const packageJson = JSON.stringify(getPackageJson(), null, 2);
-  const packageLockJson = getPackageLockJson(packageJson);
+  const { packageJson, packageLockJson, vendor } = stageInstallable();
 
   const zip = new AdmZip(packagePath);
   // Create archive package.
   console.log("Appending the extra files to the package...");
   zip.addFile("package.json", packageJson);
   zip.addFile("package-lock.json", packageLockJson);
+  for (const { tgzName, tgz } of vendor) {
+    zip.addFile(`${VENDOR_DIR}/${tgzName}`, tgz);
+  }
 
   const alloy = fs.readFileSync(path.join(cwd, "src", "lib", "alloy.js"));
   zip.addFile("alloy.js", alloy);
