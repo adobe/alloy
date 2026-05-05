@@ -11,9 +11,12 @@ governing permissions and limitations under the License.
 */
 
 /**
- * This file tests the reactor-extension custom build process. It uses
- * createExtensionPackage.mjs's getPackageJson() to produce the manifest, then
- * stages a forge-style directory and exercises buildAlloy.mjs against it.
+ * End-to-end test of the reactor-extension packaging pipeline. Calls
+ * createExtensionPackage() to produce the real zip, extracts it into a temp
+ * dir, runs `npm install` (the same step forge runs after unzipping), and
+ * exercises buildAlloy.mjs against the result. The only deviation from
+ * production is swapping @adobe/alloy to a local file: dependency so the
+ * test does not depend on the in-development version being published.
  */
 
 import { exec } from "child_process";
@@ -21,10 +24,14 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { promisify } from "util";
-import { describe, expect, test as baseTest } from "vitest";
 import { fileURLToPath } from "url";
+import AdmZip from "adm-zip";
+import { describe, expect, test as baseTest } from "vitest";
 
-import { getPackageJson } from "./createExtensionPackage.mjs";
+import {
+  createExtensionPackage,
+  getPackageJson,
+} from "./createExtensionPackage.mjs";
 
 const execAsync = promisify(exec);
 
@@ -32,45 +39,23 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 const extensionRoot = path.resolve(dirname, "..");
 const alloyRoot = path.resolve(extensionRoot, "../..");
 
-/** @type {[source: string, dest: string][]} Files to copy from reactor-extension-alloy into the staged forge directory. */
-const filesToCopy = [
-  ["scripts/buildAlloy.mjs", "scripts/buildAlloy.mjs"],
-  ["scripts/buildAlloyPreinstalled.mjs", "scripts/buildAlloyPreinstalled.mjs"],
-  ["src/lib/alloy.js", "alloy.js"],
-  ["src/lib/alloyPreinstalled.js", "alloyPreinstalled.js"],
-  ["rollup.config.mjs", "rollup.config.mjs"],
-  [".browserslistrc", ".browserslistrc"],
-  ["src/view/utils/alloyComponents.mjs", "src/view/utils/alloyComponents.mjs"],
-];
-
 /**
- * Stage a temp directory that mimics the forge builder environment after
- * unzipping the extension package and running npm install. Uses the real
- * createExtensionPackage.mjs#getPackageJson() to generate the manifest, then
- * swaps @adobe/alloy to a file: dependency so we test the in-development code
- * rather than the (possibly unpublished) version pnpm linked.
- * @param {string} tmpDir - Empty directory to populate.
+ * Patch the unzipped manifest so npm install resolves @adobe/alloy from the
+ * local workspace rather than the registry. The lockfile referenced the
+ * registry version; remove it so npm regenerates one against the file: dep.
+ * @param {string} forgeDir - Directory containing the unzipped extension.
  */
-const stageForgeDir = (tmpDir) => {
-  for (const [src, dest] of filesToCopy) {
-    fs.mkdirSync(path.dirname(path.join(tmpDir, dest)), { recursive: true });
-    fs.copyFileSync(path.join(extensionRoot, src), path.join(tmpDir, dest));
-  }
-
-  fs.mkdirSync(path.join(tmpDir, "dist/lib"), { recursive: true });
-
-  const pkg = getPackageJson();
+const pointAlloyAtLocalWorkspace = (forgeDir) => {
+  const pkgPath = path.join(forgeDir, "package.json");
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
   pkg.dependencies["@adobe/alloy"] =
     `file:${path.join(alloyRoot, "packages/browser")}`;
-
-  fs.writeFileSync(
-    path.join(tmpDir, "package.json"),
-    JSON.stringify(pkg, null, 2),
-  );
+  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
+  fs.rmSync(path.join(forgeDir, "package-lock.json"), { force: true });
 };
 
 /**
- * Run a forge buildAlloy.mjs build and return the bundle source.
+ * Run buildAlloy.mjs inside the staged forge dir and return the bundle source.
  * @param {string} forgeDir - Staged forge directory.
  * @param {object} [options]
  * @param {Record<string, string>} [options.env] - Extra environment variables.
@@ -87,19 +72,36 @@ const buildAndRead = async (forgeDir, { env, flags = "", signal } = {}) => {
 };
 
 const test = baseTest
-  .extend("forgeDir", { scope: "file" }, async ({ signal }, { onCleanup }) => {
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "forge-build-test-"));
-    onCleanup(() => fs.rmSync(tmpDir, { recursive: true, force: true }));
-
-    stageForgeDir(tmpDir);
-    const cacheDir = path.join(os.tmpdir(), "forge-npm-cache");
-    await execAsync(`npm install --ignore-scripts --cache ${cacheDir}`, {
-      cwd: tmpDir,
-      signal,
-    });
-
-    return tmpDir;
+  // eslint-disable-next-line no-empty-pattern
+  .extend("zipPath", { scope: "file" }, async ({}, { onCleanup }) => {
+    const zipPath = createExtensionPackage({ verbose: false });
+    onCleanup(() => fs.rmSync(zipPath, { force: true }));
+    return zipPath;
   })
+  .extend(
+    "forgeDir",
+    { scope: "file" },
+    async ({ zipPath, signal }, { onCleanup }) => {
+      const tmpDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), "forge-build-test-"),
+      );
+      onCleanup(() => fs.rmSync(tmpDir, { recursive: true, force: true }));
+
+      // The createExtensionPackage zip mixes entries from reactor-packager
+      // with ones AdmZip appended; AdmZip's own extractor chokes on the
+      // resulting data-descriptor mismatch, so shell out to unzip instead.
+      await execAsync(`unzip -q "${zipPath}" -d "${tmpDir}"`, { signal });
+      fs.mkdirSync(path.join(tmpDir, "dist/lib"), { recursive: true });
+      pointAlloyAtLocalWorkspace(tmpDir);
+
+      const cacheDir = path.join(os.tmpdir(), "forge-npm-cache");
+      await execAsync(`npm install --ignore-scripts --cache ${cacheDir}`, {
+        cwd: tmpDir,
+        signal,
+      });
+      return tmpDir;
+    },
+  )
   .extend(
     "buildAlloy",
     { scope: "file" },
@@ -113,11 +115,36 @@ const test = baseTest
 
 describe(
   "Extension build (forge builder simulation)",
-  { timeout: 60_000 },
+  { timeout: 180_000 },
   () => {
     describe("getPackageJson()", () => {
       test("emits no workspace: protocol values", () => {
         const pkg = getPackageJson();
+        const offenders = Object.entries(pkg.dependencies).filter(([, v]) =>
+          String(v).startsWith("workspace:"),
+        );
+        expect(offenders).toEqual([]);
+      });
+    });
+
+    describe("createExtensionPackage()", () => {
+      test("produces a zip containing package.json and package-lock.json", ({
+        zipPath,
+      }) => {
+        expect(fs.existsSync(zipPath)).toBe(true);
+        const entries = new AdmZip(zipPath)
+          .getEntries()
+          .map((e) => e.entryName);
+        expect(entries).toContain("package.json");
+        expect(entries).toContain("package-lock.json");
+        expect(entries).toContain("alloy.js");
+        expect(entries).toContain("scripts/buildAlloy.mjs");
+      });
+
+      test("zipped package.json has no workspace: protocol values", ({
+        zipPath,
+      }) => {
+        const pkg = JSON.parse(new AdmZip(zipPath).readAsText("package.json"));
         const offenders = Object.entries(pkg.dependencies).filter(([, v]) =>
           String(v).startsWith("workspace:"),
         );

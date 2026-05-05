@@ -142,17 +142,17 @@ const getPackageLockJson = (packageJson) => {
   }
 };
 
-const createExtensionPackage = ({ verbose }) => {
+export const createExtensionPackage = ({ verbose } = {}) => {
   console.log("Running the clean process (`pnpm run clean`)...");
-  execute("pnpm", ["run", "clean"], { verbose });
+  execute("pnpm", ["run", "clean"], { cwd, verbose });
 
   console.log("Running the build process (`pnpm run build`)...");
-  execute("pnpm", ["run", "build"], { verbose });
+  execute("pnpm", ["run", "build"], { cwd, verbose });
 
   console.log(
     "Generating the initial extension package...(`npx @adobe/reactor-packager`)",
   );
-  execute("pnpx", ["@adobe/reactor-packager@latest"], { verbose });
+  execute("pnpx", ["@adobe/reactor-packager@latest"], { cwd, verbose });
 
   const extensionDescriptor = getExtensionJson();
   const packagePath = getExtensionPath(extensionDescriptor);
@@ -203,6 +203,7 @@ const createExtensionPackage = ({ verbose }) => {
 
   zip.writeZip(packagePath);
   console.log("Done");
+  return packagePath;
 };
 
 const invokedAsCli =
