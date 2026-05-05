@@ -238,17 +238,27 @@ jobs:
         run: node scripts/uploadToCDN.js
 
       - name: Package and deploy extension to Reactor (when @adobe/alloy was released)
+        # Wrapped in a retry because @adobe/reactor-uploader@6.0.0-beta.12 hardcodes
+        # MAX_RETRIES=50 with 1s polls (~50s) for post-upload processing, which
+        # occasionally exceeds Reactor's actual processing time. Re-uploading the
+        # same version is idempotent: the uploader updates the existing development
+        # extension package by name.
         if: hashFiles('packages/reactor-extension/package.json') != ''
+        uses: nick-fields/retry@v3
         env:
           REACTOR_IO_INTEGRATION_CLIENT_SECRET: ${{ secrets.REACTOR_IO_INTEGRATION_CLIENT_SECRET }}
-        run: |
-          if ! jq -e '.releases[] | select(.name=="reactor-extension-alloy")' changeset-status.json >/dev/null; then
-            echo "reactor-extension-alloy was not in this release; skipping extension deploy."
-            exit 0
-          fi
-          EXT_VERSION=$(node -p "require('./packages/reactor-extension/package.json').version")
-          pnpm --filter reactor-extension-alloy run build
-          node scripts/deployExtensionToReactor.mjs "${EXT_VERSION}"
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          retry_wait_seconds: 30
+          command: |
+            if ! jq -e '.releases[] | select(.name=="reactor-extension-alloy")' changeset-status.json >/dev/null; then
+              echo "reactor-extension-alloy was not in this release; skipping extension deploy."
+              exit 0
+            fi
+            EXT_VERSION=$(node -p "require('./packages/reactor-extension/package.json').version")
+            pnpm --filter reactor-extension-alloy run build
+            node scripts/deployExtensionToReactor.mjs "${EXT_VERSION}"
 
       - name: Restore extension workspace protocol for @adobe/alloy
         if: hashFiles('packages/reactor-extension/package.json') != ''
