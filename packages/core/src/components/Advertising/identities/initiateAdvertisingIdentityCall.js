@@ -19,54 +19,50 @@ import {
   SURFER_PARAM_KEY,
   SURFER_IP,
 } from "../constants/index.js";
-import createNode from "../../../utils/dom/createNode.js";
+import {
+  appendNode,
+  awaitSelector,
+  createNode,
+} from "../../../utils/dom/index.js";
+import { BODY } from "../../../constants/tagName.js";
 
-let inProgressPromise = null;
-
-const addToDom = (element) => {
-  if (document.body) {
-    document.body.appendChild(element);
-  } else {
-    window.addEventListener(
-      "load",
-      () => {
-        document.body.appendChild(element);
-      },
-      false,
-    );
-  }
+const IFRAME_PROPS = {
+  height: 0,
+  width: 0,
+  frameBorder: 0,
+  style: { display: "none" },
 };
 
-const getInvisibleIframeElement = (url) =>
-  createNode(
-    "iframe",
-    { src: url },
-    {
-      height: 0,
-      width: 0,
-      frameBorder: 0,
-      style: { display: "none" },
-    },
-    [],
-  );
-
-const addListener = (fn) => window.addEventListener("message", fn, false);
-
-const removeListener = (fn) => window.removeEventListener("message", fn, false);
-
 /**
- * Initiates the advertising identity iframe request. Shared by collectSurferId and
- * collectHashedIP flows. Resolves with { surferId, displayClickCookie, hashedIPAddr }.
- * Hashed IP is extracted from hash params (clientIp) and set in collectHashedIP via setHashedIPAddr.
- * @returns {Promise<{ surferId: string|null, displayClickCookie: string|null, hashedIPAddr: string }>}
+ * Creates a shared advertising identity caller. Both the SurferID and hashed-IP
+ * flows call this so the pixel iframe is only loaded once per page per request.
+ *
+ * @param {Object} [deps]
+ * @param {Function} [deps.appendNode]
+ * @param {Function} [deps.awaitSelector]
+ * @param {Function} [deps.createNode]
+ * @returns {Function} initiateAdvertisingIdentityCall
  */
-export const initiateAdvertisingIdentityCall = () => {
-  if (inProgressPromise) {
-    return inProgressPromise;
-  }
+export const createInitiateAdvertisingIdentityCall = ({
+  appendNode: appendNodeFn = appendNode,
+  awaitSelector: awaitSelectorFn = awaitSelector,
+  createNode: createNodeFn = createNode,
+} = {}) => {
+  let inProgressPromise = null;
 
-  inProgressPromise = new Promise((resolve, reject) => {
-    setTimeout(() => {
+  /**
+   * Initiates the advertising identity iframe request. Shared by SurferID
+   * and hashed-IP flows so the pixel is only loaded once per page.
+   * `clientIp` is the raw IP — hashing is the caller's responsibility
+   * (see createHashedIpHandler).
+   * @returns {Promise<{ surferId: string|null, displayClickCookie: string|null, clientIp: string }>}
+   */
+  return () => {
+    if (inProgressPromise) {
+      return inProgressPromise;
+    }
+
+    inProgressPromise = new Promise((resolve, reject) => {
       const scheme =
         document.location.protocol === "https:" ? "https:" : "http:";
 
@@ -89,69 +85,69 @@ export const initiateAdvertisingIdentityCall = () => {
       });
       const pixelDetailsUrl = `${scheme}//${SURFER_PIXEL_HOST}/${SURFER_USER_ID}/gr?${mainParams.toString()}`;
 
-      const iframeElement = getInvisibleIframeElement(pixelDetailsUrl);
-      addToDom(iframeElement);
+      const iframeElement = createNodeFn(
+        "iframe",
+        { src: pixelDetailsUrl },
+        IFRAME_PROPS,
+        [],
+      );
 
-      const pixelDetailsReceiver = function pixelDetailsReceiver(message) {
+      let timeoutId;
+
+      // Single cleanup — called on every exit path (success, no-hash, error, timeout)
+      // so the listener and timer never leak.
+      const pixelDetailsReceiver = (message) => {
         if (!message.origin.includes(SURFER_TRUSTED_ORIGIN)) {
           return;
         }
 
+        clearTimeout(timeoutId);
+        window.removeEventListener("message", pixelDetailsReceiver, false);
+
         try {
           const pixelRedirectUri = message.data;
           const hashIndex = pixelRedirectUri.indexOf("#");
+
           if (hashIndex === -1) {
-            resolve({
-              surferId: null,
-              displayClickCookie: null,
-              clientIp: "",
-            });
+            resolve({ surferId: null, displayClickCookie: null, clientIp: "" });
             return;
           }
 
           const hashParams = new URLSearchParams(
             pixelRedirectUri.substring(hashIndex + 1),
           );
-          let resolvedSurferId;
-          let resolvedDisplayClickCookie;
 
-          const surferValue = hashParams.get(SURFER_PARAM_KEY);
-          if (surferValue) {
-            resolvedSurferId = surferValue;
-          }
-
+          const surferValue = hashParams.get(SURFER_PARAM_KEY) || null;
           const clientIp = hashParams.get(SURFER_IP) || "";
-
           const displayClickValue = hashParams.get(DISPLAY_CLICK_COOKIE_KEY);
-          if (displayClickValue && displayClickValue !== "__LCC__") {
-            resolvedDisplayClickCookie = displayClickValue;
-          }
+          const displayClickCookie =
+            displayClickValue && displayClickValue !== "__LCC__"
+              ? displayClickValue
+              : null;
 
-          removeListener(pixelDetailsReceiver);
-
-          if (resolvedSurferId) {
-            resolve({
-              surferId: resolvedSurferId,
-              displayClickCookie: resolvedDisplayClickCookie,
-              clientIp,
-            });
-          } else {
-            resolve({
-              surferId: null,
-              displayClickCookie: null,
-              clientIp: "",
-            });
-          }
+          resolve({ surferId: surferValue, displayClickCookie, clientIp });
         } catch (err) {
           reject(err);
-        } finally {
-          inProgressPromise = null;
         }
       };
 
-      addListener(pixelDetailsReceiver);
-    }, SURFER_TIMEOUT_MS);
-  });
+      // Reject if the iframe never responds (ad blocker, CSP, network failure, etc.)
+      timeoutId = setTimeout(() => {
+        window.removeEventListener("message", pixelDetailsReceiver, false);
+        reject(new Error("Advertising identity call timed out"));
+      }, SURFER_TIMEOUT_MS);
 
-  return inProgressPromise;
+      window.addEventListener("message", pixelDetailsReceiver, false);
+
+      // Use awaitSelector(BODY) — consistent with injectFireReferrerHideableImage.js
+      // and more robust than document.body check + load event fallback.
+      awaitSelectorFn(BODY).then(([body]) => {
+        appendNodeFn(body, iframeElement);
+      });
+    }).finally(() => {
+      inProgressPromise = null;
+    });
+
+    return inProgressPromise;
+  };
 };

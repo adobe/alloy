@@ -20,10 +20,10 @@ import createAdConversionHandler from "./handlers/createAdConversionHandler.js";
 import createCookieManager from "./utils/advertisingCookieManager.js";
 import createHandleOnBeforeSendEvent from "./handlers/createOnBeforeSendEventHandler.js";
 import createSendAdConversion from "./handlers/sendAdConversion.js";
-import collectSurferId from "./identities/collectSurferId.js";
+import createCollectSurferId from "./identities/collectSurferId.js";
 import { getID5Id } from "./identities/collectID5Id.js";
 import { getRampId } from "./identities/collectRampId.js";
-import { initiateAdvertisingIdentityCall } from "./identities/initiateAdvertisingIdentityCall.js";
+import { createInitiateAdvertisingIdentityCall } from "./identities/initiateAdvertisingIdentityCall.js";
 import createHashedIpHandler from "./identities/createHashedIpHandler.js";
 import {
   appendAdvertisingIdQueryToEvent,
@@ -45,7 +45,20 @@ const createAdvertising = ({
     orgId: config.orgId,
     logger,
   });
+
+  // One shared iframe call — both collectSurferId and hashedIpHandler use it
+  // so the pixel is only loaded once per page.
+  const initiateAdvertisingIdentityCall =
+    createInitiateAdvertisingIdentityCall();
+
+  const collectSurferId = createCollectSurferId({
+    initiateAdvertisingIdentityCall,
+    cookieManager,
+    getBrowser,
+  });
+
   const hashedIpHandler = createHashedIpHandler({ cookieManager });
+
   const adConversionHandler = createAdConversionHandler({
     eventManager,
     sendEdgeNetworkRequest,
@@ -66,7 +79,7 @@ const createAdvertising = ({
     appendAdvertisingIdQueryToEvent,
     appendAdCloudIdentityToEvent,
     collectHashedIPAddr: () =>
-      hashedIpHandler.collect(() => initiateAdvertisingIdentityCall()),
+      hashedIpHandler.collect(initiateAdvertisingIdentityCall),
     getUrlParams,
     isThrottled,
   });

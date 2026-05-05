@@ -26,7 +26,8 @@ export const EFID_PARAM = "ef_id";
 
 // Identity Types
 export const SURFER_ID = "surferId";
-export const HASHED_IP_ADDR = "hashedIPAddr";
+export const HASHED_IP = "hashedIp"; // logical key — matches surferId/id5Id/rampId casing
+export const HASHED_IP_ADDR = "hashedIPAddr"; // cookie key only
 export const RAMP_ID = "rampId";
 export const ID5_ID = "id5Id";
 

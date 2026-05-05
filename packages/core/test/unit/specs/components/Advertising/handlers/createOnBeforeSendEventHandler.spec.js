@@ -136,11 +136,7 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
       advertising: { handleAdvertisingData: "wait" },
     });
 
-    expect(collectSurferIdFn).toHaveBeenCalledWith(
-      cookieManager,
-      getBrowser,
-      true,
-    );
+    expect(collectSurferIdFn).toHaveBeenCalledWith(true);
     expect(getID5IdFn).toHaveBeenCalledWith(logger, "test-partner", true, true);
     expect(getRampIdFn).toHaveBeenCalledWith(
       logger,

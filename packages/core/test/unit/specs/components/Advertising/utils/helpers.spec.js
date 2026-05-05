@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import {
   getUrlParams,
   normalizeAdvertiser,
@@ -30,27 +30,12 @@ import {
   AD_CONVERSION_VIEW_EVENT_TYPE,
 } from "../../../../../../src/components/Advertising/constants/index.js";
 
-// Mock DOM utilities
-vi.mock("../../../../../../src/utils/dom/index.js", () => ({
-  awaitSelector: vi.fn(),
-  loadScript: vi.fn().mockResolvedValue(),
-  createNode: vi.fn(),
-  appendNode: vi.fn(),
-  matchesSelector: vi.fn(),
-  querySelectorAll: vi.fn(),
-  removeNode: vi.fn(),
-  selectNodes: vi.fn(),
-  selectNodesWithShadow: vi.fn(),
-}));
-
 describe("Advertising::helpers", () => {
   let mockEvent;
   let mockCookieManager;
   let mockLogger;
 
   beforeEach(() => {
-    // Reset modules to clear any cached state
-    vi.resetModules();
     // Mock event object
     mockEvent = {
       mergeQuery: vi.fn(),
@@ -71,11 +56,6 @@ describe("Advertising::helpers", () => {
 
     // Reset all mocks
     vi.clearAllMocks();
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-    vi.unstubAllGlobals();
   });
 
   describe("getUrlParams", () => {
@@ -268,10 +248,10 @@ describe("Advertising::helpers", () => {
       });
     });
 
-    it("should use fixed order surferId|hashedIP|id5Id|rampId|adfId for concatenation", () => {
+    it("should use fixed order surferId|hashedIp|id5Id|rampId|adfId for concatenation", () => {
       const event = { mergeXdm: vi.fn() };
       const idsToInclude = {
-        hashedIP: "hp",
+        hashedIp: "hp",
         rampId: "r",
         surferId: "s",
         id5Id: "i",

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { SURFER_ID, ID5_ID, RAMP_ID } from "../constants/index.js";
+import { SURFER_ID, HASHED_IP, ID5_ID, RAMP_ID } from "../constants/index.js";
 import { AUTO, WAIT } from "../../../constants/consentStatus.js";
 import { CHROME } from "../../../constants/browser.js";
 
@@ -33,7 +33,7 @@ const waitForAdvertisingId = (advertising) => {
  * @param {Object} dependencies.componentConfig
  * @param {Function} dependencies.getBrowser
  * @param {Object} dependencies.consent
- * @param {Function} dependencies.collectSurferId
+ * @param {Function} dependencies.collectSurferId - factory-created, already bound to cookieManager/getBrowser
  * @param {Function} dependencies.getID5Id
  * @param {Function} dependencies.getRampId
  * @param {Function} dependencies.appendAdvertisingIdQueryToEvent
@@ -105,7 +105,7 @@ export default ({
 
       const [surferIdResult, hashedIPResult, id5IdResult, rampIdResult] =
         await Promise.allSettled([
-          collectSurferId(cookieManager, getBrowser, useShortTimeout),
+          collectSurferId(useShortTimeout),
           collectHashedIPAddr(),
           id5Promise,
           rampIdPromise,
@@ -115,13 +115,13 @@ export default ({
       const availableIdsForIdentity = {};
 
       if (surferIdResult.status === "fulfilled" && surferIdResult.value) {
-        availableIdsForIdentity.surferId = surferIdResult.value;
+        availableIdsForIdentity[SURFER_ID] = surferIdResult.value;
         if (!isThrottled(SURFER_ID, cookieManager)) {
-          availableIds.surferId = surferIdResult.value;
+          availableIds[SURFER_ID] = surferIdResult.value;
         }
       }
       if (hashedIPResult.status === "fulfilled" && hashedIPResult.value) {
-        availableIdsForIdentity.hashedIP = hashedIPResult.value;
+        availableIdsForIdentity[HASHED_IP] = hashedIPResult.value;
       }
       if (
         id5IdResult.status === "fulfilled" &&

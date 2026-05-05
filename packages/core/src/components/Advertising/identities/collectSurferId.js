@@ -16,58 +16,57 @@ import {
   DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
 } from "../constants/index.js";
 import { injectAreThirdPartyCookiesSupportedByDefault } from "../../../utils/index.js";
-import { initiateAdvertisingIdentityCall } from "./initiateAdvertisingIdentityCall.js";
 
-let surferId = "";
-
-const collectSurferId = function collectSurferId(
+/**
+ * Factory for surferId collection. Cache lives at closure scope — no module-level state.
+ *
+ * @param {Object} deps
+ * @param {Function} deps.initiateAdvertisingIdentityCall
+ * @param {Object} deps.cookieManager
+ * @param {Function} deps.getBrowser
+ * @returns {Function} collectSurferId(useShortTimeout?)
+ */
+const createCollectSurferId = ({
+  initiateAdvertisingIdentityCall,
   cookieManager,
   getBrowser,
-  resolveSurferIdIfNotAvailable = true,
-) {
-  if (surferId && surferId !== "") {
-    return Promise.resolve(surferId);
-  }
+}) => {
+  let cachedSurferId = cookieManager.getValue(SURFER_ID) || "";
 
-  if (cookieManager) {
-    const cookieSurferId = cookieManager.getValue(SURFER_ID);
-    if (cookieSurferId) {
-      surferId = cookieSurferId;
-      return Promise.resolve(cookieSurferId);
+  return (resolveSurferIdIfNotAvailable = true) => {
+    if (cachedSurferId) {
+      return Promise.resolve(cachedSurferId);
     }
-  }
 
-  if (resolveSurferIdIfNotAvailable) {
+    if (!resolveSurferIdIfNotAvailable) {
+      return Promise.resolve(null);
+    }
+
     return initiateAdvertisingIdentityCall().then((resolvedId) => {
-      if (resolvedId.surferId) {
-        surferId = resolvedId.surferId;
-      }
-
       const areThirdPartyCookiesSupported =
         !getBrowser ||
         injectAreThirdPartyCookiesSupportedByDefault({ getBrowser })();
 
-      if (cookieManager && resolvedId) {
-        if (areThirdPartyCookiesSupported) {
-          if (resolvedId.surferId) {
-            cookieManager.setValue(SURFER_ID, resolvedId.surferId);
-          }
-          if (resolvedId.displayClickCookie) {
-            cookieManager.setValue(
-              DISPLAY_CLICK_COOKIE_KEY,
-              resolvedId.displayClickCookie,
-            );
-            cookieManager.setValue(
-              DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
-              Date.now() + 15 * 60 * 1000,
-            );
-          }
+      if (resolvedId && areThirdPartyCookiesSupported) {
+        if (resolvedId.surferId) {
+          cachedSurferId = resolvedId.surferId;
+          cookieManager.setValue(SURFER_ID, resolvedId.surferId);
+        }
+        if (resolvedId.displayClickCookie) {
+          cookieManager.setValue(
+            DISPLAY_CLICK_COOKIE_KEY,
+            resolvedId.displayClickCookie,
+          );
+          cookieManager.setValue(
+            DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
+            Date.now() + 15 * 60 * 1000,
+          );
         }
       }
+
       return areThirdPartyCookiesSupported ? resolvedId.surferId : null;
     });
-  }
-  return Promise.resolve(null);
+  };
 };
 
-export default collectSurferId;
+export default createCollectSurferId;
