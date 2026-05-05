@@ -44,10 +44,12 @@ const execAsync = promisify(exec);
  * @returns {Promise<string>} The contents of the generated alloy.js bundle.
  */
 const buildAndRead = async (forgeDir, { env, flags = "", signal } = {}) => {
-  await execAsync(
-    `node scripts/buildAlloy.mjs -i ./alloy.js -o ./dist/lib ${flags}`.trim(),
-    { cwd: forgeDir, signal, ...(env && { env: { ...process.env, ...env } }) },
-  );
+  const cmd = flags ? `npm run build -- ${flags}` : "npm run build";
+  await execAsync(cmd, {
+    cwd: forgeDir,
+    signal,
+    ...(env && { env: { ...process.env, ...env } }),
+  });
   return fs.readFileSync(path.join(forgeDir, "dist/lib/alloy.js"), "utf8");
 };
 
