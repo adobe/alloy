@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@adobe/auth-token": "^1.0.1",
+    "@adobe/reactor-packager": "^4.4.0",
     "@adobe/reactor-sandbox": "^13.4.0",
     "@adobe/reactor-turbine": "^28.1.0",
     "@adobe/reactor-turbine-schemas": "^10.9.0",
@@ -82,7 +83,6 @@
     "rollup-plugin-istanbul": "^5.0.0",
     "serve": "^14.2.5",
     "testcafe": "^3.7.2",
-    "testcafe-browser-provider-playwright": "^1.1.0",
-    "yauzl": "^3.3.0"
+    "testcafe-browser-provider-playwright": "^1.1.0"
   }
 }

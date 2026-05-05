@@ -19,7 +19,6 @@ import fs from "fs";
 import path, { dirname } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import archiver from "archiver";
-import yauzl from "yauzl";
 import { Command } from "commander";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -131,8 +130,6 @@ export const getPackageJson = (vendor = []) => {
 /**
  * Run `pnpm pack` on each VENDORED_PACKAGES entry and stage the tarballs in
  * `<destDir>/vendor/`.
- * @param {string} destDir - Directory to stage tarballs in.
- * @returns {Array<{name: string, tgzName: string}>}
  */
 const packVendoredWorkspacePackages = (destDir) => {
   const vendorDir = path.join(destDir, VENDOR_DIR);
@@ -155,7 +152,6 @@ const packVendoredWorkspacePackages = (destDir) => {
  * Run `npm install` in a temp directory laid out the same way as the final
  * zip (manifest + vendored tarballs in ./vendor) so the generated lockfile
  * matches what forge will resolve at install time.
- * @returns {{ packageJson: string, packageLockJson: Buffer, vendor: Array<{name:string,tgzName:string,tgz:Buffer}> }}
  */
 const stageInstallable = () => {
   const tempDir = path.join(cwd, "temp");
@@ -168,7 +164,6 @@ const stageInstallable = () => {
     fs.writeFileSync(path.join(tempDir, "package.json"), packageJson);
 
     console.log("Generating the package-lock.json file (`npm i`)...");
-    // Because this will be run by forgebuilder, use npm instead of pnpm
     execute("npm", ["i"], { cwd: tempDir });
 
     const packageLockJson = fs.readFileSync(
@@ -186,34 +181,76 @@ const stageInstallable = () => {
 };
 
 /**
- * Stream every entry from `srcZipPath` into `archive` (an archiver instance).
- * Resolves once all entries have been enqueued.
+ * Files appended on top of reactor-packager's manifest-derived file list. None
+ * of these are reachable from extension.json's delegate libPaths, so they
+ * would not be picked up otherwise.
  */
-const copyEntriesInto = (srcZipPath, archive) =>
-  new Promise((resolve, reject) => {
-    yauzl.open(srcZipPath, { lazyEntries: true }, (err, zipfile) => {
-      if (err) return reject(err);
-      zipfile.on("error", reject);
-      zipfile.on("end", resolve);
-      zipfile.readEntry();
-      zipfile.on("entry", (entry) => {
-        if (entry.fileName.endsWith("/")) {
-          zipfile.readEntry();
-          return;
-        }
-        zipfile.openReadStream(entry, (openErr, readStream) => {
-          if (openErr) return reject(openErr);
-          const chunks = [];
-          readStream.on("data", (c) => chunks.push(c));
-          readStream.on("error", reject);
-          readStream.on("end", () => {
-            archive.append(Buffer.concat(chunks), { name: entry.fileName });
-            zipfile.readEntry();
-          });
-        });
-      });
-    });
+const EXTRA_FILES = [
+  ["alloy.js", "src/lib/alloy.js"],
+  ["alloyPreinstalled.js", "src/lib/alloyPreinstalled.js"],
+  ["rollup.config.mjs", "rollup.config.mjs"],
+  [".browserslistrc", ".browserslistrc"],
+  ["scripts/buildAlloy.mjs", "scripts/buildAlloy.mjs"],
+  ["scripts/buildAlloyPreinstalled.mjs", "scripts/buildAlloyPreinstalled.mjs"],
+  ["src/view/utils/alloyComponents.mjs", "src/view/utils/alloyComponents.mjs"],
+];
+
+/**
+ * Run reactor-packager's getPackagePaths helper in a child process so its
+ * glob/fs reads happen with cwd set to the extension dir. We can't chdir
+ * in-process because vitest workers disallow it.
+ */
+const getManifestFilepaths = () => {
+  const r = spawnSync(
+    process.execPath,
+    [
+      "-e",
+      `
+      const fs = require('fs');
+      const getPaths = require('@adobe/reactor-packager/tasks/helpers/getPackagePaths.js');
+      const descriptor = JSON.parse(fs.readFileSync('extension.json', 'utf8'));
+      console.log(JSON.stringify(getPaths(descriptor)));
+      `,
+    ],
+    { cwd, encoding: "utf8" },
+  );
+  if (r.status !== 0) {
+    throw new Error(`getPackagePaths failed: ${r.stderr || r.stdout}`);
+  }
+  return JSON.parse(r.stdout);
+};
+
+const buildExtensionZip = async ({
+  packagePath,
+  packageJson,
+  packageLockJson,
+  vendor,
+}) => {
+  const manifestFilepaths = getManifestFilepaths();
+
+  const output = fs.createWriteStream(packagePath);
+  const archive = archiver("zip");
+  const done = new Promise((resolve, reject) => {
+    output.on("close", resolve);
+    archive.on("error", reject);
   });
+  archive.pipe(output);
+
+  for (const fp of manifestFilepaths) {
+    archive.file(path.join(cwd, fp), { name: fp });
+  }
+  archive.append(packageJson, { name: "package.json" });
+  archive.append(packageLockJson, { name: "package-lock.json" });
+  for (const { tgzName, tgz } of vendor) {
+    archive.append(tgz, { name: `${VENDOR_DIR}/${tgzName}` });
+  }
+  for (const [name, src] of EXTRA_FILES) {
+    archive.file(path.join(cwd, src), { name });
+  }
+
+  await archive.finalize();
+  await done;
+};
 
 export const createExtensionPackage = async ({ verbose } = {}) => {
   console.log("Running the clean process (`pnpm run clean`)...");
@@ -222,70 +259,17 @@ export const createExtensionPackage = async ({ verbose } = {}) => {
   console.log("Running the build process (`pnpm run build`)...");
   execute("pnpm", ["run", "build"], { cwd, verbose });
 
-  console.log(
-    "Generating the initial extension package...(`npx @adobe/reactor-packager`)",
-  );
-  execute("pnpx", ["@adobe/reactor-packager@latest"], { cwd, verbose });
-
-  const extensionDescriptor = getExtensionJson();
-  const packagePath = getExtensionPath(extensionDescriptor);
-
-  if (!fs.existsSync(packagePath)) {
-    throw new Error(
-      "The extension file was not found. Probably something wrong happened during build.",
-    );
-  }
+  const packagePath = getExtensionPath(getExtensionJson());
 
   const { packageJson, packageLockJson, vendor } = stageInstallable();
 
-  // Append manifest, lockfile, and vendored tarballs to the packager's zip by
-  // streaming its entries through yauzl into a fresh archiver zip (the same
-  // engine reactor-packager uses).
-  const tempPath = `${packagePath}.tmp`;
-  const output = fs.createWriteStream(tempPath);
-  const archive = archiver("zip");
-  const finished = new Promise((resolve, reject) => {
-    output.on("close", resolve);
-    output.on("error", reject);
-    archive.on("error", reject);
+  console.log("Building the extension zip...");
+  await buildExtensionZip({
+    packagePath,
+    packageJson,
+    packageLockJson,
+    vendor,
   });
-  archive.pipe(output);
-
-  await copyEntriesInto(packagePath, archive);
-
-  console.log("Appending the extra files to the package...");
-  archive.append(packageJson, { name: "package.json" });
-  archive.append(packageLockJson, { name: "package-lock.json" });
-  for (const { tgzName, tgz } of vendor) {
-    archive.append(tgz, { name: `${VENDOR_DIR}/${tgzName}` });
-  }
-
-  const extraFiles = [
-    ["alloy.js", path.join(cwd, "src", "lib", "alloy.js")],
-    [
-      "alloyPreinstalled.js",
-      path.join(cwd, "src", "lib", "alloyPreinstalled.js"),
-    ],
-    ["rollup.config.mjs", path.join(cwd, "rollup.config.mjs")],
-    [".browserslistrc", path.join(cwd, ".browserslistrc")],
-    ["scripts/buildAlloy.mjs", path.join(cwd, "scripts", "buildAlloy.mjs")],
-    [
-      "src/view/utils/alloyComponents.mjs",
-      path.join(cwd, "src", "view", "utils", "alloyComponents.mjs"),
-    ],
-    [
-      "scripts/buildAlloyPreinstalled.mjs",
-      path.join(cwd, "scripts", "buildAlloyPreinstalled.mjs"),
-    ],
-  ];
-  for (const [name, source] of extraFiles) {
-    archive.append(fs.readFileSync(source), { name });
-  }
-
-  await archive.finalize();
-  await finished;
-
-  fs.renameSync(tempPath, packagePath);
   console.log("Done");
   return packagePath;
 };
@@ -305,5 +289,4 @@ if (invokedAsCli) {
   program.action(createExtensionPackage);
 
   await program.parseAsync();
-  process.exit(0);
 }
