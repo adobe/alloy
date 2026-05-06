@@ -12,9 +12,12 @@
     "@adobe/alloy-sandbox-node": "0.0.0"
   },
   "changesets": [
+    "adcloud-organic-surfer-hashedip",
+    "advertising-organic-surferid-hashedip",
     "chilly-plums-bake",
     "chubby-rules-attack",
     "crisp-stamps-hide",
+    "cuddly-jokes-rush",
     "eleven-islands-lick",
     "icy-dodos-dig",
     "large-berries-vanish",

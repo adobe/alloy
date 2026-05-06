@@ -1,5 +1,11 @@
 # @adobe/alloy-core
 
+## 1.1.2-beta.3
+
+### Patch Changes
+
+- [#1487](https://github.com/adobe/alloy/pull/1487) [`e271e7a`](https://github.com/adobe/alloy/commit/e271e7aaab319a711465d7728503e7f3cd399063) Thanks [@ksakhare2021](https://github.com/ksakhare2021)! - Advertising: emit `_experience.adcloud.stitchId` on outgoing Experience Events containing SurferID and hashed client IP address
+
 ## 1.1.2-beta.2
 
 ### Patch Changes

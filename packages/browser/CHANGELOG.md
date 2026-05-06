@@ -1,5 +1,20 @@
 # @adobe/alloy
 
+## 2.33.0-beta.2
+
+### Minor Changes
+
+- [#1487](https://github.com/adobe/alloy/pull/1487) [`e271e7a`](https://github.com/adobe/alloy/commit/e271e7aaab319a711465d7728503e7f3cd399063) Thanks [@ksakhare2021](https://github.com/ksakhare2021)! - Added support for Advertising organic events: SurferID and hashed client IP are now collected via the everesttech.net pixel and appended to outgoing Experience Events as `_experience.adcloud.stitchId` (XDM) and `query.advertising.stitchIds` (query). A shared iframe call ensures the pixel is loaded only once per page.
+
+- [#1487](https://github.com/adobe/alloy/pull/1487) [`e271e7a`](https://github.com/adobe/alloy/commit/e271e7aaab319a711465d7728503e7f3cd399063) Thanks [@ksakhare2021](https://github.com/ksakhare2021)! - Added support for Advertising organic events: All organic events are now attached with Advertising ids (SurferId and HashedIP) in the schema \_experience->adcloud->stitchId.
+
+### Patch Changes
+
+- [#1487](https://github.com/adobe/alloy/pull/1487) [`e271e7a`](https://github.com/adobe/alloy/commit/e271e7aaab319a711465d7728503e7f3cd399063) Thanks [@ksakhare2021](https://github.com/ksakhare2021)! - Advertising: emit `_experience.adcloud.stitchId` on outgoing Experience Events containing SurferID and hashed client IP address
+
+- Updated dependencies [[`e271e7a`](https://github.com/adobe/alloy/commit/e271e7aaab319a711465d7728503e7f3cd399063)]:
+  - @adobe/alloy-core@1.1.2-beta.3
+
 ## 2.32.1-beta.1
 
 ### Patch Changes
