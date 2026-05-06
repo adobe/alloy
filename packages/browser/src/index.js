@@ -11,11 +11,15 @@ governing permissions and limitations under the License.
 */
 import { createCustomInstance } from "@adobe/alloy-core";
 import * as allOptionalComponents from "./allOptionalComponents.js";
+import * as allRequiredComponents from "./components/requiredComponentCreators.js";
 
 export { createCustomInstance };
 export const createInstance = (options = {}) =>
   createCustomInstance({
     ...options,
-    components: Object.values(allOptionalComponents),
+    components: [
+      ...Object.values(allRequiredComponents),
+      ...Object.values(allOptionalComponents),
+    ],
   });
 export { allOptionalComponents as components };

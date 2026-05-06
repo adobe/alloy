@@ -1,5 +1,18 @@
 # reactor-extension-alloy
 
+## 2.35.0-beta.1
+
+### Minor Changes
+
+- [#1488](https://github.com/adobe/alloy/pull/1488) [`151cbf6`](https://github.com/adobe/alloy/commit/151cbf662ad260052dd66d20d5cbbead81fdd2f1) Thanks [@dompuiu](https://github.com/dompuiu)! - Remove the beta flag from the Advertising and Push notifications modules.
+
+### Patch Changes
+
+- [#1492](https://github.com/adobe/alloy/pull/1492) [`b50a444`](https://github.com/adobe/alloy/commit/b50a44477d4b7621d3c01267f0ccb6c6febf8e28) Thanks [@dompuiu](https://github.com/dompuiu)! - Do not show errors on push notifications fields when shown for the first time after validation.
+
+- Updated dependencies [[`92b0ffd`](https://github.com/adobe/alloy/commit/92b0ffd12dda580ebcfa0575d412bbcf205957be), [`e120399`](https://github.com/adobe/alloy/commit/e12039919c68cd8479e7901e06896272e1f41cc4), [`447f851`](https://github.com/adobe/alloy/commit/447f851aa09789deaeddc37516ac080fdbc49908)]:
+  - @adobe/alloy@2.32.1-beta.1
+
 ## 2.34.3-beta.0
 
 ### Patch Changes

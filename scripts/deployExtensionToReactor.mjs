@@ -77,7 +77,7 @@ const releaser = spawnSync(
   "pnpx",
   [RELEASER_SPEC, "--auth.client-id=" + REACTOR_CLIENT_ID],
   {
-    cwd: rootDir,
+    cwd: extensionDir,
     input: "Y\n",
     stdio: ["pipe", "inherit", "inherit"],
     env: {
