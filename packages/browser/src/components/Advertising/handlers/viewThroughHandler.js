@@ -15,6 +15,7 @@ import {
   LOG_ERROR_RESOLVING_ID,
   LOG_AD_CONVERSION_FAILED,
   AD_CONVERSION_VIEW_EVENT_TYPE,
+  HASHED_IP,
 } from "../constants/index.js";
 import {
   isAnyIdUnused,
@@ -29,17 +30,32 @@ export default async function handleViewThrough({
   componentConfig,
   adConversionHandler,
   getBrowser,
+  collectSurferId,
+  collectHashedIPAddr,
 }) {
   const resolvedIds = {};
   const usedIdTracker = {};
+
+  // Start hashedIp collection early — shares the same iframe as surferId so
+  // it resolves at the same time. Awaiting it in triggerConversion adds no
+  // real delay and keeps the enrichment to a single call.
+  const hashedIpPromise = collectHashedIPAddr
+    ? collectHashedIPAddr().catch(() => null)
+    : Promise.resolve(null);
+
   const triggerConversion = async () => {
     if (!isAnyIdUnused(resolvedIds, usedIdTracker)) return null;
+
+    const hashedIp = await hashedIpPromise;
+    const idsForEvent = hashedIp
+      ? { ...resolvedIds, [HASHED_IP]: hashedIp }
+      : { ...resolvedIds };
 
     const idTypesToUse = Object.keys(resolvedIds);
 
     try {
       const event = appendAdvertisingIdQueryToEvent(
-        resolvedIds,
+        idsForEvent,
         eventManager.createEvent(),
         cookieManager,
         componentConfig,
@@ -66,6 +82,7 @@ export default async function handleViewThrough({
     componentConfig,
     cookieManager,
     getBrowser,
+    collectSurferId,
   );
 
   if (Object.keys(identityPromisesMap).length === 0) {

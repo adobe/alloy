@@ -46,6 +46,7 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
 
     event = {
       mergeQuery: vi.fn(),
+      mergeXdm: vi.fn(),
     };
 
     componentConfig = {
@@ -101,6 +102,8 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
       getID5Id: getID5IdFn,
       getRampId: getRampIdFn,
       appendAdvertisingIdQueryToEvent: appendAdvertisingIdQueryToEventFn,
+      appendAdCloudIdentityToEvent: vi.fn(),
+      collectHashedIPAddr: vi.fn().mockResolvedValue(""),
       getUrlParams: getUrlParamsFn,
       isThrottled: isThrottledFn,
       normalizeAdvertiser: normalizeAdvertiserFn,
@@ -140,11 +143,7 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
       advertising: { handleAdvertisingData: "wait" },
     });
 
-    expect(collectSurferIdFn).toHaveBeenCalledWith(
-      cookieManager,
-      getBrowser,
-      true,
-    );
+    expect(collectSurferIdFn).toHaveBeenCalledWith(true);
     expect(getID5IdFn).toHaveBeenCalledWith(logger, "test-partner", true, true);
     expect(getRampIdFn).toHaveBeenCalledWith(
       logger,
@@ -230,6 +229,8 @@ describe("Advertising::createOnBeforeSendEventHandler", () => {
         getID5Id: getID5IdFn,
         getRampId: getRampIdFn,
         appendAdvertisingIdQueryToEvent: appendAdvertisingIdQueryToEventFn,
+        appendAdCloudIdentityToEvent: vi.fn(),
+        collectHashedIPAddr: vi.fn().mockResolvedValue(""),
         getUrlParams: getUrlParamsFn,
         isThrottled: isThrottledFn,
         normalizeAdvertiser: realNormalizeAdvertiser,

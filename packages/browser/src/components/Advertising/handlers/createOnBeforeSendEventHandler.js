@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { SURFER_ID, ID5_ID, RAMP_ID } from "../constants/index.js";
+import { SURFER_ID, HASHED_IP, ID5_ID, RAMP_ID } from "../constants/index.js";
 import { AUTO, WAIT } from "@adobe/alloy-core/constants/consentStatus.js";
 import { CHROME } from "@adobe/alloy-core/constants/browser.js";
 
@@ -33,10 +33,12 @@ const waitForAdvertisingId = (advertising) => {
  * @param {Object} dependencies.componentConfig
  * @param {Function} dependencies.getBrowser
  * @param {Object} dependencies.consent
- * @param {Function} dependencies.collectSurferId
+ * @param {Function} dependencies.collectSurferId - factory-created, already bound to cookieManager/getBrowser
  * @param {Function} dependencies.getID5Id
  * @param {Function} dependencies.getRampId
  * @param {Function} dependencies.appendAdvertisingIdQueryToEvent
+ * @param {Function} dependencies.appendAdCloudIdentityToEvent
+ * @param {Function} dependencies.collectHashedIPAddr
  * @param {Function} dependencies.getUrlParams
  * @param {Function} dependencies.isThrottled
  * @param {Function} dependencies.normalizeAdvertiser
@@ -51,6 +53,8 @@ export default ({
   getID5Id,
   getRampId,
   appendAdvertisingIdQueryToEvent,
+  appendAdCloudIdentityToEvent,
+  collectHashedIPAddr,
   getUrlParams,
   isThrottled,
   normalizeAdvertiser,
@@ -90,7 +94,6 @@ export default ({
       const useShortTimeout = waitForAdvertisingId(advertising);
 
       let rampIdPromise = null;
-
       if (!getBrowser || getBrowser() !== CHROME) {
         rampIdPromise = getRampId(
           logger,
@@ -100,25 +103,37 @@ export default ({
           useShortTimeout,
         );
       }
-      const [surferIdResult, id5IdResult, rampIdResult] =
-        await Promise.allSettled([
-          collectSurferId(cookieManager, getBrowser, useShortTimeout),
-          getID5Id(
+      const id5Promise = componentConfig.id5PartnerId
+        ? getID5Id(
             logger,
             componentConfig.id5PartnerId,
             useShortTimeout,
             useShortTimeout,
-          ),
+          )
+        : Promise.resolve(null);
+
+      const [surferIdResult, hashedIPResult, id5IdResult, rampIdResult] =
+        await Promise.allSettled([
+          collectSurferId(useShortTimeout),
+          collectHashedIPAddr(),
+          id5Promise,
           rampIdPromise,
         ]);
 
       const availableIds = {};
-      if (
-        surferIdResult.status === "fulfilled" &&
-        surferIdResult.value &&
-        !isThrottled(SURFER_ID, cookieManager)
-      ) {
-        availableIds.surferId = surferIdResult.value;
+      const availableIdsForIdentity = {};
+
+      if (surferIdResult.status === "fulfilled" && surferIdResult.value) {
+        availableIdsForIdentity[SURFER_ID] = surferIdResult.value;
+        if (!isThrottled(SURFER_ID, cookieManager)) {
+          availableIds[SURFER_ID] = surferIdResult.value;
+        }
+      }
+      if (hashedIPResult.status === "fulfilled" && hashedIPResult.value) {
+        availableIdsForIdentity[HASHED_IP] = hashedIPResult.value;
+        if (!isThrottled(SURFER_ID, cookieManager)) {
+          availableIds[HASHED_IP] = hashedIPResult.value;
+        }
       }
       if (
         id5IdResult.status === "fulfilled" &&
@@ -134,7 +149,12 @@ export default ({
       ) {
         availableIds.rampId = rampIdResult.value;
       }
-      // If no IDs are available and any ID is throttled, return , because we dont have new info to send
+
+      if (Object.keys(availableIdsForIdentity).length !== 0) {
+        appendAdCloudIdentityToEvent(availableIdsForIdentity, event);
+      }
+
+      // If no IDs are available and any ID is throttled, skip — no new info to send
       if (
         Object.keys(availableIds).length === 0 &&
         (isThrottled(SURFER_ID, cookieManager) ||
@@ -143,6 +163,7 @@ export default ({
       ) {
         return;
       }
+
       appendAdvertisingIdQueryToEvent(
         availableIds,
         event,

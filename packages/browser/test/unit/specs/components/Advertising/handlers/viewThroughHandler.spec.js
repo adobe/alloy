@@ -33,6 +33,8 @@ describe("Advertising::viewThroughHandler", () => {
   let componentConfig;
   let adConversionHandler;
   let getBrowser;
+  let collectSurferId;
+  let collectHashedIPAddr;
 
   beforeEach(() => {
     eventManager = {
@@ -66,6 +68,8 @@ describe("Advertising::viewThroughHandler", () => {
     };
 
     getBrowser = vi.fn();
+    collectSurferId = vi.fn().mockResolvedValue(null);
+    collectHashedIPAddr = vi.fn().mockResolvedValue(null);
 
     const fixedTs = Date.UTC(2024, 0, 1, 0, 0, 0);
     vi.spyOn(Date, "now").mockReturnValue(fixedTs);
@@ -82,6 +86,8 @@ describe("Advertising::viewThroughHandler", () => {
       componentConfig,
       adConversionHandler,
       getBrowser,
+      collectSurferId,
+      collectHashedIPAddr,
     });
 
     expect(result).toEqual([]);
@@ -107,6 +113,8 @@ describe("Advertising::viewThroughHandler", () => {
       componentConfig,
       adConversionHandler,
       getBrowser,
+      collectSurferId,
+      collectHashedIPAddr,
     });
 
     await flushPromiseChains();
@@ -116,6 +124,7 @@ describe("Advertising::viewThroughHandler", () => {
       componentConfig,
       cookieManager,
       getBrowser,
+      collectSurferId,
     );
 
     expect(mockEvent.setUserXdm).toHaveBeenCalledWith(
@@ -129,7 +138,6 @@ describe("Advertising::viewThroughHandler", () => {
         advIds: "",
         eventType: "advertising.enrichment",
         stitchIds: {
-          ipAddress: "DUMMY_IP_ADDRESS",
           surferId: "test-surfer-id",
         },
       },
@@ -163,6 +171,8 @@ describe("Advertising::viewThroughHandler", () => {
       logger,
       componentConfig,
       adConversionHandler,
+      collectSurferId,
+      collectHashedIPAddr,
     });
 
     await flushPromiseChains();
