@@ -47,6 +47,7 @@ export default ({
       const { playerName, channel, appVersion } = config.streamingMedia;
       const event = eventManager.createEvent();
       const { sessionDetails } = options.xdm.mediaCollection;
+      setTimestamp(event);
       event.setUserXdm(options.xdm);
       event.mergeXdm({
         eventType: MediaEvents.SESSION_START,

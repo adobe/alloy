@@ -14,8 +14,4 @@ governing permissions and limitations under the License.
  * @typedef {import("./core/types.js").AlloyMonitor} AlloyMonitor
  */
 
-/**
- * @typedef {import("./components/PushNotifications/types.js").ServiceWorkerLogger} ServiceWorkerLogger
- */
-
 export const Types = {};

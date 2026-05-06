@@ -17,7 +17,7 @@ import configValidators from "./configValidators.js";
 import createStreamingMediaComponent from "./createStreamingMediaComponent.js";
 import createTrackMediaSession from "./createTrackMediaSession.js";
 import createMediaResponseHandler from "./createMediaResponseHandler.js";
-import injectTimestamp from "../Context/injectTimestamp.js";
+import injectTimestamp from "../../utils/injectTimestamp.js";
 
 const createStreamingMedia = ({
   config,

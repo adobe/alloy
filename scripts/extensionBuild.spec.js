@@ -11,9 +11,8 @@ governing permissions and limitations under the License.
 */
 
 /**
- * This file tests the reactor-extension-alloy custom build process, if reactor-extension-alloy has been cloned into an adjacent folder.
- * I wrote this to make sure that the extension custom build process still works while I am moving components from the core package to the browser package.
- *  It simulates the createExtensionPackage.mjs script in the extension repository.
+ * This file tests the reactor-extension custom build process (packages/reactor-extension).
+ * It simulates the createExtensionPackage.mjs script in the extension package.
  */
 
 import { exec } from "child_process";
@@ -28,12 +27,7 @@ const execAsync = promisify(exec);
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const alloyRoot = path.resolve(dirname, "..");
-const extensionRoot = path.resolve(alloyRoot, "../reactor-extension-alloy");
-
-const isCi = !!process.env.CI;
-const EXTENSION_EXISTS = fs.existsSync(
-  path.join(extensionRoot, "scripts/buildAlloy.mjs"),
-);
+const extensionRoot = path.resolve(alloyRoot, "packages/reactor-extension");
 
 /** @type {[source: string, dest: string][]} Files to copy from reactor-extension-alloy into the staged forge directory. */
 const filesToCopy = [
@@ -131,7 +125,7 @@ const test = baseTest
     return await buildAlloy();
   });
 
-describe.skipIf(isCi || !EXTENSION_EXISTS)(
+describe(
   "Extension build (forge builder simulation)",
   { timeout: 60_000 },
   () => {

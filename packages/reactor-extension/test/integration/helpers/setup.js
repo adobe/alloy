@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { afterEach, afterAll } from "vitest";
+import { beforeAll, afterEach, afterAll } from "vitest";
 import { worker } from "./mocks/browser";
 import "./spectrumLocators";
 import { wrappedConsoleError, resetErrorSuppression } from "./errorSuppression";
@@ -21,9 +21,11 @@ import field from "./field";
 // here so we suppress only that message in test output; it still appears in a real browser.
 console.error = wrappedConsoleError;
 
-worker.start({
-  onUnhandledRequest: "bypass",
-  quiet: true,
+beforeAll(async () => {
+  await worker.start({
+    onUnhandledRequest: "bypass",
+    quiet: true,
+  });
 });
 
 // Some components from react-specturm rely on process.env to exists.

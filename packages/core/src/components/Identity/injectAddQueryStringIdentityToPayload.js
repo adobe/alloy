@@ -18,25 +18,41 @@ import ecidNamespace from "../../constants/ecidNamespace.js";
 import decodeUriComponentSafely from "../../utils/decodeUriComponentSafely.js";
 
 const LINK_TTL_SECONDS = 300; // 5 minute link time to live
+const QUERY_TOKEN = "?";
 
-export default ({ locationSearch, dateProvider, orgId, logger }) =>
+export default ({
+    locationSearch,
+    locationHash,
+    dateProvider,
+    orgId,
+    logger,
+  }) =>
   (payload) => {
     if (payload.hasIdentity(ecidNamespace)) {
       // don't overwrite a user provided ecid identity
       return;
     }
 
-    const parsedQueryString = queryString.parse(locationSearch);
-    let queryStringValue = parsedQueryString[queryStringIdentityParam];
+    let queryStringValue =
+      queryString.parse(locationSearch)[queryStringIdentityParam] ??
+      queryString.parse(locationHash.slice(locationHash.indexOf(QUERY_TOKEN)))[
+        queryStringIdentityParam
+      ];
 
     if (queryStringValue === undefined) {
       return;
     }
     if (Array.isArray(queryStringValue)) {
       logger.warn(
-        "Found multiple adobe_mc query string paramters, only using the last one.",
+        "Found multiple adobe_mc query string parameters, only using the last one.",
       );
       queryStringValue = queryStringValue[queryStringValue.length - 1];
+    }
+
+    let prev = "";
+    while (prev !== queryStringValue) {
+      prev = queryStringValue;
+      queryStringValue = decodeUriComponentSafely(queryStringValue);
     }
 
     const properties = queryStringValue.split("|").reduce((memo, keyValue) => {

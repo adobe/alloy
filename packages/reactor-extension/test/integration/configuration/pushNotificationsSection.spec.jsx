@@ -200,5 +200,21 @@ describe("Config push notifications section", () => {
         /please provide a tracking dataset id/i,
       );
     });
+
+    it("does not show field errors when component is enabled after validation", async () => {
+      await driver.init(buildSettings());
+
+      // Validate while push notifications is disabled — marks all fields as touched
+      await driver.expectValidate().toBe(true);
+
+      // Enable push notifications; fields become visible
+      await ui.expand("Build options");
+      await pushNotificationsComponentCheckbox.click();
+
+      // Fields are visible but touched state was reset — no errors should appear yet
+      await vapidPublicKeyField.expectValid();
+      await appIdField.expectValid();
+      await trackingDatasetIdField.expectValid();
+    });
   });
 });

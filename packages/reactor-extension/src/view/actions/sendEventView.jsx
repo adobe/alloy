@@ -469,10 +469,7 @@ const sendEventForm = form(
         ]),
         section(
           {
-            label: "Advertising",
-            beta: true,
-            learnMoreUrl:
-              "https://experienceleague.adobe.com/en/docs/experience-platform/tags/extensions/client/web-sdk/action-types#advertising",
+            label: "Adobe Advertising",
           },
           [
             requiredComponent(

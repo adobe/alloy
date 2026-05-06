@@ -67,5 +67,13 @@ describe("components.json manifest drift detection", () => {
       );
       expect(manifestNames).toEqual(barrelNames);
     });
+
+    test("required entries match browser/components/requiredComponentCreators.js exports", () => {
+      const manifestNames = browserManifest.required.map((c) => c.name).sort();
+      const barrelNames = readBarrelExports(
+        "../packages/browser/src/components/requiredComponentCreators.js",
+      );
+      expect(manifestNames).toEqual(barrelNames);
+    });
   });
 });
