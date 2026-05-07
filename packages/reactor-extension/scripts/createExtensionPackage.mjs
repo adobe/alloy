@@ -113,6 +113,7 @@ export const getPackageJson = (vendoredPackages = []) => {
     "@babel/preset-env",
     "@rollup/plugin-commonjs",
     "@rollup/plugin-node-resolve",
+    "@rollup/plugin-replace",
     "commander",
     "rollup",
   ];
