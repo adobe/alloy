@@ -31,7 +31,7 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: pnpm
-      - uses: webfactory/ssh-agent@v0.9.1
+      - uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
       - name: Install dependencies
@@ -76,7 +76,7 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: pnpm
-      - uses: webfactory/ssh-agent@v0.9.1
+      - uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
       - name: Install dependencies

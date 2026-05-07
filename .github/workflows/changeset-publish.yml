@@ -225,7 +225,7 @@ jobs:
         run: pnpm --filter @adobe/alloy run build
 
       - name: Start ssh-agent for CDN
-        uses: webfactory/ssh-agent@v0.9.1
+        uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: |
             ${{ secrets.CDN_PRIVATE_KEY }}
