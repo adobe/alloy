@@ -26,8 +26,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v5
-        with:
-          version: latest
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
@@ -73,8 +71,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v5
-        with:
-          version: latest
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
