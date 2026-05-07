@@ -13,10 +13,6 @@ import { createCustomInstance as createCoreCustomInstance } from "@adobe/alloy-c
 import * as allOptionalComponents from "./allOptionalComponents.js";
 import * as allRequiredComponents from "./components/requiredComponentCreators.js";
 
-// Required components (e.g. Context, which populates xdm.implementationDetails)
-// are unconditionally injected so consumers using createCustomInstance with a
-// hand-picked optional component list cannot accidentally produce an instance
-// that breaks every event in finalize.
 export const createCustomInstance = ({ components = [], ...options } = {}) =>
   createCoreCustomInstance({
     ...options,
