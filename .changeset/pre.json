@@ -11,5 +11,7 @@
     "@adobe/alloy-sandbox-browser": "0.1.2",
     "@adobe/alloy-sandbox-node": "0.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "curly-paws-clap"
+  ]
 }

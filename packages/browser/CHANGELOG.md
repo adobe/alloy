@@ -1,5 +1,11 @@
 # @adobe/alloy
 
+## 2.33.1-beta.0
+
+### Patch Changes
+
+- [#1500](https://github.com/adobe/alloy/pull/1500) [`6b0e6d1`](https://github.com/adobe/alloy/commit/6b0e6d16243c4a975794660279b729aa553b2196) Thanks [@carterworks](https://github.com/carterworks)! - Fixed an issue where the Context component was being excluded in certain environments
+
 ## 2.33.0
 
 ### Minor Changes
