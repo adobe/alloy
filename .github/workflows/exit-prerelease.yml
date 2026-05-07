@@ -32,7 +32,7 @@ jobs:
           echo "Currently in prerelease mode (tag: $(jq -r '.tag' .changeset/pre.json)). Proceeding to exit."
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
         with:
           version: latest
 
