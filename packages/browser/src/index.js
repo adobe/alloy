@@ -9,17 +9,24 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { createCustomInstance } from "@adobe/alloy-core";
+import { createCustomInstance as createCoreCustomInstance } from "@adobe/alloy-core";
 import * as allOptionalComponents from "./allOptionalComponents.js";
 import * as allRequiredComponents from "./components/requiredComponentCreators.js";
 
-export { createCustomInstance };
+// Required components (e.g. Context, which populates xdm.implementationDetails)
+// are unconditionally injected so consumers using createCustomInstance with a
+// hand-picked optional component list cannot accidentally produce an instance
+// that breaks every event in finalize.
+export const createCustomInstance = ({ components = [], ...options } = {}) =>
+  createCoreCustomInstance({
+    ...options,
+    components: [...Object.values(allRequiredComponents), ...components],
+  });
+
 export const createInstance = (options = {}) =>
   createCustomInstance({
     ...options,
-    components: [
-      ...Object.values(allRequiredComponents),
-      ...Object.values(allOptionalComponents),
-    ],
+    components: Object.values(allOptionalComponents),
   });
+
 export { allOptionalComponents as components };
