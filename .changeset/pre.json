@@ -1,0 +1,15 @@
+{
+  "mode": "pre",
+  "tag": "beta",
+  "initialVersions": {
+    "adobe-alloy-monorepo": "0.0.1",
+    "@adobe/alloy": "2.33.0",
+    "@adobe/alloy-core": "1.1.2",
+    "@adobe/alloy-node": "0.0.0",
+    "reactor-extension-alloy": "2.35.0",
+    "parcel-transformer-extension-name": "1.0.0",
+    "@adobe/alloy-sandbox-browser": "0.1.2",
+    "@adobe/alloy-sandbox-node": "0.0.0"
+  },
+  "changesets": []
+}
