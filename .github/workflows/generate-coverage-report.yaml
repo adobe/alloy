@@ -38,7 +38,7 @@ jobs:
           FILE_PARALLELISM: false
 
       - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sonar-coverage-report
           path: coverage/lcov.info

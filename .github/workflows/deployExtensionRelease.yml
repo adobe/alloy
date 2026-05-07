@@ -53,7 +53,7 @@ jobs:
         env:
           REACTOR_IO_INTEGRATION_CLIENT_SECRET: ${{ secrets.REACTOR_IO_INTEGRATION_CLIENT_SECRET }}
         run: node scripts/deployExtensionToReactor.mjs ${{ github.event.inputs.version }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: extension-package
           path: packages/reactor-extension/package-adobe-alloy-${{ github.event.inputs.version }}.zip
@@ -98,7 +98,7 @@ jobs:
         env:
           REACTOR_IO_INTEGRATION_CLIENT_SECRET: ${{ secrets.REACTOR_IO_INTEGRATION_CLIENT_SECRET }}
         run: node scripts/deployExtensionToReactor.mjs ${{ github.event.inputs.version }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: extension-package
           path: packages/reactor-extension/package-adobe-alloy-${{ github.event.inputs.version }}.zip
