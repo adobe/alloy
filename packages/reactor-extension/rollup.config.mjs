@@ -10,33 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import fs from "fs";
-import path from "path";
-import { createRequire } from "module";
 import replace from "@rollup/plugin-replace";
 import nodeResolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
-
-const requireFromConfig = createRequire(import.meta.url);
-
-const getPackageVersion = (packageName) => {
-  let dir = path.dirname(requireFromConfig.resolve(packageName));
-
-  while (dir !== path.dirname(dir)) {
-    const packageJsonPath = path.join(dir, "package.json");
-    if (fs.existsSync(packageJsonPath)) {
-      const pkg = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
-      if (pkg.name === packageName) {
-        return pkg.version;
-      }
-    }
-    dir = path.dirname(dir);
-  }
-
-  throw new Error(`Unable to resolve ${packageName} package version.`);
-};
-
-const alloyVersion = getPackageVersion("@adobe/alloy");
+import alloyPackageJson from "./node_modules/@adobe/alloy/package.json" with { type: "json" };
 
 export default [
   {
@@ -48,7 +25,7 @@ export default [
     ],
     plugins: [
       replace({
-        __VERSION__: alloyVersion,
+        __VERSION__: alloyPackageJson.version,
         preventAssignment: true,
       }),
       nodeResolve({
