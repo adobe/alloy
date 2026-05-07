@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import replace from "@rollup/plugin-replace";
-import nodeResolve from "@rollup/plugin-node-resolve";
+import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import alloyPackageJson from "./node_modules/@adobe/alloy/package.json" with { type: "json" };
 
@@ -28,7 +28,7 @@ export default [
         __VERSION__: alloyPackageJson.version,
         preventAssignment: true,
       }),
-      nodeResolve({
+      resolve({
         preferBuiltins: false,
         mainFields: ["module", "main", "browser"],
       }),
