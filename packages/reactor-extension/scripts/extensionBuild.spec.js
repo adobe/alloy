@@ -161,6 +161,12 @@ describe(
         expect(defaultBundle).toContain("ActivityCollector");
       });
 
+      test("replaces the alloy version placeholder", async ({
+        defaultBundle,
+      }) => {
+        expect(defaultBundle).not.toContain("__VERSION__");
+      });
+
       test("can exclude activityCollector", async ({ buildAlloy }) => {
         const bundle = await buildAlloy({
           flags: "--activityCollector false",
