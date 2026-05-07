@@ -74,4 +74,61 @@ describe("createIdentity", () => {
       await expect(awaitIdentityPromise).resolves.toBeUndefined();
     });
   });
+
+  describe("isNewIdentity", () => {
+    it("returns false before initialize is called", () => {
+      const identity = createIdentity({
+        logger: mockLogger,
+        loggingCookieJar: mockLoggingCookieJar,
+        config: mockConfig,
+      });
+
+      expect(identity.isNewIdentity()).toBe(false);
+    });
+
+    it("returns true after initialize when no identity cookie exists", () => {
+      mockLoggingCookieJar.get.mockReturnValue(undefined);
+
+      const identity = createIdentity({
+        logger: mockLogger,
+        loggingCookieJar: mockLoggingCookieJar,
+        config: mockConfig,
+      });
+
+      identity.initialize();
+
+      expect(identity.isNewIdentity()).toBe(true);
+    });
+
+    it("returns false after initialize when identity cookie exists", () => {
+      mockLoggingCookieJar.get.mockReturnValue(
+        "CiYxNDAxNTI0NjEzODM4MjI2ODk1MTgwNTkyMTYxNjkxNTc0MzEyOFISCIelhf%5FOMRABGAEqA09SMjAA8AHX%5F4DZlzI%3D",
+      );
+
+      const identity = createIdentity({
+        logger: mockLogger,
+        loggingCookieJar: mockLoggingCookieJar,
+        config: mockConfig,
+      });
+
+      identity.initialize();
+
+      expect(identity.isNewIdentity()).toBe(false);
+    });
+
+    it("remains true after setIdentityAcquired is called on a new identity", () => {
+      mockLoggingCookieJar.get.mockReturnValue(undefined);
+
+      const identity = createIdentity({
+        logger: mockLogger,
+        loggingCookieJar: mockLoggingCookieJar,
+        config: mockConfig,
+      });
+
+      identity.initialize();
+      identity.setIdentityAcquired();
+
+      expect(identity.isNewIdentity()).toBe(true);
+    });
+  });
 });

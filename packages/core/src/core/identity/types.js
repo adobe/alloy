@@ -19,6 +19,7 @@ governing permissions and limitations under the License.
  * @property {Function} setIdentityAcquired - Marks identity as acquired and resolves any pending identity promises
  * @property {Function} awaitIdentity - Returns a promise that resolves when identity is acquired
  * @property {Function} getEcidFromCookie
+ * @property {function(): boolean} isNewIdentity - Returns true if no identity cookie existed at initialize() time; remains true after identity is acquired
  */
 
 export const Types = {};

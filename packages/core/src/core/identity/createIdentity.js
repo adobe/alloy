@@ -51,6 +51,7 @@ import createDecodeKndctrCookie from "../../utils/createDecodeKndctrCookie.js";
  */
 export default ({ logger, loggingCookieJar, config }) => {
   let awaitIdentityResolve = null;
+  let newIdentity = false;
 
   const awaitIdentityPromise = new Promise((resolve) => {
     awaitIdentityResolve = resolve;
@@ -67,6 +68,8 @@ export default ({ logger, loggingCookieJar, config }) => {
       const ecidFromCookie = decodeKndctrCookie();
       if (ecidFromCookie) {
         this.setIdentityAcquired();
+      } else {
+        newIdentity = true;
       }
     },
 
@@ -79,5 +82,10 @@ export default ({ logger, loggingCookieJar, config }) => {
     },
 
     getEcidFromCookie: () => decodeKndctrCookie(),
+
+    // Intentionally not reset when setIdentityAcquired is called — this flag
+    // reflects whether a cookie existed at initialize() time, not whether
+    // identity is still pending.
+    isNewIdentity: () => newIdentity,
   };
 };
