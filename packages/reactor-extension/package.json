@@ -65,6 +65,7 @@
     "@rollup/plugin-babel": "^6.1.0",
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-replace": "^6.0.3",
     "adm-zip": "^0.5.16",
     "ajv": "^8.18.0",
     "ajv-draft-04": "^1.0.0",
