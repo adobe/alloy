@@ -240,7 +240,7 @@ jobs:
         # same version is idempotent: the uploader updates the existing development
         # extension package by name.
         if: hashFiles('packages/reactor-extension/package.json') != ''
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         env:
           REACTOR_IO_INTEGRATION_CLIENT_SECRET: ${{ secrets.REACTOR_IO_INTEGRATION_CLIENT_SECRET }}
         with:
