@@ -17,7 +17,7 @@ jobs:
       is_prerelease: ${{ steps.pre.outputs.is_prerelease }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           ssh-key: ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
@@ -44,9 +44,7 @@ jobs:
           fi
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
+        uses: pnpm/action-setup@v5
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
@@ -99,7 +97,7 @@ jobs:
       pull-requests: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           ssh-key: ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
@@ -113,9 +111,7 @@ jobs:
           fi
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
+        uses: pnpm/action-setup@v5
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
@@ -229,7 +225,7 @@ jobs:
         run: pnpm --filter @adobe/alloy run build
 
       - name: Start ssh-agent for CDN
-        uses: webfactory/ssh-agent@v0.9.1
+        uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: |
             ${{ secrets.CDN_PRIVATE_KEY }}
@@ -244,7 +240,7 @@ jobs:
         # same version is idempotent: the uploader updates the existing development
         # extension package by name.
         if: hashFiles('packages/reactor-extension/package.json') != ''
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         env:
           REACTOR_IO_INTEGRATION_CLIENT_SECRET: ${{ secrets.REACTOR_IO_INTEGRATION_CLIENT_SECRET }}
         with:
