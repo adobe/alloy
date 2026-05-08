@@ -23,6 +23,7 @@ const transformOptions = ({ combinedConfigValidator, options, logger }) => {
         .join(
           "\n\t - ",
         )}\nFor configuration documentation see: ${CONFIG_DOC_URI}`,
+      { cause: e },
     );
   }
 };
