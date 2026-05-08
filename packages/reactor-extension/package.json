@@ -78,7 +78,7 @@
     "minimist": "^1.2.8",
     "parcel": "^2.16.1",
     "parcel-transformer-extension-name": "workspace:parcel-transformer-extension-name",
-    "puppeteer": "^24.29.1",
+    "puppeteer": "^24.43.0",
     "rimraf": "^6.1.0",
     "rollup": "^4.59.0",
     "rollup-plugin-istanbul": "^5.0.0",
