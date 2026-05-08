@@ -72,7 +72,7 @@
     "happy-dom": "^20.9.0",
     "husky": "^9.1.7",
     "minimatch": "^10.2.5",
-    "msw": "^2.12.2",
+    "msw": "^2.14.3",
     "playwright": "^1.57.0",
     "prettier": "^3.7.4",
     "recursive-readdir": "^2.2.3",
