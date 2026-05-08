@@ -63,7 +63,7 @@
     "@parcel/core": "^2.16.1",
     "@parcel/reporter-cli": "^2.16.1",
     "@rollup/plugin-babel": "^6.1.0",
-    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-commonjs": "^29.0.2",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-replace": "^6.0.3",
     "adm-zip": "^0.5.16",
@@ -78,12 +78,12 @@
     "minimist": "^1.2.8",
     "parcel": "^2.16.1",
     "parcel-transformer-extension-name": "workspace:parcel-transformer-extension-name",
-    "puppeteer": "^24.29.1",
+    "puppeteer": "^24.43.0",
     "rimraf": "^6.1.0",
     "rollup": "^4.59.0",
     "rollup-plugin-istanbul": "^5.0.0",
     "serve": "^14.2.5",
-    "testcafe": "^3.7.2",
+    "testcafe": "^3.7.4",
     "testcafe-browser-provider-playwright": "^1.1.0"
   }
 }
