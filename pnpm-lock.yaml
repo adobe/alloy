@@ -156,8 +156,8 @@ importers:
         specifier: ^4.60.3
         version: 4.60.3
       rollup-plugin-license:
-        specifier: ^3.6.0
-        version: 3.6.0(picomatch@4.0.4)(rollup@4.60.3)
+        specifier: ^3.7.1
+        version: 3.7.1(picomatch@4.0.4)(rollup@4.60.3)
     devDependencies:
       glob:
         specifier: ^13.0.6
@@ -6864,9 +6864,6 @@ packages:
     resolution: {integrity: sha512-wpGPwyg/xrSp4H4Db4xYSeAr6+cFQGHfspHzDUdYxswDnUW0L5Ov63UuJiSr8NMSpyaChO4u1n0MXUvVPtrN6A==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
-  magic-string@0.30.19:
-    resolution: {integrity: sha512-2N21sPY9Ws53PZvsEpVtNuSW+ScYbQdp4b9qUaL+9QkHUrGFKo56Lg9Emg5s9V/qrtNBmiR01sYhUOwu3H+VOw==}
-
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
@@ -8139,8 +8136,8 @@ packages:
       rollup:
         optional: true
 
-  rollup-plugin-license@3.6.0:
-    resolution: {integrity: sha512-1ieLxTCaigI5xokIfszVDRoy6c/Wmlot1fDEnea7Q/WXSR8AqOjYljHDLObAx7nFxHC2mbxT3QnTSPhaic2IYw==}
+  rollup-plugin-license@3.7.1:
+    resolution: {integrity: sha512-FcGXUbAmPvRSLxjVdjp/r/MUtKBlttVQd+ApUyvKfREnsoAfAZA6Ic2fE1Tz4RL0f9XqEQU9UIRNUMdtQtliDw==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       rollup: ^1.0.0 || ^2.0.0 || ^3.0.0 || ^4.0.0
@@ -8362,8 +8359,8 @@ packages:
   spdx-expression-validate@2.0.0:
     resolution: {integrity: sha512-b3wydZLM+Tc6CFvaRDBOF9d76oGIHNCLYFeHbftFXUWjnfZWganmDmvtM5sm1cRwJc/VDBMLyGGrsLFd1vOxbg==}
 
-  spdx-license-ids@3.0.22:
-    resolution: {integrity: sha512-4PRT4nh1EImPbt2jASOKHX7PB7I+e4IWNLvkKFDxNhJlfjbYlleYQh285Z/3mPTHSAK/AvdMmw5BNNuYH8ShgQ==}
+  spdx-license-ids@3.0.23:
+    resolution: {integrity: sha512-CWLcCCH7VLu13TgOH+r8p1O/Znwhqv/dbb6lqWy67G+pT1kHmeD/+V36AVb/vq8QMIQwVShJ6Ssl5FPh0fuSdw==}
 
   spdx-ranges@2.1.1:
     resolution: {integrity: sha512-mcdpQFV7UDAgLpXEE/jOMqvK4LBoO0uTQg0uvXUewmEFhpiZx5yJSZITHB8w1ZahKdhfZqP5GPEOKLyEq5p8XA==}
@@ -9541,7 +9538,7 @@ snapshots:
       react-json-view: 1.21.3(@types/react@19.2.14)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       react-redux: 7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       react-router-dom: 5.3.4(react@17.0.2)
-      react-router-last-location: 2.0.1(prop-types@15.8.1)(react-dom@17.0.2(react@17.0.2))(react-router-dom@5.3.4(react@19.2.0))(react@17.0.2)
+      react-router-last-location: 2.0.1(prop-types@15.8.1)(react-dom@17.0.2(react@17.0.2))(react-router-dom@5.3.4(react@17.0.2))(react@17.0.2)
       react-split: 2.0.14(react@17.0.2)
       semver-diff: 3.1.1
     transitivePeerDependencies:
@@ -22389,10 +22386,6 @@ snapshots:
 
   macos-release@3.4.0: {}
 
-  magic-string@0.30.19:
-    dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.5
-
   magic-string@0.30.21:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
@@ -23725,7 +23718,7 @@ snapshots:
       tiny-invariant: 1.3.3
       tiny-warning: 1.0.3
 
-  react-router-last-location@2.0.1(prop-types@15.8.1)(react-dom@17.0.2(react@17.0.2))(react-router-dom@5.3.4(react@19.2.0))(react@17.0.2):
+  react-router-last-location@2.0.1(prop-types@15.8.1)(react-dom@17.0.2(react@17.0.2))(react-router-dom@5.3.4(react@17.0.2))(react@17.0.2):
     dependencies:
       prop-types: 15.8.1
       react: 17.0.2
@@ -24120,12 +24113,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  rollup-plugin-license@3.6.0(picomatch@4.0.4)(rollup@4.60.3):
+  rollup-plugin-license@3.7.1(picomatch@4.0.4)(rollup@4.60.3):
     dependencies:
       commenting: 1.1.0
       fdir: 6.5.0(picomatch@4.0.4)
-      lodash: 4.17.21
-      magic-string: 0.30.19
+      lodash: 4.18.1
+      magic-string: 0.30.21
       moment: 2.30.1
       package-name-regex: 2.0.6
       rollup: 4.60.3
@@ -24445,13 +24438,13 @@ snapshots:
   spdx-expression-parse@3.0.1:
     dependencies:
       spdx-exceptions: 2.5.0
-      spdx-license-ids: 3.0.22
+      spdx-license-ids: 3.0.23
 
   spdx-expression-validate@2.0.0:
     dependencies:
       spdx-expression-parse: 3.0.1
 
-  spdx-license-ids@3.0.22: {}
+  spdx-license-ids@3.0.23: {}
 
   spdx-ranges@2.1.1: {}
 

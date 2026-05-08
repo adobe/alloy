@@ -81,7 +81,7 @@
     "@rollup/plugin-terser": "^1.0.0",
     "commander": "^14.0.2",
     "rollup": "^4.60.3",
-    "rollup-plugin-license": "^3.6.0"
+    "rollup-plugin-license": "^3.7.1"
   },
   "devDependencies": {
     "glob": "^13.0.6",
