@@ -82,5 +82,13 @@
     "url-exists-nodejs": "^0.2.4",
     "vitest": "^4.1.5",
     "vitest-browser-react": "^2.0.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "lodash@<4.18.1": "^4.18.1",
+      "jshint>minimatch": "^3.1.5",
+      "underscore@<1.13.8": "^1.13.8",
+      "yaml@<2.8.3": "^2.8.3"
+    }
   }
 }
