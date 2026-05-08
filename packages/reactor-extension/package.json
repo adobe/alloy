@@ -83,7 +83,7 @@
     "rollup": "^4.59.0",
     "rollup-plugin-istanbul": "^5.0.0",
     "serve": "^14.2.5",
-    "testcafe": "^3.7.2",
+    "testcafe": "^3.7.4",
     "testcafe-browser-provider-playwright": "^1.1.0"
   }
 }
