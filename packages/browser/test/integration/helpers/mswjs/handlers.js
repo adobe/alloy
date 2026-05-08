@@ -159,7 +159,7 @@ export const contentCardsAndEventHistoryOperations = http.post(
 );
 
 export const setConsentHandler = http.post(
-  /https:\/\/edge\.adobedc\.net\/ee\/v1\/privacy\/set-consent/,
+  /https:\/\/edge\.adobedc\.net\/ee\/(?:[^/]+\/)?v1\/privacy\/set-consent/,
 
   async (req) => {
     const url = new URL(req.request.url);
@@ -168,7 +168,18 @@ export const setConsentHandler = http.post(
     if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
       return HttpResponse.json({
         requestId: "consent-request-id",
-        handle: [],
+        handle: [
+          {
+            type: "state:store",
+            payload: [
+              {
+                key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_consent",
+                value: "general=in",
+                maxAge: 15552000,
+              },
+            ],
+          },
+        ],
       });
     }
 
