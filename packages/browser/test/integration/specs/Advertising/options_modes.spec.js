@@ -136,7 +136,7 @@ describe("Advertising - Modes (auto, wait, disabled)", () => {
     const stitchIds = advertising?.stitchIds;
     if (stitchIds) {
       const hasAny = Object.keys(stitchIds).some(
-        (k) => k !== "ipAddress" && stitchIds[k],
+        (k) => k !== "hashedIp" && stitchIds[k],
       );
       expect(hasAny).toBe(false);
     } else {

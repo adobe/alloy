@@ -20,11 +20,14 @@ import createAdConversionHandler from "./handlers/createAdConversionHandler.js";
 import createCookieManager from "./utils/advertisingCookieManager.js";
 import createHandleOnBeforeSendEvent from "./handlers/createOnBeforeSendEventHandler.js";
 import createSendAdConversion from "./handlers/sendAdConversion.js";
-import collectSurferId from "./identities/collectSurferId.js";
+import createCollectSurferId from "./identities/collectSurferId.js";
 import { getID5Id } from "./identities/collectID5Id.js";
 import { getRampId } from "./identities/collectRampId.js";
+import { createInitiateAdvertisingIdentityCall } from "./identities/initiateAdvertisingIdentityCall.js";
+import createHashedIpHandler from "./identities/createHashedIpHandler.js";
 import {
   appendAdvertisingIdQueryToEvent,
+  appendAdCloudIdentityToEvent,
   getUrlParams,
   isThrottled,
   normalizeAdvertiser,
@@ -43,6 +46,20 @@ const createAdvertising = ({
     orgId: config.orgId,
     logger,
   });
+
+  // One shared iframe call — both collectSurferId and hashedIpHandler use it
+  // so the pixel is only loaded once per page.
+  const initiateAdvertisingIdentityCall =
+    createInitiateAdvertisingIdentityCall();
+
+  const collectSurferId = createCollectSurferId({
+    initiateAdvertisingIdentityCall,
+    cookieManager,
+    getBrowser,
+  });
+
+  const hashedIpHandler = createHashedIpHandler({ cookieManager });
+
   const adConversionHandler = createAdConversionHandler({
     eventManager,
     sendEdgeNetworkRequest,
@@ -61,6 +78,9 @@ const createAdvertising = ({
     getID5Id,
     getRampId,
     appendAdvertisingIdQueryToEvent,
+    appendAdCloudIdentityToEvent,
+    collectHashedIPAddr: () =>
+      hashedIpHandler.collect(initiateAdvertisingIdentityCall),
     getUrlParams,
     isThrottled,
     normalizeAdvertiser,
@@ -73,6 +93,9 @@ const createAdvertising = ({
     componentConfig,
     getBrowser,
     consent,
+    collectSurferId,
+    collectHashedIPAddr: () =>
+      hashedIpHandler.collect(initiateAdvertisingIdentityCall),
   });
   return createComponent({
     handleOnBeforeSendEvent,

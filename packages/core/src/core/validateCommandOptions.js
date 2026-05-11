@@ -24,7 +24,7 @@ export default ({ command, options }) => {
       validatedOptions = optionsValidator(options);
     } catch (validationError) {
       const invalidOptionsMessage = `Invalid ${commandName} command options:\n\t - ${validationError} For command documentation see: ${documentationUri}`;
-      throw new Error(invalidOptionsMessage);
+      throw new Error(invalidOptionsMessage, { cause: validationError });
     }
   }
   return validatedOptions;

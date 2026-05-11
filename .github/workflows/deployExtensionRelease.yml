@@ -24,16 +24,14 @@ jobs:
     if: ${{ contains(github.event.inputs.version, '-') == false }}
     environment: Production
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: latest
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v5
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: pnpm
-      - uses: webfactory/ssh-agent@v0.9.1
+      - uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
       - name: Install dependencies
@@ -55,7 +53,7 @@ jobs:
         env:
           REACTOR_IO_INTEGRATION_CLIENT_SECRET: ${{ secrets.REACTOR_IO_INTEGRATION_CLIENT_SECRET }}
         run: node scripts/deployExtensionToReactor.mjs ${{ github.event.inputs.version }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: extension-package
           path: packages/reactor-extension/package-adobe-alloy-${{ github.event.inputs.version }}.zip
@@ -71,16 +69,14 @@ jobs:
     needs: validate
     if: ${{ contains(github.event.inputs.version, '-') }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: latest
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v5
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: pnpm
-      - uses: webfactory/ssh-agent@v0.9.1
+      - uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
       - name: Install dependencies
@@ -102,7 +98,7 @@ jobs:
         env:
           REACTOR_IO_INTEGRATION_CLIENT_SECRET: ${{ secrets.REACTOR_IO_INTEGRATION_CLIENT_SECRET }}
         run: node scripts/deployExtensionToReactor.mjs ${{ github.event.inputs.version }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: extension-package
           path: packages/reactor-extension/package-adobe-alloy-${{ github.event.inputs.version }}.zip

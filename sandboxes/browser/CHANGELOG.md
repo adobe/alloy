@@ -1,5 +1,35 @@
 # @adobe/alloy-sandbox-browser
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [[`6b0e6d1`](https://github.com/adobe/alloy/commit/6b0e6d16243c4a975794660279b729aa553b2196)]:
+  - @adobe/alloy@2.33.1
+
+## 0.1.3-beta.0
+
+### Patch Changes
+
+- Updated dependencies [[`6b0e6d1`](https://github.com/adobe/alloy/commit/6b0e6d16243c4a975794660279b729aa553b2196)]:
+  - @adobe/alloy@2.33.1-beta.0
+
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies [[`e271e7a`](https://github.com/adobe/alloy/commit/e271e7aaab319a711465d7728503e7f3cd399063), [`e271e7a`](https://github.com/adobe/alloy/commit/e271e7aaab319a711465d7728503e7f3cd399063), [`92b0ffd`](https://github.com/adobe/alloy/commit/92b0ffd12dda580ebcfa0575d412bbcf205957be), [`e271e7a`](https://github.com/adobe/alloy/commit/e271e7aaab319a711465d7728503e7f3cd399063), [`e120399`](https://github.com/adobe/alloy/commit/e12039919c68cd8479e7901e06896272e1f41cc4), [`259138e`](https://github.com/adobe/alloy/commit/259138eb8743c8a22b60722ceafee7d1aabdb6d5), [`2760287`](https://github.com/adobe/alloy/commit/2760287005308260fe3b5da83a6ce4f8ef6d6635), [`f2a616c`](https://github.com/adobe/alloy/commit/f2a616cfcaaf44020cba6ecb6b623d66ef305017), [`447f851`](https://github.com/adobe/alloy/commit/447f851aa09789deaeddc37516ac080fdbc49908), [`50307a9`](https://github.com/adobe/alloy/commit/50307a9e41ff0173a08b1d52e5ad8fea2f53454d)]:
+  - @adobe/alloy@2.33.0
+  - @adobe/alloy-core@1.1.2
+
+## 0.1.2-beta.3
+
+### Patch Changes
+
+- Updated dependencies [[`e271e7a`](https://github.com/adobe/alloy/commit/e271e7aaab319a711465d7728503e7f3cd399063), [`e271e7a`](https://github.com/adobe/alloy/commit/e271e7aaab319a711465d7728503e7f3cd399063), [`e271e7a`](https://github.com/adobe/alloy/commit/e271e7aaab319a711465d7728503e7f3cd399063)]:
+  - @adobe/alloy@2.33.0-beta.2
+  - @adobe/alloy-core@1.1.2-beta.3
+
 ## 0.1.2-beta.2
 
 ### Patch Changes

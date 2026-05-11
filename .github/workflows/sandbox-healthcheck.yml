@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Check for status 200 and title text "Mock website hosting Alloy"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - id: test
         uses: johnlokerse/website-healthcheck@v2
         with:

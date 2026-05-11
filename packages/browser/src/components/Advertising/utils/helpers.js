@@ -20,6 +20,7 @@ import {
   DISPLAY_CLICK_COOKIE_KEY,
   AD_CONVERSION_VIEW_EVENT_TYPE,
   SURFER_ID,
+  HASHED_IP,
   ID5_ID,
   RAMP_ID,
   DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
@@ -72,6 +73,29 @@ const normalizeAdvertiser = (advertiserSettings) => {
     .join(", ");
 };
 
+/**
+ * Appends AdCloud identity data to the event XDM as _experience.adcloud.stitchId.
+ * @param {{ surferId?: string, hashedIp?: string, id5Id?: string, rampId?: string, adfId?: string }} idsToInclude
+ * @param {{ mergeXdm: (xdm: Object) => void }} event
+ */
+const appendAdCloudIdentityToEvent = (idsToInclude, event) => {
+  const ID_SEPARATOR = "|";
+  // Order is a downstream AdCloud contract — consumers parse this string positionally.
+  // Do not reorder. adfId is a forward-looking placeholder for a future ID type; always serializes as an empty slot for now.
+  const ADCLOUD_ID_ORDER = [SURFER_ID, HASHED_IP, ID5_ID, RAMP_ID, "adfId"];
+  const concatenatedId = ADCLOUD_ID_ORDER.map(
+    (key) => idsToInclude[key] ?? "",
+  ).join(ID_SEPARATOR);
+
+  event.mergeXdm({
+    _experience: {
+      adcloud: {
+        stitchId: concatenatedId,
+      },
+    },
+  });
+};
+
 const appendAdvertisingIdQueryToEvent = (
   idsToInclude,
   event,
@@ -101,7 +125,9 @@ const appendAdvertisingIdQueryToEvent = (
         }),
         ...(idsToInclude[ID5_ID] && { id5: idsToInclude[ID5_ID] }),
         ...(idsToInclude[RAMP_ID] && { rampIdEnv: idsToInclude[RAMP_ID] }),
-        ipAddress: "DUMMY_IP_ADDRESS",
+        ...(idsToInclude[HASHED_IP] && {
+          hashedIp: idsToInclude[HASHED_IP],
+        }),
       },
       advIds: normalizeAdvertiser(componentConfig.advertiserSettings),
       ...(addEventType && { eventType: AD_CONVERSION_VIEW_EVENT_TYPE }),
@@ -156,6 +182,7 @@ export {
   normalizeAdvertiser,
   createManagedAsyncOperation,
   appendAdvertisingIdQueryToEvent,
+  appendAdCloudIdentityToEvent,
   isAnyIdUnused,
   markIdsAsConverted,
   isThrottled,

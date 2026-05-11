@@ -10,24 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
+import { vi, beforeEach, describe, it, expect } from "vitest";
 import {
   getUrlParams,
   normalizeAdvertiser,
   createManagedAsyncOperation,
   appendAdvertisingIdQueryToEvent,
+  appendAdCloudIdentityToEvent,
   isAnyIdUnused,
   markIdsAsConverted,
   isThrottled,
   shouldThrottle,
 } from "../../../../../../src/components/Advertising/utils/helpers.js";
+import { queryString } from "@adobe/alloy-core/utils";
 import {
   LAST_CLICK_COOKIE_KEY,
   DISPLAY_CLICK_COOKIE_KEY,
   DISPLAY_CLICK_COOKIE_KEY_EXPIRES,
   AD_CONVERSION_VIEW_EVENT_TYPE,
 } from "../../../../../../src/components/Advertising/constants/index.js";
-import { queryString } from "@adobe/alloy-core/utils";
 
 describe("Advertising::helpers", () => {
   let mockEvent;
@@ -52,10 +53,9 @@ describe("Advertising::helpers", () => {
       warn: vi.fn(),
       error: vi.fn(),
     };
-  });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
+    // Reset all mocks
+    vi.clearAllMocks();
   });
 
   describe("getUrlParams", () => {
@@ -74,9 +74,7 @@ describe("Advertising::helpers", () => {
     });
 
     it("should return undefined values when parameters are not present", () => {
-      vi.spyOn(queryString, "parse").mockReturnValue({
-        foo: "bar",
-      });
+      vi.spyOn(queryString, "parse").mockReturnValue({ foo: "bar" });
 
       const result = getUrlParams();
 
@@ -228,6 +226,45 @@ describe("Advertising::helpers", () => {
     });
   });
 
+  describe("appendAdCloudIdentityToEvent", () => {
+    it("should merge _experience.adcloud.stitchId when ids are provided", () => {
+      const event = { mergeXdm: vi.fn() };
+      const idsToInclude = { surferId: "s1", id5Id: "id5", rampId: "r1" };
+
+      appendAdCloudIdentityToEvent(idsToInclude, event);
+
+      expect(event.mergeXdm).toHaveBeenCalledWith({
+        _experience: { adcloud: { stitchId: "s1||id5|r1|" } },
+      });
+    });
+
+    it("should set stitchId with pipe-separated empty slots when no ids provided", () => {
+      const event = { mergeXdm: vi.fn() };
+
+      appendAdCloudIdentityToEvent({}, event);
+
+      expect(event.mergeXdm).toHaveBeenCalledWith({
+        _experience: { adcloud: { stitchId: "||||" } },
+      });
+    });
+
+    it("should use fixed order surferId|hashedIp|id5Id|rampId|adfId for concatenation", () => {
+      const event = { mergeXdm: vi.fn() };
+      const idsToInclude = {
+        hashedIp: "hp",
+        rampId: "r",
+        surferId: "s",
+        id5Id: "i",
+      };
+
+      appendAdCloudIdentityToEvent(idsToInclude, event);
+
+      expect(event.mergeXdm).toHaveBeenCalledWith({
+        _experience: { adcloud: { stitchId: "s|hp|i|r|" } },
+      });
+    });
+  });
+
   describe("appendAdvertisingIdQueryToEvent", () => {
     let componentConfig;
     let idsToInclude;
@@ -267,7 +304,6 @@ describe("Advertising::helpers", () => {
             surferId: "surfer123",
             id5: "id5_123",
             rampIdEnv: "ramp123",
-            ipAddress: "DUMMY_IP_ADDRESS",
           },
           advIds: "test-advertiser",
         },
@@ -291,7 +327,6 @@ describe("Advertising::helpers", () => {
             surferId: "surfer123",
             id5: "id5_123",
             rampIdEnv: "ramp123",
-            ipAddress: "DUMMY_IP_ADDRESS",
           },
           advIds: "test-advertiser",
         },
@@ -315,7 +350,6 @@ describe("Advertising::helpers", () => {
         advertising: {
           stitchIds: {
             surferId: "surfer123",
-            ipAddress: "DUMMY_IP_ADDRESS",
           },
           advIds: "test-advertiser",
         },
@@ -339,10 +373,31 @@ describe("Advertising::helpers", () => {
 
       expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
         advertising: {
-          stitchIds: {
-            ipAddress: "DUMMY_IP_ADDRESS",
-          },
+          stitchIds: {},
           advIds: "adv1, adv3",
+        },
+      });
+    });
+
+    it("should set hashedIp when provided", () => {
+      mockCookieManager.getValue.mockReturnValue(null);
+
+      appendAdvertisingIdQueryToEvent(
+        { ...idsToInclude, hashedIp: "abc123hash" },
+        mockEvent,
+        mockCookieManager,
+        componentConfig,
+      );
+
+      expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
+        advertising: {
+          stitchIds: {
+            surferId: "surfer123",
+            id5: "id5_123",
+            rampIdEnv: "ramp123",
+            hashedIp: "abc123hash",
+          },
+          advIds: "test-advertiser",
         },
       });
     });

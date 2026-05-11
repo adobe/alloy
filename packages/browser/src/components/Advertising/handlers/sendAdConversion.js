@@ -27,6 +27,8 @@ export default ({
   componentConfig,
   getBrowser,
   consent,
+  collectSurferId,
+  collectHashedIPAddr,
 }) => {
   const activeAdvertiserIds = componentConfig?.advertiserSettings
     ? normalizeAdvertiser(componentConfig.advertiserSettings)
@@ -61,6 +63,8 @@ export default ({
           componentConfig,
           adConversionHandler,
           getBrowser,
+          collectSurferId,
+          collectHashedIPAddr,
         }).catch((error) => logger.error("Error in view through:", error));
       }
     } catch (error) {
