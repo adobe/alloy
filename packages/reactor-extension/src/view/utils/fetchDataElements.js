@@ -15,6 +15,16 @@ import UserReportableError from "../errors/userReportableError";
 // EXTENSION_NAME will be replace with this extension's name
 const DELEGATE_DESCRIPTOR_ID = "__EXTENSION_NAME__::dataElements::variable";
 
+/**
+ * Fetches variable data elements for a property, one page per call.
+ *
+ * Pass `minResults` to keep fetching pages until that many variable data
+ * elements have accumulated — useful when you need to know whether 0, 1,
+ * or 2+ variable data elements exist on the property without loading all of
+ * them.
+ *
+ * To search by exact name across pages, use `fetchDataElementByName` instead.
+ */
 const fetchDataElements = async ({
   orgId,
   imsAccess,
@@ -22,10 +32,11 @@ const fetchDataElements = async ({
   search = "",
   page = 1,
   signal,
+  minResults,
 }) => {
   const allResults = [];
   let nextPage = page;
-  while (allResults.length < 2 && nextPage) {
+  do {
     const params = {
       "page[size]": "100",
       "page[number]": `${nextPage}`,
@@ -67,7 +78,12 @@ const fetchDataElements = async ({
       .forEach((result) => allResults.push(result));
 
     nextPage = parsedResponse.parsedBody.meta.pagination.next_page;
-  }
+  } while (
+    nextPage &&
+    minResults !== undefined &&
+    allResults.length < minResults
+  );
+
   return { results: allResults, nextPage };
 };
 
