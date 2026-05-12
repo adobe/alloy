@@ -9,21 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { STREAM_START_TIMEOUT_MS } from "./constants.js";
-import { number, objectOf, boolean, string } from "../../utils/validation/index.js";
+import { assertValid } from "./utils.js";
 
-export default objectOf({
-  conversation: objectOf({
-    stickyConversationSession: boolean().default(false),
-    streamTimeout: number()
-      .integer()
-      .minimum(STREAM_START_TIMEOUT_MS)
-      .default(STREAM_START_TIMEOUT_MS),
-    collectSources: boolean().default(false),
-    region: string().region(),
-  }).default({
-    stickyConversationSession: false,
-    streamTimeout: STREAM_START_TIMEOUT_MS,
-    collectSources: false,
-  }),
-});
+const REGION_REGEX = /^[a-z]{2,4}[0-9]{1,2}$/i;
+
+export default (value, path) => {
+  assertValid(REGION_REGEX.test(value), value, path, "a valid region (e.g. va7, or2, irl1)");
+  return value;
+};

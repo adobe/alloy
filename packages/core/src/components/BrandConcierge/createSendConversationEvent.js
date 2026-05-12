@@ -90,7 +90,7 @@ export default ({
     }
     const url = buildEndpointUrl({
       edgeDomain,
-      edgeBasePath,
+      region: conversation.region,
       datastreamId,
       request,
     });
