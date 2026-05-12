@@ -16,14 +16,23 @@ import UserReportableError from "../errors/userReportableError";
 const DELEGATE_DESCRIPTOR_ID = "__EXTENSION_NAME__::dataElements::variable";
 
 /**
- * Fetches variable data elements for a property, one page per call.
+ * Fetches one page of variable-type data elements for a property.
  *
- * Pass `minResults` to keep fetching pages until that many variable data
- * elements have accumulated — useful when you need to know whether 0, 1,
- * or 2+ variable data elements exist on the property without loading all of
- * them.
+ * Pass `minResults` to keep fetching additional pages until that many results
+ * have accumulated — useful for determining whether 0, 1, or 2+ variable data
+ * elements exist without loading the entire list. To search by exact name
+ * across pages, use `fetchDataElementByName` instead.
  *
- * To search by exact name across pages, use `fetchDataElementByName` instead.
+ * @param {object} options
+ * @param {string} options.orgId - IMS organization ID.
+ * @param {string} options.imsAccess - IMS access token.
+ * @param {string} options.propertyId - Reactor property ID to scope the request.
+ * @param {string} [options.search] - Substring filter applied to data element names.
+ * @param {number} [options.page=1] - Page number to start from.
+ * @param {AbortSignal} [options.signal] - Signal used to abort the request.
+ * @param {number} [options.minResults] - Keep fetching pages until this many
+ *   results have accumulated. Omit to fetch exactly one page.
+ * @returns {Promise<{results: Array<{id: string, name: string, settings: object}>, nextPage: number|null}>}
  */
 const fetchDataElements = async ({
   orgId,
