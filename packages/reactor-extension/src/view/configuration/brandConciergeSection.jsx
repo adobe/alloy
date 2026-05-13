@@ -11,12 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { object, boolean, number } from "yup";
+import { object, boolean, number, string } from "yup";
 import { useField } from "formik";
 import { View, InlineAlert, Content } from "@adobe/react-spectrum";
 import SectionHeader from "../components/sectionHeader";
 import FormikCheckbox from "../components/formikReactSpectrum3/formikCheckbox";
 import FormikNumberField from "../components/formikReactSpectrum3/formikNumberField";
+import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
 import FormElementContainer from "../components/formElementContainer";
 import Heading from "../components/typography/heading";
 import BetaBadge from "../components/betaBadge";
@@ -28,6 +29,7 @@ const STREAM_TIMEOUT_SECONDS = STREAM_TIMEOUT_MS / 1000;
 
 const getDefaultSettings = () => ({
   conversation: {
+    region: "",
     stickyConversationSession: false,
     streamTimeout: STREAM_TIMEOUT_SECONDS,
     collectSources: false,
@@ -46,7 +48,7 @@ export const bridge = {
       toObj: conversation,
       fromObj: instanceSettings.conversation || {},
       defaultsObj: getDefaultSettings().conversation,
-      keys: ["stickyConversationSession", "collectSources"],
+      keys: ["region", "stickyConversationSession", "collectSources"],
     });
 
     // Convert streamTimeout from milliseconds to seconds for display
@@ -67,7 +69,7 @@ export const bridge = {
         toObj: conversation,
         fromObj: instanceValues.conversation,
         defaultsObj: getDefaultSettings().conversation,
-        keys: ["stickyConversationSession", "collectSources"],
+        keys: ["region", "stickyConversationSession", "collectSources"],
       });
 
       // Convert streamTimeout from seconds to milliseconds for storage
@@ -92,6 +94,10 @@ export const bridge = {
       is: true,
       then: (conciergeSchema) =>
         conciergeSchema.shape({
+          region: string().matches(
+            /^[a-z]{2,4}[0-9]{1,2}$/i,
+            "Please enter a valid region (e.g. va7, or2, irl1).",
+          ),
           stickyConversationSession: boolean(),
           streamTimeout: number()
             .min(10, "The stream timeout must be at least 10 seconds.")
@@ -132,6 +138,13 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
         Brand Concierge <BetaBadge />
       </SectionHeader>
       <FormElementContainer>
+        <FormikTextField
+          data-test-id="regionField"
+          label="Region"
+          name={`${instanceFieldName}.conversation.region`}
+          description="The Brand Concierge region (e.g. va7, or2, irl1). Leave blank to use the default region."
+          width="size-5000"
+        />
         <FormikCheckbox
           data-test-id="stickyConversationSessionField"
           name={`${instanceFieldName}.conversation.stickyConversationSession`}

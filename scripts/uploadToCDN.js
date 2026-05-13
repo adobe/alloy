@@ -70,7 +70,7 @@ bye
 
 console.log(`Uploading browser artifacts for version ${version} to CDN...`);
 execSync(
-  `echo "${ftpCommands}" | sftp -oHostKeyAlgorithms=+ssh-dss -oStrictHostKeyChecking=no -b - sshacs@dxresources.ssh.upload.akamai.com:/prod/alloy`,
+  `echo "${ftpCommands}" | sftp -oStrictHostKeyChecking=no -b - sshacs@dxresources.ssh.upload.akamai.com:/prod/alloy`,
   { stdio: "inherit" },
 );
 console.log("CDN upload complete.");
