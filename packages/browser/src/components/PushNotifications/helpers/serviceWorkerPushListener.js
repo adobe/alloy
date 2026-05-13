@@ -45,28 +45,26 @@ export default async ({ sw, event, logger }) => {
     return;
   }
 
+  /** @type {Record<string, unknown>} */
   const notificationOptions = {
-    body: webData.body,
-    icon: webData.media,
-    image: webData.media,
     data: webData,
-    actions: [],
-  };
-
-  Object.keys(notificationOptions).forEach((k) => {
-    if (notificationOptions[k] == null) {
-      delete notificationOptions[k];
-    }
-  });
-
-  if (webData.actions && webData.actions.buttons) {
-    notificationOptions.actions = webData.actions.buttons.map(
-      (button, index) => ({
+    actions:
+      webData.actions?.buttons?.map((button, index) => ({
         action: `action_${index}`,
         title: button.label,
-      }),
-    );
+      })) ?? [],
+  };
+
+  if (webData.body != null) {
+    notificationOptions.body = webData.body;
+  }
+  if (webData.media != null) {
+    notificationOptions.icon = webData.media;
+    notificationOptions.image = webData.media;
   }
 
-  return sw.registration.showNotification(webData.title, notificationOptions);
+  return sw.registration.showNotification(
+    webData.title,
+    /** @type {NotificationOptions} */ (notificationOptions),
+  );
 };

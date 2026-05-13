@@ -1,6 +1,7 @@
 {
   "extends": "../../jsconfig.base.json",
   "compilerOptions": {
+    "rootDir": "..",
     "paths": {
       "@adobe/alloy-core": ["../core/src/index.js"],
       "@adobe/alloy-core/*": ["../core/src/*"]

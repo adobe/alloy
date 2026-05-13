@@ -175,7 +175,6 @@ const decodeKndctrProtobuf = (buffer) => {
         ecid = new TextDecoder().decode(
           buffer.slice(offset, offset + fieldValueLength.value),
         );
-        offset += fieldValueLength.value;
         return ecid;
       }
     } else {
