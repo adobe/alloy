@@ -103,4 +103,35 @@ describe("createConversationServiceRequest", () => {
 
     expect(request.getEdgeSubPath()).toBe("/brand-concierge-voice");
   });
+
+  it("includes region in edge subpath when region is provided", () => {
+    const request = createConversationServiceRequest({
+      payload: mockPayload,
+      sessionId: mockSessionId,
+      region: "va7",
+    });
+
+    expect(request.getEdgeSubPath()).toBe("/brand-concierge/va7");
+  });
+
+  it("omits region from edge subpath when region is undefined", () => {
+    const request = createConversationServiceRequest({
+      payload: mockPayload,
+      sessionId: mockSessionId,
+      region: undefined,
+    });
+
+    expect(request.getEdgeSubPath()).toBe("/brand-concierge");
+  });
+
+  it("does not include region in edge subpath for voice requests", () => {
+    const request = createConversationServiceRequest({
+      payload: mockPayload,
+      sessionId: mockSessionId,
+      voiceEnabled: true,
+      region: "va7",
+    });
+
+    expect(request.getEdgeSubPath()).toBe("/brand-concierge-voice");
+  });
 });

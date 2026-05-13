@@ -11,14 +11,13 @@ governing permissions and limitations under the License.
 */
 
 export default ({ queryString }) => {
-  return ({ edgeDomain, region, request, datastreamId }) => {
+  return ({ edgeDomain, request, datastreamId }) => {
     const params = request.getRequestParams();
     const configId = request.getDatastreamIdOverride() || datastreamId;
     params.requestId = request.getId();
     params.configId = configId;
     const stringifiedRequestParams = queryString.stringify({ ...params });
-    const regionSegment = region ? `/${region}` : "";
 
-    return `https://${edgeDomain}${request.getEdgeSubPath()}${regionSegment}/${request.getAction()}?${stringifiedRequestParams}`;
+    return `https://${edgeDomain}${request.getEdgeSubPath()}/${request.getAction()}?${stringifiedRequestParams}`;
   };
 };

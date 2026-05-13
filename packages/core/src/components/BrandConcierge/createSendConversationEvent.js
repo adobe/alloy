@@ -44,6 +44,7 @@ export default ({
       payload,
       sessionId: session.id,
       voiceEnabled,
+      region: conversation.region,
     });
 
     const event = eventManager.createEvent();
@@ -84,7 +85,6 @@ export default ({
     }
     const url = buildEndpointUrl({
       edgeDomain,
-      region: conversation.region,
       datastreamId,
       request,
     });

@@ -108,39 +108,4 @@ describe("createBuildEndpointUrl", () => {
     );
   });
 
-  it("inserts region segment when region is provided", () => {
-    queryStringMock.stringify.mockReturnValue(
-      "requestId=test-request-id&configId=test-datastream",
-    );
-    mockRequest.getRequestParams.mockReturnValue({});
-
-    const result = buildEndpointUrl({
-      edgeDomain: "edge.adobedc.net",
-      region: "va7",
-      request: mockRequest,
-      datastreamId: "test-datastream",
-    });
-
-    expect(result).toBe(
-      "https://edge.adobedc.net/v1/conversation/va7/chat?requestId=test-request-id&configId=test-datastream",
-    );
-  });
-
-  it("omits region segment when region is undefined", () => {
-    queryStringMock.stringify.mockReturnValue(
-      "requestId=test-request-id&configId=test-datastream",
-    );
-    mockRequest.getRequestParams.mockReturnValue({});
-
-    const result = buildEndpointUrl({
-      edgeDomain: "edge.adobedc.net",
-      region: undefined,
-      request: mockRequest,
-      datastreamId: "test-datastream",
-    });
-
-    expect(result).toBe(
-      "https://edge.adobedc.net/v1/conversation/chat?requestId=test-request-id&configId=test-datastream",
-    );
-  });
 });
