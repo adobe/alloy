@@ -22,6 +22,7 @@ let view;
 let ui;
 let driver;
 let cleanup;
+let regionField;
 let stickyConversationSessionField;
 let streamTimeoutField;
 let brandConciergeComponentCheckbox;
@@ -31,6 +32,7 @@ describe("Config brand concierge section", () => {
   beforeEach(async () => {
     ({ view, driver, cleanup } = await useView(ConfigurationView));
     ui = configurationUI(view);
+    regionField = field(view.getByTestId("regionField"));
     stickyConversationSessionField = field(
       view.getByTestId("stickyConversationSessionField"),
     );
@@ -55,6 +57,7 @@ describe("Config brand concierge section", () => {
           {
             name: "alloy",
             conversation: {
+              region: "va7",
               stickyConversationSession: true,
               streamTimeout: 20000, // 20 seconds in milliseconds
               collectSources: true,
@@ -64,9 +67,73 @@ describe("Config brand concierge section", () => {
       }),
     );
 
+    await regionField.expectValue("va7");
     await stickyConversationSessionField.expectChecked();
     await streamTimeoutField.expectValue("20");
     await collectSourcesField.expectChecked();
+  });
+
+  it("saves region to settings", async () => {
+    await driver.init(
+      buildSettings({
+        components: {
+          brandConcierge: true,
+        },
+      }),
+    );
+
+    await regionField.fill("or2");
+
+    await driver
+      .expectSettings((s) => s.instances[0].conversation.region)
+      .toBe("or2");
+  });
+
+  it("does not save region when it equals default value", async () => {
+    await driver.init(
+      buildSettings({
+        components: {
+          brandConcierge: true,
+        },
+      }),
+    );
+
+    await driver
+      .expectSettings((s) => s.instances[0].conversation?.region)
+      .toBeUndefined();
+  });
+
+  it("shows validation error for invalid region format", async () => {
+    await driver.init(
+      buildSettings({
+        components: {
+          brandConcierge: true,
+        },
+      }),
+    );
+
+    await regionField.fill("invalid-region");
+
+    await driver.expectValidate().toBe(false);
+
+    await regionField.expectError(/valid region/i);
+  });
+
+  it("accepts valid region formats", async () => {
+    await driver.init(
+      buildSettings({
+        components: {
+          brandConcierge: true,
+        },
+      }),
+    );
+
+    for (const region of ["va7", "or2", "irl1"]) {
+      // eslint-disable-next-line no-await-in-loop
+      await regionField.fill(region);
+      // eslint-disable-next-line no-await-in-loop
+      await driver.expectValidate().toBe(true);
+    }
   });
 
   it("updates form values and saves to settings", async () => {
