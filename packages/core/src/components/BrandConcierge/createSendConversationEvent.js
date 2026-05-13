@@ -29,13 +29,7 @@ export default ({
   consent,
   session,
 }) => {
-  const {
-    edgeDomain,
-    edgeBasePath,
-    datastreamId,
-    onBeforeEventSend,
-    conversation,
-  } = config;
+  const { edgeDomain, datastreamId, onBeforeEventSend, conversation } = config;
   return (options) => {
     let streamingEnabled = false;
     const {

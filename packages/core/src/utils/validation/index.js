@@ -91,7 +91,6 @@ import createRenamedValidator from "./createRenamedValidator.js";
 import createUniqueValidator from "./createUniqueValidator.js";
 import createUniqueItemsValidator from "./createUniqueItemsValidator.js";
 import domainValidator from "./domainValidator.js";
-import regionValidator from "./regionValidator.js";
 import integerValidator from "./integerValidator.js";
 import numberValidator from "./numberValidator.js";
 import regexpValidator from "./regexpValidator.js";
@@ -118,9 +117,6 @@ base.deprecated = function deprecated(message) {
 // helper validators
 const domain = function domain() {
   return nullSafeChain(this, domainValidator);
-};
-const region = function region() {
-  return nullSafeChain(this, regionValidator);
 };
 const minimumInteger = function minimumInteger(minValue) {
   return nullSafeChain(this, createMinimumValidator("an integer", minValue));
@@ -228,7 +224,6 @@ const string = function string() {
   return nullSafeChain(this, stringValidator, {
     regexp,
     domain,
-    region,
     nonEmpty: nonEmptyString,
     unique,
     matches,
