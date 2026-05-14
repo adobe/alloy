@@ -85,7 +85,6 @@ export const bridge = {
         instanceSettings.conversation = conversation;
       }
     }
-    
     return instanceSettings;
   },
 
