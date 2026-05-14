@@ -61,7 +61,7 @@ export const bridge = {
 
   getInstanceSettings: ({ instanceValues, components }) => {
     const instanceSettings = {};
-    console.log("instanceValues", instanceValues, );
+
     if (components.brandConcierge && instanceValues.conversation) {
       const conversation = {};
 
@@ -85,7 +85,7 @@ export const bridge = {
         instanceSettings.conversation = conversation;
       }
     }
-    console.log("instanceSettings", instanceSettings);
+    
     return instanceSettings;
   },
 
