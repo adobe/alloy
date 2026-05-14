@@ -107,5 +107,4 @@ describe("createBuildEndpointUrl", () => {
       "https://edge.adobedc.net/v1/conversation/chat?requestId=test-request-id&configId=test-datastream",
     );
   });
-
 });
