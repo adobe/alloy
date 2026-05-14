@@ -11,5 +11,9 @@
     "@adobe/alloy-sandbox-browser": "0.1.3",
     "@adobe/alloy-sandbox-node": "0.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "five-wombats-cry",
+    "leuxl-yqymdue-zbkgfre",
+    "social-bears-camp"
+  ]
 }
