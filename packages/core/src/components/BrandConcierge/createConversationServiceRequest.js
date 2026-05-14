@@ -19,10 +19,11 @@ export default ({
   action = "conversations",
   sessionId,
   voiceEnabled = false,
+  region,
 }) => {
   const edgeSubPath = voiceEnabled
     ? VOICE_BRAND_CONCIERGE_PATH
-    : BRAND_CONCIERGE_PATH;
+    : `${BRAND_CONCIERGE_PATH}${region ? `/${region}` : ""}`;
 
   return createRequest({
     payload: payload,
