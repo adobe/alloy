@@ -61,7 +61,7 @@ export const bridge = {
 
   getInstanceSettings: ({ instanceValues, components }) => {
     const instanceSettings = {};
-
+    console.log("instanceValues", instanceValues, );
     if (components.brandConcierge && instanceValues.conversation) {
       const conversation = {};
 
@@ -85,7 +85,7 @@ export const bridge = {
         instanceSettings.conversation = conversation;
       }
     }
-
+    console.log("instanceSettings", instanceSettings);
     return instanceSettings;
   },
 
@@ -94,9 +94,10 @@ export const bridge = {
       is: true,
       then: (conciergeSchema) =>
         conciergeSchema.shape({
-          region: string().matches(
-            /^[a-z]{2,4}[0-9]{1,2}$/i,
+          region: string().test(
+            "valid-region",
             "Please enter a valid region (e.g. va7, or2, irl1).",
+            (value) => !value || /^[a-z]{2,4}[0-9]{1,2}$/i.test(value),
           ),
           stickyConversationSession: boolean(),
           streamTimeout: number()
