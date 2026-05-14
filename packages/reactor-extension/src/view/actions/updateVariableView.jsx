@@ -30,6 +30,7 @@ import FormElementContainer from "../components/formElementContainer";
 import CodeField from "../components/codeField";
 import getValueFromFormState from "../components/objectEditor/helpers/getValueFromFormState";
 import fetchDataElements from "../utils/fetchDataElements";
+import fetchDataElementByName from "../utils/fetchDataElementByName";
 import fetchSchema from "../utils/fetchSchema";
 import Editor from "../components/objectEditor/editor";
 import getInitialFormState from "../components/objectEditor/helpers/getInitialFormState";
@@ -172,6 +173,7 @@ const getInitialValues =
       orgId,
       imsAccess,
       propertyId,
+      minResults: 2,
     });
 
     context.dataElementsFirstPage = dataElementsFirstPage;
@@ -183,22 +185,22 @@ const getInitialValues =
         (de) => de.name === dataElementName,
       );
       if (!dataElement) {
-        const { results } = await fetchDataElements({
+        dataElement = await fetchDataElementByName({
           orgId,
           imsAccess,
           propertyId,
-          search: dataElementName,
+          name: dataElementName,
         });
-        dataElement = results.find((de) => de.name === dataElementName);
       }
       if (dataElement) {
         context.previouslySavedSchemaInfo = previouslySavedSchemaInfo;
       }
     }
     if (!dataElement && dataElementId) {
+      let dataElementFromId;
       try {
         context.previouslySavedSchemaInfo = previouslySavedSchemaInfo;
-        dataElement = await fetchDataElement({
+        dataElementFromId = await fetchDataElement({
           orgId,
           imsAccess,
           dataElementId,
@@ -208,6 +210,27 @@ const getInitialValues =
         // We null out the schema because in the sandbox init can be called multiple times.
         context.schema = null;
         context.dataElementId = null;
+      }
+      if (dataElementFromId) {
+        // Resolve to the property-scoped DE by name so that a stale dataElementId
+        // gets corrected on the first save
+        const nameToFind = dataElementFromId.name;
+        let propertyDE = dataElementsFirstPage.find(
+          (de) => de.name === nameToFind,
+        );
+        if (!propertyDE) {
+          try {
+            propertyDE = await fetchDataElementByName({
+              orgId,
+              imsAccess,
+              propertyId,
+              name: nameToFind,
+            });
+          } catch {
+            // If the property search fails, fall back to the ID-fetched DE.
+          }
+        }
+        dataElement = propertyDE || dataElementFromId;
       }
     }
     if (

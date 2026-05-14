@@ -15,6 +15,7 @@ import { expect } from "vitest";
 const TOTAL_RETRIES = [0, 0, 0];
 const RETRIES = 3;
 const TIMEOUT = { timeout: 2000 };
+const CLICK_TIMEOUT = { timeout: 5000 };
 
 /**
  *
@@ -132,10 +133,18 @@ const field = (locator) => ({
       }
       const listbox = locator.controls();
       await expect.element(listbox, TIMEOUT).toBeVisible();
-      await listbox
-        .getByRole("option", { name, exact: true })
-        .nth(0)
-        .click(TIMEOUT);
+      const option = listbox.getByRole("option", { name, exact: true }).nth(0);
+      await expect.element(option, TIMEOUT).toBeVisible();
+      if (option.element().getAttribute("aria-selected") === "true") {
+        // Clicking an already-selected option races with the closing menu
+        // animation; close it explicitly so the post-click assertions are
+        // deterministic. Selection is unchanged.
+        await userEvent.keyboard("{Escape}");
+      } else {
+        // Pre-click actionability checks against animating react-spectrum
+        // overlays can blow the default 2s budget under CI load.
+        await option.click(CLICK_TIMEOUT);
+      }
       await expect
         .element(locator, TIMEOUT)
         .toHaveAttribute("aria-expanded", "false");
