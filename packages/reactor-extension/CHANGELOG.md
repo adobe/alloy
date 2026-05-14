@@ -1,5 +1,11 @@
 # reactor-extension-alloy
 
+## 2.36.0-beta.1
+
+### Patch Changes
+
+- [#1503](https://github.com/adobe/alloy/pull/1503) [`4a03659`](https://github.com/adobe/alloy/commit/4a0365923776ac96854e00176f9affc7f42cb727) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Find and update stale data element ID reference on first open of Update Variable action
+
 ## 2.36.0-beta.0
 
 ### Minor Changes
