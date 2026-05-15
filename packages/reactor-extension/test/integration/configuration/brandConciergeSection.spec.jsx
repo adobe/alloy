@@ -119,6 +119,33 @@ describe("Config brand concierge section", () => {
     await regionField.expectError(/valid region/i);
   });
 
+  it("passes validation when region is cleared after being set", async () => {
+    await driver.init(
+      buildSettings({
+        components: {
+          brandConcierge: true,
+        },
+        instances: [
+          {
+            name: "alloy",
+            conversation: {
+              region: "va7",
+            },
+          },
+        ],
+      }),
+    );
+
+    await regionField.expectValue("va7");
+    await regionField.clear();
+
+    await driver.expectValidate().toBe(true);
+
+    await driver
+      .expectSettings((s) => s.instances[0].conversation?.region)
+      .toBeUndefined();
+  });
+
   it("accepts valid region formats", async () => {
     await driver.init(
       buildSettings({
