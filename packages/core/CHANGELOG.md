@@ -1,5 +1,11 @@
 # @adobe/alloy-core
 
+## 1.2.0-beta.0
+
+### Minor Changes
+
+- [#1504](https://github.com/adobe/alloy/pull/1504) [`676b653`](https://github.com/adobe/alloy/commit/676b6535c7a17ef5879d2abff539ba721fc61bc7) Thanks [@ninaceban](https://github.com/ninaceban)! - Added `region` configuration option to the Brand Concierge component. When set, the region is used to route conversation requests to a specific Adobe edge node (e.g. `va7`, `or2`, `irl1`). The Tags extension UI now includes a Region field in the Brand Concierge configuration section.
+
 ## 1.1.2
 
 ### Patch Changes

@@ -1,5 +1,22 @@
 # reactor-extension-alloy
 
+## 2.36.0-beta.1
+
+### Patch Changes
+
+- [#1503](https://github.com/adobe/alloy/pull/1503) [`4a03659`](https://github.com/adobe/alloy/commit/4a0365923776ac96854e00176f9affc7f42cb727) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Find and update stale data element ID reference on first open of Update Variable action
+
+## 2.36.0-beta.0
+
+### Minor Changes
+
+- [#1504](https://github.com/adobe/alloy/pull/1504) [`676b653`](https://github.com/adobe/alloy/commit/676b6535c7a17ef5879d2abff539ba721fc61bc7) Thanks [@ninaceban](https://github.com/ninaceban)! - Added `region` configuration option to the Brand Concierge component. When set, the region is used to route conversation requests to a specific Adobe edge node (e.g. `va7`, `or2`, `irl1`). The Tags extension UI now includes a Region field in the Brand Concierge configuration section.
+
+### Patch Changes
+
+- Updated dependencies [[`676b653`](https://github.com/adobe/alloy/commit/676b6535c7a17ef5879d2abff539ba721fc61bc7)]:
+  - @adobe/alloy@2.34.0-beta.0
+
 ## 2.35.1
 
 ### Patch Changes

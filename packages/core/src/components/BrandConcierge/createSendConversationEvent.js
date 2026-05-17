@@ -29,13 +29,7 @@ export default ({
   consent,
   session,
 }) => {
-  const {
-    edgeDomain,
-    edgeBasePath,
-    datastreamId,
-    onBeforeEventSend,
-    conversation,
-  } = config;
+  const { edgeDomain, datastreamId, onBeforeEventSend, conversation } = config;
   return (options) => {
     let streamingEnabled = false;
     const {
@@ -50,6 +44,7 @@ export default ({
       payload,
       sessionId: session.id,
       voiceEnabled,
+      region: conversation.region,
     });
 
     const event = eventManager.createEvent();
@@ -90,7 +85,6 @@ export default ({
     }
     const url = buildEndpointUrl({
       edgeDomain,
-      edgeBasePath,
       datastreamId,
       request,
     });
