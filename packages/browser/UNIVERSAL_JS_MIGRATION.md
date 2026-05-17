@@ -8,13 +8,13 @@ This is the rough plan to migrate into the "Universal JavaScript SDK"
   - [x] `Personalization`
   - [x] `Advertising`
   - [x] `PushNotifications`
-- [ ] Create platform-agnostic "capabilities" that are injected from platform package into core package
-  - [ ] `network` (fetch, sendBeacon)
-  - [ ] `storage` (make async, localStorage)
-  - [ ] `LegacyImplementationService` (for migrating from Visitor.js)
-  - [ ] `RuntimeService` (setTimeout, etc. )
+- [x] Create platform-agnostic "capabilities" that are injected from platform package into core package
+  - [x] `network` (fetch, sendBeacon)
+  - [x] `storage` (make async, localStorage)
+  - [x] `LegacyImplementationService` (for migrating from Visitor.js)
+  - [x] `RuntimeService` (setTimeout, etc. )
         All steps should proceed imperceptably - no breaking changes, no new bugs, no changes to user configurations.
-  - [ ] `GlobalsServie` (varialbles currently on `window` like `window.__alloyNS`, monitors, queue)
+  - [x] `GlobalsService` (variables currently on `window` like `window.__alloyNS`, monitors, queue)
 - [ ] Migrate usage of these apis to these capabilities one at a time.
 
 ---

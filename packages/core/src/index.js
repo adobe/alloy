@@ -15,6 +15,12 @@ governing permissions and limitations under the License.
 // npm projects.
 
 /** @import { AlloyMonitor } from './types.js' */
+/** @import { PlatformServices } from './services/index.js' */
+/** @import { Logger } from './core/types.js' */
+
+/**
+ * @typedef {(deps: { logger: Logger }) => PlatformServices} CreatePlatformServices
+ */
 
 import { createExecuteCommand } from "./core/index.js";
 import createLogger from "./core/createLogger.js";
@@ -29,9 +35,6 @@ import {
 import getMonitors from "./core/getMonitors.js";
 import * as optionalComponents from "./core/componentCreators.js";
 
-const { console } = window;
-const createNamespacedStorage = injectStorage(window);
-
 /**
  * Creates a custom Alloy instance which can reduce the library size and increase performance.
  *
@@ -39,11 +42,17 @@ const createNamespacedStorage = injectStorage(window);
  * @param {string} [options.name=alloy] - The name of the instance.
  * @param {Array<AlloyMonitor>} [options.monitors] - Monitors for the instance.
  * @param {Array<Function>} [options.components] - Components for the instance.
+ * @param {CreatePlatformServices} [createPlatformServices] - Factory that
+ *   builds platform-provided capabilities (network, storage, cookie, runtime,
+ *   legacy, globals) for this instance.
  * @returns {(commandName: string, options?: Object) => Promise<any>} A callable Alloy instance.
  *
  * @see {@link https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/install/create-custom-build} for more details.
  */
-export const createCustomInstance = (options = {}) => {
+export const createCustomInstance = (
+  options = {},
+  createPlatformServices = undefined,
+) => {
   const eventOptionsValidator = objectOf({
     name: string().default("alloy"),
     monitors: arrayOf(objectOf({})).default([]),
@@ -51,6 +60,9 @@ export const createCustomInstance = (options = {}) => {
   }).noUnknownFields();
 
   const { name, monitors, components } = eventOptionsValidator(options);
+
+  const { console } = window;
+  const createNamespacedStorage = injectStorage(window);
 
   const logController = createLogController({
     console,
@@ -65,6 +77,7 @@ export const createCustomInstance = (options = {}) => {
     instanceName: name,
     logController,
     components,
+    createPlatformServices,
   });
   logController.logger.logOnInstanceCreated({ instance });
 
@@ -77,6 +90,8 @@ export const createCustomInstance = (options = {}) => {
  * @param {Object} [options] - Configuration options for the instance.
  * @param {string} [options.name=alloy] - The name of the instance.
  * @param {Array<AlloyMonitor>} [options.monitors] - (Optional) Monitors for the instance.
+ * @param {CreatePlatformServices} [createPlatformServices] - Platform-provided
+ *   capabilities factory. See `createCustomInstance` for details.
  * @returns {(commandName: string, options?: Object) => Promise<any>} A callable Alloy instance.
  *
  * @example
@@ -85,7 +100,10 @@ export const createCustomInstance = (options = {}) => {
  *
  * @see {@link https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/install/npm} for more details.
  */
-export const createInstance = (options = {}) => {
+export const createInstance = (
+  options = {},
+  createPlatformServices = undefined,
+) => {
   const eventOptionsValidator = objectOf({
     name: string().default("alloy"),
     monitors: arrayOf(objectOf({})).default([]),
@@ -93,9 +111,12 @@ export const createInstance = (options = {}) => {
 
   const { name, monitors } = eventOptionsValidator(options);
 
-  return createCustomInstance({
-    name,
-    monitors,
-    components: Object.values(optionalComponents),
-  });
+  return createCustomInstance(
+    {
+      name,
+      monitors,
+      components: Object.values(optionalComponents),
+    },
+    createPlatformServices,
+  );
 };

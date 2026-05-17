@@ -32,6 +32,11 @@ export default defineConfig({
           isolate: false,
           pool: "threads",
           environment: "node",
+          // Vite's first-run optimizeDeps bundling can push the initial
+          // module load past the 5s default when the full suite runs all
+          // projects in parallel
+          testTimeout: 30_000,
+          hookTimeout: 30_000,
         },
       },
       {

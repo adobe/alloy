@@ -57,24 +57,40 @@ import injectApplyResponse from "./edgeNetwork/injectApplyResponse.js";
 import getMonitors from "./getMonitors.js";
 import * as requiredComponents from "./requiredComponentCreators.js";
 
-const createNamespacedStorage = injectStorage(window);
-
-const { console, fetch, navigator } = window;
-
 const coreConfigValidators = createCoreConfigs();
-const apexDomain = getApexDomain(window, cookieJar);
-const sendFetchRequest = injectSendFetchRequest({ fetch });
-const fireReferrerHideableImage = injectFireReferrerHideableImage();
-const getAssuranceValidationTokenParams =
-  createGetAssuranceValidationTokenParams({ window, createNamespacedStorage });
 
-const getBrowser = injectGetBrowser({ userAgent: window.navigator.userAgent });
-
+/**
+ * @param {Object} params
+ * @param {string} params.instanceName
+ * @param {Object} params.logController
+ * @param {Array<Function>} params.components
+ * @param {(deps: { logger: import('./types.js').Logger }) => import('../services/index.js').PlatformServices} [params.createPlatformServices]
+ */
 export const createExecuteCommand = ({
   instanceName,
   logController: { setDebugEnabled, logger, createComponentLogger },
   components,
+  createPlatformServices,
 }) => {
+  const platformServices =
+    typeof createPlatformServices === "function"
+      ? createPlatformServices({ logger })
+      : undefined;
+
+  const createNamespacedStorage = injectStorage(window);
+  const { fetch, navigator } = window;
+  const apexDomain = getApexDomain(window, cookieJar);
+  const sendFetchRequest = injectSendFetchRequest({ fetch });
+  const fireReferrerHideableImage = injectFireReferrerHideableImage();
+  const getAssuranceValidationTokenParams =
+    createGetAssuranceValidationTokenParams({
+      window,
+      createNamespacedStorage,
+    });
+  const getBrowser = injectGetBrowser({
+    userAgent: window.navigator.userAgent,
+  });
+
   const componentRegistry = createComponentRegistry();
   const lifecycle = createLifecycle(componentRegistry);
 
@@ -194,6 +210,7 @@ export const createExecuteCommand = ({
           getBrowser,
           cookieTransfer,
           createResponse,
+          platformServices,
         };
       },
     });
@@ -218,6 +235,8 @@ export default ({ components }) => {
   const instanceNames = window.__alloyNS;
 
   if (instanceNames) {
+    const { console } = window;
+    const createNamespacedStorage = injectStorage(window);
     instanceNames.forEach((instanceName) => {
       const logController = createLogController({
         console,
