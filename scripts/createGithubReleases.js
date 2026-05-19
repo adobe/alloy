@@ -45,6 +45,43 @@ import fs from "fs";
 import path from "path";
 
 /**
+ * Parse a git tag of the form `name@version`. Splits on the LAST `@` so
+ * scoped packages (`@adobe/alloy@2.34.0`) parse correctly.
+ * @param {string} tag
+ * @returns {{ name: string, newVersion: string } | null}
+ */
+export const parseTag = (tag) => {
+  const lastAt = tag.lastIndexOf("@");
+  if (lastAt <= 0) return null;
+  const name = tag.substring(0, lastAt);
+  const newVersion = tag.substring(lastAt + 1);
+  if (!name || !newVersion) return null;
+  return { name, newVersion };
+};
+
+/**
+ * Parse a list of git tags into release entries, dropping tags that are
+ * not `name@version` shaped.
+ * @param {string[]} tags
+ * @returns {Array<{ name: string, newVersion: string }>}
+ */
+export const parseTagsAtHead = (tags) =>
+  tags.map(parseTag).filter((x) => x !== null);
+
+/**
+ * Returns all git tags pointing at HEAD, parsed into release entries.
+ * @returns {Array<{ name: string, newVersion: string }>}
+ */
+export const getTagsAtHead = () => {
+  const output = execSync("git tag --points-at HEAD", { encoding: "utf8" });
+  const tags = output
+    .split("\n")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return parseTagsAtHead(tags);
+};
+
+/**
  * Extract the changelog section for a specific version.
  * @param {string} content
  * @param {string} version
@@ -227,15 +264,28 @@ export const ghReleaseCreate = (tag, notes, isPrerelease) => {
 const main = () => {
   const args = process.argv.slice(2);
   const dryRun = args.includes("--dry-run");
-  const statusPath =
-    args.find((arg) => !arg.startsWith("--")) || "changeset-status.json";
+  const statusPath = args.find((arg) => !arg.startsWith("--"));
 
-  if (!fs.existsSync(statusPath)) {
-    console.log(`${statusPath} not found; nothing to release.`);
-    process.exit(0);
+  // Two input modes:
+  //   - With a path arg: read releases from a changeset-status.json file
+  //     (legacy mode used by .github/workflows/changeset-publish.yml).
+  //   - Without: derive releases from git tags pointing at HEAD
+  //     (default for .github/workflows/version-and-publish.yml).
+  let statusJson;
+  if (statusPath) {
+    if (!fs.existsSync(statusPath)) {
+      console.log(`${statusPath} not found; nothing to release.`);
+      process.exit(0);
+    }
+    statusJson = JSON.parse(fs.readFileSync(statusPath, "utf8"));
+  } else {
+    const releases = getTagsAtHead();
+    if (releases.length === 0) {
+      console.log("No release tags at HEAD; nothing to release.");
+      process.exit(0);
+    }
+    statusJson = { releases };
   }
-
-  const statusJson = JSON.parse(fs.readFileSync(statusPath, "utf8"));
 
   createGithubReleases(
     {
