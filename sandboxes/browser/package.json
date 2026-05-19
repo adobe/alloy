@@ -13,7 +13,8 @@
   },
   "scripts": {
     "start": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "release": "node scripts/release.mjs"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^6.0.1",
