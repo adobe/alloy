@@ -15,20 +15,14 @@ governing permissions and limitations under the License.
 /**
  * Creates GitHub releases for packages published by `changeset publish`.
  *
- * Discovers what to release in one of two modes:
- *   - Default: git tags pointing at HEAD (created by `changeset publish`).
- *   - Legacy: a `changeset-status.json` path passed as a positional arg
- *     (used by .github/workflows/changeset-publish.yml during migration).
- *
- * For each release, looks up the package directory via `pnpm ls`, extracts
- * the matching section from its CHANGELOG.md, and creates a GitHub release
+ * Reads git tags pointing at HEAD (created by `changeset publish`),
+ * looks up each released package's directory via `pnpm ls`, extracts the
+ * matching section from its CHANGELOG.md, and creates a GitHub release
  * with `gh`.
  *
  * Usage:
  *   node scripts/createGithubReleases.js
  *   node scripts/createGithubReleases.js --dry-run
- *   node scripts/createGithubReleases.js changeset-status.json
- *   node scripts/createGithubReleases.js changeset-status.json --dry-run
  *
  * Requires:
  *   - GH_TOKEN env var (for `gh release create`)
@@ -267,34 +261,17 @@ export const ghReleaseCreate = (tag, notes, isPrerelease) => {
 };
 
 const main = () => {
-  const { values, positionals } = parseArgs({
+  const { values } = parseArgs({
     options: {
       "dry-run": { type: "boolean", default: false },
     },
-    allowPositionals: true,
   });
   const dryRun = values["dry-run"];
-  const statusPath = positionals[0];
 
-  // Two input modes:
-  //   - With a path arg: read releases from a changeset-status.json file
-  //     (legacy mode used by .github/workflows/changeset-publish.yml).
-  //   - Without: derive releases from git tags pointing at HEAD
-  //     (default for .github/workflows/version-and-publish.yml).
-  let statusJson;
-  if (statusPath) {
-    if (!fs.existsSync(statusPath)) {
-      console.log(`${statusPath} not found; nothing to release.`);
-      process.exit(0);
-    }
-    statusJson = JSON.parse(fs.readFileSync(statusPath, "utf8"));
-  } else {
-    const releases = getTagsAtHead();
-    if (releases.length === 0) {
-      console.log("No release tags at HEAD; nothing to release.");
-      process.exit(0);
-    }
-    statusJson = { releases };
+  const releases = getTagsAtHead();
+  if (releases.length === 0) {
+    console.log("No release tags at HEAD; nothing to release.");
+    process.exit(0);
   }
 
   createGithubReleases(
@@ -307,7 +284,7 @@ const main = () => {
       log: console.log,
       warn: console.warn,
     },
-    statusJson,
+    { releases },
     { dryRun },
   );
 };
