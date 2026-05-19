@@ -10,6 +10,7 @@
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
+    "release": "node scripts/release.mjs",
     "build:alloy:preinstalled": "BROWSERSLIST_ROOT_PATH=. mkdir -p dist/lib && node ./scripts/buildAlloyPreinstalled.mjs -i src/lib/alloyPreinstalled.js -o dist -f alloyPreinstalled.js",
     "build:alloy": "mkdir -p dist/lib && ([[ \"$ALLOY_LIBRARY_TYPE\" == \"\\\"preinstalled\\\"\" ]] && node ./scripts/buildAlloyPreinstalled.mjs -i src/lib/alloyPreinstalled.js -o dist/lib) || (node ./scripts/buildAlloy.mjs -i src/lib/alloy.js -o dist/lib)",
     "build:componentFixtures": "./scripts/buildComponentFixtures.mjs",
