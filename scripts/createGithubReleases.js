@@ -15,27 +15,31 @@ governing permissions and limitations under the License.
 /**
  * Creates GitHub releases for packages published by `changeset publish`.
  *
- * Reads a changeset-status.json file  (from pnpm changeset status --verbose --output=changeset-status.json)
- * to determine which packages were released, discovers their directories via `pnpm ls`,
- * extracts release notes from each package's CHANGELOG.md, and creates a GitHub
- * release per package using `gh`.
+ * Discovers what to release in one of two modes:
+ *   - Default: git tags pointing at HEAD (created by `changeset publish`).
+ *   - Legacy: a `changeset-status.json` path passed as a positional arg
+ *     (used by .github/workflows/changeset-publish.yml during migration).
  *
- * Called by the Changeset Publish workflow (.github/workflows/changeset-publish.yml)
- * after tags have been pushed.
+ * For each release, looks up the package directory via `pnpm ls`, extracts
+ * the matching section from its CHANGELOG.md, and creates a GitHub release
+ * with `gh`.
  *
  * Usage:
+ *   node scripts/createGithubReleases.js
+ *   node scripts/createGithubReleases.js --dry-run
  *   node scripts/createGithubReleases.js changeset-status.json
  *   node scripts/createGithubReleases.js changeset-status.json --dry-run
  *
  * Requires:
  *   - GH_TOKEN env var (for `gh release create`)
- *   - `pnpm` and `gh` CLIs on PATH
- *   - Git tags already pushed (created by `changeset publish`)
+ *   - `pnpm`, `gh`, and `git` CLIs on PATH
+ *   - Git tags already created (`changeset publish` + `git push --tags`)
  *
  * Behavior:
- *   - Skips private packages, missing tags, and existing releases (idempotent)
+ *   - Skips packages with missing tags, missing changelog entries, or
+ *     existing GitHub releases (idempotent — safe to re-run)
  *   - Detects prereleases from the version string (e.g. 2.31.2-beta.0)
- *   - Exits 0 if changeset-status.json is missing (nothing to do)
+ *   - Exits 0 when there's nothing to release
  */
 
 // @ts-check
@@ -43,6 +47,7 @@ governing permissions and limitations under the License.
 import { execFileSync, execSync } from "child_process";
 import fs from "fs";
 import path from "path";
+import { parseArgs } from "node:util";
 
 /**
  * Parse a git tag of the form `name@version`. Splits on the LAST `@` so
@@ -262,9 +267,14 @@ export const ghReleaseCreate = (tag, notes, isPrerelease) => {
 };
 
 const main = () => {
-  const args = process.argv.slice(2);
-  const dryRun = args.includes("--dry-run");
-  const statusPath = args.find((arg) => !arg.startsWith("--"));
+  const { values, positionals } = parseArgs({
+    options: {
+      "dry-run": { type: "boolean", default: false },
+    },
+    allowPositionals: true,
+  });
+  const dryRun = values["dry-run"];
+  const statusPath = positionals[0];
 
   // Two input modes:
   //   - With a path arg: read releases from a changeset-status.json file
