@@ -123,4 +123,56 @@ describe("fetchDataElements", () => {
       expect(nextPage).toBe(2);
     });
   });
+
+  describe("fetchAllPages option", () => {
+    it("pages through every result until nextPage is null", async () => {
+      fetchFromReactor
+        .mockResolvedValueOnce(makeResponse(["A", "B"], 2))
+        .mockResolvedValueOnce(makeResponse(["C", "D"], 3))
+        .mockResolvedValueOnce(makeResponse(["E"], null));
+
+      const { results, nextPage } = await fetchDataElements({
+        orgId: "ORG",
+        imsAccess: "TOKEN",
+        propertyId: "PR1",
+        fetchAllPages: true,
+      });
+
+      expect(fetchFromReactor).toHaveBeenCalledTimes(3);
+      expect(results.map((r) => r.name)).toEqual(["A", "B", "C", "D", "E"]);
+      expect(nextPage).toBeNull();
+    });
+
+    it("returns early when the first page already has no nextPage", async () => {
+      fetchFromReactor.mockResolvedValueOnce(makeResponse(["A"], null));
+
+      const { results, nextPage } = await fetchDataElements({
+        orgId: "ORG",
+        imsAccess: "TOKEN",
+        propertyId: "PR1",
+        fetchAllPages: true,
+      });
+
+      expect(fetchFromReactor).toHaveBeenCalledTimes(1);
+      expect(results).toHaveLength(1);
+      expect(nextPage).toBeNull();
+    });
+
+    it("takes priority over minResults when both are set", async () => {
+      fetchFromReactor
+        .mockResolvedValueOnce(makeResponse(["A", "B"], 2))
+        .mockResolvedValueOnce(makeResponse(["C"], null));
+
+      const { results } = await fetchDataElements({
+        orgId: "ORG",
+        imsAccess: "TOKEN",
+        propertyId: "PR1",
+        fetchAllPages: true,
+        minResults: 2,
+      });
+
+      expect(fetchFromReactor).toHaveBeenCalledTimes(2);
+      expect(results).toHaveLength(3);
+    });
+  });
 });

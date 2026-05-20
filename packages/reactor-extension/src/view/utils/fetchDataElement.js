@@ -12,13 +12,19 @@ governing permissions and limitations under the License.
 import fetchFromReactor from "./fetchFromReactor";
 import UserReportableError from "../errors/userReportableError";
 
-const fetchDataElement = async ({ orgId, imsAccess, dataElementId }) => {
+const fetchDataElement = async ({
+  orgId,
+  imsAccess,
+  dataElementId,
+  signal,
+}) => {
   let parsedResponse;
   try {
     parsedResponse = await fetchFromReactor({
       orgId,
       imsAccess,
       path: `/data_elements/${dataElementId}`,
+      signal,
     });
   } catch (e) {
     if (e.name === "AbortError") {

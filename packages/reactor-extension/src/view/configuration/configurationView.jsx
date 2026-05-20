@@ -81,6 +81,7 @@ import PushNotificationsSection, {
 import BrandConciergeSection, {
   bridge as brandConciergeBridge,
 } from "./brandConciergeSection";
+import PropertyConfigurationSection from "./propertyConfigurationSection";
 import {
   LIBRARY_TYPE_MANAGED,
   LIBRARY_TYPE_PREINSTALLED,
@@ -489,6 +490,15 @@ const Configuration = ({ initInfo, context }) => {
               context={context}
               isPreinstalled={isPreinstalled}
             />
+          </DisclosurePanel>
+        </Disclosure>
+        <Disclosure
+          id="propertyConfiguration"
+          data-test-id="propertyConfigurationHeading"
+        >
+          <DisclosureTitle>Property configuration</DisclosureTitle>
+          <DisclosurePanel>
+            <PropertyConfigurationSection initInfo={initInfo} />
           </DisclosurePanel>
         </Disclosure>
       </Accordion>
