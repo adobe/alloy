@@ -61,39 +61,37 @@ const awaitVisitorOptIn = ({ logger }) =>
  * @param {{ orgId: string, logger: import('@adobe/alloy-core/core/types.js').Logger }} params
  * @returns {Promise<string | undefined>}
  */
-const getEcidFromVisitor = ({ orgId, logger }) => {
+const getEcidFromVisitor = async ({ orgId, logger }) => {
   const Visitor = getVisitor();
   if (!Visitor) {
-    return Promise.resolve(undefined);
+    return undefined;
   }
-  return awaitVisitorOptIn({ logger })
-    .then(
-      () =>
-        new Promise((resolve) => {
-          logger.info(
-            "Delaying request while using Visitor to retrieve ECID from server.",
-          );
-          const visitor = Visitor.getInstance(orgId, {});
-          visitor.getMarketingCloudVisitorID((ecid) => {
-            logger.info(
-              "Resuming previously delayed request that was waiting for ECID from Visitor.",
-            );
-            resolve(ecid);
-          }, true);
-        }),
-    )
-    .catch((error) => {
-      // If consent was denied, fall back to retrieving the ECID from the
-      // experience edge. OptIn and AEP Web SDK consent should operate
-      // independently, but during ID migration AEP Web SDK needs to wait for
-      // optIn so that only one ECID is generated.
-      if (error) {
-        logger.info(`${error.message}, retrieving ECID from experience edge`);
-      } else {
-        logger.info("An error occurred while obtaining the ECID from Visitor.");
-      }
-      return undefined;
+  try {
+    await awaitVisitorOptIn({ logger });
+    logger.info(
+      "Delaying request while using Visitor to retrieve ECID from server.",
+    );
+    return await new Promise((resolve) => {
+      const visitor = Visitor.getInstance(orgId, {});
+      visitor.getMarketingCloudVisitorID((ecid) => {
+        logger.info(
+          "Resuming previously delayed request that was waiting for ECID from Visitor.",
+        );
+        resolve(ecid);
+      }, true);
     });
+  } catch (error) {
+    // If consent was denied, fall back to retrieving the ECID from the
+    // experience edge. OptIn and AEP Web SDK consent should operate
+    // independently, but during ID migration AEP Web SDK needs to wait for
+    // optIn so that only one ECID is generated.
+    if (error) {
+      logger.info(`${error.message}, retrieving ECID from experience edge`);
+    } else {
+      logger.info("An error occurred while obtaining the ECID from Visitor.");
+    }
+    return undefined;
+  }
 };
 
 /**

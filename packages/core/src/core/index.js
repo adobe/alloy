@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createInstanceFunction from "./createInstanceFunction.js";
 import {
   getApexDomain,
   injectStorage,
   cookieJar,
-  isFunction,
   createLoggingCookieJar,
   injectFireReferrerHideableImage,
   injectGetBrowser,
+  queryString,
+  stringToBoolean,
 } from "../utils/index.js";
 import createLogController from "./createLogController.js";
 import createLifecycle from "./createLifecycle.js";
@@ -37,12 +37,11 @@ import initializeComponents from "./initializeComponents.js";
 import createConfig from "./config/createConfig.js";
 import createCoreConfigs from "./config/createCoreConfigs.js";
 import injectHandleError from "./injectHandleError.js";
-import injectSendFetchRequest from "./network/requestMethods/injectSendFetchRequest.js";
-import injectSendBeaconRequest from "./network/requestMethods/injectSendBeaconRequest.js";
 import createLogger from "./createLogger.js";
 import createEventManager from "./createEventManager.js";
 import createCookieTransfer from "./createCookieTransfer.js";
 import injectShouldTransferCookie from "./injectShouldTransferCookie.js";
+import debugQueryParam from "../constants/debugQueryParam.js";
 import {
   createDataCollectionRequest,
   createDataCollectionRequestPayload,
@@ -62,33 +61,65 @@ const coreConfigValidators = createCoreConfigs();
 /**
  * @param {Object} params
  * @param {string} params.instanceName
- * @param {Object} params.logController
+ * @param {Array<import('./types.js').AlloyMonitor>} [params.monitors]
+ *   Caller-supplied monitor objects, concatenated with whatever the globals
+ *   capability exposes.
  * @param {Array<Function>} params.components
- * @param {(deps: { logger: import('./types.js').Logger }) => import('../services/index.js').PlatformServices} [params.createPlatformServices]
+ * @param {(deps: { logger: import('./types.js').Logger }) => import('../services/index.js').PlatformServices} params.createPlatformServices
+ *   Factory that builds the platform-services bag for this instance. Invoked
+ *   with the per-instance logger so logger-dependent services (network's
+ *   sendBeacon fallback log) wire up correctly.
  */
 export const createExecuteCommand = ({
   instanceName,
-  logController: { setDebugEnabled, logger, createComponentLogger },
+  monitors = [],
   components,
   createPlatformServices,
 }) => {
-  const platformServices =
-    typeof createPlatformServices === "function"
-      ? createPlatformServices({ logger })
-      : undefined;
-
+  // The storage capability is async by contract, but `createLogController`
+  // and `createGetAssuranceValidationTokenParams` consume synchronous
+  // storage. The sync→async migration of those consumers is the next step
+  // in packages/browser/UNIVERSAL_JS_MIGRATION.md; until then this single
+  // sync `injectStorage(window)` call serves both.
   const createNamespacedStorage = injectStorage(window);
-  const { fetch, navigator } = window;
-  const apexDomain = getApexDomain(window, cookieJar);
-  const sendFetchRequest = injectSendFetchRequest({ fetch });
+
+  const logController = createLogController({
+    console: globalThis.console,
+    createLogger,
+    instanceName,
+    createNamespacedStorage,
+    getMonitors: getMonitors.bind(null, monitors),
+  });
+
+  const { setDebugEnabled, logger, createComponentLogger } = logController;
+
+  const platformServices = createPlatformServices({ logger });
+
+  // alloy_debug query-string detection runs after the globals capability is
+  // available. Previously this lived inside createLogController and read
+  // `locationSearch` directly; moving it here lets the location come from the
+  // platform's globals capability instead of `window`.
+  const parsedQueryString = queryString.parse(
+    platformServices.globals.getLocationSearch(),
+  );
+  if (parsedQueryString[debugQueryParam] !== undefined) {
+    setDebugEnabled(stringToBoolean(parsedQueryString[debugQueryParam]), {
+      fromConfig: false,
+    });
+  }
+
+  const apexDomain = getApexDomain(
+    platformServices.globals.getHostname(),
+    cookieJar,
+  );
   const fireReferrerHideableImage = injectFireReferrerHideableImage();
   const getAssuranceValidationTokenParams =
     createGetAssuranceValidationTokenParams({
-      window,
+      getLocationSearch: () => platformServices.globals.getLocationSearch(),
       createNamespacedStorage,
     });
   const getBrowser = injectGetBrowser({
-    userAgent: window.navigator.userAgent,
+    userAgent: platformServices.globals.getUserAgent(),
   });
 
   const componentRegistry = createComponentRegistry();
@@ -123,19 +154,10 @@ export const createExecuteCommand = ({
       apexDomain,
       dateProvider: () => new Date(),
     });
-    const sendBeaconRequest = isFunction(navigator.sendBeacon)
-      ? injectSendBeaconRequest({
-          // Without the bind(), the browser will complain about an
-          // illegal invocation.
-          sendBeacon: navigator.sendBeacon.bind(navigator),
-          sendFetchRequest,
-          logger,
-        })
-      : sendFetchRequest;
     const sendNetworkRequest = injectSendNetworkRequest({
       logger,
-      sendFetchRequest,
-      sendBeaconRequest,
+      sendFetchRequest: platformServices.network.sendFetchRequest,
+      sendBeaconRequest: platformServices.network.sendBeaconRequest,
       isRequestRetryable,
       getRequestRetryDelay,
     });
@@ -228,36 +250,6 @@ export const createExecuteCommand = ({
     handleError,
     validateCommandOptions,
   });
+  logger.logOnInstanceCreated({ instance: executeCommand });
   return executeCommand;
-};
-
-export default ({ components }) => {
-  const instanceNames = window.__alloyNS;
-
-  if (instanceNames) {
-    const { console } = window;
-    const createNamespacedStorage = injectStorage(window);
-    instanceNames.forEach((instanceName) => {
-      const logController = createLogController({
-        console,
-        locationSearch: window.location.search,
-        createLogger,
-        instanceName,
-        createNamespacedStorage,
-        getMonitors,
-      });
-
-      const executeCommand = createExecuteCommand({
-        instanceName,
-        logController,
-        components,
-      });
-      const instance = createInstanceFunction(executeCommand);
-
-      const queue = window[instanceName].q;
-      queue.push = instance;
-      logController.logger.logOnInstanceCreated({ instance });
-      queue.forEach(instance);
-    });
-  }
 };

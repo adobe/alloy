@@ -52,6 +52,7 @@ governing permissions and limitations under the License.
  * @typedef {Object} Storage
  * @property {(name: string) => Promise<string | null>} getItem
  * @property {(name: string, value: string) => Promise<boolean>} setItem
+ * @property {(name: string) => Promise<boolean>} removeItem
  * @property {() => Promise<boolean>} clear
  */
 

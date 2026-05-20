@@ -39,6 +39,14 @@ const wrapStorageArea = (storageType, namespace) => ({
       return Promise.resolve(false);
     }
   },
+  removeItem(name) {
+    try {
+      window[storageType].removeItem(namespace + name);
+      return Promise.resolve(true);
+    } catch {
+      return Promise.resolve(false);
+    }
+  },
   clear() {
     try {
       Object.keys(window[storageType]).forEach((key) => {

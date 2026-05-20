@@ -23,16 +23,12 @@ governing permissions and limitations under the License.
  */
 
 import { createExecuteCommand } from "./core/index.js";
-import createLogger from "./core/createLogger.js";
-import createLogController from "./core/createLogController.js";
-import { injectStorage } from "./utils/index.js";
 import {
   arrayOf,
   objectOf,
   string,
   callback,
 } from "./utils/validation/index.js";
-import getMonitors from "./core/getMonitors.js";
 import * as optionalComponents from "./core/componentCreators.js";
 
 /**
@@ -42,9 +38,10 @@ import * as optionalComponents from "./core/componentCreators.js";
  * @param {string} [options.name=alloy] - The name of the instance.
  * @param {Array<AlloyMonitor>} [options.monitors] - Monitors for the instance.
  * @param {Array<Function>} [options.components] - Components for the instance.
- * @param {CreatePlatformServices} [createPlatformServices] - Factory that
+ * @param {CreatePlatformServices} createPlatformServices - Factory that
  *   builds platform-provided capabilities (network, storage, cookie, runtime,
- *   legacy, globals) for this instance.
+ *   legacy, globals) for this instance. Supplied by the platform wrapper
+ *   package (`@adobe/alloy` for the browser).
  * @returns {(commandName: string, options?: Object) => Promise<any>} A callable Alloy instance.
  *
  * @see {@link https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/install/create-custom-build} for more details.
@@ -61,27 +58,12 @@ export const createCustomInstance = (
 
   const { name, monitors, components } = eventOptionsValidator(options);
 
-  const { console } = window;
-  const createNamespacedStorage = injectStorage(window);
-
-  const logController = createLogController({
-    console,
-    locationSearch: window.location.search,
-    createLogger,
+  return createExecuteCommand({
     instanceName: name,
-    createNamespacedStorage,
-    getMonitors: getMonitors.bind(null, monitors),
-  });
-
-  const instance = createExecuteCommand({
-    instanceName: name,
-    logController,
+    monitors,
     components,
     createPlatformServices,
   });
-  logController.logger.logOnInstanceCreated({ instance });
-
-  return instance;
 };
 
 /**
@@ -90,7 +72,7 @@ export const createCustomInstance = (
  * @param {Object} [options] - Configuration options for the instance.
  * @param {string} [options.name=alloy] - The name of the instance.
  * @param {Array<AlloyMonitor>} [options.monitors] - (Optional) Monitors for the instance.
- * @param {CreatePlatformServices} [createPlatformServices] - Platform-provided
+ * @param {CreatePlatformServices} createPlatformServices - Platform-provided
  *   capabilities factory. See `createCustomInstance` for details.
  * @returns {(commandName: string, options?: Object) => Promise<any>} A callable Alloy instance.
  *
