@@ -428,7 +428,7 @@ const OperationDialog = ({
           <Flex direction="column" gap="size-200">
             <Text>
               This will scan every action in this property that belongs to the
-              Adobe Alloy extension and update any that reference a data element
+              AEP Web SDK extension and update any that reference a data element
               no longer present on this property. Actions whose reference cannot
               be repaired automatically will be reported so you can fix them
               manually.
