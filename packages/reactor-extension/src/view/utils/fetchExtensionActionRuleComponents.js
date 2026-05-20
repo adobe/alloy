@@ -38,7 +38,7 @@ const parseSettings = (settings) => {
 const fetchActionsForRule = async ({ orgId, imsAccess, ruleId, signal }) => {
   const components = [];
   let pageNumber = 1;
-  // eslint-disable-next-line no-constant-condition
+
   while (true) {
     const params = new URLSearchParams({
       "page[size]": PAGE_SIZE,
