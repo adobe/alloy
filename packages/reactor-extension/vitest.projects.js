@@ -54,7 +54,6 @@ export const reactorExtensionTestProjects = [
       ],
       testTimeout: 30_000,
       hookTimeout: 30_000,
-      retry: 2,
       isolate: true,
       browser: {
         enabled: true,
