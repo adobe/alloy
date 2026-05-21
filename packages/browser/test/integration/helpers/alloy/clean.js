@@ -13,4 +13,13 @@ export default () => {
   delete window.__alloyMonitors;
   delete window.__alloyNS;
   delete window.alloy;
+  // Clear all alloy-namespaced cookies so throttle/consent/identity state
+  // from one test file doesn't poison subsequent files. browser/integration
+  // runs with `isolate: false`, so the cookie jar is shared across files.
+  document.cookie.split(";").forEach((entry) => {
+    const key = entry.trim().split("=")[0];
+    if (key.startsWith("kndctr_")) {
+      document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+    }
+  });
 };
