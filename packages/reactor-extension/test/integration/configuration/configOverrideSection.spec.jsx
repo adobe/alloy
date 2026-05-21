@@ -236,6 +236,7 @@ describe("Config overrides section", () => {
     await driver.init(buildSettingsWithDummyDatastream());
 
     await overridesEnabled.selectOption("Enabled");
+    await analyticsEnabled.expectVisible();
     await analyticsEnabled.selectOption("Enabled");
     await reportSuitesOverride[0].fill("myReportSuite1");
     await addReportSuite.click();
@@ -243,6 +244,7 @@ describe("Config overrides section", () => {
 
     await idSyncContainerOverride.fill("5555");
 
+    await targetEnabled.expectVisible();
     await targetEnabled.selectOption("Enabled");
     await targetPropertyTokenOverride.fill("myTargetToken");
 
