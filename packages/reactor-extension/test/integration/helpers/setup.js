@@ -36,6 +36,22 @@ window.process = {
   },
 };
 
+// Disable CSS animations and transitions so playwright actionability checks
+// don't time out waiting for react-spectrum overlay animations to settle.
+// Headless CI is slower than headed local runs; without this, a single
+// selectOption() can burn through 3 retries × 5 s each and hit the 30 s
+// test timeout before the animation finishes.
+const noAnimationStyle = document.createElement("style");
+noAnimationStyle.textContent = `
+  *, *::before, *::after {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+`;
+document.head.appendChild(noAnimationStyle);
+
 // Reset handlers after each test (important for test isolation)
 afterEach(() => {
   worker.resetHandlers();
