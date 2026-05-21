@@ -38,13 +38,31 @@ describe("Advertising - Viewthrough with advertising IDs", () => {
       advertising: { handleAdvertisingData: "auto" },
     });
 
-    await waitFor(200);
-
-    const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/, {
-      retries: 20,
-      delayMs: 100,
-    });
-    const [firstView] = findViewThroughCalls(calls);
+    // The view-through call comes from one of two racing paths:
+    //   A) The fire-and-forget `handleViewThrough` chain kicked off in
+    //      `onComponentsRegistered` (sets `xdm.eventType: "advertising.enrichment"`).
+    //   B) The current `sendEvent` getting `query.advertising` appended by the
+    //      `onBeforeSendEvent` hook.
+    // In CI, when the SurferID iframe at pixel.everesttech.net responds quickly,
+    // path A's `markIdsAsConverted` can flip SURFER_ID's throttle cookie before
+    // path B's throttle check runs, making path B early-return without adding
+    // `query.advertising`. Then we depend solely on A — but the default
+    // `findCalls` exits on the first complete call (usually the sendEvent), which
+    // can happen before A's response body is captured. Poll for a call that
+    // actually matches the view-through shape instead.
+    let firstView;
+    for (let i = 0; i < 100 && !firstView; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/, {
+        retries: 1,
+        delayMs: 0,
+      });
+      [firstView] = findViewThroughCalls(calls);
+      if (!firstView) {
+        // eslint-disable-next-line no-await-in-loop
+        await waitFor(100);
+      }
+    }
     expect(firstView).toBeTruthy();
 
     validateViewThroughCall(firstView, {
