@@ -16,7 +16,6 @@ import createLogController from "../../../../src/core/createLogController.js";
 const instanceName = "alloy123";
 describe("createLogController", () => {
   let console;
-  let locationSearch;
   let logger;
   let createLogger;
   let getDebugEnabled;
@@ -27,7 +26,6 @@ describe("createLogController", () => {
     console = {
       log() {},
     };
-    locationSearch = "";
     logger = {
       log() {},
     };
@@ -49,7 +47,6 @@ describe("createLogController", () => {
   it("creates a namespaced storage", () => {
     createLogController({
       console,
-      locationSearch,
       createLogger,
       instanceName,
       createNamespacedStorage,
@@ -60,7 +57,6 @@ describe("createLogController", () => {
   it("returns false for getDebugEnabled if storage item is not found", () => {
     createLogController({
       console,
-      locationSearch,
       createLogger,
       instanceName,
       createNamespacedStorage,
@@ -72,7 +68,6 @@ describe("createLogController", () => {
     sessionStorage.getItem = () => "false";
     createLogController({
       console,
-      locationSearch,
       createLogger,
       instanceName,
       createNamespacedStorage,
@@ -84,7 +79,6 @@ describe("createLogController", () => {
     sessionStorage.getItem = () => "true";
     createLogController({
       console,
-      locationSearch,
       createLogger,
       instanceName,
       createNamespacedStorage,
@@ -95,7 +89,6 @@ describe("createLogController", () => {
   it("persists changes to debugEnabled if not set from config", () => {
     const logController = createLogController({
       console,
-      locationSearch,
       createLogger,
       instanceName,
       createNamespacedStorage,
@@ -110,7 +103,6 @@ describe("createLogController", () => {
   it("does not persist changes to debugEnabled if set from config", () => {
     const logController = createLogController({
       console,
-      locationSearch,
       createLogger,
       instanceName,
       createNamespacedStorage,
@@ -125,7 +117,6 @@ describe("createLogController", () => {
   it("does not change debugEnabled from config if previously changed from something other than config on same page load", () => {
     const logController = createLogController({
       console,
-      locationSearch,
       createLogger,
       instanceName,
       createNamespacedStorage,
@@ -145,7 +136,6 @@ describe("createLogController", () => {
     sessionStorage.getItem = () => "true";
     const logController = createLogController({
       console,
-      locationSearch,
       createLogger,
       instanceName,
       createNamespacedStorage,
@@ -157,48 +147,9 @@ describe("createLogController", () => {
     expect(sessionStorage.setItem).not.toHaveBeenCalled();
     expect(getDebugEnabled()).toBe(true);
   });
-  it("sets debugEnabled to true if query string parameter set to true", () => {
-    locationSearch = "?alloy_debug=true";
-    const logController = createLogController({
-      console,
-      locationSearch,
-      createLogger,
-      instanceName,
-      createNamespacedStorage,
-      getMonitors,
-    });
-
-    // Make sure setting debugEnabled from config can't override it.
-    logController.setDebugEnabled(false, {
-      fromConfig: true,
-    });
-    expect(sessionStorage.setItem).toHaveBeenCalledWith("debug", "true");
-    expect(sessionStorage.setItem.mock.calls.length).toBe(1);
-    expect(getDebugEnabled()).toBe(true);
-  });
-  it("sets debugEnabled to false if query string parameter set to false", () => {
-    locationSearch = "?alloy_debug=false";
-    const logController = createLogController({
-      console,
-      locationSearch,
-      createLogger,
-      instanceName,
-      createNamespacedStorage,
-      getMonitors,
-    });
-
-    // Make sure setting debugEnabled from config can't override it.
-    logController.setDebugEnabled(true, {
-      fromConfig: true,
-    });
-    expect(sessionStorage.setItem).toHaveBeenCalledWith("debug", "false");
-    expect(sessionStorage.setItem.mock.calls.length).toBe(1);
-    expect(getDebugEnabled()).toBe(false);
-  });
   it("creates a logger", () => {
     const logController = createLogController({
       console,
-      locationSearch,
       createLogger,
       instanceName,
       createNamespacedStorage,
@@ -217,7 +168,6 @@ describe("createLogController", () => {
   it("creates a component logger", () => {
     const logController = createLogController({
       console,
-      locationSearch,
       createLogger,
       instanceName,
       createNamespacedStorage,

@@ -1,5 +1,13 @@
 # @adobe/alloy-sandbox-browser
 
+## 0.1.4-beta.1
+
+### Patch Changes
+
+- Updated dependencies [[`44042df`](https://github.com/adobe/alloy/commit/44042df84fd4c003567e64aa3d03f6c94c33e094), [`601b4a8`](https://github.com/adobe/alloy/commit/601b4a8dcb964880fe7da518484a301891cabced)]:
+  - @adobe/alloy-core@1.2.0-beta.1
+  - @adobe/alloy@2.34.0-beta.1
+
 ## 0.1.4-beta.0
 
 ### Patch Changes

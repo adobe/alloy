@@ -1,5 +1,13 @@
 # @adobe/alloy-core
 
+## 1.2.0-beta.1
+
+### Patch Changes
+
+- [#1517](https://github.com/adobe/alloy/pull/1517) [`44042df`](https://github.com/adobe/alloy/commit/44042df84fd4c003567e64aa3d03f6c94c33e094) Thanks [@carterworks](https://github.com/carterworks)! - Bump version number, again, to trigger release
+
+- [#1512](https://github.com/adobe/alloy/pull/1512) [`601b4a8`](https://github.com/adobe/alloy/commit/601b4a8dcb964880fe7da518484a301891cabced) Thanks [@carterworks](https://github.com/carterworks)! - Bump version number
+
 ## 1.2.0-beta.0
 
 ### Minor Changes

@@ -19,15 +19,16 @@ const cookieName = `${namespace}getTld`;
  * Of the current web page's hostname, this is the top-most domain that is
  * not a "public suffix" as outlined in https://publicsuffix.org/. In other
  * words, this is top-most domain that is able to accept cookies.
- * @param {Object} window
+ * @param {string} hostname - Current hostname (typically from the globals
+ *   capability; previously read directly from `window.location.hostname`).
  * @param {Object} cookieJar
  * @returns {string}
  */
-export default (window, cookieJar) => {
+export default (hostname, cookieJar) => {
   let topLevelCookieDomain = "";
 
   // If hostParts.length === 1, we may be on localhost.
-  const hostParts = window.location.hostname.toLowerCase().split(".");
+  const hostParts = hostname.toLowerCase().split(".");
   let i = 1;
 
   while (i < hostParts.length && !cookieJar.get(cookieName)) {

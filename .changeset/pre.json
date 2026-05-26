@@ -12,9 +12,9 @@
     "@adobe/alloy-sandbox-node": "0.0.0"
   },
   "changesets": [
-    "five-wombats-cry",
     "leuxl-yqymdue-zbkgfre",
-    "social-bears-camp",
-    "social-coins-clean"
+    "social-coins-clean",
+    "spicy-owls-flow",
+    "tough-pots-ring"
   ]
 }
