@@ -12,6 +12,7 @@
     "@adobe/alloy-sandbox-node": "0.0.0"
   },
   "changesets": [
+    "cyan-tires-jog",
     "leuxl-yqymdue-zbkgfre",
     "social-coins-clean",
     "spicy-owls-flow",

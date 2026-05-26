@@ -1,5 +1,12 @@
 # reactor-extension-alloy
 
+## 2.36.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [[`543a0e9`](https://github.com/adobe/alloy/commit/543a0e9f7ddbcd0a79885dfba8e0539a8bcf4cf4)]:
+  - @adobe/alloy@2.34.0-beta.2
+
 ## 2.36.0-beta.2
 
 ### Patch Changes
