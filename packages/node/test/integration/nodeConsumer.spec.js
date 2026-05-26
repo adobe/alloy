@@ -10,20 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// These tests simulate a Node.js application consuming @adobe/alloy-core via
-// the @adobe/alloy-node wrapper.
+// Lifecycle tests below are skipped until core's remaining `window`
+// references are migrated to capabilities — `createInstance(...)` still
+// crashes in Node otherwise.
 //
-// The import-smoke tests at the top of the suite pass today: core no longer
-// crashes at module load in Node. The runtime-lifecycle tests below remain
-// skipped until the per-domain capability migrations in
-// packages/browser/UNIVERSAL_JS_MIGRATION.md replace core's remaining
-// `window` references so that `createInstance(...).then(...)` can actually
-// run in Node.
-//
-// Imports here are static on purpose: a file-load failure is the failure
-// signal we want. Dynamic `await import()` inside `it()` blocks gets charged
-// against the per-test timeout, and Vite's first-run dep bundling can blow
-// past 5s when the full vitest suite runs in parallel.
+// Imports are static so file-load failure is the signal. Dynamic
+// `await import()` would be charged against the 5s per-test timeout, which
+// Vite's first-run dep bundling can blow past when the full suite runs in
+// parallel.
 import { describe, it, expect } from "vitest";
 import * as core from "@adobe/alloy-core";
 import * as coreServices from "@adobe/alloy-core/services";

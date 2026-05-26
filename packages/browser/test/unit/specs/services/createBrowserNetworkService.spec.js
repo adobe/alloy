@@ -31,8 +31,6 @@ describe("BrowserNetworkService", () => {
   });
 
   it("falls back to sendFetchRequest when navigator.sendBeacon is unavailable", () => {
-    // Hide sendBeacon for the duration of this test. Chromium exposes it as a
-    // configurable property on Navigator.prototype.
     const descriptor = Object.getOwnPropertyDescriptor(
       Navigator.prototype,
       "sendBeacon",

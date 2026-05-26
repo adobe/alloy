@@ -38,10 +38,7 @@ import * as optionalComponents from "./core/componentCreators.js";
  * @param {string} [options.name=alloy] - The name of the instance.
  * @param {Array<AlloyMonitor>} [options.monitors] - Monitors for the instance.
  * @param {Array<Function>} [options.components] - Components for the instance.
- * @param {CreatePlatformServices} createPlatformServices - Factory that
- *   builds platform-provided capabilities (network, storage, cookie, runtime,
- *   legacy, globals) for this instance. Supplied by the platform wrapper
- *   package (`@adobe/alloy` for the browser).
+ * @param {CreatePlatformServices} createPlatformServices
  * @returns {(commandName: string, options?: Object) => Promise<any>} A callable Alloy instance.
  *
  * @see {@link https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/install/create-custom-build} for more details.
@@ -72,8 +69,7 @@ export const createCustomInstance = (
  * @param {Object} [options] - Configuration options for the instance.
  * @param {string} [options.name=alloy] - The name of the instance.
  * @param {Array<AlloyMonitor>} [options.monitors] - (Optional) Monitors for the instance.
- * @param {CreatePlatformServices} createPlatformServices - Platform-provided
- *   capabilities factory. See `createCustomInstance` for details.
+ * @param {CreatePlatformServices} createPlatformServices
  * @returns {(commandName: string, options?: Object) => Promise<any>} A callable Alloy instance.
  *
  * @example

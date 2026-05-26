@@ -19,7 +19,6 @@ describe("BrowserRuntimeService", () => {
     const { setTimeout: timeoutFn, clearTimeout: clearFn } = runtime;
     const fired = new Promise((resolve) => {
       const id = timeoutFn(resolve, 0);
-      // Calling clear as a free function should not throw.
       expect(() => clearFn(id + 9999)).not.toThrow();
     });
     await fired;

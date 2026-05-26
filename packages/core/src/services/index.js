@@ -11,14 +11,6 @@ governing permissions and limitations under the License.
 */
 
 /**
- * Platform-service contract surface. See `./types.js` for the JSDoc typedefs
- * that describe each service. There are no runtime exports today; platform
- * packages provide the concrete implementations.
- *
- * @file
- */
-
-/**
  * @typedef {import("./types.js").NetworkResponse} NetworkResponse
  * @typedef {import("./types.js").NetworkService} NetworkService
  * @typedef {import("./types.js").Storage} Storage

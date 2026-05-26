@@ -14,13 +14,11 @@ governing permissions and limitations under the License.
 
 import baseNamespace from "@adobe/alloy-core/constants/namespace.js";
 
+// On Safari with storage disabled, even referencing `window.localStorage`
+// throws — hence the try/catch around every access.
 /**
- * Wraps a sync browser storage area (`localStorage` / `sessionStorage`) in the
- * async {@link Storage} contract. The mere act of referencing a storage area
- * throws when storage is disabled on Safari, so every access is try/catch'd.
- *
  * @param {string} storageType - "localStorage" or "sessionStorage".
- * @param {string} namespace - Prefix prepended to every key.
+ * @param {string} namespace
  * @returns {Storage}
  */
 const wrapStorageArea = (storageType, namespace) => ({
@@ -61,13 +59,7 @@ const wrapStorageArea = (storageType, namespace) => ({
   },
 });
 
-/**
- * Browser implementation of {@link StorageService}. Namespaces session and
- * persistent storage under the shared `com.adobe.alloy.` prefix plus a
- * caller-supplied suffix.
- *
- * @returns {StorageService}
- */
+/** @returns {StorageService} */
 const createBrowserStorageService = () => ({
   createNamespacedStorage(additionalNamespace) {
     const finalNamespace = baseNamespace + additionalNamespace;

@@ -15,11 +15,8 @@ governing permissions and limitations under the License.
 import cookieJar from "@adobe/alloy-core/utils/cookieJar.js";
 
 /**
- * Browser implementation of {@link CookieService} backed by `js-cookie` via the
- * shared `cookieJar` utility. Cookies are read from and written to
- * `document.cookie`. The optional `jar` parameter is how `withConverter`
- * recurses — every converted js-cookie instance still needs to satisfy the
- * `CookieService` contract.
+ * The optional `jar` parameter is the recursion seam for `withConverter` —
+ * every converted js-cookie instance must itself satisfy `CookieService`.
  *
  * @param {{ get: Function, set: Function, remove: Function, withConverter: Function }} [jar]
  * @returns {CookieService}

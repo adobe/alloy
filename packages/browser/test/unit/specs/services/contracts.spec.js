@@ -10,18 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// Contract checks for the browser platform-services. These mirror the
-// typedefs in `packages/core/src/services/types.js` and exist because core
-// and browser don't currently run JSDoc-based typechecking (only the Node
-// SDK package does). Without these checks, a method named in a typedef but
-// missing from an implementation slips through — which is what happened to
-// `Storage.removeItem`.
-//
-// When you add/rename a method on a service typedef, update the matching
-// entry below. The check is intentionally shallow — it only asserts that
-// the named members are functions/constructors of the right kind, not that
-// signatures match. Behavioral tests in the sibling spec files cover the
-// actual semantics.
+// Mirrors of the service typedefs in `packages/core/src/services/types.js`.
+// When you add or rename a method on a typedef, update the matching entry
+// below. Only presence is checked here — signatures and semantics are
+// covered by the sibling behavioral specs.
 import { describe, it, expect } from "vitest";
 import createBrowserNetworkService from "../../../../src/services/createBrowserNetworkService.js";
 import createBrowserStorageService from "../../../../src/services/createBrowserStorageService.js";

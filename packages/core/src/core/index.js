@@ -62,13 +62,8 @@ const coreConfigValidators = createCoreConfigs();
  * @param {Object} params
  * @param {string} params.instanceName
  * @param {Array<import('./types.js').AlloyMonitor>} [params.monitors]
- *   Caller-supplied monitor objects, concatenated with whatever the globals
- *   capability exposes.
  * @param {Array<Function>} params.components
  * @param {(deps: { logger: import('./types.js').Logger }) => import('../services/index.js').PlatformServices} params.createPlatformServices
- *   Factory that builds the platform-services bag for this instance. Invoked
- *   with the per-instance logger so logger-dependent services (network's
- *   sendBeacon fallback log) wire up correctly.
  */
 export const createExecuteCommand = ({
   instanceName,
@@ -76,11 +71,9 @@ export const createExecuteCommand = ({
   components,
   createPlatformServices,
 }) => {
-  // The storage capability is async by contract, but `createLogController`
-  // and `createGetAssuranceValidationTokenParams` consume synchronous
-  // storage. The sync→async migration of those consumers is the next step
-  // in packages/browser/UNIVERSAL_JS_MIGRATION.md; until then this single
-  // sync `injectStorage(window)` call serves both.
+  // `createLogController` and `createGetAssuranceValidationTokenParams` still
+  // consume sync storage, so we can't use the async storage capability here
+  // yet. Remove once those consumers are migrated.
   const createNamespacedStorage = injectStorage(window);
 
   const logController = createLogController({
@@ -95,10 +88,6 @@ export const createExecuteCommand = ({
 
   const platformServices = createPlatformServices({ logger });
 
-  // alloy_debug query-string detection runs after the globals capability is
-  // available. Previously this lived inside createLogController and read
-  // `locationSearch` directly; moving it here lets the location come from the
-  // platform's globals capability instead of `window`.
   const parsedQueryString = queryString.parse(
     platformServices.globals.getLocationSearch(),
   );

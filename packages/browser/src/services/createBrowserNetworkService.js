@@ -16,10 +16,6 @@ import injectSendFetchRequest from "@adobe/alloy-core/core/network/requestMethod
 import injectSendBeaconRequest from "@adobe/alloy-core/core/network/requestMethods/injectSendBeaconRequest.js";
 
 /**
- * Browser implementation of {@link NetworkService}. Uses the global `fetch`
- * for normal requests and `navigator.sendBeacon` (when available) for
- * unload-time delivery, falling back to `fetch` otherwise.
- *
  * @param {{ logger: import('@adobe/alloy-core/core/types.js').Logger }} dependencies
  * @returns {NetworkService}
  */
@@ -29,7 +25,7 @@ const createBrowserNetworkService = ({ logger }) => {
   const sendBeaconRequest =
     typeof navigator.sendBeacon === "function"
       ? injectSendBeaconRequest({
-          // Without the bind(), the browser will complain about an illegal invocation.
+          // bind() avoids "illegal invocation" when sendBeacon loses its receiver.
           sendBeacon: navigator.sendBeacon.bind(navigator),
           sendFetchRequest,
           logger,

@@ -14,20 +14,12 @@ governing permissions and limitations under the License.
 
 import { isFunction, isObject } from "@adobe/alloy-core/utils/index.js";
 
-/**
- * Returns the legacy Visitor constructor when present on the page, or `false`
- * otherwise.
- */
 const getVisitor = () => {
   const { Visitor } = window;
   return isFunction(Visitor) && isFunction(Visitor.getInstance) && Visitor;
 };
 
 /**
- * Resolves once legacy `adobe.optIn` has approved ECID retrieval. Resolves
- * immediately when no legacy opt-in object is present. Mirrors the historical
- * `awaitVisitorOptIn` behavior in core.
- *
  * @param {{ logger: import('@adobe/alloy-core/core/types.js').Logger }} params
  * @returns {Promise<void>}
  */
@@ -54,10 +46,6 @@ const awaitVisitorOptIn = ({ logger }) =>
   });
 
 /**
- * Resolves an ECID from the legacy Visitor service, or `undefined` if Visitor
- * isn't loaded on the page. Mirrors the historical `injectGetEcidFromVisitor`
- * behavior in core.
- *
  * @param {{ orgId: string, logger: import('@adobe/alloy-core/core/types.js').Logger }} params
  * @returns {Promise<string | undefined>}
  */
@@ -94,12 +82,7 @@ const getEcidFromVisitor = async ({ orgId, logger }) => {
   }
 };
 
-/**
- * Browser implementation of {@link LegacyService}. Bridges to Adobe's legacy
- * Visitor library and `adobe.optIn` global when they are present on the page.
- *
- * @returns {LegacyService}
- */
+/** @returns {LegacyService} */
 const createBrowserLegacyService = () => ({
   getEcidFromVisitor,
   awaitVisitorOptIn,

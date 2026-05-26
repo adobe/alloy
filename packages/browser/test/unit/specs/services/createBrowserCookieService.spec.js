@@ -37,8 +37,6 @@ describe("BrowserCookieService", () => {
     // js-cookie's `get` decodes the converter's write output, so reading via
     // raw document.cookie verifies the encoder actually ran on write.
     expect(document.cookie).toContain(`${COOKIE_NAME}=encoded:raw`);
-    // The returned service must itself satisfy the CookieService contract,
-    // including being further chainable.
     expect(typeof encoded.withConverter).toBe("function");
     expect(typeof encoded.withConverter({}).get).toBe("function");
   });

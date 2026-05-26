@@ -14,12 +14,7 @@ governing permissions and limitations under the License.
 
 /** @import { GlobalsService } from "@adobe/alloy-core/services" */
 
-/**
- * Browser implementation of {@link GlobalsService}. Reads bootstrap state and
- * ambient globals from `window`.
- *
- * @returns {GlobalsService}
- */
+/** @returns {GlobalsService} */
 const createBrowserGlobalsService = () => ({
   getInstanceNames: () => window["__alloyNS"] || [],
   getInstanceQueue: (instanceName) => {

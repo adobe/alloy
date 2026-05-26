@@ -20,11 +20,6 @@ import createBrowserLegacyService from "./createBrowserLegacyService.js";
 import createBrowserGlobalsService from "./createBrowserGlobalsService.js";
 
 /**
- * Composes the browser-side {@link PlatformServices} bag that gets passed into
- * `@adobe/alloy-core`. A new bag is created per Alloy instance so that
- * per-instance dependencies (like the logger threaded into the network
- * service) stay scoped correctly.
- *
  * @param {{ logger: import('@adobe/alloy-core/core/types.js').Logger }} dependencies
  * @returns {PlatformServices}
  */

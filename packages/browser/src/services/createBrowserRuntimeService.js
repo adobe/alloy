@@ -12,12 +12,7 @@ governing permissions and limitations under the License.
 
 /** @import { RuntimeService } from "@adobe/alloy-core/services" */
 
-/**
- * Browser implementation of {@link RuntimeService}. Forwards directly to the
- * native globals; all of these are available in every supported browser.
- *
- * @returns {RuntimeService}
- */
+/** @returns {RuntimeService} */
 const createBrowserRuntimeService = () => ({
   setTimeout: window.setTimeout.bind(window),
   clearTimeout: window.clearTimeout.bind(window),
