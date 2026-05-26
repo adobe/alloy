@@ -16,6 +16,7 @@
     "./utils/dom": "./src/utils/dom/index.js",
     "./utils/request": "./src/utils/request/index.js",
     "./utils/validation": "./src/utils/validation/index.js",
+    "./services": "./src/services/index.js",
     "./*": "./src/*"
   },
   "author": "Adobe Inc.",

@@ -16,24 +16,24 @@ import { injectStorage } from "../../../../../src/utils/index.js";
 import uuidV4Regex from "../../../constants/uuidV4Regex.js";
 
 const win = {
-  location: {
-    search: "",
-  },
   localStorage: window.localStorage,
 };
+let currentSearch = "";
+const getLocationSearch = () => currentSearch;
 describe("createGetAssuranceValidationTokenParams", () => {
   it("gets validation token params", () => {
     let result;
     let token;
     let firstClientId;
     let clientId;
+    currentSearch = "";
     const getAssuranceValidationTokenParams =
       createGetAssuranceValidationTokenParams({
-        window: win,
+        getLocationSearch,
         createNamespacedStorage: injectStorage(win),
       });
     expect(getAssuranceValidationTokenParams()).toEqual("");
-    win.location.search = "?adb_validation_sessionid=abc-123";
+    currentSearch = "?adb_validation_sessionid=abc-123";
     result = getAssuranceValidationTokenParams();
     // eslint-disable-next-line prefer-const
     [token, firstClientId] = result.split("%7C");
@@ -42,21 +42,20 @@ describe("createGetAssuranceValidationTokenParams", () => {
     expect(
       win.localStorage.getItem("com.adobe.alloy.validation.clientId"),
     ).toEqual(firstClientId);
-    win.location.search = "?adb_validation_sessionid=abc-123%20fgh";
+    currentSearch = "?adb_validation_sessionid=abc-123%20fgh";
     result = getAssuranceValidationTokenParams();
     [token, clientId] = result.split("%7C");
     expect(token).toEqual("&adobeAepValidationToken=abc-123%20fgh");
     expect(clientId).toEqual(firstClientId);
-    win.location.search =
+    currentSearch =
       "?lang=en&sort=relevancy&f:el_product=[Data%20Collection]&adb_validation_sessionid=abc-123";
     result = getAssuranceValidationTokenParams();
     [token, clientId] = result.split("%7C");
     expect(token).toEqual("&adobeAepValidationToken=abc-123");
     expect(clientId).toEqual(firstClientId);
-    win.location.search =
-      "?lang=en&sort=relevancy&f:el_product=[Data%20Collection]";
+    currentSearch = "?lang=en&sort=relevancy&f:el_product=[Data%20Collection]";
     expect(getAssuranceValidationTokenParams()).toEqual("");
-    win.location.search = "?adb_validation_sessionid=";
+    currentSearch = "?adb_validation_sessionid=";
     expect(getAssuranceValidationTokenParams()).toEqual("");
   });
 });

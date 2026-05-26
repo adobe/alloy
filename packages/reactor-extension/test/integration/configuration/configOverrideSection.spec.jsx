@@ -232,6 +232,10 @@ describe("Config overrides section", () => {
     await targetPropertyTokenOverride.expectValue("targetPropTokenStaging");
   });
 
+  // This test exercises ~12 form actions (each expanding to multiple
+  // Playwright round-trips), making it the longest test in the file. The
+  // default 30s project timeout was getting blown under CI contention even
+  // though the test isn't hung.
   it("updates form values and saves to settings", async () => {
     await driver.init(buildSettingsWithDummyDatastream());
 
@@ -273,7 +277,7 @@ describe("Config overrides section", () => {
           },
         },
       });
-  });
+  }, 60_000);
 
   it("validates third party id sync container", async () => {
     await driver.init(buildSettingsWithDummyDatastream());

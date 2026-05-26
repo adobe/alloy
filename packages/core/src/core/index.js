@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createInstanceFunction from "./createInstanceFunction.js";
 import {
   getApexDomain,
   injectStorage,
   cookieJar,
-  isFunction,
   createLoggingCookieJar,
   injectFireReferrerHideableImage,
   injectGetBrowser,
+  queryString,
+  stringToBoolean,
 } from "../utils/index.js";
 import createLogController from "./createLogController.js";
 import createLifecycle from "./createLifecycle.js";
@@ -37,12 +37,11 @@ import initializeComponents from "./initializeComponents.js";
 import createConfig from "./config/createConfig.js";
 import createCoreConfigs from "./config/createCoreConfigs.js";
 import injectHandleError from "./injectHandleError.js";
-import injectSendFetchRequest from "./network/requestMethods/injectSendFetchRequest.js";
-import injectSendBeaconRequest from "./network/requestMethods/injectSendBeaconRequest.js";
 import createLogger from "./createLogger.js";
 import createEventManager from "./createEventManager.js";
 import createCookieTransfer from "./createCookieTransfer.js";
 import injectShouldTransferCookie from "./injectShouldTransferCookie.js";
+import debugQueryParam from "../constants/debugQueryParam.js";
 import {
   createDataCollectionRequest,
   createDataCollectionRequestPayload,
@@ -57,24 +56,61 @@ import injectApplyResponse from "./edgeNetwork/injectApplyResponse.js";
 import getMonitors from "./getMonitors.js";
 import * as requiredComponents from "./requiredComponentCreators.js";
 
-const createNamespacedStorage = injectStorage(window);
-
-const { console, fetch, navigator } = window;
-
 const coreConfigValidators = createCoreConfigs();
-const apexDomain = getApexDomain(window, cookieJar);
-const sendFetchRequest = injectSendFetchRequest({ fetch });
-const fireReferrerHideableImage = injectFireReferrerHideableImage();
-const getAssuranceValidationTokenParams =
-  createGetAssuranceValidationTokenParams({ window, createNamespacedStorage });
 
-const getBrowser = injectGetBrowser({ userAgent: window.navigator.userAgent });
-
+/**
+ * @param {Object} params
+ * @param {string} params.instanceName
+ * @param {Array<import('./types.js').AlloyMonitor>} [params.monitors]
+ * @param {Array<Function>} params.components
+ * @param {(deps: { logger: import('./types.js').Logger }) => import('../services/index.js').PlatformServices} params.createPlatformServices
+ */
 export const createExecuteCommand = ({
   instanceName,
-  logController: { setDebugEnabled, logger, createComponentLogger },
+  monitors = [],
   components,
+  createPlatformServices,
 }) => {
+  // `createLogController` and `createGetAssuranceValidationTokenParams` still
+  // consume sync storage, so we can't use the async storage capability here
+  // yet. Remove once those consumers are migrated.
+  const createNamespacedStorage = injectStorage(window);
+
+  const logController = createLogController({
+    console: globalThis.console,
+    createLogger,
+    instanceName,
+    createNamespacedStorage,
+    getMonitors: getMonitors.bind(null, monitors),
+  });
+
+  const { setDebugEnabled, logger, createComponentLogger } = logController;
+
+  const platformServices = createPlatformServices({ logger });
+
+  const parsedQueryString = queryString.parse(
+    platformServices.globals.getLocationSearch(),
+  );
+  if (parsedQueryString[debugQueryParam] !== undefined) {
+    setDebugEnabled(stringToBoolean(parsedQueryString[debugQueryParam]), {
+      fromConfig: false,
+    });
+  }
+
+  const apexDomain = getApexDomain(
+    platformServices.globals.getHostname(),
+    cookieJar,
+  );
+  const fireReferrerHideableImage = injectFireReferrerHideableImage();
+  const getAssuranceValidationTokenParams =
+    createGetAssuranceValidationTokenParams({
+      getLocationSearch: () => platformServices.globals.getLocationSearch(),
+      createNamespacedStorage,
+    });
+  const getBrowser = injectGetBrowser({
+    userAgent: platformServices.globals.getUserAgent(),
+  });
+
   const componentRegistry = createComponentRegistry();
   const lifecycle = createLifecycle(componentRegistry);
 
@@ -107,19 +143,10 @@ export const createExecuteCommand = ({
       apexDomain,
       dateProvider: () => new Date(),
     });
-    const sendBeaconRequest = isFunction(navigator.sendBeacon)
-      ? injectSendBeaconRequest({
-          // Without the bind(), the browser will complain about an
-          // illegal invocation.
-          sendBeacon: navigator.sendBeacon.bind(navigator),
-          sendFetchRequest,
-          logger,
-        })
-      : sendFetchRequest;
     const sendNetworkRequest = injectSendNetworkRequest({
       logger,
-      sendFetchRequest,
-      sendBeaconRequest,
+      sendFetchRequest: platformServices.network.sendFetchRequest,
+      sendBeaconRequest: platformServices.network.sendBeaconRequest,
       isRequestRetryable,
       getRequestRetryDelay,
     });
@@ -194,6 +221,7 @@ export const createExecuteCommand = ({
           getBrowser,
           cookieTransfer,
           createResponse,
+          platformServices,
         };
       },
     });
@@ -211,34 +239,6 @@ export const createExecuteCommand = ({
     handleError,
     validateCommandOptions,
   });
+  logger.logOnInstanceCreated({ instance: executeCommand });
   return executeCommand;
-};
-
-export default ({ components }) => {
-  const instanceNames = window.__alloyNS;
-
-  if (instanceNames) {
-    instanceNames.forEach((instanceName) => {
-      const logController = createLogController({
-        console,
-        locationSearch: window.location.search,
-        createLogger,
-        instanceName,
-        createNamespacedStorage,
-        getMonitors,
-      });
-
-      const executeCommand = createExecuteCommand({
-        instanceName,
-        logController,
-        components,
-      });
-      const instance = createInstanceFunction(executeCommand);
-
-      const queue = window[instanceName].q;
-      queue.push = instance;
-      logController.logger.logOnInstanceCreated({ instance });
-      queue.forEach(instance);
-    });
-  }
 };
