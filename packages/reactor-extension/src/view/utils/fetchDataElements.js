@@ -102,3 +102,47 @@ const fetchDataElements = async ({
 };
 
 export default fetchDataElements;
+
+/**
+ * Fetches a single data element by its global Reactor ID via
+ * `/data_elements/{id}` (not property-scoped). Useful for resolving a
+ * `dataElementId` whose property scope is unknown — e.g. learning the
+ * name of a stale reference that points at a data element on another
+ * property.
+ *
+ * @param {object} options
+ * @param {string} options.orgId
+ * @param {string} options.imsAccess
+ * @param {string} options.dataElementId - Reactor ID of the data element.
+ * @param {AbortSignal} [options.signal]
+ * @returns {Promise<{id: string, name: string, settings: object}>}
+ */
+export const fetchDataElement = async ({
+  orgId,
+  imsAccess,
+  dataElementId,
+  signal,
+}) => {
+  let parsedResponse;
+  try {
+    parsedResponse = await fetchFromReactor({
+      orgId,
+      imsAccess,
+      path: `/data_elements/${dataElementId}`,
+      signal,
+    });
+  } catch (e) {
+    if (e.name === "AbortError") {
+      throw e;
+    }
+    throw new UserReportableError("Failed to load data element.", {
+      originatingError: e,
+    });
+  }
+
+  const {
+    id,
+    attributes: { name, settings },
+  } = parsedResponse.parsedBody.data;
+  return { id, name, settings: JSON.parse(settings) };
+};

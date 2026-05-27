@@ -29,14 +29,15 @@ import ExtensionView from "../components/extensionView";
 import FormElementContainer from "../components/formElementContainer";
 import CodeField from "../components/codeField";
 import getValueFromFormState from "../components/objectEditor/helpers/getValueFromFormState";
-import fetchDataElements from "../utils/fetchDataElements";
+import fetchDataElements, {
+  fetchDataElement,
+} from "../utils/fetchDataElements";
 import fetchDataElementByName from "../utils/fetchDataElementByName";
 import fetchSchema from "../utils/fetchSchema";
 import Editor from "../components/objectEditor/editor";
 import getInitialFormState from "../components/objectEditor/helpers/getInitialFormState";
 import FormikPagedComboBox from "../components/formikReactSpectrum3/formikPagedComboBox";
 import useReportAsyncError from "../utils/useReportAsyncError";
-import fetchDataElement from "../utils/fetchDataElement";
 import useChanged from "../utils/useChanged";
 import useAbortPreviousRequestsAndCreateSignal from "../utils/useAbortPreviousRequestsAndCreateSignal";
 import generateSchemaFromSolutions from "../components/objectEditor/helpers/generateSchemaFromSolutions";

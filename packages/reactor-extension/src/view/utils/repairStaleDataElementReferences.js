@@ -9,8 +9,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import fetchDataElements from "./fetchDataElements";
-import fetchDataElement from "./fetchDataElement";
+import fetchDataElements, { fetchDataElement } from "./fetchDataElements";
 import buildDataElementIndex from "./buildDataElementIndex";
 import fetchExtensionActionRuleComponents from "./fetchExtensionActionRuleComponents";
 import updateRuleComponent from "./updateRuleComponent";
@@ -28,6 +27,80 @@ export const PHASE = {
 
 const isAborted = (signal) => Boolean(signal && signal.aborted);
 
+/**
+ * @typedef {object} RepairedEntry
+ * @property {string} ruleComponentId
+ * @property {string|null} ruleName
+ * @property {string} actionName
+ * @property {string} dataElementName - The name of the matched DE on this property.
+ * @property {string} oldDataElementId - The stale ID the action previously referenced.
+ * @property {string} newDataElementId - The repaired ID (the matched DE's id).
+ */
+
+/**
+ * @typedef {object} SkippedEntry
+ * @property {string} ruleComponentId
+ * @property {string|null} ruleName
+ * @property {string} actionName
+ * @property {string} [dataElementName] - The name that was attempted (absent for MISSING_NAME).
+ * @property {string} reason - One of the {@link SKIP_REASON} values.
+ * @property {string[]} [candidates] - Candidate DE IDs for the ambiguous case.
+ */
+
+/**
+ * @typedef {object} FailedEntry
+ * @property {string} ruleComponentId
+ * @property {string|null} ruleName
+ * @property {string} actionName
+ * @property {string} error - Surfaced from the PATCH error.
+ */
+
+/**
+ * @typedef {object} RepairResult
+ * @property {number} scanned - Total in-scope actions iterated.
+ * @property {RepairedEntry[]} repaired
+ * @property {SkippedEntry[]} skipped
+ * @property {FailedEntry[]} failed
+ * @property {number|null} totalCount - Property's total rules (the pagination
+ *   denominator); the per-action `scanned` count is the meaningful one.
+ * @property {boolean} cancelled - True if the run was aborted via signal.
+ * @property {string|React.ReactNode|null} fatalError - Orchestrator-level
+ *   failure message (initial DE fetch, rule-components page fetch, etc.).
+ *   May be a React node when surfacing a wrapped `UserReportableError`.
+ */
+
+/**
+ * @typedef {object} ProgressEvent
+ * @property {"indexing"|"scanning"} phase
+ * @property {number} scanned
+ * @property {number} repaired
+ * @property {number} skipped
+ * @property {number} failed
+ * @property {number|null} totalCount
+ */
+
+/**
+ * Orchestrates the property-wide repair: fetches every variable-type data
+ * element on the property, indexes them, then pages through every action
+ * rule_component on the property that belongs to this extension. For each
+ * action with a stale `dataElementId`, attempts a conservative repair by
+ * resolving the source DE's name (preferring the action's saved name and
+ * falling back to a global ID lookup) and matching that name against the
+ * property's index. The orchestrator catches all non-AbortError exceptions
+ * and surfaces them via `result.fatalError`, so the returned promise always
+ * resolves with a {@link RepairResult}.
+ *
+ * @param {object} options
+ * @param {string} options.orgId
+ * @param {string} options.imsAccess
+ * @param {string} options.propertyId
+ * @param {AbortSignal} [options.signal]
+ * @param {(event: ProgressEvent) => void} [options.onProgress] - Called once
+ *   when the indexing phase begins and again after every per-action update
+ *   during the scan phase. Receives count-only summaries; consult the
+ *   returned result for the per-entry detail arrays.
+ * @returns {Promise<RepairResult>}
+ */
 const repairStaleDataElementReferences = async ({
   orgId,
   imsAccess,
@@ -143,6 +216,23 @@ const repairStaleDataElementReferences = async ({
   return result;
 };
 
+/**
+ * Resolves a stale `dataElementId` to a name via Reactor's global
+ * `/data_elements/{id}` endpoint. Caches each lookup per run (including
+ * failures, which cache `null`) so multiple actions referencing the same
+ * stale ID trigger at most one network call per run.
+ *
+ * @param {object} options
+ * @param {string} options.dataElementId
+ * @param {string} options.orgId
+ * @param {string} options.imsAccess
+ * @param {AbortSignal} [options.signal]
+ * @param {Map<string, string|null>} options.staleIdNameCache - Per-run cache.
+ * @returns {Promise<string|null>} The resolved name, or `null` if the DE
+ *   could not be fetched (deleted, network error, etc.).
+ * @throws {Error} Rethrows AbortError so the orchestrator can mark the run
+ *   as cancelled.
+ */
 const resolveStaleIdName = async ({
   dataElementId,
   orgId,
@@ -173,6 +263,25 @@ const resolveStaleIdName = async ({
   return name;
 };
 
+/**
+ * Classifies a single in-scope action and either repairs it (PATCH),
+ * records a skip with a reason, or records a failure with the error. Side-
+ * effects the orchestrator's `result` arrays directly. Stops at the first
+ * await whose AbortError indicates a cancellation, rethrowing so the
+ * outer loop terminates cleanly.
+ *
+ * @param {object} options
+ * @param {object} options.ruleComponent - One entry from
+ *   `fetchExtensionActionRuleComponents`'s `results` array.
+ * @param {{byId: Map<string, object>, byName: Map<string, object[]>}} options.index
+ * @param {string} options.orgId
+ * @param {string} options.imsAccess
+ * @param {AbortSignal} [options.signal]
+ * @param {RepairResult} options.result - Mutated in place.
+ * @param {Map<string, string|null>} options.staleIdNameCache - Per-run
+ *   cache shared with the recovery path.
+ * @returns {Promise<void>}
+ */
 const processRuleComponent = async ({
   ruleComponent,
   index,

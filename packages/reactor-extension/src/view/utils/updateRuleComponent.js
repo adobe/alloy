@@ -9,7 +9,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import makeReactorRequest from "./makeReactorRequest";
+import fetchFromReactor from "./fetchFromReactor";
 import UserReportableError from "../errors/userReportableError";
 
 /**
@@ -35,7 +35,7 @@ const updateRuleComponent = async ({
 }) => {
   let parsedResponse;
   try {
-    parsedResponse = await makeReactorRequest({
+    parsedResponse = await fetchFromReactor({
       orgId,
       imsAccess,
       method: "PATCH",

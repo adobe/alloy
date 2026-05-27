@@ -41,6 +41,13 @@ const STATUS = {
   SUMMARY: "summary",
 };
 
+/**
+ * Maps a {@link SKIP_REASON} to a user-facing label, interpolating the data
+ * element name when available (so users can act on the specific entry).
+ *
+ * @param {import("../utils/repairStaleDataElementReferences").SkippedEntry} item
+ * @returns {string}
+ */
 const skipReasonLabel = (item) => {
   switch (item.reason) {
     case SKIP_REASON.MISSING_NAME:
@@ -63,9 +70,14 @@ const initialTally = () => ({
   phase: PHASE.INDEXING,
 });
 
-// Renders an error message in italics so it stands out from the surrounding
-// prose as a quoted system message. `children` may be a string OR a React
-// Fragment (from a wrapped UserReportableError's message chain).
+/**
+ * Renders an error message in italics so it stands out from the surrounding
+ * prose as a quoted system message.
+ *
+ * @param {{children: React.ReactNode}} props - `children` may be a string OR a
+ *   React Fragment (from a wrapped `UserReportableError`'s message chain).
+ * @returns {React.ReactElement}
+ */
 const ErrorMessageQuote = ({ children }) => (
   <em style={{ fontStyle: "italic" }}>{children}</em>
 );
@@ -74,10 +86,19 @@ ErrorMessageQuote.propTypes = {
   children: PropTypes.node,
 };
 
-// Returns either a string or a React node. `result.fatalError` can be a
-// React Fragment when it originates from a wrapped UserReportableError, so
-// consumers must render this via JSX (e.g. `<Text>{lastRunSummary(...)}</Text>`)
-// rather than embedding it in a string template.
+/**
+ * Builds the single-line "Last run: …" status text shown in the section
+ * panel after a run. Returns a string for normal outcomes, a React node for
+ * the fatal-error outcome (because `result.fatalError` can be a React
+ * Fragment from a wrapped `UserReportableError`).
+ *
+ * Consumers MUST render this via JSX (e.g. `<Text>{formatLastRunSummary(r)}</Text>`)
+ * rather than embedding in a string template — template interpolation would
+ * stringify a Fragment to `[object Object]`.
+ *
+ * @param {import("../utils/repairStaleDataElementReferences").RepairResult|null} result
+ * @returns {string|React.ReactNode|null}
+ */
 const formatLastRunSummary = (result) => {
   if (!result) return null;
   if (result.fatalError) {
@@ -99,8 +120,20 @@ const formatLastRunSummary = (result) => {
   return `${prefix}: ${parts.join(", ")}.`;
 };
 
-// `text` may be a string OR a React node (when surfacing a wrapped
-// UserReportableError's message). Render with `{alert.text}` only.
+/**
+ * Picks the `InlineAlert` variant, heading, and body for the summary dialog
+ * based on the run's outcome. Order matters: fatal error > cancelled >
+ * any failures > any skips > clean success.
+ *
+ * @param {import("../utils/repairStaleDataElementReferences").RepairResult|null} result
+ * @returns {{
+ *   variant: "neutral"|"positive"|"notice"|"negative",
+ *   heading: string,
+ *   text: string|React.ReactNode
+ * }} `text` may be a React node when surfacing a wrapped
+ *   `UserReportableError`'s message. Always render via `{alert.text}` — never
+ *   in a string template.
+ */
 const summaryAlertProps = (result) => {
   if (!result) return { variant: "neutral", heading: "", text: "" };
   if (result.fatalError) {

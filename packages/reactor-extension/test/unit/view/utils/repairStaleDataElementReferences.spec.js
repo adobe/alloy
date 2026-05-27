@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("../../../../src/view/utils/fetchDataElements");
-vi.mock("../../../../src/view/utils/fetchDataElement");
 vi.mock("../../../../src/view/utils/fetchExtensionActionRuleComponents");
 vi.mock("../../../../src/view/utils/updateRuleComponent");
 
@@ -21,8 +20,9 @@ import repairStaleDataElementReferences, {
   PHASE,
 } from "../../../../src/view/utils/repairStaleDataElementReferences";
 
-import fetchDataElements from "../../../../src/view/utils/fetchDataElements";
-import fetchDataElement from "../../../../src/view/utils/fetchDataElement";
+import fetchDataElements, {
+  fetchDataElement,
+} from "../../../../src/view/utils/fetchDataElements";
 import fetchExtensionActionRuleComponents from "../../../../src/view/utils/fetchExtensionActionRuleComponents";
 import updateRuleComponent from "../../../../src/view/utils/updateRuleComponent";
 

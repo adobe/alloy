@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-import makeReactorRequest from "../../../../src/view/utils/makeReactorRequest";
+import fetchFromReactor from "../../../../src/view/utils/fetchFromReactor";
 import UserReportableError from "../../../../src/view/errors/userReportableError";
 
 const fetchMock = vi.fn();
@@ -28,7 +28,7 @@ const errorResponse = (status, body = {}) => ({
   json: async () => body,
 });
 
-describe("makeReactorRequest", () => {
+describe("fetchFromReactor", () => {
   beforeEach(() => {
     fetchMock.mockReset();
     vi.stubGlobal("fetch", fetchMock);
@@ -41,7 +41,7 @@ describe("makeReactorRequest", () => {
   it("defaults to GET and forwards path, params, and auth headers", async () => {
     fetchMock.mockResolvedValueOnce(okResponse({ data: { id: "X" } }));
 
-    await makeReactorRequest({
+    await fetchFromReactor({
       orgId: "ORG",
       imsAccess: "TOKEN",
       path: "/data_elements/DE1",
@@ -66,7 +66,7 @@ describe("makeReactorRequest", () => {
   it("serializes a body and sends JSON:API Content-Type for PATCH", async () => {
     fetchMock.mockResolvedValueOnce(okResponse({ data: { id: "X" } }));
 
-    await makeReactorRequest({
+    await fetchFromReactor({
       orgId: "ORG",
       imsAccess: "TOKEN",
       method: "PATCH",
@@ -93,7 +93,7 @@ describe("makeReactorRequest", () => {
       json: jsonSpy,
     });
 
-    const result = await makeReactorRequest({
+    const result = await fetchFromReactor({
       orgId: "ORG",
       imsAccess: "TOKEN",
       method: "PATCH",
@@ -109,7 +109,7 @@ describe("makeReactorRequest", () => {
     fetchMock.mockResolvedValueOnce(errorResponse(404));
 
     await expect(
-      makeReactorRequest({
+      fetchFromReactor({
         orgId: "ORG",
         imsAccess: "TOKEN",
         path: "/x",
@@ -124,7 +124,7 @@ describe("makeReactorRequest", () => {
     fetchMock.mockResolvedValueOnce(errorResponse(401));
 
     await expect(
-      makeReactorRequest({ orgId: "ORG", imsAccess: "TOKEN", path: "/x" }),
+      fetchFromReactor({ orgId: "ORG", imsAccess: "TOKEN", path: "/x" }),
     ).rejects.toMatchObject({
       message: expect.stringContaining("access token appears to be invalid"),
     });
@@ -134,7 +134,7 @@ describe("makeReactorRequest", () => {
     fetchMock.mockResolvedValueOnce(errorResponse(403));
 
     await expect(
-      makeReactorRequest({ orgId: "ORG", imsAccess: "TOKEN", path: "/x" }),
+      fetchFromReactor({ orgId: "ORG", imsAccess: "TOKEN", path: "/x" }),
     ).rejects.toMatchObject({
       message: expect.stringContaining("permissions to access"),
     });
@@ -144,7 +144,7 @@ describe("makeReactorRequest", () => {
     fetchMock.mockRejectedValueOnce(new TypeError("Failed to fetch"));
 
     await expect(
-      makeReactorRequest({ orgId: "ORG", imsAccess: "TOKEN", path: "/x" }),
+      fetchFromReactor({ orgId: "ORG", imsAccess: "TOKEN", path: "/x" }),
     ).rejects.toMatchObject({
       message: expect.stringContaining("connection to the server"),
     });
@@ -157,7 +157,7 @@ describe("makeReactorRequest", () => {
     fetchMock.mockRejectedValueOnce(abortError);
 
     await expect(
-      makeReactorRequest({ orgId: "ORG", imsAccess: "TOKEN", path: "/x" }),
+      fetchFromReactor({ orgId: "ORG", imsAccess: "TOKEN", path: "/x" }),
     ).rejects.toBe(abortError);
   });
 
@@ -165,7 +165,7 @@ describe("makeReactorRequest", () => {
     fetchMock.mockResolvedValueOnce(errorResponse(500, { errors: [] }));
 
     await expect(
-      makeReactorRequest({ orgId: "ORG", imsAccess: "TOKEN", path: "/x" }),
+      fetchFromReactor({ orgId: "ORG", imsAccess: "TOKEN", path: "/x" }),
     ).rejects.toMatchObject({
       message: "An unexpected server response was received.",
     });

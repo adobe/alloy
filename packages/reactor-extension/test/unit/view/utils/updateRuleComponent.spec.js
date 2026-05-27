@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-vi.mock("../../../../src/view/utils/makeReactorRequest");
+vi.mock("../../../../src/view/utils/fetchFromReactor");
 
 import updateRuleComponent from "../../../../src/view/utils/updateRuleComponent";
 
-import makeReactorRequest from "../../../../src/view/utils/makeReactorRequest";
+import fetchFromReactor from "../../../../src/view/utils/fetchFromReactor";
 
 import UserReportableError from "../../../../src/view/errors/userReportableError";
 
@@ -25,7 +25,7 @@ describe("updateRuleComponent", () => {
   });
 
   it("PATCHes the rule_component with stringified settings under JSON:API envelope", async () => {
-    makeReactorRequest.mockResolvedValueOnce({
+    fetchFromReactor.mockResolvedValueOnce({
       status: 200,
       parsedBody: {
         data: {
@@ -42,8 +42,8 @@ describe("updateRuleComponent", () => {
       settings: { dataElementId: "DE9", dataElementName: "My Variable" },
     });
 
-    expect(makeReactorRequest).toHaveBeenCalledTimes(1);
-    const callArg = makeReactorRequest.mock.calls[0][0];
+    expect(fetchFromReactor).toHaveBeenCalledTimes(1);
+    const callArg = fetchFromReactor.mock.calls[0][0];
     expect(callArg.method).toBe("PATCH");
     expect(callArg.path).toBe("/rule_components/RC1");
     expect(callArg.body).toEqual({
@@ -62,7 +62,7 @@ describe("updateRuleComponent", () => {
   });
 
   it("falls back to the requested ruleComponentId and settings when the response is empty (204)", async () => {
-    makeReactorRequest.mockResolvedValueOnce({
+    fetchFromReactor.mockResolvedValueOnce({
       status: 204,
       parsedBody: null,
     });
@@ -81,7 +81,7 @@ describe("updateRuleComponent", () => {
     const abortError = Object.assign(new Error("aborted"), {
       name: "AbortError",
     });
-    makeReactorRequest.mockRejectedValueOnce(abortError);
+    fetchFromReactor.mockRejectedValueOnce(abortError);
 
     await expect(
       updateRuleComponent({
@@ -95,7 +95,7 @@ describe("updateRuleComponent", () => {
 
   it("wraps non-abort errors in UserReportableError", async () => {
     const inner = new Error("boom");
-    makeReactorRequest.mockRejectedValueOnce(inner);
+    fetchFromReactor.mockRejectedValueOnce(inner);
 
     const promise = updateRuleComponent({
       orgId: "ORG",

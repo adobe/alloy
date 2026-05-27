@@ -3,7 +3,7 @@
 - [x] 1.1 Add a `fetchAllPages: true` option to `fetchDataElements` that pages through every variable-type DE on the property until `nextPage` is `null` (new code passes this option; existing call sites are unchanged)
 - [x] 1.2 Add `buildDataElementIndex.js` under `packages/reactor-extension/src/view/utils/`: takes the array from 1.1 and returns `{ byId: Map<string, DataElement>, byName: Map<string, DataElement[]> }`
 - [x] 1.3 Add `fetchExtensionActionRuleComponents.js` under `packages/reactor-extension/src/view/utils/`: pages `/properties/{propertyId}/rule_components`, filters client-side to delegate IDs prefixed `__EXTENSION_NAME__::actions::`, returns `{ results: [{ id, ruleId, ruleName, delegateDescriptorId, settings, name }], nextPage, totalCount }` (one page at a time, mirroring `fetchDataElements`); pulls rule names via JSON:API `include=rule`
-- [x] 1.4 Add `makeReactorRequest.js` (generic request helper with `method`/`body` support), refactor `fetchFromReactor.js` to be a thin GET wrapper over it, and add `updateRuleComponent.js` that PATCHes `/rule_components/{id}` with new settings and surfaces a `UserReportableError` on failure
+- [x] 1.4 Extend `fetchFromReactor.js` to accept `method` and `body` options (preserving its GET-by-default behavior) so it can issue PATCH/etc. without duplicating the auth/header/error-mapping plumbing. Add `updateRuleComponent.js` that wraps `fetchFromReactor` with the PATCH `/rule_components/{id}` shape and surfaces a `UserReportableError` on failure
 - [x] 1.5 Unit tests for 1.1–1.4 mirroring the pattern in `test/unit/view/utils/fetchDataElements.spec.js` and `fetchDataElementByName.spec.js`
 
 ## 2. Repair orchestration
