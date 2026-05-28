@@ -1,5 +1,31 @@
 # @adobe/alloy
 
+## 2.34.0
+
+### Minor Changes
+
+- [#1504](https://github.com/adobe/alloy/pull/1504) [`676b653`](https://github.com/adobe/alloy/commit/676b6535c7a17ef5879d2abff539ba721fc61bc7) Thanks [@ninaceban](https://github.com/ninaceban)! - Added `region` configuration option to the Brand Concierge component. When set, the region is used to route conversation requests to a specific Adobe edge node (e.g. `va7`, `or2`, `irl1`). The Tags extension UI now includes a Region field in the Brand Concierge configuration section.
+
+### Patch Changes
+
+- [#1511](https://github.com/adobe/alloy/pull/1511) [`543a0e9`](https://github.com/adobe/alloy/commit/543a0e9f7ddbcd0a79885dfba8e0539a8bcf4cf4) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Introduced platform services; moved browser-specific logic to browser's platform services
+
+- [#1517](https://github.com/adobe/alloy/pull/1517) [`44042df`](https://github.com/adobe/alloy/commit/44042df84fd4c003567e64aa3d03f6c94c33e094) Thanks [@carterworks](https://github.com/carterworks)! - Bump version number, again, to trigger release
+
+- [#1512](https://github.com/adobe/alloy/pull/1512) [`601b4a8`](https://github.com/adobe/alloy/commit/601b4a8dcb964880fe7da518484a301891cabced) Thanks [@carterworks](https://github.com/carterworks)! - Bump version number
+
+- Updated dependencies [[`543a0e9`](https://github.com/adobe/alloy/commit/543a0e9f7ddbcd0a79885dfba8e0539a8bcf4cf4), [`676b653`](https://github.com/adobe/alloy/commit/676b6535c7a17ef5879d2abff539ba721fc61bc7), [`44042df`](https://github.com/adobe/alloy/commit/44042df84fd4c003567e64aa3d03f6c94c33e094), [`601b4a8`](https://github.com/adobe/alloy/commit/601b4a8dcb964880fe7da518484a301891cabced)]:
+  - @adobe/alloy-core@1.2.0
+
+## 2.34.0-beta.2
+
+### Patch Changes
+
+- [#1511](https://github.com/adobe/alloy/pull/1511) [`543a0e9`](https://github.com/adobe/alloy/commit/543a0e9f7ddbcd0a79885dfba8e0539a8bcf4cf4) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Introduced platform services; moved browser-specific logic to browser's platform services
+
+- Updated dependencies [[`543a0e9`](https://github.com/adobe/alloy/commit/543a0e9f7ddbcd0a79885dfba8e0539a8bcf4cf4)]:
+  - @adobe/alloy-core@1.2.0-beta.2
+
 ## 2.34.0-beta.1
 
 ### Patch Changes
