@@ -13,10 +13,7 @@ import { test, expect, describe } from "../../helpers/testsSetup/extend.js";
 import { pullDestinationsHandler } from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
 
-// Regression test for PLATIR-64321: sendEvent must surface activation:pull
-// (profileLookup) destinations in its result so consumers (e.g. Launch rules
-// reading event.destinations) can read returned segment IDs. PR #1475 removed
-// this return value, breaking commerce/audience activation use cases.
+// PLATIR-64321: sendEvent must return activation:pull destinations on its result.
 describe("Audiences pull destinations", () => {
   test("returns activation:pull destinations on the sendEvent result", async ({
     alloy,
