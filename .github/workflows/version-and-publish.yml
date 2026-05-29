@@ -54,21 +54,16 @@ jobs:
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
 
-      # Bump versions, restore workspace:* for private deps, and push the
-      # release commit BEFORE anything irreversible. `changeset version` is a
-      # no-op when changesets are absent, so this whole step idempotently does
-      # nothing on a retry — no flag-based branching needed.
+      # Bump versions and push the release commit BEFORE anything irreversible.
+      # `changeset version` is a no-op when changesets are absent, so this
+      # whole step idempotently does nothing on a retry — no flag-based
+      # branching needed. reactor-extension's postversion hook restores its
+      # workspace:* dependency on @adobe/alloy automatically.
       - name: Version, commit, push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           pnpm changeset version
-          node -e "
-            const fs = require('fs');
-            const p = JSON.parse(fs.readFileSync('packages/reactor-extension/package.json', 'utf8'));
-            if (p.dependencies?.['@adobe/alloy']) p.dependencies['@adobe/alloy'] = 'workspace:*';
-            fs.writeFileSync('packages/reactor-extension/package.json', JSON.stringify(p, null, 2) + '\n');
-          "
           pnpm install --no-frozen-lockfile --ignore-scripts
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
