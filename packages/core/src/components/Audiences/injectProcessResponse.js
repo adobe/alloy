@@ -15,5 +15,10 @@ export default ({ processDestinations }) => {
     const pushDestinations = response.getPayloadsByType("activation:push");
     // fire and forget
     processDestinations(pushDestinations);
+    // Pull destinations (e.g. profileLookup) are surfaced on the sendEvent
+    // result so consumers can read returned segment IDs. (PLATIR-64321)
+    return {
+      destinations: response.getPayloadsByType("activation:pull"),
+    };
   };
 };
