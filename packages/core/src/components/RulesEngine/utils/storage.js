@@ -11,9 +11,9 @@ governing permissions and limitations under the License.
 */
 
 export const createRestoreStorage = (storage, storageKey) => {
-  return (defaultValue) => {
+  return async (defaultValue) => {
     try {
-      const stored = storage.getItem(storageKey);
+      const stored = await storage.getItem(storageKey);
       const s = JSON.parse(stored);
       return [s, stored.length];
       // eslint-disable-next-line no-empty
@@ -24,6 +24,7 @@ export const createRestoreStorage = (storage, storageKey) => {
 };
 
 export const createSaveStorage = (storage, storageKey) => (value) => {
+  // Fire-and-forget — callers don't need to await writes.
   storage.setItem(storageKey, JSON.stringify(value));
 };
 

@@ -29,7 +29,6 @@ const createConsent = ({
   config,
   consent,
   sendEdgeNetworkRequest,
-  createNamespacedStorage,
   platformServices,
 }) => {
   const { orgId, defaultConsent } = config;
@@ -45,7 +44,7 @@ const createConsent = ({
     sendEdgeNetworkRequest,
     edgeConfigOverrides: config.edgeConfigOverrides,
   });
-  const storage = createNamespacedStorage(
+  const storage = platformServices.storage.createNamespacedStorage(
     `${sanitizeOrgIdForCookieName(orgId)}.consentHashes.`,
   );
   const consentHashStore = createConsentHashStore({

@@ -30,37 +30,25 @@ describe("RulesEngine:utils", () => {
     inMemoryStorage = createInMemoryStorage();
   });
 
-  it("restores from storage", () => {
-    storage.getItem.mockReturnValue(
+  it("restores from storage", async () => {
+    storage.getItem.mockResolvedValue(
       '{ "something": true, "color": "orange", "person": { "height": 5.83 } }',
     );
     const restore = createRestoreStorage(storage, "zoink");
 
-    expect(
-      restore({
-        good: true,
-      })[0],
-    ).toEqual({
+    expect((await restore({ good: true }))[0]).toEqual({
       something: true,
       color: "orange",
-      person: {
-        height: 5.83,
-      },
+      person: { height: 5.83 },
     });
     expect(storage.getItem).toHaveBeenCalledWith("zoink");
   });
 
-  it("uses default value if storage unavailable", () => {
-    storage.getItem.mockReturnValue(undefined);
+  it("uses default value if storage unavailable", async () => {
+    storage.getItem.mockResolvedValue(undefined);
     const restore = createRestoreStorage(storage, "zoink");
 
-    expect(
-      restore({
-        good: true,
-      })[0],
-    ).toEqual({
-      good: true,
-    });
+    expect((await restore({ good: true }))[0]).toEqual({ good: true });
     expect(storage.getItem).toHaveBeenCalledWith("zoink");
   });
 
@@ -69,7 +57,7 @@ describe("RulesEngine:utils", () => {
     vi.useFakeTimers();
     vi.setSystemTime(mockedTimestamp);
 
-    storage.getItem.mockReturnValue(
+    storage.getItem.mockResolvedValue(
       '{ "something": true, "color": "orange", "person": { "height": 5.83 } }',
     );
     const save = createSaveStorage(storage, "zoink");

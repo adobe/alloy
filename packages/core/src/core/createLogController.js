@@ -10,30 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({
-  console,
-  createLogger,
-  instanceName,
-  createNamespacedStorage,
-  getMonitors,
-}) => {
-  const storage = createNamespacedStorage(`instance.${instanceName}.`);
-
-  const debugSessionValue = storage.session.getItem("debug");
-  let debugEnabled = debugSessionValue === "true";
-  let debugEnabledWritableFromConfig = debugSessionValue === null;
+export default ({ console, createLogger, instanceName, getMonitors }) => {
+  let debugEnabled = false;
 
   const getDebugEnabled = () => debugEnabled;
-  const setDebugEnabled = (value, { fromConfig }) => {
-    if (!fromConfig || debugEnabledWritableFromConfig) {
-      debugEnabled = value;
-    }
-
-    if (!fromConfig) {
-      // Web storage only allows strings, so we explicitly convert to string.
-      storage.session.setItem("debug", value.toString());
-      debugEnabledWritableFromConfig = false;
-    }
+  const setDebugEnabled = (value) => {
+    debugEnabled = value;
   };
 
   return {

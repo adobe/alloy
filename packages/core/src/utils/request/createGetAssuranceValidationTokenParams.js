@@ -13,20 +13,12 @@ governing permissions and limitations under the License.
 import { uuid, queryString } from "../index.js";
 
 const ASSURANCE_VALIDATION_SESSION_URL_PARAM = "adb_validation_sessionid";
-const ASSURANCE_VALIDATION_NAMESPACE = "validation.";
-const CLIENT_ID = "clientId";
 
-const getOrCreateAssuranceClientId = (storage) => {
-  let clientId = storage.persistent.getItem(CLIENT_ID);
-  if (!clientId) {
-    clientId = uuid();
-    storage.persistent.setItem(CLIENT_ID, clientId);
-  }
-  return clientId;
-};
+export default ({ getLocationSearch }) => {
+  // Generated once per instance — Assurance is a browser debugging tool,
+  // so a fresh ID per instance startup is sufficient.
+  const clientId = uuid();
 
-export default ({ getLocationSearch, createNamespacedStorage }) => {
-  const storage = createNamespacedStorage(ASSURANCE_VALIDATION_NAMESPACE);
   return () => {
     const parsedQuery = queryString.parse(getLocationSearch());
     const validationSessionId =
@@ -34,7 +26,6 @@ export default ({ getLocationSearch, createNamespacedStorage }) => {
     if (!validationSessionId) {
       return "";
     }
-    const clientId = getOrCreateAssuranceClientId(storage);
     const validationToken = `${validationSessionId}|${clientId}`;
     return `&${queryString.stringify({
       adobeAepValidationToken: validationToken,

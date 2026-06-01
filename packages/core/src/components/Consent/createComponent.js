@@ -62,15 +62,15 @@ export default ({
           consent.suspend();
           const consentHashes = consentHashStore.lookup(consentOptions);
           return taskQueue
-            .addTask(() => {
-              if (consentHashes.isNew()) {
+            .addTask(async () => {
+              if (await consentHashes.isNew()) {
                 return sendSetConsentRequest({
                   consentOptions,
                   identityMap,
                   edgeConfigOverrides,
                 });
               }
-              return Promise.resolve();
+              return undefined;
             })
             .then(() => consentHashes.save())
             .finally(readCookieIfQueueEmpty);

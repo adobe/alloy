@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import {
   getApexDomain,
-  injectStorage,
   createLoggingCookieJar,
   injectFireReferrerHideableImage,
   injectGetBrowser,
@@ -70,16 +69,10 @@ export const createExecuteCommand = ({
   components,
   createPlatformServices,
 }) => {
-  // `createLogController` and `createGetAssuranceValidationTokenParams` still
-  // consume sync storage, so we can't use the async storage capability here
-  // yet. Remove once those consumers are migrated (async storage PR).
-  const createNamespacedStorage = injectStorage(globalThis);
-
   const logController = createLogController({
     console: globalThis.console,
     createLogger,
     instanceName,
-    createNamespacedStorage,
     getMonitors: getMonitors.bind(null, monitors),
   });
 
@@ -104,7 +97,6 @@ export const createExecuteCommand = ({
   const getAssuranceValidationTokenParams =
     createGetAssuranceValidationTokenParams({
       getLocationSearch: () => platformServices.globals.getLocationSearch(),
-      createNamespacedStorage,
     });
   const getBrowser = injectGetBrowser({
     userAgent: platformServices.globals.getUserAgent(),
@@ -222,7 +214,6 @@ export const createExecuteCommand = ({
             errorPrefix: `[${instanceName}] [${componentName}]`,
             logger: componentLogger,
           }),
-          createNamespacedStorage,
           apexDomain,
           getBrowser,
           cookieTransfer,

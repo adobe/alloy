@@ -12,50 +12,47 @@ governing permissions and limitations under the License.
 
 import { describe, it, expect } from "vitest";
 import { createGetAssuranceValidationTokenParams } from "../../../../../src/utils/request/index.js";
-import { injectStorage } from "../../../../../src/utils/index.js";
 import uuidV4Regex from "../../../constants/uuidV4Regex.js";
 
-const win = {
-  localStorage: window.localStorage,
-};
 let currentSearch = "";
 const getLocationSearch = () => currentSearch;
+
 describe("createGetAssuranceValidationTokenParams", () => {
-  it("gets validation token params", () => {
-    let result;
-    let token;
-    let firstClientId;
-    let clientId;
+  it("returns empty string when no session ID in query", () => {
     currentSearch = "";
-    const getAssuranceValidationTokenParams =
-      createGetAssuranceValidationTokenParams({
-        getLocationSearch,
-        createNamespacedStorage: injectStorage(win),
-      });
-    expect(getAssuranceValidationTokenParams()).toEqual("");
+    const fn = createGetAssuranceValidationTokenParams({ getLocationSearch });
+    expect(fn()).toEqual("");
+  });
+
+  it("returns empty string when session ID param is empty", () => {
+    currentSearch = "?adb_validation_sessionid=";
+    const fn = createGetAssuranceValidationTokenParams({ getLocationSearch });
+    expect(fn()).toEqual("");
+  });
+
+  it("returns validation token with UUID client ID when session ID present", () => {
     currentSearch = "?adb_validation_sessionid=abc-123";
-    result = getAssuranceValidationTokenParams();
-    // eslint-disable-next-line prefer-const
-    [token, firstClientId] = result.split("%7C");
+    const fn = createGetAssuranceValidationTokenParams({ getLocationSearch });
+    const result = fn();
+    const [token, clientId] = result.split("%7C");
     expect(token).toEqual("&adobeAepValidationToken=abc-123");
-    expect(uuidV4Regex.test(firstClientId)).toBe(true);
-    expect(
-      win.localStorage.getItem("com.adobe.alloy.validation.clientId"),
-    ).toEqual(firstClientId);
-    currentSearch = "?adb_validation_sessionid=abc-123%20fgh";
-    result = getAssuranceValidationTokenParams();
-    [token, clientId] = result.split("%7C");
-    expect(token).toEqual("&adobeAepValidationToken=abc-123%20fgh");
-    expect(clientId).toEqual(firstClientId);
+    expect(uuidV4Regex.test(clientId)).toBe(true);
+  });
+
+  it("uses the same client ID across multiple calls on the same instance", () => {
+    currentSearch = "?adb_validation_sessionid=abc-123";
+    const fn = createGetAssuranceValidationTokenParams({ getLocationSearch });
+    const [, firstClientId] = fn().split("%7C");
+    currentSearch = "?adb_validation_sessionid=abc-456";
+    const [, secondClientId] = fn().split("%7C");
+    expect(firstClientId).toEqual(secondClientId);
+  });
+
+  it("works with session ID among other query params", () => {
     currentSearch =
       "?lang=en&sort=relevancy&f:el_product=[Data%20Collection]&adb_validation_sessionid=abc-123";
-    result = getAssuranceValidationTokenParams();
-    [token, clientId] = result.split("%7C");
+    const fn = createGetAssuranceValidationTokenParams({ getLocationSearch });
+    const [token] = fn().split("%7C");
     expect(token).toEqual("&adobeAepValidationToken=abc-123");
-    expect(clientId).toEqual(firstClientId);
-    currentSearch = "?lang=en&sort=relevancy&f:el_product=[Data%20Collection]";
-    expect(getAssuranceValidationTokenParams()).toEqual("");
-    currentSearch = "?adb_validation_sessionid=";
-    expect(getAssuranceValidationTokenParams()).toEqual("");
   });
 });

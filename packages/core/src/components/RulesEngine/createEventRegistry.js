@@ -39,19 +39,22 @@ import {
  */
 export default ({ storage, logger }) => {
   let currentStorage = storage;
-  let save;
 
+  // Initialized to safe defaults so the registry is usable immediately;
+  // setStorage updates them asynchronously when switching to persistent storage.
   /** @type {EventRegistry} */
-  let eventRegistry;
+  let eventRegistry = {};
 
   /** @type {number} */
-  let eventRegistrySize;
+  let eventRegistrySize = 0;
+
+  let save = createSaveStorage(storage, EVENT_HISTORY_STORAGE_KEY);
 
   /**
    * Sets a new storage object for the event registry
    * @param {Object} newStorage
    */
-  const setStorage = (newStorage) => {
+  const setStorage = async (newStorage) => {
     currentStorage = newStorage;
 
     const restore = createRestoreStorage(
@@ -61,7 +64,7 @@ export default ({ storage, logger }) => {
 
     save = createSaveStorage(currentStorage, EVENT_HISTORY_STORAGE_KEY);
 
-    [eventRegistry, eventRegistrySize] = restore({});
+    [eventRegistry, eventRegistrySize] = await restore({});
 
     if (eventRegistrySize > EVENT_HISTORY_MAX_LENGTH) {
       const eventPruner = createEventPruner();

@@ -32,21 +32,26 @@ export default ({ storage }) => {
       };
 
       return {
-        isNew() {
-          return consentObjects.some((consentObject) => {
-            const key = getKey(consentObject);
-            const previousHash = storage.getItem(key);
-            return (
-              previousHash === null ||
-              previousHash !== getCurrentHash(consentObject)
-            );
-          });
+        async isNew() {
+          const checks = await Promise.all(
+            consentObjects.map(async (consentObject) => {
+              const key = getKey(consentObject);
+              const previousHash = await storage.getItem(key);
+              return (
+                previousHash === null ||
+                previousHash !== getCurrentHash(consentObject)
+              );
+            }),
+          );
+          return checks.some(Boolean);
         },
-        save() {
-          consentObjects.forEach((consentObject) => {
-            const key = getKey(consentObject);
-            storage.setItem(key, getCurrentHash(consentObject));
-          });
+        async save() {
+          await Promise.all(
+            consentObjects.map((consentObject) => {
+              const key = getKey(consentObject);
+              return storage.setItem(key, getCurrentHash(consentObject));
+            }),
+          );
         },
       };
     },
