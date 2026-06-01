@@ -34,6 +34,7 @@ const createRulesEngine = ({
   consent,
   getBrowser,
   logger,
+  platformServices,
 }) => {
   const { orgId, personalizationStorageEnabled } = config;
   const collect = createCollect({
@@ -55,7 +56,7 @@ const createRulesEngine = ({
   const decisionProvider = createDecisionProvider({ eventRegistry });
   const contextProvider = createContextProvider({
     eventRegistry,
-    window,
+    getWindowContext: platformServices.globals.getWindowContext,
     getBrowser,
   });
 

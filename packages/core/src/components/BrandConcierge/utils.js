@@ -9,17 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import {
-  getNamespacedCookieName,
-  createGetPageLocation,
-} from "../../utils/index.js";
+import { getNamespacedCookieName } from "../../utils/index.js";
 import { buildPageSurface } from "../../utils/surfaceUtils.js";
 import { BC_SESSION_COOKIE_NAME } from "./constants.js";
 import uuid from "../../utils/uuid.js";
 
 export const getPageSurface = () => {
-  const pageLocation = createGetPageLocation({ window: window });
-  return buildPageSurface(pageLocation);
+  return buildPageSurface(() => globalThis.location);
 };
 
 export const getConciergeSessionCookie = ({ loggingCookieJar, config }) => {

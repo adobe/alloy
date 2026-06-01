@@ -15,7 +15,14 @@ This is the rough plan to migrate into the "Universal JavaScript SDK"
   - [x] `RuntimeService` (setTimeout, etc. )
         All steps should proceed imperceptably - no breaking changes, no new bugs, no changes to user configurations.
   - [x] `GlobalsService` (variables currently on `window` like `window.__alloyNS`, monitors, queue)
-- [ ] Migrate usage of these apis to these capabilities one at a time.
+- [x] Migrate usage of these apis to these capabilities one at a time.
+  - [x] Cookie callers: replaced `cookieJar` singleton with `platformServices.cookie` throughout core (Identity, Audiences, Consent, createCookieTransfer, injectDoesIdentityCookieExist, getApexDomain, getLocationHint)
+  - [x] Legacy callers: Identity now uses `platformServices.legacy` (getEcidFromVisitor, awaitVisitorOptIn); deleted core visitorService files
+  - [x] Context/globals callers: Identity (`isPageSsl`, `locationSearch`, `locationHash`), Audiences (`isPageSsl`), BrandConcierge (`locationSearch`, `fetch`), RulesEngine (`createContextProvider`) all use platformServices
+  - [x] Bootstrap/monitor globals: `getMonitors.js` no longer reads `window.__alloyMonitors`; browser layer merges it into `monitors` param
+  - [x] Storage: `injectStorage(window)` → `injectStorage(globalThis)` stopgap (sync callers remain; async migration is a follow-up)
+  - [ ] Async storage migration: `createLogController`, `createGetAssuranceValidationTokenParams`, `createConsentHashStore`, RulesEngine storage callers still use sync storage
+  - [x] ESLint `no-restricted-globals` for core/src banning `window`, `document`, `navigator`, `localStorage`, `sessionStorage` (dom utilities excluded pending Wave 2 move)
 
 ---
 
@@ -47,14 +54,7 @@ Out of scope:
 
 ### 1) Core is not import-safe outside the browser
 
-Running `node -e "import('./packages/core/src/index.js')"` fails with `ReferenceError: window is not defined`. Browser-dependent modules are pulled in at module scope:
-
-- `packages/core/src/index.js:32-33` — `const { console } = window;` and `const createNamespacedStorage = injectStorage(window);`
-- `packages/core/src/core/index.js:62` — `const { console, fetch, navigator } = window;`
-- `packages/core/src/components/Context/index.js:24-30` — `const web = injectWeb(window);` and similar
-- `packages/core/src/components/ActivityCollector/index.js` — `injectStorage(window)`
-
-These module-scope references are the #1 blocker for Node importability and must be addressed in the earliest PRs.
+~~Running `node -e "import('./packages/core/src/index.js')"` fails with `ReferenceError: window is not defined`.~~ **✅ Fixed** — all module-scope `window` references removed. `injectStorage(globalThis)` is used as a stopgap; storage gracefully no-ops in Node.js since `globalThis.localStorage` is undefined (caught by existing try/catch). Core is now import-safe; full execute-safety requires the async storage migration (PR 4b).
 
 ### 2) Browser globals are widely referenced in core
 
@@ -68,11 +68,7 @@ Beyond `window` and `document`, core reaches for many browser-specific APIs dire
 
 ### 3) Browser bootstrap and ambient-global contracts live in core
 
-- Snippet and instance queue globals in `packages/core/src/core/index.js` (`window.__alloyNS`, `window[instanceName].q`).
-- Monitor globals in `packages/core/src/core/getMonitors.js` (`window.__alloyMonitors`).
-- Third-party ambient globals:
-  - `window.Visitor`, `window.adobe.optIn` in the identity visitor bridge.
-  - `window.ID5`, `window.ats` in the advertising identity bridge.
+**✅ Fixed** — `window.__alloyNS` / `window[name].q` reading already lived in `browser/src/initializeStandalone.js`. `window.__alloyMonitors` removed from `getMonitors.js`; browser layer now merges it before calling `createCustomInstance`. `window.Visitor` / `window.adobe.optIn` replaced by `platformServices.legacy` in Identity; old visitorService files deleted.
 
 ### 4) Browser package tooling is coupled to core metadata and composition
 
@@ -670,51 +666,49 @@ With browser components out of core, create the service interfaces and browser a
 
 With services available on `platformServices`, migrate each usage domain to consume them instead of globals. Each domain is an independent PR.
 
-**PR 4a: Migrate network callers**
+**PR 4a: Migrate network callers** ✅ (partial)
 
-- Refactor `injectSendFetchRequest` and `injectSendBeaconRequest` to consume `platformServices.network`.
-- Replace direct `new URL()` / `new URLSearchParams()` in remaining core code with `platformServices.network.parseURL` / `createURLSearchParams`.
-- Refactor BrandConcierge to use `platformServices.network.sendFetchRequest`.
+- ✅ `injectSendNetworkRequest` already consumes `platformServices.network.sendFetchRequest` / `sendBeaconRequest` (done in Wave 3 scaffolding).
+- ✅ BrandConcierge no longer reads `window.fetch`; uses the global `fetch` (available in browsers and Node.js 18+).
+- ⏭ `new URL()` / `new URLSearchParams()` are Node.js globals — no action needed for portability.
 
-**PR 4b: Migrate storage callers (async refactor)**
+**PR 4b: Migrate storage callers (async refactor)** ⏳ (stopgap only)
 
-- Replace `injectStorage(window)` calls with `platformServices.storage.createNamespacedStorage`.
-- Refactor callers for async:
-  - `createLogController.js` — await or queue until resolved.
-  - `createGetAssuranceValidationTokenParams.js` — async getter.
-  - `createConsentHashStore.js` — `isNew()` returns `Promise<boolean>`.
-  - RulesEngine event registry storage operations.
+- ✅ `injectStorage(window)` → `injectStorage(globalThis)` — removes `window` dependency; storage gracefully no-ops in Node.js.
+- ☐ Full async migration still needed: `createLogController.js`, `createGetAssuranceValidationTokenParams.js`, `createConsentHashStore.js`, RulesEngine storage callers.
 
-**PR 4c: Migrate cookie callers**
+**PR 4c: Migrate cookie callers** ✅ (partial — js-cookie dep move pending)
 
-- Replace `cookieJar.js` singleton with injected `platformServices.cookie`.
-- Thread CookieService through: `createCookieTransfer`, `injectDoesIdentityCookieExist`, Identity, Consent, Audiences, BrandConcierge.
-- Preserve `withConverter()` for Audiences and apex-domain probing for `getApexDomain`.
-- Move `js-cookie` dependency from core to browser `package.json`.
+- ✅ `cookieJar.js` singleton replaced with `platformServices.cookie` throughout core.
+- ✅ `createCookieTransfer`, `injectDoesIdentityCookieExist`, Identity, Consent, Audiences all use injected CookieService.
+- ✅ `withConverter()` preserved for Audiences; `getApexDomain` uses `platformServices.cookie`.
+- ✅ `CookieService` extended with `getAll()` for `createCookieTransfer`'s all-cookies read.
+- ✅ `js-cookie` moved from core `dependencies` → core `devDependencies` + browser `dependencies`; `cookieJar.js` removed from core/src; `createBrowserCookieService` imports `js-cookie` directly; `Advertising` component updated to use `platformServices.cookie`.
 
-**PR 4d: Migrate runtime callers**
+**PR 4d: Migrate runtime callers** ⏭ (not required for Node.js portability)
 
-- Replace direct `setTimeout`/`clearTimeout` in BrandConcierge and StreamingMedia with `platformServices.runtime`.
-- Replace `atob`/`btoa` in `bytes.js`.
-- Replace `TextEncoder`/`TextDecoder` in `fnv1a32Hex.js`, `createStreamParser.js`, `createDecodeKndctrCookie.js`.
+- `setTimeout`/`clearTimeout`, `atob`/`btoa`, `TextEncoder`/`TextDecoder`, `fetch` are all available as globals in Node.js 18+. Core already uses them without `window.` prefix, so no changes are needed for portability. Injecting them via `platformServices.runtime` remains an option for testability if desired in the future.
 
-**PR 4e: Migrate legacy and globals callers**
+**PR 4e: Migrate legacy and globals callers** ✅
 
-- Refactor Identity to consume `platformServices.legacy` instead of `window.Visitor` / `window.adobe.optIn`.
-- Transition third-party globals (`window.ID5`, `window.ats`) in Advertising (now in browser package) to `platformServices.globals.getGlobal()` if still needed cross-boundary, or to direct `window` access within browser-owned code.
+- ✅ Identity uses `platformServices.legacy.getEcidFromVisitor` and `platformServices.legacy.awaitVisitorOptIn`; old `visitorService/` files deleted.
+- ✅ `getMonitors.js` no longer reads `window.__alloyMonitors`; browser layer merges it into `monitors` before calling `createCustomInstance`.
+- ✅ `window.ID5` / `window.ats` are in Advertising which already lives in the browser package — no cross-boundary issue.
 
-**PR 4f: Migrate context callers in core**
+**PR 4f: Migrate context callers in core** ✅
 
-- Refactor Identity (`isPageSsl`, `locationSearch`), Audiences (`isPageSsl`), BrandConcierge (`locationSearch`) to receive environment data via `platformServices` instead of `window`.
-- Refactor RulesEngine's `createContextProvider` to accept an injected context provider function.
+- ✅ Identity uses `platformServices.globals.isPageSsl()`, `getLocationSearch()`, `getLocationHash()`.
+- ✅ Audiences uses `platformServices.globals.isPageSsl()`.
+- ✅ BrandConcierge uses `platformServices.globals.getLocationSearch()`; `BrandConcierge/utils.js` uses `globalThis.location`.
+- ✅ `createContextProvider` refactored to accept `getWindowContext` function; RulesEngine passes `platformServices.globals.getWindowContext`.
+- ✅ `GlobalsService` extended with `isPageSsl()`, `getLocationHash()`, `getWindowContext()`.
 
-**PR 4g: Linting, cleanup, and hardening**
+**PR 4g: Linting, cleanup, and hardening** ☐
 
-- Add `no-restricted-globals` rule in `eslint.config.js` `alloy/core-src` section banning `window`, `document`, `navigator`, `localStorage`, `sessionStorage`, `fetch`, `setTimeout`, `clearTimeout`, `atob`, `btoa`, `TextEncoder`, `TextDecoder`, `MutationObserver`, `requestAnimationFrame`, `DOMParser`, `indexedDB`.
-- Remove any remaining temporary migration fallbacks from core.
-- Verify `@adobe/aep-rules-engine` portability; add Node smoke test covering RulesEngine import.
-- Add composition tests for component exclusion.
-- Final Node smoke test: import core, create instance with injected services, execute minimal `sendEvent` lifecycle.
+- ☐ Add `no-restricted-globals` rule in `eslint.config.js` `alloy/core-src` section banning `window`, `document`, `navigator`, `localStorage`, `sessionStorage`.
+- ☐ Remove temporary `injectStorage(globalThis)` stopgap once async storage migration (4b) is complete.
+- ☐ Verify `@adobe/aep-rules-engine` portability; add Node smoke test covering RulesEngine import.
+- ☐ Final Node smoke test: import core, create instance with injected services, execute minimal `sendEvent` lifecycle.
 
 ---
 

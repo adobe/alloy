@@ -23,8 +23,19 @@ const createBrowserGlobalsService = () => ({
   },
   getMonitors: () => window["__alloyMonitors"] || [],
   getLocationSearch: () => window.location.search,
+  getLocationHash: () => window.location.hash,
   getUserAgent: () => window.navigator.userAgent,
   getHostname: () => window.location.hostname,
+  isPageSsl: () => window.location.protocol === "https:",
+  getWindowContext: () => ({
+    title: document.title,
+    url: window.location.href,
+    referrer: document.referrer,
+    height: window.innerHeight,
+    width: window.innerWidth,
+    scrollY: window.scrollY,
+    scrollX: window.scrollX,
+  }),
 });
 
 export default createBrowserGlobalsService;

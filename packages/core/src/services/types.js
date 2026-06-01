@@ -78,6 +78,7 @@ governing permissions and limitations under the License.
 /**
  * @typedef {Object} CookieService
  * @property {(name: string) => (string | undefined)} get
+ * @property {() => Record<string, string>} getAll
  * @property {(name: string, value: string, options?: CookieAttributes) => (string | undefined)} set
  * @property {(name: string, options?: CookieAttributes) => void} remove
  * @property {(converter: CookieConverter) => CookieService} withConverter
@@ -105,13 +106,27 @@ governing permissions and limitations under the License.
  */
 
 /**
+ * @typedef {Object} WindowContext
+ * @property {string} title
+ * @property {string} url
+ * @property {string} referrer
+ * @property {number} height
+ * @property {number} width
+ * @property {number} scrollY
+ * @property {number} scrollX
+ */
+
+/**
  * @typedef {Object} GlobalsService
  * @property {() => string[]} getInstanceNames
  * @property {(instanceName: string) => any[]} getInstanceQueue
  * @property {() => import('../core/types.js').AlloyMonitor[]} getMonitors
  * @property {() => string} getLocationSearch
+ * @property {() => string} getLocationHash
  * @property {() => string} getUserAgent
  * @property {() => string} getHostname
+ * @property {() => boolean} isPageSsl
+ * @property {() => WindowContext} getWindowContext
  */
 
 /**

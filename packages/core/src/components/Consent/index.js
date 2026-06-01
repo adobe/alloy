@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import {
   createTaskQueue,
-  cookieJar,
   injectDoesIdentityCookieExist,
   sanitizeOrgIdForCookieName,
 } from "../../utils/index.js";
@@ -31,12 +30,13 @@ const createConsent = ({
   consent,
   sendEdgeNetworkRequest,
   createNamespacedStorage,
+  platformServices,
 }) => {
   const { orgId, defaultConsent } = config;
   const storedConsent = createStoredConsent({
     parseConsentCookie,
     orgId,
-    cookieJar,
+    cookieJar: platformServices.cookie,
   });
   const taskQueue = createTaskQueue();
   const sendSetConsentRequest = injectSendSetConsentRequest({
@@ -52,7 +52,10 @@ const createConsent = ({
     storage: storage.persistent,
   });
 
-  const doesIdentityCookieExist = injectDoesIdentityCookieExist({ orgId });
+  const doesIdentityCookieExist = injectDoesIdentityCookieExist({
+    orgId,
+    cookieJar: platformServices.cookie,
+  });
 
   return createComponent({
     storedConsent,

@@ -30,8 +30,8 @@ const createConciergeComponent = ({
   lifecycle,
   cookieTransfer,
   createResponse,
+  platformServices,
 }) => {
-  const { fetch } = window;
   const session = {
     id: getConciergeSessionCookie({ loggingCookieJar, config }),
   };
@@ -69,7 +69,9 @@ const createConciergeComponent = ({
     lifecycle: {
       onBeforeEvent({ event }) {
         if (config.conversation.collectSources) {
-          const parsedParams = queryString.parse(window.location.search);
+          const parsedParams = queryString.parse(
+            platformServices.globals.getLocationSearch(),
+          );
           const source = parsedParams[SOURCES_QUERY_PARAM];
           if (source) {
             event.mergeXdm({ channel: { referringSource: source } });

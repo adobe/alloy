@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 import {
   getApexDomain,
   injectStorage,
-  cookieJar,
   createLoggingCookieJar,
   injectFireReferrerHideableImage,
   injectGetBrowser,
@@ -73,8 +72,8 @@ export const createExecuteCommand = ({
 }) => {
   // `createLogController` and `createGetAssuranceValidationTokenParams` still
   // consume sync storage, so we can't use the async storage capability here
-  // yet. Remove once those consumers are migrated.
-  const createNamespacedStorage = injectStorage(window);
+  // yet. Remove once those consumers are migrated (async storage PR).
+  const createNamespacedStorage = injectStorage(globalThis);
 
   const logController = createLogController({
     console: globalThis.console,
@@ -99,7 +98,7 @@ export const createExecuteCommand = ({
 
   const apexDomain = getApexDomain(
     platformServices.globals.getHostname(),
-    cookieJar,
+    platformServices.cookie,
   );
   const fireReferrerHideableImage = injectFireReferrerHideableImage();
   const getAssuranceValidationTokenParams =
@@ -122,7 +121,10 @@ export const createExecuteCommand = ({
     setDebugEnabled(options.enabled, { fromConfig: false });
   };
 
-  const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });
+  const loggingCookieJar = createLoggingCookieJar({
+    logger,
+    cookieJar: platformServices.cookie,
+  });
   const configureCommand = (options) => {
     const config = buildAndValidateConfig({
       options,
@@ -143,6 +145,7 @@ export const createExecuteCommand = ({
       apexDomain,
       dateProvider: () => new Date(),
     });
+
     const sendNetworkRequest = injectSendNetworkRequest({
       logger,
       sendFetchRequest: platformServices.network.sendFetchRequest,
@@ -155,7 +158,10 @@ export const createExecuteCommand = ({
     });
     const extractEdgeInfo = injectExtractEdgeInfo({ logger });
     const createResponse = injectCreateResponse({ extractEdgeInfo });
-    const getLocationHint = injectGetLocationHint({ orgId, cookieJar });
+    const getLocationHint = injectGetLocationHint({
+      orgId,
+      cookieJar: platformServices.cookie,
+    });
     const sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
       config,
       lifecycle,

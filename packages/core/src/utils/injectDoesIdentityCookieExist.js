@@ -10,11 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import cookieJar from "./cookieJar.js";
 import getNamespacedCookieName from "./getNamespacedCookieName.js";
 import { IDENTITY } from "../constants/cookieNameKey.js";
 
-export default ({ orgId }) => {
+export default ({ orgId, cookieJar }) => {
   const identityCookieName = getNamespacedCookieName(orgId, IDENTITY);
   /**
    * Returns whether the identity cookie exists.

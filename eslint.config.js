@@ -186,6 +186,58 @@ export default defineConfig([
     },
   },
   {
+    name: "alloy/core-src-globals",
+    files: ["packages/core/src/**/*.{cjs,js}"],
+    languageOptions: {
+      // Declare browser + Node globals so ESLint doesn't fire no-undef for
+      // things like setTimeout, TextEncoder, fetch, etc. The no-restricted-globals
+      // rule below then blocks the ones that aren't actually portable.
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+    },
+  },
+  {
+    name: "alloy/core-src-no-browser-globals",
+    files: ["packages/core/src/**/*.{cjs,js}"],
+    ignores: [
+      "packages/core/src/utils/dom/**",
+      "packages/core/src/utils/fireImage.js",
+      "packages/core/src/utils/injectFireReferrerHideableImage.js",
+    ],
+    rules: {
+      "no-restricted-globals": [
+        "error",
+        {
+          name: "window",
+          message:
+            "Use platformServices instead of browser globals in core. See UNIVERSAL_JS_MIGRATION.md.",
+        },
+        {
+          name: "document",
+          message:
+            "Use platformServices instead of browser globals in core. See UNIVERSAL_JS_MIGRATION.md.",
+        },
+        {
+          name: "navigator",
+          message:
+            "Use platformServices instead of browser globals in core. See UNIVERSAL_JS_MIGRATION.md.",
+        },
+        {
+          name: "localStorage",
+          message:
+            "Use platformServices instead of browser globals in core. See UNIVERSAL_JS_MIGRATION.md.",
+        },
+        {
+          name: "sessionStorage",
+          message:
+            "Use platformServices instead of browser globals in core. See UNIVERSAL_JS_MIGRATION.md.",
+        },
+      ],
+    },
+  },
+  {
     name: "alloy/core-src",
     files: ["packages/*/src/**/*.{cjs,js}"],
     rules: {
@@ -265,7 +317,9 @@ export default defineConfig([
     files: [
       "packages/browser/**/*.{cjs,js,mjs,jsx}",
       "sandboxes/browser/**/*.{cjs,js,mjs,jsx}",
-      "packages/core/**/*.{cjs,js,mjs,jsx}", // TODO: Remove this once browser APIs are removed from core.
+      "packages/core/src/utils/dom/**/*.{cjs,js,mjs,jsx}",
+      "packages/core/src/utils/fireImage.js",
+      "packages/core/src/utils/injectFireReferrerHideableImage.js",
     ],
     plugins: {
       compat: compatPlugin,

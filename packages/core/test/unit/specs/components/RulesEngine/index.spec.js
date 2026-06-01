@@ -73,6 +73,19 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
       consent,
       getBrowser,
       logger: { info: vi.fn() },
+      platformServices: {
+        globals: {
+          getWindowContext: () => ({
+            title: document.title,
+            url: window.location.href,
+            referrer: window.referrer,
+            height: window.innerHeight,
+            width: window.innerWidth,
+            scrollY: window.scrollY,
+            scrollX: window.scrollX,
+          }),
+        },
+      },
     });
 
     rulesEngine.lifecycle.onComponentsRegistered(() => {});

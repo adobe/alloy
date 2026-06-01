@@ -37,7 +37,7 @@ export default ({
       // to the payload since they'll be automatically passed through cookie
       // headers.
       if (!isEndpointFirstParty) {
-        const cookies = cookieJar.get();
+        const cookies = cookieJar.getAll();
 
         const entries = Object.keys(cookies)
           .filter(shouldTransferCookie)

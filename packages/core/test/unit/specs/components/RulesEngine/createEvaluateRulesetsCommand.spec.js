@@ -54,7 +54,7 @@ describe("RulesEngine:evaluateRulesetsCommand", () => {
 
     contextProvider = createContextProvider({
       eventRegistry,
-      window,
+      getWindowContext: () => window,
       getBrowser,
     });
 

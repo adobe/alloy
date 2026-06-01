@@ -10,24 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/* eslint-disable dot-notation */
-
 /** @import { AlloyMonitor } from './types.js' */
 
 /**
- * This factory function creates a getter that combines both provided monitors
- * and any monitors found in the global window.__alloyMonitors array.
- *
- * @param {Array<AlloyMonitor>} [monitors] - Optional array of monitor objects to append to the current one
- * @returns {Function} A function that when called, returns all available monitors
+ * @param {Array<AlloyMonitor>} [monitors]
+ * @returns {Array<AlloyMonitor>}
  */
-export default (monitors) => {
-  /** @type {Array<AlloyMonitor>} */
-  let alloyMonitors = window["__alloyMonitors"] || [];
-
-  if (monitors) {
-    alloyMonitors = alloyMonitors.concat(monitors);
-  }
-
-  return alloyMonitors;
-};
+export default (monitors) => monitors || [];

@@ -14,7 +14,6 @@ governing permissions and limitations under the License.
 export { default as assignConcatArrayValues } from "./assignConcatArrayValues.js";
 export { base64ToBytes, bytesToBase64 } from "./bytes.js";
 export { default as clone } from "./clone.js";
-export { default as cookieJar } from "./cookieJar.js";
 export { default as createMerger } from "./createMerger.js";
 export { default as createCallbackAggregator } from "./createCallbackAggregator.js";
 export { default as createLoggingCookieJar } from "./createLoggingCookieJar.js";
