@@ -492,10 +492,7 @@ const Configuration = ({ initInfo, context }) => {
             />
           </DisclosurePanel>
         </Disclosure>
-        <Disclosure
-          id="propertyActions"
-          data-test-id="propertyActionsHeading"
-        >
+        <Disclosure id="propertyActions" data-test-id="propertyActionsHeading">
           <DisclosureTitle>Property actions</DisclosureTitle>
           <DisclosurePanel>
             <PropertyActionsSection initInfo={initInfo} />
