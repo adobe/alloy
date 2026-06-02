@@ -242,7 +242,7 @@ const PropertyConfigurationSection = ({ initInfo }) => {
       // throw so the section never gets stuck in the running state.
       runResult = {
         scanned: 0,
-        repaired: 0,
+        repaired: [],
         skipped: [],
         failed: [],
         totalCount: null,
