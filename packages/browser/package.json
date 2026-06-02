@@ -26,6 +26,7 @@
   ],
   "scripts": {
     "clean": "rimraf dist distTest",
+    "prepack": "pnpm run build",
     "release": "node scripts/release.mjs",
     "build:types": "tsc -p jsconfig.json --declaration --emitDeclarationOnly --outDir dist/types --checkJs false --noEmit false",
     "build": "pnpm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,SERVICE_WORKER,SERVICE_WORKER_MIN,UTILITY_EXPORTS,BUNDLESIZE && pnpm run build:types",
