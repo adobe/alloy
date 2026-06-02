@@ -18,7 +18,7 @@ import { Provider, lightTheme } from "@adobe/react-spectrum";
 import { worker } from "../helpers/mocks/browser";
 import field from "../helpers/field";
 import ErrorBoundary from "../../../src/view/components/errorBoundary";
-import PropertyConfigurationSection from "../../../src/view/configuration/propertyConfigurationSection";
+import PropertyActionsSection from "../../../src/view/configuration/propertyActionsSection";
 
 const INIT_INFO = {
   company: { orgId: "1234@AdobeOrg" },
@@ -173,14 +173,14 @@ const renderSection = async (initInfo = INIT_INFO) =>
       UNSAFE_className="react-spectrum-provider spectrum spectrum--medium spectrum--light spectrum-accessibility-overrides"
     >
       <ErrorBoundary>
-        <PropertyConfigurationSection initInfo={initInfo} />
+        <PropertyActionsSection initInfo={initInfo} />
       </ErrorBoundary>
     </Provider>,
   );
 
 let view;
 
-describe("Property configuration — repair stale data element references", () => {
+describe("Property actions — repair stale data element references", () => {
   beforeEach(() => {
     patchedIds.length = 0;
     failingPatchIds.clear();

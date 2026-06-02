@@ -7,7 +7,7 @@ The extension configuration view SHALL surface a property-scoped "Repair stale d
 #### Scenario: Control is rendered
 
 - **WHEN** a user opens the extension configuration view for a property
-- **THEN** the configuration view shows a top-level "Property configuration" disclosure section, sibling to "Build options" and "SDK instances", containing a "Repair stale data element references" button and a short description of what the operation does
+- **THEN** the configuration view shows a top-level "Property actions" disclosure section, sibling to "Build options" and "SDK instances", containing a "Repair stale data element references" button and a short description of what the operation does
 
 #### Scenario: Control targets only the current property
 

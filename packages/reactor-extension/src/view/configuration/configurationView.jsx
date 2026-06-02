@@ -81,7 +81,7 @@ import PushNotificationsSection, {
 import BrandConciergeSection, {
   bridge as brandConciergeBridge,
 } from "./brandConciergeSection";
-import PropertyConfigurationSection from "./propertyConfigurationSection";
+import PropertyActionsSection from "./propertyActionsSection";
 import {
   LIBRARY_TYPE_MANAGED,
   LIBRARY_TYPE_PREINSTALLED,
@@ -493,12 +493,12 @@ const Configuration = ({ initInfo, context }) => {
           </DisclosurePanel>
         </Disclosure>
         <Disclosure
-          id="propertyConfiguration"
-          data-test-id="propertyConfigurationHeading"
+          id="propertyActions"
+          data-test-id="propertyActionsHeading"
         >
-          <DisclosureTitle>Property configuration</DisclosureTitle>
+          <DisclosureTitle>Property actions</DisclosureTitle>
           <DisclosurePanel>
-            <PropertyConfigurationSection initInfo={initInfo} />
+            <PropertyActionsSection initInfo={initInfo} />
           </DisclosurePanel>
         </Disclosure>
       </Accordion>

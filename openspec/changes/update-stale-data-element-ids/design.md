@@ -27,17 +27,15 @@ Constraints:
 
 ## Decisions
 
-### Decision: Host the control in the extension configuration view, as its own top-level "Property configuration" section
+### Decision: Host the control in the extension configuration view, as its own top-level "Property actions" section
 
-The extension configuration view is already the top-level surface for property-scoped extension settings. We add a new top-level `<Disclosure>` inside the existing `<Accordion>` in `configurationView.jsx`, as a sibling of "Build options" and "SDK instances". The new section is titled **"Property configuration"** — deliberately generic, so future property-scoped utilities (e.g. exporting rules, auditing DE usage) can be added to the same section without renaming. The repair button inside it stays specific: **"Repair stale data element references"**. The section defaults to collapsed since most users will not need it.
-
-The author flags the section title as a place where they are open to team pushback during PR review.
+The extension configuration view is already the top-level surface for property-scoped extension settings. We add a new top-level `<Disclosure>` inside the existing `<Accordion>` in `configurationView.jsx`, as a sibling of "Build options" and "SDK instances". The new section is titled **"Property actions"** — a clear label for property-scoped operations like the repair. The repair button inside it stays specific: **"Repair stale data element references"**. The section defaults to collapsed since most users will not need it.
 
 **Alternatives considered:**
 - *A new standalone view registered with Reactor.* Reactor extensions can register additional views, but they must be wired into the host's rule-builder UI surfaces (action/condition/event), not into a property-level "tools" area. There is no extension hook for property-level utility views. Rejected.
 - *A nested section inside "SDK instances".* The repair operates on the whole property, not per-instance, so nesting it under "SDK instances" would be misleading. Rejected.
 - *Trigger from each action view individually.* That's what #1503 already does, on-save. The point of this change is to fix many actions at once.
-- *Section name "Data element maintenance" / "Property maintenance" / "Property tools".* "Maintenance" reads slightly negative; "tools" is fine but less natural than "configuration". "Property configuration" is the most flexible naming for an area we may extend.
+- *Section name "Property configuration" / "Data element maintenance" / "Property maintenance" / "Property tools".* "Maintenance" reads slightly negative; "configuration" implies settings rather than operations. "Property actions" was chosen as it best describes the section's purpose.
 
 ### Decision: Scan via `/properties/{propertyId}/rules` paginated, then per-rule `/rules/{ruleId}/rule_components` in parallel
 

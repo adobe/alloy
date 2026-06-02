@@ -172,7 +172,7 @@ const summaryAlertProps = (result) => {
   };
 };
 
-const PropertyConfigurationSection = ({ initInfo }) => {
+const PropertyActionsSection = ({ initInfo }) => {
   const [status, setStatus] = useState(STATUS.IDLE);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [tally, setTally] = useState(initialTally);
@@ -211,14 +211,14 @@ const PropertyConfigurationSection = ({ initInfo }) => {
     setTally(initialTally());
     setResult(null);
 
-    const {
-      company: { orgId },
-      tokens: { imsAccess },
-      propertySettings: { id: propertyId },
-    } = initInfo;
-
     let runResult;
     try {
+      const {
+        company: { orgId },
+        tokens: { imsAccess },
+        propertySettings: { id: propertyId },
+      } = initInfo;
+
       runResult = await repairStaleDataElementReferences({
         orgId,
         imsAccess,
@@ -321,11 +321,11 @@ const PropertyConfigurationSection = ({ initInfo }) => {
   );
 };
 
-PropertyConfigurationSection.propTypes = {
+PropertyActionsSection.propTypes = {
   initInfo: PropTypes.object.isRequired,
 };
 
-export default PropertyConfigurationSection;
+export default PropertyActionsSection;
 
 // ---------------------------------------------------------------------------
 // Section panel
