@@ -11,29 +11,12 @@ governing permissions and limitations under the License.
 */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-vi.mock("../../../../src/view/utils/fetchFromReactor");
+vi.mock("../../../../src/view/utils/fetchDataElements");
 
 import fetchDataElementByName from "../../../../src/view/utils/fetchDataElementByName";
+import fetchDataElements from "../../../../src/view/utils/fetchDataElements";
 
-import fetchFromReactor from "../../../../src/view/utils/fetchFromReactor";
-
-const DELEGATE_DESCRIPTOR_ID = "__EXTENSION_NAME__::dataElements::variable";
-
-const makeDE = (name, id) => ({
-  id,
-  attributes: {
-    name,
-    delegate_descriptor_id: DELEGATE_DESCRIPTOR_ID,
-    settings: JSON.stringify({ solutions: ["analytics"] }),
-  },
-});
-
-const makeResponse = (des, nextPage) => ({
-  parsedBody: {
-    data: des,
-    meta: { pagination: { next_page: nextPage } },
-  },
-});
+const makeDE = (name, id) => ({ id, name, settings: {} });
 
 describe("fetchDataElementByName", () => {
   beforeEach(() => {
@@ -41,12 +24,10 @@ describe("fetchDataElementByName", () => {
   });
 
   it("returns the matching data element when found on the first page", async () => {
-    fetchFromReactor.mockResolvedValueOnce(
-      makeResponse(
-        [makeDE("My Variable", "DE1"), makeDE("Other", "DE2")],
-        null,
-      ),
-    );
+    fetchDataElements.mockResolvedValueOnce({
+      results: [makeDE("My Variable", "DE1"), makeDE("Other", "DE2")],
+      nextPage: null,
+    });
 
     const result = await fetchDataElementByName({
       orgId: "ORG",
@@ -55,24 +36,23 @@ describe("fetchDataElementByName", () => {
       name: "My Variable",
     });
 
-    expect(fetchFromReactor).toHaveBeenCalledTimes(1);
+    expect(fetchDataElements).toHaveBeenCalledTimes(1);
     expect(result).toMatchObject({ id: "DE1", name: "My Variable" });
   });
 
   it("paginates until the exact match is found on a later page", async () => {
-    fetchFromReactor
-      .mockResolvedValueOnce(
-        makeResponse(
-          [
-            makeDE("My Variable 2024", "DE1"),
-            makeDE("My Variable 2025", "DE2"),
-          ],
-          2,
-        ),
-      )
-      .mockResolvedValueOnce(
-        makeResponse([makeDE("My Variable", "DE3")], null),
-      );
+    fetchDataElements
+      .mockResolvedValueOnce({
+        results: [
+          makeDE("My Variable 2024", "DE1"),
+          makeDE("My Variable 2025", "DE2"),
+        ],
+        nextPage: 2,
+      })
+      .mockResolvedValueOnce({
+        results: [makeDE("My Variable", "DE3")],
+        nextPage: null,
+      });
 
     const result = await fetchDataElementByName({
       orgId: "ORG",
@@ -81,16 +61,20 @@ describe("fetchDataElementByName", () => {
       name: "My Variable",
     });
 
-    expect(fetchFromReactor).toHaveBeenCalledTimes(2);
+    expect(fetchDataElements).toHaveBeenCalledTimes(2);
     expect(result).toMatchObject({ id: "DE3", name: "My Variable" });
   });
 
   it("stops as soon as the exact match is found even if more pages exist", async () => {
-    fetchFromReactor
-      .mockResolvedValueOnce(
-        makeResponse([makeDE("My Variable 2024", "DE1")], 2),
-      )
-      .mockResolvedValueOnce(makeResponse([makeDE("My Variable", "DE2")], 3));
+    fetchDataElements
+      .mockResolvedValueOnce({
+        results: [makeDE("My Variable 2024", "DE1")],
+        nextPage: 2,
+      })
+      .mockResolvedValueOnce({
+        results: [makeDE("My Variable", "DE2")],
+        nextPage: 3,
+      });
 
     await fetchDataElementByName({
       orgId: "ORG",
@@ -99,13 +83,14 @@ describe("fetchDataElementByName", () => {
       name: "My Variable",
     });
 
-    expect(fetchFromReactor).toHaveBeenCalledTimes(2);
+    expect(fetchDataElements).toHaveBeenCalledTimes(2);
   });
 
   it("does not return a partial-name match — only an exact match", async () => {
-    fetchFromReactor.mockResolvedValueOnce(
-      makeResponse([makeDE("My Variable 2024", "DE1")], null),
-    );
+    fetchDataElements.mockResolvedValueOnce({
+      results: [makeDE("My Variable 2024", "DE1")],
+      nextPage: null,
+    });
 
     const result = await fetchDataElementByName({
       orgId: "ORG",
@@ -118,7 +103,10 @@ describe("fetchDataElementByName", () => {
   });
 
   it("returns undefined when no data element with that name exists", async () => {
-    fetchFromReactor.mockResolvedValueOnce(makeResponse([], null));
+    fetchDataElements.mockResolvedValueOnce({
+      results: [],
+      nextPage: null,
+    });
 
     const result = await fetchDataElementByName({
       orgId: "ORG",
