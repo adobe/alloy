@@ -25,10 +25,10 @@ const getOrCreateAssuranceClientId = (storage) => {
   return clientId;
 };
 
-export default ({ window, createNamespacedStorage }) => {
+export default ({ getLocationSearch, createNamespacedStorage }) => {
   const storage = createNamespacedStorage(ASSURANCE_VALIDATION_NAMESPACE);
   return () => {
-    const parsedQuery = queryString.parse(window.location.search);
+    const parsedQuery = queryString.parse(getLocationSearch());
     const validationSessionId =
       parsedQuery[ASSURANCE_VALIDATION_SESSION_URL_PARAM];
     if (!validationSessionId) {

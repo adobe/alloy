@@ -13,25 +13,16 @@ governing permissions and limitations under the License.
 import { vi, describe, it, expect } from "vitest";
 import getApexDomain from "../../../../src/utils/getApexDomain.js";
 
-const mockWindowWithHostname = (hostname) => {
-  return {
-    location: {
-      hostname,
-    },
-  };
-};
 describe("getTld", () => {
   it("returns an empty string when only one host part exists", () => {
-    const window = mockWindowWithHostname("localhost");
     const cookieJar = {
       get() {},
       set() {},
       remove() {},
     };
-    expect(getApexDomain(window, cookieJar)).toBe("");
+    expect(getApexDomain("localhost", cookieJar)).toBe("");
   });
   it("returns the first host that allows a cookie to be set", () => {
-    const window = mockWindowWithHostname("a.b.c.co.uk");
     let storedValue;
     const cookieJar = {
       get() {
@@ -44,11 +35,10 @@ describe("getTld", () => {
       },
       remove: vi.fn(),
     };
-    expect(getApexDomain(window, cookieJar)).toBe("c.co.uk");
+    expect(getApexDomain("a.b.c.co.uk", cookieJar)).toBe("c.co.uk");
     expect(cookieJar.remove).toHaveBeenCalled();
   });
   it("tries all segments of the hostname if necessary", () => {
-    const window = mockWindowWithHostname("10.30.34.68");
     let storedValue;
     const cookieJar = {
       get() {
@@ -61,7 +51,7 @@ describe("getTld", () => {
       },
       remove: vi.fn(),
     };
-    expect(getApexDomain(window, cookieJar)).toBe("10.30.34.68");
+    expect(getApexDomain("10.30.34.68", cookieJar)).toBe("10.30.34.68");
     expect(cookieJar.remove).toHaveBeenCalled();
   });
 });

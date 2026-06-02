@@ -1,13 +1,13 @@
 {
   "dist/alloy.js": {
-    "uncompressedSize": 753657,
-    "gzippedSize": 124367,
-    "brotiliSize": 95970
+    "uncompressedSize": 765533,
+    "gzippedSize": 126350,
+    "brotiliSize": 97112
   },
   "dist/alloy.min.js": {
-    "uncompressedSize": 155026,
-    "gzippedSize": 51902,
-    "brotiliSize": 44821
+    "uncompressedSize": 157549,
+    "gzippedSize": 52700,
+    "brotiliSize": 45353
   },
   "dist/alloyServiceWorker.js": {
     "uncompressedSize": 19625,

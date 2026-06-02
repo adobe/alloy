@@ -14,8 +14,9 @@ import { expect } from "vitest";
 
 const TOTAL_RETRIES = [0, 0, 0];
 const RETRIES = 3;
-const TIMEOUT = { timeout: 2000 };
-const CLICK_TIMEOUT = { timeout: 5000 };
+// CI runners can starve Chromium enough that even a click event roundtrip
+// exceeds the old 2s budget; Increased to 6s to avoid test flakiness in CI
+const TIMEOUT = { timeout: 6000 };
 
 /**
  *
@@ -141,9 +142,7 @@ const field = (locator) => ({
         // deterministic. Selection is unchanged.
         await userEvent.keyboard("{Escape}");
       } else {
-        // Pre-click actionability checks against animating react-spectrum
-        // overlays can blow the default 2s budget under CI load.
-        await option.click(CLICK_TIMEOUT);
+        await option.click(TIMEOUT);
       }
       await expect
         .element(locator, TIMEOUT)

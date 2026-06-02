@@ -12,12 +12,16 @@ governing permissions and limitations under the License.
 import { createCustomInstance as createCoreCustomInstance } from "@adobe/alloy-core";
 import * as allOptionalComponents from "./allOptionalComponents.js";
 import * as allRequiredComponents from "./components/requiredComponentCreators.js";
+import createBrowserPlatformServices from "./services/createBrowserPlatformServices.js";
 
 export const createCustomInstance = ({ components = [], ...options } = {}) =>
-  createCoreCustomInstance({
-    ...options,
-    components: [...Object.values(allRequiredComponents), ...components],
-  });
+  createCoreCustomInstance(
+    {
+      ...options,
+      components: [...Object.values(allRequiredComponents), ...components],
+    },
+    createBrowserPlatformServices,
+  );
 
 export const createInstance = (options = {}) =>
   createCustomInstance({
