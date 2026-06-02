@@ -11,12 +11,18 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+/**
+ * 1. Upload build artifacts to CDN
+ * 2. Verify that they were uploaded correctly
+ * 3. If the version was a prerelease, tag it as `next` on npm.
+ */
 
 import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { isPrerelease, cdnUrlFor } from "./helpers/release.js";
+import { name, version } from "../package.json" with { type: "json" };
 
 const urlExists = async (url) => {
   try {
@@ -30,9 +36,6 @@ const urlExists = async (url) => {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const pkgDir = path.resolve(__dirname, "..");
 const distDir = path.join(pkgDir, "dist");
-const { name, version } = JSON.parse(
-  fs.readFileSync(path.join(pkgDir, "package.json"), "utf8"),
-);
 
 const REQUIRED_ARTIFACTS = [
   "alloy.js",
