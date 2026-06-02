@@ -56,9 +56,7 @@ jobs:
 
       # Bump versions and push the release commit BEFORE anything irreversible.
       # `changeset version` is a no-op when changesets are absent, so this
-      # whole step idempotently does nothing on a retry — no flag-based
-      # branching needed. reactor-extension's postversion hook restores its
-      # workspace:* dependency on @adobe/alloy automatically.
+      # whole step idempotently does nothing on a retry.
       - name: Version, commit, push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
