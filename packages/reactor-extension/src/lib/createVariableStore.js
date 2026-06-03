@@ -20,7 +20,7 @@ module.exports = () => {
         nameToKey[dataElementName] === undefined &&
         entries[dataElementName] !== undefined
       ) {
-        entries[dataElementId] = Object.assign(
+        entries[dataElementId] = deepAssign(
           {},
           entries[dataElementId],
           entries[dataElementName],
