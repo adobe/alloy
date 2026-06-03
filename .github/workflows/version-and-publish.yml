@@ -73,9 +73,12 @@ jobs:
       # changeset publish skips already-on-npm versions; with
       # privatePackages.tag: true in .changeset/config.json it also tags the
       # private packages so all four share a uniform release marker.
+      # `changeset publish` only tags what it just published, so a retry after a
+      # post-publish crash drops the tag; `changeset tag` idempotently backfills it.
       - name: Publish + tag
         run: |
           pnpm changeset publish
+          pnpm changeset tag
           git push --tags
 
       - uses: webfactory/ssh-agent@v0.10.0
