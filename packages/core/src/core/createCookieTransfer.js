@@ -23,7 +23,7 @@ export default ({
      * access first-party cookies, therefore we transfer cookies into
      * the request body so they can be read by the server.
      */
-    cookiesToPayload(payload, endpointDomain) {
+    cookiesToPayload(payload, endpointDomain, extraCookieNames = []) {
       // localhost is a special case where the apexDomain is ""
       // We want to treat localhost as a third-party domain.
       const isEndpointFirstParty =
@@ -33,24 +33,31 @@ export default ({
         cookiesEnabled: true,
       };
 
+      const cookies = cookieJar.get();
+      const entries = [];
+
       // If the endpoint is first-party, there's no need to transfer cookies
       // to the payload since they'll be automatically passed through cookie
       // headers.
       if (!isEndpointFirstParty) {
-        const cookies = cookieJar.get();
-
-        const entries = Object.keys(cookies)
+        Object.keys(cookies)
           .filter(shouldTransferCookie)
-          .map((qualifyingCookieName) => {
-            return {
+          .forEach((qualifyingCookieName) => {
+            entries.push({
               key: qualifyingCookieName,
               value: cookies[qualifyingCookieName],
-            };
+            });
           });
+      }
 
-        if (entries.length) {
-          state.entries = entries;
+      extraCookieNames.forEach((name) => {
+        if (cookies[name] !== undefined) {
+          entries.push({ key: name, value: cookies[name] });
         }
+      });
+
+      if (entries.length) {
+        state.entries = entries;
       }
 
       payload.mergeState(state);
