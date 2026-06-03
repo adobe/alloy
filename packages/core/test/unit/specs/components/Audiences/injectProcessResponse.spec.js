@@ -22,13 +22,29 @@ describe("injectProcessResponse", () => {
       processDestinations,
     });
     response = {
-      getPayloadsByType: vi.fn().mockReturnValue(["An Edge Destination"]),
+      getPayloadsByType: vi.fn().mockImplementation((type) => {
+        if (type === "activation:push") {
+          return ["A Push Destination"];
+        }
+        if (type === "activation:pull") {
+          return ["A Pull Destination"];
+        }
+        return [];
+      }),
     };
   });
-  it("processes push destinations and does not return a value", () => {
+  it("processes push destinations", () => {
     processResponse({
       response,
     });
-    expect(processDestinations).toHaveBeenCalled();
+    expect(processDestinations).toHaveBeenCalledWith(["A Push Destination"]);
+  });
+  it("returns pull destinations on the result", () => {
+    const result = processResponse({
+      response,
+    });
+    expect(result).toEqual({
+      destinations: ["A Pull Destination"],
+    });
   });
 });
