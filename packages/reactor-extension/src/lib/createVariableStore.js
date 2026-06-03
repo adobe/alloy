@@ -37,8 +37,9 @@ module.exports = () => {
     },
 
     findByName(dataElementName) {
-      const key = dataElementName && nameToKey[dataElementName];
-      return key !== undefined ? entries[key] : undefined;
+      if (!dataElementName) return undefined;
+      const key = nameToKey[dataElementName] ?? dataElementName;
+      return entries[key];
     },
   };
 };

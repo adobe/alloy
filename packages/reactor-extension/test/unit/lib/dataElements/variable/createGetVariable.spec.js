@@ -71,6 +71,16 @@ describe("Variable data element", () => {
       updateVariable = createUpdateVariable({ variableStore, deepAssign });
     });
 
+    it("name-only round-trip: get retrieves data written without an id", () => {
+      updateVariable({
+        data: { page: "home" },
+        dataElementName: "MyVar",
+        transforms: {},
+      });
+      const result = getVariable({ dataElementName: "MyVar" });
+      expect(result).toEqual({ page: "home" });
+    });
+
     it("Case 1: old rule (id-only) — get with same id retrieves the data", () => {
       updateVariable({
         data: { page: "home" },
