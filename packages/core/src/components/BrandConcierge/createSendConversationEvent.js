@@ -15,6 +15,7 @@ import { getPageSurface } from "./utils.js";
 import uuid from "../../utils/uuid.js";
 import createStreamParser from "./createStreamParser.js";
 import createTimeoutWrapper from "./createTimeoutWrapper.js";
+import { MUNCHKIN_COOKIE_NAME } from "./constants.js";
 
 export default ({
   eventManager,
@@ -103,7 +104,9 @@ export default ({
 
         payload.addEvent(event);
         if (config.conversation.stickyConversationSession === true) {
-          cookieTransfer.cookiesToPayload(payload, edgeDomain);
+          cookieTransfer.cookiesToPayload(payload, edgeDomain, [
+            MUNCHKIN_COOKIE_NAME,
+          ]);
         }
         return sendConversationServiceRequest({
           requestId: uuid(),
