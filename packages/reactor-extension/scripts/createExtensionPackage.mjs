@@ -288,9 +288,6 @@ const buildExtensionZip = async ({
  * @returns {Promise<string>} Absolute path to the produced zip file.
  */
 export const createExtensionPackage = async ({ verbose } = {}) => {
-  console.log("Running the clean process (`pnpm run clean`)...");
-  execute("pnpm", ["run", "clean"], { cwd, verbose });
-
   console.log("Running the build process (`pnpm run build`)...");
   execute("pnpm", ["run", "build"], { cwd, verbose });
 
