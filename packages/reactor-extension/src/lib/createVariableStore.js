@@ -15,9 +15,15 @@ module.exports = () => {
 
   return {
     registerName(dataElementId, dataElementName) {
-      if (dataElementId && dataElementName) {
-        nameToKey[dataElementName] = dataElementId;
+      if (!dataElementId || !dataElementName) return;
+      if (
+        nameToKey[dataElementName] === undefined &&
+        entries[dataElementName] !== undefined
+      ) {
+        entries[dataElementId] = entries[dataElementName];
+        delete entries[dataElementName];
       }
+      nameToKey[dataElementName] = dataElementId;
     },
 
     resolveKey(dataElementId, dataElementName) {

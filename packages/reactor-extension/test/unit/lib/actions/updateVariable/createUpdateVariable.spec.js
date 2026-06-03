@@ -195,6 +195,24 @@ describe("Update variable", () => {
       expect(variableStore.get("DE123")).toEqual({ a: 1, b: 2 });
       expect(variableStore.get("myVariable")).toBeUndefined();
     });
+
+    it("name-only write before id+name write: earlier data is migrated and not orphaned", () => {
+      // Name-only rule fires first — no id available yet.
+      updateVariable({
+        data: { a: 1 },
+        dataElementName: "myVariable",
+        transforms: {},
+      });
+      // Id+name rule fires second — registerName migrates the name-keyed entry to the id key.
+      updateVariable({
+        data: { b: 2 },
+        dataElementName: "myVariable",
+        dataElementId: "DE123",
+        transforms: {},
+      });
+      expect(variableStore.get("DE123")).toEqual({ a: 1, b: 2 });
+      expect(variableStore.get("myVariable")).toBeUndefined();
+    });
   });
 
   describe("updates existing variable using dataElementId when both id and name provided", () => {

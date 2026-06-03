@@ -77,8 +77,26 @@ describe("Variable data element", () => {
         dataElementName: "MyVar",
         transforms: {},
       });
-      const result = getVariable({ dataElementName: "MyVar" });
-      expect(result).toEqual({ page: "home" });
+      expect(getVariable({ dataElementName: "MyVar" })).toEqual({
+        page: "home",
+      });
+    });
+
+    it("name-only write before id+name write: get retrieves all accumulated data", () => {
+      updateVariable({
+        data: { a: 1 },
+        dataElementName: "MyVar",
+        transforms: {},
+      });
+      updateVariable({
+        data: { b: 2 },
+        dataElementId: "DE123",
+        dataElementName: "MyVar",
+        transforms: {},
+      });
+      expect(
+        getVariable({ dataElementId: "DE123", dataElementName: "MyVar" }),
+      ).toEqual({ a: 1, b: 2 });
     });
 
     it("Case 1: old rule (id-only) — get with same id retrieves the data", () => {
