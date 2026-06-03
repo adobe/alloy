@@ -60,6 +60,42 @@ describe("createCookieTransfer", () => {
         cookiesEnabled: true,
       });
     });
+    it("includes extra cookies even when endpoint is first-party", () => {
+      build();
+      cookieJar.get.mockReturnValue({ munchkin: "abc123" });
+      cookieTransfer.cookiesToPayload(payload, "edge.example.com", ["munchkin"]);
+      expect(payload.mergeState).toHaveBeenCalledWith({
+        domain: apexDomain,
+        cookiesEnabled: true,
+        entries: [{ key: "munchkin", value: "abc123" }],
+      });
+    });
+    it("includes extra cookies alongside qualifying cookies for third-party endpoints", () => {
+      build();
+      cookieJar.get.mockReturnValue({
+        kndctr_ABC_CustomOrg_identity: "XYZ@CustomOrg",
+        munchkin: "abc123",
+      });
+      shouldTransferCookie.mockReturnValueOnce(true).mockReturnValueOnce(false);
+      cookieTransfer.cookiesToPayload(payload, endpointDomain, ["munchkin"]);
+      expect(payload.mergeState).toHaveBeenCalledWith({
+        domain: apexDomain,
+        cookiesEnabled: true,
+        entries: [
+          { key: "kndctr_ABC_CustomOrg_identity", value: "XYZ@CustomOrg" },
+          { key: "munchkin", value: "abc123" },
+        ],
+      });
+    });
+    it("skips extra cookies that are not present in the cookie jar", () => {
+      cookieJar.get.mockReturnValue({});
+      build();
+      cookieTransfer.cookiesToPayload(payload, endpointDomain, ["munchkin"]);
+      expect(payload.mergeState).toHaveBeenCalledWith({
+        domain: apexDomain,
+        cookiesEnabled: true,
+      });
+    });
     ["example.com", ""].forEach((domain) => {
       it(`transfers eligible cookies to payload with domain ${domain}`, () => {
         apexDomain = domain;
