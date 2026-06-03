@@ -11,7 +11,14 @@ governing permissions and limitations under the License.
 
 module.exports =
   ({ variableStore }) =>
-  (settings) => {
-    const { dataElementId, dataElementName } = settings;
-    return variableStore[dataElementName] || variableStore[dataElementId] || {};
+  ({ dataElementId, dataElementName }) => {
+    if (dataElementId) {
+      const value = variableStore.get(dataElementId);
+      if (value !== undefined) return value;
+    }
+    if (dataElementName) {
+      const value = variableStore.findByName(dataElementName);
+      if (value !== undefined) return value;
+    }
+    return {};
   };

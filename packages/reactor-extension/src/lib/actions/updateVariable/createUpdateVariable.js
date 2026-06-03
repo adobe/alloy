@@ -15,29 +15,34 @@ const { deletePath } = require("../../utils/pathUtils");
 module.exports =
   ({ variableStore, deepAssign }) =>
   ({ data, dataElementId, dataElementName, transforms, customCode }, event) => {
-    const storeKey = dataElementName || dataElementId;
+    variableStore.registerName(dataElementId, dataElementName);
+    const storeKey = variableStore.resolveKey(dataElementId, dataElementName);
 
-    const existingValue = Object.keys(transforms || {}).reduce((memo, path) => {
-      const { clear } = transforms[path];
-      return clear ? deletePath(memo, path) : memo;
-    }, variableStore[storeKey] || {});
+    const existingValue = Object.keys(transforms || {}).reduce(
+      (memo, path) => {
+        const { clear } = transforms[path];
+        return clear ? deletePath(memo, path) : memo;
+      },
+      variableStore.get(storeKey) || {},
+    );
 
     const previousEvents = existingValue?.__adobe?.analytics?.events || "";
 
-    variableStore[storeKey] = deepAssign({}, existingValue, data);
+    variableStore.set(storeKey, deepAssign({}, existingValue, data));
 
-    const newEvents = variableStore[storeKey]?.__adobe?.analytics?.events || "";
+    const newEvents =
+      variableStore.get(storeKey)?.__adobe?.analytics?.events || "";
     if (previousEvents && newEvents && previousEvents !== newEvents) {
-      variableStore[storeKey].__adobe.analytics.events =
+      variableStore.get(storeKey).__adobe.analytics.events =
         `${previousEvents},${newEvents}`;
     }
 
     if (customCode) {
-      customCode(variableStore[storeKey], event);
+      customCode(variableStore.get(storeKey), event);
     }
 
     // This is a temporary fix to support the 'audienceManager' property that should be lowercased.
-    const adobe = variableStore[storeKey]?.__adobe || {};
+    const adobe = variableStore.get(storeKey)?.__adobe || {};
     if (adobe.audienceManager) {
       adobe.audiencemanager = adobe.audienceManager;
       delete adobe.audienceManager;

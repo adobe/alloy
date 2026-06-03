@@ -9,6 +9,36 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// This is just a store of variables indexed by their cacheId
+module.exports = () => {
+  const entries = {};
+  const nameToKey = {};
 
-module.exports = () => ({});
+  return {
+    registerName(dataElementId, dataElementName) {
+      if (dataElementId && dataElementName) {
+        nameToKey[dataElementName] = dataElementId;
+      }
+    },
+
+    resolveKey(dataElementId, dataElementName) {
+      if (dataElementId) return dataElementId;
+      if (dataElementName && nameToKey[dataElementName] !== undefined) {
+        return nameToKey[dataElementName];
+      }
+      return dataElementName;
+    },
+
+    get(key) {
+      return entries[key];
+    },
+
+    set(key, value) {
+      entries[key] = value;
+    },
+
+    findByName(dataElementName) {
+      const key = dataElementName && nameToKey[dataElementName];
+      return key !== undefined ? entries[key] : undefined;
+    },
+  };
+};
