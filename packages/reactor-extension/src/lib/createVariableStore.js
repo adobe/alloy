@@ -20,7 +20,11 @@ module.exports = () => {
         nameToKey[dataElementName] === undefined &&
         entries[dataElementName] !== undefined
       ) {
-        entries[dataElementId] = entries[dataElementName];
+        entries[dataElementId] = Object.assign(
+          {},
+          entries[dataElementId],
+          entries[dataElementName],
+        );
         delete entries[dataElementName];
       }
       nameToKey[dataElementName] = dataElementId;
