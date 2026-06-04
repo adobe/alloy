@@ -18,8 +18,6 @@ import { fileURLToPath } from "url";
 import fs from "fs";
 
 const REACTOR_CLIENT_ID = "f401a5fe22184c91a85fd441a8aa2976";
-const UPLOADER_SPEC = "@adobe/reactor-uploader@6.0.0-beta.12";
-const RELEASER_SPEC = "@adobe/reactor-releaser@4.0.0-beta.8";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const pkgDir = path.resolve(__dirname, "..");
@@ -49,25 +47,19 @@ if (!fs.existsSync(zipPath)) {
   throw new Error(`Expected packaged zip at ${zipPath}`);
 }
 
-// Re-uploading the same version is idempotent: the uploader updates the
-// existing development extension package by name.
 console.log(`Uploading ${zipName} to Reactor...`);
-run("pnpx", [
-  UPLOADER_SPEC,
+run("pnpm", [
+  "exec",
+  "reactor-uploader",
   zipPath,
   `--auth.client-id=${REACTOR_CLIENT_ID}`,
   "--upload-timeout=300",
 ]);
 
 console.log(`Releasing ${name}@${version}...`);
-const releaser = spawnSync(
-  "pnpx",
-  [RELEASER_SPEC, `--auth.client-id=${REACTOR_CLIENT_ID}`],
-  {
-    cwd: pkgDir,
-    input: "Y\n",
-    stdio: ["pipe", "inherit", "inherit"],
-    env: process.env,
-  },
-);
-if (releaser.status !== 0) process.exit(releaser.status ?? 1);
+run("pnpm", [
+  "exec",
+  "reactor-releaser",
+  `--auth.client-id=${REACTOR_CLIENT_ID}`,
+  "--confirm-package-release",
+]);

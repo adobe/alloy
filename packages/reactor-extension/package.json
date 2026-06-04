@@ -54,9 +54,11 @@
   "devDependencies": {
     "@adobe/auth-token": "^1.0.1",
     "@adobe/reactor-packager": "^4.4.0",
+    "@adobe/reactor-releaser": "4.0.0",
     "@adobe/reactor-sandbox": "^13.4.0",
     "@adobe/reactor-turbine": "^28.1.0",
     "@adobe/reactor-turbine-schemas": "^10.9.0",
+    "@adobe/reactor-uploader": "6.0.2",
     "@babel/cli": "^7.28.3",
     "@babel/core": "^7.28.5",
     "@babel/preset-env": "^7.28.5",
