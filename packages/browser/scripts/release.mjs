@@ -37,7 +37,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const pkgDir = path.resolve(__dirname, "..");
 const distDir = path.join(pkgDir, "dist");
 
-const REQUIRED_ARTIFACTS = [
+const FILES_TO_UPLOAD = [
   "alloy.js",
   "alloy.min.js",
   "alloyServiceWorker.js",
@@ -49,7 +49,10 @@ const alreadyUploaded = await urlExists(cdnUrlFor(version, "alloy.min.js"));
 if (alreadyUploaded) {
   console.log(`CDN already has ${name}@${version}; skipping upload.`);
 } else {
-  for (const file of REQUIRED_ARTIFACTS) {
+  console.log(`Building ${name}@${version} for CDN upload...`);
+  execSync("pnpm run build", { cwd: pkgDir, stdio: "inherit" });
+
+  for (const file of FILES_TO_UPLOAD) {
     const filePath = path.join(distDir, file);
     if (!fs.existsSync(filePath)) {
       throw new Error(`Missing build artifact for CDN upload: ${filePath}`);
@@ -60,7 +63,7 @@ if (alreadyUploaded) {
   const ftpCommands = [
     `-mkdir ${version}`,
     `cd ${version}`,
-    ...REQUIRED_ARTIFACTS.map((f) => `put ${path.join(distDir, f)}`),
+    ...FILES_TO_UPLOAD.map((f) => `put ${path.join(distDir, f)}`),
     "bye",
   ].join("\n");
 
@@ -72,7 +75,7 @@ if (alreadyUploaded) {
 
   // Verify each artifact landed before reporting success.
   const verifyResults = await Promise.all(
-    REQUIRED_ARTIFACTS.map(async (file) => ({
+    FILES_TO_UPLOAD.map(async (file) => ({
       file,
       exists: await urlExists(cdnUrlFor(version, file)),
     })),
