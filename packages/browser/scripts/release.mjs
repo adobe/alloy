@@ -69,8 +69,8 @@ if (alreadyUploaded) {
 
   console.log(`Uploading ${name}@${version} to CDN...`);
   execSync(
-    `echo "${ftpCommands}" | sftp -oStrictHostKeyChecking=no -b - sshacs@dxresources.ssh.upload.akamai.com:/prod/alloy`,
-    { stdio: "inherit" },
+    "sftp -oStrictHostKeyChecking=no -b - sshacs@dxresources.ssh.upload.akamai.com:/prod/alloy",
+    { input: ftpCommands, stdio: ["pipe", "inherit", "inherit"] },
   );
 
   // Verify each artifact landed before reporting success.
