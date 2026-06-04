@@ -48,7 +48,8 @@ if (!fs.existsSync(buildDir)) {
 }
 
 console.log(`Deploying ${name}@${version} to alloyio.com...`);
-run("pnpx", [
+run("pnpm", [
+  "exec",
   "@azure/static-web-apps-cli",
   "deploy",
   buildDir,
