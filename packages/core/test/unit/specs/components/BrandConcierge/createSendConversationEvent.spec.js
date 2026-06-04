@@ -68,6 +68,7 @@ describe("createSendConversationEvent", () => {
       sendConversationServiceRequest: vi.fn(),
       decodeKndctrCookie: vi.fn().mockReturnValue("test-ecid-123"),
       session: { id: "test-session-id" },
+      getPageLocation: () => ({ host: "test.adobe.com", pathname: "/page" }),
     };
   });
 

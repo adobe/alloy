@@ -121,6 +121,7 @@ governing permissions and limitations under the License.
  * @property {() => string} getLocationHash
  * @property {() => string} getUserAgent
  * @property {() => string} getHostname
+ * @property {() => { host: string, pathname: string }} getPageLocation
  * @property {() => boolean} isPageSsl
  * @property {() => WindowContext} getWindowContext
  */

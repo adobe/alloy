@@ -14,8 +14,8 @@ import { buildPageSurface } from "../../utils/surfaceUtils.js";
 import { BC_SESSION_COOKIE_NAME } from "./constants.js";
 import uuid from "../../utils/uuid.js";
 
-export const getPageSurface = () => {
-  return buildPageSurface(() => globalThis.location);
+export const getPageSurface = (getLocation) => {
+  return buildPageSurface(getLocation);
 };
 
 export const getConciergeSessionCookie = ({ loggingCookieJar, config }) => {

@@ -26,6 +26,7 @@ const createBrowserGlobalsService = () => ({
   getLocationHash: () => window.location.hash,
   getUserAgent: () => window.navigator.userAgent,
   getHostname: () => window.location.hostname,
+  getPageLocation: () => window.location,
   isPageSsl: () => window.location.protocol === "https:",
   getWindowContext: () => ({
     title: document.title,

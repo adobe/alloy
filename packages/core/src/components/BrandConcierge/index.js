@@ -63,6 +63,7 @@ const createConciergeComponent = ({
     sendConversationServiceRequest,
     decodeKndctrCookie,
     session,
+    getPageLocation: platformServices.globals.getPageLocation,
   });
 
   return {
