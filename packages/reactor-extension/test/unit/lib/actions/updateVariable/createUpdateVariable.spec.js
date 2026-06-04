@@ -213,6 +213,29 @@ describe("Update variable", () => {
       expect(variableStore.get("DE123")).toEqual({ a: 1, b: 2 });
       expect(variableStore.get("myVariable")).toBeUndefined();
     });
+
+    it("migration merges name-keyed data with existing id-keyed data rather than overwriting", () => {
+      // Id-only rule and name-only rule both fire before any id+name rule is seen.
+      updateVariable({
+        data: { a: 1 },
+        dataElementId: "DE123",
+        transforms: {},
+      });
+      updateVariable({
+        data: { b: 2 },
+        dataElementName: "myVariable",
+        transforms: {},
+      });
+      // Id+name rule fires — migration must deepAssign name-keyed data into the existing id-keyed entry.
+      updateVariable({
+        data: { c: 3 },
+        dataElementName: "myVariable",
+        dataElementId: "DE123",
+        transforms: {},
+      });
+      expect(variableStore.get("DE123")).toEqual({ a: 1, b: 2, c: 3 });
+      expect(variableStore.get("myVariable")).toBeUndefined();
+    });
   });
 
   describe("updates existing variable using dataElementId when both id and name provided", () => {
