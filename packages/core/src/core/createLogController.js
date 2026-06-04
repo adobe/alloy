@@ -12,10 +12,16 @@ governing permissions and limitations under the License.
 
 export default ({ console, createLogger, instanceName, getMonitors }) => {
   let debugEnabled = false;
+  let debugSetByUser = false;
 
   const getDebugEnabled = () => debugEnabled;
-  const setDebugEnabled = (value) => {
-    debugEnabled = value;
+  const setDebugEnabled = (value, { fromConfig = false } = {}) => {
+    if (!fromConfig || !debugSetByUser) {
+      debugEnabled = value;
+    }
+    if (!fromConfig) {
+      debugSetByUser = true;
+    }
   };
 
   return {

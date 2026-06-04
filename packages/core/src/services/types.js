@@ -29,16 +29,12 @@ governing permissions and limitations under the License.
  */
 
 /**
- * @typedef {(url: string, body: string) => Promise<NetworkResponse>} SendBeaconRequest
- */
-
-/**
  * @typedef {Object} NetworkService
  * @property {SendFetchRequest} sendFetchRequest
  *   Must send cookies (`credentials: "include"` in browsers).
- * @property {SendBeaconRequest} sendBeaconRequest
- *   May fall back to `sendFetchRequest` when the underlying transport is
- *   unavailable.
+ * @property {((url: string, body: Blob) => boolean) | null} sendBeacon
+ *   Raw `navigator.sendBeacon` (bound to navigator), or null if unavailable.
+ *   The core layer wraps this with fallback and logging.
  */
 
 /**

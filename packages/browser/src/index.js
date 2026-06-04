@@ -14,7 +14,6 @@ import * as allOptionalComponents from "./allOptionalComponents.js";
 import * as allRequiredComponents from "./components/requiredComponentCreators.js";
 import createBrowserPlatformServices from "./services/createBrowserPlatformServices.js";
 
-/* eslint-disable dot-notation */
 export const createCustomInstance = ({
   components = [],
   monitors = [],
@@ -23,7 +22,7 @@ export const createCustomInstance = ({
   createCoreCustomInstance(
     {
       ...options,
-      monitors: [...(window["__alloyMonitors"] || []), ...monitors],
+      monitors,
       components: [...Object.values(allRequiredComponents), ...components],
     },
     createBrowserPlatformServices,

@@ -54,6 +54,17 @@ describe("createLogController", () => {
     logController.setDebugEnabled(false);
     expect(getDebugEnabled()).toBe(false);
   });
+  it("allows config to set debug when user has not set it", () => {
+    const logController = build();
+    logController.setDebugEnabled(true, { fromConfig: true });
+    expect(getDebugEnabled()).toBe(true);
+  });
+  it("does not let config override a value the user set", () => {
+    const logController = build();
+    logController.setDebugEnabled(true);
+    logController.setDebugEnabled(false, { fromConfig: true });
+    expect(getDebugEnabled()).toBe(true);
+  });
   it("creates a logger", () => {
     const logController = build();
     expect(createLogger).toHaveBeenCalledWith({

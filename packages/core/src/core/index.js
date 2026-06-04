@@ -51,7 +51,6 @@ import injectGetLocationHint from "./edgeNetwork/injectGetLocationHint.js";
 import isRequestRetryable from "./network/isRequestRetryable.js";
 import getRequestRetryDelay from "./network/getRequestRetryDelay.js";
 import injectApplyResponse from "./edgeNetwork/injectApplyResponse.js";
-import getMonitors from "./getMonitors.js";
 import * as requiredComponents from "./requiredComponentCreators.js";
 
 const coreConfigValidators = createCoreConfigs();
@@ -69,16 +68,16 @@ export const createExecuteCommand = ({
   components,
   createPlatformServices,
 }) => {
+  const platformServices = createPlatformServices();
+
   const logController = createLogController({
     console: globalThis.console,
     createLogger,
     instanceName,
-    getMonitors: getMonitors.bind(null, monitors),
+    getMonitors: () => [...platformServices.globals.getMonitors(), ...monitors],
   });
 
   const { setDebugEnabled, logger, createComponentLogger } = logController;
-
-  const platformServices = createPlatformServices({ logger });
 
   const parsedQueryString = queryString.parse(
     platformServices.globals.getLocationSearch(),
@@ -141,7 +140,7 @@ export const createExecuteCommand = ({
     const sendNetworkRequest = injectSendNetworkRequest({
       logger,
       sendFetchRequest: platformServices.network.sendFetchRequest,
-      sendBeaconRequest: platformServices.network.sendBeaconRequest,
+      sendBeacon: platformServices.network.sendBeacon,
       isRequestRetryable,
       getRequestRetryDelay,
     });

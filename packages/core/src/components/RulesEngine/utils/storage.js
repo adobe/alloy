@@ -24,8 +24,10 @@ export const createRestoreStorage = (storage, storageKey) => {
 };
 
 export const createSaveStorage = (storage, storageKey) => (value) => {
-  // Fire-and-forget — callers don't need to await writes.
-  storage.setItem(storageKey, JSON.stringify(value));
+  const result = storage.setItem(storageKey, JSON.stringify(value));
+  if (result && typeof result.then === "function") {
+    result.catch(() => {});
+  }
 };
 
 export const createInMemoryStorage = () => {

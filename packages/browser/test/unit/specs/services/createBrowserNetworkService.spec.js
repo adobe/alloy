@@ -24,21 +24,21 @@ afterEach(() => {
 });
 
 describe("BrowserNetworkService", () => {
-  it("exposes sendFetchRequest and sendBeaconRequest as functions", () => {
-    const network = createBrowserNetworkService({ logger: createLogger() });
+  it("exposes sendFetchRequest as a function and sendBeacon when available", () => {
+    const network = createBrowserNetworkService();
     expect(typeof network.sendFetchRequest).toBe("function");
-    expect(typeof network.sendBeaconRequest).toBe("function");
+    expect(typeof network.sendBeacon).toBe("function");
   });
 
-  it("falls back to sendFetchRequest when navigator.sendBeacon is unavailable", () => {
+  it("sets sendBeacon to null when navigator.sendBeacon is unavailable", () => {
     const descriptor = Object.getOwnPropertyDescriptor(
       Navigator.prototype,
       "sendBeacon",
     );
     delete Navigator.prototype.sendBeacon;
     try {
-      const network = createBrowserNetworkService({ logger: createLogger() });
-      expect(network.sendBeaconRequest).toBe(network.sendFetchRequest);
+      const network = createBrowserNetworkService();
+      expect(network.sendBeacon).toBeNull();
     } finally {
       if (descriptor) {
         Object.defineProperty(Navigator.prototype, "sendBeacon", descriptor);

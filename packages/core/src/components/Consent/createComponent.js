@@ -73,6 +73,15 @@ export default ({
               return undefined;
             })
             .then(() => consentHashes.save())
+            .catch((error) => {
+              if (
+                taskQueue.length === 0 &&
+                storedConsent.read()[GENERAL] === undefined
+              ) {
+                consent.setConsent(defaultConsentByPurpose);
+              }
+              throw error;
+            })
             .finally(readCookieIfQueueEmpty);
         },
       },

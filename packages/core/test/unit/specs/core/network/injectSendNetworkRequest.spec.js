@@ -29,7 +29,7 @@ describe("injectSendNetworkRequest", () => {
   const responseBodyJson = JSON.stringify(responseBody);
   let sendNetworkRequest;
   let sendFetchRequest;
-  let sendBeaconRequest;
+  let sendBeacon;
   let isRequestRetryable;
   let getRequestRetryDelay;
   let getHeader;
@@ -50,19 +50,13 @@ describe("injectSendNetworkRequest", () => {
         getHeader,
       }),
     );
-    sendBeaconRequest = vi.fn().mockReturnValue(
-      Promise.resolve({
-        statusCode: 204,
-        body: "",
-        getHeader: () => undefined,
-      }),
-    );
+    sendBeacon = vi.fn().mockReturnValue(true);
     isRequestRetryable = vi.fn().mockReturnValue(false);
     getRequestRetryDelay = vi.fn().mockReturnValue(1000);
     sendNetworkRequest = injectSendNetworkRequest({
       logger,
       sendFetchRequest,
-      sendBeaconRequest,
+      sendBeacon,
       isRequestRetryable,
       getRequestRetryDelay,
     });
