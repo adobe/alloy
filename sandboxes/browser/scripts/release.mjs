@@ -47,8 +47,6 @@ if (!fs.existsSync(buildDir)) {
   throw new Error(`Expected build output at ${buildDir}`);
 }
 
-// Re-deploying the same content is idempotent at Azure Static Web Apps:
-// the deployment overwrites the existing app at this environment.
 console.log(`Deploying ${name}@${version} to alloyio.com...`);
 run("pnpx", [
   "@azure/static-web-apps-cli",
