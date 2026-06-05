@@ -1,5 +1,11 @@
 # @adobe/alloy-core
 
+## 1.2.1-beta.0
+
+### Patch Changes
+
+- [#1519](https://github.com/adobe/alloy/pull/1519) [`7c15a87`](https://github.com/adobe/alloy/commit/7c15a87b4fc252d10e3f0e3b79b8bf2f87472af6) Thanks [@carterworks](https://github.com/carterworks)! - Fixed an issue where event.destinations were missing for customers using commerce personalization without Adobe Journey Optimizer.
+
 ## 1.2.0
 
 ### Minor Changes

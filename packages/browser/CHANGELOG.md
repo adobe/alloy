@@ -1,5 +1,16 @@
 # @adobe/alloy
 
+## 2.34.1-beta.0
+
+### Patch Changes
+
+- [#1519](https://github.com/adobe/alloy/pull/1519) [`7c15a87`](https://github.com/adobe/alloy/commit/7c15a87b4fc252d10e3f0e3b79b8bf2f87472af6) Thanks [@carterworks](https://github.com/carterworks)! - Fixed an issue where event.destinations were missing for customers using commerce personalization without Adobe Journey Optimizer.
+
+- [#1523](https://github.com/adobe/alloy/pull/1523) [`7d4d294`](https://github.com/adobe/alloy/commit/7d4d29435674181a168e89a5e2d0516b4bfab334) Thanks [@carterworks](https://github.com/carterworks)! - Adjust the internal release workflow
+
+- Updated dependencies [[`7c15a87`](https://github.com/adobe/alloy/commit/7c15a87b4fc252d10e3f0e3b79b8bf2f87472af6)]:
+  - @adobe/alloy-core@1.2.1-beta.0
+
 ## 2.34.0
 
 ### Minor Changes
