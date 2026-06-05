@@ -15,5 +15,6 @@
 		"url": "http://adobe.com",
     "email": "reactor@adobe.com"
 	},
-	"license": "Apache-2.0"
+	"license": "Apache-2.0",
+	"private": true
 }

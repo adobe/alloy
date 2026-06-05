@@ -127,15 +127,50 @@ describe(
         }
       });
 
-      test("zipped package.json has no workspace: protocol values", ({
+      test("no package.json in the installed forge tree uses the workspace: protocol", ({
         forgeDir,
       }) => {
-        const pkg = JSON.parse(
-          fs.readFileSync(path.join(forgeDir, "package.json"), "utf8"),
-        );
-        const offenders = Object.entries(pkg.dependencies).filter(([, v]) =>
-          String(v).startsWith("workspace:"),
-        );
+        // npm installs the root package's devDependencies but never a nested
+        // dependency's, so a nested workspace:* devDependency can't break forge.
+        const ROOT_FIELDS = [
+          "dependencies",
+          "devDependencies",
+          "optionalDependencies",
+          "peerDependencies",
+        ];
+        const NESTED_FIELDS = [
+          "dependencies",
+          "optionalDependencies",
+          "peerDependencies",
+        ];
+
+        const collectManifests = (dir, found = []) => {
+          for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+            if (entry.isDirectory()) {
+              collectManifests(path.join(dir, entry.name), found);
+            } else if (entry.name === "package.json") {
+              found.push(path.join(dir, entry.name));
+            }
+          }
+          return found;
+        };
+
+        const offenders = [];
+        for (const file of collectManifests(forgeDir)) {
+          const pkg = JSON.parse(fs.readFileSync(file, "utf8"));
+          const fields =
+            path.dirname(file) === forgeDir ? ROOT_FIELDS : NESTED_FIELDS;
+          for (const field of fields) {
+            for (const [name, range] of Object.entries(pkg[field] ?? {})) {
+              if (String(range).startsWith("workspace:")) {
+                offenders.push(
+                  `${path.relative(forgeDir, file)} (${field}.${name})`,
+                );
+              }
+            }
+          }
+        }
+
         expect(offenders).toEqual([]);
       });
 

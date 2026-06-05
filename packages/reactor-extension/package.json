@@ -8,7 +8,9 @@
     "email": "reactor@adobe.com"
   },
   "license": "Apache-2.0",
+  "private": true,
   "scripts": {
+    "release": "node scripts/release.mjs",
     "build:alloy:preinstalled": "BROWSERSLIST_ROOT_PATH=. mkdir -p dist/lib && node ./scripts/buildAlloyPreinstalled.mjs -i src/lib/alloyPreinstalled.js -o dist -f alloyPreinstalled.js",
     "build:alloy": "mkdir -p dist/lib && ([[ \"$ALLOY_LIBRARY_TYPE\" == \"\\\"preinstalled\\\"\" ]] && node ./scripts/buildAlloyPreinstalled.mjs -i src/lib/alloyPreinstalled.js -o dist/lib) || (node ./scripts/buildAlloy.mjs -i src/lib/alloy.js -o dist/lib)",
     "build:componentFixtures": "./scripts/buildComponentFixtures.mjs",
@@ -52,9 +54,11 @@
   "devDependencies": {
     "@adobe/auth-token": "^1.0.1",
     "@adobe/reactor-packager": "^4.4.0",
+    "@adobe/reactor-releaser": "4.0.0",
     "@adobe/reactor-sandbox": "^13.4.0",
     "@adobe/reactor-turbine": "^28.1.0",
     "@adobe/reactor-turbine-schemas": "^10.9.0",
+    "@adobe/reactor-uploader": "6.0.2",
     "@babel/cli": "^7.28.3",
     "@babel/core": "^7.28.5",
     "@babel/preset-env": "^7.28.5",
