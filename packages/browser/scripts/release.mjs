@@ -44,7 +44,10 @@ const FILES_TO_UPLOAD = [
   "alloyServiceWorker.min.js",
 ];
 
-const alreadyUploaded = await urlExists(cdnUrlFor(version, "alloy.min.js"));
+const uploadStatuses = await Promise.all(
+  FILES_TO_UPLOAD.map((file) => urlExists(cdnUrlFor(version, file))),
+);
+const alreadyUploaded = uploadStatuses.every(Boolean);
 
 if (alreadyUploaded) {
   console.log(`CDN already has ${name}@${version}; skipping upload.`);
