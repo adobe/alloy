@@ -50,7 +50,7 @@ if (!fs.existsSync(buildDir)) {
 console.log(`Deploying ${name}@${version} to alloyio.com...`);
 run("pnpm", [
   "exec",
-  "@azure/static-web-apps-cli",
+  "swa",
   "deploy",
   buildDir,
   "--api-key",
