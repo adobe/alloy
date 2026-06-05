@@ -1,0 +1,43 @@
+{
+  "requestId": "3931ed0b-d171-45f6-9d3e-29a61113aac2-254b6b357f27442f",
+  "handle": [
+    {
+      "payload": [
+        {
+          "id": "41861666193140161934276845651148876988",
+          "namespace": {
+            "code": "ECID"
+          }
+        }
+      ],
+      "type": "identity:result"
+    },
+    {
+      "payload": [
+        {
+          "id": "ed6a852f-3e99-4cf3-86f7-0027fabeb4fb",
+          "segments": [
+            { "id": "seg-AAA" },
+            { "id": "seg-BBB" }
+          ]
+        },
+        {
+          "id": "d6211043-fb49-45f1-84a9-a56336c1f6fe",
+          "segments": [{ "id": "seg-CCC" }]
+        }
+      ],
+      "type": "activation:pull",
+      "eventIndex": 0
+    },
+    {
+      "payload": [
+        {
+          "key": "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster",
+          "value": "or2",
+          "maxAge": 1800
+        }
+      ],
+      "type": "state:store"
+    }
+  ]
+}

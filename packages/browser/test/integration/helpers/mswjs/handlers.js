@@ -58,6 +58,25 @@ export const sendEventErrorHandler = http.post(
   },
 );
 
+export const pullDestinationsHandler = http.post(
+  /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
+
+  async (req) => {
+    const url = new URL(req.request.url);
+    const configId = url.searchParams.get("configId");
+
+    if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
+      return HttpResponse.text(
+        await readFile(
+          `${server.config.root}/packages/browser/test/integration/helpers/mocks/pullDestinationsResponse.json`,
+        ),
+      );
+    }
+
+    throw new Error("Handler not configured properly");
+  },
+);
+
 export const demdexHandler = http.post(
   "https://adobedc.demdex.net/ee/v1/interact",
 

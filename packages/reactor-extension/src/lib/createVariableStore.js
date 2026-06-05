@@ -9,6 +9,49 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// This is just a store of variables indexed by their cacheId
+const { deepAssign } = require("./alloy");
 
-module.exports = () => ({});
+module.exports = () => {
+  const entries = {};
+  const nameToKey = {};
+
+  return {
+    registerName(dataElementId, dataElementName) {
+      if (!dataElementId || !dataElementName) return;
+      if (
+        nameToKey[dataElementName] === undefined &&
+        entries[dataElementName] !== undefined
+      ) {
+        entries[dataElementId] = deepAssign(
+          {},
+          entries[dataElementId],
+          entries[dataElementName],
+        );
+        delete entries[dataElementName];
+      }
+      nameToKey[dataElementName] = dataElementId;
+    },
+
+    resolveKey(dataElementId, dataElementName) {
+      if (dataElementId) return dataElementId;
+      if (dataElementName && nameToKey[dataElementName] !== undefined) {
+        return nameToKey[dataElementName];
+      }
+      return dataElementName;
+    },
+
+    get(key) {
+      return entries[key];
+    },
+
+    set(key, value) {
+      entries[key] = value;
+    },
+
+    findByName(dataElementName) {
+      if (!dataElementName) return undefined;
+      const key = nameToKey[dataElementName] ?? dataElementName;
+      return entries[key];
+    },
+  };
+};
