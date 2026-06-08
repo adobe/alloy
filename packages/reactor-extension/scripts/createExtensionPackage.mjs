@@ -58,16 +58,24 @@ const execute = (
     Object.assign(options, verbose ? { stdio: "inherit" } : {}),
   );
 
-  if (r.status !== 0) {
-    // When stdio is captured (non-verbose), surface BOTH streams. Tools like
-    // `concurrently` write sub-process build errors to stdout, not stderr, so
-    // looking at stderr alone yields only the bare command echo and hides the
-    // real failure.
-    const stdout = r.stdout ? r.stdout.toString().trim() : "";
-    const stderr = r.stderr ? r.stderr.toString().trim() : "";
-    const details = [stdout, stderr].filter(Boolean).join("\n");
+  if (r.status !== 0 || r.error) {
+    // Surface every failure mode:
+    //  - r.error: the command couldn't be spawned at all (e.g. ENOENT).
+    //  - r.signal: the process was killed by a signal (e.g. SIGKILL from an
+    //    OOM kill) — status is null in that case, and it's the failure we most
+    //    want to catch on small CI runners.
+    //  - stdout/stderr: when captured (non-verbose). Tools like `concurrently`
+    //    write sub-process build errors to stdout, not stderr, so stderr alone
+    //    yields only the bare command echo and hides the real failure.
+    const parts = [
+      r.error && r.error.message,
+      r.signal && `Killed by signal ${r.signal}`,
+      r.stdout && r.stdout.toString().trim(),
+      r.stderr && r.stderr.toString().trim(),
+    ].filter(Boolean);
     throw new Error(
-      details || `An error occurred while executing the command: ${command}.`,
+      parts.join("\n") ||
+        `An error occurred while executing the command: ${command}.`,
     );
   }
 };
