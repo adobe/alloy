@@ -53,7 +53,7 @@ run("pnpm", [
   "swa", // from @azure/static-web-apps-cli
   "deploy",
   buildDir,
-  "--api-key",
+  "--deployment-token",
   token,
   "--env",
   "Production",
