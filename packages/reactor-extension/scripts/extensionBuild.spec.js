@@ -56,7 +56,7 @@ const buildAndRead = async (forgeDir, { env, flags = "", signal } = {}) => {
 const test = baseTest
   // eslint-disable-next-line no-empty-pattern
   .extend("extensionPackage", { scope: "file" }, async ({}, { onCleanup }) => {
-    const extensionPackage = await createExtensionPackage({ verbose: false });
+    const extensionPackage = await createExtensionPackage();
     onCleanup(() => fs.rmSync(extensionPackage, { force: true }));
     return extensionPackage;
   })
