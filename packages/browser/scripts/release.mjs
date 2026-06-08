@@ -22,7 +22,8 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { isPrerelease, cdnUrlFor } from "./helpers/release.js";
-import { name, version } from "../package.json" with { type: "json" };
+import pkg from "../package.json" with { type: "json" };
+const { name, version } = pkg;
 
 const urlExists = async (url) => {
   try {
