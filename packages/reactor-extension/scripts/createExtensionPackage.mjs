@@ -59,14 +59,16 @@ const execute = (
   );
 
   if (r.status !== 0) {
-    if (r.stderr) {
-      const error = r.stderr.toString().trim();
-      throw new Error(error);
-    } else {
-      throw new Error(
-        `An error occurred while executing the command: ${command}.`,
-      );
-    }
+    // When stdio is captured (non-verbose), surface BOTH streams. Tools like
+    // `concurrently` write sub-process build errors to stdout, not stderr, so
+    // looking at stderr alone yields only the bare command echo and hides the
+    // real failure.
+    const stdout = r.stdout ? r.stdout.toString().trim() : "";
+    const stderr = r.stderr ? r.stderr.toString().trim() : "";
+    const details = [stdout, stderr].filter(Boolean).join("\n");
+    throw new Error(
+      details || `An error occurred while executing the command: ${command}.`,
+    );
   }
 };
 
@@ -284,12 +286,14 @@ const buildExtensionZip = async ({
 };
 
 /**
- * @param {{ verbose?: boolean }} [options]
  * @returns {Promise<string>} Absolute path to the produced zip file.
  */
-export const createExtensionPackage = async ({ verbose } = {}) => {
+export const createExtensionPackage = async () => {
   console.log("Running the build process (`pnpm run build`)...");
-  execute("pnpm", ["run", "build"], { cwd, verbose });
+  // Always stream the build live. It's the longest, noisiest step and the one
+  // most likely to fail; inheriting stdio guarantees the underlying error
+  // (e.g. a killed concurrently sub-build) lands in the CI log.
+  execute("pnpm", ["run", "build"], { cwd, verbose: true });
 
   const packagePath = getExtensionPackagePath(getExtensionJson());
 
@@ -316,8 +320,6 @@ if (invokedAsCli) {
   program
     .name("createExtensionPackage")
     .description("Tool for generating the alloy extension package for Tags.");
-
-  program.option("-v, --verbose", "verbose mode", false);
 
   program.action(createExtensionPackage);
 
