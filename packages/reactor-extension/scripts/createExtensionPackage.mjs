@@ -161,9 +161,19 @@ const packVendoredWorkspacePackages = (destDir) => {
   fs.mkdirSync(vendorDir, { recursive: true });
   return VENDORED_PACKAGES.map(({ name, dir }) => {
     console.log(`Packing ${name}...`);
-    execute("pnpm", ["pack", "--pack-destination", vendorDir], { cwd: dir });
     const pkg = JSON.parse(
       fs.readFileSync(path.join(dir, "package.json"), "utf8"),
+    );
+    // Pack (with scripts off) so prepack (a full build that deletes distTest)
+    // can't race the browser integration tests reading it; build first only
+    // if the package isn't already built.
+    if (pkg.scripts?.build && !fs.existsSync(path.join(dir, "dist"))) {
+      execute("pnpm", ["run", "--if-present", "build"], { cwd: dir });
+    }
+    execute(
+      "pnpm",
+      ["pack", "--config.ignore-scripts=true", "--pack-destination", vendorDir],
+      { cwd: dir },
     );
     const tgzName = `${name.replace(/^@/, "").replace("/", "-")}-${pkg.version}.tgz`;
     if (!fs.existsSync(path.join(vendorDir, tgzName))) {
