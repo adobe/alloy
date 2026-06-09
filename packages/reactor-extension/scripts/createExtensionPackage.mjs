@@ -247,8 +247,16 @@ const getManifestFilepaths = () => {
     ],
     { cwd, encoding: "utf8" },
   );
-  if (r.status !== 0) {
-    throw new Error(`getPackagePaths failed: ${r.stderr || r.stdout}`);
+  if (r.status !== 0 || r.error) {
+    const parts = [
+      r.error && r.error.message,
+      r.signal && `Killed by signal ${r.signal}`,
+      r.stderr && r.stderr.toString().trim(),
+      r.stdout && r.stdout.toString().trim(),
+    ].filter(Boolean);
+    throw new Error(
+      `getPackagePaths failed: ${parts.join("\n") || "(no output)"}`,
+    );
   }
   return JSON.parse(r.stdout);
 };

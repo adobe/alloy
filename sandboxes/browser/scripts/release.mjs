@@ -37,6 +37,14 @@ const run = (cmd, args, opts = {}) => {
     cwd: opts.cwd || pkgDir,
     env: { ...process.env, ...opts.env },
   });
+  if (r.error) {
+    console.error(`Failed to spawn "${cmd}": ${r.error.message}`);
+    process.exit(1);
+  }
+  if (r.signal) {
+    console.error(`"${cmd}" killed by signal ${r.signal}`);
+    process.exit(1);
+  }
   if (r.status !== 0) process.exit(r.status ?? 1);
 };
 

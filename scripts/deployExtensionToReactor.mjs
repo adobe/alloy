@@ -31,6 +31,14 @@ const run = (cmd, args, opts = {}) => {
     cwd: opts.cwd || rootDir,
     env: { ...process.env, ...opts.env },
   });
+  if (result.error) {
+    console.error(`Failed to spawn "${cmd}": ${result.error.message}`);
+    process.exit(1);
+  }
+  if (result.signal) {
+    console.error(`"${cmd}" killed by signal ${result.signal}`);
+    process.exit(1);
+  }
   if (result.status !== 0) {
     process.exit(result.status ?? 1);
   }
@@ -87,4 +95,12 @@ const releaser = spawnSync(
     },
   },
 );
+if (releaser.error) {
+  console.error(`Failed to spawn reactor-releaser: ${releaser.error.message}`);
+  process.exit(1);
+}
+if (releaser.signal) {
+  console.error(`reactor-releaser killed by signal ${releaser.signal}`);
+  process.exit(1);
+}
 if (releaser.status !== 0) process.exit(releaser.status ?? 1);
