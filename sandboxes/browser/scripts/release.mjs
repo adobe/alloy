@@ -56,5 +56,5 @@ run("pnpm", [
   "--deployment-token",
   token,
   "--env",
-  "Production",
+  "production",
 ]);
