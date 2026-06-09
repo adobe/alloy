@@ -178,8 +178,10 @@ program.action(async ({ inputFile, outputDir, ...modules }) => {
 
     fs.writeFileSync(entryFile, output);
   } catch (e) {
-    fs.unlinkSync(entryFile);
     console.error(e);
+    if (entryFile && fs.existsSync(entryFile)) {
+      fs.unlinkSync(entryFile);
+    }
     process.exit(1);
   }
 });
