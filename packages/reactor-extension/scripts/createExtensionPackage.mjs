@@ -293,6 +293,9 @@ const buildExtensionZip = async ({
  * @returns {Promise<string>} Absolute path to the produced zip file.
  */
 export const createExtensionPackage = async () => {
+  const { packageJson, packageLockJson, vendoredPackages } =
+    stageInstallablePackages();
+
   console.log("Running the build process (`pnpm run build`)...");
   // Always stream the build live. It's the longest, noisiest step and the one
   // most likely to fail; inheriting stdio guarantees the underlying error
@@ -300,9 +303,6 @@ export const createExtensionPackage = async () => {
   execute("pnpm", ["run", "build"], { cwd, verbose: true });
 
   const packagePath = getExtensionPackagePath(getExtensionJson());
-
-  const { packageJson, packageLockJson, vendoredPackages } =
-    stageInstallablePackages();
 
   console.log("Building the extension zip...");
   await buildExtensionZip({
