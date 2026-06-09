@@ -62,9 +62,9 @@ export default ({ storage, logger }) => {
       EVENT_HISTORY_STORAGE_KEY,
     );
 
-    save = createSaveStorage(currentStorage, EVENT_HISTORY_STORAGE_KEY);
-
     [eventRegistry, eventRegistrySize] = await restore({});
+
+    save = createSaveStorage(currentStorage, EVENT_HISTORY_STORAGE_KEY);
 
     if (eventRegistrySize > EVENT_HISTORY_MAX_LENGTH) {
       const eventPruner = createEventPruner();

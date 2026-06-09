@@ -18,13 +18,9 @@ describe("injectSendBeaconRequest", () => {
     const sendBeacon = vi.fn().mockReturnValue(false);
     const sendFetchRequestPromise = Promise.resolve();
     const sendFetchRequest = vi.fn().mockReturnValue(sendFetchRequestPromise);
-    const logger = {
-      info: vi.fn(),
-    };
     const sendBeaconRequest = injectSendBeaconRequest({
       sendBeacon,
       sendFetchRequest,
-      logger,
     });
     const body = {
       a: "b",
@@ -37,9 +33,6 @@ describe("injectSendBeaconRequest", () => {
     expect(sendFetchRequest).toHaveBeenCalledWith(
       "https://example.com/endpoint",
       body,
-    );
-    expect(logger.info).toHaveBeenCalledWith(
-      expect.stringMatching("falling back to"),
     );
     expect(result).toBe(sendFetchRequestPromise);
   });

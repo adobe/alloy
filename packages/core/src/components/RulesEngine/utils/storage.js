@@ -14,6 +14,7 @@ export const createRestoreStorage = (storage, storageKey) => {
   return async (defaultValue) => {
     try {
       const stored = await storage.getItem(storageKey);
+      if (stored == null) return [defaultValue, 0];
       const s = JSON.parse(stored);
       return [s, stored.length];
       // eslint-disable-next-line no-empty

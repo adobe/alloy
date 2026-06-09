@@ -20,6 +20,7 @@ describe("createLogController", () => {
   let createLogger;
   let getDebugEnabled;
   let getMonitors;
+  let storage;
   beforeEach(() => {
     console = {
       log() {},
@@ -34,10 +35,20 @@ describe("createLogController", () => {
         return logger;
       });
     getMonitors = () => [];
+    storage = {
+      getItem: vi.fn().mockResolvedValue(null),
+      setItem: vi.fn().mockResolvedValue(true),
+    };
   });
 
   const build = () =>
-    createLogController({ console, createLogger, instanceName, getMonitors });
+    createLogController({
+      console,
+      createLogger,
+      instanceName,
+      getMonitors,
+      storage,
+    });
 
   it("returns false for getDebugEnabled by default", () => {
     build();
@@ -62,6 +73,29 @@ describe("createLogController", () => {
   it("does not let config override a value the user set", () => {
     const logController = build();
     logController.setDebugEnabled(true);
+    logController.setDebugEnabled(false, { fromConfig: true });
+    expect(getDebugEnabled()).toBe(true);
+  });
+  it("persists debug state to storage when set by user", () => {
+    const logController = build();
+    logController.setDebugEnabled(true);
+    expect(storage.setItem).toHaveBeenCalledWith("debug", "true");
+  });
+  it("does not persist debug state when set from config", () => {
+    const logController = build();
+    logController.setDebugEnabled(true, { fromConfig: true });
+    expect(storage.setItem).not.toHaveBeenCalled();
+  });
+  it("restores debug state from a previous session", async () => {
+    storage.getItem.mockResolvedValue("true");
+    build();
+    await Promise.resolve();
+    expect(getDebugEnabled()).toBe(true);
+  });
+  it("prevents config from overriding a debug state restored from storage", async () => {
+    storage.getItem.mockResolvedValue("true");
+    const logController = build();
+    await Promise.resolve();
     logController.setDebugEnabled(false, { fromConfig: true });
     expect(getDebugEnabled()).toBe(true);
   });

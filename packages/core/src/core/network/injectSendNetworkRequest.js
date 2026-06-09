@@ -11,18 +11,14 @@ governing permissions and limitations under the License.
 */
 
 import { stackError } from "../../utils/index.js";
-import injectSendBeaconRequest from "./requestMethods/injectSendBeaconRequest.js";
 
 export default ({
   logger,
   sendFetchRequest,
-  sendBeacon,
+  sendBeaconRequest,
   isRequestRetryable,
   getRequestRetryDelay,
 }) => {
-  const sendBeaconRequest = sendBeacon
-    ? injectSendBeaconRequest({ sendBeacon, sendFetchRequest, logger })
-    : sendFetchRequest;
   /**
    * Send a network request and returns details about the response.
    */

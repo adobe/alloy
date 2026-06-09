@@ -10,9 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ console, createLogger, instanceName, getMonitors }) => {
+export default ({
+  console,
+  createLogger,
+  instanceName,
+  getMonitors,
+  storage,
+}) => {
   let debugEnabled = false;
   let debugSetByUser = false;
+
+  // Restore debug state from the previous page load in this tab.
+  storage.getItem("debug").then((stored) => {
+    if (stored !== null) {
+      debugEnabled = stored === "true";
+      debugSetByUser = true;
+    }
+  });
 
   const getDebugEnabled = () => debugEnabled;
   const setDebugEnabled = (value, { fromConfig = false } = {}) => {
@@ -21,6 +35,10 @@ export default ({ console, createLogger, instanceName, getMonitors }) => {
     }
     if (!fromConfig) {
       debugSetByUser = true;
+      const result = storage.setItem("debug", String(value));
+      if (result && typeof result.then === "function") {
+        result.catch(() => {});
+      }
     }
   };
 

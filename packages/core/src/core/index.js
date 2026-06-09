@@ -69,12 +69,16 @@ export const createExecuteCommand = ({
   createPlatformServices,
 }) => {
   const platformServices = createPlatformServices();
+  const allMonitors = [...platformServices.globals.getMonitors(), ...monitors];
 
   const logController = createLogController({
     console: globalThis.console,
     createLogger,
     instanceName,
-    getMonitors: () => [...platformServices.globals.getMonitors(), ...monitors],
+    getMonitors: () => allMonitors,
+    storage: platformServices.storage.createNamespacedStorage(
+      `instance.${instanceName}.`,
+    ).session,
   });
 
   const { setDebugEnabled, logger, createComponentLogger } = logController;
@@ -96,6 +100,9 @@ export const createExecuteCommand = ({
   const getAssuranceValidationTokenParams =
     createGetAssuranceValidationTokenParams({
       getLocationSearch: () => platformServices.globals.getLocationSearch(),
+      storage:
+        platformServices.storage.createNamespacedStorage("validation.")
+          .persistent,
     });
   const getBrowser = injectGetBrowser({
     userAgent: platformServices.globals.getUserAgent(),
@@ -140,7 +147,7 @@ export const createExecuteCommand = ({
     const sendNetworkRequest = injectSendNetworkRequest({
       logger,
       sendFetchRequest: platformServices.network.sendFetchRequest,
-      sendBeacon: platformServices.network.sendBeacon,
+      sendBeaconRequest: platformServices.network.sendBeaconRequest,
       isRequestRetryable,
       getRequestRetryDelay,
     });

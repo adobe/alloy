@@ -13,11 +13,21 @@ governing permissions and limitations under the License.
 import { uuid, queryString } from "../index.js";
 
 const ASSURANCE_VALIDATION_SESSION_URL_PARAM = "adb_validation_sessionid";
+const CLIENT_ID_KEY = "clientId";
 
-export default ({ getLocationSearch }) => {
-  // Generated once per instance — Assurance is a browser debugging tool,
-  // so a fresh ID per instance startup is sufficient.
-  const clientId = uuid();
+export default ({ getLocationSearch, storage }) => {
+  // Start with a fresh UUID as an immediate fallback, then overwrite with the
+  // persisted value once the async read resolves. Requests fired before the
+  // read settles carry the fallback UUID; all subsequent requests (and all
+  // requests on future page loads) use the stable persisted ID.
+  let clientId = uuid();
+  storage.getItem(CLIENT_ID_KEY).then((stored) => {
+    if (stored) {
+      clientId = stored;
+    } else {
+      storage.setItem(CLIENT_ID_KEY, clientId);
+    }
+  });
 
   return () => {
     const parsedQuery = queryString.parse(getLocationSearch());
