@@ -58,15 +58,21 @@ const execute = (
     Object.assign(options, verbose ? { stdio: "inherit" } : {}),
   );
 
-  if (r.status !== 0) {
-    if (r.stderr) {
-      const error = r.stderr.toString().trim();
-      throw new Error(error);
-    } else {
-      throw new Error(
+  if (r.status !== 0 || r.error) {
+    // concurrently/pnpm write sub-build errors to stdout, not stderr, so report
+    // both streams. r.error covers a failed spawn (e.g. ENOENT) and r.signal a
+    // kill (e.g. an OOM SIGKILL, which leaves status null) — the failure we most
+    // want to surface on small CI runners.
+    const parts = [
+      r.error && r.error.message,
+      r.signal && `Killed by signal ${r.signal}`,
+      r.stdout && r.stdout.toString().trim(),
+      r.stderr && r.stderr.toString().trim(),
+    ].filter(Boolean);
+    throw new Error(
+      parts.join("\n") ||
         `An error occurred while executing the command: ${command}.`,
-      );
-    }
+    );
   }
 };
 
@@ -284,12 +290,14 @@ const buildExtensionZip = async ({
 };
 
 /**
- * @param {{ verbose?: boolean }} [options]
  * @returns {Promise<string>} Absolute path to the produced zip file.
  */
-export const createExtensionPackage = async ({ verbose } = {}) => {
+export const createExtensionPackage = async () => {
   console.log("Running the build process (`pnpm run build`)...");
-  execute("pnpm", ["run", "build"], { cwd, verbose });
+  // Always stream the build live. It's the longest, noisiest step and the one
+  // most likely to fail; inheriting stdio guarantees the underlying error
+  // (e.g. a killed concurrently sub-build) lands in the CI log.
+  execute("pnpm", ["run", "build"], { cwd, verbose: true });
 
   const packagePath = getExtensionPackagePath(getExtensionJson());
 
@@ -316,8 +324,6 @@ if (invokedAsCli) {
   program
     .name("createExtensionPackage")
     .description("Tool for generating the alloy extension package for Tags.");
-
-  program.option("-v, --verbose", "verbose mode", false);
 
   program.action(createExtensionPackage);
 
