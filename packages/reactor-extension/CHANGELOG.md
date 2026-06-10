@@ -1,5 +1,25 @@
 # reactor-extension-alloy
 
+## 2.36.1-beta.1
+
+### Patch Changes
+
+- [#1531](https://github.com/adobe/alloy/pull/1531) [`109e2c4`](https://github.com/adobe/alloy/commit/109e2c4975e9eb35e11a9c0f21f402690eb1408d) Thanks [@carterworks](https://github.com/carterworks)! - manual bump of version number to trigger package release process
+
+- Updated dependencies [[`109e2c4`](https://github.com/adobe/alloy/commit/109e2c4975e9eb35e11a9c0f21f402690eb1408d)]:
+  - @adobe/alloy@2.34.1-beta.1
+
+## 2.36.1-beta.0
+
+### Patch Changes
+
+- [#1523](https://github.com/adobe/alloy/pull/1523) [`7d4d294`](https://github.com/adobe/alloy/commit/7d4d29435674181a168e89a5e2d0516b4bfab334) Thanks [@carterworks](https://github.com/carterworks)! - Adjust the internal release workflow
+
+- [#1521](https://github.com/adobe/alloy/pull/1521) [`b9cf8fe`](https://github.com/adobe/alloy/commit/b9cf8fecc6c13f5eb76086dc20b45e36bc19f6e8) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Fix variablestore key confusion
+
+- Updated dependencies [[`7c15a87`](https://github.com/adobe/alloy/commit/7c15a87b4fc252d10e3f0e3b79b8bf2f87472af6), [`7d4d294`](https://github.com/adobe/alloy/commit/7d4d29435674181a168e89a5e2d0516b4bfab334)]:
+  - @adobe/alloy@2.34.1-beta.0
+
 ## 2.36.0
 
 ### Minor Changes

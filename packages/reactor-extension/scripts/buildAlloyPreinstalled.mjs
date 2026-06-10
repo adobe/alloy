@@ -30,7 +30,15 @@ const execute = (command, options) => {
     spawn(command, options, {
       stdio: "inherit",
     })
-      .on("exit", resolve)
+      .on("exit", (code, signal) => {
+        if (code === 0) {
+          resolve(code);
+        } else if (signal) {
+          reject(new Error(`${command} killed by signal ${signal}`));
+        } else {
+          reject(new Error(`${command} exited with code ${code}`));
+        }
+      })
       .on("error", reject);
   });
 };

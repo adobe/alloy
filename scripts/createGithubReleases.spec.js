@@ -18,6 +18,8 @@ import {
   getWorkspacePackages,
   gitTagExists,
   createGithubReleases,
+  parseTag,
+  parseTagsAtHead,
 } from "./createGithubReleases.js";
 
 describe("getWorkspacePackages", () => {
@@ -47,6 +49,62 @@ describe("gitTagExists", () => {
 
   it("returns false for a tag that does not exist", () => {
     expect(gitTagExists("@adobe/alloy@0.0.0-does-not-exist")).toBe(false);
+  });
+});
+
+describe("parseTag", () => {
+  it("parses a simple name@version tag", () => {
+    expect(parseTag("reactor-extension-alloy@1.5.0")).toEqual({
+      name: "reactor-extension-alloy",
+      newVersion: "1.5.0",
+    });
+  });
+
+  it("parses a scoped package tag (split on last @)", () => {
+    expect(parseTag("@adobe/alloy@2.34.0-beta.0")).toEqual({
+      name: "@adobe/alloy",
+      newVersion: "2.34.0-beta.0",
+    });
+  });
+
+  it("returns null for tags without @", () => {
+    expect(parseTag("v1.0.0")).toBeNull();
+    expect(parseTag("main")).toBeNull();
+  });
+
+  it("returns null for tags with @ only as scope prefix", () => {
+    expect(parseTag("@adobe/alloy")).toBeNull();
+  });
+
+  it("returns null for empty version", () => {
+    expect(parseTag("@adobe/alloy@")).toBeNull();
+  });
+
+  it("returns null for empty name", () => {
+    expect(parseTag("@1.0.0")).toBeNull();
+  });
+});
+
+describe("parseTagsAtHead", () => {
+  it("filters out non-package tags", () => {
+    expect(parseTagsAtHead(["@adobe/alloy@2.0.0", "v1.0.0", "main"])).toEqual([
+      { name: "@adobe/alloy", newVersion: "2.0.0" },
+    ]);
+  });
+
+  it("returns empty for no tags", () => {
+    expect(parseTagsAtHead([])).toEqual([]);
+  });
+
+  it("preserves order", () => {
+    const result = parseTagsAtHead([
+      "@adobe/alloy@2.0.0",
+      "reactor-extension-alloy@1.0.0",
+    ]);
+    expect(result).toEqual([
+      { name: "@adobe/alloy", newVersion: "2.0.0" },
+      { name: "reactor-extension-alloy", newVersion: "1.0.0" },
+    ]);
   });
 });
 

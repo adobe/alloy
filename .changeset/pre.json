@@ -11,5 +11,10 @@
     "@adobe/alloy-sandbox-browser": "0.1.4",
     "@adobe/alloy-sandbox-node": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "fresh-papers-send",
+    "lucky-dragons-call",
+    "plenty-jokes-invent",
+    "yummy-words-sink"
+  ]
 }

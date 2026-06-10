@@ -1,5 +1,23 @@
 # @adobe/alloy-sandbox-browser
 
+## 0.1.5-beta.1
+
+### Patch Changes
+
+- Updated dependencies [[`109e2c4`](https://github.com/adobe/alloy/commit/109e2c4975e9eb35e11a9c0f21f402690eb1408d)]:
+  - @adobe/alloy@2.34.1-beta.1
+  - @adobe/alloy-core@1.2.1-beta.1
+
+## 0.1.5-beta.0
+
+### Patch Changes
+
+- [#1523](https://github.com/adobe/alloy/pull/1523) [`7d4d294`](https://github.com/adobe/alloy/commit/7d4d29435674181a168e89a5e2d0516b4bfab334) Thanks [@carterworks](https://github.com/carterworks)! - Adjust the internal release workflow
+
+- Updated dependencies [[`7c15a87`](https://github.com/adobe/alloy/commit/7c15a87b4fc252d10e3f0e3b79b8bf2f87472af6), [`7d4d294`](https://github.com/adobe/alloy/commit/7d4d29435674181a168e89a5e2d0516b4bfab334)]:
+  - @adobe/alloy@2.34.1-beta.0
+  - @adobe/alloy-core@1.2.1-beta.0
+
 ## 0.1.4
 
 ### Patch Changes

@@ -29,14 +29,19 @@ const libOutDir = path.join(outputDir, "lib");
 const alloyInFile = path.join(libInDir, "alloy.js");
 
 // ignore alloy.js because it will be built separately in buildAlloy.js
-run("babel", [
-  libInDir,
-  "--out-dir",
-  libOutDir,
-  "--ignore",
-  alloyInFile,
-  "--presets=@babel/preset-env",
-]);
+try {
+  await run("babel", [
+    libInDir,
+    "--out-dir",
+    libOutDir,
+    "--ignore",
+    alloyInFile,
+    "--presets=@babel/preset-env",
+  ]);
+} catch (error) {
+  console.error(error);
+  process.exit(1);
+}
 
 if (watch) {
   const babelWatchSubprocess = spawn(
