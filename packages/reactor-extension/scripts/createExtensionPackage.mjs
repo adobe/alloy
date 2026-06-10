@@ -161,9 +161,19 @@ const packVendoredWorkspacePackages = (destDir) => {
   fs.mkdirSync(vendorDir, { recursive: true });
   return VENDORED_PACKAGES.map(({ name, dir }) => {
     console.log(`Packing ${name}...`);
-    execute("pnpm", ["pack", "--pack-destination", vendorDir], { cwd: dir });
     const pkg = JSON.parse(
       fs.readFileSync(path.join(dir, "package.json"), "utf8"),
+    );
+    // Pack (with scripts off) so prepack (a full build that deletes distTest)
+    // can't race the browser integration tests reading it; build first only
+    // if the package isn't already built.
+    if (pkg.scripts?.build && !fs.existsSync(path.join(dir, "dist"))) {
+      execute("pnpm", ["run", "--if-present", "build"], { cwd: dir });
+    }
+    execute(
+      "pnpm",
+      ["pack", "--config.ignore-scripts=true", "--pack-destination", vendorDir],
+      { cwd: dir },
     );
     const tgzName = `${name.replace(/^@/, "").replace("/", "-")}-${pkg.version}.tgz`;
     if (!fs.existsSync(path.join(vendorDir, tgzName))) {
@@ -247,8 +257,16 @@ const getManifestFilepaths = () => {
     ],
     { cwd, encoding: "utf8" },
   );
-  if (r.status !== 0) {
-    throw new Error(`getPackagePaths failed: ${r.stderr || r.stdout}`);
+  if (r.status !== 0 || r.error) {
+    const parts = [
+      r.error && r.error.message,
+      r.signal && `Killed by signal ${r.signal}`,
+      r.stderr && r.stderr.toString().trim(),
+      r.stdout && r.stdout.toString().trim(),
+    ].filter(Boolean);
+    throw new Error(
+      `getPackagePaths failed: ${parts.join("\n") || "(no output)"}`,
+    );
   }
   return JSON.parse(r.stdout);
 };
@@ -293,6 +311,9 @@ const buildExtensionZip = async ({
  * @returns {Promise<string>} Absolute path to the produced zip file.
  */
 export const createExtensionPackage = async () => {
+  const { packageJson, packageLockJson, vendoredPackages } =
+    stageInstallablePackages();
+
   console.log("Running the build process (`pnpm run build`)...");
   // Always stream the build live. It's the longest, noisiest step and the one
   // most likely to fail; inheriting stdio guarantees the underlying error
@@ -300,9 +321,6 @@ export const createExtensionPackage = async () => {
   execute("pnpm", ["run", "build"], { cwd, verbose: true });
 
   const packagePath = getExtensionPackagePath(getExtensionJson());
-
-  const { packageJson, packageLockJson, vendoredPackages } =
-    stageInstallablePackages();
 
   console.log("Building the extension zip...");
   await buildExtensionZip({

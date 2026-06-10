@@ -87,19 +87,12 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.CDN_PRIVATE_KEY }}
 
-      # Each package owns its deploy via a `release` script that's idempotent:
-      # read pkg.version, check the target, exit 0 if already at that version.
-      # @adobe/alloy → CDN + 'next' dist-tag (when prerelease)
-      # reactor-extension → Reactor upload
-      # sandboxes/browser → Azure deploy
-      #
-      # --workspace-concurrency=1 runs the deploys serially, which is less resource intensive
-      # on small GitHub CI runners.
+      # Each package owns its deploy via a `release` script that's idempotent
       - name: Side-effect deploys
         env:
           REACTOR_IO_INTEGRATION_CLIENT_SECRET: ${{ secrets.REACTOR_IO_INTEGRATION_CLIENT_SECRET }}
           AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_AGREEABLE_RIVER_0EC96991E }}
-        run: pnpm -r --workspace-concurrency=1 --if-present run release
+        run: pnpm --recursive --workspace-concurrency=1 --no-bail --if-present run release
 
       # Iterates git tags at HEAD; skips existing releases.
       - name: GitHub Releases

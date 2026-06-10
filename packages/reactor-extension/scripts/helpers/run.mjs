@@ -1,20 +1,16 @@
 import { spawn } from "child_process";
 
-const toPromise = (func) => {
-  return new Promise((resolve, reject) => {
-    const callback = (error) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve();
-      }
-    };
-    func(callback);
+export default (command, args) =>
+  new Promise((resolve, reject) => {
+    spawn(command, args, { stdio: "inherit" })
+      .on("exit", (code, signal) => {
+        if (code === 0) {
+          resolve(code);
+        } else if (signal) {
+          reject(new Error(`${command} killed by signal ${signal}`));
+        } else {
+          reject(new Error(`${command} exited with code ${code}`));
+        }
+      })
+      .on("error", reject);
   });
-};
-
-export default (command, options) => {
-  return toPromise((callback) =>
-    spawn(command, options, { stdio: "inherit" }).on("exit", callback),
-  );
-};
