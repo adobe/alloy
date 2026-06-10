@@ -1,5 +1,15 @@
 # reactor-extension-alloy
 
+## 2.37.0-beta.2
+
+### Minor Changes
+
+- [#1513](https://github.com/adobe/alloy/pull/1513) [`c18d24d`](https://github.com/adobe/alloy/commit/c18d24d47120d69f4a32ea6b0d6f1dae8a4e1115) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Added a "Property actions" section to the extension configuration view with a "Repair stale data element references" button. The button scans every action in the current property that belongs to this extension and repairs any reference to a data element that no longer exists on the property by matching on the saved data element name. Progress is reported in a dialog that can be hidden (the operation continues) and reopened; results are surfaced as a summary with per-action detail for anything that could not be repaired automatically.
+
+### Patch Changes
+
+- [#1513](https://github.com/adobe/alloy/pull/1513) [`c18d24d`](https://github.com/adobe/alloy/commit/c18d24d47120d69f4a32ea6b0d6f1dae8a4e1115) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Added 'repair all (property-wide) data element references' to extension configuration
+
 ## 2.36.1-beta.1
 
 ### Patch Changes
