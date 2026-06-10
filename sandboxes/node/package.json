@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy-sandbox-node",
-  "version": "0.0.2-beta.0",
+  "version": "0.0.2",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.20.0",
