@@ -1,5 +1,14 @@
 # reactor-extension-alloy
 
+## 2.36.1-beta.1
+
+### Patch Changes
+
+- [#1531](https://github.com/adobe/alloy/pull/1531) [`109e2c4`](https://github.com/adobe/alloy/commit/109e2c4975e9eb35e11a9c0f21f402690eb1408d) Thanks [@carterworks](https://github.com/carterworks)! - manual bump of version number to trigger package release process
+
+- Updated dependencies [[`109e2c4`](https://github.com/adobe/alloy/commit/109e2c4975e9eb35e11a9c0f21f402690eb1408d)]:
+  - @adobe/alloy@2.34.1-beta.1
+
 ## 2.36.1-beta.0
 
 ### Patch Changes
