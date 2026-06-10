@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+export const NO_CONTENT = 204;
 export const UNAUTHORIZED = 401;
 export const FORBIDDEN = 403;
 export const NOT_FOUND = 404;

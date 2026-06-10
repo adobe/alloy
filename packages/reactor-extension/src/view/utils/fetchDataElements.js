@@ -16,12 +16,14 @@ import UserReportableError from "../errors/userReportableError";
 const DELEGATE_DESCRIPTOR_ID = "__EXTENSION_NAME__::dataElements::variable";
 
 /**
- * Fetches one page of variable-type data elements for a property.
+ * Fetches one page of variable-type data elements for a property by default.
  *
  * Pass `minResults` to keep fetching additional pages until that many results
  * have accumulated — useful for determining whether 0, 1, or 2+ variable data
- * elements exist without loading the entire list. To search by exact name
- * across pages, use `fetchDataElementByName` instead.
+ * elements exist without loading the entire list. Pass `fetchAllPages: true`
+ * to exhaust every page and return all variable-type data elements on the
+ * property. To search by exact name across pages, use `fetchDataElementByName`
+ * instead.
  *
  * @param {object} options
  * @param {string} options.orgId - IMS organization ID.
@@ -32,6 +34,8 @@ const DELEGATE_DESCRIPTOR_ID = "__EXTENSION_NAME__::dataElements::variable";
  * @param {AbortSignal} [options.signal] - Signal used to abort the request.
  * @param {number} [options.minResults] - Keep fetching pages until this many
  *   results have accumulated. Omit to fetch exactly one page.
+ * @param {boolean} [options.fetchAllPages] - When true, ignores `minResults`
+ *   and pages through every result on the property.
  * @returns {Promise<{results: Array<{id: string, name: string, settings: object}>, nextPage: number|null}>}
  */
 const fetchDataElements = async ({
@@ -42,6 +46,7 @@ const fetchDataElements = async ({
   page = 1,
   signal,
   minResults,
+  fetchAllPages = false,
 }) => {
   const allResults = [];
   let nextPage = page;
@@ -89,11 +94,55 @@ const fetchDataElements = async ({
     nextPage = parsedResponse.parsedBody.meta.pagination.next_page;
   } while (
     nextPage &&
-    minResults !== undefined &&
-    allResults.length < minResults
+    (fetchAllPages ||
+      (minResults !== undefined && allResults.length < minResults))
   );
 
   return { results: allResults, nextPage };
 };
 
 export default fetchDataElements;
+
+/**
+ * Fetches a single data element by its global Reactor ID via
+ * `/data_elements/{id}` (not property-scoped). Useful for resolving a
+ * `dataElementId` whose property scope is unknown — e.g. learning the
+ * name of a stale reference that points at a data element on another
+ * property.
+ *
+ * @param {object} options
+ * @param {string} options.orgId
+ * @param {string} options.imsAccess
+ * @param {string} options.dataElementId - Reactor ID of the data element.
+ * @param {AbortSignal} [options.signal]
+ * @returns {Promise<{id: string, name: string, settings: object}>}
+ */
+export const fetchDataElement = async ({
+  orgId,
+  imsAccess,
+  dataElementId,
+  signal,
+}) => {
+  let parsedResponse;
+  try {
+    parsedResponse = await fetchFromReactor({
+      orgId,
+      imsAccess,
+      path: `/data_elements/${dataElementId}`,
+      signal,
+    });
+  } catch (e) {
+    if (e.name === "AbortError") {
+      throw e;
+    }
+    throw new UserReportableError("Failed to load data element.", {
+      originatingError: e,
+    });
+  }
+
+  const {
+    id,
+    attributes: { name, settings },
+  } = parsedResponse.parsedBody.data;
+  return { id, name, settings: JSON.parse(settings) };
+};
