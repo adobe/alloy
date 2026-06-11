@@ -26,7 +26,7 @@ export default ({
       debugEnabled = stored === "true";
       debugSetByUser = true;
     }
-  });
+  }).catch(() => {});
 
   const getDebugEnabled = () => debugEnabled;
   const setDebugEnabled = (value, { fromConfig = false } = {}) => {
