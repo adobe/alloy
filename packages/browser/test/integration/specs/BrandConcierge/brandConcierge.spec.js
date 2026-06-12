@@ -86,9 +86,7 @@ describe("BrandConcierge - sendConversationEvent", () => {
     const body = calls[0].request.body;
     const conversationQuery = body.events[0].query.conversation;
 
-    expect(conversationQuery.message).toBe(
-      "Hello, I need help with my order",
-    );
+    expect(conversationQuery.message).toBe("Hello, I need help with my order");
     expect(Array.isArray(conversationQuery.surfaces)).toBe(true);
     expect(conversationQuery.surfaces.length).toBeGreaterThanOrEqual(1);
 
