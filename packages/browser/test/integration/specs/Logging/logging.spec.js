@@ -37,7 +37,10 @@ describe("Toggle logging through configuration (C2583)", () => {
     consoleSpy.mockRestore();
   });
 
-  test("logs sendEvent when debugEnabled is true", async ({ alloy, worker }) => {
+  test("logs sendEvent when debugEnabled is true", async ({
+    alloy,
+    worker,
+  }) => {
     worker.use(sendEventHandler);
     await alloy("configure", { ...alloyConfig, debugEnabled: true });
     await alloy("sendEvent");
@@ -114,10 +117,7 @@ describe("Toggle logging through querystring parameter (C2586)", () => {
           await alloy("getLibraryInfo");
 
           expect(
-            searchForLogMessage(
-              consoleSpy,
-              "Executing getLibraryInfo command",
-            ),
+            searchForLogMessage(consoleSpy, "Executing getLibraryInfo command"),
           ).toBe(true);
 
           cleanAlloy();
