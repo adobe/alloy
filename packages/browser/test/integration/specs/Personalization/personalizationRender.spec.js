@@ -63,7 +63,10 @@ const makeSetHtmlHandler = (selector, content) =>
           handle: [
             {
               payload: [
-                { id: "56475161841051406291527557158775615545", namespace: { code: "ECID" } },
+                {
+                  id: "56475161841051406291527557158775615545",
+                  namespace: { code: "ECID" },
+                },
               ],
               type: "identity:result",
             },
@@ -99,7 +102,11 @@ const makeSetHtmlHandler = (selector, content) =>
             },
             {
               payload: [
-                { key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster", value: "or2", maxAge: 1800 },
+                {
+                  key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster",
+                  value: "or2",
+                  maxAge: 1800,
+                },
               ],
               type: "state:store",
             },
@@ -136,7 +143,12 @@ describe("C28757: VEC offer renders when renderDecisions=true", () => {
     alloy,
     worker,
   }) => {
-    worker.use(makeSetHtmlHandler("#vec-offer-target", "Here is an awesome target offer!"));
+    worker.use(
+      makeSetHtmlHandler(
+        "#vec-offer-target",
+        "Here is an awesome target offer!",
+      ),
+    );
     await alloy("configure", alloyConfig);
     const eventResult = await alloy("sendEvent", { renderDecisions: true });
 
@@ -153,7 +165,9 @@ describe("C28757: VEC offer renders when renderDecisions=true", () => {
     expect(remainingVecDecisions.length).toBe(0);
 
     // At least one proposition should have renderAttempted=true
-    expect(eventResult.propositions.some((p) => p.renderAttempted === true)).toBe(true);
+    expect(
+      eventResult.propositions.some((p) => p.renderAttempted === true),
+    ).toBe(true);
   });
 });
 
@@ -200,8 +214,8 @@ describe("C28760: display notification sent after VEC render", () => {
         .propositionEventType.display,
     ).toBe(1);
     expect(
-      displayCall.request.body.events[0].xdm._experience.decisioning.propositions
-        .length,
+      displayCall.request.body.events[0].xdm._experience.decisioning
+        .propositions.length,
     ).toBeGreaterThan(0);
   });
 });
@@ -221,11 +235,15 @@ describe("C5805675: default content offers delivered and display notification se
       /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
       async (req) => {
         const url = new URL(req.request.url);
-        if (url.searchParams.get("configId") !== "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
+        if (
+          url.searchParams.get("configId") !==
+          "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83"
+        ) {
           throw new Error("Handler not configured properly");
         }
         const requestBody = await req.request.json();
-        const hasSchemas = requestBody?.events?.[0]?.query?.personalization?.schemas;
+        const hasSchemas =
+          requestBody?.events?.[0]?.query?.personalization?.schemas;
 
         if (hasSchemas && hasSchemas.length > 0) {
           return HttpResponse.json({
@@ -268,7 +286,11 @@ describe("C5805675: default content offers delivered and display notification se
               },
               {
                 payload: [
-                  { key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster", value: "or2", maxAge: 1800 },
+                  {
+                    key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster",
+                    value: "or2",
+                    maxAge: 1800,
+                  },
                 ],
                 type: "state:store",
               },
@@ -289,7 +311,9 @@ describe("C5805675: default content offers delivered and display notification se
     const eventResult = await alloy("sendEvent", { renderDecisions: true });
 
     // At least one proposition should have renderAttempted=true
-    expect(eventResult.propositions.some((p) => p.renderAttempted === true)).toBe(true);
+    expect(
+      eventResult.propositions.some((p) => p.renderAttempted === true),
+    ).toBe(true);
 
     // Wait for display notification
     const calls = await networkRecorder.findCalls(/v1\/interact/, {
@@ -385,7 +409,9 @@ describe("C14299422: prehiding style removed when personalization payload return
     return () => {
       const existingStyle = document.getElementById("alloy-prehiding");
       if (existingStyle) existingStyle.parentNode.removeChild(existingStyle);
-      const existingEl = document.getElementById("prehiding-with-payload-target");
+      const existingEl = document.getElementById(
+        "prehiding-with-payload-target",
+      );
       if (existingEl) existingEl.parentNode.removeChild(existingEl);
     };
   });
@@ -438,7 +464,11 @@ describe("C17294899: prehiding style removed when consent is out", () => {
     expect(document.getElementById("alloy-prehiding")).not.toBeNull();
 
     // Setting consent to "out" should remove the prehiding style
-    await alloy("setConsent", { consent: [{ standard: "Adobe", version: "1.0", value: { general: "out" } }] });
+    await alloy("setConsent", {
+      consent: [
+        { standard: "Adobe", version: "1.0", value: { general: "out" } },
+      ],
+    });
 
     expect(document.getElementById("alloy-prehiding")).toBeNull();
   });
