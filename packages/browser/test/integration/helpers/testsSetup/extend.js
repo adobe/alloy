@@ -54,9 +54,11 @@ export const test = baseTest.extend({
 
   alloy: [
     async ({}, use) => {
+      // Clear all cookies for a clean slate before each test, so individual
+      // tests don't leak identity/consent state into subsequent tests.
       document.cookie.split(";").forEach((c) => {
         const name = c.split("=")[0].trim();
-        if (name.startsWith("kndctr_") || name.startsWith("AMCV_")) {
+        if (name) {
           document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
         }
       });
