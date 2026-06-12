@@ -32,7 +32,10 @@ const spaPersonalizationHandler = http.post(
   /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
   async (req) => {
     const url = new URL(req.request.url);
-    if (url.searchParams.get("configId") !== "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
+    if (
+      url.searchParams.get("configId") !==
+      "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83"
+    ) {
       throw new Error("Handler not configured properly");
     }
 
@@ -132,7 +135,11 @@ const spaPersonalizationHandler = http.post(
           },
           {
             payload: [
-              { key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster", value: "or2", maxAge: 1800 },
+              {
+                key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster",
+                value: "or2",
+                maxAge: 1800,
+              },
             ],
             type: "state:store",
           },
@@ -150,7 +157,11 @@ const spaPersonalizationHandler = http.post(
         },
         {
           payload: [
-            { key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster", value: "or2", maxAge: 1800 },
+            {
+              key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster",
+              value: "or2",
+              maxAge: 1800,
+            },
           ],
           type: "state:store",
         },
