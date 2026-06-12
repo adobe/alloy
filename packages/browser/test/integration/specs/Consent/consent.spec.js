@@ -268,9 +268,7 @@ describe("Consent", () => {
 
     const body = calls[0].request.body;
     const bodyStr = JSON.stringify(body);
-    expect(bodyStr).toContain(
-      '"name":"https://ns.adobe.com/experience/alloy"',
-    );
+    expect(bodyStr).toContain('"name":"https://ns.adobe.com/experience/alloy"');
   });
 
   // C14406: Unidentified user can consent to no purposes
@@ -301,9 +299,7 @@ describe("Consent", () => {
       await alloy("setConsent", CONSENT_OUT);
       await alloy("sendEvent");
 
-      expect(
-        searchForLogMessage(consoleSpy, "declined consent"),
-      ).toBe(true);
+      expect(searchForLogMessage(consoleSpy, "declined consent")).toBe(true);
 
       expect(
         networkRecorder.calls.filter((c) =>
@@ -394,9 +390,7 @@ describe("Consent", () => {
       });
       await alloy2("sendEvent");
 
-      expect(
-        searchForLogMessage(consoleSpy, "declined consent"),
-      ).toBe(true);
+      expect(searchForLogMessage(consoleSpy, "declined consent")).toBe(true);
       expect(
         networkRecorder.calls.filter((c) =>
           /v1\/interact/.test(c.request?.url ?? ""),
@@ -878,7 +872,10 @@ describe("Consent", () => {
       expect(result.decisions ?? []).toEqual([]);
 
       expect(
-        searchForLogMessage(consoleSpy, "No consent preferences have been set."),
+        searchForLogMessage(
+          consoleSpy,
+          "No consent preferences have been set.",
+        ),
       ).toBe(true);
 
       // No interact calls yet
@@ -968,9 +965,7 @@ describe("Consent", () => {
 
       // Second event — should be blocked
       await alloy("sendEvent");
-      expect(
-        searchForLogMessage(consoleSpy, "declined consent"),
-      ).toBe(true);
+      expect(searchForLogMessage(consoleSpy, "declined consent")).toBe(true);
 
       // Only the first event should have fired
       const interactCalls = await networkRecorder.findCalls(/v1\/interact/);
