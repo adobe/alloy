@@ -92,6 +92,13 @@ describe("createLogController", () => {
     await Promise.resolve();
     expect(getDebugEnabled()).toBe(true);
   });
+  it("does not let a stored value overwrite a synchronously-set value", async () => {
+    storage.getItem.mockResolvedValue("false");
+    const logController = build();
+    logController.setDebugEnabled(true); // e.g. ?alloy_debug=true
+    await Promise.resolve();
+    expect(getDebugEnabled()).toBe(true);
+  });
   it("prevents config from overriding a debug state restored from storage", async () => {
     storage.getItem.mockResolvedValue("true");
     const logController = build();

@@ -22,7 +22,7 @@ export default ({
 
   // Restore debug state from the previous page load in this tab.
   storage.getItem("debug").then((stored) => {
-    if (stored !== null) {
+    if (stored !== null && !debugSetByUser) {
       debugEnabled = stored === "true";
       debugSetByUser = true;
     }
