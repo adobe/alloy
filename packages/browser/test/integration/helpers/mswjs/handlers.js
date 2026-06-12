@@ -24,7 +24,7 @@ export const sendEventHandler = http.post(
     const url = new URL(req.request.url);
     const configId = url.searchParams.get("configId");
 
-    if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
+    if (configId && configId.startsWith("bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83")) {
       return HttpResponse.text(
         await readFile(
           `${server.config.root}/packages/browser/test/integration/helpers/mocks/sendEventResponse.json`,
@@ -184,7 +184,35 @@ export const setConsentHandler = http.post(
     const url = new URL(req.request.url);
     const configId = url.searchParams.get("configId");
 
-    if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
+    if (configId && configId.startsWith("bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83")) {
+      const body = await req.request.json().catch(() => ({}));
+      const consentOptions = body?.consent ?? [];
+
+      const IAB_OUT_STRINGS = [
+        "CO052oTO052oTDGAMBFRACBgAABAAAAAAIYgEawAQEagAAAA", // no Purpose 1
+        "CO052qdO052qdDGAMBFRACBgAIBAAAAAAIYgAAoAAAAA", // no Adobe vendor
+      ];
+
+      let generalConsent = "in";
+      for (const option of consentOptions) {
+        if (option.standard === "Adobe" && option.version === "1.0") {
+          if (option.value?.general === "out") {
+            generalConsent = "out";
+          }
+        } else if (option.standard === "Adobe" && option.version === "2.0") {
+          if (option.value?.collect?.val === "n") {
+            generalConsent = "out";
+          }
+        } else if (option.standard === "IAB TCF") {
+          if (
+            option.gdprApplies !== false &&
+            IAB_OUT_STRINGS.includes(option.value)
+          ) {
+            generalConsent = "out";
+          }
+        }
+      }
+
       return HttpResponse.json({
         requestId: "consent-request-id",
         handle: [
@@ -193,13 +221,36 @@ export const setConsentHandler = http.post(
             payload: [
               {
                 key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_consent",
-                value: "general=in",
+                value: `general=${generalConsent}`,
                 maxAge: 15552000,
               },
             ],
           },
         ],
       });
+    }
+
+    throw new Error("Handler not configured properly");
+  },
+);
+
+export const acquireHandler = http.post(
+  /https:\/\/edge\.adobedc\.net\/ee\/.*\/?v1\/identity\/acquire/,
+
+  async (req) => {
+    const url = new URL(req.request.url);
+    const configId = url.searchParams.get("configId");
+
+    if (
+      configId &&
+      (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83" ||
+        configId.startsWith("bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83:"))
+    ) {
+      return HttpResponse.text(
+        await readFile(
+          `${server.config.root}/packages/browser/test/integration/helpers/mocks/acquireResponse.json`,
+        ),
+      );
     }
 
     throw new Error("Handler not configured properly");

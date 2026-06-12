@@ -25,14 +25,14 @@ import addHtmlToBody from "../../helpers/dom/addHtmlToBody.js";
 import {
   CLICK_LABEL_DATA_ATTRIBUTE,
   INTERACT_ID_DATA_ATTRIBUTE,
-} from "../../../../../core/src/components/Personalization/handlers/createDecorateProposition.js";
+} from "../../../../src/components/Personalization/handlers/createDecorateProposition.js";
 import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../../core/src/constants/decisionProvider.js";
 import {
   ALWAYS,
   DECORATED_ELEMENTS_ONLY,
   NEVER,
 } from "../../../../../core/src/constants/propositionInteractionType.js";
-import { DOM_ACTION_COLLECT_INTERACTIONS } from "../../../../../core/src/components/Personalization/dom-actions/initDomActionsModules.js";
+import { DOM_ACTION_COLLECT_INTERACTIONS } from "../../../../src/components/Personalization/dom-actions/initDomActionsModules.js";
 /* eslint-enable import/no-relative-packages */
 import { responseStatus } from "../../helpers/assertions/index.js";
 

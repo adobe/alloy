@@ -54,6 +54,13 @@ export const test = baseTest.extend({
 
   alloy: [
     async ({}, use) => {
+      document.cookie.split(";").forEach((c) => {
+        const name = c.split("=")[0].trim();
+        if (name.startsWith("kndctr_") || name.startsWith("AMCV_")) {
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+        }
+      });
+
       await setupBaseCode();
       const alloy = await setupAlloy();
 
