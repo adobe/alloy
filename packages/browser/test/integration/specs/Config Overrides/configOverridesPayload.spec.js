@@ -115,7 +115,10 @@ describe("sendEvent config overrides in request payload (C7437530)", () => {
   }) => {
     worker.use(sendEventHandler);
 
-    await alloy("configure", { ...alloyConfig, edgeConfigOverrides: overrides });
+    await alloy("configure", {
+      ...alloyConfig,
+      edgeConfigOverrides: overrides,
+    });
     await alloy("sendEvent", {});
 
     const call = await networkRecorder.findCall(/v1\/interact/);
@@ -236,7 +239,10 @@ describe("getIdentity config overrides in request payload (C7437531)", () => {
   }) => {
     worker.use(acquireHandler);
 
-    await alloy("configure", { ...alloyConfig, edgeConfigOverrides: overrides });
+    await alloy("configure", {
+      ...alloyConfig,
+      edgeConfigOverrides: overrides,
+    });
     await alloy("getIdentity");
 
     const call = await networkRecorder.findCall(/v1\/identity\/acquire/);
@@ -336,7 +342,10 @@ describe("appendIdentityToUrl config overrides in request payload (C7437532)", (
   }) => {
     worker.use(acquireHandler);
 
-    await alloy("configure", { ...alloyConfig, edgeConfigOverrides: overrides });
+    await alloy("configure", {
+      ...alloyConfig,
+      edgeConfigOverrides: overrides,
+    });
     await alloy("appendIdentityToUrl", { url: "https://example.com" });
 
     const call = await networkRecorder.findCall(/v1\/identity\/acquire/);
@@ -441,7 +450,10 @@ describe("setConsent config overrides in request payload (C7437533)", () => {
   }) => {
     worker.use(setConsentHandler);
 
-    await alloy("configure", { ...alloyConfig, edgeConfigOverrides: overrides });
+    await alloy("configure", {
+      ...alloyConfig,
+      edgeConfigOverrides: overrides,
+    });
     await alloy("setConsent", IAB_CONSENT_IN);
 
     const call = await networkRecorder.findCall(/privacy\/set-consent/);
