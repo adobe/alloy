@@ -64,7 +64,10 @@ describe("MediaCollection (MA1/MA3) - createMediaSession and sendMediaEvent", ()
 
     // Verify session-start call went to the interact endpoint
     const interactCalls = await networkRecorder.findCalls(/edge\.adobedc\.net/);
-    const sessionStartEvent = getEventFromCalls(interactCalls, "media.sessionStart");
+    const sessionStartEvent = getEventFromCalls(
+      interactCalls,
+      "media.sessionStart",
+    );
     expect(sessionStartEvent).toBeDefined();
     expect(sessionStartEvent.xdm.eventType).toBe("media.sessionStart");
 
@@ -116,7 +119,11 @@ describe("MediaCollection (MA1/MA3) - createMediaSession and sendMediaEvent", ()
         mediaCollection: {
           playhead: 5,
           sessionID: sessionId,
-          advertisingPodDetails: { friendlyName: "Mid-roll", offset: 0, index: 1 },
+          advertisingPodDetails: {
+            friendlyName: "Mid-roll",
+            offset: 0,
+            index: 1,
+          },
         },
       },
     });
@@ -255,7 +262,10 @@ describe("MediaCollection (MA1/MA3) - createMediaSession and sendMediaEvent", ()
 
     for (const eventType of expectedEventTypes) {
       const event = getEventFromCalls(vaCalls, eventType);
-      expect(event, `expected ${eventType} to be found in /va/ calls`).toBeDefined();
+      expect(
+        event,
+        `expected ${eventType} to be found in /va/ calls`,
+      ).toBeDefined();
     }
   });
 
@@ -301,10 +311,10 @@ describe("MediaCollection (MA1/MA3) - createMediaSession and sendMediaEvent", ()
     await tracker.trackSessionStart(mediaInfo, contextData);
 
     // Wait for the session-start interact call to complete.
-    const sessionCalls = await networkRecorder.findCalls(
-      /edge\.adobedc\.net/,
-      { retries: 10, delayMs: 100 },
-    );
+    const sessionCalls = await networkRecorder.findCalls(/edge\.adobedc\.net/, {
+      retries: 10,
+      delayMs: 100,
+    });
     expect(sessionCalls.length).toBe(1);
     const sessionStartEvent = sessionCalls
       .map((c) => c.request.body?.events?.[0])
