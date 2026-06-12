@@ -234,7 +234,9 @@ describe("IAB TCF consent", () => {
     // Verify the consentStrings were included in the XDM payload
     const bodyStr = JSON.stringify(interactCalls[0].request.body);
     expect(bodyStr).toContain("IAB TCF");
-    expect(bodyStr).toContain("CO052l-O052l-DGAMBFRACBgAIBAAAAAAIYgEawAQEagAAAA");
+    expect(bodyStr).toContain(
+      "CO052l-O052l-DGAMBFRACBgAIBAAAAAAIYgEawAQEagAAAA",
+    );
 
     // A subsequent sendEvent (without consent strings) should also succeed
     await alloy("sendEvent");
@@ -308,6 +310,8 @@ describe("IAB TCF consent", () => {
 
     // Verify the opt-out consent string was included in the request
     const bodyStr = JSON.stringify(interactCalls[0].request.body);
-    expect(bodyStr).toContain("CO052oTO052oTDGAMBFRACBgAABAAAAAAIYgEawAQEagAAAA");
+    expect(bodyStr).toContain(
+      "CO052oTO052oTDGAMBFRACBgAABAAAAAAIYgEawAQEagAAAA",
+    );
   });
 });
