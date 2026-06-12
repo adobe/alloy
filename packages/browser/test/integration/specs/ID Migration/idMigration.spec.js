@@ -107,7 +107,7 @@ describe("ID Migration", () => {
     worker.use(createMigrationSendEventHandler());
 
     // Set the legacy AMCV cookie before configuring alloy
-    setLegacyIdentityCookie(ORG_ID);
+    await setLegacyIdentityCookie(ORG_ID);
 
     await alloy("configure", {
       ...alloyConfig,
@@ -142,7 +142,7 @@ describe("ID Migration", () => {
     worker.use(createMigrationSendEventHandler());
 
     // Set the s_ecid cookie before configuring alloy
-    setSecidCookie();
+    await setSecidCookie();
 
     await alloy("configure", {
       ...alloyConfig,
@@ -175,7 +175,7 @@ describe("ID Migration", () => {
     worker.use(createMigrationSendEventHandler());
 
     // Set the s_ecid cookie — alloy should ignore it when migration is disabled
-    setSecidCookie();
+    await setSecidCookie();
 
     await alloy("configure", {
       ...alloyConfig,
@@ -218,7 +218,7 @@ describe("ID Migration", () => {
     worker.use(createMigrationSendEventHandler());
 
     // Set legacy AMCV cookie — alloy should ignore it when migration is disabled
-    setLegacyIdentityCookie(ORG_ID);
+    await setLegacyIdentityCookie(ORG_ID);
 
     await alloy("configure", {
       ...alloyConfig,
@@ -365,7 +365,7 @@ describe("ID Migration", () => {
     worker.use(echoEcidHandler);
 
     // Phase 1: legacy AMCV cookie present, configure + sendEvent
-    setLegacyIdentityCookie(ORG_ID);
+    await setLegacyIdentityCookie(ORG_ID);
 
     await alloy("configure", {
       ...alloyConfig,
