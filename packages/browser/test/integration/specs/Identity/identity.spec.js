@@ -244,9 +244,9 @@ describe("C2581: Queue requests until ECID is received", () => {
     // The first response returns the ECID; the second request is released only after
     // the identity cookie is set. The ECID is transmitted via the identity cookie
     // (not as a plain string in the JSON body of subsequent requests).
-    const firstResponseEcid = calls[0].response.body?.handle
-      ?.find((h) => h.type === "identity:result")
-      ?.payload?.[0]?.id;
+    const firstResponseEcid = calls[0].response.body?.handle?.find(
+      (h) => h.type === "identity:result",
+    )?.payload?.[0]?.id;
     expect(firstResponseEcid).toBe(MOCK_ECID);
   });
 });
@@ -377,9 +377,7 @@ describe("C5287654: Cookies are set with sameSite=none", () => {
     expect(call.response.status).toBe(200);
 
     const body = call.response.body;
-    const stateStoreHandle = body.handle.find(
-      (h) => h.type === "state:store",
-    );
+    const stateStoreHandle = body.handle.find((h) => h.type === "state:store");
     expect(stateStoreHandle).toBeDefined();
 
     const identityCookiePayload = stateStoreHandle.payload.find((p) =>
@@ -514,10 +512,9 @@ describe("C5594872: An expired adobe_mc query string parameter is not used", () 
     const call = await networkRecorder.findCall(/v1\/interact/);
     expect(call).toBeDefined();
     // The ECID from the mocked response should be used, not the expired one
-    const returnedEcid =
-      call.response.body?.handle
-        ?.find((h) => h.type === "identity:result")
-        ?.payload?.[0]?.id;
+    const returnedEcid = call.response.body?.handle?.find(
+      (h) => h.type === "identity:result",
+    )?.payload?.[0]?.id;
     expect(returnedEcid).toBeDefined();
     expect(returnedEcid).not.toBe(expiredEcid);
   });
@@ -613,9 +610,9 @@ describe("C6842980: FPID from the identityMap is used to generate an ECID", () =
     await alloy("sendEvent", fpidEvent);
 
     const firstCall = await networkRecorder.findCall(/v1\/interact/);
-    const firstEcid = firstCall.response.body?.handle
-      ?.find((h) => h.type === "identity:result")
-      ?.payload?.[0]?.id;
+    const firstEcid = firstCall.response.body?.handle?.find(
+      (h) => h.type === "identity:result",
+    )?.payload?.[0]?.id;
     expect(firstEcid).toBeDefined();
 
     // Delete the identity cookie and send again with the same FPID
@@ -625,9 +622,9 @@ describe("C6842980: FPID from the identityMap is used to generate an ECID", () =
     await alloy("sendEvent", fpidEvent);
 
     const secondCall = await networkRecorder.findCall(/v1\/interact/);
-    const secondEcid = secondCall.response.body?.handle
-      ?.find((h) => h.type === "identity:result")
-      ?.payload?.[0]?.id;
+    const secondEcid = secondCall.response.body?.handle?.find(
+      (h) => h.type === "identity:result",
+    )?.payload?.[0]?.id;
 
     // Both calls go to the same mocked response, so same ECID is returned.
     // The important thing is that alloy sent the FPID in both requests.
@@ -675,9 +672,9 @@ describe("C6842981: FPID from identityMap produces a stable ECID across requests
     await alloy("sendEvent", fpidEvent);
 
     const firstCall = await networkRecorder.findCall(/v1\/interact/);
-    const firstEcid = firstCall.response.body?.handle
-      ?.find((h) => h.type === "identity:result")
-      ?.payload?.[0]?.id;
+    const firstEcid = firstCall.response.body?.handle?.find(
+      (h) => h.type === "identity:result",
+    )?.payload?.[0]?.id;
     expect(firstEcid).toBeDefined();
 
     // Verify the FPID was sent in the request (user-provided identityMap
@@ -697,9 +694,9 @@ describe("C6842981: FPID from identityMap produces a stable ECID across requests
       secondCall.request.body?.events?.[0]?.xdm?.identityMap?.FPID?.[0]?.id,
     ).toBe(fpidValue);
 
-    const secondEcid = secondCall.response.body?.handle
-      ?.find((h) => h.type === "identity:result")
-      ?.payload?.[0]?.id;
+    const secondEcid = secondCall.response.body?.handle?.find(
+      (h) => h.type === "identity:result",
+    )?.payload?.[0]?.id;
 
     // Both calls return the same mocked ECID (deterministic mock)
     expect(secondEcid).toBe(firstEcid);
@@ -735,18 +732,18 @@ describe("C6842982: Existing identity cookie takes precedence over an FPID", () 
     // First sendEvent — establishes the identity cookie
     await alloy("sendEvent");
     const firstCall = await networkRecorder.findCall(/v1\/interact/);
-    const firstEcid = firstCall.response.body?.handle
-      ?.find((h) => h.type === "identity:result")
-      ?.payload?.[0]?.id;
+    const firstEcid = firstCall.response.body?.handle?.find(
+      (h) => h.type === "identity:result",
+    )?.payload?.[0]?.id;
 
     networkRecorder.reset();
 
     // Second sendEvent with an FPID — identity cookie should still take precedence
     await alloy("sendEvent", fpidEvent);
     const secondCall = await networkRecorder.findCall(/v1\/interact/);
-    const secondEcid = secondCall.response.body?.handle
-      ?.find((h) => h.type === "identity:result")
-      ?.payload?.[0]?.id;
+    const secondEcid = secondCall.response.body?.handle?.find(
+      (h) => h.type === "identity:result",
+    )?.payload?.[0]?.id;
 
     expect(secondEcid).toBe(firstEcid);
   });
