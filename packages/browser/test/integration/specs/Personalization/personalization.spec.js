@@ -200,7 +200,11 @@ const buildEdgeResponse = (propositionPayload) => ({
     },
     {
       payload: [
-        { key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster", value: "or2", maxAge: 1800 },
+        {
+          key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster",
+          value: "or2",
+          maxAge: 1800,
+        },
       ],
       type: "state:store",
     },
