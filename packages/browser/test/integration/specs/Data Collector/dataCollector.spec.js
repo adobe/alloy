@@ -17,7 +17,10 @@ import {
   beforeEach,
   afterEach,
 } from "../../helpers/testsSetup/extend.js";
-import { sendEventHandler, setConsentHandler } from "../../helpers/mswjs/handlers.js";
+import {
+  sendEventHandler,
+  setConsentHandler,
+} from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
 import searchForLogMessage from "../../helpers/utils/searchForLogMessage.js";
 import { CONSENT_OUT } from "../../helpers/constants/consent.js";
@@ -259,12 +262,7 @@ describe("C81184 - Click collection configuration warnings", () => {
       onBeforeLinkClickSend: () => {},
     });
 
-    expect(
-      searchForLogMessage(
-        consoleSpy,
-        "onBeforeLinkClickSend",
-      ),
-    ).toBe(true);
+    expect(searchForLogMessage(consoleSpy, "onBeforeLinkClickSend")).toBe(true);
   });
 
   test("warns when downloadLinkQualifier configured but clickCollectionEnabled is false", async ({
@@ -277,12 +275,7 @@ describe("C81184 - Click collection configuration warnings", () => {
       downloadLinkQualifier: "\\.pdf$",
     });
 
-    expect(
-      searchForLogMessage(
-        consoleSpy,
-        "downloadLinkQualifier",
-      ),
-    ).toBe(true);
+    expect(searchForLogMessage(consoleSpy, "downloadLinkQualifier")).toBe(true);
   });
 
   test("does not warn for default downloadLinkQualifier when clickCollectionEnabled is false", async ({
@@ -294,12 +287,9 @@ describe("C81184 - Click collection configuration warnings", () => {
       clickCollectionEnabled: false,
     });
 
-    expect(
-      searchForLogMessage(
-        consoleSpy,
-        "downloadLinkQualifier",
-      ),
-    ).toBe(false);
+    expect(searchForLogMessage(consoleSpy, "downloadLinkQualifier")).toBe(
+      false,
+    );
   });
 
   test("does not warn about disabled click collection when clickCollectionEnabled is true with downloadLinkQualifier", async ({
@@ -524,9 +514,9 @@ describe("C225010 - Click collection handles consent declined gracefully", () =>
       { intervalMs: 50, timeoutMs: 3000 },
     );
 
-    expect(
-      searchForLogMessage(consoleSpy, "The user declined consent"),
-    ).toBe(true);
+    expect(searchForLogMessage(consoleSpy, "The user declined consent")).toBe(
+      true,
+    );
     expect(unhandledRejections.length).toBe(0);
 
     window.removeEventListener("unhandledrejection", rejectionHandler);
