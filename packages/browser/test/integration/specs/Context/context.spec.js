@@ -192,7 +192,9 @@ describe("Context", () => {
     const xdm2 = calls2[0].request.body.events[0].xdm;
     expect(xdm2.device?.customDeviceField).toBeFalsy();
     expect(xdm2.environment?.customEnvironmentField).toBeFalsy();
-    expect(xdm2.implementationDetails?.customImplementationDetailsField).toBeFalsy();
+    expect(
+      xdm2.implementationDetails?.customImplementationDetailsField,
+    ).toBeFalsy();
     expect(xdm2.placeContext?.customPlaceContextField).toBeFalsy();
     expect(xdm2.web?.customWebField).toBeFalsy();
   });
