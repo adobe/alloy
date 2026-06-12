@@ -59,8 +59,7 @@ const createMigrationSendEventHandler = () =>
     /https:\/\/edge\.adobedc\.net\/ee\/.*\/?v1\/interact/,
     async ({ request }) => {
       const body = await request.json();
-      const sentEcid =
-        body?.xdm?.identityMap?.ECID?.[0]?.id ?? null;
+      const sentEcid = body?.xdm?.identityMap?.ECID?.[0]?.id ?? null;
 
       const ecid = sentEcid || "41861666193140161934276845651148876988";
 
@@ -340,8 +339,7 @@ describe("ID Migration", () => {
         }
         const body = await request.json();
         // alloy sends the adobe_mc / legacy ECID at the request-level xdm.identityMap
-        const sentEcid =
-          body?.xdm?.identityMap?.ECID?.[0]?.id ?? adobeMcEcid;
+        const sentEcid = body?.xdm?.identityMap?.ECID?.[0]?.id ?? adobeMcEcid;
         return HttpResponse.json({
           requestId: `migration-echo-${Date.now()}`,
           handle: [
