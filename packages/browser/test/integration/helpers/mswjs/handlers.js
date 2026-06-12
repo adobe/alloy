@@ -24,7 +24,10 @@ export const sendEventHandler = http.post(
     const url = new URL(req.request.url);
     const configId = url.searchParams.get("configId");
 
-    if (configId && configId.startsWith("bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83")) {
+    if (
+      configId &&
+      configId.startsWith("bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83")
+    ) {
       return HttpResponse.text(
         await readFile(
           `${server.config.root}/packages/browser/test/integration/helpers/mocks/sendEventResponse.json`,
@@ -184,7 +187,10 @@ export const setConsentHandler = http.post(
     const url = new URL(req.request.url);
     const configId = url.searchParams.get("configId");
 
-    if (configId && configId.startsWith("bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83")) {
+    if (
+      configId &&
+      configId.startsWith("bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83")
+    ) {
       const body = await req.request.json().catch(() => ({}));
       const consentOptions = body?.consent ?? [];
 

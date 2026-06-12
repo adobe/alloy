@@ -19,7 +19,9 @@ export const LEGACY_IDENTITY_COOKIE_UNESCAPED_NAME =
 // ECID embedded in the legacy cookie value below
 export const LEGACY_ECID = "16908443662402872073525706953453086963";
 
-export const setLegacyIdentityCookie = (orgId = "5BFE274A5F6980A50A495C08@AdobeOrg") => {
+export const setLegacyIdentityCookie = (
+  orgId = "5BFE274A5F6980A50A495C08@AdobeOrg",
+) => {
   const encodedOrgId = encodeURIComponent(orgId);
   const cookieName = `AMCV_${encodedOrgId}`;
   const cookieValue =
