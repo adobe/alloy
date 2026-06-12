@@ -99,7 +99,11 @@ const buildResponseWithItems = (propositionId, activityId, items) => ({
     },
     {
       payload: [
-        { key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster", value: "or2", maxAge: 1800 },
+        {
+          key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster",
+          value: "or2",
+          maxAge: 1800,
+        },
       ],
       type: "state:store",
     },
@@ -112,7 +116,10 @@ const interactionRequestHandler = http.post(
   /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
   async (req) => {
     const url = new URL(req.request.url);
-    if (url.searchParams.get("configId") !== "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
+    if (
+      url.searchParams.get("configId") !==
+      "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83"
+    ) {
       throw new Error("Handler not configured properly");
     }
     const requestBody = await req.request.json();
@@ -244,8 +251,7 @@ describe("C17409728: does not send interact event when NEVER is configured", () 
           schema: "https://ns.adobe.com/personalization/dom-action",
           data: {
             type: "insertAfter",
-            content:
-              '<div id="something-else">This is something else</div>',
+            content: '<div id="something-else">This is something else</div>',
             selector: "#page-header",
           },
         },
@@ -273,7 +279,10 @@ describe("C17409728: does not send interact event when NEVER is configured", () 
     // resetting — avoids a race where the display call lands after reset and
     // pollutes the post-click count.
     await waitUntil(
-      () => networkRecorder.calls.some((c) => /v1\/interact/.test(c.request?.url ?? "")),
+      () =>
+        networkRecorder.calls.some((c) =>
+          /v1\/interact/.test(c.request?.url ?? ""),
+        ),
       { intervalMs: 50, timeoutMs: 3000 },
     ).catch(() => {
       // applyResponse may not fire a display notification in NEVER mode; proceed.
@@ -362,7 +371,10 @@ describe("C17409728: only decorated elements trigger interact events", () => {
     // resetting — avoids a race where the display call lands after reset and
     // pollutes the post-click count.
     await waitUntil(
-      () => networkRecorder.calls.some((c) => /v1\/interact/.test(c.request?.url ?? "")),
+      () =>
+        networkRecorder.calls.some((c) =>
+          /v1\/interact/.test(c.request?.url ?? ""),
+        ),
       { intervalMs: 50, timeoutMs: 3000 },
     ).catch(() => {
       // applyResponse may not fire a display notification in this mode; proceed.
@@ -509,8 +521,7 @@ describe("C17409728: includeRenderedPropositions in bottom-of-page sendEvent", (
         items: [
           {
             id: "442359",
-            schema:
-              "https://ns.adobe.com/personalization/html-content-item",
+            schema: "https://ns.adobe.com/personalization/html-content-item",
             data: {
               content: "<p>Some custom content for the home page</p>",
               format: "text/html",
@@ -531,7 +542,9 @@ describe("C17409728: includeRenderedPropositions in bottom-of-page sendEvent", (
       },
     });
 
-    const allRendered = applyResult.propositions.every((p) => p.renderAttempted);
+    const allRendered = applyResult.propositions.every(
+      (p) => p.renderAttempted,
+    );
     expect(allRendered).toBe(true);
     expect(applyResult.propositions.length).toBe(1);
 
@@ -549,8 +562,7 @@ describe("C17409728: includeRenderedPropositions in bottom-of-page sendEvent", (
     const sendEventCall = calls[calls.length - 1];
     const hasTargetDisplayNotifications =
       sendEventCall.request.body.events.some(
-        ({ xdm }) =>
-          xdm.eventType === "decisioning.propositionDisplay",
+        ({ xdm }) => xdm.eventType === "decisioning.propositionDisplay",
       );
     const hasPlatformDisplayNotifications =
       sendEventCall.request.body.events.some(
