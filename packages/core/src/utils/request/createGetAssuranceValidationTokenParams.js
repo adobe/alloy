@@ -21,13 +21,19 @@ export default ({ getLocationSearch, storage }) => {
   // read settles carry the fallback UUID; all subsequent requests (and all
   // requests on future page loads) use the stable persisted ID.
   let clientId = uuid();
-  storage.getItem(CLIENT_ID_KEY).then((stored) => {
-    if (stored) {
-      clientId = stored;
-    } else {
-      storage.setItem(CLIENT_ID_KEY, clientId);
-    }
-  });
+  storage
+    .getItem(CLIENT_ID_KEY)
+    .then((stored) => {
+      if (stored) {
+        clientId = stored;
+      } else {
+        const result = storage.setItem(CLIENT_ID_KEY, clientId);
+        if (result && typeof result.then === "function") {
+          result.catch(() => {});
+        }
+      }
+    })
+    .catch(() => {});
 
   return () => {
     const parsedQuery = queryString.parse(getLocationSearch());
