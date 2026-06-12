@@ -21,12 +21,15 @@ export default ({
   let debugSetByUser = false;
 
   // Restore debug state from the previous page load in this tab.
-  storage.getItem("debug").then((stored) => {
-    if (stored !== null && !debugSetByUser) {
-      debugEnabled = stored === "true";
-      debugSetByUser = true;
-    }
-  }).catch(() => {});
+  storage
+    .getItem("debug")
+    .then((stored) => {
+      if (stored !== null && !debugSetByUser) {
+        debugEnabled = stored === "true";
+        debugSetByUser = true;
+      }
+    })
+    .catch(() => {});
 
   const getDebugEnabled = () => debugEnabled;
   const setDebugEnabled = (value, { fromConfig = false } = {}) => {
