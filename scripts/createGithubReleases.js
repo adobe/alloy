@@ -15,27 +15,25 @@ governing permissions and limitations under the License.
 /**
  * Creates GitHub releases for packages published by `changeset publish`.
  *
- * Reads a changeset-status.json file  (from pnpm changeset status --verbose --output=changeset-status.json)
- * to determine which packages were released, discovers their directories via `pnpm ls`,
- * extracts release notes from each package's CHANGELOG.md, and creates a GitHub
- * release per package using `gh`.
- *
- * Called by the Changeset Publish workflow (.github/workflows/changeset-publish.yml)
- * after tags have been pushed.
+ * Reads git tags pointing at HEAD (created by `changeset publish`),
+ * looks up each released package's directory via `pnpm ls`, extracts the
+ * matching section from its CHANGELOG.md, and creates a GitHub release
+ * with `gh`.
  *
  * Usage:
- *   node scripts/createGithubReleases.js changeset-status.json
- *   node scripts/createGithubReleases.js changeset-status.json --dry-run
+ *   node scripts/createGithubReleases.js
+ *   node scripts/createGithubReleases.js --dry-run
  *
  * Requires:
  *   - GH_TOKEN env var (for `gh release create`)
- *   - `pnpm` and `gh` CLIs on PATH
- *   - Git tags already pushed (created by `changeset publish`)
+ *   - `pnpm`, `gh`, and `git` CLIs on PATH
+ *   - Git tags already created (`changeset publish` + `git push --tags`)
  *
  * Behavior:
- *   - Skips private packages, missing tags, and existing releases (idempotent)
+ *   - Skips packages with missing tags, missing changelog entries, or
+ *     existing GitHub releases (idempotent — safe to re-run)
  *   - Detects prereleases from the version string (e.g. 2.31.2-beta.0)
- *   - Exits 0 if changeset-status.json is missing (nothing to do)
+ *   - Exits 0 when there's nothing to release
  */
 
 // @ts-check
@@ -43,6 +41,44 @@ governing permissions and limitations under the License.
 import { execFileSync, execSync } from "child_process";
 import fs from "fs";
 import path from "path";
+import { parseArgs } from "node:util";
+
+/**
+ * Parse a git tag of the form `name@version`. Splits on the LAST `@` so
+ * scoped packages (`@adobe/alloy@2.34.0`) parse correctly.
+ * @param {string} tag
+ * @returns {{ name: string, newVersion: string } | null}
+ */
+export const parseTag = (tag) => {
+  const lastAt = tag.lastIndexOf("@");
+  if (lastAt <= 0) return null;
+  const name = tag.substring(0, lastAt);
+  const newVersion = tag.substring(lastAt + 1);
+  if (!name || !newVersion) return null;
+  return { name, newVersion };
+};
+
+/**
+ * Parse a list of git tags into release entries, dropping tags that are
+ * not `name@version` shaped.
+ * @param {string[]} tags
+ * @returns {Array<{ name: string, newVersion: string }>}
+ */
+export const parseTagsAtHead = (tags) =>
+  tags.map(parseTag).filter((x) => x !== null);
+
+/**
+ * Returns all git tags pointing at HEAD, parsed into release entries.
+ * @returns {Array<{ name: string, newVersion: string }>}
+ */
+export const getTagsAtHead = () => {
+  const output = execSync("git tag --points-at HEAD", { encoding: "utf8" });
+  const tags = output
+    .split("\n")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return parseTagsAtHead(tags);
+};
 
 /**
  * Extract the changelog section for a specific version.
@@ -225,17 +261,18 @@ export const ghReleaseCreate = (tag, notes, isPrerelease) => {
 };
 
 const main = () => {
-  const args = process.argv.slice(2);
-  const dryRun = args.includes("--dry-run");
-  const statusPath =
-    args.find((arg) => !arg.startsWith("--")) || "changeset-status.json";
+  const { values } = parseArgs({
+    options: {
+      "dry-run": { type: "boolean", default: false },
+    },
+  });
+  const dryRun = values["dry-run"];
 
-  if (!fs.existsSync(statusPath)) {
-    console.log(`${statusPath} not found; nothing to release.`);
+  const releases = getTagsAtHead();
+  if (releases.length === 0) {
+    console.log("No release tags at HEAD; nothing to release.");
     process.exit(0);
   }
-
-  const statusJson = JSON.parse(fs.readFileSync(statusPath, "utf8"));
 
   createGithubReleases(
     {
@@ -247,7 +284,7 @@ const main = () => {
       log: console.log,
       warn: console.warn,
     },
-    statusJson,
+    { releases },
     { dryRun },
   );
 };

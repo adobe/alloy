@@ -58,15 +58,21 @@ const execute = (
     Object.assign(options, verbose ? { stdio: "inherit" } : {}),
   );
 
-  if (r.status !== 0) {
-    if (r.stderr) {
-      const error = r.stderr.toString().trim();
-      throw new Error(error);
-    } else {
-      throw new Error(
+  if (r.status !== 0 || r.error) {
+    // concurrently/pnpm write sub-build errors to stdout, not stderr, so report
+    // both streams. r.error covers a failed spawn (e.g. ENOENT) and r.signal a
+    // kill (e.g. an OOM SIGKILL, which leaves status null) — the failure we most
+    // want to surface on small CI runners.
+    const parts = [
+      r.error && r.error.message,
+      r.signal && `Killed by signal ${r.signal}`,
+      r.stdout && r.stdout.toString().trim(),
+      r.stderr && r.stderr.toString().trim(),
+    ].filter(Boolean);
+    throw new Error(
+      parts.join("\n") ||
         `An error occurred while executing the command: ${command}.`,
-      );
-    }
+    );
   }
 };
 
@@ -155,9 +161,19 @@ const packVendoredWorkspacePackages = (destDir) => {
   fs.mkdirSync(vendorDir, { recursive: true });
   return VENDORED_PACKAGES.map(({ name, dir }) => {
     console.log(`Packing ${name}...`);
-    execute("pnpm", ["pack", "--pack-destination", vendorDir], { cwd: dir });
     const pkg = JSON.parse(
       fs.readFileSync(path.join(dir, "package.json"), "utf8"),
+    );
+    // Pack (with scripts off) so prepack (a full build that deletes distTest)
+    // can't race the browser integration tests reading it; build first only
+    // if the package isn't already built.
+    if (pkg.scripts?.build && !fs.existsSync(path.join(dir, "dist"))) {
+      execute("pnpm", ["run", "--if-present", "build"], { cwd: dir });
+    }
+    execute(
+      "pnpm",
+      ["pack", "--config.ignore-scripts=true", "--pack-destination", vendorDir],
+      { cwd: dir },
     );
     const tgzName = `${name.replace(/^@/, "").replace("/", "-")}-${pkg.version}.tgz`;
     if (!fs.existsSync(path.join(vendorDir, tgzName))) {
@@ -241,8 +257,16 @@ const getManifestFilepaths = () => {
     ],
     { cwd, encoding: "utf8" },
   );
-  if (r.status !== 0) {
-    throw new Error(`getPackagePaths failed: ${r.stderr || r.stdout}`);
+  if (r.status !== 0 || r.error) {
+    const parts = [
+      r.error && r.error.message,
+      r.signal && `Killed by signal ${r.signal}`,
+      r.stderr && r.stderr.toString().trim(),
+      r.stdout && r.stdout.toString().trim(),
+    ].filter(Boolean);
+    throw new Error(
+      `getPackagePaths failed: ${parts.join("\n") || "(no output)"}`,
+    );
   }
   return JSON.parse(r.stdout);
 };
@@ -284,20 +308,19 @@ const buildExtensionZip = async ({
 };
 
 /**
- * @param {{ verbose?: boolean }} [options]
  * @returns {Promise<string>} Absolute path to the produced zip file.
  */
-export const createExtensionPackage = async ({ verbose } = {}) => {
-  console.log("Running the clean process (`pnpm run clean`)...");
-  execute("pnpm", ["run", "clean"], { cwd, verbose });
-
-  console.log("Running the build process (`pnpm run build`)...");
-  execute("pnpm", ["run", "build"], { cwd, verbose });
-
-  const packagePath = getExtensionPackagePath(getExtensionJson());
-
+export const createExtensionPackage = async () => {
   const { packageJson, packageLockJson, vendoredPackages } =
     stageInstallablePackages();
+
+  console.log("Running the build process (`pnpm run build`)...");
+  // Always stream the build live. It's the longest, noisiest step and the one
+  // most likely to fail; inheriting stdio guarantees the underlying error
+  // (e.g. a killed concurrently sub-build) lands in the CI log.
+  execute("pnpm", ["run", "build"], { cwd, verbose: true });
+
+  const packagePath = getExtensionPackagePath(getExtensionJson());
 
   console.log("Building the extension zip...");
   await buildExtensionZip({
@@ -319,8 +342,6 @@ if (invokedAsCli) {
   program
     .name("createExtensionPackage")
     .description("Tool for generating the alloy extension package for Tags.");
-
-  program.option("-v, --verbose", "verbose mode", false);
 
   program.action(createExtensionPackage);
 

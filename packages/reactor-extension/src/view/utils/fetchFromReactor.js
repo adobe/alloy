@@ -16,20 +16,70 @@ import UserReportableError from "../errors/userReportableError";
 
 const REACTOR_HOST = "https://reactor.adobe.io";
 
-export default async ({ orgId, imsAccess, path, params, headers, signal }) => {
+// JSON:API requires Content-Type for request bodies to be the bare media type
+// with no parameters. The Accept header is allowed to include parameters and
+// uses Reactor's `;revision=1` selector for response format.
+const JSON_API_ACCEPT = "application/vnd.api+json;revision=1";
+const JSON_API_CONTENT_TYPE = "application/vnd.api+json";
+
+/**
+ * Makes an authenticated request to the Reactor API. Handles header
+ * construction, body serialization, abort signal propagation, common
+ * status-code mapping, and JSON body parsing.
+ *
+ * Defaults to GET. To mutate, pass `method: "PATCH"` (etc.) along with a
+ * `body`. Sibling helpers (e.g. `updateRuleComponent`) wrap this with verb-
+ * specific shapes so call sites document the operation by name.
+ *
+ * @param {object} options
+ * @param {string} options.orgId
+ * @param {string} options.imsAccess
+ * @param {string} options.path - Request path beneath the Reactor host.
+ * @param {string} [options.method="GET"] - HTTP method.
+ * @param {URLSearchParams|undefined} [options.params] - Query parameters.
+ * @param {object|string|undefined} [options.body] - Request body. Objects are
+ *   JSON-stringified; strings are sent as-is.
+ * @param {object|undefined} [options.headers] - Additional headers; merged
+ *   over the defaults.
+ * @param {AbortSignal} [options.signal]
+ * @returns {Promise<{status: number, parsedBody: object|null}>}
+ *   `parsedBody` is `null` for empty / 204 responses.
+ */
+export default async ({
+  orgId,
+  imsAccess,
+  path,
+  method = "GET",
+  params,
+  body,
+  headers,
+  signal,
+}) => {
   const baseRequestHeaders = getBaseRequestHeaders({ orgId, imsAccess });
   const queryString = params ? `?${params.toString()}` : "";
-  let response;
 
+  const requestHeaders = {
+    ...baseRequestHeaders,
+    Accept: JSON_API_ACCEPT,
+    ...(body !== undefined ? { "Content-Type": JSON_API_CONTENT_TYPE } : {}),
+    ...headers,
+  };
+
+  const fetchOptions = {
+    method,
+    headers: requestHeaders,
+    signal,
+  };
+  if (body !== undefined) {
+    fetchOptions.body = typeof body === "string" ? body : JSON.stringify(body);
+  }
+
+  let response;
   try {
-    response = await fetch(`${REACTOR_HOST}${path}${queryString}`, {
-      headers: {
-        ...baseRequestHeaders,
-        Accept: "application/vnd.api+json;revision=1",
-        ...headers,
-      },
-      signal,
-    });
+    response = await fetch(
+      `${REACTOR_HOST}${path}${queryString}`,
+      fetchOptions,
+    );
   } catch (e) {
     if (e.name === "AbortError") {
       throw e;
@@ -51,19 +101,18 @@ export default async ({ orgId, imsAccess, path, params, headers, signal }) => {
     throw new UserReportableError(NETWORK_ERROR_MESSAGE.FORBIDDEN_ACCESS);
   }
 
-  let parsedBody;
-
-  // Be aware that this can throw an error not only if the response
-  // body is invalid JSON but also if the request has been aborted.
-  try {
-    parsedBody = await response.json();
-  } catch (e) {
-    if (e.name === "AbortError") {
-      throw e;
+  let parsedBody = null;
+  if (response.status !== HTTP_STATUS.NO_CONTENT) {
+    try {
+      parsedBody = await response.json();
+    } catch (e) {
+      if (e.name === "AbortError") {
+        throw e;
+      }
+      throw new UserReportableError(
+        NETWORK_ERROR_MESSAGE.UNEXPECTED_SERVER_RESPONSE,
+      );
     }
-    throw new UserReportableError(
-      NETWORK_ERROR_MESSAGE.UNEXPECTED_SERVER_RESPONSE,
-    );
   }
 
   if (!response.ok) {

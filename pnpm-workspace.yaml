@@ -23,3 +23,19 @@ onlyBuiltDependencies:
   - msw
   - puppeteer
 verifyDepsBeforeRun: warn
+overrides:
+  lodash@<4.18.1: ^4.18.1
+  jshint>minimatch: ^3.1.5
+  underscore@<1.13.8: ^1.13.8
+  yaml@<2.8.3: ^2.8.3
+  tmp@<0.2.6: ^0.2.7
+allowBuilds:
+  '@parcel/watcher': true
+  '@swc/core': true
+  core-js: true
+  esbuild: true
+  keytar: true
+  lmdb: true
+  msgpackr-extract: true
+  msw: true
+  puppeteer: true

@@ -1,13 +1,18 @@
 {
+  "distTest/baseCode.min.js": {
+    "uncompressedSize": 199,
+    "gzippedSize": 164,
+    "brotiliSize": 133
+  },
   "dist/alloy.js": {
-    "uncompressedSize": 758937,
-    "gzippedSize": 125488,
-    "brotiliSize": 96771
+    "uncompressedSize": 760386,
+    "gzippedSize": 125829,
+    "brotiliSize": 97018
   },
   "dist/alloy.min.js": {
-    "uncompressedSize": 156943,
-    "gzippedSize": 52551,
-    "brotiliSize": 45253
+    "uncompressedSize": 157476,
+    "gzippedSize": 52699,
+    "brotiliSize": 45429
   },
   "dist/alloyServiceWorker.js": {
     "uncompressedSize": 19625,
@@ -18,11 +23,6 @@
     "uncompressedSize": 5514,
     "gzippedSize": 2579,
     "brotiliSize": 2165
-  },
-  "distTest/baseCode.min.js": {
-    "uncompressedSize": 199,
-    "gzippedSize": 164,
-    "brotiliSize": 133
   },
   "dist/utils/deepAssign.js": {
     "uncompressedSize": 3829,

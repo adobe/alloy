@@ -19,7 +19,6 @@ import {
   validateViewThroughCall,
   ADVERTISING_CONSTANTS,
 } from "../../helpers/advertising.js";
-import waitFor from "../../helpers/utils/waitFor.js";
 
 describe("Advertising - Viewthrough with advertising IDs", () => {
   test("should send conversion query with advertising IDs in view-through", async ({
@@ -38,16 +37,21 @@ describe("Advertising - Viewthrough with advertising IDs", () => {
       advertising: { handleAdvertisingData: "auto" },
     });
 
-    await waitFor(200);
+    // Poll for a *complete* view-through call rather than waiting a fixed time
+    // then checking once: findCalls resolves on the first completed edge call,
+    // which can precede the advertising enrichment call on a slow runner.
+    const getFirstViewThrough = async () => {
+      const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/, {
+        retries: 1,
+      });
+      return findViewThroughCalls(calls)[0];
+    };
 
-    const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/, {
-      retries: 20,
-      delayMs: 100,
-    });
-    const [firstView] = findViewThroughCalls(calls);
-    expect(firstView).toBeTruthy();
+    await expect
+      .poll(getFirstViewThrough, { timeout: 5000, interval: 100 })
+      .toBeTruthy();
 
-    validateViewThroughCall(firstView, {
+    validateViewThroughCall(await getFirstViewThrough(), {
       advIds: ADVERTISING_CONSTANTS.DEFAULT_ADVERTISER_IDS_STRING,
       requireIds: false,
     });

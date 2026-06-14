@@ -1,5 +1,54 @@
 # reactor-extension-alloy
 
+## 2.37.0
+
+### Minor Changes
+
+- [#1513](https://github.com/adobe/alloy/pull/1513) [`c18d24d`](https://github.com/adobe/alloy/commit/c18d24d47120d69f4a32ea6b0d6f1dae8a4e1115) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Added a "Property actions" section to the extension configuration view with a "Repair stale data element references" button. The button scans every action in the current property that belongs to this extension and repairs any reference to a data element that no longer exists on the property by matching on the saved data element name. Progress is reported in a dialog that can be hidden (the operation continues) and reopened; results are surfaced as a summary with per-action detail for anything that could not be repaired automatically.
+
+### Patch Changes
+
+- [#1531](https://github.com/adobe/alloy/pull/1531) [`109e2c4`](https://github.com/adobe/alloy/commit/109e2c4975e9eb35e11a9c0f21f402690eb1408d) Thanks [@carterworks](https://github.com/carterworks)! - manual bump of version number to trigger package release process
+
+- [#1523](https://github.com/adobe/alloy/pull/1523) [`7d4d294`](https://github.com/adobe/alloy/commit/7d4d29435674181a168e89a5e2d0516b4bfab334) Thanks [@carterworks](https://github.com/carterworks)! - Adjust the internal release workflow
+
+- [#1513](https://github.com/adobe/alloy/pull/1513) [`c18d24d`](https://github.com/adobe/alloy/commit/c18d24d47120d69f4a32ea6b0d6f1dae8a4e1115) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Added 'repair all (property-wide) data element references' to extension configuration
+
+- [#1521](https://github.com/adobe/alloy/pull/1521) [`b9cf8fe`](https://github.com/adobe/alloy/commit/b9cf8fecc6c13f5eb76086dc20b45e36bc19f6e8) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Fix variablestore key confusion
+
+- Updated dependencies [[`7c15a87`](https://github.com/adobe/alloy/commit/7c15a87b4fc252d10e3f0e3b79b8bf2f87472af6), [`109e2c4`](https://github.com/adobe/alloy/commit/109e2c4975e9eb35e11a9c0f21f402690eb1408d), [`7d4d294`](https://github.com/adobe/alloy/commit/7d4d29435674181a168e89a5e2d0516b4bfab334)]:
+  - @adobe/alloy@2.34.1
+
+## 2.37.0-beta.2
+
+### Minor Changes
+
+- [#1513](https://github.com/adobe/alloy/pull/1513) [`c18d24d`](https://github.com/adobe/alloy/commit/c18d24d47120d69f4a32ea6b0d6f1dae8a4e1115) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Added a "Property actions" section to the extension configuration view with a "Repair stale data element references" button. The button scans every action in the current property that belongs to this extension and repairs any reference to a data element that no longer exists on the property by matching on the saved data element name. Progress is reported in a dialog that can be hidden (the operation continues) and reopened; results are surfaced as a summary with per-action detail for anything that could not be repaired automatically.
+
+### Patch Changes
+
+- [#1513](https://github.com/adobe/alloy/pull/1513) [`c18d24d`](https://github.com/adobe/alloy/commit/c18d24d47120d69f4a32ea6b0d6f1dae8a4e1115) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Added 'repair all (property-wide) data element references' to extension configuration
+
+## 2.36.1-beta.1
+
+### Patch Changes
+
+- [#1531](https://github.com/adobe/alloy/pull/1531) [`109e2c4`](https://github.com/adobe/alloy/commit/109e2c4975e9eb35e11a9c0f21f402690eb1408d) Thanks [@carterworks](https://github.com/carterworks)! - manual bump of version number to trigger package release process
+
+- Updated dependencies [[`109e2c4`](https://github.com/adobe/alloy/commit/109e2c4975e9eb35e11a9c0f21f402690eb1408d)]:
+  - @adobe/alloy@2.34.1-beta.1
+
+## 2.36.1-beta.0
+
+### Patch Changes
+
+- [#1523](https://github.com/adobe/alloy/pull/1523) [`7d4d294`](https://github.com/adobe/alloy/commit/7d4d29435674181a168e89a5e2d0516b4bfab334) Thanks [@carterworks](https://github.com/carterworks)! - Adjust the internal release workflow
+
+- [#1521](https://github.com/adobe/alloy/pull/1521) [`b9cf8fe`](https://github.com/adobe/alloy/commit/b9cf8fecc6c13f5eb76086dc20b45e36bc19f6e8) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Fix variablestore key confusion
+
+- Updated dependencies [[`7c15a87`](https://github.com/adobe/alloy/commit/7c15a87b4fc252d10e3f0e3b79b8bf2f87472af6), [`7d4d294`](https://github.com/adobe/alloy/commit/7d4d29435674181a168e89a5e2d0516b4bfab334)]:
+  - @adobe/alloy@2.34.1-beta.0
+
 ## 2.36.0
 
 ### Minor Changes

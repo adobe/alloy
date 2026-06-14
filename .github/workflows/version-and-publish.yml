@@ -1,0 +1,112 @@
+name: Version and Publish
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: version-and-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # Cheap gate so the Production approval is only requested when there's
+  # actual release work (changesets exist) or the operator forced a run.
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      proceed: ${{ steps.check.outputs.proceed }}
+    steps:
+      - uses: actions/checkout@v5
+      - id: check
+        run: |
+          shopt -s nullglob
+          changesets=()
+          for f in .changeset/*.md; do
+            [ "$(basename "$f")" = "README.md" ] || changesets+=("$f")
+          done
+          if [ ${#changesets[@]} -gt 0 ]; then
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  publish:
+    needs: detect
+    if: needs.detect.outputs.proceed == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: Production
+    permissions:
+      contents: write
+      pull-requests: read
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+      NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          # use the SSH deploy key for all future git actions to bypass branch protection
+          ssh-key: ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - run: pnpm install --frozen-lockfile
+
+      # Bump versions and push the release commit BEFORE anything irreversible.
+      # `changeset version` is a no-op when changesets are absent, so this
+      # whole step idempotently does nothing on a retry.
+      - name: Version, commit, push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pnpm changeset version
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: publish [skip ci]"
+            git push origin HEAD:main
+          fi
+
+      # changeset publish skips already-on-npm versions; with
+      # privatePackages.tag: true in .changeset/config.json it also tags the
+      # private packages so all four share a uniform release marker.
+      # `changeset publish` only tags what it just published, so a retry after a
+      # post-publish crash drops the tag; `changeset tag` idempotently backfills it.
+      - name: Publish + tag
+        run: |
+          pnpm changeset publish
+          pnpm changeset tag
+          git push --tags
+
+      - uses: webfactory/ssh-agent@v0.10.0
+        with:
+          ssh-private-key: ${{ secrets.CDN_PRIVATE_KEY }}
+
+      # Each package owns its deploy via a `release` script that's idempotent
+      - name: Side-effect deploys
+        env:
+          REACTOR_IO_INTEGRATION_CLIENT_SECRET: ${{ secrets.REACTOR_IO_INTEGRATION_CLIENT_SECRET }}
+          AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_AGREEABLE_RIVER_0EC96991E }}
+        run: pnpm --recursive --workspace-concurrency=1 --no-bail --if-present run release
+
+      # Iterates git tags at HEAD; skips existing releases.
+      - name: GitHub Releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/createGithubReleases.js
+
+      # After a stable release, prep the next cycle by re-entering pre mode.
+      - name: Re-enter beta pre-mode after stable
+        run: |
+          [ -f .changeset/pre.json ] && exit 0
+          pnpm changeset pre enter beta
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .changeset/pre.json
+          git commit -m "chore: re-enter beta pre mode [skip ci]"
+          git push origin HEAD:main

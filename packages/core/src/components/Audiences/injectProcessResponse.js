@@ -15,5 +15,8 @@ export default ({ processDestinations }) => {
     const pushDestinations = response.getPayloadsByType("activation:push");
     // fire and forget
     processDestinations(pushDestinations);
+    return {
+      destinations: response.getPayloadsByType("activation:pull"),
+    };
   };
 };

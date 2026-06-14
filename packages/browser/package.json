@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy",
-  "version": "2.34.0",
+  "version": "2.34.1",
   "description": "Adobe Experience Platform Web SDK",
   "type": "module",
   "repository": {
@@ -26,6 +26,8 @@
   ],
   "scripts": {
     "clean": "rimraf dist distTest",
+    "prepack": "pnpm run build",
+    "release": "node scripts/release.mjs",
     "build:types": "tsc -p jsconfig.json --declaration --emitDeclarationOnly --outDir dist/types --checkJs false --noEmit false",
     "build": "pnpm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,SERVICE_WORKER,SERVICE_WORKER_MIN,UTILITY_EXPORTS,BUNDLESIZE && pnpm run build:types",
     "build:watch": "pnpm run clean && rollup -c --watch --environment BASE_CODE_MIN,STANDALONE,UTILITY_EXPORTS",
@@ -92,6 +94,6 @@
     "testcafe": "^3.7.4",
     "testcafe-browser-provider-playwright": "^1.1.0",
     "uuid": "^14.0.0",
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.6"
   }
 }
