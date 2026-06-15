@@ -38,7 +38,6 @@ describe("Context", () => {
     expect(xdm.environment?.browserDetails?.userAgentClientHints).toBeFalsy();
   });
 
-  // C2598 - Adds only web context data when only web is specified in configuration.
   test("C2598 - adds only web context data when only web context is configured", async ({
     alloy,
     worker,
@@ -63,10 +62,8 @@ describe("Context", () => {
     expect(xdm.device).toBeFalsy();
     expect(xdm.placeContext).toBeFalsy();
     expect(xdm.environment).toBeFalsy();
-    expect(xdm.environment?.browserDetails?.userAgentClientHints).toBeFalsy();
   });
 
-  // C2599 - Adds only device context data when only device is specified in configuration.
   test("C2599 - adds only device context data when only device context is configured", async ({
     alloy,
     worker,
@@ -93,10 +90,8 @@ describe("Context", () => {
     expect(xdm.web.webPageDetails).toBeTruthy();
     expect(xdm.placeContext).toBeFalsy();
     expect(xdm.environment).toBeFalsy();
-    expect(xdm.environment?.browserDetails?.userAgentClientHints).toBeFalsy();
   });
 
-  // C2600 - Adds only environment context data when only environment is specified in configuration.
   test("C2600 - adds only environment context data when only environment context is configured", async ({
     alloy,
     worker,
@@ -126,7 +121,6 @@ describe("Context", () => {
     expect(xdm.environment?.browserDetails?.userAgentClientHints).toBeFalsy();
   });
 
-  // C2601 - Adds only placeContext context data when only placeContext is specified in configuration.
   test("C2601 - adds only placeContext data when only placeContext context is configured", async ({
     alloy,
     worker,
@@ -153,10 +147,8 @@ describe("Context", () => {
     expect(xdm.web.webPageDetails).toBeTruthy();
     expect(xdm.environment).toBeFalsy();
     expect(xdm.device).toBeFalsy();
-    expect(xdm.environment?.browserDetails?.userAgentClientHints).toBeFalsy();
   });
 
-  // C1911390 - Ensure user-provided fields for context data don't leak across requests.
   test("C1911390 - user-provided context fields do not leak to subsequent requests", async ({
     alloy,
     worker,
@@ -204,7 +196,6 @@ describe("Context", () => {
     expect(xdm2.web?.customWebField).toBeFalsy();
   });
 
-  // C7311732 - Adds only userAgentClientHints context data when only highEntropyUserAgentHints is specified.
   test("C7311732 - adds only userAgentClientHints when highEntropyUserAgentHints context is configured", async ({
     alloy,
     worker,
