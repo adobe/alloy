@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 import { test, expect, describe } from "../../helpers/testsSetup/extend.js";
 import { sendEventHandler } from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
+import { withTemporaryReferrer } from "../../helpers/utils/referrer.js";
 
 describe("Context", () => {
   // C2597 - Adds all context data to requests by default.
@@ -45,8 +46,10 @@ describe("Context", () => {
   }) => {
     worker.use(sendEventHandler);
 
+    const referrer = "https://example.com/referring-page";
+
     await alloy("configure", { ...alloyConfig, context: ["web"] });
-    await alloy("sendEvent");
+    await withTemporaryReferrer(referrer, () => alloy("sendEvent"));
 
     const call = await networkRecorder.findCall(/edge\.adobedc\.net/);
     expect(call).toBeDefined();
@@ -54,7 +57,9 @@ describe("Context", () => {
     const xdm = call.request.body.events[0].xdm;
     expect(xdm.web).toBeTruthy();
     expect(xdm.web.webPageDetails).toBeTruthy();
+    expect(xdm.web.webPageDetails.URL).toBe(window.location.href);
     expect(xdm.web.webReferrer).toBeTruthy();
+    expect(xdm.web.webReferrer.URL).toBe(referrer);
     expect(xdm.device).toBeFalsy();
     expect(xdm.placeContext).toBeFalsy();
     expect(xdm.environment).toBeFalsy();
