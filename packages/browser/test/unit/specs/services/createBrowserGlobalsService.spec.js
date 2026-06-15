@@ -50,4 +50,33 @@ describe("BrowserGlobalsService", () => {
     expect(globals.getHostname()).toBe(window.location.hostname);
     expect(globals.getUserAgent()).toBe(window.navigator.userAgent);
   });
+
+  it("getLocationHash returns window.location.hash", () => {
+    const globals = createBrowserGlobalsService();
+    expect(globals.getLocationHash()).toBe(window.location.hash);
+  });
+
+  it("getPageLocation returns the window.location object", () => {
+    const globals = createBrowserGlobalsService();
+    expect(globals.getPageLocation()).toBe(window.location);
+  });
+
+  it("isPageSsl reflects whether the current protocol is https", () => {
+    const globals = createBrowserGlobalsService();
+    expect(globals.isPageSsl()).toBe(window.location.protocol === "https:");
+  });
+
+  it("getWindowContext returns an object with all expected page context fields", () => {
+    const globals = createBrowserGlobalsService();
+    const ctx = globals.getWindowContext();
+    expect(ctx).toMatchObject({
+      title: document.title,
+      url: window.location.href,
+      referrer: document.referrer,
+      height: window.innerHeight,
+      width: window.innerWidth,
+      scrollY: window.scrollY,
+      scrollX: window.scrollX,
+    });
+  });
 });
