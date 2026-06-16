@@ -23,7 +23,6 @@ import searchForLogMessage from "../../helpers/utils/searchForLogMessage.js";
 import { withTemporaryUrl } from "../../helpers/utils/location.js";
 import setupBaseCode from "../../helpers/alloy/setupBaseCode.js";
 import setupAlloy from "../../helpers/alloy/setup.js";
-import cleanAlloy from "../../helpers/alloy/clean.js";
 
 let consoleSpy;
 beforeEach(() => {
@@ -104,8 +103,6 @@ describe("Toggle logging through querystring parameter (C2586)", () => {
         expect(
           searchForLogMessage(consoleSpy, "Executing getLibraryInfo command"),
         ).toBe(true);
-
-        cleanAlloy();
       });
     } finally {
       consoleSpy.mockRestore();
@@ -141,7 +138,10 @@ describe("Logged objects can be stringified (C532204)", () => {
       spies.forEach((spy) => spy.mockRestore());
     }
 
-    const callCount = spies.reduce((sum, spy) => sum + spy.mock.calls.length, 0);
+    const callCount = spies.reduce(
+      (sum, spy) => sum + spy.mock.calls.length,
+      0,
+    );
     expect(callCount).toBeGreaterThan(0);
   });
 });
