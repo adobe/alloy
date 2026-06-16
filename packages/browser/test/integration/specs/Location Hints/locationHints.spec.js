@@ -20,39 +20,46 @@ import { MAIN_CLUSTER_COOKIE_NAME } from "../../helpers/constants/cookies.js";
 // (mboxEdgeCluster=38 maps to sgp3 in Konductor).
 const sgp3LocationHintHandler = http.post(
   /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
-  () => {
-    return HttpResponse.json({
-      requestId: "sgp3-location-hint-test",
-      handle: [
-        {
-          payload: [
-            {
-              id: "41861666193140161934276845651148876988",
-              namespace: { code: "ECID" },
-            },
-          ],
-          type: "identity:result",
-        },
-        {
-          payload: [
-            { scope: "Target", hint: "38", ttlSeconds: 1800 },
-            { scope: "AAM", hint: "3", ttlSeconds: 1800 },
-            { scope: "EdgeNetwork", hint: "sgp3", ttlSeconds: 1800 },
-          ],
-          type: "locationHint:result",
-        },
-        {
-          payload: [
-            {
-              key: MAIN_CLUSTER_COOKIE_NAME,
-              value: "sgp3",
-              maxAge: 1800,
-            },
-          ],
-          type: "state:store",
-        },
-      ],
-    });
+  async (req) => {
+    const url = new URL(req.request.url);
+    const configId = url.searchParams.get("configId");
+
+    if (configId === alloyConfig.datastreamId) {
+      return HttpResponse.json({
+        requestId: "sgp3-location-hint-test",
+        handle: [
+          {
+            payload: [
+              {
+                id: "41861666193140161934276845651148876988",
+                namespace: { code: "ECID" },
+              },
+            ],
+            type: "identity:result",
+          },
+          {
+            payload: [
+              { scope: "Target", hint: "38", ttlSeconds: 1800 },
+              { scope: "AAM", hint: "3", ttlSeconds: 1800 },
+              { scope: "EdgeNetwork", hint: "sgp3", ttlSeconds: 1800 },
+            ],
+            type: "locationHint:result",
+          },
+          {
+            payload: [
+              {
+                key: MAIN_CLUSTER_COOKIE_NAME,
+                value: "sgp3",
+                maxAge: 1800,
+              },
+            ],
+            type: "state:store",
+          },
+        ],
+      });
+    }
+
+    throw new Error("Handler not configured properly");
   },
 );
 
@@ -113,6 +120,13 @@ describe("Location Hints", () => {
       debugEnabled: false,
     });
     await alloy("sendEvent", {});
+
+    // The edge response's state:store sets the cluster cookie to sgp3; assert it
+    // explicitly so a storage failure surfaces here rather than as a confusing
+    // URL-path mismatch on the second request below.
+    const clusterCookie = await cookieStore.get(MAIN_CLUSTER_COOKIE_NAME);
+    expect(clusterCookie?.value).toBe("sgp3");
+
     await alloy("sendEvent", {});
 
     const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/, {
