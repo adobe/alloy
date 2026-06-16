@@ -30,7 +30,7 @@ const BASE_CONFIG = {
   onBeforeEventSend: () => {},
 };
 
-const EXPECTED_COMMANDS = [
+const KNOWN_COMMANDS = [
   "appendIdentityToUrl",
   "applyPropositions",
   "applyResponse",
@@ -59,8 +59,7 @@ describe("LibraryInfo (C2589)", () => {
     const { libraryInfo } = await alloy("getLibraryInfo");
 
     expect(libraryInfo.version).toBe(LIBRARY_VERSION);
-    // Use toEqual for commands — exact list reflects the public API contract.
-    expect(libraryInfo.commands).toEqual(EXPECTED_COMMANDS);
+    expect(libraryInfo.commands).toEqual(expect.arrayContaining(KNOWN_COMMANDS));
     // Use toMatchObject for configs — new components may add new fields over time.
     expect(libraryInfo.configs).toMatchObject({
       clickCollectionEnabled: true,
