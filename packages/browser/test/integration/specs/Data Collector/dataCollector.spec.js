@@ -139,16 +139,8 @@ describe("C1715149 - onBeforeEventSend callback", () => {
       },
     });
 
-    let error;
-    try {
-      await alloy("sendEvent");
-    } catch (e) {
-      error = e;
-    }
-
+    await expect(alloy("sendEvent")).rejects.toThrow(/Expected Error/);
     expect(callbackInvoked).toBe(true);
-    expect(error).toBeDefined();
-    expect(error.message).toMatch(/Expected Error/);
 
     expect(interactCalls(networkRecorder).length).toBe(0);
   });
