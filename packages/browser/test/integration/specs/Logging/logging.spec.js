@@ -24,6 +24,16 @@ import { withTemporaryUrl } from "../../helpers/utils/location.js";
 import setupBaseCode from "../../helpers/alloy/setupBaseCode.js";
 import setupAlloy from "../../helpers/alloy/setup.js";
 
+// Captured before beforeEach spies on console.info, so forwarding from a
+// re-spied method doesn't loop back through the spy. See C532204 below.
+const originalConsole = ["log", "info", "warn", "error"].reduce(
+  (acc, methodName) => {
+    acc[methodName] = console[methodName].bind(console);
+    return acc;
+  },
+  {},
+);
+
 let consoleSpy;
 beforeEach(() => {
   consoleSpy = vi.spyOn(console, "info");
@@ -123,25 +133,22 @@ describe("Logged objects can be stringified (C532204)", () => {
   }) => {
     worker.use(sendEventHandler);
 
-    const spies = ["log", "info", "warn", "error"].map((methodName) => {
-      const through = console[methodName].bind(console);
-      return vi.spyOn(console, methodName).mockImplementation((...args) => {
+    const spies = ["log", "info", "warn", "error"].map((methodName) =>
+      vi.spyOn(console, methodName).mockImplementation((...args) => {
         args.forEach((arg) => String(arg));
-        through(...args);
-      });
-    });
+        originalConsole[methodName](...args);
+      }),
+    );
 
+    let callCount;
     try {
       await alloy("configure", { ...alloyConfig, debugEnabled: true });
       await alloy("sendEvent");
+      callCount = spies.reduce((sum, spy) => sum + spy.mock.calls.length, 0);
     } finally {
       spies.forEach((spy) => spy.mockRestore());
     }
 
-    const callCount = spies.reduce(
-      (sum, spy) => sum + spy.mock.calls.length,
-      0,
-    );
     expect(callCount).toBeGreaterThan(0);
   });
 });
