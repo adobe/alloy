@@ -25,6 +25,10 @@ import alloyConfig from "../../helpers/alloy/config.js";
 import searchForLogMessage from "../../helpers/utils/searchForLogMessage.js";
 import { CONSENT_OUT } from "../../helpers/constants/consent.js";
 
+// Fixed wait for negative assertions ("no request fired"). There is no positive
+// signal to poll on, so a fixed delay is required.
+const NO_REQUEST_WAIT_MS = 200;
+
 describe("C2592 - Event command sends a request", () => {
   test("sendEvent produces an edge interact call with implementationDetails and state", async ({
     alloy,
@@ -197,7 +201,7 @@ describe("C8119 - Click collection disabled does not send link click events", ()
 
     // Fixed wait is necessary: asserting that NO interact call fires after the
     // click, so there is no positive observable condition to poll on.
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, NO_REQUEST_WAIT_MS));
 
     const calls = networkRecorder.calls.filter((c) =>
       /v1\/interact/.test(c.request?.url ?? ""),
@@ -310,7 +314,7 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
 
     // Fixed wait is necessary: asserting that NO interact call fires after the
     // click, so there is no positive observable condition to poll on.
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, NO_REQUEST_WAIT_MS));
 
     const calls = networkRecorder.calls.filter((c) =>
       /v1\/interact/.test(c.request?.url ?? ""),
@@ -344,7 +348,7 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
 
     // Fixed wait is necessary: asserting that NO interact call fires after the
     // click, so there is no positive observable condition to poll on.
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, NO_REQUEST_WAIT_MS));
 
     const calls = networkRecorder.calls.filter((c) =>
       /v1\/interact/.test(c.request?.url ?? ""),
