@@ -24,10 +24,20 @@ import {
 import alloyConfig from "../../helpers/alloy/config.js";
 import searchForLogMessage from "../../helpers/utils/searchForLogMessage.js";
 import { CONSENT_OUT } from "../../helpers/constants/consent.js";
+import {
+  appendLink,
+  clickLink,
+  cleanupDom,
+} from "../../helpers/utils/domHelpers.js";
 
 // Fixed wait for negative assertions ("no request fired"). There is no positive
 // signal to poll on, so a fixed delay is required.
 const NO_REQUEST_WAIT_MS = 200;
+
+afterEach(() => {
+  cleanupDom();
+  delete window.___getLinkDetails;
+});
 
 describe("C2592 - Event command sends a request", () => {
   test("sendEvent produces an edge interact call with implementationDetails and state", async ({
@@ -189,15 +199,8 @@ describe("C8119 - Click collection disabled does not send link click events", ()
     });
     networkRecorder.reset();
 
-    const link = document.createElement("a");
-    link.id = "alloy-link-test";
-    link.href = "#blank";
-    link.textContent = "Test Link";
-    document.body.appendChild(link);
-
-    // Prevent navigation so the page stays
-    link.addEventListener("click", (e) => e.preventDefault());
-    link.click();
+    const link = appendLink({ id: "alloy-link-test", href: "#blank", text: "Test Link" });
+    clickLink(link);
 
     // Fixed wait is necessary: asserting that NO interact call fires after the
     // click, so there is no positive observable condition to poll on.
@@ -304,13 +307,8 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     });
     networkRecorder.reset();
 
-    const link = document.createElement("a");
-    link.id = "alloy-link-test";
-    link.href = "#valid";
-    link.textContent = "Test Link";
-    document.body.appendChild(link);
-    link.addEventListener("click", (e) => e.preventDefault());
-    link.click();
+    const link = appendLink({ id: "alloy-link-test", href: "#valid", text: "Test Link" });
+    clickLink(link);
 
     // Fixed wait is necessary: asserting that NO interact call fires after the
     // click, so there is no positive observable condition to poll on.
@@ -338,13 +336,8 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     });
     networkRecorder.reset();
 
-    const link = document.createElement("a");
-    link.id = "alloy-link-test";
-    link.href = "#valid";
-    link.textContent = "Test Link";
-    document.body.appendChild(link);
-    link.addEventListener("click", (e) => e.preventDefault());
-    link.click();
+    const link = appendLink({ id: "alloy-link-test", href: "#valid", text: "Test Link" });
+    clickLink(link);
 
     // Fixed wait is necessary: asserting that NO interact call fires after the
     // click, so there is no positive observable condition to poll on.
@@ -378,13 +371,8 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
       },
     });
 
-    const link = document.createElement("a");
-    link.id = "alloy-link-test";
-    link.href = "#internal";
-    link.textContent = "Test Link";
-    document.body.appendChild(link);
-    link.addEventListener("click", (e) => e.preventDefault());
-    link.click();
+    const link = appendLink({ id: "alloy-link-test", href: "#internal", text: "Test Link" });
+    clickLink(link);
 
     const call = await networkRecorder.findCall(/v1\/interact/);
     expect(call).toBeDefined();
@@ -413,14 +401,9 @@ describe("C11693274 - URL query params do not affect exit link classification", 
     });
 
     // href contains current domain only in the query string (not the host)
-    const link = document.createElement("a");
-    link.id = "alloy-link-test";
     const externalUrl = `https://example.com/?exclude-this=${window.location.hostname}`;
-    link.href = externalUrl;
-    link.textContent = "Test Link";
-    document.body.appendChild(link);
-    link.addEventListener("click", (e) => e.preventDefault());
-    link.click();
+    const link = appendLink({ id: "alloy-link-test", href: externalUrl, text: "Test Link" });
+    clickLink(link);
 
     const call = await networkRecorder.findCall(/v1\/interact/);
     expect(call).toBeDefined();
@@ -459,13 +442,8 @@ describe("C225010 - Click collection handles consent declined gracefully", () =>
 
     await alloy("setConsent", CONSENT_OUT);
 
-    const link = document.createElement("a");
-    link.id = "alloy-link-test";
-    link.href = "#foo";
-    link.textContent = "Test Link";
-    document.body.appendChild(link);
-    link.addEventListener("click", (e) => e.preventDefault());
-    link.click();
+    const link = appendLink({ id: "alloy-link-test", href: "#foo", text: "Test Link" });
+    clickLink(link);
 
     await expect
       .poll(() => searchForLogMessage(consoleSpy, "The user declined consent"))
@@ -518,11 +496,11 @@ describe("C81183 - getLinkDetails monitoring hook via __alloyMonitors", () => {
       clickCollectionEnabled: true,
     });
 
-    const link = document.createElement("a");
-    link.id = "alloy-link-test";
-    link.href = "https://example.com/valid.html";
-    link.textContent = "Test Link";
-    document.body.appendChild(link);
+    const link = appendLink({
+      id: "alloy-link-test",
+      href: "https://example.com/valid.html",
+      text: "Test Link",
+    });
 
     const result = window.___getLinkDetails(link);
     expect(result).toBeTruthy();
@@ -546,11 +524,11 @@ describe("C81183 - getLinkDetails monitoring hook via __alloyMonitors", () => {
       clickCollectionEnabled: false,
     });
 
-    const link = document.createElement("a");
-    link.id = "alloy-link-test-disabled";
-    link.href = "https://example.com/";
-    link.textContent = "External Link";
-    document.body.appendChild(link);
+    const link = appendLink({
+      id: "alloy-link-test-disabled",
+      href: "https://example.com/",
+      text: "External Link",
+    });
 
     const result = window.___getLinkDetails(link);
     expect(result).toBeTruthy();
@@ -580,11 +558,11 @@ describe("C81183 - getLinkDetails monitoring hook via __alloyMonitors", () => {
       },
     });
 
-    const cancelLink = document.createElement("a");
-    cancelLink.id = "cancel-alloy-link-test";
-    cancelLink.href = "https://example.com/canceled.html";
-    cancelLink.textContent = "Canceled Link";
-    document.body.appendChild(cancelLink);
+    const cancelLink = appendLink({
+      id: "cancel-alloy-link-test",
+      href: "https://example.com/canceled.html",
+      text: "Canceled Link",
+    });
 
     // getLinkDetails itself doesn't invoke onBeforeLinkClickSend — it returns
     // the raw link details regardless of the callback. This just proves the
