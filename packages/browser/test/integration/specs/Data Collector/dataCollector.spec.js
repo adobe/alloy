@@ -103,19 +103,15 @@ describe("C1715149 - onBeforeEventSend callback", () => {
   }) => {
     worker.use(sendEventHandler);
 
-    let callbackInvoked = false;
-
-    await alloy("configure", {
-      ...alloyConfig,
-      onBeforeEventSend: (content) => {
-        callbackInvoked = true;
-        content.xdm.foo = "bar";
-      },
+    const onBeforeEventSend = vi.fn((content) => {
+      content.xdm.foo = "bar";
     });
+
+    await alloy("configure", { ...alloyConfig, onBeforeEventSend });
 
     await alloy("sendEvent");
 
-    expect(callbackInvoked).toBe(true);
+    expect(onBeforeEventSend).toHaveBeenCalled();
 
     const call = await networkRecorder.findCall(/edge\.adobedc\.net/);
     expect(call).toBeDefined();
@@ -129,18 +125,14 @@ describe("C1715149 - onBeforeEventSend callback", () => {
   }) => {
     worker.use(sendEventHandler);
 
-    let callbackInvoked = false;
-
-    await alloy("configure", {
-      ...alloyConfig,
-      onBeforeEventSend: () => {
-        callbackInvoked = true;
-        throw new Error("Expected Error");
-      },
+    const onBeforeEventSend = vi.fn(() => {
+      throw new Error("Expected Error");
     });
 
+    await alloy("configure", { ...alloyConfig, onBeforeEventSend });
+
     await expect(alloy("sendEvent")).rejects.toThrow(/Expected Error/);
-    expect(callbackInvoked).toBe(true);
+    expect(onBeforeEventSend).toHaveBeenCalled();
 
     expect(interactCalls(networkRecorder).length).toBe(0);
   });
@@ -152,22 +144,18 @@ describe("C1715149 - onBeforeEventSend callback", () => {
   }) => {
     worker.use(sendEventHandler);
 
-    let callbackInvoked = false;
-
+    const onBeforeEventSend = vi.fn(() => false);
     const consoleSpy = vi.spyOn(console, "info");
 
     await alloy("configure", {
       ...alloyConfig,
       debugEnabled: true,
-      onBeforeEventSend: () => {
-        callbackInvoked = true;
-        return false;
-      },
+      onBeforeEventSend,
     });
 
     const result = await alloy("sendEvent");
 
-    expect(callbackInvoked).toBe(true);
+    expect(onBeforeEventSend).toHaveBeenCalled();
     expect(result).toEqual({});
 
     expect(interactCalls(networkRecorder).length).toBe(0);
