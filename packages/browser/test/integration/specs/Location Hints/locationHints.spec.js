@@ -74,10 +74,8 @@ describe("Location Hints", () => {
 
     // After the first request, the edge response (sendEventResponse.json) sets
     // EdgeNetwork hint "or2" and a cluster cookie "or2".
-    const clusterCookie = document.cookie
-      .split("; ")
-      .find((c) => c.startsWith(MAIN_CLUSTER_COOKIE_NAME + "="));
-    const locationHint = clusterCookie?.split("=")[1];
+    const clusterCookie = await cookieStore.get(MAIN_CLUSTER_COOKIE_NAME);
+    const locationHint = clusterCookie?.value;
     expect(locationHint).toBeTruthy();
 
     await alloy("sendEvent", {});
@@ -105,7 +103,7 @@ describe("Location Hints", () => {
   }) => {
     // Set mboxEdgeCluster=38 (Singapore, Konductor region ID 3 = sgp3)
     // Alloy reads this cookie and uses it as the initial location hint (/t38/)
-    document.cookie = "mboxEdgeCluster=38; path=/";
+    await cookieStore.set({ name: "mboxEdgeCluster", value: "38", path: "/" });
 
     worker.use(sgp3LocationHintHandler);
 
