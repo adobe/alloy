@@ -344,6 +344,15 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     expect(event.xdm.web.webInteraction.name).toBe("Augmented name");
     expect(event.data.customField).toBe("test123");
   });
+
+  // These five tests from the original C81181 functional file were not included
+  // in the initial migration. None depend on sendBeacon/collect-endpoint
+  // interception, so they are deferred scope rather than blocked.
+  test.skip("C81181 - link click is collected when clickCollectionEnabled and no callback defined", () => {});
+  test.skip("C81181 - onBeforeLinkClickSend cancels a request conditionally based on clickedElement.id", () => {});
+  test.skip("C81181 - filterClickDetails cancels a request conditionally based on clickedElement.id", () => {});
+  test.skip("C81181 - filterClickDetails can augment xdm and data before the request fires", () => {});
+  test.skip("C81181 - clickCollection.sessionStorageEnabled:false still captures link click data", () => {});
 });
 
 describe("C11693274 - URL query params do not affect exit link classification", () => {
