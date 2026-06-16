@@ -17,7 +17,6 @@ import {
   beforeEach,
   afterEach,
 } from "../../helpers/testsSetup/extend.js";
-import { test as vitestTest } from "vitest";
 import { sendEventHandler } from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
 import searchForLogMessage from "../../helpers/utils/searchForLogMessage.js";
@@ -100,33 +99,30 @@ describe("Toggle logging through setDebug command (C2584)", () => {
 describe("Toggle logging through querystring parameter (C2586)", () => {
   // This test sets alloy_debug=true in the URL before calling configure
   // so alloy reads the param during initialization
-  vitestTest(
-    "enables logging when alloy_debug=true is in the URL at configure time",
-    async () => {
-      const consoleSpy = vi.spyOn(console, "info");
-      try {
-        await withTemporaryUrl(async ({ currentHref, applyUrl }) => {
-          const url = new URL(currentHref);
-          url.searchParams.set("alloy_debug", "true");
-          applyUrl(url);
+  test("enables logging when alloy_debug=true is in the URL at configure time", async () => {
+    const consoleSpy = vi.spyOn(console, "info");
+    try {
+      await withTemporaryUrl(async ({ currentHref, applyUrl }) => {
+        const url = new URL(currentHref);
+        url.searchParams.set("alloy_debug", "true");
+        applyUrl(url);
 
-          await setupBaseCode();
-          const alloy = await setupAlloy();
+        await setupBaseCode();
+        const alloy = await setupAlloy();
 
-          await alloy("configure", alloyConfig);
-          await alloy("getLibraryInfo");
+        await alloy("configure", alloyConfig);
+        await alloy("getLibraryInfo");
 
-          expect(
-            searchForLogMessage(consoleSpy, "Executing getLibraryInfo command"),
-          ).toBe(true);
+        expect(
+          searchForLogMessage(consoleSpy, "Executing getLibraryInfo command"),
+        ).toBe(true);
 
-          cleanAlloy();
-        });
-      } finally {
-        consoleSpy.mockRestore();
-      }
-    },
-  );
+        cleanAlloy();
+      });
+    } finally {
+      consoleSpy.mockRestore();
+    }
+  });
 });
 
 describe("Logged objects can be stringified (C532204)", () => {
