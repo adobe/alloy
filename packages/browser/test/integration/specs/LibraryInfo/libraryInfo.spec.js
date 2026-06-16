@@ -54,12 +54,17 @@ describe("LibraryInfo (C2589)", () => {
   test("getLibraryInfo command returns library version, commands, and config", async ({
     alloy,
   }) => {
-    await alloy("configure", { ...BASE_CONFIG, thirdPartyCookiesEnabled: true });
+    await alloy("configure", {
+      ...BASE_CONFIG,
+      thirdPartyCookiesEnabled: true,
+    });
 
     const { libraryInfo } = await alloy("getLibraryInfo");
 
     expect(libraryInfo.version).toBe(LIBRARY_VERSION);
-    expect(libraryInfo.commands).toEqual(expect.arrayContaining(KNOWN_COMMANDS));
+    expect(libraryInfo.commands).toEqual(
+      expect.arrayContaining(KNOWN_COMMANDS),
+    );
     // Use toMatchObject for configs — new components may add new fields over time.
     expect(libraryInfo.configs).toMatchObject({
       clickCollectionEnabled: true,
