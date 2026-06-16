@@ -24,19 +24,11 @@ import { withTemporaryUrl } from "../../helpers/utils/location.js";
 import setupBaseCode from "../../helpers/alloy/setupBaseCode.js";
 import setupAlloy from "../../helpers/alloy/setup.js";
 
-// Captured before beforeEach spies on console.info, so forwarding from a
-// re-spied method doesn't loop back through the spy. See C532204 below.
-const originalConsole = ["log", "info", "warn", "error"].reduce(
-  (acc, methodName) => {
-    acc[methodName] = console[methodName].bind(console);
-    return acc;
-  },
-  {},
-);
-
 let consoleSpy;
 beforeEach(() => {
-  consoleSpy = vi.spyOn(console, "info");
+  // Don't forward to the real console; the spy still records calls for
+  // assertions, but the reporter output stays clean.
+  consoleSpy = vi.spyOn(console, "info").mockImplementation(() => {});
 });
 afterEach(() => {
   consoleSpy.mockRestore();
@@ -97,7 +89,7 @@ describe("Toggle logging through querystring parameter (C2586)", () => {
   // This test sets alloy_debug=true in the URL before calling configure
   // so alloy reads the param during initialization
   test("enables logging when alloy_debug=true is in the URL at configure time", async () => {
-    const consoleSpy = vi.spyOn(console, "info");
+    const consoleSpy = vi.spyOn(console, "info").mockImplementation(() => {});
     try {
       await withTemporaryUrl(async ({ currentHref, applyUrl }) => {
         const url = new URL(currentHref);
@@ -136,7 +128,6 @@ describe("Logged objects can be stringified (C532204)", () => {
     const spies = ["log", "info", "warn", "error"].map((methodName) =>
       vi.spyOn(console, methodName).mockImplementation((...args) => {
         args.forEach((arg) => String(arg));
-        originalConsole[methodName](...args);
       }),
     );
 
