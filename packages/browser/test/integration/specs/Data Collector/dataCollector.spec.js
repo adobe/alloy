@@ -25,7 +25,6 @@ import alloyConfig from "../../helpers/alloy/config.js";
 import searchForLogMessage from "../../helpers/utils/searchForLogMessage.js";
 import { CONSENT_OUT } from "../../helpers/constants/consent.js";
 
-// Poll until condition() returns truthy, then resolve.  Rejects on timeout.
 const waitUntil = (condition, { intervalMs = 50, timeoutMs = 3000 } = {}) =>
   new Promise((resolve, reject) => {
     const start = Date.now();
@@ -43,9 +42,6 @@ const waitUntil = (condition, { intervalMs = 50, timeoutMs = 3000 } = {}) =>
     poll();
   });
 
-// ---------------------------------------------------------------------------
-// C2592 – Event command sends a request
-// ---------------------------------------------------------------------------
 describe("C2592 - Event command sends a request", () => {
   test("sendEvent produces an edge interact call with implementationDetails and state", async ({
     alloy,
@@ -72,9 +68,6 @@ describe("C2592 - Event command sends a request", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// C75372 – XDM and data objects passed to sendEvent are not mutated
-// ---------------------------------------------------------------------------
 describe("C75372 - XDM and data objects are not mutated by sendEvent", () => {
   test("original xdm and data objects remain unchanged after sendEvent", async ({
     alloy,
@@ -98,9 +91,6 @@ describe("C75372 - XDM and data objects are not mutated by sendEvent", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// C1715149 – onBeforeEventSend callback
-// ---------------------------------------------------------------------------
 describe("C1715149 - onBeforeEventSend callback", () => {
   test("callback is invoked and can augment the xdm before the request fires", async ({
     alloy,
@@ -156,7 +146,6 @@ describe("C1715149 - onBeforeEventSend callback", () => {
     expect(error).toBeDefined();
     expect(error.message).toMatch(/Expected Error/);
 
-    // No network request should have been made
     const calls = networkRecorder.calls.filter((c) =>
       /v1\/interact/.test(c.request?.url ?? ""),
     );
@@ -199,9 +188,6 @@ describe("C1715149 - onBeforeEventSend callback", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// C8119 – Click collection disabled: link click does not send an event
-// ---------------------------------------------------------------------------
 describe("C8119 - Click collection disabled does not send link click events", () => {
   test("clicking a link fires no edge request when clickCollectionEnabled is false", async ({
     alloy,
@@ -216,7 +202,6 @@ describe("C8119 - Click collection disabled does not send link click events", ()
     });
     networkRecorder.reset();
 
-    // Add a link and click it
     const link = document.createElement("a");
     link.id = "alloy-link-test";
     link.href = "#blank";
@@ -238,9 +223,6 @@ describe("C8119 - Click collection disabled does not send link click events", ()
   });
 });
 
-// ---------------------------------------------------------------------------
-// C81184 – Click collection configuration warnings
-// ---------------------------------------------------------------------------
 describe("C81184 - Click collection configuration warnings", () => {
   let consoleSpy;
 
@@ -320,9 +302,6 @@ describe("C81184 - Click collection configuration warnings", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// C81181 – onBeforeLinkClickSend callback
-// ---------------------------------------------------------------------------
 describe("C81181 - onBeforeLinkClickSend callback", () => {
   test("returning false from onBeforeLinkClickSend cancels the link click request", async ({
     alloy,
@@ -429,9 +408,6 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// C11693274 – URL query parameters do not affect exit link classification
-// ---------------------------------------------------------------------------
 describe("C11693274 - URL query params do not affect exit link classification", () => {
   test("link to external domain with query param containing current domain is still classified as exit", async ({
     alloy,
@@ -452,7 +428,6 @@ describe("C11693274 - URL query params do not affect exit link classification", 
     // href contains current domain only in the query string (not the host)
     const link = document.createElement("a");
     link.id = "alloy-link-test";
-    // Build a URL that has the test page's hostname only in a query param
     const externalUrl = `https://example.com/?exclude-this=${window.location.hostname}`;
     link.href = externalUrl;
     link.textContent = "Test Link";
@@ -470,9 +445,6 @@ describe("C11693274 - URL query params do not affect exit link classification", 
   });
 });
 
-// ---------------------------------------------------------------------------
-// C225010 – Click collection handles errors when user declines consent
-// ---------------------------------------------------------------------------
 describe("C225010 - Click collection handles consent declined gracefully", () => {
   test("warning logged and no unhandled rejection when link clicked after opt-out", async ({
     alloy,
@@ -508,7 +480,6 @@ describe("C225010 - Click collection handles consent declined gracefully", () =>
     link.addEventListener("click", (e) => e.preventDefault());
     link.click();
 
-    // Poll until the "declined consent" warning log appears instead of sleeping.
     await waitUntil(
       () => searchForLogMessage(consoleSpy, "The user declined consent"),
       { intervalMs: 50, timeoutMs: 3000 },
@@ -524,26 +495,17 @@ describe("C225010 - Click collection handles consent declined gracefully", () =>
   });
 });
 
-// ---------------------------------------------------------------------------
-// C455258 – sendEvent uses /collect when documentUnloading and identity exists
-// ---------------------------------------------------------------------------
 // Skipped: the /collect endpoint uses sendBeacon, which is not intercepted by
 // MSW in browser mode. This test was a baseline failure in the functional suite
 // ("Collect endpoint" failures). See FUNCTIONAL_MIGRATION_PLAN.md §1.
 test.skip("C455258 - sendEvent sends to collect endpoint when documentUnloading=true after identity established", () => {});
 
-// ---------------------------------------------------------------------------
-// C8118 – Click collection sends to interact/collect depending on identity
-// ---------------------------------------------------------------------------
 // Skipped: tests that assert collect-vs-interact routing depend on sendBeacon
 // interception via MSW, which is not reliably supported in browser mode, and
 // this test was a baseline failure in the functional suite.
 // See FUNCTIONAL_MIGRATION_PLAN.md §1.
 test.skip("C8118 - link click routes to interact (no identity) then collect (identity established)", () => {});
 
-// ---------------------------------------------------------------------------
-// C9369211 – sendEvent includes a Referer header
-// ---------------------------------------------------------------------------
 // Skipped: the collect-endpoint portion of this test uses sendBeacon, which
 // MSW cannot intercept in browser mode. The interact portion relies on
 // inspecting request headers that MSW/networkRecorder may not surface
@@ -551,17 +513,11 @@ test.skip("C8118 - link click routes to interact (no identity) then collect (ide
 // See FUNCTIONAL_MIGRATION_PLAN.md §1.
 test.skip("C9369211 - sendEvent includes a Referer header on interact and collect requests", () => {});
 
-// ---------------------------------------------------------------------------
-// C81182 – onBeforeLinkClickSend with personalization metric
-// ---------------------------------------------------------------------------
 // Skipped: all sub-tests in the source functional file are already marked
 // test.skip because they require a specific personalization response from the
 // live edge that is difficult to reproduce deterministically with MSW mocks.
 test.skip("C81182 - onBeforeLinkClickSend interacts with personalization metric on link (source tests skipped)", () => {});
 
-// ---------------------------------------------------------------------------
-// C81183 – getLinkDetails monitoring hook
-// ---------------------------------------------------------------------------
 describe("C81183 - getLinkDetails monitoring hook via __alloyMonitors", () => {
   test("getLinkDetails returns correct link info for a visible link element", async ({
     alloy,
@@ -650,9 +606,6 @@ describe("C81183 - getLinkDetails monitoring hook via __alloyMonitors", () => {
     // getLinkDetails itself doesn't invoke onBeforeLinkClickSend — it returns
     // the raw link details regardless of the callback. This just proves the
     // monitor hook is accessible and returns a value.
-    const result = window.___getLinkDetails(cancelLink);
-    // The result may or may not be defined depending on implementation, but
-    // the call itself must not throw.
     expect(() => window.___getLinkDetails(cancelLink)).not.toThrow();
   });
 });
