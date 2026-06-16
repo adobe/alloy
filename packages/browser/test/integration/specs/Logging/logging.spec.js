@@ -25,17 +25,15 @@ import setupBaseCode from "../../helpers/alloy/setupBaseCode.js";
 import setupAlloy from "../../helpers/alloy/setup.js";
 import cleanAlloy from "../../helpers/alloy/clean.js";
 
+let consoleSpy;
+beforeEach(() => {
+  consoleSpy = vi.spyOn(console, "info");
+});
+afterEach(() => {
+  consoleSpy.mockRestore();
+});
+
 describe("Toggle logging through configuration (C2583)", () => {
-  let consoleSpy;
-
-  beforeEach(() => {
-    consoleSpy = vi.spyOn(console, "info");
-  });
-
-  afterEach(() => {
-    consoleSpy.mockRestore();
-  });
-
   test("logs sendEvent when debugEnabled is true", async ({
     alloy,
     worker,
@@ -62,16 +60,6 @@ describe("Toggle logging through configuration (C2583)", () => {
 });
 
 describe("Toggle logging through setDebug command (C2584)", () => {
-  let consoleSpy;
-
-  beforeEach(() => {
-    consoleSpy = vi.spyOn(console, "info");
-  });
-
-  afterEach(() => {
-    consoleSpy.mockRestore();
-  });
-
   test("enables logging when setDebug called with enabled: true", async ({
     alloy,
   }) => {
@@ -138,29 +126,22 @@ describe("Logged objects can be stringified (C532204)", () => {
   }) => {
     worker.use(sendEventHandler);
 
-    const originals = {};
-    let callCount = 0;
-    ["log", "info", "warn", "error"].forEach((methodName) => {
-      originals[methodName] = console[methodName];
-      const orig = console[methodName];
-      // eslint-disable-next-line no-console
-      console[methodName] = (...args) => {
-        callCount++;
+    const spies = ["log", "info", "warn", "error"].map((methodName) => {
+      const through = console[methodName].bind(console);
+      return vi.spyOn(console, methodName).mockImplementation((...args) => {
         args.forEach((arg) => String(arg));
-        orig.apply(console, args);
-      };
+        through(...args);
+      });
     });
 
     try {
       await alloy("configure", { ...alloyConfig, debugEnabled: true });
       await alloy("sendEvent");
     } finally {
-      ["log", "info", "warn", "error"].forEach((methodName) => {
-        // eslint-disable-next-line no-console
-        console[methodName] = originals[methodName];
-      });
+      spies.forEach((spy) => spy.mockRestore());
     }
 
+    const callCount = spies.reduce((sum, spy) => sum + spy.mock.calls.length, 0);
     expect(callCount).toBeGreaterThan(0);
   });
 });
