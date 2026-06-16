@@ -22,6 +22,14 @@ import {
 
 const LIBRARY_VERSION = packageJson.version;
 
+const BASE_CONFIG = {
+  orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
+  datastreamId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
+  edgeDomain: "edge.adobedc.net",
+  debugEnabled: true,
+  onBeforeEventSend: () => {},
+};
+
 const EXPECTED_COMMANDS = [
   "appendIdentityToUrl",
   "applyPropositions",
@@ -46,14 +54,7 @@ describe("LibraryInfo (C2589)", () => {
   test("getLibraryInfo command returns library version, commands, and config", async ({
     alloy,
   }) => {
-    await alloy("configure", {
-      orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
-      datastreamId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
-      edgeDomain: "edge.adobedc.net",
-      debugEnabled: true,
-      thirdPartyCookiesEnabled: true,
-      onBeforeEventSend: () => {},
-    });
+    await alloy("configure", { ...BASE_CONFIG, thirdPartyCookiesEnabled: true });
 
     const { libraryInfo } = await alloy("getLibraryInfo");
 
@@ -93,13 +94,7 @@ describe("LibraryInfo (C2589)", () => {
   test("getLibraryInfo correctly serializes functions in the config", async ({
     alloy,
   }) => {
-    await alloy("configure", {
-      orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
-      datastreamId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
-      edgeDomain: "edge.adobedc.net",
-      debugEnabled: true,
-      onBeforeEventSend: () => {},
-    });
+    await alloy("configure", BASE_CONFIG);
 
     const { libraryInfo } = await alloy("getLibraryInfo");
     expect(typeof libraryInfo.configs.onBeforeEventSend).toBe("string");
@@ -108,13 +103,7 @@ describe("LibraryInfo (C2589)", () => {
   test("libraryInfo can be posted via postMessage without cloning error", async ({
     alloy,
   }) => {
-    await alloy("configure", {
-      orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
-      datastreamId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
-      edgeDomain: "edge.adobedc.net",
-      debugEnabled: true,
-      onBeforeEventSend: () => {},
-    });
+    await alloy("configure", BASE_CONFIG);
 
     const { libraryInfo } = await alloy("getLibraryInfo");
 
