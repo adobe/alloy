@@ -56,7 +56,6 @@ describe("LibraryInfo (C2589)", () => {
     });
 
     const { libraryInfo } = await alloy("getLibraryInfo");
-    delete libraryInfo.configs.edgeBasePath;
 
     expect(libraryInfo.version).toBe(LIBRARY_VERSION);
     // Use toEqual for commands — exact list reflects the public API contract.
