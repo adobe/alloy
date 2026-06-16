@@ -10,17 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { http, HttpResponse } from "msw";
-import {
-  test,
-  expect,
-  describe,
-  beforeEach,
-  afterEach,
-} from "../../helpers/testsSetup/extend.js";
+import { test, expect, describe } from "../../helpers/testsSetup/extend.js";
 import { sendEventHandler } from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
 import { MAIN_CLUSTER_COOKIE_NAME } from "../../helpers/constants/cookies.js";
-import deleteCookies from "../../helpers/utils/deleteCookies.js";
 
 // Handler that returns sgp3 (Singapore, region 3) as the EdgeNetwork location hint.
 // This simulates the edge response when the client is routed via the Singapore cluster
@@ -64,12 +57,6 @@ const sgp3LocationHintHandler = http.post(
 );
 
 describe("Location Hints", () => {
-  beforeEach(async () => {
-    await deleteCookies();
-  });
-  afterEach(async () => {
-    await deleteCookies();
-  });
   // C6589015 - The Experience Edge location hint is used on the second request.
   test("C6589015 - location hint from first response is included in second request URL", async ({
     alloy,
