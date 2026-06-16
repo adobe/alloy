@@ -139,11 +139,13 @@ describe("Logged objects can be stringified (C532204)", () => {
     worker.use(sendEventHandler);
 
     const originals = {};
+    let callCount = 0;
     ["log", "info", "warn", "error"].forEach((methodName) => {
       originals[methodName] = console[methodName];
       const orig = console[methodName];
       // eslint-disable-next-line no-console
       console[methodName] = (...args) => {
+        callCount++;
         args.forEach((arg) => String(arg));
         orig.apply(console, args);
       };
@@ -158,5 +160,7 @@ describe("Logged objects can be stringified (C532204)", () => {
         console[methodName] = originals[methodName];
       });
     }
+
+    expect(callCount).toBeGreaterThan(0);
   });
 });
