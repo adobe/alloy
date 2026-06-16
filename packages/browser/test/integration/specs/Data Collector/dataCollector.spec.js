@@ -161,8 +161,6 @@ describe("C1715149 - onBeforeEventSend callback", () => {
     expect(interactCalls(networkRecorder).length).toBe(0);
 
     expect(searchForLogMessage(consoleSpy, "Event was canceled")).toBe(true);
-
-    consoleSpy.mockRestore();
   });
 });
 
@@ -196,10 +194,6 @@ describe("C81184 - Click collection configuration warnings", () => {
 
   beforeEach(() => {
     consoleSpy = vi.spyOn(console, "warn");
-  });
-
-  afterEach(() => {
-    consoleSpy.mockRestore();
   });
 
   test("warns when onBeforeLinkClickSend configured but clickCollectionEnabled is false", async ({
@@ -424,7 +418,6 @@ describe("C225010 - Click collection handles consent declined gracefully", () =>
     expect(unhandledRejections.length).toBe(0);
 
     window.removeEventListener("unhandledrejection", rejectionHandler);
-    consoleSpy.mockRestore();
   });
 });
 
