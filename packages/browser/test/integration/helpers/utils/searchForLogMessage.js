@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 export default (spy, searchMessage) =>
-  spy.mock.calls.some(
-    ([, logMessage]) =>
-      typeof logMessage === "string" && logMessage.includes(searchMessage),
+  spy.mock.calls.some((args) =>
+    args.some((arg) => typeof arg === "string" && arg.includes(searchMessage)),
   );
