@@ -176,7 +176,6 @@ describe("C8119 - Click collection disabled does not send link click events", ()
       ...alloyConfig,
       clickCollectionEnabled: false,
     });
-    networkRecorder.reset();
 
     const link = appendLink({ id: "alloy-link-test", href: "#blank", text: "Test Link" });
     clickLink(link);
@@ -277,7 +276,6 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
       clickCollectionEnabled: true,
       onBeforeLinkClickSend: () => false,
     });
-    networkRecorder.reset();
 
     const link = appendLink({ id: "alloy-link-test", href: "#valid", text: "Test Link" });
     clickLink(link);
@@ -303,7 +301,6 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
         filterClickDetails: () => false,
       },
     });
-    networkRecorder.reset();
 
     const link = appendLink({ id: "alloy-link-test", href: "#valid", text: "Test Link" });
     clickLink(link);
