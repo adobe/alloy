@@ -498,7 +498,7 @@ describe("C81183 - getLinkDetails monitoring hook via __alloyMonitors", () => {
     expect(result.linkType).toBe("exit");
   });
 
-  test("getLinkDetails returns falsy for an element that would not produce a click event", async ({
+  test("getLinkDetails returns no link data for a null element", async ({
     alloy,
   }) => {
     window.__alloyMonitors = window.__alloyMonitors || [];
@@ -511,24 +511,13 @@ describe("C81183 - getLinkDetails monitoring hook via __alloyMonitors", () => {
     await alloy("configure", {
       ...alloyConfig,
       clickCollectionEnabled: true,
-      onBeforeLinkClickSend: (options) => {
-        const { clickedElement } = options;
-        if (clickedElement.id === "cancel-alloy-link-test") {
-          return false;
-        }
-        return true;
-      },
     });
 
-    const cancelLink = appendLink({
-      id: "cancel-alloy-link-test",
-      href: "https://example.com/canceled.html",
-      text: "Canceled Link",
-    });
-
-    // getLinkDetails itself doesn't invoke onBeforeLinkClickSend — it returns
-    // the raw link details regardless of the callback. This just proves the
-    // monitor hook is accessible and returns a value.
-    expect(() => window.___getLinkDetails(cancelLink)).not.toThrow();
+    // Mirrors original C81183 test 2: passing null (a non-existent element)
+    // should return an object with no meaningful link data, not throw.
+    const result = window.___getLinkDetails(null);
+    expect(result.linkName).toBeUndefined();
+    expect(result.linkType).toBeUndefined();
+    expect(result.linkUrl).toBeUndefined();
   });
 });
