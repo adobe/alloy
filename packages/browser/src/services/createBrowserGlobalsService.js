@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 /* eslint-disable dot-notation */
 
 /** @import { GlobalsService } from "@adobe/alloy-core/services" */
+import injectFireReferrerHideableImage from "@adobe/alloy-core/utils/injectFireReferrerHideableImage.js";
 
 /** @returns {GlobalsService} */
 const createBrowserGlobalsService = () => ({
@@ -28,6 +29,7 @@ const createBrowserGlobalsService = () => ({
   getHostname: () => window.location.hostname,
   getPageLocation: () => window.location,
   isPageSsl: () => window.location.protocol === "https:",
+  fireReferrerHideableImage: injectFireReferrerHideableImage(),
   getWindowContext: () => ({
     title: document.title,
     url: window.location.href,

@@ -66,6 +66,11 @@ describe("BrowserGlobalsService", () => {
     expect(globals.isPageSsl()).toBe(window.location.protocol === "https:");
   });
 
+  it("fireReferrerHideableImage is a function", () => {
+    const globals = createBrowserGlobalsService();
+    expect(typeof globals.fireReferrerHideableImage).toBe("function");
+  });
+
   it("getWindowContext returns an object with all expected page context fields", () => {
     const globals = createBrowserGlobalsService();
     const ctx = globals.getWindowContext();

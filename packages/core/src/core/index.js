@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 import {
   getApexDomain,
   createLoggingCookieJar,
-  injectFireReferrerHideableImage,
   injectGetBrowser,
   queryString,
   stringToBoolean,
@@ -60,7 +59,7 @@ const coreConfigValidators = createCoreConfigs();
  * @param {string} params.instanceName
  * @param {Array<import('./types.js').AlloyMonitor>} [params.monitors]
  * @param {Array<Function>} params.components
- * @param {(deps: { logger: import('./types.js').Logger }) => import('../services/index.js').PlatformServices} params.createPlatformServices
+ * @param {() => import('../services/index.js').PlatformServices} params.createPlatformServices
  */
 export const createExecuteCommand = ({
   instanceName,
@@ -96,7 +95,7 @@ export const createExecuteCommand = ({
     platformServices.globals.getHostname(),
     platformServices.cookie,
   );
-  const fireReferrerHideableImage = injectFireReferrerHideableImage();
+  const { fireReferrerHideableImage } = platformServices.globals;
   const getAssuranceValidationTokenParams =
     createGetAssuranceValidationTokenParams({
       getLocationSearch: () => platformServices.globals.getLocationSearch(),

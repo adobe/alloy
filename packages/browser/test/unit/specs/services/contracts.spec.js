@@ -87,6 +87,7 @@ describe("Service contracts", () => {
       "getHostname",
       "getPageLocation",
       "isPageSsl",
+      "fireReferrerHideableImage",
       "getWindowContext",
     ]);
   });

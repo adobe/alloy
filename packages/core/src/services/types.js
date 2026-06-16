@@ -126,6 +126,7 @@ governing permissions and limitations under the License.
  * @property {() => string} getHostname
  * @property {() => { host: string, pathname: string }} getPageLocation
  * @property {() => boolean} isPageSsl
+ * @property {(request: { hideReferrer: boolean, url: string }) => Promise<void>} fireReferrerHideableImage
  * @property {() => WindowContext} getWindowContext
  */
 
