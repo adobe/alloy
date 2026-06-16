@@ -25,23 +25,6 @@ import alloyConfig from "../../helpers/alloy/config.js";
 import searchForLogMessage from "../../helpers/utils/searchForLogMessage.js";
 import { CONSENT_OUT } from "../../helpers/constants/consent.js";
 
-const waitUntil = (condition, { intervalMs = 50, timeoutMs = 3000 } = {}) =>
-  new Promise((resolve, reject) => {
-    const start = Date.now();
-    const poll = () => {
-      if (condition()) {
-        resolve();
-        return;
-      }
-      if (Date.now() - start >= timeoutMs) {
-        reject(new Error("waitUntil timed out"));
-        return;
-      }
-      setTimeout(poll, intervalMs);
-    };
-    poll();
-  });
-
 describe("C2592 - Event command sends a request", () => {
   test("sendEvent produces an edge interact call with implementationDetails and state", async ({
     alloy,
@@ -480,14 +463,10 @@ describe("C225010 - Click collection handles consent declined gracefully", () =>
     link.addEventListener("click", (e) => e.preventDefault());
     link.click();
 
-    await waitUntil(
-      () => searchForLogMessage(consoleSpy, "The user declined consent"),
-      { intervalMs: 50, timeoutMs: 3000 },
-    );
+    await expect
+      .poll(() => searchForLogMessage(consoleSpy, "The user declined consent"))
+      .toBe(true);
 
-    expect(searchForLogMessage(consoleSpy, "The user declined consent")).toBe(
-      true,
-    );
     expect(unhandledRejections.length).toBe(0);
 
     window.removeEventListener("unhandledrejection", rejectionHandler);
