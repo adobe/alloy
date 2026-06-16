@@ -126,6 +126,12 @@ describe("Toggle logging through querystring parameter (C2586)", () => {
 });
 
 describe("Logged objects can be stringified (C532204)", () => {
+  /*
+   * Some pages will redefine the console logging methods with implementations
+   * that aren't as forgiving as the built in logger. We ran into this issue
+   * on a Shopify site with a redefined logger. This test runs through some basic
+   * scenarios and makes sure the logged objects can be stringified
+   */
   test("does not throw when console methods call String() on arguments", async ({
     alloy,
     worker,
