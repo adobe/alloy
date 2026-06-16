@@ -129,6 +129,13 @@ describe("sendEvent config overrides in request payload (C7437530)", () => {
     expect(
       call.request.body.meta.configOverrides.com_adobe_analytics.reportSuites,
     ).toEqual(overrides.com_adobe_analytics.reportSuites);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_identity
+        .idSyncContainerId,
+    ).toEqual(overrides.com_adobe_identity.idSyncContainerId);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_target.propertyToken,
+    ).toEqual(overrides.com_adobe_target.propertyToken);
   });
 
   test("sendEvent command overrides take precedence over configure overrides", async ({
@@ -146,8 +153,16 @@ describe("sendEvent config overrides in request payload (C7437530)", () => {
 
     const call = await networkRecorder.findCall(/v1\/interact/);
     expect(
+      call.request.body.meta.configOverrides.com_adobe_experience_platform
+        .datasets.event,
+    ).toEqual(overrides.com_adobe_experience_platform.datasets.event);
+    expect(
       call.request.body.meta.configOverrides.com_adobe_analytics.reportSuites,
     ).toEqual(overrides.com_adobe_analytics.reportSuites);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_identity
+        .idSyncContainerId,
+    ).toEqual(overrides.com_adobe_identity.idSyncContainerId);
     expect(
       call.request.body.meta.configOverrides.com_adobe_target.propertyToken,
     ).toEqual(overrides.com_adobe_target.propertyToken);
@@ -176,8 +191,16 @@ describe("sendEvent config overrides in request payload (C7437530)", () => {
 
     const call = await networkRecorder.findCall(/v1\/interact/);
     expect(
+      call.request.body.meta.configOverrides.com_adobe_experience_platform
+        .datasets.event,
+    ).toEqual(overrides.com_adobe_experience_platform.datasets.event);
+    expect(
       call.request.body.meta.configOverrides.com_adobe_analytics.reportSuites,
     ).toEqual(overrides.com_adobe_analytics.reportSuites);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_identity
+        .idSyncContainerId,
+    ).toEqual(overrides.com_adobe_identity.idSyncContainerId);
     expect(
       call.request.body.meta.configOverrides.com_adobe_target,
     ).toBeUndefined();
@@ -247,8 +270,19 @@ describe("getIdentity config overrides in request payload (C7437531)", () => {
 
     const call = await networkRecorder.findCall(/v1\/identity\/acquire/);
     expect(
+      call.request.body.meta.configOverrides.com_adobe_experience_platform
+        .datasets.event,
+    ).toEqual(overrides.com_adobe_experience_platform.datasets.event);
+    expect(
       call.request.body.meta.configOverrides.com_adobe_analytics.reportSuites,
     ).toEqual(overrides.com_adobe_analytics.reportSuites);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_identity
+        .idSyncContainerId,
+    ).toEqual(overrides.com_adobe_identity.idSyncContainerId);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_target.propertyToken,
+    ).toEqual(overrides.com_adobe_target.propertyToken);
   });
 
   test("getIdentity command overrides take precedence over configure overrides", async ({
@@ -266,8 +300,19 @@ describe("getIdentity config overrides in request payload (C7437531)", () => {
 
     const call = await networkRecorder.findCall(/v1\/identity\/acquire/);
     expect(
+      call.request.body.meta.configOverrides.com_adobe_experience_platform
+        .datasets.event,
+    ).toEqual(overrides.com_adobe_experience_platform.datasets.event);
+    expect(
       call.request.body.meta.configOverrides.com_adobe_analytics.reportSuites,
     ).toEqual(overrides.com_adobe_analytics.reportSuites);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_identity
+        .idSyncContainerId,
+    ).toEqual(overrides.com_adobe_identity.idSyncContainerId);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_target.propertyToken,
+    ).toEqual(overrides.com_adobe_target.propertyToken);
   });
 
   test("empty config override values are not sent by getIdentity", async ({
@@ -286,6 +331,17 @@ describe("getIdentity config overrides in request payload (C7437531)", () => {
     });
 
     const call = await networkRecorder.findCall(/v1\/identity\/acquire/);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_experience_platform
+        .datasets.event,
+    ).toEqual(overrides.com_adobe_experience_platform.datasets.event);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_analytics.reportSuites,
+    ).toEqual(overrides.com_adobe_analytics.reportSuites);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_identity
+        .idSyncContainerId,
+    ).toEqual(overrides.com_adobe_identity.idSyncContainerId);
     expect(
       call.request.body.meta.configOverrides.com_adobe_target,
     ).toBeUndefined();
@@ -328,8 +384,16 @@ describe("appendIdentityToUrl config overrides in request payload (C7437532)", (
 
     const call = await networkRecorder.findCall(/v1\/identity\/acquire/);
     expect(
+      call.request.body.meta.configOverrides.com_adobe_experience_platform
+        .datasets.event,
+    ).toEqual(overrides.com_adobe_experience_platform.datasets.event);
+    expect(
       call.request.body.meta.configOverrides.com_adobe_analytics.reportSuites,
     ).toEqual(overrides.com_adobe_analytics.reportSuites);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_identity
+        .idSyncContainerId,
+    ).toEqual(overrides.com_adobe_identity.idSyncContainerId);
     expect(
       call.request.body.meta.configOverrides.com_adobe_target.propertyToken,
     ).toEqual(overrides.com_adobe_target.propertyToken);
@@ -350,8 +414,19 @@ describe("appendIdentityToUrl config overrides in request payload (C7437532)", (
 
     const call = await networkRecorder.findCall(/v1\/identity\/acquire/);
     expect(
+      call.request.body.meta.configOverrides.com_adobe_experience_platform
+        .datasets.event,
+    ).toEqual(overrides.com_adobe_experience_platform.datasets.event);
+    expect(
       call.request.body.meta.configOverrides.com_adobe_analytics.reportSuites,
     ).toEqual(overrides.com_adobe_analytics.reportSuites);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_identity
+        .idSyncContainerId,
+    ).toEqual(overrides.com_adobe_identity.idSyncContainerId);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_target.propertyToken,
+    ).toEqual(overrides.com_adobe_target.propertyToken);
   });
 
   test("appendIdentityToUrl command overrides take precedence over configure", async ({
@@ -372,8 +447,19 @@ describe("appendIdentityToUrl config overrides in request payload (C7437532)", (
 
     const call = await networkRecorder.findCall(/v1\/identity\/acquire/);
     expect(
+      call.request.body.meta.configOverrides.com_adobe_experience_platform
+        .datasets.event,
+    ).toEqual(overrides.com_adobe_experience_platform.datasets.event);
+    expect(
       call.request.body.meta.configOverrides.com_adobe_analytics.reportSuites,
     ).toEqual(overrides.com_adobe_analytics.reportSuites);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_identity
+        .idSyncContainerId,
+    ).toEqual(overrides.com_adobe_identity.idSyncContainerId);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_target.propertyToken,
+    ).toEqual(overrides.com_adobe_target.propertyToken);
   });
 
   test("empty config override values are not sent by appendIdentityToUrl", async ({
@@ -393,6 +479,17 @@ describe("appendIdentityToUrl config overrides in request payload (C7437532)", (
     });
 
     const call = await networkRecorder.findCall(/v1\/identity\/acquire/);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_experience_platform
+        .datasets.event,
+    ).toEqual(overrides.com_adobe_experience_platform.datasets.event);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_analytics.reportSuites,
+    ).toEqual(overrides.com_adobe_analytics.reportSuites);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_identity
+        .idSyncContainerId,
+    ).toEqual(overrides.com_adobe_identity.idSyncContainerId);
     expect(
       call.request.body.meta.configOverrides.com_adobe_target,
     ).toBeUndefined();
@@ -436,8 +533,16 @@ describe("setConsent config overrides in request payload (C7437533)", () => {
 
     const call = await networkRecorder.findCall(/privacy\/set-consent/);
     expect(
+      call.request.body.meta.configOverrides.com_adobe_experience_platform
+        .datasets.event,
+    ).toEqual(overrides.com_adobe_experience_platform.datasets.event);
+    expect(
       call.request.body.meta.configOverrides.com_adobe_analytics.reportSuites,
     ).toEqual(overrides.com_adobe_analytics.reportSuites);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_identity
+        .idSyncContainerId,
+    ).toEqual(overrides.com_adobe_identity.idSyncContainerId);
     expect(
       call.request.body.meta.configOverrides.com_adobe_target.propertyToken,
     ).toEqual(overrides.com_adobe_target.propertyToken);
@@ -458,8 +563,19 @@ describe("setConsent config overrides in request payload (C7437533)", () => {
 
     const call = await networkRecorder.findCall(/privacy\/set-consent/);
     expect(
+      call.request.body.meta.configOverrides.com_adobe_experience_platform
+        .datasets.event,
+    ).toEqual(overrides.com_adobe_experience_platform.datasets.event);
+    expect(
       call.request.body.meta.configOverrides.com_adobe_analytics.reportSuites,
     ).toEqual(overrides.com_adobe_analytics.reportSuites);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_identity
+        .idSyncContainerId,
+    ).toEqual(overrides.com_adobe_identity.idSyncContainerId);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_target.propertyToken,
+    ).toEqual(overrides.com_adobe_target.propertyToken);
   });
 
   test("setConsent command overrides take precedence over configure overrides", async ({
@@ -480,8 +596,19 @@ describe("setConsent config overrides in request payload (C7437533)", () => {
 
     const call = await networkRecorder.findCall(/privacy\/set-consent/);
     expect(
+      call.request.body.meta.configOverrides.com_adobe_experience_platform
+        .datasets.event,
+    ).toEqual(alternateOverrides.com_adobe_experience_platform.datasets.event);
+    expect(
       call.request.body.meta.configOverrides.com_adobe_analytics.reportSuites,
     ).toEqual(alternateOverrides.com_adobe_analytics.reportSuites);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_identity
+        .idSyncContainerId,
+    ).toEqual(alternateOverrides.com_adobe_identity.idSyncContainerId);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_target.propertyToken,
+    ).toEqual(alternateOverrides.com_adobe_target.propertyToken);
   });
 
   test("empty config override values are not sent by setConsent", async ({
@@ -501,6 +628,17 @@ describe("setConsent config overrides in request payload (C7437533)", () => {
     });
 
     const call = await networkRecorder.findCall(/privacy\/set-consent/);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_experience_platform
+        .datasets.event,
+    ).toEqual(overrides.com_adobe_experience_platform.datasets.event);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_analytics.reportSuites,
+    ).toEqual(overrides.com_adobe_analytics.reportSuites);
+    expect(
+      call.request.body.meta.configOverrides.com_adobe_identity
+        .idSyncContainerId,
+    ).toEqual(overrides.com_adobe_identity.idSyncContainerId);
     expect(
       call.request.body.meta.configOverrides.com_adobe_target,
     ).toBeUndefined();
