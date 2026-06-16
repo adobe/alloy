@@ -34,6 +34,13 @@ import {
 // signal to poll on, so a fixed delay is required.
 const NO_REQUEST_WAIT_MS = 200;
 
+// Synchronous filter — intentionally NOT findCalls(), which retries/waits and
+// would give false negatives on assertions that no request was fired.
+const interactCalls = (networkRecorder) =>
+  networkRecorder.calls.filter((c) =>
+    /v1\/interact/.test(c.request?.url ?? ""),
+  );
+
 afterEach(() => {
   cleanupDom();
   delete window.___getLinkDetails;
@@ -143,10 +150,7 @@ describe("C1715149 - onBeforeEventSend callback", () => {
     expect(error).toBeDefined();
     expect(error.message).toMatch(/Expected Error/);
 
-    const calls = networkRecorder.calls.filter((c) =>
-      /v1\/interact/.test(c.request?.url ?? ""),
-    );
-    expect(calls.length).toBe(0);
+    expect(interactCalls(networkRecorder).length).toBe(0);
   });
 
   test("callback returning false cancels the event and sendEvent resolves with {}", async ({
@@ -174,10 +178,7 @@ describe("C1715149 - onBeforeEventSend callback", () => {
     expect(callbackInvoked).toBe(true);
     expect(result).toEqual({});
 
-    const interactCalls = networkRecorder.calls.filter((c) =>
-      /v1\/interact/.test(c.request?.url ?? ""),
-    );
-    expect(interactCalls.length).toBe(0);
+    expect(interactCalls(networkRecorder).length).toBe(0);
 
     expect(searchForLogMessage(consoleSpy, "Event was canceled")).toBe(true);
 
@@ -206,10 +207,7 @@ describe("C8119 - Click collection disabled does not send link click events", ()
     // click, so there is no positive observable condition to poll on.
     await new Promise((resolve) => setTimeout(resolve, NO_REQUEST_WAIT_MS));
 
-    const calls = networkRecorder.calls.filter((c) =>
-      /v1\/interact/.test(c.request?.url ?? ""),
-    );
-    expect(calls.length).toBe(0);
+    expect(interactCalls(networkRecorder).length).toBe(0);
   });
 });
 
@@ -314,10 +312,7 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     // click, so there is no positive observable condition to poll on.
     await new Promise((resolve) => setTimeout(resolve, NO_REQUEST_WAIT_MS));
 
-    const calls = networkRecorder.calls.filter((c) =>
-      /v1\/interact/.test(c.request?.url ?? ""),
-    );
-    expect(calls.length).toBe(0);
+    expect(interactCalls(networkRecorder).length).toBe(0);
   });
 
   test("returning false from filterClickDetails cancels the link click request", async ({
@@ -343,10 +338,7 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     // click, so there is no positive observable condition to poll on.
     await new Promise((resolve) => setTimeout(resolve, NO_REQUEST_WAIT_MS));
 
-    const calls = networkRecorder.calls.filter((c) =>
-      /v1\/interact/.test(c.request?.url ?? ""),
-    );
-    expect(calls.length).toBe(0);
+    expect(interactCalls(networkRecorder).length).toBe(0);
   });
 
   test("onBeforeLinkClickSend can augment xdm and data before the request fires", async ({
