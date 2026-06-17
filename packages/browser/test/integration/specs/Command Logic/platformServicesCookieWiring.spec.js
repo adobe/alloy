@@ -77,7 +77,9 @@ describe("PlatformServices wiring — cookie service read/write at SDK level", (
     // Now switch to the setConsent handler and call setConsent.
     worker.use(setConsentHandler);
     await alloy("setConsent", {
-      consent: [{ standard: "Adobe", version: "1.0", value: { general: "in" } }],
+      consent: [
+        { standard: "Adobe", version: "1.0", value: { general: "in" } },
+      ],
     });
 
     // If the cookie service write path is broken, the consent cookie will be absent.
