@@ -340,7 +340,13 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     expect(call).toBeDefined();
 
     const event = call.request.body.events[0];
-    expect(event.xdm.web.webInteraction.name).toBe("Augmented name");
+    const { webInteraction } = event.xdm.web;
+    expect(webInteraction.name).toBe("Augmented name");
+    expect(webInteraction.region).toBe("BODY");
+    expect(webInteraction.type).toBe("other");
+    expect(webInteraction.linkClicks).toEqual({ value: 1 });
+    // URL resolves against the localhost test page, so only check the origin.
+    expect(webInteraction.URL).toContain(window.location.origin);
     expect(event.data.customField).toBe("test123");
   });
 
