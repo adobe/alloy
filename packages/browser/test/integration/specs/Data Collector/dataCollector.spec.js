@@ -476,17 +476,21 @@ test.skip("C9369211 - sendEvent includes a Referer header on interact and collec
 test.skip("C81182 - onBeforeLinkClickSend interacts with personalization metric on link (source tests skipped)", () => {});
 
 describe("C81183 - getLinkDetails monitoring hook via __alloyMonitors", () => {
+  // Install the monitor before configure so onInstanceConfigured fires and
+  // exposes getLinkDetails.
+  beforeEach(() => {
+    window.__alloyMonitors = [
+      {
+        onInstanceConfigured(data) {
+          window.___getLinkDetails = data.getLinkDetails;
+        },
+      },
+    ];
+  });
+
   test("getLinkDetails returns correct link info for a visible link element", async ({
     alloy,
   }) => {
-    // Install monitor BEFORE configure so onInstanceConfigured fires
-    window.__alloyMonitors = window.__alloyMonitors || [];
-    window.__alloyMonitors.push({
-      onInstanceConfigured(data) {
-        window.___getLinkDetails = data.getLinkDetails;
-      },
-    });
-
     await alloy("configure", {
       ...alloyConfig,
       clickCollectionEnabled: true,
@@ -508,13 +512,6 @@ describe("C81183 - getLinkDetails monitoring hook via __alloyMonitors", () => {
   test("getLinkDetails returns results even when clickCollectionEnabled is false", async ({
     alloy,
   }) => {
-    window.__alloyMonitors = window.__alloyMonitors || [];
-    window.__alloyMonitors.push({
-      onInstanceConfigured(data) {
-        window.___getLinkDetails = data.getLinkDetails;
-      },
-    });
-
     await alloy("configure", {
       ...alloyConfig,
       clickCollectionEnabled: false,
@@ -535,13 +532,6 @@ describe("C81183 - getLinkDetails monitoring hook via __alloyMonitors", () => {
   test("getLinkDetails returns no link data for a null element", async ({
     alloy,
   }) => {
-    window.__alloyMonitors = window.__alloyMonitors || [];
-    window.__alloyMonitors.push({
-      onInstanceConfigured(data) {
-        window.___getLinkDetails = data.getLinkDetails;
-      },
-    });
-
     await alloy("configure", {
       ...alloyConfig,
       clickCollectionEnabled: true,
