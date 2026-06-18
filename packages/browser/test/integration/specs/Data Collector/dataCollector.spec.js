@@ -473,11 +473,12 @@ describe("C455258 - sendEvent routes to collect via sendBeacon once identity is 
 // See FUNCTIONAL_MIGRATION_PLAN.md §1.
 test.skip("C8118 - link click routes to interact (no identity) then collect (identity established)", () => {});
 
-// Skipped: the collect-endpoint portion of this test uses sendBeacon, which
-// MSW cannot intercept in browser mode. The interact portion relies on
-// inspecting request headers that MSW/networkRecorder may not surface
-// consistently. This was a baseline failure in the functional suite.
-// See FUNCTIONAL_MIGRATION_PLAN.md §1.
+// Skipped: this test asserts the Referer header on the interact request, but
+// Referer is a browser-set forbidden header added by the network layer after
+// MSW's service worker sees the request, so networkRecorder never captures it
+// (verified: request.headers.referer is undefined). The collect-side referer
+// assertion was already a commented-out TODO in the functional source. Without
+// the Referer header there is nothing this test covers beyond C2592.
 test.skip("C9369211 - sendEvent includes a Referer header on interact and collect requests", () => {});
 
 // Skipped: all sub-tests in the source functional file are already marked
