@@ -22,14 +22,15 @@ governing permissions and limitations under the License.
 // back to fetch.
 
 export const installSendBeaconRecorder = () => {
-  if (!window.__alloySendBeaconInstalled) {
-    window.__alloySendBeaconInstalled = true;
-    window.navigator.sendBeacon = (url, data) => {
-      window.__alloySendBeaconCalls.push({ url, data });
-      return true;
-    };
+  if (window.__alloySendBeaconInstalled) {
+    return;
   }
+  window.__alloySendBeaconInstalled = true;
   window.__alloySendBeaconCalls = [];
+  window.navigator.sendBeacon = (url, data) => {
+    window.__alloySendBeaconCalls.push({ url, data });
+    return true;
+  };
 };
 
 export const sendBeaconCalls = () => window.__alloySendBeaconCalls ?? [];

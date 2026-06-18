@@ -15,7 +15,6 @@ import {
   describe,
   vi,
   beforeEach,
-  afterEach,
 } from "../../helpers/testsSetup/extend.js";
 import {
   sendEventHandler,
@@ -25,11 +24,7 @@ import {
 import alloyConfig from "../../helpers/alloy/config.js";
 import searchForLogMessage from "../../helpers/utils/searchForLogMessage.js";
 import { CONSENT_OUT } from "../../helpers/constants/consent.js";
-import {
-  appendLink,
-  clickLink,
-  cleanupDom,
-} from "../../helpers/utils/domHelpers.js";
+import { appendLink, clickLink } from "../../helpers/utils/domHelpers.js";
 import {
   sendBeaconCalls,
   resetSendBeaconCalls,
@@ -43,11 +38,6 @@ const interactCalls = (networkRecorder) =>
   networkRecorder.calls.filter((c) =>
     /v1\/interact/.test(c.request?.url ?? ""),
   );
-
-afterEach(() => {
-  cleanupDom();
-  delete window.___getLinkDetails;
-});
 
 describe("C2592 - Event command sends a request", () => {
   test("sendEvent produces an edge interact call with implementationDetails and state", async ({
