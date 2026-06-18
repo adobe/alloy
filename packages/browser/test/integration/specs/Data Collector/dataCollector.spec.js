@@ -57,8 +57,10 @@ describe("C2592 - Event command sends a request", () => {
   }) => {
     worker.use(sendEventHandler);
 
+    const datasetId = "6335faf30f5a161c0b4b1444";
+
     await alloy("configure", alloyConfig);
-    await alloy("sendEvent");
+    await alloy("sendEvent", { datasetId });
 
     const call = await networkRecorder.findCall(/edge\.adobedc\.net/);
     expect(call).toBeDefined();
@@ -69,6 +71,10 @@ describe("C2592 - Event command sends a request", () => {
     expect(body.events[0].xdm.implementationDetails.name).toBe(
       "https://ns.adobe.com/experience/alloy",
     );
+    expect(
+      body.meta.configOverrides.com_adobe_experience_platform.datasets.event
+        .datasetId,
+    ).toBe(datasetId);
     expect(body.meta.state.cookiesEnabled).toBe(true);
     // domain is "" on localhost, so only check the type
     expect(typeof body.meta.state.domain).toBe("string");
