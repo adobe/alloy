@@ -380,8 +380,13 @@ describe("C11693274 - URL query params do not affect exit link classification", 
 
     const eventXdm = call.request.body.events[0].xdm;
     expect(eventXdm.eventType).toBe("web.webinteraction.linkClicks");
-    expect(eventXdm.web.webInteraction.type).toBe("exit");
-    expect(eventXdm.web.webInteraction.URL).toBe(externalUrl);
+    expect(eventXdm.web.webInteraction).toEqual({
+      name: "Test Link",
+      region: "BODY",
+      type: "exit",
+      URL: externalUrl,
+      linkClicks: { value: 1 },
+    });
   });
 });
 
