@@ -29,6 +29,7 @@ import {
   sendBeaconCalls,
   resetSendBeaconCalls,
 } from "../../helpers/utils/sendBeacon.js";
+import waitFor from "../../helpers/utils/waitFor.js";
 
 // A request that must NOT fire has no signal to poll on, so a fixed wait is required.
 const NO_REQUEST_WAIT_MS = 200;
@@ -179,7 +180,7 @@ describe("C8119 - Click collection disabled does not send link click events", ()
     const link = appendLink({ id: "alloy-link-test", href: "#blank", text: "Test Link" });
     clickLink(link);
 
-    await new Promise((resolve) => setTimeout(resolve, NO_REQUEST_WAIT_MS));
+    await waitFor(NO_REQUEST_WAIT_MS);
 
     expect(interactCalls(networkRecorder).length).toBe(0);
   });
@@ -273,7 +274,7 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     const link = appendLink({ id: "alloy-link-test", href: "#valid", text: "Test Link" });
     clickLink(link);
 
-    await new Promise((resolve) => setTimeout(resolve, NO_REQUEST_WAIT_MS));
+    await waitFor(NO_REQUEST_WAIT_MS);
 
     expect(interactCalls(networkRecorder).length).toBe(0);
   });
@@ -296,7 +297,7 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     const link = appendLink({ id: "alloy-link-test", href: "#valid", text: "Test Link" });
     clickLink(link);
 
-    await new Promise((resolve) => setTimeout(resolve, NO_REQUEST_WAIT_MS));
+    await waitFor(NO_REQUEST_WAIT_MS);
 
     expect(interactCalls(networkRecorder).length).toBe(0);
   });
@@ -460,20 +461,22 @@ describe("C455258 - sendEvent routes to collect via sendBeacon once identity is 
   });
 });
 
-// Skipped: 15 functional sub-tests. The one collect-routing case is now doable
-// via the sendBeacon recorder (see C455258); the other 14 are interact link-XDM
-// variations deferred as scope, like the C81181 five. Not yet migrated.
-test.skip("C8118 - link click routes to interact (no identity) then collect (identity established)", () => {});
+describe("Not migrated (see per-test rationale)", () => {
+  // 15 functional sub-tests. The one collect-routing case is now doable via the
+  // sendBeacon recorder (see C455258); the other 14 are interact link-XDM
+  // variations deferred as scope, like the C81181 five.
+  test.skip("C8118 - link click routes to interact (no identity) then collect (identity established)", () => {});
 
-// Skipped: asserts the Referer header, but it's a browser-set forbidden header
-// added after MSW's service worker sees the request, so networkRecorder can't
-// capture it (verified). The collect-side referer was already a commented-out
-// TODO in the functional source, and collect routing is covered by C455258.
-test.skip("C9369211 - sendEvent includes a Referer header on interact and collect requests", () => {});
+  // Asserts the Referer header, but it's a browser-set forbidden header added
+  // after MSW's service worker sees the request, so networkRecorder can't
+  // capture it (verified). The collect-side referer was already a commented-out
+  // TODO in the functional source, and collect routing is covered by C455258.
+  test.skip("C9369211 - sendEvent includes a Referer header on interact and collect requests", () => {});
 
-// Skipped: every sub-test is test.skip in the functional source too — they need
-// a specific live-edge personalization response that's hard to mock deterministically.
-test.skip("C81182 - onBeforeLinkClickSend interacts with personalization metric on link (source tests skipped)", () => {});
+  // Every sub-test is test.skip in the functional source too — they need a
+  // specific live-edge personalization response that's hard to mock deterministically.
+  test.skip("C81182 - onBeforeLinkClickSend interacts with personalization metric on link (source tests skipped)", () => {});
+});
 
 describe("C81183 - getLinkDetails monitoring hook via __alloyMonitors", () => {
   // Install the monitor before configure so onInstanceConfigured fires and
