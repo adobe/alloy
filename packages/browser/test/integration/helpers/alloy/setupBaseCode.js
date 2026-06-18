@@ -10,6 +10,7 @@ governing permissions and limitations under the License.
 */
 
 import { server } from "vitest/browser";
+import { installSendBeaconRecorder } from "../utils/sendBeacon.js";
 
 const { readFile } = server.commands;
 
@@ -17,6 +18,8 @@ export default async () => {
   const alloyBaseCode = await readFile(
     `${server.config.root}/packages/browser/distTest/baseCode.min.js`,
   );
+
+  installSendBeaconRecorder();
 
   document.body.innerHTML = "Alloy Test Page";
 

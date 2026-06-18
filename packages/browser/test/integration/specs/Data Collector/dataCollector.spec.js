@@ -19,6 +19,7 @@ import {
 } from "../../helpers/testsSetup/extend.js";
 import {
   sendEventHandler,
+  sendEventWithIdentityCookieHandler,
   setConsentHandler,
 } from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
@@ -29,6 +30,10 @@ import {
   clickLink,
   cleanupDom,
 } from "../../helpers/utils/domHelpers.js";
+import {
+  sendBeaconCalls,
+  resetSendBeaconCalls,
+} from "../../helpers/utils/sendBeacon.js";
 
 // Fixed wait for negative assertions ("no request fired"). There is no positive
 // signal to poll on, so a fixed delay is required.
@@ -427,10 +432,40 @@ describe("C225010 - Click collection handles consent declined gracefully", () =>
   });
 });
 
-// Skipped: the /collect endpoint uses sendBeacon, which is not intercepted by
-// MSW in browser mode. This test was a baseline failure in the functional suite
-// ("Collect endpoint" failures). See FUNCTIONAL_MIGRATION_PLAN.md §1.
-test.skip("C455258 - sendEvent sends to collect endpoint when documentUnloading=true after identity established", () => {});
+describe("C455258 - sendEvent routes to collect via sendBeacon once identity is established", () => {
+  test("documentUnloading uses interact before identity, collect after, and interact when not unloading", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventWithIdentityCookieHandler);
+
+    await alloy("configure", alloyConfig);
+
+    // No identity established yet: even with documentUnloading, the request
+    // goes to interact (fetch) so the response can establish an identity.
+    await alloy("sendEvent", { documentUnloading: true });
+    expect(interactCalls(networkRecorder).length).toBe(1);
+    expect(sendBeaconCalls().length).toBe(0);
+
+    networkRecorder.reset();
+    resetSendBeaconCalls();
+
+    // Identity is now established: documentUnloading routes to collect via
+    // sendBeacon, not interact.
+    await alloy("sendEvent", { documentUnloading: true });
+    expect(sendBeaconCalls().length).toBe(1);
+    expect(interactCalls(networkRecorder).length).toBe(0);
+
+    networkRecorder.reset();
+    resetSendBeaconCalls();
+
+    // Without documentUnloading the request goes to interact regardless.
+    await alloy("sendEvent");
+    expect(interactCalls(networkRecorder).length).toBe(1);
+    expect(sendBeaconCalls().length).toBe(0);
+  });
+});
 
 // Skipped: tests that assert collect-vs-interact routing depend on sendBeacon
 // interception via MSW, which is not reliably supported in browser mode, and
