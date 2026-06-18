@@ -477,7 +477,8 @@ test.skip("C8118 - link click routes to interact (no identity) then collect (ide
 
 // Skipped: asserts the Referer header, but it's a browser-set forbidden header
 // added after MSW's service worker sees the request, so networkRecorder can't
-// capture it (verified). Nothing else here isn't already covered by C2592.
+// capture it (verified). The collect-side referer was already a commented-out
+// TODO in the functional source, and collect routing is covered by C455258.
 test.skip("C9369211 - sendEvent includes a Referer header on interact and collect requests", () => {});
 
 // Skipped: every sub-test is test.skip in the functional source too — they need
