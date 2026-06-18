@@ -177,7 +177,11 @@ describe("C8119 - Click collection disabled does not send link click events", ()
       clickCollectionEnabled: false,
     });
 
-    const link = appendLink({ id: "alloy-link-test", href: "#blank", text: "Test Link" });
+    const link = appendLink({
+      id: "alloy-link-test",
+      href: "#blank",
+      text: "Test Link",
+    });
     clickLink(link);
 
     await waitFor(NO_REQUEST_WAIT_MS);
@@ -271,7 +275,11 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
       onBeforeLinkClickSend: () => false,
     });
 
-    const link = appendLink({ id: "alloy-link-test", href: "#valid", text: "Test Link" });
+    const link = appendLink({
+      id: "alloy-link-test",
+      href: "#valid",
+      text: "Test Link",
+    });
     clickLink(link);
 
     await waitFor(NO_REQUEST_WAIT_MS);
@@ -294,7 +302,11 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
       },
     });
 
-    const link = appendLink({ id: "alloy-link-test", href: "#valid", text: "Test Link" });
+    const link = appendLink({
+      id: "alloy-link-test",
+      href: "#valid",
+      text: "Test Link",
+    });
     clickLink(link);
 
     await waitFor(NO_REQUEST_WAIT_MS);
@@ -324,7 +336,11 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
       },
     });
 
-    const link = appendLink({ id: "alloy-link-test", href: "#internal", text: "Test Link" });
+    const link = appendLink({
+      id: "alloy-link-test",
+      href: "#internal",
+      text: "Test Link",
+    });
     clickLink(link);
 
     const call = await networkRecorder.findCall(/v1\/interact/);
@@ -369,7 +385,11 @@ describe("C11693274 - URL query params do not affect exit link classification", 
 
     // href contains current domain only in the query string (not the host)
     const externalUrl = `https://example.com/?exclude-this=${window.location.hostname}`;
-    const link = appendLink({ id: "alloy-link-test", href: externalUrl, text: "Test Link" });
+    const link = appendLink({
+      id: "alloy-link-test",
+      href: externalUrl,
+      text: "Test Link",
+    });
     clickLink(link);
 
     const call = await networkRecorder.findCall(/v1\/interact/);
@@ -414,7 +434,11 @@ describe("C225010 - Click collection handles consent declined gracefully", () =>
 
     await alloy("setConsent", CONSENT_OUT);
 
-    const link = appendLink({ id: "alloy-link-test", href: "#foo", text: "Test Link" });
+    const link = appendLink({
+      id: "alloy-link-test",
+      href: "#foo",
+      text: "Test Link",
+    });
     clickLink(link);
 
     await expect
