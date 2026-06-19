@@ -24,7 +24,11 @@ import {
 import alloyConfig from "../../helpers/alloy/config.js";
 import searchForLogMessage from "../../helpers/utils/searchForLogMessage.js";
 import { CONSENT_OUT } from "../../helpers/constants/consent.js";
-import { appendLink, clickLink } from "../../helpers/utils/domHelpers.js";
+import {
+  appendLink,
+  appendHtmlToBody,
+  clickLink,
+} from "../../helpers/utils/domHelpers.js";
 import {
   sendBeaconCalls,
   resetSendBeaconCalls,
@@ -711,12 +715,442 @@ describe("C455258 - sendEvent routes to collect via sendBeacon once identity is 
   });
 });
 
-describe("Not migrated (see per-test rationale)", () => {
-  // 15 functional sub-tests. The one collect-routing case is now doable via the
-  // sendBeacon recorder (see C455258); the other 14 are interact link-XDM
-  // variations deferred as scope, like the C81181 five.
-  test.skip("C8118 - link click routes to interact (no identity) then collect (identity established)", () => {});
+describe("C8118 - Collects and sends link click information", () => {
+  const clickById = (id = "alloy-link-test") =>
+    clickLink(document.getElementById(id));
 
+  const waitForIdentityCookie = () =>
+    expect
+      .poll(async () =>
+        (await cookieStore.getAll()).some((c) => c.name.endsWith("_identity")),
+      )
+      .toBe(true);
+
+  test("link click uses interact before identity and collect (sendBeacon) after", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventWithIdentityHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: { eventGroupingEnabled: false },
+    });
+
+    appendLink({ id: "alloy-link-test", href: "blank.html", text: "Test Link" });
+    clickById();
+
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    expect(call).toBeDefined();
+    expect(firstEvent(call).xdm.web.webInteraction).toEqual(
+      expectedWebInteraction({ name: "Test Link", type: "other", href: "blank.html" }),
+    );
+    expect(sendBeaconCalls().length).toBe(0);
+
+    // The interact response establishes an identity; wait for the cookie before
+    // the second click so it can route to collect.
+    await waitForIdentityCookie();
+    networkRecorder.reset();
+    resetSendBeaconCalls();
+
+    clickById();
+    await expect.poll(() => sendBeaconCalls().length).toBe(1);
+    expect(interactCalls(networkRecorder).length).toBe(0);
+    expect(sendBeaconCalls()[0].url).toMatch(/\/v1\/collect\?configId=/);
+  });
+
+  test("download link click is not sent when downloadLinkEnabled is false", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: { downloadLinkEnabled: false, eventGroupingEnabled: false },
+    });
+
+    appendHtmlToBody(
+      `<a href="example.zip" id="alloy-link-test" download>Download Zip File</a>`,
+    );
+    clickById();
+
+    await waitFor(NO_REQUEST_WAIT_MS);
+    expect(interactCalls(networkRecorder).length).toBe(0);
+    expect(sendBeaconCalls().length).toBe(0);
+  });
+
+  test("download link click is sent with download type when downloadLinkEnabled is true", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: { downloadLinkEnabled: true, eventGroupingEnabled: false },
+    });
+
+    appendHtmlToBody(
+      `<a href="example.zip" id="alloy-link-test" download>Download Zip File</a>`,
+    );
+    clickById();
+
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    const event = firstEvent(call);
+    expect(event.xdm.web.webInteraction).toEqual(
+      expectedWebInteraction({
+        name: "Download Zip File",
+        type: "download",
+        href: "example.zip",
+      }),
+    );
+    expect(activityMap(event)).toEqual(
+      expectedActivityMap({ link: "Download Zip File" }),
+    );
+  });
+
+  test("internal link click is not sent when internalLinkEnabled is false", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: { internalLinkEnabled: false, eventGroupingEnabled: false },
+    });
+
+    appendLink({ id: "alloy-link-test", href: "blank.html", text: "Test Link" });
+    clickById();
+
+    await waitFor(NO_REQUEST_WAIT_MS);
+    expect(interactCalls(networkRecorder).length).toBe(0);
+    expect(sendBeaconCalls().length).toBe(0);
+  });
+
+  test("internal link click is sent with full XDM when internalLinkEnabled is true", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: { internalLinkEnabled: true, eventGroupingEnabled: false },
+    });
+
+    appendLink({ id: "alloy-link-test", href: "blank.html", text: "Internal Link" });
+    clickById();
+
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    const event = firstEvent(call);
+    expect(event.xdm.web.webInteraction).toEqual(
+      expectedWebInteraction({
+        name: "Internal Link",
+        type: "other",
+        href: "blank.html",
+      }),
+    );
+    expect(activityMap(event)).toEqual(
+      expectedActivityMap({ link: "Internal Link" }),
+    );
+  });
+
+  test("external link click is not sent when externalLinkEnabled is false", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: { externalLinkEnabled: false, eventGroupingEnabled: false },
+    });
+
+    appendLink({
+      id: "alloy-link-test",
+      href: "https://example.com/",
+      text: "External Link",
+    });
+    clickById();
+
+    await waitFor(NO_REQUEST_WAIT_MS);
+    expect(interactCalls(networkRecorder).length).toBe(0);
+    expect(sendBeaconCalls().length).toBe(0);
+  });
+
+  test("external link click is sent with exit type when externalLinkEnabled is true", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: { externalLinkEnabled: true, eventGroupingEnabled: false },
+    });
+
+    appendLink({
+      id: "alloy-link-test",
+      href: "https://example.com/",
+      text: "External Link",
+    });
+    clickById();
+
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    const event = firstEvent(call);
+    expect(event.xdm.web.webInteraction).toEqual(
+      expectedWebInteraction({
+        name: "External Link",
+        type: "exit",
+        href: "https://example.com/",
+      }),
+    );
+    expect(activityMap(event)).toEqual(
+      expectedActivityMap({ link: "External Link" }),
+    );
+  });
+
+  test("internal link click is not sent immediately when event grouping is enabled", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: { internalLinkEnabled: true, eventGroupingEnabled: true },
+    });
+
+    appendLink({ id: "alloy-link-test", href: "blank.html", text: "Test Link" });
+    clickById();
+
+    await waitFor(NO_REQUEST_WAIT_MS);
+    expect(interactCalls(networkRecorder).length).toBe(0);
+    expect(sendBeaconCalls().length).toBe(0);
+  });
+
+  test("cached internal link click is sent on the next page view event", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: { internalLinkEnabled: true, eventGroupingEnabled: true },
+    });
+
+    appendLink({ id: "alloy-link-test", href: "blank.html", text: "Test Link" });
+    clickById();
+    await waitFor(NO_REQUEST_WAIT_MS);
+    expect(interactCalls(networkRecorder).length).toBe(0);
+
+    networkRecorder.reset();
+
+    await alloy("sendEvent", {
+      xdm: {
+        web: {
+          webPageDetails: { name: "Test Page", pageViews: { value: 1 } },
+        },
+      },
+    });
+
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    const event = firstEvent(call);
+    expect(event.xdm.web.webInteraction).toEqual(
+      expectedWebInteraction({ name: "Test Link", type: "other", href: "blank.html" }),
+    );
+    expect(event.xdm.web.webPageDetails.name).toBe("Test Page");
+    expect(event.xdm.web.webPageDetails.pageViews).toEqual({ value: 1 });
+    expect(activityMap(event)).toEqual(expectedActivityMap({ link: "Test Link" }));
+  });
+
+  test("internal link click data with custom region", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: { internalLinkEnabled: true, eventGroupingEnabled: false },
+    });
+
+    appendHtmlToBody(
+      `<div id="custom-region"><a href="blank.html" id="alloy-link-test">Internal Link</a></div>`,
+    );
+    clickById();
+
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    expect(firstEvent(call).xdm.web.webInteraction.region).toBe("custom-region");
+  });
+
+  test("external link click data with custom link type", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: { externalLinkEnabled: true, eventGroupingEnabled: false },
+    });
+
+    appendHtmlToBody(
+      `<a href="https://example.com/" id="alloy-link-test" data-linktype="exit">External Link</a>`,
+    );
+    clickById();
+
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    expect(firstEvent(call).xdm.web.webInteraction.type).toBe("exit");
+  });
+
+  test("link click with custom activity map data", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: { internalLinkEnabled: true, eventGroupingEnabled: false },
+    });
+
+    appendHtmlToBody(
+      `<div id="custom-region"><a href="blank.html" id="alloy-link-test" data-activitymap-region="custom-region" data-activitymap-link-id="custom-link">Custom Activity Map Link</a></div>`,
+    );
+    clickById();
+
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    expect(activityMap(firstEvent(call))).toEqual(
+      expectedActivityMap({
+        link: "Custom Activity Map Link",
+        region: "custom-region",
+      }),
+    );
+  });
+
+  test("multiple grouped link clicks surface on the next page view event", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: { internalLinkEnabled: true, eventGroupingEnabled: true },
+    });
+
+    appendLink({ id: "alloy-link-test-1", href: "blank.html", text: "Link 1" });
+    appendLink({ id: "alloy-link-test-2", href: "blank.html", text: "Link 2" });
+    clickById("alloy-link-test-1");
+    clickById("alloy-link-test-2");
+
+    await waitFor(NO_REQUEST_WAIT_MS);
+    expect(interactCalls(networkRecorder).length).toBe(0);
+
+    networkRecorder.reset();
+
+    await alloy("sendEvent", {
+      xdm: {
+        web: {
+          webPageDetails: { name: "Test Page", pageViews: { value: 1 } },
+        },
+      },
+    });
+
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    const { webInteraction } = firstEvent(call).xdm.web;
+    expect(webInteraction).toBeDefined();
+    // Event grouping caches one click at a time, so the last click wins. The
+    // payload shape is not guaranteed, so accept either an array or an object.
+    if (Array.isArray(webInteraction)) {
+      expect(webInteraction.at(-1).name).toBe("Link 2");
+    } else {
+      expect(webInteraction.name).toBe("Link 2");
+    }
+  });
+
+  test("link click with custom XDM data via onBeforeLinkClickSend", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: { internalLinkEnabled: true, eventGroupingEnabled: false },
+      onBeforeLinkClickSend: (options) => {
+        options.xdm.customField = "customValue";
+        return true;
+      },
+    });
+
+    appendLink({ id: "alloy-link-test", href: "blank.html", text: "Internal Link" });
+    clickById();
+
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    expect(firstEvent(call).xdm.customField).toBe("customValue");
+  });
+
+  test("page view name is stored and the grouped click surfaces with it", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: { eventGroupingEnabled: true },
+    });
+
+    appendLink({ id: "alloy-link-test", href: "blank.html", text: "Test Link" });
+    clickById();
+
+    await alloy("sendEvent", {
+      xdm: { web: { webPageDetails: { name: "Test Page" } } },
+    });
+
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    const { web } = firstEvent(call).xdm;
+    expect(web.webPageDetails.name).toBe("Test Page");
+    expect(web.webInteraction).toBeDefined();
+  });
+});
+
+describe("Not migrated (see per-test rationale)", () => {
   // Asserts the Referer header, but it's a browser-set forbidden header added
   // after MSW's service worker sees the request, so networkRecorder can't
   // capture it (verified). The collect-side referer was already a commented-out
