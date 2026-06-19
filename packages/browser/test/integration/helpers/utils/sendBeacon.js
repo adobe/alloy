@@ -10,16 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// Alloy binds navigator.sendBeacon once at instance creation (see
-// createBrowserNetworkService), and MSW's service worker does not surface
-// sendBeacon for assertion. So the only way to observe collect-vs-interact
-// routing is to record sendBeacon calls in the page — the same approach the
-// functional suite took (sendBeaconMock.js). The patch must be installed
-// before the library script loads, so it lives in setupBaseCode alongside the
-// permanent addEventListener patch: installed once per page lifetime, with the
-// captured calls reset per test. Returning true keeps the suite hermetic (no
-// stray real beacon) and tells alloy the beacon succeeded so it doesn't fall
-// back to fetch.
+// MSW's service worker does not surface sendBeacon for assertion, so the only
+// way to observe collect-vs-interact routing is to record sendBeacon calls in
+// the page — the same approach the functional suite took (sendBeaconMock.js).
+//
+// The recorder is necessarily global (installed in setupBaseCode before the
+// alloy script is injected) rather than opt-in per spec: alloy creates its
+// network service at bundle load, and createBrowserNetworkService binds
+// navigator.sendBeacon *by value* (.bind) at that moment. A per-test beforeEach
+// runs after the bundle has already loaded, so its swap would be ignored —
+// verified empirically (the routing assertions saw zero recorded beacons).
+//
+// Returning true is the deliberate hermetic default, matching the functional
+// suite: it suppresses any stray real beacon and tells alloy the beacon
+// succeeded so it doesn't fall back to fetch. Specs that don't assert routing
+// are unaffected, and any that need the fetch-fallback path could simulate it
+// by recording false here.
 
 export const installSendBeaconRecorder = () => {
   if (window.__alloySendBeaconInstalled) {

@@ -19,9 +19,10 @@ export default async () => {
     `${server.config.root}/packages/browser/distTest/baseCode.min.js`,
   );
 
-  // Must run before the alloy script is injected below: createBrowserNetworkService
-  // binds navigator.sendBeacon once at instance creation, so the recorder has to
-  // already be in place. Per-test reset lives in the extend.js alloy fixture.
+  // Must run before the alloy script is injected below: alloy creates its
+  // instance (and its network service) at bundle load, and that service
+  // binds navigator.sendBeacon by value at that moment, so a later swap would
+  // be ignored. Per-test reset lives in the extend.js alloy fixture.
   installSendBeaconRecorder();
 
   document.body.innerHTML = "Alloy Test Page";
