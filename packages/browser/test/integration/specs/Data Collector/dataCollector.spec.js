@@ -34,10 +34,14 @@ import waitFor from "../../helpers/utils/waitFor.js";
 // A request that must NOT fire has no signal to poll on, so a fixed wait is required.
 const NO_REQUEST_WAIT_MS = 200;
 
-// Synchronous, unlike findCalls() which retries/waits — wrong for "no request fired".
+// Pin the full edge host and path so a wrong host or malformed path is not
+// counted as an interact call. Synchronous, unlike findCalls() which
+// retries/waits — wrong for "no request fired".
+const EDGE_INTERACT =
+  /^https:\/\/edge\.adobedc\.net\/ee\/(?:[^?]*\/)?v1\/interact\?configId=/;
 const interactCalls = (networkRecorder) =>
   networkRecorder.calls.filter((c) =>
-    /v1\/interact/.test(c.request?.url ?? ""),
+    EDGE_INTERACT.test(c.request?.url ?? ""),
   );
 
 describe("C2592 - Event command sends a request", () => {
