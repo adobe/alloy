@@ -1048,8 +1048,11 @@ describe("C8118 - Collects and sends link click information", () => {
         href: "blank.html",
       }),
     );
-    expect(event.xdm.web.webPageDetails.name).toBe("Test Page");
-    expect(event.xdm.web.webPageDetails.pageViews).toEqual({ value: 1 });
+    expect(event.xdm.web.webPageDetails).toEqual({
+      URL: window.location.href,
+      name: "Test Page",
+      pageViews: { value: 1 },
+    });
     expect(activityMap(event)).toEqual(
       expectedActivityMap({ link: "Test Link" }),
     );
