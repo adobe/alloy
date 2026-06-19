@@ -472,8 +472,14 @@ describe("C455258 - sendEvent routes to collect via sendBeacon once identity is 
 
     // With identity established, documentUnloading routes to collect (sendBeacon).
     await alloy("sendEvent", { documentUnloading: true });
-    expect(sendBeaconCalls().length).toBe(1);
+    const beacons = sendBeaconCalls();
+    expect(beacons.length).toBe(1);
     expect(interactCalls(networkRecorder).length).toBe(0);
+
+    expect(beacons[0].url).toMatch(/\/v1\/collect\?configId=/);
+    const beaconBody = JSON.parse(await beacons[0].data.text());
+    expect(Array.isArray(beaconBody.events)).toBe(true);
+    expect(beaconBody.events.length).toBeGreaterThanOrEqual(1);
 
     networkRecorder.reset();
     resetSendBeaconCalls();
