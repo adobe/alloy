@@ -44,6 +44,32 @@ const interactCalls = (networkRecorder) =>
     EDGE_INTERACT.test(c.request?.url ?? ""),
   );
 
+const firstEvent = (call) => call.request.body.events[0];
+
+// eslint-disable-next-line no-underscore-dangle
+const activityMap = (event) =>
+  event.data.__adobe.analytics.contextData.a.activitymap;
+
+// Functional originals pinned absolute alloyio.com URLs; on localhost the
+// relative hrefs resolve against the test page, so derive the expected URL.
+const absoluteUrl = (href) =>
+  /^https?:\/\//.test(href) ? href : new URL(href, window.location.href).href;
+
+const expectedWebInteraction = ({ name, type, href, region = "BODY" }) => ({
+  name,
+  region,
+  type,
+  URL: absoluteUrl(href),
+  linkClicks: { value: 1 },
+});
+
+const expectedActivityMap = ({ link, region = "BODY", pageIDType = 0 }) => ({
+  page: window.location.href,
+  link,
+  region,
+  pageIDType,
+});
+
 describe("C2592 - Event command sends a request", () => {
   test("sendEvent produces an edge interact call with implementationDetails and state", async ({
     alloy,
@@ -342,7 +368,7 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
 
     const link = appendLink({
       id: "alloy-link-test",
-      href: "#internal",
+      href: "valid.html",
       text: "Test Link",
     });
     clickLink(link);
@@ -350,14 +376,18 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     const call = await networkRecorder.findCall(/v1\/interact/);
     expect(call).toBeDefined();
 
-    const event = call.request.body.events[0];
-    const { webInteraction } = event.xdm.web;
-    expect(webInteraction.name).toBe("Augmented name");
-    expect(webInteraction.region).toBe("BODY");
-    expect(webInteraction.type).toBe("other");
-    expect(webInteraction.linkClicks).toEqual({ value: 1 });
-    // URL resolves against the localhost test page, so only check the origin.
-    expect(webInteraction.URL).toContain(window.location.origin);
+    const event = firstEvent(call);
+    expect(event.xdm.eventType).toBe("web.webinteraction.linkClicks");
+    expect(event.xdm.web.webInteraction).toEqual(
+      expectedWebInteraction({
+        name: "Augmented name",
+        type: "other",
+        href: "valid.html",
+      }),
+    );
+    // The activity-map link is unchanged: the callback only augmented the xdm
+    // webInteraction name, not the data.
+    expect(activityMap(event)).toEqual(expectedActivityMap({ link: "Test Link" }));
     expect(event.data.customField).toBe("test123");
   });
 
