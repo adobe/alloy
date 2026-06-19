@@ -391,13 +391,195 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     expect(event.data.customField).toBe("test123");
   });
 
-  // Five C81181 functional tests are interact link-XDM variations, deferred as
-  // scope — not blocked (no sendBeacon dependency).
-  test.skip("C81181 - link click is collected when clickCollectionEnabled and no callback defined", () => {});
-  test.skip("C81181 - onBeforeLinkClickSend cancels a request conditionally based on clickedElement.id", () => {});
-  test.skip("C81181 - filterClickDetails cancels a request conditionally based on clickedElement.id", () => {});
-  test.skip("C81181 - filterClickDetails can augment xdm and data before the request fires", () => {});
-  test.skip("C81181 - clickCollection.sessionStorageEnabled:false still captures link click data", () => {});
+  test("link click is collected with full XDM when no callback is defined", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: {
+        eventGroupingEnabled: false,
+      },
+    });
+
+    const link = appendLink({
+      id: "alloy-link-test",
+      href: "valid.html",
+      text: "Test Link",
+    });
+    clickLink(link);
+
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    expect(call).toBeDefined();
+
+    const event = firstEvent(call);
+    expect(event.xdm.eventType).toBe("web.webinteraction.linkClicks");
+    expect(event.xdm.web.webInteraction).toEqual(
+      expectedWebInteraction({ name: "Test Link", type: "other", href: "valid.html" }),
+    );
+  });
+
+  test("onBeforeLinkClickSend cancels conditionally based on clickedElement.id", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: {
+        eventGroupingEnabled: false,
+      },
+      onBeforeLinkClickSend: (options) =>
+        options.clickedElement.id !== "canceled-alloy-link-test",
+    });
+
+    const canceledLink = appendLink({
+      id: "canceled-alloy-link-test",
+      href: "canceled.html",
+      text: "Canceled Link",
+    });
+    clickLink(canceledLink);
+    await waitFor(NO_REQUEST_WAIT_MS);
+    expect(interactCalls(networkRecorder).length).toBe(0);
+
+    const link = appendLink({
+      id: "alloy-link-test",
+      href: "valid.html",
+      text: "Test Link",
+    });
+    clickLink(link);
+
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    expect(call).toBeDefined();
+    expect(firstEvent(call).xdm.web.webInteraction).toEqual(
+      expectedWebInteraction({ name: "Test Link", type: "other", href: "valid.html" }),
+    );
+  });
+
+  test("filterClickDetails cancels conditionally based on clickedElement.id", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: {
+        eventGroupingEnabled: false,
+        filterClickDetails: (props) =>
+          props.clickedElement.id !== "canceled-alloy-link-test",
+      },
+    });
+
+    const canceledLink = appendLink({
+      id: "canceled-alloy-link-test",
+      href: "canceled.html",
+      text: "Canceled Link",
+    });
+    clickLink(canceledLink);
+    await waitFor(NO_REQUEST_WAIT_MS);
+    expect(interactCalls(networkRecorder).length).toBe(0);
+
+    const link = appendLink({
+      id: "alloy-link-test",
+      href: "valid.html",
+      text: "Test Link",
+    });
+    clickLink(link);
+
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    expect(call).toBeDefined();
+    expect(firstEvent(call).xdm.web.webInteraction).toEqual(
+      expectedWebInteraction({ name: "Test Link", type: "other", href: "valid.html" }),
+    );
+  });
+
+  test("filterClickDetails can augment xdm and data before the request fires", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: {
+        eventGroupingEnabled: false,
+        filterClickDetails: (props) => {
+          if (props.clickedElement.id === "alloy-link-test") {
+            props.linkName = "Augmented name";
+            return true;
+          }
+          return false;
+        },
+      },
+    });
+
+    const link = appendLink({
+      id: "alloy-link-test",
+      href: "valid.html",
+      text: "Test Link",
+    });
+    clickLink(link);
+
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    expect(call).toBeDefined();
+
+    const event = firstEvent(call);
+    expect(event.xdm.eventType).toBe("web.webinteraction.linkClicks");
+    // filterClickDetails mutates linkName, so both the webInteraction name and
+    // the activity-map link reflect the augmented value.
+    expect(event.xdm.web.webInteraction).toEqual(
+      expectedWebInteraction({
+        name: "Augmented name",
+        type: "other",
+        href: "valid.html",
+      }),
+    );
+    expect(activityMap(event)).toEqual(
+      expectedActivityMap({ link: "Augmented name" }),
+    );
+  });
+
+  test("link click data is captured when clickCollection.sessionStorageEnabled is false", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: {
+        eventGroupingEnabled: false,
+        sessionStorageEnabled: false,
+      },
+    });
+
+    const link = appendLink({
+      id: "alloy-link-test",
+      href: "valid.html",
+      text: "Test Link",
+    });
+    clickLink(link);
+
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    expect(call).toBeDefined();
+    expect(firstEvent(call).xdm.web.webInteraction).toEqual(
+      expectedWebInteraction({ name: "Test Link", type: "other", href: "valid.html" }),
+    );
+  });
 });
 
 describe("C11693274 - URL query params do not affect exit link classification", () => {
