@@ -49,11 +49,11 @@ const interactCalls = (networkRecorder) =>
 const firstEvent = (call) => call.request.body.events[0];
 
 // Link clicks are fire-and-forget: clickLink returns before the request is sent,
-// so findCall must outwait the click → event → fetch → MSW round-trip. The
-// default (5 × 10ms) is too short under CI load; poll up to ~2s, returning as
-// soon as the call completes.
+// so there is no promise to await. waitForCall resolves the moment the matching
+// response is captured (no polling), which findCall's short retry window can
+// miss under CI load.
 const findInteractCall = (networkRecorder) =>
-  networkRecorder.findCall(/v1\/interact/, { retries: 40, delayMs: 50 });
+  networkRecorder.waitForCall(/v1\/interact/);
 
 // eslint-disable-next-line no-underscore-dangle
 const activityMap = (event) =>

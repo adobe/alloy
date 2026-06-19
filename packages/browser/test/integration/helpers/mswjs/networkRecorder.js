@@ -32,6 +32,29 @@ class NetworkRecorder {
   constructor() {
     /** @type {NetworkCall[]} */
     this.calls = [];
+    /** @type {{ pattern: RegExp, resolve: (call: NetworkCall) => void, timer: ReturnType<typeof setTimeout> }[]} */
+    this.waiters = [];
+  }
+
+  /**
+   * Resolves any pending waitForCall promises whose pattern matches a call that
+   * now has both a request and a response. Called from both capture methods so
+   * resolution does not depend on which of request:start / response:* settles
+   * last.
+   * @param {NetworkCall} call
+   */
+  notifyWaiters(call) {
+    if (!call.request || !call.response) {
+      return;
+    }
+    this.waiters = this.waiters.filter((waiter) => {
+      if (waiter.pattern.test(call.request.url)) {
+        clearTimeout(waiter.timer);
+        waiter.resolve(call);
+        return false;
+      }
+      return true;
+    });
   }
 
   /**
@@ -72,6 +95,8 @@ class NetworkRecorder {
       timestamp: Date.now(),
       body,
     };
+
+    this.notifyWaiters(call);
   }
 
   /**
@@ -112,6 +137,8 @@ class NetworkRecorder {
       body,
       timestamp: Date.now(),
     };
+
+    this.notifyWaiters(call);
   }
 
   /**
@@ -172,7 +199,43 @@ class NetworkRecorder {
     return calls.length > 0 ? calls[0] : undefined;
   }
 
+  /**
+   * Resolves with the first complete call matching the pattern. Unlike findCall,
+   * this is event-driven: if no match exists yet it resolves the moment a
+   * matching response is captured, rather than retry-polling. This is the right
+   * tool for fire-and-forget requests (e.g. link clicks) where the triggering
+   * call does not return a promise to await. Resolves with undefined if no match
+   * arrives within timeoutMs, so callers can assert presence with toBeDefined().
+   * @param {RegExp|string} pattern
+   * @param {Object} [options]
+   * @param {number} [options.timeoutMs=5000]
+   * @returns {Promise<NetworkCall | undefined>}
+   */
+  waitForCall(pattern, { timeoutMs = 5000 } = {}) {
+    if (typeof pattern === "string") {
+      pattern = new RegExp(`/${pattern}/`, "i");
+    }
+
+    const existing = this.calls.find(
+      (call) => call.request && call.response && pattern.test(call.request.url),
+    );
+    if (existing) {
+      return Promise.resolve(existing);
+    }
+
+    return new Promise((resolve) => {
+      const waiter = { pattern, resolve, timer: undefined };
+      waiter.timer = setTimeout(() => {
+        this.waiters = this.waiters.filter((w) => w !== waiter);
+        resolve(undefined);
+      }, timeoutMs);
+      this.waiters.push(waiter);
+    });
+  }
+
   reset() {
+    this.waiters.forEach((waiter) => clearTimeout(waiter.timer));
+    this.waiters = [];
     this.calls = [];
   }
 }
