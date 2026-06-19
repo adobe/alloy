@@ -443,7 +443,10 @@ describe("C225010 - Click collection handles consent declined gracefully", () =>
       href: "#foo",
       text: "Test Link",
     });
-    clickLink(link);
+    // Let the click navigate so a regression that blocks default navigation
+    // (the original C225010 concern) would be caught.
+    clickLink(link, { preventNavigation: false });
+    expect(window.location.href).toContain("#foo");
 
     await expect
       .poll(() => searchForLogMessage(consoleSpy, "The user declined consent"))
@@ -452,6 +455,7 @@ describe("C225010 - Click collection handles consent declined gracefully", () =>
     expect(unhandledRejections.length).toBe(0);
 
     window.removeEventListener("unhandledrejection", rejectionHandler);
+    window.location.hash = "";
   });
 });
 
