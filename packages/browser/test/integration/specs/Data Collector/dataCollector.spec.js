@@ -44,9 +44,7 @@ const NO_REQUEST_WAIT_MS = 200;
 const EDGE_INTERACT =
   /^https:\/\/edge\.adobedc\.net\/ee\/(?:[^?]*\/)?v1\/interact\?configId=/;
 const interactCalls = (networkRecorder) =>
-  networkRecorder.calls.filter((c) =>
-    EDGE_INTERACT.test(c.request?.url ?? ""),
-  );
+  networkRecorder.calls.filter((c) => EDGE_INTERACT.test(c.request?.url ?? ""));
 
 const firstEvent = (call) => call.request.body.events[0];
 
@@ -391,7 +389,9 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     );
     // The activity-map link is unchanged: the callback only augmented the xdm
     // webInteraction name, not the data.
-    expect(activityMap(event)).toEqual(expectedActivityMap({ link: "Test Link" }));
+    expect(activityMap(event)).toEqual(
+      expectedActivityMap({ link: "Test Link" }),
+    );
     expect(event.data.customField).toBe("test123");
   });
 
@@ -423,7 +423,11 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     const event = firstEvent(call);
     expect(event.xdm.eventType).toBe("web.webinteraction.linkClicks");
     expect(event.xdm.web.webInteraction).toEqual(
-      expectedWebInteraction({ name: "Test Link", type: "other", href: "valid.html" }),
+      expectedWebInteraction({
+        name: "Test Link",
+        type: "other",
+        href: "valid.html",
+      }),
     );
   });
 
@@ -463,7 +467,11 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     const call = await networkRecorder.findCall(/v1\/interact/);
     expect(call).toBeDefined();
     expect(firstEvent(call).xdm.web.webInteraction).toEqual(
-      expectedWebInteraction({ name: "Test Link", type: "other", href: "valid.html" }),
+      expectedWebInteraction({
+        name: "Test Link",
+        type: "other",
+        href: "valid.html",
+      }),
     );
   });
 
@@ -503,7 +511,11 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     const call = await networkRecorder.findCall(/v1\/interact/);
     expect(call).toBeDefined();
     expect(firstEvent(call).xdm.web.webInteraction).toEqual(
-      expectedWebInteraction({ name: "Test Link", type: "other", href: "valid.html" }),
+      expectedWebInteraction({
+        name: "Test Link",
+        type: "other",
+        href: "valid.html",
+      }),
     );
   });
 
@@ -581,7 +593,11 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     const call = await networkRecorder.findCall(/v1\/interact/);
     expect(call).toBeDefined();
     expect(firstEvent(call).xdm.web.webInteraction).toEqual(
-      expectedWebInteraction({ name: "Test Link", type: "other", href: "valid.html" }),
+      expectedWebInteraction({
+        name: "Test Link",
+        type: "other",
+        href: "valid.html",
+      }),
     );
   });
 });
@@ -739,13 +755,21 @@ describe("C8118 - Collects and sends link click information", () => {
       clickCollection: { eventGroupingEnabled: false },
     });
 
-    appendLink({ id: "alloy-link-test", href: "blank.html", text: "Test Link" });
+    appendLink({
+      id: "alloy-link-test",
+      href: "blank.html",
+      text: "Test Link",
+    });
     clickById();
 
     const call = await networkRecorder.findCall(/v1\/interact/);
     expect(call).toBeDefined();
     expect(firstEvent(call).xdm.web.webInteraction).toEqual(
-      expectedWebInteraction({ name: "Test Link", type: "other", href: "blank.html" }),
+      expectedWebInteraction({
+        name: "Test Link",
+        type: "other",
+        href: "blank.html",
+      }),
     );
     expect(sendBeaconCalls().length).toBe(0);
 
@@ -771,7 +795,10 @@ describe("C8118 - Collects and sends link click information", () => {
     await alloy("configure", {
       ...alloyConfig,
       clickCollectionEnabled: true,
-      clickCollection: { downloadLinkEnabled: false, eventGroupingEnabled: false },
+      clickCollection: {
+        downloadLinkEnabled: false,
+        eventGroupingEnabled: false,
+      },
     });
 
     appendHtmlToBody(
@@ -794,7 +821,10 @@ describe("C8118 - Collects and sends link click information", () => {
     await alloy("configure", {
       ...alloyConfig,
       clickCollectionEnabled: true,
-      clickCollection: { downloadLinkEnabled: true, eventGroupingEnabled: false },
+      clickCollection: {
+        downloadLinkEnabled: true,
+        eventGroupingEnabled: false,
+      },
     });
 
     appendHtmlToBody(
@@ -826,10 +856,17 @@ describe("C8118 - Collects and sends link click information", () => {
     await alloy("configure", {
       ...alloyConfig,
       clickCollectionEnabled: true,
-      clickCollection: { internalLinkEnabled: false, eventGroupingEnabled: false },
+      clickCollection: {
+        internalLinkEnabled: false,
+        eventGroupingEnabled: false,
+      },
     });
 
-    appendLink({ id: "alloy-link-test", href: "blank.html", text: "Test Link" });
+    appendLink({
+      id: "alloy-link-test",
+      href: "blank.html",
+      text: "Test Link",
+    });
     clickById();
 
     await waitFor(NO_REQUEST_WAIT_MS);
@@ -847,10 +884,17 @@ describe("C8118 - Collects and sends link click information", () => {
     await alloy("configure", {
       ...alloyConfig,
       clickCollectionEnabled: true,
-      clickCollection: { internalLinkEnabled: true, eventGroupingEnabled: false },
+      clickCollection: {
+        internalLinkEnabled: true,
+        eventGroupingEnabled: false,
+      },
     });
 
-    appendLink({ id: "alloy-link-test", href: "blank.html", text: "Internal Link" });
+    appendLink({
+      id: "alloy-link-test",
+      href: "blank.html",
+      text: "Internal Link",
+    });
     clickById();
 
     const call = await networkRecorder.findCall(/v1\/interact/);
@@ -877,7 +921,10 @@ describe("C8118 - Collects and sends link click information", () => {
     await alloy("configure", {
       ...alloyConfig,
       clickCollectionEnabled: true,
-      clickCollection: { externalLinkEnabled: false, eventGroupingEnabled: false },
+      clickCollection: {
+        externalLinkEnabled: false,
+        eventGroupingEnabled: false,
+      },
     });
 
     appendLink({
@@ -902,7 +949,10 @@ describe("C8118 - Collects and sends link click information", () => {
     await alloy("configure", {
       ...alloyConfig,
       clickCollectionEnabled: true,
-      clickCollection: { externalLinkEnabled: true, eventGroupingEnabled: false },
+      clickCollection: {
+        externalLinkEnabled: true,
+        eventGroupingEnabled: false,
+      },
     });
 
     appendLink({
@@ -936,10 +986,17 @@ describe("C8118 - Collects and sends link click information", () => {
     await alloy("configure", {
       ...alloyConfig,
       clickCollectionEnabled: true,
-      clickCollection: { internalLinkEnabled: true, eventGroupingEnabled: true },
+      clickCollection: {
+        internalLinkEnabled: true,
+        eventGroupingEnabled: true,
+      },
     });
 
-    appendLink({ id: "alloy-link-test", href: "blank.html", text: "Test Link" });
+    appendLink({
+      id: "alloy-link-test",
+      href: "blank.html",
+      text: "Test Link",
+    });
     clickById();
 
     await waitFor(NO_REQUEST_WAIT_MS);
@@ -957,10 +1014,17 @@ describe("C8118 - Collects and sends link click information", () => {
     await alloy("configure", {
       ...alloyConfig,
       clickCollectionEnabled: true,
-      clickCollection: { internalLinkEnabled: true, eventGroupingEnabled: true },
+      clickCollection: {
+        internalLinkEnabled: true,
+        eventGroupingEnabled: true,
+      },
     });
 
-    appendLink({ id: "alloy-link-test", href: "blank.html", text: "Test Link" });
+    appendLink({
+      id: "alloy-link-test",
+      href: "blank.html",
+      text: "Test Link",
+    });
     clickById();
     await waitFor(NO_REQUEST_WAIT_MS);
     expect(interactCalls(networkRecorder).length).toBe(0);
@@ -978,11 +1042,17 @@ describe("C8118 - Collects and sends link click information", () => {
     const call = await networkRecorder.findCall(/v1\/interact/);
     const event = firstEvent(call);
     expect(event.xdm.web.webInteraction).toEqual(
-      expectedWebInteraction({ name: "Test Link", type: "other", href: "blank.html" }),
+      expectedWebInteraction({
+        name: "Test Link",
+        type: "other",
+        href: "blank.html",
+      }),
     );
     expect(event.xdm.web.webPageDetails.name).toBe("Test Page");
     expect(event.xdm.web.webPageDetails.pageViews).toEqual({ value: 1 });
-    expect(activityMap(event)).toEqual(expectedActivityMap({ link: "Test Link" }));
+    expect(activityMap(event)).toEqual(
+      expectedActivityMap({ link: "Test Link" }),
+    );
   });
 
   test("internal link click data with custom region", async ({
@@ -995,7 +1065,10 @@ describe("C8118 - Collects and sends link click information", () => {
     await alloy("configure", {
       ...alloyConfig,
       clickCollectionEnabled: true,
-      clickCollection: { internalLinkEnabled: true, eventGroupingEnabled: false },
+      clickCollection: {
+        internalLinkEnabled: true,
+        eventGroupingEnabled: false,
+      },
     });
 
     appendHtmlToBody(
@@ -1004,7 +1077,9 @@ describe("C8118 - Collects and sends link click information", () => {
     clickById();
 
     const call = await networkRecorder.findCall(/v1\/interact/);
-    expect(firstEvent(call).xdm.web.webInteraction.region).toBe("custom-region");
+    expect(firstEvent(call).xdm.web.webInteraction.region).toBe(
+      "custom-region",
+    );
   });
 
   test("external link click data with custom link type", async ({
@@ -1017,7 +1092,10 @@ describe("C8118 - Collects and sends link click information", () => {
     await alloy("configure", {
       ...alloyConfig,
       clickCollectionEnabled: true,
-      clickCollection: { externalLinkEnabled: true, eventGroupingEnabled: false },
+      clickCollection: {
+        externalLinkEnabled: true,
+        eventGroupingEnabled: false,
+      },
     });
 
     appendHtmlToBody(
@@ -1039,7 +1117,10 @@ describe("C8118 - Collects and sends link click information", () => {
     await alloy("configure", {
       ...alloyConfig,
       clickCollectionEnabled: true,
-      clickCollection: { internalLinkEnabled: true, eventGroupingEnabled: false },
+      clickCollection: {
+        internalLinkEnabled: true,
+        eventGroupingEnabled: false,
+      },
     });
 
     appendHtmlToBody(
@@ -1066,7 +1147,10 @@ describe("C8118 - Collects and sends link click information", () => {
     await alloy("configure", {
       ...alloyConfig,
       clickCollectionEnabled: true,
-      clickCollection: { internalLinkEnabled: true, eventGroupingEnabled: true },
+      clickCollection: {
+        internalLinkEnabled: true,
+        eventGroupingEnabled: true,
+      },
     });
 
     appendLink({ id: "alloy-link-test-1", href: "blank.html", text: "Link 1" });
@@ -1109,14 +1193,21 @@ describe("C8118 - Collects and sends link click information", () => {
     await alloy("configure", {
       ...alloyConfig,
       clickCollectionEnabled: true,
-      clickCollection: { internalLinkEnabled: true, eventGroupingEnabled: false },
+      clickCollection: {
+        internalLinkEnabled: true,
+        eventGroupingEnabled: false,
+      },
       onBeforeLinkClickSend: (options) => {
         options.xdm.customField = "customValue";
         return true;
       },
     });
 
-    appendLink({ id: "alloy-link-test", href: "blank.html", text: "Internal Link" });
+    appendLink({
+      id: "alloy-link-test",
+      href: "blank.html",
+      text: "Internal Link",
+    });
     clickById();
 
     const call = await networkRecorder.findCall(/v1\/interact/);
@@ -1136,7 +1227,11 @@ describe("C8118 - Collects and sends link click information", () => {
       clickCollection: { eventGroupingEnabled: true },
     });
 
-    appendLink({ id: "alloy-link-test", href: "blank.html", text: "Test Link" });
+    appendLink({
+      id: "alloy-link-test",
+      href: "blank.html",
+      text: "Test Link",
+    });
     clickById();
 
     await alloy("sendEvent", {
