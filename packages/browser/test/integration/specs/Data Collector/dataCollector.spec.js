@@ -529,28 +529,44 @@ describe("C81183 - getLinkDetails monitoring hook via __alloyMonitors", () => {
     ];
   });
 
-  test("getLinkDetails returns correct link info for a visible link element", async ({
+  // The functional original pinned every field for an internal link. URLs are
+  // adapted to the localhost test page: linkUrl resolves the relative href and
+  // pageName is the page's own location.
+  const expectedInternalLinkDetails = () => ({
+    linkName: "Test Link",
+    linkRegion: "BODY",
+    linkType: "other",
+    linkUrl: new URL("valid.html", window.location.href).href,
+    pageName: window.location.href,
+    pageIDType: 0,
+  });
+
+  test("getLinkDetails returns the resolved details even when onBeforeLinkClickSend augments the xdm", async ({
     alloy,
   }) => {
     await alloy("configure", {
       ...alloyConfig,
       clickCollectionEnabled: true,
+      onBeforeLinkClickSend: (options) => {
+        options.xdm.web.webInteraction.name = "augmented name";
+        options.data.customField = "test123";
+        return true;
+      },
     });
 
     const link = appendLink({
       id: "alloy-link-test",
-      href: "https://example.com/valid.html",
+      href: "valid.html",
       text: "Test Link",
     });
 
     const result = window.___getLinkDetails(link);
-    expect(result).toBeTruthy();
-    expect(result.linkName).toBeTruthy();
-    expect(result.linkUrl).toContain("example.com");
-    expect(result.linkType).toBe("exit");
+    // linkName stays "Test Link": the activity-map link (unchanged by the
+    // callback) takes priority over the augmented webInteraction name.
+    expect(result).toEqual(expectedInternalLinkDetails());
   });
 
-  test("getLinkDetails returns results even when clickCollectionEnabled is false", async ({
+  test("getLinkDetails returns the full internal-link details even when clickCollectionEnabled is false", async ({
     alloy,
   }) => {
     await alloy("configure", {
@@ -559,15 +575,13 @@ describe("C81183 - getLinkDetails monitoring hook via __alloyMonitors", () => {
     });
 
     const link = appendLink({
-      id: "alloy-link-test-disabled",
-      href: "https://example.com/",
-      text: "External Link",
+      id: "alloy-link-test",
+      href: "valid.html",
+      text: "Test Link",
     });
 
     const result = window.___getLinkDetails(link);
-    expect(result).toBeTruthy();
-    expect(result.linkName).toBeTruthy();
-    expect(result.linkType).toBe("exit");
+    expect(result).toEqual(expectedInternalLinkDetails());
   });
 
   test("getLinkDetails returns no link data for a null element", async ({
@@ -582,7 +596,9 @@ describe("C81183 - getLinkDetails monitoring hook via __alloyMonitors", () => {
     // fields, not a throw or falsy — mirrors original C81183 test 2.
     const result = window.___getLinkDetails(null);
     expect(result.linkName).toBeUndefined();
+    expect(result.linkRegion).toBeUndefined();
     expect(result.linkType).toBeUndefined();
     expect(result.linkUrl).toBeUndefined();
+    expect(result.pageName).toBeUndefined();
   });
 });
