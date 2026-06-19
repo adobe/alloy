@@ -48,6 +48,13 @@ const interactCalls = (networkRecorder) =>
 
 const firstEvent = (call) => call.request.body.events[0];
 
+// Link clicks are fire-and-forget: clickLink returns before the request is sent,
+// so findCall must outwait the click → event → fetch → MSW round-trip. The
+// default (5 × 10ms) is too short under CI load; poll up to ~2s, returning as
+// soon as the call completes.
+const findInteractCall = (networkRecorder) =>
+  networkRecorder.findCall(/v1\/interact/, { retries: 40, delayMs: 50 });
+
 // eslint-disable-next-line no-underscore-dangle
 const activityMap = (event) =>
   event.data.__adobe.analytics.contextData.a.activitymap;
@@ -375,7 +382,7 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     });
     clickLink(link);
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
+    const call = await findInteractCall(networkRecorder);
     expect(call).toBeDefined();
 
     const event = firstEvent(call);
@@ -417,7 +424,7 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     });
     clickLink(link);
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
+    const call = await findInteractCall(networkRecorder);
     expect(call).toBeDefined();
 
     const event = firstEvent(call);
@@ -464,7 +471,7 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     });
     clickLink(link);
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
+    const call = await findInteractCall(networkRecorder);
     expect(call).toBeDefined();
     expect(firstEvent(call).xdm.web.webInteraction).toEqual(
       expectedWebInteraction({
@@ -508,7 +515,7 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     });
     clickLink(link);
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
+    const call = await findInteractCall(networkRecorder);
     expect(call).toBeDefined();
     expect(firstEvent(call).xdm.web.webInteraction).toEqual(
       expectedWebInteraction({
@@ -548,7 +555,7 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     });
     clickLink(link);
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
+    const call = await findInteractCall(networkRecorder);
     expect(call).toBeDefined();
 
     const event = firstEvent(call);
@@ -590,7 +597,7 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
     });
     clickLink(link);
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
+    const call = await findInteractCall(networkRecorder);
     expect(call).toBeDefined();
     expect(firstEvent(call).xdm.web.webInteraction).toEqual(
       expectedWebInteraction({
@@ -628,7 +635,7 @@ describe("C11693274 - URL query params do not affect exit link classification", 
     });
     clickLink(link);
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
+    const call = await findInteractCall(networkRecorder);
     expect(call).toBeDefined();
 
     const eventXdm = call.request.body.events[0].xdm;
@@ -762,7 +769,7 @@ describe("C8118 - Collects and sends link click information", () => {
     });
     clickById();
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
+    const call = await findInteractCall(networkRecorder);
     expect(call).toBeDefined();
     expect(firstEvent(call).xdm.web.webInteraction).toEqual(
       expectedWebInteraction({
@@ -832,7 +839,7 @@ describe("C8118 - Collects and sends link click information", () => {
     );
     clickById();
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
+    const call = await findInteractCall(networkRecorder);
     const event = firstEvent(call);
     expect(event.xdm.web.webInteraction).toEqual(
       expectedWebInteraction({
@@ -897,7 +904,7 @@ describe("C8118 - Collects and sends link click information", () => {
     });
     clickById();
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
+    const call = await findInteractCall(networkRecorder);
     const event = firstEvent(call);
     expect(event.xdm.web.webInteraction).toEqual(
       expectedWebInteraction({
@@ -962,7 +969,7 @@ describe("C8118 - Collects and sends link click information", () => {
     });
     clickById();
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
+    const call = await findInteractCall(networkRecorder);
     const event = firstEvent(call);
     expect(event.xdm.web.webInteraction).toEqual(
       expectedWebInteraction({
@@ -1039,7 +1046,7 @@ describe("C8118 - Collects and sends link click information", () => {
       },
     });
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
+    const call = await findInteractCall(networkRecorder);
     const event = firstEvent(call);
     expect(event.xdm.web.webInteraction).toEqual(
       expectedWebInteraction({
@@ -1079,7 +1086,7 @@ describe("C8118 - Collects and sends link click information", () => {
     );
     clickById();
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
+    const call = await findInteractCall(networkRecorder);
     expect(firstEvent(call).xdm.web.webInteraction.region).toBe(
       "custom-region",
     );
@@ -1106,7 +1113,7 @@ describe("C8118 - Collects and sends link click information", () => {
     );
     clickById();
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
+    const call = await findInteractCall(networkRecorder);
     expect(firstEvent(call).xdm.web.webInteraction.type).toBe("exit");
   });
 
@@ -1131,7 +1138,7 @@ describe("C8118 - Collects and sends link click information", () => {
     );
     clickById();
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
+    const call = await findInteractCall(networkRecorder);
     expect(activityMap(firstEvent(call))).toEqual(
       expectedActivityMap({
         link: "Custom Activity Map Link",
@@ -1174,7 +1181,7 @@ describe("C8118 - Collects and sends link click information", () => {
       },
     });
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
+    const call = await findInteractCall(networkRecorder);
     const { webInteraction } = firstEvent(call).xdm.web;
     expect(webInteraction).toBeDefined();
     // Event grouping caches one click at a time, so the last click wins. The
@@ -1213,7 +1220,7 @@ describe("C8118 - Collects and sends link click information", () => {
     });
     clickById();
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
+    const call = await findInteractCall(networkRecorder);
     expect(firstEvent(call).xdm.customField).toBe("customValue");
   });
 
@@ -1241,7 +1248,7 @@ describe("C8118 - Collects and sends link click information", () => {
       xdm: { web: { webPageDetails: { name: "Test Page" } } },
     });
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
+    const call = await findInteractCall(networkRecorder);
     const { web } = firstEvent(call).xdm;
     expect(web.webPageDetails.name).toBe("Test Page");
     expect(web.webInteraction).toBeDefined();
