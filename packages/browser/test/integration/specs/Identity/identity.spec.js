@@ -520,6 +520,39 @@ describe("C5594872: An expired adobe_mc query string parameter is not used", () 
   });
 });
 
+// C5594865 verifies an ECID established on one domain is carried to a second
+// domain: alloy appends an `adobe_mc` param to a cross-domain link and the
+// destination page consumes it, yielding the same ECID. This requires
+// navigating between two distinct origins; the integration harness runs on a
+// single blank page and `withTemporaryUrl` rejects cross-origin URLs
+// (helpers/utils/location.js:38). Single-page `adobe_mc` consumption is already
+// covered by C5594871/C5594872.
+describe("C5594865: Identity maintained across domains via adobe_mc", () => {
+  test.skip("a second domain reuses the ECID passed via adobe_mc", () => {
+    // Skipped: needs multi-origin navigation (see note above).
+  });
+});
+
+// C5594866 verifies that a *different* identity supplied via `adobe_mc` on a
+// second domain overrides the existing ECID, and that the new ECID then
+// persists across a page reload. Same blocker as C5594865: multi-origin
+// navigation is unavailable here (`withTemporaryUrl` is same-origin only).
+describe("C5594866: Identity changed across domains via adobe_mc", () => {
+  test.skip("a different adobe_mc identity overrides the existing ECID", () => {
+    // Skipped: needs multi-origin navigation (see note above).
+  });
+});
+
+// C15325238 verifies that when a URL carries multiple `adobe_mc` parameters the
+// last one wins. The functional test builds that state by appending identity
+// across successive cross-domain navigations. Not migratable: multi-origin
+// navigation is unavailable here (`withTemporaryUrl` is same-origin only).
+describe("C15325238: Last adobe_mc parameter wins", () => {
+  test.skip("the final adobe_mc parameter determines the ECID", () => {
+    // Skipped: needs multi-origin navigation (see note above).
+  });
+});
+
 describe("C5598188: Informative error when using an invalid orgID", () => {
   test("logs a warning containing the invalid org id when the identity cookie cannot be set", async ({
     alloy,
@@ -1075,5 +1108,45 @@ describe("Legacy identity cookie migration (migrationEnabled)", () => {
     // The request body should include the legacy ECID in the ECID namespace
     const requestBodyStr = JSON.stringify(call.request.body);
     expect(requestBodyStr).toContain(legacyEcid);
+  });
+});
+
+// C10922 verifies demdex routing: with third-party cookies enabled and
+// supported, the *first* edge request is routed through the demdex domain (so
+// demdex can seed the third-party cookie), and after a reload — once an identity
+// cookie exists — demdex is skipped. A demdex MSW handler and mock already
+// exist (helpers/mswjs/handlers.js, demdexResponse.json), so the network layer
+// is mockable; the blockers are (1) the functional assertion branches on
+// `areThirdPartyCookiesSupported()`, which is environment-dependent in headless
+// Playwright, and (2) the reload half requires a real page reload, which the
+// integration harness does not support. Passes in the functional baseline —
+// deferred coverage, not a failing test.
+describe("C10922: demdex is used for the first request", () => {
+  test.skip("first request routes through demdex, reload skips it", () => {
+    // Skipped: third-party-cookie detection + page reload (see note above).
+  });
+});
+
+// C21636436 verifies the ECID is preserved after a collect-beacon request
+// (`documentUnloading: true`, which routes to the /collect endpoint instead of
+// /interact). This is a known baseline failure in the functional suite
+// (FUNCTIONAL_MIGRATION_PLAN.md §1, "ECID after collect beacon" among the 17
+// pre-existing failures), and the integration harness has no collect-endpoint
+// asserter ported yet (plan §4). Not porting a failing test.
+describe("C21636436: ECID preserved after a collect beacon", () => {
+  test.skip("ECID is unchanged after a documentUnloading collect call", () => {
+    // Skipped: known baseline failure + no collect-endpoint asserter (see note above).
+  });
+});
+
+// C21636437 verifies demdex fallback: when third-party cookies are enabled and
+// the demdex request is blocked, alloy still completes a successful edge request
+// against the configured edge domain. Reproducing this needs the
+// `areThirdPartyCookiesSupported()` precondition (so demdex is attempted first)
+// plus a demdex request-failure hook; that precondition is environment-dependent
+// in headless Playwright. Passes in the functional baseline — deferred coverage.
+describe("C21636437: demdex fallback when demdex is blocked", () => {
+  test.skip("falls back to the edge domain when demdex is blocked", () => {
+    // Skipped: depends on third-party-cookie detection (see note above).
   });
 });
