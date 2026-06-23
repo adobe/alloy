@@ -67,10 +67,16 @@ const interactInvalidIdErrorHandler = http.post(
         { status: 400 },
       );
     }
-    return HttpResponse.text(
+    return new HttpResponse(
       await readFile(
         `${server.config.root}/packages/browser/test/integration/helpers/mocks/sendEventWithIdentityCookieResponse.json`,
       ),
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "x-adobe-edge": "or2;35",
+        },
+      },
     );
   },
 );
@@ -596,22 +602,24 @@ describe("C5598188: Informative error when using an invalid orgID", () => {
 
     const warnSpy = vi.spyOn(console, "warn");
 
-    await alloy("configure", {
-      ...alloyConfig,
-      orgId: "invalid-org-id@Adobe",
-      debugEnabled: true,
-    });
-    await alloy("sendEvent", {});
+    try {
+      await alloy("configure", {
+        ...alloyConfig,
+        orgId: "invalid-org-id@Adobe",
+        debugEnabled: true,
+      });
+      await alloy("sendEvent", {});
 
-    const warnCalls = warnSpy.mock.calls.map((args) => args.join(" "));
-    const identityWarning = warnCalls.find(
-      (msg) =>
-        msg.includes("Identity cookie not found") ||
-        msg.includes("invalid-org-id"),
-    );
-    expect(identityWarning).toBeDefined();
-
-    warnSpy.mockRestore();
+      const warnCalls = warnSpy.mock.calls.map((args) => args.join(" "));
+      const identityWarning = warnCalls.find(
+        (msg) =>
+          msg.includes("Identity cookie not found") ||
+          msg.includes("invalid-org-id"),
+      );
+      expect(identityWarning).toBeDefined();
+    } finally {
+      warnSpy.mockRestore();
+    }
   });
 });
 
