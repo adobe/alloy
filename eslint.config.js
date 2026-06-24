@@ -201,11 +201,7 @@ export default defineConfig([
   {
     name: "alloy/core-src-no-browser-globals",
     files: ["packages/core/src/**/*.{cjs,js}"],
-    ignores: [
-      "packages/core/src/utils/dom/**",
-      "packages/core/src/utils/fireImage.js",
-      "packages/core/src/utils/injectFireReferrerHideableImage.js",
-    ],
+    ignores: ["packages/core/src/utils/dom/**"],
     rules: {
       "no-restricted-globals": [
         "error",
@@ -318,8 +314,6 @@ export default defineConfig([
       "packages/browser/**/*.{cjs,js,mjs,jsx}",
       "sandboxes/browser/**/*.{cjs,js,mjs,jsx}",
       "packages/core/src/utils/dom/**/*.{cjs,js,mjs,jsx}",
-      "packages/core/src/utils/fireImage.js",
-      "packages/core/src/utils/injectFireReferrerHideableImage.js",
     ],
     plugins: {
       compat: compatPlugin,

@@ -18,9 +18,11 @@ describe("injectSendBeaconRequest", () => {
     const sendBeacon = vi.fn().mockReturnValue(false);
     const sendFetchRequestPromise = Promise.resolve();
     const sendFetchRequest = vi.fn().mockReturnValue(sendFetchRequestPromise);
+    const logger = { info: vi.fn() };
     const sendBeaconRequest = injectSendBeaconRequest({
       sendBeacon,
       sendFetchRequest,
+      logger,
     });
     const body = {
       a: "b",
@@ -43,9 +45,11 @@ describe("injectSendBeaconRequest", () => {
       a: "b",
     };
     const sendFetchRequest = vi.fn();
+    const logger = { info: vi.fn() };
     const sendBeaconRequest = injectSendBeaconRequest({
       sendBeacon,
       sendFetchRequest,
+      logger,
     });
 
     return sendBeaconRequest("https://example.com/endpoint", body).then(

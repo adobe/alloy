@@ -21,6 +21,7 @@ import createLogController from "./createLogController.js";
 import createLifecycle from "./createLifecycle.js";
 import createComponentRegistry from "./createComponentRegistry.js";
 import injectSendNetworkRequest from "./network/injectSendNetworkRequest.js";
+import injectSendBeaconRequest from "./network/requestMethods/injectSendBeaconRequest.js";
 import injectExtractEdgeInfo from "./edgeNetwork/injectExtractEdgeInfo.js";
 import createIdentity from "./identity/createIdentity.js";
 import createConsent from "./consent/createConsent.js";
@@ -99,9 +100,9 @@ export const createExecuteCommand = ({
   const getAssuranceValidationTokenParams =
     createGetAssuranceValidationTokenParams({
       getLocationSearch: () => platformServices.globals.getLocationSearch(),
-      storage:
-        platformServices.storage.createNamespacedStorage("validation.")
-          .persistent,
+      storage: platformServices.storage.createNamespacedStorage(
+        `instance.${instanceName}.validation.`,
+      ).persistent,
     });
   const getBrowser = injectGetBrowser({
     userAgent: platformServices.globals.getUserAgent(),
@@ -143,10 +144,14 @@ export const createExecuteCommand = ({
       dateProvider: () => new Date(),
     });
 
+    const { sendFetchRequest, sendBeacon } = platformServices.network;
+    const sendBeaconRequest = sendBeacon
+      ? injectSendBeaconRequest({ sendBeacon, sendFetchRequest, logger })
+      : sendFetchRequest;
     const sendNetworkRequest = injectSendNetworkRequest({
       logger,
-      sendFetchRequest: platformServices.network.sendFetchRequest,
-      sendBeaconRequest: platformServices.network.sendBeaconRequest,
+      sendFetchRequest,
+      sendBeaconRequest,
       isRequestRetryable,
       getRequestRetryDelay,
     });

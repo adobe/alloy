@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 /* eslint-disable dot-notation */
 
 /** @import { GlobalsService } from "@adobe/alloy-core/services" */
-import injectFireReferrerHideableImage from "@adobe/alloy-core/utils/injectFireReferrerHideableImage.js";
+import injectFireReferrerHideableImage from "@adobe/alloy-core/utils/dom/injectFireReferrerHideableImage.js";
 
 /** @returns {GlobalsService} */
 const createBrowserGlobalsService = () => ({

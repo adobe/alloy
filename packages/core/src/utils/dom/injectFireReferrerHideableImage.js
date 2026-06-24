@@ -15,8 +15,8 @@ import {
   appendNode as appendNodeToDocument,
   awaitSelector as awaitSelectorInDocument,
   createNode as createNodeInDocument,
-} from "./dom/index.js";
-import { BODY, IFRAME } from "../constants/tagName.js";
+} from "./index.js";
+import { BODY, IFRAME } from "../../constants/tagName.js";
 
 const IFRAME_ATTRS = {
   name: "Adobe Alloy",

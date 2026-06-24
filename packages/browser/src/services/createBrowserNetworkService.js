@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 /** @import { NetworkService } from "@adobe/alloy-core/services" */
 
 import injectSendFetchRequest from "@adobe/alloy-core/core/network/requestMethods/injectSendFetchRequest.js";
-import injectSendBeaconRequest from "@adobe/alloy-core/core/network/requestMethods/injectSendBeaconRequest.js";
 
 /**
  * @returns {NetworkService}
@@ -21,17 +20,14 @@ import injectSendBeaconRequest from "@adobe/alloy-core/core/network/requestMetho
 const createBrowserNetworkService = () => {
   const { fetch, navigator } = window;
   const sendFetchRequest = injectSendFetchRequest({ fetch });
-  const sendBeaconRequest =
+  const sendBeacon =
     typeof navigator.sendBeacon === "function"
-      ? injectSendBeaconRequest({
-          sendBeacon: navigator.sendBeacon.bind(navigator),
-          sendFetchRequest,
-        })
-      : sendFetchRequest;
+      ? navigator.sendBeacon.bind(navigator)
+      : null;
 
   return {
     sendFetchRequest,
-    sendBeaconRequest,
+    sendBeacon,
   };
 };
 

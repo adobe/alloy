@@ -205,10 +205,6 @@ importers:
       uuid:
         specifier: ^14.0.0
         version: 14.0.0
-    devDependencies:
-      js-cookie:
-        specifier: 3.0.7
-        version: 3.0.7
 
   packages/node:
     dependencies:
