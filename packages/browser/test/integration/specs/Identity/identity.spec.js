@@ -1020,38 +1020,28 @@ describe("C19160486: CORE identity namespace behavior", () => {
     );
   });
 
-  test("ECID is returned from cookie on reload without another network request", async ({
-    alloy,
-    worker,
-    networkRecorder,
-  }) => {
-    worker.use(acquireHandler);
+  // The remaining functional C19160486 sub-cases all require a CORE identity,
+  // which Experience Edge only mints via the demdex domain when third-party
+  // cookies are enabled and supported. That path depends on
+  // areThirdPartyCookiesSupported() detection (environment-dependent in headless
+  // Playwright), and the cross-domain cases additionally need multi-origin
+  // navigation — the same blockers as C10922. Stubbed rather than faked. The
+  // ECID-from-cookie behavior these also touched is covered for real by
+  // C21636438.
+  test.skip("CORE identity is the same across domains when getIdentity is called first", () => {
+    // Skipped: requires CORE (demdex/3p-cookie) + multi-origin navigation.
+  });
 
-    await alloy("configure", alloyConfig);
-    const firstResult = await alloy("getIdentity", { namespaces: ["ECID"] });
-    expect(firstResult.identity.ECID).toBe(MOCK_ECID);
+  test.skip("CORE identity is the same across domains when called after sendEvent", () => {
+    // Skipped: requires CORE (demdex/3p-cookie) + multi-origin navigation.
+  });
 
-    const firstAcquireCalls = await networkRecorder.findCalls(
-      /v1\/identity\/acquire/,
-      { retries: 10 },
-    );
-    expect(firstAcquireCalls.length).toBe(1);
+  test.skip("ECID and CORE can be requested separately", () => {
+    // Skipped: requires a CORE identity (demdex/3p-cookie support).
+  });
 
-    // The cookie is now set; simulate a "reload" by resetting alloy state
-    // but keeping the cookie. We reset the networkRecorder and re-configure.
-    networkRecorder.reset();
-
-    // Re-setup alloy (simulates page reload with cookie already present)
-    // Note: the alloy fixture tears down between tests; here we call getIdentity
-    // again after the first call to confirm it uses the cached value.
-    const secondResult = await alloy("getIdentity", { namespaces: ["ECID"] });
-    expect(secondResult.identity.ECID).toBe(MOCK_ECID);
-
-    const secondAcquireCalls = await networkRecorder.findCalls(
-      /v1\/identity\/acquire/,
-      { retries: 3 },
-    );
-    expect(secondAcquireCalls.length).toBe(0);
+  test.skip("CORE identity is returned from the identity cookie", () => {
+    // Skipped: requires a CORE identity (demdex/3p-cookie support).
   });
 });
 
