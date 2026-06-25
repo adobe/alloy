@@ -733,7 +733,7 @@ describe("C6842981: FPID from identityMap produces a stable ECID across requests
   });
 });
 
-describe("C6842982: Existing identity cookie takes precedence over an FPID", () => {
+describe("C6842982: Established identity is sent with a later FPID (edge applies precedence)", () => {
   const fpidEvent = {
     xdm: {
       identityMap: {
