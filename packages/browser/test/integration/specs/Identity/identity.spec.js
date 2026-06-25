@@ -383,33 +383,22 @@ describe("C5287654: Cookies are set with sameSite=none", () => {
     await deleteCookies();
   });
 
-  test("the server response specifies SameSite=None for the identity cookie", async ({
+  test("alloy writes the identity cookie with sameSite=none and secure", async ({
     alloy,
     worker,
-    networkRecorder,
   }) => {
     worker.use(interactWithIdentityHandler);
 
     await alloy("configure", alloyConfig);
     await alloy("sendEvent");
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
-    expect(call.response.status).toBe(200);
-
-    const body = call.response.body;
-    const stateStoreHandle = body.handle.find((h) => h.type === "state:store");
-    expect(stateStoreHandle).toBeDefined();
-
-    const identityCookiePayload = stateStoreHandle.payload.find((p) =>
-      p.key.includes("identity"),
-    );
-    expect(identityCookiePayload).toBeDefined();
-    expect(identityCookiePayload.attrs).toBeDefined();
-    expect(identityCookiePayload.attrs.SameSite).toBe("None");
-
-    // The identity cookie should also be set in the browser
-    const identityCookie = getCookieValue(MAIN_IDENTITY_COOKIE_NAME);
+    // Inspect the actual browser cookie attributes (not just the mock's
+    // response payload) to confirm alloy applies SameSite=None — which the
+    // browser only honors alongside Secure.
+    const identityCookie = await cookieStore.get(MAIN_IDENTITY_COOKIE_NAME);
     expect(identityCookie).toBeTruthy();
+    expect(identityCookie.sameSite).toBe("none");
+    expect(identityCookie.secure).toBe(true);
   });
 });
 
