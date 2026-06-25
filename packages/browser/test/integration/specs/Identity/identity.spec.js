@@ -650,7 +650,11 @@ describe("C6842980: FPID from the identityMap is used to generate an ECID", () =
     await deleteCookies();
   });
 
-  test("the same FPID produces the same ECID across requests", async ({
+  // Deriving an ECID from an FPID is an Experience Edge behavior; alloy has no
+  // FPID-specific code (no `fpid` reference anywhere in source). Alloy's only
+  // observable contribution is forwarding the FPID, so that is what we assert —
+  // a static mock cannot prove server-side ECID derivation.
+  test("forwards the identityMap FPID on every request", async ({
     alloy,
     worker,
     networkRecorder,
@@ -665,10 +669,9 @@ describe("C6842980: FPID from the identityMap is used to generate an ECID", () =
     await alloy("sendEvent", fpidEvent);
 
     const firstCall = await networkRecorder.findCall(/v1\/interact/);
-    const firstEcid = firstCall.response.body?.handle?.find(
-      (h) => h.type === "identity:result",
-    )?.payload?.[0]?.id;
-    expect(firstEcid).toBeDefined();
+    expect(
+      firstCall.request.body?.events?.[0]?.xdm?.identityMap?.FPID?.[0]?.id,
+    ).toBe("my-stable-fpid-uuid");
 
     // Delete the identity cookie and send again with the same FPID
     await deleteCookies();
@@ -677,26 +680,18 @@ describe("C6842980: FPID from the identityMap is used to generate an ECID", () =
     await alloy("sendEvent", fpidEvent);
 
     const secondCall = await networkRecorder.findCall(/v1\/interact/);
-    const secondEcid = secondCall.response.body?.handle?.find(
-      (h) => h.type === "identity:result",
-    )?.payload?.[0]?.id;
-
-    // Both calls go to the same mocked response, so same ECID is returned.
-    // The important thing is that alloy sent the FPID in both requests.
-    expect(secondEcid).toBe(firstEcid);
-
-    const firstBody = JSON.stringify(firstCall.request.body);
-    const secondBody = JSON.stringify(secondCall.request.body);
-    expect(firstBody).toContain("my-stable-fpid-uuid");
-    expect(secondBody).toContain("my-stable-fpid-uuid");
+    expect(
+      secondCall.request.body?.events?.[0]?.xdm?.identityMap?.FPID?.[0]?.id,
+    ).toBe("my-stable-fpid-uuid");
   });
 });
 
-// NOTE: The full C6842981 functional test relies on a `fpidCookieName` alloy
-// config option (set externally on the test page) which reads a first-party
-// cookie as the FPID. Here we test the observable behaviors that can be verified
-// in the integration environment: that the ECID is stable when an FPID is
-// consistently provided via the identityMap.
+// NOTE: Functional C6842981 supplies the FPID via a custom first-party cookie
+// (`myFPID`). That cookie-to-FPID mapping is configured at the datastream/edge,
+// not in alloy — alloy has no FPID-specific code or `fpidCookieName` option
+// (confirmed: no `fpid` reference anywhere in source). At the alloy layer this
+// collapses to the same observable behavior as C6842980: alloy forwards the
+// FPID from the identityMap, which is what we assert here.
 
 describe("C6842981: FPID from identityMap produces a stable ECID across requests", () => {
   const fpidValue = "stable-fpid-value-for-test-6842981";
@@ -727,13 +722,8 @@ describe("C6842981: FPID from identityMap produces a stable ECID across requests
     await alloy("sendEvent", fpidEvent);
 
     const firstCall = await networkRecorder.findCall(/v1\/interact/);
-    const firstEcid = firstCall.response.body?.handle?.find(
-      (h) => h.type === "identity:result",
-    )?.payload?.[0]?.id;
-    expect(firstEcid).toBeDefined();
-
-    // Verify the FPID was sent in the request (user-provided identityMap
-    // is at events[0].xdm.identityMap, not the request-level xdm.identityMap)
+    // User-provided identityMap rides at events[0].xdm.identityMap, not the
+    // request-level xdm.identityMap.
     expect(
       firstCall.request.body?.events?.[0]?.xdm?.identityMap?.FPID?.[0]?.id,
     ).toBe(fpidValue);
@@ -748,13 +738,6 @@ describe("C6842981: FPID from identityMap produces a stable ECID across requests
     expect(
       secondCall.request.body?.events?.[0]?.xdm?.identityMap?.FPID?.[0]?.id,
     ).toBe(fpidValue);
-
-    const secondEcid = secondCall.response.body?.handle?.find(
-      (h) => h.type === "identity:result",
-    )?.payload?.[0]?.id;
-
-    // Both calls return the same mocked ECID (deterministic mock)
-    expect(secondEcid).toBe(firstEcid);
   });
 });
 
@@ -771,7 +754,7 @@ describe("C6842982: Existing identity cookie takes precedence over an FPID", () 
     await deleteCookies();
   });
 
-  test("the ECID from the first sendEvent (cookie) matches the ECID after a second sendEvent with an FPID", async ({
+  test("sends the established identity alongside the FPID on a later request", async ({
     alloy,
     worker,
     networkRecorder,
@@ -786,21 +769,23 @@ describe("C6842982: Existing identity cookie takes precedence over an FPID", () 
 
     // First sendEvent — establishes the identity cookie
     await alloy("sendEvent");
-    const firstCall = await networkRecorder.findCall(/v1\/interact/);
-    const firstEcid = firstCall.response.body?.handle?.find(
-      (h) => h.type === "identity:result",
-    )?.payload?.[0]?.id;
+    await networkRecorder.findCall(/v1\/interact/);
+    const identityCookieValue = getCookieValue(MAIN_IDENTITY_COOKIE_NAME);
+    expect(identityCookieValue).toBeTruthy();
 
     networkRecorder.reset();
 
-    // Second sendEvent with an FPID — identity cookie should still take precedence
+    // Cookie-over-FPID precedence is an edge decision; alloy's observable
+    // contribution is carrying the established identity (the kndctr cookie, via
+    // state entries) alongside the user-provided FPID so the edge can prefer it.
     await alloy("sendEvent", fpidEvent);
     const secondCall = await networkRecorder.findCall(/v1\/interact/);
-    const secondEcid = secondCall.response.body?.handle?.find(
-      (h) => h.type === "identity:result",
-    )?.payload?.[0]?.id;
-
-    expect(secondEcid).toBe(firstEcid);
+    expect(JSON.stringify(secondCall.request.body)).toContain(
+      identityCookieValue,
+    );
+    expect(
+      secondCall.request.body?.events?.[0]?.xdm?.identityMap?.FPID?.[0]?.id,
+    ).toBe("should-be-ignored-fpid");
   });
 });
 
