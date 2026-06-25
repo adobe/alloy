@@ -1,0 +1,75 @@
+## ADDED Requirements
+
+### Requirement: `/jira-propose` creates or updates a `.jira/` YAML file locally without calling JIRA
+The `/jira-propose` Claude Code slash command SHALL operate entirely locally. It SHALL NOT make any calls to the JIRA REST API. All information used to populate a new ticket file comes from git state, chat context, and existing `.jira/` files.
+
+#### Scenario: Propose runs without JIRA credentials
+- **WHEN** a developer runs `/jira-propose` with no `JIRA_API_TOKEN` set
+- **THEN** the command completes successfully and writes a `.jira/` YAML file
+
+### Requirement: `/jira-propose` searches existing `.jira/` files for a matching ticket
+When invoked, `/jira-propose` SHALL scan all `.jira/*.yml` files and compare their content (filename slug, `details.summary` if present) against the current git changes and chat context. If a suitable match is found, the command SHALL update the existing file. If no match is found, the command SHALL create a new `PDCL-XXXX-<short-description>.yml` file.
+
+#### Scenario: Matching ticket found
+- **WHEN** an existing `.jira/PDCL-1234-my-feature.yml` matches the current changes
+- **THEN** `/jira-propose` updates that file's `updates` section rather than creating a new file
+
+#### Scenario: No matching ticket found
+- **WHEN** no existing `.jira/` file matches the current changes
+- **THEN** `/jira-propose` creates a new `PDCL-XXXX-<short-description>.yml` with an `updates` array containing a create-ticket REST call
+
+### Requirement: `/jira-propose` uses current git changes and chat context to populate the ticket
+`/jira-propose` SHALL inspect:
+- The current git diff (staged and unstaged changes) to infer what changed
+- Recent commit messages on the branch
+- Chat context provided by the user in the invocation or recent conversation
+
+From this context it SHALL populate:
+- `summary` (required): a concise one-line ticket title
+- `description` (optional): a paragraph describing the change and motivation
+- `issuetype`: defaulting to `story` (id `7`) unless the change is clearly a bug fix
+- `components`: `[{ id: "155901" }]` (AEP Web SDK, matching existing defaults)
+- `customfield_23300`: `{ id: "116005" }` (product field, matching existing defaults)
+
+#### Scenario: Summary derived from commit messages
+- **WHEN** the branch has commit messages describing a feature
+- **THEN** the proposed ticket's `summary` reflects those commit messages
+
+#### Scenario: Issue type defaults to story
+- **WHEN** the change does not appear to be a bug fix
+- **THEN** the proposed ticket uses `issuetype: { id: "7" }` (story)
+
+#### Scenario: Issue type set to bug for fix changes
+- **WHEN** commit messages or diff context indicate a bug fix
+- **THEN** the proposed ticket uses `issuetype: { id: "1" }` (bug)
+
+### Requirement: New ticket `updates` array contains an idempotent create-ticket call as the first entry
+For new tickets, the first entry in `updates` SHALL be a `POST /rest/api/2/issue` call whose body uses `fields` (not `update`) to set all initial field values. This follows JIRA's create-issue API shape.
+
+The `summary`, `issuetype`, `project`, `components`, and `customfield_23300` fields SHALL always be present in the create body. The `description` field SHALL be included if non-empty.
+
+#### Scenario: Create call is first in updates array
+- **WHEN** `/jira-propose` creates a new `PDCL-XXXX-*.yml` file
+- **THEN** `updates[0]` is `{ path: "/rest/api/2/issue", method: "POST", body: { fields: { ... } } }`
+
+#### Scenario: Create body includes required fields
+- **WHEN** the created file's first update is inspected
+- **THEN** it contains `project`, `issuetype`, `summary`, `components`, and `customfield_23300`
+
+### Requirement: YAML output includes inline comments for custom field IDs
+The YAML files written by `/jira-propose` SHALL include inline comments explaining custom field IDs, matching the pattern used in `scripts/team/api.js`.
+
+Specifically:
+- `customfield_23300` SHALL have the comment `# AEP Web SDK product field`
+- Component IDs SHALL have comments identifying the component name (e.g. `# AEP Web SDK`, `# Documentation`)
+
+#### Scenario: Custom field comment present in output
+- **WHEN** `/jira-propose` writes a new ticket file
+- **THEN** `customfield_23300` has an adjacent YAML comment identifying it
+
+### Requirement: `/jira-propose` is implemented as a Claude Code skill in `.claude/commands/`
+The action SHALL be implemented as a markdown skill file at `.claude/commands/jira-propose.md`, following the same pattern as other skills in the project (e.g. `pr-sync`, `jira-propose`).
+
+#### Scenario: Skill is available in Claude Code
+- **WHEN** a developer types `/jira-propose` in a Claude Code session
+- **THEN** Claude Code loads and executes the skill from `.claude/commands/jira-propose.md`
