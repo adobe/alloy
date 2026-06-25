@@ -430,9 +430,11 @@ describe("C5594871: getIdentity works with adobe_mc query string parameter", () 
         /https:\/\/edge\.adobedc\.net\/ee\/.*\/?v1\/identity\/acquire/,
         async ({ request }) => {
           const body = await request.json();
-          // Extract the ECID from the request xdm.identityMap if present
-          const ecidFromRequest =
-            body.xdm?.identityMap?.ECID?.[0]?.id || adobeMcEcid;
+          // Echo back the ECID alloy placed in the request's xdm.identityMap.
+          // No fallback: if alloy fails to forward it, identity.ECID is
+          // undefined and the assertion below fails (rather than passing
+          // vacuously against a hard-coded value).
+          const ecidFromRequest = body.xdm?.identityMap?.ECID?.[0]?.id;
           return new HttpResponse(
             JSON.stringify({
               requestId: "acquire-adobe-mc-response",
@@ -624,13 +626,14 @@ describe("C5598188: Informative error when using an invalid orgID", () => {
       });
       await alloy("sendEvent", {});
 
+      // Functional C5598188 requires two distinct warnings, not just one.
       const warnCalls = warnSpy.mock.calls.map((args) => args.join(" "));
-      const identityWarning = warnCalls.find(
-        (msg) =>
-          msg.includes("Identity cookie not found") ||
-          msg.includes("invalid-org-id"),
+      expect(
+        warnCalls.some((msg) => msg.includes("Identity cookie not found")),
+      ).toBe(true);
+      expect(warnCalls.some((msg) => msg.includes("invalid-org-id"))).toBe(
+        true,
       );
-      expect(identityWarning).toBeDefined();
     } finally {
       warnSpy.mockRestore();
     }
@@ -933,10 +936,9 @@ describe("C14699834: Identity is still established if the first request fails", 
       error = e;
     }
     expect(error).toBeDefined();
-    // alloy includes server response body in error message; our error detail has "myinvalidoverride"
-    expect(error.message.toLowerCase()).toMatch(
-      /400|myinvalidoverride|invalid/,
-    );
+    // alloy surfaces the server response body; our error detail names the
+    // invalid override. Match it specifically (functional asserts the same).
+    expect(error.message.toLowerCase()).toContain("myinvalidoverride");
 
     // No identity cookie yet
     const identityCookieBefore = getCookieValue(MAIN_IDENTITY_COOKIE_NAME);
