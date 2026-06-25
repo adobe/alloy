@@ -33,6 +33,11 @@ const { readFile } = server.commands;
 // The ECID that all mock responses return
 const MOCK_ECID = "41861666193140161934276845651148876988";
 
+// A valid kndctr identity cookie value whose protobuf decodes to MOCK_ECID.
+// Same value the mock responses write via state:store.
+const KNOWN_IDENTITY_COOKIE_VALUE =
+  "CiY0MTg2MTY2NjE5MzE0MDE2MTkzNDI3Njg0NTY1MTE0ODg3Njk4OFIQCM68vcXoMhgBKgNPUjIwAaAB0ry9xegysAHCqAHwAc68vcXoMg==";
+
 const interactWithIdentityHandler = http.post(
   /https:\/\/edge\.adobedc\.net\/ee\/.*\/?v1\/interact/,
   async () => {
@@ -1050,43 +1055,69 @@ describe("C19160486: CORE identity namespace behavior", () => {
   });
 });
 
-// NOTE: The base64/protobuf fallback scenarios (two sub-tests) are skipped per
-// migration plan — those are in the list of known baseline failures.
-
-describe("C21636438: Decode the kndctr identity cookie (partial)", () => {
+describe("C21636438: Decode the kndctr identity cookie", () => {
   beforeEach(async () => {
     await deleteCookies();
   });
 
-  test("extracts the ECID from the identity cookie on a second call (no network)", async ({
+  test("extracts the ECID from a pre-existing identity cookie without a network request", async ({
     alloy,
     worker,
     networkRecorder,
   }) => {
+    // A fresh alloy with the identity cookie already present must decode the
+    // ECID from the cookie and skip the acquire request entirely.
+    document.cookie = `${MAIN_IDENTITY_COOKIE_NAME}=${KNOWN_IDENTITY_COOKIE_VALUE}; path=/`;
     worker.use(acquireHandler);
 
     await alloy("configure", alloyConfig);
+    const result = await alloy("getIdentity", { namespaces: ["ECID"] });
+    expect(result.identity.ECID).toBe(MOCK_ECID);
 
-    const firstResult = await alloy("getIdentity");
-    expect(firstResult.identity.ECID).toBe(MOCK_ECID);
-
-    const firstAcquireCalls = await networkRecorder.findCalls(
-      /v1\/identity\/acquire/,
-      { retries: 10 },
-    );
-    expect(firstAcquireCalls.length).toBe(1);
-
-    // Reset recorder — next getIdentity should NOT hit the network
-    networkRecorder.reset();
-
-    const secondResult = await alloy("getIdentity");
-    expect(secondResult.identity.ECID).toBe(MOCK_ECID);
-
-    const secondAcquireCalls = await networkRecorder.findCalls(
+    const acquireCalls = await networkRecorder.findCalls(
       /v1\/identity\/acquire/,
       { retries: 3 },
     );
-    expect(secondAcquireCalls.length).toBe(0);
+    expect(acquireCalls.length).toBe(0);
+  });
+
+  test("falls back to a network request when the cookie is not base64", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    document.cookie = `${MAIN_IDENTITY_COOKIE_NAME}=gibberish; path=/`;
+    worker.use(acquireHandler);
+
+    await alloy("configure", alloyConfig);
+    const result = await alloy("getIdentity", { namespaces: ["ECID"] });
+    expect(result.identity.ECID).toBe(MOCK_ECID);
+
+    const acquireCalls = await networkRecorder.findCalls(
+      /v1\/identity\/acquire/,
+      { retries: 10 },
+    );
+    expect(acquireCalls.length).toBe(1);
+  });
+
+  test("falls back to a network request when the cookie is base64 but not a valid protobuf", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    // base64 of [0x00, 0x00, 0x00, 0x00] — decodes but is not a valid protobuf.
+    document.cookie = `${MAIN_IDENTITY_COOKIE_NAME}=AAAAAA==; path=/`;
+    worker.use(acquireHandler);
+
+    await alloy("configure", alloyConfig);
+    const result = await alloy("getIdentity", { namespaces: ["ECID"] });
+    expect(result.identity.ECID).toBe(MOCK_ECID);
+
+    const acquireCalls = await networkRecorder.findCalls(
+      /v1\/identity\/acquire/,
+      { retries: 10 },
+    );
+    expect(acquireCalls.length).toBe(1);
   });
 });
 
