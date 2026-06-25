@@ -254,6 +254,15 @@ describe("C2581: Queue requests until ECID is received", () => {
       (h) => h.type === "identity:result",
     )?.payload?.[0]?.id;
     expect(firstResponseEcid).toBe(MOCK_ECID);
+
+    // The queued second request must carry the resolved identity established by
+    // the first response — the kndctr identity cookie value rides in the request
+    // body's state entries (mirrors functional C2581's request-body assertion).
+    const identityCookieValue = getCookieValue(MAIN_IDENTITY_COOKIE_NAME);
+    expect(identityCookieValue).toBeTruthy();
+    expect(JSON.stringify(calls[1].request.body)).toContain(
+      identityCookieValue,
+    );
   });
 });
 
