@@ -22,9 +22,9 @@ afterEach(() => {
 });
 
 describe("createBrowserPlatformServices (wiring)", () => {
-  it("returns an object with all six service keys", () => {
+  it("returns an object with all service keys", () => {
     const services = createBrowserPlatformServices();
-    expect(services).toHaveProperty("network");
+    expect(services).toHaveProperty("createNetworkService");
     expect(services).toHaveProperty("storage");
     expect(services).toHaveProperty("cookie");
     expect(services).toHaveProperty("runtime");

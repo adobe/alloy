@@ -34,12 +34,8 @@ const expectFunctions = (obj, names) => {
 
 describe("Service contracts", () => {
   it("NetworkService implements the typedef", () => {
-    const network = createBrowserNetworkService();
-    expectFunctions(network, ["sendFetchRequest"]);
-    expect(
-      network.sendBeacon === null || typeof network.sendBeacon === "function",
-      "expected sendBeacon to be a function or null",
-    ).toBe(true);
+    const network = createBrowserNetworkService({ logger: noopLogger });
+    expectFunctions(network, ["sendFetchRequest", "sendBeaconRequest"]);
   });
 
   it("StorageService implements the typedef (including nested Storage shape)", () => {

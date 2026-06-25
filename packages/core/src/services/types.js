@@ -29,16 +29,15 @@ governing permissions and limitations under the License.
  */
 
 /**
+ * @typedef {(url: string, body: string) => Promise<NetworkResponse>} SendBeaconRequest
+ */
+
+/**
  * @typedef {Object} NetworkService
  * @property {SendFetchRequest} sendFetchRequest
  *   Must send cookies (`credentials: "include"` in browsers).
- * @property {((url: string, data: any) => boolean) | null} sendBeacon
- *   Raw platform send-beacon function (e.g. `navigator.sendBeacon`), or `null` if unavailable.
- *   Core owns the beacon strategy (fallback to fetch, logging) via `injectSendBeaconRequest`.
- *   This means platforms can express "beacon available / unavailable" but cannot customize the
- *   strategy further. If a future platform needs a different beacon strategy, this property
- *   should become a full `sendBeaconRequest` function and the logger dependency ordering problem
- *   in `core/index.js` will need revisiting.
+ * @property {SendBeaconRequest} sendBeaconRequest
+ *   Falls back to `sendFetchRequest` when the underlying transport is unavailable.
  */
 
 /**
@@ -133,7 +132,7 @@ governing permissions and limitations under the License.
 
 /**
  * @typedef {Object} PlatformServices
- * @property {NetworkService} network
+ * @property {(logger: import('../core/types.js').Logger) => NetworkService} createNetworkService
  * @property {StorageService} storage
  * @property {CookieService} cookie
  * @property {RuntimeService} runtime

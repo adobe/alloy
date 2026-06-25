@@ -13,32 +13,28 @@ governing permissions and limitations under the License.
 import { afterEach, describe, it, expect, vi } from "vitest";
 import createBrowserNetworkService from "../../../../src/services/createBrowserNetworkService.js";
 
-const createLogger = () => ({
-  info: vi.fn(),
-  warn: vi.fn(),
-  error: vi.fn(),
-});
+const createLogger = () => ({ info: vi.fn(), warn: vi.fn(), error: vi.fn() });
 
 afterEach(() => {
   vi.restoreAllMocks();
 });
 
 describe("BrowserNetworkService", () => {
-  it("exposes sendFetchRequest as a function and sendBeacon when available", () => {
-    const network = createBrowserNetworkService();
+  it("exposes sendFetchRequest and sendBeaconRequest as functions", () => {
+    const network = createBrowserNetworkService({ logger: createLogger() });
     expect(typeof network.sendFetchRequest).toBe("function");
-    expect(typeof network.sendBeacon).toBe("function");
+    expect(typeof network.sendBeaconRequest).toBe("function");
   });
 
-  it("exposes sendBeacon as null when navigator.sendBeacon is unavailable", () => {
+  it("falls back to sendFetchRequest when navigator.sendBeacon is unavailable", () => {
     const descriptor = Object.getOwnPropertyDescriptor(
       Navigator.prototype,
       "sendBeacon",
     );
     delete Navigator.prototype.sendBeacon;
     try {
-      const network = createBrowserNetworkService();
-      expect(network.sendBeacon).toBeNull();
+      const network = createBrowserNetworkService({ logger: createLogger() });
+      expect(network.sendBeaconRequest).toBe(network.sendFetchRequest);
     } finally {
       if (descriptor) {
         Object.defineProperty(Navigator.prototype, "sendBeacon", descriptor);
