@@ -23,12 +23,32 @@ import {
 import alloyConfig from "../../helpers/alloy/config.js";
 import deleteCookies from "../../helpers/utils/deleteCookies.js";
 import { withTemporaryUrl } from "../../helpers/utils/location.js";
+import setupAlloy from "../../helpers/alloy/setup.js";
+import setupBaseCode from "../../helpers/alloy/setupBaseCode.js";
+import cleanAlloy from "../../helpers/alloy/clean.js";
 import {
   MAIN_IDENTITY_COOKIE_NAME,
   LEGACY_IDENTITY_COOKIE_NAME,
 } from "../../helpers/constants/cookies.js";
 
 const { readFile } = server.commands;
+
+// A few behaviors (server-side ECID derivation from an FPID, cookie-over-FPID
+// precedence) only exist at Experience Edge and cannot be reproduced by a mock.
+// Like the original functional tests, these run against the real int edge by
+// leaving /interact unhandled (the worker uses onUnhandledRequest: "bypass"),
+// so they require edge access and return non-deterministic ECIDs.
+function ecidFromResponse(call) {
+  return call?.response?.body?.handle
+    ?.find((h) => h.type === "identity:result")
+    ?.payload?.find((p) => p.namespace?.code === "ECID")?.id;
+}
+
+async function reinitializeAlloy() {
+  cleanAlloy();
+  await setupBaseCode();
+  await setupAlloy();
+}
 
 // The ECID that all mock responses return
 const MOCK_ECID = "41861666193140161934276845651148876988";
@@ -631,51 +651,46 @@ describe("C5598188: Informative error when using an invalid orgID", () => {
 
 describe("C6842980: FPID from the identityMap is used to generate an ECID", () => {
   const fpidEvent = {
-    xdm: {
-      identityMap: {
-        FPID: [{ id: "my-stable-fpid-uuid" }],
-      },
-    },
+    xdm: { identityMap: { FPID: [{ id: "alloy-integration-fpid-6842980" }] } },
+  };
+  const liveConfig = {
+    ...alloyConfig,
+    thirdPartyCookiesEnabled: false,
+    idMigrationEnabled: false,
   };
 
   beforeEach(async () => {
     await deleteCookies();
   });
 
-  // Deriving an ECID from an FPID is an Experience Edge behavior; alloy has no
-  // FPID-specific code (no `fpid` reference anywhere in source). Alloy's only
-  // observable contribution is forwarding the FPID, so that is what we assert —
-  // a static mock cannot prove server-side ECID derivation.
-  test("forwards the identityMap FPID on every request", async ({
-    alloy,
-    worker,
+  // Live edge: the edge derives the ECID from the FPID, so we read the ECID the
+  // edge returns (not alloy's cache) across two fresh sessions with the same
+  // FPID and assert it is stable.
+  test("the edge derives the same ECID from the same FPID across fresh sessions", async ({
     networkRecorder,
   }) => {
-    worker.use(interactWithIdentityHandler);
-
-    await alloy("configure", {
-      ...alloyConfig,
-      thirdPartyCookiesEnabled: false,
-      idMigrationEnabled: false,
+    await window.alloy("configure", liveConfig);
+    await window.alloy("sendEvent", fpidEvent);
+    const firstCall = await networkRecorder.findCall(/v1\/interact/, {
+      retries: 40,
     });
-    await alloy("sendEvent", fpidEvent);
+    const firstEcid = ecidFromResponse(firstCall);
+    expect(firstEcid).toBeTruthy();
 
-    const firstCall = await networkRecorder.findCall(/v1\/interact/);
-    expect(
-      firstCall.request.body?.events?.[0]?.xdm?.identityMap?.FPID?.[0]?.id,
-    ).toBe("my-stable-fpid-uuid");
-
-    // Delete the identity cookie and send again with the same FPID
+    // Fresh session: clear identity and reinitialize alloy (mirrors the
+    // functional reloadPage), then send the same FPID again.
     await deleteCookies();
     networkRecorder.reset();
+    await reinitializeAlloy();
 
-    await alloy("sendEvent", fpidEvent);
+    await window.alloy("configure", liveConfig);
+    await window.alloy("sendEvent", fpidEvent);
+    const secondCall = await networkRecorder.findCall(/v1\/interact/, {
+      retries: 40,
+    });
 
-    const secondCall = await networkRecorder.findCall(/v1\/interact/);
-    expect(
-      secondCall.request.body?.events?.[0]?.xdm?.identityMap?.FPID?.[0]?.id,
-    ).toBe("my-stable-fpid-uuid");
-  });
+    expect(ecidFromResponse(secondCall)).toBe(firstEcid);
+  }, 30000);
 });
 
 // NOTE: Functional C6842981 supplies the FPID via a custom first-party cookie
@@ -733,52 +748,44 @@ describe("C6842981: FPID from identityMap produces a stable ECID across requests
   });
 });
 
-describe("C6842982: Established identity is sent with a later FPID (edge applies precedence)", () => {
+describe("C6842982: existing identity takes precedence over an FPID", () => {
   const fpidEvent = {
-    xdm: {
-      identityMap: {
-        FPID: [{ id: "should-be-ignored-fpid" }],
-      },
-    },
+    xdm: { identityMap: { FPID: [{ id: "alloy-integration-fpid-6842982" }] } },
+  };
+  const liveConfig = {
+    ...alloyConfig,
+    thirdPartyCookiesEnabled: false,
+    idMigrationEnabled: false,
   };
 
   beforeEach(async () => {
     await deleteCookies();
   });
 
-  test("sends the established identity alongside the FPID on a later request", async ({
-    alloy,
-    worker,
+  // Live edge: precedence is an edge decision, so assert against the ECID the
+  // edge returns. A first request establishes an ECID; a later request supplies
+  // a different FPID, yet the edge must keep the established ECID.
+  test("the edge keeps the established ECID when a later request supplies an FPID", async ({
     networkRecorder,
   }) => {
-    worker.use(interactWithIdentityHandler);
+    await window.alloy("configure", liveConfig);
 
-    await alloy("configure", {
-      ...alloyConfig,
-      thirdPartyCookiesEnabled: false,
-      idMigrationEnabled: false,
+    await window.alloy("sendEvent", {});
+    const firstCall = await networkRecorder.findCall(/v1\/interact/, {
+      retries: 40,
     });
-
-    // First sendEvent — establishes the identity cookie
-    await alloy("sendEvent");
-    await networkRecorder.findCall(/v1\/interact/);
-    const identityCookieValue = getCookieValue(MAIN_IDENTITY_COOKIE_NAME);
-    expect(identityCookieValue).toBeTruthy();
+    const establishedEcid = ecidFromResponse(firstCall);
+    expect(establishedEcid).toBeTruthy();
 
     networkRecorder.reset();
 
-    // Cookie-over-FPID precedence is an edge decision; alloy's observable
-    // contribution is carrying the established identity (the kndctr cookie, via
-    // state entries) alongside the user-provided FPID so the edge can prefer it.
-    await alloy("sendEvent", fpidEvent);
-    const secondCall = await networkRecorder.findCall(/v1\/interact/);
-    expect(JSON.stringify(secondCall.request.body)).toContain(
-      identityCookieValue,
-    );
-    expect(
-      secondCall.request.body?.events?.[0]?.xdm?.identityMap?.FPID?.[0]?.id,
-    ).toBe("should-be-ignored-fpid");
-  });
+    await window.alloy("sendEvent", fpidEvent);
+    const secondCall = await networkRecorder.findCall(/v1\/interact/, {
+      retries: 40,
+    });
+
+    expect(ecidFromResponse(secondCall)).toBe(establishedEcid);
+  }, 30000);
 });
 
 describe("C14699834: Identity is still established if the first request fails", () => {
