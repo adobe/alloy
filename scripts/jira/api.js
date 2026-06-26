@@ -55,14 +55,5 @@ export default function createApi({ dryRun = false, baseUrl, token }) {
     return data.issues ?? [];
   };
 
-  const getRemoteLinks = async (key) => {
-    const response = await fetch(
-      `${baseUrl}/rest/api/2/issue/${key}/remotelink`,
-      { headers: authHeaders },
-    );
-    if (!response.ok) return [];
-    return response.json();
-  };
-
-  return { dryRun, request, searchIssues, getRemoteLinks };
+  return { dryRun, request, searchIssues };
 }

@@ -18,11 +18,12 @@ import { load as yamlLoad } from "js-yaml";
 import createApi from "./api.js";
 import { applyFile } from "./apply.js";
 import { fetchFile } from "./fetch.js";
-import { JIRA_BASE_URL, JIRA_API_TOKEN } from "../team/config.js";
+import { JIRA_BASE_URL, JIRA_API_TOKEN } from "./config.js";
 
 /**
  * Process a single .jira/*.yml file: apply updates, refresh details via fetch.
- * For XXXX files, deletes the placeholder file and creates a real-key file.
+ * For new-ticket files (non-numeric key part), deletes the placeholder and creates
+ * a real-key file (e.g. PDCL-a3f8b2c1-title.yml → PDCL-1234-title.yml).
  * @param {string} filename
  * @param {{ api: object, prUrl?: string, prTitle?: string }} opts
  * @returns {Promise<string|null>} ticket key if processed, null if skipped
@@ -47,11 +48,14 @@ export const processFile = async (
   const ticketKey = await applyFile(filename, { api, prUrl, prTitle });
   console.log(`Applied: ${ticketKey}`);
 
-  // Derive new filename: replace XXXX with the real ticket number.
+  // Derive new filename: for new tickets (non-numeric key part), replace globalId with ticket number.
   const dir = dirname(filename);
   const base = basename(filename);
+  const keyMatch = base.match(/^[A-Z]+-([a-zA-Z0-9]+)/);
+  const keyPart = keyMatch?.[1] ?? "";
+  const isNewTicket = !/^\d+$/.test(keyPart);
   const ticketNum = ticketKey.split("-").pop();
-  const newBase = base.replace("XXXX", ticketNum);
+  const newBase = isNewTicket ? base.replace(keyPart, ticketNum) : base;
   const newFilename = `${dir}/${newBase}`;
 
   if (filename !== newFilename && !api.dryRun) {

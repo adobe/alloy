@@ -15,7 +15,7 @@ import { writeFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dump as yamlDump } from "js-yaml";
 import createApi from "./api.js";
-import { JIRA_BASE_URL, JIRA_API_TOKEN } from "../team/config.js";
+import { JIRA_BASE_URL, JIRA_API_TOKEN } from "./config.js";
 
 const MAX_STRING_LENGTH = 500;
 

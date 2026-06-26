@@ -24,7 +24,6 @@ const mockApi = (overrides = {}) => ({
       : { key: "PDCL-1234", fields: { summary: "Test" } },
   ),
   searchIssues: vi.fn(async () => []),
-  getRemoteLinks: vi.fn(async () => []),
   ...overrides,
 });
 
@@ -81,11 +80,12 @@ updates:
     if (existsSync(file)) unlinkSync(file);
   });
 
-  it("deletes XXXX file and creates real-key file", async () => {
+  it("deletes globalId file and creates real-key file", async () => {
+    const gid = "abc12345";
     const uid = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    const xxxxPath = join(tmpdir(), `PDCL-XXXX-proc-spec-${uid}.yml`);
+    const globalIdPath = join(tmpdir(), `PDCL-${gid}-proc-spec-${uid}.yml`);
     writeFileSync(
-      xxxxPath,
+      globalIdPath,
       `
 updates:
   - path: /rest/api/2/issue
@@ -94,26 +94,22 @@ updates:
       fields:
         project: { key: PDCL }
         summary: New feat
-  - path: /rest/api/2/issue/{key}/remotelink
-    method: POST
-    body:
-      globalId: abc-xyz
-      object:
-        url: "{GITHUB_PR_URL}"
+        labels:
+          - ${gid}
 `,
       "utf8",
     );
 
     const api = mockApi();
-    const result = await processFile(xxxxPath, {
+    const result = await processFile(globalIdPath, {
       api,
       prUrl: "https://github.com/adobe/alloy/pull/2",
       prTitle: "PR",
     });
 
     expect(result).toBe("PDCL-9999");
-    expect(existsSync(xxxxPath)).toBe(false);
-    const realPath = xxxxPath.replace("XXXX", "9999");
+    expect(existsSync(globalIdPath)).toBe(false);
+    const realPath = globalIdPath.replace(gid, "9999");
     expect(existsSync(realPath)).toBe(true);
     if (existsSync(realPath)) unlinkSync(realPath);
   });

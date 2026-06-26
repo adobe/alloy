@@ -16,7 +16,7 @@ import { basename } from "path";
 import { fileURLToPath } from "url";
 import { load as yamlLoad } from "js-yaml";
 import createApi from "./api.js";
-import { JIRA_BASE_URL, JIRA_API_TOKEN } from "../team/config.js";
+import { JIRA_BASE_URL, JIRA_API_TOKEN } from "./config.js";
 
 // Recursively replace {PLACEHOLDER} tokens in body values.
 const interpolate = (value, vars) => {
@@ -32,8 +32,26 @@ const interpolate = (value, vars) => {
   return value;
 };
 
+// Parse filename → { project, ticketKey (if numeric), globalId (if non-numeric) }.
+// e.g. "PDCL-1234-title.yml"     → ticketKey="PDCL-1234", globalId=null
+//      "PDCL-a3f8b2c1-title.yml" → ticketKey=null,         globalId="a3f8b2c1"
+const parseFilename = (filename) => {
+  const base = basename(filename, ".yml");
+  const match = base.match(/^([A-Z]+)-([a-zA-Z0-9]+)/);
+  if (!match)
+    throw new Error(`Cannot parse ticket key from filename: ${filename}`);
+  const [, project, keyPart] = match;
+  if (/^\d+$/.test(keyPart)) {
+    return { project, ticketKey: `${project}-${keyPart}`, globalId: null };
+  }
+  return { project, ticketKey: null, globalId: keyPart };
+};
+
 /**
  * Apply a .jira/*.yml file's updates to JIRA.
+ * For new tickets (non-numeric key in filename), the globalId is used as a JIRA label
+ * so that re-runs find the existing ticket instead of creating a duplicate.
+ * A remote link from the ticket to the PR is always created (idempotent via PR URL).
  * @param {string} filename
  * @param {{ api: object, prUrl?: string, prTitle?: string }} opts
  * @returns {Promise<string>} resolved ticket key, e.g. "PDCL-1234"
@@ -42,87 +60,57 @@ export const applyFile = async (
   filename,
   { api, prUrl = "", prTitle = "" },
 ) => {
-  const fileBase = basename(filename, ".yml");
-  const keyMatch = fileBase.match(/^([A-Z]+-(?:XXXX|\d+))/);
-  if (!keyMatch)
-    throw new Error(`Cannot parse ticket key from filename: ${filename}`);
+  const { project, ticketKey: parsedKey, globalId } = parseFilename(filename);
+  let ticketKey = parsedKey;
 
-  const fileKey = keyMatch[1];
-  const isNewTicket = fileKey.includes("XXXX");
   const parsed = yamlLoad(readFileSync(filename, "utf8")) ?? {};
   const updates = Array.isArray(parsed.updates) ? parsed.updates : [];
-  const hasUpdates = updates.length > 0;
 
   const vars = { GITHUB_PR_URL: prUrl, GITHUB_PR_TITLE: prTitle };
 
-  // For new tickets, find the remote-link entry to get its globalId (idempotency key).
-  const remoteLinkUpdate = updates.find(
-    (u) => u.method === "POST" && String(u.path).includes("/remotelink"),
-  );
-  const globalId = remoteLinkUpdate?.body?.globalId;
-
-  const resolveKey = async () => {
-    if (!isNewTicket) return fileKey;
-
-    // Search for an existing ticket that already has this globalId on its remote links.
-    if (globalId) {
-      const issues = await api.searchIssues(
-        `project = PDCL AND created >= startOfDay("-7d") ORDER BY created DESC`,
-      );
-      // Fetch all remote links in parallel then find the match.
-      const linkResults = await Promise.all(
-        issues.map((issue) => api.getRemoteLinks(issue.key)),
-      );
-      const matchIndex = linkResults.findIndex((links) =>
-        links.some((l) => l.globalId === globalId),
-      );
-      if (matchIndex !== -1) {
-        const issue = issues[matchIndex];
-        console.log(
-          `Found existing ticket ${issue.key} via globalId ${globalId}`,
-        );
-        // Update the existing ticket with the create details to ensure idempotency.
-        const createUpdate = updates.find(
-          (u) => u.method === "POST" && u.path === "/rest/api/2/issue",
-        );
-        if (createUpdate?.body?.fields) {
-          await api.request("PUT", `/rest/api/2/issue/${issue.key}`, {
-            fields: createUpdate.body.fields,
-          });
-        }
-        return issue.key;
-      }
+  // For new tickets: check if already created via label (idempotency).
+  if (globalId && !ticketKey) {
+    const issues = await api.searchIssues(
+      `project = ${project} AND labels = "${globalId}"`,
+    );
+    if (issues.length > 0) {
+      ticketKey = issues[0].key;
+      console.log(`Found existing ticket ${ticketKey} via label ${globalId}`);
     }
-
-    // No existing ticket found — create one.
-    const createUpdate = updates.find(
-      (u) => u.method === "POST" && u.path === "/rest/api/2/issue",
-    );
-    if (!createUpdate)
-      throw new Error(
-        "XXXX file has no POST /rest/api/2/issue entry in updates",
-      );
-    const data = await api.request(
-      "POST",
-      "/rest/api/2/issue",
-      createUpdate.body,
-    );
-    return data.key ?? "PDCL-XXXX";
-  };
-
-  const ticketKey = await resolveKey();
-
-  if (!hasUpdates) return ticketKey;
-
-  const isCreateCall = (u) =>
-    isNewTicket && u.method === "POST" && u.path === "/rest/api/2/issue";
+  }
 
   for (const update of updates) {
-    if (isCreateCall(update)) continue;
-    const path = String(update.path).replace(/\{key\}/g, ticketKey);
-    const body = interpolate(update.body, vars);
+    const isCreate =
+      update.method === "POST" && String(update.path) === "/rest/api/2/issue";
+
+    if (isCreate) {
+      if (!ticketKey) {
+        // eslint-disable-next-line no-await-in-loop
+        const data = await api.request(
+          "POST",
+          "/rest/api/2/issue",
+          interpolate(update.body, vars),
+        );
+        ticketKey = data.key ?? `${project}-UNKNOWN`;
+      }
+      // Skip if ticket already exists (idempotent).
+      continue;
+    }
+
+    // All other updates run only when we have a ticket key.
+    if (!ticketKey) continue;
+    const path = String(update.path).replace(/{key}/g, ticketKey);
     // eslint-disable-next-line no-await-in-loop
-    await api.request(update.method, path, body);
+    await api.request(update.method, path, interpolate(update.body, vars));
+  }
+
+  // Auto-create a remote link to the PR for every processed ticket (idempotent via PR URL).
+  if (ticketKey && prUrl) {
+    await api.request("POST", `/rest/api/2/issue/${ticketKey}/remotelink`, {
+      globalId: prUrl,
+      relationship: "mentioned in",
+      object: { url: prUrl, title: prTitle || prUrl },
+    });
   }
 
   return ticketKey;

@@ -39,11 +39,11 @@ Check each `.jira/*.yml` file:
 - If a file matches the current work, **update it** (append to `updates` array)
 - If no file matches, **create a new one**
 
-### 4a. New ticket — write `PDCL-XXXX-<short-description>.yml`
+### 4a. New ticket — write `PDCL-<globalId>-<short-description>.yml`
 
-Generate a kebab-case short description (3–6 words) from the branch name and commits.
+Generate a short random `globalId` (8 hex characters, e.g. `"a3f8b2c1"`) and a kebab-case short description (3–6 words) from the branch name and commits.
 
-Write `.jira/PDCL-XXXX-<short-description>.yml` with this structure:
+Write `.jira/PDCL-<globalId>-<short-description>.yml` with this structure:
 
 ```yaml
 updates:
@@ -64,17 +64,17 @@ updates:
           - id: "155901"  # AEP Web SDK
         customfield_23300:  # AEP Web SDK product field
           id: "116005"
-  - path: /rest/api/2/issue/{key}/remotelink
-    method: POST
-    body:
-      globalId: <generate a short unique random hex string, e.g. "a3f7b2c9e1d6">
-      relationship: mentioned in
-      object:
-        url: "{GITHUB_PR_URL}"
-        title: "{GITHUB_PR_TITLE}"
+        labels:
+          - <globalId>  # idempotency key — do not remove
 ```
 
-The `globalId` is the idempotency key for this ticket — it must be unique per ticket file so that multiple new tickets can be created in a single PR merge. Generate a random 12-character hex string (e.g. using `Math.random().toString(16).slice(2,14)` mentally). The `{GITHUB_PR_URL}` and `{GITHUB_PR_TITLE}` placeholders are substituted by `apply.mjs` at run time.
+**Filename and globalId:**
+- The `<globalId>` in the filename is the idempotency key for this ticket
+- It must be unique per ticket file so multiple new tickets can be created in a single PR
+- Generate a random 8-character hex string (e.g. `a3f8b2c1`)
+- The same value goes in `labels` so `apply.js` can find the ticket on re-runs
+- The apply script auto-creates a remote link from the ticket to the PR — no remotelink entry needed in `updates`
+- After merge, the build replaces the file with `PDCL-<real-number>-<short-description>.yml`
 
 **Description guidelines:**
 - Lead with who benefits (e.g., "Analytics customers using the Web SDK...")
@@ -99,6 +99,7 @@ updates:
 
 Use `PUT /rest/api/2/issue/{key}` with `update.field[].set` for field changes.
 Use `POST /rest/api/2/issue/{key}/transitions` for status transitions.
+The `{key}` placeholder is replaced with the real ticket key by `apply.js` at run time.
 
 ### 5. Write the file
 
@@ -110,9 +111,9 @@ Use `POST /rest/api/2/issue/{key}/transitions` for status transitions.
 
 After writing the file, tell the user:
 - The filename created or updated
-- The ticket key (PDCL-XXXX for new, PDCL-NNNN for existing)
+- The ticket identifier (globalId for new tickets, PDCL-NNNN for existing)
 - The proposed summary
-- What will happen when the PR merges (apply.mjs will execute the updates)
+- What will happen when the PR merges (apply.js will execute the updates, then replace the file with a real-key filename)
 
 ## Reference: PDCL custom fields
 
@@ -131,6 +132,7 @@ After writing the file, tell the user:
 
 - **No JIRA API calls** — all information comes from git state, context, and existing `.jira/` files
 - All `update` operations must use `set` (never `add`/`remove`) to ensure idempotency
-- New tickets must have a `POST /rest/api/2/issue` as the first entry in `updates`
+- New tickets must have a `POST /rest/api/2/issue` as the first entry in `updates`, with the `globalId` in `labels`
+- Do **not** add a remotelink entry to `updates` — the apply script creates it automatically
 - File must be valid YAML
-- Do not populate the `details` section — that is written by `fetch.mjs` after apply
+- Do not populate the `details` section — that is written by `fetch.js` after apply
