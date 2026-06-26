@@ -62,17 +62,26 @@ export default ({
           consent.suspend();
           const consentHashes = consentHashStore.lookup(consentOptions);
           return taskQueue
-            .addTask(() => {
-              if (consentHashes.isNew()) {
+            .addTask(async () => {
+              if (await consentHashes.isNew()) {
                 return sendSetConsentRequest({
                   consentOptions,
                   identityMap,
                   edgeConfigOverrides,
                 });
               }
-              return Promise.resolve();
+              return undefined;
             })
             .then(() => consentHashes.save())
+            .catch((error) => {
+              if (
+                taskQueue.length === 0 &&
+                storedConsent.read()[GENERAL] === undefined
+              ) {
+                consent.setConsent(defaultConsentByPurpose);
+              }
+              throw error;
+            })
             .finally(readCookieIfQueueEmpty);
         },
       },

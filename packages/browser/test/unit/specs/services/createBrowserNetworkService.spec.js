@@ -13,11 +13,7 @@ governing permissions and limitations under the License.
 import { afterEach, describe, it, expect, vi } from "vitest";
 import createBrowserNetworkService from "../../../../src/services/createBrowserNetworkService.js";
 
-const createLogger = () => ({
-  info: vi.fn(),
-  warn: vi.fn(),
-  error: vi.fn(),
-});
+const createLogger = () => ({ info: vi.fn(), warn: vi.fn(), error: vi.fn() });
 
 afterEach(() => {
   vi.restoreAllMocks();

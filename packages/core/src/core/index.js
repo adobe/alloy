@@ -12,10 +12,7 @@ governing permissions and limitations under the License.
 
 import {
   getApexDomain,
-  injectStorage,
-  cookieJar,
   createLoggingCookieJar,
-  injectFireReferrerHideableImage,
   injectGetBrowser,
   queryString,
   stringToBoolean,
@@ -53,7 +50,6 @@ import injectGetLocationHint from "./edgeNetwork/injectGetLocationHint.js";
 import isRequestRetryable from "./network/isRequestRetryable.js";
 import getRequestRetryDelay from "./network/getRequestRetryDelay.js";
 import injectApplyResponse from "./edgeNetwork/injectApplyResponse.js";
-import getMonitors from "./getMonitors.js";
 import * as requiredComponents from "./requiredComponentCreators.js";
 
 const coreConfigValidators = createCoreConfigs();
@@ -63,7 +59,7 @@ const coreConfigValidators = createCoreConfigs();
  * @param {string} params.instanceName
  * @param {Array<import('./types.js').AlloyMonitor>} [params.monitors]
  * @param {Array<Function>} params.components
- * @param {(deps: { logger: import('./types.js').Logger }) => import('../services/index.js').PlatformServices} params.createPlatformServices
+ * @param {() => import('../services/index.js').PlatformServices} params.createPlatformServices
  */
 export const createExecuteCommand = ({
   instanceName,
@@ -71,22 +67,21 @@ export const createExecuteCommand = ({
   components,
   createPlatformServices,
 }) => {
-  // `createLogController` and `createGetAssuranceValidationTokenParams` still
-  // consume sync storage, so we can't use the async storage capability here
-  // yet. Remove once those consumers are migrated.
-  const createNamespacedStorage = injectStorage(window);
+  const platformServices = createPlatformServices();
+  const allMonitors = [...platformServices.globals.getMonitors(), ...monitors];
 
   const logController = createLogController({
     console: globalThis.console,
     createLogger,
     instanceName,
-    createNamespacedStorage,
-    getMonitors: getMonitors.bind(null, monitors),
+    getMonitors: () => allMonitors,
+    storage: platformServices.storage.createNamespacedStorage(
+      `instance.${instanceName}.`,
+    ).session,
   });
 
   const { setDebugEnabled, logger, createComponentLogger } = logController;
-
-  const platformServices = createPlatformServices({ logger });
+  const network = platformServices.createNetworkService(logger);
 
   const parsedQueryString = queryString.parse(
     platformServices.globals.getLocationSearch(),
@@ -99,13 +94,15 @@ export const createExecuteCommand = ({
 
   const apexDomain = getApexDomain(
     platformServices.globals.getHostname(),
-    cookieJar,
+    platformServices.cookie,
   );
-  const fireReferrerHideableImage = injectFireReferrerHideableImage();
+  const { fireReferrerHideableImage } = platformServices.globals;
   const getAssuranceValidationTokenParams =
     createGetAssuranceValidationTokenParams({
       getLocationSearch: () => platformServices.globals.getLocationSearch(),
-      createNamespacedStorage,
+      storage: platformServices.storage.createNamespacedStorage(
+        `instance.${instanceName}.validation.`,
+      ).persistent,
     });
   const getBrowser = injectGetBrowser({
     userAgent: platformServices.globals.getUserAgent(),
@@ -122,7 +119,10 @@ export const createExecuteCommand = ({
     setDebugEnabled(options.enabled, { fromConfig: false });
   };
 
-  const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });
+  const loggingCookieJar = createLoggingCookieJar({
+    logger,
+    cookieJar: platformServices.cookie,
+  });
   const configureCommand = (options) => {
     const config = buildAndValidateConfig({
       options,
@@ -143,10 +143,11 @@ export const createExecuteCommand = ({
       apexDomain,
       dateProvider: () => new Date(),
     });
+
     const sendNetworkRequest = injectSendNetworkRequest({
       logger,
-      sendFetchRequest: platformServices.network.sendFetchRequest,
-      sendBeaconRequest: platformServices.network.sendBeaconRequest,
+      sendFetchRequest: network.sendFetchRequest,
+      sendBeaconRequest: network.sendBeaconRequest,
       isRequestRetryable,
       getRequestRetryDelay,
     });
@@ -155,7 +156,10 @@ export const createExecuteCommand = ({
     });
     const extractEdgeInfo = injectExtractEdgeInfo({ logger });
     const createResponse = injectCreateResponse({ extractEdgeInfo });
-    const getLocationHint = injectGetLocationHint({ orgId, cookieJar });
+    const getLocationHint = injectGetLocationHint({
+      orgId,
+      cookieJar: platformServices.cookie,
+    });
     const sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
       config,
       lifecycle,
@@ -216,7 +220,6 @@ export const createExecuteCommand = ({
             errorPrefix: `[${instanceName}] [${componentName}]`,
             logger: componentLogger,
           }),
-          createNamespacedStorage,
           apexDomain,
           getBrowser,
           cookieTransfer,

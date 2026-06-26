@@ -37,8 +37,7 @@ governing permissions and limitations under the License.
  * @property {SendFetchRequest} sendFetchRequest
  *   Must send cookies (`credentials: "include"` in browsers).
  * @property {SendBeaconRequest} sendBeaconRequest
- *   May fall back to `sendFetchRequest` when the underlying transport is
- *   unavailable.
+ *   Falls back to `sendFetchRequest` when the underlying transport is unavailable.
  */
 
 /**
@@ -78,6 +77,7 @@ governing permissions and limitations under the License.
 /**
  * @typedef {Object} CookieService
  * @property {(name: string) => (string | undefined)} get
+ * @property {() => Record<string, string>} getAll
  * @property {(name: string, value: string, options?: CookieAttributes) => (string | undefined)} set
  * @property {(name: string, options?: CookieAttributes) => void} remove
  * @property {(converter: CookieConverter) => CookieService} withConverter
@@ -105,18 +105,34 @@ governing permissions and limitations under the License.
  */
 
 /**
+ * @typedef {Object} WindowContext
+ * @property {string} title
+ * @property {string} url
+ * @property {string} referrer
+ * @property {number} height
+ * @property {number} width
+ * @property {number} scrollY
+ * @property {number} scrollX
+ */
+
+/**
  * @typedef {Object} GlobalsService
  * @property {() => string[]} getInstanceNames
  * @property {(instanceName: string) => any[]} getInstanceQueue
  * @property {() => import('../core/types.js').AlloyMonitor[]} getMonitors
  * @property {() => string} getLocationSearch
+ * @property {() => string} getLocationHash
  * @property {() => string} getUserAgent
  * @property {() => string} getHostname
+ * @property {() => { host: string, pathname: string }} getPageLocation
+ * @property {() => boolean} isPageSsl
+ * @property {(request: { hideReferrer: boolean, url: string }) => Promise<void>} fireReferrerHideableImage
+ * @property {() => WindowContext} getWindowContext
  */
 
 /**
  * @typedef {Object} PlatformServices
- * @property {NetworkService} network
+ * @property {(logger: import('../core/types.js').Logger) => NetworkService} createNetworkService
  * @property {StorageService} storage
  * @property {CookieService} cookie
  * @property {RuntimeService} runtime

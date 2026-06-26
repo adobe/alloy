@@ -170,6 +170,11 @@ const packVendoredWorkspacePackages = (destDir) => {
     if (pkg.scripts?.build && !fs.existsSync(path.join(dir, "dist"))) {
       execute("pnpm", ["run", "--if-present", "build"], { cwd: dir });
     }
+    // Remove any leftover alloyBuilder-generated entry point before packing.
+    // src/input.js is ephemeral (gitignored); if a previous custom build was
+    // interrupted before its finally-block cleanup, the file may still be present
+    // and would cause pnpm pack to error if it disappears mid-scan.
+    fs.rmSync(path.join(dir, "src/input.js"), { force: true });
     execute(
       "pnpm",
       ["pack", "--config.ignore-scripts=true", "--pack-destination", vendorDir],

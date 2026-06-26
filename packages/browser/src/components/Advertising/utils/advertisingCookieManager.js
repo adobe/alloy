@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { getNamespacedCookieName, cookieJar } from "@adobe/alloy-core/utils";
+import { getNamespacedCookieName } from "@adobe/alloy-core/utils";
 import createLoggingCookieJar from "@adobe/alloy-core/utils/createLoggingCookieJar.js";
 import {
   ADVERTISING_COOKIE_KEY,
@@ -18,7 +18,7 @@ import {
   DEFAULT_THROTTLE_MINUTES,
 } from "../constants/index.js";
 
-export default ({ orgId, logger }) => {
+export default ({ orgId, logger, cookieJar }) => {
   const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });
 
   const getCookieName = (key, useNamespace = true) =>

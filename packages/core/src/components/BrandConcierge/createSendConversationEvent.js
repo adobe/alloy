@@ -28,6 +28,7 @@ export default ({
   lifecycle,
   consent,
   session,
+  getPageLocation,
 }) => {
   const { edgeDomain, datastreamId, onBeforeEventSend, conversation } = config;
   return (options) => {
@@ -49,7 +50,7 @@ export default ({
 
     const event = eventManager.createEvent();
     if (message || data) {
-      const pageSurface = getPageSurface();
+      const pageSurface = getPageSurface(getPageLocation);
       event.mergeQuery({
         conversation: {
           surfaces: [pageSurface],

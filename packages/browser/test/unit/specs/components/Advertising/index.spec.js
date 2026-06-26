@@ -60,6 +60,15 @@ describe("Advertising::index", () => {
       consent,
       getBrowser,
       getUrlParams,
+      platformServices: {
+        cookie: {
+          get: vi.fn(),
+          getAll: vi.fn().mockReturnValue({}),
+          set: vi.fn(),
+          remove: vi.fn(),
+          withConverter: vi.fn().mockReturnThis(),
+        },
+      },
     });
   });
 

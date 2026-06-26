@@ -11,9 +11,10 @@ governing permissions and limitations under the License.
 */
 
 export const createRestoreStorage = (storage, storageKey) => {
-  return (defaultValue) => {
+  return async (defaultValue) => {
     try {
-      const stored = storage.getItem(storageKey);
+      const stored = await storage.getItem(storageKey);
+      if (stored == null) return [defaultValue, 0];
       const s = JSON.parse(stored);
       return [s, stored.length];
       // eslint-disable-next-line no-empty
@@ -24,7 +25,10 @@ export const createRestoreStorage = (storage, storageKey) => {
 };
 
 export const createSaveStorage = (storage, storageKey) => (value) => {
-  storage.setItem(storageKey, JSON.stringify(value));
+  const result = storage.setItem(storageKey, JSON.stringify(value));
+  if (result && typeof result.then === "function") {
+    result.catch(() => {});
+  }
 };
 
 export const createInMemoryStorage = () => {

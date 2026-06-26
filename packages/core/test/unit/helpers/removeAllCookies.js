@@ -10,10 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { cookieJar } from "../../../src/utils/index.js";
-
 export default () => {
-  Object.keys(cookieJar.get()).forEach((cookieName) => {
-    cookieJar.remove(cookieName);
+  document.cookie.split(";").forEach((cookie) => {
+    const name = cookie.split("=")[0].trim();
+    if (name) {
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+    }
   });
 };

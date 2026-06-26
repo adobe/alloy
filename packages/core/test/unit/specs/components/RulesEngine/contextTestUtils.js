@@ -148,7 +148,7 @@ export const setupResponseHandler = (applyResponse, window, condition) => {
 
   const contextProvider = createContextProvider({
     eventRegistry,
-    window,
+    getWindowContext: () => window,
     getBrowser,
   });
 

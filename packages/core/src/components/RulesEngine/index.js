@@ -30,10 +30,10 @@ import { mergeDecisionsMeta } from "../../utils/event.js";
 const createRulesEngine = ({
   config,
   eventManager,
-  createNamespacedStorage,
   consent,
   getBrowser,
   logger,
+  platformServices,
 }) => {
   const { orgId, personalizationStorageEnabled } = config;
   const collect = createCollect({
@@ -41,7 +41,7 @@ const createRulesEngine = ({
     mergeDecisionsMeta,
   });
 
-  const storage = createNamespacedStorage(
+  const storage = platformServices.storage.createNamespacedStorage(
     `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`,
   );
   if (!personalizationStorageEnabled) {
@@ -55,7 +55,7 @@ const createRulesEngine = ({
   const decisionProvider = createDecisionProvider({ eventRegistry });
   const contextProvider = createContextProvider({
     eventRegistry,
-    window,
+    getWindowContext: platformServices.globals.getWindowContext,
     getBrowser,
   });
 
@@ -79,9 +79,7 @@ const createRulesEngine = ({
         if (personalizationStorageEnabled) {
           consent
             .awaitConsent()
-            .then(() => {
-              eventRegistry.setStorage(storage.persistent);
-            })
+            .then(() => eventRegistry.setStorage(storage.persistent))
             .catch(() => {
               if (storage) {
                 clearLocalStorage(storage.persistent);

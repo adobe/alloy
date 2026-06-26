@@ -14,10 +14,15 @@ import * as allOptionalComponents from "./allOptionalComponents.js";
 import * as allRequiredComponents from "./components/requiredComponentCreators.js";
 import createBrowserPlatformServices from "./services/createBrowserPlatformServices.js";
 
-export const createCustomInstance = ({ components = [], ...options } = {}) =>
+export const createCustomInstance = ({
+  components = [],
+  monitors = [],
+  ...options
+} = {}) =>
   createCoreCustomInstance(
     {
       ...options,
+      monitors,
       components: [...Object.values(allRequiredComponents), ...components],
     },
     createBrowserPlatformServices,

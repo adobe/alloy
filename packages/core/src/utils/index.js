@@ -14,7 +14,6 @@ governing permissions and limitations under the License.
 export { default as assignConcatArrayValues } from "./assignConcatArrayValues.js";
 export { base64ToBytes, bytesToBase64 } from "./bytes.js";
 export { default as clone } from "./clone.js";
-export { default as cookieJar } from "./cookieJar.js";
 export { default as createMerger } from "./createMerger.js";
 export { default as createCallbackAggregator } from "./createCallbackAggregator.js";
 export { default as createLoggingCookieJar } from "./createLoggingCookieJar.js";
@@ -22,8 +21,8 @@ export { default as createTaskQueue } from "./createTaskQueue.js";
 export { default as defer } from "./defer.js";
 export { default as deduplicateArray } from "./deduplicateArray.js";
 export { default as deepAssign } from "./deepAssign.js";
-export { default as fireImage } from "./fireImage.js";
-export { default as injectFireReferrerHideableImage } from "./injectFireReferrerHideableImage.js";
+export { default as fireImage } from "./dom/fireImage.js";
+export { default as injectFireReferrerHideableImage } from "./dom/injectFireReferrerHideableImage.js";
 export { default as filterObject } from "./filterObject.js";
 export { default as fnv1a32Hex } from "./fnv1a32Hex.js";
 export { default as getApexDomain } from "./getApexDomain.js";
