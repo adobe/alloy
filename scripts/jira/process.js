@@ -27,7 +27,10 @@ import { JIRA_BASE_URL, JIRA_API_TOKEN } from "../team/config.js";
  * @param {{ api: object, prUrl?: string, prTitle?: string }} opts
  * @returns {Promise<string|null>} ticket key if processed, null if skipped
  */
-export async function processFile(filename, { api, prUrl = "", prTitle = "" }) {
+export const processFile = async (
+  filename,
+  { api, prUrl = "", prTitle = "" },
+) => {
   if (!existsSync(filename)) {
     console.log(`Skipping ${filename} (file not found)`);
     return null;
@@ -58,7 +61,7 @@ export async function processFile(filename, { api, prUrl = "", prTitle = "" }) {
   await fetchFile(ticketKey, newFilename, { api });
 
   return ticketKey;
-}
+};
 
 // Script entry point — only executes when run directly.
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

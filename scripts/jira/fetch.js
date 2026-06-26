@@ -13,26 +13,26 @@ governing permissions and limitations under the License.
 
 import { writeFileSync } from "fs";
 import { fileURLToPath } from "url";
-import { load as yamlLoad, dump as yamlDump } from "js-yaml";
+import { dump as yamlDump } from "js-yaml";
 import createApi from "./api.js";
 import { JIRA_BASE_URL, JIRA_API_TOKEN } from "../team/config.js";
 
 const MAX_STRING_LENGTH = 500;
 
-function truncate(value) {
+const truncate = (value) => {
   if (typeof value === "string" && value.length > MAX_STRING_LENGTH) {
     return value.slice(0, MAX_STRING_LENGTH) + "...";
   }
   return value;
-}
+};
 
-function isNonEmpty(value) {
+const isNonEmpty = (value) => {
   if (value === null || value === undefined) return false;
   if (Array.isArray(value) && value.length === 0) return false;
   return true;
-}
+};
 
-function extractFields(fields) {
+const extractFields = (fields) => {
   const result = {};
   for (const [key, value] of Object.entries(fields)) {
     if (!isNonEmpty(value)) continue;
@@ -59,11 +59,10 @@ function extractFields(fields) {
     }
   }
   return result;
-}
+};
 
-function buildYaml(details, timestamp) {
-  return `# fetched from JIRA ${timestamp}\n${yamlDump({ details }, { lineWidth: 120, noRefs: true })}`;
-}
+const buildYaml = (details, timestamp) =>
+  `# fetched from JIRA ${timestamp}\n${yamlDump({ details }, { lineWidth: 120, noRefs: true })}`;
 
 /**
  * Fetch live JIRA state for a ticket and write it to a file.
@@ -71,7 +70,7 @@ function buildYaml(details, timestamp) {
  * @param {string} filename   target file path
  * @param {{ api: object }} opts
  */
-export async function fetchFile(ticketKey, filename, { api }) {
+export const fetchFile = async (ticketKey, filename, { api }) => {
   const data = await api.request(
     "GET",
     `/rest/api/2/issue/${encodeURIComponent(ticketKey)}`,
@@ -87,7 +86,7 @@ export async function fetchFile(ticketKey, filename, { api }) {
 
   writeFileSync(filename, content, "utf8");
   console.log(`Wrote ${filename}`);
-}
+};
 
 // Script entry point — only executes when run directly.
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

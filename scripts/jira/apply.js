@@ -19,7 +19,7 @@ import createApi from "./api.js";
 import { JIRA_BASE_URL, JIRA_API_TOKEN } from "../team/config.js";
 
 // Recursively replace {PLACEHOLDER} tokens in body values.
-function interpolate(value, vars) {
+const interpolate = (value, vars) => {
   if (typeof value === "string") {
     return value.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? `{${k}}`);
   }
@@ -30,7 +30,7 @@ function interpolate(value, vars) {
     );
   }
   return value;
-}
+};
 
 /**
  * Apply a .jira/*.yml file's updates to JIRA.
@@ -38,7 +38,10 @@ function interpolate(value, vars) {
  * @param {{ api: object, prUrl?: string, prTitle?: string }} opts
  * @returns {Promise<string>} resolved ticket key, e.g. "PDCL-1234"
  */
-export async function applyFile(filename, { api, prUrl = "", prTitle = "" }) {
+export const applyFile = async (
+  filename,
+  { api, prUrl = "", prTitle = "" },
+) => {
   const fileBase = basename(filename, ".yml");
   const keyMatch = fileBase.match(/^([A-Z]+-(?:XXXX|\d+))/);
   if (!keyMatch)
@@ -58,7 +61,7 @@ export async function applyFile(filename, { api, prUrl = "", prTitle = "" }) {
   );
   const globalId = remoteLinkUpdate?.body?.globalId;
 
-  async function resolveKey() {
+  const resolveKey = async () => {
     if (!isNewTicket) return fileKey;
 
     // Search for an existing ticket that already has this globalId on its remote links.
@@ -66,23 +69,28 @@ export async function applyFile(filename, { api, prUrl = "", prTitle = "" }) {
       const issues = await api.searchIssues(
         `project = PDCL AND created >= startOfDay("-7d") ORDER BY created DESC`,
       );
-      for (const issue of issues) {
-        const links = await api.getRemoteLinks(issue.key);
-        if (links.some((l) => l.globalId === globalId)) {
-          console.log(
-            `Found existing ticket ${issue.key} via globalId ${globalId}`,
-          );
-          // Update the existing ticket with the create details to ensure idempotency.
-          const createUpdate = updates.find(
-            (u) => u.method === "POST" && u.path === "/rest/api/2/issue",
-          );
-          if (createUpdate?.body?.fields) {
-            await api.request("PUT", `/rest/api/2/issue/${issue.key}`, {
-              fields: createUpdate.body.fields,
-            });
-          }
-          return issue.key;
+      // Fetch all remote links in parallel then find the match.
+      const linkResults = await Promise.all(
+        issues.map((issue) => api.getRemoteLinks(issue.key)),
+      );
+      const matchIndex = linkResults.findIndex((links) =>
+        links.some((l) => l.globalId === globalId),
+      );
+      if (matchIndex !== -1) {
+        const issue = issues[matchIndex];
+        console.log(
+          `Found existing ticket ${issue.key} via globalId ${globalId}`,
+        );
+        // Update the existing ticket with the create details to ensure idempotency.
+        const createUpdate = updates.find(
+          (u) => u.method === "POST" && u.path === "/rest/api/2/issue",
+        );
+        if (createUpdate?.body?.fields) {
+          await api.request("PUT", `/rest/api/2/issue/${issue.key}`, {
+            fields: createUpdate.body.fields,
+          });
         }
+        return issue.key;
       }
     }
 
@@ -100,7 +108,7 @@ export async function applyFile(filename, { api, prUrl = "", prTitle = "" }) {
       createUpdate.body,
     );
     return data.key ?? "PDCL-XXXX";
-  }
+  };
 
   const ticketKey = await resolveKey();
 
@@ -113,11 +121,12 @@ export async function applyFile(filename, { api, prUrl = "", prTitle = "" }) {
     if (isCreateCall(update)) continue;
     const path = String(update.path).replace(/\{key\}/g, ticketKey);
     const body = interpolate(update.body, vars);
+    // eslint-disable-next-line no-await-in-loop
     await api.request(update.method, path, body);
   }
 
   return ticketKey;
-}
+};
 
 // Script entry point — only executes when run directly.
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

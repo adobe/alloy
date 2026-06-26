@@ -16,28 +16,26 @@ import { join } from "path";
 import { tmpdir } from "os";
 import { processFile } from "./process.js";
 
-function mockApi(overrides = {}) {
-  return {
-    dryRun: false,
-    request: vi.fn(async (method) =>
-      method === "POST"
-        ? { key: "PDCL-9999" }
-        : { key: "PDCL-1234", fields: { summary: "Test" } },
-    ),
-    searchIssues: vi.fn(async () => []),
-    getRemoteLinks: vi.fn(async () => []),
-    ...overrides,
-  };
-}
+const mockApi = (overrides = {}) => ({
+  dryRun: false,
+  request: vi.fn(async (method) =>
+    method === "POST"
+      ? { key: "PDCL-9999" }
+      : { key: "PDCL-1234", fields: { summary: "Test" } },
+  ),
+  searchIssues: vi.fn(async () => []),
+  getRemoteLinks: vi.fn(async () => []),
+  ...overrides,
+});
 
 // jiraKey must be at the start of the basename for the filename regex to match.
 // Unique suffix per spec file prevents collisions when tests run in parallel.
-function writeTemp(jiraKey, content) {
+const writeTemp = (jiraKey, content) => {
   const uid = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const path = join(tmpdir(), `${jiraKey}-proc-spec-${uid}.yml`);
   writeFileSync(path, content, "utf8");
   return path;
-}
+};
 
 describe("processFile", () => {
   it("returns null and skips when file has no updates", async () => {

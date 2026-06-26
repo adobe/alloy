@@ -10,40 +10,36 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { writeFileSync, unlinkSync } from "fs";
 import { join } from "path";
 import { tmpdir } from "os";
 import { applyFile } from "./apply.js";
 
 // Unique prefix per spec file avoids temp-file collisions when tests run in parallel.
-function uid() {
-  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-}
+const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-function tempFile(content) {
+const tempFile = (content) => {
   const path = join(tmpdir(), `PDCL-1234-apply-spec-${uid()}.yml`);
   writeFileSync(path, content, "utf8");
   return path;
-}
+};
 
-function xxxxFile(content) {
+const xxxxFile = (content) => {
   const path = join(tmpdir(), `PDCL-XXXX-apply-spec-${uid()}.yml`);
   writeFileSync(path, content, "utf8");
   return path;
-}
+};
 
-function mockApi(overrides = {}) {
-  return {
-    dryRun: false,
-    request: vi.fn(async (method) =>
-      method === "POST" ? { key: "PDCL-9999" } : {},
-    ),
-    searchIssues: vi.fn(async () => []),
-    getRemoteLinks: vi.fn(async () => []),
-    ...overrides,
-  };
-}
+const mockApi = (overrides = {}) => ({
+  dryRun: false,
+  request: vi.fn(async (method) =>
+    method === "POST" ? { key: "PDCL-9999" } : {},
+  ),
+  searchIssues: vi.fn(async () => []),
+  getRemoteLinks: vi.fn(async () => []),
+  ...overrides,
+});
 
 describe("applyFile — existing ticket", () => {
   it("returns the ticket key from the filename", async () => {

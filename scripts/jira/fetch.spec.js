@@ -17,32 +17,29 @@ import { tmpdir } from "os";
 import { load as yamlLoad } from "js-yaml";
 import { fetchFile } from "./fetch.js";
 
-function mockApi(issueData = {}) {
-  return {
-    dryRun: false,
-    request: vi.fn(async () => ({
-      key: "PDCL-1234",
-      fields: {
-        summary: "My feature",
-        status: { name: "In Progress" },
-        assignee: null,
-        description: null,
-        components: [],
-        ...issueData,
-      },
-    })),
-    searchIssues: vi.fn(async () => []),
-    getRemoteLinks: vi.fn(async () => []),
-  };
-}
+const mockApi = (issueData = {}) => ({
+  dryRun: false,
+  request: vi.fn(async () => ({
+    key: "PDCL-1234",
+    fields: {
+      summary: "My feature",
+      status: { name: "In Progress" },
+      assignee: null,
+      description: null,
+      components: [],
+      ...issueData,
+    },
+  })),
+  searchIssues: vi.fn(async () => []),
+  getRemoteLinks: vi.fn(async () => []),
+});
 
 // Unique prefix per spec file avoids temp-file collisions when tests run in parallel.
-function tempPath(label) {
-  return join(
+const tempPath = (label) =>
+  join(
     tmpdir(),
     `fetch-spec-${label}-${Date.now()}-${Math.random().toString(36).slice(2)}.yml`,
   );
-}
 
 describe("fetchFile", () => {
   it("writes details section to a new file", async () => {
