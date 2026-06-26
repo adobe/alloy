@@ -12,33 +12,12 @@ governing permissions and limitations under the License.
 */
 
 import { readFileSync, writeFileSync, existsSync } from "fs";
+import { fileURLToPath } from "url";
 import yaml from "js-yaml";
+import createApi from "./api.mjs";
 import { JIRA_BASE_URL, JIRA_API_TOKEN } from "../team/config.js";
 
 const MAX_STRING_LENGTH = 500;
-
-function usage() {
-  console.error("Usage: fetch.mjs [--dry-run] <ticket-key> <filename>");
-  console.error("  <ticket-key>  JIRA issue key, e.g. PDCL-1234");
-  console.error(
-    "  <filename>    Path to write, e.g. .jira/PDCL-1234-my-feature.yml",
-  );
-  process.exit(1);
-}
-
-const args = process.argv.slice(2).filter((a) => a !== "--dry-run");
-const dryRun = process.argv.slice(2).includes("--dry-run");
-
-if (args.length < 2) {
-  usage();
-}
-
-const [ticketKey, filename] = args;
-
-if (!dryRun && !JIRA_API_TOKEN) {
-  console.error("JIRA_API_TOKEN is required");
-  process.exit(1);
-}
 
 function truncate(value) {
   if (typeof value === "string" && value.length > MAX_STRING_LENGTH) {
@@ -59,11 +38,6 @@ function extractFields(fields) {
     if (!isNonEmpty(value)) continue;
     if (typeof value === "string") {
       result[key] = truncate(value);
-    } else if (typeof value === "object" && !Array.isArray(value)) {
-      const nested = extractFields(value);
-      if (Object.keys(nested).length > 0) {
-        result[key] = nested;
-      }
     } else if (Array.isArray(value)) {
       const filtered = value
         .map((item) =>
@@ -76,9 +50,10 @@ function extractFields(fields) {
             ? Object.keys(item).length > 0
             : isNonEmpty(item),
         );
-      if (filtered.length > 0) {
-        result[key] = filtered;
-      }
+      if (filtered.length > 0) result[key] = filtered;
+    } else if (typeof value === "object") {
+      const nested = extractFields(value);
+      if (Object.keys(nested).length > 0) result[key] = nested;
     } else {
       result[key] = value;
     }
@@ -86,61 +61,76 @@ function extractFields(fields) {
   return result;
 }
 
-async function fetchIssue(key) {
-  const url = `${JIRA_BASE_URL.replace(/\/$/, "")}/rest/api/2/issue/${encodeURIComponent(key)}`;
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${JIRA_API_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-  });
-  if (!response.ok) {
-    const text = await response.text();
-    console.error(`JIRA GET failed: ${response.status} ${text}`);
+function buildYaml(details, existingUpdates, timestamp) {
+  const doc = existingUpdates
+    ? { details, updates: existingUpdates }
+    : { details };
+  return `# fetched from JIRA ${timestamp}\n${yaml.dump(doc, { lineWidth: 120, noRefs: true })}`;
+}
+
+/**
+ * Fetch live JIRA state for a ticket and write it to a file.
+ * @param {string} ticketKey  e.g. "PDCL-1234"
+ * @param {string} filename   target file path
+ * @param {{ api: object }} opts
+ */
+export async function fetchFile(ticketKey, filename, { api }) {
+  if (api.dryRun) {
+    console.log(
+      `[dry-run] Would fetch: GET ${JIRA_BASE_URL.replace(/\/$/, "")}/rest/api/2/issue/${encodeURIComponent(ticketKey)}`,
+    );
+    console.log(`[dry-run] Would write to: ${filename}`);
+    return;
+  }
+
+  const data = await api.request(
+    "GET",
+    `/rest/api/2/issue/${encodeURIComponent(ticketKey)}`,
+  );
+  const details = { key: data.key, ...extractFields(data.fields ?? {}) };
+
+  let existingUpdates;
+  if (existsSync(filename)) {
+    const existing = yaml.load(readFileSync(filename, "utf8"));
+    existingUpdates = existing?.updates;
+  }
+
+  const timestamp = new Date().toISOString();
+  const content = buildYaml(details, existingUpdates, timestamp);
+  writeFileSync(filename, content, "utf8");
+  console.log(`Wrote ${filename}`);
+}
+
+// Script entry point — only executes when run directly.
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const rawArgs = process.argv.slice(2);
+  const dryRun = rawArgs.includes("--dry-run");
+  const args = rawArgs.filter((a) => a !== "--dry-run");
+
+  if (args.length < 2) {
+    console.error("Usage: fetch.mjs [--dry-run] <ticket-key> <filename>");
+    console.error("  <ticket-key>  JIRA issue key, e.g. PDCL-1234");
+    console.error(
+      "  <filename>    Path to write, e.g. .jira/PDCL-1234-my-feature.yml",
+    );
     process.exit(1);
   }
-  return response.json();
-}
 
-function buildDetailsYaml(details, timestamp) {
-  const comment = `# fetched from JIRA ${timestamp}`;
-  const detailsYaml = yaml.dump({ details }, { lineWidth: 120, noRefs: true });
-  return `${comment}\n${detailsYaml}`;
-}
+  const [ticketKey, filename] = args;
 
-function mergeWithExisting(detailsYaml, filename) {
-  if (!existsSync(filename)) {
-    return detailsYaml;
+  if (!dryRun && !JIRA_API_TOKEN) {
+    console.error("JIRA_API_TOKEN is required");
+    process.exit(1);
   }
-  const existing = yaml.load(readFileSync(filename, "utf8"));
-  if (!existing?.updates) {
-    return detailsYaml;
-  }
-  const detailsParsed = yaml.load(detailsYaml);
-  const merged = { ...detailsParsed, updates: existing.updates };
-  const timestamp =
-    detailsYaml.match(/# fetched from JIRA (.+)/)?.[1] ??
-    new Date().toISOString();
-  const mergedYaml = yaml.dump(merged, { lineWidth: 120, noRefs: true });
-  return `# fetched from JIRA ${timestamp}\n${mergedYaml}`;
+
+  const api = createApi({
+    dryRun,
+    baseUrl: JIRA_BASE_URL.replace(/\/$/, ""),
+    token: JIRA_API_TOKEN ?? "",
+  });
+
+  fetchFile(ticketKey, filename, { api }).catch((e) => {
+    console.error(e.message);
+    process.exit(1);
+  });
 }
-
-if (dryRun) {
-  const url = `${JIRA_BASE_URL.replace(/\/$/, "")}/rest/api/2/issue/${encodeURIComponent(ticketKey)}`;
-  console.log(`[dry-run] Would fetch: GET ${url}`);
-  console.log(`[dry-run] Would write to: ${filename}`);
-  process.exit(0);
-}
-
-const data = await fetchIssue(ticketKey);
-const details = {
-  key: data.key,
-  ...extractFields(data.fields ?? {}),
-};
-
-const timestamp = new Date().toISOString();
-const detailsYaml = buildDetailsYaml(details, timestamp);
-const finalYaml = mergeWithExisting(detailsYaml, filename);
-
-writeFileSync(filename, finalYaml, "utf8");
-console.log(`Wrote ${filename}`);

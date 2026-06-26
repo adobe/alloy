@@ -64,7 +64,17 @@ updates:
           - id: "155901"  # AEP Web SDK
         customfield_23300:  # AEP Web SDK product field
           id: "116005"
+  - path: /rest/api/2/issue/{key}/remotelink
+    method: POST
+    body:
+      globalId: <generate a short unique random hex string, e.g. "a3f7b2c9e1d6">
+      relationship: mentioned in
+      object:
+        url: "{GITHUB_PR_URL}"
+        title: "{GITHUB_PR_TITLE}"
 ```
+
+The `globalId` is the idempotency key for this ticket — it must be unique per ticket file so that multiple new tickets can be created in a single PR merge. Generate a random 12-character hex string (e.g. using `Math.random().toString(16).slice(2,14)` mentally). The `{GITHUB_PR_URL}` and `{GITHUB_PR_TITLE}` placeholders are substituted by `apply.mjs` at run time.
 
 **Description guidelines:**
 - Lead with who benefits (e.g., "Analytics customers using the Web SDK...")

@@ -61,46 +61,14 @@ jobs:
         id: apply-jira
         if: steps.jira-files.outputs.has_changes == 'true'
         env:
-          GITHUB_PR_NUMBER: ${{ steps.pr-context.outputs.pr_number }}
           GITHUB_PR_URL: ${{ steps.pr-context.outputs.pr_url }}
           GITHUB_PR_TITLE: ${{ steps.pr-context.outputs.pr_title }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           applied_tickets=""
           for file in ${{ steps.jira-files.outputs.files }}; do
-            [ -f "$file" ] || continue
-
-            # Only process files with an updates section
-            has_updates=$(node -e "
-              import yaml from 'js-yaml';
-              import { readFileSync } from 'fs';
-              const doc = yaml.load(readFileSync('$file','utf8')) ?? {};
-              const u = doc.updates;
-              process.stdout.write(Array.isArray(u) && u.length > 0 ? 'true' : 'false');
-            " 2>/dev/null || echo 'false')
-
-            if [ "$has_updates" != "true" ]; then
-              echo "Skipping $file (no updates)"
-              continue
-            fi
-
-            echo "Applying $file"
-            ticket_key=$(node scripts/jira/apply.mjs "$file")
-            echo "Applied: $ticket_key"
-
-            # Derive the new filename with the real ticket key
-            dir=$(dirname "$file")
-            base=$(basename "$file")
-            new_base=$(echo "$base" | sed "s/XXXX/${ticket_key##*-}/")
-            new_file="$dir/$new_base"
-
-            # Replace the XXXX file with a real-key file via fetch
-            if [ "$file" != "$new_file" ]; then
-              rm -f "$file"
-            fi
-            node scripts/jira/fetch.mjs "$ticket_key" "$new_file"
-
-            applied_tickets="$applied_tickets $ticket_key"
+            ticket_key=$(node scripts/jira/process.mjs "$file")
+            [ -n "$ticket_key" ] && applied_tickets="$applied_tickets $ticket_key"
           done
           echo "tickets=$applied_tickets" >> "$GITHUB_OUTPUT"
 
