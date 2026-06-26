@@ -25,7 +25,6 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
   let consent;
   let getBrowser;
   let persistentStorage;
-  let createNamespacedStorage;
   let originalReferrer;
 
   beforeEach(() => {
@@ -45,9 +44,8 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
       clear: vi.fn(),
     };
 
-    createNamespacedStorage = vi.fn().mockReturnValue({
-      persistent: persistentStorage,
-    });
+    persistentStorage.getItem = vi.fn().mockResolvedValue(null);
+    persistentStorage.setItem = vi.fn().mockResolvedValue(true);
 
     mockEvent = {
       getContent: () => ({}),
@@ -69,10 +67,27 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
 
     const rulesEngine = createRulesEngine({
       config,
-      createNamespacedStorage,
       consent,
       getBrowser,
       logger: { info: vi.fn() },
+      platformServices: {
+        storage: {
+          createNamespacedStorage: vi.fn().mockReturnValue({
+            persistent: persistentStorage,
+          }),
+        },
+        globals: {
+          getWindowContext: () => ({
+            title: document.title,
+            url: window.location.href,
+            referrer: window.referrer,
+            height: window.innerHeight,
+            width: window.innerWidth,
+            scrollY: window.scrollY,
+            scrollX: window.scrollX,
+          }),
+        },
+      },
     });
 
     rulesEngine.lifecycle.onComponentsRegistered(() => {});

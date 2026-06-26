@@ -10,13 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createLoggingCookieJar, cookieJar } from "../../utils/index.js";
+import { createLoggingCookieJar } from "../../utils/index.js";
 import injectProcessDestinations from "./injectProcessDestinations.js";
 import injectProcessResponse from "./injectProcessResponse.js";
 
-const createAudiences = ({ logger, fireReferrerHideableImage }) => {
-  // we override the js-cookie converter to encode the cookie value similar on how it is in DIL (PDCL-10238)
-  const cookieJarWithEncoding = cookieJar.withConverter({
+const createAudiences = ({
+  logger,
+  fireReferrerHideableImage,
+  platformServices,
+}) => {
+  // Override the js-cookie converter to encode the cookie value similar to DIL (PDCL-10238)
+  const cookieJarWithEncoding = platformServices.cookie.withConverter({
     write: (value) => {
       return encodeURIComponent(value);
     },
@@ -30,7 +34,7 @@ const createAudiences = ({ logger, fireReferrerHideableImage }) => {
     fireReferrerHideableImage,
     logger,
     cookieJar: loggingCookieJar,
-    isPageSsl: window.location.protocol === "https:",
+    isPageSsl: platformServices.globals.isPageSsl(),
   });
 
   const processResponse = injectProcessResponse({ processDestinations });

@@ -13,7 +13,7 @@ import parseUrl from "../../utils/parseUrl.js";
 import flattenObject from "../../utils/flattenObject.js";
 import libraryVersion from "../../constants/libraryVersion.js";
 
-export default ({ eventRegistry, window, getBrowser }) => {
+export default ({ eventRegistry, getWindowContext, getBrowser }) => {
   const pageLoadTimestamp = new Date().getTime();
   const getBrowserContext = () => {
     return {
@@ -21,17 +21,19 @@ export default ({ eventRegistry, window, getBrowser }) => {
     };
   };
   const getPageContext = () => {
+    const { title, url } = getWindowContext();
     return {
-      title: window.title,
-      url: window.url,
-      ...parseUrl(window.url),
+      title,
+      url,
+      ...parseUrl(url),
     };
   };
 
   const getReferrerContext = () => {
+    const { referrer } = getWindowContext();
     return {
-      url: window.referrer,
-      ...parseUrl(window.referrer),
+      url: referrer,
+      ...parseUrl(referrer),
     };
   };
   const getTimeContext = () => {
@@ -56,11 +58,8 @@ export default ({ eventRegistry, window, getBrowser }) => {
     };
   };
 
-  const getWindowContext = () => {
-    const height = window.height;
-    const width = window.width;
-    const scrollY = window.scrollY;
-    const scrollX = window.scrollX;
+  const getViewportContext = () => {
+    const { height, width, scrollY, scrollX } = getWindowContext();
     return {
       height,
       width,
@@ -79,7 +78,7 @@ export default ({ eventRegistry, window, getBrowser }) => {
     return {
       ...coreGlobalContext,
       ...getTimeContext(),
-      window: getWindowContext(),
+      window: getViewportContext(),
       "~sdkver": libraryVersion,
     };
   };

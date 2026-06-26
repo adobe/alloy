@@ -40,11 +40,13 @@ const createAdvertising = ({
   sendEdgeNetworkRequest,
   consent,
   getBrowser,
+  platformServices,
 }) => {
   const componentConfig = config.advertising;
   const cookieManager = createCookieManager({
     orgId: config.orgId,
     logger,
+    cookieJar: platformServices.cookie,
   });
 
   // One shared iframe call — both collectSurferId and hashedIpHandler use it

@@ -14,15 +14,12 @@ import {
   injectAreThirdPartyCookiesSupportedByDefault,
   injectDoesIdentityCookieExist,
   createLoggingCookieJar,
-  cookieJar,
 } from "../../utils/index.js";
 import injectProcessIdSyncs from "./injectProcessIdSyncs.js";
 import configValidators from "./configValidators.js";
 
 import createComponent from "./createComponent.js";
 import createLegacyIdentity from "./createLegacyIdentity.js";
-import awaitVisitorOptIn from "./visitorService/awaitVisitorOptIn.js";
-import injectGetEcidFromVisitor from "./visitorService/injectGetEcidFromVisitor.js";
 import injectHandleResponseForIdSyncs from "./injectHandleResponseForIdSyncs.js";
 import injectEnsureSingleIdentity from "./injectEnsureSingleIdentity.js";
 import injectAddEcidQueryToPayload from "./injectAddEcidQueryToPayload.js";
@@ -47,6 +44,7 @@ const createIdentity = ({
   apexDomain,
   getBrowser,
   identity,
+  platformServices,
 }) => {
   const {
     orgId,
@@ -54,20 +52,24 @@ const createIdentity = ({
     edgeConfigOverrides: globalConfigOverrides,
   } = config;
 
-  const getEcidFromVisitor = injectGetEcidFromVisitor({
+  const getEcidFromVisitor = () =>
+    platformServices.legacy.getEcidFromVisitor({ orgId, logger });
+
+  const loggingCookieJar = createLoggingCookieJar({
     logger,
-    orgId,
-    awaitVisitorOptIn,
+    cookieJar: platformServices.cookie,
   });
-  const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });
   const legacyIdentity = createLegacyIdentity({
     config,
     getEcidFromVisitor,
     apexDomain,
     cookieJar: loggingCookieJar,
-    isPageSsl: window.location.protocol === "https:",
+    isPageSsl: platformServices.globals.isPageSsl(),
   });
-  const doesIdentityCookieExist = injectDoesIdentityCookieExist({ orgId });
+  const doesIdentityCookieExist = injectDoesIdentityCookieExist({
+    orgId,
+    cookieJar: platformServices.cookie,
+  });
   const getIdentity = createGetIdentity({
     sendEdgeNetworkRequest,
     createIdentityRequestPayload,
@@ -87,8 +89,8 @@ const createIdentity = ({
   });
   const addQueryStringIdentityToPayload = injectAddQueryStringIdentityToPayload(
     {
-      locationSearch: window.document.location.search,
-      locationHash: window.document.location.hash,
+      locationSearch: platformServices.globals.getLocationSearch(),
+      locationHash: platformServices.globals.getLocationHash(),
       dateProvider: () => new Date(),
       orgId,
       logger,

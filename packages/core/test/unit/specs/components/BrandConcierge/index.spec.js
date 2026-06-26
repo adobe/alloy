@@ -60,6 +60,11 @@ describe("BrandConcierge", () => {
       },
       createResponse: vi.fn(),
       apexDomain: "adobe.com",
+      platformServices: {
+        globals: {
+          getLocationSearch: () => window.location.search,
+        },
+      },
     };
   });
 

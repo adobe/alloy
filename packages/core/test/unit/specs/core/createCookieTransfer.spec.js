@@ -30,7 +30,7 @@ describe("createCookieTransfer", () => {
       mergeState: vi.fn(),
     };
     cookieJar = {
-      get: vi.fn(),
+      getAll: vi.fn(),
       set: vi.fn(),
     };
   });
@@ -52,7 +52,7 @@ describe("createCookieTransfer", () => {
       });
     });
     it("does not set state.entries if there are no qualifying cookies", () => {
-      cookieJar.get.mockReturnValue({});
+      cookieJar.getAll.mockReturnValue({});
       build();
       cookieTransfer.cookiesToPayload(payload, endpointDomain);
       expect(payload.mergeState).toHaveBeenCalledWith({
@@ -64,7 +64,7 @@ describe("createCookieTransfer", () => {
       it(`transfers eligible cookies to payload with domain ${domain}`, () => {
         apexDomain = domain;
         build();
-        cookieJar.get.mockReturnValue({
+        cookieJar.getAll.mockReturnValue({
           kndctr_ABC_CustomOrg_identity: "XYZ@CustomOrg",
           ineligible_cookie: "foo",
           kndctr_ABC_CustomOrg_optIn: "all",

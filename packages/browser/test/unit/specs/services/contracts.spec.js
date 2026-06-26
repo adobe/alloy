@@ -51,7 +51,7 @@ describe("Service contracts", () => {
 
   it("CookieService implements the typedef and withConverter returns a CookieService", () => {
     const cookie = createBrowserCookieService();
-    const methods = ["get", "set", "remove", "withConverter"];
+    const methods = ["get", "getAll", "set", "remove", "withConverter"];
     expectFunctions(cookie, methods);
     const converted = cookie.withConverter({});
     expectFunctions(converted, methods);
@@ -82,8 +82,13 @@ describe("Service contracts", () => {
       "getInstanceQueue",
       "getMonitors",
       "getLocationSearch",
+      "getLocationHash",
       "getUserAgent",
       "getHostname",
+      "getPageLocation",
+      "isPageSsl",
+      "fireReferrerHideableImage",
+      "getWindowContext",
     ]);
   });
 });

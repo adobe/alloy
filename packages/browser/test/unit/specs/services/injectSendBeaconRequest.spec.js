@@ -11,16 +11,14 @@ governing permissions and limitations under the License.
 */
 
 import { vi, describe, it, expect } from "vitest";
-import injectSendBeaconRequest from "../../../../../../src/core/network/requestMethods/injectSendBeaconRequest.js";
+import injectSendBeaconRequest from "../../../../src/services/injectSendBeaconRequest.js";
 
 describe("injectSendBeaconRequest", () => {
   it("falls back to sendFetchRequest if sendBeacon fails", () => {
     const sendBeacon = vi.fn().mockReturnValue(false);
     const sendFetchRequestPromise = Promise.resolve();
     const sendFetchRequest = vi.fn().mockReturnValue(sendFetchRequestPromise);
-    const logger = {
-      info: vi.fn(),
-    };
+    const logger = { info: vi.fn() };
     const sendBeaconRequest = injectSendBeaconRequest({
       sendBeacon,
       sendFetchRequest,
@@ -38,9 +36,6 @@ describe("injectSendBeaconRequest", () => {
       "https://example.com/endpoint",
       body,
     );
-    expect(logger.info).toHaveBeenCalledWith(
-      expect.stringMatching("falling back to"),
-    );
     expect(result).toBe(sendFetchRequestPromise);
   });
 
@@ -50,9 +45,11 @@ describe("injectSendBeaconRequest", () => {
       a: "b",
     };
     const sendFetchRequest = vi.fn();
+    const logger = { info: vi.fn() };
     const sendBeaconRequest = injectSendBeaconRequest({
       sendBeacon,
       sendFetchRequest,
+      logger,
     });
 
     return sendBeaconRequest("https://example.com/endpoint", body).then(

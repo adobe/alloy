@@ -12,11 +12,11 @@ governing permissions and limitations under the License.
 
 /** @import { NetworkService } from "@adobe/alloy-core/services" */
 
-import injectSendFetchRequest from "@adobe/alloy-core/core/network/requestMethods/injectSendFetchRequest.js";
-import injectSendBeaconRequest from "@adobe/alloy-core/core/network/requestMethods/injectSendBeaconRequest.js";
+import injectSendFetchRequest from "./injectSendFetchRequest.js";
+import injectSendBeaconRequest from "./injectSendBeaconRequest.js";
 
 /**
- * @param {{ logger: import('@adobe/alloy-core/core/types.js').Logger }} dependencies
+ * @param {{ logger: import("@adobe/alloy-core/core/types.js").Logger }} params
  * @returns {NetworkService}
  */
 const createBrowserNetworkService = ({ logger }) => {
@@ -25,7 +25,6 @@ const createBrowserNetworkService = ({ logger }) => {
   const sendBeaconRequest =
     typeof navigator.sendBeacon === "function"
       ? injectSendBeaconRequest({
-          // bind() avoids "illegal invocation" when sendBeacon loses its receiver.
           sendBeacon: navigator.sendBeacon.bind(navigator),
           sendFetchRequest,
           logger,

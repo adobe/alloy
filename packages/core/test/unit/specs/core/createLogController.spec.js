@@ -19,9 +19,8 @@ describe("createLogController", () => {
   let logger;
   let createLogger;
   let getDebugEnabled;
-  let sessionStorage;
-  let createNamespacedStorage;
   let getMonitors;
+  let storage;
   beforeEach(() => {
     console = {
       log() {},
@@ -35,144 +34,90 @@ describe("createLogController", () => {
         getDebugEnabled = _getDebugEnabled;
         return logger;
       });
-    sessionStorage = {
-      getItem: vi.fn().mockReturnValue(null),
-      setItem: vi.fn(),
-    };
-    createNamespacedStorage = vi.fn().mockReturnValue({
-      session: sessionStorage,
-    });
     getMonitors = () => [];
+    storage = {
+      getItem: vi.fn().mockResolvedValue(null),
+      setItem: vi.fn().mockResolvedValue(true),
+    };
   });
-  it("creates a namespaced storage", () => {
+
+  const build = () =>
     createLogController({
       console,
       createLogger,
       instanceName,
-      createNamespacedStorage,
       getMonitors,
+      storage,
     });
-    expect(createNamespacedStorage).toHaveBeenCalledWith("instance.alloy123.");
-  });
-  it("returns false for getDebugEnabled if storage item is not found", () => {
-    createLogController({
-      console,
-      createLogger,
-      instanceName,
-      createNamespacedStorage,
-      getMonitors,
-    });
+
+  it("returns false for getDebugEnabled by default", () => {
+    build();
     expect(getDebugEnabled()).toBe(false);
   });
-  it("returns false for getDebugEnabled if storage item is false", () => {
-    sessionStorage.getItem = () => "false";
-    createLogController({
-      console,
-      createLogger,
-      instanceName,
-      createNamespacedStorage,
-      getMonitors,
-    });
+  it("returns true for getDebugEnabled after setDebugEnabled(true)", () => {
+    const logController = build();
+    logController.setDebugEnabled(true);
+    expect(getDebugEnabled()).toBe(true);
+  });
+  it("returns false for getDebugEnabled after setDebugEnabled(false)", () => {
+    const logController = build();
+    logController.setDebugEnabled(true);
+    logController.setDebugEnabled(false);
     expect(getDebugEnabled()).toBe(false);
   });
-  it("returns true for getDebugEnabled if storage item is true", () => {
-    sessionStorage.getItem = () => "true";
-    createLogController({
-      console,
-      createLogger,
-      instanceName,
-      createNamespacedStorage,
-      getMonitors,
-    });
+  it("allows config to set debug when user has not set it", () => {
+    const logController = build();
+    logController.setDebugEnabled(true, { fromConfig: true });
     expect(getDebugEnabled()).toBe(true);
   });
-  it("persists changes to debugEnabled if not set from config", () => {
-    const logController = createLogController({
-      console,
-      createLogger,
-      instanceName,
-      createNamespacedStorage,
-      getMonitors,
-    });
-    logController.setDebugEnabled(true, {
-      fromConfig: false,
-    });
-    expect(sessionStorage.setItem).toHaveBeenCalledWith("debug", "true");
+  it("does not let config override a value the user set", () => {
+    const logController = build();
+    logController.setDebugEnabled(true);
+    logController.setDebugEnabled(false, { fromConfig: true });
     expect(getDebugEnabled()).toBe(true);
   });
-  it("does not persist changes to debugEnabled if set from config", () => {
-    const logController = createLogController({
-      console,
-      createLogger,
-      instanceName,
-      createNamespacedStorage,
-      getMonitors,
-    });
-    logController.setDebugEnabled(true, {
-      fromConfig: true,
-    });
-    expect(sessionStorage.setItem).not.toHaveBeenCalled();
+  it("persists debug state to storage when set by user", () => {
+    const logController = build();
+    logController.setDebugEnabled(true);
+    expect(storage.setItem).toHaveBeenCalledWith("debug", "true");
+  });
+  it("does not persist debug state when set from config", () => {
+    const logController = build();
+    logController.setDebugEnabled(true, { fromConfig: true });
+    expect(storage.setItem).not.toHaveBeenCalled();
+  });
+  it("restores debug state from a previous session", async () => {
+    storage.getItem.mockResolvedValue("true");
+    build();
+    await Promise.resolve();
     expect(getDebugEnabled()).toBe(true);
   });
-  it("does not change debugEnabled from config if previously changed from something other than config on same page load", () => {
-    const logController = createLogController({
-      console,
-      createLogger,
-      instanceName,
-      createNamespacedStorage,
-      getMonitors,
-    });
-    logController.setDebugEnabled(true, {
-      fromConfig: false,
-    });
-    logController.setDebugEnabled(false, {
-      fromConfig: true,
-    });
-    expect(sessionStorage.setItem).toHaveBeenCalledWith("debug", "true");
-    expect(sessionStorage.setItem).not.toHaveBeenCalledWith("debug", "false");
+  it("does not let a stored value overwrite a synchronously-set value", async () => {
+    storage.getItem.mockResolvedValue("false");
+    const logController = build();
+    logController.setDebugEnabled(true); // e.g. ?alloy_debug=true
+    await Promise.resolve();
     expect(getDebugEnabled()).toBe(true);
   });
-  it("does not change debugEnabled from config if previously changed from something other than config on previous page load", () => {
-    sessionStorage.getItem = () => "true";
-    const logController = createLogController({
-      console,
-      createLogger,
-      instanceName,
-      createNamespacedStorage,
-      getMonitors,
-    });
-    logController.setDebugEnabled(false, {
-      fromConfig: true,
-    });
-    expect(sessionStorage.setItem).not.toHaveBeenCalled();
+  it("prevents config from overriding a debug state restored from storage", async () => {
+    storage.getItem.mockResolvedValue("true");
+    const logController = build();
+    await Promise.resolve();
+    logController.setDebugEnabled(false, { fromConfig: true });
     expect(getDebugEnabled()).toBe(true);
   });
   it("creates a logger", () => {
-    const logController = createLogController({
-      console,
-      createLogger,
-      instanceName,
-      createNamespacedStorage,
-      getMonitors,
-    });
+    const logController = build();
     expect(createLogger).toHaveBeenCalledWith({
       getDebugEnabled,
       console,
       getMonitors,
-      context: {
-        instanceName: "alloy123",
-      },
+      context: { instanceName: "alloy123" },
     });
     expect(logController.logger).toBe(logger);
   });
   it("creates a component logger", () => {
-    const logController = createLogController({
-      console,
-      createLogger,
-      instanceName,
-      createNamespacedStorage,
-      getMonitors,
-    });
+    const logController = build();
     const componentLogger = {};
     createLogger.mockReturnValue(componentLogger);
     const result = logController.createComponentLogger("Personalization");
@@ -180,10 +125,7 @@ describe("createLogController", () => {
       getDebugEnabled,
       console,
       getMonitors,
-      context: {
-        instanceName: "alloy123",
-        componentName: "Personalization",
-      },
+      context: { instanceName: "alloy123", componentName: "Personalization" },
     });
     expect(result).toBe(componentLogger);
   });

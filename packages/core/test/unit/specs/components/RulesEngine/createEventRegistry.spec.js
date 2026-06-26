@@ -18,9 +18,9 @@ describe("RulesEngine:createEventRegistry", () => {
 
   beforeEach(() => {
     storage = {
-      getItem: vi.fn(),
-      setItem: vi.fn(),
-      clear: vi.fn(),
+      getItem: vi.fn().mockResolvedValue(null),
+      setItem: vi.fn().mockResolvedValue(true),
+      clear: vi.fn().mockResolvedValue(true),
     };
     mockedTimestamp = new Date("2023-05-24T08:00:00Z");
     vi.useFakeTimers();

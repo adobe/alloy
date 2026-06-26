@@ -53,7 +53,7 @@ describe("RulesEngine:createContextProvider", () => {
     });
     contextProvider = createContextProvider({
       eventRegistry,
-      window,
+      getWindowContext: () => window,
       getBrowser,
     });
     expect(contextProvider.getContext()).toEqual(
@@ -76,7 +76,7 @@ describe("RulesEngine:createContextProvider", () => {
     });
     contextProvider = createContextProvider({
       eventRegistry,
-      window,
+      getWindowContext: () => window,
       getBrowser,
     });
     expect(contextProvider.getContext()).toEqual(
@@ -97,7 +97,7 @@ describe("RulesEngine:createContextProvider", () => {
     });
     contextProvider = createContextProvider({
       eventRegistry,
-      window,
+      getWindowContext: () => window,
       getBrowser,
     });
     expect(contextProvider.getContext()).toEqual(
@@ -112,7 +112,7 @@ describe("RulesEngine:createContextProvider", () => {
     });
     contextProvider = createContextProvider({
       eventRegistry,
-      window,
+      getWindowContext: () => window,
       getBrowser,
     });
     expect(contextProvider.getContext()).toEqual(
@@ -130,7 +130,7 @@ describe("RulesEngine:createContextProvider", () => {
     });
     contextProvider = createContextProvider({
       eventRegistry,
-      window,
+      getWindowContext: () => window,
       getBrowser,
     });
     expect(
@@ -159,7 +159,7 @@ describe("RulesEngine:createContextProvider", () => {
     };
     contextProvider = createContextProvider({
       eventRegistry,
-      window,
+      getWindowContext: () => window,
       getBrowser,
     });
     expect(
