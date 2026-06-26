@@ -30,19 +30,15 @@
 - [ ] 4.5 Add a step after apply-jira that posts a PR comment listing all JIRA tickets created or updated (using `gh pr comment`)
 - [ ] 4.6 Combine the `.jira/` file additions/deletions with any changeset version-bump changes into a single skip-ci commit; add this as a job step with appropriate `needs` dependencies so JIRA and changeset changes land together
 
-## 5. Quality Gate (`.github/workflows/quality-checks.yml`)
+## 5. `/jira-propose` Claude Code Skill
 
-- [ ] 5.1 Add a check to `quality-checks.yml` that verifies every open PR has at least one `.jira/*.yml` file; fail the check if none are present
+- [ ] 5.1 Create `.claude/skills/jira-propose/SKILL.md` skill file with instructions for the propose action (skills can be invoked automatically by the agent; commands cannot)
+- [ ] 5.2 Implement logic to scan `.jira/*.yml` files and match against current git diff, branch name, and recent commit messages
+- [ ] 5.3 Implement new-ticket YAML generation: populate `summary`, `description` (including business value: customer names, who benefits, elevator-pitch value statement), `issuetype`, `project`, `components`, `customfield_23300` with defaults from `scripts/team/api.js` ISSUE_TEMPLATES; include inline YAML comments for custom fields
+- [ ] 5.4 Implement existing-ticket update: when a match is found, append or replace the `updates` array in the existing file
+- [ ] 5.5 Implement issue-type heuristic: default to `story` (id `7`); use `bug` (id `1`) when commit messages or diff context suggest a fix
 
-## 6. `/jira-propose` Claude Code Skill
+## 6. Cleanup and Documentation
 
-- [ ] 6.1 Create `.claude/skills/jira-propose/SKILL.md` skill file with instructions for the propose action (skills can be invoked automatically by the agent; commands cannot)
-- [ ] 6.2 Implement logic to scan `.jira/*.yml` files and match against current git diff, branch name, and recent commit messages
-- [ ] 6.3 Implement new-ticket YAML generation: populate `summary`, `description` (including business value: customer names, who benefits, elevator-pitch value statement), `issuetype`, `project`, `components`, `customfield_23300` with defaults from `scripts/team/api.js` ISSUE_TEMPLATES; include inline YAML comments for custom fields
-- [ ] 6.4 Implement existing-ticket update: when a match is found, append or replace the `updates` array in the existing file
-- [ ] 6.5 Implement issue-type heuristic: default to `story` (id `7`); use `bug` (id `1`) when commit messages or diff context suggest a fix
-
-## 7. Cleanup and Documentation
-
-- [ ] 7.1 Create `CLAUDE.md` if it does not exist, and update the project README, with the full `.jira/` workflow: propose → PR review → build applies → fetch refreshes
-- [ ] 7.2 Add `JIRA_API_TOKEN` secret to the `Production` GitHub Actions environment
+- [ ] 6.1 Create `CLAUDE.md` if it does not exist, and update the project README, with the full `.jira/` workflow: propose → PR review → build applies → fetch refreshes
+- [ ] 6.2 Add `JIRA_API_TOKEN` secret to the `Production` GitHub Actions environment

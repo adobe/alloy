@@ -35,5 +35,4 @@ The team's JIRA backlog management is disconnected from the codebase — ticket 
 - New `scripts/jira/apply.mjs` and `scripts/jira/fetch.mjs` Node.js scripts; both reuse `scripts/team/config.js` for base URL and project key
 - Existing `scripts/createJiraTicket.js`, `scripts/openPr.js` JIRA fetch logic, and `scripts/team/` helpers referenced but some superseded
 - New `.claude/skills/jira-propose/SKILL.md` skill definition (skills can be invoked by the agent automatically; commands cannot)
-- A new quality gate in `.github/workflows/quality-checks.yml` verifies that every open PR has at least one `.jira/` YAML file, ensuring JIRA traceability for all changes
 - `JIRA_API_TOKEN` secret will be added to the GitHub Actions `Production` environment

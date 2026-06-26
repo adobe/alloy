@@ -80,9 +80,8 @@ Custom field IDs used in the PDCL project:
 2. Add `scripts/jira/fetch.mjs` — test locally against a real PDCL ticket with `--dry-run`
 3. Add `scripts/jira/apply.mjs` — test locally with `--dry-run`
 4. Add `apply-jira` job to `version-and-publish.yml`; coordinate its file additions/deletions with the existing changeset skip-ci commit so a single commit covers both; add `JIRA_API_TOKEN` secret to the `Production` environment
-5. Add quality gate to `quality-checks.yml` verifying each PR has at least one `.jira/` YAML file
-6. Add `.claude/skills/jira-propose/SKILL.md`
-7. Create or update `CLAUDE.md` and the project README with the full workflow
+5. Add `.claude/skills/jira-propose/SKILL.md`
+6. Create or update `CLAUDE.md` and the project README with the full workflow
 
 Rollback: Remove the `apply-jira` job from the workflow. YAML files in `.jira/` are inert without the job.
 
