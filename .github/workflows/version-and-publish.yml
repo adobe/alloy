@@ -10,6 +10,127 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Applies any pending .jira/*.yml changes to JIRA on every push to main.
+  apply-jira:
+    runs-on: ubuntu-latest
+    environment: Production
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+          ssh-key: ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Detect changed .jira files
+        id: jira-files
+        run: |
+          changed=$(git diff HEAD^1 HEAD --name-only -- '.jira/*.yml' | tr '\n' ' ')
+          echo "files=$changed" >> "$GITHUB_OUTPUT"
+          if [ -n "$changed" ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Get PR context
+        id: pr-context
+        if: steps.jira-files.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pr_info=$(gh pr list --state merged --base main --limit 5 --json number,url,title \
+            --jq 'map(select(.number != null)) | first')
+          pr_number=$(echo "$pr_info" | jq -r '.number // ""')
+          pr_url=$(echo "$pr_info"    | jq -r '.url   // ""')
+          pr_title=$(echo "$pr_info"  | jq -r '.title // ""')
+          echo "pr_number=$pr_number" >> "$GITHUB_OUTPUT"
+          echo "pr_url=$pr_url"       >> "$GITHUB_OUTPUT"
+          echo "pr_title=$pr_title"   >> "$GITHUB_OUTPUT"
+
+      - name: Apply JIRA changes and fetch updated state
+        id: apply-jira
+        if: steps.jira-files.outputs.has_changes == 'true'
+        env:
+          GITHUB_PR_NUMBER: ${{ steps.pr-context.outputs.pr_number }}
+          GITHUB_PR_URL: ${{ steps.pr-context.outputs.pr_url }}
+          GITHUB_PR_TITLE: ${{ steps.pr-context.outputs.pr_title }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          applied_tickets=""
+          for file in ${{ steps.jira-files.outputs.files }}; do
+            [ -f "$file" ] || continue
+
+            # Only process files with an updates section
+            has_updates=$(node -e "
+              import yaml from 'js-yaml';
+              import { readFileSync } from 'fs';
+              const doc = yaml.load(readFileSync('$file','utf8')) ?? {};
+              const u = doc.updates;
+              process.stdout.write(Array.isArray(u) && u.length > 0 ? 'true' : 'false');
+            " 2>/dev/null || echo 'false')
+
+            if [ "$has_updates" != "true" ]; then
+              echo "Skipping $file (no updates)"
+              continue
+            fi
+
+            echo "Applying $file"
+            ticket_key=$(node scripts/jira/apply.mjs "$file")
+            echo "Applied: $ticket_key"
+
+            # Derive the new filename with the real ticket key
+            dir=$(dirname "$file")
+            base=$(basename "$file")
+            new_base=$(echo "$base" | sed "s/XXXX/${ticket_key##*-}/")
+            new_file="$dir/$new_base"
+
+            # Replace the XXXX file with a real-key file via fetch
+            if [ "$file" != "$new_file" ]; then
+              rm -f "$file"
+            fi
+            node scripts/jira/fetch.mjs "$ticket_key" "$new_file"
+
+            applied_tickets="$applied_tickets $ticket_key"
+          done
+          echo "tickets=$applied_tickets" >> "$GITHUB_OUTPUT"
+
+      - name: Commit refreshed .jira files
+        if: steps.jira-files.outputs.has_changes == 'true'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- '.jira/'
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: refresh JIRA details [skip ci]"
+            git push origin HEAD:main
+          fi
+
+      - name: Post PR comment with JIRA tickets
+        if: >
+          steps.jira-files.outputs.has_changes == 'true' &&
+          steps.apply-jira.outputs.tickets != '' &&
+          steps.pr-context.outputs.pr_number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tickets="${{ steps.apply-jira.outputs.tickets }}"
+          base_url="https://jira.corp.adobe.com/browse"
+          body="**JIRA tickets updated by this PR:**"$'\n'
+          for key in $tickets; do
+            body="$body"$'\n'"- [$key]($base_url/$key)"
+          done
+          gh pr comment ${{ steps.pr-context.outputs.pr_number }} --body "$body"
+
   # Cheap gate so the Production approval is only requested when there's
   # actual release work (changesets exist) or the operator forced a run.
   detect:
@@ -32,7 +153,7 @@ jobs:
           fi
 
   publish:
-    needs: detect
+    needs: [detect, apply-jira]
     if: needs.detect.outputs.proceed == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment: Production
@@ -66,6 +187,8 @@ jobs:
           pnpm changeset version
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Pull any commits made by apply-jira before pushing (e.g. JIRA detail refresh)
+          git pull --rebase origin main
           git add -A
           if ! git diff --cached --quiet; then
             git commit -m "chore: publish [skip ci]"

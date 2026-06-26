@@ -20,3 +20,12 @@ This repo contains multiple projects. Each one is in a subdirectory and has its 
 ## Contribution
 
 Check out the [contribution guidelines](CONTRIBUTING.md) for quick start information, and head over to the [developer documentation](https://github.com/adobe/alloy/wiki) to understand the architecture and structure of the library.
+
+## JIRA ticket management
+
+JIRA changes are version-controlled as YAML files in [`.jira/`](./.jira/). See [`.jira/README.md`](./.jira/README.md) for the full workflow.
+
+**Quick start:**
+1. Run `/jira-propose` in Claude Code to create or update a `.jira/` ticket file
+2. The file appears in your PR diff for review
+3. On merge, the build workflow applies it to JIRA automatically
