@@ -22,7 +22,7 @@ export default function createApi({ dryRun = false, baseUrl, token }) {
 
   async function request(method, path, body) {
     const url = `${baseUrl}${path}`;
-    if (dryRun) {
+    if (dryRun && method !== "GET") {
       console.log(`[dry-run] ${method} ${url}`);
       if (body !== undefined) console.log(JSON.stringify(body, null, 2));
       return {};
@@ -44,10 +44,6 @@ export default function createApi({ dryRun = false, baseUrl, token }) {
 
   async function searchIssues(jql, { fields = "key", maxResults = 50 } = {}) {
     const qs = `jql=${encodeURIComponent(jql)}&fields=${fields}&maxResults=${maxResults}`;
-    if (dryRun) {
-      console.log(`[dry-run] Search: GET ${baseUrl}/rest/api/2/search?${qs}`);
-      return [];
-    }
     const response = await fetch(`${baseUrl}/rest/api/2/search?${qs}`, {
       headers: authHeaders,
     });
@@ -57,7 +53,6 @@ export default function createApi({ dryRun = false, baseUrl, token }) {
   }
 
   async function getRemoteLinks(key) {
-    if (dryRun) return [];
     const response = await fetch(
       `${baseUrl}/rest/api/2/issue/${key}/remotelink`,
       { headers: authHeaders },

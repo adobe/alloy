@@ -11,7 +11,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { readFileSync, writeFileSync, existsSync } from "fs";
+import { writeFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { load as yamlLoad, dump as yamlDump } from "js-yaml";
 import createApi from "./api.js";
@@ -61,11 +61,8 @@ function extractFields(fields) {
   return result;
 }
 
-function buildYaml(details, existingUpdates, timestamp) {
-  const doc = existingUpdates
-    ? { details, updates: existingUpdates }
-    : { details };
-  return `# fetched from JIRA ${timestamp}\n${yamlDump(doc, { lineWidth: 120, noRefs: true })}`;
+function buildYaml(details, timestamp) {
+  return `# fetched from JIRA ${timestamp}\n${yamlDump({ details }, { lineWidth: 120, noRefs: true })}`;
 }
 
 /**
@@ -75,28 +72,19 @@ function buildYaml(details, existingUpdates, timestamp) {
  * @param {{ api: object }} opts
  */
 export async function fetchFile(ticketKey, filename, { api }) {
-  if (api.dryRun) {
-    console.log(
-      `[dry-run] Would fetch: GET ${JIRA_BASE_URL.replace(/\/$/, "")}/rest/api/2/issue/${encodeURIComponent(ticketKey)}`,
-    );
-    console.log(`[dry-run] Would write to: ${filename}`);
-    return;
-  }
-
   const data = await api.request(
     "GET",
     `/rest/api/2/issue/${encodeURIComponent(ticketKey)}`,
   );
   const details = { key: data.key, ...extractFields(data.fields ?? {}) };
+  const timestamp = new Date().toISOString();
+  const content = buildYaml(details, timestamp);
 
-  let existingUpdates;
-  if (existsSync(filename)) {
-    const existing = yamlLoad(readFileSync(filename, "utf8"));
-    existingUpdates = existing?.updates;
+  if (api.dryRun) {
+    console.log(`[dry-run] Would write to ${filename}:\n${content}`);
+    return;
   }
 
-  const timestamp = new Date().toISOString();
-  const content = buildYaml(details, existingUpdates, timestamp);
   writeFileSync(filename, content, "utf8");
   console.log(`Wrote ${filename}`);
 }
@@ -118,7 +106,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 
   const [ticketKey, filename] = args;
 
-  if (!dryRun && !JIRA_API_TOKEN) {
+  if (!JIRA_API_TOKEN) {
     console.error("JIRA_API_TOKEN is required");
     process.exit(1);
   }

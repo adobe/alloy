@@ -87,7 +87,7 @@ describe("fetchFile", () => {
     unlinkSync(filename);
   });
 
-  it("preserves existing updates section when file already exists", async () => {
+  it("overwrites existing file with only details, no updates", async () => {
     const filename = tempPath("pdcl-1234");
     writeFileSync(
       filename,
@@ -101,8 +101,7 @@ describe("fetchFile", () => {
     const content = readFileSync(filename, "utf8");
     const parsed = yamlLoad(content.replace(/^#.*\n/, ""));
     expect(parsed.details.summary).toBe("Updated");
-    expect(parsed.updates).toHaveLength(1);
-    expect(parsed.updates[0].method).toBe("PUT");
+    expect(parsed.updates).toBeUndefined();
     unlinkSync(filename);
   });
 
@@ -117,12 +116,16 @@ describe("fetchFile", () => {
     unlinkSync(filename);
   });
 
-  it("skips file write in dry-run mode", async () => {
+  it("fetches from JIRA but outputs to stdout instead of writing in dry-run mode", async () => {
     const filename = tempPath("pdcl-1234");
     const api = { ...mockApi(), dryRun: true };
 
     await fetchFile("PDCL-1234", filename, { api });
 
     expect(existsSync(filename)).toBe(false);
+    expect(api.request).toHaveBeenCalledWith(
+      "GET",
+      expect.stringContaining("PDCL-1234"),
+    );
   });
 });

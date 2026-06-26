@@ -73,11 +73,11 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 
   const [filename] = args;
 
+  if (!JIRA_API_TOKEN) {
+    console.error("JIRA_API_TOKEN is required");
+    process.exit(1);
+  }
   if (!dryRun) {
-    if (!JIRA_API_TOKEN) {
-      console.error("JIRA_API_TOKEN is required");
-      process.exit(1);
-    }
     if (!process.env.GITHUB_PR_URL) {
       console.error("GITHUB_PR_URL is required");
       process.exit(1);

@@ -141,18 +141,20 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   })();
   const hasUpdates = Array.isArray(parsed.updates) && parsed.updates.length > 0;
 
-  if (hasUpdates && !dryRun) {
+  if (hasUpdates) {
     if (!JIRA_API_TOKEN) {
       console.error("JIRA_API_TOKEN is required");
       process.exit(1);
     }
-    if (!process.env.GITHUB_PR_URL) {
-      console.error("GITHUB_PR_URL is required when updates are present");
-      process.exit(1);
-    }
-    if (!process.env.GITHUB_PR_TITLE) {
-      console.error("GITHUB_PR_TITLE is required when updates are present");
-      process.exit(1);
+    if (!dryRun) {
+      if (!process.env.GITHUB_PR_URL) {
+        console.error("GITHUB_PR_URL is required when updates are present");
+        process.exit(1);
+      }
+      if (!process.env.GITHUB_PR_TITLE) {
+        console.error("GITHUB_PR_TITLE is required when updates are present");
+        process.exit(1);
+      }
     }
   }
 
