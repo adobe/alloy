@@ -14,25 +14,34 @@ export default ({
   console,
   createLogger,
   instanceName,
-  createNamespacedStorage,
   getMonitors,
+  storage,
 }) => {
-  const storage = createNamespacedStorage(`instance.${instanceName}.`);
+  let debugEnabled = false;
+  let debugSetByUser = false;
 
-  const debugSessionValue = storage.session.getItem("debug");
-  let debugEnabled = debugSessionValue === "true";
-  let debugEnabledWritableFromConfig = debugSessionValue === null;
+  // Restore debug state from the previous page load in this tab.
+  storage
+    .getItem("debug")
+    .then((stored) => {
+      if (stored !== null && !debugSetByUser) {
+        debugEnabled = stored === "true";
+        debugSetByUser = true;
+      }
+    })
+    .catch(() => {});
 
   const getDebugEnabled = () => debugEnabled;
-  const setDebugEnabled = (value, { fromConfig }) => {
-    if (!fromConfig || debugEnabledWritableFromConfig) {
+  const setDebugEnabled = (value, { fromConfig = false } = {}) => {
+    if (!fromConfig || !debugSetByUser) {
       debugEnabled = value;
     }
-
     if (!fromConfig) {
-      // Web storage only allows strings, so we explicitly convert to string.
-      storage.session.setItem("debug", value.toString());
-      debugEnabledWritableFromConfig = false;
+      debugSetByUser = true;
+      const result = storage.setItem("debug", String(value));
+      if (result && typeof result.then === "function") {
+        result.catch(() => {});
+      }
     }
   };
 

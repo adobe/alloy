@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy",
-  "version": "2.34.1",
+  "version": "2.34.2-beta.0",
   "description": "Adobe Experience Platform Web SDK",
   "type": "module",
   "repository": {
@@ -76,6 +76,7 @@
   },
   "dependencies": {
     "@adobe/alloy-core": "workspace:^",
+    "js-cookie": "3.0.7",
     "@inquirer/prompts": "^7.9.0",
     "@rollup/plugin-commonjs": "^29.0.2",
     "@rollup/plugin-node-resolve": "^16.0.3",

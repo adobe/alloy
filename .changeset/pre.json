@@ -11,5 +11,7 @@
     "@adobe/alloy-sandbox-browser": "0.1.5",
     "@adobe/alloy-sandbox-node": "0.0.2"
   },
-  "changesets": []
+  "changesets": [
+    "vast-jeans-walk"
+  ]
 }

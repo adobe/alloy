@@ -162,6 +162,9 @@ importers:
       commander:
         specifier: ^14.0.2
         version: 14.0.2
+      js-cookie:
+        specifier: 3.0.7
+        version: 3.0.7
       rollup:
         specifier: ^4.60.3
         version: 4.60.3
@@ -202,9 +205,6 @@ importers:
       '@adobe/reactor-query-string':
         specifier: ^2.0.0
         version: 2.0.0
-      js-cookie:
-        specifier: 3.0.7
-        version: 3.0.7
       uuid:
         specifier: ^14.0.0
         version: 14.0.0

@@ -28,6 +28,14 @@ describe("BrowserCookieService", () => {
     expect(cookie.get(COOKIE_NAME)).toBeUndefined();
   });
 
+  it("getAll returns all currently set cookies as a plain object", () => {
+    const cookie = createBrowserCookieService();
+    cookie.set(COOKIE_NAME, "hello");
+    const all = cookie.getAll();
+    expect(typeof all).toBe("object");
+    expect(all[COOKIE_NAME]).toBe("hello");
+  });
+
   it("withConverter applies a write encoder and returns a chainable CookieService", () => {
     const cookie = createBrowserCookieService();
     const encoded = cookie.withConverter({

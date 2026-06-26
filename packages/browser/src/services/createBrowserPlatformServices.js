@@ -20,11 +20,10 @@ import createBrowserLegacyService from "./createBrowserLegacyService.js";
 import createBrowserGlobalsService from "./createBrowserGlobalsService.js";
 
 /**
- * @param {{ logger: import('@adobe/alloy-core/core/types.js').Logger }} dependencies
  * @returns {PlatformServices}
  */
-const createBrowserPlatformServices = ({ logger }) => ({
-  network: createBrowserNetworkService({ logger }),
+const createBrowserPlatformServices = () => ({
+  createNetworkService: (logger) => createBrowserNetworkService({ logger }),
   storage: createBrowserStorageService(),
   cookie: createBrowserCookieService(),
   runtime: createBrowserRuntimeService(),

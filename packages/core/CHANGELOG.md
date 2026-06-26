@@ -1,5 +1,11 @@
 # @adobe/alloy-core
 
+## 1.2.2-beta.0
+
+### Patch Changes
+
+- [#1524](https://github.com/adobe/alloy/pull/1524) [`3d5faef`](https://github.com/adobe/alloy/commit/3d5faef53f88eb19ac6b87d13e699addb7978c15) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Refactor: browser-specific resources no longer referenced in core
+
 ## 1.2.1
 
 ### Patch Changes

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 /** @import { CookieService } from "@adobe/alloy-core/services" */
 
-import cookieJar from "@adobe/alloy-core/utils/cookieJar.js";
+import Cookies from "js-cookie";
 
 /**
  * The optional `jar` parameter is the recursion seam for `withConverter` —
@@ -21,8 +21,9 @@ import cookieJar from "@adobe/alloy-core/utils/cookieJar.js";
  * @param {{ get: Function, set: Function, remove: Function, withConverter: Function }} [jar]
  * @returns {CookieService}
  */
-const createBrowserCookieService = (jar = cookieJar) => ({
+const createBrowserCookieService = (jar = Cookies) => ({
   get: (name) => jar.get(name),
+  getAll: () => jar.get(),
   set: (name, value, options) => jar.set(name, value, options),
   remove: (name, options) => {
     jar.remove(name, options);

@@ -10,26 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { beforeEach, afterEach, describe, it, expect } from "vitest";
-import {
-  injectDoesIdentityCookieExist,
-  cookieJar,
-} from "../../../../src/utils/index.js";
+import { beforeEach, afterEach, describe, it, expect, vi } from "vitest";
+import { injectDoesIdentityCookieExist } from "../../../../src/utils/index.js";
 import removeAllCookies from "../../helpers/removeAllCookies.js";
 
 describe("Identity::injectDoesIdentityCookieExist", () => {
   beforeEach(removeAllCookies);
   afterEach(removeAllCookies);
   it("returns false if cookie does not exist", () => {
+    const cookieJar = { get: vi.fn().mockReturnValue(undefined) };
     const doesIdentityCookieExist = injectDoesIdentityCookieExist({
       orgId: "org@adobe",
+      cookieJar,
     });
     expect(doesIdentityCookieExist()).toBe(false);
   });
   it("returns true if cookie exists", () => {
-    cookieJar.set("kndctr_org_adobe_identity", "user@adobe");
+    const cookieJar = {
+      get: vi.fn().mockReturnValue("user@adobe"),
+    };
     const doesIdentityCookieExist = injectDoesIdentityCookieExist({
       orgId: "org@adobe",
+      cookieJar,
     });
     expect(doesIdentityCookieExist()).toBe(true);
   });

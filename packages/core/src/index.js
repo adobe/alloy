@@ -19,7 +19,7 @@ governing permissions and limitations under the License.
 /** @import { Logger } from './core/types.js' */
 
 /**
- * @typedef {(deps: { logger: Logger }) => PlatformServices} CreatePlatformServices
+ * @typedef {() => PlatformServices} CreatePlatformServices
  */
 
 import { createExecuteCommand } from "./core/index.js";
