@@ -20,7 +20,9 @@ const MAX_STRING_LENGTH = 500;
 function usage() {
   console.error("Usage: fetch.mjs [--dry-run] <ticket-key> <filename>");
   console.error("  <ticket-key>  JIRA issue key, e.g. PDCL-1234");
-  console.error("  <filename>    Path to write, e.g. .jira/PDCL-1234-my-feature.yml");
+  console.error(
+    "  <filename>    Path to write, e.g. .jira/PDCL-1234-my-feature.yml",
+  );
   process.exit(1);
 }
 
@@ -70,7 +72,9 @@ function extractFields(fields) {
             : item,
         )
         .filter((item) =>
-          typeof item === "object" ? Object.keys(item).length > 0 : isNonEmpty(item),
+          typeof item === "object"
+            ? Object.keys(item).length > 0
+            : isNonEmpty(item),
         );
       if (filtered.length > 0) {
         result[key] = filtered;
@@ -114,7 +118,9 @@ function mergeWithExisting(detailsYaml, filename) {
   }
   const detailsParsed = yaml.load(detailsYaml);
   const merged = { ...detailsParsed, updates: existing.updates };
-  const timestamp = detailsYaml.match(/# fetched from JIRA (.+)/)?.[1] ?? new Date().toISOString();
+  const timestamp =
+    detailsYaml.match(/# fetched from JIRA (.+)/)?.[1] ??
+    new Date().toISOString();
   const mergedYaml = yaml.dump(merged, { lineWidth: 120, noRefs: true });
   return `# fetched from JIRA ${timestamp}\n${mergedYaml}`;
 }

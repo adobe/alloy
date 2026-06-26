@@ -103,7 +103,9 @@ async function resolveTicketKey() {
   if (GITHUB_PR_NUMBER) {
     const foundKey = await searchByRemoteLinkGlobalId(globalId);
     if (foundKey) {
-      console.log(`Found existing ticket ${foundKey} via remote link globalId ${globalId}`);
+      console.log(
+        `Found existing ticket ${foundKey} via remote link globalId ${globalId}`,
+      );
       return foundKey;
     }
   }
@@ -122,7 +124,11 @@ async function resolveTicketKey() {
     return "PDCL-XXXX";
   }
 
-  const response = await jiraRequest("POST", "/rest/api/2/issue", createUpdate.body);
+  const response = await jiraRequest(
+    "POST",
+    "/rest/api/2/issue",
+    createUpdate.body,
+  );
   const data = await response.json();
   return data.key;
 }
@@ -168,12 +174,15 @@ async function searchByRemoteLinkGlobalId(searchGlobalId) {
 
 async function remoteLinksForIssue(key) {
   if (dryRun) return [];
-  const response = await fetch(`${baseUrl}/rest/api/2/issue/${key}/remotelink`, {
-    headers: {
-      Authorization: `Bearer ${JIRA_API_TOKEN}`,
-      "Content-Type": "application/json",
+  const response = await fetch(
+    `${baseUrl}/rest/api/2/issue/${key}/remotelink`,
+    {
+      headers: {
+        Authorization: `Bearer ${JIRA_API_TOKEN}`,
+        "Content-Type": "application/json",
+      },
     },
-  });
+  );
   if (!response.ok) return [];
   return response.json();
 }
@@ -183,7 +192,8 @@ async function remoteLinksForIssue(key) {
 const ticketKey = await resolveTicketKey();
 
 if (!hasUpdates) {
-  if (dryRun) console.log(`[dry-run] No updates — would print key: ${ticketKey}`);
+  if (dryRun)
+    console.log(`[dry-run] No updates — would print key: ${ticketKey}`);
   console.log(ticketKey);
   process.exit(0);
 }
@@ -207,7 +217,9 @@ if (GITHUB_PR_URL && GITHUB_PR_NUMBER) {
   const alreadyLinked = existingLinks.some((l) => l.globalId === globalId);
 
   if (alreadyLinked) {
-    console.log(`Remote link ${globalId} already exists on ${ticketKey} — skipping`);
+    console.log(
+      `Remote link ${globalId} already exists on ${ticketKey} — skipping`,
+    );
   } else {
     await jiraRequest("POST", `/rest/api/2/issue/${ticketKey}/remotelink`, {
       globalId,
