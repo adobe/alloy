@@ -14,10 +14,10 @@ governing permissions and limitations under the License.
 import { readFileSync, unlinkSync, existsSync } from "fs";
 import { basename, dirname } from "path";
 import { fileURLToPath } from "url";
-import yaml from "js-yaml";
-import createApi from "./api.mjs";
-import { applyFile } from "./apply.mjs";
-import { fetchFile } from "./fetch.mjs";
+import { load as yamlLoad } from "js-yaml";
+import createApi from "./api.js";
+import { applyFile } from "./apply.js";
+import { fetchFile } from "./fetch.js";
 import { JIRA_BASE_URL, JIRA_API_TOKEN } from "../team/config.js";
 
 /**
@@ -33,7 +33,7 @@ export async function processFile(filename, { api, prUrl = "", prTitle = "" }) {
     return null;
   }
 
-  const parsed = yaml.load(readFileSync(filename, "utf8")) ?? {};
+  const parsed = yamlLoad(readFileSync(filename, "utf8")) ?? {};
   const hasUpdates = Array.isArray(parsed.updates) && parsed.updates.length > 0;
 
   if (!hasUpdates) {
@@ -67,7 +67,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const args = rawArgs.filter((a) => a !== "--dry-run");
 
   if (args.length < 1) {
-    console.error("Usage: process.mjs [--dry-run] <filename>");
+    console.error("Usage: process.js [--dry-run] <filename>");
     process.exit(1);
   }
 

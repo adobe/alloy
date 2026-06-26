@@ -14,7 +14,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { writeFileSync, unlinkSync } from "fs";
 import { join } from "path";
 import { tmpdir } from "os";
-import { applyFile } from "./apply.mjs";
+import { applyFile } from "./apply.js";
 
 // Unique prefix per spec file avoids temp-file collisions when tests run in parallel.
 function uid() {

@@ -14,8 +14,8 @@ import { describe, it, expect, vi } from "vitest";
 import { writeFileSync, readFileSync, unlinkSync, existsSync } from "fs";
 import { join } from "path";
 import { tmpdir } from "os";
-import yaml from "js-yaml";
-import { fetchFile } from "./fetch.mjs";
+import { load as yamlLoad } from "js-yaml";
+import { fetchFile } from "./fetch.js";
 
 function mockApi(issueData = {}) {
   return {
@@ -52,7 +52,7 @@ describe("fetchFile", () => {
     await fetchFile("PDCL-1234", filename, { api });
 
     const content = readFileSync(filename, "utf8");
-    const parsed = yaml.load(content.replace(/^#.*\n/, ""));
+    const parsed = yamlLoad(content.replace(/^#.*\n/, ""));
     expect(parsed.details.key).toBe("PDCL-1234");
     expect(parsed.details.summary).toBe("Hello world");
     expect(parsed.details.assignee).toBeUndefined();
@@ -67,7 +67,7 @@ describe("fetchFile", () => {
     await fetchFile("PDCL-1234", filename, { api });
 
     const content = readFileSync(filename, "utf8");
-    const parsed = yaml.load(content.replace(/^#.*\n/, ""));
+    const parsed = yamlLoad(content.replace(/^#.*\n/, ""));
     expect(parsed.details.description).toBeUndefined();
     expect(parsed.details.components).toBeUndefined();
     unlinkSync(filename);
@@ -81,7 +81,7 @@ describe("fetchFile", () => {
     await fetchFile("PDCL-1234", filename, { api });
 
     const content = readFileSync(filename, "utf8");
-    const parsed = yaml.load(content.replace(/^#.*\n/, ""));
+    const parsed = yamlLoad(content.replace(/^#.*\n/, ""));
     expect(parsed.details.description).toHaveLength(503); // 500 + "..."
     expect(parsed.details.description.endsWith("...")).toBe(true);
     unlinkSync(filename);
@@ -99,7 +99,7 @@ describe("fetchFile", () => {
     await fetchFile("PDCL-1234", filename, { api });
 
     const content = readFileSync(filename, "utf8");
-    const parsed = yaml.load(content.replace(/^#.*\n/, ""));
+    const parsed = yamlLoad(content.replace(/^#.*\n/, ""));
     expect(parsed.details.summary).toBe("Updated");
     expect(parsed.updates).toHaveLength(1);
     expect(parsed.updates[0].method).toBe("PUT");

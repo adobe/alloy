@@ -13,8 +13,8 @@ governing permissions and limitations under the License.
 
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { fileURLToPath } from "url";
-import yaml from "js-yaml";
-import createApi from "./api.mjs";
+import { load as yamlLoad, dump as yamlDump } from "js-yaml";
+import createApi from "./api.js";
 import { JIRA_BASE_URL, JIRA_API_TOKEN } from "../team/config.js";
 
 const MAX_STRING_LENGTH = 500;
@@ -65,7 +65,7 @@ function buildYaml(details, existingUpdates, timestamp) {
   const doc = existingUpdates
     ? { details, updates: existingUpdates }
     : { details };
-  return `# fetched from JIRA ${timestamp}\n${yaml.dump(doc, { lineWidth: 120, noRefs: true })}`;
+  return `# fetched from JIRA ${timestamp}\n${yamlDump(doc, { lineWidth: 120, noRefs: true })}`;
 }
 
 /**
@@ -91,7 +91,7 @@ export async function fetchFile(ticketKey, filename, { api }) {
 
   let existingUpdates;
   if (existsSync(filename)) {
-    const existing = yaml.load(readFileSync(filename, "utf8"));
+    const existing = yamlLoad(readFileSync(filename, "utf8"));
     existingUpdates = existing?.updates;
   }
 
@@ -108,7 +108,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const args = rawArgs.filter((a) => a !== "--dry-run");
 
   if (args.length < 2) {
-    console.error("Usage: fetch.mjs [--dry-run] <ticket-key> <filename>");
+    console.error("Usage: fetch.js [--dry-run] <ticket-key> <filename>");
     console.error("  <ticket-key>  JIRA issue key, e.g. PDCL-1234");
     console.error(
       "  <filename>    Path to write, e.g. .jira/PDCL-1234-my-feature.yml",

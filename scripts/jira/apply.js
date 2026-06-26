@@ -14,8 +14,8 @@ governing permissions and limitations under the License.
 import { readFileSync } from "fs";
 import { basename } from "path";
 import { fileURLToPath } from "url";
-import yaml from "js-yaml";
-import createApi from "./api.mjs";
+import { load as yamlLoad } from "js-yaml";
+import createApi from "./api.js";
 import { JIRA_BASE_URL, JIRA_API_TOKEN } from "../team/config.js";
 
 // Recursively replace {PLACEHOLDER} tokens in body values.
@@ -46,7 +46,7 @@ export async function applyFile(filename, { api, prUrl = "", prTitle = "" }) {
 
   const fileKey = keyMatch[1];
   const isNewTicket = fileKey.includes("XXXX");
-  const parsed = yaml.load(readFileSync(filename, "utf8")) ?? {};
+  const parsed = yamlLoad(readFileSync(filename, "utf8")) ?? {};
   const updates = Array.isArray(parsed.updates) ? parsed.updates : [];
   const hasUpdates = updates.length > 0;
 
@@ -126,7 +126,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const args = rawArgs.filter((a) => a !== "--dry-run");
 
   if (args.length < 1) {
-    console.error("Usage: apply.mjs [--dry-run] <filename>");
+    console.error("Usage: apply.js [--dry-run] <filename>");
     process.exit(1);
   }
 
@@ -134,7 +134,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 
   const parsed = (() => {
     try {
-      return yaml.load(readFileSync(filename, "utf8")) ?? {};
+      return yamlLoad(readFileSync(filename, "utf8")) ?? {};
     } catch {
       return {};
     }

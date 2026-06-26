@@ -67,7 +67,7 @@ jobs:
         run: |
           applied_tickets=""
           for file in ${{ steps.jira-files.outputs.files }}; do
-            ticket_key=$(node scripts/jira/process.mjs "$file")
+            ticket_key=$(node scripts/jira/process.js "$file")
             [ -n "$ticket_key" ] && applied_tickets="$applied_tickets $ticket_key"
           done
           echo "tickets=$applied_tickets" >> "$GITHUB_OUTPUT"
