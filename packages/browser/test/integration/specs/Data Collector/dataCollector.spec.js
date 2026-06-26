@@ -754,7 +754,7 @@ describe("C8118 - Collects and sends link click information", () => {
     worker,
     networkRecorder,
   }) => {
-    worker.use(sendEventWithIdentityHandler);
+    worker.use(sendEventWithIdentityCookieHandler);
 
     await alloy("configure", {
       ...alloyConfig,
