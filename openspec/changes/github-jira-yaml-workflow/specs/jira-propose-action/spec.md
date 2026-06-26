@@ -26,7 +26,7 @@ When invoked, `/jira-propose` SHALL scan all `.jira/*.yml` files and compare the
 
 From this context it SHALL populate:
 - `summary` (required): a concise one-line ticket title
-- `description` (optional): a paragraph describing the change and motivation
+- `description` (optional): a paragraph describing the change and motivation, including business value — customer names, who benefits, why it matters, and the elevator-pitch value statement
 - `issuetype`: defaulting to `story` (id `7`) unless the change is clearly a bug fix
 - `components`: `[{ id: "155901" }]` (AEP Web SDK, matching existing defaults)
 - `customfield_23300`: `{ id: "116005" }` (product field, matching existing defaults)
@@ -67,9 +67,13 @@ Specifically:
 - **WHEN** `/jira-propose` writes a new ticket file
 - **THEN** `customfield_23300` has an adjacent YAML comment identifying it
 
-### Requirement: `/jira-propose` is implemented as a Claude Code skill in `.claude/commands/`
-The action SHALL be implemented as a markdown skill file at `.claude/commands/jira-propose.md`, following the same pattern as other skills in the project (e.g. `pr-sync`, `jira-propose`).
+### Requirement: `/jira-propose` is implemented as a Claude Code skill in `.claude/skills/jira-propose/`
+The action SHALL be implemented as a markdown skill file at `.claude/skills/jira-propose/SKILL.md`. Skills (unlike commands) can be invoked automatically by the agent in addition to being invoked manually by the developer.
 
 #### Scenario: Skill is available in Claude Code
 - **WHEN** a developer types `/jira-propose` in a Claude Code session
-- **THEN** Claude Code loads and executes the skill from `.claude/commands/jira-propose.md`
+- **THEN** Claude Code loads and executes the skill from `.claude/skills/jira-propose/SKILL.md`
+
+#### Scenario: Skill can be invoked automatically by the agent
+- **WHEN** the Claude Code agent determines that a JIRA ticket file should be created or updated
+- **THEN** the agent can invoke the skill without explicit developer input

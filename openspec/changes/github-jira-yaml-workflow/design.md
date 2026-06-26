@@ -19,11 +19,12 @@ Custom field IDs used in the PDCL project:
 - Local authoring (propose) makes zero JIRA API calls
 - YAML files are human-readable and support inline comments for custom field documentation
 - Remote link to the merged PR is always created in JIRA as part of apply
+- PR review is the approval mechanism for JIRA changes — `/jira-propose` writes files locally with no external effect, so developers can write ticket files freely without prior sign-off
 
 **Non-Goals:**
 - Real-time JIRA → repo sync (the `details` snapshot is a one-time capture, not kept live)
 - Automated backfill of historical tickets
-- Support for JIRA projects other than PDCL (config is project-key-aware but multi-project support is not in scope)
+- Creating tickets in JIRA projects other than PDCL (fetch can read any project key; only PDCL ticket creation is supported by apply)
 - Replacing the JIRA UI for complex ticket authoring (descriptions, attachments, etc.)
 
 ## Decisions
@@ -39,16 +40,16 @@ Custom field IDs used in the PDCL project:
 **Idempotency**: All `body.update` payloads use `set` operations, never `add`/`remove`. The apply script skips updates when the remote link already exists (checked before applying).
 
 ### Remote link as idempotency key for new tickets
-**Decision**: Before creating a new ticket (`PDCL-XXXX-*.yml`), the apply script searches JIRA for any issue in the project with a remote link whose URL matches the PR URL. If found, the ticket already exists and creation is skipped.  
-**Rationale**: `PDCL-XXXX` files have no real ticket key yet, so we need an external signal. GitHub PR URLs are stable and unique — a perfect idempotency key.
+**Decision**: Before creating a new ticket (`PDCL-XXXX-*.yml`), the apply script searches JIRA for any issue in the project whose remote links include one with global ID `repo-{PR#}` (e.g. `repo-1553`). No pagination is needed — a single search suffices. If any match is found, creation is skipped and the found ticket key is returned. Apply exits 0 in either case, so the workflow continues with the delete-and-fetch step.  
+**Rationale**: Using `repo-{PR#}` as the global ID gives JIRA a stable, indexed identifier that is more reliably searchable than a full URL. If the build fails mid-step and re-runs, apply again finds the link and returns the key; the XXXX file is re-deleted and fetch re-creates the real-key file — fully idempotent.
 
-### `details` section is read-only metadata
-**Decision**: The `details` section is a snapshot captured at propose time (or manually). The apply script ignores it entirely.  
-**Rationale**: Prevents accidental JIRA drift if `details` gets stale. Updates are always expressed explicitly in `updates`.
+### `details` section is read-only metadata; refreshed by the build workflow
+**Decision**: The `details` section is a read-only snapshot — the apply script ignores it entirely. After apply runs successfully, the build workflow deletes the file and calls fetch to regenerate `details` from live JIRA state, producing a fresh file with the real ticket key in the filename.  
+**Rationale**: Prevents accidental JIRA drift from a stale snapshot. The post-apply fetch ensures `details` always reflects the true JIRA state after the updates have landed.
 
 ### New ticket file naming with `XXXX` sentinel
-**Decision**: Unsubmitted tickets use `PDCL-XXXX-short-description.yml`. After the apply workflow creates the ticket, the file is NOT automatically renamed (the real key appears in the JIRA remote link and in the workflow output log).  
-**Rationale**: Renaming requires a follow-up commit; accepting a slightly stale filename is simpler and avoids merge conflicts. Teams can manually rename as a housekeeping step.
+**Decision**: Unsubmitted tickets use `PDCL-XXXX-short-description.yml`. After apply creates the ticket (or finds an existing one via the remote-link check), the build workflow deletes the XXXX file and calls `fetch.mjs <real-key> <real-key-filename>` to create a properly-named file (e.g. `PDCL-1234-short-description.yml`) with populated `details`.  
+**Rationale**: Deleting the XXXX file and creating a named file in a single skip-ci commit is idempotent: if the build fails and re-runs, apply finds the remote link, exits 0, and the delete+fetch sequence completes cleanly.
 
 ### Local `/jira-propose` makes zero JIRA calls
 **Decision**: The propose action only reads `.jira/` files and git state. It never calls the JIRA API.  
@@ -59,8 +60,8 @@ Custom field IDs used in the PDCL project:
 **Rationale**: Keeps CI logic in the same `scripts/` tree as the existing JIRA helpers, enabling code reuse from `scripts/team/config.js`.
 
 ### Fetch script design
-**Decision**: `fetch.mjs` accepts a ticket key (e.g. `PDCL-1234`) or a `.jira/` filename, calls JIRA's `GET /rest/api/2/issue/{key}` endpoint, and writes (or updates) a `.jira/{key}-{slug}.yml` file. The slug is derived from the ticket summary. If the file already exists, only the `details` section is replaced; any `updates` array is preserved.  
-**Rationale**: Lets developers bootstrap the `details` snapshot from a real ticket without copy-pasting from the JIRA UI. Can also be run in CI before apply to capture a before-snapshot for audit logs.
+**Decision**: `fetch.mjs` requires exactly two arguments: `<ticket-key>` and `<filename>`. Both are required. It calls JIRA's `GET /rest/api/2/issue/{key}` endpoint and writes (or overwrites) the file at the given path with a fresh `details` section; any existing `updates` array is preserved.  
+**Rationale**: Keeping key and filename independent lets the build workflow substitute the real ticket number for XXXX in the filename, and lets LLMs or developers control naming. The script stays deterministic given the same inputs. Fetch can read any JIRA project (not limited to PDCL) since it is read-only.
 
 ### No separate JIRA workflow file
 **Decision**: Integrate the `apply-jira` job into the existing `.github/workflows/version-and-publish.yml`.  
@@ -68,26 +69,24 @@ Custom field IDs used in the PDCL project:
 
 ## Risks / Trade-offs
 
-- **Stale `details` snapshot** → Mitigation: `details` is advisory only; apply ignores it. Document this clearly in schema comments.
-- **XXXX files never renamed** → Mitigation: Workflow output logs the real ticket key. A future housekeeping script can rename files post-merge.
-- **JIRA API pagination on remote-link search** → Mitigation: Apply script iterates all pages when searching for an existing remote link before creating a new ticket.
-- **PAT expiry breaks apply workflow** → Mitigation: Workflow fails loudly with a clear error; no partial state written. Token rotation is an ops concern (existing pattern for `JIRA_API_TOKEN` secret).
-- **Concurrent PRs both creating the same PDCL-XXXX ticket** → Mitigation: Remote-link idempotency check handles this — whichever workflow runs second finds the link and skips creation.
+- **Build dies between apply and commit** → Mitigation: Idempotent by design — re-run finds the remote link, deletes the XXXX file again (or finds it already gone), and re-creates the real-key file via fetch. Git commit is a no-op if files haven't changed.
+- **PAT expiry breaks apply workflow** → Mitigation: Workflow fails loudly with a clear error; no partial JIRA state written. Token rotation follows the existing `JIRA_API_TOKEN` ops pattern.
 - **Large JIRA body fields (description)** → Mitigation: `details` snapshot truncates long string fields (> 500 chars) with a `...` suffix; full content lives in JIRA.
+- **XXXX files from different PRs collide** → Each PR that creates a new ticket produces a distinct JIRA ticket with a distinct key. Concurrent XXXX files on concurrent PRs are fine — they will each create their own ticket once merged.
 
 ## Migration Plan
 
-1. Add `.jira/` directory with a `.gitkeep`
+1. Add `.jira/` directory with a `.gitkeep` and README
 2. Add `scripts/jira/fetch.mjs` — test locally against a real PDCL ticket with `--dry-run`
 3. Add `scripts/jira/apply.mjs` — test locally with `--dry-run`
-4. Add `apply-jira` job to `version-and-publish.yml` referencing `JIRA_API_TOKEN` secret
-5. Add `.claude/commands/jira-propose.md` skill
-6. Remove (or archive to `scripts/legacy/`) `scripts/createJiraTicket.js` — the `scripts/team/` helpers are retained as shared utilities
-7. Update `CLAUDE.md` / team docs with the new workflow
+4. Add `apply-jira` job to `version-and-publish.yml`; coordinate its file additions/deletions with the existing changeset skip-ci commit so a single commit covers both; add `JIRA_API_TOKEN` secret to the `Production` environment
+5. Add quality gate to `quality-checks.yml` verifying each PR has at least one `.jira/` YAML file
+6. Add `.claude/skills/jira-propose/SKILL.md`
+7. Create or update `CLAUDE.md` and the project README with the full workflow
 
 Rollback: Remove the `apply-jira` job from the workflow. YAML files in `.jira/` are inert without the job.
 
-## Open Questions
+## Resolved Questions
 
-- Should the apply workflow post a PR comment with JIRA links after applying? (Nice-to-have; out of scope for v1)
-- Should `details` be populated automatically by a fetch script when `/jira-propose` is run against an existing ticket key? (Deferred; requires JIRA auth locally)
+- **Should the apply workflow post a PR comment with JIRA links after applying?** Yes — add a step that posts a PR comment listing the JIRA tickets that were created or updated.
+- **Should `details` be populated automatically by a fetch script when `/jira-propose` is run?** No — `/jira-propose` works locally only and assumes local ticket files are up-to-date. Developers run fetch manually if they need to refresh `details`.
