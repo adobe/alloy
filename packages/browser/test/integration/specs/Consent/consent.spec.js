@@ -27,6 +27,8 @@ import setupAlloy from "../../helpers/alloy/setup.js";
 import setupBaseCode from "../../helpers/alloy/setupBaseCode.js";
 import cleanAlloy from "../../helpers/alloy/clean.js";
 import searchForLogMessage from "../../helpers/utils/searchForLogMessage.js";
+import { withTemporaryUrl } from "../../helpers/utils/location.js";
+import waitFor from "../../helpers/utils/waitFor.js";
 import {
   CONSENT_IN,
   CONSENT_OUT,
@@ -189,33 +191,50 @@ describe("Consent", () => {
   });
 
   // C2660: Context data is captured before user consents
-  // Note: The hash-change portion requires browser navigation; we test the core
-  // queuing behavior — that the event fires after consent is set.
-  test("C2660: sendEvent queued before consent fires after setConsent", async ({
+  test("C2660: context data is captured at queue time, not at consent time", async ({
     alloy,
     worker,
     networkRecorder,
   }) => {
     worker.use(sendEventHandler, setConsentHandler);
 
-    await alloy("configure", {
-      ...alloyConfig,
-      defaultConsent: "pending",
+    await withTemporaryUrl(async ({ currentHref, applyUrl }) => {
+      await alloy("configure", {
+        ...alloyConfig,
+        defaultConsent: "pending",
+      });
+
+      const sendEventPromise = alloy("sendEvent");
+
+      // flush promise chain so that the event is in the "awaiting consent" state.
+      await waitFor(0);
+
+      // Change something that will be collected by the Context component,
+      // after the event was queued but before consent unblocks it.
+      const hashUrl = new URL(currentHref);
+      hashUrl.hash = "foo";
+      applyUrl(hashUrl);
+
+      // Set consent to in — should unblock the queued event
+      await alloy("setConsent", CONSENT_IN);
+      await sendEventPromise;
+
+      // Send another event to make sure the hash is collected normally
+      await alloy("sendEvent");
+
+      const calls = await networkRecorder.findCalls(/v1\/interact/, {
+        retries: 10,
+        minCalls: 2,
+      });
+      expect(calls.length).toBe(2);
+
+      const getUrl = (call) =>
+        call.request.body.events[0].xdm.web.webPageDetails.URL;
+      // The first event's context was captured before the hash change.
+      expect(getUrl(calls[0])).toBe(currentHref);
+      // The second event's context reflects the hash change.
+      expect(getUrl(calls[1])).toBe(hashUrl.toString());
     });
-
-    const sendEventPromise = alloy("sendEvent");
-
-    await alloy("setConsent", CONSENT_IN);
-    await sendEventPromise;
-
-    // A second event after consent is already set also fires immediately
-    await alloy("sendEvent");
-
-    const calls = await networkRecorder.findCalls(/v1\/interact/, {
-      retries: 10,
-      minCalls: 2,
-    });
-    expect(calls.length).toBe(2);
   });
 
   // C14404: User can consent to all purposes after consenting to no purposes
