@@ -173,6 +173,7 @@ describe("Consent", () => {
       // alloy resolves with an object containing empty arrays when consent is out
       expect(result.propositions ?? []).toEqual([]);
       expect(result.decisions ?? []).toEqual([]);
+      expect(result).toEqual({});
 
       expect(
         searchForLogMessage(consoleSpy, "The user declined consent."),
