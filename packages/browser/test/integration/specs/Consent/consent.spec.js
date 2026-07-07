@@ -35,16 +35,10 @@ import {
   ADOBE2_IN,
   ADOBE2_OUT,
 } from "../../helpers/constants/consent.js";
-
-// Cookie names for org 5BFE274A5F6980A50A495C08@AdobeOrg
-const MAIN_IDENTITY_COOKIE_NAME =
-  "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_identity";
-const MAIN_CONSENT_COOKIE_NAME =
-  "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_consent";
-
-function deleteCookie(name) {
-  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
-}
+import {
+  MAIN_IDENTITY_COOKIE_NAME,
+  MAIN_CONSENT_COOKIE_NAME,
+} from "../../helpers/constants/cookies.js";
 
 // Writes the identity cookie so doesIdentityCookieExist() returns true after sendEvent
 const sendEventWithIdentityHandler = http.post(
@@ -93,15 +87,9 @@ const sendEventWithIdentityHandler = http.post(
 );
 
 describe("Consent", () => {
-  // Clear cookies and localStorage before each test to prevent state bleed.
-  // Consent hashes are stored in localStorage; cookies persist across cleanAlloy().
+  // Consent hashes are stored in localStorage; cookies are already cleared by
+  // the `alloy` fixture (extend.js) before each test.
   beforeEach(() => {
-    document.cookie.split(";").forEach((c) => {
-      const name = c.split("=")[0].trim();
-      if (name) {
-        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
-      }
-    });
     localStorage.clear();
   });
 
@@ -345,7 +333,11 @@ describe("Consent", () => {
     await alloy("setConsent", CONSENT_IN);
     // Write the identity cookie so phase 2 configure() doesn't clear the persisted consent.
     // (setConsentHandler only writes the consent cookie; the real edge also writes identity.)
-    document.cookie = `${MAIN_IDENTITY_COOKIE_NAME}=present; path=/`;
+    await cookieStore.set({
+      name: MAIN_IDENTITY_COOKIE_NAME,
+      value: "present",
+      path: "/",
+    });
 
     // Simulate page reload (cookies persist, alloy state cleared)
     cleanAlloy();
@@ -394,7 +386,11 @@ describe("Consent", () => {
       await alloy("setConsent", CONSENT_OUT);
       // Write the identity cookie so phase 2 configure() doesn't clear the persisted consent.
       // (setConsentHandler only writes the consent cookie; the real edge also writes identity.)
-      document.cookie = `${MAIN_IDENTITY_COOKIE_NAME}=present; path=/`;
+      await cookieStore.set({
+        name: MAIN_IDENTITY_COOKIE_NAME,
+        value: "present",
+        path: "/",
+      });
 
       // Simulate page reload
       cleanAlloy();
@@ -492,7 +488,7 @@ describe("Consent", () => {
 
     // Simulate reload without consent cookie
     cleanAlloy();
-    deleteCookie(MAIN_CONSENT_COOKIE_NAME);
+    await cookieStore.delete(MAIN_CONSENT_COOKIE_NAME);
     await setupBaseCode();
     const alloy2 = await setupAlloy();
 
@@ -564,7 +560,11 @@ describe("Consent", () => {
     await alloy("setConsent", ADOBE2_IN);
     // Write the identity cookie so phase 2 configure() doesn't clear the persisted consent.
     // (setConsentHandler only writes the consent cookie; the real edge also writes identity.)
-    document.cookie = `${MAIN_IDENTITY_COOKIE_NAME}=present; path=/`;
+    await cookieStore.set({
+      name: MAIN_IDENTITY_COOKIE_NAME,
+      value: "present",
+      path: "/",
+    });
 
     const consentCallsPhase1 = await networkRecorder.findCalls(
       /v1\/privacy\/set-consent/,
@@ -612,7 +612,11 @@ describe("Consent", () => {
     await alloy("setConsent", ADOBE2_IN);
     // Write the identity cookie so phase 2 configure() doesn't clear the persisted consent.
     // (setConsentHandler only writes the consent cookie; the real edge also writes identity.)
-    document.cookie = `${MAIN_IDENTITY_COOKIE_NAME}=present; path=/`;
+    await cookieStore.set({
+      name: MAIN_IDENTITY_COOKIE_NAME,
+      value: "present",
+      path: "/",
+    });
 
     const consentCallsPhase1 = await networkRecorder.findCalls(
       /v1\/privacy\/set-consent/,
@@ -659,7 +663,11 @@ describe("Consent", () => {
       defaultConsent: "pending",
     });
     await alloy("setConsent", ADOBE2_IN);
-    document.cookie = `${MAIN_IDENTITY_COOKIE_NAME}=present; path=/`;
+    await cookieStore.set({
+      name: MAIN_IDENTITY_COOKIE_NAME,
+      value: "present",
+      path: "/",
+    });
 
     const consentCallsPhase1 = await networkRecorder.findCalls(
       /v1\/privacy\/set-consent/,
@@ -668,7 +676,7 @@ describe("Consent", () => {
 
     // Simulate reload: delete identity cookie, keep consent cookie
     cleanAlloy();
-    deleteCookie(MAIN_IDENTITY_COOKIE_NAME);
+    await cookieStore.delete(MAIN_IDENTITY_COOKIE_NAME);
     await setupBaseCode();
     const alloy2 = await setupAlloy();
 
@@ -719,7 +727,11 @@ describe("Consent", () => {
       defaultConsent: "pending",
     });
     await alloy("setConsent", ADOBE2_IN);
-    document.cookie = `${MAIN_IDENTITY_COOKIE_NAME}=present; path=/`;
+    await cookieStore.set({
+      name: MAIN_IDENTITY_COOKIE_NAME,
+      value: "present",
+      path: "/",
+    });
 
     const consentCallsPhase1 = await networkRecorder.findCalls(
       /v1\/privacy\/set-consent/,
@@ -728,7 +740,7 @@ describe("Consent", () => {
 
     // Simulate reload: delete consent cookie, keep identity cookie
     cleanAlloy();
-    deleteCookie(MAIN_CONSENT_COOKIE_NAME);
+    await cookieStore.delete(MAIN_CONSENT_COOKIE_NAME);
     await setupBaseCode();
     const alloy2 = await setupAlloy();
 
