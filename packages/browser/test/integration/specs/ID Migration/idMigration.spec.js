@@ -31,7 +31,6 @@ import { withTemporaryUrl } from "../../helpers/utils/location.js";
 // Matches the org in alloyConfig: 5BFE274A5F6980A50A495C08@AdobeOrg
 const ORG_ID = "5BFE274A5F6980A50A495C08@AdobeOrg";
 
-// ECID pattern — a long string of digits
 const ECID_REGEX = /^\d{30,40}$/;
 
 // TS must be within 300s of now or alloy rejects the adobe_mc value
@@ -106,7 +105,6 @@ describe("ID Migration", () => {
   }) => {
     worker.use(createMigrationSendEventHandler());
 
-    // Set the legacy AMCV cookie before configuring alloy
     await setLegacyIdentityCookie(ORG_ID);
 
     await alloy("configure", {
@@ -121,12 +119,9 @@ describe("ID Migration", () => {
     expect(call.response.status).toBeGreaterThanOrEqual(200);
     expect(call.response.status).toBeLessThanOrEqual(207);
 
-    // alloy should have read the ECID from the legacy cookie and sent it
-    // Note: legacy ECID is at request-level xdm.identityMap, not events[0].xdm.identityMap
     const sentEcid = call.request.body?.xdm?.identityMap?.ECID?.[0]?.id;
     expect(sentEcid).toBe(LEGACY_ECID);
 
-    // The response should echo back the same ECID
     const responseBody = call.response.body;
     const ecidPayload = responseBody?.handle
       ?.find((h) => h.type === "identity:result")
@@ -141,7 +136,6 @@ describe("ID Migration", () => {
   }) => {
     worker.use(createMigrationSendEventHandler());
 
-    // Set the s_ecid cookie before configuring alloy
     await setSecidCookie();
 
     await alloy("configure", {
@@ -156,12 +150,9 @@ describe("ID Migration", () => {
     expect(call.response.status).toBeGreaterThanOrEqual(200);
     expect(call.response.status).toBeLessThanOrEqual(207);
 
-    // alloy should have read the ECID from s_ecid and sent it
-    // Note: legacy ECID is at request-level xdm.identityMap, not events[0].xdm.identityMap
     const sentEcid = call.request.body?.xdm?.identityMap?.ECID?.[0]?.id;
     expect(sentEcid).toBe(LEGACY_ECID);
 
-    // The s_ecid cookie should still be present
     expect(document.cookie).toContain(
       "s_ecid=MCMID%7C16908443662402872073525706953453086963",
     );
@@ -174,7 +165,6 @@ describe("ID Migration", () => {
   }) => {
     worker.use(createMigrationSendEventHandler());
 
-    // Set the s_ecid cookie — alloy should ignore it when migration is disabled
     await setSecidCookie();
 
     await alloy("configure", {
@@ -194,17 +184,15 @@ describe("ID Migration", () => {
     const xdmIdentityMap = call.request.body?.events?.[0]?.xdm?.identityMap;
     expect(xdmIdentityMap?.ECID).toBeUndefined();
 
-    // The response returns a fresh ECID (from the mock's fallback)
+    // Migration disabled means no ECID was sent, so the mock falls back to
+    // its own generated ECID
     const responseBody = call.response.body;
     const ecidPayload = responseBody?.handle
       ?.find((h) => h.type === "identity:result")
       ?.payload?.find((p) => p.namespace?.code === "ECID");
     expect(ecidPayload?.id).toMatch(ECID_REGEX);
-
-    // The legacy ECID should NOT be what was returned (a new one was assigned)
     expect(ecidPayload?.id).not.toBe(LEGACY_ECID);
 
-    // AMCV cookie should NOT be set (migration disabled)
     expect(document.cookie).not.toContain(
       `${LEGACY_IDENTITY_COOKIE_NAME}=MCMID|${ecidPayload?.id}`,
     );
@@ -217,7 +205,6 @@ describe("ID Migration", () => {
   }) => {
     worker.use(createMigrationSendEventHandler());
 
-    // Set legacy AMCV cookie — alloy should ignore it when migration is disabled
     await setLegacyIdentityCookie(ORG_ID);
 
     await alloy("configure", {
@@ -232,11 +219,9 @@ describe("ID Migration", () => {
     expect(call.response.status).toBeGreaterThanOrEqual(200);
     expect(call.response.status).toBeLessThanOrEqual(207);
 
-    // No ECID from the legacy cookie should be present in the request
     const xdmIdentityMap = call.request.body?.events?.[0]?.xdm?.identityMap;
     expect(xdmIdentityMap?.ECID).toBeUndefined();
 
-    // The response still returns a valid ECID (a new one, not the legacy one)
     const responseBody = call.response.body;
     const ecidPayload = responseBody?.handle
       ?.find((h) => h.type === "identity:result")
@@ -251,7 +236,6 @@ describe("ID Migration", () => {
   }) => {
     worker.use(createMigrationSendEventHandler());
 
-    // No legacy cookie set — alloy should create one after sendEvent
     await alloy("configure", {
       ...alloyConfig,
       idMigrationEnabled: true,
@@ -264,16 +248,14 @@ describe("ID Migration", () => {
     expect(call.response.status).toBeGreaterThanOrEqual(200);
     expect(call.response.status).toBeLessThanOrEqual(207);
 
-    // Get the ECID that the server returned
     const responseBody = call.response.body;
     const ecidPayload = responseBody?.handle
       ?.find((h) => h.type === "identity:result")
       ?.payload?.find((p) => p.namespace?.code === "ECID");
     expect(ecidPayload?.id).toMatch(ECID_REGEX);
 
-    // The AMCV cookie should now be present, containing the new ECID.
-    // alloy uses js-cookie to write it; js-cookie encodes '@' as '%40' in names
-    // and keeps '|' literal in values, so document.cookie shows '%40' in the name.
+    // js-cookie encodes '@' as '%40' in cookie names but keeps '|' literal in
+    // values, so document.cookie shows '%40' rather than '@' in the name.
     expect(document.cookie).toContain(
       `${LEGACY_IDENTITY_COOKIE_NAME}=MCMID|${ecidPayload?.id}`,
     );
@@ -286,7 +268,6 @@ describe("ID Migration", () => {
   }) => {
     worker.use(createMigrationSendEventHandler());
 
-    // No legacy cookie set
     await alloy("configure", {
       ...alloyConfig,
       idMigrationEnabled: false,
@@ -299,14 +280,12 @@ describe("ID Migration", () => {
     expect(call.response.status).toBeGreaterThanOrEqual(200);
     expect(call.response.status).toBeLessThanOrEqual(207);
 
-    // Get the ECID that the server returned
     const responseBody = call.response.body;
     const ecidPayload = responseBody?.handle
       ?.find((h) => h.type === "identity:result")
       ?.payload?.find((p) => p.namespace?.code === "ECID");
     expect(ecidPayload?.id).toMatch(ECID_REGEX);
 
-    // No AMCV cookie should be written since migration is disabled
     expect(document.cookie).not.toContain(
       `AMCV_5BFE274A5F6980A50A495C08%40AdobeOrg=MCMID|${ecidPayload?.id}`,
     );
@@ -320,9 +299,6 @@ describe("ID Migration", () => {
     const adobeMcEcid = createRandomEcid();
     const adobeMcValue = createAdobeMC(adobeMcEcid);
 
-    // This handler echoes back whatever ECID was sent in the request, or uses
-    // the adobe_mc ECID as a fallback. It also writes the AMCV cookie and the
-    // kndctr identity cookie so future phases see persistence.
     // Handler that echoes back the ECID sent in the request (or falls back to
     // the adobe_mc ECID). alloy automatically writes the AMCV cookie from the
     // identity:result response — no need to write it manually via state:store.
@@ -364,7 +340,6 @@ describe("ID Migration", () => {
 
     worker.use(echoEcidHandler);
 
-    // Phase 1: legacy AMCV cookie present, configure + sendEvent
     await setLegacyIdentityCookie(ORG_ID);
 
     await alloy("configure", {
@@ -375,12 +350,10 @@ describe("ID Migration", () => {
 
     const phase1Call = await networkRecorder.findCall(/v1\/interact/);
     expect(phase1Call).toBeDefined();
-    // Phase 1 sends LEGACY_ECID (from the AMCV cookie)
     expect(phase1Call.request.body?.xdm?.identityMap?.ECID?.[0]?.id).toBe(
       LEGACY_ECID,
     );
 
-    // Phase 2: simulate reload with adobe_mc param in URL
     cleanAlloy();
     await setupBaseCode();
     networkRecorder.reset();
@@ -399,13 +372,11 @@ describe("ID Migration", () => {
 
       const phase2Call = await networkRecorder.findCall(/v1\/interact/);
       expect(phase2Call).toBeDefined();
-      // Phase 2 sends the ECID from adobe_mc
       expect(phase2Call.request.body?.xdm?.identityMap?.ECID?.[0]?.id).toBe(
         adobeMcEcid,
       );
     });
 
-    // Phase 3: simulate reload without adobe_mc param
     cleanAlloy();
     await setupBaseCode();
     networkRecorder.reset();
@@ -424,13 +395,11 @@ describe("ID Migration", () => {
       adobeMcEcid,
     );
 
-    // The response should also echo back the adobe_mc ECID
     const phase3ResponseEcid = phase3Call.response.body?.handle
       ?.find((h) => h.type === "identity:result")
       ?.payload?.find((p) => p.namespace?.code === "ECID")?.id;
     expect(phase3ResponseEcid).toBe(adobeMcEcid);
 
-    // The AMCV cookie should contain the adobe_mc ECID
     expect(document.cookie).toContain(
       `${LEGACY_IDENTITY_COOKIE_NAME}=MCMID|${adobeMcEcid}`,
     );
