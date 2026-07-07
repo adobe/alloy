@@ -424,6 +424,12 @@ describe("ID Migration", () => {
       adobeMcEcid,
     );
 
+    // The response should also echo back the adobe_mc ECID
+    const phase3ResponseEcid = phase3Call.response.body?.handle
+      ?.find((h) => h.type === "identity:result")
+      ?.payload?.find((p) => p.namespace?.code === "ECID")?.id;
+    expect(phase3ResponseEcid).toBe(adobeMcEcid);
+
     // The AMCV cookie should contain the adobe_mc ECID
     expect(document.cookie).toContain(
       `${LEGACY_IDENTITY_COOKIE_NAME}=MCMID|${adobeMcEcid}`,
