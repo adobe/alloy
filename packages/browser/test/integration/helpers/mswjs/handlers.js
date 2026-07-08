@@ -248,6 +248,13 @@ export const setConsentHandler = http.post(
                 value: `general=${generalConsent}`,
                 maxAge: 15552000,
               },
+              {
+                key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_identity",
+                value:
+                  "CiY0MTg2MTY2NjE5MzE0MDE2MTkzNDI3Njg0NTY1MTE0ODg3Njk4OFIQCM68vcXoMhgBKgNPUjIwAaAB0ry9xegysAHCqAHwAc68vcXoMg==",
+                maxAge: 34128000,
+                attrs: { SameSite: "None" },
+              },
             ],
           },
         ],

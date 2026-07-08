@@ -331,13 +331,6 @@ describe("Consent", () => {
       defaultConsent: "pending",
     });
     await alloy("setConsent", CONSENT_IN);
-    // Write the identity cookie so phase 2 configure() doesn't clear the persisted consent.
-    // (setConsentHandler only writes the consent cookie; the real edge also writes identity.)
-    await cookieStore.set({
-      name: MAIN_IDENTITY_COOKIE_NAME,
-      value: "present",
-      path: "/",
-    });
 
     // Simulate page reload (cookies persist, alloy state cleared)
     cleanAlloy();
@@ -384,13 +377,6 @@ describe("Consent", () => {
         debugEnabled: true,
       });
       await alloy("setConsent", CONSENT_OUT);
-      // Write the identity cookie so phase 2 configure() doesn't clear the persisted consent.
-      // (setConsentHandler only writes the consent cookie; the real edge also writes identity.)
-      await cookieStore.set({
-        name: MAIN_IDENTITY_COOKIE_NAME,
-        value: "present",
-        path: "/",
-      });
 
       // Simulate page reload
       cleanAlloy();
@@ -558,13 +544,6 @@ describe("Consent", () => {
       defaultConsent: "pending",
     });
     await alloy("setConsent", ADOBE2_IN);
-    // Write the identity cookie so phase 2 configure() doesn't clear the persisted consent.
-    // (setConsentHandler only writes the consent cookie; the real edge also writes identity.)
-    await cookieStore.set({
-      name: MAIN_IDENTITY_COOKIE_NAME,
-      value: "present",
-      path: "/",
-    });
 
     const consentCallsPhase1 = await networkRecorder.findCalls(
       /v1\/privacy\/set-consent/,
@@ -610,13 +589,6 @@ describe("Consent", () => {
       defaultConsent: "pending",
     });
     await alloy("setConsent", ADOBE2_IN);
-    // Write the identity cookie so phase 2 configure() doesn't clear the persisted consent.
-    // (setConsentHandler only writes the consent cookie; the real edge also writes identity.)
-    await cookieStore.set({
-      name: MAIN_IDENTITY_COOKIE_NAME,
-      value: "present",
-      path: "/",
-    });
 
     const consentCallsPhase1 = await networkRecorder.findCalls(
       /v1\/privacy\/set-consent/,
@@ -656,18 +628,12 @@ describe("Consent", () => {
   }) => {
     worker.use(sendEventWithIdentityHandler, setConsentHandler);
 
-    // Phase 1: configure and set consent to in; then manually write the identity cookie.
-    // (setConsentHandler only writes the consent cookie; the real edge also writes identity.)
+    // Phase 1
     await alloy("configure", {
       ...alloyConfig,
       defaultConsent: "pending",
     });
     await alloy("setConsent", ADOBE2_IN);
-    await cookieStore.set({
-      name: MAIN_IDENTITY_COOKIE_NAME,
-      value: "present",
-      path: "/",
-    });
 
     const consentCallsPhase1 = await networkRecorder.findCalls(
       /v1\/privacy\/set-consent/,
@@ -720,18 +686,12 @@ describe("Consent", () => {
   }) => {
     worker.use(sendEventWithIdentityHandler, setConsentHandler);
 
-    // Phase 1: configure and set consent to in; then manually write the identity cookie.
-    // (setConsentHandler only writes the consent cookie; the real edge also writes identity.)
+    // Phase 1
     await alloy("configure", {
       ...alloyConfig,
       defaultConsent: "pending",
     });
     await alloy("setConsent", ADOBE2_IN);
-    await cookieStore.set({
-      name: MAIN_IDENTITY_COOKIE_NAME,
-      value: "present",
-      path: "/",
-    });
 
     const consentCallsPhase1 = await networkRecorder.findCalls(
       /v1\/privacy\/set-consent/,
