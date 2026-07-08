@@ -424,21 +424,29 @@ describe("Consent", () => {
 
   test("C14410: setting consent for unknown purposes produces server 400 error", async ({
     alloy,
-    worker,
   }) => {
-    // This test exercises server-side validation — the MSW mock does not replicate
-    // per-purpose server rejection, so we test that the setConsent call completes
-    // (the mock handler accepts it). The real edge validates unknown purposes.
-    worker.use(setConsentHandler);
-
+    // No setConsentHandler is registered - hits prod Edge
     await alloy("configure", {
       ...alloyConfig,
       defaultConsent: "pending",
     });
 
-    // After a rejected setConsent, calling with valid values should succeed
-    // (We cannot replicate the server-side EXEG-0102-400 rejection in MSW mock
-    //  without a purpose-specific error handler, so just verify recovery.)
+    let error;
+    try {
+      await alloy("setConsent", {
+        consent: [
+          { standard: "Adobe", version: "1.0", value: { analytics: "in" } },
+        ],
+      });
+    } catch (e) {
+      error = e;
+    }
+
+    expect(error).toBeTruthy();
+    expect(error.message).toContain(
+      "The server responded with a status code 400",
+    );
+    expect(error.message).toContain("EXEG-0102-400");
     await alloy("setConsent", CONSENT_IN);
   });
 
@@ -465,7 +473,6 @@ describe("Consent", () => {
   }) => {
     worker.use(setConsentHandler);
 
-    // Phase 1: configure and set consent to out
     await alloy("configure", {
       ...alloyConfig,
       defaultConsent: "pending",
@@ -478,18 +485,12 @@ describe("Consent", () => {
     await setupBaseCode();
     const alloy2 = await setupAlloy();
 
-    // Phase 2: setConsent(out) again should not throw
     await alloy2("configure", {
       ...alloyConfig,
       defaultConsent: "pending",
     });
-    let error;
-    try {
-      await alloy2("setConsent", CONSENT_OUT);
-    } catch (e) {
-      error = e;
-    }
-    expect(error).toBeUndefined();
+
+    expect(() => alloy2("setConsent", CONSENT_OUT)).not.toThrow();
   });
 
   // C14414: Requests are queued while consent changes are pending
