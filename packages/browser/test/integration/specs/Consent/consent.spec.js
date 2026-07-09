@@ -23,9 +23,7 @@ import {
   setConsentHandler,
 } from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
-import setupAlloy from "../../helpers/alloy/setup.js";
-import setupBaseCode from "../../helpers/alloy/setupBaseCode.js";
-import cleanAlloy from "../../helpers/alloy/clean.js";
+import reloadAlloy from "../../helpers/alloy/reload.js";
 import searchForLogMessage from "../../helpers/utils/searchForLogMessage.js";
 import { withTemporaryUrl } from "../../helpers/utils/location.js";
 import waitFor from "../../helpers/utils/waitFor.js";
@@ -333,9 +331,7 @@ describe("Consent", () => {
     await alloy("setConsent", CONSENT_IN);
 
     // Simulate page reload (cookies persist, alloy state cleared)
-    cleanAlloy();
-    await setupBaseCode();
-    const alloy2 = await setupAlloy();
+    const alloy2 = await reloadAlloy();
 
     // Phase 2: configure fresh alloy — consent cookie should restore "in" state
     networkRecorder.reset();
@@ -379,9 +375,7 @@ describe("Consent", () => {
       await alloy("setConsent", CONSENT_OUT);
 
       // Simulate page reload
-      cleanAlloy();
-      await setupBaseCode();
-      const alloy2 = await setupAlloy();
+      const alloy2 = await reloadAlloy();
 
       // Phase 2: configure fresh alloy — consent cookie should restore "out" state
       networkRecorder.reset();
@@ -480,10 +474,8 @@ describe("Consent", () => {
     await alloy("setConsent", CONSENT_OUT);
 
     // Simulate reload without consent cookie
-    cleanAlloy();
     await cookieStore.delete(MAIN_CONSENT_COOKIE_NAME);
-    await setupBaseCode();
-    const alloy2 = await setupAlloy();
+    const alloy2 = await reloadAlloy();
 
     await alloy2("configure", {
       ...alloyConfig,
@@ -558,9 +550,7 @@ describe("Consent", () => {
     expect(consentCallsPhase1.length).toBe(1);
 
     // Simulate page reload
-    cleanAlloy();
-    await setupBaseCode();
-    const alloy2 = await setupAlloy();
+    const alloy2 = await reloadAlloy();
 
     // Phase 2: configure + sendEvent (consent was persisted, should fire immediately)
     networkRecorder.reset();
@@ -603,9 +593,7 @@ describe("Consent", () => {
     expect(consentCallsPhase1.length).toBe(1);
 
     // Simulate page reload
-    cleanAlloy();
-    await setupBaseCode();
-    const alloy2 = await setupAlloy();
+    const alloy2 = await reloadAlloy();
 
     // Phase 2: configure + sendEvent (consent was persisted, should fire immediately)
     networkRecorder.reset();
@@ -648,10 +636,8 @@ describe("Consent", () => {
     expect(consentCallsPhase1.length).toBe(1);
 
     // Simulate reload: delete identity cookie, keep consent cookie
-    cleanAlloy();
     await cookieStore.delete(MAIN_IDENTITY_COOKIE_NAME);
-    await setupBaseCode();
-    const alloy2 = await setupAlloy();
+    const alloy2 = await reloadAlloy();
 
     // Phase 2: configure fresh alloy
     networkRecorder.reset();
@@ -706,10 +692,8 @@ describe("Consent", () => {
     expect(consentCallsPhase1.length).toBe(1);
 
     // Simulate reload: delete consent cookie, keep identity cookie
-    cleanAlloy();
     await cookieStore.delete(MAIN_CONSENT_COOKIE_NAME);
-    await setupBaseCode();
-    const alloy2 = await setupAlloy();
+    const alloy2 = await reloadAlloy();
 
     // Phase 2: configure fresh alloy
     networkRecorder.reset();
