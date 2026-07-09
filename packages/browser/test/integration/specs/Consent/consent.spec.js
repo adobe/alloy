@@ -523,6 +523,12 @@ describe("Consent", () => {
     );
     expect(consentCalls.length).toBe(2);
 
+    // check that the second set-consent request starts after the first one's response
+    const [firstConsent, secondConsent] = consentCalls;
+    expect(secondConsent.request.sequence).toBeGreaterThan(
+      firstConsent.response.sequence,
+    );
+
     // Event should be blocked because final consent is out
     expect(
       networkRecorder.calls.filter((c) =>

@@ -21,17 +21,21 @@ class NetworkRecorder {
    * @property {string} request.method
    * @property {Record<string, string>} request.headers
    * @property {number} request.timestamp
+   * @property {number} request.sequence
    * @property {Object} [response]
    * @property {number} response.status
    * @property {string} response.statusText
    * @property {Record<string, string>} response.headers
    * @property {number} response.timestamp
+   * @property {number} response.sequence
    * @property {string | Object} response.body
    */
 
   constructor() {
     /** @type {NetworkCall[]} */
     this.calls = [];
+    // counter to assert request/response sequence order
+    this.sequence = 0;
   }
 
   /**
@@ -41,6 +45,9 @@ class NetworkRecorder {
    * @param {string} options.requestId - Unique identifier for the request
    */
   async captureRequest({ request, requestId }) {
+    // Stamp before any await so it reflects the request:start emission order.
+    const sequence = this.sequence++;
+
     let call = this.calls.find((c) => c.requestId === requestId);
 
     if (!call) {
@@ -70,6 +77,7 @@ class NetworkRecorder {
       method: request.method,
       headers: Object.fromEntries(request.headers.entries()),
       timestamp: Date.now(),
+      sequence,
       body,
     };
   }
@@ -86,6 +94,8 @@ class NetworkRecorder {
     if (!call) {
       return;
     }
+
+    const sequence = this.sequence++;
 
     // Clone the response to be able to read the body
     const responseClone = response.clone();
@@ -111,6 +121,7 @@ class NetworkRecorder {
       headers: Object.fromEntries(response.headers.entries()),
       body,
       timestamp: Date.now(),
+      sequence,
     };
   }
 
@@ -174,6 +185,7 @@ class NetworkRecorder {
 
   reset() {
     this.calls = [];
+    this.sequence = 0;
   }
 }
 
