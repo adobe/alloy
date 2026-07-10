@@ -95,18 +95,6 @@ export default defineConfig([
       ],
       "valid-typeof": ["error", { requireStringLiterals: true }],
       "no-console": ["warn", { allow: ["error"] }],
-      "no-underscore-dangle": [
-        "error",
-        {
-          allow: [
-            "_experience",
-            "__dirname",
-            "__filename",
-            "__alloyMonitors",
-            "__alloyNS",
-          ],
-        },
-      ],
       "no-bitwise": "error",
       "default-param-last": "error",
       eqeqeq: ["error", "smart"],
@@ -495,19 +483,6 @@ export default defineConfig([
       "jsx-a11y": jsxA11y,
     },
     rules: {
-      "no-underscore-dangle": [
-        "error",
-        {
-          allow: [
-            "_experience",
-            "__dirname",
-            "__filename",
-            "__alloyMonitors",
-            "__alloyNS",
-            "__adobe",
-          ],
-        },
-      ],
       "import/extensions": "off",
       "import/default": "off",
       "import/namespace": "off",
@@ -574,10 +549,6 @@ export default defineConfig([
     rules: {
       "no-var": "off",
       "func-names": "off",
-      "no-underscore-dangle": [
-        "error",
-        { allow: ["__alloyNS", "__alloyMonitors", "__adobe"] },
-      ],
     },
   },
   {

@@ -58,7 +58,6 @@ const getSelectInputMethodStateNewInstance = () => {
 
 const prepareDatastreamsMap = (datastreams) => {
   return datastreams.reduce((acc, datastream) => {
-    // eslint-disable-next-line no-underscore-dangle
     const datastreamId = datastream._system.id;
     acc[datastreamId] = {
       sandbox: datastream.sandboxName,

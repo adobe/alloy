@@ -67,7 +67,6 @@ const createEventListeners = ({ platform, sw }) => {
 
         try {
           await makeSendServiceWorkerTrackingData({
-            /* eslint-disable-next-line no-underscore-dangle */
             xdm: data._xdm.mixins,
             actionLabel: "Dismiss",
           });

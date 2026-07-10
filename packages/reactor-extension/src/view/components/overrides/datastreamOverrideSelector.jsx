@@ -51,7 +51,7 @@ import OverrideInput from "./overrideInput";
  * @param {Datastream} datastream
  * @returns {string?}
  */
-// eslint-disable-next-line no-underscore-dangle
+
 const getKey = (datastream) => datastream?._system?.id;
 /**
  * Get a human-readable identifier for a datastream.
