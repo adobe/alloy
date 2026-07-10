@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import { http, HttpResponse } from "msw";
 
-// eslint-disable-next-line import/no-unresolved
 import { server } from "vitest/browser";
 
 const { readFile } = server.commands;
