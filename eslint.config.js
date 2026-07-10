@@ -319,17 +319,6 @@ export default defineConfig([
     rules: { "compat/compat": "off" },
   },
   {
-    // A Program-level rule (its violation is always reported at 1:1), so no
-    // inline eslint-disable comment can suppress it without also being
-    // flagged as unused by `reportUnusedDisableDirectives`. Two shadow-DOM
-    // custom element classes are genuinely needed here.
-    name: "alloy/browser-test/select-nodes-with-shadow-classes",
-    files: [
-      "packages/browser/test/unit/specs/utils/dom/selectNodesWithShadow.spec.js",
-    ],
-    rules: { "max-classes-per-file": "off" },
-  },
-  {
     name: "alloy/browser-src",
     files: ["packages/browser/src/**/*.{cjs,js,mjs,jsx}"],
     rules: {
