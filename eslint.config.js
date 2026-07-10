@@ -49,8 +49,6 @@ export default defineConfig([
     "launch*.js",
     "packages/reactor-extension/dist/**",
     "packages/reactor-extension/src/lib/runAlloy.js",
-    "packages/core/test/**",
-    "packages/browser/test/**",
     "**/scripts/**/*.mjs",
   ]),
   // License: warn only
@@ -316,6 +314,11 @@ export default defineConfig([
     },
   },
   {
+    name: "alloy/browser-test/no-compat",
+    files: ["packages/browser/test/**/*.{cjs,js,mjs,jsx}"],
+    rules: { "compat/compat": "off" },
+  },
+  {
     // A Program-level rule (its violation is always reported at 1:1), so no
     // inline eslint-disable comment can suppress it without also being
     // flagged as unused by `reportUnusedDisableDirectives`. Two shadow-DOM
@@ -357,6 +360,7 @@ export default defineConfig([
   {
     name: "alloy/tests",
     files: ["packages/**/test/**/*.{cjs,js,mjs,jsx}"],
+    languageOptions: { globals: { ...globals.node } },
     rules: {
       "import/extensions": [
         "error",
@@ -399,6 +403,47 @@ export default defineConfig([
         fixture: "readonly",
         ...globals.node,
       },
+    },
+  },
+  {
+    name: "alloy/core-tests-browser-globals",
+    files: ["packages/core/test/**/*.{cjs,js,mjs,jsx}"],
+    ignores: [
+      "packages/core/test/**/specs/components/BrandConcierge/**",
+      "packages/core/test/**/specs/components/RulesEngine/**",
+    ],
+    languageOptions: {
+      globals: { ...globals.browser },
+    },
+  },
+  {
+    // TODO(UJS): these core component tests still assume browser globals
+    // (window/document); migrate them to platformServices mocks. Declare the
+    // globals so no-undef still catches genuine typos here, and surface the
+    // leakage via no-restricted-globals warnings so the migration debt stays
+    // visible without failing CI.
+    name: "alloy/core-tests-browser-leakage",
+    files: [
+      "packages/core/test/**/specs/components/BrandConcierge/**/*.{cjs,js,mjs,jsx}",
+      "packages/core/test/**/specs/components/RulesEngine/**/*.{cjs,js,mjs,jsx}",
+    ],
+    languageOptions: {
+      globals: { ...globals.browser },
+    },
+    rules: {
+      "no-restricted-globals": [
+        "warn",
+        {
+          name: "window",
+          message:
+            "Use platformServices mocks instead of browser globals in core tests. See UNIVERSAL_JS_MIGRATION.md.",
+        },
+        {
+          name: "document",
+          message:
+            "Use platformServices mocks instead of browser globals in core tests. See UNIVERSAL_JS_MIGRATION.md.",
+        },
+      ],
     },
   },
   {
