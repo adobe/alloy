@@ -34,12 +34,12 @@ const ORG_ID = "5BFE274A5F6980A50A495C08@AdobeOrg";
 const ECID_REGEX = /^\d{30,40}$/;
 
 // TS must be within 300s of now or alloy rejects the adobe_mc value
-function createAdobeMC(ecid, orgId = ORG_ID) {
+const createAdobeMC = (ecid, orgId = ORG_ID) => {
   const ts = Math.floor(Date.now() / 1000);
   return encodeURIComponent(`TS=${ts}|MCMID=${ecid}|MCORGID=${orgId}`);
-}
+};
 
-function createRandomEcid() {
+const createRandomEcid = () => {
   const buf = new Uint8Array(16);
   crypto.getRandomValues(buf);
   // eslint-disable-next-line no-bitwise
@@ -50,7 +50,7 @@ function createRandomEcid() {
   const hi = view.getBigUint64(0, false).toString().padStart(19, "0");
   const lo = view.getBigUint64(8, false).toString().padStart(19, "0");
   return hi + lo;
-}
+};
 
 // Legacy ECID lives in xdm.identityMap (request-level), not events[0].xdm.identityMap
 const createMigrationSendEventHandler = () =>
