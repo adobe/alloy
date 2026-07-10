@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { http, HttpResponse } from "msw";
-// eslint-disable-next-line import/no-unresolved
+
 import { server } from "vitest/browser";
 import {
   test,
@@ -38,17 +38,17 @@ const { readFile } = server.commands;
 // Like the original functional tests, these run against the real int edge by
 // leaving /interact unhandled (the worker uses onUnhandledRequest: "bypass"),
 // so they require edge access and return non-deterministic ECIDs.
-function ecidFromResponse(call) {
+const ecidFromResponse = (call) => {
   return call?.response?.body?.handle
     ?.find((h) => h.type === "identity:result")
     ?.payload?.find((p) => p.namespace?.code === "ECID")?.id;
-}
+};
 
-async function reinitializeAlloy() {
+const reinitializeAlloy = async () => {
   cleanAlloy();
   await setupBaseCode();
   await setupAlloy();
-}
+};
 
 // The ECID that all mock responses return
 const MOCK_ECID = "41861666193140161934276845651148876988";
@@ -209,7 +209,7 @@ const acquireConfigOverrideErrorHandler = http.post(
   },
 );
 
-function getCookieValue(name) {
+const getCookieValue = (name) => {
   return document.cookie
     .split(";")
     .map((c) => c.trim())
@@ -217,16 +217,16 @@ function getCookieValue(name) {
     ?.split("=")
     .slice(1)
     .join("=");
-}
+};
 
-function createAdobeMC({ id, timestamp, orgId } = {}) {
+const createAdobeMC = ({ id, timestamp, orgId } = {}) => {
   const ts = timestamp !== undefined ? timestamp : Date.now() / 1000;
   const mcmid = id || createRandomEcid();
   const mcorgid = orgId || alloyConfig.orgId;
   return encodeURIComponent(`TS=${ts}|MCMID=${mcmid}|MCORGID=${mcorgid}`);
-}
+};
 
-function createRandomEcid() {
+const createRandomEcid = () => {
   const buf = new Uint8Array(16);
   crypto.getRandomValues(buf);
   // Mask high bit of each 8-byte half to keep values within signed 64-bit range
@@ -238,7 +238,7 @@ function createRandomEcid() {
   const hi = view.getBigUint64(0, false).toString().padStart(19, "0");
   const lo = view.getBigUint64(8, false).toString().padStart(19, "0");
   return hi + lo;
-}
+};
 
 describe("C2581: Queue requests until ECID is received", () => {
   beforeEach(async () => {
