@@ -14,11 +14,11 @@ import packageJson from "../../../../package.json";
 import {
   ADOBE_JOURNEY_OPTIMIZER,
   ADOBE_TARGET,
-} from "../../../../../core/src/constants/decisionProvider.js";
+} from "@adobe/alloy-core/constants/decisionProvider.js";
 import {
   ALWAYS,
   NEVER,
-} from "../../../../../core/src/constants/propositionInteractionType.js";
+} from "@adobe/alloy-core/constants/propositionInteractionType.js";
 
 const LIBRARY_VERSION = packageJson.version;
 
