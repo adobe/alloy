@@ -62,6 +62,7 @@ describe("Context", () => {
     expect(xdm.device).toBeFalsy();
     expect(xdm.placeContext).toBeFalsy();
     expect(xdm.environment).toBeFalsy();
+    expect(xdm?.environment?.browserDetails?.userAgentClientHints).toBeFalsy();
   });
 
   test("C2599 - adds only device context data when only device context is configured", async ({
@@ -90,6 +91,7 @@ describe("Context", () => {
     expect(xdm.web.webPageDetails).toBeTruthy();
     expect(xdm.placeContext).toBeFalsy();
     expect(xdm.environment).toBeFalsy();
+    expect(xdm?.environment?.browserDetails?.userAgentClientHints).toBeFalsy();
   });
 
   test("C2600 - adds only environment context data when only environment context is configured", async ({
