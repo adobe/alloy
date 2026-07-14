@@ -195,12 +195,6 @@ describe("IAB TCF consent", () => {
     expect(interactCalls.length).toBe(1);
   });
 
-  // C224675: Passing invalid consent options should throw a validation error
-  // These tests rely on server-side 400/422 responses (EXEG-0102-400, EXEG-0103-400, EXEG-0104-422).
-  // The MSW setConsentHandler mock does not replicate per-request server-side validation errors,
-  // so the server-side rejection assertions are skipped.
-  test.skip("C224675: invalid IAB consent standard/version/value produces server 400/422 (requires live edge endpoint)", () => {});
-
   // C224676: Passing a positive Consent in the sendEvent command (consentStrings in xdm)
   test("C224676: positive IAB consent strings in sendEvent XDM succeed", async ({
     alloy,
