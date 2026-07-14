@@ -316,7 +316,10 @@ describe("createSendConversationEvent", () => {
     };
 
     const sendConversationEvent = createSendConversationEvent(mockDependencies);
-    await sendConversationEvent({ message: "Hello", onStreamResponse: vi.fn() });
+    await sendConversationEvent({
+      message: "Hello",
+      onStreamResponse: vi.fn(),
+    });
 
     expect(
       mockDependencies.cookieTransfer.cookiesToPayload,
@@ -342,7 +345,10 @@ describe("createSendConversationEvent", () => {
     };
 
     const sendConversationEvent = createSendConversationEvent(mockDependencies);
-    await sendConversationEvent({ message: "Hello", onStreamResponse: vi.fn() });
+    await sendConversationEvent({
+      message: "Hello",
+      onStreamResponse: vi.fn(),
+    });
 
     expect(
       mockDependencies.cookieTransfer.cookiesToPayload,

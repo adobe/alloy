@@ -63,7 +63,9 @@ describe("createCookieTransfer", () => {
     it("includes extra cookies even when endpoint is first-party", () => {
       build();
       cookieJar.get.mockReturnValue({ munchkin: "abc123" });
-      cookieTransfer.cookiesToPayload(payload, "edge.example.com", ["munchkin"]);
+      cookieTransfer.cookiesToPayload(payload, "edge.example.com", [
+        "munchkin",
+      ]);
       expect(payload.mergeState).toHaveBeenCalledWith({
         domain: apexDomain,
         cookiesEnabled: true,
