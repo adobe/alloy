@@ -23,9 +23,8 @@ import {
 import alloyConfig from "../../helpers/alloy/config.js";
 import deleteCookies from "../../helpers/utils/deleteCookies.js";
 import { withTemporaryUrl } from "../../helpers/utils/location.js";
-import setupAlloy from "../../helpers/alloy/setup.js";
-import setupBaseCode from "../../helpers/alloy/setupBaseCode.js";
-import cleanAlloy from "../../helpers/alloy/clean.js";
+import reloadAlloy from "../../helpers/alloy/reload.js";
+import { demdexHandler } from "../../helpers/mswjs/handlers.js";
 import {
   MAIN_IDENTITY_COOKIE_NAME,
   LEGACY_IDENTITY_COOKIE_NAME,
@@ -44,19 +43,17 @@ const ecidFromResponse = (call) => {
     ?.payload?.find((p) => p.namespace?.code === "ECID")?.id;
 };
 
-const reinitializeAlloy = async () => {
-  cleanAlloy();
-  await setupBaseCode();
-  await setupAlloy();
-};
-
 // The ECID that all mock responses return
 const MOCK_ECID = "41861666193140161934276845651148876988";
+const DEMDEX_ECID = "75142138344462263894507331812511658810";
+const MOCK_CORE = "71265032074538902643759651525003437623";
 
 // A valid kndctr identity cookie value whose protobuf decodes to MOCK_ECID.
 // Same value the mock responses write via state:store.
 const KNOWN_IDENTITY_COOKIE_VALUE =
   "CiY0MTg2MTY2NjE5MzE0MDE2MTkzNDI3Njg0NTY1MTE0ODg3Njk4OFIQCM68vcXoMhgBKgNPUjIwAaAB0ry9xegysAHCqAHwAc68vcXoMg==";
+const DEMDEX_IDENTITY_COOKIE_VALUE =
+  "CiY3NTE0MjEzODM0NDQ2MjI2Mzg5NDUwNzMzMTgxMjUxMTY1ODgxMFIQCM68vcXoMhgBKgNPUjIwAaAB0ry9xegysAG8swHwAc68vcXoMg==";
 
 const interactWithIdentityHandler = http.post(
   /https:\/\/edge\.adobedc\.net\/ee\/.*\/?v1\/interact/,
@@ -75,30 +72,68 @@ const interactWithIdentityHandler = http.post(
   },
 );
 
-const interactInvalidIdErrorHandler = http.post(
-  /https:\/\/edge\.adobedc\.net\/ee\/.*\/?v1\/interact/,
-  async ({ request }) => {
-    const body = await request.json();
-    const bodyStr = JSON.stringify(body);
-    if (bodyStr.includes("INVALID_ID")) {
-      return HttpResponse.json(
+const createFailFirstInteractHandler = () => {
+  let isFirstRequest = true;
+  return http.post(
+    /https:\/\/edge\.adobedc\.net\/ee\/.*\/?v1\/interact/,
+    async () => {
+      if (isFirstRequest) {
+        isFirstRequest = false;
+        return HttpResponse.json(
+          {
+            type: "https://ns.adobe.com/aep/errors/EXEG-0003-400",
+            status: 400,
+            title: "Invalid request",
+            detail: "INVALID_ID is not a valid ECID value.",
+            report: {},
+          },
+          { status: 400 },
+        );
+      }
+      return new HttpResponse(
+        await readFile(
+          `${server.config.root}/packages/browser/test/integration/helpers/mocks/sendEventWithIdentityCookieResponse.json`,
+        ),
         {
-          type: "https://ns.adobe.com/aep/errors/EXEG-0003-400",
-          status: 400,
-          title: "Invalid request",
-          detail: "INVALID_ID is not a valid ECID value.",
-          report: {},
+          headers: {
+            "Content-Type": "application/json",
+            "x-adobe-edge": "or2;35",
+          },
         },
-        { status: 400 },
       );
-    }
-    return new HttpResponse(
-      await readFile(
-        `${server.config.root}/packages/browser/test/integration/helpers/mocks/sendEventWithIdentityCookieResponse.json`,
-      ),
+    },
+  );
+};
+
+const coreAcquireHandler = http.post(
+  /https:\/\/(?:adobedc\.demdex\.net|edge\.adobedc\.net)\/ee\/.*\/?v1\/identity\/acquire/,
+  () => {
+    return HttpResponse.json(
+      {
+        requestId: "core-acquire-response",
+        handle: [
+          {
+            payload: [
+              { id: MOCK_ECID, namespace: { code: "ECID" } },
+              { id: MOCK_CORE, namespace: { code: "CORE" } },
+            ],
+            type: "identity:result",
+          },
+          {
+            payload: [
+              {
+                key: MAIN_IDENTITY_COOKIE_NAME,
+                value: KNOWN_IDENTITY_COOKIE_VALUE,
+                maxAge: 34128000,
+                attrs: { SameSite: "None" },
+              },
+            ],
+            type: "state:store",
+          },
+        ],
+      },
       {
         headers: {
-          "Content-Type": "application/json",
           "x-adobe-edge": "or2;35",
         },
       },
@@ -551,36 +586,111 @@ describe("C5594872: An expired adobe_mc query string parameter is not used", () 
   });
 });
 
-// C5594865 verifies an ECID established on one domain is carried to a second
-// domain: alloy appends an `adobe_mc` param to a cross-domain link and the
-// destination page consumes it, yielding the same ECID. This requires
-// navigating between two distinct origins; the integration harness runs on a
-// single blank page and `withTemporaryUrl` rejects cross-origin URLs
-// (helpers/utils/location.js:38). Single-page `adobe_mc` consumption is already
-// covered by C5594871/C5594872.
 describe("C5594865: Identity maintained across domains via adobe_mc", () => {
-  test.skip("a second domain reuses the ECID passed via adobe_mc", () => {
-    // Skipped: needs multi-origin navigation (see note above).
+  test("a fresh domain state reuses the ECID passed via adobe_mc", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(interactWithIdentityHandler);
+    const config = { ...alloyConfig, thirdPartyCookiesEnabled: false };
+
+    await alloy("configure", config);
+    await alloy("sendEvent");
+    const { url } = await alloy("appendIdentityToUrl", {
+      url: "https://secondary.example.test/",
+    });
+    expect(new URL(url).searchParams.get("adobe_mc")).toContain(MOCK_ECID);
+
+    await deleteCookies();
+    networkRecorder.reset();
+    await reloadAlloy();
+    await withTemporaryUrl(async ({ applyUrl, currentHref }) => {
+      const destinationUrl = new URL(currentHref);
+      destinationUrl.search = new URL(url).search;
+      applyUrl(destinationUrl);
+      await window.alloy("configure", config);
+      await window.alloy("sendEvent");
+    });
+
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    expect(call.request.body.xdm.identityMap.ECID[0].id).toBe(MOCK_ECID);
+    expect((await window.alloy("getIdentity")).identity.ECID).toBe(MOCK_ECID);
   });
 });
 
-// C5594866 verifies that a *different* identity supplied via `adobe_mc` on a
-// second domain overrides the existing ECID, and that the new ECID then
-// persists across a page reload. Same blocker as C5594865: multi-origin
-// navigation is unavailable here (`withTemporaryUrl` is same-origin only).
 describe("C5594866: Identity changed across domains via adobe_mc", () => {
-  test.skip("a different adobe_mc identity overrides the existing ECID", () => {
-    // Skipped: needs multi-origin navigation (see note above).
+  test("a different domain identity overrides the existing ECID and persists", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(interactWithIdentityHandler);
+    const config = { ...alloyConfig, thirdPartyCookiesEnabled: false };
+
+    document.cookie = `${MAIN_IDENTITY_COOKIE_NAME}=${DEMDEX_IDENTITY_COOKIE_VALUE}; path=/`;
+    await alloy("configure", config);
+    expect((await alloy("getIdentity")).identity.ECID).toBe(DEMDEX_ECID);
+
+    await deleteCookies();
+    await reloadAlloy();
+    await window.alloy("configure", config);
+    await window.alloy("sendEvent");
+    const { url } = await window.alloy("appendIdentityToUrl", {
+      url: "https://primary.example.test/",
+    });
+
+    await deleteCookies();
+    networkRecorder.reset();
+    await reloadAlloy();
+    await withTemporaryUrl(async ({ applyUrl, currentHref }) => {
+      const destinationUrl = new URL(currentHref);
+      destinationUrl.search = new URL(url).search;
+      applyUrl(destinationUrl);
+      await window.alloy("configure", config);
+      await window.alloy("sendEvent");
+    });
+
+    const changedCall = await networkRecorder.findCall(/v1\/interact/);
+    expect(changedCall.request.body.xdm.identityMap.ECID[0].id).toBe(MOCK_ECID);
+
+    networkRecorder.reset();
+    await reloadAlloy();
+    await window.alloy("configure", config);
+    expect((await window.alloy("getIdentity")).identity.ECID).toBe(MOCK_ECID);
+    expect(
+      await networkRecorder.findCalls(/v1\/identity\/acquire/),
+    ).toHaveLength(0);
   });
 });
 
-// C15325238 verifies that when a URL carries multiple `adobe_mc` parameters the
-// last one wins. The functional test builds that state by appending identity
-// across successive cross-domain navigations. Not migratable: multi-origin
-// navigation is unavailable here (`withTemporaryUrl` is same-origin only).
 describe("C15325238: Last adobe_mc parameter wins", () => {
-  test.skip("the final adobe_mc parameter determines the ECID", () => {
-    // Skipped: needs multi-origin navigation (see note above).
+  test("the final adobe_mc parameter determines the ECID", async ({
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(interactWithIdentityHandler);
+    await deleteCookies();
+    await reloadAlloy();
+
+    await withTemporaryUrl(async ({ applyUrl, currentHref }) => {
+      const url = new URL(currentHref);
+      url.searchParams.append(
+        "adobe_mc",
+        createAdobeMC({ id: createRandomEcid() }),
+      );
+      url.searchParams.append("adobe_mc", createAdobeMC({ id: MOCK_ECID }));
+      applyUrl(url);
+      await window.alloy("configure", {
+        ...alloyConfig,
+        thirdPartyCookiesEnabled: false,
+      });
+      await window.alloy("sendEvent");
+    });
+
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    expect(call.request.body.xdm.identityMap.ECID[0].id).toBe(MOCK_ECID);
+    expect((await window.alloy("getIdentity")).identity.ECID).toBe(MOCK_ECID);
   });
 });
 
@@ -681,7 +791,7 @@ describe("C6842980: FPID from the identityMap is used to generate an ECID", () =
     // functional reloadPage), then send the same FPID again.
     await deleteCookies();
     networkRecorder.reset();
-    await reinitializeAlloy();
+    await reloadAlloy();
 
     await window.alloy("configure", liveConfig);
     await window.alloy("sendEvent", fpidEvent);
@@ -793,19 +903,12 @@ describe("C14699834: Identity is still established if the first request fails", 
     await deleteCookies();
   });
 
-  // Skipped: when a user provides xdm.identityMap.ECID = [{id: "INVALID_ID"}]
-  // in the first request, alloy caches the user-provided identity. The second
-  // sendEvent still includes "INVALID_ID" in the request body (via alloy's
-  // internal identity state), causing the mock handler to return 400 again.
-  // This may indicate alloy should clear the identity cache after a 400 error,
-  // or the test design needs refinement to not use a string-matching handler.
-  // TODO: Investigate alloy identity cache behavior after 400 responses.
-  test.skip("identity established after a failed sendEvent", async ({
+  test("identity established after a failed sendEvent", async ({
     alloy,
     worker,
     networkRecorder,
   }) => {
-    worker.use(interactInvalidIdErrorHandler);
+    worker.use(createFailFirstInteractHandler());
 
     await alloy("configure", {
       ...alloyConfig,
@@ -1003,28 +1106,53 @@ describe("C19160486: CORE identity namespace behavior", () => {
     );
   });
 
-  // The remaining functional C19160486 sub-cases all require a CORE identity,
-  // which Experience Edge only mints via the demdex domain when third-party
-  // cookies are enabled and supported. That path depends on
-  // areThirdPartyCookiesSupported() detection (environment-dependent in headless
-  // Playwright), and the cross-domain cases additionally need multi-origin
-  // navigation — the same blockers as C10922. Stubbed rather than faked. The
-  // ECID-from-cookie behavior these also touched is covered for real by
-  // C21636438.
-  test.skip("CORE identity is the same across domains when getIdentity is called first", () => {
-    // Skipped: requires CORE (demdex/3p-cookie) + multi-origin navigation.
+  test("ECID and CORE can be requested separately", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(coreAcquireHandler);
+    await alloy("configure", {
+      ...alloyConfig,
+      thirdPartyCookiesEnabled: true,
+    });
+
+    const ecidResult = await alloy("getIdentity", { namespaces: ["ECID"] });
+    expect(ecidResult.identity).toEqual({ ECID: MOCK_ECID });
+    const firstCall = await networkRecorder.findCall(/v1\/identity\/acquire/);
+    expect(firstCall.request.body.query.identity.fetch).toEqual([
+      "ECID",
+      "CORE",
+    ]);
+
+    const coreResult = await alloy("getIdentity", {
+      namespaces: ["CORE"],
+    });
+    expect(coreResult.identity).toEqual({ CORE: MOCK_CORE });
+    expect(
+      await networkRecorder.findCalls(/v1\/identity\/acquire/),
+    ).toHaveLength(1);
   });
 
-  test.skip("CORE identity is the same across domains when called after sendEvent", () => {
-    // Skipped: requires CORE (demdex/3p-cookie) + multi-origin navigation.
-  });
+  test("CORE identity is returned when ECID is read from the identity cookie", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    document.cookie = `${MAIN_IDENTITY_COOKIE_NAME}=${KNOWN_IDENTITY_COOKIE_VALUE}; path=/`;
+    worker.use(coreAcquireHandler);
+    await alloy("configure", {
+      ...alloyConfig,
+      thirdPartyCookiesEnabled: true,
+    });
 
-  test.skip("ECID and CORE can be requested separately", () => {
-    // Skipped: requires a CORE identity (demdex/3p-cookie support).
-  });
-
-  test.skip("CORE identity is returned from the identity cookie", () => {
-    // Skipped: requires a CORE identity (demdex/3p-cookie support).
+    const result = await alloy("getIdentity", {
+      namespaces: ["ECID", "CORE"],
+    });
+    expect(result.identity).toEqual({ ECID: MOCK_ECID, CORE: MOCK_CORE });
+    const call = await networkRecorder.findCall(/v1\/identity\/acquire/);
+    expect(call.request.body.query.identity.fetch).toEqual(["ECID", "CORE"]);
+    expect(call.request.body.xdm).toBeUndefined();
   });
 });
 
@@ -1132,42 +1260,92 @@ describe("Legacy identity cookie migration (migrationEnabled)", () => {
   });
 });
 
-// C10922 verifies demdex routing: with third-party cookies enabled and
-// supported, the *first* edge request is routed through the demdex domain (so
-// demdex can seed the third-party cookie), and after a reload — once an identity
-// cookie exists — demdex is skipped. A demdex MSW handler and mock already
-// exist (helpers/mswjs/handlers.js, demdexResponse.json), so the network layer
-// is mockable; the blockers are (1) the functional assertion branches on
-// `areThirdPartyCookiesSupported()`, which is environment-dependent in headless
-// Playwright, and (2) the reload half requires a real page reload, which the
-// integration harness does not support. Passes in the functional baseline —
-// deferred coverage, not a failing test.
 describe("C10922: demdex is used for the first request", () => {
-  test.skip("first request routes through demdex, reload skips it", () => {
-    // Skipped: third-party-cookie detection + page reload (see note above).
+  test("first request routes through demdex, reload skips it", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(demdexHandler, interactWithIdentityHandler);
+    const config = { ...alloyConfig, thirdPartyCookiesEnabled: true };
+
+    await alloy("configure", config);
+    await alloy("sendEvent");
+    const firstCall = await networkRecorder.findCall(/v1\/interact/);
+    expect(firstCall.request.url).toContain("adobedc.demdex.net");
+    expect(getCookieValue(MAIN_IDENTITY_COOKIE_NAME)).toBeTruthy();
+
+    networkRecorder.reset();
+    await reloadAlloy();
+    await window.alloy("configure", config);
+    await window.alloy("sendEvent");
+    const secondCall = await networkRecorder.findCall(/v1\/interact/);
+    expect(secondCall.request.url).toContain(alloyConfig.edgeDomain);
+    expect(secondCall.request.url).not.toContain("demdex.net");
   });
 });
 
-// C21636436 verifies the ECID is preserved after a collect-beacon request
-// (`documentUnloading: true`, which routes to the /collect endpoint instead of
-// /interact). This is a known baseline failure in the functional suite
-// (FUNCTIONAL_MIGRATION_PLAN.md §1, "ECID after collect beacon" among the 17
-// pre-existing failures), and the integration harness has no collect-endpoint
-// asserter ported yet (plan §4). Not porting a failing test.
 describe("C21636436: ECID preserved after a collect beacon", () => {
-  test.skip("ECID is unchanged after a documentUnloading collect call", () => {
-    // Skipped: known baseline failure + no collect-endpoint asserter (see note above).
+  test("ECID is unchanged after a documentUnloading collect call", async ({
+    worker,
+  }) => {
+    worker.use(interactWithIdentityHandler);
+    const sendBeacon = vi
+      .spyOn(navigator, "sendBeacon")
+      .mockImplementation(() => true);
+    await reloadAlloy();
+
+    try {
+      await window.alloy("configure", {
+        ...alloyConfig,
+        thirdPartyCookiesEnabled: false,
+      });
+      await window.alloy("sendEvent");
+      const initialEcid = (
+        await window.alloy("getIdentity", { namespaces: ["ECID"] })
+      ).identity.ECID;
+
+      await window.alloy("sendEvent", {
+        documentUnloading: true,
+        xdm: { eventType: "test-event" },
+      });
+
+      expect(sendBeacon).toHaveBeenCalledOnce();
+      expect(sendBeacon.mock.calls[0][0]).toContain("/v1/collect");
+      expect(
+        (await window.alloy("getIdentity", { namespaces: ["ECID"] })).identity
+          .ECID,
+      ).toBe(initialEcid);
+    } finally {
+      sendBeacon.mockRestore();
+    }
   });
 });
 
-// C21636437 verifies demdex fallback: when third-party cookies are enabled and
-// the demdex request is blocked, alloy still completes a successful edge request
-// against the configured edge domain. Reproducing this needs the
-// `areThirdPartyCookiesSupported()` precondition (so demdex is attempted first)
-// plus a demdex request-failure hook; that precondition is environment-dependent
-// in headless Playwright. Passes in the functional baseline — deferred coverage.
 describe("C21636437: demdex fallback when demdex is blocked", () => {
-  test.skip("falls back to the edge domain when demdex is blocked", () => {
-    // Skipped: depends on third-party-cookie detection (see note above).
+  test("falls back to the edge domain when demdex is blocked", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(
+      http.post("https://adobedc.demdex.net/ee/v1/interact", () =>
+        HttpResponse.error(),
+      ),
+      interactWithIdentityHandler,
+    );
+    await alloy("configure", {
+      ...alloyConfig,
+      thirdPartyCookiesEnabled: true,
+    });
+    await alloy("sendEvent");
+
+    const calls = await networkRecorder.findCalls(/v1\/interact/, {
+      minCalls: 2,
+      retries: 15,
+    });
+    expect(calls[0].request.url).toContain("adobedc.demdex.net");
+    expect(calls[1].request.url).toContain(alloyConfig.edgeDomain);
+    expect(calls[1].response.status).toBe(200);
   });
 });
