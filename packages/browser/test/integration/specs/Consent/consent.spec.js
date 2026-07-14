@@ -817,11 +817,27 @@ describe("Consent", () => {
   });
 
   // C1576777: When identity cookie is missing, stored consent is cleared
-  // Skipped in both functional and integration tests — was already marked flaky in
-  // TestCafe. The behavior (clearing stored out-consent when identity cookie is missing)
-  // is tricky to verify reliably with MSW mocks because alloy's internal consent
-  // state reset depends on timing interactions between the identity and consent systems.
-  test.skip("C1576777: when identity cookie is missing, stored consent is cleared (flaky — skipped in original TestCafe suite)", () => {});
+  test("C1576777: stored consent is cleared after reload when the identity cookie is missing", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler, setConsentHandler);
+
+    await alloy("configure", alloyConfig);
+    await alloy("setConsent", CONSENT_OUT);
+    expect(await cookieStore.get(MAIN_CONSENT_COOKIE_NAME)).not.toBeNull();
+
+    await cookieStore.delete(MAIN_IDENTITY_COOKIE_NAME);
+    const alloy2 = await reloadAlloy();
+    await alloy2("configure", alloyConfig);
+
+    expect(await cookieStore.get(MAIN_CONSENT_COOKIE_NAME)).toBeNull();
+
+    await alloy2("sendEvent");
+    const interactCalls = await networkRecorder.findCalls(/v1\/interact/);
+    expect(interactCalls.length).toBe(1);
+  });
 
   // C1631712: Requests are dropped when default consent is out
   describe("C1631712: requests are dropped when defaultConsent is out", () => {
@@ -984,6 +1000,32 @@ describe("Consent", () => {
   });
 
   // C5594870: Identity can be set via the adobe_mc query string parameter when calling set-consent
-  // Requires a special URL with adobe_mc param and real ECID verification — skip in integration tests
-  test.skip("C5594870: identity can be set via adobe_mc query string parameter (requires special URL setup)", () => {});
+  test("C5594870: adobe_mc ECID is included in the set-consent request", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(setConsentHandler);
+
+    const ecid = "77094828402023918047117570965393734545";
+    await withTemporaryUrl(async ({ currentHref, applyUrl }) => {
+      const url = new URL(currentHref);
+      url.searchParams.set(
+        "adobe_mc",
+        `TS=${Date.now() / 1000}|MCMID=${ecid}|MCORGID=${alloyConfig.orgId}`,
+      );
+      applyUrl(url);
+
+      await alloy("configure", {
+        ...alloyConfig,
+        defaultConsent: "pending",
+      });
+      await alloy("setConsent", CONSENT_IN);
+
+      const [consentCall] = await networkRecorder.findCalls(
+        /v1\/privacy\/set-consent/,
+      );
+      expect(consentCall.request.body.identityMap.ECID[0].id).toBe(ecid);
+    });
+  });
 });
