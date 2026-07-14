@@ -31,7 +31,6 @@ const mockApi = (issueData = {}) => ({
     },
   })),
   searchIssues: vi.fn(async () => []),
-  getRemoteLinks: vi.fn(async () => []),
 });
 
 // Unique prefix per spec file avoids temp-file collisions when tests run in parallel.

@@ -13,30 +13,30 @@
 ## 3. Apply Script (`scripts/jira/apply.js`)
 
 - [x] 3.1 Create `scripts/jira/apply.js` as an ES module; require one positional `<filename>` argument; wire up `--dry-run` flag, `JIRA_API_TOKEN` guard, and `GITHUB_PR_URL`/`GITHUB_PR_TITLE` env-var validation (required only when `updates` is non-empty and not in dry-run)
-- [x] 3.2 Implement ticket key resolution: parse `{PROJECT}-{NUMBER}` from filename; for `XXXX` files, extract the `globalId` from the remotelink entry in `updates`; search JIRA for recent issues in parallel (fetching remote links for each via `Promise.all`); if any issue has a remote link matching that `globalId`, reuse that ticket key and PUT the create fields to it (idempotency); if not found, POST to create a new ticket
+- [x] 3.2 Implement ticket key resolution: parse `{PROJECT}-{KEYPART}` from filename; if `KEYPART` is numeric, it's an existing ticket key; if non-numeric, it's a `globalId` for a new ticket — search `project = {PROJECT} AND labels = "{globalId}"` to find an existing ticket before creating
 - [x] 3.3 If the file has no `updates` or an empty array: return the resolved ticket key with no API calls
-- [x] 3.4 Implement REST call executor: for each `updates` entry, serialize `body` from YAML to JSON and call JIRA API with `Authorization: Bearer`; fail fast on non-2xx; skip the `POST /rest/api/2/issue` create call for XXXX files (already handled in key resolution); use `eslint-disable-next-line no-await-in-loop` for intentionally sequential update loop
-- [x] 3.5 Remote link idempotency via per-ticket unique globalId: the YAML remotelink entry in `updates` carries a unique hex `globalId` string generated at propose time; apply does not auto-inject a remotelink — it is explicit in the `updates` array
+- [x] 3.4 Implement update loop: for each entry in `updates`, POST to `/rest/api/2/issue` runs only when no ticket key is known yet (create); all other methods run only when a ticket key is known; use `eslint-disable-next-line no-await-in-loop` for intentionally sequential updates
+- [x] 3.5 Auto-create a remote link from the ticket to the PR after processing all updates; use the PR URL as the remote link `globalId` (idempotent — JIRA deduplicates by globalId); no remotelink entry needed in the YAML
 - [x] 3.6 Interpolate `{GITHUB_PR_URL}` and `{GITHUB_PR_TITLE}` placeholders in all `body` values before sending
-- [x] 3.7 Add `--dry-run` output: log planned non-GET API calls and the resolved key without making mutating HTTP requests; read queries (searchIssues, getRemoteLinks) always run even in dry-run to give accurate previews
+- [x] 3.7 Add `--dry-run` output: log planned non-GET API calls without making mutating HTTP requests; label search (`searchIssues`) still runs in dry-run to give an accurate preview
 - [x] 3.8 Export `applyFile` for use by `process.js`; script entry point only executes when run directly
 
-## 3b. API Factory (`scripts/jira/api.js`)
+## 3b. Config and API Factory
 
-- [x] 3b.1 Create `scripts/jira/api.js` exporting a `createApi({ dryRun, baseUrl, token })` factory for dependency injection in tests
-- [x] 3b.2 Expose `request(method, path, body)`, `searchIssues(jql, opts)`, `getRemoteLinks(key)` — dryRun only blocks non-GET requests
+- [x] 3b.1 Create `scripts/jira/config.js` with `JIRA_BASE_URL` and `JIRA_API_TOKEN` from env; all jira scripts import from `./config.js` (not `../team/config.js`)
+- [x] 3b.2 Create `scripts/jira/api.js` exporting a `createApi({ dryRun, baseUrl, token })` factory for dependency injection in tests; expose `request(method, path, body)` and `searchIssues(jql, opts)` — dryRun only blocks non-GET requests
 
 ## 3c. Process Orchestrator (`scripts/jira/process.js`)
 
-- [x] 3c.1 Create `scripts/jira/process.js` that calls `applyFile` then `fetchFile` for a single `.jira/*.yml` file; handles XXXX→real-key filename rename (deletes placeholder, creates new file); skips files with no updates; used by both the build workflow loop and as a CLI entry point
-- [x] 3c.2 Export `processFile` for unit tests; vitest suite covers: no-updates skip, nonexistent file, existing ticket update, XXXX→real-key rename
+- [x] 3c.1 Create `scripts/jira/process.js` that calls `applyFile` then `fetchFile` for a single `.jira/*.yml` file; handles globalId→real-key filename rename (deletes placeholder, creates new file); skips files with no updates; used by both the build workflow loop and as a CLI entry point
+- [x] 3c.2 Export `processFile` for unit tests; vitest suite covers: no-updates skip, nonexistent file, existing ticket update, globalId→real-key rename
 
 ## 4. Build Workflow Integration (`.github/workflows/version-and-publish.yml`)
 
 - [x] 4.1 Add a new `apply-jira` job to `version-and-publish.yml` that runs on every push to `main`; use `Production` environment for `JIRA_API_TOKEN` access
 - [x] 4.2 Add step to extract `GITHUB_PR_URL` and `GITHUB_PR_TITLE` (not PR number) from the merged PR via `gh pr list --state merged`
 - [x] 4.3 Add step to detect changed `.jira/*.yml` files via `git diff HEAD^1 HEAD --name-only -- '.jira/*.yml'`; skip remaining steps if none
-- [x] 4.4 Add loop step: for each changed file, run `node scripts/jira/process.js "$file"` (which handles apply + fetch + XXXX rename internally); capture printed ticket key
+- [x] 4.4 Add loop step: for each changed file, run `node scripts/jira/process.js "$file"` (which handles apply + fetch + globalId rename internally); capture printed ticket key
 - [x] 4.5 Add a step after apply-jira that posts a PR comment listing all JIRA tickets created or updated (using `gh pr comment`)
 - [x] 4.6 Add a commit step that stages all `.jira/` changes and commits with `[skip ci]`; the `publish` job declares `needs: [apply-jira]` so JIRA and changeset changes are coordinated
 
@@ -44,7 +44,7 @@
 
 - [x] 5.1 Create `.claude/skills/jira-propose/SKILL.md` skill file with instructions for the propose action (skills can be invoked automatically by the agent; commands cannot)
 - [x] 5.2 Implement logic to scan `.jira/*.yml` files and match against current git diff, branch name, and recent commit messages
-- [x] 5.3 Implement new-ticket YAML generation: populate `summary`, `description` (including business value: customer names, who benefits, elevator-pitch value statement), `issuetype`, `project`, `components`, `customfield_23300` with defaults from `scripts/team/api.js` ISSUE_TEMPLATES; include inline YAML comments for custom fields; generate a unique hex `globalId` per ticket for the remotelink entry
+- [x] 5.3 Implement new-ticket YAML generation: populate `summary`, `description`, `issuetype`, `project`, `components`, `customfield_23300`; generate a unique 8-char hex `globalId` per ticket — placed in `labels` on the create body (enables idempotency lookup) and embedded in the filename; no remotelink entry needed in `updates` (apply adds it automatically)
 - [x] 5.4 Implement existing-ticket update: when a match is found, append or replace the `updates` array in the existing file
 - [x] 5.5 Implement issue-type heuristic: default to `story` (id `7`); use `bug` (id `1`) when commit messages or diff context suggest a fix
 

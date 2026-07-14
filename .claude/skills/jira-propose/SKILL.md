@@ -77,7 +77,7 @@ updates:
 - After merge, the build replaces the file with `PDCL-<real-number>-<short-description>.yml`
 
 **Description guidelines:**
-- Lead with who benefits (e.g., "Analytics customers using the Web SDK...")
+- Lead with who benefits — use specific customer names if you know them from context or prior conversations (e.g., "Adobe Analytics customers at Marriott and Delta..." rather than just "Analytics customers...")
 - Explain the problem being solved
 - State the business value / outcome (e.g., "This eliminates the need for manual re-configuration after...")
 - Keep to 2–4 sentences
@@ -115,18 +115,9 @@ After writing the file, tell the user:
 - The proposed summary
 - What will happen when the PR merges (apply.js will execute the updates, then replace the file with a real-key filename)
 
-## Reference: PDCL custom fields
+## Reference
 
-| Field | ID / value |
-|-------|-----------|
-| Project key | `PDCL` |
-| AEP Web SDK component | `components[].id: "155901"` |
-| Documentation component | `components[].id: "157512"` |
-| Product field (`customfield_23300`) | `id: "116005"` |
-| Story issue type | `issuetype.id: "7"` |
-| Bug issue type | `issuetype.id: "1"` |
-| Documentation issue type | `issuetype.id: "14801"` |
-| JIRA base URL | `https://jira.corp.adobe.com` |
+See [`.jira/README.md`](../../../.jira/README.md) for the full custom field reference (project key, component IDs, issue type IDs, JIRA base URL, and example YAML).
 
 ## Constraints
 

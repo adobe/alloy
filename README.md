@@ -23,7 +23,7 @@ Check out the [contribution guidelines](CONTRIBUTING.md) for quick start informa
 
 ## JIRA ticket management
 
-JIRA changes are version-controlled as YAML files in [`.jira/`](./.jira/). See [`.jira/README.md`](./.jira/README.md) for the full workflow.
+All PRs should reference a JIRA ticket. JIRA changes are version-controlled as YAML files in [`.jira/`](./.jira/). See [`.jira/README.md`](./.jira/README.md) for the full workflow.
 
 **Quick start:**
 1. Run `/jira-propose` in Claude Code to create or update a `.jira/` ticket file

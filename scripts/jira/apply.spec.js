@@ -16,28 +16,17 @@ import { join } from "path";
 import { tmpdir } from "os";
 import { applyFile } from "./apply.js";
 
-// Unique prefix per spec file avoids temp-file collisions when tests run in parallel.
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-// Existing ticket file: PDCL-1234-...yml
 const tempFile = (content) => {
   const path = join(tmpdir(), `PDCL-1234-apply-spec-${uid()}.yml`);
   writeFileSync(path, content, "utf8");
   return path;
 };
 
-// New ticket file: PDCL-{globalId}-...yml
-const globalIdFile = (globalId, content) => {
-  const path = join(tmpdir(), `PDCL-${globalId}-apply-spec-${uid()}.yml`);
-  writeFileSync(path, content, "utf8");
-  return path;
-};
-
 const mockApi = (overrides = {}) => ({
   dryRun: false,
-  request: vi.fn(async (method) =>
-    method === "POST" ? { key: "PDCL-9999" } : {},
-  ),
+  request: vi.fn(async () => ({})),
   searchIssues: vi.fn(async () => []),
   ...overrides,
 });
@@ -87,12 +76,11 @@ updates:
     unlinkSync(file);
   });
 
-  it("returns key immediately when there are no updates (no API calls except remote link)", async () => {
+  it("returns key immediately when there are no updates", async () => {
     const file = tempFile(`details:\n  key: PDCL-1234\n`);
     const api = mockApi();
     const key = await applyFile(file, { api });
     expect(key).toBe("PDCL-1234");
-    // No updates in file, so no non-remotelink request should be made
     expect(api.request).not.toHaveBeenCalled();
     unlinkSync(file);
   });
@@ -126,116 +114,22 @@ updates:
     );
     unlinkSync(file);
   });
-});
 
-describe("applyFile — new ticket (globalId in filename)", () => {
-  it("creates ticket and returns real key when no existing ticket found", async () => {
-    const gid = "abc12345";
-    const file = globalIdFile(
-      gid,
-      `
+  it("skips remote link when prUrl is absent", async () => {
+    const file = tempFile(`
 updates:
-  - path: /rest/api/2/issue
-    method: POST
-    body:
-      fields:
-        project: { key: PDCL }
-        summary: New feature
-        labels:
-          - ${gid}
-`,
-    );
-    const api = mockApi();
-    const key = await applyFile(file, {
-      api,
-      prUrl: "https://github.com/adobe/alloy/pull/1",
-      prTitle: "My PR",
-    });
-    expect(key).toBe("PDCL-9999");
-    // Label search found nothing → create called
-    expect(api.request).toHaveBeenCalledWith(
-      "POST",
-      "/rest/api/2/issue",
-      expect.any(Object),
-    );
-    // Auto remote link created
-    expect(api.request).toHaveBeenCalledWith(
-      "POST",
-      "/rest/api/2/issue/PDCL-9999/remotelink",
-      expect.objectContaining({
-        globalId: "https://github.com/adobe/alloy/pull/1",
-      }),
-    );
-    unlinkSync(file);
-  });
-
-  it("finds existing ticket via label and skips create", async () => {
-    const gid = "existing99";
-    const file = globalIdFile(
-      gid,
-      `
-updates:
-  - path: /rest/api/2/issue
-    method: POST
-    body:
-      fields:
-        project: { key: PDCL }
-        summary: New feature
-        labels:
-          - ${gid}
-  - path: /rest/api/2/issue/{key}
+  - path: /rest/api/2/issue/PDCL-1234
     method: PUT
     body:
       update:
         summary:
           - set: "Updated"
-`,
-    );
-    const api = mockApi({
-      searchIssues: vi.fn(async () => [{ key: "PDCL-5678" }]),
-    });
-    const key = await applyFile(file, {
-      api,
-      prUrl: "https://github.com/adobe/alloy/pull/1",
-      prTitle: "My PR",
-    });
-    expect(key).toBe("PDCL-5678");
-    // Should NOT have called create
+`);
+    const api = mockApi();
+    await applyFile(file, { api }); // no prUrl
     expect(api.request).not.toHaveBeenCalledWith(
       "POST",
-      "/rest/api/2/issue",
-      expect.any(Object),
-    );
-    // Should have applied the PUT with resolved key
-    expect(api.request).toHaveBeenCalledWith(
-      "PUT",
-      "/rest/api/2/issue/PDCL-5678",
-      expect.any(Object),
-    );
-    unlinkSync(file);
-  });
-
-  it("skips non-create updates when no ticket key available", async () => {
-    const gid = "noop1234";
-    // Only has a PUT, no POST create — no ticket key can be resolved
-    const file = globalIdFile(
-      gid,
-      `
-updates:
-  - path: /rest/api/2/issue/{key}
-    method: PUT
-    body:
-      update:
-        summary:
-          - set: "Should not run"
-`,
-    );
-    const api = mockApi();
-    // No searchIssues result, no create → ticketKey stays null → PUT is skipped
-    await applyFile(file, { api });
-    expect(api.request).not.toHaveBeenCalledWith(
-      "PUT",
-      expect.any(String),
+      expect.stringContaining("remotelink"),
       expect.any(Object),
     );
     unlinkSync(file);

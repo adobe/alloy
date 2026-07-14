@@ -1,14 +1,14 @@
 ## ADDED Requirements
 
 ### Requirement: `/jira-propose` creates or updates a `.jira/` YAML file locally without calling JIRA
-The `/jira-propose` Claude Code slash command SHALL operate entirely locally. It SHALL NOT make any calls to the JIRA REST API. All information used to populate a new ticket file comes from git state, chat context, and existing `.jira/` files.
+The `/jira-propose` Claude Code skill SHALL operate entirely locally. It SHALL NOT make any calls to the JIRA REST API. All information used to populate a new ticket file comes from git state, chat context, and existing `.jira/` files.
 
 #### Scenario: Propose runs without JIRA credentials
 - **WHEN** a developer runs `/jira-propose` with no `JIRA_API_TOKEN` set
 - **THEN** the command completes successfully and writes a `.jira/` YAML file
 
 ### Requirement: `/jira-propose` searches existing `.jira/` files for a matching ticket
-When invoked, `/jira-propose` SHALL scan all `.jira/*.yml` files and compare their content (filename slug, `details.summary` if present) against the current git changes and chat context. If a suitable match is found, the command SHALL update the existing file. If no match is found, the command SHALL create a new `PDCL-XXXX-<short-description>.yml` file.
+When invoked, `/jira-propose` SHALL scan all `.jira/*.yml` files and compare their content (filename slug, `details.summary` if present) against the current git changes and chat context. If a suitable match is found, the command SHALL update the existing file. If no match is found, the command SHALL create a new `PDCL-{globalId}-<short-description>.yml` file.
 
 #### Scenario: Matching ticket found
 - **WHEN** an existing `.jira/PDCL-1234-my-feature.yml` matches the current changes
@@ -16,7 +16,7 @@ When invoked, `/jira-propose` SHALL scan all `.jira/*.yml` files and compare the
 
 #### Scenario: No matching ticket found
 - **WHEN** no existing `.jira/` file matches the current changes
-- **THEN** `/jira-propose` creates a new `PDCL-XXXX-<short-description>.yml` with an `updates` array containing a create-ticket REST call
+- **THEN** `/jira-propose` creates a new `PDCL-{globalId}-<short-description>.yml` with an `updates` array containing a create-ticket REST call
 
 ### Requirement: `/jira-propose` uses current git changes and chat context to populate the ticket
 `/jira-propose` SHALL inspect:
@@ -26,7 +26,7 @@ When invoked, `/jira-propose` SHALL scan all `.jira/*.yml` files and compare the
 
 From this context it SHALL populate:
 - `summary` (required): a concise one-line ticket title
-- `description` (optional): a paragraph describing the change and motivation, including business value — customer names, who benefits, why it matters, and the elevator-pitch value statement
+- `description` (optional): a paragraph describing the change and motivation, including business value — specific customer names (if known from context or prior conversations), who benefits, why it matters, and the elevator-pitch value statement
 - `issuetype`: defaulting to `story` (id `7`) unless the change is clearly a bug fix
 - `components`: `[{ id: "155901" }]` (AEP Web SDK, matching existing defaults)
 - `customfield_23300`: `{ id: "116005" }` (product field, matching existing defaults)
@@ -43,21 +43,27 @@ From this context it SHALL populate:
 - **WHEN** commit messages or diff context indicate a bug fix
 - **THEN** the proposed ticket uses `issuetype: { id: "1" }` (bug)
 
-### Requirement: New ticket `updates` array contains an idempotent create-ticket call as the first entry
-For new tickets, the first entry in `updates` SHALL be a `POST /rest/api/2/issue` call whose body uses `fields` (not `update`) to set all initial field values. This follows JIRA's create-issue API shape.
+### Requirement: New ticket `updates` array uses globalId-in-labels for idempotency
+For new tickets, the first entry in `updates` SHALL be a `POST /rest/api/2/issue` call whose body uses `fields` to set all initial field values. The `labels` field SHALL include the same `globalId` that appears in the filename — this is how the apply script finds an existing ticket on re-run without creating a duplicate.
 
-The `summary`, `issuetype`, `project`, `components`, and `customfield_23300` fields SHALL always be present in the create body. The `description` field SHALL be included if non-empty.
+No remotelink entry is needed in `updates` — `apply.js` creates the remote link to the PR automatically.
 
-#### Scenario: Create call is first in updates array
-- **WHEN** `/jira-propose` creates a new `PDCL-XXXX-*.yml` file
-- **THEN** `updates[0]` is `{ path: "/rest/api/2/issue", method: "POST", body: { fields: { ... } } }`
+The `summary`, `issuetype`, `project`, `components`, `customfield_23300`, and `labels` fields SHALL always be present in the create body. The `description` field SHALL be included if non-empty.
+
+#### Scenario: Create call is first in updates array with globalId in labels
+- **WHEN** `/jira-propose` creates a new `PDCL-a3f8b2c1-*.yml` file
+- **THEN** `updates[0]` is `{ path: "/rest/api/2/issue", method: "POST", body: { fields: { labels: ["a3f8b2c1"], ... } } }`
+
+#### Scenario: No remotelink entry in updates
+- **WHEN** the created file's `updates` array is inspected
+- **THEN** there is no entry for `/rest/api/2/issue/{key}/remotelink`
 
 #### Scenario: Create body includes required fields
 - **WHEN** the created file's first update is inspected
-- **THEN** it contains `project`, `issuetype`, `summary`, `components`, and `customfield_23300`
+- **THEN** it contains `project`, `issuetype`, `summary`, `components`, `customfield_23300`, and `labels` (with globalId)
 
 ### Requirement: YAML output includes inline comments for custom field IDs
-The YAML files written by `/jira-propose` SHALL include inline comments explaining custom field IDs, matching the pattern used in `scripts/team/api.js`.
+The YAML files written by `/jira-propose` SHALL include inline comments explaining custom field IDs. See `.jira/README.md` for the full field reference.
 
 Specifically:
 - `customfield_23300` SHALL have the comment `# AEP Web SDK product field`

@@ -90,12 +90,10 @@ export const fetchFile = async (ticketKey, filename, { api }) => {
 
 // Script entry point — only executes when run directly.
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const rawArgs = process.argv.slice(2);
-  const dryRun = rawArgs.includes("--dry-run");
-  const args = rawArgs.filter((a) => a !== "--dry-run");
+  const args = process.argv.slice(2);
 
   if (args.length < 2) {
-    console.error("Usage: fetch.js [--dry-run] <ticket-key> <filename>");
+    console.error("Usage: fetch.js <ticket-key> <filename>");
     console.error("  <ticket-key>  JIRA issue key, e.g. PDCL-1234");
     console.error(
       "  <filename>    Path to write, e.g. .jira/PDCL-1234-my-feature.yml",
@@ -111,7 +109,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   }
 
   const api = createApi({
-    dryRun,
+    dryRun: false,
     baseUrl: JIRA_BASE_URL.replace(/\/$/, ""),
     token: JIRA_API_TOKEN ?? "",
   });
