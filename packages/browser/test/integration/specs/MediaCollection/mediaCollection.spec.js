@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { test, expect, describe } from "../../helpers/testsSetup/extend.js";
+import { test, expect, describe, vi } from "../../helpers/testsSetup/extend.js";
 import {
   mediaSessionHandler,
   mediaEventHandler,
@@ -269,13 +269,43 @@ describe("MediaCollection (MA1/MA3) - createMediaSession and sendMediaEvent", ()
     }
   });
 
-  test.skip(
-    "MA1 - automatic (ping) mode: pings are sent every 10s when using playerId " +
-      "(skipped: ping timing assertions require sleep(11000) which is impractical in CI; " +
-      "session-start and event routing are covered by the MA3 test and StreamingMedia/mediaEvents.spec.js)",
-    // eslint-disable-next-line no-empty-function
-    async () => {},
-  );
+  test("MA1 - automatic (ping) mode: pings are sent every 10s when using playerId", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(mediaSessionHandler, mediaEventHandler);
+    await alloy("configure", streamingMediaConfig);
+
+    let sessionId;
+    vi.useFakeTimers();
+    try {
+      const sessionPromise = alloy("createMediaSession", {
+        playerId: "player1",
+        xdm: {
+          mediaCollection: {
+            sessionDetails: {
+              length: 60,
+              contentType: "VOD",
+              name: "test name of the video",
+            },
+          },
+        },
+        getPlayerDetails: () => ({ playhead: 3 }),
+      });
+
+      await vi.advanceTimersByTimeAsync(0);
+      ({ sessionId } = await sessionPromise);
+      await vi.advanceTimersByTimeAsync(10_000);
+    } finally {
+      vi.useRealTimers();
+    }
+
+    const mediaCalls = await networkRecorder.findCalls(/\/va\//);
+    const pingEvent = getEventFromCalls(mediaCalls, "media.ping");
+    expect(pingEvent).toBeDefined();
+    expect(pingEvent.xdm.mediaCollection.sessionID).toBe(sessionId);
+  });
 
   test("MA2 - legacy getMediaAnalyticsTracker: tracker API routes events to /va/ endpoint with XDM", async ({
     alloy,
