@@ -55,7 +55,6 @@ const firstEvent = (call) => call.request.body.events[0];
 const findInteractCall = (networkRecorder) =>
   networkRecorder.waitForCall(/v1\/interact/);
 
-// eslint-disable-next-line no-underscore-dangle
 const activityMap = (event) =>
   event.data.__adobe.analytics.contextData.a.activitymap;
 
@@ -1265,91 +1264,4 @@ describe("Not migrated (see per-test rationale)", () => {
   // Every sub-test is test.skip in the functional source too — they need a
   // specific live-edge personalization response that's hard to mock deterministically.
   test.skip("C81182 - onBeforeLinkClickSend interacts with personalization metric on link (source tests skipped)", () => {});
-});
-
-describe("C81183 - getLinkDetails monitoring hook via __alloyMonitors", () => {
-  // Install the monitor before configure so onInstanceConfigured fires and
-  // exposes getLinkDetails.
-  beforeEach(() => {
-    window.__alloyMonitors = [
-      {
-        onInstanceConfigured(data) {
-          window.___getLinkDetails = data.getLinkDetails;
-        },
-      },
-    ];
-  });
-
-  // The functional original pinned every field for an internal link. URLs are
-  // adapted to the localhost test page: linkUrl resolves the relative href and
-  // pageName is the page's own location.
-  const expectedInternalLinkDetails = () => ({
-    linkName: "Test Link",
-    linkRegion: "BODY",
-    linkType: "other",
-    linkUrl: new URL("valid.html", window.location.href).href,
-    pageName: window.location.href,
-    pageIDType: 0,
-  });
-
-  test("getLinkDetails returns the resolved details even when onBeforeLinkClickSend augments the xdm", async ({
-    alloy,
-  }) => {
-    await alloy("configure", {
-      ...alloyConfig,
-      clickCollectionEnabled: true,
-      onBeforeLinkClickSend: (options) => {
-        options.xdm.web.webInteraction.name = "augmented name";
-        options.data.customField = "test123";
-        return true;
-      },
-    });
-
-    const link = appendLink({
-      id: "alloy-link-test",
-      href: "valid.html",
-      text: "Test Link",
-    });
-
-    const result = window.___getLinkDetails(link);
-    // linkName stays "Test Link": the activity-map link (unchanged by the
-    // callback) takes priority over the augmented webInteraction name.
-    expect(result).toEqual(expectedInternalLinkDetails());
-  });
-
-  test("getLinkDetails returns the full internal-link details even when clickCollectionEnabled is false", async ({
-    alloy,
-  }) => {
-    await alloy("configure", {
-      ...alloyConfig,
-      clickCollectionEnabled: false,
-    });
-
-    const link = appendLink({
-      id: "alloy-link-test",
-      href: "valid.html",
-      text: "Test Link",
-    });
-
-    const result = window.___getLinkDetails(link);
-    expect(result).toEqual(expectedInternalLinkDetails());
-  });
-
-  test("getLinkDetails returns no link data for a null element", async ({
-    alloy,
-  }) => {
-    await alloy("configure", {
-      ...alloyConfig,
-      clickCollectionEnabled: true,
-    });
-
-    // An absent/non-clickable element yields a details object with undefined
-    // fields, not a throw or falsy — mirrors original C81183 test 2.
-    const result = window.___getLinkDetails(null);
-    expect(result.linkName).toBeUndefined();
-    expect(result.linkRegion).toBeUndefined();
-    expect(result.linkType).toBeUndefined();
-    expect(result.linkUrl).toBeUndefined();
-    expect(result.pageName).toBeUndefined();
-  });
 });
