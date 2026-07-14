@@ -17,63 +17,85 @@ import {
   afterEach,
   vi,
 } from "../../helpers/testsSetup/extend.js";
+import { http, HttpResponse } from "msw";
 import alloyConfig from "../../helpers/alloy/config.js";
-import {
-  acquireHandler,
-  setConsentHandler,
-} from "../../helpers/mswjs/handlers.js";
+import { setConsentHandler } from "../../helpers/mswjs/handlers.js";
 import { CONSENT_IN } from "../../helpers/constants/consent.js";
+import getVisitorEcid from "../../helpers/visitorService/getVisitorEcid.js";
+import loadVisitor from "../../helpers/visitorService/loadVisitor.js";
 
 const EDGE_ECID = "41861666193140161934276845651148876988";
+const VISITOR_ECID = "12345678901234567890123456789012345678";
 
-const setUpVisitor = ({
-  ecid = EDGE_ECID,
-  approved = true,
-  deferred = false,
-} = {}) => {
-  let release;
-  let isApproved = approved;
-  const getMarketingCloudVisitorID = vi.fn((callback) => {
-    if (deferred) {
-      release = () => callback(ecid);
-    } else {
-      callback(ecid);
-    }
+const acquireHandler = http.post(
+  /https:\/\/edge\.adobedc\.net\/ee\/.*\/?v1\/identity\/acquire/,
+  async ({ request }) => {
+    const body = await request.json();
+    const ecid = body.xdm?.identityMap?.ECID?.[0]?.id || EDGE_ECID;
+
+    return HttpResponse.json({
+      requestId: "acquire-request-id",
+      handle: [
+        {
+          type: "identity:result",
+          payload: [{ id: ecid, namespace: { code: "ECID" } }],
+        },
+      ],
+    });
+  },
+);
+
+const createVisitorApiHandler = ({ deferred = false } = {}) => {
+  let releaseResponse;
+  let markRequestStarted;
+  const requestStarted = new Promise((resolve) => {
+    markRequestStarted = resolve;
   });
-  const visitor = { getMarketingCloudVisitorID };
-  const Visitor = function Visitor() {};
-  Visitor.getInstance = vi.fn(() => visitor);
-  window.Visitor = Visitor;
 
-  const optIn = {
-    fetchPermissions: vi.fn((callback) => callback()),
-    isApproved: vi.fn(() => isApproved),
-    Categories: { ECID: "ecid" },
-  };
-  window.adobe = { optIn };
+  const handler = http.get("https://dpm.demdex.net/id", async () => {
+    markRequestStarted();
+    if (deferred) {
+      await new Promise((resolve) => {
+        releaseResponse = resolve;
+      });
+    }
+
+    return HttpResponse.json(
+      { mid: VISITOR_ECID },
+      {
+        headers: {
+          "Access-Control-Allow-Credentials": "true",
+          "Access-Control-Allow-Origin": window.location.origin,
+        },
+      },
+    );
+  });
 
   return {
-    Visitor,
-    getMarketingCloudVisitorID,
-    optIn,
-    approve: () => {
-      isApproved = true;
-    },
-    release: () => release(),
+    handler,
+    requestStarted,
+    release: () => releaseResponse(),
   };
 };
 
-const getVisitorEcid = () =>
-  new Promise((resolve) => {
-    window.Visitor.getInstance(
-      alloyConfig.orgId,
-      {},
-    ).getMarketingCloudVisitorID(resolve, true);
-  });
+const setUpOptIn = (approved) => {
+  const optIn = {
+    fetchPermissions: vi.fn((callback) => callback()),
+    isApproved: vi.fn(() => approved),
+    Categories: { ECID: "ecid" },
+  };
+  window.adobe.optIn = optIn;
+  return optIn;
+};
 
 afterEach(() => {
-  delete window.Visitor;
-  delete window.adobe;
+  window.s_c_il = [];
+  window.s_c_in = 0;
+  window.adobe.optIn = {
+    fetchPermissions: (callback) => callback(),
+    isApproved: () => true,
+    Categories: { ECID: "ecid" },
+  };
 });
 
 describe("Visitor ID migration", () => {
@@ -82,9 +104,10 @@ describe("Visitor ID migration", () => {
     worker,
     networkRecorder,
   }) => {
-    worker.use(acquireHandler);
+    const visitorApi = createVisitorApiHandler({ deferred: true });
+    worker.use(visitorApi.handler, acquireHandler);
     await alloy("configure", { ...alloyConfig, idMigrationEnabled: true });
-    const visitor = setUpVisitor({ deferred: true });
+    await loadVisitor();
 
     let settled = false;
     const identityPromise = alloy("getIdentity").then((result) => {
@@ -92,17 +115,15 @@ describe("Visitor ID migration", () => {
       return result;
     });
 
-    await vi.waitFor(() => {
-      expect(visitor.getMarketingCloudVisitorID).toHaveBeenCalledOnce();
-    });
+    await visitorApi.requestStarted;
     expect(settled).toBe(false);
 
-    visitor.release();
+    visitorApi.release();
     const identityResult = await identityPromise;
     const { request } = await networkRecorder.findCall(/v1\/identity\/acquire/);
 
-    expect(request.body.xdm.identityMap.ECID[0].id).toBe(EDGE_ECID);
-    expect(identityResult.identity).toEqual({ ECID: EDGE_ECID });
+    expect(request.body.xdm.identityMap.ECID[0].id).toBe(VISITOR_ECID);
+    expect(identityResult.identity).toEqual({ ECID: VISITOR_ECID });
   });
 
   test("C35450 - ID migration + consent pending: when consent is given to both, Alloy waits for Visitor ECID", async ({
@@ -110,8 +131,10 @@ describe("Visitor ID migration", () => {
     worker,
     networkRecorder,
   }) => {
-    worker.use(setConsentHandler, acquireHandler);
-    const visitor = setUpVisitor();
+    const visitorApi = createVisitorApiHandler();
+    worker.use(visitorApi.handler, setConsentHandler, acquireHandler);
+    await loadVisitor();
+    const optIn = setUpOptIn(true);
     await alloy("configure", {
       ...alloyConfig,
       idMigrationEnabled: true,
@@ -119,21 +142,24 @@ describe("Visitor ID migration", () => {
     });
 
     await alloy("setConsent", CONSENT_IN);
+    const visitorEcidPromise = getVisitorEcid(alloyConfig.orgId);
     const identityResult = await alloy("getIdentity");
+    const visitorEcid = await visitorEcidPromise;
     const { request } = await networkRecorder.findCall(/v1\/identity\/acquire/);
 
-    expect(visitor.optIn.fetchPermissions).toHaveBeenCalled();
-    expect(visitor.getMarketingCloudVisitorID).toHaveBeenCalled();
-    expect(request.body.xdm.identityMap.ECID[0].id).toBe(EDGE_ECID);
-    expect(identityResult.identity).toEqual({ ECID: EDGE_ECID });
+    expect(optIn.fetchPermissions).toHaveBeenCalled();
+    expect(request.body.xdm.identityMap.ECID[0].id).toBe(visitorEcid);
+    expect(identityResult.identity).toEqual({ ECID: visitorEcid });
   });
 
   test("C36908 - ID migration + consent pending: Visitor denied, Alloy approved — Alloy ECID matches Visitor ECID", async ({
     alloy,
     worker,
   }) => {
-    worker.use(setConsentHandler, acquireHandler);
-    const visitor = setUpVisitor({ approved: false });
+    const visitorApi = createVisitorApiHandler();
+    worker.use(visitorApi.handler, setConsentHandler, acquireHandler);
+    await loadVisitor();
+    const optIn = setUpOptIn(false);
     await alloy("configure", {
       ...alloyConfig,
       idMigrationEnabled: true,
@@ -143,11 +169,10 @@ describe("Visitor ID migration", () => {
     await alloy("setConsent", CONSENT_IN);
     const alloyIdentity = await alloy("getIdentity");
 
-    expect(visitor.optIn.isApproved).toHaveBeenCalled();
-    expect(visitor.getMarketingCloudVisitorID).not.toHaveBeenCalled();
+    expect(optIn.isApproved).toHaveBeenCalled();
 
-    visitor.approve();
-    const visitorEcid = await getVisitorEcid();
+    setUpOptIn(true);
+    const visitorEcid = await getVisitorEcid(alloyConfig.orgId);
 
     expect(alloyIdentity.identity).toEqual({ ECID: visitorEcid });
   });
@@ -156,11 +181,10 @@ describe("Visitor ID migration", () => {
     alloy,
     worker,
   }) => {
-    worker.use(setConsentHandler, acquireHandler);
-    const visitor = setUpVisitor({
-      ecid: "12345678901234567890123456789012345678",
-      approved: false,
-    });
+    const visitorApi = createVisitorApiHandler();
+    worker.use(visitorApi.handler, setConsentHandler, acquireHandler);
+    await loadVisitor();
+    setUpOptIn(false);
     await alloy("configure", {
       ...alloyConfig,
       idMigrationEnabled: false,
@@ -169,9 +193,9 @@ describe("Visitor ID migration", () => {
 
     await alloy("setConsent", CONSENT_IN);
     const alloyIdentity = await alloy("getIdentity");
+    const visitorEcid = await getVisitorEcid(alloyConfig.orgId);
 
-    expect(visitor.optIn.fetchPermissions).not.toHaveBeenCalled();
-    expect(visitor.getMarketingCloudVisitorID).not.toHaveBeenCalled();
     expect(alloyIdentity.identity.ECID).toBe(EDGE_ECID);
+    expect(alloyIdentity.identity.ECID).not.toBe(visitorEcid);
   });
 });
