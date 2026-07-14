@@ -23,7 +23,7 @@ const worker = createWorker();
 let workerStarted = false;
 
 // Extend the test with MSW worker
-export const test = baseTest.extend({
+export const testWithoutAlloy = baseTest.extend({
   worker: [
     async ({}, use) => {
       if (!workerStarted) {
@@ -51,7 +51,9 @@ export const test = baseTest.extend({
     },
     { auto: true }, // Apply to all tests even if not explicitly using networkRecorder
   ],
+});
 
+export const test = testWithoutAlloy.extend({
   alloy: [
     async ({}, use) => {
       // Clear all cookies for a clean slate before each test, so individual

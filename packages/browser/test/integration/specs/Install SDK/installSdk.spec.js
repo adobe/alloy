@@ -9,34 +9,169 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { test, expect, describe } from "../../helpers/testsSetup/extend.js";
+import { http, HttpResponse } from "msw";
+import { createInstance } from "@adobe/alloy";
+import {
+  test,
+  testWithoutAlloy,
+  expect,
+  describe,
+  afterEach,
+} from "../../helpers/testsSetup/extend.js";
+import setupAlloy from "../../helpers/alloy/setup.js";
+import cleanAlloy from "../../helpers/alloy/clean.js";
+import alloyConfig from "../../helpers/alloy/config.js";
+import { sendEventHandler } from "../../helpers/mswjs/handlers.js";
+
+const instances = [
+  {
+    name: "alloy",
+    datastreamId: "11111111-1111-4111-8111-111111111111",
+    orgId: "111111111111111111111111@AdobeOrg",
+    ecid: "11111111111111111111111111111111111111",
+    identityState: "identity-state-one",
+  },
+  {
+    name: "instance2",
+    datastreamId: "22222222-2222-4222-8222-222222222222",
+    orgId: "222222222222222222222222@AdobeOrg",
+    ecid: "22222222222222222222222222222222222222",
+    identityState: "identity-state-two",
+  },
+];
+
+const getIdentityEntry = (call) =>
+  call.request.body.meta.state.entries?.find(({ key }) =>
+    key.endsWith("_identity"),
+  );
+
+afterEach(() => {
+  cleanAlloy();
+  delete window.instance2;
+  instances.forEach(({ orgId }) => {
+    document.cookie = `kndctr_${orgId.replace("@", "_")}_identity=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+  });
+});
 
 describe("Install SDK", () => {
-  // C2560 - Global function named alloy is accessible.
   test("C2560 - window.alloy is a callable function after the SDK loads", async ({
     alloy,
   }) => {
-    // The `alloy` fixture loads the SDK and sets window.alloy before this test runs.
-    // We check the type via window.alloy directly since the fixture also returns it.
     expect(typeof window.alloy).toBe("function");
     expect(alloy).toBeDefined();
   });
 
-  // C2579 - Separate ECIDs are used for multiple SDK instances.
-  //
-  // Skipped: The integration test harness creates a single alloy instance via setupBaseCode +
-  // setupAlloy. initializeStandalone() reads window.__alloyNS only once when alloy.js is
-  // first parsed, so a second instance cannot be initialized by pushing to __alloyNS after
-  // the fact. Properly testing multi-instance isolation requires loading alloy.js a second
-  // time in the same browser context, which would conflict with the existing instance.
-  // Multi-instance behavior is covered by unit tests.
-  test.skip("C2579 - separate ECIDs are used for multiple SDK instances", () => {});
+  testWithoutAlloy(
+    "C2579 - separate ECIDs are used for multiple SDK instances",
+    async ({ worker, networkRecorder }) => {
+      worker.use(
+        http.post(
+          /https:\/\/edge\.adobedc\.net\/ee\/v1\/interact/,
+          ({ request }) => {
+            const datastreamId = new URL(request.url).searchParams.get(
+              "configId",
+            );
+            const instance = instances.find(
+              (candidate) => candidate.datastreamId === datastreamId,
+            );
 
-  // C1338399 - Use SDK from NPM entry point.
-  //
-  // Skipped: The NPM entry point exposes `alloyCreateInstance`, which requires a different
-  // build artifact than the standalone alloy.js loaded by the integration test harness.
-  // The fixture always loads the standalone build. Supporting the NPM build would require
-  // a separate test setup or a fixture that loads alloyCreateInstance instead.
-  test.skip("C1338399 - SDK can be initialized from the NPM entry point using alloyCreateInstance", () => {});
+            if (!instance) {
+              throw new Error(`Unexpected datastream ID: ${datastreamId}`);
+            }
+
+            return HttpResponse.json({
+              requestId: `${instance.name}-request-id`,
+              handle: [
+                {
+                  type: "identity:result",
+                  payload: [
+                    {
+                      id: instance.ecid,
+                      namespace: { code: "ECID" },
+                    },
+                  ],
+                },
+                {
+                  type: "state:store",
+                  payload: [
+                    {
+                      key: `kndctr_${instance.orgId.replace("@", "_")}_identity`,
+                      value: instance.identityState,
+                      maxAge: 34128000,
+                    },
+                  ],
+                },
+              ],
+            });
+          },
+        ),
+      );
+
+      await setupAlloy({ instanceNames: instances.map(({ name }) => name) });
+
+      await Promise.all(
+        instances.map((instance) =>
+          window[instance.name]("configure", {
+            ...alloyConfig,
+            datastreamId: instance.datastreamId,
+            orgId: instance.orgId,
+          }),
+        ),
+      );
+      await Promise.all(instances.map(({ name }) => window[name]("sendEvent")));
+      await Promise.all(instances.map(({ name }) => window[name]("sendEvent")));
+
+      const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/, {
+        minCalls: 4,
+      });
+
+      const identities = await Promise.all(
+        instances.map(({ name }) =>
+          window[name]("getIdentity", { namespaces: ["ECID"] }),
+        ),
+      );
+
+      instances.forEach((instance, index) => {
+        const instanceCalls = calls.filter(
+          ({ request }) =>
+            new URL(request.url).searchParams.get("configId") ===
+            instance.datastreamId,
+        );
+        const otherInstance = instances.find(
+          ({ name }) => name !== instance.name,
+        );
+
+        expect(instanceCalls).toHaveLength(2);
+        expect(getIdentityEntry(instanceCalls[0])).toBeUndefined();
+        expect(getIdentityEntry(instanceCalls[1])).toEqual({
+          key: `kndctr_${instance.orgId.replace("@", "_")}_identity`,
+          value: instance.identityState,
+        });
+        expect(getIdentityEntry(instanceCalls[1]).value).not.toBe(
+          otherInstance.identityState,
+        );
+
+        expect(identities[index]).toMatchObject({
+          identity: { ECID: instance.ecid },
+        });
+      });
+    },
+  );
+
+  testWithoutAlloy(
+    "C1338399 - SDK can be initialized from the NPM entry point using createInstance",
+    async ({ worker, networkRecorder }) => {
+      worker.use(sendEventHandler);
+      const alloy = createInstance({ name: "npmLibraryAlloy" });
+
+      await alloy("configure", alloyConfig);
+      await alloy("sendEvent");
+
+      const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/);
+      expect(calls).toHaveLength(1);
+      expect(new URL(calls[0].request.url).searchParams.get("configId")).toBe(
+        alloyConfig.datastreamId,
+      );
+    },
+  );
 });
