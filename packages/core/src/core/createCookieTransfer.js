@@ -1,4 +1,18 @@
 /*
+Copyright 2026 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+import { isNonEmptyArray } from "../utils/index.js";
+
+/*
 Copyright 2019 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
@@ -33,31 +47,32 @@ export default ({
         cookiesEnabled: true,
       };
 
-      const cookies = cookieJar.get();
-      const entries = [];
-
       // If the endpoint is first-party, there's no need to transfer cookies
       // to the payload since they'll be automatically passed through cookie
       // headers.
-      if (!isEndpointFirstParty) {
-        Object.keys(cookies)
-          .filter(shouldTransferCookie)
-          .forEach((qualifyingCookieName) => {
-            entries.push({
-              key: qualifyingCookieName,
-              value: cookies[qualifyingCookieName],
+      if (!isEndpointFirstParty || isNonEmptyArray(extraCookieNames)) {
+        const cookies = cookieJar.get();
+        const entries = [];
+        if (!isEndpointFirstParty) {
+          Object.keys(cookies)
+            .filter(shouldTransferCookie)
+            .forEach((qualifyingCookieName) => {
+              entries.push({
+                key: qualifyingCookieName,
+                value: cookies[qualifyingCookieName],
+              });
             });
-          });
-      }
-
-      extraCookieNames.forEach((name) => {
-        if (cookies[name] !== undefined) {
-          entries.push({ key: name, value: cookies[name] });
         }
-      });
-
-      if (entries.length) {
-        state.entries = entries;
+        if (!isNonEmptyArray(extraCookieNames)) {
+          extraCookieNames.forEach((name) => {
+            if (cookies[name] !== undefined) {
+              entries.push({ key: name, value: cookies[name] });
+            }
+          });
+        }
+        if (entries.length) {
+          state.entries = entries;
+        }
       }
 
       payload.mergeState(state);
