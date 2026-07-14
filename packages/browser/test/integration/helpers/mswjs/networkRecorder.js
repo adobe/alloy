@@ -19,6 +19,7 @@ class NetworkRecorder {
    * @property {Object} [request]
    * @property {string} request.url
    * @property {string} request.method
+   * @property {string} request.referrer
    * @property {Record<string, string>} request.headers
    * @property {number} request.timestamp
    * @property {Object} [response]
@@ -91,6 +92,7 @@ class NetworkRecorder {
     call.request = {
       url: request.url,
       method: request.method,
+      referrer: request.referrer,
       headers: Object.fromEntries(request.headers.entries()),
       timestamp: Date.now(),
       body,

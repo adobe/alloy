@@ -78,6 +78,59 @@ const expectedActivityMap = ({ link, region = "BODY", pageIDType = 0 }) => ({
   pageIDType,
 });
 
+const PERSONALIZATION_PROPOSITION = {
+  id: "c81182-proposition",
+  scope: "__view__",
+  scopeDetails: {
+    decisionProvider: "TGT",
+    activity: { id: "c81182-activity" },
+  },
+};
+
+const applyClickProposition = (alloy) =>
+  alloy("applyResponse", {
+    renderDecisions: true,
+    responseBody: {
+      requestId: "c81182-request",
+      handle: [
+        {
+          type: "personalization:decisions",
+          eventIndex: 0,
+          payload: [
+            {
+              ...PERSONALIZATION_PROPOSITION,
+              items: [
+                {
+                  id: "c81182-click-item",
+                  schema: "https://ns.adobe.com/personalization/dom-action",
+                  data: {
+                    type: "click",
+                    selector: "#c81182-link",
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  });
+
+const appendPersonalizationLink = () =>
+  appendLink({
+    id: "c81182-link",
+    href: "personalized.html",
+    text: "Personalized Link",
+  });
+
+const expectPersonalizationMetric = (event) => {
+  expect(event.xdm.eventType).toBe("decisioning.propositionInteract");
+  expect(event.xdm._experience.decisioning).toEqual({
+    propositionEventType: { interact: 1 },
+    propositions: [PERSONALIZATION_PROPOSITION],
+  });
+};
+
 describe("C2592 - Event command sends a request", () => {
   test("sendEvent produces an edge interact call with implementationDetails and state", async ({
     alloy,
@@ -1254,14 +1307,123 @@ describe("C8118 - Collects and sends link click information", () => {
   });
 });
 
-describe("Not migrated (see per-test rationale)", () => {
-  // Asserts the Referer header, but it's a browser-set forbidden header added
-  // after MSW's service worker sees the request, so networkRecorder can't
-  // capture it (verified). The collect-side referer was already a commented-out
-  // TODO in the functional source, and collect routing is covered by C455258.
-  test.skip("C9369211 - sendEvent includes a Referer header on interact and collect requests", () => {});
+describe("C81182 - onBeforeLinkClickSend preserves personalization metrics", () => {
+  test("cancellation removes link details but retains the personalization metric", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
 
-  // Every sub-test is test.skip in the functional source too — they need a
-  // specific live-edge personalization response that's hard to mock deterministically.
-  test.skip("C81182 - onBeforeLinkClickSend interacts with personalization metric on link (source tests skipped)", () => {});
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: { eventGroupingEnabled: false },
+      onBeforeLinkClickSend: () => false,
+    });
+    const link = appendPersonalizationLink();
+    await applyClickProposition(alloy);
+    clickLink(link);
+
+    const call = await findInteractCall(networkRecorder);
+    expect(call).toBeDefined();
+    const event = firstEvent(call);
+    expectPersonalizationMetric(event);
+    expect(event.xdm.web?.webInteraction).toBeUndefined();
+  });
+
+  test("augmentation retains the personalization metric", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      clickCollection: { eventGroupingEnabled: false },
+      onBeforeLinkClickSend: ({ xdm, data }) => {
+        xdm.web.webInteraction.name = "Augmented link name";
+        data.customField = "augmented";
+        return true;
+      },
+    });
+    const link = appendPersonalizationLink();
+    await applyClickProposition(alloy);
+    clickLink(link);
+
+    const call = await findInteractCall(networkRecorder);
+    expect(call).toBeDefined();
+    const event = firstEvent(call);
+    expectPersonalizationMetric(event);
+    expect(event.xdm.web.webInteraction).toEqual(
+      expectedWebInteraction({
+        name: "Augmented link name",
+        type: "other",
+        href: "personalized.html",
+      }),
+    );
+    expect(event.data.customField).toBe("augmented");
+  });
+
+  test("clickCollectionEnabled false still sends the personalization metric", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: false,
+    });
+    const link = appendPersonalizationLink();
+    await applyClickProposition(alloy);
+    clickLink(link);
+
+    const call = await findInteractCall(networkRecorder);
+    expect(call).toBeDefined();
+    const event = firstEvent(call);
+    expectPersonalizationMetric(event);
+    expect(event.xdm.web?.webInteraction).toBeUndefined();
+  });
+});
+
+describe("C9369211 - sendEvent request referrer", () => {
+  test("interact exposes the page URL through Request.referrer", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", alloyConfig);
+    await alloy("sendEvent");
+
+    const call = await networkRecorder.findCall(EDGE_INTERACT);
+    expect(call).toBeDefined();
+    const expectedReferrer = new URL(window.location.href);
+    expectedReferrer.hash = "";
+    expect(call.request.referrer).toBe(expectedReferrer.href);
+  });
+
+  test("documentUnloading retains collect routing after identity is established", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventWithIdentityCookieHandler);
+
+    await alloy("configure", alloyConfig);
+    await alloy("sendEvent");
+    networkRecorder.reset();
+    resetSendBeaconCalls();
+
+    await alloy("sendEvent", { documentUnloading: true });
+
+    expect(interactCalls(networkRecorder).length).toBe(0);
+    expect(sendBeaconCalls()).toHaveLength(1);
+    expect(sendBeaconCalls()[0].url).toMatch(/\/v1\/collect\?configId=/);
+  });
 });
