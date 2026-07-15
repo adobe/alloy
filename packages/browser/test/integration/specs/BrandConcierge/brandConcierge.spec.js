@@ -44,23 +44,6 @@ const brandConciergeNoStreamHandler = http.post(
   () => new HttpResponse(null, { status: 204 }),
 );
 
-const waitUntil = (condition, { intervalMs = 50, timeoutMs = 3000 } = {}) =>
-  new Promise((resolve, reject) => {
-    const start = Date.now();
-    const poll = () => {
-      if (condition()) {
-        resolve();
-        return;
-      }
-      if (Date.now() - start >= timeoutMs) {
-        reject(new Error("waitUntil timed out"));
-        return;
-      }
-      setTimeout(poll, intervalMs);
-    };
-    poll();
-  });
-
 describe("BrandConcierge - sendConversationEvent", () => {
   test("BC1/C2590433 - Send conversational event with message only", async ({
     alloy,
@@ -82,6 +65,7 @@ describe("BrandConcierge - sendConversationEvent", () => {
       /brand-concierge\/conversations/,
     );
     expect(calls.length).toBeGreaterThanOrEqual(1);
+    expect([200, 207]).toContain(calls[0].response.status);
 
     const body = calls[0].request.body;
     const conversationQuery = body.events[0].query.conversation;
@@ -94,9 +78,7 @@ describe("BrandConcierge - sendConversationEvent", () => {
     expect(eventXdm.identityMap.ECID).toBeTruthy();
     expect(eventXdm.identityMap.ECID.length).toBeGreaterThanOrEqual(1);
 
-    // Stream parsing runs asynchronously — wait for at least one callback invocation.
-    await waitUntil(() => streamResponseCallCount > 0);
-    expect(streamResponseCallCount).toBeGreaterThanOrEqual(1);
+    await expect.poll(() => streamResponseCallCount).toBeGreaterThanOrEqual(1);
   });
 
   test("BC2/C2590434 - Send conversational event with data object", async ({
@@ -122,6 +104,7 @@ describe("BrandConcierge - sendConversationEvent", () => {
       /brand-concierge\/conversations/,
     );
     expect(calls.length).toBeGreaterThanOrEqual(1);
+    expect([200, 207]).toContain(calls[0].response.status);
 
     const body = calls[0].request.body;
     const conversationQuery = body.events[0].query.conversation;
@@ -142,7 +125,7 @@ describe("BrandConcierge - sendConversationEvent", () => {
     worker,
     networkRecorder,
   }) => {
-    worker.use(brandConciergeNoStreamHandler);
+    worker.use(brandConciergeStreamingHandler);
     await alloy("configure", bcConfig);
 
     await alloy("sendConversationEvent", {
@@ -151,7 +134,7 @@ describe("BrandConcierge - sendConversationEvent", () => {
         conversationId: "test-conversation-456",
         conversation: {
           feedback: {
-            classification: "positive",
+            rating: 4,
             comment: "Good bot response",
           },
         },
@@ -163,48 +146,66 @@ describe("BrandConcierge - sendConversationEvent", () => {
       /brand-concierge\/conversations/,
     );
     expect(calls.length).toBeGreaterThanOrEqual(1);
+    expect([200, 207]).toContain(calls[0].response.status);
 
     const eventXdm = calls[0].request.body.events[0].xdm;
     expect(eventXdm.interactionId).toBe("test-interaction-123");
     expect(eventXdm.conversationId).toBe("test-conversation-456");
-    expect(eventXdm.conversation.feedback.classification).toBe("positive");
+    expect(eventXdm.conversation.feedback.rating).toBe(4);
     expect(eventXdm.conversation.feedback.comment).toBe("Good bot response");
 
     expect(eventXdm.identityMap.ECID).toBeTruthy();
     expect(eventXdm.identityMap.ECID.length).toBeGreaterThanOrEqual(1);
   });
 
-  // Original test expected a throw; the anyOf validator is permissive so neither case throws.
   test("BC4/C2590436 - sendConversationEvent with only onStreamResponse does not throw (permissive anyOf validator)", async ({
     alloy,
     worker,
+    networkRecorder,
   }) => {
     worker.use(brandConciergeNoStreamHandler);
     await alloy("configure", bcConfig);
 
-    await expect(
-      alloy("sendConversationEvent", {
-        onStreamResponse: () => {},
-      }),
-    ).resolves.not.toThrow();
+    await alloy("sendConversationEvent", {
+      onStreamResponse: () => {},
+    });
+
+    const calls = await networkRecorder.findCalls(
+      /brand-concierge\/conversations/,
+    );
+    expect(calls).toHaveLength(1);
+    expect(calls[0].response.status).toBe(204);
+    expect(calls[0].request.body.events[0].xdm.identityMap.ECID).toHaveLength(
+      1,
+    );
   });
 
   test("BC5/C2590437 - sendConversationEvent with data missing type does not throw (permissive anyOf validator)", async ({
     alloy,
     worker,
+    networkRecorder,
   }) => {
     worker.use(brandConciergeNoStreamHandler);
     await alloy("configure", bcConfig);
 
-    await expect(
-      alloy("sendConversationEvent", {
-        data: {
-          payload: {
-            rating: 5,
-          },
+    await alloy("sendConversationEvent", {
+      data: {
+        payload: {
+          rating: 5,
         },
-        onStreamResponse: () => {},
-      }),
-    ).resolves.not.toThrow();
+      },
+      onStreamResponse: () => {},
+    });
+
+    const calls = await networkRecorder.findCalls(
+      /brand-concierge\/conversations/,
+    );
+    expect(calls).toHaveLength(1);
+    expect(calls[0].response.status).toBe(204);
+    expect(calls[0].request.body.events[0].query.conversation.data).toEqual({
+      payload: {
+        rating: 5,
+      },
+    });
   });
 });
