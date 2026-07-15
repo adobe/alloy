@@ -25,251 +25,232 @@ const streamingMediaConfig = {
   },
 };
 
-const getEventFromCalls = (calls, eventType) => {
-  for (const call of calls) {
-    const found = call.request.body.events?.find(
-      (e) => e.xdm?.eventType === eventType,
-    );
-    if (found) return found;
-  }
-  return undefined;
+const getEvents = (calls) => {
+  return calls.flatMap((call) => call.request.body.events || []);
 };
 
-describe("MediaCollection (MA1/MA3) - createMediaSession and sendMediaEvent", () => {
-  test("MA3 - non-automatic mode: events are routed to the /va/ endpoint with correct eventType", async ({
+const getRecordedCalls = (networkRecorder, pattern) => {
+  return networkRecorder.calls.filter((call) => {
+    return call.request && call.response && pattern.test(call.request.url);
+  });
+};
+
+const waitForRecordedCalls = async (networkRecorder, pattern, retries = 10) => {
+  const calls = getRecordedCalls(networkRecorder, pattern);
+  if (calls.length > 0 || retries === 0) {
+    return calls;
+  }
+  await vi.advanceTimersByTimeAsync(100);
+  return waitForRecordedCalls(networkRecorder, pattern, retries - 1);
+};
+
+const expectSessionStarted = (
+  calls,
+  sessionId,
+  playhead,
+  expectedMediaCollection,
+) => {
+  expect(calls).toHaveLength(1);
+  expect(calls[0].response.status).toBe(200);
+
+  const [event] = getEvents(calls);
+  expect(event.xdm.eventType).toBe("media.sessionStart");
+  expect(event.xdm.mediaCollection.playhead).toBe(playhead);
+  if (expectedMediaCollection) {
+    expect(event.xdm.mediaCollection).toMatchObject(expectedMediaCollection);
+  }
+
+  if (sessionId) {
+    const payload = calls[0].response.body.handle[0].payload[0];
+    expect(payload.sessionId).toBe(sessionId);
+  }
+
+  return event;
+};
+
+const expectMediaEvents = (calls, expectedEventTypes) => {
+  expect(calls).toHaveLength(expectedEventTypes.length);
+  calls.forEach((call) => expect(call.response.status).toBe(204));
+
+  const events = getEvents(calls);
+  expect(events.map((event) => event.xdm.eventType)).toEqual(
+    expectedEventTypes,
+  );
+  return events;
+};
+
+const expectSessionAndPlayhead = (events, sessionId, playheads) => {
+  events.forEach((event, index) => {
+    expect(event.xdm.mediaCollection.sessionID).toBe(sessionId);
+    expect(event.xdm.mediaCollection.playhead).toBe(playheads[index]);
+  });
+};
+
+const expectMediaPayloads = (events, expectedPayloads) => {
+  events.forEach((event, index) => {
+    expect(event.xdm.mediaCollection).toMatchObject(expectedPayloads[index]);
+  });
+};
+
+const advanceCommand = async (command) => {
+  await vi.advanceTimersByTimeAsync(0);
+  const result = await command;
+  await vi.advanceTimersByTimeAsync(0);
+  return result;
+};
+
+const sendTimedMediaEvents = (alloy, events, createOptions) => {
+  return events.reduce((previous, event) => {
+    return previous.then(() => {
+      return advanceCommand(alloy("sendMediaEvent", createOptions(event)));
+    });
+  }, Promise.resolve());
+};
+
+const directMediaEvents = [
+  ["media.play"],
+  ["media.pauseStart"],
+  [
+    "media.chapterStart",
+    {
+      chapterDetails: {
+        friendlyName: "Chapter 1",
+        length: 10,
+        index: 1,
+        offset: 0,
+      },
+    },
+  ],
+  ["media.chapterComplete"],
+  ["media.chapterSkip"],
+  [
+    "media.adBreakStart",
+    {
+      advertisingPodDetails: {
+        friendlyName: "Mid-roll",
+        offset: 0,
+        index: 1,
+      },
+    },
+  ],
+  [
+    "media.adStart",
+    {
+      advertisingDetails: {
+        friendlyName: "Ad 1",
+        name: "/uri-reference/001",
+        length: 10,
+        advertiser: "Adobe Marketing",
+        campaignID: "Adobe Analytics",
+        creativeID: "creativeID",
+        creativeURL: "https://creativeurl.com",
+        placementID: "placementID",
+        siteID: "siteID",
+        podPosition: 11,
+        playerName: "HTML5 player",
+      },
+    },
+  ],
+  ["media.adComplete"],
+  ["media.adBreakComplete"],
+  ["media.adSkip"],
+  [
+    "media.error",
+    { errorDetails: { name: "test-buffer-start", source: "player" } },
+  ],
+  ["media.bufferStart"],
+  [
+    "media.bitrateChange",
+    {
+      qoeDataDetails: {
+        framesPerSecond: 1,
+        bitrate: 35000,
+        droppedFrames: 30,
+        timeToStart: 1364,
+      },
+    },
+  ],
+  [
+    "media.statesUpdate",
+    {
+      statesStart: [{ name: "mute" }, { name: "pictureInPicture" }],
+      statesEnd: [{ name: "fullScreen" }],
+    },
+  ],
+];
+
+describe("MediaCollection", () => {
+  test("MA3 - non-automatic mode sends events without automatic pings", async ({
     alloy,
     worker,
     networkRecorder,
   }) => {
     worker.use(mediaSessionHandler, mediaEventHandler);
-
     await alloy("configure", streamingMediaConfig);
 
-    const session = await alloy("createMediaSession", {
-      xdm: {
-        mediaCollection: {
-          playhead: 0,
-          sessionDetails: {
-            length: 60,
-            contentType: "VOD",
-            name: "test name of the video",
+    vi.useFakeTimers();
+    try {
+      const { sessionId } = await advanceCommand(
+        alloy("createMediaSession", {
+          xdm: {
+            mediaCollection: {
+              playhead: 0,
+              sessionDetails: {
+                length: 60,
+                contentType: "VOD",
+                name: "test name of the video",
+              },
+            },
           },
-        },
-      },
-    });
+        }),
+      );
 
-    expect(session.sessionId).toBeDefined();
+      const interactCalls = await waitForRecordedCalls(
+        networkRecorder,
+        /\/v1\/interact/,
+      );
+      expectSessionStarted(interactCalls, sessionId, 0);
 
-    const sessionId = session.sessionId;
-
-    // Verify session-start call went to the interact endpoint
-    const interactCalls = await networkRecorder.findCalls(/edge\.adobedc\.net/);
-    const sessionStartEvent = getEventFromCalls(
-      interactCalls,
-      "media.sessionStart",
-    );
-    expect(sessionStartEvent).toBeDefined();
-    expect(sessionStartEvent.xdm.eventType).toBe("media.sessionStart");
-
-    // play
-    await alloy("sendMediaEvent", {
-      xdm: {
-        eventType: "media.play",
-        mediaCollection: { playhead: 1, sessionID: sessionId },
-      },
-    });
-
-    // pause
-    await alloy("sendMediaEvent", {
-      xdm: {
-        eventType: "media.pauseStart",
-        mediaCollection: { playhead: 2, sessionID: sessionId },
-      },
-    });
-
-    // chapter start
-    await alloy("sendMediaEvent", {
-      xdm: {
-        eventType: "media.chapterStart",
-        mediaCollection: {
-          playhead: 3,
-          sessionID: sessionId,
-          chapterDetails: {
-            friendlyName: "Chapter 1",
-            length: 10,
-            index: 1,
-            offset: 0,
+      await sendTimedMediaEvents(
+        alloy,
+        directMediaEvents,
+        ([eventType, additionalData = {}]) => ({
+          xdm: {
+            eventType,
+            mediaCollection: {
+              playhead: 1,
+              sessionID: sessionId,
+              ...additionalData,
+            },
           },
-        },
-      },
-    });
+        }),
+      );
 
-    // chapter complete
-    await alloy("sendMediaEvent", {
-      xdm: {
-        eventType: "media.chapterComplete",
-        mediaCollection: { playhead: 4, sessionID: sessionId },
-      },
-    });
+      await vi.advanceTimersByTimeAsync(10_000);
 
-    // ad break start
-    await alloy("sendMediaEvent", {
-      xdm: {
-        eventType: "media.adBreakStart",
-        mediaCollection: {
-          playhead: 5,
-          sessionID: sessionId,
-          advertisingPodDetails: {
-            friendlyName: "Mid-roll",
-            offset: 0,
-            index: 1,
-          },
-        },
-      },
-    });
-
-    // ad start
-    await alloy("sendMediaEvent", {
-      xdm: {
-        eventType: "media.adStart",
-        mediaCollection: {
-          playhead: 5,
-          sessionID: sessionId,
-          advertisingDetails: {
-            friendlyName: "Ad 1",
-            name: "/uri-reference/001",
-            length: 10,
-            advertiser: "Adobe Marketing",
-            campaignID: "Adobe Analytics",
-            creativeID: "creativeID",
-            creativeURL: "https://creativeurl.com",
-            placementID: "placementID",
-            siteID: "siteID",
-            podPosition: 11,
-            playerName: "HTML5 player",
-          },
-        },
-      },
-    });
-
-    // ad complete
-    await alloy("sendMediaEvent", {
-      xdm: {
-        eventType: "media.adComplete",
-        mediaCollection: { playhead: 5, sessionID: sessionId },
-      },
-    });
-
-    // ad break complete
-    await alloy("sendMediaEvent", {
-      xdm: {
-        eventType: "media.adBreakComplete",
-        mediaCollection: { playhead: 5, sessionID: sessionId },
-      },
-    });
-
-    // ad skip
-    await alloy("sendMediaEvent", {
-      xdm: {
-        eventType: "media.adSkip",
-        mediaCollection: { playhead: 5, sessionID: sessionId },
-      },
-    });
-
-    // error
-    await alloy("sendMediaEvent", {
-      xdm: {
-        eventType: "media.error",
-        mediaCollection: {
-          playhead: 6,
-          sessionID: sessionId,
-          errorDetails: { name: "test-buffer-start", source: "player" },
-        },
-      },
-    });
-
-    // buffer start
-    await alloy("sendMediaEvent", {
-      xdm: {
-        eventType: "media.bufferStart",
-        mediaCollection: { playhead: 7, sessionID: sessionId },
-      },
-    });
-
-    // bitrate change
-    await alloy("sendMediaEvent", {
-      xdm: {
-        eventType: "media.bitrateChange",
-        mediaCollection: {
-          playhead: 8,
-          sessionID: sessionId,
-          qoeDataDetails: {
-            framesPerSecond: 1,
-            bitrate: 35000,
-            droppedFrames: 30,
-            timeToStart: 1364,
-          },
-        },
-      },
-    });
-
-    // states update
-    await alloy("sendMediaEvent", {
-      xdm: {
-        eventType: "media.statesUpdate",
-        mediaCollection: {
-          playhead: 9,
-          sessionID: sessionId,
-          statesStart: [{ name: "mute" }, { name: "pictureInPicture" }],
-          statesEnd: [{ name: "fullScreen" }],
-        },
-      },
-    });
-
-    // session complete
-    await alloy("sendMediaEvent", {
-      xdm: {
-        eventType: "media.sessionComplete",
-        mediaCollection: { playhead: 10, sessionID: sessionId },
-      },
-    });
-
-    // All media events should have gone to the /va/ endpoint.
-    // Wait for all 14 event types to complete before asserting.
-    const vaCalls = await networkRecorder.findCalls(/\/va\//, {
-      retries: 30,
-      delayMs: 200,
-      minCalls: 14,
-    });
-    expect(vaCalls.length).toBe(14);
-
-    const expectedEventTypes = [
-      "media.play",
-      "media.pauseStart",
-      "media.chapterStart",
-      "media.chapterComplete",
-      "media.adBreakStart",
-      "media.adStart",
-      "media.adComplete",
-      "media.adBreakComplete",
-      "media.adSkip",
-      "media.error",
-      "media.bufferStart",
-      "media.bitrateChange",
-      "media.statesUpdate",
-      "media.sessionComplete",
-    ];
-
-    for (const eventType of expectedEventTypes) {
-      const event = getEventFromCalls(vaCalls, eventType);
-      expect(
-        event,
-        `expected ${eventType} to be found in /va/ calls`,
-      ).toBeDefined();
+      const mediaCalls = getRecordedCalls(networkRecorder, /\/va\//);
+      const events = expectMediaEvents(
+        mediaCalls,
+        directMediaEvents.map(([eventType]) => eventType),
+      );
+      expectSessionAndPlayhead(
+        events,
+        sessionId,
+        directMediaEvents.map(() => 1),
+      );
+      expectMediaPayloads(
+        events,
+        directMediaEvents.map(([, additionalData = {}]) => additionalData),
+      );
+      expect(events.some((event) => event.xdm.eventType === "media.ping")).toBe(
+        false,
+      );
+    } finally {
+      vi.useRealTimers();
     }
   });
 
-  test("MA1 - automatic (ping) mode: pings are sent every 10s when using playerId", async ({
+  test("MA1 - automatic mode augments events and stops pings when complete", async ({
     alloy,
     worker,
     networkRecorder,
@@ -277,9 +258,17 @@ describe("MediaCollection (MA1/MA3) - createMediaSession and sendMediaEvent", ()
     worker.use(mediaSessionHandler, mediaEventHandler);
     await alloy("configure", streamingMediaConfig);
 
-    let sessionId;
     vi.useFakeTimers();
     try {
+      const playerDetails = {
+        playhead: 3,
+        qoeDataDetails: {
+          bitrate: 1,
+          droppedFrames: 2,
+          framesPerSecond: 3,
+          timeToStart: 4,
+        },
+      };
       const sessionPromise = alloy("createMediaSession", {
         playerId: "player1",
         xdm: {
@@ -291,23 +280,82 @@ describe("MediaCollection (MA1/MA3) - createMediaSession and sendMediaEvent", ()
             },
           },
         },
-        getPlayerDetails: () => ({ playhead: 3 }),
+        getPlayerDetails: () => ({
+          ...playerDetails,
+          qoeDataDetails: { ...playerDetails.qoeDataDetails },
+        }),
+      });
+      const { sessionId } = await advanceCommand(sessionPromise);
+
+      const interactCalls = await waitForRecordedCalls(
+        networkRecorder,
+        /\/v1\/interact/,
+      );
+      expectSessionStarted(interactCalls, sessionId, 3, {
+        qoeDataDetails: playerDetails.qoeDataDetails,
       });
 
-      await vi.advanceTimersByTimeAsync(0);
-      ({ sessionId } = await sessionPromise);
       await vi.advanceTimersByTimeAsync(10_000);
+
+      const automaticEvents = directMediaEvents.filter(
+        ([eventType]) => eventType !== "media.bufferStart",
+      );
+      await sendTimedMediaEvents(
+        alloy,
+        automaticEvents,
+        ([eventType, additionalData = {}]) => ({
+          playerId: "player1",
+          xdm: {
+            eventType,
+            mediaCollection: additionalData,
+          },
+        }),
+      );
+
+      await vi.advanceTimersByTimeAsync(10_000);
+      await advanceCommand(
+        alloy("sendMediaEvent", {
+          playerId: "player1",
+          xdm: { eventType: "media.sessionComplete" },
+        }),
+      );
+      await vi.advanceTimersByTimeAsync(10_000);
+
+      const mediaCalls = getRecordedCalls(networkRecorder, /\/va\//);
+      const expectedEventTypes = [
+        "media.ping",
+        ...automaticEvents.map(([eventType]) => eventType),
+        "media.ping",
+        "media.sessionComplete",
+      ];
+      const events = expectMediaEvents(mediaCalls, expectedEventTypes);
+      expectSessionAndPlayhead(
+        events,
+        sessionId,
+        expectedEventTypes.map(() => 3),
+      );
+      expectMediaPayloads(
+        events,
+        expectedEventTypes.map((eventType, index) => {
+          const additionalData =
+            eventType === "media.ping" || eventType === "media.sessionComplete"
+              ? {}
+              : automaticEvents[index - 1]?.[1];
+          return {
+            qoeDataDetails: playerDetails.qoeDataDetails,
+            ...additionalData,
+          };
+        }),
+      );
+      expect(
+        events.filter((event) => event.xdm.eventType === "media.ping"),
+      ).toHaveLength(2);
     } finally {
       vi.useRealTimers();
     }
-
-    const mediaCalls = await networkRecorder.findCalls(/\/va\//);
-    const pingEvent = getEventFromCalls(mediaCalls, "media.ping");
-    expect(pingEvent).toBeDefined();
-    expect(pingEvent.xdm.mediaCollection.sessionID).toBe(sessionId);
   });
 
-  test("MA2 - legacy getMediaAnalyticsTracker: tracker API routes events to /va/ endpoint with XDM", async ({
+  test("MA2 - legacy tracker transforms events and controls automatic pings", async ({
     alloy,
     worker,
     networkRecorder,
@@ -315,66 +363,178 @@ describe("MediaCollection (MA1/MA3) - createMediaSession and sendMediaEvent", ()
     worker.use(mediaSessionHandler, mediaEventHandler);
     await alloy("configure", streamingMediaConfig);
 
-    // Get the legacy Media Analytics tracker.
     const Media = await alloy("getMediaAnalyticsTracker");
-    expect(Media).toBeDefined();
     expect(typeof Media.getInstance).toBe("function");
-
     const tracker = Media.getInstance();
-    expect(typeof tracker.trackSessionStart).toBe("function");
-    expect(typeof tracker.trackPlay).toBe("function");
 
-    // Build media object using the helper (mirrors the original JS 3.x SDK API).
     const mediaInfo = Media.createMediaObject(
-      "TestVideoName",
-      "test-video-id",
+      "NinasVideoName",
+      "Ninas player video",
       60,
       Media.StreamType.VOD,
       Media.MediaType.Video,
     );
     const contextData = {
       isUserLoggedIn: "false",
-      tvStation: "Test TV Station",
+      tvStation: "Sample TV station",
+      programmer: "Sample programmer",
+      assetID: "/uri-reference",
+      [Media.VideoMetadataKeys.Episode]: "Sample Episode",
+      [Media.VideoMetadataKeys.Show]: "Sample Show",
     };
 
-    // Session start — goes to /ee/.../v1/interact (mediaSessionHandler)
-    await tracker.trackSessionStart(mediaInfo, contextData);
+    vi.useFakeTimers();
+    try {
+      await advanceCommand(tracker.trackSessionStart(mediaInfo, contextData));
 
-    // Wait for the session-start interact call to complete.
-    const sessionCalls = await networkRecorder.findCalls(/edge\.adobedc\.net/, {
-      retries: 10,
-      delayMs: 100,
-    });
-    expect(sessionCalls.length).toBe(1);
-    const sessionStartEvent = sessionCalls
-      .map((c) => c.request.body?.events?.[0])
-      .find((e) => e?.xdm?.eventType === "media.sessionStart");
-    expect(sessionStartEvent).toBeDefined();
-    expect(sessionStartEvent.xdm.eventType).toBe("media.sessionStart");
+      const interactCalls = await waitForRecordedCalls(
+        networkRecorder,
+        /\/v1\/interact/,
+      );
+      const sessionStartEvent = expectSessionStarted(interactCalls, null, 0);
+      const sessionId =
+        interactCalls[0].response.body.handle[0].payload[0].sessionId;
+      expect(
+        sessionStartEvent.xdm.mediaCollection.sessionDetails,
+      ).toMatchObject({
+        friendlyName: "NinasVideoName",
+        name: "Ninas player video",
+        length: 60,
+        contentType: Media.StreamType.VOD,
+        streamType: Media.MediaType.Video,
+        episode: "Sample Episode",
+        show: "Sample Show",
+      });
+      expect(sessionStartEvent.xdm.mediaCollection.customMetadata).toEqual([
+        { name: "isUserLoggedIn", value: "false" },
+        { name: "tvStation", value: "Sample TV station" },
+        { name: "programmer", value: "Sample programmer" },
+        { name: "assetID", value: "/uri-reference" },
+      ]);
 
-    // Play — goes to /va/ endpoint (mediaEventHandler)
-    await tracker.trackPlay();
+      await advanceCommand(tracker.trackPlay());
+      await advanceCommand(tracker.trackPause());
 
-    // Pause — goes to /va/ endpoint
-    await tracker.trackPause();
+      const chapterInfo = Media.createChapterObject("chapterNumber1", 2, 18, 1);
+      await advanceCommand(
+        tracker.trackEvent(Media.Event.ChapterStart, chapterInfo, {
+          segmentType: "Sample segment type",
+        }),
+      );
 
-    // Session complete — goes to /va/ endpoint
-    await tracker.trackComplete();
+      tracker.updatePlayhead(10);
+      await advanceCommand(tracker.trackEvent(Media.Event.ChapterComplete));
+      await advanceCommand(tracker.trackEvent(Media.Event.ChapterSkip));
+      await advanceCommand(tracker.trackEvent(Media.Event.BufferStart));
+      await advanceCommand(tracker.trackEvent(Media.Event.BufferComplete));
+      await advanceCommand(tracker.trackEvent(Media.Event.SeekStart));
+      await advanceCommand(tracker.trackEvent(Media.Event.SeekComplete));
 
-    // Wait for all three /va/ events to arrive.
-    const vaCalls = await networkRecorder.findCalls(/\/va\//, {
-      retries: 20,
-      delayMs: 100,
-      minCalls: 3,
-    });
-    expect(vaCalls.length).toBe(3);
+      tracker.updateQoEObject(Media.createQoEObject(1000000, 24, 25, 10));
+      await advanceCommand(tracker.trackEvent(Media.Event.BitrateChange));
 
-    const vaEventTypes = vaCalls.map(
-      (c) => c.request.body?.events?.[0]?.xdm?.eventType,
-    );
+      const state = Media.createStateObject(Media.PlayerState.Mute);
+      await advanceCommand(tracker.trackEvent(Media.Event.StateStart, state));
+      await advanceCommand(tracker.trackEvent(Media.Event.StateEnd, state));
+      await advanceCommand(tracker.trackError("test-buffer-start"));
 
-    expect(vaEventTypes).toContain("media.play");
-    expect(vaEventTypes).toContain("media.pauseStart");
-    expect(vaEventTypes).toContain("media.sessionComplete");
+      const ad = Media.createAdObject("ad-name", "ad-id", 1, 15);
+      await advanceCommand(
+        tracker.trackEvent(Media.Event.AdStart, ad, {
+          [Media.AdMetadataKeys.Advertiser]: "Sample Advertiser",
+          [Media.AdMetadataKeys.CampaignId]: "Sample Campaign",
+          affiliate: "Sample affiliate",
+        }),
+      );
+      await advanceCommand(tracker.trackEvent(Media.Event.AdComplete));
+      await advanceCommand(tracker.trackEvent(Media.Event.AdSkip));
+
+      const adBreak = Media.createAdBreakObject("preroll", 1, 0);
+      await advanceCommand(
+        tracker.trackEvent(Media.Event.AdBreakStart, adBreak),
+      );
+      await advanceCommand(tracker.trackEvent(Media.Event.AdBreakComplete));
+
+      await vi.advanceTimersByTimeAsync(10_000);
+      await advanceCommand(tracker.trackComplete());
+      await vi.advanceTimersByTimeAsync(10_000);
+
+      const expectedEventTypes = [
+        "media.play",
+        "media.pauseStart",
+        "media.chapterStart",
+        "media.chapterComplete",
+        "media.chapterSkip",
+        "media.bufferStart",
+        "media.play",
+        "media.pauseStart",
+        "media.play",
+        "media.bitrateChange",
+        "media.statesUpdate",
+        "media.statesUpdate",
+        "media.error",
+        "media.adStart",
+        "media.adComplete",
+        "media.adSkip",
+        "media.adBreakStart",
+        "media.adBreakComplete",
+        "media.ping",
+        "media.sessionComplete",
+      ];
+      const mediaCalls = getRecordedCalls(networkRecorder, /\/va\//);
+      const events = expectMediaEvents(mediaCalls, expectedEventTypes);
+      expectSessionAndPlayhead(events, sessionId, [
+        0,
+        0,
+        0,
+        ...expectedEventTypes.slice(3).map(() => 10),
+      ]);
+      expect(events[2].xdm.mediaCollection).toMatchObject({
+        chapterDetails: {
+          friendlyName: "chapterNumber1",
+          index: 2,
+          length: 18,
+          offset: 1,
+        },
+        customMetadata: [{ name: "segmentType", value: "Sample segment type" }],
+      });
+      expect(events[9].xdm.mediaCollection.qoeDataDetails).toEqual({
+        bitrate: 1000000,
+        timeToStart: 24,
+        framesPerSecond: 25,
+        droppedFrames: 10,
+      });
+      expect(events[10].xdm.mediaCollection.statesStart).toEqual([
+        { name: Media.PlayerState.Mute },
+      ]);
+      expect(events[11].xdm.mediaCollection.statesEnd).toEqual([
+        { name: Media.PlayerState.Mute },
+      ]);
+      expect(events[12].xdm.mediaCollection.errorDetails).toEqual({
+        name: "test-buffer-start",
+        source: "player",
+      });
+      expect(events[13].xdm.mediaCollection).toMatchObject({
+        advertisingDetails: {
+          friendlyName: "ad-name",
+          name: "ad-id",
+          podPosition: 1,
+          length: 15,
+          advertiser: "Sample Advertiser",
+          campaignID: "Sample Campaign",
+        },
+        customMetadata: [{ name: "affiliate", value: "Sample affiliate" }],
+      });
+      expect(events[16].xdm.mediaCollection.advertisingPodDetails).toEqual({
+        friendlyName: "preroll",
+        index: 1,
+        offset: 0,
+      });
+      expect(
+        events.filter((event) => event.xdm.eventType === "media.ping"),
+      ).toHaveLength(1);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
