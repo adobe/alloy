@@ -52,7 +52,7 @@ export default ({
               });
             });
         }
-        if (!isNonEmptyArray(extraCookieNames)) {
+        if (isNonEmptyArray(extraCookieNames)) {
           extraCookieNames.forEach((name) => {
             if (cookies[name] !== undefined) {
               entries.push({ key: name, value: cookies[name] });

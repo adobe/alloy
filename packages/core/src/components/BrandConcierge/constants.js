@@ -13,4 +13,4 @@ export const BC_SESSION_COOKIE_NAME = "bc_session_id";
 export const STREAM_START_TIMEOUT_MS = 10000;
 export const SOURCES_QUERY_PARAM = "adobe_brand_concierge_source";
 // This is the cookie that marketo js sets and we need it for Marketo integrations
-export const MUNCHKIN_COOKIE_NAME = "munchkin"; 
+export const MUNCHKIN_COOKIE_NAME = "munchkin";
