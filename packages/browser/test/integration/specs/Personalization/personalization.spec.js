@@ -14,10 +14,7 @@ governing permissions and limitations under the License.
  * Migration notes (functional → integration):
  *
  * C28755 — sendEvent fetches personalization with expected schemas/scopes.
- *   Partially covered by the sendEventHandler returning a response with
- *   personalization:decisions. We test the request shape and that
- *   propositions are returned (renderAttempted: false when renderDecisions
- *   is not set).
+ *   Covered here with a deterministic VEC proposition response.
  *
  * C28756 — form-based offer via decisionScopes.
  *
@@ -40,7 +37,9 @@ governing permissions and limitations under the License.
  * C205528 — Redirect offer. Skipped (redirect requires navigating the page,
  *   hard to assert in integration context without a real redirect activity).
  *
- * C205529 — Offer based on device XDM field. Covered here (request shape).
+ * C205529 — Offer based on device XDM field. The live Target evaluation is
+ *   replaced by a request-sensitive handler that returns the captured offer
+ *   only for the original device field value.
  *
  * C753469 — CSP nonce on injected script tags. Skipped (requires CSP headers
  *   configured on the test page itself).
@@ -77,7 +76,8 @@ governing permissions and limitations under the License.
  *   Covered by applyPropositions.spec.js.
  *
  * C6364800 — applyResponse accepts response, updates DOM, returns decisions.
- *   Covered here (inline response).
+ *   The live Target activity is replaced by a deterministic response containing
+ *   the same form-based decision and DOM-action behaviors.
  *
  * C6984408 — Target mbox cookie included when targetMigrationEnabled=true.
  *   Covered here.
@@ -121,7 +121,8 @@ governing permissions and limitations under the License.
  *   Covered here.
  *
  * C15325239 — Top and bottom of page pattern (multiple sendEvents).
- *   Covered here.
+ *   Covered here; the TestCafe-only sendEventAsync wrapper becomes a direct
+ *   await of the real browser promise per the migration plan.
  *
  * C17294899 — Prehiding style removed when consent is set to out.
  *   Covered by personalizationRender.spec.js.
@@ -139,7 +140,6 @@ governing permissions and limitations under the License.
  */
 
 import { http, HttpResponse } from "msw";
-// eslint-disable-next-line import/no-unresolved
 import { server } from "vitest/browser";
 import alloyConfig from "../../helpers/alloy/config.js";
 import {
@@ -147,18 +147,20 @@ import {
   test,
   expect,
   beforeEach,
+  afterEach,
 } from "../../helpers/testsSetup/extend.js";
-import { sendEventHandler } from "../../helpers/mswjs/handlers.js";
 
 const { readFile } = server.commands;
 
-const makeInteractHandler = (responseBody) =>
+const makeInteractHandler = (getResponseBody) =>
   http.post(
     /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
     async (req) => {
       const url = new URL(req.request.url);
       const configId = url.searchParams.get("configId");
-      if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
+      if (configId?.startsWith("bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83")) {
+        const requestBody = await req.request.json();
+        const responseBody = getResponseBody(requestBody);
         return HttpResponse.json(responseBody);
       }
       throw new Error("Handler not configured properly");
@@ -211,6 +213,33 @@ const buildEdgeResponse = (propositionPayload) => ({
   ],
 });
 
+const vecProposition = {
+  id: "vec-proposition-id",
+  scope: "__view__",
+  scopeDetails: {
+    decisionProvider: "TGT",
+    activity: { id: "vec-activity" },
+  },
+  items: [
+    {
+      id: "vec-item",
+      schema: "https://ns.adobe.com/personalization/html-content-item",
+      data: {
+        content: '<div id="C28755">Here is an awesome target offer!</div>',
+        format: "text/html",
+      },
+    },
+  ],
+};
+
+const vecHandler = makeInteractHandler((requestBody) =>
+  buildEdgeResponse(
+    requestBody.events[0].query?.personalization ? [vecProposition] : [],
+  ),
+);
+
+const emptyHandler = makeInteractHandler(() => buildEdgeResponse([]));
+
 // ---------------------------------------------------------------------------
 // C28755 — sendEvent fetches personalization with expected schemas/scopes
 // ---------------------------------------------------------------------------
@@ -221,7 +250,7 @@ describe("C28755: sendEvent fetches personalization VEC offers", () => {
     worker,
     networkRecorder,
   }) => {
-    worker.use(sendEventHandler);
+    worker.use(vecHandler);
     await alloy("configure", alloyConfig);
     const result = await alloy("sendEvent", {});
 
@@ -231,10 +260,11 @@ describe("C28755: sendEvent fetches personalization VEC offers", () => {
       minCalls: 1,
     });
     expect(calls.length).toBe(1);
+    expect(calls[0].response.status).toBe(200);
 
     const body = calls[0].request.body;
     const personalization = body.events[0].query.personalization;
-    expect(personalization.decisionScopes).toContain("__view__");
+    expect(personalization.decisionScopes).toEqual(["__view__"]);
 
     const expectedSchemas = [
       "https://ns.adobe.com/personalization/default-content-item",
@@ -247,12 +277,11 @@ describe("C28755: sendEvent fetches personalization VEC offers", () => {
       expect(personalization.schemas).toContain(schema);
     });
 
-    // Without renderDecisions, propositions should be returned but not rendered
-    expect(result).toHaveProperty("propositions");
-    expect(Array.isArray(result.propositions)).toBe(true);
-    result.propositions.forEach((p) => {
-      expect(p.renderAttempted).toBe(false);
-    });
+    expect(result.decisions).toEqual([vecProposition]);
+    expect(result.decisions[0].renderAttempted).toBeUndefined();
+    expect(result.propositions).toEqual([
+      { ...vecProposition, renderAttempted: false },
+    ]);
   });
 });
 
@@ -278,23 +307,31 @@ describe("C28756: form-based offer returned when event includes its scope", () =
       minCalls: 1,
     });
     expect(calls.length).toBe(1);
+    expect(calls[0].response.status).toBe(200);
 
     const body = calls[0].request.body;
     const decisionScopes = body.events[0].query.personalization.decisionScopes;
-    expect(decisionScopes).toContain(scope);
-    expect(decisionScopes).toContain("__view__");
+    expect(decisionScopes).toEqual([scope, "__view__"]);
 
-    // propositions should be returned un-rendered
-    expect(result).toHaveProperty("propositions");
-    result.propositions.forEach((p) => {
-      expect(p.renderAttempted).toBe(false);
+    const expectedSchemas = [
+      "https://ns.adobe.com/personalization/default-content-item",
+      "https://ns.adobe.com/personalization/html-content-item",
+      "https://ns.adobe.com/personalization/json-content-item",
+      "https://ns.adobe.com/personalization/redirect-item",
+    ];
+    expectedSchemas.forEach((schema) => {
+      expect(body.events[0].query.personalization.schemas).toContain(schema);
     });
 
-    // find the matching proposition for alloy-test-scope-1
-    const matchingProposition = result.propositions.find(
-      (p) => p.scope === scope,
-    );
+    expect(result.decisions[0].renderAttempted).toBeUndefined();
+    expect(result.propositions[0].renderAttempted).toBe(false);
+
+    const matchingProposition = result.decisions.find((p) => p.scope === scope);
     expect(matchingProposition).toBeDefined();
+    expect(matchingProposition.id).toBe(
+      "AT:eyJhY3Rpdml0eUlkIjoiMTI2NDg2IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
+    );
+    expect(matchingProposition.scope).toBe(scope);
     expect(matchingProposition.items[0].data.content).toBe(
       "<h3>welcome to TARGET AWESOME WORLD!!! </h3>",
     );
@@ -306,14 +343,35 @@ describe("C28756: form-based offer returned when event includes its scope", () =
 // ---------------------------------------------------------------------------
 
 describe("C205529: offer returned based on device XDM field", () => {
-  test("device XDM field is sent in request", async ({
+  const deviceProposition = {
+    ...vecProposition,
+    id: "AT:eyJhY3Rpdml0eUlkIjoiMTI2NTYxIiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
+    items: [
+      {
+        ...vecProposition.items[0],
+        data: {
+          content: '<div id="C205529">Device based offer!</div>',
+          format: "text/html",
+        },
+      },
+    ],
+  };
+  const deviceHandler = makeInteractHandler((requestBody) =>
+    buildEdgeResponse(
+      requestBody.events[0].xdm.device?.customDeviceField === 9999
+        ? [deviceProposition]
+        : [],
+    ),
+  );
+
+  test("device XDM field returns its offer", async ({
     alloy,
     worker,
     networkRecorder,
   }) => {
-    worker.use(sendEventHandler);
+    worker.use(deviceHandler);
     await alloy("configure", alloyConfig);
-    await alloy("sendEvent", {
+    const result = await alloy("sendEvent", {
       xdm: {
         device: {
           customDeviceField: 9999,
@@ -327,13 +385,26 @@ describe("C205529: offer returned based on device XDM field", () => {
       minCalls: 1,
     });
     expect(calls.length).toBe(1);
+    expect(calls[0].response.status).toBe(200);
 
     const body = calls[0].request.body;
     expect(body.events[0].xdm.device?.customDeviceField).toBe(9999);
-    // Personalization query should still be present
-    expect(body.events[0].query.personalization.decisionScopes).toContain(
+    expect(body.events[0].query.personalization.decisionScopes).toEqual([
       "__view__",
-    );
+    ]);
+
+    const expectedSchemas = [
+      "https://ns.adobe.com/personalization/default-content-item",
+      "https://ns.adobe.com/personalization/dom-action",
+      "https://ns.adobe.com/personalization/html-content-item",
+      "https://ns.adobe.com/personalization/json-content-item",
+      "https://ns.adobe.com/personalization/redirect-item",
+    ];
+    expectedSchemas.forEach((schema) => {
+      expect(body.events[0].query.personalization.schemas).toContain(schema);
+    });
+
+    expect(result.decisions).toEqual([deviceProposition]);
   });
 });
 
@@ -343,6 +414,51 @@ describe("C205529: offer returned based on device XDM field", () => {
 
 describe("C6364800: applyResponse accepts a response and returns decisions", () => {
   let targetContainer;
+
+  const buildApplyResponse = ({ idPrefix, content }) => {
+    const formBasedProposition = {
+      id: `${idPrefix}-form-based-proposition-id`,
+      scope: "sample-json-offer",
+      scopeDetails: {
+        decisionProvider: "TGT",
+        activity: { id: `${idPrefix}-form-based-activity` },
+      },
+      items: [
+        {
+          id: `${idPrefix}-form-based-item`,
+          schema: "https://ns.adobe.com/personalization/html-content-item",
+          data: { content: '{"message":"form-based offer"}' },
+        },
+      ],
+    };
+    const domActionProposition = {
+      id: `${idPrefix}-dom-action-proposition-id`,
+      scope: "__view__",
+      scopeDetails: {
+        decisionProvider: "TGT",
+        activity: { id: `${idPrefix}-dom-action-activity` },
+      },
+      items: [
+        {
+          id: `${idPrefix}-dom-action-item`,
+          schema: "https://ns.adobe.com/personalization/dom-action",
+          data: {
+            type: "setHtml",
+            content: `<div>${content}</div>`,
+            selector: "#apply-response-container",
+          },
+        },
+      ],
+    };
+
+    return {
+      formBasedProposition,
+      responseBody: buildEdgeResponse([
+        formBasedProposition,
+        domActionProposition,
+      ]),
+    };
+  };
 
   beforeEach(() => {
     targetContainer = document.createElement("div");
@@ -359,85 +475,72 @@ describe("C6364800: applyResponse accepts a response and returns decisions", () 
   test("applyResponse returns decisions with renderAttempted", async ({
     alloy,
     worker,
+    networkRecorder,
   }) => {
-    // No network needed — applyResponse is a client-side command
-    worker.use(sendEventHandler);
+    worker.use(emptyHandler);
     await alloy("configure", alloyConfig);
 
-    const responseBody = buildEdgeResponse([
-      {
-        id: "apply-response-proposition-id",
-        scope: "__view__",
-        scopeDetails: {
-          decisionProvider: "TGT",
-          activity: { id: "apply-response-activity" },
-        },
-        items: [
-          {
-            id: "apply-response-item",
-            schema: "https://ns.adobe.com/personalization/dom-action",
-            data: {
-              type: "setHtml",
-              content: "<div>Applied response content</div>",
-              selector: "#apply-response-container",
-            },
-          },
-        ],
-      },
-    ]);
+    const { formBasedProposition, responseBody } = buildApplyResponse({
+      idPrefix: "apply-response",
+      content: "Applied response content",
+    });
 
     const applyResult = await alloy("applyResponse", {
       renderDecisions: true,
+      responseHeaders: {},
       responseBody,
     });
 
-    expect(applyResult).toHaveProperty("decisions");
-    expect(Array.isArray(applyResult.decisions)).toBe(true);
-    // propositions should have renderAttempted=true
-    expect(applyResult).toHaveProperty("propositions");
-    applyResult.propositions.forEach((p) => {
-      expect(p.renderAttempted).toBe(true);
+    expect(applyResult.decisions).toContainEqual(formBasedProposition);
+    expect(
+      applyResult.propositions.find(({ scope }) => scope === "__view__")
+        .renderAttempted,
+    ).toBe(true);
+    expect(targetContainer.innerHTML).toContain("Applied response content");
+
+    const calls = await networkRecorder.findCalls(/v1\/interact/, {
+      retries: 10,
+      delayMs: 100,
+      minCalls: 1,
     });
+    expect(calls.length).toBe(1);
+    expect(calls[0].response.status).toBe(200);
   });
 
   test("applyResponse after sendEvent applies personalization", async ({
     alloy,
     worker,
+    networkRecorder,
   }) => {
-    worker.use(sendEventHandler);
+    worker.use(emptyHandler);
     await alloy("configure", alloyConfig);
     await alloy("sendEvent", {});
 
-    const responseBody = buildEdgeResponse([
-      {
-        id: "apply-after-send-proposition-id",
-        scope: "__view__",
-        scopeDetails: {
-          decisionProvider: "TGT",
-          activity: { id: "apply-after-send-activity" },
-        },
-        items: [
-          {
-            id: "apply-after-send-item",
-            schema: "https://ns.adobe.com/personalization/dom-action",
-            data: {
-              type: "setHtml",
-              content: "<div>Second apply content</div>",
-              selector: "#apply-response-container",
-            },
-          },
-        ],
-      },
-    ]);
+    const { formBasedProposition, responseBody } = buildApplyResponse({
+      idPrefix: "apply-after-send",
+      content: "Second apply content",
+    });
 
     const applyResult = await alloy("applyResponse", {
       renderDecisions: true,
+      responseHeaders: {},
       responseBody,
     });
 
-    expect(applyResult).toHaveProperty("decisions");
-    expect(applyResult.propositions.every((p) => p.renderAttempted)).toBe(true);
+    expect(applyResult.decisions).toContainEqual(formBasedProposition);
+    expect(
+      applyResult.propositions.find(({ scope }) => scope === "__view__")
+        .renderAttempted,
+    ).toBe(true);
     expect(targetContainer.innerHTML).toContain("Second apply content");
+
+    const calls = await networkRecorder.findCalls(/v1\/interact/, {
+      retries: 10,
+      delayMs: 100,
+      minCalls: 2,
+    });
+    expect(calls.length).toBe(2);
+    calls.forEach((call) => expect(call.response.status).toBe(200));
   });
 });
 
@@ -446,12 +549,16 @@ describe("C6364800: applyResponse accepts a response and returns decisions", () 
 // ---------------------------------------------------------------------------
 
 describe("C6984408: mbox cookie included in requests when targetMigrationEnabled=true", () => {
+  afterEach(() => {
+    document.cookie = "mbox=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  });
+
   test("request contains mbox cookie entry in meta.state.entries", async ({
     alloy,
     worker,
     networkRecorder,
   }) => {
-    worker.use(sendEventHandler);
+    worker.use(emptyHandler);
 
     // Plant a fake mbox cookie in the document
     document.cookie =
@@ -472,10 +579,12 @@ describe("C6984408: mbox cookie included in requests when targetMigrationEnabled
 
     const body = calls[0].request.body;
     expect(body.meta).toBeDefined();
+    expect(body.meta.state).toBeDefined();
+    expect(body.meta.state.entries).toBeDefined();
+    expect(
+      body.meta.state.entries.find(({ key }) => key === "mbox"),
+    ).toBeDefined();
     expect(body.meta.target?.migration).toBe(true);
-
-    // Clean up the cookie
-    document.cookie = "mbox=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
   });
 });
 
@@ -484,12 +593,16 @@ describe("C6984408: mbox cookie included in requests when targetMigrationEnabled
 // ---------------------------------------------------------------------------
 
 describe("C7498683: mbox cookie not included in requests when targetMigrationEnabled not set", () => {
+  afterEach(() => {
+    document.cookie = "mbox=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  });
+
   test("request does not include mbox cookie in meta.state.entries", async ({
     alloy,
     worker,
     networkRecorder,
   }) => {
-    worker.use(sendEventHandler);
+    worker.use(emptyHandler);
 
     // Plant a fake mbox cookie
     document.cookie =
@@ -506,11 +619,10 @@ describe("C7498683: mbox cookie not included in requests when targetMigrationEna
     expect(calls.length).toBe(1);
 
     const body = calls[0].request.body;
-    // meta.target should be absent or undefined
+    expect(body.meta).toBeDefined();
+    expect(body.meta.state).toBeDefined();
+    expect(body.meta.state.entries).toBeUndefined();
     expect(body.meta?.target).toBeUndefined();
-
-    // Clean up
-    document.cookie = "mbox=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
   });
 });
 
@@ -524,24 +636,21 @@ describe("C7878996: manual notification event without propositionEventType succe
     worker,
     networkRecorder,
   }) => {
-    worker.use(sendEventHandler);
+    worker.use(vecHandler);
     await alloy("configure", alloyConfig);
     const eventResult = await alloy("sendEvent", { renderDecisions: false });
 
-    expect(eventResult).toHaveProperty("propositions");
-    expect(Array.isArray(eventResult.propositions)).toBe(true);
-    eventResult.propositions.forEach((p) => {
-      expect(p.renderAttempted).toBe(false);
-    });
+    expect(eventResult.decisions).toEqual([vecProposition]);
+    expect(eventResult.propositions).toEqual([
+      { ...vecProposition, renderAttempted: false },
+    ]);
 
-    // Build notification propositions from what we got back
     const notificationPropositions = eventResult.propositions.map((p) => ({
       id: p.id,
       scope: p.scope,
       scopeDetails: p.scopeDetails,
     }));
 
-    // Send a manual display notification event (without propositionEventType)
     await alloy("sendEvent", {
       xdm: {
         _experience: {
@@ -553,7 +662,6 @@ describe("C7878996: manual notification event without propositionEventType succe
       },
     });
 
-    // Both calls should be recorded
     const calls = await networkRecorder.findCalls(/v1\/interact/, {
       retries: 20,
       delayMs: 100,
@@ -563,6 +671,25 @@ describe("C7878996: manual notification event without propositionEventType succe
     calls.forEach((call) => {
       expect(call.response.status).toBeLessThan(300);
     });
+    const personalization =
+      calls[0].request.body.events[0].query.personalization;
+    expect(personalization.decisionScopes).toEqual(["__view__"]);
+    [
+      "https://ns.adobe.com/personalization/default-content-item",
+      "https://ns.adobe.com/personalization/dom-action",
+      "https://ns.adobe.com/personalization/html-content-item",
+      "https://ns.adobe.com/personalization/json-content-item",
+      "https://ns.adobe.com/personalization/redirect-item",
+    ].forEach((schema) => {
+      expect(personalization.schemas).toContain(schema);
+    });
+    expect(
+      calls[1].request.body.events[0].xdm._experience.decisioning.propositions,
+    ).toEqual(notificationPropositions);
+    expect(
+      calls[1].request.body.events[0].xdm._experience.decisioning
+        .propositionEventType,
+    ).toBeUndefined();
   });
 });
 
@@ -571,92 +698,44 @@ describe("C7878996: manual notification event without propositionEventType succe
 // ---------------------------------------------------------------------------
 
 describe("C14317242: defaultPersonalizationEnabled controls VEC offer fetching", () => {
-  test("when defaultPersonalizationEnabled=false, no personalization query is sent", async ({
+  test("false, default, and true preserve offer-fetching state and order", async ({
     alloy,
     worker,
     networkRecorder,
   }) => {
-    worker.use(sendEventHandler);
+    worker.use(vecHandler);
     await alloy("configure", alloyConfig);
 
-    // First call: defaultPersonalizationEnabled=false → no personalization query
     await alloy("sendEvent", {
       personalization: { defaultPersonalizationEnabled: false },
     });
-
-    const calls = await networkRecorder.findCalls(/v1\/interact/, {
-      retries: 10,
-      delayMs: 100,
-      minCalls: 1,
-    });
-    expect(calls.length).toBe(1);
-
-    const firstBody = calls[0].request.body;
-    expect(firstBody.events[0].query).toBeUndefined();
-  });
-
-  test("subsequent sendEvent without flag fetches offers (cache not initialized)", async ({
-    alloy,
-    worker,
-    networkRecorder,
-  }) => {
-    worker.use(sendEventHandler);
-    await alloy("configure", alloyConfig);
-
-    // First call skips personalization
-    await alloy("sendEvent", {
-      personalization: { defaultPersonalizationEnabled: false },
-    });
-
-    // Second call (no flag) should fetch offers because cache was not initialized
     const result2 = await alloy("sendEvent", {});
-
-    const calls = await networkRecorder.findCalls(/v1\/interact/, {
-      retries: 15,
-      delayMs: 100,
-      minCalls: 2,
-    });
-    expect(calls.length).toBe(2);
-
-    const secondBody = calls[1].request.body;
-    expect(
-      secondBody.events[0].query?.personalization?.decisionScopes,
-    ).toContain("__view__");
-
-    expect(result2).toHaveProperty("propositions");
-    result2.propositions.forEach((p) => {
-      expect(p.renderAttempted).toBe(false);
-    });
-  });
-
-  test("sendEvent with defaultPersonalizationEnabled=true fetches offers", async ({
-    alloy,
-    worker,
-    networkRecorder,
-  }) => {
-    worker.use(sendEventHandler);
-    await alloy("configure", alloyConfig);
-
-    const result = await alloy("sendEvent", {
+    const result3 = await alloy("sendEvent", {
       personalization: { defaultPersonalizationEnabled: true },
     });
 
     const calls = await networkRecorder.findCalls(/v1\/interact/, {
-      retries: 10,
+      retries: 20,
       delayMs: 100,
-      minCalls: 1,
+      minCalls: 3,
     });
-    expect(calls.length).toBe(1);
-
-    const body = calls[0].request.body;
-    expect(body.events[0].query?.personalization?.decisionScopes).toContain(
-      "__view__",
-    );
-
-    expect(result).toHaveProperty("propositions");
-    result.propositions.forEach((p) => {
-      expect(p.renderAttempted).toBe(false);
-    });
+    expect(calls.length).toBe(3);
+    calls.forEach((call) => expect(call.response.status).toBe(200));
+    expect(calls[0].request.body.events[0].query).toBeUndefined();
+    expect(
+      calls[1].request.body.events[0].query.personalization.decisionScopes,
+    ).toEqual(["__view__"]);
+    expect(
+      calls[2].request.body.events[0].query.personalization.decisionScopes,
+    ).toEqual(["__view__"]);
+    expect(result2.decisions).toEqual([vecProposition]);
+    expect(result2.propositions).toEqual([
+      { ...vecProposition, renderAttempted: false },
+    ]);
+    expect(result3.decisions).toEqual([vecProposition]);
+    expect(result3.propositions).toEqual([
+      { ...vecProposition, renderAttempted: false },
+    ]);
   });
 });
 
@@ -670,19 +749,19 @@ describe("C15325239: top and bottom of page", () => {
     worker,
     networkRecorder,
   }) => {
-    worker.use(sendEventHandler);
+    worker.use(emptyHandler);
     await alloy("configure", alloyConfig);
 
     // Top of page #1 — renderDecisions=true, sendDisplayEvent=false
     await alloy("sendEvent", {
       renderDecisions: true,
-      xdm: { eventType: "decisioning.propositionFetch" },
+      type: "decisioning.propositionFetch",
       personalization: { sendDisplayEvent: false },
     });
 
     // Top of page #2 — additional scope, sendDisplayEvent=false
     await alloy("sendEvent", {
-      xdm: { eventType: "decisioning.propositionFetch" },
+      type: "decisioning.propositionFetch",
       personalization: {
         decisionScopes: ["foo"],
         sendDisplayEvent: false,
