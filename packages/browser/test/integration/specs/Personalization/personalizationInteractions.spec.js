@@ -16,37 +16,11 @@ governing permissions and limitations under the License.
  * C17409728 — autoCollectPropositionInteractions: ALWAYS, NEVER, DECORATED_ELEMENTS_ONLY
  *             and applyPropositions with DOM_ACTION_COLLECT_INTERACTIONS.
  *             Also covers "includeRenderedPropositions" in bottom-of-page sendEvent.
- *
- * Note: The original functional test also verified the request body of the
- * interact event, but TestCafe no longer captures sendBeacon request bodies.
- * We therefore verify that the network request count is correct and that the
- * interact event is sent, but cannot inspect the exact payload without
- * NetworkRecorder.  Where possible, we use a regular fetch (not sendBeacon)
- * to capture the body.
  */
 
 import { http, HttpResponse } from "msw";
-// eslint-disable-next-line import/no-unresolved
 import { server } from "vitest/browser";
 import alloyConfig from "../../helpers/alloy/config.js";
-
-// Poll until condition() returns truthy, then resolve.  Rejects on timeout.
-const waitUntil = (condition, { intervalMs = 50, timeoutMs = 3000 } = {}) =>
-  new Promise((resolve, reject) => {
-    const start = Date.now();
-    const poll = () => {
-      if (condition()) {
-        resolve();
-        return;
-      }
-      if (Date.now() - start >= timeoutMs) {
-        reject(new Error("waitUntil timed out"));
-        return;
-      }
-      setTimeout(poll, intervalMs);
-    };
-    poll();
-  });
 import {
   describe,
   test,
@@ -67,6 +41,51 @@ const DECORATED_ELEMENTS_ONLY = "decoratedElementsOnly";
 const CLICK_LABEL_DATA_ATTRIBUTE = "data-aep-click-label";
 const INTERACT_ID_DATA_ATTRIBUTE = "data-aep-interact-id";
 const DOM_ACTION_COLLECT_INTERACTIONS = "collectInteractions";
+const DISPLAY = "decisioning.propositionDisplay";
+const INTERACT = "decisioning.propositionInteract";
+const INTERACTION_SETTLE_TIME = 250;
+
+const getEvents = (calls) =>
+  calls.flatMap(({ request }) => request.body.events ?? []);
+
+const waitForDisplayNotification = async (networkRecorder) => {
+  const calls = await networkRecorder.findCalls(/v1\/interact/, {
+    retries: 30,
+    delayMs: 100,
+    minCalls: 1,
+  });
+  expect(getEvents(calls).some(({ xdm }) => xdm.eventType === DISPLAY)).toBe(
+    true,
+  );
+};
+
+const getInteractionCalls = async (networkRecorder) => {
+  await networkRecorder.findCalls(/v1\/interact/, {
+    retries: 30,
+    delayMs: 100,
+    minCalls: 1,
+  });
+  await new Promise((resolve) => setTimeout(resolve, INTERACTION_SETTLE_TIME));
+  return networkRecorder.calls.filter(({ request }) =>
+    /v1\/interact/.test(request?.url ?? ""),
+  );
+};
+
+const expectInteraction = (calls, propositionId, itemId) => {
+  expect(calls).toHaveLength(1);
+  expect(calls[0].response.status).toBe(204);
+
+  const interactionEvent = getEvents(calls).find(
+    ({ xdm }) => xdm.eventType === INTERACT,
+  );
+  expect(interactionEvent).toBeDefined();
+  expect(interactionEvent.xdm._experience.decisioning.propositions).toEqual([
+    expect.objectContaining({
+      id: propositionId,
+      items: [{ id: itemId }],
+    }),
+  ]);
+};
 
 // ---------------------------------------------------------------------------
 // Helper — builds a mock edge response with the given items
@@ -96,16 +115,6 @@ const buildResponseWithItems = (propositionId, activityId, items) => ({
       ],
       type: "personalization:decisions",
       eventIndex: 0,
-    },
-    {
-      payload: [
-        {
-          key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster",
-          value: "or2",
-          maxAge: 1800,
-        },
-      ],
-      type: "state:store",
     },
   ],
 });
@@ -201,16 +210,13 @@ describe("C17409728: automatically sends interact event when ALWAYS is configure
     expect(inserted).not.toBeNull();
     expect(inserted.hasAttribute(INTERACT_ID_DATA_ATTRIBUTE)).toBe(true);
 
-    // Click the inserted element
+    await waitForDisplayNotification(networkRecorder);
+    networkRecorder.reset();
+
     inserted.click();
 
-    // Wait for the interact event to be sent
-    const calls = await networkRecorder.findCalls(/v1\/interact/, {
-      retries: 30,
-      delayMs: 100,
-      minCalls: 1,
-    });
-    expect(calls.length).toBeGreaterThanOrEqual(1);
+    const calls = await getInteractionCalls(networkRecorder);
+    expectInteraction(calls, propositionId, itemId);
   });
 });
 
@@ -272,28 +278,16 @@ describe("C17409728: does not send interact event when NEVER is configured", () 
 
     const inserted = document.getElementById("something-else");
     expect(inserted).not.toBeNull();
-    // NEVER mode — element should NOT have the interact-id attribute
     expect(inserted.hasAttribute(INTERACT_ID_DATA_ATTRIBUTE)).toBe(false);
 
-    // Wait for any display notification from applyResponse to settle before
-    // resetting — avoids a race where the display call lands after reset and
-    // pollutes the post-click count.
-    await waitUntil(
-      () =>
-        networkRecorder.calls.some((c) =>
-          /v1\/interact/.test(c.request?.url ?? ""),
-        ),
-      { intervalMs: 50, timeoutMs: 3000 },
-    ).catch(() => {
-      // applyResponse may not fire a display notification in NEVER mode; proceed.
-    });
+    await waitForDisplayNotification(networkRecorder);
     networkRecorder.reset();
 
     inserted.click();
 
-    // Fixed wait is necessary here: we are asserting that NO interact call fires
-    // after the click, so there is no positive condition to poll on.
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    await new Promise((resolve) =>
+      setTimeout(resolve, INTERACTION_SETTLE_TIME),
+    );
     const calls = await networkRecorder.findCalls(/v1\/interact/, {
       retries: 3,
       delayMs: 50,
@@ -364,48 +358,31 @@ describe("C17409728: only decorated elements trigger interact events", () => {
 
     const list = document.getElementById("some-list");
     expect(list).not.toBeNull();
-    // The list root should have the interact-id attribute in DECORATED_ELEMENTS_ONLY mode
     expect(list.hasAttribute(INTERACT_ID_DATA_ATTRIBUTE)).toBe(true);
 
-    // Wait for any display notification from applyResponse to settle before
-    // resetting — avoids a race where the display call lands after reset and
-    // pollutes the post-click count.
-    await waitUntil(
-      () =>
-        networkRecorder.calls.some((c) =>
-          /v1\/interact/.test(c.request?.url ?? ""),
-        ),
-      { intervalMs: 50, timeoutMs: 3000 },
-    ).catch(() => {
-      // applyResponse may not fire a display notification in this mode; proceed.
-    });
+    await waitForDisplayNotification(networkRecorder);
     networkRecorder.reset();
 
-    // Click a non-decorated item — no interact event
     const itemA = document.getElementById("some-list-item-a");
     expect(itemA).not.toBeNull();
     itemA.click();
 
-    // Fixed wait is necessary here: we are asserting that NO interact call fires
-    // after clicking a non-decorated element, so there is no positive condition to poll on.
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    await new Promise((resolve) =>
+      setTimeout(resolve, INTERACTION_SETTLE_TIME),
+    );
     const callsAfterNonDecorated = await networkRecorder.findCalls(
       /v1\/interact/,
       { retries: 3, delayMs: 50 },
     );
     expect(callsAfterNonDecorated.length).toBe(0);
 
-    // Click the decorated span — should trigger an interact event
     networkRecorder.reset();
     const span = document.getElementById("some-list-item-span");
     expect(span).not.toBeNull();
     span.click();
 
-    const callsAfterDecorated = await networkRecorder.findCalls(
-      /v1\/interact/,
-      { retries: 20, delayMs: 100, minCalls: 1 },
-    );
-    expect(callsAfterDecorated.length).toBeGreaterThanOrEqual(1);
+    const callsAfterDecorated = await getInteractionCalls(networkRecorder);
+    expectInteraction(callsAfterDecorated, propositionId, itemId);
   });
 });
 
@@ -474,17 +451,13 @@ describe("C17409728: applyPropositions with collectInteractions action type", ()
       },
     });
 
-    // The page header should now have an interact-id attribute
     expect(pageHeader.hasAttribute(INTERACT_ID_DATA_ATTRIBUTE)).toBe(true);
 
+    networkRecorder.reset();
     pageHeader.click();
 
-    const calls = await networkRecorder.findCalls(/v1\/interact/, {
-      retries: 30,
-      delayMs: 100,
-      minCalls: 1,
-    });
-    expect(calls.length).toBeGreaterThanOrEqual(1);
+    const calls = await getInteractionCalls(networkRecorder);
+    expectInteraction(calls, propositionId, itemId);
   });
 });
 
@@ -557,9 +530,9 @@ describe("C17409728: includeRenderedPropositions in bottom-of-page sendEvent", (
       delayMs: 100,
       minCalls: 1,
     });
-    expect(calls.length).toBeGreaterThanOrEqual(1);
+    expect(calls).toHaveLength(1);
 
-    const sendEventCall = calls[calls.length - 1];
+    const sendEventCall = calls[0];
     const hasTargetDisplayNotifications =
       sendEventCall.request.body.events.some(
         ({ xdm }) => xdm.eventType === "decisioning.propositionDisplay",
