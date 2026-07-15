@@ -20,13 +20,13 @@ governing permissions and limitations under the License.
  * C14299420 — Prehiding style removed when renderDecisions=false.
  * C14299422 — Prehiding style removed when personalization payload returned.
  * C17294899 — Prehiding style removed when consent is set to out.
- * C22098199 — Non-idempotent proposition actions not applied multiple times.
+ * C17409729 — Non-idempotent proposition actions not applied multiple times.
+ * C22098199 — setHtml propositions can be re-rendered.
  */
 
 import { http, HttpResponse } from "msw";
-// eslint-disable-next-line import/no-unresolved
-import { server } from "vitest/browser";
 import alloyConfig from "../../helpers/alloy/config.js";
+import reloadAlloy from "../../helpers/alloy/reload.js";
 import {
   describe,
   test,
@@ -38,7 +38,29 @@ import {
   setConsentHandler,
 } from "../../helpers/mswjs/handlers.js";
 
-const { readFile } = server.commands;
+const personalizationSchemas = [
+  "https://ns.adobe.com/personalization/default-content-item",
+  "https://ns.adobe.com/personalization/dom-action",
+  "https://ns.adobe.com/personalization/html-content-item",
+  "https://ns.adobe.com/personalization/json-content-item",
+  "https://ns.adobe.com/personalization/redirect-item",
+];
+
+const getPersonalizationPayload = (call) =>
+  call.response.body.handle.find(
+    ({ type }) => type === "personalization:decisions",
+  ).payload;
+
+const extractDecisionsMeta = (decisions) =>
+  decisions.map(({ id, scope, scopeDetails }) => ({ id, scope, scopeDetails }));
+
+const emptyEventResponse = () =>
+  HttpResponse.json({ requestId: "empty-render-test", handle: [] });
+
+const emptyEventHandler = http.post(
+  /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
+  emptyEventResponse,
+);
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -114,11 +136,7 @@ const makeSetHtmlHandler = (selector, content) =>
         });
       }
 
-      return HttpResponse.text(
-        await readFile(
-          `${server.config.root}/packages/browser/test/integration/helpers/mocks/emptyEventResponse.json`,
-        ),
-      );
+      return emptyEventResponse();
     },
   );
 
@@ -142,6 +160,7 @@ describe("C28757: VEC offer renders when renderDecisions=true", () => {
   test("dom-action setHtml updates the target element", async ({
     alloy,
     worker,
+    networkRecorder,
   }) => {
     worker.use(
       makeSetHtmlHandler(
@@ -152,7 +171,32 @@ describe("C28757: VEC offer renders when renderDecisions=true", () => {
     await alloy("configure", alloyConfig);
     const eventResult = await alloy("sendEvent", { renderDecisions: true });
 
-    expect(targetDiv.innerHTML).toContain("Here is an awesome target offer!");
+    const calls = await networkRecorder.findCalls(/v1\/interact/, {
+      retries: 30,
+      delayMs: 100,
+      minCalls: 2,
+    });
+    expect(calls).toHaveLength(2);
+    expect(calls.map(({ response }) => response.status)).toEqual([200, 200]);
+
+    const sendEventCall = calls.find(
+      ({ request }) =>
+        request.body.events[0].xdm.eventType !==
+        "decisioning.propositionDisplay",
+    );
+    const personalization =
+      sendEventCall.request.body.events[0].query.personalization;
+    expect(personalization.decisionScopes).toEqual(["__view__"]);
+    expect(personalization.schemas).toEqual(
+      expect.arrayContaining(personalizationSchemas),
+    );
+
+    const personalizationPayload = getPersonalizationPayload(sendEventCall);
+    expect(personalizationPayload[0].scope).toBe("__view__");
+    expect(personalizationPayload[0].items[0].data.content).toBe(
+      "Here is an awesome target offer!",
+    );
+    expect(targetDiv.textContent).toBe("Here is an awesome target offer!");
 
     // VEC propositions that were rendered should not appear in decisions
     const vecSchemas = [
@@ -201,7 +245,32 @@ describe("C28760: display notification sent after VEC render", () => {
       delayMs: 100,
       minCalls: 2,
     });
-    expect(calls.length).toBeGreaterThanOrEqual(2);
+    expect(calls).toHaveLength(2);
+    expect(calls.map(({ response }) => response.status)).toEqual([200, 200]);
+
+    const sendEventCall = calls.find(
+      ({ request }) =>
+        request.body.events[0].xdm.eventType !==
+        "decisioning.propositionDisplay",
+    );
+    const personalization =
+      sendEventCall.request.body.events[0].query.personalization;
+    expect(personalization.decisionScopes).toEqual(["__view__"]);
+    expect(personalization.schemas).toEqual(
+      expect.arrayContaining(personalizationSchemas),
+    );
+
+    const vecDecisions = getPersonalizationPayload(sendEventCall).filter(
+      (decision) =>
+        decision.items.some(({ schema }) =>
+          [
+            "https://ns.adobe.com/personalization/dom-action",
+            "https://ns.adobe.com/personalization/html-content-item",
+          ].includes(schema),
+        ),
+    );
+    expect(vecDecisions).not.toHaveLength(0);
+    expect(vecDecisions.every(({ scope }) => scope === "__view__")).toBe(true);
 
     const displayCall = calls.find(
       (c) =>
@@ -215,8 +284,8 @@ describe("C28760: display notification sent after VEC render", () => {
     ).toBe(1);
     expect(
       displayCall.request.body.events[0].xdm._experience.decisioning
-        .propositions.length,
-    ).toBeGreaterThan(0);
+        .propositions,
+    ).toEqual(extractDecisionsMeta(vecDecisions));
   });
 });
 
@@ -298,11 +367,7 @@ describe("C5805675: default content offers delivered and display notification se
           });
         }
 
-        return HttpResponse.text(
-          await readFile(
-            `${server.config.root}/packages/browser/test/integration/helpers/mocks/emptyEventResponse.json`,
-          ),
-        );
+        return emptyEventResponse();
       },
     );
 
@@ -321,6 +386,47 @@ describe("C5805675: default content offers delivered and display notification se
       delayMs: 100,
       minCalls: 2,
     });
+    expect(calls).toHaveLength(2);
+    expect(calls.map(({ response }) => response.status)).toEqual([200, 200]);
+
+    const sendEventCall = calls.find(
+      ({ request }) =>
+        request.body.events[0].xdm.eventType !==
+        "decisioning.propositionDisplay",
+    );
+    const personalization =
+      sendEventCall.request.body.events[0].query.personalization;
+    expect(personalization.decisionScopes).toEqual(["__view__"]);
+    expect(personalization.schemas).toEqual(
+      expect.arrayContaining(personalizationSchemas),
+    );
+
+    const defaultContentDecisions = getPersonalizationPayload(
+      sendEventCall,
+    ).filter((decision) =>
+      decision.items.some(
+        ({ schema }) =>
+          schema ===
+          "https://ns.adobe.com/personalization/default-content-item",
+      ),
+    );
+    expect(defaultContentDecisions).not.toHaveLength(0);
+    expect(defaultContentDecisions[0].scope).toBe("__view__");
+
+    const defaultContentItem = defaultContentDecisions[0].items.find(
+      ({ schema }) =>
+        schema === "https://ns.adobe.com/personalization/default-content-item",
+    );
+    expect(defaultContentItem.id).toBeTruthy();
+    expect(defaultContentItem.schema).toBe(
+      "https://ns.adobe.com/personalization/default-content-item",
+    );
+    expect(defaultContentItem.meta["activity.name"]).toBe(
+      "Functional: C5805675 AB",
+    );
+    expect(defaultContentItem.meta["offer.name"]).toBe("Default Content");
+    expect(defaultContentItem.data).toBeUndefined();
+
     const displayCall = calls.find(
       (c) =>
         c.request.body?.events?.[0]?.xdm?.eventType ===
@@ -331,6 +437,10 @@ describe("C5805675: default content offers delivered and display notification se
       displayCall.request.body.events[0].xdm._experience.decisioning
         .propositionEventType.display,
     ).toBe(1);
+    expect(
+      displayCall.request.body.events[0].xdm._experience.decisioning
+        .propositions,
+    ).toEqual(extractDecisionsMeta(defaultContentDecisions));
   });
 });
 
@@ -354,8 +464,7 @@ describe("C14299419: prehiding style removed when no personalization payload", (
     alloy,
     worker,
   }) => {
-    // Use sendEventHandler which returns an empty personalization payload
-    worker.use(sendEventHandler);
+    worker.use(emptyEventHandler);
     await alloy("configure", alloyConfig);
     await alloy("sendEvent", { renderDecisions: true });
 
@@ -383,7 +492,7 @@ describe("C14299420: prehiding style removed when renderDecisions=false", () => 
     alloy,
     worker,
   }) => {
-    worker.use(sendEventHandler);
+    worker.use(emptyEventHandler);
     await alloy("configure", alloyConfig);
     await alloy("sendEvent", { renderDecisions: false });
 
@@ -419,6 +528,7 @@ describe("C14299422: prehiding style removed when personalization payload return
   test("alloy-prehiding style is removed even when personalization offer is returned", async ({
     alloy,
     worker,
+    networkRecorder,
   }) => {
     worker.use(
       makeSetHtmlHandler(
@@ -430,6 +540,13 @@ describe("C14299422: prehiding style removed when personalization payload return
     await alloy("sendEvent", { renderDecisions: true });
 
     expect(document.getElementById("alloy-prehiding")).toBeNull();
+    expect(
+      await networkRecorder.findCalls(/v1\/interact/, {
+        retries: 30,
+        delayMs: 100,
+        minCalls: 2,
+      }),
+    ).toHaveLength(2);
   });
 });
 
@@ -453,32 +570,47 @@ describe("C17294899: prehiding style removed when consent is out", () => {
     alloy,
     worker,
   }) => {
-    worker.use(sendEventHandler, setConsentHandler);
+    worker.use(setConsentHandler);
 
     await alloy("configure", {
       ...alloyConfig,
       defaultConsent: "pending",
     });
 
-    // Style should still be present (consent pending)
     expect(document.getElementById("alloy-prehiding")).not.toBeNull();
 
-    // Setting consent to "out" should remove the prehiding style
+    const sendEventPromise = alloy("sendEvent", { renderDecisions: true });
+    expect(document.getElementById("alloy-prehiding")).not.toBeNull();
+
     await alloy("setConsent", {
       consent: [
         { standard: "Adobe", version: "1.0", value: { general: "out" } },
       ],
     });
+    await expect(sendEventPromise).resolves.toEqual({});
 
+    expect(document.getElementById("alloy-prehiding")).toBeNull();
+
+    const reloadedAlloy = await reloadAlloy();
+    const style = document.createElement("style");
+    style.id = "alloy-prehiding";
+    style.textContent = "body { visibility: hidden; }";
+    document.head.appendChild(style);
+    expect(document.getElementById("alloy-prehiding")).not.toBeNull();
+
+    await reloadedAlloy("configure", {
+      ...alloyConfig,
+      defaultConsent: "pending",
+    });
     expect(document.getElementById("alloy-prehiding")).toBeNull();
   });
 });
 
 // ---------------------------------------------------------------------------
-// C22098199 — Non-idempotent proposition actions not applied multiple times
+// C17409729 and C22098199 — DOM action idempotency
 // ---------------------------------------------------------------------------
 
-describe("C22098199: non-idempotent proposition actions not applied multiple times", () => {
+describe("C17409729 and C22098199: DOM action idempotency", () => {
   const containerId = "idempotency-test-container";
 
   const makePropositions = (action, content, itemId) => [
@@ -510,7 +642,7 @@ describe("C22098199: non-idempotent proposition actions not applied multiple tim
 
   ["prependHtml", "appendHtml", "insertBefore", "insertAfter"].forEach(
     (action) => {
-      test(`${action} proposition is not applied multiple times`, async ({
+      test(`C17409729: ${action} proposition is not applied multiple times`, async ({
         alloy,
         worker,
       }) => {
@@ -537,6 +669,7 @@ describe("C22098199: non-idempotent proposition actions not applied multiple tim
 
           const firstCount = document.querySelectorAll(`#${contentId}`).length;
           expect(firstCount).toBe(1);
+          expect(container.dataset.adobePropositionIds).toContain(itemId);
 
           // Second application should be idempotent
           await alloy("applyPropositions", { propositions });
