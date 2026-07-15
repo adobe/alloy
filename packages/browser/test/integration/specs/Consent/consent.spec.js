@@ -20,6 +20,7 @@ import {
 import { http, HttpResponse } from "msw";
 import {
   sendEventHandler,
+  setConsentErrorHandler,
   setConsentHandler,
 } from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
@@ -106,6 +107,8 @@ describe("Consent", () => {
 
     // Fire and don't await — event should be queued while consent is pending
     const sendEventPromise = alloy("sendEvent");
+
+    await waitFor(0);
 
     // Before consent, no interact calls should have been made
     expect(
@@ -239,6 +242,10 @@ describe("Consent", () => {
 
     await alloy("setConsent", CONSENT_OUT);
     await alloy("setConsent", CONSENT_IN);
+
+    expect((await cookieStore.get(MAIN_CONSENT_COOKIE_NAME))?.value).toBe(
+      "general=in",
+    );
 
     const consentCalls = await networkRecorder.findCalls(
       /v1\/privacy\/set-consent/,
@@ -418,8 +425,9 @@ describe("Consent", () => {
 
   test("C14410: setting consent for unknown purposes produces server 400 error", async ({
     alloy,
+    worker,
   }) => {
-    // No setConsentHandler is registered - hits prod Edge
+    worker.use(setConsentErrorHandler);
     await alloy("configure", {
       ...alloyConfig,
       defaultConsent: "pending",
@@ -441,6 +449,7 @@ describe("Consent", () => {
       "The server responded with a status code 400",
     );
     expect(error.message).toContain("EXEG-0102-400");
+    worker.use(setConsentHandler);
     await alloy("setConsent", CONSENT_IN);
   });
 
@@ -482,7 +491,7 @@ describe("Consent", () => {
       defaultConsent: "pending",
     });
 
-    expect(() => alloy2("setConsent", CONSENT_OUT)).not.toThrow();
+    await alloy2("setConsent", CONSENT_OUT);
   });
 
   // C14414: Requests are queued while consent changes are pending
@@ -649,6 +658,8 @@ describe("Consent", () => {
     // sendEvent should be queued — consent present but identity missing requires re-verification
     const sendEventPromise = alloy2("sendEvent");
 
+    await waitFor(0);
+
     // Immediately: no interact calls yet
     expect(
       networkRecorder.calls.filter((c) =>
@@ -705,6 +716,8 @@ describe("Consent", () => {
     // sendEvent should be queued — consent cookie is gone, consent is "pending" again
     const sendEventPromise = alloy2("sendEvent");
 
+    await waitFor(0);
+
     // Immediately: no interact calls yet
     expect(
       networkRecorder.calls.filter((c) =>
@@ -742,6 +755,8 @@ describe("Consent", () => {
 
     // Queue an event
     const sendEventPromise = alloy("sendEvent");
+
+    await waitFor(0);
 
     // No interact calls yet
     expect(
@@ -791,6 +806,8 @@ describe("Consent", () => {
       // Queue an event
       const sendEventPromise = alloy("sendEvent");
 
+      await waitFor(0);
+
       // No interact calls yet
       expect(
         networkRecorder.calls.filter((c) =>
@@ -822,21 +839,36 @@ describe("Consent", () => {
     worker,
     networkRecorder,
   }) => {
-    worker.use(sendEventHandler, setConsentHandler);
+    worker.use(sendEventWithIdentityHandler, setConsentHandler);
 
-    await alloy("configure", alloyConfig);
-    await alloy("setConsent", CONSENT_OUT);
+    const config = {
+      ...alloyConfig,
+      defaultConsent: "in",
+      debugEnabled: true,
+      idMigrationEnabled: true,
+      thirdPartyCookiesEnabled: false,
+    };
+
+    await alloy("configure", config);
+    await alloy("setConsent", ADOBE2_OUT);
     expect(await cookieStore.get(MAIN_CONSENT_COOKIE_NAME)).not.toBeNull();
 
     await cookieStore.delete(MAIN_IDENTITY_COOKIE_NAME);
     const alloy2 = await reloadAlloy();
-    await alloy2("configure", alloyConfig);
+    await alloy2("configure", config);
 
     expect(await cookieStore.get(MAIN_CONSENT_COOKIE_NAME)).toBeNull();
 
     await alloy2("sendEvent");
-    const interactCalls = await networkRecorder.findCalls(/v1\/interact/);
-    expect(interactCalls.length).toBe(1);
+    const alloy3 = await reloadAlloy();
+    await alloy3("configure", config);
+    await alloy3("sendEvent");
+
+    const interactCalls = await networkRecorder.findCalls(/v1\/interact/, {
+      retries: 10,
+      minCalls: 2,
+    });
+    expect(interactCalls.length).toBe(2);
   });
 
   // C1631712: Requests are dropped when default consent is out
@@ -869,6 +901,7 @@ describe("Consent", () => {
       // alloy resolves with an object containing empty arrays when consent is out
       expect(result.propositions ?? []).toEqual([]);
       expect(result.decisions ?? []).toEqual([]);
+      expect(result).toEqual({});
 
       expect(
         searchForLogMessage(
@@ -886,6 +919,11 @@ describe("Consent", () => {
 
       // Opt in
       await alloy("setConsent", CONSENT_IN);
+      expect(
+        networkRecorder.calls.filter((c) =>
+          /v1\/interact/.test(c.request?.url ?? ""),
+        ).length,
+      ).toBe(0);
 
       // Second sendEvent — should succeed
       await alloy("sendEvent");

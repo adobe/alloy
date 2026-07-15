@@ -265,6 +265,19 @@ export const setConsentHandler = http.post(
   },
 );
 
+export const setConsentErrorHandler = http.post(
+  /https:\/\/edge\.adobedc\.net\/ee\/(?:[^/]+\/)?v1\/privacy\/set-consent/,
+  () =>
+    HttpResponse.json(
+      {
+        type: "https://ns.adobe.com/aep/errors/EXEG-0102-400",
+        status: 400,
+        title: "Invalid consent request",
+      },
+      { status: 400 },
+    ),
+);
+
 export const acquireHandler = http.post(
   /https:\/\/edge\.adobedc\.net\/ee\/.*\/?v1\/identity\/acquire/,
 
