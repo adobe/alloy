@@ -19,6 +19,7 @@ governing permissions and limitations under the License.
  */
 
 import { http, HttpResponse } from "msw";
+import { server } from "vitest/browser";
 import alloyConfig from "../../helpers/alloy/config.js";
 import {
   describe,
@@ -27,7 +28,27 @@ import {
   beforeEach,
 } from "../../helpers/testsSetup/extend.js";
 
-// Returns SPA propositions for the first request; empty for subsequent view-change pings
+const { readFile } = server.commands;
+const PAGE_WIDE_SCOPE = "__view__";
+const PERSONALIZATION_SCHEMAS = [
+  "https://ns.adobe.com/personalization/default-content-item",
+  "https://ns.adobe.com/personalization/dom-action",
+  "https://ns.adobe.com/personalization/html-content-item",
+  "https://ns.adobe.com/personalization/json-content-item",
+  "https://ns.adobe.com/personalization/redirect-item",
+];
+
+const getPersonalizationPayload = (call) =>
+  call.response.body.handle.find(
+    ({ type }) => type === "personalization:decisions",
+  ).payload;
+
+const getPropositionMeta = ({ id, scope, scopeDetails }) => ({
+  id,
+  scope,
+  scopeDetails,
+});
+
 const spaPersonalizationHandler = http.post(
   /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
   async (req) => {
@@ -44,128 +65,16 @@ const spaPersonalizationHandler = http.post(
       requestBody?.events?.[0]?.query?.personalization?.schemas?.length > 0;
 
     if (hasPersonalizationQuery) {
-      // Return SPA response with page-wide, products, and cart view propositions
-      return HttpResponse.json({
-        requestId: "spa-test-response",
-        handle: [
-          {
-            payload: [{ id: "ecid-spa", namespace: { code: "ECID" } }],
-            type: "identity:result",
-          },
-          {
-            payload: [
-              {
-                id: "AT:pagewide-spa",
-                scope: "__view__",
-                scopeDetails: {
-                  decisionProvider: "TGT",
-                  activity: { id: "spa-activity" },
-                  experience: { id: "0" },
-                  characteristics: { eventToken: "pagewide-token" },
-                  correlationID: "spa-activity:0:0",
-                },
-                items: [
-                  {
-                    id: "pagewide-item",
-                    schema: "https://ns.adobe.com/personalization/dom-action",
-                    data: {
-                      type: "setHtml",
-                      content: "test for a page wide scope",
-                      selector: "#pageWideScope",
-                      prehidingSelector: "#pageWideScope",
-                    },
-                  },
-                ],
-              },
-              {
-                id: "AT:products-view",
-                scope: "products",
-                scopeDetails: {
-                  decisionProvider: "TGT",
-                  activity: { id: "spa-activity" },
-                  experience: { id: "0" },
-                  characteristics: {
-                    eventToken: "products-token",
-                    scopeType: "view",
-                  },
-                  correlationID: "spa-activity:0:0",
-                },
-                items: [
-                  {
-                    id: "products-item",
-                    schema: "https://ns.adobe.com/personalization/dom-action",
-                    data: {
-                      type: "setHtml",
-                      content: "This is product view",
-                      selector: "#personalization-products-container",
-                      prehidingSelector: "#personalization-products-container",
-                    },
-                  },
-                ],
-              },
-              {
-                id: "AT:cart-view",
-                scope: "cart",
-                scopeDetails: {
-                  decisionProvider: "TGT",
-                  activity: { id: "spa-activity" },
-                  experience: { id: "0" },
-                  characteristics: {
-                    eventToken: "cart-token",
-                    scopeType: "view",
-                  },
-                  correlationID: "spa-activity:0:0",
-                },
-                items: [
-                  {
-                    id: "cart-item",
-                    schema: "https://ns.adobe.com/personalization/dom-action",
-                    data: {
-                      type: "setHtml",
-                      content: "This is cart view",
-                      selector: "#personalization-cart-container",
-                      prehidingSelector: "#personalization-cart-container",
-                    },
-                  },
-                ],
-              },
-            ],
-            type: "personalization:decisions",
-            eventIndex: 0,
-          },
-          {
-            payload: [
-              {
-                key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster",
-                value: "or2",
-                maxAge: 1800,
-              },
-            ],
-            type: "state:store",
-          },
-        ],
-      });
+      return HttpResponse.text(
+        await readFile(
+          `${server.config.root}/packages/browser/test/integration/helpers/mocks/personalizationSpaResponse.json`,
+        ),
+      );
     }
 
-    // View-change or notification request — return empty response
     return HttpResponse.json({
       requestId: `spa-notification-${Date.now()}`,
-      handle: [
-        {
-          payload: [{ id: "ecid-spa", namespace: { code: "ECID" } }],
-          type: "identity:result",
-        },
-        {
-          payload: [
-            {
-              key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster",
-              value: "or2",
-              maxAge: 1800,
-            },
-          ],
-          type: "state:store",
-        },
-      ],
+      handle: [],
     });
   },
 );
@@ -219,36 +128,45 @@ describe("C782718: SPA support with auto-rendering and view notifications", () =
       },
     });
 
-    // DOM should be updated
     const pageWideEl = document.getElementById("pageWideScope");
-    expect(pageWideEl.textContent).toContain("test for a page wide scope");
+    expect(pageWideEl.textContent).toBe("test for a page wide scope");
     const productsEl = document.getElementById(
       "personalization-products-container",
     );
-    expect(productsEl.textContent).toContain("This is product view");
+    expect(productsEl.textContent).toBe("This is product view");
 
-    // All propositions should have renderAttempted=true
-    const allRendered = resultingObject.propositions.every(
-      (p) => p.renderAttempted,
-    );
-    expect(allRendered).toBe(true);
-
-    // Wait for display notification
     const calls = await networkRecorder.findCalls(/v1\/interact/, {
       retries: 30,
       delayMs: 100,
       minCalls: 2,
     });
-    const displayCall = calls.find(
-      (c) =>
-        c.request.body?.events?.[0]?.xdm?.eventType ===
-        "decisioning.propositionDisplay",
+    expect(calls).toHaveLength(2);
+
+    const sendEventCall = calls[0];
+    const personalizationQuery =
+      sendEventCall.request.body.events[0].query.personalization;
+    expect(personalizationQuery.decisionScopes).toEqual([PAGE_WIDE_SCOPE]);
+    expect(personalizationQuery.schemas).toEqual(
+      expect.arrayContaining(PERSONALIZATION_SCHEMAS),
     );
-    expect(displayCall).toBeDefined();
+
+    const personalizationPayload = getPersonalizationPayload(sendEventCall);
+    expect(personalizationPayload).toHaveLength(3);
+
+    const displayXdm = calls[1].request.body.events[0].xdm;
+    expect(displayXdm.eventType).toBe("decisioning.propositionDisplay");
+    expect(displayXdm._experience.decisioning).toEqual({
+      propositions: personalizationPayload
+        .filter(({ scope }) => [PAGE_WIDE_SCOPE, "products"].includes(scope))
+        .map(getPropositionMeta),
+      propositionEventType: { display: 1 },
+    });
+    expect(resultingObject.propositions).toHaveLength(2);
     expect(
-      displayCall.request.body.events[0].xdm._experience.decisioning
-        .propositionEventType.display,
-    ).toBe(1);
+      resultingObject.propositions.every(({ renderAttempted }) =>
+        Boolean(renderAttempted),
+      ),
+    ).toBe(true);
   });
 
   test("view change uses cached proposals, sends display notification, no personalization query", async ({
@@ -259,20 +177,18 @@ describe("C782718: SPA support with auto-rendering and view notifications", () =
     worker.use(spaPersonalizationHandler);
     await alloy("configure", alloyConfig);
 
-    // Page load
     await alloy("sendEvent", {
       renderDecisions: true,
       xdm: { web: { webPageDetails: { viewName: "products" } } },
     });
 
-    // Wait for display notification from page load
-    await networkRecorder.findCalls(/v1\/interact/, {
+    const pageLoadCalls = await networkRecorder.findCalls(/v1\/interact/, {
       retries: 30,
       delayMs: 100,
       minCalls: 2,
     });
+    const personalizationPayload = getPersonalizationPayload(pageLoadCalls[0]);
 
-    // View change — should NOT include personalization query
     const viewChangeResult = await alloy("sendEvent", {
       renderDecisions: true,
       decisionScopes: [],
@@ -285,22 +201,28 @@ describe("C782718: SPA support with auto-rendering and view notifications", () =
       minCalls: 3,
     });
 
-    // Find the cart view-change request
-    const viewChangeCall = allCalls.find((c) => {
-      const viewName =
-        c.request.body?.events?.[0]?.xdm?.web?.webPageDetails?.viewName;
-      return viewName === "cart";
-    });
-    expect(viewChangeCall).toBeDefined();
-
-    // No personalization query on view change
+    expect(allCalls).toHaveLength(3);
+    const viewChangeCall = allCalls[2];
+    expect(
+      viewChangeCall.request.body.events[0].xdm.web.webPageDetails.viewName,
+    ).toBe("cart");
     expect(viewChangeCall.request.body.events[0].query).toBeUndefined();
-
-    // All propositions from the view change should be renderAttempted=true
-    const allRendered = viewChangeResult.propositions.every(
-      (p) => p.renderAttempted,
-    );
-    expect(allRendered).toBe(true);
+    expect(
+      viewChangeCall.request.body.events[0].xdm._experience.decisioning,
+    ).toEqual({
+      propositions: personalizationPayload
+        .filter(({ scope }) => scope === "cart")
+        .map(getPropositionMeta),
+      propositionEventType: { display: 1 },
+    });
+    expect(
+      viewChangeResult.propositions.every(({ renderAttempted }) =>
+        Boolean(renderAttempted),
+      ),
+    ).toBe(true);
+    expect(
+      document.getElementById("personalization-cart-container").textContent,
+    ).toBe("This is cart view");
   });
 
   test("view change for non-existing view sends notification with empty propositions marker", async ({
@@ -311,20 +233,17 @@ describe("C782718: SPA support with auto-rendering and view notifications", () =
     worker.use(spaPersonalizationHandler);
     await alloy("configure", alloyConfig);
 
-    // Page load
     await alloy("sendEvent", {
       renderDecisions: true,
       xdm: { web: { webPageDetails: { viewName: "products" } } },
     });
 
-    // Wait for display notification from page load
     await networkRecorder.findCalls(/v1\/interact/, {
       retries: 30,
       delayMs: 100,
       minCalls: 2,
     });
 
-    // View change to non-existent view
     await alloy("sendEvent", {
       renderDecisions: true,
       decisionScopes: [],
@@ -340,23 +259,21 @@ describe("C782718: SPA support with auto-rendering and view notifications", () =
       minCalls: 3,
     });
 
-    const noViewCall = allCalls.find(
-      (c) =>
-        c.request.body?.events?.[0]?.xdm?.web?.webPageDetails?.viewName ===
-        "noView",
-    );
-    expect(noViewCall).toBeDefined();
+    expect(allCalls).toHaveLength(3);
+    const noViewCall = allCalls[2];
     expect(noViewCall.request.body.events[0].query).toBeUndefined();
-
-    const decisioning =
-      noViewCall.request.body.events[0].xdm._experience?.decisioning;
-    expect(decisioning).toBeDefined();
-    // Should report the noView scope with scopeType="view" characteristics
-    const noViewProp = decisioning.propositions.find(
-      (p) => p.scope === "noView",
-    );
-    expect(noViewProp).toBeDefined();
-    expect(noViewProp.scopeDetails?.characteristics?.scopeType).toBe("view");
+    const noViewXdm = noViewCall.request.body.events[0].xdm;
+    expect(noViewXdm.eventType).toBe("noviewoffers");
+    expect(noViewXdm.web.webPageDetails.viewName).toBe("noView");
+    expect(noViewXdm._experience.decisioning).toEqual({
+      propositions: [
+        {
+          scope: "noView",
+          scopeDetails: { characteristics: { scopeType: "view" } },
+        },
+      ],
+      propositionEventType: { display: 1 },
+    });
   });
 });
 
@@ -403,27 +320,31 @@ describe("C782719: SPA support with auto-rendering disabled", () => {
       xdm: { web: { webPageDetails: { viewName: "products" } } },
     });
 
-    // Propositions should be returned
-    expect(resultingObject.propositions).toBeDefined();
-    expect(resultingObject.propositions.length).toBeGreaterThan(0);
-
-    // All propositions should have been fetched for __view__ and products
-    const scopes = resultingObject.propositions.map((p) => p.scope);
-    expect(scopes.some((s) => ["__view__", "products"].includes(s))).toBe(true);
-
-    // No propositions should have been rendered
-    const noneRendered = resultingObject.propositions.every(
-      (p) => !p.renderAttempted,
-    );
-    expect(noneRendered).toBe(true);
-
-    // Only one request should be sent (no display notification)
     const calls = await networkRecorder.findCalls(/v1\/interact/, {
       retries: 10,
       delayMs: 100,
       minCalls: 1,
     });
-    expect(calls.length).toBe(1);
+    expect(calls).toHaveLength(1);
+
+    const personalizationQuery =
+      calls[0].request.body.events[0].query.personalization;
+    expect(personalizationQuery.decisionScopes).toEqual([PAGE_WIDE_SCOPE]);
+    expect(personalizationQuery.schemas).toEqual(
+      expect.arrayContaining(PERSONALIZATION_SCHEMAS),
+    );
+    expect(getPersonalizationPayload(calls[0])).toHaveLength(3);
+    expect(resultingObject.propositions).toHaveLength(2);
+    expect(
+      resultingObject.propositions.every(({ scope }) =>
+        [PAGE_WIDE_SCOPE, "products"].includes(scope),
+      ),
+    ).toBe(true);
+    expect(
+      resultingObject.propositions.every(
+        ({ renderAttempted }) => !renderAttempted,
+      ),
+    ).toBe(true);
   });
 
   test("view change with renderDecisions=false returns unrendered propositions", async ({
@@ -434,84 +355,35 @@ describe("C782719: SPA support with auto-rendering disabled", () => {
     worker.use(spaPersonalizationHandler);
     await alloy("configure", alloyConfig);
 
-    // Page load
     await alloy("sendEvent", {
       renderDecisions: false,
       xdm: { web: { webPageDetails: { viewName: "products" } } },
     });
 
-    // View change
     const viewChangeResult = await alloy("sendEvent", {
       renderDecisions: false,
       xdm: { web: { webPageDetails: { viewName: "cart" } } },
     });
 
-    // View change should use cached data (no personalization query)
     const calls = await networkRecorder.findCalls(/v1\/interact/, {
       retries: 10,
       delayMs: 100,
       minCalls: 2,
     });
-    const cartCall = calls.find(
-      (c) =>
-        c.request.body?.events?.[0]?.xdm?.web?.webPageDetails?.viewName ===
-        "cart",
-    );
-    expect(cartCall).toBeDefined();
+    expect(calls).toHaveLength(2);
+    const cartCall = calls[1];
+    expect(
+      cartCall.request.body.events[0].xdm.web.webPageDetails.viewName,
+    ).toBe("cart");
     expect(cartCall.request.body.events[0].query).toBeUndefined();
-
-    // No propositions should be rendered
-    const noneRendered = viewChangeResult.propositions.every(
-      (p) => !p.renderAttempted,
-    );
-    expect(noneRendered).toBe(true);
+    expect(
+      viewChangeResult.propositions.every(
+        ({ renderAttempted }) => !renderAttempted,
+      ),
+    ).toBe(true);
   });
 
   test("view change for non-existing view returns empty propositions array", async ({
-    alloy,
-    worker,
-  }) => {
-    worker.use(spaPersonalizationHandler);
-    await alloy("configure", alloyConfig);
-
-    // Page load
-    await alloy("sendEvent", {
-      renderDecisions: false,
-      xdm: { web: { webPageDetails: { viewName: "products" } } },
-    });
-
-    // View change to non-existent view
-    const noViewResult = await alloy("sendEvent", {
-      renderDecisions: true,
-      xdm: { web: { webPageDetails: { viewName: "noView" } } },
-    });
-
-    expect(noViewResult.propositions).toEqual([]);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// C14286730 — Target SPA click interaction includes viewName in notification
-// ---------------------------------------------------------------------------
-
-// C14286730 is skipped: Target (TGT) propositions do not automatically trigger
-// a separate display-notification request after sendEvent + renderDecisions.
-// Target tracks impressions differently (via mbox tracking), so the display
-// notification call is never fired and the assertion cannot be satisfied.
-// TODO: Investigate whether a manual applyResponse + notification flow is needed.
-describe.skip("C14286730: Target SPA click interaction includes viewName", () => {
-  beforeEach(() => {
-    const productsEl = document.createElement("div");
-    productsEl.id = "personalization-products-container";
-    productsEl.textContent = "Products";
-    document.body.appendChild(productsEl);
-    return () => {
-      const el = document.getElementById("personalization-products-container");
-      if (el) el.parentNode.removeChild(el);
-    };
-  });
-
-  test("display notification includes viewName from the sendEvent", async ({
     alloy,
     worker,
     networkRecorder,
@@ -520,25 +392,109 @@ describe.skip("C14286730: Target SPA click interaction includes viewName", () =>
     await alloy("configure", alloyConfig);
 
     await alloy("sendEvent", {
+      renderDecisions: false,
+      xdm: { web: { webPageDetails: { viewName: "products" } } },
+    });
+
+    const noViewResult = await alloy("sendEvent", {
+      renderDecisions: true,
+      xdm: { web: { webPageDetails: { viewName: "noView" } } },
+    });
+
+    expect(noViewResult.propositions).toEqual([]);
+    const calls = await networkRecorder.findCalls(/v1\/interact/, {
+      retries: 10,
+      delayMs: 100,
+      minCalls: 2,
+    });
+    expect(calls).toHaveLength(2);
+    expect(calls[1].request.body.events[0].query).toBeUndefined();
+    expect(
+      calls[1].request.body.events[0].xdm.web.webPageDetails.viewName,
+    ).toBe("noView");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// C14286730 — Target SPA click interaction includes viewName in notification
+// ---------------------------------------------------------------------------
+
+describe("C14286730: Target SPA click interaction includes viewName", () => {
+  beforeEach(() => {
+    [
+      ["pageWideScope", "Page wide"],
+      ["personalization-products-container", "Products"],
+      ["personalization-cart-container", "Cart"],
+    ].forEach(([id, textContent]) => {
+      const element = document.createElement("div");
+      element.id = id;
+      element.textContent = textContent;
+      document.body.appendChild(element);
+    });
+
+    return () => {
+      [
+        "pageWideScope",
+        "personalization-products-container",
+        "personalization-cart-container",
+      ].forEach((id) => document.getElementById(id)?.remove());
+    };
+  });
+
+  test("click interaction includes the originating viewName", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(spaPersonalizationHandler);
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollection: { eventGroupingEnabled: false },
+      autoCollectPropositionInteractions: { TGT: "always" },
+    });
+
+    await alloy("sendEvent", {
       renderDecisions: true,
       xdm: { web: { webPageDetails: { viewName: "products" } } },
     });
 
-    // Wait for display notification
-    const calls = await networkRecorder.findCalls(/v1\/interact/, {
+    const initialCalls = await networkRecorder.findCalls(/v1\/interact/, {
       retries: 30,
       delayMs: 100,
       minCalls: 2,
     });
+    expect(initialCalls).toHaveLength(2);
 
-    const displayCall = calls.find(
-      (c) =>
-        c.request.body?.events?.[0]?.xdm?.eventType ===
-        "decisioning.propositionDisplay",
+    const clickTarget = document.querySelector(".clickme");
+    expect(clickTarget).not.toBeNull();
+    clickTarget.click();
+
+    const displayCall = initialCalls[1];
+    expect(displayCall.request.body.events[0].xdm.eventType).toBe(
+      "decisioning.propositionDisplay",
     );
-    expect(displayCall).toBeDefined();
     expect(
       displayCall.request.body.events[0].xdm.web.webPageDetails.viewName,
     ).toBe("products");
+
+    const calls = await networkRecorder.findCalls(/v1\/interact/, {
+      retries: 30,
+      delayMs: 100,
+      minCalls: 3,
+    });
+    expect(calls).toHaveLength(3);
+
+    const interactXdm = calls[2].request.body.events[0].xdm;
+    expect(interactXdm.eventType).toBe("decisioning.propositionInteract");
+    expect(interactXdm.web.webPageDetails.viewName).toBe("products");
+    expect(interactXdm._experience.decisioning).toEqual({
+      propositions: [
+        {
+          ...getPropositionMeta(getPersonalizationPayload(calls[0])[1]),
+          items: [{ id: "200001-products-item" }],
+        },
+      ],
+      propositionEventType: { interact: 1 },
+    });
   });
 });
