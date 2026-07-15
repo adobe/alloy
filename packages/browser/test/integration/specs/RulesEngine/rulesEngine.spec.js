@@ -10,17 +10,44 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { test, expect, describe } from "../../helpers/testsSetup/extend.js";
+import {
+  test,
+  expect,
+  describe,
+  beforeEach,
+} from "../../helpers/testsSetup/extend.js";
 import alloyConfig from "../../helpers/alloy/config.js";
 import { inAppMessageHandler } from "../../helpers/mswjs/handlers.js";
 import inAppMessageResponse from "../../helpers/mocks/inAppMessageResponse.json";
 import rulesEngineEvaluateResponse from "../../helpers/mocks/rulesEngineEvaluateResponse.json";
 
+const expectDisplayNotification = async (networkRecorder, minCalls = 1) => {
+  const calls = await networkRecorder.findCalls(/v1\/interact/, {
+    retries: 30,
+    delayMs: 100,
+    minCalls,
+  });
+
+  expect(
+    calls.some(
+      (call) =>
+        call.request.body?.events?.[0]?.xdm?.eventType ===
+        "decisioning.propositionDisplay",
+    ),
+  ).toBe(true);
+};
+
 describe("RulesEngine", () => {
+  beforeEach(() => {
+    document.getElementById("alloy-messaging-container")?.remove();
+    document.getElementById("alloy-overlay-container")?.remove();
+  });
+
   // onBeforeEvent sets ~type="com.adobe.eventType.edge" → inAppMessageResponse condition matches
   test("C13419240 - Verify DOM action using the sendEvent command", async ({
     alloy,
     worker,
+    networkRecorder,
   }) => {
     worker.use(inAppMessageHandler);
     await alloy("configure", alloyConfig);
@@ -35,12 +62,16 @@ describe("RulesEngine", () => {
     const container = document.getElementById("alloy-messaging-container");
     await expect.element(container).toBeInTheDocument();
     expect(container.innerHTML).toContain("alloy-content-iframe");
+    await expectDisplayNotification(networkRecorder, 2);
   });
 
-  // applyResponse also triggers onBeforeEvent with ~type=edge; responseBody inline, no network call
+  // applyResponse also triggers onBeforeEvent with ~type=edge.
   test("C13348429 - Verify DOM action using the applyResponse command", async ({
     alloy,
+    worker,
+    networkRecorder,
   }) => {
+    worker.use(inAppMessageHandler);
     await alloy("configure", alloyConfig);
 
     await alloy("applyResponse", {
@@ -51,12 +82,16 @@ describe("RulesEngine", () => {
     const container = document.getElementById("alloy-messaging-container");
     await expect.element(container).toBeInTheDocument();
     expect(container.innerHTML).toContain("alloy-content-iframe");
+    await expectDisplayNotification(networkRecorder);
   });
 
   // evaluateRulesets uses ~type=rulesEngine (not edge); applyResponse stores ruleset, then evaluateRulesets renders
   test("C13405889 - Verify DOM action using the evaluateRulesets command", async ({
     alloy,
+    worker,
+    networkRecorder,
   }) => {
+    worker.use(inAppMessageHandler);
     await alloy("configure", alloyConfig);
 
     await alloy("applyResponse", {
@@ -74,5 +109,6 @@ describe("RulesEngine", () => {
     const container = document.getElementById("alloy-messaging-container");
     await expect.element(container).toBeInTheDocument();
     expect(container.innerHTML).toContain("alloy-content-iframe");
+    await expectDisplayNotification(networkRecorder);
   });
 });
