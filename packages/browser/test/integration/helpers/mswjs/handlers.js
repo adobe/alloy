@@ -216,6 +216,10 @@ export const setConsentHandler = http.post(
         "CO052oTO052oTDGAMBFRACBgAABAAAAAAIYgEawAQEagAAAA", // no Purpose 1
         "CO052qdO052qdDGAMBFRACBgAIBAAAAAAIYgAAoAAAAA", // no Adobe vendor
       ];
+      const IAB_IN_STRINGS = [
+        "CO052l-O052l-DGAMBFRACBgAIBAAAAAAIYgEawAQEagAAAA", // all required purposes
+        "CO052kIO052kIDGAMBFRACBgAIAAAAAAAIYgEawAQEagAAAA", // no Purpose 10
+      ];
 
       let generalConsent = "in";
       for (const option of consentOptions) {
@@ -228,11 +232,16 @@ export const setConsentHandler = http.post(
             generalConsent = "out";
           }
         } else if (option.standard === "IAB TCF") {
-          if (
-            option.gdprApplies !== false &&
-            IAB_OUT_STRINGS.includes(option.value)
-          ) {
+          if (option.gdprApplies === false) {
+            generalConsent = "in";
+          } else if (IAB_OUT_STRINGS.includes(option.value)) {
             generalConsent = "out";
+          } else if (IAB_IN_STRINGS.includes(option.value)) {
+            generalConsent = "in";
+          } else {
+            throw new Error(
+              "Handler received an unexpected IAB consent string",
+            );
           }
         }
       }
@@ -240,6 +249,17 @@ export const setConsentHandler = http.post(
       return HttpResponse.json({
         requestId: "consent-request-id",
         handle: [
+          {
+            type: "identity:result",
+            payload: [
+              {
+                id: "41861666193140161934276845651148876988",
+                namespace: {
+                  code: "ECID",
+                },
+              },
+            ],
+          },
           {
             type: "state:store",
             payload: [
@@ -252,6 +272,48 @@ export const setConsentHandler = http.post(
           },
         ],
       });
+    }
+
+    throw new Error("Handler not configured properly");
+  },
+);
+
+export const setConsentErrorHandler = http.post(
+  /https:\/\/edge\.adobedc\.net\/ee\/(?:[^/]+\/)?v1\/privacy\/set-consent/,
+
+  async (req) => {
+    const url = new URL(req.request.url);
+    const configId = url.searchParams.get("configId");
+
+    if (
+      configId &&
+      configId.startsWith("bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83")
+    ) {
+      const body = await req.request.json().catch(() => ({}));
+      const option = body?.consent?.[0] ?? {};
+      let status;
+      let errorCode;
+
+      if (option.standard !== "IAB TCF" || option.version !== "2.0") {
+        status = 400;
+        errorCode = "EXEG-0102-400";
+      } else if (option.value === undefined) {
+        status = 400;
+        errorCode = "EXEG-0103-400";
+      } else if (option.value === "") {
+        status = 422;
+        errorCode = "EXEG-0104-422";
+      } else {
+        throw new Error("Handler received valid IAB consent");
+      }
+
+      return HttpResponse.json(
+        {
+          type: `https://ns.adobe.com/aep/errors/${errorCode}`,
+          status,
+        },
+        { status },
+      );
     }
 
     throw new Error("Handler not configured properly");
