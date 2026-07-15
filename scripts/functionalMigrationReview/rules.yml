@@ -1,0 +1,118 @@
+id: test-case
+language: JavaScript
+rule:
+  pattern: $TEST($TITLE, $FUNCTION)
+constraints:
+  TEST:
+    regex: '^(test|it)(\.|\s|$)'
+---
+id: skipped-test-case
+language: JavaScript
+rule:
+  any:
+    - pattern: test.skip($$$ARGS)
+    - pattern: it.skip($$$ARGS)
+---
+id: describe-block
+language: JavaScript
+rule:
+  any:
+    - pattern: describe($TITLE, $FUNCTION)
+    - pattern: describe.skip($TITLE, $FUNCTION)
+---
+id: legacy-alloy-command
+language: JavaScript
+rule:
+  pattern: $ALLOY.$COMMAND($$$ARGS)
+constraints:
+  ALLOY:
+    regex: ^alloy\d*$
+---
+id: integration-alloy-command
+language: JavaScript
+rule:
+  any:
+    - pattern: $ALLOY($COMMAND)
+    - pattern: $ALLOY($COMMAND, $$$ARGS)
+constraints:
+  ALLOY:
+    regex: ^alloy\d*$
+  COMMAND:
+    kind: string
+---
+id: legacy-assertion
+language: JavaScript
+rule:
+  pattern: $T.expect($ACTUAL).$MATCHER($$$EXPECTED)
+constraints:
+  T:
+    regex: ^t$
+---
+id: vitest-assertion
+language: JavaScript
+rule:
+  pattern: expect($ACTUAL).$MATCHER($$$EXPECTED)
+---
+id: vitest-not-assertion
+language: JavaScript
+rule:
+  pattern: expect($ACTUAL).not.$MATCHER($$$EXPECTED)
+---
+id: vitest-promise-assertion
+language: JavaScript
+rule:
+  any:
+    - pattern: expect($ACTUAL).resolves.$MATCHER($$$EXPECTED)
+    - pattern: expect($ACTUAL).rejects.$MATCHER($$$EXPECTED)
+---
+id: vitest-poll-assertion
+language: JavaScript
+rule:
+  pattern: expect.poll($ACTUAL).$MATCHER($$$EXPECTED)
+---
+id: helper-assertion
+language: JavaScript
+rule:
+  pattern: $MATCHER($$$EXPECTED)
+constraints:
+  MATCHER:
+    regex: "^(assert|validate|verify|responseStatus)"
+---
+id: state-location-assignment
+language: JavaScript
+rule:
+  pattern: window.location.$PROPERTY = $VALUE
+---
+id: state-cookie-assignment
+language: JavaScript
+rule:
+  pattern: document.cookie = $VALUE
+---
+id: state-storage-call
+language: JavaScript
+rule:
+  pattern: $STORAGE.$METHOD($$$ARGS)
+constraints:
+  STORAGE:
+    regex: ^(localStorage|sessionStorage)$
+---
+id: state-url-helper
+language: JavaScript
+rule:
+  pattern: $HELPER($$$ARGS)
+constraints:
+  HELPER:
+    regex: ^applyUrl$
+---
+id: risk-helper-call
+language: JavaScript
+rule:
+  pattern: $HELPER($$$ARGS)
+constraints:
+  HELPER:
+    regex: ^(reload.*|.*Reload.*|(get|set|delete|clear|create|read|write).*Cookie.*|.*Cookies|withTemporaryUrl|applyUrl|waitFor.*|flushPromiseChains)$
+---
+id: risk-concurrent-promises
+language: JavaScript
+rule:
+  pattern: Promise.all($$$ARGS)
