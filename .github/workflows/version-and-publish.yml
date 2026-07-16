@@ -10,43 +10,56 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Cheap gate so the Production approval is only requested when there's
-  # actual release work (changesets exist) or the operator forced a run.
-  detect:
+  # Detects whether there is work to do and whether a Production approval gate
+  # is required. Stable releases (no pre.json) require approval; beta pushes
+  # do not.
+  guard:
     runs-on: ubuntu-latest
     outputs:
-      proceed: ${{ steps.check.outputs.proceed }}
+      changes_detected: ${{ steps.check.outputs.changes_detected }}
+      changed_jira_files: ${{ steps.check.outputs.changed_jira_files }}
+      approval_needed: ${{ steps.check.outputs.approval_needed }}
     steps:
       - uses: actions/checkout@v5
-      - id: check
-        run: |
-          shopt -s nullglob
-          changesets=()
-          for f in .changeset/*.md; do
-            [ "$(basename "$f")" = "README.md" ] || changesets+=("$f")
-          done
-          if [ ${#changesets[@]} -gt 0 ]; then
-            echo "proceed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "proceed=false" >> "$GITHUB_OUTPUT"
-          fi
+        with:
+          fetch-depth: 2
+      - name: Detect changes and approval requirement
+        id: check
+        run: bash scripts/ci/guard.sh
 
-  publish:
-    needs: detect
-    if: needs.detect.outputs.proceed == 'true' || github.event_name == 'workflow_dispatch'
+  # Requests a manual approval from the Production environment reviewers.
+  # Only runs for stable (non-beta) releases with pending changesets.
+  approve:
+    needs: guard
+    if: needs.guard.outputs.approval_needed == 'true'
     runs-on: ubuntu-latest
     environment: Production
+    steps:
+      - run: echo "Release approved"
+
+  # Applies all pending work (changesets + JIRA files) in a single commit,
+  # then publishes to npm and runs side-effect deploys.
+  apply:
+    needs: [guard, approve]
+    if: |
+      always() &&
+      needs.guard.outputs.changes_detected == 'true' &&
+      (
+        needs.guard.outputs.approval_needed == 'false' ||
+        needs.approve.result == 'success'
+      )
+    runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: read
+      pull-requests: write
     env:
       NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
       NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+      JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          # use the SSH deploy key for all future git actions to bypass branch protection
           ssh-key: ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v5
@@ -56,57 +69,28 @@ jobs:
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
 
-      # Bump versions and push the release commit BEFORE anything irreversible.
-      # `changeset version` is a no-op when changesets are absent, so this
-      # whole step idempotently does nothing on a retry.
-      - name: Version, commit, push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          pnpm changeset version
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if ! git diff --cached --quiet; then
-            git commit -m "chore: publish [skip ci]"
-            git push origin HEAD:main
-          fi
+      - name: Apply changesets
+        run: bash scripts/ci/apply-changesets.sh
 
-      # changeset publish skips already-on-npm versions; with
-      # privatePackages.tag: true in .changeset/config.json it also tags the
-      # private packages so all four share a uniform release marker.
-      # `changeset publish` only tags what it just published, so a retry after a
-      # post-publish crash drops the tag; `changeset tag` idempotently backfills it.
-      - name: Publish + tag
-        run: |
-          pnpm changeset publish
-          pnpm changeset tag
-          git push --tags
+      - name: Apply JIRA changes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHANGED_JIRA_FILES: ${{ needs.guard.outputs.changed_jira_files }}
+        run: bash scripts/ci/apply-jira.sh
+
+      - name: Commit all changes
+        run: bash scripts/ci/commit.sh
+
+      - name: Publish to npm
+        run: bash scripts/ci/publish.sh
 
       - uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.CDN_PRIVATE_KEY }}
 
-      # Each package owns its deploy via a `release` script that's idempotent
-      - name: Side-effect deploys
-        env:
-          REACTOR_IO_INTEGRATION_CLIENT_SECRET: ${{ secrets.REACTOR_IO_INTEGRATION_CLIENT_SECRET }}
-          AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_AGREEABLE_RIVER_0EC96991E }}
-        run: pnpm --recursive --workspace-concurrency=1 --no-bail --if-present run release
-
-      # Iterates git tags at HEAD; skips existing releases.
-      - name: GitHub Releases
+      - name: Deploy
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node scripts/createGithubReleases.js
-
-      # After a stable release, prep the next cycle by re-entering pre mode.
-      - name: Re-enter beta pre-mode after stable
-        run: |
-          [ -f .changeset/pre.json ] && exit 0
-          pnpm changeset pre enter beta
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .changeset/pre.json
-          git commit -m "chore: re-enter beta pre mode [skip ci]"
-          git push origin HEAD:main
+          REACTOR_IO_INTEGRATION_CLIENT_SECRET: ${{ secrets.REACTOR_IO_INTEGRATION_CLIENT_SECRET }}
+          AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_AGREEABLE_RIVER_0EC96991E }}
+        run: bash scripts/ci/deploy.sh

@@ -1,0 +1,174 @@
+#!/usr/bin/env node
+/*
+Copyright 2025 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+import { readFileSync } from "fs";
+import { basename } from "path";
+import { fileURLToPath } from "url";
+import { load as yamlLoad } from "js-yaml";
+import createApi from "./api.js";
+import { JIRA_BASE_URL, JIRA_API_TOKEN } from "./config.js";
+
+// Recursively replace {PLACEHOLDER} tokens in body values.
+const interpolate = (value, vars) => {
+  if (typeof value === "string") {
+    return value.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? `{${k}}`);
+  }
+  if (Array.isArray(value)) return value.map((v) => interpolate(v, vars));
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([k, v]) => [k, interpolate(v, vars)]),
+    );
+  }
+  return value;
+};
+
+// Parse filename → { project, ticketKey (if numeric), globalId (if non-numeric) }.
+// e.g. "PDCL-1234-title.yml"     → ticketKey="PDCL-1234", globalId=null
+//      "PDCL-a3f8b2c1-title.yml" → ticketKey=null,         globalId="a3f8b2c1"
+const parseFilename = (filename) => {
+  const base = basename(filename, ".yml");
+  const match = base.match(/^([A-Z]+)-([a-zA-Z0-9]+)/);
+  if (!match)
+    throw new Error(`Cannot parse ticket key from filename: ${filename}`);
+  const [, project, keyPart] = match;
+  if (/^\d+$/.test(keyPart)) {
+    return { project, ticketKey: `${project}-${keyPart}`, globalId: null };
+  }
+  return { project, ticketKey: null, globalId: keyPart };
+};
+
+/**
+ * Apply a .jira/*.yml file's updates to JIRA.
+ * For new tickets (non-numeric key in filename), the globalId is used as a JIRA label
+ * so that re-runs find the existing ticket instead of creating a duplicate.
+ * A remote link from the ticket to the PR is always created (idempotent via PR URL).
+ * @param {string} filename
+ * @param {{ api: object, prUrl?: string, prTitle?: string }} opts
+ * @returns {Promise<string>} resolved ticket key, e.g. "PDCL-1234"
+ */
+export const applyFile = async (
+  filename,
+  { api, prUrl = "", prTitle = "" },
+) => {
+  const { project, ticketKey: parsedKey, globalId } = parseFilename(filename);
+  let ticketKey = parsedKey;
+
+  const parsed = yamlLoad(readFileSync(filename, "utf8")) ?? {};
+  const updates = Array.isArray(parsed.updates) ? parsed.updates : [];
+
+  const vars = { GITHUB_PR_URL: prUrl, GITHUB_PR_TITLE: prTitle };
+
+  // For new tickets: check if already created via label (idempotency).
+  if (globalId && !ticketKey) {
+    const issues = await api.searchIssues(
+      `project = ${project} AND labels = "${globalId}"`,
+    );
+    if (issues.length > 0) {
+      ticketKey = issues[0].key;
+      console.log(`Found existing ticket ${ticketKey} via label ${globalId}`);
+    }
+  }
+
+  for (const update of updates) {
+    const isCreate =
+      update.method === "POST" && String(update.path) === "/rest/api/2/issue";
+
+    if (isCreate) {
+      if (!ticketKey) {
+        // eslint-disable-next-line no-await-in-loop
+        const data = await api.request(
+          "POST",
+          "/rest/api/2/issue",
+          interpolate(update.body, vars),
+        );
+        ticketKey = data.key ?? `${project}-UNKNOWN`;
+      }
+      // Skip if ticket already exists (idempotent).
+      continue;
+    }
+
+    // All other updates run only when we have a ticket key.
+    if (!ticketKey) continue;
+    const path = String(update.path).replace(/{key}/g, ticketKey);
+    // eslint-disable-next-line no-await-in-loop
+    await api.request(update.method, path, interpolate(update.body, vars));
+  }
+
+  // Auto-create a remote link to the PR for every processed ticket (idempotent via PR URL).
+  if (ticketKey && prUrl) {
+    await api.request("POST", `/rest/api/2/issue/${ticketKey}/remotelink`, {
+      globalId: prUrl,
+      relationship: "mentioned in",
+      object: { url: prUrl, title: prTitle || prUrl },
+    });
+  }
+
+  return ticketKey;
+};
+
+// Script entry point — only executes when run directly.
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const rawArgs = process.argv.slice(2);
+  const dryRun = rawArgs.includes("--dry-run");
+  const args = rawArgs.filter((a) => a !== "--dry-run");
+
+  if (args.length < 1) {
+    console.error("Usage: apply.js [--dry-run] <filename>");
+    process.exit(1);
+  }
+
+  const [filename] = args;
+
+  const parsed = (() => {
+    try {
+      return yamlLoad(readFileSync(filename, "utf8")) ?? {};
+    } catch {
+      return {};
+    }
+  })();
+  const hasUpdates = Array.isArray(parsed.updates) && parsed.updates.length > 0;
+
+  if (hasUpdates) {
+    if (!JIRA_API_TOKEN) {
+      console.error("JIRA_API_TOKEN is required");
+      process.exit(1);
+    }
+    if (!dryRun) {
+      if (!process.env.GITHUB_PR_URL) {
+        console.error("GITHUB_PR_URL is required when updates are present");
+        process.exit(1);
+      }
+      if (!process.env.GITHUB_PR_TITLE) {
+        console.error("GITHUB_PR_TITLE is required when updates are present");
+        process.exit(1);
+      }
+    }
+  }
+
+  const api = createApi({
+    dryRun,
+    baseUrl: JIRA_BASE_URL.replace(/\/$/, ""),
+    token: JIRA_API_TOKEN ?? "",
+  });
+
+  applyFile(filename, {
+    api,
+    prUrl: process.env.GITHUB_PR_URL ?? "",
+    prTitle: process.env.GITHUB_PR_TITLE ?? "",
+  })
+    .then((key) => console.log(key))
+    .catch((e) => {
+      console.error(e.message);
+      process.exit(1);
+    });
+}
