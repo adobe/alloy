@@ -80,6 +80,29 @@ updates:
     if (existsSync(file)) unlinkSync(file);
   });
 
+  it("skips fetch on dry-run (nothing changed in JIRA to reflect)", async () => {
+    const file = writeTemp(
+      "PDCL-1234",
+      `
+updates:
+  - path: /rest/api/2/issue/PDCL-1234
+    method: PUT
+    body:
+      update:
+        summary:
+          - set: "Dry"
+`,
+    );
+    const api = mockApi({ dryRun: true });
+    const result = await processFile(file, { api });
+    expect(result).toBe("PDCL-1234");
+    expect(api.request).not.toHaveBeenCalledWith(
+      "GET",
+      expect.stringContaining("PDCL-1234"),
+    );
+    if (existsSync(file)) unlinkSync(file);
+  });
+
   it("deletes globalId file and creates real-key file", async () => {
     const gid = "abc12345";
     const uid = `${Date.now()}-${Math.random().toString(36).slice(2)}`;

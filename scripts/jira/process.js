@@ -62,7 +62,9 @@ export const processFile = async (
     unlinkSync(filename);
   }
 
-  await fetchFile(ticketKey, newFilename, { api });
+  if (!api.dryRun) {
+    await fetchFile(ticketKey, newFilename, { api });
+  }
 
   return ticketKey;
 };
@@ -83,16 +85,6 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   if (!JIRA_API_TOKEN) {
     console.error("JIRA_API_TOKEN is required");
     process.exit(1);
-  }
-  if (!dryRun) {
-    if (!process.env.GITHUB_PR_URL) {
-      console.error("GITHUB_PR_URL is required");
-      process.exit(1);
-    }
-    if (!process.env.GITHUB_PR_TITLE) {
-      console.error("GITHUB_PR_TITLE is required");
-      process.exit(1);
-    }
   }
 
   const api = createApi({
