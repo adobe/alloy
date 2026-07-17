@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { StorageCreator } from '@adobe/alloy-core/utils/types.js' */
 /** @import { EventManager, Logger } from '@adobe/alloy-core/core/types.js' */
 /** @import { IdentityManager } from '@adobe/alloy-core/core/identity/types.js' */
 /** @import { ConsentManager } from '@adobe/alloy-core/core/consent/types.js' */
 /** @import { EdgeRequestExecutor } from '@adobe/alloy-core/core/edgeNetwork/types.js' */
+/** @import { PlatformServices } from '@adobe/alloy-core/services' */
 
 import { objectOf, string } from "@adobe/alloy-core/utils/validation";
 import { sanitizeOrgIdForCookieName } from "@adobe/alloy-core/utils";
@@ -35,17 +35,16 @@ const isComponentConfigured = ({
  *
  * @param {Object} options
  * @param {{ orgId: string, datastreamId: string, edgeDomain: string, edgeBasePath: string, pushNotifications: { vapidPublicKey: string, appId: string, trackingDatasetId: string }}} options.config
- * @param {StorageCreator} options.createNamespacedStorage
  * @param {EventManager} options.eventManager
  * @param {Logger} options.logger
  * @param {ConsentManager} options.consent
  * @param {IdentityManager} options.identity
  * @param {function(): string} options.getBrowser
  * @param {EdgeRequestExecutor} options.sendEdgeNetworkRequest
+ * @param {PlatformServices} options.platformServices
  * @returns {{ lifecycle: object, commands: { sendPushSubscription: object } }}
  */
 const createPushNotifications = ({
-  createNamespacedStorage,
   eventManager,
   config,
   logger,
@@ -53,6 +52,7 @@ const createPushNotifications = ({
   identity,
   getBrowser,
   sendEdgeNetworkRequest,
+  platformServices,
 }) => {
   return {
     lifecycle: {
@@ -92,7 +92,7 @@ const createPushNotifications = ({
             },
           } = config || {};
 
-          const storage = createNamespacedStorage(
+          const storage = platformServices.storage.createNamespacedStorage(
             `${sanitizeOrgIdForCookieName(orgId)}.pushNotifications.`,
           );
 
