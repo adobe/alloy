@@ -10,13 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { test, expect, describe, vi } from "../../helpers/testsSetup/extend.js";
+import {
+  test,
+  expect,
+  describe,
+  beforeEach,
+  afterEach,
+  vi,
+} from "../../helpers/testsSetup/extend.js";
 import {
   mediaSessionHandler,
   mediaEventHandler,
 } from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
-import { beforeEach, afterEach, after } from "vitest";
 
 const streamingMediaConfig = {
   ...alloyConfig,
