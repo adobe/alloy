@@ -1,5 +1,11 @@
 # @adobe/alloy
 
+## 2.34.2-beta.1
+
+### Patch Changes
+
+- [#1554](https://github.com/adobe/alloy/pull/1554) [`4439c62`](https://github.com/adobe/alloy/commit/4439c622b29341f76631b74286e55c1f77dbfd6a) Thanks [@dompuiu](https://github.com/dompuiu)! - Fix an error in Push notifications module triggered by createNamespacedStorage being undefined.
+
 ## 2.34.2-beta.0
 
 ### Patch Changes
