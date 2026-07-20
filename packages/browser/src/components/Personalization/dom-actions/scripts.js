@@ -24,10 +24,24 @@ const getPromise = (url, script) => {
     };
   });
 };
-const loadScript = (url) => {
+const loadScript = (source) => {
+  const url = getAttribute(source, SRC);
   const script = document.createElement("script");
-  script.src = url;
+  // Preserve all author-supplied attributes (class, type, data-*, etc.) so
+  // consumers relying on them keep working.
+  const { attributes } = source;
+  for (let i = 0; i < attributes.length; i += 1) {
+    const { name, value } = attributes[i];
+    script.setAttribute(name, value);
+  }
+  // Override invariants last so they can't be clobbered by the source element.
+  const nonce = getNonce();
+  if (nonce) {
+    script.setAttribute("nonce", nonce);
+  }
   script.async = true;
+  // Assign load handlers after copying attributes so a copied inline
+  // onload/onerror attribute can't break load-completion tracking.
   const promise = getPromise(url, script);
   document.head.appendChild(script);
   return promise;
@@ -70,7 +84,7 @@ export const getInlineScripts = (fragment) => {
   return result;
 };
 
-export const getRemoteScriptsUrls = (fragment) => {
+export const getRemoteScripts = (fragment) => {
   const scripts = selectNodes(SCRIPT, fragment);
   const result = [];
   const { length } = scripts;
@@ -78,17 +92,12 @@ export const getRemoteScriptsUrls = (fragment) => {
   for (let i = 0; i < length; i += 1) {
     const element = scripts[i];
 
+    // isRemoteScript already requires a non-empty src attribute.
     if (!isRemoteScript(element)) {
       continue;
     }
 
-    const url = getAttribute(element, SRC);
-
-    if (!url) {
-      continue;
-    }
-
-    result.push(url);
+    result.push(element);
   }
 
   return result;
@@ -101,6 +110,6 @@ export const executeInlineScripts = (parent, scripts) => {
   });
 };
 
-export const executeRemoteScripts = (urls) => {
-  return Promise.all(urls.map(loadScript));
+export const executeRemoteScripts = (scripts) => {
+  return Promise.all(scripts.map(loadScript));
 };
