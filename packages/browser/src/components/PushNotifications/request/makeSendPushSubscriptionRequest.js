@@ -79,7 +79,7 @@ export default async ({
   const cacheValue = `${ecid}${serializedPushSubscriptionDetails}`;
   const storedValue = await storage.getItem(SUBSCRIPTION_DETAILS);
 
-  if (cacheValue && storedValue && cacheValue === storedValue) {
+  if (storedValue && cacheValue === storedValue) {
     logger.info(
       "Subscription details have not changed. Not sending to the server.",
     );
