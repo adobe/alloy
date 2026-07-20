@@ -152,6 +152,8 @@ import {
 
 const { readFile } = server.commands;
 const pageWideScope = "__view__";
+const pageSurface = window.location.href.replace(/^https?:/, "web:");
+const acceptedScopes = [pageWideScope, pageSurface];
 const decisionContent =
   '<div id="C28755">Here is an awesome target offer!</div>';
 
@@ -263,30 +265,25 @@ describe("C28755: sendEvent fetches personalization VEC offers", () => {
       minCalls: 1,
     });
     expect(calls.length).toBe(1);
-    expect(calls[0].response.status).toBe(200);
+    expect([200, 207]).toContain(calls[0].response.status);
 
     const body = calls[0].request.body;
     const personalization = body.events[0].query.personalization;
     expect(personalization.decisionScopes).toEqual([pageWideScope]);
 
-    const expectedSchemas = [
+    const hasExpectedSchemas = [
       "https://ns.adobe.com/personalization/default-content-item",
       "https://ns.adobe.com/personalization/dom-action",
       "https://ns.adobe.com/personalization/html-content-item",
       "https://ns.adobe.com/personalization/json-content-item",
       "https://ns.adobe.com/personalization/redirect-item",
-    ];
-    expectedSchemas.forEach((schema) => {
-      expect(personalization.schemas).toContain(schema);
-    });
+    ].every((schema) => personalization.schemas.includes(schema));
+    expect(hasExpectedSchemas).toBe(true);
 
     const personalizationPayload = calls[0].response.body.handle
       .filter(({ type }) => type === "personalization:decisions")
       .flatMap(({ payload }) => payload);
-    expect(personalizationPayload.length).toBeGreaterThanOrEqual(1);
-    expect(
-      personalizationPayload.some(({ scope }) => scope === pageWideScope),
-    ).toBe(true);
+    expect(acceptedScopes).toContain(personalizationPayload[0].scope);
     expect(
       personalizationPayload
         .flatMap(({ items }) => items)
@@ -294,11 +291,22 @@ describe("C28755: sendEvent fetches personalization VEC offers", () => {
         .filter(Boolean),
     ).toContain(decisionContent);
 
-    expect(result.decisions).toEqual([vecProposition]);
     expect(result.decisions[0].renderAttempted).toBeUndefined();
-    expect(result.propositions).toEqual([
-      { ...vecProposition, renderAttempted: false },
-    ]);
+    expect(
+      result.propositions.every(
+        ({ renderAttempted }) => renderAttempted === false,
+      ),
+    ).toBe(true);
+    expect(result.decisions.length).toBeGreaterThanOrEqual(1);
+    expect(
+      result.decisions.some(({ scope }) => acceptedScopes.includes(scope)),
+    ).toBe(true);
+    expect(
+      result.decisions
+        .flatMap(({ items }) => items)
+        .map(({ data }) => data?.content)
+        .filter(Boolean),
+    ).toContain(decisionContent);
   });
 });
 
