@@ -59,6 +59,14 @@ export default async ({
   await identity.awaitIdentity();
   const ecid = identity.getEcidFromCookie();
 
+  if (!ecid) {
+    logger.info(
+      "No ECID is available. Not sending push subscription details to the server.",
+    );
+
+    return;
+  }
+
   const pushSubscriptionDetails = await getPushSubscriptionDetails({
     vapidPublicKey,
     window,
@@ -71,7 +79,7 @@ export default async ({
   const cacheValue = `${ecid}${serializedPushSubscriptionDetails}`;
   const storedValue = await storage.getItem(SUBSCRIPTION_DETAILS);
 
-  if (cacheValue === storedValue) {
+  if (cacheValue && storedValue && cacheValue === storedValue) {
     logger.info(
       "Subscription details have not changed. Not sending to the server.",
     );

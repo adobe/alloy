@@ -20,8 +20,11 @@ describe("makeSendPushSubscriptionRequest", () => {
   let mockSendEdgeNetworkRequest;
   let mockSetUserData;
   let mockGetPushSubscriptionDetails;
+  let mockNoEcid;
 
   beforeEach(() => {
+    mockNoEcid = false;
+
     mockStorage = {
       cache: {},
       // eslint-disable-next-line func-names
@@ -66,7 +69,9 @@ describe("makeSendPushSubscriptionRequest", () => {
       },
       identity: {
         awaitIdentity: vi.fn().mockResolvedValue(),
-        getEcidFromCookie: vi.fn().mockReturnValue("ecid"),
+        getEcidFromCookie: vi
+          .fn()
+          .mockReturnValue(mockNoEcid ? undefined : "ecid"),
       },
       window: { location: { host: "somehost" } },
       getPushSubscriptionDetails: mockGetPushSubscriptionDetails,
@@ -89,6 +94,17 @@ describe("makeSendPushSubscriptionRequest", () => {
 
     expect(mockLogger.info).toHaveBeenCalledWith(
       "Subscription details have not changed. Not sending to the server.",
+    );
+    expect(mockSendEdgeNetworkRequest).not.toHaveBeenCalled();
+  });
+
+  it("does not make an edge call when no ECID is available", async () => {
+    mockNoEcid = true;
+
+    await callMakeSendPushSubscriptionRequest();
+
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      "No ECID is available. Not sending push subscription details to the server.",
     );
     expect(mockSendEdgeNetworkRequest).not.toHaveBeenCalled();
   });
