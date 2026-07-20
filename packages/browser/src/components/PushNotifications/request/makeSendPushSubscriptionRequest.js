@@ -87,8 +87,6 @@ export default async ({
     return;
   }
 
-  storage.setItem(SUBSCRIPTION_DETAILS, cacheValue);
-
   const payload = await createSendPushSubscriptionPayload({
     eventManager,
     ecid,
@@ -103,5 +101,13 @@ export default async ({
   await consent.awaitConsent();
   await sendEdgeNetworkRequest({ request });
 
-  await saveToIndexedDb({ ecid }, logger);
+  const savedToIndexedDb = await saveToIndexedDb({ ecid }, logger);
+
+  // Only cache the subscription details once the ECID has been persisted, so
+  // that a failed send or a failed IndexedDB write does not short-circuit the
+  // dedupe check on the next call. This lets a subsequent sendPushSubscription
+  // self-heal instead of getting stuck with a cached subscription but no ECID.
+  if (savedToIndexedDb) {
+    storage.setItem(SUBSCRIPTION_DETAILS, cacheValue);
+  }
 };
