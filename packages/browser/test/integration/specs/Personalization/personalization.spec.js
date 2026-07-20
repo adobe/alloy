@@ -151,6 +151,9 @@ import {
 } from "../../helpers/testsSetup/extend.js";
 
 const { readFile } = server.commands;
+const pageWideScope = "__view__";
+const decisionContent =
+  '<div id="C28755">Here is an awesome target offer!</div>';
 
 const makeInteractHandler = (getResponseBody) =>
   http.post(
@@ -215,7 +218,7 @@ const buildEdgeResponse = (propositionPayload) => ({
 
 const vecProposition = {
   id: "vec-proposition-id",
-  scope: "__view__",
+  scope: pageWideScope,
   scopeDetails: {
     decisionProvider: "TGT",
     activity: { id: "vec-activity" },
@@ -225,7 +228,7 @@ const vecProposition = {
       id: "vec-item",
       schema: "https://ns.adobe.com/personalization/html-content-item",
       data: {
-        content: '<div id="C28755">Here is an awesome target offer!</div>',
+        content: decisionContent,
         format: "text/html",
       },
     },
@@ -264,7 +267,7 @@ describe("C28755: sendEvent fetches personalization VEC offers", () => {
 
     const body = calls[0].request.body;
     const personalization = body.events[0].query.personalization;
-    expect(personalization.decisionScopes).toEqual(["__view__"]);
+    expect(personalization.decisionScopes).toEqual([pageWideScope]);
 
     const expectedSchemas = [
       "https://ns.adobe.com/personalization/default-content-item",
@@ -276,6 +279,20 @@ describe("C28755: sendEvent fetches personalization VEC offers", () => {
     expectedSchemas.forEach((schema) => {
       expect(personalization.schemas).toContain(schema);
     });
+
+    const personalizationPayload = calls[0].response.body.handle
+      .filter(({ type }) => type === "personalization:decisions")
+      .flatMap(({ payload }) => payload);
+    expect(personalizationPayload.length).toBeGreaterThanOrEqual(1);
+    expect(
+      personalizationPayload.some(({ scope }) => scope === pageWideScope),
+    ).toBe(true);
+    expect(
+      personalizationPayload
+        .flatMap(({ items }) => items)
+        .map(({ data }) => data?.content)
+        .filter(Boolean),
+    ).toContain(decisionContent);
 
     expect(result.decisions).toEqual([vecProposition]);
     expect(result.decisions[0].renderAttempted).toBeUndefined();
