@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import createSendConversationEvent from "../../../../../src/components/BrandConcierge/createSendConversationEvent.js";
-import { MUNCHKIN_COOKIE_NAME } from "../../../../../src/components/BrandConcierge/constants.js";
 import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 import createMockReadableStream from "./helpers/createMockReadableStream.js";
 
@@ -65,6 +64,7 @@ describe("createSendConversationEvent", () => {
         cookiesToPayload: vi.fn(),
         responseToCookies: vi.fn(),
       },
+      alwaysTransferCookies: ["test-cookie"],
       createResponse: vi.fn(),
       sendConversationServiceRequest: vi.fn(),
       decodeKndctrCookie: vi.fn().mockReturnValue("test-ecid-123"),
@@ -300,7 +300,7 @@ describe("createSendConversationEvent", () => {
     expect(request.getEdgeSubPath()).toBe("/brand-concierge");
   });
 
-  it("passes munchkin cookie name to cookiesToPayload when stickyConversationSession is true", async () => {
+  it("always calls cookiesToPayload with alwaysTransferCookies regardless of stickyConversationSession", async () => {
     const mockResponse = {
       ok: true,
       status: 200,
@@ -309,49 +309,29 @@ describe("createSendConversationEvent", () => {
     mockDependencies.sendConversationServiceRequest.mockResolvedValue(
       mockResponse,
     );
-    mockDependencies.config.conversation = {
-      ...mockDependencies.config.conversation,
-      stickyConversationSession: true,
-    };
 
-    const sendConversationEvent = createSendConversationEvent(mockDependencies);
-    await sendConversationEvent({
-      message: "Hello",
-      onStreamResponse: vi.fn(),
-    });
+    for (const stickyConversationSession of [true, false]) {
+      mockDependencies.cookieTransfer.cookiesToPayload.mockClear();
+      mockDependencies.config.conversation = {
+        ...mockDependencies.config.conversation,
+        stickyConversationSession,
+      };
 
-    expect(
-      mockDependencies.cookieTransfer.cookiesToPayload,
-    ).toHaveBeenCalledWith(
-      expect.anything(),
-      mockDependencies.config.edgeDomain,
-      [MUNCHKIN_COOKIE_NAME],
-    );
-  });
+      const sendConversationEvent =
+        createSendConversationEvent(mockDependencies);
+      await sendConversationEvent({
+        message: "Hello",
+        onStreamResponse: vi.fn(),
+      });
 
-  it("does not call cookiesToPayload when stickyConversationSession is false", async () => {
-    const mockResponse = {
-      ok: true,
-      status: 200,
-      body: createMockReadableStream([]),
-    };
-    mockDependencies.sendConversationServiceRequest.mockResolvedValue(
-      mockResponse,
-    );
-    mockDependencies.config.conversation = {
-      ...mockDependencies.config.conversation,
-      stickyConversationSession: false,
-    };
-
-    const sendConversationEvent = createSendConversationEvent(mockDependencies);
-    await sendConversationEvent({
-      message: "Hello",
-      onStreamResponse: vi.fn(),
-    });
-
-    expect(
-      mockDependencies.cookieTransfer.cookiesToPayload,
-    ).not.toHaveBeenCalled();
+      expect(
+        mockDependencies.cookieTransfer.cookiesToPayload,
+      ).toHaveBeenCalledWith(
+        expect.anything(),
+        mockDependencies.config.edgeDomain,
+        mockDependencies.alwaysTransferCookies,
+      );
+    }
   });
 
   it("handles stream timeout when no data is received within 10 seconds", async () => {

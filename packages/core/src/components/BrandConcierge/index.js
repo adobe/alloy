@@ -17,7 +17,7 @@ import { getConciergeSessionCookie } from "./utils.js";
 import createGetEcidFromCookie from "../../utils/createDecodeKndctrCookie.js";
 import createSendConversationServiceRequest from "./createSendConversationServiceRequest.js";
 import configValidators from "./configValidators.js";
-import { SOURCES_QUERY_PARAM } from "./constants.js";
+import { MUNCHKIN_COOKIE_NAME, SOURCES_QUERY_PARAM } from "./constants.js";
 
 const createConciergeComponent = ({
   loggingCookieJar,
@@ -59,6 +59,7 @@ const createConciergeComponent = ({
     buildEndpointUrl,
     lifecycle,
     cookieTransfer,
+    alwaysTransferCookies: [MUNCHKIN_COOKIE_NAME],
     createResponse,
     sendConversationServiceRequest,
     decodeKndctrCookie,
