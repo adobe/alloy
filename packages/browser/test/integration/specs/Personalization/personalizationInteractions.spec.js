@@ -125,10 +125,8 @@ const interactionRequestHandler = http.post(
   /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
   async (req) => {
     const url = new URL(req.request.url);
-    if (
-      url.searchParams.get("configId") !==
-      "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83"
-    ) {
+    const configId = url.searchParams.get("configId");
+    if (!configId?.startsWith("bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83")) {
       throw new Error("Handler not configured properly");
     }
     const requestBody = await req.request.json();
