@@ -85,6 +85,28 @@ describe("C81183 - getLinkDetails monitoring hook via __alloyMonitors", () => {
     );
   });
 
+  test("getLinkDetails classifies external links when clickCollectionEnabled is false", async () => {
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: false,
+    });
+
+    const link = appendLink({
+      id: "test-link",
+      href: "https://example.com",
+      text: "Test Link",
+    });
+
+    expect(window.___getLinkDetails(link)).toEqual({
+      linkName: "Test Link",
+      linkRegion: "BODY",
+      linkType: "exit",
+      linkUrl: "https://example.com/",
+      pageName: window.location.href,
+      pageIDType: 0,
+    });
+  });
+
   test("getLinkDetails returns no link data for a null element", async () => {
     await alloy("configure", {
       ...alloyConfig,

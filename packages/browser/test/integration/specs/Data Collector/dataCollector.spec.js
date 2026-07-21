@@ -298,7 +298,12 @@ describe("C81184 - Click collection configuration warnings", () => {
       onBeforeLinkClickSend: () => {},
     });
 
-    expect(searchForLogMessage(consoleSpy, "onBeforeLinkClickSend")).toBe(true);
+    expect(
+      searchForLogMessage(
+        consoleSpy,
+        "The 'onBeforeLinkClickSend' configuration was provided but will be ignored because clickCollectionEnabled is false.",
+      ),
+    ).toBe(true);
   });
 
   test("warns when downloadLinkQualifier configured but clickCollectionEnabled is false", async ({
