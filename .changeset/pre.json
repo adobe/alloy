@@ -12,6 +12,7 @@
     "@adobe/alloy-sandbox-node": "0.0.2"
   },
   "changesets": [
+    "curvy-scripts-inherit",
     "tidy-doors-talk",
     "vast-jeans-walk"
   ]

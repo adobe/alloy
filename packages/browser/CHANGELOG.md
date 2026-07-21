@@ -1,5 +1,11 @@
 # @adobe/alloy
 
+## 2.34.2-beta.2
+
+### Patch Changes
+
+- [#1557](https://github.com/adobe/alloy/pull/1557) [`191a3d9`](https://github.com/adobe/alloy/commit/191a3d98aa3cf5410e7724a9ff89cae846534fd1) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Preserve author-supplied attributes (such as `class`, `type`, and `data-*`) on remote scripts that Personalization offers inject into the document head, instead of keeping only `src`.
+
 ## 2.34.2-beta.1
 
 ### Patch Changes
