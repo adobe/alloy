@@ -25,6 +25,7 @@ import {
 } from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
 import reloadAlloy from "../../helpers/alloy/reload.js";
+import createResponse from "../../helpers/responses/createResponse.js";
 import searchForLogMessage from "../../helpers/utils/searchForLogMessage.js";
 import { withTemporaryUrl } from "../../helpers/utils/location.js";
 import waitFor from "../../helpers/utils/waitFor.js";
@@ -1012,14 +1013,11 @@ describe("Consent", () => {
   });
 
   // C28754: Consenting to no purposes should result in no data handles in the response
-  test("C28754: setConsent(out) completes with a 200/207 response", async ({
+  test("C28754: setConsent(out) returns no data handles", async ({
     alloy,
     worker,
     networkRecorder,
   }) => {
-    // Note: The MSW mock returns a minimal JSON without data handles.
-    // We verify the call succeeds; inspecting real response payloads
-    // (idSyncs, personalization, audiences) requires a live edge endpoint.
     worker.use(setConsentHandler);
 
     await alloy("configure", {
@@ -1032,9 +1030,16 @@ describe("Consent", () => {
     const consentCalls = await networkRecorder.findCalls(
       /v1\/privacy\/set-consent/,
     );
-    expect(consentCalls.length).toBe(1);
-    expect(consentCalls[0].response.status).toBeGreaterThanOrEqual(200);
-    expect(consentCalls[0].response.status).toBeLessThanOrEqual(207);
+    expect(consentCalls).toHaveLength(1);
+
+    const [consentCall] = consentCalls;
+    expect(consentCall.response.status).toBeGreaterThanOrEqual(200);
+    expect(consentCall.response.status).toBeLessThanOrEqual(207);
+
+    const response = createResponse({ content: consentCall.response.body });
+    expect(response.getPayloadsByType("identity:exchange")).toEqual([]);
+    expect(response.getPayloadsByType("personalization:decisions")).toEqual([]);
+    expect(response.getPayloadsByType("activation:push")).toEqual([]);
   });
 
   // C5594870: Identity can be set via the adobe_mc query string parameter when calling set-consent
