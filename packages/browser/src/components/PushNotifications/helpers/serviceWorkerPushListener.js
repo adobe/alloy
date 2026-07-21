@@ -16,7 +16,7 @@ governing permissions and limitations under the License.
 /** @import {  PushNotificationData  } from '../types.js' */
 /** @import { ServiceWorkerLogger } from '../types.js' */
 
-const ECID_NAMESPACE = "ECID";
+import ecidNamespace from "@adobe/alloy-core/constants/ecidNamespace.js";
 
 /**
  * Determines whether a notification targeted at a specific identity should be
@@ -38,7 +38,7 @@ const shouldShowNotification = async ({
 }) => {
   const { identity } = webData;
 
-  if (!identity || identity.namespace?.toUpperCase() !== ECID_NAMESPACE) {
+  if (!identity || identity.namespace?.toUpperCase() !== ecidNamespace) {
     return true;
   }
 

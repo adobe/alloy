@@ -556,7 +556,7 @@ describe("serviceWorkerPushListener", () => {
       });
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        expect.stringContaining("unable to read the stored ECID"),
+        expect.stringContaining("Unable to read the stored ECID"),
       );
       expect(mockShowNotification).toHaveBeenCalledWith("Test Title", {
         data: notificationData.web,
