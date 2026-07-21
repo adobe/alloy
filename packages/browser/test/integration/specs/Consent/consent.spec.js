@@ -38,6 +38,7 @@ import {
 import {
   MAIN_IDENTITY_COOKIE_NAME,
   MAIN_CONSENT_COOKIE_NAME,
+  LEGACY_IDENTITY_COOKIE_NAME,
 } from "../../helpers/constants/cookies.js";
 
 // Writes the identity cookie so doesIdentityCookieExist() returns true after sendEvent
@@ -647,6 +648,7 @@ describe("Consent", () => {
 
     // Simulate reload: delete identity cookie, keep consent cookie
     await cookieStore.delete(MAIN_IDENTITY_COOKIE_NAME);
+    await cookieStore.delete(LEGACY_IDENTITY_COOKIE_NAME);
     const alloy2 = await reloadAlloy();
 
     // Phase 2: configure fresh alloy
@@ -855,6 +857,7 @@ describe("Consent", () => {
     expect(await cookieStore.get(MAIN_CONSENT_COOKIE_NAME)).not.toBeNull();
 
     await cookieStore.delete(MAIN_IDENTITY_COOKIE_NAME);
+    await cookieStore.delete(LEGACY_IDENTITY_COOKIE_NAME);
     const alloy2 = await reloadAlloy();
     await alloy2("configure", config);
 
