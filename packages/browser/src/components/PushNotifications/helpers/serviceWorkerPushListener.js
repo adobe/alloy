@@ -51,12 +51,8 @@ const shouldShowNotification = async ({
     return true;
   }
   const storedEcid = storedConfig?.ecid;
-  const normalizedId =
-    typeof identity.id === "string" ? identity.id.trim() : identity.id;
-  const normalizedStoredEcid =
-    typeof storedEcid === "string" ? storedEcid.trim() : storedEcid;
 
-  if (normalizedId !== normalizedStoredEcid) {
+  if (identity.id !== storedEcid) {
     logger.info(
       "Suppressing push notification: payload ECID does not match the ECID stored for this browser.",
     );
