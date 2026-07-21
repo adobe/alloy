@@ -57,8 +57,8 @@ governing permissions and limitations under the License.
  * @property {string} web.body
  * @property {string|null} web.media
  * @property {Object} [web.identity]
- * @property {string} web.identity.id
- * @property {string} web.identity.namespace
+ * @property {string} [web.identity.id]
+ * @property {string} [web.identity.namespace]
  * @property {Object} web.interaction
  * @property {string} web.interaction.type
  * @property {string|null} web.interaction.uri
