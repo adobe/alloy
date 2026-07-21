@@ -1324,7 +1324,10 @@ describe("C81182 - onBeforeLinkClickSend preserves personalization metrics", () 
       ...alloyConfig,
       clickCollectionEnabled: true,
       clickCollection: { eventGroupingEnabled: false },
-      onBeforeLinkClickSend: () => false,
+      onBeforeLinkClickSend: ({ data }) => {
+        data.customField = "test";
+        return false;
+      },
     });
     const link = appendPersonalizationLink();
     await applyClickProposition(alloy);
@@ -1335,6 +1338,7 @@ describe("C81182 - onBeforeLinkClickSend preserves personalization metrics", () 
     const event = firstEvent(call);
     expectPersonalizationMetric(event);
     expect(event.xdm.web?.webInteraction).toBeUndefined();
+    expect(event.data).toBeUndefined();
   });
 
   test("augmentation retains the personalization metric", async ({
