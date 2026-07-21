@@ -20,7 +20,6 @@ import {
 import { http, HttpResponse } from "msw";
 import {
   sendEventHandler,
-  setConsentErrorHandler,
   setConsentHandler,
 } from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
@@ -40,6 +39,12 @@ import {
   MAIN_CONSENT_COOKIE_NAME,
   LEGACY_IDENTITY_COOKIE_NAME,
 } from "../../helpers/constants/cookies.js";
+
+const productionEdgeConfig = {
+  ...alloyConfig,
+  edgeDomain: "edge.adobedc.net",
+  edgeBasePath: "ee",
+};
 
 // Writes the identity cookie so doesIdentityCookieExist() returns true after sendEvent
 const sendEventWithIdentityHandler = http.post(
@@ -427,11 +432,9 @@ describe("Consent", () => {
 
   test("C14410: setting consent for unknown purposes produces server 400 error", async ({
     alloy,
-    worker,
   }) => {
-    worker.use(setConsentErrorHandler);
     await alloy("configure", {
-      ...alloyConfig,
+      ...productionEdgeConfig,
       defaultConsent: "pending",
     });
 
@@ -451,7 +454,6 @@ describe("Consent", () => {
       "The server responded with a status code 400",
     );
     expect(error.message).toContain("EXEG-0102-400");
-    worker.use(setConsentHandler);
     await alloy("setConsent", CONSENT_IN);
   });
 
@@ -749,10 +751,10 @@ describe("Consent", () => {
     worker,
     networkRecorder,
   }) => {
-    worker.use(sendEventHandler, setConsentHandler);
+    worker.use(sendEventHandler);
 
     await alloy("configure", {
-      ...alloyConfig,
+      ...productionEdgeConfig,
       defaultConsent: "pending",
     });
 
@@ -775,6 +777,9 @@ describe("Consent", () => {
       /v1\/privacy\/set-consent/,
     );
     expect(consentCalls.length).toBe(1);
+    expect((await cookieStore.get(MAIN_CONSENT_COOKIE_NAME))?.value).toBe(
+      "general=in",
+    );
 
     // Event should now go out
     await sendEventPromise;
@@ -799,10 +804,10 @@ describe("Consent", () => {
       worker,
       networkRecorder,
     }) => {
-      worker.use(setConsentHandler);
+      worker.use(sendEventHandler);
 
       await alloy("configure", {
-        ...alloyConfig,
+        ...productionEdgeConfig,
         defaultConsent: "pending",
       });
 
@@ -825,6 +830,9 @@ describe("Consent", () => {
         /v1\/privacy\/set-consent/,
       );
       expect(consentCalls.length).toBe(1);
+      expect((await cookieStore.get(MAIN_CONSENT_COOKIE_NAME))?.value).toBe(
+        "general=out",
+      );
 
       // Event resolves (with {}) but should NOT go out
       await sendEventPromise;
@@ -1018,13 +1026,10 @@ describe("Consent", () => {
   // C28754: Consenting to no purposes should result in no data handles in the response
   test("C28754: setConsent(out) returns no data handles", async ({
     alloy,
-    worker,
     networkRecorder,
   }) => {
-    worker.use(setConsentHandler);
-
     await alloy("configure", {
-      ...alloyConfig,
+      ...productionEdgeConfig,
       defaultConsent: "pending",
     });
 
@@ -1046,14 +1051,14 @@ describe("Consent", () => {
   });
 
   // C5594870: Identity can be set via the adobe_mc query string parameter when calling set-consent
-  test("C5594870: adobe_mc ECID is included in the set-consent request", async ({
+  test("C5594870: adobe_mc ECID is returned by set-consent", async ({
     alloy,
-    worker,
     networkRecorder,
   }) => {
-    worker.use(setConsentHandler);
-
-    const ecid = "77094828402023918047117570965393734545";
+    const ecid = Array.from(
+      crypto.getRandomValues(new BigUint64Array(2)),
+      (value) => (value % 9223372036854775808n).toString().padStart(19, "0"),
+    ).join("");
     await withTemporaryUrl(async ({ currentHref, applyUrl }) => {
       const url = new URL(currentHref);
       url.searchParams.set(
@@ -1063,7 +1068,7 @@ describe("Consent", () => {
       applyUrl(url);
 
       await alloy("configure", {
-        ...alloyConfig,
+        ...productionEdgeConfig,
         defaultConsent: "pending",
       });
       await alloy("setConsent", CONSENT_IN);
@@ -1072,6 +1077,12 @@ describe("Consent", () => {
         /v1\/privacy\/set-consent/,
       );
       expect(consentCall.request.body.identityMap.ECID[0].id).toBe(ecid);
+
+      const response = createResponse({ content: consentCall.response.body });
+      const returnedEcid = response
+        .getPayloadsByType("identity:result")
+        .find(({ namespace }) => namespace.code === "ECID");
+      expect(returnedEcid.id).toBe(ecid);
     });
   });
 });
