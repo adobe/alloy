@@ -16,6 +16,13 @@ governing permissions and limitations under the License.
  * C782718 — SPA support with auto-rendering and view notifications.
  * C782719 — SPA support with auto-rendering disabled.
  * C14286730 — Target SPA click interaction includes viewName in notification.
+ *
+ * CSP nonce behavior remains covered by the functional tests C753469 and C753470:
+ * https://github.com/adobe/alloy/blob/main/packages/browser/test/functional/specs/Personalization/C753469.js
+ * https://github.com/adobe/alloy/blob/main/packages/browser/test/functional/specs/Personalization/C753470.js
+ * Vitest browser mode owns the runner document, so a spec cannot deliver a real
+ * CSP before Alloy loads. Adding CSP dynamically would not exercise browser
+ * enforcement or Alloy's page-load nonce discovery.
  */
 
 import { http, HttpResponse } from "msw";
