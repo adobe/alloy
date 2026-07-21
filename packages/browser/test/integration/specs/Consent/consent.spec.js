@@ -467,7 +467,7 @@ describe("Consent", () => {
 
     await alloy("setConsent", CONSENT_OUT);
     // Should not throw
-    await alloy("setConsent", CONSENT_OUT);
+    expect(() => alloy("setConsent", CONSENT_OUT)).not.toThrow();
   });
 
   test("C14411: setConsent(out) after reload without consent cookie does not throw", async ({
