@@ -47,7 +47,7 @@ const shouldShowNotification = async ({
     storedConfig = await readFromIndexedDb(logger);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    logger.info(`Unable to read the stored ECID for this browser. ${message}`);
+    logger.error(`Unable to read the stored ECID for this browser. ${message}`);
     return true;
   }
   const storedEcid = storedConfig?.ecid;
