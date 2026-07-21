@@ -21,6 +21,10 @@ import { sanitizeOrgIdForCookieName } from "@adobe/alloy-core/utils";
 import makeSendPushSubscriptionRequest from "./request/makeSendPushSubscriptionRequest.js";
 import saveToIndexedDb from "./helpers/saveToIndexedDb.js";
 
+/**
+ * @param {{ orgId?: string, pushNotifications?: { vapidPublicKey?: string, appId?: string, trackingDatasetId?: string } }} config
+ * @returns {boolean}
+ */
 const isComponentConfigured = ({
   orgId,
   pushNotifications: { vapidPublicKey, appId, trackingDatasetId } = {
@@ -28,7 +32,7 @@ const isComponentConfigured = ({
     appId: undefined,
     trackingDatasetId: undefined,
   },
-}) => orgId && vapidPublicKey && appId && trackingDatasetId;
+}) => Boolean(orgId && vapidPublicKey && appId && trackingDatasetId);
 
 /**
  * @function
@@ -86,11 +90,8 @@ const createPushNotifications = ({
 
           const {
             orgId,
-            pushNotifications: { vapidPublicKey, appId } = {
-              vapidPublicKey: undefined,
-              appId: undefined,
-            },
-          } = config || {};
+            pushNotifications: { vapidPublicKey, appId },
+          } = config;
 
           const storage = platformServices.storage.createNamespacedStorage(
             `${sanitizeOrgIdForCookieName(orgId)}.pushNotifications.`,

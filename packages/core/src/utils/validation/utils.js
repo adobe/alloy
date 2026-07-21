@@ -10,13 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+/** @import { ValidatorFn } from './types.js' */
+
 /**
  * Wraps a validator returning the value if it is null or undefined, otherwise
  * it will call the original validator and return the result.
  *
- * @param {function} validator - the validator to call if the value is not null
+ * @param {ValidatorFn} validator - the validator to call if the value is not null
+ * @returns {ValidatorFn}
  */
 const skipIfNull = (validator) =>
+  /**
+   * @this {any}
+   */
   function skipIfNullValidator(value, path) {
     return value == null ? value : validator.call(this, value, path);
   };
@@ -26,11 +32,14 @@ const skipIfNull = (validator) =>
  * validator with the result of the first validator. The result of the second validator
  * is returned.
  *
- * @param {function} firstValidator - validator to call first
- * @param {function} secondValidator - validator to call second
- * @returns {function} - a new validator that calls the first and second validators
+ * @param {ValidatorFn} firstValidator - validator to call first
+ * @param {ValidatorFn} secondValidator - validator to call second
+ * @returns {ValidatorFn} - a new validator that calls the first and second validators
  */
 const callSequentially = (firstValidator, secondValidator) =>
+  /**
+   * @this {any}
+   */
   function callSequentiallyValidator(value, path) {
     return secondValidator.call(
       this,
@@ -43,12 +52,16 @@ const callSequentially = (firstValidator, secondValidator) =>
  * Just like callSequentially, but if either validator throws an error, the errors
  * are collected and thrown at the end.
  *
- * @param {function} firstValidator
- * @param {function} secondValidator
- * @returns {function}
+ * @param {ValidatorFn} firstValidator
+ * @param {ValidatorFn} secondValidator
+ * @returns {ValidatorFn}
  */
 const callSequentiallyJoinErrors = (firstValidator, secondValidator) =>
+  /**
+   * @this {any}
+   */
   function callSequentiallyJoinErrorsValidator(value, path) {
+    /** @type {unknown[]} */
     const errors = [];
     const newValue = [firstValidator, secondValidator].reduce(
       (memo, validator) => {
@@ -72,12 +85,12 @@ const callSequentiallyJoinErrors = (firstValidator, secondValidator) =>
  * sequence, this will also copy over methods from the base validator to the
  * resulting validator and include any additional methods.
  *
- * @param {function} baseValidator - This validator will be called first, and its
+ * @param {ValidatorFn} baseValidator - This validator will be called first, and its
  * methods will be copied over to the returned validator.
- * @param {function} newValidator - This validator will be called second.
- * @param {object} additionalMethods - Additional methods to include on the returned
+ * @param {ValidatorFn} newValidator - This validator will be called second.
+ * @param {object} [additionalMethods] - Additional methods to include on the returned
  * validator.
- * @returns {function}
+ * @returns {ValidatorFn}
  */
 export const chain = (baseValidator, newValidator, additionalMethods) => {
   return Object.assign(
@@ -93,14 +106,14 @@ export const chain = (baseValidator, newValidator, additionalMethods) => {
  * copy over methods from the base validator to the resulting validator and
  * include any additional methods.
  *
- * @param {function} baseValidator - This validator will be called first, and its
+ * @param {ValidatorFn} baseValidator - This validator will be called first, and its
  * methods will be copied over to the returned validator.
- * @param {function} newValidator - This validator will be called second. If the value
+ * @param {ValidatorFn} newValidator - This validator will be called second. If the value
  * is null after the first validator is called, this validator will not be
  * called.
- * @param {object} additionalMethods - Additional methods to include on the returned
+ * @param {object} [additionalMethods] - Additional methods to include on the returned
  * validator.
- * @returns {function}
+ * @returns {ValidatorFn}
  */
 export const nullSafeChain = (
   baseValidator,
@@ -117,13 +130,13 @@ export const nullSafeChain = (
 /**
  * Same as nullSafeChain, but calls the new validator first.
  *
- * @param {function} baseValidator - This validator will be called second, and its
+ * @param {ValidatorFn} baseValidator - This validator will be called second, and its
  * methods will be copied over to the returned validator.
- * @param {function} newValidator - This validator will be called first. If the value
+ * @param {ValidatorFn} newValidator - This validator will be called first. If the value
  * is null, this validator will not be called.
- * @param {function} additionalMethods - Additional methods to include on the returned
+ * @param {object} [additionalMethods] - Additional methods to include on the returned
  * validator.
- * @returns {function}
+ * @returns {ValidatorFn}
  */
 export const reverseNullSafeChainJoinErrors = (
   baseValidator,

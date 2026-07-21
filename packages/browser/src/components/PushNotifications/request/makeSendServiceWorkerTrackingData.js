@@ -12,14 +12,16 @@ governing permissions and limitations under the License.
 
 /** @import { ServiceWorkerLogger } from '../types.js' */
 /** @import { TrackingDataPayload   } from '../types.js' */
+/** @import { PushServiceWorkerConfig } from '../types.js' */
+/** @import { XdmTrackingContext } from '../types.js' */
 
 /**
  * @param {Object} dependencies
- * @param {(logger: ServiceWorkerLogger) => Promise<Object>} dependencies.readFromIndexedDb
+ * @param {(logger: ServiceWorkerLogger) => Promise<PushServiceWorkerConfig>} dependencies.readFromIndexedDb
  * @param {() => string} dependencies.uuidv4
  * @param {ServiceWorkerLogger} dependencies.logger
  * @param {(url: string, options: object) => Promise<Response>} dependencies.fetch
- * @returns {(options: { xdm: Object, actionLabel?: string, applicationLaunches?: number }) => Promise<boolean>}
+ * @returns {(options: { xdm: XdmTrackingContext, actionLabel?: string, applicationLaunches?: number }) => Promise<boolean>}
  */
 export const createMakeSendServiceWorkerTrackingData = ({
   readFromIndexedDb,
@@ -31,7 +33,7 @@ export const createMakeSendServiceWorkerTrackingData = ({
    * @async
    * @function
    * @param {Object} options
-   * @param {Object} options.xdm
+   * @param {XdmTrackingContext} options.xdm
    * @param {string} [options.actionLabel]
    * @param {number} [options.applicationLaunches=0]
    *
@@ -50,6 +52,7 @@ export const createMakeSendServiceWorkerTrackingData = ({
       };
     }
 
+    /** @type {{ name: keyof PushServiceWorkerConfig, errorField: string }[]} */
     const requiredFields = [
       { name: "browser", errorField: "Browser" },
       { name: "ecid", errorField: "ECID" },
@@ -82,19 +85,24 @@ export const createMakeSendServiceWorkerTrackingData = ({
 
       const url = `https://${edgeDomain}/${edgeBasePath}/v1/interact?configId=${datastreamId}&requestId=${uuidv4()}`;
 
+      // The requiredFields loop above guarantees these are defined strings.
+      const validEcid = /** @type {string} */ (ecid);
+      const validBrowser = /** @type {string} */ (browser);
+      const validDatasetId = /** @type {string} */ (datasetId);
+
       /** @type {TrackingDataPayload} */
       const payload = {
         events: [
           {
             xdm: {
               identityMap: {
-                ECID: [{ id: ecid }],
+                ECID: [{ id: validEcid }],
               },
               timestamp: new Date().toISOString(),
               pushNotificationTracking: {
                 ...customActionData,
                 pushProviderMessageID: uuidv4(),
-                pushProvider: browser.toLowerCase(),
+                pushProvider: validBrowser.toLowerCase(),
               },
               application: {
                 launches: {
@@ -121,7 +129,7 @@ export const createMakeSendServiceWorkerTrackingData = ({
             },
             meta: {
               collect: {
-                datasetId,
+                datasetId: validDatasetId,
               },
             },
           },
