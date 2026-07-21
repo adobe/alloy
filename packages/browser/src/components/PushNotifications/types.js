@@ -104,4 +104,16 @@ governing permissions and limitations under the License.
  * @property {(...args: any[]) => void} error
  */
 
+/**
+ * @typedef {Object} PushServiceWorkerConfig
+ * @property {string} [ecid]
+ * @property {string} [browser]
+ * @property {string} [edgeDomain]
+ * @property {string} [edgeBasePath]
+ * @property {string} [datastreamId]
+ * @property {string} [datasetId]
+ * @property {string} [id]
+ * @property {number} [timestamp]
+ */
+
 export const Types = {};

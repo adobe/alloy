@@ -14,7 +14,7 @@ governing permissions and limitations under the License.
 /// <reference lib="webworker" />
 
 /** @import {  PushNotificationData  } from '../types.js' */
-/** @import { ServiceWorkerLogger } from '../types.js' */
+/** @import { ServiceWorkerLogger, PushServiceWorkerConfig } from '../types.js' */
 
 import ecidNamespace from "@adobe/alloy-core/constants/ecidNamespace.js";
 
@@ -27,7 +27,7 @@ import ecidNamespace from "@adobe/alloy-core/constants/ecidNamespace.js";
  *
  * @param {Object} options
  * @param {PushNotificationData["web"]} options.webData
- * @param {(logger: ServiceWorkerLogger) => Promise<Object|undefined>} options.readFromIndexedDb
+ * @param {(logger: ServiceWorkerLogger) => Promise<PushServiceWorkerConfig|undefined>} options.readFromIndexedDb
  * @param {ServiceWorkerLogger} options.logger
  * @returns {Promise<boolean>}
  */
@@ -46,9 +46,8 @@ const shouldShowNotification = async ({
   try {
     storedConfig = await readFromIndexedDb(logger);
   } catch (error) {
-    logger.info(
-      `Unable to read the stored ECID for this browser. ${error.message}`,
-    );
+    const message = error instanceof Error ? error.message : String(error);
+    logger.info(`Unable to read the stored ECID for this browser. ${message}`);
     return true;
   }
   const storedEcid = storedConfig?.ecid;
@@ -75,7 +74,7 @@ const shouldShowNotification = async ({
  * @param {ServiceWorkerGlobalScope} options.sw
  * @param {PushEvent} options.event
  * @param {ServiceWorkerLogger} options.logger
- * @param {(logger: ServiceWorkerLogger) => Promise<Object|undefined>} options.readFromIndexedDb
+ * @param {(logger: ServiceWorkerLogger) => Promise<PushServiceWorkerConfig|undefined>} options.readFromIndexedDb
  * @returns {Promise<void>}
  */
 export default async ({ sw, event, logger, readFromIndexedDb }) => {

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { ServiceWorkerLogger } from '../types.js' */
+/** @import { ServiceWorkerLogger, PushServiceWorkerConfig } from '../types.js' */
 
 import {
   getFromIndexedDbStore,
@@ -20,7 +20,7 @@ import { DB_NAME, DB_VERSION, STORE_NAME, INDEX_KEY } from "./constants.js";
 
 /**
  * @param {ServiceWorkerLogger} logger
- * @returns {Promise<Object|undefined>}
+ * @returns {Promise<PushServiceWorkerConfig|undefined>}
  * @throws {Error}
  */
 export default async (logger) => {
