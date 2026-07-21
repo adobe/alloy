@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 /** @import { Logger } from '@adobe/alloy-core/core/types.js' */
+/** @import { PushServiceWorkerConfig } from '../types.js' */
 
 import {
   openIndexedDb,
@@ -21,7 +22,7 @@ import {
 import { DB_NAME, DB_VERSION, STORE_NAME, INDEX_KEY } from "./constants.js";
 
 /**
- * @param {Object} data
+ * @param {Partial<PushServiceWorkerConfig>} data
  * @param {Logger} logger
  *
  * @returns {Promise<boolean>} Whether the data was successfully saved.
