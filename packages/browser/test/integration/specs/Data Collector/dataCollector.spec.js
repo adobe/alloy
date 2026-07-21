@@ -52,8 +52,23 @@ const firstEvent = (call) => call.request.body.events[0];
 // so there is no promise to await. waitForCall resolves the moment the matching
 // response is captured (no polling), which findCall's short retry window can
 // miss under CI load.
-const findInteractCall = (networkRecorder) =>
-  networkRecorder.waitForCall(/v1\/interact/);
+const findInteractCall = async (networkRecorder) => {
+  const call = await networkRecorder.waitForCall(EDGE_INTERACT);
+  expect(call).toBeDefined();
+  await waitFor(NO_REQUEST_WAIT_MS);
+  expect(interactCalls(networkRecorder)).toHaveLength(1);
+  expect(sendBeaconCalls()).toHaveLength(0);
+  return call;
+};
+
+const appendNestedLink = ({ id, href, text }) => {
+  const link = appendLink({ id: "", href, text: "" });
+  const target = document.createElement("span");
+  target.id = id;
+  target.textContent = text;
+  link.appendChild(target);
+  return target;
+};
 
 const activityMap = (event) =>
   event.data.__adobe.analytics.contextData.a.activitymap;
@@ -278,6 +293,7 @@ describe("C8119 - Click collection disabled does not send link click events", ()
     await waitFor(NO_REQUEST_WAIT_MS);
 
     expect(interactCalls(networkRecorder).length).toBe(0);
+    expect(sendBeaconCalls()).toHaveLength(0);
   });
 });
 
@@ -358,6 +374,19 @@ describe("C81184 - Click collection configuration warnings", () => {
 });
 
 describe("C81181 - onBeforeLinkClickSend callback", () => {
+  const appendCallbackLinks = () => ({
+    link: appendNestedLink({
+      id: "alloy-link-test",
+      href: "valid.html",
+      text: "Test Link",
+    }),
+    canceledLink: appendNestedLink({
+      id: "canceled-alloy-link-test",
+      href: "canceled.html",
+      text: "Link Click that is canceled",
+    }),
+  });
+
   test("returning false from onBeforeLinkClickSend cancels the link click request", async ({
     alloy,
     worker,
@@ -371,16 +400,13 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
       onBeforeLinkClickSend: () => false,
     });
 
-    const link = appendLink({
-      id: "alloy-link-test",
-      href: "#valid",
-      text: "Test Link",
-    });
+    const { link } = appendCallbackLinks();
     clickLink(link);
 
     await waitFor(NO_REQUEST_WAIT_MS);
 
     expect(interactCalls(networkRecorder).length).toBe(0);
+    expect(sendBeaconCalls()).toHaveLength(0);
   });
 
   test("returning false from filterClickDetails cancels the link click request", async ({
@@ -398,16 +424,13 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
       },
     });
 
-    const link = appendLink({
-      id: "alloy-link-test",
-      href: "#valid",
-      text: "Test Link",
-    });
+    const { link } = appendCallbackLinks();
     clickLink(link);
 
     await waitFor(NO_REQUEST_WAIT_MS);
 
     expect(interactCalls(networkRecorder).length).toBe(0);
+    expect(sendBeaconCalls()).toHaveLength(0);
   });
 
   test("onBeforeLinkClickSend can augment xdm and data before the request fires", async ({
@@ -424,19 +447,21 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
         internalLinkEnabled: true,
         eventGroupingEnabled: false,
       },
-      onBeforeLinkClickSend: (options) => {
-        const { xdm, data } = options;
-        xdm.web.webInteraction.name = "Augmented name";
-        data.customField = "test123";
-        return true;
+      onBeforeLinkClickSend: ({ clickedElement, xdm, data }) => {
+        if (clickedElement.id === "alloy-link-test") {
+          xdm.web.webInteraction.name = "Augmented name";
+          data.customField = "test123";
+          return true;
+        }
+        return false;
       },
     });
 
-    const link = appendLink({
-      id: "alloy-link-test",
-      href: "valid.html",
-      text: "Test Link",
-    });
+    const { link, canceledLink } = appendCallbackLinks();
+    clickLink(canceledLink);
+    await waitFor(NO_REQUEST_WAIT_MS);
+    expect(interactCalls(networkRecorder)).toHaveLength(0);
+    expect(sendBeaconCalls()).toHaveLength(0);
     clickLink(link);
 
     const call = await findInteractCall(networkRecorder);
@@ -474,11 +499,7 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
       },
     });
 
-    const link = appendLink({
-      id: "alloy-link-test",
-      href: "valid.html",
-      text: "Test Link",
-    });
+    const { link } = appendCallbackLinks();
     clickLink(link);
 
     const call = await findInteractCall(networkRecorder);
@@ -512,20 +533,11 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
         options.clickedElement.id !== "canceled-alloy-link-test",
     });
 
-    const canceledLink = appendLink({
-      id: "canceled-alloy-link-test",
-      href: "canceled.html",
-      text: "Canceled Link",
-    });
+    const { link, canceledLink } = appendCallbackLinks();
     clickLink(canceledLink);
     await waitFor(NO_REQUEST_WAIT_MS);
     expect(interactCalls(networkRecorder).length).toBe(0);
-
-    const link = appendLink({
-      id: "alloy-link-test",
-      href: "valid.html",
-      text: "Test Link",
-    });
+    expect(sendBeaconCalls()).toHaveLength(0);
     clickLink(link);
 
     const call = await findInteractCall(networkRecorder);
@@ -556,20 +568,11 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
       },
     });
 
-    const canceledLink = appendLink({
-      id: "canceled-alloy-link-test",
-      href: "canceled.html",
-      text: "Canceled Link",
-    });
+    const { link, canceledLink } = appendCallbackLinks();
     clickLink(canceledLink);
     await waitFor(NO_REQUEST_WAIT_MS);
     expect(interactCalls(networkRecorder).length).toBe(0);
-
-    const link = appendLink({
-      id: "alloy-link-test",
-      href: "valid.html",
-      text: "Test Link",
-    });
+    expect(sendBeaconCalls()).toHaveLength(0);
     clickLink(link);
 
     const call = await findInteractCall(networkRecorder);
@@ -605,11 +608,11 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
       },
     });
 
-    const link = appendLink({
-      id: "alloy-link-test",
-      href: "valid.html",
-      text: "Test Link",
-    });
+    const { link, canceledLink } = appendCallbackLinks();
+    clickLink(canceledLink);
+    await waitFor(NO_REQUEST_WAIT_MS);
+    expect(interactCalls(networkRecorder)).toHaveLength(0);
+    expect(sendBeaconCalls()).toHaveLength(0);
     clickLink(link);
 
     const call = await findInteractCall(networkRecorder);
@@ -647,11 +650,7 @@ describe("C81181 - onBeforeLinkClickSend callback", () => {
       },
     });
 
-    const link = appendLink({
-      id: "alloy-link-test",
-      href: "valid.html",
-      text: "Test Link",
-    });
+    const { link } = appendCallbackLinks();
     clickLink(link);
 
     const call = await findInteractCall(networkRecorder);
@@ -685,7 +684,7 @@ describe("C11693274 - URL query params do not affect exit link classification", 
 
     // href contains current domain only in the query string (not the host)
     const externalUrl = `https://example.com/?exclude-this=${window.location.hostname}`;
-    const link = appendLink({
+    const link = appendNestedLink({
       id: "alloy-link-test",
       href: externalUrl,
       text: "Test Link",
@@ -819,7 +818,7 @@ describe("C8118 - Collects and sends link click information", () => {
       clickCollection: { eventGroupingEnabled: false },
     });
 
-    appendLink({
+    appendNestedLink({
       id: "alloy-link-test",
       href: "blank.html",
       text: "Test Link",
@@ -926,7 +925,7 @@ describe("C8118 - Collects and sends link click information", () => {
       },
     });
 
-    appendLink({
+    appendNestedLink({
       id: "alloy-link-test",
       href: "blank.html",
       text: "Test Link",
@@ -1056,7 +1055,7 @@ describe("C8118 - Collects and sends link click information", () => {
       },
     });
 
-    appendLink({
+    appendNestedLink({
       id: "alloy-link-test",
       href: "blank.html",
       text: "Test Link",
@@ -1065,7 +1064,7 @@ describe("C8118 - Collects and sends link click information", () => {
 
     await waitFor(NO_REQUEST_WAIT_MS);
     expect(interactCalls(networkRecorder).length).toBe(0);
-    expect(sendBeaconCalls().length).toBe(0);
+    expect(sendBeaconCalls()).toHaveLength(0);
   });
 
   test("cached internal link click is sent on the next page view event", async ({
@@ -1084,7 +1083,7 @@ describe("C8118 - Collects and sends link click information", () => {
       },
     });
 
-    appendLink({
+    appendNestedLink({
       id: "alloy-link-test",
       href: "blank.html",
       text: "Test Link",
@@ -1092,6 +1091,7 @@ describe("C8118 - Collects and sends link click information", () => {
     clickById();
     await waitFor(NO_REQUEST_WAIT_MS);
     expect(interactCalls(networkRecorder).length).toBe(0);
+    expect(sendBeaconCalls()).toHaveLength(0);
 
     networkRecorder.reset();
 
@@ -1227,6 +1227,7 @@ describe("C8118 - Collects and sends link click information", () => {
 
     await waitFor(NO_REQUEST_WAIT_MS);
     expect(interactCalls(networkRecorder).length).toBe(0);
+    expect(sendBeaconCalls()).toHaveLength(0);
 
     networkRecorder.reset();
 
@@ -1294,7 +1295,7 @@ describe("C8118 - Collects and sends link click information", () => {
       clickCollection: { eventGroupingEnabled: true },
     });
 
-    appendLink({
+    appendNestedLink({
       id: "alloy-link-test",
       href: "blank.html",
       text: "Test Link",
