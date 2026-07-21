@@ -16,6 +16,45 @@ governing permissions and limitations under the License.
 /** @import {  PushNotificationData  } from '../types.js' */
 /** @import { ServiceWorkerLogger } from '../types.js' */
 
+const ECID_NAMESPACE = "ECID";
+
+/**
+ * Determines whether a notification targeted at a specific identity should be
+ * shown on this browser. When the payload contains an `identity` with the ECID
+ * namespace, the notification is only shown if the ECID in the payload matches
+ * the ECID stored in IndexedDB for this browser. When there is no identity, or
+ * the namespace is not ECID, the notification is always shown.
+ *
+ * @param {Object} options
+ * @param {PushNotificationData["web"]} options.webData
+ * @param {(logger: ServiceWorkerLogger) => Promise<Object|undefined>} options.readFromIndexedDb
+ * @param {ServiceWorkerLogger} options.logger
+ * @returns {Promise<boolean>}
+ */
+const shouldShowNotification = async ({
+  webData,
+  readFromIndexedDb,
+  logger,
+}) => {
+  const { identity } = webData;
+
+  if (!identity || identity.namespace?.toUpperCase() !== ECID_NAMESPACE) {
+    return true;
+  }
+
+  const storedConfig = await readFromIndexedDb(logger);
+  const storedEcid = storedConfig?.ecid;
+
+  if (identity.id !== storedEcid) {
+    logger.info(
+      "Suppressing push notification: payload ECID does not match the ECID stored for this browser.",
+    );
+    return false;
+  }
+
+  return true;
+};
+
 /**
  * @async
  * @function
@@ -24,9 +63,10 @@ governing permissions and limitations under the License.
  * @param {ServiceWorkerGlobalScope} options.sw
  * @param {PushEvent} options.event
  * @param {ServiceWorkerLogger} options.logger
+ * @param {(logger: ServiceWorkerLogger) => Promise<Object|undefined>} options.readFromIndexedDb
  * @returns {Promise<void>}
  */
-export default async ({ sw, event, logger }) => {
+export default async ({ sw, event, logger, readFromIndexedDb }) => {
   if (!event.data) {
     return;
   }
@@ -42,6 +82,15 @@ export default async ({ sw, event, logger }) => {
 
   const webData = notificationData.web;
   if (!webData?.title) {
+    return;
+  }
+
+  const showNotification = await shouldShowNotification({
+    webData,
+    readFromIndexedDb,
+    logger,
+  });
+  if (!showNotification) {
     return;
   }
 
