@@ -46,5 +46,6 @@ export default async (logger) => {
     return existingConfigData;
   } catch (error) {
     logger.error("Failed to read data from IndexedDB", { error });
+    throw error;
   }
 };

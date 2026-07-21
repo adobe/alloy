@@ -533,6 +533,37 @@ describe("serviceWorkerPushListener", () => {
       expect(mockShowNotification).not.toHaveBeenCalled();
     });
 
+    it("shows notification when reading the stored ECID throws", async () => {
+      const readError = new Error("IndexedDB read failed");
+      mockReadFromIndexedDb.mockRejectedValue(readError);
+
+      const notificationData = {
+        web: {
+          title: "Test Title",
+          identity: {
+            id: "SOME_ECID",
+            namespace: "ECID",
+          },
+        },
+      };
+      mockEvent.data.json.mockReturnValue(notificationData);
+
+      await serviceWorkerPushListener({
+        sw: mockSw,
+        event: mockEvent,
+        logger: mockLogger,
+        readFromIndexedDb: mockReadFromIndexedDb,
+      });
+
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expect.stringContaining("unable to read the stored ECID"),
+      );
+      expect(mockShowNotification).toHaveBeenCalledWith("Test Title", {
+        data: notificationData.web,
+        actions: [],
+      });
+    });
+
     it("suppresses notification when no ECID is stored for this browser", async () => {
       mockReadFromIndexedDb.mockResolvedValue(undefined);
 

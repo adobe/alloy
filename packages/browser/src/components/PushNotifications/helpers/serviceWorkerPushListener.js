@@ -42,7 +42,15 @@ const shouldShowNotification = async ({
     return true;
   }
 
-  const storedConfig = await readFromIndexedDb(logger);
+  let storedConfig;
+  try {
+    storedConfig = await readFromIndexedDb(logger);
+  } catch (error) {
+    logger.info(
+      `Unable to read the stored ECID for this browser. ${error.message}`,
+    );
+    return true;
+  }
   const storedEcid = storedConfig?.ecid;
 
   if (identity.id !== storedEcid) {
