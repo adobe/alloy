@@ -35,6 +35,7 @@ class NetworkRecorder {
     this.calls = [];
     /** @type {{ pattern: RegExp, resolve: (call: NetworkCall) => void, timer: ReturnType<typeof setTimeout> }[]} */
     this.waiters = [];
+    this.generation = 0;
   }
 
   /**
@@ -65,6 +66,7 @@ class NetworkRecorder {
    * @param {string} options.requestId - Unique identifier for the request
    */
   async captureRequest({ request, requestId }) {
+    const generation = this.generation;
     let call = this.calls.find((c) => c.requestId === requestId);
 
     if (!call) {
@@ -89,6 +91,10 @@ class NetworkRecorder {
       body = `Unable to read body: ${e.message}`;
     }
 
+    if (generation !== this.generation) {
+      return;
+    }
+
     call.request = {
       url: request.url,
       method: request.method,
@@ -108,6 +114,7 @@ class NetworkRecorder {
    * @param {Response} options.response - The response object
    */
   async captureResponse({ requestId, response }) {
+    const generation = this.generation;
     const call = this.calls.find((c) => c.requestId === requestId);
 
     if (!call) {
@@ -130,6 +137,10 @@ class NetworkRecorder {
       }
     } catch (e) {
       body = `Unable to read body: ${e.message}`;
+    }
+
+    if (generation !== this.generation) {
+      return;
     }
 
     call.response = {
@@ -236,7 +247,11 @@ class NetworkRecorder {
   }
 
   reset() {
-    this.waiters.forEach((waiter) => clearTimeout(waiter.timer));
+    this.generation += 1;
+    this.waiters.forEach((waiter) => {
+      clearTimeout(waiter.timer);
+      waiter.resolve(undefined);
+    });
     this.waiters = [];
     this.calls = [];
   }
