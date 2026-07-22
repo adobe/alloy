@@ -1,5 +1,11 @@
 # @adobe/alloy
 
+## 2.34.2-beta.3
+
+### Patch Changes
+
+- [#1556](https://github.com/adobe/alloy/pull/1556) [`6e96412`](https://github.com/adobe/alloy/commit/6e9641257bec5077300713d5b14a374d539feb19) Thanks [@dompuiu](https://github.com/dompuiu)! - Fix Push Notifications module so the ECID used to target notifications is persisted reliably: skip sending when no ECID is available, and only cache the subscription details after the ECID is saved so a failed send or storage write self-heals on the next attempt.
+
 ## 2.34.2-beta.2
 
 ### Patch Changes
