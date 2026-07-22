@@ -68,7 +68,7 @@
               "data": {
                 "type": "setHtml",
                 "format": "application/vnd.adobe.target.dom-action",
-                "content": "This is product view",
+                "content": "This is product view<button class=\"clickme\" aria-label=\"Track interaction\"></button>",
                 "selector": "#personalization-products-container",
                 "prehidingSelector": "#personalization-products-container"
               }
