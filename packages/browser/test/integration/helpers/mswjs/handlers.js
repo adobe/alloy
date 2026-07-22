@@ -297,6 +297,12 @@ export const setConsentHandler = http.post(
             type: "state:store",
             payload: [
               {
+                key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_identity",
+                value:
+                  "CiQ0MTg2MTY2NjE5MzE0MDE2MTkzNDI3Njg0NTY1MTE0ODg3Njk4OA==",
+                maxAge: 34128000,
+              },
+              {
                 key: "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_consent",
                 value: `general=${generalConsent}`,
                 maxAge: 15552000,
