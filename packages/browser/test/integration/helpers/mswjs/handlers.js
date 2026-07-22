@@ -166,6 +166,17 @@ export const inAppMessageHandler = http.post(
     const configId = url.searchParams.get("configId");
 
     if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
+      const requestBody = await req.request.json();
+      if (
+        requestBody.events?.[0]?.xdm?.eventType ===
+        "decisioning.propositionDisplay"
+      ) {
+        return HttpResponse.json({
+          requestId: "display-notification-ack",
+          handle: [],
+        });
+      }
+
       return HttpResponse.text(
         await readFile(
           `${server.config.root}/packages/browser/test/integration/helpers/mocks/inAppMessageResponse.json`,
