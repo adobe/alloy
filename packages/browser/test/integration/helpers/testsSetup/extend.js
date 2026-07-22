@@ -54,6 +54,13 @@ export const test = baseTest.extend({
 
   alloy: [
     async ({}, use) => {
+      // Clear all cookies for a clean slate before each test, so individual
+      // tests don't leak identity/consent state into subsequent tests.
+      const cookies = await cookieStore.getAll();
+      await Promise.all(
+        cookies.map((c) => cookieStore.delete({ name: c.name, path: c.path })),
+      );
+
       await setupBaseCode();
       const alloy = await setupAlloy();
 

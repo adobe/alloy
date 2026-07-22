@@ -1,0 +1,139 @@
+{
+  "requestId": "pers-spa-001-requestid",
+  "handle": [
+    {
+      "payload": [
+        {
+          "id": "56475161841051406291527557158775615545",
+          "namespace": {
+            "code": "ECID"
+          }
+        }
+      ],
+      "type": "identity:result"
+    },
+    {
+      "payload": [
+        {
+          "id": "AT:pagewide-spa-proposition",
+          "scope": "__view__",
+          "scopeDetails": {
+            "decisionProvider": "TGT",
+            "activity": {
+              "id": "200001"
+            },
+            "experience": {
+              "id": "0"
+            },
+            "characteristics": {
+              "eventToken": "pagewide-spa-event-token"
+            },
+            "correlationID": "200001:0:0"
+          },
+          "items": [
+            {
+              "id": "200001-pagewide-item",
+              "schema": "https://ns.adobe.com/personalization/dom-action",
+              "data": {
+                "type": "setHtml",
+                "format": "application/vnd.adobe.target.dom-action",
+                "content": "test for a page wide scope",
+                "selector": "#pageWideScope",
+                "prehidingSelector": "#pageWideScope"
+              }
+            }
+          ]
+        },
+        {
+          "id": "AT:products-view-proposition",
+          "scope": "products",
+          "scopeDetails": {
+            "decisionProvider": "TGT",
+            "activity": {
+              "id": "200001"
+            },
+            "experience": {
+              "id": "0"
+            },
+            "characteristics": {
+              "eventToken": "products-view-event-token",
+              "scopeType": "view"
+            },
+            "correlationID": "200001:0:0"
+          },
+          "items": [
+            {
+              "id": "200001-products-item",
+              "schema": "https://ns.adobe.com/personalization/dom-action",
+              "data": {
+                "type": "setHtml",
+                "format": "application/vnd.adobe.target.dom-action",
+                "content": "This is product view",
+                "selector": "#personalization-products-container",
+                "prehidingSelector": "#personalization-products-container"
+              }
+            }
+          ]
+        },
+        {
+          "id": "AT:cart-view-proposition",
+          "scope": "cart",
+          "scopeDetails": {
+            "decisionProvider": "TGT",
+            "activity": {
+              "id": "200001"
+            },
+            "experience": {
+              "id": "0"
+            },
+            "characteristics": {
+              "eventToken": "cart-view-event-token",
+              "scopeType": "view"
+            },
+            "correlationID": "200001:0:0"
+          },
+          "items": [
+            {
+              "id": "200001-cart-item",
+              "schema": "https://ns.adobe.com/personalization/dom-action",
+              "data": {
+                "type": "setHtml",
+                "format": "application/vnd.adobe.target.dom-action",
+                "content": "This is cart view",
+                "selector": "#personalization-cart-container",
+                "prehidingSelector": "#personalization-cart-container"
+              }
+            }
+          ]
+        }
+      ],
+      "type": "personalization:decisions",
+      "eventIndex": 0
+    },
+    {
+      "payload": [
+        {
+          "scope": "Target",
+          "hint": "35",
+          "ttlSeconds": 1800
+        },
+        {
+          "scope": "EdgeNetwork",
+          "hint": "or2",
+          "ttlSeconds": 1800
+        }
+      ],
+      "type": "locationHint:result"
+    },
+    {
+      "payload": [
+        {
+          "key": "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster",
+          "value": "or2",
+          "maxAge": 1800
+        }
+      ],
+      "type": "state:store"
+    }
+  ]
+}

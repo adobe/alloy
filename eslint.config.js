@@ -49,8 +49,6 @@ export default defineConfig([
     "launch*.js",
     "packages/reactor-extension/dist/**",
     "packages/reactor-extension/src/lib/runAlloy.js",
-    "packages/core/test/**",
-    "packages/browser/test/**",
     "**/scripts/**/*.mjs",
   ]),
   // License: warn only
@@ -95,18 +93,6 @@ export default defineConfig([
       ],
       "valid-typeof": ["error", { requireStringLiterals: true }],
       "no-console": ["warn", { allow: ["error"] }],
-      "no-underscore-dangle": [
-        "error",
-        {
-          allow: [
-            "_experience",
-            "__dirname",
-            "__filename",
-            "__alloyMonitors",
-            "__alloyNS",
-          ],
-        },
-      ],
       "no-bitwise": "error",
       "default-param-last": "error",
       eqeqeq: ["error", "smart"],
@@ -328,6 +314,11 @@ export default defineConfig([
     },
   },
   {
+    name: "alloy/browser-test/no-compat",
+    files: ["packages/browser/test/**/*.{cjs,js,mjs,jsx}"],
+    rules: { "compat/compat": "off" },
+  },
+  {
     name: "alloy/browser-src",
     files: ["packages/browser/src/**/*.{cjs,js,mjs,jsx}"],
     rules: {
@@ -358,6 +349,7 @@ export default defineConfig([
   {
     name: "alloy/tests",
     files: ["packages/**/test/**/*.{cjs,js,mjs,jsx}"],
+    languageOptions: { globals: { ...globals.node } },
     rules: {
       "import/extensions": [
         "error",
@@ -381,6 +373,12 @@ export default defineConfig([
       vitest,
     },
     extends: [vitest.configs.recommended],
+    rules: {
+      "vitest/expect-expect": [
+        "error",
+        { assertFunctionNames: ["expect", "assert", "expectFunctions"] },
+      ],
+    },
   },
   {
     name: "alloy/tests/functional",
@@ -394,6 +392,47 @@ export default defineConfig([
         fixture: "readonly",
         ...globals.node,
       },
+    },
+  },
+  {
+    name: "alloy/core-tests-browser-globals",
+    files: ["packages/core/test/**/*.{cjs,js,mjs,jsx}"],
+    ignores: [
+      "packages/core/test/**/specs/components/BrandConcierge/**",
+      "packages/core/test/**/specs/components/RulesEngine/**",
+    ],
+    languageOptions: {
+      globals: { ...globals.browser },
+    },
+  },
+  {
+    // TODO(UJS): these core component tests still assume browser globals
+    // (window/document); migrate them to platformServices mocks. Declare the
+    // globals so no-undef still catches genuine typos here, and surface the
+    // leakage via no-restricted-globals warnings so the migration debt stays
+    // visible without failing CI.
+    name: "alloy/core-tests-browser-leakage",
+    files: [
+      "packages/core/test/**/specs/components/BrandConcierge/**/*.{cjs,js,mjs,jsx}",
+      "packages/core/test/**/specs/components/RulesEngine/**/*.{cjs,js,mjs,jsx}",
+    ],
+    languageOptions: {
+      globals: { ...globals.browser },
+    },
+    rules: {
+      "no-restricted-globals": [
+        "warn",
+        {
+          name: "window",
+          message:
+            "Use platformServices mocks instead of browser globals in core tests. See UNIVERSAL_JS_MIGRATION.md.",
+        },
+        {
+          name: "document",
+          message:
+            "Use platformServices mocks instead of browser globals in core tests. See UNIVERSAL_JS_MIGRATION.md.",
+        },
+      ],
     },
   },
   {
@@ -495,19 +534,6 @@ export default defineConfig([
       "jsx-a11y": jsxA11y,
     },
     rules: {
-      "no-underscore-dangle": [
-        "error",
-        {
-          allow: [
-            "_experience",
-            "__dirname",
-            "__filename",
-            "__alloyMonitors",
-            "__alloyNS",
-            "__adobe",
-          ],
-        },
-      ],
       "import/extensions": "off",
       "import/default": "off",
       "import/namespace": "off",
@@ -574,10 +600,6 @@ export default defineConfig([
     rules: {
       "no-var": "off",
       "func-names": "off",
-      "no-underscore-dangle": [
-        "error",
-        { allow: ["__alloyNS", "__alloyMonitors", "__adobe"] },
-      ],
     },
   },
   {

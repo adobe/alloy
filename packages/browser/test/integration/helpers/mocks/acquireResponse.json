@@ -1,0 +1,26 @@
+{
+  "requestId": "acquire-request-id-1234",
+  "handle": [
+    {
+      "payload": [
+        {
+          "id": "41861666193140161934276845651148876988",
+          "namespace": {
+            "code": "ECID"
+          }
+        }
+      ],
+      "type": "identity:result"
+    },
+    {
+      "payload": [
+        {
+          "key": "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster",
+          "value": "or2",
+          "maxAge": 1800
+        }
+      ],
+      "type": "state:store"
+    }
+  ]
+}

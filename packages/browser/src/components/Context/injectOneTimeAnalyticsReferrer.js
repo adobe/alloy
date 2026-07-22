@@ -30,7 +30,7 @@ export default (window) => {
 
     // Allow customers to explicitly set the referrer (for SPA view changes)
     // Otherwise, use document.referrer
-    // eslint-disable-next-line no-underscore-dangle
+
     const explicitReferrer = content.data?.__adobe?.analytics?.referrer;
     const currentReferrer =
       explicitReferrer !== undefined

@@ -1,0 +1,54 @@
+{
+  "requestId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "handle": [
+    {
+      "payload": [
+        {
+          "id": "41861666193140161934276845651148876988",
+          "namespace": {
+            "code": "ECID"
+          }
+        }
+      ],
+      "type": "identity:result"
+    },
+    {
+      "payload": [
+        {
+          "scope": "Target",
+          "hint": "35",
+          "ttlSeconds": 1800
+        },
+        {
+          "scope": "AAM",
+          "hint": "9",
+          "ttlSeconds": 1800
+        },
+        {
+          "scope": "EdgeNetwork",
+          "hint": "or2",
+          "ttlSeconds": 1800
+        }
+      ],
+      "type": "locationHint:result"
+    },
+    {
+      "payload": [
+        {
+          "key": "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_identity",
+          "value": "CiY0MTg2MTY2NjE5MzE0MDE2MTkzNDI3Njg0NTY1MTE0ODg3Njk4OFIQCM68vcXoMhgBKgNPUjIwAaAB0ry9xegysAHCqAHwAc68vcXoMg==",
+          "maxAge": 34128000,
+          "attrs": {
+            "SameSite": "None"
+          }
+        },
+        {
+          "key": "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster",
+          "value": "or2",
+          "maxAge": 1800
+        }
+      ],
+      "type": "state:store"
+    }
+  ]
+}
