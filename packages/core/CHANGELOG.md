@@ -1,5 +1,12 @@
 # @adobe/alloy-core
 
+## 1.2.2-beta.1
+
+### Patch Changes
+
+- [#1558](https://github.com/adobe/alloy/pull/1558) [`f72ec8f`](https://github.com/adobe/alloy/commit/f72ec8f8380474fb4e4acf0b9856645a7a1efc80) Thanks [@dompuiu](https://github.com/dompuiu)! - Check if ECID from push notification payload matches the ECID from the browser before showing the notification.
+  Fix type errors in the push notification component.
+
 ## 1.2.2-beta.0
 
 ### Patch Changes
