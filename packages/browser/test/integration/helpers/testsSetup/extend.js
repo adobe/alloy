@@ -17,6 +17,8 @@ import { networkRecorder } from "../mswjs/networkRecorder.js";
 import setupAlloy from "../alloy/setup.js";
 import setupBaseCode from "../alloy/setupBaseCode.js";
 import cleanAlloy from "../alloy/clean.js";
+import { cleanupDom } from "../utils/domHelpers.js";
+import { resetSendBeaconCalls } from "../utils/sendBeacon.js";
 
 const worker = createWorker();
 
@@ -65,11 +67,13 @@ export const test = testWithoutAlloy.extend({
 
       await setupBaseCode();
       const alloy = await setupAlloy();
+      resetSendBeaconCalls();
 
       // Make alloy available in the test context
       await use(alloy);
 
       cleanAlloy();
+      cleanupDom();
     },
     { auto: true }, // Apply to all tests even if not explicitly using alloy
   ],

@@ -59,6 +59,7 @@ export const browserTestProjects = [
         "packages/browser/test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)",
       ],
       isolate: false,
+      restoreMocks: true,
       browser: createBrowserMode(),
       coverage: packageCoverage,
     },

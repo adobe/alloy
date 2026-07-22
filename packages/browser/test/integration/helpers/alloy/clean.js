@@ -17,6 +17,7 @@ export default () => {
     window.__alloyClickListeners = [];
   }
   delete window.__alloyMonitors;
+  delete window.___getLinkDetails;
   delete window.__alloyNS;
   delete window.alloy;
 };
