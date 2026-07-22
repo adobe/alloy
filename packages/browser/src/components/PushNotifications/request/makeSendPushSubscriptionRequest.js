@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { Storage } from '@adobe/alloy-core/utils/types.js' */
+/** @import { Storage } from '@adobe/alloy-core/services' */
 /** @import { EventManager, Logger } from '@adobe/alloy-core/core/types.js' */
 /** @import { IdentityManager } from '@adobe/alloy-core/core/identity/types.js' */
 /** @import { ConsentManager } from '@adobe/alloy-core/core/consent/types.js' */
@@ -42,6 +42,7 @@ const SUBSCRIPTION_DETAILS = "subscriptionDetails";
  * @param {EdgeRequestExecutor} options.sendEdgeNetworkRequest
  * @param {ConsentManager} options.consent
  * @param {Window} options.window
+ * @param {typeof getPushSubscriptionDetailsDefault} [options.getPushSubscriptionDetails]
  *
  * @returns {Promise<void>}
  */

@@ -50,6 +50,7 @@ const createEventListeners = ({ platform, sw }) => {
           event,
           sw,
           logger: platform.logger,
+          readFromIndexedDb,
         });
       },
       /**
