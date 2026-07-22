@@ -12,9 +12,13 @@ governing permissions and limitations under the License.
 import { server } from "vitest/browser";
 const { readFile } = server.commands;
 
-export default async () => {
-  const alloyBaseCode = await readFile(
+export default async ({ instanceNames = ["alloy"] } = {}) => {
+  let alloyBaseCode = await readFile(
     `${server.config.root}/packages/browser/distTest/baseCode.min.js`,
+  );
+  alloyBaseCode = alloyBaseCode.replace(
+    '["alloy"]',
+    JSON.stringify(instanceNames),
   );
 
   document.body.innerHTML = "Alloy Test Page";
