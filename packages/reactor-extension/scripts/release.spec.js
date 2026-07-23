@@ -52,4 +52,10 @@ describe("isAlreadyReleasedError()", () => {
     const output = "Error: connect ETIMEDOUT 1.2.3.4:443";
     expect(isAlreadyReleasedError(output)).toBe(false);
   });
+
+  test("requires the invalid-version code, not just matching wording", () => {
+    const output =
+      '{"errors":[{"code":"some-other-code","detail":"2.37.1.pre.beta.4 is older than latest version: 2.37.1.pre.beta.4"}]}';
+    expect(isAlreadyReleasedError(output)).toBe(false);
+  });
 });

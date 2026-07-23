@@ -46,14 +46,18 @@ const run = (cmd, args, opts = {}) => {
 // script for a version that was already fully released can't find a dev
 // record to PATCH, so it POSTs a new one instead; Reactor rejects that as
 // "invalid-version", reporting the attempted version as older than "the
-// latest version: <that same version>". The message gets JSON-stringified
-// twice on its way to the console, so quotes may or may not be
-// backslash-escaped depending on nesting depth. Recognize this exact
-// already-released shape (both sides of the comparison equal) rather than
-// treating it as a real failure.
+// latest version: <that same version>". The message is JSON-stringified
+// twice on its way to the console, so backslash-escaped quotes are
+// collapsed before matching. The "invalid-version" code is required
+// alongside the equal-version detail so an unrelated error that happens to
+// contain similar wording can't be mistaken for this specific case.
 export const isAlreadyReleasedError = (output) => {
-  const match = output.match(
-    /detail\\?"\s*:\s*\\?"([^"\\]+) is older than latest version: ([^"\\]+)/,
+  const normalized = output.replace(/\\"/g, '"');
+  if (!/"code":\s*"invalid-version"/.test(normalized)) {
+    return false;
+  }
+  const match = normalized.match(
+    /"detail":"([^"]+) is older than latest version: ([^"]+)"/,
   );
   return Boolean(match) && match[1] === match[2];
 };
@@ -61,7 +65,7 @@ export const isAlreadyReleasedError = (output) => {
 const invokedAsCli =
   process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
 
-if (invokedAsCli) {
+const main = () => {
   const { name, version } = JSON.parse(
     fs.readFileSync(path.join(pkgDir, "package.json"), "utf8"),
   );
@@ -87,19 +91,44 @@ if (invokedAsCli) {
       `--auth.client-id=${REACTOR_CLIENT_ID}`,
       "--upload-timeout=300",
     ],
-    { cwd: pkgDir, env: process.env, encoding: "utf8" },
+    {
+      cwd: pkgDir,
+      env: process.env,
+      encoding: "utf8",
+      // Buffered rather than "inherit" so the output can be inspected below;
+      // sized well above spawnSync's default so verbose uploader output
+      // can't get silently truncated before the check runs.
+      maxBuffer: 10 * 1024 * 1024,
+    },
   );
   process.stdout.write(upload.stdout ?? "");
   process.stderr.write(upload.stderr ?? "");
+
+  // Checked before inspecting output for the already-released case: a spawn
+  // failure or signal kill must never be mistaken for a successful skip just
+  // because matching text happens to appear in whatever output was captured.
+  if (upload.error) {
+    console.error(
+      `Failed to spawn "reactor-uploader": ${upload.error.message}`,
+    );
+    process.exitCode = 1;
+    return;
+  }
+  if (upload.signal) {
+    console.error(`"reactor-uploader" killed by signal ${upload.signal}`);
+    process.exitCode = 1;
+    return;
+  }
   if (upload.status !== 0) {
     const output = `${upload.stdout ?? ""}${upload.stderr ?? ""}`;
     if (isAlreadyReleasedError(output)) {
       console.log(
         `${name}@${version} is already released on Reactor; skipping.`,
       );
-      process.exit(0);
+      return;
     }
-    process.exit(upload.status ?? 1);
+    process.exitCode = upload.status ?? 1;
+    return;
   }
 
   console.log(`Releasing ${name}@${version}...`);
@@ -109,4 +138,8 @@ if (invokedAsCli) {
     `--auth.client-id=${REACTOR_CLIENT_ID}`,
     "--confirm-package-release",
   ]);
+};
+
+if (invokedAsCli) {
+  main();
 }
