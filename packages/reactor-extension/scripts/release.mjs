@@ -14,16 +14,13 @@ governing permissions and limitations under the License.
 
 import { spawnSync } from "child_process";
 import path from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 import fs from "fs";
 
 const REACTOR_CLIENT_ID = "f401a5fe22184c91a85fd441a8aa2976";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const pkgDir = path.resolve(__dirname, "..");
-const { name, version } = JSON.parse(
-  fs.readFileSync(path.join(pkgDir, "package.json"), "utf8"),
-);
 
 const run = (cmd, args, opts = {}) => {
   const result = spawnSync(cmd, args, {
@@ -44,30 +41,72 @@ const run = (cmd, args, opts = {}) => {
   }
 };
 
-// Build + zip the extension. The `package` script writes
-// package-adobe-alloy-<version>.zip into the package dir.
-console.log(`Building ${name}@${version} extension package...`);
-run("pnpm", ["run", "package"]);
+// Reactor keeps a single "development" extension package per name+platform
+// and drops its dev-availability record once released. Re-running this
+// script for a version that was already fully released can't find a dev
+// record to PATCH, so it POSTs a new one instead; Reactor rejects that as
+// "invalid-version", reporting the attempted version as older than "the
+// latest version: <that same version>". The message gets JSON-stringified
+// twice on its way to the console, so quotes may or may not be
+// backslash-escaped depending on nesting depth. Recognize this exact
+// already-released shape (both sides of the comparison equal) rather than
+// treating it as a real failure.
+export const isAlreadyReleasedError = (output) => {
+  const match = output.match(
+    /detail\\?"\s*:\s*\\?"([^"\\]+) is older than latest version: ([^"\\]+)/,
+  );
+  return Boolean(match) && match[1] === match[2];
+};
 
-const zipName = `package-adobe-alloy-${version}.zip`;
-const zipPath = path.join(pkgDir, zipName);
-if (!fs.existsSync(zipPath)) {
-  throw new Error(`Expected packaged zip at ${zipPath}`);
+const invokedAsCli =
+  process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (invokedAsCli) {
+  const { name, version } = JSON.parse(
+    fs.readFileSync(path.join(pkgDir, "package.json"), "utf8"),
+  );
+
+  // Build + zip the extension. The `package` script writes
+  // package-adobe-alloy-<version>.zip into the package dir.
+  console.log(`Building ${name}@${version} extension package...`);
+  run("pnpm", ["run", "package"]);
+
+  const zipName = `package-adobe-alloy-${version}.zip`;
+  const zipPath = path.join(pkgDir, zipName);
+  if (!fs.existsSync(zipPath)) {
+    throw new Error(`Expected packaged zip at ${zipPath}`);
+  }
+
+  console.log(`Uploading ${zipName} to Reactor...`);
+  const upload = spawnSync(
+    "pnpm",
+    [
+      "exec",
+      "reactor-uploader",
+      zipPath,
+      `--auth.client-id=${REACTOR_CLIENT_ID}`,
+      "--upload-timeout=300",
+    ],
+    { cwd: pkgDir, env: process.env, encoding: "utf8" },
+  );
+  process.stdout.write(upload.stdout ?? "");
+  process.stderr.write(upload.stderr ?? "");
+  if (upload.status !== 0) {
+    const output = `${upload.stdout ?? ""}${upload.stderr ?? ""}`;
+    if (isAlreadyReleasedError(output)) {
+      console.log(
+        `${name}@${version} is already released on Reactor; skipping.`,
+      );
+      process.exit(0);
+    }
+    process.exit(upload.status ?? 1);
+  }
+
+  console.log(`Releasing ${name}@${version}...`);
+  run("pnpm", [
+    "exec",
+    "reactor-releaser",
+    `--auth.client-id=${REACTOR_CLIENT_ID}`,
+    "--confirm-package-release",
+  ]);
 }
-
-console.log(`Uploading ${zipName} to Reactor...`);
-run("pnpm", [
-  "exec",
-  "reactor-uploader",
-  zipPath,
-  `--auth.client-id=${REACTOR_CLIENT_ID}`,
-  "--upload-timeout=300",
-]);
-
-console.log(`Releasing ${name}@${version}...`);
-run("pnpm", [
-  "exec",
-  "reactor-releaser",
-  `--auth.client-id=${REACTOR_CLIENT_ID}`,
-  "--confirm-package-release",
-]);
