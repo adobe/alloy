@@ -10,8 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { describe, expect, test } from "vitest";
-import { isAlreadyReleasedError } from "./release.mjs";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { spawnSync } from "child_process";
+import fs from "fs";
+
+vi.mock("child_process", () => ({ spawnSync: vi.fn() }));
+vi.mock("fs", () => ({
+  default: { readFileSync: vi.fn(), existsSync: vi.fn() },
+}));
+
+import { isAlreadyReleasedError, main } from "./release.mjs";
 
 // Captured verbatim from https://github.com/adobe/alloy/actions/runs/29958621025/job/89057883911
 const CAPTURED_ALREADY_RELEASED_OUTPUT = `No development extension package was found on the server with the name adobe-alloy. A new extension package will be created.
@@ -57,5 +65,117 @@ describe("isAlreadyReleasedError()", () => {
     const output =
       '{"errors":[{"code":"some-other-code","detail":"2.37.1.pre.beta.4 is older than latest version: 2.37.1.pre.beta.4"}]}';
     expect(isAlreadyReleasedError(output)).toBe(false);
+  });
+});
+
+const PACKAGE_JSON = JSON.stringify({
+  name: "reactor-extension-alloy",
+  version: "2.37.1-beta.4",
+});
+
+const ALREADY_RELEASED_OUTPUT =
+  '{"errors":[{"code":"invalid-version","detail":"2.37.1-beta.4 is older than latest version: 2.37.1-beta.4"}]}';
+
+const RELEASER_ARGS = expect.arrayContaining(["reactor-releaser"]);
+
+describe("main()", () => {
+  beforeEach(() => {
+    vi.mocked(fs.readFileSync).mockReturnValue(PACKAGE_JSON);
+    vi.mocked(fs.existsSync).mockReturnValue(true);
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    process.exitCode = undefined;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.mocked(spawnSync).mockReset();
+    process.exitCode = undefined;
+  });
+
+  // Only the "reactor-uploader" call is under test; the package build and
+  // reactor-releaser steps are unrelated to this fix, so they're stubbed to
+  // succeed unconditionally.
+  const mockUpload = (uploadResult) => {
+    vi.mocked(spawnSync).mockImplementation((cmd, args) =>
+      args.includes("reactor-uploader") ? uploadResult : { status: 0 },
+    );
+  };
+
+  test("skips reactor-releaser and leaves the exit code clean on an already-released upload", () => {
+    mockUpload({ status: 1, stdout: ALREADY_RELEASED_OUTPUT, stderr: "" });
+
+    main();
+
+    expect(spawnSync).not.toHaveBeenCalledWith(
+      "pnpm",
+      RELEASER_ARGS,
+      expect.anything(),
+    );
+    expect(process.exitCode).toBeUndefined();
+  });
+
+  test("sets a non-zero exit code and skips reactor-releaser on an unrelated upload failure", () => {
+    mockUpload({ status: 1, stdout: "", stderr: "boom" });
+
+    main();
+
+    expect(spawnSync).not.toHaveBeenCalledWith(
+      "pnpm",
+      RELEASER_ARGS,
+      expect.anything(),
+    );
+    expect(process.exitCode).toBe(1);
+  });
+
+  test("continues to reactor-releaser when the upload succeeds", () => {
+    mockUpload({ status: 0, stdout: "", stderr: "" });
+
+    main();
+
+    expect(spawnSync).toHaveBeenCalledWith(
+      "pnpm",
+      RELEASER_ARGS,
+      expect.anything(),
+    );
+    expect(process.exitCode).toBeUndefined();
+  });
+
+  test("treats a spawn error from the uploader as a failure even if its captured output looks like an already-released skip", () => {
+    mockUpload({
+      error: new Error("spawn pnpm ENOENT"),
+      status: null,
+      stdout: ALREADY_RELEASED_OUTPUT,
+      stderr: "",
+    });
+
+    main();
+
+    expect(spawnSync).not.toHaveBeenCalledWith(
+      "pnpm",
+      RELEASER_ARGS,
+      expect.anything(),
+    );
+    expect(process.exitCode).toBe(1);
+  });
+
+  test("treats a signal kill of the uploader as a failure even if its captured output looks like an already-released skip", () => {
+    mockUpload({
+      signal: "SIGTERM",
+      status: null,
+      stdout: ALREADY_RELEASED_OUTPUT,
+      stderr: "",
+    });
+
+    main();
+
+    expect(spawnSync).not.toHaveBeenCalledWith(
+      "pnpm",
+      RELEASER_ARGS,
+      expect.anything(),
+    );
+    expect(process.exitCode).toBe(1);
   });
 });

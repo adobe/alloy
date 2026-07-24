@@ -65,7 +65,7 @@ export const isAlreadyReleasedError = (output) => {
 const invokedAsCli =
   process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
 
-const main = () => {
+export const main = () => {
   const { name, version } = JSON.parse(
     fs.readFileSync(path.join(pkgDir, "package.json"), "utf8"),
   );
