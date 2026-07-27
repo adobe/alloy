@@ -38,24 +38,31 @@ const getEventFromCall = (call, eventType) => {
   });
 };
 
-const getCalls = (networkRecorder, eventType) => {
+const getCalls = (networkRecorder, eventType, requireResponse = true) => {
   return networkRecorder.calls.filter((call) => {
-    return call.request && call.response && getEventFromCall(call, eventType);
+    return (
+      call.request &&
+      (!requireResponse || call.response) &&
+      getEventFromCall(call, eventType)
+    );
   });
 };
 
 const waitForCalls = async (
   networkRecorder,
   eventType,
-  minCalls = 1,
-  retries = 10,
+  { minCalls = 1, retries = 10, requireResponse = true } = {},
 ) => {
-  const calls = getCalls(networkRecorder, eventType);
+  const calls = getCalls(networkRecorder, eventType, requireResponse);
   if (calls.length >= minCalls || retries === 0) {
     return calls;
   }
   await vi.advanceTimersByTimeAsync(100);
-  return waitForCalls(networkRecorder, eventType, minCalls, retries - 1);
+  return waitForCalls(networkRecorder, eventType, {
+    minCalls,
+    retries: retries - 1,
+    requireResponse,
+  });
 };
 
 const assertSessionStarted = async (networkRecorder, sessionId, playhead) => {
@@ -83,7 +90,9 @@ const assertEventIsSent = async (
   playhead,
   order = 0,
 ) => {
-  const calls = await waitForCalls(networkRecorder, eventType, order + 1);
+  const calls = await waitForCalls(networkRecorder, eventType, {
+    minCalls: order + 1,
+  });
   const call = calls[order];
   expect(call.request.url).toMatch(/\/va\//);
   expect(call.response.status).toBe(204);
@@ -97,7 +106,11 @@ const assertEventIsSent = async (
 };
 
 const assertPingSent = async (networkRecorder, sessionId) => {
-  const calls = await waitForCalls(networkRecorder, "media.ping");
+  // Ping has no awaited command, so its mocked response can lag under fake timers.
+  const calls = await waitForCalls(networkRecorder, "media.ping", {
+    requireResponse: false,
+  });
+  expect(calls.length).toBeGreaterThanOrEqual(1);
   expect(calls[0].request.url).toMatch(/\/va\//);
   const ping = getEventFromCall(calls[0], "media.ping");
   expect(ping.xdm.mediaCollection.sessionID).toBe(sessionId);
@@ -253,7 +266,7 @@ describe("MediaCollection", () => {
       }),
     );
     await vi.advanceTimersByTimeAsync(10_000);
-    expect(getCalls(networkRecorder, "media.ping")[2]).toBeUndefined();
+    expect(getCalls(networkRecorder, "media.ping", false)[2]).toBeUndefined();
   });
 
   test("MA2 - legacy component transforms events and controls automatic pings", async ({
@@ -357,7 +370,7 @@ describe("MediaCollection", () => {
     await assertPingSent(networkRecorder, sessionId);
     await advanceCommand(tracker.trackComplete());
     await vi.advanceTimersByTimeAsync(10_000);
-    expect(getCalls(networkRecorder, "media.ping")[2]).toBeUndefined();
+    expect(getCalls(networkRecorder, "media.ping", false)[2]).toBeUndefined();
   });
 
   test("MA3 - non-automatic mode sends events without automatic pings", async ({
@@ -404,6 +417,6 @@ describe("MediaCollection", () => {
     );
 
     await vi.advanceTimersByTimeAsync(10_000);
-    expect(getCalls(networkRecorder, "media.ping")[0]).toBeUndefined();
+    expect(getCalls(networkRecorder, "media.ping", false)[0]).toBeUndefined();
   });
 });
