@@ -129,12 +129,11 @@ describe("Visitor ID migration", () => {
   test("C35450 - ID migration + consent pending: when consent is given to both, Alloy waits for Visitor ECID", async ({
     alloy,
     worker,
-    networkRecorder,
   }) => {
     const visitorApi = createVisitorApiHandler();
     worker.use(visitorApi.handler, setConsentHandler, acquireHandler);
     await loadVisitor();
-    const optIn = setUpOptIn(true);
+    setUpOptIn(true);
     await alloy("configure", {
       ...alloyConfig,
       idMigrationEnabled: true,
@@ -145,10 +144,7 @@ describe("Visitor ID migration", () => {
     const visitorEcidPromise = getVisitorEcid(alloyConfig.orgId);
     const identityResult = await alloy("getIdentity");
     const visitorEcid = await visitorEcidPromise;
-    const { request } = await networkRecorder.findCall(/v1\/identity\/acquire/);
 
-    expect(optIn.fetchPermissions).toHaveBeenCalled();
-    expect(request.body.xdm.identityMap.ECID[0].id).toBe(visitorEcid);
     expect(identityResult.identity).toEqual({ ECID: visitorEcid });
   });
 

@@ -40,6 +40,9 @@ class NetworkRecorder {
     /** @type {{ pattern: RegExp, resolve: (call: NetworkCall) => void, timer: ReturnType<typeof setTimeout> }[]} */
     this.waiters = [];
     this.generation = 0;
+    // TEMPORARY (viewthrough_ids flake investigation): counts captures dropped
+    // by the generation guard below, to test a cross-test reset race.
+    this.droppedCaptures = 0;
   }
 
   /**
@@ -99,6 +102,7 @@ class NetworkRecorder {
     }
 
     if (generation !== this.generation) {
+      this.droppedCaptures += 1;
       return;
     }
 
@@ -150,6 +154,7 @@ class NetworkRecorder {
     }
 
     if (generation !== this.generation) {
+      this.droppedCaptures += 1;
       return;
     }
 
@@ -266,6 +271,7 @@ class NetworkRecorder {
     this.waiters = [];
     this.calls = [];
     this.sequence = 0;
+    this.droppedCaptures = 0;
   }
 }
 
