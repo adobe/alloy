@@ -244,6 +244,7 @@ export const setConsentHandler = http.post(
     ) {
       const body = await req.request.json().catch(() => ({}));
       const consentOptions = body?.consent ?? [];
+      const migratedEcid = body?.identityMap?.ECID?.[0]?.id;
 
       const IAB_OUT_STRINGS = [
         "CO052oTO052oTDGAMBFRACBgAABAAAAAAIYgEawAQEagAAAA", // no Purpose 1
@@ -286,7 +287,7 @@ export const setConsentHandler = http.post(
             type: "identity:result",
             payload: [
               {
-                id: "41861666193140161934276845651148876988",
+                id: migratedEcid || "41861666193140161934276845651148876988",
                 namespace: {
                   code: "ECID",
                 },
