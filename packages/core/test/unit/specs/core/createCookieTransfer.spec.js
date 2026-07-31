@@ -62,7 +62,7 @@ describe("createCookieTransfer", () => {
     });
     it("includes extra cookies even when endpoint is first-party", () => {
       build();
-      cookieJar.get.mockReturnValue({ munchkin: "abc123" });
+      cookieJar.getAll.mockReturnValue({ munchkin: "abc123" });
       cookieTransfer.cookiesToPayload(payload, "edge.example.com", [
         "munchkin",
       ]);
@@ -74,7 +74,7 @@ describe("createCookieTransfer", () => {
     });
     it("includes extra cookies alongside qualifying cookies for third-party endpoints", () => {
       build();
-      cookieJar.get.mockReturnValue({
+      cookieJar.getAll.mockReturnValue({
         kndctr_ABC_CustomOrg_identity: "XYZ@CustomOrg",
         munchkin: "abc123",
       });
@@ -90,7 +90,7 @@ describe("createCookieTransfer", () => {
       });
     });
     it("skips extra cookies that are not present in the cookie jar", () => {
-      cookieJar.get.mockReturnValue({});
+      cookieJar.getAll.mockReturnValue({});
       build();
       cookieTransfer.cookiesToPayload(payload, endpointDomain, ["munchkin"]);
       expect(payload.mergeState).toHaveBeenCalledWith({

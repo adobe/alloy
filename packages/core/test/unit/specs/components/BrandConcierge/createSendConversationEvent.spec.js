@@ -311,7 +311,7 @@ describe("createSendConversationEvent", () => {
       mockResponse,
     );
 
-    for (const stickyConversationSession of [true, false]) {
+    const runWithConfig = async (stickyConversationSession) => {
       mockDependencies.cookieTransfer.cookiesToPayload.mockClear();
       mockDependencies.config.conversation = {
         ...mockDependencies.config.conversation,
@@ -332,7 +332,10 @@ describe("createSendConversationEvent", () => {
         mockDependencies.config.edgeDomain,
         mockDependencies.alwaysTransferCookies,
       );
-    }
+    };
+
+    await runWithConfig(true);
+    await runWithConfig(false);
   });
 
   it("handles stream timeout when no data is received within 10 seconds", async () => {

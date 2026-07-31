@@ -40,7 +40,7 @@ export default ({
       // to the payload since they'll be automatically passed through cookie
       // headers.
       if (!isEndpointFirstParty || isNonEmptyArray(extraCookieNames)) {
-        const cookies = cookieJar.get();
+        const cookies = cookieJar.getAll();
         const entries = [];
         if (!isEndpointFirstParty) {
           Object.keys(cookies)

@@ -104,7 +104,11 @@ export default ({
         }
 
         payload.addEvent(event);
-        cookieTransfer.cookiesToPayload(payload, edgeDomain, alwaysTransferCookies);
+        cookieTransfer.cookiesToPayload(
+          payload,
+          edgeDomain,
+          alwaysTransferCookies,
+        );
         return sendConversationServiceRequest({
           requestId: uuid(),
           url,
