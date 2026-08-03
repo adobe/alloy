@@ -234,6 +234,18 @@ export default defineConfig([
     },
   },
   {
+    name: "alloy/node-globals",
+    files: [
+      "packages/node/src/**/*.{cjs,js}",
+      "packages/node/test/**/*.{cjs,js}",
+    ],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+  {
     name: "alloy/core-src",
     files: ["packages/*/src/**/*.{cjs,js}"],
     rules: {
@@ -409,6 +421,12 @@ export default defineConfig([
     },
     rules: {
       "no-console": "off",
+      "import/extensions": [
+        "error",
+        {
+          js: "always",
+        },
+      ],
     },
   },
   {

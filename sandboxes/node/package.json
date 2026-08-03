@@ -8,7 +8,11 @@
     "node": ">=18"
   },
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/sendEvent.js",
+    "configure": "node src/configure.js",
+    "send-event": "node src/sendEvent.js",
+    "get-library-info": "node src/getLibraryInfo.js",
+    "for-request": "node src/forRequest.js"
   },
   "dependencies": {
     "@adobe/alloy-node": "workspace:*"
