@@ -40,7 +40,6 @@ const runTest = async () => {
   await t
     .expect(Array.isArray(response.propositions))
     .ok("response.propositions is not an array");
-  response = null;
   await collectEndpointAsserter.reset();
 
   // check that collect calls return propositions.
@@ -52,7 +51,6 @@ const runTest = async () => {
   await t
     .expect(Array.isArray(response.propositions))
     .ok("response.propositions is not an array");
-  response = null;
   await collectEndpointAsserter.reset();
 };
 

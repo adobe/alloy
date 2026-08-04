@@ -19,19 +19,51 @@ class NetworkRecorder {
    * @property {Object} [request]
    * @property {string} request.url
    * @property {string} request.method
+   * @property {string} request.referrer
    * @property {Record<string, string>} request.headers
    * @property {number} request.timestamp
+   * @property {number} request.sequence
    * @property {Object} [response]
    * @property {number} response.status
    * @property {string} response.statusText
    * @property {Record<string, string>} response.headers
    * @property {number} response.timestamp
+   * @property {number} response.sequence
    * @property {string | Object} response.body
    */
 
   constructor() {
     /** @type {NetworkCall[]} */
     this.calls = [];
+    // counter to assert request/response sequence order
+    this.sequence = 0;
+    /** @type {{ pattern: RegExp, resolve: (call: NetworkCall) => void, timer: ReturnType<typeof setTimeout> }[]} */
+    this.waiters = [];
+    this.generation = 0;
+    // TEMPORARY (viewthrough_ids flake investigation): counts captures dropped
+    // by the generation guard below, to test a cross-test reset race.
+    this.droppedCaptures = 0;
+  }
+
+  /**
+   * Resolves any pending waitForCall promises whose pattern matches a call that
+   * now has both a request and a response. Called from both capture methods so
+   * resolution does not depend on which of request:start / response:* settles
+   * last.
+   * @param {NetworkCall} call
+   */
+  notifyWaiters(call) {
+    if (!call.request || !call.response) {
+      return;
+    }
+    this.waiters = this.waiters.filter((waiter) => {
+      if (waiter.pattern.test(call.request.url)) {
+        clearTimeout(waiter.timer);
+        waiter.resolve(call);
+        return false;
+      }
+      return true;
+    });
   }
 
   /**
@@ -41,6 +73,10 @@ class NetworkRecorder {
    * @param {string} options.requestId - Unique identifier for the request
    */
   async captureRequest({ request, requestId }) {
+    // Stamp before any await so it reflects the request:start emission order.
+    const sequence = this.sequence++;
+
+    const generation = this.generation;
     let call = this.calls.find((c) => c.requestId === requestId);
 
     if (!call) {
@@ -65,13 +101,22 @@ class NetworkRecorder {
       body = `Unable to read body: ${e.message}`;
     }
 
+    if (generation !== this.generation) {
+      this.droppedCaptures += 1;
+      return;
+    }
+
     call.request = {
       url: request.url,
       method: request.method,
+      referrer: request.referrer,
       headers: Object.fromEntries(request.headers.entries()),
       timestamp: Date.now(),
+      sequence,
       body,
     };
+
+    this.notifyWaiters(call);
   }
 
   /**
@@ -81,11 +126,14 @@ class NetworkRecorder {
    * @param {Response} options.response - The response object
    */
   async captureResponse({ requestId, response }) {
+    const generation = this.generation;
     const call = this.calls.find((c) => c.requestId === requestId);
 
     if (!call) {
       return;
     }
+
+    const sequence = this.sequence++;
 
     // Clone the response to be able to read the body
     const responseClone = response.clone();
@@ -105,13 +153,21 @@ class NetworkRecorder {
       body = `Unable to read body: ${e.message}`;
     }
 
+    if (generation !== this.generation) {
+      this.droppedCaptures += 1;
+      return;
+    }
+
     call.response = {
       status: response.status,
       statusText: response.statusText,
       headers: Object.fromEntries(response.headers.entries()),
       body,
       timestamp: Date.now(),
+      sequence,
     };
+
+    this.notifyWaiters(call);
   }
 
   /**
@@ -172,8 +228,50 @@ class NetworkRecorder {
     return calls.length > 0 ? calls[0] : undefined;
   }
 
+  /**
+   * Resolves with the first complete call matching the pattern. Unlike findCall,
+   * this is event-driven: if no match exists yet it resolves the moment a
+   * matching response is captured, rather than retry-polling. This is the right
+   * tool for fire-and-forget requests (e.g. link clicks) where the triggering
+   * call does not return a promise to await. Resolves with undefined if no match
+   * arrives within timeoutMs, so callers can assert presence with toBeDefined().
+   * @param {RegExp|string} pattern
+   * @param {Object} [options]
+   * @param {number} [options.timeoutMs=5000]
+   * @returns {Promise<NetworkCall | undefined>}
+   */
+  waitForCall(pattern, { timeoutMs = 5000 } = {}) {
+    if (typeof pattern === "string") {
+      pattern = new RegExp(`/${pattern}/`, "i");
+    }
+
+    const existing = this.calls.find(
+      (call) => call.request && call.response && pattern.test(call.request.url),
+    );
+    if (existing) {
+      return Promise.resolve(existing);
+    }
+
+    return new Promise((resolve) => {
+      const waiter = { pattern, resolve, timer: undefined };
+      waiter.timer = setTimeout(() => {
+        this.waiters = this.waiters.filter((w) => w !== waiter);
+        resolve(undefined);
+      }, timeoutMs);
+      this.waiters.push(waiter);
+    });
+  }
+
   reset() {
+    this.generation += 1;
+    this.waiters.forEach((waiter) => {
+      clearTimeout(waiter.timer);
+      waiter.resolve(undefined);
+    });
+    this.waiters = [];
     this.calls = [];
+    this.sequence = 0;
+    this.droppedCaptures = 0;
   }
 }
 

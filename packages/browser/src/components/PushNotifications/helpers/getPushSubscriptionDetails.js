@@ -46,8 +46,7 @@ const getPushSubscriptionDetails = async ({ vapidPublicKey, window }) => {
     throw new Error("Push notifications are not supported in this browser.");
   }
 
-  /** @type {object} */
-  const notification = window.Notification;
+  const notification = /** @type {typeof Notification} */ (window.Notification);
   if (notification.permission !== "granted") {
     throw new Error(
       "The user has not given permission to send push notifications.",
@@ -92,15 +91,18 @@ const getPushSubscriptionDetails = async ({ vapidPublicKey, window }) => {
         subscriptionOptions,
       );
 
+    const p256dhKey = subscription.getKey("p256dh");
+    const authKey = subscription.getKey("auth");
+
     return {
       endpoint: subscription.endpoint,
       keys: {
-        p256dh: bytesToBase64(new Uint8Array(subscription.getKey("p256dh")), {
-          urlSafe: true,
-        }),
-        auth: bytesToBase64(new Uint8Array(subscription.getKey("auth")), {
-          urlSafe: true,
-        }),
+        p256dh: p256dhKey
+          ? bytesToBase64(new Uint8Array(p256dhKey), { urlSafe: true })
+          : null,
+        auth: authKey
+          ? bytesToBase64(new Uint8Array(authKey), { urlSafe: true })
+          : null,
       },
     };
   } catch (e) {

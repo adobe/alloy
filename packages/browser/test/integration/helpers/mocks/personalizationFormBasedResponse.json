@@ -1,0 +1,99 @@
+{
+  "requestId": "pers-form-based-001-requestid",
+  "handle": [
+    {
+      "payload": [
+        {
+          "id": "56475161841051406291527557158775615545",
+          "namespace": {
+            "code": "ECID"
+          }
+        }
+      ],
+      "type": "identity:result"
+    },
+    {
+      "payload": [
+        {
+          "id": "AT:eyJhY3Rpdml0eUlkIjoiMTI2NDg2IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
+          "scope": "__view__",
+          "scopeDetails": {
+            "decisionProvider": "TGT",
+            "activity": {
+              "id": "126486"
+            },
+            "experience": {
+              "id": "0"
+            },
+            "characteristics": {
+              "eventToken": "page-wide-event-token"
+            },
+            "correlationID": "126486:0:0"
+          },
+          "items": [
+            {
+              "id": "0",
+              "schema": "https://ns.adobe.com/personalization/default-content-item",
+              "meta": {}
+            }
+          ]
+        },
+        {
+          "id": "AT:eyJhY3Rpdml0eUlkIjoiMTI2NDg2IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
+          "scope": "alloy-test-scope-1",
+          "scopeDetails": {
+            "decisionProvider": "TGT",
+            "activity": {
+              "id": "126486"
+            },
+            "experience": {
+              "id": "0"
+            },
+            "characteristics": {
+              "eventToken": "form-based-event-token"
+            },
+            "correlationID": "126486:0:0"
+          },
+          "items": [
+            {
+              "id": "126486-item",
+              "schema": "https://ns.adobe.com/personalization/html-content-item",
+              "data": {
+                "content": "<h3>welcome to TARGET AWESOME WORLD!!! </h3>",
+                "format": "text/html",
+                "id": "126486-item"
+              }
+            }
+          ]
+        }
+      ],
+      "type": "personalization:decisions",
+      "eventIndex": 0
+    },
+    {
+      "payload": [
+        {
+          "scope": "Target",
+          "hint": "35",
+          "ttlSeconds": 1800
+        },
+        {
+          "scope": "EdgeNetwork",
+          "hint": "or2",
+          "ttlSeconds": 1800
+        }
+      ],
+      "type": "locationHint:result"
+    },
+    {
+      "payload": [
+        {
+          "key": "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_cluster",
+          "value": "or2",
+          "maxAge": 1800
+        }
+      ],
+      "type": "state:store"
+    }
+  ]
+}

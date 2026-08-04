@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { Storage } from '@adobe/alloy-core/utils/types.js' */
+/** @import { Storage } from '@adobe/alloy-core/services' */
 /** @import { EventManager, Logger } from '@adobe/alloy-core/core/types.js' */
 /** @import { IdentityManager } from '@adobe/alloy-core/core/identity/types.js' */
 /** @import { ConsentManager } from '@adobe/alloy-core/core/consent/types.js' */
@@ -42,6 +42,7 @@ const SUBSCRIPTION_DETAILS = "subscriptionDetails";
  * @param {EdgeRequestExecutor} options.sendEdgeNetworkRequest
  * @param {ConsentManager} options.consent
  * @param {Window} options.window
+ * @param {typeof getPushSubscriptionDetailsDefault} [options.getPushSubscriptionDetails]
  *
  * @returns {Promise<void>}
  */
@@ -59,6 +60,14 @@ export default async ({
   await identity.awaitIdentity();
   const ecid = identity.getEcidFromCookie();
 
+  if (!ecid) {
+    logger.info(
+      "No ECID is available. Not sending push subscription details to the server.",
+    );
+
+    return;
+  }
+
   const pushSubscriptionDetails = await getPushSubscriptionDetails({
     vapidPublicKey,
     window,
@@ -69,16 +78,15 @@ export default async ({
   );
 
   const cacheValue = `${ecid}${serializedPushSubscriptionDetails}`;
+  const storedValue = await storage.getItem(SUBSCRIPTION_DETAILS);
 
-  if (cacheValue === storage.getItem(SUBSCRIPTION_DETAILS)) {
+  if (storedValue && cacheValue === storedValue) {
     logger.info(
       "Subscription details have not changed. Not sending to the server.",
     );
 
     return;
   }
-
-  storage.setItem(SUBSCRIPTION_DETAILS, cacheValue);
 
   const payload = await createSendPushSubscriptionPayload({
     eventManager,
@@ -94,5 +102,13 @@ export default async ({
   await consent.awaitConsent();
   await sendEdgeNetworkRequest({ request });
 
-  await saveToIndexedDb({ ecid }, logger);
+  const savedToIndexedDb = await saveToIndexedDb({ ecid }, logger);
+
+  // Only cache the subscription details once the ECID has been persisted, so
+  // that a failed send or a failed IndexedDB write does not short-circuit the
+  // dedupe check on the next call. This lets a subsequent sendPushSubscription
+  // self-heal instead of getting stuck with a cached subscription but no ECID.
+  if (savedToIndexedDb) {
+    storage.setItem(SUBSCRIPTION_DETAILS, cacheValue);
+  }
 };

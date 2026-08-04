@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 /**
  * Takes a base64 string of bytes and returns a Uint8Array.
  * @param {string} base64String
- * @returns {Uint8Array}
+ * @returns {Uint8Array<ArrayBuffer>}
  */
 export const base64ToBytes = (base64String) => {
   // Add padding if needed
@@ -23,7 +23,7 @@ export const base64ToBytes = (base64String) => {
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
 
   const binString = atob(base64);
-  return Uint8Array.from(binString, (m) => m.codePointAt(0));
+  return Uint8Array.from(binString, (m) => m.codePointAt(0) ?? 0);
 };
 
 /**

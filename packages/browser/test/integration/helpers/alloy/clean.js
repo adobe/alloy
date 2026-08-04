@@ -10,7 +10,14 @@ governing permissions and limitations under the License.
 */
 
 export default () => {
+  if (window.__alloyClickListeners) {
+    window.__alloyClickListeners.forEach(({ handler, rest }) => {
+      document.removeEventListener("click", handler, ...rest);
+    });
+    window.__alloyClickListeners = [];
+  }
   delete window.__alloyMonitors;
+  delete window.___getLinkDetails;
   delete window.__alloyNS;
   delete window.alloy;
 };

@@ -58,7 +58,6 @@ export default ({ makeSendServiceWorkerTrackingData, sw, logger }) => {
     }
 
     makeSendServiceWorkerTrackingData({
-      // eslint-disable-next-line no-underscore-dangle
       xdm: data._xdm.mixins,
       actionLabel,
       applicationLaunches: 1,

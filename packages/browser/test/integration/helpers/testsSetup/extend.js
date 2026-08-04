@@ -17,13 +17,15 @@ import { networkRecorder } from "../mswjs/networkRecorder.js";
 import setupAlloy from "../alloy/setup.js";
 import setupBaseCode from "../alloy/setupBaseCode.js";
 import cleanAlloy from "../alloy/clean.js";
+import { cleanupDom } from "../utils/domHelpers.js";
+import { resetSendBeaconCalls } from "../utils/sendBeacon.js";
 
 const worker = createWorker();
 
 let workerStarted = false;
 
 // Extend the test with MSW worker
-export const test = baseTest.extend({
+export const testWithoutAlloy = baseTest.extend({
   worker: [
     async ({}, use) => {
       if (!workerStarted) {
@@ -51,16 +53,27 @@ export const test = baseTest.extend({
     },
     { auto: true }, // Apply to all tests even if not explicitly using networkRecorder
   ],
+});
 
+export const test = testWithoutAlloy.extend({
   alloy: [
     async ({}, use) => {
+      // Clear all cookies for a clean slate before each test, so individual
+      // tests don't leak identity/consent state into subsequent tests.
+      const cookies = await cookieStore.getAll();
+      await Promise.all(
+        cookies.map((c) => cookieStore.delete({ name: c.name, path: c.path })),
+      );
+
       await setupBaseCode();
       const alloy = await setupAlloy();
+      resetSendBeaconCalls();
 
       // Make alloy available in the test context
       await use(alloy);
 
       cleanAlloy();
+      cleanupDom();
     },
     { auto: true }, // Apply to all tests even if not explicitly using alloy
   ],

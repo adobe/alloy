@@ -75,7 +75,7 @@ export default async ({
 
   return {
     results: parsedResponse.parsedBody.results,
-    // eslint-disable-next-line no-underscore-dangle
+
     nextPage: parsedResponse.parsedBody._page.next,
   };
 };

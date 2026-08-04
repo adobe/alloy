@@ -45,10 +45,8 @@ export const browserTestProjects = [
     extends: false,
     test: {
       name: "browser/unit",
-      include: [
-        "packages/browser/test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)",
-      ],
-      isolate: false,
+      include: ["packages/browser/test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
+      isolate: true,
       browser: createBrowserMode(),
       coverage: packageCoverage,
     },
@@ -61,6 +59,7 @@ export const browserTestProjects = [
         "packages/browser/test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)",
       ],
       isolate: false,
+      restoreMocks: true,
       browser: createBrowserMode(),
       coverage: packageCoverage,
     },

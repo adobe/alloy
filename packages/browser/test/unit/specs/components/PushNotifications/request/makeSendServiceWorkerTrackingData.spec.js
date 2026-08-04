@@ -10,8 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/* eslint-disable no-underscore-dangle */
-
 import { vi, beforeEach, describe, it, expect } from "vitest";
 
 import { createMakeSendServiceWorkerTrackingData } from "../../../../../../src/components/PushNotifications/request/makeSendServiceWorkerTrackingData.js";

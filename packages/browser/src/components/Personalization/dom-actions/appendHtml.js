@@ -18,7 +18,7 @@ import {
   executeInlineScripts,
   executeRemoteScripts,
   getInlineScripts,
-  getRemoteScriptsUrls,
+  getRemoteScripts,
 } from "./scripts.js";
 
 export default (container, html, decorateProposition) => {
@@ -26,7 +26,7 @@ export default (container, html, decorateProposition) => {
   addNonceToInlineStyleElements(fragment);
   const elements = getChildNodes(fragment);
   const scripts = getInlineScripts(fragment);
-  const scriptsUrls = getRemoteScriptsUrls(fragment);
+  const remoteScripts = getRemoteScripts(fragment);
 
   loadImages(fragment);
 
@@ -38,5 +38,5 @@ export default (container, html, decorateProposition) => {
 
   executeInlineScripts(container, scripts);
 
-  return executeRemoteScripts(scriptsUrls);
+  return executeRemoteScripts(remoteScripts);
 };

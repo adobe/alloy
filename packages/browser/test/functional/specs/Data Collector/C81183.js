@@ -48,7 +48,7 @@ const addLinksToBody = () => {
 
 const getLinkDetails = ClientFunction((selector) => {
   const linkElement = document.getElementById(selector);
-  // eslint-disable-next-line no-underscore-dangle
+
   const result = window.___getLinkDetails(linkElement);
   if (!result) {
     return result;

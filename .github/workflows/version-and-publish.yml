@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       proceed: ${{ steps.check.outputs.proceed }}
+      environment: ${{ steps.check.outputs.environment }}
     steps:
       - uses: actions/checkout@v5
       - id: check
@@ -31,11 +32,20 @@ jobs:
             echo "proceed=false" >> "$GITHUB_OUTPUT"
           fi
 
+          # Route by changesets prerelease mode (the signal exit-prerelease.yml
+          # guards on, so both workflows agree). "pre" => beta channel; exiting
+          # or absent => stable. Emit the target environment name so `publish`
+          # references it verbatim with no branching in the workflow.
+          case "$(jq -r '.mode // "none"' .changeset/pre.json 2>/dev/null)" in
+            pre) echo "environment=Beta" >> "$GITHUB_OUTPUT" ;;
+            *)   echo "environment=Production" >> "$GITHUB_OUTPUT" ;;
+          esac
+
   publish:
     needs: detect
     if: needs.detect.outputs.proceed == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    environment: Production
+    environment: ${{ needs.detect.outputs.environment }}
     permissions:
       contents: write
       pull-requests: read

@@ -19,6 +19,7 @@ describe("serviceWorkerPushListener", () => {
   let mockEvent;
   let mockLogger;
   let mockShowNotification;
+  let mockReadFromIndexedDb;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -32,6 +33,7 @@ describe("serviceWorkerPushListener", () => {
     };
 
     mockLogger = {
+      info: vi.fn(),
       error: vi.fn(),
     };
 
@@ -40,6 +42,8 @@ describe("serviceWorkerPushListener", () => {
         json: vi.fn(),
       },
     };
+
+    mockReadFromIndexedDb = vi.fn().mockResolvedValue({ ecid: "STORED_ECID" });
   });
 
   describe("early returns", () => {
@@ -399,6 +403,190 @@ describe("serviceWorkerPushListener", () => {
         data: notificationData.web,
         actions: [{ action: "action_0", title: "Action" }],
       });
+    });
+  });
+
+  describe("ECID identity check", () => {
+    it("shows notification when there is no identity in the payload", async () => {
+      const notificationData = {
+        web: {
+          title: "Test Title",
+        },
+      };
+      mockEvent.data.json.mockReturnValue(notificationData);
+
+      await serviceWorkerPushListener({
+        sw: mockSw,
+        event: mockEvent,
+        logger: mockLogger,
+        readFromIndexedDb: mockReadFromIndexedDb,
+      });
+
+      expect(mockReadFromIndexedDb).not.toHaveBeenCalled();
+      expect(mockShowNotification).toHaveBeenCalledWith("Test Title", {
+        data: notificationData.web,
+        actions: [],
+      });
+    });
+
+    it("shows notification when the identity namespace is not ECID", async () => {
+      const notificationData = {
+        web: {
+          title: "Test Title",
+          identity: {
+            id: "SOME_ID",
+            namespace: "CRMID",
+          },
+        },
+      };
+      mockEvent.data.json.mockReturnValue(notificationData);
+
+      await serviceWorkerPushListener({
+        sw: mockSw,
+        event: mockEvent,
+        logger: mockLogger,
+        readFromIndexedDb: mockReadFromIndexedDb,
+      });
+
+      expect(mockReadFromIndexedDb).not.toHaveBeenCalled();
+      expect(mockShowNotification).toHaveBeenCalledWith("Test Title", {
+        data: notificationData.web,
+        actions: [],
+      });
+    });
+
+    it("shows notification when the ECID matches the stored ECID", async () => {
+      const notificationData = {
+        web: {
+          title: "Test Title",
+          body: "Test body",
+          identity: {
+            id: "STORED_ECID",
+            namespace: "ECID",
+          },
+        },
+      };
+      mockEvent.data.json.mockReturnValue(notificationData);
+
+      await serviceWorkerPushListener({
+        sw: mockSw,
+        event: mockEvent,
+        logger: mockLogger,
+        readFromIndexedDb: mockReadFromIndexedDb,
+      });
+
+      expect(mockReadFromIndexedDb).toHaveBeenCalledWith(mockLogger);
+      expect(mockShowNotification).toHaveBeenCalledWith("Test Title", {
+        body: "Test body",
+        data: notificationData.web,
+        actions: [],
+      });
+    });
+
+    it("matches the ECID namespace case-insensitively", async () => {
+      const notificationData = {
+        web: {
+          title: "Test Title",
+          identity: {
+            id: "STORED_ECID",
+            namespace: "ecid",
+          },
+        },
+      };
+      mockEvent.data.json.mockReturnValue(notificationData);
+
+      await serviceWorkerPushListener({
+        sw: mockSw,
+        event: mockEvent,
+        logger: mockLogger,
+        readFromIndexedDb: mockReadFromIndexedDb,
+      });
+
+      expect(mockReadFromIndexedDb).toHaveBeenCalledWith(mockLogger);
+      expect(mockShowNotification).toHaveBeenCalledWith("Test Title", {
+        data: notificationData.web,
+        actions: [],
+      });
+    });
+
+    it("suppresses notification when the ECID does not match the stored ECID", async () => {
+      const notificationData = {
+        web: {
+          title: "Test Title",
+          identity: {
+            id: "DIFFERENT_ECID",
+            namespace: "ECID",
+          },
+        },
+      };
+      mockEvent.data.json.mockReturnValue(notificationData);
+
+      const result = await serviceWorkerPushListener({
+        sw: mockSw,
+        event: mockEvent,
+        logger: mockLogger,
+        readFromIndexedDb: mockReadFromIndexedDb,
+      });
+
+      expect(result).toBeUndefined();
+      expect(mockReadFromIndexedDb).toHaveBeenCalledWith(mockLogger);
+      expect(mockShowNotification).not.toHaveBeenCalled();
+    });
+
+    it("shows notification when reading the stored ECID throws", async () => {
+      const readError = new Error("IndexedDB read failed");
+      mockReadFromIndexedDb.mockRejectedValue(readError);
+
+      const notificationData = {
+        web: {
+          title: "Test Title",
+          identity: {
+            id: "SOME_ECID",
+            namespace: "ECID",
+          },
+        },
+      };
+      mockEvent.data.json.mockReturnValue(notificationData);
+
+      await serviceWorkerPushListener({
+        sw: mockSw,
+        event: mockEvent,
+        logger: mockLogger,
+        readFromIndexedDb: mockReadFromIndexedDb,
+      });
+
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        expect.stringContaining("Unable to read the stored ECID"),
+      );
+      expect(mockShowNotification).toHaveBeenCalledWith("Test Title", {
+        data: notificationData.web,
+        actions: [],
+      });
+    });
+
+    it("suppresses notification when no ECID is stored for this browser", async () => {
+      mockReadFromIndexedDb.mockResolvedValue(undefined);
+
+      const notificationData = {
+        web: {
+          title: "Test Title",
+          identity: {
+            id: "SOME_ECID",
+            namespace: "ECID",
+          },
+        },
+      };
+      mockEvent.data.json.mockReturnValue(notificationData);
+
+      const result = await serviceWorkerPushListener({
+        sw: mockSw,
+        event: mockEvent,
+        logger: mockLogger,
+        readFromIndexedDb: mockReadFromIndexedDb,
+      });
+
+      expect(result).toBeUndefined();
+      expect(mockShowNotification).not.toHaveBeenCalled();
     });
   });
 });

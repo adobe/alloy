@@ -17,6 +17,7 @@ describe("AJO In-App Messages", () => {
   test("are rendered correctly and with the correct styles applied", async ({
     worker,
     alloy,
+    networkRecorder,
   }) => {
     worker.use(inAppMessageHandler);
 
@@ -35,6 +36,19 @@ describe("AJO In-App Messages", () => {
     await expect.element(messageContainerLocator).toBeInTheDocument();
 
     expect(messageContainerLocator.style.width).toBe("55%");
+
+    const calls = await networkRecorder.findCalls(/v1\/interact/, {
+      retries: 30,
+      delayMs: 100,
+      minCalls: 2,
+    });
+    expect(
+      calls.some(
+        (call) =>
+          call.request.body?.events?.[0]?.xdm?.eventType ===
+          "decisioning.propositionDisplay",
+      ),
+    ).toBe(true);
 
     document.body.removeChild(messageContainerLocator);
     document.body.removeChild(

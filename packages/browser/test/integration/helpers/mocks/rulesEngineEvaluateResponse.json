@@ -1,0 +1,137 @@
+{
+  "requestId": "rules-engine-evaluate-test-fixture",
+  "handle": [
+    {
+      "payload": [
+        {
+          "id": "rules-engine-evaluate-payload",
+          "scope": "web://testing.alloy.adobe.com/",
+          "scopeDetails": {
+            "decisionProvider": "AJO",
+            "correlationID": "rules-engine-evaluate-correlation",
+            "characteristics": {
+              "eventToken": "rules-engine-evaluate-token"
+            },
+            "rank": 1,
+            "activity": {
+              "id": "rules-engine-evaluate-activity",
+              "priority": 0,
+              "matchedSurfaces": ["web://testing.alloy.adobe.com/"]
+            }
+          },
+          "items": [
+            {
+              "id": "rules-engine-evaluate-item",
+              "schema": "https://ns.adobe.com/personalization/ruleset-item",
+              "data": {
+                "version": 1,
+                "rules": [
+                  {
+                    "condition": {
+                      "definition": {
+                        "conditions": [
+                          {
+                            "definition": {
+                              "key": "~type",
+                              "matcher": "eq",
+                              "values": ["com.adobe.eventType.rulesEngine"]
+                            },
+                            "type": "matcher"
+                          }
+                        ],
+                        "logic": "and"
+                      },
+                      "type": "group"
+                    },
+                    "consequences": [
+                      {
+                        "id": "rules-engine-evaluate-consequence",
+                        "type": "schema",
+                        "detail": {
+                          "id": "rules-engine-evaluate-consequence",
+                          "schema": "https://ns.adobe.com/personalization/message/in-app",
+                          "data": {
+                            "content": "<!doctype html><html><body><div>Rules Engine Test</div></body></html>",
+                            "contentType": "text/html",
+                            "mobileParameters": {
+                              "verticalAlign": "center",
+                              "dismissAnimation": "bottom",
+                              "verticalInset": 0,
+                              "backdropOpacity": 0.2,
+                              "cornerRadius": 15,
+                              "gestures": {},
+                              "horizontalInset": 0,
+                              "uiTakeover": true,
+                              "horizontalAlign": "center",
+                              "width": 55,
+                              "displayAnimation": "bottom",
+                              "backdropColor": "#000000",
+                              "height": 55
+                            },
+                            "webParameters": {
+                              "alloy-content-iframe": {
+                                "style": {
+                                  "border": "none",
+                                  "height": "100%",
+                                  "width": "100%"
+                                },
+                                "params": {
+                                  "enabled": true,
+                                  "insertionMethod": "appendChild",
+                                  "parentElement": "#alloy-messaging-container"
+                                }
+                              },
+                              "alloy-messaging-container": {
+                                "style": {
+                                  "backgroundColor": "#000000",
+                                  "border": "none",
+                                  "borderRadius": "15px",
+                                  "height": "55vh",
+                                  "overflow": "hidden",
+                                  "position": "fixed",
+                                  "width": "55%",
+                                  "left": "50%",
+                                  "transform": "translateX(-50%) translateY(-50%)",
+                                  "top": "50%"
+                                },
+                                "params": {
+                                  "enabled": true,
+                                  "insertionMethod": "appendChild",
+                                  "parentElement": "body"
+                                }
+                              },
+                              "alloy-overlay-container": {
+                                "style": {
+                                  "position": "fixed",
+                                  "top": "0",
+                                  "left": "0",
+                                  "width": "100%",
+                                  "height": "100%",
+                                  "background": "transparent",
+                                  "opacity": 0.2,
+                                  "backgroundColor": "#000000"
+                                },
+                                "params": {
+                                  "enabled": true,
+                                  "insertionMethod": "appendChild",
+                                  "parentElement": "body"
+                                }
+                              }
+                            },
+                            "publishedDate": 1746806494
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "type": "personalization:decisions",
+      "eventIndex": 0
+    }
+  ]
+}

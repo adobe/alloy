@@ -162,6 +162,24 @@ describe("Identity::createComponent", () => {
     expect(setLegacyEcid).toHaveBeenCalledTimes(1);
   });
 
+  it("marks identity as acquired when an ECID cookie is present", () => {
+    handleResponseForIdSyncs.mockReturnValue(Promise.resolve());
+    identity.getEcidFromCookie.mockReturnValue("user@adobe");
+
+    component.lifecycle.onResponse({ response });
+
+    expect(identity.setIdentityAcquired).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not mark identity as acquired when no ECID cookie is present", () => {
+    handleResponseForIdSyncs.mockReturnValue(Promise.resolve());
+    identity.getEcidFromCookie.mockReturnValue(undefined);
+
+    component.lifecycle.onResponse({ response });
+
+    expect(identity.setIdentityAcquired).not.toHaveBeenCalled();
+  });
+
   it("handles ID syncs", () => {
     const idSyncsPromise = Promise.resolve();
     handleResponseForIdSyncs.mockReturnValue(idSyncsPromise);

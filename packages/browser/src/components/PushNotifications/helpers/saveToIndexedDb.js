@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 /** @import { Logger } from '@adobe/alloy-core/core/types.js' */
+/** @import { PushServiceWorkerConfig } from '../types.js' */
 
 import {
   openIndexedDb,
@@ -21,10 +22,10 @@ import {
 import { DB_NAME, DB_VERSION, STORE_NAME, INDEX_KEY } from "./constants.js";
 
 /**
- * @param {Object} data
+ * @param {Partial<PushServiceWorkerConfig>} data
  * @param {Logger} logger
  *
- * @returns {Promise<void>}
+ * @returns {Promise<boolean>} Whether the data was successfully saved.
  */
 export default async function saveToIndexedDB(data, logger) {
   try {
@@ -58,7 +59,11 @@ export default async function saveToIndexedDB(data, logger) {
       "Successfully saved web SDK config to IndexedDB",
       updatedConfigData,
     );
+
+    return true;
   } catch (error) {
     logger.error("Failed to save config to IndexedDB", { error });
+
+    return false;
   }
 }

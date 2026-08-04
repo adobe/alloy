@@ -56,7 +56,9 @@ export default ({
         // so that sendBeacon requests don't override the edge info from before.
         edge = { ...edge, ...response.getEdge() };
 
-        identity.setIdentityAcquired();
+        if (identity.getEcidFromCookie()) {
+          identity.setIdentityAcquired();
+        }
 
         return handleResponseForIdSyncs(response);
       },

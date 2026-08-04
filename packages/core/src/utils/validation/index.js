@@ -68,6 +68,8 @@ governing permissions and limitations under the License.
  * nullSafeChain allows you to chain a validator in a null-safe way.
  */
 
+/** @import { ValidatorFn, AnyValidator, ArrayValidator, NumberValidator, MapOfValuesValidator, ObjectValidator, ObjectValidatorSchema, StringValidator } from './types.js' */
+
 import {
   chain,
   nullSafeChain,
@@ -99,135 +101,310 @@ import stringValidator from "./stringValidator.js";
 import matchesRegexpValidator from "./matchesRegexpValidator.js";
 
 // The base validator does no validation and just returns the value unchanged
-const base = (value) => value;
+const base = /** @type {AnyValidator} */ ((value) => value);
 
 // The 'default', 'required', and 'deprecated' methods are available after any
 // data-type method. Don't use the nullSafeChain on 'default' or 'required'
 // because they need to handle the null or undefined case
+/**
+ * @this {AnyValidator}
+ * @param {any} defaultValue
+ * @returns {AnyValidator}
+ */
 base.default = function _default(defaultValue) {
-  return chain(this, createDefaultValidator(defaultValue));
+  return /** @type {AnyValidator} */ (
+    chain(this, createDefaultValidator(defaultValue))
+  );
 };
+/**
+ * @this {AnyValidator}
+ * @returns {AnyValidator}
+ */
 base.required = function required() {
-  return chain(this, requiredValidator);
+  return /** @type {AnyValidator} */ (chain(this, requiredValidator));
 };
+/**
+ * @this {AnyValidator}
+ * @param {string} message
+ * @returns {AnyValidator}
+ */
 base.deprecated = function deprecated(message) {
-  return chain(this, createDeprecatedValidator(message));
+  return /** @type {AnyValidator} */ (
+    chain(this, createDeprecatedValidator(message))
+  );
 };
 
 // helper validators
+/**
+ * @this {StringValidator}
+ * @returns {StringValidator}
+ */
 const domain = function domain() {
-  return nullSafeChain(this, domainValidator);
+  return /** @type {StringValidator} */ (nullSafeChain(this, domainValidator));
 };
+/**
+ * @this {NumberValidator}
+ * @param {number} minValue
+ * @returns {NumberValidator}
+ */
 const minimumInteger = function minimumInteger(minValue) {
-  return nullSafeChain(this, createMinimumValidator("an integer", minValue));
+  return /** @type {NumberValidator} */ (
+    nullSafeChain(this, createMinimumValidator("an integer", minValue))
+  );
 };
+/**
+ * @this {NumberValidator}
+ * @param {number} minValue
+ * @returns {NumberValidator}
+ */
 const minimumNumber = function minimumNumber(minValue) {
-  return nullSafeChain(this, createMinimumValidator("a number", minValue));
+  return /** @type {NumberValidator} */ (
+    nullSafeChain(this, createMinimumValidator("a number", minValue))
+  );
 };
+/**
+ * @this {NumberValidator}
+ * @param {number} maxValue
+ * @returns {NumberValidator}
+ */
 const maximumNumber = function maximumNumber(maxValue) {
-  return nullSafeChain(this, createMaximumValidator("a number", maxValue));
+  return /** @type {NumberValidator} */ (
+    nullSafeChain(this, createMaximumValidator("a number", maxValue))
+  );
 };
+/**
+ * @this {NumberValidator}
+ * @returns {NumberValidator}
+ */
 const integer = function integer() {
-  return nullSafeChain(this, integerValidator, { minimum: minimumInteger });
+  return /** @type {NumberValidator} */ (
+    nullSafeChain(this, integerValidator, { minimum: minimumInteger })
+  );
 };
+/**
+ * @this {StringValidator}
+ * @returns {StringValidator}
+ */
 const nonEmptyString = function nonEmptyString() {
-  return nullSafeChain(this, createNonEmptyValidator("a non-empty string"));
+  return /** @type {StringValidator} */ (
+    nullSafeChain(this, createNonEmptyValidator("a non-empty string"))
+  );
 };
+/**
+ * @this {ArrayValidator}
+ * @returns {ArrayValidator}
+ */
 const nonEmptyArray = function nonEmptyArray() {
-  return nullSafeChain(this, createNonEmptyValidator("a non-empty array"));
+  return /** @type {ArrayValidator} */ (
+    nullSafeChain(this, createNonEmptyValidator("a non-empty array"))
+  );
 };
+/**
+ * @this {MapOfValuesValidator | ObjectValidator}
+ * @returns {MapOfValuesValidator & ObjectValidator}
+ */
 const nonEmptyObject = function nonEmptyObject() {
-  return nullSafeChain(this, createNonEmptyValidator("a non-empty object"));
+  return /** @type {MapOfValuesValidator & ObjectValidator} */ (
+    nullSafeChain(this, createNonEmptyValidator("a non-empty object"))
+  );
 };
+/**
+ * @this {StringValidator}
+ * @returns {StringValidator}
+ */
 const regexp = function regexp() {
-  return nullSafeChain(this, regexpValidator);
+  return /** @type {StringValidator} */ (nullSafeChain(this, regexpValidator));
 };
+/**
+ * @this {StringValidator}
+ * @param {RegExp} regexpPattern
+ * @returns {StringValidator}
+ */
 const matches = function matches(regexpPattern) {
-  return nullSafeChain(this, matchesRegexpValidator(regexpPattern));
+  return /** @type {StringValidator} */ (
+    nullSafeChain(this, matchesRegexpValidator(regexpPattern))
+  );
 };
+/**
+ * @this {NumberValidator | StringValidator}
+ * @returns {NumberValidator & StringValidator}
+ */
 const unique = function createUnique() {
-  return nullSafeChain(this, createUniqueValidator());
+  return /** @type {NumberValidator & StringValidator} */ (
+    nullSafeChain(this, createUniqueValidator())
+  );
 };
+/**
+ * @this {ArrayValidator}
+ * @returns {ArrayValidator}
+ */
 const uniqueItems = function createUniqueItems() {
-  return nullSafeChain(this, createUniqueItemsValidator());
+  return /** @type {ArrayValidator} */ (
+    nullSafeChain(this, createUniqueItemsValidator())
+  );
 };
 
 // top-level validators.  These are the first functions that are called to create a validator.
+/**
+ * @this {AnyValidator}
+ * @param {ValidatorFn[]} validators
+ * @param {string} [message]
+ * @returns {AnyValidator}
+ */
 const anyOf = function anyOf(validators, message) {
   // use chain here because we don't want to accept null or undefined unless at least
   // one of the validators accept null or undefined.
-  return chain(this, createAnyOfValidator(validators, message));
+  return /** @type {AnyValidator} */ (
+    chain(this, createAnyOfValidator(validators, message))
+  );
 };
+/**
+ * @this {AnyValidator}
+ * @returns {AnyValidator}
+ */
 const anything = function anything() {
   return this;
 };
+/**
+ * @this {AnyValidator}
+ * @param {ValidatorFn} elementValidator
+ * @returns {ArrayValidator}
+ */
 const arrayOf = function arrayOf(elementValidator) {
-  return nullSafeChain(this, createArrayOfValidator(elementValidator), {
-    nonEmpty: nonEmptyArray,
-    uniqueItems,
-  });
+  return /** @type {ArrayValidator} */ (
+    nullSafeChain(this, createArrayOfValidator(elementValidator), {
+      nonEmpty: nonEmptyArray,
+      uniqueItems,
+    })
+  );
 };
+/**
+ * @this {AnyValidator}
+ * @returns {AnyValidator}
+ */
 const boolean = function boolean() {
-  return nullSafeChain(this, booleanValidator);
+  return /** @type {AnyValidator} */ (nullSafeChain(this, booleanValidator));
 };
+/**
+ * @this {AnyValidator}
+ * @returns {AnyValidator}
+ */
 const callback = function callback() {
-  return nullSafeChain(this, callbackValidator);
+  return /** @type {AnyValidator} */ (nullSafeChain(this, callbackValidator));
 };
+/**
+ * @this {AnyValidator}
+ * @param {any} literalValue
+ * @returns {AnyValidator}
+ */
 const literal = function literal(literalValue) {
-  return nullSafeChain(this, createLiteralValidator(literalValue));
+  return /** @type {AnyValidator} */ (
+    nullSafeChain(this, createLiteralValidator(literalValue))
+  );
 };
+/**
+ * @this {AnyValidator}
+ * @returns {NumberValidator}
+ */
 const number = function number() {
-  return nullSafeChain(this, numberValidator, {
-    minimum: minimumNumber,
-    maximum: maximumNumber,
-    integer,
-    unique,
-  });
+  return /** @type {NumberValidator} */ (
+    nullSafeChain(this, numberValidator, {
+      minimum: minimumNumber,
+      maximum: maximumNumber,
+      integer,
+      unique,
+    })
+  );
 };
+/**
+ * @this {AnyValidator}
+ * @param {ValidatorFn} valuesValidator
+ * @returns {MapOfValuesValidator}
+ */
 const mapOfValues = function mapOfValues(valuesValidator) {
-  return nullSafeChain(this, createMapOfValuesValidator(valuesValidator), {
-    nonEmpty: nonEmptyObject,
-  });
+  return /** @type {MapOfValuesValidator} */ (
+    nullSafeChain(this, createMapOfValuesValidator(valuesValidator), {
+      nonEmpty: nonEmptyObject,
+    })
+  );
 };
+/**
+ * @param {ObjectValidatorSchema} schema
+ */
 const createObjectOfAdditionalProperties = (schema) => ({
+  /**
+   * @this {ObjectValidator}
+   * @returns {ObjectValidator}
+   */
   noUnknownFields: function noUnknownFields() {
-    return nullSafeChain(this, createNoUnknownFieldsValidator(schema));
+    return /** @type {ObjectValidator} */ (
+      nullSafeChain(this, createNoUnknownFieldsValidator(schema))
+    );
   },
   nonEmpty: nonEmptyObject,
+  /**
+   * @this {ObjectValidator}
+   * @param {ObjectValidator} otherObjectOfValidator
+   * @returns {ObjectValidator}
+   */
   concat: function concat(otherObjectOfValidator) {
     // combine the schema so that noUnknownFields, and concat have the combined schema
     const newSchema = { ...schema, ...otherObjectOfValidator.schema };
-    return nullSafeChain(
-      this,
-      otherObjectOfValidator,
-      createObjectOfAdditionalProperties(newSchema),
+    return /** @type {ObjectValidator} */ (
+      nullSafeChain(
+        this,
+        otherObjectOfValidator,
+        createObjectOfAdditionalProperties(newSchema),
+      )
     );
   },
+  /**
+   * @this {ObjectValidator}
+   * @param {string} oldField
+   * @param {ValidatorFn} oldSchema
+   * @param {string} newField
+   * @returns {ObjectValidator}
+   */
   renamed: function renamed(oldField, oldSchema, newField) {
     // Run the deprecated validator first so that the deprecated field is removed
     // before the objectOf validator runs.
-    return reverseNullSafeChainJoinErrors(
-      this,
-      createRenamedValidator(oldField, oldSchema, newField),
+    return /** @type {ObjectValidator} */ (
+      reverseNullSafeChainJoinErrors(
+        this,
+        createRenamedValidator(oldField, oldSchema, newField),
+      )
     );
   },
   schema,
 });
+/**
+ * @this {AnyValidator}
+ * @param {ObjectValidatorSchema} schema
+ * @returns {ObjectValidator}
+ */
 const objectOf = function objectOf(schema) {
-  return nullSafeChain(
-    this,
-    createObjectOfValidator(schema),
-    createObjectOfAdditionalProperties(schema),
+  return /** @type {ObjectValidator} */ (
+    nullSafeChain(
+      this,
+      createObjectOfValidator(schema),
+      createObjectOfAdditionalProperties(schema),
+    )
   );
 };
+/**
+ * @this {AnyValidator}
+ * @returns {StringValidator}
+ */
 const string = function string() {
-  return nullSafeChain(this, stringValidator, {
-    regexp,
-    domain,
-    nonEmpty: nonEmptyString,
-    unique,
-    matches,
-  });
+  return /** @type {StringValidator} */ (
+    nullSafeChain(this, stringValidator, {
+      regexp,
+      domain,
+      nonEmpty: nonEmptyString,
+      unique,
+      matches,
+    })
+  );
 };
 
 const boundAnyOf = anyOf.bind(base);
@@ -242,6 +419,10 @@ const boundObjectOf = objectOf.bind(base);
 const boundString = string.bind(base);
 
 // compound validators
+/**
+ * @param {...any} values
+ * @returns {AnyValidator}
+ */
 const boundEnumOf = function boundEnumOf(...values) {
   return boundAnyOf(
     values.map(boundLiteral),

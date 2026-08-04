@@ -39,7 +39,6 @@ import {
 import FormikTextField from "./formikReactSpectrum3/formikTextField";
 import { capitialize } from "./overrides/utils";
 
-// eslint-disable-next-line no-underscore-dangle
 const getKey = (datastream) => datastream && datastream._system.id;
 const getLabel = (datastream) => {
   if (!datastream) {

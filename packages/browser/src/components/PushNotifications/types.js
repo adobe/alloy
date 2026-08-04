@@ -56,6 +56,9 @@ governing permissions and limitations under the License.
  * @property {string} web.title
  * @property {string} web.body
  * @property {string|null} web.media
+ * @property {Object} [web.identity]
+ * @property {string} [web.identity.id]
+ * @property {string} [web.identity.namespace]
  * @property {Object} web.interaction
  * @property {string} web.interaction.type
  * @property {string|null} web.interaction.uri
@@ -99,6 +102,18 @@ governing permissions and limitations under the License.
  * @property {string} namespace
  * @property {(...args: any[]) => void} info
  * @property {(...args: any[]) => void} error
+ */
+
+/**
+ * @typedef {Object} PushServiceWorkerConfig
+ * @property {string} [ecid]
+ * @property {string} [browser]
+ * @property {string} [edgeDomain]
+ * @property {string} [edgeBasePath]
+ * @property {string} [datastreamId]
+ * @property {string} [datasetId]
+ * @property {string} [id]
+ * @property {number} [timestamp]
  */
 
 export const Types = {};
