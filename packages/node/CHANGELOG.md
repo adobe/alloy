@@ -1,5 +1,12 @@
 # @adobe/alloy-node
 
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies [[`f72ec8f`](https://github.com/adobe/alloy/commit/f72ec8f8380474fb4e4acf0b9856645a7a1efc80), [`3d5faef`](https://github.com/adobe/alloy/commit/3d5faef53f88eb19ac6b87d13e699addb7978c15)]:
+  - @adobe/alloy-core@1.2.2
+
 ## 0.0.3-beta.0
 
 ### Patch Changes
