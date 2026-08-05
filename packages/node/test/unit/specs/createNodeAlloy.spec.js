@@ -107,17 +107,52 @@ describe("createNodeAlloy", () => {
     expect(topLevelCookie.get).not.toHaveBeenCalled();
   });
 
-  it("forRequest() falls back to the top-level platformServices for anything it doesn't override", async () => {
-    const topLevelCookie = createSpyCookieService();
+  // Regression test for a real leak: passing a stateful cookie override to
+  // createNodeAlloy() and then calling forRequest() without a per-request
+  // override used to silently reuse that same shared cookie jar for every
+  // request — meaning two different visitors that both omit a request-level
+  // override would resolve to the same identity. cookie/storage must always
+  // get a fresh default instead unless a request explicitly overrides them.
+  it("forRequest() does not inherit a stateful cookie override from the top-level platformServices", async () => {
+    const sharedCookie = createSpyCookieService();
     const alloy = createNodeAlloy({
-      platformServices: { cookie: topLevelCookie },
+      platformServices: { cookie: sharedCookie },
     });
     await alloy.configure(config);
-    topLevelCookie.get.mockClear();
+    sharedCookie.get.mockClear();
 
     // No cookie override passed to forRequest() this time.
     await alloy.forRequest().getLibraryInfo();
 
-    expect(topLevelCookie.get).toHaveBeenCalled();
+    expect(sharedCookie.get).not.toHaveBeenCalled();
+  });
+
+  it("forRequest() still falls back to the top-level platformServices for stateless slots like network", async () => {
+    const networkService = {
+      sendFetchRequest: vi.fn(),
+      sendBeaconRequest: vi.fn(),
+    };
+    const network = vi.fn(() => networkService);
+    const alloy = createNodeAlloy({ platformServices: { network } });
+    await alloy.configure(config);
+
+    // createNetworkService(logger) is called synchronously as soon as an
+    // instance is set up, before any command runs — clear the call made by
+    // createNodeAlloy()'s own top-level instance first.
+    network.mockClear();
+    alloy.forRequest();
+
+    expect(network).toHaveBeenCalled();
+  });
+
+  // Regression test: configure() used to capture its options synchronously,
+  // before core had validated them, so a forRequest() call after a rejected
+  // configure() would proceed anyway with the invalid config instead of
+  // throwing.
+  it("does not capture the config if configure() rejects, so forRequest() still throws afterward", async () => {
+    const alloy = createNodeAlloy();
+
+    await expect(alloy.configure({})).rejects.toThrow();
+    expect(() => alloy.forRequest()).toThrow(/configure/);
   });
 });

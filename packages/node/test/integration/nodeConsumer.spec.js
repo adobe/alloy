@@ -142,6 +142,27 @@ describe("Node consumer integration", () => {
     expect(identityA.identity.ECID).not.toEqual(identityB.identity.ECID);
   });
 
+  // Regression test for a real leak flagged in review: passing a stateful
+  // cookie override at the top level and then calling forRequest() without
+  // a per-request override used to silently reuse that same shared cookie
+  // jar for every request — meaning two visitors that both omit a
+  // request-level override would resolve to the same identity.
+  it("forRequest() must not leak identity between visitors via a top-level cookie override", async () => {
+    const sharedCookie = createNodeCookieService();
+    const alloy = node.createInstance({
+      platformServices: { cookie: sharedCookie },
+    });
+    await alloy.configure(config);
+
+    const visitorA = alloy.forRequest();
+    const identityA = await visitorA.getIdentity();
+
+    const visitorB = alloy.forRequest();
+    const identityB = await visitorB.getIdentity();
+
+    expect(identityA.identity.ECID).not.toEqual(identityB.identity.ECID);
+  });
+
   // Proves the real request/response round trip for personalization: the
   // query actually reaches the Edge Network with a decisionScope attached,
   // and the response comes back parsed into a `propositions` array — even

@@ -106,6 +106,14 @@ const createNodeAlloy = ({
    * visitor's identity into another's. Don't "optimize" this into instance
    * reuse without re-deriving that state per request too.
    *
+   * `cookie`/`storage` specifically never fall back to this instance's own
+   * platformServices, even if it configured one — those two hold per-visitor
+   * state, so inheriting a shared, stateful one as a silent default would
+   * leak identity across visitors exactly like reusing the instance would.
+   * If a request doesn't override them here, it gets a fresh, empty default
+   * instead. Only the (stateless) `network`/`runtime`/`legacy`/`globals`
+   * slots are safe to inherit as instance-wide defaults.
+   *
    * @param {PlatformServiceOverrides} [requestPlatformServices]
    */
   const forRequest = (requestPlatformServices = {}) => {
@@ -114,11 +122,12 @@ const createNodeAlloy = ({
         "forRequest() can only be called after configure() has resolved.",
       );
     }
+    const { cookie, storage, ...sharedPlatformServices } = platformServices;
     const requestExecuteCommand = createCoreCustomInstance(
       { name, monitors, components },
       () =>
         createNodePlatformServices({
-          ...platformServices,
+          ...sharedPlatformServices,
           ...requestPlatformServices,
         }),
       // Fresh validators per request: orgId/datastreamId are being
@@ -135,8 +144,14 @@ const createNodeAlloy = ({
     ...bindCommandMethods(executeCommand, COMMAND_NAMES),
     /** @param {Record<string, unknown>} options */
     configure(options) {
-      capturedConfig = options;
-      return executeCommand("configure", options);
+      // Only capture the config once configure() has actually succeeded —
+      // if it rejects (invalid config), capturedConfig must stay unset, so
+      // a subsequent forRequest() call still throws instead of silently
+      // reconfiguring every request with a config core already rejected.
+      return executeCommand("configure", options).then((result) => {
+        capturedConfig = options;
+        return result;
+      });
     },
     forRequest,
   };
