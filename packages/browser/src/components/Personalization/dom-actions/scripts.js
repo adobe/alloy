@@ -14,6 +14,9 @@ import { SCRIPT } from "@adobe/alloy-core/constants/tagName.js";
 import { SRC } from "@adobe/alloy-core/constants/elementAttribute.js";
 import { getAttribute, getNonce } from "./dom/index.js";
 
+const TYPE = "type";
+const MODULE = "module";
+
 const getPromise = (url, script) => {
   return new Promise((resolve, reject) => {
     script.onload = () => {
@@ -24,24 +27,40 @@ const getPromise = (url, script) => {
     };
   });
 };
+
+// Re-creates a script in <head> so the browser executes it (scripts inserted via
+// innerHTML never run). Handles both remote scripts (with a src) and inline
+// module scripts: an inline `type="module"` executes asynchronously and belongs
+// with the head-loaded scripts rather than the synchronously-run inline path.
 const loadScript = (source) => {
   const url = getAttribute(source, SRC);
+  const type = getAttribute(source, TYPE);
   const script = document.createElement("script");
-  // Preserve all author-supplied attributes (class, type, data-*, etc.) so
-  // consumers relying on them keep working.
-  const { attributes } = source;
-  for (let i = 0; i < attributes.length; i += 1) {
-    const { name, value } = attributes[i];
-    script.setAttribute(name, value);
+  // Only carry the attributes required to execute the script correctly: `type`
+  // (e.g. "module"), `src` (below), and the CSP `nonce`. Author attributes such
+  // as `id`, `class`, and `data-*` are intentionally NOT copied: the original
+  // offer <script> is left in the page (inert), so copying its id/class onto
+  // this executed element would create duplicate matches for
+  // document.getElementById / querySelector.
+  if (type) {
+    script.setAttribute(TYPE, type);
   }
-  // Override invariants last so they can't be clobbered by the source element.
   const nonce = getNonce();
   if (nonce) {
     script.setAttribute("nonce", nonce);
   }
+
+  if (!url) {
+    // Inline module script: carry the code across and let it execute in <head>.
+    // Inline scripts emit no load event, so completion cannot be tracked; we
+    // resolve immediately and rely on the browser's deferred module execution.
+    script.textContent = source.textContent;
+    document.head.appendChild(script);
+    return Promise.resolve(script);
+  }
+
+  script.src = url;
   script.async = true;
-  // Assign load handlers after copying attributes so a copied inline
-  // onload/onerror attribute can't break load-completion tracking.
   const promise = getPromise(url, script);
   document.head.appendChild(script);
   return promise;
@@ -50,11 +69,29 @@ const loadScript = (source) => {
 export const is = (element, tagName) =>
   !!element && element.tagName === tagName;
 
-const isInlineScript = (element) =>
-  is(element, SCRIPT) && !getAttribute(element, SRC);
+const isModule = (element) => getAttribute(element, TYPE) === MODULE;
 
 const isRemoteScript = (element) =>
-  is(element, SCRIPT) && getAttribute(element, SRC);
+  is(element, SCRIPT) && !!getAttribute(element, SRC);
+
+// An inline module (no src, type="module") executes asynchronously, so it is
+// re-created in <head> alongside remote scripts rather than run synchronously
+// in the offer container. It needs code to be worth executing.
+const isInlineModuleScript = (element) =>
+  is(element, SCRIPT) &&
+  !getAttribute(element, SRC) &&
+  isModule(element) &&
+  !!element.textContent;
+
+// Classic inline scripts execute synchronously in the offer container. Inline
+// module scripts are excluded here — they are handled as head scripts instead.
+const isInlineScript = (element) =>
+  is(element, SCRIPT) && !getAttribute(element, SRC) && !isModule(element);
+
+// Scripts that must be re-created in <head> to execute: remote scripts and
+// inline module scripts.
+const isHeadScript = (element) =>
+  isRemoteScript(element) || isInlineModuleScript(element);
 
 export const getInlineScripts = (fragment) => {
   const scripts = selectNodes(SCRIPT, fragment);
@@ -92,8 +129,7 @@ export const getRemoteScripts = (fragment) => {
   for (let i = 0; i < length; i += 1) {
     const element = scripts[i];
 
-    // isRemoteScript already requires a non-empty src attribute.
-    if (!isRemoteScript(element)) {
+    if (!isHeadScript(element)) {
       continue;
     }
 
