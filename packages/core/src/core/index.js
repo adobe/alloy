@@ -52,7 +52,11 @@ import getRequestRetryDelay from "./network/getRequestRetryDelay.js";
 import injectApplyResponse from "./edgeNetwork/injectApplyResponse.js";
 import * as requiredComponents from "./requiredComponentCreators.js";
 
-const coreConfigValidators = createCoreConfigs();
+// Default, shared for the lifetime of this module — matches "configured
+// once per page load" in the browser, where module state resets on its own.
+// Callers that don't map 1:1 to a page load (e.g. one Node process handling
+// many requests) can pass a fresh instance per call instead.
+const defaultCoreConfigValidators = createCoreConfigs();
 
 /**
  * @param {Object} params
@@ -60,12 +64,14 @@ const coreConfigValidators = createCoreConfigs();
  * @param {Array<import('./types.js').AlloyMonitor>} [params.monitors]
  * @param {Array<Function>} params.components
  * @param {() => import('../services/index.js').PlatformServices} params.createPlatformServices
+ * @param {ReturnType<typeof createCoreConfigs>} [params.coreConfigValidators]
  */
 export const createExecuteCommand = ({
   instanceName,
   monitors = [],
   components,
   createPlatformServices,
+  coreConfigValidators = defaultCoreConfigValidators,
 }) => {
   const platformServices = createPlatformServices();
   const allMonitors = [...platformServices.globals.getMonitors(), ...monitors];

@@ -9,20 +9,55 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { createCustomInstance } from "@adobe/alloy-core";
+import createNodeAlloy from "./createNodeAlloy.js";
+import * as allOptionalComponents from "./allOptionalComponents.js";
 
 /**
  * @alpha
  *
- * Node.js entrypoint for the Adobe Experience Platform Node SDK.
+ * Creates a custom Node instance, including only the given optional
+ * components (e.g. `personalization`). See `createInstance` to get every
+ * optional component by default.
  *
- * NOT FUNCTIONAL. Because @adobe/alloy-core still references browser globals
- * and APIs, this package will throw errors at runtime.
+ * Returns an object with real methods (`configure`, `sendEvent`,
+ * `getIdentity`, ...) rather than the browser bundle's
+ * `alloy("commandName", options)` calling convention — there's no pre-load
+ * stub queue to keep call syntax uniform for in Node, so methods give
+ * better discoverability. This is an early skeleton: most optional
+ * components (Consent, Audiences, etc.) are not wired up yet.
+ *
+ * @param {Object} [options]
+ * @param {Array<Function>} [options.components]
+ * @param {Object} [options.platformServices] Overrides for one or more of
+ * the default Node platform services (network, storage, cookie, runtime,
+ * legacy, globals) — e.g. a `cookie` service backed by a real HTTP
+ * request/response so identity persists across requests instead of only
+ * within a single process. See `createNodePlatformServices` for the shape
+ * of each override.
+ */
+export const createCustomInstance = ({
+  platformServices = {},
+  components = [],
+  ...options
+} = {}) =>
+  createNodeAlloy({
+    ...options,
+    components,
+    platformServices,
+  });
+
+/**
+ * @alpha
+ *
+ * Creates a Node instance with every optional component included.
+ *
+ * @param {Object} [options]
+ * @param {Object} [options.platformServices]
  */
 export const createInstance = (options = {}) =>
   createCustomInstance({
     ...options,
-    components: [],
+    components: Object.values(allOptionalComponents),
   });
 
-export { createCustomInstance };
+export { allOptionalComponents as components };

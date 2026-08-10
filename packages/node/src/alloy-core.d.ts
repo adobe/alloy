@@ -2,5 +2,9 @@
 declare module "@adobe/alloy-core" {
   export function createCustomInstance(
     options: Record<string, unknown>,
-  ): unknown;
+    createPlatformServices?: () => unknown,
+    coreConfigValidators?: unknown,
+  ): (commandName: string, options?: Record<string, unknown>) => Promise<any>;
+
+  export function createCoreConfigs(): unknown;
 }
