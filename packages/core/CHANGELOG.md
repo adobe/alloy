@@ -1,5 +1,11 @@
 # @adobe/alloy-core
 
+## 1.2.3-beta.0
+
+### Patch Changes
+
+- [#1561](https://github.com/adobe/alloy/pull/1561) [`7ac18dc`](https://github.com/adobe/alloy/commit/7ac18dc37a1d42b88a7521bc0fa6c88ea0bfb82c) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Created MVP for node package
+
 ## 1.2.2
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # reactor-extension-alloy
 
+## 2.37.2-beta.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @adobe/alloy@2.35.1-beta.0
+
 ## 2.37.1
 
 ### Patch Changes
