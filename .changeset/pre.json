@@ -12,6 +12,7 @@
     "@adobe/alloy-sandbox-node": "0.0.3"
   },
   "changesets": [
-    "dirty-pugs-boil"
+    "dirty-pugs-boil",
+    "wild-peaches-cut"
   ]
 }
