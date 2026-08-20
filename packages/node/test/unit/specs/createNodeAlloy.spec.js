@@ -17,7 +17,7 @@ governing permissions and limitations under the License.
 // complementing, not duplicating, the real-network coverage in
 // packages/node/test/integration/nodeConsumer.spec.js.
 
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import createNodeAlloy from "../../../src/createNodeAlloy.js";
 
 const config = {
@@ -32,7 +32,13 @@ const COMMAND_METHOD_NAMES = [
   "getIdentity",
   "appendIdentityToUrl",
   "getLibraryInfo",
+  "setConsent",
 ];
+
+const fakeEdgeNetworkResponse = () =>
+  new Response(JSON.stringify({ requestId: "test-request-id", handle: [] }), {
+    status: 200,
+  });
 
 const createSpyCookieService = () => {
   const jar = new Map();
@@ -154,5 +160,57 @@ describe("createNodeAlloy", () => {
 
     await expect(alloy.configure({})).rejects.toThrow();
     expect(() => alloy.forRequest()).toThrow(/configure/);
+  });
+
+  describe("Context", () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it("is always active — attaches implementationDetails even when no components were requested", async () => {
+      const fetchMock = vi.fn().mockResolvedValue(fakeEdgeNetworkResponse());
+      vi.stubGlobal("fetch", fetchMock);
+      const alloy = createNodeAlloy({
+        platformServices: { cookie: createSpyCookieService() },
+      });
+      await alloy.configure(config);
+
+      await alloy.sendEvent({ xdm: { eventType: "test" } });
+
+      const [, requestInit] = fetchMock.mock.calls.at(-1);
+      const { xdm } = JSON.parse(requestInit.body).events[0];
+      expect(xdm.implementationDetails).toEqual(
+        expect.objectContaining({ environment: "server" }),
+      );
+    });
+
+    it("forRequest({ request }) forwards the visitor's real headers to the default network service", async () => {
+      const fetchMock = vi.fn().mockResolvedValue(fakeEdgeNetworkResponse());
+      vi.stubGlobal("fetch", fetchMock);
+      const alloy = createNodeAlloy({
+        platformServices: { cookie: createSpyCookieService() },
+      });
+      await alloy.configure(config);
+
+      const request = alloy.forRequest({
+        cookie: createSpyCookieService(),
+        request: {
+          headers: {
+            "user-agent": "Mozilla/5.0",
+            referer: "https://example.com/page",
+          },
+        },
+      });
+      await request.sendEvent({ xdm: { eventType: "test" } });
+
+      const [, requestInit] = fetchMock.mock.calls.at(-1);
+      expect(requestInit.headers).toEqual(
+        expect.objectContaining({ "user-agent": "Mozilla/5.0" }),
+      );
+      const { xdm } = JSON.parse(requestInit.body).events[0];
+      expect(xdm.web).toEqual({
+        webPageDetails: { URL: "https://example.com/page" },
+      });
+    });
   });
 });

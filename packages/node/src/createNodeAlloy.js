@@ -18,6 +18,9 @@ import {
   createCoreConfigs,
 } from "@adobe/alloy-core";
 import createNodePlatformServices from "./services/createNodePlatformServices.js";
+import * as allRequiredComponents from "./components/requiredComponentCreators.js";
+
+/** @import { NodeRequestLike } from "./services/createNodePlatformServices.js" */
 
 /**
  * @typedef {Object} PlatformServiceOverrides
@@ -44,6 +47,7 @@ const COMMAND_NAMES = [
   "getIdentity",
   "appendIdentityToUrl",
   "getLibraryInfo",
+  "setConsent",
 ];
 
 /**
@@ -78,8 +82,15 @@ const createNodeAlloy = ({
   components = [],
   platformServices = {},
 } = {}) => {
+  // Mirrors packages/browser/src/index.js: components a consumer can't opt
+  // out of (currently just Context), prepended to whatever they passed in.
+  const allComponents = [
+    ...Object.values(allRequiredComponents),
+    ...components,
+  ];
+
   const executeCommand = createCoreCustomInstance(
-    { name, monitors, components },
+    { name, monitors, components: allComponents },
     () => createNodePlatformServices(platformServices),
     createCoreConfigs(),
   );
@@ -114,21 +125,32 @@ const createNodeAlloy = ({
    * instead. Only the (stateless) `network`/`runtime`/`legacy`/`globals`
    * slots are safe to inherit as instance-wide defaults.
    *
-   * @param {PlatformServiceOverrides} [requestPlatformServices]
+   * `request` isn't a platform service override — it's this request's real
+   * incoming HTTP request (anything with a `headers` object; a raw Node
+   * `IncomingMessage`, an Express `req`, or a plain `{ headers }`), used to
+   * forward the real visitor's `User-Agent`/`Accept-Language` upstream to
+   * Edge Network and to populate `web.webPageDetails.URL` (see
+   * components/context.js). Pass it whenever this call is proxying a real
+   * visitor's request, so Edge Network's own device/geo parsing has real
+   * data instead of whatever Node's own fetch() would send by default.
+   *
+   * @param {PlatformServiceOverrides & { request?: NodeRequestLike }} [requestOverrides]
    */
-  const forRequest = (requestPlatformServices = {}) => {
+  const forRequest = (requestOverrides = {}) => {
     if (!capturedConfig) {
       throw new Error(
         "forRequest() can only be called after configure() has resolved.",
       );
     }
+    const { request, ...requestPlatformServices } = requestOverrides;
     const { cookie, storage, ...sharedPlatformServices } = platformServices;
     const requestExecuteCommand = createCoreCustomInstance(
-      { name, monitors, components },
+      { name, monitors, components: allComponents },
       () =>
         createNodePlatformServices({
           ...sharedPlatformServices,
           ...requestPlatformServices,
+          request,
         }),
       // Fresh validators per request: orgId/datastreamId are being
       // reconfigured with the exact same values on purpose here, once per

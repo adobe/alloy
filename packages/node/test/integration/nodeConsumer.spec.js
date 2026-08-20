@@ -179,4 +179,51 @@ describe("Node consumer integration", () => {
 
     expect(Array.isArray(result.propositions)).toBe(true);
   });
+
+  // Proves Consent is real, wired-up core component (not just a stub): the
+  // real /privacy/set-consent round trip succeeds and writes a real consent
+  // cookie to whatever cookie service the caller supplies — the same
+  // pattern proven for identity above, now for consent state.
+  it("setConsent() writes a real consent cookie to a request-scoped cookie service", async () => {
+    const alloy = node.createInstance();
+    await alloy.configure(config);
+
+    const cookie = createNodeCookieService();
+    const request = alloy.forRequest({ cookie });
+
+    await request.setConsent({
+      consent: [
+        { standard: "Adobe", version: "1.0", value: { general: "in" } },
+      ],
+    });
+
+    const cookieNames = Object.keys(cookie.getAll());
+    expect(cookieNames.some((name) => name.endsWith("_consent"))).toBe(true);
+  });
+
+  // Proves the Context component's request-forwarding actually reaches a
+  // real Edge Network round trip without erroring — the forwarded
+  // User-Agent/Accept-Language headers and the derived web.webPageDetails.URL
+  // are exercised by the real request pipeline, not just mocked in unit
+  // tests. There's no way to inspect what Edge Network received/parsed from
+  // here, so this only proves the plumbing doesn't break the request.
+  it("forRequest({ request }) sends a real event without error", async () => {
+    const alloy = node.createInstance();
+    await alloy.configure(config);
+
+    const request = alloy.forRequest({
+      cookie: createNodeCookieService(),
+      request: {
+        headers: {
+          "user-agent": "Mozilla/5.0 (nodeConsumer integration test)",
+          "accept-language": "en-US",
+          referer: "https://example.com/sample-page",
+        },
+      },
+    });
+
+    await expect(
+      request.sendEvent({ xdm: { eventType: "test.nodeConsumer" } }),
+    ).resolves.toBeDefined();
+  });
 });

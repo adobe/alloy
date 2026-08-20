@@ -55,4 +55,26 @@ describe("createNodeNetworkService", () => {
 
     expect(sendBeaconRequest).toBe(sendFetchRequest);
   });
+
+  it("merges given headers into the outgoing request without letting them override Content-Type", async () => {
+    fetchMock.mockResolvedValueOnce(okResponse(""));
+    const { sendFetchRequest } = createNodeNetworkService({
+      headers: {
+        "user-agent": "Mozilla/5.0",
+        "Content-Type": "should-not-win",
+      },
+    });
+
+    await sendFetchRequest("https://example.com", "payload");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://example.com",
+      expect.objectContaining({
+        headers: {
+          "user-agent": "Mozilla/5.0",
+          "Content-Type": "text/plain; charset=UTF-8",
+        },
+      }),
+    );
+  });
 });
