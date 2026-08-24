@@ -21,7 +21,7 @@ governing permissions and limitations under the License.
  * plain object, and bracket access on a `Headers` instance always returns
  * `undefined` — it only exposes values through `.get()`.
  *
- * @param {NodeRequestHeaders} [headers]
+ * @param {NodeRequestHeaders | undefined} headers
  * @param {string} name Lowercase header name.
  * @returns {string | string[] | undefined}
  */
@@ -29,7 +29,7 @@ const getHeader = (headers, name) => {
   if (!headers) {
     return undefined;
   }
-  if (typeof headers.get === "function") {
+  if (headers instanceof Headers) {
     return headers.get(name) ?? undefined;
   }
   return headers[name];
