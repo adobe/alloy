@@ -32,6 +32,13 @@ import {
 import * as optionalComponents from "./core/componentCreators.js";
 
 /**
+ * Creates a fresh, independent scope for tracking which orgId/datastreamId
+ * values have been configured, for use as `createCustomInstance`'s third
+ * argument. See that function's documentation for when you'd want one.
+ */
+export { default as createCoreConfigs } from "./core/config/createCoreConfigs.js";
+
+/**
  * Creates a custom Alloy instance which can reduce the library size and increase performance.
  *
  * @param {Object} [options] - Configuration options for the instance.
@@ -39,6 +46,13 @@ import * as optionalComponents from "./core/componentCreators.js";
  * @param {Array<AlloyMonitor>} [options.monitors] - Monitors for the instance.
  * @param {Array<Function>} [options.components] - Components for the instance.
  * @param {CreatePlatformServices} createPlatformServices
+ * @param {ReturnType<typeof import('./core/config/createCoreConfigs.js').default>} [coreConfigValidators]
+ * Tracks which orgId/datastreamId values have already been configured, to
+ * catch accidentally configuring two instances with the same one. Shared by
+ * default for the module's lifetime (matches "configured once per page
+ * load," since a page load resets module state); pass a fresh instance per
+ * call if that assumption doesn't hold for your runtime (e.g. one Node
+ * process handling many requests).
  * @returns {(commandName: string, options?: Object) => Promise<any>} A callable Alloy instance.
  *
  * @see {@link https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/install/create-custom-build} for more details.
@@ -46,6 +60,7 @@ import * as optionalComponents from "./core/componentCreators.js";
 export const createCustomInstance = (
   options = {},
   createPlatformServices = undefined,
+  coreConfigValidators = undefined,
 ) => {
   const eventOptionsValidator = objectOf({
     name: string().default("alloy"),
@@ -60,6 +75,7 @@ export const createCustomInstance = (
     monitors,
     components,
     createPlatformServices,
+    coreConfigValidators,
   });
 };
 

@@ -1,5 +1,19 @@
 # @adobe/alloy-sandbox-browser
 
+## 0.1.7-beta.1
+
+### Patch Changes
+
+- [#1563](https://github.com/adobe/alloy/pull/1563) [`8c15fb5`](https://github.com/adobe/alloy/commit/8c15fb54e45b31f7559c10b5f7e86cd1530bbe99) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump react-router from 7.15.0 to 7.18.2
+
+## 0.1.7-beta.0
+
+### Patch Changes
+
+- Updated dependencies [[`7ac18dc`](https://github.com/adobe/alloy/commit/7ac18dc37a1d42b88a7521bc0fa6c88ea0bfb82c)]:
+  - @adobe/alloy-core@1.2.3-beta.0
+  - @adobe/alloy@2.35.1-beta.0
+
 ## 0.1.6
 
 ### Patch Changes
