@@ -17,6 +17,35 @@ import { getAttribute, getNonce } from "./dom/index.js";
 const TYPE = "type";
 const MODULE = "module";
 const NONCE = "nonce";
+const NOMODULE = "nomodule";
+
+// Per the HTML spec, a <script> only ever executes if its type is absent/
+// empty, "module", or one of these recognized JavaScript MIME type essences
+// (https://mimesniff.spec.whatwg.org/#javascript-mime-type). Any other type
+// (e.g. "importmap", "application/json", a templating library's custom type)
+// makes the element a data block: the browser never executes it, regardless
+// of whether it's parsed from HTML, inserted via innerHTML, or appended with
+// appendChild. Such elements are left untouched by this module — extracting
+// and re-inserting them would be pointless at best, and at worst (if `type`
+// were dropped along the way) would turn inert data into code that runs.
+const JAVASCRIPT_MIME_TYPES = new Set([
+  "application/ecmascript",
+  "application/javascript",
+  "application/x-ecmascript",
+  "application/x-javascript",
+  "text/ecmascript",
+  "text/javascript",
+  "text/javascript1.0",
+  "text/javascript1.1",
+  "text/javascript1.2",
+  "text/javascript1.3",
+  "text/javascript1.4",
+  "text/javascript1.5",
+  "text/jscript",
+  "text/livescript",
+  "text/x-ecmascript",
+  "text/x-javascript",
+]);
 
 // Attributes that affect how the script executes/fetches (as opposed to
 // identity/presentation attributes like id, class, and data-*, which are
@@ -91,16 +120,39 @@ const loadScript = (source) => {
 export const is = (element, tagName) =>
   !!element && element.tagName === tagName;
 
-const isModule = (element) => getAttribute(element, TYPE) === MODULE;
+// Normalizes away casing/whitespace/parameters (e.g. "TEXT/JAVASCRIPT ;
+// charset=utf-8") so it can be compared against MODULE/JAVASCRIPT_MIME_TYPES.
+const getNormalizedType = (element) => {
+  const type = getAttribute(element, TYPE);
+  return type ? type.split(";")[0].trim().toLowerCase() : "";
+};
+
+const isModule = (element) => getNormalizedType(element) === MODULE;
+
+// A classic script per the HTML spec: type is absent/empty or a recognized
+// JavaScript MIME type. Excludes "module" (handled separately) and anything
+// else (data blocks like "importmap" or a templating library's custom type).
+const isClassicJavaScript = (element) => {
+  const type = getNormalizedType(element);
+  return type === "" || JAVASCRIPT_MIME_TYPES.has(type);
+};
+
+// Gate applied before any inline/remote classification below: only scripts
+// the browser would actually execute (classic JS or module) are eligible for
+// extraction and re-insertion. Everything else is left untouched — it was
+// never going to execute regardless of insertion method, so there's nothing
+// to force.
+const isExecutableScript = (element) =>
+  is(element, SCRIPT) && (isClassicJavaScript(element) || isModule(element));
 
 const isRemoteScript = (element) =>
-  is(element, SCRIPT) && !!getAttribute(element, SRC);
+  isExecutableScript(element) && !!getAttribute(element, SRC);
 
 // An inline module (no src, type="module") executes asynchronously, so it is
 // re-created in <head> alongside remote scripts rather than run synchronously
 // in the offer container. It needs code to be worth executing.
 const isInlineModuleScript = (element) =>
-  is(element, SCRIPT) &&
+  isExecutableScript(element) &&
   !getAttribute(element, SRC) &&
   isModule(element) &&
   !!element.textContent;
@@ -108,7 +160,9 @@ const isInlineModuleScript = (element) =>
 // Classic inline scripts execute synchronously in the offer container. Inline
 // module scripts are excluded here — they are handled as head scripts instead.
 const isInlineScript = (element) =>
-  is(element, SCRIPT) && !getAttribute(element, SRC) && !isModule(element);
+  isExecutableScript(element) &&
+  !getAttribute(element, SRC) &&
+  !isModule(element);
 
 // Scripts that must be re-created in <head> to execute: remote scripts and
 // inline module scripts.
@@ -137,7 +191,18 @@ export const getInlineScripts = (fragment) => {
       continue;
     }
 
-    result.push(createNode(SCRIPT, attributes, { textContent }));
+    // `nomodule` is preserved even though this element is force-executed via
+    // appendChild: without it, a classic script the author intended as a
+    // legacy fallback (skipped in module-supporting browsers) would run
+    // where it otherwise wouldn't have.
+    const nomodule = getAttribute(element, NOMODULE);
+    result.push(
+      createNode(
+        SCRIPT,
+        { ...attributes, ...(nomodule !== null && { nomodule }) },
+        { textContent },
+      ),
+    );
   }
 
   return result;

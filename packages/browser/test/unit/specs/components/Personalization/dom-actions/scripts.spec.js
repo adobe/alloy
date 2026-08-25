@@ -129,6 +129,25 @@ describe("Personalization::helper::scripts", () => {
     expect(getInlineScripts(fragment).length).toEqual(0);
     expect(getRemoteScripts(fragment).length).toEqual(0);
   });
+  it("should leave non-executable script types untouched (neither inline nor head)", () => {
+    const fragment = createFragment(
+      `<script type="text/x-template">{{ not js }}</script>` +
+        `<script type="application/json">{"a":1}</script>` +
+        `<script type="importmap">{"imports":{}}</script>` +
+        `<script type="importmap" src="http://foo.com/map.json"></script>`,
+    );
+    expect(getInlineScripts(fragment).length).toEqual(0);
+    expect(getRemoteScripts(fragment).length).toEqual(0);
+  });
+  it("should treat recognized JavaScript MIME type variants as classic/module scripts", () => {
+    const fragment = createFragment(
+      `<script type="application/javascript">console.log('classic');</script>` +
+        `<script type="TEXT/JAVASCRIPT ; charset=utf-8">console.log('classic2');</script>` +
+        `<script type=" MODULE ">export default 1;</script>`,
+    );
+    expect(getInlineScripts(fragment).length).toEqual(2);
+    expect(getRemoteScripts(fragment).length).toEqual(1);
+  });
   it("should execute an inline module in the head as an ES module (fire-and-forget)", async () => {
     delete window.__alloyInlineModuleRan;
     const fragment = createFragment(
@@ -152,6 +171,23 @@ describe("Personalization::helper::scripts", () => {
     const ran = await waitFor(() => window.__alloyInlineModuleRan === true);
     expect(ran).toBe(true);
     delete window.__alloyInlineModuleRan;
+  });
+  it("should preserve nomodule on a re-created classic inline script", () => {
+    const fragment = createFragment(
+      `<script nomodule data-alloy-test="legacy">window.__alloyLegacyRan = true;</script>`,
+    );
+    const inlineScripts = getInlineScripts(fragment);
+    expect(inlineScripts.length).toEqual(1);
+    expect(inlineScripts[0].getAttribute("nomodule")).toEqual("");
+    // Author identity attributes are still not copied.
+    expect(inlineScripts[0].getAttribute("data-alloy-test")).toBeNull();
+  });
+  it("should omit nomodule from a re-created classic inline script when absent", () => {
+    const fragment = createFragment(
+      `<script>window.__alloyClassicRan = true;</script>`,
+    );
+    const inlineScripts = getInlineScripts(fragment);
+    expect(inlineScripts[0].getAttribute("nomodule")).toBeNull();
   });
   it("should remove classic inline scripts from the DOM after executing them", () => {
     const fragment = createFragment(
