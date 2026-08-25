@@ -129,45 +129,50 @@ const getNormalizedType = (element) => {
 
 const isModule = (element) => getNormalizedType(element) === MODULE;
 
-// A classic script per the HTML spec: type is absent/empty or a recognized
-// JavaScript MIME type. Excludes "module" (handled separately) and anything
-// else (data blocks like "importmap" or a templating library's custom type).
-const isClassicJavaScript = (element) => {
+// An empty src (`<script src="">`) is treated as "no src" — it points nowhere,
+// so the script is handled on the inline path rather than fetched.
+const hasSrc = (element) => !!getAttribute(element, SRC);
+
+// A <script> the browser would actually execute: a classic script (type is
+// absent/empty or a recognized JavaScript MIME type) or an ES module. Any other
+// type is a data block (e.g. "importmap", "application/json", a templating
+// library's custom type) that never runs — see JAVASCRIPT_MIME_TYPES above.
+// Only executable scripts are extracted and re-inserted; the rest are left
+// untouched, since forcing them to run was never the intent.
+const isExecutableScript = (element) => {
+  if (!is(element, SCRIPT)) {
+    return false;
+  }
   const type = getNormalizedType(element);
-  return type === "" || JAVASCRIPT_MIME_TYPES.has(type);
+  return type === "" || type === MODULE || JAVASCRIPT_MIME_TYPES.has(type);
 };
 
-// Gate applied before any inline/remote classification below: only scripts
-// the browser would actually execute (classic JS or module) are eligible for
-// extraction and re-insertion. Everything else is left untouched — it was
-// never going to execute regardless of insertion method, so there's nothing
-// to force.
-const isExecutableScript = (element) =>
-  is(element, SCRIPT) && (isClassicJavaScript(element) || isModule(element));
+// How a given <script> must be re-created for the browser to run it:
+//   HEAD_SCRIPT   – re-created in <head>: any remote script (with a src), plus
+//                   inline ES modules. An inline `type="module"` executes
+//                   asynchronously, so it belongs with the head scripts rather
+//                   than the synchronous inline path.
+//   INLINE_SCRIPT – classic inline script: re-created and run synchronously in
+//                   the offer container.
+const HEAD_SCRIPT = "head";
+const INLINE_SCRIPT = "inline";
 
-const isRemoteScript = (element) =>
-  isExecutableScript(element) && !!getAttribute(element, SRC);
-
-// An inline module (no src, type="module") executes asynchronously, so it is
-// re-created in <head> alongside remote scripts rather than run synchronously
-// in the offer container. It needs code to be worth executing.
-const isInlineModuleScript = (element) =>
-  isExecutableScript(element) &&
-  !getAttribute(element, SRC) &&
-  isModule(element) &&
-  !!element.textContent;
-
-// Classic inline scripts execute synchronously in the offer container. Inline
-// module scripts are excluded here — they are handled as head scripts instead.
-const isInlineScript = (element) =>
-  isExecutableScript(element) &&
-  !getAttribute(element, SRC) &&
-  !isModule(element);
-
-// Scripts that must be re-created in <head> to execute: remote scripts and
-// inline module scripts.
-const isHeadScript = (element) =>
-  isRemoteScript(element) || isInlineModuleScript(element);
+// Classifies a <script>, or returns null when there's nothing to run: either a
+// data block the browser would never execute (left untouched), or an inline
+// script with no code. `src`-less inline scripts need code to be worth running;
+// a remote script's code lives at its `src`, so it always qualifies.
+const classifyScript = (element) => {
+  if (!isExecutableScript(element)) {
+    return null;
+  }
+  if (hasSrc(element)) {
+    return HEAD_SCRIPT;
+  }
+  if (!element.textContent) {
+    return null;
+  }
+  return isModule(element) ? HEAD_SCRIPT : INLINE_SCRIPT;
+};
 
 export const getInlineScripts = (fragment) => {
   const scripts = selectNodes(SCRIPT, fragment);
@@ -181,15 +186,11 @@ export const getInlineScripts = (fragment) => {
   for (let i = 0; i < length; i += 1) {
     const element = scripts[i];
 
-    if (!isInlineScript(element)) {
+    if (classifyScript(element) !== INLINE_SCRIPT) {
       continue;
     }
 
     const { textContent } = element;
-
-    if (!textContent) {
-      continue;
-    }
 
     // `nomodule` is preserved even though this element is force-executed via
     // appendChild: without it, a classic script the author intended as a
@@ -216,7 +217,7 @@ export const getRemoteScripts = (fragment) => {
   for (let i = 0; i < length; i += 1) {
     const element = scripts[i];
 
-    if (!isHeadScript(element)) {
+    if (classifyScript(element) !== HEAD_SCRIPT) {
       continue;
     }
 
