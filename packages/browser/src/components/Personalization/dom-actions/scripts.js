@@ -16,6 +16,23 @@ import { getAttribute, getNonce } from "./dom/index.js";
 
 const TYPE = "type";
 const MODULE = "module";
+const NONCE = "nonce";
+
+// Attributes that affect how the script executes/fetches (as opposed to
+// identity/presentation attributes like id, class, and data-*, which are
+// intentionally not copied — see loadScript below). `src` is handled
+// separately since it needs different treatment for inline vs. remote
+// scripts, and `nonce` is copied here as a fallback but then overridden
+// below with the page's current CSP nonce when one is found.
+const COPIED_ATTRIBUTES = [
+  TYPE,
+  NONCE,
+  "crossorigin",
+  "integrity",
+  "referrerpolicy",
+  "fetchpriority",
+  "nomodule",
+];
 
 const getPromise = (url, script) => {
   return new Promise((resolve, reject) => {
@@ -34,20 +51,25 @@ const getPromise = (url, script) => {
 // with the head-loaded scripts rather than the synchronously-run inline path.
 const loadScript = (source) => {
   const url = getAttribute(source, SRC);
-  const type = getAttribute(source, TYPE);
   const script = document.createElement("script");
-  // Only carry the attributes required to execute the script correctly: `type`
-  // (e.g. "module"), `src` (below), and the CSP `nonce`. Author attributes such
-  // as `id`, `class`, and `data-*` are intentionally NOT copied: the original
-  // offer <script> is left in the page (inert), so copying its id/class onto
-  // this executed element would create duplicate matches for
+  // Only carry the attributes required to execute the script correctly:
+  // `src` (below) and COPIED_ATTRIBUTES. Author attributes such as `id`,
+  // `class`, and `data-*` are intentionally NOT copied: the original offer
+  // <script> is left in the page (inert), so copying its id/class onto this
+  // executed element would create duplicate matches for
   // document.getElementById / querySelector.
-  if (type) {
-    script.setAttribute(TYPE, type);
-  }
+  COPIED_ATTRIBUTES.forEach((name) => {
+    const value = getAttribute(source, name);
+    if (value !== null) {
+      script.setAttribute(name, value);
+    }
+  });
+  // The page's current CSP nonce takes priority over whatever nonce (if any)
+  // was written into the source markup, since that's the one the browser
+  // will actually check against the CSP header for this page load.
   const nonce = getNonce();
   if (nonce) {
-    script.setAttribute("nonce", nonce);
+    script.setAttribute(NONCE, nonce);
   }
 
   if (!url) {

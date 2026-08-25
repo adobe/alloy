@@ -35,9 +35,9 @@ const MODULE_SRC = `data:text/javascript,${encodeURIComponent(
   "window.__alloyModuleExecuted = true; export default 1;",
 )}`;
 
-// The re-created head scripts only carry type/src/nonce (no test marker
-// attribute), so snapshot the <head> scripts before each test and remove
-// anything added during it.
+// The re-created head scripts only carry type/src/nonce/the functional
+// allowlist (no test marker attribute), so snapshot the <head> scripts before
+// each test and remove anything added during it.
 let preExistingHeadScripts;
 
 const removeInjectedScripts = () => {
@@ -169,12 +169,16 @@ describe("Personalization::helper::scripts", () => {
       delete window.__alloyClassicRan;
     }
   });
-  it("should copy only type, src, and nonce to the executed head script", async () => {
+  it("should copy only type, src, nonce, and the functional allowlist to the executed head script", () => {
     const fragment = createFragment(
-      `<script class="mfx-targetOffer" type="text/javascript" id="offerScript" data-foo="bar" src="${LOADABLE_SRC}"></script>`,
+      `<script class="mfx-targetOffer" type="text/javascript" id="offerScript" data-foo="bar" crossorigin="anonymous" integrity="sha384-abc" referrerpolicy="no-referrer" fetchpriority="high" nomodule src="${LOADABLE_SRC}"></script>`,
     );
     const remoteScripts = getRemoteScripts(fragment);
-    await executeRemoteScripts(remoteScripts);
+    // The script element is appended to <head> synchronously; the returned
+    // promise only tracks the (separate) load outcome, which is irrelevant to
+    // attribute copying and can be unpredictable for a data: URL combined with
+    // crossorigin/integrity. Swallow it so it doesn't surface as unhandled.
+    executeRemoteScripts(remoteScripts).catch(() => {});
 
     const injected = document.head.querySelector(
       `script[src="${LOADABLE_SRC}"]`,
@@ -183,6 +187,11 @@ describe("Personalization::helper::scripts", () => {
     // Functional attributes are carried over.
     expect(injected.getAttribute("src")).toEqual(LOADABLE_SRC);
     expect(injected.getAttribute("type")).toEqual("text/javascript");
+    expect(injected.getAttribute("crossorigin")).toEqual("anonymous");
+    expect(injected.getAttribute("integrity")).toEqual("sha384-abc");
+    expect(injected.getAttribute("referrerpolicy")).toEqual("no-referrer");
+    expect(injected.getAttribute("fetchpriority")).toEqual("high");
+    expect(injected.getAttribute("nomodule")).toEqual("");
     // Author identity/data attributes are intentionally NOT copied, so they
     // can't create duplicate matches with the original offer script.
     expect(injected.getAttribute("class")).toBeNull();
@@ -190,6 +199,19 @@ describe("Personalization::helper::scripts", () => {
     expect(injected.getAttribute("data-foo")).toBeNull();
     // async is always enforced.
     expect(injected.async).toBe(true);
+  });
+  it("should omit the functional allowlist attributes when the source doesn't have them", async () => {
+    const fragment = createFragment(`<script src="${LOADABLE_SRC}"></script>`);
+    await executeRemoteScripts(getRemoteScripts(fragment));
+
+    const injected = document.head.querySelector(
+      `script[src="${LOADABLE_SRC}"]`,
+    );
+    expect(injected.getAttribute("crossorigin")).toBeNull();
+    expect(injected.getAttribute("integrity")).toBeNull();
+    expect(injected.getAttribute("referrerpolicy")).toBeNull();
+    expect(injected.getAttribute("fetchpriority")).toBeNull();
+    expect(injected.getAttribute("nomodule")).toBeNull();
   });
   it("should preserve type=module so a remote ES module offer executes as a module", async () => {
     delete window.__alloyModuleExecuted;
@@ -237,6 +259,38 @@ describe("Personalization::helper::scripts", () => {
         `script[src="${LOADABLE_SRC}"]`,
       );
       expect(injected.getAttribute("nonce")).toEqual("test-nonce-123");
+    } finally {
+      nonceHolder.remove();
+    }
+  });
+  it("should fall back to the source's nonce when no page nonce is found", async () => {
+    testResetCachedNonce();
+    const fragment = createFragment(
+      `<script nonce="source-nonce-456" src="${LOADABLE_SRC}"></script>`,
+    );
+    await executeRemoteScripts(getRemoteScripts(fragment));
+
+    const injected = document.head.querySelector(
+      `script[src="${LOADABLE_SRC}"]`,
+    );
+    expect(injected.getAttribute("nonce")).toEqual("source-nonce-456");
+  });
+  it("should override the source's nonce with the page's nonce when both are present", async () => {
+    testResetCachedNonce();
+    const nonceHolder = document.createElement("meta");
+    nonceHolder.setAttribute("nonce", "page-nonce-789");
+    document.head.appendChild(nonceHolder);
+
+    try {
+      const fragment = createFragment(
+        `<script nonce="source-nonce-456" src="${LOADABLE_SRC}"></script>`,
+      );
+      await executeRemoteScripts(getRemoteScripts(fragment));
+
+      const injected = document.head.querySelector(
+        `script[src="${LOADABLE_SRC}"]`,
+      );
+      expect(injected.getAttribute("nonce")).toEqual("page-nonce-789");
     } finally {
       nonceHolder.remove();
     }
