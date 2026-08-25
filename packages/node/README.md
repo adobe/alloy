@@ -106,10 +106,11 @@ A minimal, always-on Context component attaches `implementationDetails` to
 every event automatically. There's no DOM to read device/viewport/timezone
 info from like the browser version does, but if you pass the real incoming
 request to `forRequest({ request })`, Context also derives
-`web.webPageDetails.URL` from its `Referer` header, and the real visitor's
-`User-Agent`/`Accept-Language` headers get forwarded upstream to Edge
-Network — so its own server-side device/locale parsing has real data to
-work with instead of whatever Node's own `fetch()` would send by default:
+`web.webPageDetails.URL` from its `Referer` header, and the visitor's real
+headers (`User-Agent`, client hints, `X-Forwarded-For`, etc. — see
+`pickForwardableHeaders`) get forwarded upstream to Edge Network, so its own
+server-side device/locale/geo parsing has real data to work with instead of
+whatever Node's own `fetch()` would send by default:
 
 ```js
 const request = alloy.forRequest({

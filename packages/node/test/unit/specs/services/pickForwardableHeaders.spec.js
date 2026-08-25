@@ -18,10 +18,14 @@ describe("pickForwardableHeaders", () => {
     expect(pickForwardableHeaders()).toEqual({});
   });
 
-  it("picks user-agent and accept-language, dropping everything else", () => {
+  it("picks user-agent, accept-language, client hints, and IP-forwarding headers, dropping everything else", () => {
     const picked = pickForwardableHeaders({
       "user-agent": "Mozilla/5.0",
       "accept-language": "en-US,en;q=0.9",
+      "sec-ch-ua": '"Chromium";v="128"',
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": '"macOS"',
+      "x-forwarded-for": "203.0.113.1",
       cookie: "should-not-be-forwarded",
       host: "example.com",
     });
@@ -29,6 +33,10 @@ describe("pickForwardableHeaders", () => {
     expect(picked).toEqual({
       "user-agent": "Mozilla/5.0",
       "accept-language": "en-US,en;q=0.9",
+      "sec-ch-ua": '"Chromium";v="128"',
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": '"macOS"',
+      "x-forwarded-for": "203.0.113.1",
     });
   });
 

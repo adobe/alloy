@@ -13,13 +13,10 @@ governing permissions and limitations under the License.
 /** @import { NodeRequestHeaders } from "./createNodePlatformServices.js" */
 
 /**
- * Reads a single header off either shape `request.headers` can be, since
- * `forRequest({ request })` is documented to accept "any object with
- * headers" and fetch-standard `Request`s (as used by Next.js Route
- * Handlers, Hono, and other fetch-based Node frameworks) are a realistic
- * shape for that: their `.headers` is a WHATWG `Headers` instance, not a
- * plain object, and bracket access on a `Headers` instance always returns
- * `undefined` — it only exposes values through `.get()`.
+ * Reads a single header from either shape `request.headers` can be — a
+ * plain object, or a WHATWG `Headers` instance (e.g. fetch-standard
+ * `Request`s, as used by Next.js Route Handlers, Hono, etc.), which only
+ * exposes values through `.get()`.
  *
  * @param {NodeRequestHeaders | undefined} headers
  * @param {string} name Lowercase header name.

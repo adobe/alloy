@@ -45,13 +45,10 @@ import pickForwardableHeaders from "./pickForwardableHeaders.js";
  * @param {RuntimeService} [overrides.runtime]
  * @param {LegacyService} [overrides.legacy]
  * @param {GlobalsService} [overrides.globals]
- * @param {NodeRequestLike} [overrides.request] The real incoming HTTP
- * request Node is proxying an event on behalf of, if any. Used, when
- * `network` isn't explicitly overridden, to forward the visitor's real
- * `User-Agent`/`Accept-Language` headers upstream to Edge Network, and
- * exposed as-is on the returned object (a Node-only extension beyond the
- * shared `PlatformServices` interface) for the Context component to derive
- * `web.webPageDetails.URL` from.
+ * @param {NodeRequestLike} [overrides.request] The real incoming request
+ * Node is proxying an event for, if any — forwarded to Edge Network via
+ * `pickForwardableHeaders` (unless `network` is overridden), and exposed
+ * as-is on the returned object for the Context component to read.
  * @returns {PlatformServices & { request?: NodeRequestLike }}
  */
 const createNodePlatformServices = ({

@@ -12,31 +12,21 @@ governing permissions and limitations under the License.
 
 /** @import { NodeRequestLike } from "../services/createNodePlatformServices.js" */
 
+import { createRequire } from "node:module";
 import getHeader from "../services/getHeader.js";
 
-// Mirrors @adobe/alloy-core/constants/libraryName.js, hardcoded here rather
-// than imported to avoid pulling core's build-time __VERSION__ placeholder
-// (never replaced in Node's unbundled source) and to keep Node's own
-// implementationDetails.version tied to @adobe/alloy-node's own version,
-// which is independent of the browser bundle's.
+// Mirrors @adobe/alloy-core/constants/libraryName.js — hardcoded rather than
+// imported since it's independent of @adobe/alloy-node's own version.
 const LIBRARY_NAME = "https://ns.adobe.com/experience/alloy";
-const LIBRARY_VERSION = "1.0.0-beta.0";
+const { version: LIBRARY_VERSION } = createRequire(import.meta.url)(
+  "../../package.json",
+);
 
 /**
- * Required (always active) Node component analogous to the browser bundle's
- * Context component. There's no DOM to read device/viewport/timezone info
- * from, so unlike the browser version this only attaches:
- *
- * - `implementationDetails`, unconditionally.
- * - `web.webPageDetails.URL`, best-effort, from the `Referer` header of the
- *   request passed to `forRequest({ request })` — the closest Node
- *   equivalent of "the page the visitor is on," since it's usually the page
- *   that called this server's endpoint in a hybrid-personalization setup.
- *
- * Everything else the browser's Context collects (screen size, viewport,
- * local timezone) has no honest server-side source and is deliberately not
- * guessed at here — a caller who has real values for those can still merge
- * them directly via `sendEvent({ xdm })`.
+ * Node's analog to the browser bundle's Context component. No DOM to read
+ * device/viewport/timezone from, so this only attaches `implementationDetails`
+ * and, best-effort, `web.webPageDetails.URL` from the `Referer` header of
+ * `forRequest({ request })`.
  *
  * @param {Object} params
  * @param {{ request?: NodeRequestLike }} params.platformServices

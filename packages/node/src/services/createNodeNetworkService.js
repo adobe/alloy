@@ -18,10 +18,8 @@ governing permissions and limitations under the License.
  *
  * @param {Object} [options]
  * @param {Record<string, string>} [options.headers] Extra headers merged
- * into every outgoing request — e.g. a real visitor's `User-Agent` from
- * `pickForwardableHeaders`, so Edge Network's own device parsing has real
- * data instead of whatever Node's fetch() sends by default. Can't override
- * `Content-Type`.
+ * into every outgoing request (e.g. from `pickForwardableHeaders`). Can't
+ * override `Content-Type`.
  * @returns {NetworkService}
  */
 const createNodeNetworkService = ({ headers: forwardedHeaders = {} } = {}) => {
