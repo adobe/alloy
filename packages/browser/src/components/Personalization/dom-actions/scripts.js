@@ -14,6 +14,55 @@ import { SCRIPT } from "@adobe/alloy-core/constants/tagName.js";
 import { SRC } from "@adobe/alloy-core/constants/elementAttribute.js";
 import { getAttribute, getNonce } from "./dom/index.js";
 
+const TYPE = "type";
+const MODULE = "module";
+const NONCE = "nonce";
+const NOMODULE = "nomodule";
+
+// Per the HTML spec, a <script> only ever executes if its type is absent/
+// empty, "module", or one of these recognized JavaScript MIME type essences
+// (https://mimesniff.spec.whatwg.org/#javascript-mime-type). Any other type
+// (e.g. "importmap", "application/json", a templating library's custom type)
+// makes the element a data block: the browser never executes it, regardless
+// of whether it's parsed from HTML, inserted via innerHTML, or appended with
+// appendChild. Such elements are left untouched by this module — extracting
+// and re-inserting them would be pointless at best, and at worst (if `type`
+// were dropped along the way) would turn inert data into code that runs.
+const JAVASCRIPT_MIME_TYPES = new Set([
+  "application/ecmascript",
+  "application/javascript",
+  "application/x-ecmascript",
+  "application/x-javascript",
+  "text/ecmascript",
+  "text/javascript",
+  "text/javascript1.0",
+  "text/javascript1.1",
+  "text/javascript1.2",
+  "text/javascript1.3",
+  "text/javascript1.4",
+  "text/javascript1.5",
+  "text/jscript",
+  "text/livescript",
+  "text/x-ecmascript",
+  "text/x-javascript",
+]);
+
+// Attributes that affect how the script executes/fetches (as opposed to
+// identity/presentation attributes like id, class, and data-*, which are
+// intentionally not copied — see loadScript below). `src` is handled
+// separately since it needs different treatment for inline vs. remote
+// scripts, and `nonce` is copied here as a fallback but then overridden
+// below with the page's current CSP nonce when one is found.
+const COPIED_ATTRIBUTES = [
+  TYPE,
+  NONCE,
+  "crossorigin",
+  "integrity",
+  "referrerpolicy",
+  "fetchpriority",
+  "nomodule",
+];
+
 const getPromise = (url, script) => {
   return new Promise((resolve, reject) => {
     script.onload = () => {
@@ -24,24 +73,45 @@ const getPromise = (url, script) => {
     };
   });
 };
+
+// Re-creates a script in <head> so the browser executes it (scripts inserted via
+// innerHTML never run). Handles both remote scripts (with a src) and inline
+// module scripts: an inline `type="module"` executes asynchronously and belongs
+// with the head-loaded scripts rather than the synchronously-run inline path.
 const loadScript = (source) => {
   const url = getAttribute(source, SRC);
   const script = document.createElement("script");
-  // Preserve all author-supplied attributes (class, type, data-*, etc.) so
-  // consumers relying on them keep working.
-  const { attributes } = source;
-  for (let i = 0; i < attributes.length; i += 1) {
-    const { name, value } = attributes[i];
-    script.setAttribute(name, value);
-  }
-  // Override invariants last so they can't be clobbered by the source element.
+  // Only carry the attributes required to execute the script correctly:
+  // `src` (below) and COPIED_ATTRIBUTES. Author attributes such as `id`,
+  // `class`, and `data-*` are intentionally NOT copied: the original offer
+  // <script> is left in the page (inert), so copying its id/class onto this
+  // executed element would create duplicate matches for
+  // document.getElementById / querySelector.
+  COPIED_ATTRIBUTES.forEach((name) => {
+    const value = getAttribute(source, name);
+    if (value !== null) {
+      script.setAttribute(name, value);
+    }
+  });
+  // The page's current CSP nonce takes priority over whatever nonce (if any)
+  // was written into the source markup, since that's the one the browser
+  // will actually check against the CSP header for this page load.
   const nonce = getNonce();
   if (nonce) {
-    script.setAttribute("nonce", nonce);
+    script.setAttribute(NONCE, nonce);
   }
+
+  if (!url) {
+    // Inline module script: carry the code across and let it execute in <head>.
+    // Inline scripts emit no load event, so completion cannot be tracked; we
+    // resolve immediately and rely on the browser's deferred module execution.
+    script.textContent = source.textContent;
+    document.head.appendChild(script);
+    return Promise.resolve(script);
+  }
+
+  script.src = url;
   script.async = true;
-  // Assign load handlers after copying attributes so a copied inline
-  // onload/onerror attribute can't break load-completion tracking.
   const promise = getPromise(url, script);
   document.head.appendChild(script);
   return promise;
@@ -50,11 +120,59 @@ const loadScript = (source) => {
 export const is = (element, tagName) =>
   !!element && element.tagName === tagName;
 
-const isInlineScript = (element) =>
-  is(element, SCRIPT) && !getAttribute(element, SRC);
+// Normalizes away casing/whitespace/parameters (e.g. "TEXT/JAVASCRIPT ;
+// charset=utf-8") so it can be compared against MODULE/JAVASCRIPT_MIME_TYPES.
+const getNormalizedType = (element) => {
+  const type = getAttribute(element, TYPE);
+  return type ? type.split(";")[0].trim().toLowerCase() : "";
+};
 
-const isRemoteScript = (element) =>
-  is(element, SCRIPT) && getAttribute(element, SRC);
+const isModule = (element) => getNormalizedType(element) === MODULE;
+
+// An empty src (`<script src="">`) is treated as "no src" — it points nowhere,
+// so the script is handled on the inline path rather than fetched.
+const hasSrc = (element) => !!getAttribute(element, SRC);
+
+// A <script> the browser would actually execute: a classic script (type is
+// absent/empty or a recognized JavaScript MIME type) or an ES module. Any other
+// type is a data block (e.g. "importmap", "application/json", a templating
+// library's custom type) that never runs — see JAVASCRIPT_MIME_TYPES above.
+// Only executable scripts are extracted and re-inserted; the rest are left
+// untouched, since forcing them to run was never the intent.
+const isExecutableScript = (element) => {
+  if (!is(element, SCRIPT)) {
+    return false;
+  }
+  const type = getNormalizedType(element);
+  return type === "" || type === MODULE || JAVASCRIPT_MIME_TYPES.has(type);
+};
+
+// How a given <script> must be re-created for the browser to run it:
+//   HEAD_SCRIPT   – re-created in <head>: any remote script (with a src), plus
+//                   inline ES modules. An inline `type="module"` executes
+//                   asynchronously, so it belongs with the head scripts rather
+//                   than the synchronous inline path.
+//   INLINE_SCRIPT – classic inline script: re-created and run synchronously in
+//                   the offer container.
+const HEAD_SCRIPT = "head";
+const INLINE_SCRIPT = "inline";
+
+// Classifies a <script>, or returns null when there's nothing to run: either a
+// data block the browser would never execute (left untouched), or an inline
+// script with no code. `src`-less inline scripts need code to be worth running;
+// a remote script's code lives at its `src`, so it always qualifies.
+const classifyScript = (element) => {
+  if (!isExecutableScript(element)) {
+    return null;
+  }
+  if (hasSrc(element)) {
+    return HEAD_SCRIPT;
+  }
+  if (!element.textContent) {
+    return null;
+  }
+  return isModule(element) ? HEAD_SCRIPT : INLINE_SCRIPT;
+};
 
 export const getInlineScripts = (fragment) => {
   const scripts = selectNodes(SCRIPT, fragment);
@@ -68,17 +186,24 @@ export const getInlineScripts = (fragment) => {
   for (let i = 0; i < length; i += 1) {
     const element = scripts[i];
 
-    if (!isInlineScript(element)) {
+    if (classifyScript(element) !== INLINE_SCRIPT) {
       continue;
     }
 
     const { textContent } = element;
 
-    if (!textContent) {
-      continue;
-    }
-
-    result.push(createNode(SCRIPT, attributes, { textContent }));
+    // `nomodule` is preserved even though this element is force-executed via
+    // appendChild: without it, a classic script the author intended as a
+    // legacy fallback (skipped in module-supporting browsers) would run
+    // where it otherwise wouldn't have.
+    const nomodule = getAttribute(element, NOMODULE);
+    result.push(
+      createNode(
+        SCRIPT,
+        { ...attributes, ...(nomodule !== null && { nomodule }) },
+        { textContent },
+      ),
+    );
   }
 
   return result;
@@ -92,8 +217,7 @@ export const getRemoteScripts = (fragment) => {
   for (let i = 0; i < length; i += 1) {
     const element = scripts[i];
 
-    // isRemoteScript already requires a non-empty src attribute.
-    if (!isRemoteScript(element)) {
+    if (classifyScript(element) !== HEAD_SCRIPT) {
       continue;
     }
 
