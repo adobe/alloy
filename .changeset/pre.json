@@ -13,6 +13,7 @@
   },
   "changesets": [
     "dirty-pugs-boil",
+    "inline-module-scripts",
     "wild-peaches-cut"
   ]
 }
