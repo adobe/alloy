@@ -12,15 +12,11 @@ governing permissions and limitations under the License.
 
 /** @import { NodeRequestLike } from "../services/createNodePlatformServices.js" */
 
-import { createRequire } from "node:module";
+import packageJson from "../../package.json" with { type: "json" };
 import getHeader from "../services/getHeader.js";
 
-// Mirrors @adobe/alloy-core/constants/libraryName.js — hardcoded rather than
-// imported since it's independent of @adobe/alloy-node's own version.
 const LIBRARY_NAME = "https://ns.adobe.com/experience/alloy";
-const { version: LIBRARY_VERSION } = createRequire(import.meta.url)(
-  "../../package.json",
-);
+const { version: LIBRARY_VERSION } = packageJson;
 
 /**
  * Node's analog to the browser bundle's Context component. No DOM to read
