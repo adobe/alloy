@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { isNamespacedCookieName } from "../utils/index.js";
-import { AT_QA_MODE, MBOX } from "../constants/legacyCookies.js";
+import { AT_QA_MODE, MBOX, MUNCHKIN } from "../constants/legacyCookies.js";
 
 export default ({ orgId, targetMigrationEnabled }) =>
   (name) => {
@@ -19,10 +19,13 @@ export default ({ orgId, targetMigrationEnabled }) =>
     // all cookies whose names are namespaced according to the
     // logic in isNamespacedCookieName as well as any legacy
     // cookie names (so that the server can handle migrating
-    // identities on websites previously using Visitor.js)
+    // identities on websites previously using Visitor.js). The
+    // Marketo Munchkin cookie is always forwarded so the server
+    // can resolve the visitor's Marketo identity.
     return (
       isNamespacedCookieName(orgId, name) ||
       name === AT_QA_MODE ||
+      name === MUNCHKIN ||
       (targetMigrationEnabled && name === MBOX)
     );
   };

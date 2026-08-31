@@ -41,26 +41,20 @@ export default ({
       // headers.
       if (!isEndpointFirstParty || isNonEmptyArray(extraCookieNames)) {
         const cookies = cookieJar.getAll();
-        const entries = [];
+        const entriesByKey = new Map();
+        const addEntry = (key) => {
+          if (cookies[key] !== undefined && !entriesByKey.has(key)) {
+            entriesByKey.set(key, { key, value: cookies[key] });
+          }
+        };
         if (!isEndpointFirstParty) {
-          Object.keys(cookies)
-            .filter(shouldTransferCookie)
-            .forEach((qualifyingCookieName) => {
-              entries.push({
-                key: qualifyingCookieName,
-                value: cookies[qualifyingCookieName],
-              });
-            });
+          Object.keys(cookies).filter(shouldTransferCookie).forEach(addEntry);
         }
         if (isNonEmptyArray(extraCookieNames)) {
-          extraCookieNames.forEach((name) => {
-            if (cookies[name] !== undefined) {
-              entries.push({ key: name, value: cookies[name] });
-            }
-          });
+          extraCookieNames.forEach(addEntry);
         }
-        if (entries.length) {
-          state.entries = entries;
+        if (entriesByKey.size) {
+          state.entries = [...entriesByKey.values()];
         }
       }
 

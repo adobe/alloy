@@ -2,4 +2,4 @@
 "@adobe/alloy-core": patch
 ---
 
-Transfer the Marketo Munchkin cookie into the Brand Concierge conversation payload so it is shared with the Edge Network and Brand Concierge runtime, regardless of the `stickyConversationSession` setting.
+Always forward the Marketo Munchkin cookie (`_mkto_trk`) to the Edge Network by adding it to the cookie-transfer allowlist, so the server can resolve the visitor's Marketo identity. Additionally, Brand Concierge gains a `conversation.transferCookies` configuration option for forwarding extra first-party cookies into the conversation request `meta.state`.

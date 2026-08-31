@@ -11,13 +11,22 @@ governing permissions and limitations under the License.
 */
 import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import createConciergeComponent from "../../../../../src/components/BrandConcierge/index.js";
+import createSendConversationEvent from "../../../../../src/components/BrandConcierge/createSendConversationEvent.js";
 import testConfigValidators from "../../../helpers/testConfigValidators.js";
+
+vi.mock(
+  "../../../../../src/components/BrandConcierge/createSendConversationEvent.js",
+  () => ({
+    default: vi.fn().mockReturnValue(vi.fn()),
+  }),
+);
 
 describe("BrandConcierge", () => {
   let mockDependencies;
   let originalFetch;
 
   beforeEach(() => {
+    createSendConversationEvent.mockClear();
     originalFetch = window.fetch;
     window.fetch = vi.fn();
 
@@ -139,6 +148,33 @@ describe("BrandConcierge", () => {
     );
   });
 
+  describe("alwaysTransferCookies", () => {
+    it("defaults to an empty list when no transferCookies are configured", () => {
+      createConciergeComponent(mockDependencies);
+
+      const [{ alwaysTransferCookies }] =
+        createSendConversationEvent.mock.calls[0];
+      expect(alwaysTransferCookies).toEqual([]);
+    });
+
+    it("passes configured transferCookies through", () => {
+      createConciergeComponent({
+        ...mockDependencies,
+        config: {
+          ...mockDependencies.config,
+          conversation: {
+            ...mockDependencies.config.conversation,
+            transferCookies: ["cookie_a", "cookie_b"],
+          },
+        },
+      });
+
+      const [{ alwaysTransferCookies }] =
+        createSendConversationEvent.mock.calls[0];
+      expect(alwaysTransferCookies).toEqual(["cookie_a", "cookie_b"]);
+    });
+  });
+
   describe("onBeforeEvent lifecycle", () => {
     let originalSearch;
     let originalState;
@@ -257,6 +293,9 @@ describe("BrandConcierge config validators", () => {
       {},
       { conversation: { collectSources: true } },
       { conversation: { collectSources: false } },
+      { conversation: { transferCookies: [] } },
+      { conversation: { transferCookies: ["_mkto_trk"] } },
+      { conversation: { transferCookies: ["_mkto_trk", "my_cookie"] } },
     ],
     invalidConfigurations: [
       { conversation: { stickyConversationSession: "invalid" } },
@@ -266,6 +305,8 @@ describe("BrandConcierge config validators", () => {
       { conversation: { streamTimeout: 1.5 } },
       { conversation: { collectSources: "invalid" } },
       { conversation: { collectSources: 123 } },
+      { conversation: { transferCookies: "invalid" } },
+      { conversation: { transferCookies: [123] } },
     ],
     defaultValues: {},
   });
@@ -274,5 +315,6 @@ describe("BrandConcierge config validators", () => {
     expect(config.conversation.stickyConversationSession).toBe(false);
     expect(config.conversation.streamTimeout).toBe(10000);
     expect(config.conversation.collectSources).toBe(false);
+    expect(config.conversation.transferCookies).toEqual([]);
   });
 });

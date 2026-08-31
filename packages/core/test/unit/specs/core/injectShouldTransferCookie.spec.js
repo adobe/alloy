@@ -50,4 +50,8 @@ describe("shouldTransferCookie", () => {
     build();
     expect(shouldTransferCookie("kndctr_ABC_CustomOrg_mynewcookie")).toBe(true);
   });
+  it("returns true for the Marketo Munchkin cookie", () => {
+    build();
+    expect(shouldTransferCookie("_mkto_trk")).toBe(true);
+  });
 });
