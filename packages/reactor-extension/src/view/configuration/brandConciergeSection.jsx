@@ -20,7 +20,6 @@ import {
   Flex,
   Button,
   ActionButton,
-  LabeledValue,
 } from "@adobe/react-spectrum";
 import Delete from "@spectrum-icons/workflow/Delete";
 import SectionHeader from "../components/sectionHeader";
@@ -70,6 +69,16 @@ export const bridge = {
     const streamTimeoutMs =
       instanceSettings.conversation?.streamTimeout ?? STREAM_TIMEOUT_MS;
     conversation.streamTimeout = streamTimeoutMs / 1000;
+
+    // Always show at least one transfer cookie field. An untouched empty
+    // field is trimmed and dropped in getInstanceSettings, so this does not
+    // emit a transferCookies setting on its own.
+    if (
+      !conversation.transferCookies ||
+      conversation.transferCookies.length === 0
+    ) {
+      conversation.transferCookies = [""];
+    }
 
     return { conversation };
   },
@@ -199,21 +208,21 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
           Collect sources
         </FormikCheckbox>
         <View>
-          <LabeledValue label="Transfer cookies" value="" width="size-5000" />
-          <Content>
-            Additional first-party cookie names to always transfer to Brand
-            Concierge conversation requests, in addition to the ones transferred
-            by default.
-          </Content>
           <FieldArray
             name={`${instanceFieldName}.conversation.transferCookies`}
             render={(arrayHelpers) => (
-              <Flex direction="column" gap="size-100" marginTop="size-100">
+              <Flex direction="column" gap="size-100">
                 {transferCookies.map((cookieName, index) => (
                   <Flex key={index} alignItems="end">
                     <FormikTextField
                       data-test-id={`transferCookie${index}Field`}
+                      label={index === 0 ? "Transfer cookies" : undefined}
                       aria-label={`Transfer cookie ${index + 1}`}
+                      description={
+                        index === transferCookies.length - 1
+                          ? "Additional first-party cookie names to always transfer to Brand Concierge conversation requests, in addition to the ones transferred by default."
+                          : undefined
+                      }
                       name={`${instanceFieldName}.conversation.transferCookies.${index}`}
                       width="size-4600"
                       marginEnd="size-100"
@@ -222,6 +231,7 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
                       data-test-id={`deleteTransferCookie${index}Button`}
                       isQuiet
                       variant="secondary"
+                      isDisabled={transferCookies.length <= 1}
                       onPress={() => {
                         arrayHelpers.remove(index);
                       }}

@@ -336,7 +336,8 @@ describe("Config brand concierge section", () => {
       }),
     );
 
-    await field(view.getByTestId("addTransferCookieButton")).click();
+    // A single empty transfer cookie field is always shown by default, so
+    // there is no need to add one before filling it.
     await field(view.getByTestId("transferCookie0Field")).fill("munchkin");
 
     await driver
