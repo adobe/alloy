@@ -31,6 +31,8 @@ const createConciergeComponent = ({
   cookieTransfer,
   createResponse,
   platformServices,
+  createSendConversationEvent:
+    createSendConversationEventFactory = createSendConversationEvent,
 }) => {
   const session = {
     id: getConciergeSessionCookie({ loggingCookieJar, config }),
@@ -48,7 +50,7 @@ const createConciergeComponent = ({
     cookieJar: loggingCookieJar,
     logger,
   });
-  const sendConversationEvent = createSendConversationEvent({
+  const sendConversationEvent = createSendConversationEventFactory({
     loggingCookieJar,
     logger,
     eventManager,

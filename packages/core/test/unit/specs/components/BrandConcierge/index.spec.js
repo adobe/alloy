@@ -11,26 +11,20 @@ governing permissions and limitations under the License.
 */
 import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import createConciergeComponent from "../../../../../src/components/BrandConcierge/index.js";
-import createSendConversationEvent from "../../../../../src/components/BrandConcierge/createSendConversationEvent.js";
 import testConfigValidators from "../../../helpers/testConfigValidators.js";
-
-vi.mock(
-  "../../../../../src/components/BrandConcierge/createSendConversationEvent.js",
-  () => ({
-    default: vi.fn().mockReturnValue(vi.fn()),
-  }),
-);
 
 describe("BrandConcierge", () => {
   let mockDependencies;
   let originalFetch;
+  let createSendConversationEvent;
 
   beforeEach(() => {
-    createSendConversationEvent.mockClear();
+    createSendConversationEvent = vi.fn().mockReturnValue(vi.fn());
     originalFetch = window.fetch;
     window.fetch = vi.fn();
 
     mockDependencies = {
+      createSendConversationEvent,
       loggingCookieJar: {
         remove: vi.fn(),
         get: vi.fn(),
