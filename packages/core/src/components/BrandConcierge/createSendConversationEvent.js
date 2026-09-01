@@ -23,6 +23,7 @@ export default ({
   sendConversationServiceRequest,
   buildEndpointUrl,
   cookieTransfer,
+  alwaysTransferCookies = [],
   createResponse,
   decodeKndctrCookie,
   lifecycle,
@@ -103,9 +104,11 @@ export default ({
         }
 
         payload.addEvent(event);
-        if (config.conversation.stickyConversationSession === true) {
-          cookieTransfer.cookiesToPayload(payload, edgeDomain);
-        }
+        cookieTransfer.cookiesToPayload(
+          payload,
+          edgeDomain,
+          alwaysTransferCookies,
+        );
         return sendConversationServiceRequest({
           requestId: uuid(),
           url,

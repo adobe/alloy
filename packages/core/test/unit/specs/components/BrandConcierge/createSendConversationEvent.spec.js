@@ -64,6 +64,7 @@ describe("createSendConversationEvent", () => {
         cookiesToPayload: vi.fn(),
         responseToCookies: vi.fn(),
       },
+      alwaysTransferCookies: ["test-cookie"],
       createResponse: vi.fn(),
       sendConversationServiceRequest: vi.fn(),
       decodeKndctrCookie: vi.fn().mockReturnValue("test-ecid-123"),
@@ -298,6 +299,43 @@ describe("createSendConversationEvent", () => {
 
     const [{ request }] = mockDependencies.buildEndpointUrl.mock.calls[0];
     expect(request.getEdgeSubPath()).toBe("/brand-concierge");
+  });
+
+  it("always calls cookiesToPayload with alwaysTransferCookies regardless of stickyConversationSession", async () => {
+    const mockResponse = {
+      ok: true,
+      status: 200,
+      body: createMockReadableStream([]),
+    };
+    mockDependencies.sendConversationServiceRequest.mockResolvedValue(
+      mockResponse,
+    );
+
+    const runWithConfig = async (stickyConversationSession) => {
+      mockDependencies.cookieTransfer.cookiesToPayload.mockClear();
+      mockDependencies.config.conversation = {
+        ...mockDependencies.config.conversation,
+        stickyConversationSession,
+      };
+
+      const sendConversationEvent =
+        createSendConversationEvent(mockDependencies);
+      await sendConversationEvent({
+        message: "Hello",
+        onStreamResponse: vi.fn(),
+      });
+
+      expect(
+        mockDependencies.cookieTransfer.cookiesToPayload,
+      ).toHaveBeenCalledWith(
+        expect.anything(),
+        mockDependencies.config.edgeDomain,
+        mockDependencies.alwaysTransferCookies,
+      );
+    };
+
+    await runWithConfig(true);
+    await runWithConfig(false);
   });
 
   it("handles stream timeout when no data is received within 10 seconds", async () => {
