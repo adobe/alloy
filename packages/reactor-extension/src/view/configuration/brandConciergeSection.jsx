@@ -41,7 +41,10 @@ const getDefaultSettings = () => ({
     stickyConversationSession: false,
     streamTimeout: STREAM_TIMEOUT_SECONDS,
     collectSources: false,
-    transferCookies: [],
+    // Seed one empty field so the UI always renders at least one transfer
+    // cookie input. An untouched empty field is trimmed and dropped in
+    // getInstanceSettings, so this does not emit a transferCookies setting.
+    transferCookies: [""],
   },
 });
 

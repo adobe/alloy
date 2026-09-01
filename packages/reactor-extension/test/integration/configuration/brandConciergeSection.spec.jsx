@@ -327,6 +327,19 @@ describe("Config brand concierge section", () => {
     );
   });
 
+  it("shows one empty transfer cookie field by default", async () => {
+    await driver.init(
+      buildSettings({
+        components: {
+          brandConcierge: true,
+        },
+      }),
+    );
+
+    await field(view.getByTestId("transferCookie0Field")).expectVisible();
+    await field(view.getByTestId("transferCookie0Field")).expectValue("");
+  });
+
   it("adds transfer cookies and saves them to settings", async () => {
     await driver.init(
       buildSettings({
