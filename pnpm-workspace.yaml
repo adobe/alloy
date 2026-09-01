@@ -30,6 +30,7 @@ overrides:
   yaml@<2.8.3: ^2.8.3
   tmp@<0.2.6: ^0.2.7
 allowBuilds:
+  '@adobe/reactor-turbine': false
   '@parcel/watcher': true
   '@swc/core': true
   core-js: true
