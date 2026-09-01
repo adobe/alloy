@@ -15,6 +15,7 @@ import {
   objectOf,
   boolean,
   string,
+  arrayOf,
 } from "../../utils/validation/index.js";
 
 export default objectOf({
@@ -26,9 +27,13 @@ export default objectOf({
       .default(STREAM_START_TIMEOUT_MS),
     collectSources: boolean().default(false),
     region: string().matches(/^[a-z]{2,4}[0-9]{1,2}$/i),
+    // Additional first-party cookie names to always transfer into the
+    // request meta.state object (on top of the ones transferred by default).
+    transferCookies: arrayOf(string()).default([]),
   }).default({
     stickyConversationSession: false,
     streamTimeout: STREAM_START_TIMEOUT_MS,
     collectSources: false,
+    transferCookies: [],
   }),
 });
