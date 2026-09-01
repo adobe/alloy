@@ -340,6 +340,20 @@ describe("Config brand concierge section", () => {
     await field(view.getByTestId("transferCookie0Field")).expectValue("");
   });
 
+  it("shows one empty transfer cookie field for a newly added extension", async () => {
+    // Settings with no `instances` is a brand-new extension: the instance is
+    // built via getInstanceDefaults (not getInitialInstanceValues, which the
+    // buildSettings-based tests above cover). Enabling the component then
+    // reads those defaults, so the transfer cookie field must still render.
+    await driver.init({ settings: {} });
+
+    await ui.expand("Build options");
+    await brandConciergeComponentCheckbox.click();
+
+    await field(view.getByTestId("transferCookie0Field")).expectVisible();
+    await field(view.getByTestId("transferCookie0Field")).expectValue("");
+  });
+
   it("adds transfer cookies and saves them to settings", async () => {
     await driver.init(
       buildSettings({

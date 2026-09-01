@@ -49,9 +49,10 @@ const getDefaultSettings = () => ({
 });
 
 export const bridge = {
-  getInstanceDefaults: () => ({
-    conversation: getDefaultSettings(),
-  }),
+  // getDefaultSettings already returns the { conversation: {...} } instance
+  // shape, so return it directly. Wrapping it again would double-nest under
+  // conversation.conversation and the fields would never reach the form.
+  getInstanceDefaults: () => getDefaultSettings(),
 
   getInitialInstanceValues: ({ instanceSettings }) => {
     const conversation = {};
