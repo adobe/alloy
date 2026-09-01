@@ -217,7 +217,7 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
             render={(arrayHelpers) => (
               <Flex direction="column" gap="size-100">
                 {transferCookies.map((cookieName, index) => (
-                  <Flex key={index} alignItems="end">
+                  <Flex key={index} alignItems="start">
                     <FormikTextField
                       data-test-id={`transferCookie${index}Field`}
                       label={index === 0 ? "Transfer cookies" : undefined}
@@ -240,6 +240,11 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
                         arrayHelpers.remove(index);
                       }}
                       aria-label={`Remove transfer cookie ${index + 1}`}
+                      // Offset the first row's button past the field label so it
+                      // aligns with the input; later rows have no label. Using
+                      // start alignment keeps the last row's description (help
+                      // text) from dragging its button below the input.
+                      marginTop={index === 0 ? "size-300" : "size-0"}
                     >
                       <Delete />
                     </ActionButton>
