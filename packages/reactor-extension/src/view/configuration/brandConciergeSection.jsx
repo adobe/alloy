@@ -262,7 +262,6 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
             label="Transfer cookies"
             name={`${instanceFieldName}.conversation.transferCookiesInputMethod`}
             orientation="horizontal"
-            description={TRANSFER_COOKIES_DESCRIPTION}
           >
             <Radio data-test-id="transferCookiesIndividualOption" value={FORM}>
               Specify each cookie individually
@@ -280,7 +279,7 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
                 data-test-id="transferCookiesDataElementField"
                 aria-label="Transfer cookies data element"
                 name={`${instanceFieldName}.conversation.transferCookiesDataElement`}
-                description="Provide a data element that resolves to an array of first-party cookie names."
+                description={TRANSFER_COOKIES_DESCRIPTION}
                 width="size-5000"
               />
             </DataElementSelector>
@@ -296,6 +295,11 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
                           data-test-id={`transferCookie${index}Field`}
                           aria-label={`Transfer cookie ${index + 1}`}
                           name={`${instanceFieldName}.conversation.transferCookies.${index}`}
+                          description={
+                            index === transferCookies.length - 1
+                              ? TRANSFER_COOKIES_DESCRIPTION
+                              : undefined
+                          }
                           width="size-4600"
                         />
                       </DataElementSelector>
