@@ -428,4 +428,114 @@ describe("Config brand concierge section", () => {
       .expectSettings((s) => s.instances[0].conversation.transferCookies)
       .toEqual(["marketo"]);
   });
+
+  it("defaults to specifying transfer cookies individually", async () => {
+    await driver.init(
+      buildSettings({
+        components: {
+          brandConcierge: true,
+        },
+      }),
+    );
+
+    await field(
+      view.getByTestId("transferCookiesIndividualOption"),
+    ).expectChecked();
+    await field(view.getByTestId("transferCookie0Field")).expectVisible();
+  });
+
+  it("shows a data element button on each transfer cookie row", async () => {
+    await driver.init(
+      buildSettings({
+        components: {
+          brandConcierge: true,
+        },
+      }),
+    );
+
+    await expect
+      .element(
+        view
+          .getByTestId("transferCookiesField")
+          .getByRole("button", { name: "Select data element" }),
+      )
+      .toBeVisible();
+  });
+
+  it("saves transfer cookies as a whole data element", async () => {
+    await driver.init(
+      buildSettings({
+        components: {
+          brandConcierge: true,
+        },
+      }),
+    );
+
+    await field(view.getByTestId("transferCookiesDataElementOption")).click();
+    await field(view.getByTestId("transferCookiesDataElementField")).fill(
+      "%cookieList%",
+    );
+
+    await driver
+      .expectSettings((s) => s.instances[0].conversation.transferCookies)
+      .toBe("%cookieList%");
+  });
+
+  it("loads a whole data element from settings", async () => {
+    await driver.init(
+      buildSettings({
+        components: {
+          brandConcierge: true,
+        },
+        instances: [
+          {
+            name: "alloy",
+            conversation: {
+              transferCookies: "%cookieList%",
+            },
+          },
+        ],
+      }),
+    );
+
+    await field(
+      view.getByTestId("transferCookiesDataElementOption"),
+    ).expectChecked();
+    await field(
+      view.getByTestId("transferCookiesDataElementField"),
+    ).expectValue("%cookieList%");
+  });
+
+  it("does not save a data element when it is empty", async () => {
+    await driver.init(
+      buildSettings({
+        components: {
+          brandConcierge: true,
+        },
+      }),
+    );
+
+    await field(view.getByTestId("transferCookiesDataElementOption")).click();
+
+    await driver
+      .expectSettings((s) => s.instances[0].conversation?.transferCookies)
+      .toBeUndefined();
+  });
+
+  it("shows a validation error for an invalid data element", async () => {
+    await driver.init(
+      buildSettings({
+        components: {
+          brandConcierge: true,
+        },
+      }),
+    );
+
+    await field(view.getByTestId("transferCookiesDataElementOption")).click();
+    await field(view.getByTestId("transferCookiesDataElementField")).fill(
+      "notADataElement",
+    );
+
+    await driver.expectValidate().toBe(false);
+  });
 });

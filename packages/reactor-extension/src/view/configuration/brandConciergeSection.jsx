@@ -20,20 +20,32 @@ import {
   Flex,
   Button,
   ActionButton,
+  Radio,
 } from "@adobe/react-spectrum";
 import Delete from "@spectrum-icons/workflow/Delete";
 import SectionHeader from "../components/sectionHeader";
 import FormikCheckbox from "../components/formikReactSpectrum3/formikCheckbox";
 import FormikNumberField from "../components/formikReactSpectrum3/formikNumberField";
 import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
+import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
+import DataElementSelector from "../components/dataElementSelector";
 import FormElementContainer from "../components/formElementContainer";
 import Heading from "../components/typography/heading";
 import BetaBadge from "../components/betaBadge";
+import singleDataElementRegex from "../constants/singleDataElementRegex";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
 
 const STREAM_TIMEOUT_MS = 10000;
 const STREAM_TIMEOUT_SECONDS = STREAM_TIMEOUT_MS / 1000;
+
+// Whether transferCookies is entered as individual cookie names (FORM) or as a
+// single data element that resolves to the whole array (DATA_ELEMENT).
+const FORM = "form";
+const DATA_ELEMENT = "dataElement";
+
+const TRANSFER_COOKIES_DESCRIPTION =
+  "Additional first-party cookie names to always transfer to Brand Concierge conversation requests, in addition to the ones transferred by default.";
 
 const getDefaultSettings = () => ({
   conversation: {
@@ -45,6 +57,10 @@ const getDefaultSettings = () => ({
     // cookie input. An untouched empty field is trimmed and dropped in
     // getInstanceSettings, so this does not emit a transferCookies setting.
     transferCookies: [""],
+    // Form-only state: not persisted to settings. transferCookies is stored as
+    // an array (FORM) or as a data element string (DATA_ELEMENT).
+    transferCookiesInputMethod: FORM,
+    transferCookiesDataElement: "",
   },
 });
 
@@ -61,12 +77,7 @@ export const bridge = {
       toObj: conversation,
       fromObj: instanceSettings.conversation || {},
       defaultsObj: getDefaultSettings().conversation,
-      keys: [
-        "region",
-        "stickyConversationSession",
-        "collectSources",
-        "transferCookies",
-      ],
+      keys: ["region", "stickyConversationSession", "collectSources"],
     });
 
     // Convert streamTimeout from milliseconds to seconds for display
@@ -74,14 +85,22 @@ export const bridge = {
       instanceSettings.conversation?.streamTimeout ?? STREAM_TIMEOUT_MS;
     conversation.streamTimeout = streamTimeoutMs / 1000;
 
-    // Always show at least one transfer cookie field. An untouched empty
-    // field is trimmed and dropped in getInstanceSettings, so this does not
-    // emit a transferCookies setting on its own.
-    if (
-      !conversation.transferCookies ||
-      conversation.transferCookies.length === 0
-    ) {
+    // transferCookies is stored either as an array of cookie names, or as a
+    // single data element string that resolves to the whole array. Pick the
+    // input method from the stored shape, and always keep at least one empty
+    // field for the individual-cookie view.
+    const savedTransferCookies = instanceSettings.conversation?.transferCookies;
+    if (typeof savedTransferCookies === "string") {
+      conversation.transferCookiesInputMethod = DATA_ELEMENT;
+      conversation.transferCookiesDataElement = savedTransferCookies;
       conversation.transferCookies = [""];
+    } else {
+      conversation.transferCookiesInputMethod = FORM;
+      conversation.transferCookiesDataElement = "";
+      conversation.transferCookies =
+        Array.isArray(savedTransferCookies) && savedTransferCookies.length > 0
+          ? savedTransferCookies
+          : [""];
     }
 
     return { conversation };
@@ -109,14 +128,26 @@ export const bridge = {
         conversation.streamTimeout = streamTimeoutMs;
       }
 
-      // Trim and drop any empty cookie names before saving.
-      const transferCookies = (
-        instanceValues.conversation.transferCookies || []
-      )
-        .map((cookieName) => cookieName.trim())
-        .filter((cookieName) => cookieName.length > 0);
-      if (transferCookies.length > 0) {
-        conversation.transferCookies = transferCookies;
+      if (
+        instanceValues.conversation.transferCookiesInputMethod === DATA_ELEMENT
+      ) {
+        // Store the whole array as a single data element string.
+        const dataElement = (
+          instanceValues.conversation.transferCookiesDataElement || ""
+        ).trim();
+        if (dataElement) {
+          conversation.transferCookies = dataElement;
+        }
+      } else {
+        // Trim and drop any empty cookie names before saving.
+        const transferCookies = (
+          instanceValues.conversation.transferCookies || []
+        )
+          .map((cookieName) => cookieName.trim())
+          .filter((cookieName) => cookieName.length > 0);
+        if (transferCookies.length > 0) {
+          conversation.transferCookies = transferCookies;
+        }
       }
 
       if (Object.keys(conversation).length > 0) {
@@ -142,6 +173,18 @@ export const bridge = {
             .default(STREAM_TIMEOUT_SECONDS),
           collectSources: boolean(),
           transferCookies: array().of(string()),
+          transferCookiesInputMethod: string(),
+          transferCookiesDataElement: string().when(
+            "transferCookiesInputMethod",
+            {
+              is: DATA_ELEMENT,
+              then: (schema) =>
+                schema.matches(
+                  singleDataElementRegex,
+                  "Please provide a single data element, for example %myDataElement%.",
+                ),
+            },
+          ),
         }),
     }),
   }),
@@ -153,6 +196,9 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
   );
   const [{ value: transferCookies = [] }] = useField(
     `${instanceFieldName}.conversation.transferCookies`,
+  );
+  const [{ value: transferCookiesInputMethod }] = useField(
+    `${instanceFieldName}.conversation.transferCookiesInputMethod`,
   );
 
   if (!brandConciergeComponentEnabled) {
@@ -211,59 +257,78 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
         >
           Collect sources
         </FormikCheckbox>
-        <View>
-          <FieldArray
-            name={`${instanceFieldName}.conversation.transferCookies`}
-            render={(arrayHelpers) => (
-              <Flex direction="column" gap="size-100">
-                {transferCookies.map((cookieName, index) => (
-                  <Flex key={index} alignItems="start">
-                    <FormikTextField
-                      data-test-id={`transferCookie${index}Field`}
-                      label={index === 0 ? "Transfer cookies" : undefined}
-                      aria-label={`Transfer cookie ${index + 1}`}
-                      description={
-                        index === transferCookies.length - 1
-                          ? "Additional first-party cookie names to always transfer to Brand Concierge conversation requests, in addition to the ones transferred by default."
-                          : undefined
-                      }
-                      name={`${instanceFieldName}.conversation.transferCookies.${index}`}
-                      width="size-4600"
-                      marginEnd="size-100"
-                    />
-                    <ActionButton
-                      data-test-id={`deleteTransferCookie${index}Button`}
-                      isQuiet
-                      variant="secondary"
-                      isDisabled={transferCookies.length <= 1}
-                      onPress={() => {
-                        arrayHelpers.remove(index);
-                      }}
-                      aria-label={`Remove transfer cookie ${index + 1}`}
-                      // Offset the first row's button past the field label so it
-                      // aligns with the input; later rows have no label. Using
-                      // start alignment keeps the last row's description (help
-                      // text) from dragging its button below the input.
-                      marginTop={index === 0 ? "size-300" : "size-0"}
-                    >
-                      <Delete />
-                    </ActionButton>
-                  </Flex>
-                ))}
-                <Button
-                  variant="secondary"
-                  data-test-id="addTransferCookieButton"
-                  marginTop="size-100"
-                  alignSelf="start"
-                  onPress={() => {
-                    arrayHelpers.push("");
-                  }}
-                >
-                  Add cookie
-                </Button>
-              </Flex>
-            )}
-          />
+        <View data-test-id="transferCookiesField">
+          <FormikRadioGroup
+            label="Transfer cookies"
+            name={`${instanceFieldName}.conversation.transferCookiesInputMethod`}
+            orientation="horizontal"
+            description={TRANSFER_COOKIES_DESCRIPTION}
+          >
+            <Radio data-test-id="transferCookiesIndividualOption" value={FORM}>
+              Specify each cookie individually
+            </Radio>
+            <Radio
+              data-test-id="transferCookiesDataElementOption"
+              value={DATA_ELEMENT}
+            >
+              Use a whole data element
+            </Radio>
+          </FormikRadioGroup>
+          {transferCookiesInputMethod === DATA_ELEMENT ? (
+            <DataElementSelector>
+              <FormikTextField
+                data-test-id="transferCookiesDataElementField"
+                aria-label="Transfer cookies data element"
+                name={`${instanceFieldName}.conversation.transferCookiesDataElement`}
+                description="Provide a data element that resolves to an array of first-party cookie names."
+                width="size-5000"
+              />
+            </DataElementSelector>
+          ) : (
+            <FieldArray
+              name={`${instanceFieldName}.conversation.transferCookies`}
+              render={(arrayHelpers) => (
+                <Flex direction="column" gap="size-100">
+                  {transferCookies.map((cookieName, index) => (
+                    <Flex key={index} alignItems="start">
+                      <DataElementSelector>
+                        <FormikTextField
+                          data-test-id={`transferCookie${index}Field`}
+                          aria-label={`Transfer cookie ${index + 1}`}
+                          name={`${instanceFieldName}.conversation.transferCookies.${index}`}
+                          width="size-4600"
+                        />
+                      </DataElementSelector>
+                      <ActionButton
+                        data-test-id={`deleteTransferCookie${index}Button`}
+                        isQuiet
+                        variant="secondary"
+                        isDisabled={transferCookies.length <= 1}
+                        onPress={() => {
+                          arrayHelpers.remove(index);
+                        }}
+                        aria-label={`Remove transfer cookie ${index + 1}`}
+                        marginStart="size-100"
+                      >
+                        <Delete />
+                      </ActionButton>
+                    </Flex>
+                  ))}
+                  <Button
+                    variant="secondary"
+                    data-test-id="addTransferCookieButton"
+                    marginTop="size-100"
+                    alignSelf="start"
+                    onPress={() => {
+                      arrayHelpers.push("");
+                    }}
+                  >
+                    Add cookie
+                  </Button>
+                </Flex>
+              )}
+            />
+          )}
         </View>
       </FormElementContainer>
     </>
