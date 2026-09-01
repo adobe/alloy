@@ -9,28 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import path from "path";
-import fs from "fs";
-import getContainer from "@adobe/reactor-sandbox/src/tasks/helpers/getContainer.js";
+import build from "@adobe/reactor-sandbox/src/tasks/helpers/build.js";
+import files from "@adobe/reactor-sandbox/src/tasks/constants/files.js";
 import appendScript from "./appendScript.mjs";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export default async (container) => {
-  // Write the container.js file here because getContainer requires the file
-  const containerPath = path.join(
-    __dirname,
-    "../../../../.sandbox/container.js",
-  );
-  const text = `module.exports = ${JSON.stringify(container, null, 2)};`;
-  fs.writeFileSync(containerPath, text);
-  const containerJS = getContainer();
+  const buildFiles = build({ container });
+  const launchLibrary = buildFiles[`/${files.LAUNCH_LIBRARY_FILENAME}`];
 
-  const engineFileName = await import.meta
-    .resolve("@adobe/reactor-turbine/dist/engine.js");
-  const turbine = fs.readFileSync(new URL(engineFileName));
-
-  return appendScript(containerJS + turbine);
+  return appendScript(launchLibrary);
 };
