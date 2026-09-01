@@ -11,9 +11,18 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { object, boolean, number, string } from "yup";
-import { useField } from "formik";
-import { View, InlineAlert, Content } from "@adobe/react-spectrum";
+import { object, boolean, number, string, array } from "yup";
+import { useField, FieldArray } from "formik";
+import {
+  View,
+  InlineAlert,
+  Content,
+  Flex,
+  Button,
+  ActionButton,
+  LabeledValue,
+} from "@adobe/react-spectrum";
+import Delete from "@spectrum-icons/workflow/Delete";
 import SectionHeader from "../components/sectionHeader";
 import FormikCheckbox from "../components/formikReactSpectrum3/formikCheckbox";
 import FormikNumberField from "../components/formikReactSpectrum3/formikNumberField";
@@ -33,6 +42,7 @@ const getDefaultSettings = () => ({
     stickyConversationSession: false,
     streamTimeout: STREAM_TIMEOUT_SECONDS,
     collectSources: false,
+    transferCookies: [],
   },
 });
 
@@ -48,7 +58,12 @@ export const bridge = {
       toObj: conversation,
       fromObj: instanceSettings.conversation || {},
       defaultsObj: getDefaultSettings().conversation,
-      keys: ["region", "stickyConversationSession", "collectSources"],
+      keys: [
+        "region",
+        "stickyConversationSession",
+        "collectSources",
+        "transferCookies",
+      ],
     });
 
     // Convert streamTimeout from milliseconds to seconds for display
@@ -81,6 +96,16 @@ export const bridge = {
         conversation.streamTimeout = streamTimeoutMs;
       }
 
+      // Trim and drop any empty cookie names before saving.
+      const transferCookies = (
+        instanceValues.conversation.transferCookies || []
+      )
+        .map((cookieName) => cookieName.trim())
+        .filter((cookieName) => cookieName.length > 0);
+      if (transferCookies.length > 0) {
+        conversation.transferCookies = transferCookies;
+      }
+
       if (Object.keys(conversation).length > 0) {
         instanceSettings.conversation = conversation;
       }
@@ -103,6 +128,7 @@ export const bridge = {
             .min(10, "The stream timeout must be at least 10 seconds.")
             .default(STREAM_TIMEOUT_SECONDS),
           collectSources: boolean(),
+          transferCookies: array().of(string()),
         }),
     }),
   }),
@@ -111,6 +137,9 @@ export const bridge = {
 const BrandConciergeSection = ({ instanceFieldName }) => {
   const [{ value: brandConciergeComponentEnabled }] = useField(
     "components.brandConcierge",
+  );
+  const [{ value: transferCookies = [] }] = useField(
+    `${instanceFieldName}.conversation.transferCookies`,
   );
 
   if (!brandConciergeComponentEnabled) {
@@ -169,6 +198,54 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
         >
           Collect sources
         </FormikCheckbox>
+        <View>
+          <LabeledValue label="Transfer cookies" value="" width="size-5000" />
+          <Content>
+            Additional first-party cookie names to always transfer to Brand
+            Concierge conversation requests, in addition to the ones transferred
+            by default.
+          </Content>
+          <FieldArray
+            name={`${instanceFieldName}.conversation.transferCookies`}
+            render={(arrayHelpers) => (
+              <Flex direction="column" gap="size-100" marginTop="size-100">
+                {transferCookies.map((cookieName, index) => (
+                  <Flex key={index} alignItems="end">
+                    <FormikTextField
+                      data-test-id={`transferCookie${index}Field`}
+                      aria-label={`Transfer cookie ${index + 1}`}
+                      name={`${instanceFieldName}.conversation.transferCookies.${index}`}
+                      width="size-4600"
+                      marginEnd="size-100"
+                    />
+                    <ActionButton
+                      data-test-id={`deleteTransferCookie${index}Button`}
+                      isQuiet
+                      variant="secondary"
+                      onPress={() => {
+                        arrayHelpers.remove(index);
+                      }}
+                      aria-label={`Remove transfer cookie ${index + 1}`}
+                    >
+                      <Delete />
+                    </ActionButton>
+                  </Flex>
+                ))}
+                <Button
+                  variant="secondary"
+                  data-test-id="addTransferCookieButton"
+                  marginTop="size-100"
+                  alignSelf="start"
+                  onPress={() => {
+                    arrayHelpers.push("");
+                  }}
+                >
+                  Add cookie
+                </Button>
+              </Flex>
+            )}
+          />
+        </View>
       </FormElementContainer>
     </>
   );

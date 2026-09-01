@@ -301,4 +301,103 @@ describe("Config brand concierge section", () => {
       .expectSettings((s) => s.instances[0].conversation?.collectSources)
       .toBeUndefined();
   });
+
+  it("loads transfer cookies from settings", async () => {
+    await driver.init(
+      buildSettings({
+        components: {
+          brandConcierge: true,
+        },
+        instances: [
+          {
+            name: "alloy",
+            conversation: {
+              transferCookies: ["munchkin", "marketo"],
+            },
+          },
+        ],
+      }),
+    );
+
+    await field(view.getByTestId("transferCookie0Field")).expectValue(
+      "munchkin",
+    );
+    await field(view.getByTestId("transferCookie1Field")).expectValue(
+      "marketo",
+    );
+  });
+
+  it("adds transfer cookies and saves them to settings", async () => {
+    await driver.init(
+      buildSettings({
+        components: {
+          brandConcierge: true,
+        },
+      }),
+    );
+
+    await field(view.getByTestId("addTransferCookieButton")).click();
+    await field(view.getByTestId("transferCookie0Field")).fill("munchkin");
+
+    await driver
+      .expectSettings((s) => s.instances[0].conversation.transferCookies)
+      .toEqual(["munchkin"]);
+  });
+
+  it("does not save transfer cookies when none are provided", async () => {
+    await driver.init(
+      buildSettings({
+        components: {
+          brandConcierge: true,
+        },
+      }),
+    );
+
+    await driver
+      .expectSettings((s) => s.instances[0].conversation?.transferCookies)
+      .toBeUndefined();
+  });
+
+  it("trims and drops empty transfer cookie names when saving", async () => {
+    await driver.init(
+      buildSettings({
+        components: {
+          brandConcierge: true,
+        },
+      }),
+    );
+
+    await field(view.getByTestId("addTransferCookieButton")).click();
+    await field(view.getByTestId("addTransferCookieButton")).click();
+    await field(view.getByTestId("transferCookie0Field")).fill("  munchkin  ");
+    // Leave the second field empty so it gets dropped on save.
+
+    await driver
+      .expectSettings((s) => s.instances[0].conversation.transferCookies)
+      .toEqual(["munchkin"]);
+  });
+
+  it("removes a transfer cookie", async () => {
+    await driver.init(
+      buildSettings({
+        components: {
+          brandConcierge: true,
+        },
+        instances: [
+          {
+            name: "alloy",
+            conversation: {
+              transferCookies: ["munchkin", "marketo"],
+            },
+          },
+        ],
+      }),
+    );
+
+    await field(view.getByTestId("deleteTransferCookie0Button")).click();
+
+    await driver
+      .expectSettings((s) => s.instances[0].conversation.transferCookies)
+      .toEqual(["marketo"]);
+  });
 });

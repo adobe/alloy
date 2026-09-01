@@ -524,6 +524,12 @@ const createExtensionManifest = ({ version }) => {
                         type: "integer",
                         minimum: 10000,
                       },
+                      transferCookies: {
+                        type: "array",
+                        items: {
+                          type: "string",
+                        },
+                      },
                     },
                     personalizationStorageEnabled: {
                       type: "boolean",
