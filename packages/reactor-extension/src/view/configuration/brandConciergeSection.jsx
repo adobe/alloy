@@ -270,7 +270,7 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
               data-test-id="transferCookiesDataElementOption"
               value={DATA_ELEMENT}
             >
-              Use a whole data element
+              Use a data element
             </Radio>
           </FormikRadioGroup>
           {transferCookiesInputMethod === DATA_ELEMENT ? (
