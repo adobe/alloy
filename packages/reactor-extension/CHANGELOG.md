@@ -1,5 +1,16 @@
 # reactor-extension-alloy
 
+## 2.38.0
+
+### Minor Changes
+
+- [#1566](https://github.com/adobe/alloy/pull/1566) [`1dd0ebd`](https://github.com/adobe/alloy/commit/1dd0ebdfadef1126fd31c160b3f6b79a513ca1f4) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Add UI for the Brand Concierge `conversation.transferCookies` configuration option (an array of first-party cookie names) to the Tags extension configuration view and manifest.
+
+### Patch Changes
+
+- Updated dependencies [[`dde0fe1`](https://github.com/adobe/alloy/commit/dde0fe189dc15b58dca21459af7b7c747fc5acb9)]:
+  - @adobe/alloy@2.35.1
+
 ## 2.38.0-beta.2
 
 ### Minor Changes
