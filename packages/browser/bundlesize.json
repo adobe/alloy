@@ -16,22 +16,22 @@
   },
   "dist/alloyServiceWorker.js": {
     "uncompressedSize": 22249,
-    "gzippedSize": 5027,
+    "gzippedSize": 5030,
     "brotiliSize": 4279
   },
   "dist/alloyServiceWorker.min.js": {
     "uncompressedSize": 6064,
-    "gzippedSize": 2801,
+    "gzippedSize": 2809,
     "brotiliSize": 2379
   },
   "dist/utils/deepAssign.js": {
     "uncompressedSize": 3829,
-    "gzippedSize": 1044,
+    "gzippedSize": 1041,
     "brotiliSize": 810
   },
   "dist/utils/createEventMergeId.js": {
     "uncompressedSize": 2734,
-    "gzippedSize": 934,
+    "gzippedSize": 930,
     "brotiliSize": 718
   }
 }

@@ -9,6 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+import { isNonEmptyArray } from "../utils/index.js";
+
 const STATE_STORE_HANDLE_TYPE = "state:store";
 
 export default ({
@@ -23,7 +26,7 @@ export default ({
      * access first-party cookies, therefore we transfer cookies into
      * the request body so they can be read by the server.
      */
-    cookiesToPayload(payload, endpointDomain) {
+    cookiesToPayload(payload, endpointDomain, extraCookieNames = []) {
       // localhost is a special case where the apexDomain is ""
       // We want to treat localhost as a third-party domain.
       const isEndpointFirstParty =
@@ -36,20 +39,22 @@ export default ({
       // If the endpoint is first-party, there's no need to transfer cookies
       // to the payload since they'll be automatically passed through cookie
       // headers.
-      if (!isEndpointFirstParty) {
+      if (!isEndpointFirstParty || isNonEmptyArray(extraCookieNames)) {
         const cookies = cookieJar.getAll();
-
-        const entries = Object.keys(cookies)
-          .filter(shouldTransferCookie)
-          .map((qualifyingCookieName) => {
-            return {
-              key: qualifyingCookieName,
-              value: cookies[qualifyingCookieName],
-            };
-          });
-
-        if (entries.length) {
-          state.entries = entries;
+        const entriesByKey = new Map();
+        const addEntry = (key) => {
+          if (cookies[key] !== undefined && !entriesByKey.has(key)) {
+            entriesByKey.set(key, { key, value: cookies[key] });
+          }
+        };
+        if (!isEndpointFirstParty) {
+          Object.keys(cookies).filter(shouldTransferCookie).forEach(addEntry);
+        }
+        if (isNonEmptyArray(extraCookieNames)) {
+          extraCookieNames.forEach(addEntry);
+        }
+        if (entriesByKey.size) {
+          state.entries = [...entriesByKey.values()];
         }
       }
 

@@ -1,5 +1,11 @@
 # @adobe/alloy-core
 
+## 1.2.3-beta.1
+
+### Patch Changes
+
+- [#1522](https://github.com/adobe/alloy/pull/1522) [`80257dc`](https://github.com/adobe/alloy/commit/80257dcb4f313cd602126371e448d1648507805a) Thanks [@ninaceban](https://github.com/ninaceban)! - Always forward the Marketo Munchkin cookie (`_mkto_trk`) to the Edge Network by adding it to the cookie-transfer allowlist, so the server can resolve the visitor's Marketo identity. Additionally, Brand Concierge gains a `conversation.transferCookies` configuration option for forwarding extra first-party cookies into the conversation request `meta.state`.
+
 ## 1.2.3-beta.0
 
 ### Patch Changes
