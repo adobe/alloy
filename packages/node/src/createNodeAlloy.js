@@ -18,6 +18,9 @@ import {
   createCoreConfigs,
 } from "@adobe/alloy-core";
 import createNodePlatformServices from "./services/createNodePlatformServices.js";
+import * as allRequiredComponents from "./components/requiredComponentCreators.js";
+
+/** @import { NodeRequestLike } from "./services/createNodePlatformServices.js" */
 
 /**
  * @typedef {Object} PlatformServiceOverrides
@@ -44,6 +47,7 @@ const COMMAND_NAMES = [
   "getIdentity",
   "appendIdentityToUrl",
   "getLibraryInfo",
+  "setConsent",
 ];
 
 /**
@@ -78,8 +82,15 @@ const createNodeAlloy = ({
   components = [],
   platformServices = {},
 } = {}) => {
+  // Mirrors packages/browser/src/index.js: components a consumer can't opt
+  // out of (currently just Context), prepended to whatever they passed in.
+  const allComponents = [
+    ...Object.values(allRequiredComponents),
+    ...components,
+  ];
+
   const executeCommand = createCoreCustomInstance(
-    { name, monitors, components },
+    { name, monitors, components: allComponents },
     () => createNodePlatformServices(platformServices),
     createCoreConfigs(),
   );
@@ -88,47 +99,43 @@ const createNodeAlloy = ({
   let capturedConfig;
 
   /**
-   * A handle scoped to a single request: backed by its own fresh underlying
-   * instance, reconfigured with the same config this instance was configured
-   * with, but with `requestPlatformServices` overrides layered on top of
-   * this instance's own platformServices — typically `cookie`, so identity
-   * resolves from that request's cookies instead of shared in-memory state.
-   * Call `configure()` on this instance before calling `forRequest()`.
+   * A handle scoped to a single request, backed by its own fresh instance
+   * reconfigured with this instance's config plus `requestOverrides`
+   * layered on top of its platformServices. Requires `configure()` to have
+   * already resolved on this instance.
    *
-   * Building a whole new instance (not just swapping platformServices on a
-   * shared one) is load-bearing, not incidental: core's Identity component
-   * caches its resolved ECID/namespaces in plain closures once acquired
-   * (see createIdentity.js's awaitIdentityPromise and
-   * components/Identity/createComponent.js's cached namespaces/edge) —
-   * those closures live for as long as the instance they were created in,
-   * regardless of which cookie jar is passed in later. Reusing an instance
-   * across requests and only swapping `cookie` would silently leak one
-   * visitor's identity into another's. Don't "optimize" this into instance
-   * reuse without re-deriving that state per request too.
+   * A fresh instance (not just a swapped `cookie`) is required because
+   * Identity caches its resolved ECID in a plain closure for the life of
+   * the instance — reusing one across requests would leak identity between
+   * visitors regardless of which cookie jar was passed in.
    *
-   * `cookie`/`storage` specifically never fall back to this instance's own
-   * platformServices, even if it configured one — those two hold per-visitor
-   * state, so inheriting a shared, stateful one as a silent default would
-   * leak identity across visitors exactly like reusing the instance would.
-   * If a request doesn't override them here, it gets a fresh, empty default
-   * instead. Only the (stateless) `network`/`runtime`/`legacy`/`globals`
-   * slots are safe to inherit as instance-wide defaults.
+   * For the same reason, `cookie`/`storage` never fall back to this
+   * instance's own platformServices; only the stateless
+   * `network`/`runtime`/`legacy`/`globals` slots do.
    *
-   * @param {PlatformServiceOverrides} [requestPlatformServices]
+   * `request` (any object with a `headers` property — a Node
+   * `IncomingMessage`, an Express `req`, a fetch `Request`, etc.) is the
+   * real incoming request this call is proxying, used to forward the
+   * visitor's real headers to Edge Network and populate
+   * `web.webPageDetails.URL` (see components/context.js).
+   *
+   * @param {PlatformServiceOverrides & { request?: NodeRequestLike }} [requestOverrides]
    */
-  const forRequest = (requestPlatformServices = {}) => {
+  const forRequest = (requestOverrides = {}) => {
     if (!capturedConfig) {
       throw new Error(
         "forRequest() can only be called after configure() has resolved.",
       );
     }
+    const { request, ...requestPlatformServices } = requestOverrides;
     const { cookie, storage, ...sharedPlatformServices } = platformServices;
     const requestExecuteCommand = createCoreCustomInstance(
-      { name, monitors, components },
+      { name, monitors, components: allComponents },
       () =>
         createNodePlatformServices({
           ...sharedPlatformServices,
           ...requestPlatformServices,
+          request,
         }),
       // Fresh validators per request: orgId/datastreamId are being
       // reconfigured with the exact same values on purpose here, once per

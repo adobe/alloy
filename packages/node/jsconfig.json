@@ -2,6 +2,12 @@
   "extends": "../../jsconfig.base.json",
   "compilerOptions": {
     "target": "ES2022",
+    // Overrides the shared ES2020/bundler settings from jsconfig.base.json:
+    // this package ships raw ESM source run directly by Node (no bundler),
+    // and import attributes (`with { type: "json" }`) need one of
+    // esnext/node18/node20/nodenext/preserve.
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "lib": ["ES2022", "DOM"],
     "strict": true,
     "noUncheckedIndexedAccess": true,

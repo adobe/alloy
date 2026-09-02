@@ -179,4 +179,160 @@ describe("Node consumer integration", () => {
 
     expect(Array.isArray(result.propositions)).toBe(true);
   });
+
+  // Proves Consent is real, wired-up core component (not just a stub): the
+  // real /privacy/set-consent round trip succeeds and writes a real consent
+  // cookie to whatever cookie service the caller supplies — the same
+  // pattern proven for identity above, now for consent state.
+  it("setConsent() writes a real consent cookie to a request-scoped cookie service", async () => {
+    const alloy = node.createInstance();
+    await alloy.configure(config);
+
+    const cookie = createNodeCookieService();
+    const request = alloy.forRequest({ cookie });
+
+    await request.setConsent({
+      consent: [
+        { standard: "Adobe", version: "1.0", value: { general: "in" } },
+      ],
+    });
+
+    const cookieNames = Object.keys(cookie.getAll());
+    expect(cookieNames.some((name) => name.endsWith("_consent"))).toBe(true);
+  });
+
+  // These consent tests pass `decisionScopes` and check for `propositions`
+  // in the result as a real, observable signal that the request actually
+  // reached Edge Network — a plain sendEvent() resolves to `{}` whether or
+  // not consent blocked it, so it can't tell the two cases apart on its own.
+
+  it("real defaultConsent: pending holds sendEvent, then a real opt-in unblocks it", async () => {
+    const alloy = node.createInstance();
+    await alloy.configure({ ...config, defaultConsent: "pending" });
+
+    let resolved = false;
+    const pending = alloy
+      .sendEvent({
+        xdm: { eventType: "test.nodeConsumer" },
+        decisionScopes: ["test-nodeConsumer-scope"],
+      })
+      .then((result) => {
+        resolved = true;
+        return result;
+      });
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(resolved).toBe(false);
+
+    await alloy.setConsent({
+      consent: [
+        { standard: "Adobe", version: "1.0", value: { general: "in" } },
+      ],
+    });
+    const result = await pending;
+
+    expect(resolved).toBe(true);
+    expect(Array.isArray(result.propositions)).toBe(true);
+  });
+
+  it("a real opt-out setConsent blocks a subsequent sendEvent", async () => {
+    const alloy = node.createInstance();
+    await alloy.configure(config);
+
+    await alloy.setConsent({
+      consent: [
+        { standard: "Adobe", version: "1.0", value: { general: "out" } },
+      ],
+    });
+    const result = await alloy.sendEvent({
+      xdm: { eventType: "test.nodeConsumer" },
+      decisionScopes: ["test-nodeConsumer-scope"],
+    });
+
+    expect(result).toEqual({});
+  });
+
+  it("consent persists across two forRequest() calls sharing a cookie jar, without a second setConsent", async () => {
+    const sharedCookie = createNodeCookieService();
+    const alloy = node.createInstance();
+    await alloy.configure({ ...config, defaultConsent: "out" });
+
+    await alloy.forRequest({ cookie: sharedCookie }).setConsent({
+      consent: [
+        { standard: "Adobe", version: "1.0", value: { general: "in" } },
+      ],
+    });
+
+    const result = await alloy.forRequest({ cookie: sharedCookie }).sendEvent({
+      xdm: { eventType: "test.nodeConsumer" },
+      decisionScopes: ["test-nodeConsumer-scope"],
+    });
+
+    expect(Array.isArray(result.propositions)).toBe(true);
+  });
+
+  it("the real Edge Network interprets the Adobe 2.0 standard's collect.val the same way our code assumes", async () => {
+    const alloy = node.createInstance();
+    await alloy.configure(config);
+
+    await alloy.setConsent({
+      consent: [
+        { standard: "Adobe", version: "2.0", value: { collect: { val: "n" } } },
+      ],
+    });
+    const declined = await alloy.sendEvent({
+      xdm: { eventType: "test.nodeConsumer" },
+      decisionScopes: ["test-nodeConsumer-scope"],
+    });
+    expect(declined).toEqual({});
+
+    await alloy.setConsent({
+      consent: [
+        { standard: "Adobe", version: "2.0", value: { collect: { val: "y" } } },
+      ],
+    });
+    const allowed = await alloy.sendEvent({
+      xdm: { eventType: "test.nodeConsumer" },
+      decisionScopes: ["test-nodeConsumer-scope"],
+    });
+    expect(Array.isArray(allowed.propositions)).toBe(true);
+  });
+
+  // Proves the Context component's request-forwarding actually reaches a
+  // real Edge Network round trip without erroring — the forwarded
+  // User-Agent/Accept-Language headers and the derived web.webPageDetails.URL
+  // are exercised by the real request pipeline, not just mocked in unit
+  // tests. There's no way to inspect what Edge Network received/parsed from
+  // here, so this only proves the plumbing doesn't break the request.
+  it("forRequest({ request }) sends a real event without error", async () => {
+    const alloy = node.createInstance();
+    await alloy.configure(config);
+
+    const request = alloy.forRequest({
+      cookie: createNodeCookieService(),
+      request: {
+        headers: {
+          "user-agent": "Mozilla/5.0 (nodeConsumer integration test)",
+          "accept-language": "en-US",
+          referer: "https://example.com/sample-page",
+        },
+      },
+    });
+
+    await expect(
+      request.sendEvent({ xdm: { eventType: "test.nodeConsumer" } }),
+    ).resolves.toBeDefined();
+  });
+
+  it("appendIdentityToUrl() appends a real ECID query param to a real URL", async () => {
+    const alloy = node.createInstance();
+    await alloy.configure(config);
+
+    const request = alloy.forRequest({ cookie: createNodeCookieService() });
+    const result = await request.appendIdentityToUrl({
+      url: "https://example.com/?a=b",
+    });
+
+    expect(result.url).toMatch(/^https:\/\/example\.com\/\?a=b/);
+    expect(result.url).not.toBe("https://example.com/?a=b");
+  });
 });

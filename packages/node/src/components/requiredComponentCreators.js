@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// This file contains the optional components that can be included in a Node
-// build. Mirrors the shape of packages/browser/src/allOptionalComponents.js.
+// This file contains the components that are always active in a Node build,
+// regardless of what's passed to `components`. Mirrors the shape of
+// packages/browser/src/components/requiredComponentCreators.js.
 
-export { default as personalization } from "./components/personalization.js";
-export { consent } from "@adobe/alloy-core";
+export { default as context } from "./context.js";
