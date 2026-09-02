@@ -47,6 +47,9 @@ const DATA_ELEMENT = "dataElement";
 const TRANSFER_COOKIES_DESCRIPTION =
   "Additional first-party cookie names to always transfer to Brand Concierge conversation requests, in addition to the ones transferred by default.";
 
+const TRANSFER_COOKIES_DATA_ELEMENT_DESCRIPTION =
+  "This data element should resolve to an array of cookie names to always transfer to Brand Concierge conversation requests, in addition to the ones transferred by default.";
+
 const getDefaultSettings = () => ({
   conversation: {
     region: "",
@@ -279,7 +282,7 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
                 data-test-id="transferCookiesDataElementField"
                 aria-label="Transfer cookies data element"
                 name={`${instanceFieldName}.conversation.transferCookiesDataElement`}
-                description={TRANSFER_COOKIES_DESCRIPTION}
+                description={TRANSFER_COOKIES_DATA_ELEMENT_DESCRIPTION}
                 width="size-5000"
               />
             </DataElementSelector>
