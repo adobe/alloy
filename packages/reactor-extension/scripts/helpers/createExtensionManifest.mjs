@@ -524,6 +524,21 @@ const createExtensionManifest = ({ version }) => {
                         type: "integer",
                         minimum: 10000,
                       },
+                      transferCookies: {
+                        anyOf: [
+                          {
+                            type: "array",
+                            items: {
+                              type: "string",
+                            },
+                          },
+                          {
+                            // The whole array supplied as a single data element.
+                            type: "string",
+                            pattern: "^%[^%]+%$",
+                          },
+                        ],
+                      },
                     },
                     personalizationStorageEnabled: {
                       type: "boolean",
