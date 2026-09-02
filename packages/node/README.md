@@ -1,9 +1,10 @@
 # @adobe/alloy-node
 
 > [!WARNING]
-> **Alpha. Only `configure`, `sendEvent`, Identity's commands, and
-> fetch-only Personalization are exercised so far.** Most optional
-> components (Consent, Audiences, etc.) are not wired up yet.
+> **Alpha. Only `configure`, `sendEvent`, Identity's commands, Consent, a
+> minimal Context, and fetch-only Personalization are exercised so far.**
+> Most other optional components (Audiences, RulesEngine, etc.) are not
+> wired up yet.
 
 Node.js entrypoint for the Adobe Experience Platform Web SDK.
 
@@ -21,10 +22,11 @@ await alloy.sendEvent({ xdm: { eventType: "..." } });
 Unlike the browser bundle's `alloy("commandName", options)` calling
 convention, `createInstance`/`createCustomInstance` return an object with
 real methods (`configure`, `sendEvent`, `getIdentity`,
-`appendIdentityToUrl`, `applyResponse`, `getLibraryInfo`, `setDebug`). The
-browser bundle uses a callable string-command dispatcher so a synchronous
-stub can queue calls before the library finishes loading asynchronously —
-that doesn't apply in Node, so methods are used instead for discoverability.
+`appendIdentityToUrl`, `applyResponse`, `getLibraryInfo`, `setDebug`,
+`setConsent`). The browser bundle uses a callable string-command dispatcher
+so a synchronous stub can queue calls before the library finishes loading
+asynchronously — that doesn't apply in Node, so methods are used instead for
+discoverability.
 
 ## One instance per process, `forRequest()` per request
 
@@ -78,6 +80,50 @@ display-notification batching, since there's no page to render into in
 Node. That's the client's job once it calls `applyPropositions`; use
 `createCustomInstance({ components: [] })` to omit this component entirely.
 
+## Consent
+
+`createInstance()` includes Consent, so `setConsent` is available the same
+way it is in the browser — call it per-request, on the `forRequest()` handle,
+with whatever consent value the visitor already recorded in their browser:
+
+```js
+await request.setConsent({
+  consent: [{ standard: "Adobe", version: "1.0", value: { general: "in" } }],
+});
+```
+
+Like identity, consent state is tied to the visitor's cookies (read/written
+through `platformServices.cookie`), so it's automatically scoped correctly
+by whatever `cookie` override you already pass to `forRequest()` — no
+separate wiring needed. If you build a custom instance with
+`createCustomInstance({ components: [...] })` and leave `consent` out,
+`setConsent` will still exist as a method but will reject when called, the
+same as calling an unregistered command in the browser bundle.
+
+## Context
+
+A minimal, always-on Context component attaches `implementationDetails` to
+every event automatically. There's no DOM to read device/viewport/timezone
+info from like the browser version does, but if you pass the real incoming
+request to `forRequest({ request })`, Context also derives
+`web.webPageDetails.URL` from its `Referer` header, and the visitor's real
+headers (`User-Agent`, client hints, `X-Forwarded-For`, etc. — see
+`pickForwardableHeaders`) get forwarded upstream to Edge Network, so its own
+server-side device/locale/geo parsing has real data to work with instead of
+whatever Node's own `fetch()` would send by default:
+
+```js
+const request = alloy.forRequest({
+  cookie: createCookieServiceForThisRequest(req, res),
+  request: req, // any { headers } object — a raw request, Express req, etc.
+});
+```
+
+Everything else the browser's Context collects (screen size, viewport,
+local timezone) has no honest server-side source and isn't guessed at here —
+merge real values directly via `sendEvent({ xdm: { ... } })` if you have
+them.
+
 ## Platform services
 
 Both `createInstance(options)` and `forRequest(overrides)` accept a
@@ -105,7 +151,10 @@ implement the `CookieService` interface (`get`, `getAll`, `set`, `remove`,
 Everything ECID/identity-related — the `kndctr_`/`AMCV_` cookies, edge
 cluster/location-hint affinity, consent cookies forwarded to the Edge
 Network — goes through `cookie`, so it's already correctly bucketed by
-`forRequest()`'s per-request override. `storage`'s current uses (debug-flag
+`forRequest()`'s per-request override. `request` (the real incoming HTTP
+request, see [Context](#context)) is inherently per-request too, and is
+never inherited from the top-level instance the way `cookie`/`storage`
+aren't. `storage`'s current uses (debug-flag
 persistence, an Assurance validation client ID) are process-level
 bookkeeping, not visitor state, _except_ that Assurance client ID: it's
 meant to be a stable per-visitor value, but with the default in-memory

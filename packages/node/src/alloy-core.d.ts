@@ -7,4 +7,6 @@ declare module "@adobe/alloy-core" {
   ): (commandName: string, options?: Record<string, unknown>) => Promise<any>;
 
   export function createCoreConfigs(): unknown;
+
+  export function consent(options: Record<string, unknown>): unknown;
 }

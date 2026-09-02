@@ -16,9 +16,13 @@ governing permissions and limitations under the License.
  * Node has no `navigator.sendBeacon`, so there is no separate unload-safe
  * transport — both network strategies use `fetch`.
  *
+ * @param {Object} [options]
+ * @param {Record<string, string>} [options.headers] Extra headers merged
+ * into every outgoing request (e.g. from `pickForwardableHeaders`). Can't
+ * override `Content-Type`.
  * @returns {NetworkService}
  */
-const createNodeNetworkService = () => {
+const createNodeNetworkService = ({ headers: forwardedHeaders = {} } = {}) => {
   /**
    * @param {string} url
    * @param {string} body
@@ -27,6 +31,7 @@ const createNodeNetworkService = () => {
     fetch(url, {
       method: "POST",
       headers: {
+        ...forwardedHeaders,
         "Content-Type": "text/plain; charset=UTF-8",
       },
       body,

@@ -1,9 +1,8 @@
 {
   "name": "@adobe/alloy-node",
-  "version": "1.0.0-beta.0",
+  "version": "0.1.0-beta.1",
   "description": "Adobe Experience Platform Web SDK - Node.js entrypoint",
   "type": "module",
-  "private": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/adobe/alloy.git",
@@ -12,7 +11,7 @@
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "files": [
     "src",

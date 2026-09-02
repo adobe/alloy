@@ -19,6 +19,19 @@ import createNodeCookieService from "./createNodeCookieService.js";
 import createNodeRuntimeService from "./createNodeRuntimeService.js";
 import createNodeLegacyService from "./createNodeLegacyService.js";
 import createNodeGlobalsService from "./createNodeGlobalsService.js";
+import pickForwardableHeaders from "./pickForwardableHeaders.js";
+
+/**
+ * @typedef {Record<string, string | string[] | undefined> | Headers} NodeRequestHeaders
+ * Either a plain headers object (Node's `IncomingMessage.headers`,
+ * Express's `req.headers`) or a WHATWG `Headers` instance (fetch-standard
+ * `Request.headers`). See `getHeader.js`.
+ */
+
+/**
+ * @typedef {Object} NodeRequestLike
+ * @property {NodeRequestHeaders} [headers]
+ */
 
 /**
  * Each override replaces the corresponding default in-memory Node
@@ -32,7 +45,11 @@ import createNodeGlobalsService from "./createNodeGlobalsService.js";
  * @param {RuntimeService} [overrides.runtime]
  * @param {LegacyService} [overrides.legacy]
  * @param {GlobalsService} [overrides.globals]
- * @returns {PlatformServices}
+ * @param {NodeRequestLike} [overrides.request] The real incoming request
+ * Node is proxying an event for, if any — forwarded to Edge Network via
+ * `pickForwardableHeaders` (unless `network` is overridden), and exposed
+ * as-is on the returned object for the Context component to read.
+ * @returns {PlatformServices & { request?: NodeRequestLike }}
  */
 const createNodePlatformServices = ({
   network,
@@ -41,14 +58,20 @@ const createNodePlatformServices = ({
   runtime,
   legacy,
   globals,
+  request,
 } = {}) => ({
   createNetworkService: (logger) =>
-    network ? network(logger) : createNodeNetworkService(),
+    network
+      ? network(logger)
+      : createNodeNetworkService({
+          headers: pickForwardableHeaders(request?.headers),
+        }),
   storage: storage || createNodeStorageService(),
   cookie: cookie || createNodeCookieService(),
   runtime: runtime || createNodeRuntimeService(),
   legacy: legacy || createNodeLegacyService(),
   globals: globals || createNodeGlobalsService(),
+  request,
 });
 
 export default createNodePlatformServices;

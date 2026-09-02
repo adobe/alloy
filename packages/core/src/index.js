@@ -39,6 +39,14 @@ import * as optionalComponents from "./core/componentCreators.js";
 export { default as createCoreConfigs } from "./core/config/createCoreConfigs.js";
 
 /**
+ * The Consent component creator, exported individually (rather than only
+ * available bundled into `createInstance`'s full component set) so runtimes
+ * like `@adobe/alloy-node` can opt into it without importing core's deep
+ * internal paths directly.
+ */
+export { default as consent } from "./components/Consent/index.js";
+
+/**
  * Creates a custom Alloy instance which can reduce the library size and increase performance.
  *
  * @param {Object} [options] - Configuration options for the instance.

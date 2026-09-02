@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import createNodePlatformServices from "../../../../src/services/createNodePlatformServices.js";
 
 describe("createNodePlatformServices", () => {
@@ -57,5 +57,81 @@ describe("createNodePlatformServices", () => {
     expect(platformServices.createNetworkService("the-logger")).toBe(
       fakeNetworkService,
     );
+  });
+
+  describe("request", () => {
+    const fetchMock = vi.fn();
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it("exposes the given request as-is, for components (e.g. Context) to read", () => {
+      const request = { headers: { referer: "https://example.com/page" } };
+
+      const platformServices = createNodePlatformServices({ request });
+
+      expect(platformServices.request).toBe(request);
+    });
+
+    it("is undefined by default", () => {
+      const platformServices = createNodePlatformServices();
+
+      expect(platformServices.request).toBeUndefined();
+    });
+
+    it("forwards the request's forwardable headers to the default network service", async () => {
+      fetchMock.mockResolvedValueOnce(new Response("", { status: 200 }));
+      vi.stubGlobal("fetch", fetchMock);
+      const request = {
+        headers: { "user-agent": "Mozilla/5.0", cookie: "not-forwarded" },
+      };
+
+      const platformServices = createNodePlatformServices({ request });
+      const network = platformServices.createNetworkService(console);
+      await network.sendFetchRequest("https://example.com", "payload");
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://example.com",
+        expect.objectContaining({
+          headers: expect.objectContaining({ "user-agent": "Mozilla/5.0" }),
+        }),
+      );
+    });
+
+    it("forwards headers from a WHATWG Headers instance, e.g. a fetch-standard Request", async () => {
+      fetchMock.mockResolvedValueOnce(new Response("", { status: 200 }));
+      vi.stubGlobal("fetch", fetchMock);
+      const request = {
+        headers: new Headers({
+          "user-agent": "Mozilla/5.0",
+          cookie: "not-forwarded",
+        }),
+      };
+
+      const platformServices = createNodePlatformServices({ request });
+      const network = platformServices.createNetworkService(console);
+      await network.sendFetchRequest("https://example.com", "payload");
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://example.com",
+        expect.objectContaining({
+          headers: expect.objectContaining({ "user-agent": "Mozilla/5.0" }),
+        }),
+      );
+    });
+
+    it("does not forward request headers when network is explicitly overridden", () => {
+      const network = vi.fn(() => ({ fake: "network" }));
+      const request = { headers: { "user-agent": "Mozilla/5.0" } };
+
+      const platformServices = createNodePlatformServices({
+        network,
+        request,
+      });
+      platformServices.createNetworkService(console);
+
+      expect(network).toHaveBeenCalledWith(console);
+    });
   });
 });
