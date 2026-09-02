@@ -12,6 +12,7 @@
     "@adobe/alloy-sandbox-node": "0.0.3"
   },
   "changesets": [
+    "brand-concierge-transfer-cookies-ui",
     "dirty-pugs-boil",
     "inline-module-scripts",
     "munchkin-cookie-payload",
