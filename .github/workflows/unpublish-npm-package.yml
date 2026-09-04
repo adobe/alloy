@@ -1,0 +1,68 @@
+name: Unpublish npm package version
+
+# Manual-only emergency escape hatch — npm only allows unpublishing within
+# 72 hours of the original `npm publish`, and once a given name@version is
+# unpublished, npm permanently blocks ever publishing that exact
+# name@version again (security policy, not configurable). The next real
+# release of this package must use a different version number.
+
+on:
+  workflow_dispatch:
+    inputs:
+      package_name:
+        description: "npm package name (with scope)"
+        required: true
+        default: "@adobe/alloy-node"
+      version:
+        description: "Exact version to unpublish (e.g. 1.0.0) — not a range or dist-tag"
+        required: true
+      confirm:
+        description: "Re-type the exact version above to confirm. This is irreversible."
+        required: true
+
+jobs:
+  unpublish:
+    runs-on: ubuntu-latest
+    # Reuses this repo's existing Production environment protection rules
+    # (required reviewers) as a second human check before anything runs.
+    environment: Production
+    permissions:
+      contents: read
+    steps:
+      - name: Require explicit confirmation
+        run: |
+          if [ "${{ inputs.confirm }}" != "${{ inputs.version }}" ]; then
+            echo "::error::confirm must exactly match version ('${{ inputs.version }}'). Got: '${{ inputs.confirm }}'"
+            exit 1
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+
+      - name: Unpublish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+        run: |
+          PACKAGE="${{ inputs.package_name }}"
+          VERSION="${{ inputs.version }}"
+          echo "Unpublishing $PACKAGE@$VERSION ..."
+          npm unpublish "$PACKAGE@$VERSION" --force
+          echo "Done. Remaining published versions:"
+          npm view "$PACKAGE" versions --json
+
+      - name: Remove 'latest' if it still points at the removed version
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+        run: |
+          PACKAGE="${{ inputs.package_name }}"
+          VERSION="${{ inputs.version }}"
+          LATEST=$(npm view "$PACKAGE" dist-tags.latest 2>/dev/null || echo "")
+          if [ "$LATEST" = "$VERSION" ]; then
+            echo "'latest' pointed at the just-unpublished $VERSION — removing it so a plain 'npm install $PACKAGE' fails loudly instead of silently resolving nothing, until a real release reassigns 'latest' properly."
+            npm dist-tag rm "$PACKAGE" latest
+          else
+            echo "'latest' points at '$LATEST', not the removed version — nothing to do."
+          fi
