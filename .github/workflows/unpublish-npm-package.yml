@@ -36,6 +36,9 @@ jobs:
             exit 1
           fi
 
+      - name: Checkout
+        uses: actions/checkout@v5
+
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
