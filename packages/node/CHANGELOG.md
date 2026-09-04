@@ -1,12 +1,10 @@
 # @adobe/alloy-node
 
-## 1.0.0
-
-### Major Changes
-
-- [#1561](https://github.com/adobe/alloy/pull/1561) [`7ac18dc`](https://github.com/adobe/alloy/commit/7ac18dc37a1d42b88a7521bc0fa6c88ea0bfb82c) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Created MVP for node package
+## 0.1.0
 
 ### Minor Changes
+
+- [#1561](https://github.com/adobe/alloy/pull/1561) [`7ac18dc`](https://github.com/adobe/alloy/commit/7ac18dc37a1d42b88a7521bc0fa6c88ea0bfb82c) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Created MVP for node package
 
 - [#1564](https://github.com/adobe/alloy/pull/1564) [`34fab83`](https://github.com/adobe/alloy/commit/34fab83b4aa76fc7c1c023c47a1bd5a7f968082d) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Added Consent and a minimal Context component to the Node SDK. `setConsent` is now available (scoped per-visitor), and every event now carries `implementationDetails`. `forRequest({ request })` accepts the real incoming HTTP request to forward the visitor's `User-Agent`/`Accept-Language` headers to Edge Network and derive `web.webPageDetails.URL` from the `Referer` header.
 
