@@ -12,6 +12,7 @@
     "@adobe/alloy-sandbox-node": "0.0.4"
   },
   "changesets": [
-    "wacky-donkeys-repeat"
+    "wacky-donkeys-repeat",
+    "wacky-news-design"
   ]
 }
