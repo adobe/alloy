@@ -74,6 +74,7 @@ const bindCommandMethods = (executeCommand, commandNames) => {
 // back to the standard unauthenticated v1 API instead of trying (and
 // failing) to authenticate with IMS using fake values.
 const TEST_CREDENTIAL_VALUE = "TEST";
+/** @param {any} edgeCredentials */
 const isTestEdgeCredentials = (edgeCredentials) =>
   edgeCredentials?.clientId === TEST_CREDENTIAL_VALUE &&
   edgeCredentials?.clientSecret === TEST_CREDENTIAL_VALUE;
