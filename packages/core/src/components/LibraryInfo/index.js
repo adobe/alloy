@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import libraryVersion from "../../constants/libraryVersion.js";
+import defaultLibraryVersion from "../../constants/libraryVersion.js";
 import { CONFIGURE, SET_DEBUG } from "../../constants/coreCommands.js";
 
-const prepareLibraryInfo = ({ config, componentRegistry }) => {
+const prepareLibraryInfo = ({ config, componentRegistry, libraryVersion }) => {
   const allCommands = [
     ...componentRegistry.getCommandNames(),
     CONFIGURE,
@@ -36,13 +36,21 @@ const prepareLibraryInfo = ({ config, componentRegistry }) => {
   };
 };
 
-const createLibraryInfo = ({ config, componentRegistry }) => {
+const createLibraryInfo = ({ config, componentRegistry, platformServices }) => {
+  // defaultLibraryVersion is a build-time placeholder the browser bundler
+  // replaces; other runtimes (e.g. Node) override it via platformServices.
+  const libraryVersion =
+    platformServices?.libraryVersionOverride ?? defaultLibraryVersion;
   return {
     commands: {
       getLibraryInfo: {
         run: () => {
           return {
-            libraryInfo: prepareLibraryInfo({ config, componentRegistry }),
+            libraryInfo: prepareLibraryInfo({
+              config,
+              componentRegistry,
+              libraryVersion,
+            }),
           };
         },
       },

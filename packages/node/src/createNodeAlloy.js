@@ -16,7 +16,9 @@ governing permissions and limitations under the License.
 import {
   createCustomInstance as createCoreCustomInstance,
   createCoreConfigs,
+  createGetImsAccessToken,
 } from "@adobe/alloy-core";
+import { DEFAULT_IMS_HOST } from "@adobe/alloy-core/constants/domain.js";
 import createNodePlatformServices from "./services/createNodePlatformServices.js";
 import * as allRequiredComponents from "./components/requiredComponentCreators.js";
 
@@ -64,6 +66,18 @@ const bindCommandMethods = (executeCommand, commandNames) => {
   return methods;
 };
 
+// Quickstart/testing escape hatch: real OAuth Server-to-Server credentials
+// require registering a Developer Console project, which is overkill for
+// trying the SDK out or writing tests. `edgeCredentials: { clientId: "TEST",
+// clientSecret: "TEST" }` satisfies the required-edgeCredentials check
+// below, but is discarded rather than passed to core, so requests fall
+// back to the standard unauthenticated v1 API instead of trying (and
+// failing) to authenticate with IMS using fake values.
+const TEST_CREDENTIAL_VALUE = "TEST";
+const isTestEdgeCredentials = (edgeCredentials) =>
+  edgeCredentials?.clientId === TEST_CREDENTIAL_VALUE &&
+  edgeCredentials?.clientSecret === TEST_CREDENTIAL_VALUE;
+
 /**
  * Node entrypoint's method-based wrapper around core's string-command
  * dispatcher. Unlike the browser bundle, there's no pre-load stub queue to
@@ -97,6 +111,10 @@ const createNodeAlloy = ({
 
   /** @type {Record<string, unknown> | undefined} */
   let capturedConfig;
+  // Built once, after configure() resolves, and shared across every
+  // forRequest() call — see createGetImsAccessToken's docs for why.
+  /** @type {ReturnType<typeof createGetImsAccessToken> | undefined} */
+  let sharedGetImsAccessToken;
 
   /**
    * A handle scoped to a single request, backed by its own fresh instance
@@ -142,6 +160,7 @@ const createNodeAlloy = ({
       // request, so they must not be checked for uniqueness against every
       // other request this process has ever handled.
       createCoreConfigs(),
+      sharedGetImsAccessToken,
     );
     requestExecuteCommand("configure", capturedConfig);
     return bindCommandMethods(requestExecuteCommand, COMMAND_NAMES);
@@ -151,12 +170,58 @@ const createNodeAlloy = ({
     ...bindCommandMethods(executeCommand, COMMAND_NAMES),
     /** @param {Record<string, unknown>} options */
     configure(options) {
+      if (options.defaultConsent === "pending") {
+        return Promise.reject(
+          new Error(
+            '@adobe/alloy-node does not support defaultConsent: "pending" — ' +
+              "Node has no cross-request session to hold a pending decision " +
+              'in (unlike a long-lived browser page). Use "in" or "out", and ' +
+              "gate calling sendEvent()/setConsent() on your own persisted " +
+              "consent decision instead.",
+          ),
+        );
+      }
+
+      // Node runs in a trusted, client-controlled environment, so
+      // authenticating is required here, unlike the browser bundle's
+      // optional opt-in.
+      if (!options.edgeCredentials) {
+        return Promise.reject(
+          new Error(
+            "@adobe/alloy-node requires edgeCredentials. See the README for " +
+              "how to obtain OAuth Server-to-Server credentials from the " +
+              'Adobe Developer Console, or use { clientId: "TEST", ' +
+              'clientSecret: "TEST" } to quickstart against the ' +
+              "unauthenticated v1 API instead.",
+          ),
+        );
+      }
+
+      const testMode = isTestEdgeCredentials(options.edgeCredentials);
+      const configureOptions = testMode
+        ? { ...options, edgeCredentials: undefined }
+        : options;
+
       // Only capture the config once configure() has actually succeeded —
       // if it rejects (invalid config), capturedConfig must stay unset, so
       // a subsequent forRequest() call still throws instead of silently
       // reconfiguring every request with a config core already rejected.
-      return executeCommand("configure", options).then((result) => {
-        capturedConfig = options;
+      return executeCommand("configure", configureOptions).then((result) => {
+        capturedConfig = configureOptions;
+        if (!testMode) {
+          // core's config validation applies this same default, but only
+          // to its own internal copy — this instance's token accessor is
+          // built from the raw options, so an omitted imsHost would
+          // otherwise become the literal string "undefined" in the token
+          // URL.
+          const edgeCredentials = /** @type {any} */ (options).edgeCredentials;
+          sharedGetImsAccessToken = createGetImsAccessToken({
+            edgeCredentials: {
+              ...edgeCredentials,
+              imsHost: edgeCredentials.imsHost || DEFAULT_IMS_HOST,
+            },
+          });
+        }
         return result;
       });
     },

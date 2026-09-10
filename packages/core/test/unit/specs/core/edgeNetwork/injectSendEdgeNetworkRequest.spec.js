@@ -553,6 +553,175 @@ describe("injectSendEdgeNetworkRequest", () => {
     });
   });
 
+  describe("edgeCredentials (authenticated Server API, v2)", () => {
+    let getImsAccessToken;
+
+    // Confirmed against the real API: v2 only exists for "interact", and
+    // wants a singular `event` object (with an explicit primary identity)
+    // instead of v1's `events` array — see toServerApiPayloadJSON's
+    // comment in the source file for how that was discovered.
+    beforeEach(() => {
+      request.getAction.mockReturnValue("interact");
+      payload.toJSON = vi.fn().mockReturnValue({
+        events: [{ xdm: { eventType: "test" } }],
+        query: { identity: { fetch: ["ECID"] } },
+        meta: { queueTimeMillis: 0 },
+      });
+      getImsAccessToken = {
+        getAccessToken: vi.fn().mockResolvedValue("the-access-token"),
+      };
+      config = createConfig({
+        edgeDomain: "edge.example.com",
+        edgeBasePath: "ee",
+        datastreamId: "myconfigId",
+        orgId: "myOrgId",
+        edgeCredentials: {
+          clientId: "myClientId",
+          clientSecret: "myClientSecret",
+          scopes: ["openid"],
+          imsHost: "ims-na1.adobelogin.com",
+        },
+      });
+      sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
+        config,
+        logger,
+        lifecycle,
+        cookieTransfer,
+        sendNetworkRequest,
+        createResponse,
+        processWarningsAndErrors,
+        getLocationHint,
+        getAssuranceValidationTokenParams,
+        getImsAccessToken,
+      });
+    });
+
+    it("sends interact to the Server API domain, v2, with dataStreamId instead of configId", () => {
+      return sendEdgeNetworkRequest({ request }).then(() => {
+        expect(sendNetworkRequest).toHaveBeenCalledWith(
+          expect.objectContaining({
+            url: "https://server.adobedc.net/ee/v2/interact?dataStreamId=myconfigId&requestId=RID123",
+          }),
+        );
+      });
+    });
+
+    it("attaches Authorization/x-api-key/x-gw-ims-org-id headers using the acquired access token", () => {
+      return sendEdgeNetworkRequest({ request }).then(() => {
+        expect(getImsAccessToken.getAccessToken).toHaveBeenCalled();
+        expect(sendNetworkRequest).toHaveBeenCalledWith(
+          expect.objectContaining({
+            headers: {
+              Authorization: "Bearer the-access-token",
+              "x-api-key": "myClientId",
+              "x-gw-ims-org-id": "myOrgId",
+            },
+          }),
+        );
+      });
+    });
+
+    it("reshapes the payload from a plural events array to a singular event, preserving query/meta", () => {
+      return sendEdgeNetworkRequest({ request }).then(() => {
+        expect(sendNetworkRequest).toHaveBeenCalledWith(
+          expect.objectContaining({
+            payload: {
+              event: { xdm: { eventType: "test" } },
+              query: { identity: { fetch: ["ECID"] } },
+              meta: { queueTimeMillis: 0 },
+            },
+          }),
+        );
+      });
+    });
+
+    it("rejects rather than guessing which event to send if the payload ever has more than one", () => {
+      payload.toJSON.mockReturnValue({
+        events: [{ xdm: { eventType: "a" } }, { xdm: { eventType: "b" } }],
+      });
+      return expect(sendEdgeNetworkRequest({ request })).rejects.toThrow(
+        /exactly one event/,
+      );
+    });
+
+    it("uses the Server API domain even when the request would otherwise use the third-party domain", () => {
+      request.getUseIdThirdPartyDomain.mockReturnValue(true);
+      return sendEdgeNetworkRequest({ request }).then(() => {
+        expect(sendNetworkRequest).toHaveBeenCalledWith(
+          expect.objectContaining({
+            url: expect.stringContaining("https://server.adobedc.net/"),
+          }),
+        );
+        expect(cookieTransfer.cookiesToPayload).toHaveBeenCalledWith(
+          payload,
+          "server.adobedc.net",
+        );
+      });
+    });
+
+    // Confirmed against the real API: a v1 response (e.g. from setConsent)
+    // can write a cluster location hint cookie, and if a later v2 request
+    // blindly reused it in the URL, the Server API domain would 404 on
+    // that path segment — it's not meaningful for authenticated
+    // server-to-server calls, so it must be omitted even when the cookie
+    // is present.
+    it("omits the cluster location hint from the URL, even when one is cached", () => {
+      getLocationHint.mockReturnValue("va6");
+      return sendEdgeNetworkRequest({ request }).then(() => {
+        expect(sendNetworkRequest).toHaveBeenCalledWith(
+          expect.objectContaining({
+            url: "https://server.adobedc.net/ee/v2/interact?dataStreamId=myconfigId&requestId=RID123",
+          }),
+        );
+      });
+    });
+
+    it("does not send any headers, and uses v1/configId, when edgeCredentials is absent", () => {
+      sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
+        config: createConfig({
+          edgeDomain: "edge.example.com",
+          edgeBasePath: "ee",
+          datastreamId: "myconfigId",
+        }),
+        logger,
+        lifecycle,
+        cookieTransfer,
+        sendNetworkRequest,
+        createResponse,
+        processWarningsAndErrors,
+        getLocationHint,
+        getAssuranceValidationTokenParams,
+      });
+      return sendEdgeNetworkRequest({ request }).then(() => {
+        expect(getImsAccessToken.getAccessToken).not.toHaveBeenCalled();
+        expect(sendNetworkRequest).toHaveBeenCalledWith(
+          expect.objectContaining({
+            url: "https://edge.example.com/ee/v1/interact?configId=myconfigId&requestId=RID123",
+            headers: undefined,
+            payload,
+          }),
+        );
+      });
+    });
+
+    // Confirmed against the real API: privacy/set-consent and
+    // identity/acquire both 404 under v2, so they must stay on v1 even
+    // when edgeCredentials is configured.
+    it("falls back to v1/configId for actions other than interact, even with edgeCredentials configured", () => {
+      request.getAction.mockReturnValue("privacy/set-consent");
+      return sendEdgeNetworkRequest({ request }).then(() => {
+        expect(getImsAccessToken.getAccessToken).not.toHaveBeenCalled();
+        expect(sendNetworkRequest).toHaveBeenCalledWith(
+          expect.objectContaining({
+            url: "https://edge.example.com/ee/v1/privacy/set-consent?configId=myconfigId&requestId=RID123",
+            headers: undefined,
+            payload,
+          }),
+        );
+      });
+    });
+  });
+
   describe("queueTimeMillis", () => {
     it("merges queueTimeMillis into request meta when payload has events", () => {
       vi.useFakeTimers();

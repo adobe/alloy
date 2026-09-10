@@ -37,4 +37,13 @@ describe("LibraryInfo", () => {
       },
     });
   });
+
+  it("reports platformServices.libraryVersionOverride instead of the default when given", () => {
+    toolsMock.platformServices = { libraryVersionOverride: "1.2.3" };
+
+    const { libraryInfo } =
+      createLibraryInfo(toolsMock).commands.getLibraryInfo.run();
+
+    expect(libraryInfo.version).toBe("1.2.3");
+  });
 });

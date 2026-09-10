@@ -100,6 +100,19 @@ separate wiring needed. If you build a custom instance with
 `setConsent` will still exist as a method but will reject when called, the
 same as calling an unregistered command in the browser bundle.
 
+> [!WARNING]
+> `defaultConsent: "pending"` is rejected by `configure()` — not supported
+> in Node. A pending `sendEvent()`/`getIdentity()` on one `forRequest()`
+> call can only ever be released by a `setConsent()` on that *exact same*
+> call, never by a later request for the same visitor (each `forRequest()`
+> is a fresh instance with its own private pending queue) — unlike a
+> browser page, Node has no equivalent long-lived session to hold that
+> state across separate HTTP requests. Use `"in"` or `"out"`, and gate
+> calling `sendEvent()`/`setConsent()` on your own persisted consent
+> decision instead. If you need the multi-request pending flow to work,
+> let us know — we haven't built it because we don't yet have signal that
+> anyone needs it, not because it's impossible.
+
 ## Context
 
 A minimal, always-on Context component attaches `implementationDetails` to
@@ -123,6 +136,74 @@ Everything else the browser's Context collects (screen size, viewport,
 local timezone) has no honest server-side source and isn't guessed at here —
 merge real values directly via `sendEvent({ xdm: { ... } })` if you have
 them.
+
+## Authenticated requests (Edge Network Server API, v2)
+
+Because Node runs in a trusted, client-controlled environment (unlike a
+browser), it authenticates its own requests instead of sending them
+unauthenticated — `configure()` **requires** OAuth Server-to-Server
+credentials from the [Adobe Developer Console](https://developer.adobe.com/console):
+
+```js
+await alloy.configure({
+  orgId: "...",
+  datastreamId: "...",
+  edgeCredentials: {
+    clientId: "...",
+    clientSecret: "...",
+    scopes: ["openid", "AdobeID", ...], // whatever your project grants
+  },
+});
+```
+
+`configure()` rejects if `edgeCredentials` is missing — unlike the browser
+bundle, where the same config field is optional (and generally shouldn't be
+used at all: shipping a client secret to a browser defeats the point of it
+being a secret). `sendEvent()` then goes to the authenticated Edge Network
+Server API (`server.adobedc.net`, `v2`) instead of the standard one, with a
+real IMS access token attached.
+
+> [!TIP]
+> Don't have a Developer Console project yet? Pass
+> `edgeCredentials: { clientId: "TEST", clientSecret: "TEST" }` to
+> quickstart against the standard unauthenticated v1 API instead — it
+> satisfies the required-`edgeCredentials` check but is discarded rather
+> than used, so no real IMS authentication is attempted. For local
+> exploration and tests only; don't ship this to production.
+
+The IMS token is fetched once and cached (~24h) for the life of the
+process, not once per request — it's server-credential state, not visitor
+state, shared automatically across every `forRequest()` call the same way
+`network`/`runtime` already are.
+
+Verified against a real, credentialed project — two things worth knowing,
+neither of which needs any code changes on your part, but do affect what
+you pass to `sendEvent()`:
+
+- **Only `sendEvent` uses v2.** `setConsent` and `getIdentity` still go
+  through the standard v1 endpoint even when `edgeCredentials` is
+  configured — the authenticated Server API returns a flat 404 for
+  `privacy/set-consent` and `identity/acquire`. This is handled
+  automatically; you don't need to do anything differently for those
+  calls.
+- **You must supply a primary identity.** Since there's no browser cookie
+  jar for Edge Network to resolve identity from on a pure server-to-server
+  call, an authenticated `sendEvent()` needs an explicit identity in the
+  event itself, or it's rejected:
+
+  ```js
+  await request.sendEvent({
+    xdm: {
+      eventType: "...",
+      identityMap: {
+        Email: [{ id: "visitor@example.com", primary: true }],
+      },
+    },
+  });
+  ```
+
+  (The `events` → `event` payload reshaping v2 requires under the hood is
+  handled internally — nothing to do there either.)
 
 ## Platform services
 
