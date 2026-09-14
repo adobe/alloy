@@ -23,17 +23,28 @@ import createNodeCookieService from "../../src/services/createNodeCookieService.
 
 // @adobe/alloy-node requires edgeCredentials — there's no more
 // unauthenticated fallback to test against, so this whole suite needs a
-// real OAuth Server-to-Server credential. Run with, e.g.:
+// real OAuth Server-to-Server credential AND a real datastream under that
+// same org (Edge Network rejects a datastream that belongs to a different
+// org than the token does) — no fallback datastream, since nobody could
+// reach one that belongs to an org they don't have credentials for anyway.
+// Run with, e.g.:
 //   node --env-file=.env ./node_modules/.bin/vitest run --project node-integration
+// In CI, these env vars are populated from repo secrets (see
+// .github/workflows/quality-checks.yml) — skips (not fails) when they're
+// absent, e.g. on a fork's pull_request run, where secrets aren't exposed.
 const { CLIENT_ID, CLIENT_SECRET, SCOPES, IMS_ORG_ID, DATASTREAM_ID } =
   process.env;
+const hasEdgeCredentials = !!(
+  CLIENT_ID &&
+  CLIENT_SECRET &&
+  SCOPES &&
+  IMS_ORG_ID &&
+  DATASTREAM_ID
+);
 
 const config = {
   orgId: IMS_ORG_ID,
-  // A real, already-configured datastream under IMS_ORG_ID — same one
-  // used by alloy-samples' node/personalization-hybrid sample — unless a
-  // different one is provided.
-  datastreamId: DATASTREAM_ID || "73690cda-9d47-4d55-b669-2d027dc01d19",
+  datastreamId: DATASTREAM_ID,
   edgeDomain: "edge.adobedc.net",
   edgeBasePath: "ee",
   thirdPartyCookiesEnabled: false,
@@ -53,11 +64,7 @@ const identityMap = () => ({
   Email: [{ id: `${randomUUID()}@nodeConsumer.test`, primary: true }],
 });
 
-// Skipped for now: these tests hit the live Edge Network and need a real
-// OAuth Server-to-Server credential, which we don't yet have a safe way to
-// provide in CI. Remove .skip to run locally against real credentials (see
-// the env vars read above). 2026-09-09 @spencers
-describe.skip("Node consumer integration", () => {
+describe.skipIf(!hasEdgeCredentials)("Node consumer integration", () => {
   it("imports @adobe/alloy-core without throwing", () => {
     expect(core.createCustomInstance).toBeTypeOf("function");
     expect(core.createInstance).toBeTypeOf("function");

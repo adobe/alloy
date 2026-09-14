@@ -412,30 +412,6 @@ describe("createNodeAlloy", () => {
       );
     });
 
-    // Quickstart escape hatch: { clientId: "TEST", clientSecret: "TEST" }
-    // satisfies the required-edgeCredentials check but is discarded rather
-    // than used, so requests fall back to the unauthenticated v1 API.
-    it('accepts { clientId: "TEST", clientSecret: "TEST" } and falls back to v1 instead of authenticating', async () => {
-      const fetchMock = createFetchMock();
-      vi.stubGlobal("fetch", fetchMock);
-      const alloy = createNodeAlloy();
-
-      await expect(
-        alloy.configure({
-          ...config,
-          edgeCredentials: { clientId: "TEST", clientSecret: "TEST" },
-        }),
-      ).resolves.toBeDefined();
-      await alloy
-        .forRequest({ cookie: createSpyCookieService() })
-        .sendEvent({ xdm: { eventType: "test" } });
-
-      expect(imsCalls(fetchMock)).toHaveLength(0);
-      const [url] = fetchMock.mock.calls.at(-1);
-      expect(url).toContain("/v1/interact?configId=");
-      expect(url).not.toContain("server.adobedc.net");
-    });
-
     // Confirmed against the real API: privacy/set-consent 404s under v2,
     // so it must keep using v1 even when edgeCredentials is configured.
     it("still sends setConsent through v1, not the Server API, even with edgeCredentials configured", async () => {

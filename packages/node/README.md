@@ -163,18 +163,40 @@ being a secret). `sendEvent()` then goes to the authenticated Edge Network
 Server API (`server.adobedc.net`, `v2`) instead of the standard one, with a
 real IMS access token attached.
 
-> [!TIP]
-> Don't have a Developer Console project yet? Pass
-> `edgeCredentials: { clientId: "TEST", clientSecret: "TEST" }` to
-> quickstart against the standard unauthenticated v1 API instead — it
-> satisfies the required-`edgeCredentials` check but is discarded rather
-> than used, so no real IMS authentication is attempted. For local
-> exploration and tests only; don't ship this to production.
-
 The IMS token is fetched once and cached (~24h) for the life of the
 process, not once per request — it's server-credential state, not visitor
 state, shared automatically across every `forRequest()` call the same way
 `network`/`runtime` already are.
+
+### Running the real-network integration suite
+
+`packages/node/test/integration/nodeConsumer.spec.js` makes requests to
+authentication-required APIs, so it needs a real credential — it reads
+`CLIENT_ID`/`CLIENT_SECRET`/`SCOPES`/`IMS_ORG_ID`/`DATASTREAM_ID` from
+`process.env` and skips itself (doesn't fail) whenever any of them are
+unset. `DATASTREAM_ID` must be a real datastream under that same
+`IMS_ORG_ID` — Edge Network rejects a datastream that belongs to a
+different org than the credential does.
+
+Because it needs credentials, this suite is cordoned off from the plain
+`pnpm run test`/`test:coverage` (which exclude it via
+`--project=!node-integration`) into its own command:
+
+```sh
+# Locally, from a .env file at the repo root (gitignored):
+node --env-file=.env ./node_modules/.bin/vitest run --project node-integration
+# or, equivalently:
+node --env-file=.env ./node_modules/.bin/pnpm run test:node-integration
+```
+
+In CI (`.github/workflows/quality-checks.yml`'s `tests` job), `pnpm run
+test:node-integration` is its own step, with those same env vars populated
+from repo secrets — `ALLOY_NODE_INTEGRATION_CLIENT_ID`, `_CLIENT_SECRET`,
+`_SCOPES`, `_IMS_ORG_ID`, `_DATASTREAM_ID` — configured under this repo's
+**Settings → Secrets and variables → Actions**. Until those secrets exist,
+the suite just keeps skipping in CI, same as it does locally without a
+`.env`. GitHub doesn't expose secrets to a fork's `pull_request` run either
+way, so it'll always skip there regardless.
 
 Verified against a real, credentialed project — two things worth knowing,
 neither of which needs any code changes on your part, but do affect what
