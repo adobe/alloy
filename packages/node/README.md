@@ -175,11 +175,10 @@ authentication-required APIs, so it needs a real credential — it reads
 `CLIENT_ID`/`CLIENT_SECRET`/`SCOPES`/`IMS_ORG_ID`/`DATASTREAM_ID` from
 `process.env` and skips itself (doesn't fail) whenever any of them are
 unset. `DATASTREAM_ID` must be a real datastream under that same
-`IMS_ORG_ID` — Edge Network rejects a datastream that belongs to a
-different org than the credential does.
+`IMS_ORG_ID`.
 
-Because it needs credentials, this suite is cordoned off from the plain
-`pnpm run test`/`test:coverage` (which exclude it via
+Because it needs credentials, this suite does not run with the basic
+`pnpm run test`/`test:coverage` testing commands (which exclude it via
 `--project=!node-integration`) into its own command:
 
 ```sh
