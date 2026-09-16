@@ -40,17 +40,20 @@ const CONTAINER_STYLES = {
   }),
 };
 
+// Tree pane: minimum 300px wide, but can grow if there's extra room (long
+// node names, several expanded nodes). Edit pane: takes the rest of the
+// row and shrinks first, so the tree's 300px minimum always wins.
 const TREE_PANE_STYLES = {
   true: style({}),
-  false: style({ flexGrow: 1, flexShrink: 0, minWidth: 300 }),
+  false: style({ flexGrow: 1, flexShrink: 0, flexBasis: 300 }),
 };
 
 const EDIT_PANE_STYLES = {
   true: style({ alignSelf: "start", position: "sticky", top: 0 }),
   false: style({
-    flexGrow: 1,
+    flexGrow: 0,
     flexShrink: 1,
-    minWidth: 0,
+    flexBasis: "full",
     alignSelf: "start",
     position: "sticky",
     top: 0,
