@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { ActionButton, TooltipTrigger, Tooltip } from "@adobe/react-spectrum";
-import Refresh from "@spectrum-icons/workflow/Refresh";
+import { ActionButton, TooltipTrigger, Tooltip } from "@react-spectrum/s2";
+import Refresh from "@react-spectrum/s2/icons/Refresh";
 import PropTypes from "prop-types";
 
 /**

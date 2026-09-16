@@ -10,11 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createRef, cloneElement, Children } from "react";
 import PropTypes from "prop-types";
-import { CheckboxGroup } from "@react-spectrum/s2";
+import { CheckboxGroup, Checkbox } from "@react-spectrum/s2";
 import { useField } from "formik";
 import FieldDescriptionAndError from "../fieldDescriptionAndError";
+import widthStyle from "../widthStyle";
+import normalizeGroupChildren from "./normalizeGroupChildren";
 
 const FormikCheckboxGroup = ({
   name,
@@ -25,42 +26,22 @@ const FormikCheckboxGroup = ({
 }) => {
   const [{ value }, { touched, error }, { setValue, setTouched }] =
     useField(name);
-  const checkboxGroupRef = createRef();
-  // Not entirely sure this is the right approach, but there's
-  // no onBlur prop for FormikCheckboxGroup, so we wire up Formik's
-  // onBlur to every checkbox.
-  const childrenWithOnBlur = Children.map(children, (child) => {
-    return cloneElement(child, {
-      onBlur: (event) => {
-        // If the target that will receive focus is not a child of the
-        // checkbox group, we know the checkbox group has lost focus.
-        if (
-          !checkboxGroupRef.current
-            .UNSAFE_getDOMNode()
-            .contains(event.relatedTarget)
-        ) {
-          setTouched(true);
-        }
-      },
-    });
-  });
 
   return (
     <FieldDescriptionAndError
       description={description}
       error={touched && error ? error : undefined}
+      width={width}
     >
       <CheckboxGroup
-        // TODO(S2-upgrade): check this spread for style props
         {...otherProps}
-        ref={checkboxGroupRef}
         value={value}
         onChange={setValue}
-        validationState={touched && error ? "invalid" : undefined}
-        // TODO(S2-upgrade): update this style prop
-        width={width}
+        onBlur={() => setTouched(true)}
+        isInvalid={Boolean(touched && error)}
+        styles={widthStyle(width)}
       >
-        {childrenWithOnBlur}
+        {normalizeGroupChildren(Checkbox, children)}
       </CheckboxGroup>
     </FieldDescriptionAndError>
   );

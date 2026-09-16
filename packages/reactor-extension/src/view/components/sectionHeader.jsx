@@ -10,9 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Divider, Link, View } from "@adobe/react-spectrum";
+import { Divider, Link } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import Heading from "./typography/heading";
+
+const NO_MARGIN_DIVIDER_STYLE = style({ marginTop: 0, marginBottom: 0 });
+
+// Only the tokens actually passed by callers are mapped.
+const CONTAINER_MARGIN_BOTTOM_STYLES = {
+  "size-0": style({ marginBottom: 0 }),
+  "size-200": style({ marginBottom: 16 }),
+};
 
 const SectionHeader = ({
   children,
@@ -21,17 +30,17 @@ const SectionHeader = ({
   marginBottom = "size-200",
 }) => {
   return (
-    <View marginBottom={marginBottom}>
+    <div className={CONTAINER_MARGIN_BOTTOM_STYLES[marginBottom]}>
       <Heading marginTop={marginTop} marginBottom="size-75">
         {children}
       </Heading>
-      <Divider margin={0} size="M" />
+      <Divider size="M" styles={NO_MARGIN_DIVIDER_STYLE} />
       {learnMoreUrl && (
         <Link href={learnMoreUrl} target="_blank" rel="noopener noreferrer">
           Learn more
         </Link>
       )}
-    </View>
+    </div>
   );
 };
 
