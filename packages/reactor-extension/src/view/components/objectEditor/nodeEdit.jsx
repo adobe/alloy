@@ -10,9 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { Breadcrumb, Breadcrumbs, Checkbox } from "@react-spectrum/s2";
+
+/*
+Copyright 2020 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
 import PropTypes from "prop-types";
 import { useFormikContext } from "formik";
-import { Breadcrumbs, Checkbox, Item, Flex, View } from "@adobe/react-spectrum";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import getNodeEditData from "./helpers/getNodeEditData";
 import AutoPopulationAlert from "./autoPopulationAlert";
 import { ALWAYS, NONE } from "./constants/autoPopulationSource";
@@ -66,27 +80,33 @@ const NodeEdit = (props) => {
   }
 
   return (
-    <Flex
+    <div
       data-test-id="nodeEdit"
-      gap="size-200"
-      marginBottom="size-200"
-      direction="column"
+      className={style({
+        display: "flex",
+        gap: 16,
+        marginBottom: 16,
+        flexDirection: "column",
+      })}
     >
       {!verticalLayout && (
-        <View data-test-id="breadcrumb" UNSAFE_className="NodeEdit-breadcrumbs">
+        <div data-test-id="breadcrumb" className="NodeEdit-breadcrumbs">
           {
             // There's currently a known error that occurs when Breadcrumbs
             // is unmounted, but it doesn't seem to affect the UX.
             // https://github.com/adobe/react-spectrum/issues/1979
           }
           {breadcrumb.length > 1 && (
+            // TODO(S2-upgrade): S2 Breadcrumbs no longer includes a nav element by default. You can wrap the Breadcrumbs component in a nav element if needed.
             <Breadcrumbs onAction={(nodeId) => onNodeSelect(nodeId)}>
               {breadcrumb.map((item) => (
-                <Item key={item.nodeId}>{item.label}</Item>
+                <Breadcrumb id={item.nodeId} key={item.nodeId}>
+                  {item.label}
+                </Breadcrumb>
               ))}
             </Breadcrumbs>
           )}
-        </View>
+        </div>
       )}
       {formStateNode.autoPopulationSource !== NONE && (
         <AutoPopulationAlert formStateNode={formStateNode} />
@@ -104,7 +124,9 @@ const NodeEdit = (props) => {
                 data-test-id="clearField"
                 isSelected
                 isDisabled
-                width="size-5000"
+                styles={style({
+                  width: 400,
+                })}
               >
                 Clear existing value
               </Checkbox>
@@ -123,7 +145,7 @@ const NodeEdit = (props) => {
           )}
         </>
       )}
-    </Flex>
+    </div>
   );
 };
 

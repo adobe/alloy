@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { ContextualHelp, Heading, Content, Text } from "@adobe/react-spectrum";
+import { ContextualHelp, Heading, Content, Text } from "@react-spectrum/s2";
 
 const NodeDescription = ({ title, description }) => {
   if (!description) {
@@ -19,8 +19,8 @@ const NodeDescription = ({ title, description }) => {
   }
 
   return (
+    // TODO(S2-upgrade): variant="info" has not been implemented yet.
     <ContextualHelp
-      variant="info"
       data-test-id="nodeDescription"
       aria-label="Click to view additional information about this field"
     >
