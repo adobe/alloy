@@ -79,17 +79,16 @@ const PartsPopulationStrategyForm = ({
                     gap: 16,
                   })}
                 >
-                  <Button
+                  <ActionButton
                     data-test-id={`item${index}SelectButton`}
-                    variant="secondary"
+                    isQuiet
                     onPress={() => onNodeSelect(itemNode.id)}
                   >
                     Item {index + 1}
-                  </Button>
+                  </ActionButton>
                   <ActionButton
                     data-test-id={`item${index}RemoveButton`}
                     isQuiet
-                    variant="secondary"
                     aria-label="Delete"
                     onPress={() => arrayHelpers.remove(index)}
                     styles={style({
