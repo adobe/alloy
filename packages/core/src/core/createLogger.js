@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import redactSensitiveValues from "../utils/redactSensitiveValues.js";
+
 export default ({ getDebugEnabled, console, getMonitors, context }) => {
   let prefix = `[${context.instanceName}]`;
   if (context.componentName) {
@@ -35,6 +37,13 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
     }
   };
 
+  // Scoped to "configure" only — other commands' options are arbitrary
+  // customer data that could coincidentally have a field named "password".
+  const redactOptionsIfConfigure = (data) =>
+    data.commandName === "configure"
+      ? { ...data, options: redactSensitiveValues(data.options) }
+      : data;
+
   return {
     get enabled() {
       return getMonitors().length > 0 || getDebugEnabled();
@@ -44,23 +53,35 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
       log("info", "Instance initialized.");
     },
     logOnInstanceConfigured(data) {
-      notifyMonitors("onInstanceConfigured", data);
-      log("info", "Instance configured. Computed configuration:", data.config);
+      // Always redacted — always our own config shape, never customer data.
+      const redactedData = {
+        ...data,
+        config: redactSensitiveValues(data.config),
+      };
+      notifyMonitors("onInstanceConfigured", redactedData);
+      log(
+        "info",
+        "Instance configured. Computed configuration:",
+        redactedData.config,
+      );
     },
     logOnBeforeCommand(data) {
-      notifyMonitors("onBeforeCommand", data);
+      const redactedData = redactOptionsIfConfigure(data);
+      notifyMonitors("onBeforeCommand", redactedData);
       log(
         "info",
         `Executing ${data.commandName} command. Options:`,
-        data.options,
+        redactedData.options,
       );
     },
     logOnCommandResolved(data) {
-      notifyMonitors("onCommandResolved", data);
+      const redactedData = redactOptionsIfConfigure(data);
+      notifyMonitors("onCommandResolved", redactedData);
       log("info", `${data.commandName} command resolved. Result:`, data.result);
     },
     logOnCommandRejected(data) {
-      notifyMonitors("onCommandRejected", data);
+      const redactedData = redactOptionsIfConfigure(data);
+      notifyMonitors("onCommandRejected", redactedData);
       log(
         "error",
         `${data.commandName} command was rejected. Error:`,

@@ -205,6 +205,101 @@ describe("createLogger", () => {
       error,
     );
   });
+  describe("redaction of secrets before logging/notifying monitors", () => {
+    let monitor;
+    beforeEach(() => {
+      logEnabled = true;
+      monitor = {
+        onInstanceConfigured: vi.fn(),
+        onBeforeCommand: vi.fn(),
+        onCommandResolved: vi.fn(),
+        onCommandRejected: vi.fn(),
+      };
+      getMonitors = () => [monitor];
+    });
+    it("redacts a secret in logOnInstanceConfigured's config, in both the console log and the monitor payload", () => {
+      build();
+      logger.logOnInstanceConfigured({
+        config: {
+          orgId: "abc@AdobeOrg",
+          edgeCredentials: { clientId: "myClientId", clientSecret: "shh" },
+        },
+      });
+      const expectedConfig = {
+        orgId: "abc@AdobeOrg",
+        edgeCredentials: { clientId: "myClientId", clientSecret: "[REDACTED]" },
+      };
+      expect(console.info).toHaveBeenCalledWith(
+        "[myinstance]",
+        "Instance configured. Computed configuration:",
+        expectedConfig,
+      );
+      expect(monitor.onInstanceConfigured).toHaveBeenCalledWith(
+        expect.objectContaining({ config: expectedConfig }),
+      );
+    });
+    it("redacts a secret in configure's options, for logOnBeforeCommand/logOnCommandResolved/logOnCommandRejected", () => {
+      build();
+      const options = {
+        edgeCredentials: { clientId: "myClientId", clientSecret: "shh" },
+      };
+      const expectedOptions = {
+        edgeCredentials: { clientId: "myClientId", clientSecret: "[REDACTED]" },
+      };
+
+      logger.logOnBeforeCommand({ commandName: "configure", options });
+      expect(console.info).toHaveBeenCalledWith(
+        "[myinstance]",
+        "Executing configure command. Options:",
+        expectedOptions,
+      );
+      expect(monitor.onBeforeCommand).toHaveBeenCalledWith(
+        expect.objectContaining({ options: expectedOptions }),
+      );
+
+      logger.logOnCommandResolved({
+        commandName: "configure",
+        options,
+        result: {},
+      });
+      expect(monitor.onCommandResolved).toHaveBeenCalledWith(
+        expect.objectContaining({ options: expectedOptions }),
+      );
+
+      logger.logOnCommandRejected({
+        commandName: "configure",
+        options,
+        error: new Error("nope"),
+      });
+      expect(monitor.onCommandRejected).toHaveBeenCalledWith(
+        expect.objectContaining({ options: expectedOptions }),
+      );
+    });
+    it("does not redact other commands' options, even if a field happens to be named like a secret", () => {
+      build();
+      const options = { xdm: { password: "not-actually-a-secret-field" } };
+
+      logger.logOnBeforeCommand({ commandName: "sendEvent", options });
+      expect(console.info).toHaveBeenCalledWith(
+        "[myinstance]",
+        "Executing sendEvent command. Options:",
+        options,
+      );
+      expect(monitor.onBeforeCommand).toHaveBeenCalledWith(
+        expect.objectContaining({ options }),
+      );
+    });
+    it("does not mutate the original config/options objects", () => {
+      build();
+      const config = { edgeCredentials: { clientSecret: "shh" } };
+      logger.logOnInstanceConfigured({ config });
+      expect(config).toEqual({ edgeCredentials: { clientSecret: "shh" } });
+
+      const options = { edgeCredentials: { clientSecret: "shh" } };
+      logger.logOnBeforeCommand({ commandName: "configure", options });
+      expect(options).toEqual({ edgeCredentials: { clientSecret: "shh" } });
+    });
+  });
   it("logs onBeforeNetworkRequest", () => {
     logEnabled = true;
     build();
