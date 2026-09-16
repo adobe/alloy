@@ -17,12 +17,20 @@ import { networkRecorder } from "../mswjs/networkRecorder.js";
 import setupAlloy from "../alloy/setup.js";
 import setupBaseCode from "../alloy/setupBaseCode.js";
 import cleanAlloy from "../alloy/clean.js";
+import { createCommandDrain } from "../alloy/commandDrain.js";
 import { cleanupDom } from "../utils/domHelpers.js";
 import { resetSendBeaconCalls } from "../utils/sendBeacon.js";
 
 const worker = createWorker();
 
 let workerStarted = false;
+
+const clearAllCookies = async () => {
+  const cookies = await cookieStore.getAll();
+  await Promise.all(
+    cookies.map((c) => cookieStore.delete({ name: c.name, path: c.path })),
+  );
+};
 
 // Extend the test with MSW worker
 export const testWithoutAlloy = baseTest.extend({
@@ -58,12 +66,12 @@ export const testWithoutAlloy = baseTest.extend({
 export const test = testWithoutAlloy.extend({
   alloy: [
     async ({}, use) => {
+      const commandDrain = createCommandDrain();
+      commandDrain.register();
+
       // Clear all cookies for a clean slate before each test, so individual
       // tests don't leak identity/consent state into subsequent tests.
-      const cookies = await cookieStore.getAll();
-      await Promise.all(
-        cookies.map((c) => cookieStore.delete({ name: c.name, path: c.path })),
-      );
+      await clearAllCookies();
 
       await setupBaseCode();
       const alloy = await setupAlloy();
@@ -71,6 +79,11 @@ export const test = testWithoutAlloy.extend({
 
       // Make alloy available in the test context
       await use(alloy);
+
+      // Wait for unawaited/in-flight commands to finish writing their response w/
+      // cookies before deleting cookies
+      await commandDrain.drain();
+      await clearAllCookies();
 
       cleanAlloy();
       cleanupDom();
