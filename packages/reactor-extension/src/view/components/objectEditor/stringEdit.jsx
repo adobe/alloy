@@ -36,7 +36,11 @@ const StringEdit = (props) => {
             contextualHelp={nodeDescription}
           >
             {(item) => (
-              <ComboBoxItem key={item.value} id={item.value} data-test-id={item.value}>
+              <ComboBoxItem
+                key={item.value}
+                id={item.value}
+                data-test-id={item.value}
+              >
                 {item.label}
               </ComboBoxItem>
             )}
