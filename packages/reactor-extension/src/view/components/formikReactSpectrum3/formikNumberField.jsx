@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { NumberField } from "@adobe/react-spectrum";
+import { NumberField } from "@react-spectrum/s2";
 import { useField } from "formik";
 
 /**
@@ -31,6 +31,7 @@ const FormikNumberField = ({ name, width, validate, ...otherProps }) => {
 
   return (
     <NumberField
+      // TODO(S2-upgrade): check this spread for style props
       {...otherProps}
       value={value === "" ? null : value}
       onChange={(val) => {
@@ -41,8 +42,9 @@ const FormikNumberField = ({ name, width, validate, ...otherProps }) => {
       onBlur={() => {
         setTouched(true);
       }}
-      validationState={touched && error ? "invalid" : undefined}
+      isInvalid={Boolean(touched && error)}
       errorMessage={error}
+      // TODO(S2-upgrade): update this style prop
       width={width}
     />
   );

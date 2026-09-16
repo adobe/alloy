@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 
 import { createRef, Children, cloneElement } from "react";
 import PropTypes from "prop-types";
-import { RadioGroup, Radio, TextField } from "@adobe/react-spectrum";
+import { RadioGroup, Radio, TextField } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import { string } from "yup";
 import RawDataElementSelector from "../rawDataElementSelector";
@@ -105,6 +106,7 @@ const FormikRadioGroupWithDataElement = ({
   return (
     <div>
       <RadioGroup
+        // TODO(S2-upgrade): check this spread for style props
         {...otherProps}
         ref={radioGroupRef}
         value={radioValue}
@@ -138,12 +140,12 @@ const FormikRadioGroupWithDataElement = ({
               onChange={(newValue) => setValues("dataElement", newValue)}
               onBlur={() => dataElementSetTouched(true)}
               description={dataElementDescription}
-              validationState={
-                dataElementTouched && error ? "invalid" : undefined
-              }
+              isInvalid={Boolean(dataElementTouched && error)}
               errorMessage={error}
-              width="size-5000"
               isRequired
+              styles={style({
+                width: 400,
+              })}
             />
           </RawDataElementSelector>
         </FieldSubset>

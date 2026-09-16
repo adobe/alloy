@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { TextField } from "@adobe/react-spectrum";
+import { TextField } from "@react-spectrum/s2";
 import { useField } from "formik";
 
 /**
@@ -40,6 +40,7 @@ const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
 
   return (
     <TextField
+      // TODO(S2-upgrade): check this spread for style props
       {...otherProps}
       value={value}
       onChange={(newValue) => {
@@ -51,8 +52,10 @@ const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
           onBlur();
         }
       }}
+      // TODO(S2-upgrade): Prop validationState could not be automatically updated because validationState could not be followed.
       validationState={validationState}
       errorMessage={error}
+      // TODO(S2-upgrade): update this style prop
       width={width}
     />
   );

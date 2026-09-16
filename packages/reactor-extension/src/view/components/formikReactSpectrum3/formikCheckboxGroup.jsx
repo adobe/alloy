@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { createRef, cloneElement, Children } from "react";
 import PropTypes from "prop-types";
-import { CheckboxGroup } from "@adobe/react-spectrum";
+import { CheckboxGroup } from "@react-spectrum/s2";
 import { useField } from "formik";
 import FieldDescriptionAndError from "../fieldDescriptionAndError";
 
@@ -51,11 +51,13 @@ const FormikCheckboxGroup = ({
       error={touched && error ? error : undefined}
     >
       <CheckboxGroup
+        // TODO(S2-upgrade): check this spread for style props
         {...otherProps}
         ref={checkboxGroupRef}
         value={value}
         onChange={setValue}
         validationState={touched && error ? "invalid" : undefined}
+        // TODO(S2-upgrade): update this style prop
         width={width}
       >
         {childrenWithOnBlur}

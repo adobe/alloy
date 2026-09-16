@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { ComboBox } from "@adobe/react-spectrum";
+import { ComboBox } from "@react-spectrum/s2";
 import { useField } from "formik";
 
 /**
@@ -37,6 +37,7 @@ const FormikComboBox = ({
   });
   return (
     <ComboBox
+      // TODO(S2-upgrade): check this spread for style props
       {...otherProps}
       inputValue={value}
       onInputChange={setValue}
@@ -44,8 +45,9 @@ const FormikComboBox = ({
         onBlur(...args);
         setTouched(true);
       }}
-      validationState={touched && error ? "invalid" : undefined}
+      isInvalid={Boolean(touched && error)}
       name={name}
+      // TODO(S2-upgrade): update this style prop
       width={width}
       errorMessage={error}
     />
