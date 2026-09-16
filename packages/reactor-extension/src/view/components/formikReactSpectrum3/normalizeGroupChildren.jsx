@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Children, Fragment, cloneElement, isValidElement } from "react";
+import { Children, cloneElement, isValidElement } from "react";
 
 // Views that haven't been migrated yet still render a v3 Radio/Checkbox
 // (from @adobe/react-spectrum) as RadioGroup/CheckboxGroup children. Those
@@ -21,13 +21,6 @@ import { Children, Fragment, cloneElement, isValidElement } from "react";
 const reinterpretLeaf = (LeafComponent, node) => {
   if (!isValidElement(node)) {
     return node;
-  }
-  if (node.type === Fragment) {
-    return cloneElement(
-      node,
-      {},
-      reinterpretChildren(LeafComponent, node.props.children),
-    );
   }
   if (Object.hasOwn(node.props, "value")) {
     return <LeafComponent key={node.key} {...node.props} />;
