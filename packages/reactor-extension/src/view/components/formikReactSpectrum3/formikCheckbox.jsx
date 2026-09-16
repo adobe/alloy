@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { Checkbox } from "@adobe/react-spectrum";
+import { Checkbox } from "@react-spectrum/s2";
 import { useField } from "formik";
 import FieldDescriptionAndError from "../fieldDescriptionAndError";
 
@@ -26,6 +26,7 @@ const FormikCheckbox = ({ name, description, width, ...otherProps }) => {
       messagePaddingStart="size-300"
     >
       <Checkbox
+        // TODO(S2-upgrade): check this spread for style props
         {...otherProps}
         isSelected={value}
         onChange={setValue}
@@ -33,6 +34,7 @@ const FormikCheckbox = ({ name, description, width, ...otherProps }) => {
           setTouched(true);
         }}
         validationState={touched && error ? "invalid" : undefined}
+        // TODO(S2-upgrade): update this style prop
         width={width}
       />
     </FieldDescriptionAndError>

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { useRef } from "react";
 import PropTypes from "prop-types";
-import { ComboBox } from "@adobe/react-spectrum";
+import { ComboBox } from "@react-spectrum/s2";
 import { useField } from "formik";
 import useForceRender from "../../utils/useForceRender";
 
@@ -40,6 +40,7 @@ const FormikKeyedComboBox = ({
 
   return (
     <ComboBox
+      // TODO(S2-upgrade): check this spread for style props
       {...otherProps}
       inputValue={text}
       items={itemsRef.current}
@@ -77,7 +78,8 @@ const FormikKeyedComboBox = ({
         }
         setTouched(true);
       }}
-      validationState={touched && error ? "invalid" : undefined}
+      isInvalid={Boolean(touched && error)}
+      // TODO(S2-upgrade): update this style prop
       width={width}
       errorMessage={error}
       onOpenChange={(isOpen) => {
