@@ -36,6 +36,17 @@ window.process = {
   },
 };
 
+// React Spectrum overlays (Picker/Menu/Popover) open and close on react-transition-group
+// fixed setTimeouts (OpenTransition timeout={{enter:0, exit:350}}) plus CSS transitions. Under
+// the coverage job's CPU contention those real-timer animations stall for seconds, so overlay
+// assertions (visibility, click actionability) miss their poll windows and heavy tests
+// intermittently exceed the 30s timeout. Zeroing transition/animation durations removes that
+// nondeterministic latency in the test environment only.
+const disableAnimations = document.createElement("style");
+disableAnimations.textContent =
+  "*, *::before, *::after { transition-duration: 0ms !important; animation-duration: 0ms !important; transition-delay: 0ms !important; animation-delay: 0ms !important; }";
+document.head.appendChild(disableAnimations);
+
 // Reset handlers after each test (important for test isolation)
 afterEach(() => {
   worker.resetHandlers();
