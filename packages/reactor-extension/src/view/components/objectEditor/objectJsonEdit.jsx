@@ -29,6 +29,13 @@ import {
 
 const getEmptyItem = () => ({ key: "", value: "" });
 
+// The style() macro must be statically evaluable, so the index === 0
+// comparison can't be interpolated directly; precompute both variants.
+const REMOVE_BUTTON_STYLES = {
+  true: style({ marginTop: 24 }),
+  false: style({}),
+};
+
 /**
  * Displayed when the WHOLE population strategy is selected.
  * Allows the user to provide a value for the whole array.
@@ -39,21 +46,22 @@ const WholePopulationStrategyForm = ({
   nodeDescription,
 }) => {
   return (
-    <DataElementSelector clearable>
-      <FormikTextArea
-        data-test-id="valueField"
-        label={displayName}
-        name={`${fieldName}.value`}
-        aria-label="Value"
-        description={
-          "You can provide Data Elements for individual fields within the JSON " +
-          '(e.g. "%My Data%") or provide one data element for the entire object.'
-        }
-        width="size-6000"
-        marginStart="size-300"
-        contextualHelp={nodeDescription}
-      />
-    </DataElementSelector>
+    <div className={style({ marginStart: 24 })}>
+      <DataElementSelector clearable>
+        <FormikTextArea
+          data-test-id="valueField"
+          label={displayName}
+          name={`${fieldName}.value`}
+          aria-label="Value"
+          description={
+            "You can provide Data Elements for individual fields within the JSON " +
+            '(e.g. "%My Data%") or provide one data element for the entire object.'
+          }
+          width="size-6000"
+          contextualHelp={nodeDescription}
+        />
+      </DataElementSelector>
+    </div>
   );
 };
 
@@ -78,6 +86,7 @@ const PartsPopulationStrategyForm = ({ fieldName, items }) => (
             textAlign: "start",
             minWidth: 160,
             padding: 16,
+            paddingTop: 8,
             marginTop: 4,
             borderWidth: 1,
             borderRadius: "sm",
@@ -87,9 +96,6 @@ const PartsPopulationStrategyForm = ({ fieldName, items }) => (
             font: "body-sm",
             marginStart: 24,
           })}
-          style={{
-            paddingTop: "var(--spectrum-global-dimension-size-100)",
-          }}
         >
           <div
             className={style({
@@ -115,25 +121,24 @@ const PartsPopulationStrategyForm = ({ fieldName, items }) => (
                     width="size-3000"
                   />
 
-                  <DataElementSelector clearable>
-                    <FormikTextField
-                      data-test-id={`valueField${index}`}
-                      name={`${fieldName}.items.${index}.value`}
-                      aria-label="Value"
-                      label={index === 0 ? "Value" : ""}
-                      width="size-3000"
-                      marginStart="size-100"
-                    />
-                  </DataElementSelector>
+                  <div className={style({ marginStart: 8 })}>
+                    <DataElementSelector clearable>
+                      <FormikTextField
+                        data-test-id={`valueField${index}`}
+                        name={`${fieldName}.items.${index}.value`}
+                        aria-label="Value"
+                        label={index === 0 ? "Value" : ""}
+                        width="size-3000"
+                      />
+                    </DataElementSelector>
+                  </div>
 
                   <ActionButton
                     data-test-id={`item${index}RemoveButton`}
                     isQuiet
-                    variant="secondary"
                     aria-label="Delete"
                     isDisabled={items.length === 1 && !key && !value}
-                    // TODO(S2-upgrade): update this style prop
-                    marginTop={index === 0 ? "size-300" : ""}
+                    styles={REMOVE_BUTTON_STYLES[index === 0]}
                     onPress={() =>
                       items.length > 1
                         ? arrayHelpers.remove(index)
