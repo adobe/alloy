@@ -91,5 +91,14 @@
     "testcafe": "^3.7.4",
     "testcafe-browser-provider-playwright": "^1.1.0",
     "unplugin-parcel-macros": "^0.2.0"
+  },
+  "@parcel/bundler-default": {
+    "manualSharedBundles": [
+      {
+        "name": "s2-styles",
+        "types": ["css"],
+        "assets": ["**/@react-spectrum/s2/**", "src/view/**/*.{js,jsx}"]
+      }
+    ]
   }
 }

@@ -15,6 +15,8 @@ import { defineProject } from "vitest/config";
 import { playwright } from "@vitest/browser-playwright";
 // eslint-disable-next-line import/no-unresolved
 import react from "@vitejs/plugin-react";
+// eslint-disable-next-line import/no-unresolved
+import macros from "unplugin-parcel-macros";
 const isCi = !!process.env.CI;
 
 const packageCoverage = {
@@ -43,10 +45,19 @@ export const reactorExtensionTestProjects = [
   defineProject({
     extends: false,
     plugins: [
+      // Must run before @vitejs/plugin-react so the S2 `style()` macro is
+      // evaluated at build time (parity with Parcel's native macro support).
+      macros.vite(),
       react({
         jsxRuntime: "automatic",
       }),
     ],
+    // The S2 `style()` macro is imported from a build-time-only `./style`
+    // subpath with no browser export. Keep Vite's dep pre-scanner from
+    // resolving it as a runtime module; the macro plugin handles it instead.
+    optimizeDeps: {
+      exclude: ["@react-spectrum/s2/style"],
+    },
     test: {
       name: "reactor-extension/integration",
       include: [
