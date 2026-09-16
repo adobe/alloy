@@ -30,8 +30,10 @@ const FONT_STYLES = {
 };
 
 // Only the tokens actually passed by callers are mapped; size-75 (6px in S1)
-// is rounded to the nearest S2 margin step (4px).
+// is rounded to the nearest S2 margin step (4px). Callers may pass either the
+// "size-0" token or a bare 0, so both keys are mapped to the same style.
 const MARGIN_TOP_STYLES = {
+  0: style({ marginTop: 0 }),
   "size-0": style({ marginTop: 0 }),
   "size-75": style({ marginTop: 4 }),
   "size-100": style({ marginTop: 8 }),
@@ -39,6 +41,7 @@ const MARGIN_TOP_STYLES = {
   "size-300": style({ marginTop: 24 }),
 };
 const MARGIN_BOTTOM_STYLES = {
+  0: style({ marginBottom: 0 }),
   "size-0": style({ marginBottom: 0 }),
   "size-75": style({ marginBottom: 4 }),
   "size-100": style({ marginBottom: 8 }),
@@ -78,6 +81,6 @@ Body.propTypes = {
   "data-test-id": PropTypes.string,
   children: PropTypes.node.isRequired,
   size: PropTypes.oneOf(["XXXL", "XXL", "XL", "L", "M", "S", "XS", "XXS"]),
-  marginTop: PropTypes.string,
-  marginBottom: PropTypes.string,
+  marginTop: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  marginBottom: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };

@@ -17,8 +17,11 @@ import Heading from "./typography/heading";
 
 const NO_MARGIN_DIVIDER_STYLE = style({ marginTop: 0, marginBottom: 0 });
 
-// Only the tokens actually passed by callers are mapped.
+// Only the tokens actually passed by callers are mapped. Callers may pass
+// either the "size-0" token or a bare 0, so both keys are mapped to the same
+// style.
 const CONTAINER_MARGIN_BOTTOM_STYLES = {
+  0: style({ marginBottom: 0 }),
   "size-0": style({ marginBottom: 0 }),
   "size-200": style({ marginBottom: 16 }),
 };
@@ -46,8 +49,8 @@ const SectionHeader = ({
 
 SectionHeader.propTypes = {
   children: PropTypes.node.isRequired,
-  marginTop: PropTypes.string,
-  marginBottom: PropTypes.string,
+  marginTop: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  marginBottom: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   learnMoreUrl: PropTypes.string,
 };
 

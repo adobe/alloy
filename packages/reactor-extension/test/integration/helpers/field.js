@@ -282,9 +282,20 @@ const field = (locator) => ({
     withRetries(async () => {
       await expect.element(asCheckable(locator), TIMEOUT).not.toBeChecked();
     }),
+  // S2 sets the native `required` attribute whenever `isRequired` is passed,
+  // regardless of Formik's touched/error state (v3 only reflected it via
+  // aria-required). So an empty required field is natively invalid the
+  // moment it renders - use this to assert no error is DISPLAYED to the
+  // user yet, rather than expectValid()'s native-constraint check.
+  expectNotInvalid: async () =>
+    withRetries(async () => {
+      await expect
+        .element(asControl(locator), TIMEOUT)
+        .not.toHaveAttribute("aria-invalid", "true");
+    }),
   expectValid: async () =>
     withRetries(async () => {
-      await expect.element(locator, TIMEOUT).toBeValid();
+      await expect.element(asControl(locator), TIMEOUT).toBeValid();
     }),
   expectValue: async (value) =>
     withRetries(async () => {
