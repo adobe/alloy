@@ -12,8 +12,11 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { InlineAlert, Heading, Content } from "@react-spectrum/s2";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import AsteriskIcon from "@spectrum-icons/workflow/Asterisk";
+import {
+  style,
+  iconStyle,
+} from "@react-spectrum/s2/style" with { type: "macro" };
+import InfoIcon from "@react-spectrum/s2/icons/InfoCircle";
 import Delete from "@react-spectrum/s2/icons/Delete";
 import PopulationAmountIndicator from "./populationAmountIndicator";
 import { EMPTY, PARTIAL, FULL } from "./constants/populationAmount";
@@ -94,10 +97,7 @@ const NoSelectedNodeView = ({
             A full circle indicates all of the attributes have been populated.
           </IndicatorDescription>
           <IndicatorDescription
-            indicator={
-              // TODO(S2-upgrade): A Spectrum 2 equivalent to 'AsteriskIcon' was not found. Please update this icon manually.
-              <AsteriskIcon size="XS" />
-            }
+            indicator={<InfoIcon styles={iconStyle({ size: "XS" })} />}
           >
             Fields that may be auto-populated when this data element is passed
             to the XDM option of the <b>Send event</b> action have this icon.
@@ -105,7 +105,9 @@ const NoSelectedNodeView = ({
             be auto-populated.
           </IndicatorDescription>
           {updateMode && (
-            <IndicatorDescription indicator={<Delete size="XS" />}>
+            <IndicatorDescription
+              indicator={<Delete styles={iconStyle({ size: "XS" })} />}
+            >
               A delete icon indicates that the field will be cleared before
               setting any values. A field further up in the object is already
               cleared. This is controlled by the &quot;Clear exisiting
