@@ -87,16 +87,22 @@ const asTrigger = (locator) => {
   return locator.locator("input, button").first();
 };
 
-// isDisabled/isEnabled apply to every field type, including button-based
-// ones (Picker/ComboBox triggers) that have no nested control at all - so
-// unlike asControl/asCheckable, fall back to the original locator instead
-// of assuming a control exists.
+// isDisabled/isEnabled apply to every field type. The real control may be
+// the locator itself, or a nested control when `data-test-id` is on the S2
+// field wrapper - including a nested trigger button (Picker/ComboBox), whose
+// native `disabled` is what jest-dom reads. Fall back to the wrapper only
+// when no control is nested.
 const preferControl = (locator) => {
   const tagName = locator.element().tagName.toLowerCase();
-  if (tagName === "input" || tagName === "textarea" || tagName === "select") {
+  if (
+    tagName === "input" ||
+    tagName === "textarea" ||
+    tagName === "select" ||
+    tagName === "button"
+  ) {
     return locator;
   }
-  const nested = locator.locator("input, textarea, select").first();
+  const nested = locator.locator("input, textarea, select, button").first();
   return nested.query() ? nested : locator;
 };
 
