@@ -19,8 +19,8 @@ const NodeDescription = ({ title, description }) => {
   }
 
   return (
-    // TODO(S2-upgrade): variant="info" has not been implemented yet.
     <ContextualHelp
+      variant="info"
       data-test-id="nodeDescription"
       aria-label="Click to view additional information about this field"
     >
