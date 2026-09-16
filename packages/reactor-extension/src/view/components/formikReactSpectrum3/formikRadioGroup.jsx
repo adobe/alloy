@@ -10,11 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createRef, Children, cloneElement, Fragment } from "react";
 import PropTypes from "prop-types";
-import { RadioGroup } from "@react-spectrum/s2";
+import { RadioGroup, Radio } from "@react-spectrum/s2";
 import { useField } from "formik";
 import FieldDescriptionAndError from "../fieldDescriptionAndError";
+import widthStyle from "../widthStyle";
+import normalizeGroupChildren from "./normalizeGroupChildren";
 
 const FormikRadioGroup = ({
   name,
@@ -26,48 +27,15 @@ const FormikRadioGroup = ({
 }) => {
   const [{ value }, { touched, error }, { setValue, setTouched }] =
     useField(name);
-  const radioGroupRef = createRef();
-  // Not entirely sure this is the right approach, but there's
-  // no onBlur prop for RadioGroup, so we wire up Formik's
-  // onBlur to every radio.
-  /** @type {(child: React.ReactNode) => React.ReactNode} */
-  const cloneWithOnBlur = (child) => {
-    if (!child) {
-      return child;
-    }
-    if (child?.type === Fragment) {
-      return cloneElement(
-        child,
-        {},
-        Children.map(child.props.children, cloneWithOnBlur),
-      );
-    }
 
-    return cloneElement(child, {
-      /** @type {(event: React.FocusEvent<HTMLInputElement>) => void} */
-      onBlur: (event) => {
-        // If the target that will receive focus is not a child of the
-        // radio group, we know the radio group has lost focus.
-        if (
-          !radioGroupRef.current
-            .UNSAFE_getDOMNode()
-            .contains(event.relatedTarget)
-        ) {
-          setTouched(true);
-        }
-      },
-    });
-  };
-  const childrenWithOnBlur = Children.map(children, cloneWithOnBlur);
   return (
     <FieldDescriptionAndError
       description={description}
       error={touched && error ? error : undefined}
+      width={width}
     >
       <RadioGroup
-        // TODO(S2-upgrade): check this spread for style props
         {...otherProps}
-        ref={radioGroupRef}
         value={value}
         onChange={(currentValue) => {
           setValue(currentValue);
@@ -75,11 +43,11 @@ const FormikRadioGroup = ({
             onChange(currentValue);
           }
         }}
-        isInvalid
-        // TODO(S2-upgrade): update this style prop
-        width={width}
+        onBlur={() => setTouched(true)}
+        isInvalid={Boolean(touched && error)}
+        styles={widthStyle(width)}
       >
-        {childrenWithOnBlur}
+        {normalizeGroupChildren(Radio, children)}
       </RadioGroup>
     </FieldDescriptionAndError>
   );

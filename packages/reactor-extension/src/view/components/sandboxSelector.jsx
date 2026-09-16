@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { useAsyncList } from "@adobe/react-spectrum";
+import { useAsyncList } from "@react-stately/data";
 import { useField } from "formik";
 import PropTypes from "prop-types";
 import { useEffect } from "react";
@@ -55,7 +55,7 @@ const SandboxSelector = ({ initInfo, name, ...otherProps }) => {
     tokens: { imsAccess },
   } = initInfo;
 
-  /** @type {import("@adobe/react-spectrum").AsyncListData<Sandbox, string>} */
+  /** @type {import("@react-stately/data").AsyncListData<Sandbox, string>} */
   const sandboxList = useAsyncList({
     async load({ signal }) {
       if (!orgId || !imsAccess) {

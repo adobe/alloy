@@ -10,45 +10,62 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import classNames from "classnames";
 import PropTypes from "prop-types";
-import getDimensionStyle from "../../utils/getDimensionStyle";
+import { mergeStyles } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+
+const NO_STYLE = style({});
+
+// One font style per body size. The style() macro needs a literal object
+// per call, so these can't be generated from a size -> font token map.
+const FONT_STYLES = {
+  XXXL: style({ font: "body-3xl" }),
+  XXL: style({ font: "body-2xl" }),
+  XL: style({ font: "body-xl" }),
+  L: style({ font: "body-lg" }),
+  M: style({ font: "body" }),
+  S: style({ font: "body-sm" }),
+  XS: style({ font: "body-xs" }),
+  XXS: style({ font: "body-2xs" }),
+};
+
+// Only the tokens actually passed by callers are mapped; size-75 (6px in S1)
+// is rounded to the nearest S2 margin step (4px).
+const MARGIN_TOP_STYLES = {
+  "size-0": style({ marginTop: 0 }),
+  "size-75": style({ marginTop: 4 }),
+  "size-100": style({ marginTop: 8 }),
+  "size-200": style({ marginTop: 16 }),
+  "size-300": style({ marginTop: 24 }),
+};
+const MARGIN_BOTTOM_STYLES = {
+  "size-0": style({ marginBottom: 0 }),
+  "size-75": style({ marginBottom: 4 }),
+  "size-100": style({ marginBottom: 8 }),
+  "size-200": style({ marginBottom: 16 }),
+  "size-300": style({ marginBottom: 24 }),
+};
 
 /**
- * Provides typography styling for a block of text (a paragraph).
- * This is typically unnecessary, since the React-Spectrum Provider
- * component provides basic default body styling for all content,
- * but this can be useful in scenarios where a different font size
- * is needed.
- * See https://opensource.adobe.com/spectrum-css/typography-body.html
- * for more info. Once React-Spectrum provides a Body component
- * that handles typography, we can get rid of this.
+ * Provides typography styling for a block of text (a paragraph). This is
+ * typically unnecessary, since the S2 Provider applies default body styling
+ * to all content, but this is useful when a different font size is needed.
  */
 const Body = ({
   "data-test-id": dataTestId,
   children,
   size = "S",
-  isSerif,
   marginTop,
   marginBottom,
 }) => {
-  const style = {};
-
-  if (marginTop !== undefined) {
-    style.marginTop = getDimensionStyle(marginTop);
-  }
-
-  if (marginBottom !== undefined) {
-    style.marginBottom = getDimensionStyle(marginBottom);
-  }
-
   return (
     <p
       data-test-id={dataTestId}
-      className={classNames("spectrum-Body", `spectrum-Body--size${size}`, {
-        "spectrum-Body--serif": isSerif,
-      })}
-      style={style}
+      className={mergeStyles(
+        FONT_STYLES[size],
+        MARGIN_TOP_STYLES[marginTop] ?? NO_STYLE,
+        MARGIN_BOTTOM_STYLES[marginBottom] ?? NO_STYLE,
+      )}
     >
       {children}
     </p>
@@ -61,7 +78,6 @@ Body.propTypes = {
   "data-test-id": PropTypes.string,
   children: PropTypes.node.isRequired,
   size: PropTypes.oneOf(["XXXL", "XXL", "XL", "L", "M", "S", "XS", "XXS"]),
-  isSerif: PropTypes.bool,
-  marginTop: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  marginBottom: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  marginTop: PropTypes.string,
+  marginBottom: PropTypes.string,
 };

@@ -40,10 +40,6 @@ body,
   padding: 8px;
 }
 
-.formik-field textarea {
-  min-height: var(--spectrum-global-dimension-size-4600) !important
-}
-
 .spectrum-accessibility-overrides {
    *[class*="spectrum-HelpText--neutral"][class*="is-disabled"] *[class*="spectrum-HelpText-text"] {
     color: var(--spectrum-alias-label-text-color, var(--spectrum-global-color-gray-700));

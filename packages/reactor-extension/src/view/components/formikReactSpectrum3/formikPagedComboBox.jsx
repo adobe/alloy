@@ -11,18 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import { ComboBoxItem, ComboBox } from "@react-spectrum/s2";
-/*
-Copyright 2021 Adobe. All rights reserved.
-This file is licensed to you under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License. You may obtain a copy
-of the License at http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software distributed under
-the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-OF ANY KIND, either express or implied. See the License for the specific language
-governing permissions and limitations under the License.
-*/
-
 import { useEffect } from "react";
 import PropTypes from "prop-types";
 import { useField } from "formik";
@@ -30,6 +18,7 @@ import usePagedComboBox from "../../utils/usePagedComboBox";
 
 import useIsFirstRender from "../../utils/useIsFirstRender";
 import Alert from "../alert";
+import widthStyle from "../widthStyle";
 
 const FormikPagedComboBox = ({
   name,
@@ -77,11 +66,9 @@ const FormikPagedComboBox = ({
   return (
     <>
       <ComboBox
-        // TODO(S2-upgrade): check this spread for style props
         {...otherProps}
         data-test-id={dataTestId}
-        // TODO(S2-upgrade): update this style prop
-        width={width}
+        styles={widthStyle(width)}
         items={pagedComboBox.items}
         inputValue={pagedComboBox.inputValue || ""}
         selectedKey={getKey(pagedComboBox.selectedItem) || null}

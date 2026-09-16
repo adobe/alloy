@@ -10,11 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Picker } from "@react-spectrum/s2";
+import { Picker, PickerItem } from "@react-spectrum/s2";
 import { useField } from "formik";
 import PropTypes from "prop-types";
+import widthStyle from "../widthStyle";
+import normalizeCollectionChildren from "./normalizeCollectionChildren";
 
-const FormikPicker = ({ name, width, validate, onChange, ...otherProps }) => {
+const FormikPicker = ({
+  name,
+  width,
+  validate,
+  onChange,
+  children,
+  ...otherProps
+}) => {
   const [{ value }, { touched, error }, { setValue, setTouched }] = useField({
     name,
     validate,
@@ -34,11 +43,11 @@ const FormikPicker = ({ name, width, validate, onChange, ...otherProps }) => {
       }}
       isInvalid={Boolean(touched && error)}
       errorMessage={error}
-      // TODO(S2-upgrade): update this style prop
-      width={width}
-      // TODO(S2-upgrade): check this spread for style props
+      styles={widthStyle(width)}
       {...otherProps}
-    />
+    >
+      {normalizeCollectionChildren(PickerItem, children)}
+    </Picker>
   );
 };
 
@@ -47,6 +56,7 @@ FormikPicker.propTypes = {
   width: PropTypes.string,
   validate: PropTypes.func,
   onChange: PropTypes.func,
+  children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
 };
 
 export default FormikPicker;

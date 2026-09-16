@@ -14,6 +14,7 @@ import PropTypes from "prop-types";
 import { Checkbox } from "@react-spectrum/s2";
 import { useField } from "formik";
 import FieldDescriptionAndError from "../fieldDescriptionAndError";
+import widthStyle from "../widthStyle";
 
 const FormikCheckbox = ({ name, description, width, ...otherProps }) => {
   const [{ value }, { touched, error }, { setValue, setTouched }] =
@@ -22,20 +23,19 @@ const FormikCheckbox = ({ name, description, width, ...otherProps }) => {
     <FieldDescriptionAndError
       description={description}
       error={touched && error ? error : undefined}
+      width={width}
       messagePaddingTop="size-0"
       messagePaddingStart="size-300"
     >
       <Checkbox
-        // TODO(S2-upgrade): check this spread for style props
         {...otherProps}
         isSelected={value}
         onChange={setValue}
         onBlur={() => {
           setTouched(true);
         }}
-        validationState={touched && error ? "invalid" : undefined}
-        // TODO(S2-upgrade): update this style prop
-        width={width}
+        isInvalid={Boolean(touched && error)}
+        styles={widthStyle(width)}
       />
     </FieldDescriptionAndError>
   );
