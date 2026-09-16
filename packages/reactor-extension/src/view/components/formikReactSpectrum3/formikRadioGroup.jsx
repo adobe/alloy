@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { createRef, Children, cloneElement, Fragment } from "react";
 import PropTypes from "prop-types";
-import { RadioGroup } from "@adobe/react-spectrum";
+import { RadioGroup } from "@react-spectrum/s2";
 import { useField } from "formik";
 import FieldDescriptionAndError from "../fieldDescriptionAndError";
 
@@ -65,6 +65,7 @@ const FormikRadioGroup = ({
       error={touched && error ? error : undefined}
     >
       <RadioGroup
+        // TODO(S2-upgrade): check this spread for style props
         {...otherProps}
         ref={radioGroupRef}
         value={value}
@@ -74,7 +75,8 @@ const FormikRadioGroup = ({
             onChange(currentValue);
           }
         }}
-        validationState={touched && error ? "invalid" : undefined}
+        isInvalid
+        // TODO(S2-upgrade): update this style prop
         width={width}
       >
         {childrenWithOnBlur}
