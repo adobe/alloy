@@ -22,7 +22,7 @@ export default ({
   /**
    * Send a network request and returns details about the response.
    */
-  return ({ requestId, url, payload, useSendBeacon }) => {
+  return ({ requestId, url, payload, useSendBeacon, headers }) => {
     // We want to log raw payload and event data rather than
     // our fancy wrapper objects. Calling payload.toJSON() is
     // insufficient to get all the nested raw data, because it's
@@ -40,52 +40,56 @@ export default ({
     });
 
     const executeRequest = (retriesAttempted = 0) => {
-      const requestMethod = useSendBeacon
-        ? sendBeaconRequest
-        : sendFetchRequest;
+      // navigator.sendBeacon() has no way to attach custom headers, so a
+      // request that needs any (e.g. authenticated Server API requests)
+      // must always go through fetch, regardless of useSendBeacon.
+      const requestMethod =
+        useSendBeacon && !headers ? sendBeaconRequest : sendFetchRequest;
 
-      return requestMethod(url, stringifiedPayload).then((response) => {
-        const requestIsRetryable = isRequestRetryable({
-          response,
-          retriesAttempted,
-        });
-
-        if (requestIsRetryable) {
-          const requestRetryDelay = getRequestRetryDelay({
+      return requestMethod(url, stringifiedPayload, headers).then(
+        (response) => {
+          const requestIsRetryable = isRequestRetryable({
             response,
             retriesAttempted,
           });
-          return new Promise((resolve) => {
-            setTimeout(() => {
-              resolve(executeRequest(retriesAttempted + 1));
-            }, requestRetryDelay);
+
+          if (requestIsRetryable) {
+            const requestRetryDelay = getRequestRetryDelay({
+              response,
+              retriesAttempted,
+            });
+            return new Promise((resolve) => {
+              setTimeout(() => {
+                resolve(executeRequest(retriesAttempted + 1));
+              }, requestRetryDelay);
+            });
+          }
+
+          let parsedBody;
+
+          try {
+            parsedBody = JSON.parse(response.body);
+          } catch {
+            // Non-JSON. Something went wrong.
+          }
+
+          logger.logOnNetworkResponse({
+            requestId,
+            url,
+            payload: parsedPayload,
+            ...response,
+            parsedBody,
+            retriesAttempted,
           });
-        }
 
-        let parsedBody;
-
-        try {
-          parsedBody = JSON.parse(response.body);
-        } catch {
-          // Non-JSON. Something went wrong.
-        }
-
-        logger.logOnNetworkResponse({
-          requestId,
-          url,
-          payload: parsedPayload,
-          ...response,
-          parsedBody,
-          retriesAttempted,
-        });
-
-        return {
-          statusCode: response.statusCode,
-          body: response.body,
-          parsedBody,
-          getHeader: response.getHeader,
-        };
-      });
+          return {
+            statusCode: response.statusCode,
+            body: response.body,
+            parsedBody,
+            getHeader: response.getHeader,
+          };
+        },
+      );
     };
 
     return executeRequest().catch((error) => {

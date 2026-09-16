@@ -14,22 +14,57 @@ governing permissions and limitations under the License.
 // `await import()` would be charged against the 5s per-test timeout, which
 // Vite's first-run dep bundling can blow past when the full suite runs in
 // parallel.
+import { randomUUID } from "node:crypto";
 import { describe, it, expect } from "vitest";
 import * as core from "@adobe/alloy-core";
 import * as coreServices from "@adobe/alloy-core/services";
 import * as node from "../../src/index.js";
 import createNodeCookieService from "../../src/services/createNodeCookieService.js";
 
+// @adobe/alloy-node requires edgeCredentials — there's no more
+// unauthenticated fallback to test against, so this whole suite needs a
+// real OAuth Server-to-Server credential AND a real datastream under that
+// same org (Edge Network rejects a datastream that belongs to a different
+// org than the token does) — no fallback datastream, since nobody could
+// reach one that belongs to an org they don't have credentials for anyway.
+// Run with, e.g.:
+//   node --env-file=.env ./node_modules/.bin/vitest run --project node-integration
+// In CI, these env vars are populated from repo secrets (see
+// .github/workflows/quality-checks.yml) — skips (not fails) when they're
+// absent, e.g. on a fork's pull_request run, where secrets aren't exposed.
+const { CLIENT_ID, CLIENT_SECRET, SCOPES, IMS_ORG_ID, DATASTREAM_ID } =
+  process.env;
+const hasEdgeCredentials = !!(
+  CLIENT_ID &&
+  CLIENT_SECRET &&
+  SCOPES &&
+  IMS_ORG_ID &&
+  DATASTREAM_ID
+);
+
 const config = {
-  orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
-  datastreamId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
+  orgId: IMS_ORG_ID,
+  datastreamId: DATASTREAM_ID,
   edgeDomain: "edge.adobedc.net",
   edgeBasePath: "ee",
   thirdPartyCookiesEnabled: false,
   debugEnabled: false,
+  edgeCredentials: {
+    clientId: CLIENT_ID,
+    clientSecret: CLIENT_SECRET,
+    scopes: SCOPES ? SCOPES.split(",") : [],
+  },
 };
 
-describe("Node consumer integration", () => {
+// The Server API requires an explicit primary identity per event (no
+// browser cookie to resolve one from) — unique per call so identity
+// continuity tests aren't accidentally sharing this instead of the cookie
+// jar they're actually testing.
+const identityMap = () => ({
+  Email: [{ id: `${randomUUID()}@nodeConsumer.test`, primary: true }],
+});
+
+describe.skipIf(!hasEdgeCredentials)("Node consumer integration", () => {
   it("imports @adobe/alloy-core without throwing", () => {
     expect(core.createCustomInstance).toBeTypeOf("function");
     expect(core.createInstance).toBeTypeOf("function");
@@ -61,18 +96,30 @@ describe("Node consumer integration", () => {
     });
   });
 
+  it("rejects configure() without edgeCredentials", async () => {
+    const alloy = node.createInstance();
+    const { edgeCredentials, ...configWithoutCredentials } = config;
+    await expect(alloy.configure(configWithoutCredentials)).rejects.toThrow(
+      /edgeCredentials/,
+    );
+  });
+
+  it('rejects configure() with defaultConsent: "pending"', async () => {
+    const alloy = node.createInstance();
+    await expect(
+      alloy.configure({ ...config, defaultConsent: "pending" }),
+    ).rejects.toThrow(/pending/);
+  });
+
   // Each createInstance() call gets its own orgId/datastreamId uniqueness
   // scope (see createNodeAlloy.js), so separate tests configuring the same
   // real org/datastream on separate instances don't collide.
-  it("configures an instance and sends an event", async () => {
+  it("configures an instance and sends an authenticated event via the Server API (v2)", async () => {
     const alloy = node.createInstance();
     await expect(alloy.configure(config)).resolves.toBeDefined();
 
     const result = await alloy.sendEvent({
-      xdm: {
-        eventType: "test.nodeConsumer",
-        _id: "00000000-0000-0000-0000-000000000000",
-      },
+      xdm: { eventType: "test.nodeConsumer", identityMap: identityMap() },
     });
 
     expect(result).toBeDefined();
@@ -87,10 +134,7 @@ describe("Node consumer integration", () => {
     await alloy.configure(config);
 
     await alloy.sendEvent({
-      xdm: {
-        eventType: "test.nodeConsumer",
-        _id: "00000000-0000-0000-0000-000000000001",
-      },
+      xdm: { eventType: "test.nodeConsumer", identityMap: identityMap() },
     });
 
     expect(Object.keys(cookie.getAll())).not.toHaveLength(0);
@@ -173,7 +217,7 @@ describe("Node consumer integration", () => {
     await alloy.configure(config);
 
     const result = await alloy.sendEvent({
-      xdm: { eventType: "test.nodeConsumer" },
+      xdm: { eventType: "test.nodeConsumer", identityMap: identityMap() },
       decisionScopes: ["test-nodeConsumer-scope"],
     });
 
@@ -183,7 +227,9 @@ describe("Node consumer integration", () => {
   // Proves Consent is real, wired-up core component (not just a stub): the
   // real /privacy/set-consent round trip succeeds and writes a real consent
   // cookie to whatever cookie service the caller supplies — the same
-  // pattern proven for identity above, now for consent state.
+  // pattern proven for identity above, now for consent state. setConsent
+  // itself always goes through v1 (see injectSendEdgeNetworkRequest.js),
+  // so this doesn't need a primary identity the way sendEvent() does.
   it("setConsent() writes a real consent cookie to a request-scoped cookie service", async () => {
     const alloy = node.createInstance();
     await alloy.configure(config);
@@ -206,34 +252,6 @@ describe("Node consumer integration", () => {
   // reached Edge Network — a plain sendEvent() resolves to `{}` whether or
   // not consent blocked it, so it can't tell the two cases apart on its own.
 
-  it("real defaultConsent: pending holds sendEvent, then a real opt-in unblocks it", async () => {
-    const alloy = node.createInstance();
-    await alloy.configure({ ...config, defaultConsent: "pending" });
-
-    let resolved = false;
-    const pending = alloy
-      .sendEvent({
-        xdm: { eventType: "test.nodeConsumer" },
-        decisionScopes: ["test-nodeConsumer-scope"],
-      })
-      .then((result) => {
-        resolved = true;
-        return result;
-      });
-    await new Promise((resolve) => setTimeout(resolve, 50));
-    expect(resolved).toBe(false);
-
-    await alloy.setConsent({
-      consent: [
-        { standard: "Adobe", version: "1.0", value: { general: "in" } },
-      ],
-    });
-    const result = await pending;
-
-    expect(resolved).toBe(true);
-    expect(Array.isArray(result.propositions)).toBe(true);
-  });
-
   it("a real opt-out setConsent blocks a subsequent sendEvent", async () => {
     const alloy = node.createInstance();
     await alloy.configure(config);
@@ -244,7 +262,7 @@ describe("Node consumer integration", () => {
       ],
     });
     const result = await alloy.sendEvent({
-      xdm: { eventType: "test.nodeConsumer" },
+      xdm: { eventType: "test.nodeConsumer", identityMap: identityMap() },
       decisionScopes: ["test-nodeConsumer-scope"],
     });
 
@@ -263,7 +281,7 @@ describe("Node consumer integration", () => {
     });
 
     const result = await alloy.forRequest({ cookie: sharedCookie }).sendEvent({
-      xdm: { eventType: "test.nodeConsumer" },
+      xdm: { eventType: "test.nodeConsumer", identityMap: identityMap() },
       decisionScopes: ["test-nodeConsumer-scope"],
     });
 
@@ -280,7 +298,7 @@ describe("Node consumer integration", () => {
       ],
     });
     const declined = await alloy.sendEvent({
-      xdm: { eventType: "test.nodeConsumer" },
+      xdm: { eventType: "test.nodeConsumer", identityMap: identityMap() },
       decisionScopes: ["test-nodeConsumer-scope"],
     });
     expect(declined).toEqual({});
@@ -291,7 +309,7 @@ describe("Node consumer integration", () => {
       ],
     });
     const allowed = await alloy.sendEvent({
-      xdm: { eventType: "test.nodeConsumer" },
+      xdm: { eventType: "test.nodeConsumer", identityMap: identityMap() },
       decisionScopes: ["test-nodeConsumer-scope"],
     });
     expect(Array.isArray(allowed.propositions)).toBe(true);
@@ -319,7 +337,9 @@ describe("Node consumer integration", () => {
     });
 
     await expect(
-      request.sendEvent({ xdm: { eventType: "test.nodeConsumer" } }),
+      request.sendEvent({
+        xdm: { eventType: "test.nodeConsumer", identityMap: identityMap() },
+      }),
     ).resolves.toBeDefined();
   });
 
