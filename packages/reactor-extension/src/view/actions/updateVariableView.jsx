@@ -12,10 +12,9 @@ governing permissions and limitations under the License.
 
 import { useRef, useState } from "react";
 import { object } from "yup";
-import { Item } from "@adobe/react-spectrum";
 import {
   ProgressCircle,
-  Heading,
+  Heading as AlertHeading,
   Divider,
   Text,
   InlineAlert,
@@ -28,6 +27,7 @@ import PropTypes from "prop-types";
 import ExtensionView from "../components/extensionView";
 import FormElementContainer from "../components/formElementContainer";
 import CodeField from "../components/codeField";
+import SubsectionHeading from "../components/typography/heading";
 import getValueFromFormState from "../components/objectEditor/helpers/getValueFromFormState";
 import fetchDataElements, {
   fetchDataElement,
@@ -51,6 +51,8 @@ import {
   ADOBE_TARGET,
 } from "../constants/solutions";
 import deepAssign from "../utils/deepAssign";
+
+const NO_MARGIN_DIVIDER_STYLE = style({ marginTop: 0, marginBottom: 0 });
 
 const isDataVariable = (data) => data?.settings?.solutions?.length > 0;
 
@@ -474,7 +476,7 @@ const UpdateVariable = ({
             width: 400,
           })}
         >
-          <Heading size="XXS">Error</Heading>
+          <AlertHeading size="XXS">Error</AlertHeading>
           <Content>
             No `variable` type data elements are available.{" "}
             <Link
@@ -509,11 +511,7 @@ const UpdateVariable = ({
             getLabel={(item) => item?.name}
             firstPage={dataElementsFirstPage}
             firstPageCursor={dataElementsFirstPageCursor}
-          >
-            {(
-              item, // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
-            ) => <Item key={item.name}>{item.name}</Item>}
-          </FormikPagedComboBox>
+          />
         </>
       )}
       {context.schemaLoadFailed && dataElement && (
@@ -524,9 +522,9 @@ const UpdateVariable = ({
             width: 400,
           })}
         >
-          <Heading size="XXS">
+          <AlertHeading size="XXS">
             The schema associated with this data element could not be loaded.
-          </Heading>
+          </AlertHeading>
           <Content>
             Either choose a new data element or update the selected data element
             with a valid schema.
@@ -535,16 +533,10 @@ const UpdateVariable = ({
       )}
       {hasSchema && isSchemaMatched && (
         <>
-          {/* TODO(S2-upgrade): Could not transform style prop automatically: Error: invalid dimension: 0 */}
-          <Heading size="M" margin="0">
+          <SubsectionHeading size="M" marginTop={0} marginBottom={0}>
             Variable Editor
-          </Heading>
-          <Divider
-            size="M"
-            styles={style({
-              margin: 0,
-            })}
-          />
+          </SubsectionHeading>
+          <Divider size="M" styles={NO_MARGIN_DIVIDER_STYLE} />
 
           <Editor
             key={isDataVariable(dataElement) ? "data" : "xdm"}
@@ -557,16 +549,10 @@ const UpdateVariable = ({
             verticalLayout={isDataVariable(dataElement)}
           />
 
-          {/* TODO(S2-upgrade): Could not transform style prop automatically: Error: invalid dimension: 0 */}
-          <Heading size="M" margin="0">
+          <SubsectionHeading size="M" marginTop={0} marginBottom={0}>
             Custom Code
-          </Heading>
-          <Divider
-            size="M"
-            styles={style({
-              margin: 0,
-            })}
-          />
+          </SubsectionHeading>
+          <Divider size="M" styles={NO_MARGIN_DIVIDER_STYLE} />
 
           <CodeField
             data-test-id="onBeforeEventSendEditButton"
