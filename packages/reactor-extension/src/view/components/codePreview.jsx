@@ -29,11 +29,6 @@ const CodePreview = ({
   onPress,
   beta,
 }) => {
-  const classNames = ["CodePreview-textArea"];
-  if (error) {
-    classNames.push("CodePreview-textArea--invalid");
-  }
-
   return (
     <div
       className={style({
@@ -54,7 +49,7 @@ const CodePreview = ({
           aria-label={label || ariaLabel}
           value={value}
           isDisabled
-          UNSAFE_className={classNames.join(" ")}
+          UNSAFE_className="CodePreview-textArea"
           isInvalid={Boolean(error)}
           styles={style({
             width: 400,
