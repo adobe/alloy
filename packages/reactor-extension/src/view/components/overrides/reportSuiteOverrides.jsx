@@ -117,7 +117,7 @@ const ReportSuitesOverride = ({
             variant="secondary"
             onPress={() => push("")}
             isDisabled={isDisabled}
-            UNSAFE_style={{ maxWidth: "fit-content" }}
+            styles={style({ maxWidth: "fit" })}
           >
             Add Report Suite
           </Button>
