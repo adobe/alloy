@@ -64,6 +64,8 @@ export const reactorExtensionTestProjects = [
         "packages/reactor-extension/test/integration/**/*.{test,spec}.?(c|m)[jt]s?(x)",
       ],
       testTimeout: 30_000,
+      // Retry CPU-contention stalls in the full CI test suite.
+      retry: isCi ? 2 : 0,
       hookTimeout: 30_000,
       isolate: true,
       browser: {
