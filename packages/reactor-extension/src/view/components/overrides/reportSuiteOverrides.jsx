@@ -9,8 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { Item } from "@adobe/react-spectrum";
-import { ActionButton, Button } from "@react-spectrum/s2";
+import { ActionButton, Button, PickerItem } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
 import { FieldArray } from "formik";
@@ -18,6 +17,8 @@ import PropTypes from "prop-types";
 import { useFieldValue } from "../../utils/useFieldValue";
 import OverrideInput from "./overrideInput";
 import { FIELD_NAMES } from "./utils";
+
+const FIRST_ROW_MARGIN_TOP_STYLE = style({ marginTop: 24 });
 
 /**
  * The section of the page that allows the user to input a variable number of
@@ -92,15 +93,16 @@ const ReportSuitesOverride = ({
                   width="size-5000"
                   key={index}
                 >
-                  {(
-                    { value, label }, // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
-                  ) => <Item key={value}>{label}</Item>}
+                  {({ value, label }) => (
+                    <PickerItem key={value} id={value}>
+                      {label}
+                    </PickerItem>
+                  )}
                 </OverrideInput>
                 <ActionButton
                   isQuiet
                   isDisabled={isDisabled || rsids.length < 2}
-                  // TODO(S2-upgrade): update this style prop
-                  marginTop={index === 0 && "size-300"}
+                  styles={index === 0 ? FIRST_ROW_MARGIN_TOP_STYLE : undefined}
                   data-test-id={`removeReportSuite.${index}`}
                   aria-label={`Remove report suite #${index + 1}`}
                   onPress={() => remove(index)}
@@ -115,9 +117,7 @@ const ReportSuitesOverride = ({
             variant="secondary"
             onPress={() => push("")}
             isDisabled={isDisabled}
-            fillStyle={{
-              maxWidth: "fit-content",
-            }}
+            UNSAFE_style={{ maxWidth: "fit-content" }}
           >
             Add Report Suite
           </Button>

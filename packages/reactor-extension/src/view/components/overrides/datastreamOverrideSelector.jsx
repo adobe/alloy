@@ -9,8 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { Item } from "@adobe/react-spectrum";
-import { ActionButton, Radio } from "@react-spectrum/s2";
+import { ActionButton, PickerItem, Radio } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useAsyncList } from "@react-stately/data";
 import { useField } from "formik";
@@ -206,8 +205,9 @@ const DatastreamOverrideSelector = ({
           useManualEntry={useManualEntry}
         >
           {(/** @type {Datastream} */ item) => (
-            // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
-            <Item key={getKey(item)}>{getLabel(item)}</Item>
+            <PickerItem key={getKey(item)} id={getKey(item)}>
+              {getLabel(item)}
+            </PickerItem>
           )}
         </OverrideInput>
         {!useManualEntry && (
