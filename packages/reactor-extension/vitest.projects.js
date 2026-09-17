@@ -71,6 +71,13 @@ export const reactorExtensionTestProjects = [
         instances: [{ browser: "chromium" }],
         provider: playwright({
           actionTimeout: 5_000,
+          // Emulate `prefers-reduced-motion: reduce` so Spectrum (react-aria)
+          // overlays skip their JS animation wait when opening/closing. Under the
+          // coverage job's CPU contention that wait stalls for seconds and flakes
+          // overlay-driven tests (e.g. configOverrideSection). This complements
+          // setup.js's CSS animation-duration override, which keeps elements
+          // click-actionable (S2's CSS animations are not gated on reduced-motion).
+          contextOptions: { reducedMotion: "reduce" },
         }),
         headless: true,
         screenshotFailures: false,
