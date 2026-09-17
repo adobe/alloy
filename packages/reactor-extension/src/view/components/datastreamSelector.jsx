@@ -9,13 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { useEffect } from "react";
-import { useAsyncList } from "@react-stately/data";
 import {
-  Flex,
-  Item,
+  PickerItem,
   Link,
-  View,
   Picker,
   ActionButton,
   TooltipTrigger,
@@ -23,11 +19,14 @@ import {
   InlineAlert,
   Heading,
   Content,
-} from "@adobe/react-spectrum";
+} from "@react-spectrum/s2";
+import { useEffect } from "react";
+import { useAsyncList } from "@react-stately/data";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import { useField } from "formik";
-import Copy from "@spectrum-icons/workflow/Copy";
-import Delete from "@spectrum-icons/workflow/Delete";
+import Copy from "@react-spectrum/s2/icons/Copy";
+import Delete from "@react-spectrum/s2/icons/Delete";
 import copyToClipboard from "clipboard-copy";
 import RefreshButton from "./refreshButton";
 import fetchConfigs from "../configuration/utils/fetchConfigs";
@@ -38,6 +37,20 @@ import {
 } from "../configuration/constants/environmentType";
 import FormikTextField from "./formikReactSpectrum3/formikTextField";
 import { capitialize } from "./overrides/utils";
+
+// The style() macro needs a literal object per call, so one style per
+// defaultSandboxOnly value is precomputed and picked by the boolean at
+// runtime instead of interpolating marginTop directly.
+const ACTIONS_ROW_STYLE_WIDE_MARGIN = style({
+  display: "flex",
+  flexDirection: "row",
+  marginTop: 24,
+});
+const ACTIONS_ROW_STYLE = style({
+  display: "flex",
+  flexDirection: "row",
+  marginTop: 16,
+});
 
 const getKey = (datastream) => datastream && datastream._system.id;
 const getLabel = (datastream) => {
@@ -141,8 +154,14 @@ const DatastreamSelector = ({
 
     if (value || fallbackToManualEntry) {
       return (
-        <Flex direction="row" gap="size-100">
-          <View>
+        <div
+          className={style({
+            display: "flex",
+            flexDirection: "row",
+            gap: 8,
+          })}
+        >
+          <div>
             <FormikTextField
               data-test-id={`datastreamDisabledField${environmentType}`}
               label="Datastream ID"
@@ -151,8 +170,15 @@ const DatastreamSelector = ({
               width="size-5000"
               isDisabled={!fallbackToManualEntry}
             />
-          </View>
-          <Flex direction="row" gap="size-100" marginTop="size-250">
+          </div>
+          <div
+            className={style({
+              display: "flex",
+              flexDirection: "row",
+              gap: 8,
+              marginTop: 20,
+            })}
+          >
             <TooltipTrigger>
               <ActionButton
                 isQuiet
@@ -165,16 +191,18 @@ const DatastreamSelector = ({
               </ActionButton>
               <Tooltip> Copy datastream ID to clipboard. </Tooltip>
             </TooltipTrigger>
-          </Flex>
-        </Flex>
+          </div>
+        </div>
       );
     }
     return (
       <InlineAlert
         data-test-id={`${environmentType}ErrorFetchingDatastreamsAlert`}
-        variant={environmentType === PRODUCTION ? "negative" : "info"}
-        width="size-5000"
-        marginTop="size-100"
+        variant={environmentType === PRODUCTION ? "negative" : "informative"}
+        styles={style({
+          width: 400,
+          marginTop: 8,
+        })}
       >
         <Heading size="XXS">
           Error fetching datastreams for {selectedSandbox.name} sandbox
@@ -187,9 +215,11 @@ const DatastreamSelector = ({
   if (!datastreamList.isLoading && !datastreamList.items.length) {
     return (
       <InlineAlert
-        variant={environmentType === PRODUCTION ? "negative" : "info"}
-        width="size-5000"
-        marginTop="size-100"
+        variant={environmentType === PRODUCTION ? "negative" : "informative"}
+        styles={style({
+          width: 400,
+          marginTop: 8,
+        })}
       >
         <Heading size="XXS">No datastreams</Heading>
         <Content>
@@ -207,33 +237,46 @@ const DatastreamSelector = ({
     );
   }
   return (
-    <Flex direction="row" gap="size-100">
-      <View>
+    <div
+      className={style({
+        display: "flex",
+        flexDirection: "row",
+        gap: 8,
+      })}
+    >
+      <div>
         <Picker
           {...datastreamProps}
-          selectedKey={value}
-          onSelectionChange={setValue}
+          value={value}
+          onChange={setValue}
           onBlur={() => {
             setTouched(true);
           }}
-          validationState={touched && error ? "invalid" : undefined}
-          width="size-5000"
+          isInvalid={Boolean(touched && error)}
           placeholder="Select a datastream"
-          isLoading={datastreamList.isLoading}
+          loadingState={datastreamList.isLoading ? "loading" : "idle"}
           isDisabled={!datastreamList.isLoading && !datastreamList.items.length}
           items={datastreamList.items}
           description={touched && error ? "" : description}
           errorMessage={touched && error ? error : undefined}
+          styles={style({
+            width: 400,
+          })}
         >
           {(item) => {
-            return <Item key={getKey(item)}>{getLabel(item)}</Item>;
+            return (
+              <PickerItem key={getKey(item)} id={getKey(item)}>
+                {getLabel(item)}
+              </PickerItem>
+            );
           }}
         </Picker>
-      </View>
+      </div>
 
-      <Flex
-        direction="row"
-        marginTop={defaultSandboxOnly ? "size-300" : "size-200"}
+      <div
+        className={
+          defaultSandboxOnly ? ACTIONS_ROW_STYLE_WIDE_MARGIN : ACTIONS_ROW_STYLE
+        }
       >
         <RefreshButton
           onPress={() => {
@@ -269,8 +312,8 @@ const DatastreamSelector = ({
           </ActionButton>
           <Tooltip> Reset datastream ID. </Tooltip>
         </TooltipTrigger>
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   );
 };
 

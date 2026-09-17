@@ -17,10 +17,6 @@ governing permissions and limitations under the License.
   overflow: hidden !important;
 }
 
-.CodePreview-textArea--invalid textarea:disabled {
-  border-color: var(--spectrum-textfield-border-color-error, var(--spectrum-semantic-negative-color-default));
-}
-
 .CodePreview-openEditorButton {
   position: absolute !important;
   /* The TextArea component has been given a specific
