@@ -19,6 +19,7 @@ import {
   Button,
   ActionButton,
   Radio,
+  Heading,
 } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
@@ -29,7 +30,6 @@ import FormikTextField from "../components/formikReactSpectrum3/formikTextField"
 import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
 import DataElementSelector from "../components/dataElementSelector";
 import FormElementContainer from "../components/formElementContainer";
-import Heading from "../components/typography/heading";
 import BetaBadge from "../components/betaBadge";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
