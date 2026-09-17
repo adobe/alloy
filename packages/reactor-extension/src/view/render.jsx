@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import { createRoot } from "react-dom/client";
 
-import { Provider, lightTheme } from "@adobe/react-spectrum";
 import { Provider as SpectrumProvider } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import ErrorBoundary from "./components/errorBoundary";
@@ -39,25 +38,16 @@ const flushStyles = style({
   padding: 0,
 });
 
-// The S2 provider is nested inside the v3 provider so views can hold both
-// Spectrum versions while they migrate one page at a time. S2 requires the
-// innermost provider. Both are removed down to one once migration completes.
 export default (View, { noPadding = false } = {}) => {
   root.render(
-    <Provider
-      theme={lightTheme}
+    <SpectrumProvider
+      background="base"
       colorScheme="light"
-      UNSAFE_className="react-spectrum-provider spectrum spectrum--medium spectrum--light spectrum-accessibility-overrides"
+      styles={noPadding ? flushStyles : paddedStyles}
     >
-      <SpectrumProvider
-        background="base"
-        colorScheme="light"
-        styles={noPadding ? flushStyles : paddedStyles}
-      >
-        <ErrorBoundary>
-          <View />
-        </ErrorBoundary>
-      </SpectrumProvider>
-    </Provider>,
+      <ErrorBoundary>
+        <View />
+      </ErrorBoundary>
+    </SpectrumProvider>,
   );
 };
