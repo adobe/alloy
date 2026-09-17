@@ -87,6 +87,22 @@ describe("Config personalization section", () => {
     await tgtPicker.expectValue(/always/i);
   });
 
+  it("renders enabled dropdowns with a white background", async () => {
+    await driver.init(buildSettings());
+
+    for (const testId of [
+      "autoCollectPropositionInteractionsAJOPicker",
+      "autoCollectPropositionInteractionsTGTPicker",
+    ]) {
+      const picker = view.getByTestId(testId).element();
+      const trigger = picker.querySelector("button");
+
+      expect(window.getComputedStyle(trigger).backgroundColor).toBe(
+        "rgb(255, 255, 255)",
+      );
+    }
+  });
+
   it("updates form values and saves to settings", async () => {
     await driver.init(buildSettings());
 

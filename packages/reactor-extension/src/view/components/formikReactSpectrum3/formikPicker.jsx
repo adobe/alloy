@@ -15,6 +15,7 @@ import { useField } from "formik";
 import PropTypes from "prop-types";
 import widthStyle from "../widthStyle";
 import normalizeCollectionChildren from "./normalizeCollectionChildren";
+import "./formikPicker.css";
 
 const FormikPicker = ({
   name,
@@ -31,6 +32,7 @@ const FormikPicker = ({
 
   return (
     <Picker
+      UNSAFE_className="FormikPicker"
       value={value}
       onChange={(key) => {
         setValue(key);
