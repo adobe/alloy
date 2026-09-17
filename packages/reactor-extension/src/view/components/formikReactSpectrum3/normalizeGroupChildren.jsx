@@ -17,6 +17,12 @@ import widthStyle from "../widthStyle";
 
 const MAX_WIDTH_STYLE = style({ maxWidth: "full" });
 
+// S2's control and label gap is 2px wider than v3's. Compensate so a
+// size-5000 option keeps the same 376px text measure and line wrapping.
+const GROUP_ITEM_WIDTH_STYLES = {
+  "size-5000": style({ width: 402 }),
+};
+
 // Views that haven't been migrated yet still render a v3 Radio/Checkbox
 // (from @adobe/react-spectrum) as RadioGroup/CheckboxGroup children. Those
 // read their selection state from a v3-only React context, which an S2
@@ -33,7 +39,12 @@ const reinterpretLeaf = (LeafComponent, node) => {
       <LeafComponent
         key={node.key}
         {...props}
-        styles={mergeStyles(widthStyle(width), MAX_WIDTH_STYLE, styles)}
+        styles={mergeStyles(
+          widthStyle(width),
+          GROUP_ITEM_WIDTH_STYLES[width],
+          MAX_WIDTH_STYLE,
+          styles,
+        )}
       />
     );
   }

@@ -178,7 +178,7 @@ describe("Config data collection section", () => {
       const radioStyle = window.getComputedStyle(radio);
 
       expect(window.getComputedStyle(badge).display).toBe("inline-flex");
-      expect(radioStyle.width).toBe("400px");
+      expect(badge.parentElement.getBoundingClientRect().width).toBe(376);
       expect(radioStyle.maxInlineSize).toBe("100%");
     }
   });
