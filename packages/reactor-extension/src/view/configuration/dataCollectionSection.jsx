@@ -16,13 +16,12 @@ import { object, string } from "yup";
 import {
   ActionButton,
   Checkbox,
-  Flex,
   Radio,
-  View,
   InlineAlert,
   Content,
   Heading,
-} from "@adobe/react-spectrum";
+} from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import SectionHeader from "../components/sectionHeader";
 import CodeField from "../components/codeField";
@@ -317,7 +316,9 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                   <Radio
                     data-test-id="eventGroupingNoneField"
                     value={EVENT_GROUPING.NONE}
-                    width="size-5000"
+                    styles={style({
+                      width: 400,
+                    })}
                   >
                     No event grouping: Internal link click events are sent
                     immediately.
@@ -325,7 +326,9 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                   <Radio
                     data-test-id="eventGroupingSessionStorageField"
                     value={EVENT_GROUPING.SESSION_STORAGE}
-                    width="size-5000"
+                    styles={style({
+                      width: 400,
+                    })}
                   >
                     Event grouping using session storage: Keep internal link
                     click data in session storage until the next page view event
@@ -334,7 +337,9 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                   <Radio
                     data-test-id="eventGroupingMemoryField"
                     value={EVENT_GROUPING.MEMORY}
-                    width="size-5000"
+                    styles={style({
+                      width: 400,
+                    })}
                   >
                     Event grouping using local object: Keep internal link click
                     data in a local object until the next page view event.
@@ -361,7 +366,12 @@ const DataCollectionSection = ({ instanceFieldName }) => {
             </FormikCheckbox>
             {instanceValues.clickCollection.downloadLinkEnabled && (
               <FieldSubset>
-                <Flex gap="size-100">
+                <div
+                  className={style({
+                    display: "flex",
+                    gap: 8,
+                  })}
+                >
                   <FormikTextField
                     data-test-id="downloadLinkQualifierField"
                     label="Download link qualifier"
@@ -384,7 +394,9 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                         newPattern,
                       );
                     }}
-                    marginTop="size-300"
+                    styles={style({
+                      marginTop: 24,
+                    })}
                   >
                     Test regex
                   </ActionButton>
@@ -393,12 +405,17 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                     name={`${instanceFieldName}.downloadLinkQualifier`}
                     defaultValue={instanceDefaults.downloadLinkQualifier}
                   />
-                </Flex>
+                </div>
               </FieldSubset>
             )}
             {clickCollectionIsEnabled(instanceValues) &&
               instanceValues.onBeforeLinkClickSendInitiallySpecified && (
-                <Flex gap="size-100">
+                <div
+                  className={style({
+                    display: "flex",
+                    gap: 8,
+                  })}
+                >
                   <FormikRadioGroup
                     label="Link callback type"
                     name={`${instanceFieldName}.linkCallbackType`}
@@ -406,24 +423,33 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                     <Radio
                       data-test-id="linkCallbackFilterClickDetails"
                       value={LINK_CALLBACK.FILTER_CLICK_DETAILS}
-                      width="size-5000"
+                      styles={style({
+                        width: 400,
+                      })}
                     >
                       filterClickDetails
                     </Radio>
                     <Radio
                       data-test-id="linkCallbackOnBeforeLinkClickSend"
                       value={LINK_CALLBACK.ON_BEFORE_LINK_CLICK_SEND}
-                      width="size-5000"
+                      styles={style({
+                        width: 400,
+                      })}
                     >
                       onBeforeLinkClickSend (deprecated)
                     </Radio>
                   </FormikRadioGroup>
-                </Flex>
+                </div>
               )}
             {clickCollectionIsEnabled(instanceValues) &&
               instanceValues.linkCallbackType !==
                 LINK_CALLBACK.ON_BEFORE_LINK_CLICK_SEND && (
-                <Flex gap="size-100">
+                <div
+                  className={style({
+                    display: "flex",
+                    gap: 8,
+                  })}
+                >
                   <CodeField
                     data-test-id="filterClickDetailsEditButton"
                     label="Filter click details"
@@ -433,12 +459,17 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                     language="javascript"
                     placeholder={FILTER_CLICK_DETAILS_PLACEHOLDER}
                   />
-                </Flex>
+                </div>
               )}
             {clickCollectionIsEnabled(instanceValues) &&
               instanceValues.linkCallbackType ===
                 LINK_CALLBACK.ON_BEFORE_LINK_CLICK_SEND && (
-                <Flex gap="size-100">
+                <div
+                  className={style({
+                    display: "flex",
+                    gap: 8,
+                  })}
+                >
                   <CodeField
                     data-test-id="onBeforeLinkClickSendEditButton"
                     label="On before link click send callback (deprecated, use filter click details instead)"
@@ -448,19 +479,23 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                     language="javascript"
                     placeholder={ON_BEFORE_LINK_CLICK_SEND_PLACEHOLDER}
                   />
-                </Flex>
+                </div>
               )}
           </div>
         ) : (
-          <View width="size-6000">
-            <InlineAlert variant="info">
+          <div
+            className={style({
+              width: 480,
+            })}
+          >
+            <InlineAlert variant="informative">
               <Heading>Activity collector component disabled</Heading>
               <Content>
                 The activity collector custom build component is disabled.
                 Enable it above to configure activity collector settings.
               </Content>
             </InlineAlert>
-          </View>
+          </div>
         )}
         <div>
           <FormikRadioGroup
@@ -500,7 +535,9 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                         key={contextOption.value}
                         data-test-id={contextOption.testId}
                         value={contextOption.value}
-                        width="size-5000"
+                        styles={style({
+                          width: 400,
+                        })}
                       >
                         {contextOption.label}
                       </Checkbox>
