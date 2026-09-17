@@ -10,8 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Radio, Button, ActionButton, Flex } from "@adobe/react-spectrum";
-import Delete from "@spectrum-icons/workflow/Delete";
+import { Radio, Button, ActionButton } from "@react-spectrum/s2";
+
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import Delete from "@react-spectrum/s2/icons/Delete";
 import { FieldArray, useField } from "formik";
 import { object, string } from "yup";
 import FormikRadioGroup from "./formikReactSpectrum3/formikRadioGroup";
@@ -115,7 +117,14 @@ const DecisionScopes = () => {
       )}
       {decisionsInputMethod === CONSTANT && (
         <FieldSubset>
-          <Flex direction="column" gap="size-100" alignItems="start">
+          <div
+            className={style({
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
+              alignItems: "start",
+            })}
+          >
             <FieldArray
               name="decisionScopesArray"
               render={(arrayHelpers) => {
@@ -123,7 +132,13 @@ const DecisionScopes = () => {
                   <div>
                     {decisionScopesArray.map((scope, index) => {
                       return (
-                        <Flex key={index} alignItems="end">
+                        <div
+                          key={index}
+                          className={style({
+                            display: "flex",
+                            alignItems: "end",
+                          })}
+                        >
                           <FormikTextField
                             data-test-id={`scope${index}Field`}
                             label="Scope"
@@ -136,7 +151,6 @@ const DecisionScopes = () => {
                             data-test-id={`deleteScope${index}Button`}
                             isQuiet
                             isDisabled={decisionScopesArray.length === 1}
-                            variant="secondary"
                             onPress={() => {
                               arrayHelpers.remove(index);
                             }}
@@ -144,7 +158,7 @@ const DecisionScopes = () => {
                           >
                             <Delete />
                           </ActionButton>
-                        </Flex>
+                        </div>
                       );
                     })}
                     <Button
@@ -160,7 +174,7 @@ const DecisionScopes = () => {
                 );
               }}
             />
-          </Flex>
+          </div>
         </FieldSubset>
       )}
     </div>

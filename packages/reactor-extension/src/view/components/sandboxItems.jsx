@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Item } from "@adobe/react-spectrum";
+import { PickerItem } from "@react-spectrum/s2";
 
 /**
  * Map a sandbox item to a JSX element to be used inside a Picker.
  *
  * I would create a SandboxItem component, but react-spectrum doesn't let you
- * wrap Items. See https://github.com/adobe/react-spectrum/issues/2746.
+ * wrap collection items. See https://github.com/adobe/react-spectrum/issues/2746.
  * Instead, this is a function you can use as the inside of a Picker.
  * @param {Object} item A sandbox item
  * @param {string} item.name
@@ -29,7 +29,11 @@ const sandboxItems = (item) => {
   const region = item.region ? ` (${item.region.toUpperCase()})` : "";
   const label = `${item.type.toUpperCase()} ${item.title}${region}`;
 
-  return <Item key={item.name}>{label}</Item>;
+  return (
+    <PickerItem key={item.name} id={item.name}>
+      {label}
+    </PickerItem>
+  );
 };
 
 export default sandboxItems;

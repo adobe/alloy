@@ -11,14 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import {
-  ActionButton,
-  LabeledValue,
-  Text,
-  TextArea,
-  View,
-} from "@adobe/react-spectrum";
-import CodeIcon from "@spectrum-icons/workflow/Code";
+import { ActionButton, LabeledValue, Text, TextArea } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import CodeIcon from "@react-spectrum/s2/icons/Code";
 import FieldDescriptionAndError from "./fieldDescriptionAndError";
 import "./codePreview.css";
 import BetaBadge from "./betaBadge";
@@ -34,35 +29,41 @@ const CodePreview = ({
   onPress,
   beta,
 }) => {
-  const classNames = ["CodePreview-textArea"];
-  if (error) {
-    classNames.push("CodePreview-textArea--invalid");
-  }
-
   return (
-    <View position="relative" UNSAFE_style={{ width: "fit-content" }}>
+    <div
+      className={style({
+        position: "relative",
+      })}
+      style={{
+        width: "fit-content",
+      }}
+    >
       <LabeledValue label={label} aria-label={ariaLabel} />
       {beta && <BetaBadge />}
-      <FieldDescriptionAndError description={description} error={error}>
+      <FieldDescriptionAndError
+        description={description}
+        error={error}
+        width="size-5000"
+      >
         <TextArea
-          width="size-5000"
           aria-label={label || ariaLabel}
-          height="size-1600"
           value={value}
           isDisabled
-          UNSAFE_className={classNames.join(" ")}
-          validationState={error ? "invalid" : "valid"}
+          UNSAFE_className="CodePreview-textArea"
+          isInvalid={Boolean(error)}
+          styles={style({
+            width: 400,
+            height: 128,
+          })}
         />
       </FieldDescriptionAndError>
-      <ActionButton
-        data-test-id={dataTestId}
-        onPress={onPress}
-        UNSAFE_className="CodePreview-openEditorButton"
-      >
-        <CodeIcon />
-        <Text>{buttonLabel}</Text>
-      </ActionButton>
-    </View>
+      <div className="CodePreview-openEditorButton">
+        <ActionButton data-test-id={dataTestId} onPress={onPress}>
+          <CodeIcon />
+          <Text>{buttonLabel}</Text>
+        </ActionButton>
+      </div>
+    </div>
   );
 };
 

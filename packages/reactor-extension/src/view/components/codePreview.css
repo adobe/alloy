@@ -17,10 +17,6 @@ governing permissions and limitations under the License.
   overflow: hidden !important;
 }
 
-.CodePreview-textArea--invalid textarea:disabled {
-  border-color: var(--spectrum-textfield-border-color-error, var(--spectrum-semantic-negative-color-default));
-}
-
 .CodePreview-openEditorButton {
   position: absolute !important;
   /* The TextArea component has been given a specific
@@ -31,6 +27,12 @@ governing permissions and limitations under the License.
   left: 50%;
   transform: translate(-50%, -50%);
   white-space: nowrap;
+
+  /* This class must stay on a wrapper around the ActionButton, not on the
+  button itself: S2's ActionButton applies its own inline `transform` while
+  pressed (pressScale), which would replace this centering transform mid-press
+  and shift the button out from under the pointer, silently swallowing the
+  click. */
 }
 
 /* This is a workaround for a react-spectrum bug */
