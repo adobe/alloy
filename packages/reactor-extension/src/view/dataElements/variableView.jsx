@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 import { useRef } from "react";
 import PropTypes from "prop-types";
 import { useField } from "formik";
-import { Content, Link, Radio } from "@adobe/react-spectrum";
+import { Content, Link, Radio } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import ExtensionView from "../components/extensionView";
 import FormElementContainer from "../components/formElementContainer";
 import XdmVariable, {
@@ -59,7 +60,9 @@ const Schema = ({ xdmVariableContext, initInfo }) => {
 
   return (
     <>
-      <Content width="size-5000">
+      <Content styles={style({
+        width: 400
+      })}>
         Variable data elements are used to build up an XDM or Data object using
         actions. Variable data elements start out empty, but you can update
         properties using Web SDK update variable actions. You can reference the
