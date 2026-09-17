@@ -12,17 +12,9 @@ governing permissions and limitations under the License.
 
 import { useRef, useState } from "react";
 import { object } from "yup";
-import {
-  Item,
-  Flex,
-  ProgressCircle,
-  Heading,
-  Divider,
-  Text,
-  InlineAlert,
-  Content,
-  Link,
-} from "@adobe/react-spectrum";
+import { Item } from "@adobe/react-spectrum";
+import { ProgressCircle, Heading, Divider, Text, InlineAlert, Content, Link } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import PropTypes from "prop-types";
 import ExtensionView from "../components/extensionView";
@@ -470,7 +462,9 @@ const UpdateVariable = ({
         <InlineAlert
           variant="negative"
           data-test-id="noDataElements"
-          width="size-5000"
+          styles={style({
+            width: 400
+          })}
         >
           <Heading size="XXS">Error</Heading>
           <Content>
@@ -508,15 +502,18 @@ const UpdateVariable = ({
             firstPage={dataElementsFirstPage}
             firstPageCursor={dataElementsFirstPageCursor}
           >
-            {(item) => <Item key={item.name}>{item.name}</Item>}
+            {(item) => // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
+            <Item key={item.name}>{item.name}</Item>}
           </FormikPagedComboBox>
         </>
       )}
       {context.schemaLoadFailed && dataElement && (
         <InlineAlert
-          variant="info"
+          variant="informative"
           data-test-id="dataElementSchemaMissingAlert"
-          width="size-5000"
+          styles={style({
+            width: 400
+          })}
         >
           <Heading size="XXS">
             The schema associated with this data element could not be loaded.
@@ -529,10 +526,12 @@ const UpdateVariable = ({
       )}
       {hasSchema && isSchemaMatched && (
         <>
-          <Heading size="M" margin="0">
-            Variable Editor
-          </Heading>
-          <Divider margin={0} size="M" />
+          {/* TODO(S2-upgrade): Could not transform style prop automatically: Error: invalid dimension: 0 */}
+          <Heading size="M" margin="0">Variable Editor
+                      </Heading>
+          <Divider size="M" styles={style({
+            margin: 0
+          })} />
 
           <Editor
             key={isDataVariable(dataElement) ? "data" : "xdm"}
@@ -545,10 +544,12 @@ const UpdateVariable = ({
             verticalLayout={isDataVariable(dataElement)}
           />
 
-          <Heading size="M" margin="0">
-            Custom Code
-          </Heading>
-          <Divider margin={0} size="M" />
+          {/* TODO(S2-upgrade): Could not transform style prop automatically: Error: invalid dimension: 0 */}
+          <Heading size="M" margin="0">Custom Code
+                      </Heading>
+          <Divider size="M" styles={style({
+            margin: 0
+          })} />
 
           <CodeField
             data-test-id="onBeforeEventSendEditButton"
@@ -591,9 +592,15 @@ const UpdateVariable = ({
       {!(hasSchema && isSchemaMatched) &&
         dataElement &&
         !context.schemaLoadFailed && (
-          <Flex alignItems="center" justifyContent="center" height="size-2000">
+          <div
+            className={style({
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: 160
+            })}>
             <ProgressCircle size="L" aria-label="Loading..." isIndeterminate />
-          </Flex>
+          </div>
         )}
     </FormElementContainer>
   );
