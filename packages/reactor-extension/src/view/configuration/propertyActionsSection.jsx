@@ -10,23 +10,23 @@ governing permissions and limitations under the License.
 */
 
 import { useState, useRef, useEffect, useCallback } from "react";
+
 import {
+  Accordion,
   Button,
   Content,
   Dialog,
   DialogContainer,
-  Divider,
-  Flex,
   Heading,
   InlineAlert,
   ProgressCircle,
   Text,
-  View,
   Disclosure,
   DisclosureTitle,
   DisclosurePanel,
-  Accordion,
-} from "@adobe/react-spectrum";
+} from "@react-spectrum/s2";
+
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import repairStaleDataElementReferences, {
   PHASE,
@@ -287,7 +287,7 @@ const PropertyActionsSection = ({ initInfo }) => {
   };
 
   return (
-    <View>
+    <div>
       <PanelContent
         status={status}
         dialogVisible={dialogVisible}
@@ -299,10 +299,7 @@ const PropertyActionsSection = ({ initInfo }) => {
         onShowDetails={showDialog}
         onRunAgain={openConfirmation}
       />
-      <DialogContainer
-        onDismiss={handleDialogDismiss}
-        isDismissable={status !== STATUS.RUNNING}
-      >
+      <DialogContainer onDismiss={handleDialogDismiss}>
         {dialogVisible && (
           <OperationDialog
             status={status}
@@ -317,7 +314,7 @@ const PropertyActionsSection = ({ initInfo }) => {
           />
         )}
       </DialogContainer>
-    </View>
+    </div>
   );
 };
 
@@ -347,7 +344,13 @@ const PanelContent = ({
   const isSummary = status === STATUS.SUMMARY;
 
   return (
-    <Flex direction="column" gap="size-200">
+    <div
+      className={style({
+        display: "flex",
+        flexDirection: "column",
+        gap: 16,
+      })}
+    >
       <SectionHeader marginTop={0} marginBottom={0}>
         Repair data element references
       </SectionHeader>
@@ -358,7 +361,11 @@ const PanelContent = ({
       </Text>
 
       {isIdle && (
-        <Flex>
+        <div
+          className={style({
+            display: "flex",
+          })}
+        >
           <Button
             data-test-id="repairStaleDataElementsButton"
             variant="primary"
@@ -366,17 +373,30 @@ const PanelContent = ({
           >
             Run repair
           </Button>
-        </Flex>
+        </div>
       )}
 
       {isRunning && (
-        <Flex direction="column" gap="size-100">
+        <div
+          className={style({
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+          })}
+        >
           <Text data-test-id="repairRunningHiddenTally">
             Repair in progress &mdash; Repaired {tally.repaired} &middot;
             Skipped {tally.skipped} &middot; Failed {tally.failed}
           </Text>
           {!dialogVisible && (
-            <Flex direction="row" gap="size-100" justifyContent="end">
+            <div
+              className={style({
+                display: "flex",
+                flexDirection: "row",
+                gap: 8,
+                justifyContent: "end",
+              })}
+            >
               <Button
                 data-test-id="repairShowProgressButton"
                 variant="primary"
@@ -391,18 +411,31 @@ const PanelContent = ({
               >
                 Cancel
               </Button>
-            </Flex>
+            </div>
           )}
-        </Flex>
+        </div>
       )}
 
       {isSummary && (
-        <Flex direction="column" gap="size-100">
+        <div
+          className={style({
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+          })}
+        >
           <Text data-test-id="repairLastRunSummary">
             {formatLastRunSummary(result)}
           </Text>
           {!dialogVisible && (
-            <Flex direction="row" gap="size-100" justifyContent="end">
+            <div
+              className={style({
+                display: "flex",
+                flexDirection: "row",
+                gap: 8,
+                justifyContent: "end",
+              })}
+            >
               <Button
                 data-test-id="repairShowDetailsButton"
                 variant="secondary"
@@ -417,11 +450,11 @@ const PanelContent = ({
               >
                 Run again
               </Button>
-            </Flex>
+            </div>
           )}
-        </Flex>
+        </div>
       )}
-    </Flex>
+    </div>
   );
 };
 
@@ -454,11 +487,17 @@ const OperationDialog = ({
 }) => {
   if (status === STATUS.CONFIRMING) {
     return (
-      <Dialog data-test-id="repairConfirmationDialog">
+      <Dialog data-test-id="repairConfirmationDialog" isDismissible>
         <Heading>Repair data element references</Heading>
-        <Divider />
+
         <Content>
-          <Flex direction="column" gap="size-200">
+          <div
+            className={style({
+              display: "flex",
+              flexDirection: "column",
+              gap: 16,
+            })}
+          >
             <Text>
               This will scan every action in this property that belongs to the
               AEP Web SDK extension and update any that reference a data element
@@ -466,11 +505,14 @@ const OperationDialog = ({
               be repaired automatically will be reported so you can fix them
               manually.
             </Text>
-            <Flex
-              direction="row"
-              gap="size-100"
-              justifyContent="end"
-              marginTop="size-100"
+            <div
+              className={style({
+                display: "flex",
+                flexDirection: "row",
+                gap: 8,
+                justifyContent: "end",
+                marginTop: 8,
+              })}
             >
               <Button
                 data-test-id="repairConfirmCancelButton"
@@ -481,14 +523,14 @@ const OperationDialog = ({
               </Button>
               <Button
                 data-test-id="repairConfirmStartButton"
-                variant="cta"
+                variant="accent"
                 onPress={onConfirm}
                 autoFocus
               >
                 Confirm
               </Button>
-            </Flex>
-          </Flex>
+            </div>
+          </div>
         </Content>
       </Dialog>
     );
@@ -510,26 +552,42 @@ const OperationDialog = ({
     return (
       <Dialog data-test-id="repairRunningDialog">
         <Heading>Repairing data element references</Heading>
-        <Divider />
+
         <Content>
-          <Flex direction="column" gap="size-200" alignItems="center">
-            <Flex alignItems="center" gap="size-150">
+          <div
+            className={style({
+              display: "flex",
+              flexDirection: "column",
+              gap: 16,
+              alignItems: "center",
+            })}
+          >
+            <div
+              className={style({
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+              })}
+            >
               <ProgressCircle
                 aria-label="Repair in progress"
                 isIndeterminate
                 size="S"
               />
               <Text data-test-id="repairRunningStatusLine">{statusLine}</Text>
-            </Flex>
+            </div>
             <Text data-test-id="repairRunningTally">
               Repaired {tally.repaired} &middot; Skipped {tally.skipped}{" "}
               &middot; Failed {tally.failed}
             </Text>
-            <Flex
-              direction="row"
-              gap="size-100"
-              marginTop="size-100"
-              alignSelf="end"
+            <div
+              className={style({
+                display: "flex",
+                flexDirection: "row",
+                gap: 8,
+                marginTop: 8,
+                alignSelf: "end",
+              })}
             >
               <Button
                 data-test-id="repairHideButton"
@@ -545,8 +603,8 @@ const OperationDialog = ({
               >
                 Cancel
               </Button>
-            </Flex>
-          </Flex>
+            </div>
+          </div>
         </Content>
       </Dialog>
     );
@@ -555,11 +613,17 @@ const OperationDialog = ({
   // STATUS.SUMMARY
   const alert = summaryAlertProps(result);
   return (
-    <Dialog data-test-id="repairSummaryDialog">
+    <Dialog data-test-id="repairSummaryDialog" isDismissible>
       <Heading>Repair complete</Heading>
-      <Divider />
+
       <Content>
-        <Flex direction="column" gap="size-200">
+        <div
+          className={style({
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+          })}
+        >
           <InlineAlert
             variant={alert.variant}
             data-test-id="repairSummaryAlert"
@@ -575,7 +639,13 @@ const OperationDialog = ({
                   Repaired ({result.repaired.length})
                 </DisclosureTitle>
                 <DisclosurePanel>
-                  <Flex direction="column" gap="size-50">
+                  <div
+                    className={style({
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 4,
+                    })}
+                  >
                     {result.repaired.map((item) => (
                       <Text
                         key={item.ruleComponentId}
@@ -587,7 +657,7 @@ const OperationDialog = ({
                         {item.newDataElementId})
                       </Text>
                     ))}
-                  </Flex>
+                  </div>
                 </DisclosurePanel>
               </Disclosure>
             </Accordion>
@@ -600,7 +670,13 @@ const OperationDialog = ({
                   Skipped ({result.skipped.length})
                 </DisclosureTitle>
                 <DisclosurePanel>
-                  <Flex direction="column" gap="size-50">
+                  <div
+                    className={style({
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 4,
+                    })}
+                  >
                     {result.skipped.map((item) => (
                       <Text
                         key={item.ruleComponentId}
@@ -614,7 +690,7 @@ const OperationDialog = ({
                         )}
                       </Text>
                     ))}
-                  </Flex>
+                  </div>
                 </DisclosurePanel>
               </Disclosure>
             </Accordion>
@@ -627,7 +703,13 @@ const OperationDialog = ({
                   Failed ({result.failed.length})
                 </DisclosureTitle>
                 <DisclosurePanel>
-                  <Flex direction="column" gap="size-50">
+                  <div
+                    className={style({
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 4,
+                    })}
+                  >
                     {result.failed.map((item) => (
                       <Text
                         key={item.ruleComponentId}
@@ -638,17 +720,20 @@ const OperationDialog = ({
                         {item.error}
                       </Text>
                     ))}
-                  </Flex>
+                  </div>
                 </DisclosurePanel>
               </Disclosure>
             </Accordion>
           )}
 
-          <Flex
-            direction="row"
-            gap="size-100"
-            justifyContent="end"
-            marginTop="size-100"
+          <div
+            className={style({
+              display: "flex",
+              flexDirection: "row",
+              gap: 8,
+              justifyContent: "end",
+              marginTop: 8,
+            })}
           >
             <Button
               data-test-id="repairSummaryCloseButton"
@@ -664,8 +749,8 @@ const OperationDialog = ({
             >
               Run again
             </Button>
-          </Flex>
-        </Flex>
+          </div>
+        </div>
       </Content>
     </Dialog>
   );

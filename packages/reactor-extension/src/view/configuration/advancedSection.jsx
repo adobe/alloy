@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Flex } from "@adobe/react-spectrum";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { object, string } from "yup";
 import PropTypes from "prop-types";
 import SectionHeader from "../components/sectionHeader";
@@ -60,7 +60,11 @@ const AdvancedSection = ({ instanceFieldName }) => {
     <>
       <SectionHeader>Advanced Settings</SectionHeader>
       <FormElementContainer>
-        <Flex>
+        <div
+          className={style({
+            display: "flex",
+          })}
+        >
           <DataElementSelector>
             <FormikTextField
               data-test-id="edgeBasePathField"
@@ -76,7 +80,7 @@ const AdvancedSection = ({ instanceFieldName }) => {
             name={`${instanceFieldName}.edgeBasePath`}
             defaultValue={instanceDefaults.edgeBasePath}
           />
-        </Flex>
+        </div>
       </FormElementContainer>
     </>
   );
