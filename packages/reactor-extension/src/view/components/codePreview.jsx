@@ -62,14 +62,12 @@ const CodePreview = ({
           })}
         />
       </FieldDescriptionAndError>
-      <ActionButton
-        data-test-id={dataTestId}
-        onPress={onPress}
-        UNSAFE_className="CodePreview-openEditorButton"
-      >
-        <CodeIcon />
-        <Text>{buttonLabel}</Text>
-      </ActionButton>
+      <div className="CodePreview-openEditorButton">
+        <ActionButton data-test-id={dataTestId} onPress={onPress}>
+          <CodeIcon />
+          <Text>{buttonLabel}</Text>
+        </ActionButton>
+      </div>
     </div>
   );
 };
