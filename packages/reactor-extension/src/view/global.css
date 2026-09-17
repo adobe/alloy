@@ -27,21 +27,9 @@ body {
   padding: 0;
 }
 
-html
 body,
-#root,
-.react-spectrum-provider {
+#root {
   display: flex;
   flex-direction: column;
   flex: 1;
-}
-
-.react-spectrum-provider.with-padding {
-  padding: 8px;
-}
-
-.spectrum-accessibility-overrides {
-   *[class*="spectrum-HelpText--neutral"][class*="is-disabled"] *[class*="spectrum-HelpText-text"] {
-    color: var(--spectrum-alias-label-text-color, var(--spectrum-global-color-gray-700));
-  }
 }
