@@ -250,6 +250,7 @@ const InstancesSection = ({ initInfo, context, isPreinstalled }) => {
                 className={style({
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "end",
                 })}
               >
                 <Button
@@ -265,11 +266,6 @@ const InstancesSection = ({ initInfo, context, isPreinstalled }) => {
                     arrayHelpers.push(newInstance);
                     setSelectedTabKey(String(instances.length));
                   }}
-                  styles={style({
-                    position: "absolute",
-                    top: 12,
-                    right: 16,
-                  })}
                 >
                   Add instance
                 </Button>
