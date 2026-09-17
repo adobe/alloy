@@ -60,9 +60,11 @@ const Schema = ({ xdmVariableContext, initInfo }) => {
 
   return (
     <>
-      <Content styles={style({
-        width: 400
-      })}>
+      <Content
+        styles={style({
+          width: 400,
+        })}
+      >
         Variable data elements are used to build up an XDM or Data object using
         actions. Variable data elements start out empty, but you can update
         properties using Web SDK update variable actions. You can reference the

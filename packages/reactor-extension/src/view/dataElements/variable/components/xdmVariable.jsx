@@ -271,8 +271,9 @@ const XdmVariable = ({
             data-test-id="schemaMissingAlert"
             styles={style({
               width: 400,
-              marginBottom: 16
-            })}>
+              marginBottom: 16,
+            })}
+          >
             <Heading size="XXS">Could not load saved configuration</Heading>
             <Content>
               The previously saved sandbox or schema could not be retrieved. You
@@ -309,8 +310,9 @@ const XdmVariable = ({
             className={style({
               display: "flex",
               flexDirection: "row",
-              gap: 8
-            })}>
+              gap: 8,
+            })}
+          >
             <div>
               <FormikPagedComboBox
                 data-test-id="schemaField"
@@ -332,8 +334,9 @@ const XdmVariable = ({
               className={style({
                 display: "flex",
                 flexDirection: "row",
-                marginTop: 24
-              })}>
+                marginTop: 24,
+              })}
+            >
               <RefreshButton
                 onPress={handleRefreshSchemas}
                 isDisabled={isRefreshing}

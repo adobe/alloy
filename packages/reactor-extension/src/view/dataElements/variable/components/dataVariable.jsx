@@ -78,7 +78,7 @@ const DataVariable = () => {
               data-test-id={`${solution}Checkbox`}
               value={solution}
               styles={style({
-                width: 400
+                width: 400,
               })}
             >
               {name}
