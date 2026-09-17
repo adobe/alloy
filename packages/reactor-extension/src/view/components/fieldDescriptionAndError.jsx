@@ -14,7 +14,7 @@ import { Children } from "react";
 import PropTypes from "prop-types";
 import { Link, mergeStyles } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import widthStyle from "./widthStyle";
+import widthStyle from "../forms/fields/widthStyle";
 
 const NO_STYLE = style({});
 

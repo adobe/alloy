@@ -10,17 +10,27 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Picker, PickerItem } from "@react-spectrum/s2";
-import { useField } from "formik";
 import PropTypes from "prop-types";
-import widthStyle from "../widthStyle";
+import { ComboBox, ComboBoxItem } from "@react-spectrum/s2";
+import { useField } from "formik";
+import widthStyle from "./widthStyle";
 import normalizeCollectionChildren from "./normalizeCollectionChildren";
 
-const FormikPicker = ({
+/**
+ * @param {object} params
+ * @param {string} params.name
+ * @param {string?} params.width
+ * @param {Function?} params.onBlur
+ * @param {(value: T) => undefined | string} params.validate A function that will be called to validate
+ * the value entered by the user. The function should return an error message if
+ * the value is invalid, or null if the value is valid.
+ * @returns {React.Element}
+ */
+const FormikComboBox = ({
   name,
   width,
   validate,
-  onChange,
+  onBlur = () => {},
   children,
   ...otherProps
 }) => {
@@ -28,35 +38,31 @@ const FormikPicker = ({
     name,
     validate,
   });
-
   return (
-    <Picker
-      value={value}
-      onChange={(key) => {
-        setValue(key);
-        if (onChange) {
-          onChange(key);
-        }
-      }}
-      onBlur={() => {
+    <ComboBox
+      {...otherProps}
+      inputValue={value}
+      onInputChange={setValue}
+      onBlur={(...args) => {
+        onBlur(...args);
         setTouched(true);
       }}
       isInvalid={Boolean(touched && error)}
-      errorMessage={error}
+      name={name}
       styles={widthStyle(width)}
-      {...otherProps}
+      errorMessage={error}
     >
-      {normalizeCollectionChildren(PickerItem, children)}
-    </Picker>
+      {normalizeCollectionChildren(ComboBoxItem, children)}
+    </ComboBox>
   );
 };
 
-FormikPicker.propTypes = {
+FormikComboBox.propTypes = {
   name: PropTypes.string.isRequired,
-  width: PropTypes.string,
+  onBlur: PropTypes.func,
   validate: PropTypes.func,
-  onChange: PropTypes.func,
+  width: PropTypes.string,
   children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
 };
 
-export default FormikPicker;
+export default FormikComboBox;

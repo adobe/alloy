@@ -15,7 +15,7 @@ import { object, string } from "yup";
 import PropTypes from "prop-types";
 import SectionHeader from "../components/sectionHeader";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
+import FormikTextField from "../forms/fields/TextField";
 import RestoreDefaultValueButton from "../components/restoreDefaultValueButton";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";

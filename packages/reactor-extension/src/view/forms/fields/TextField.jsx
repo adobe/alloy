@@ -11,14 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { TextArea, mergeStyles } from "@react-spectrum/s2";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { TextField } from "@react-spectrum/s2";
 import { useField } from "formik";
-import widthStyle from "../widthStyle";
-
-// Was `.formik-field textarea { min-height: size-4600 !important }` in
-// global.css; size-4600 = 368px per the S1->S2 dimension token table.
-const MIN_HEIGHT_STYLE = style({ minHeight: 368 });
+import widthStyle from "./widthStyle";
 
 /**
  * @param {Object} params
@@ -44,7 +39,7 @@ const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
   const isInvalid = Boolean(otherProps.invalid || (touched && error));
 
   return (
-    <TextArea
+    <TextField
       {...otherProps}
       value={value}
       onChange={(newValue) => {
@@ -58,7 +53,7 @@ const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
       }}
       isInvalid={isInvalid}
       errorMessage={error}
-      styles={mergeStyles(widthStyle(width), MIN_HEIGHT_STYLE)}
+      styles={widthStyle(width)}
     />
   );
 };

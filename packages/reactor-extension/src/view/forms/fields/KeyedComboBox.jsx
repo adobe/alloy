@@ -15,7 +15,7 @@ import PropTypes from "prop-types";
 import { ComboBox, ComboBoxItem } from "@react-spectrum/s2";
 import { useField } from "formik";
 import useForceRender from "../../utils/useForceRender";
-import widthStyle from "../widthStyle";
+import widthStyle from "./widthStyle";
 import normalizeCollectionChildren from "./normalizeCollectionChildren";
 
 const FormikKeyedComboBox = ({
