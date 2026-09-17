@@ -1,28 +1,9 @@
-.Alert {
-  box-sizing: border-box;
-  border: 2px solid;
-  border-radius: 4px;
-  padding: 24px;
-}
-.Alert--neutral {
-  border-color: var(--spectrum-global-color-static-gray-600);
-}
-.Alert--informative {
-  border-color: var(--spectrum-semantic-informative-color-default);
-}
-.Alert--positive {
-  border-color: var(--spectrum-semantic-positive-color-default);
-}
-.Alert--notice {
-  border-color: var(--spectrum-semantic-notice-color-default);
-}
-.Alert--negative {
-  border-color: var(--spectrum-semantic-negative-color-default);
-}
-
+/*
+The box chrome (border/padding/radius/color) moved to the style() macro in
+alert.jsx. Only the child-selector rule below (which the macro can't
+express) still needs plain CSS.
+*/
 .Alert-description {
-  color: var(--spectrum-alias-label-text-color, var(--spectrum-global-color-gray-700));
-
   /* Paragraph elements (and possibly other elements?) will add block margin
   on the top and bottom, which provides too much spacing. */
   > :first-child {
