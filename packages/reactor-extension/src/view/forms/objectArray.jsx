@@ -378,7 +378,9 @@ export default function objectArray(
                                 isDisabled={
                                   items.length === 1 && isRowEmpty(item)
                                 }
-                                styles={HORIZONTAL_REMOVE_BUTTON_STYLES[index === 0]}
+                                styles={
+                                  HORIZONTAL_REMOVE_BUTTON_STYLES[index === 0]
+                                }
                               >
                                 <Delete />
                               </ActionButton>
