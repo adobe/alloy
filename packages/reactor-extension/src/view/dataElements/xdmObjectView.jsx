@@ -12,7 +12,13 @@ governing permissions and limitations under the License.
 
 import { useRef, useState } from "react";
 import PropTypes from "prop-types";
-import { ProgressCircle, Switch, InlineAlert, Heading, Content } from "@react-spectrum/s2";
+import {
+  ProgressCircle,
+  Switch,
+  InlineAlert,
+  Heading,
+  Content,
+} from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import { object, string } from "yup";
@@ -367,8 +373,9 @@ const XdmObject = ({ initInfo, context, formikProps }) => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          height: 160
-        })}>
+          height: 160,
+        })}
+      >
         <ProgressCircle size="L" aria-label="Loading..." isIndeterminate />
       </div>
     );
@@ -388,29 +395,23 @@ const XdmObject = ({ initInfo, context, formikProps }) => {
   return (
     <div>
       <FormElementContainer>
-        <div
-          className={style({
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            marginBottom: 16
-          })}>
-          <Switch
-            isSelected={showDisplayNames}
-            onChange={setShowDisplayNames}
-            data-test-id="displayNamesSwitch"
-          >
-            Show display names for fields
-          </Switch>
-        </div>
+        <Switch
+          isSelected={showDisplayNames}
+          onChange={setShowDisplayNames}
+          data-test-id="displayNamesSwitch"
+          styles={style({ marginBottom: 16 })}
+        >
+          Show display names for fields
+        </Switch>
         {(context.missingSavedSandbox || context.missingSavedSchema) && (
           <InlineAlert
             variant="notice"
             data-test-id="schemaMissingAlert"
             styles={style({
               width: 400,
-              marginBottom: 16
-            })}>
+              marginBottom: 16,
+            })}
+          >
             <Heading size="XXS">Could not load saved configuration</Heading>
             <Content>
               The previously saved sandbox or schema could not be retrieved. You
