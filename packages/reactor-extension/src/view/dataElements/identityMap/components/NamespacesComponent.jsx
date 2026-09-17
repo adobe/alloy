@@ -65,8 +65,9 @@ const NamespacesComponent = ({ name, index, namespaces }) => {
           label="Namespace"
           allowsCustomValue
         >
-          {(namespace) => // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
-          <Item key={namespace.code}>{namespace.code}</Item>}
+          {(
+            namespace, // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
+          ) => <Item key={namespace.code}>{namespace.code}</Item>}
         </FormikComboBox>
       ) : (
         <FormikTextField
