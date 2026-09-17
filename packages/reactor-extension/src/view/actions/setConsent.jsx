@@ -13,8 +13,7 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { FieldArray } from "formik";
 import { object, string, array, mixed } from "yup";
-import { Item } from "@adobe/react-spectrum";
-import { Radio, Button, Text } from "@react-spectrum/s2";
+import { PickerItem, Radio, Button, Text } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
 import render from "../render";
@@ -249,8 +248,11 @@ const ConsentObject = ({ value, index }) => {
         items={[ADOBE, IAB_TCF]}
         width="size-5000"
       >
-        {(item) => // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
-        <Item key={item.value}>{item.label}</Item>}
+        {(item) => (
+          <PickerItem key={item.value} id={item.value}>
+            {item.label}
+          </PickerItem>
+        )}
       </FormikPicker>
       {value.standard === ADOBE.value && (
         <FormikPicker
@@ -261,8 +263,11 @@ const ConsentObject = ({ value, index }) => {
           items={[VERSION_1_0, VERSION_2_0]}
           width="size-5000"
         >
-          {(item) => // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
-          <Item key={item.value}>{item.label}</Item>}
+          {(item) => (
+            <PickerItem key={item.value} id={item.value}>
+              {item.label}
+            </PickerItem>
+          )}
         </FormikPicker>
       )}
       {value.standard === ADOBE.value &&
@@ -413,7 +418,7 @@ const SetConsent = () => {
                           arrayHelpers.push(createBlankConsentObject());
                         }}
                         styles={style({
-                          marginStart: "[auto]"
+                          marginStart: "auto",
                         })}
                       >
                         Add consent object
@@ -422,8 +427,9 @@ const SetConsent = () => {
                         className={style({
                           display: "flex",
                           flexDirection: "column",
-                          gap: 20
-                        })}>
+                          gap: 20,
+                        })}
+                      >
                         {values.consent.map((value, index) => (
                           <div
                             data-test-id={`consentObject${index}`}
@@ -439,8 +445,9 @@ const SetConsent = () => {
                               backgroundColor: "layer-1",
                               borderStyle: "solid",
                               borderColor: "transparent-black-75",
-                              font: "body-sm"
-                            })}>
+                              font: "body-sm",
+                            })}
+                          >
                             <FormElementContainer>
                               <ConsentObject value={value} index={index} />
                               {values.consent.length > 1 && (
@@ -452,7 +459,7 @@ const SetConsent = () => {
                                   aria-label="Delete"
                                   data-test-id="deleteConsentButton"
                                   styles={style({
-                                    alignSelf: "flex-start"
+                                    alignSelf: "start",
                                   })}
                                 >
                                   <Delete />
