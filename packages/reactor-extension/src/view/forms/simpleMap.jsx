@@ -247,9 +247,7 @@ export default function simpleMap({
                                 isDisabled={items.length === 1}
                                 onPress={() => {
                                   // using arrayHelpers.remove mangles the error message
-                                  setItems(
-                                    items.filter((_, i) => i !== index),
-                                  );
+                                  setItems(items.filter((_, i) => i !== index));
                                 }}
                                 styles={REMOVE_BUTTON_STYLE}
                               >
