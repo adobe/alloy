@@ -10,13 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { string } from "yup";
-import { Item } from "@adobe/react-spectrum";
+import { ComboBoxItem } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import PropTypes from "prop-types";
-import Data from "@spectrum-icons/workflow/Data";
+import Data from "@react-spectrum/s2/icons/Data";
 import DataElementSelector from "../components/dataElementSelector";
 import FormikKeyedComboBox from "../components/formikReactSpectrum3/formikKeyedComboBox";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
+
+// Reserves the width of the DataElementSelector's icon button next to a combo
+// box that has no data element button of its own, so sibling fields with and
+// without the button still line up. The hidden styling has to go on a
+// wrapping div rather than the icon's own `styles` prop: S2's icon wrapper
+// (@react-spectrum/s2/icons/Icon.mjs `iconStyles`) only re-emits a fixed
+// allowlist of override classes (margin/alignment/position/size/color), so a
+// `visibility` class passed straight to the icon is silently dropped and it
+// stays visible.
+const ICON_SPACER_STYLE = style({ display: "flex", gap: 2 });
+const HIDDEN_ICON_STYLE = style({ visibility: "hidden" });
 
 /** @typedef {import("./form").Form} Form */
 /**
@@ -98,9 +110,9 @@ export default function comboBox({
         getLabel={(item) => item.label}
       >
         {(item) => (
-          <Item key={item.value} data-test-id={item.value}>
+          <ComboBoxItem key={item.value} data-test-id={item.value}>
             {item.label}
-          </Item>
+          </ComboBoxItem>
         )}
       </Component>
     );
@@ -150,19 +162,28 @@ export default function comboBox({
           </DataElementSelector>
         );
       }
-      return (
-        <>
+      if (!fillDataElementIconSpace) {
+        return (
           <InnerComponent
             name={`${namePrefix}${name}`}
             label={hideLabel ? undefined : label}
             aria-label={label}
             description={description}
-            marginEnd={fillDataElementIconSpace ? "size-25" : ""}
           />
-          {fillDataElementIconSpace && (
-            <Data UNSAFE_style={{ visibility: "hidden" }} />
-          )}
-        </>
+        );
+      }
+      return (
+        <div className={ICON_SPACER_STYLE}>
+          <InnerComponent
+            name={`${namePrefix}${name}`}
+            label={hideLabel ? undefined : label}
+            aria-label={label}
+            description={description}
+          />
+          <div className={HIDDEN_ICON_STYLE}>
+            <Data />
+          </div>
+        </div>
       );
     },
   };
