@@ -10,8 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Item } from "@adobe/react-spectrum";
-import { InlineAlert, Heading, Content, Link } from "@react-spectrum/s2";
+import {
+  InlineAlert,
+  Heading,
+  Content,
+  Link,
+  PickerItem,
+} from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import { useState } from "react";
@@ -299,8 +304,9 @@ const XdmVariable = ({
             const region = item.region ? ` (${item.region.toUpperCase()})` : "";
             const label = `${item.type.toUpperCase()} ${item.title}${region}`;
             return (
-              // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
-              <Item key={item.name}>{label}</Item>
+              <PickerItem key={item.name} id={item.name}>
+                {label}
+              </PickerItem>
             );
           }}
         </FormikPicker>
