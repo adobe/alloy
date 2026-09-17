@@ -21,7 +21,13 @@ import singleDataElementRegex from "../constants/singleDataElementRegex";
 
 // Reserves the width of the DataElementSelector's icon button next to a combo
 // box that has no data element button of its own, so sibling fields with and
-// without the button still line up.
+// without the button still line up. The hidden styling has to go on a
+// wrapping div rather than the icon's own `styles` prop: S2's icon wrapper
+// (@react-spectrum/s2/icons/Icon.mjs `iconStyles`) only re-emits a fixed
+// allowlist of override classes (margin/alignment/position/size/color), so a
+// `visibility` class passed straight to the icon is silently dropped and it
+// stays visible.
+const ICON_SPACER_STYLE = style({ display: "flex", gap: 2 });
 const HIDDEN_ICON_STYLE = style({ visibility: "hidden" });
 
 /** @typedef {import("./form").Form} Form */
@@ -167,14 +173,16 @@ export default function comboBox({
         );
       }
       return (
-        <div className={style({ display: "flex" })}>
+        <div className={ICON_SPACER_STYLE}>
           <InnerComponent
             name={`${namePrefix}${name}`}
             label={hideLabel ? undefined : label}
             aria-label={label}
             description={description}
           />
-          <Data styles={HIDDEN_ICON_STYLE} />
+          <div className={HIDDEN_ICON_STYLE}>
+            <Data />
+          </div>
         </div>
       );
     },
