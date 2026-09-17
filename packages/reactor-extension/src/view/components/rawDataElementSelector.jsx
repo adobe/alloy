@@ -20,9 +20,10 @@ const CONTAINER_STYLE = style({ display: "flex" });
 
 // Nudges the button down to align with a field that has a label above it.
 // size-300 = 24px per the S1->S2 dimension token table.
+// Keep the action target at the 32px width used before the S2 migration.
 const BUTTON_MARGIN_TOP_STYLES = {
-  "size-300": style({ marginTop: 24, minWidth: 0 }),
-  0: style({ marginTop: 0, minWidth: 0 }),
+  "size-300": style({ marginTop: 24, minWidth: 32 }),
+  0: style({ marginTop: 0, minWidth: 32 }),
 };
 
 const RawDataElementSelector = ({
