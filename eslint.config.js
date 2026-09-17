@@ -634,6 +634,18 @@ export default defineConfig([
       ],
     },
   },
+  {
+    name: "alloy/reactor-extension/screenshots",
+    files: ["packages/reactor-extension/test/screenshots/**/*.{js,jsx}"],
+    rules: {
+      // captureView() (test/screenshots/helpers/captureView.js) does the
+      // expect.poll assertion for every spec here.
+      "vitest/expect-expect": [
+        "error",
+        { assertFunctionNames: ["expect", "assert", "captureView"] },
+      ],
+    },
+  },
   // Extension functional tests use testcafe/browser patterns; relax vitest assertion rules
   {
     name: "alloy/reactor-extension/functional-tests",
