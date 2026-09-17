@@ -211,6 +211,16 @@ describe("Config general settings and datastream section", () => {
       .toBe("%instanceName%");
   });
 
+  it("renders the base code link inline with the name description", async () => {
+    await driver.init(buildSettings());
+
+    const baseCodeLink = view
+      .getByRole("link", { name: "base code" })
+      .element();
+
+    expect(window.getComputedStyle(baseCodeLink).display).toBe("inline");
+  });
+
   it("renders the data element selector beside restore at 32 pixels wide", async () => {
     await driver.init(buildSettings());
 
