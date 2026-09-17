@@ -13,7 +13,7 @@ import { string } from "yup";
 import { Item } from "@adobe/react-spectrum";
 import { useField } from "formik";
 import PropTypes from "prop-types";
-import Data from "@spectrum-icons/workflow/Data";
+import Data from "@react-spectrum/s2/icons/Data";
 import DataElementSelector from "../components/dataElementSelector";
 import FormikKeyedComboBox from "../components/formikReactSpectrum3/formikKeyedComboBox";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
@@ -98,6 +98,7 @@ export default function comboBox({
         getLabel={(item) => item.label}
       >
         {(item) => (
+          // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
           <Item key={item.value} data-test-id={item.value}>
             {item.label}
           </Item>

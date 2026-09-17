@@ -11,9 +11,10 @@ governing permissions and limitations under the License.
 */
 import { array, string, object } from "yup";
 import { FieldArray, useField } from "formik";
-import { Flex, Radio, Button, Well, ActionButton } from "@adobe/react-spectrum";
+import { Radio, Button, ActionButton } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
-import Delete from "@spectrum-icons/workflow/Delete";
+import Delete from "@react-spectrum/s2/icons/Delete";
 import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
 import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
 import DataElementSelector from "../components/dataElementSelector";
@@ -36,13 +37,26 @@ const lowerInitialLetters = (s) => {
 const ObjectArrayContainer = ({ horizontal, children }) => {
   if (horizontal) {
     return (
-      <Well
-        UNSAFE_style={{
+      <div
+        className={style({
+          display: "block",
+          textAlign: "start",
+          minWidth: 160,
+          padding: 16,
+          marginTop: 4,
+          borderWidth: 1,
+          borderRadius: "sm",
+          backgroundColor: "layer-1",
+          borderStyle: "solid",
+          borderColor: "transparent-black-75",
+          font: "body-sm",
+        })}
+        style={{
           paddingTop: "var(--spectrum-global-dimension-size-100)",
         }}
       >
         <FormElementContainer>{children}</FormElementContainer>
-      </Well>
+      </div>
     );
   }
   return children;
@@ -287,16 +301,32 @@ export default function objectArray(
                       return (
                         <div key={index}>
                           {!horizontal && (
-                            <Well
-                              alignSelf="flex-start"
-                              direction="column"
-                              gap="size-100"
+                            <div
+                              className={style({
+                                display: "block",
+                                textAlign: "start",
+                                minWidth: 160,
+                                padding: 16,
+                                marginTop: 4,
+                                borderWidth: 1,
+                                borderRadius: "sm",
+                                backgroundColor: "layer-1",
+                                borderStyle: "solid",
+                                borderColor: "transparent-black-75",
+                                font: "body-sm",
+                                alignSelf: "flex-start",
+                              })}
                             >
                               <ItemComponent
                                 namePrefix={`${namePrefix}${name}.${index}.`}
                                 {...props}
                               />
-                              <Flex direction="row">
+                              <div
+                                className={style({
+                                  display: "flex",
+                                  flexDirection: "row",
+                                })}
+                              >
                                 <Button
                                   variant="secondary"
                                   data-test-id={`${namePrefix}${name}${index}RemoveButton`}
@@ -309,15 +339,22 @@ export default function objectArray(
                                   isDisabled={
                                     items.length === 1 && isRowEmpty(item)
                                   }
-                                  marginStart="auto"
+                                  styles={style({
+                                    marginStart: "[auto]",
+                                  })}
                                 >
                                   Remove {lowerInitialLetters(singularLabel)}
                                 </Button>
-                              </Flex>
-                            </Well>
+                              </div>
+                            </div>
                           )}
                           {horizontal && (
-                            <Flex direction="row">
+                            <div
+                              className={style({
+                                display: "flex",
+                                flexDirection: "row",
+                              })}
+                            >
                               <ItemComponent
                                 namePrefix={`${namePrefix}${name}.${index}.`}
                                 hideLabel={index > 0}
@@ -339,11 +376,12 @@ export default function objectArray(
                                 isDisabled={
                                   items.length === 1 && isRowEmpty(item)
                                 }
+                                // TODO(S2-upgrade): update this style prop
                                 marginTop={index === 0 ? "size-300" : 0}
                               >
                                 <Delete />
                               </ActionButton>
-                            </Flex>
+                            </div>
                           )}
                         </div>
                       );
