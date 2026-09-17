@@ -11,11 +11,17 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { InlineAlert, Heading, Content } from "@adobe/react-spectrum";
+import { InlineAlert, Heading, Content } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 
 const BetaNotice = ({ componentName }) => {
   return (
-    <InlineAlert variant="notice" width="size-5000">
+    <InlineAlert
+      variant="notice"
+      styles={style({
+        width: 400,
+      })}
+    >
       <Heading size="XXS">Beta feature</Heading>
       <Content>
         This {componentName} is a beta feature while the development team

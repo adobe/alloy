@@ -9,19 +9,20 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { Badge } from "@adobe/react-spectrum";
+import { Badge } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 
-const betaBadge = ({ isDisabled }) => {
-  const styles = {
-    padding: "0",
-  };
-  if (isDisabled) {
-    styles.backgroundColor = "var(--spectrum-alias-text-color-disabled)";
-  }
+const BADGE_STYLE = style({ marginStart: 8 });
 
+// S2 Badge has no background-color override; the disabled look uses the
+// neutral variant instead of forcing a specific color like v3 did.
+const betaBadge = ({ isDisabled }) => {
   return (
-    <Badge variant="info" marginStart="size-100" UNSAFE_style={styles}>
+    <Badge
+      variant={isDisabled ? "neutral" : "informative"}
+      styles={BADGE_STYLE}
+    >
       Beta
     </Badge>
   );
