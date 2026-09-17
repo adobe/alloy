@@ -10,20 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { Tab, Collection, Button, TabList, Tabs, Text } from "@react-spectrum/s2";
+
+/*
+Copyright 2022 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
 import { FieldArray, useField } from "formik";
 import { useState } from "react";
-import DeleteIcon from "@spectrum-icons/workflow/Delete";
-import {
-  Button,
-  Flex,
-  Item,
-  TabList,
-  TabPanels,
-  Tabs,
-  Text,
-  View,
-  Well,
-} from "@adobe/react-spectrum";
+import DeleteIcon from "@react-spectrum/s2/icons/Delete";
+import { Item } from "@adobe/react-spectrum";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import useNewlyValidatedFormSubmission from "../../../utils/useNewlyValidatedFormSubmission";
 import useFocusFirstError from "../../../utils/useFocusFirstError";
@@ -66,7 +71,10 @@ const Identity = ({ context }) => {
       render={(arrayHelpers) => {
         return (
           <>
-            <Flex alignItems="center">
+            <div className={style({
+              display: "flex",
+              alignItems: "center"
+            })}>
               <Heading size="M">Identities</Heading>
               <Button
                 data-test-id="addIdentityButton"
@@ -75,11 +83,13 @@ const Identity = ({ context }) => {
                   arrayHelpers.push(getDefaultIdentity());
                   setSelectedTabKey(String(identities.length));
                 }}
-                marginStart="auto"
+                styles={style({
+                  marginStart: "[auto]"
+                })}
               >
                 Add identity
               </Button>
-            </Flex>
+            </div>
             {/*
                 There is an issue where the heavy line under the selected
                 tab doesn't update in position or width when the label changes,
@@ -89,20 +99,20 @@ const Identity = ({ context }) => {
                 */}
             <Tabs
               aria-label="Identities"
-              items={identities}
               selectedKey={selectedTabKey}
-              onSelectionChange={setSelectedTabKey}
-            >
-              <TabList>
+              onSelectionChange={setSelectedTabKey}><TabList items={identities}>
                 {identities.map((identity, index) => {
                   const label =
                     findNamespace(namespaces, identity.namespaceCode)?.name ||
                     identity.namespaceCode ||
                     "Unnamed identity";
-                  return <Item key={index}>{label}</Item>;
+                  return (
+                    <Tab id={index} key={index}>
+                      {label}
+                    </Tab>
+                  );
                 })}
-              </TabList>
-              <TabPanels>
+              </TabList><Collection items={identities}>
                 {identities.map((identity, index) => {
                   return (
                     <Item key={index}>
@@ -113,11 +123,13 @@ const Identity = ({ context }) => {
                           render={(identityArrayHelpers) => {
                             return (
                               <>
-                                <Flex
-                                  marginTop="size-100"
-                                  alignItems="flex-end"
-                                  justifyContent="space-between"
-                                >
+                                <div
+                                  className={style({
+                                    display: "flex",
+                                    marginTop: 8,
+                                    alignItems: "flex-end",
+                                    justifyContent: "space-between"
+                                  })}>
                                   <NamespacesComponent
                                     name={`identities.${index}.namespaceCode`}
                                     selectedNamespaceCode={
@@ -137,13 +149,30 @@ const Identity = ({ context }) => {
                                   >
                                     Add identifier
                                   </Button>
-                                </Flex>
-                                <Flex direction="column" gap="size-250">
+                                </div>
+                                <div
+                                  className={style({
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: 20
+                                  })}>
                                   {identity.identifiers.map(
                                     (identifier, identifierIndex) => (
-                                      <Well
+                                      <div
                                         key={`identity${index}identifier${identifierIndex}`}
-                                      >
+                                        className={style({
+                                          display: "block",
+                                          textAlign: "start",
+                                          minWidth: 160,
+                                          padding: 16,
+                                          marginTop: 4,
+                                          borderWidth: 1,
+                                          borderRadius: "sm",
+                                          backgroundColor: "layer-1",
+                                          borderStyle: "solid",
+                                          borderColor: "transparent-black-75",
+                                          font: "body-sm"
+                                        })}>
                                         <FormElementContainer>
                                           <DataElementSelector>
                                             <FormikTextField
@@ -207,22 +236,26 @@ const Identity = ({ context }) => {
                                                 identifierIndex,
                                               );
                                             }}
-                                            marginTop="size-150"
+                                            styles={style({
+                                              marginTop: 12
+                                            })}
                                           >
                                             <DeleteIcon />
                                             <Text>Delete identifier</Text>
                                           </Button>
                                         )}
-                                      </Well>
+                                      </div>
                                     ),
                                   )}
-                                </Flex>
+                                </div>
                               </>
                             );
                           }}
                         />
                         {identities.length > 1 && (
-                          <View marginTop="size-100">
+                          <div className={style({
+                            marginTop: 8
+                          })}>
                             <Button
                               data-test-id={`deleteIdentity${index}Button`}
                               variant="secondary"
@@ -234,14 +267,13 @@ const Identity = ({ context }) => {
                               <DeleteIcon />
                               Delete identity
                             </Button>
-                          </View>
+                          </div>
                         )}
                       </FormElementContainer>
                     </Item>
                   );
                 })}
-              </TabPanels>
-            </Tabs>
+              </Collection></Tabs>
           </>
         );
       }}
