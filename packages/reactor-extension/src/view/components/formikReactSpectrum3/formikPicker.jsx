@@ -10,11 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Picker } from "@adobe/react-spectrum";
+import { Picker, PickerItem } from "@react-spectrum/s2";
 import { useField } from "formik";
 import PropTypes from "prop-types";
+import widthStyle from "../widthStyle";
+import normalizeCollectionChildren from "./normalizeCollectionChildren";
 
-const FormikPicker = ({ name, width, validate, onChange, ...otherProps }) => {
+const FormikPicker = ({
+  name,
+  width,
+  validate,
+  onChange,
+  children,
+  ...otherProps
+}) => {
   const [{ value }, { touched, error }, { setValue, setTouched }] = useField({
     name,
     validate,
@@ -22,8 +31,8 @@ const FormikPicker = ({ name, width, validate, onChange, ...otherProps }) => {
 
   return (
     <Picker
-      selectedKey={value}
-      onSelectionChange={(key) => {
+      value={value}
+      onChange={(key) => {
         setValue(key);
         if (onChange) {
           onChange(key);
@@ -32,11 +41,13 @@ const FormikPicker = ({ name, width, validate, onChange, ...otherProps }) => {
       onBlur={() => {
         setTouched(true);
       }}
-      validationState={touched && error ? "invalid" : undefined}
+      isInvalid={Boolean(touched && error)}
       errorMessage={error}
-      width={width}
+      styles={widthStyle(width)}
       {...otherProps}
-    />
+    >
+      {normalizeCollectionChildren(PickerItem, children)}
+    </Picker>
   );
 };
 
@@ -45,6 +56,7 @@ FormikPicker.propTypes = {
   width: PropTypes.string,
   validate: PropTypes.func,
   onChange: PropTypes.func,
+  children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
 };
 
 export default FormikPicker;

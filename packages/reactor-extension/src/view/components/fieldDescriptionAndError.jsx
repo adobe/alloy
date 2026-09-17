@@ -12,8 +12,38 @@ governing permissions and limitations under the License.
 
 import { Children } from "react";
 import PropTypes from "prop-types";
-import "./fieldDescriptionAndError.css";
-import { Flex, Link, View } from "@adobe/react-spectrum";
+import { Link, mergeStyles } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import widthStyle from "./widthStyle";
+
+const NO_STYLE = style({});
+
+const CONTAINER_STYLE = style({ display: "flex", flexDirection: "column" });
+
+const MESSAGE_STYLES = {
+  description: style({
+    color: "gray-700",
+    font: "detail-sm",
+    paddingTop: 4,
+    paddingBottom: 4,
+  }),
+  error: style({
+    color: "negative",
+    font: "detail-sm",
+    paddingTop: 4,
+    paddingBottom: 4,
+  }),
+};
+
+// messagePaddingTop/messagePaddingStart nudge the description/error text to
+// align under a Checkbox's label (indented past its control) instead of the
+// field's own left edge. Only the tokens actually used by callers are mapped.
+const MESSAGE_PADDING_TOP_STYLES = {
+  "size-0": style({ paddingTop: 0 }),
+};
+const MESSAGE_PADDING_START_STYLES = {
+  "size-300": style({ paddingStart: 24 }),
+};
 
 // This is intended as a temporary solution until descriptions and errors
 // supported natively in React-Spectrum.
@@ -22,41 +52,37 @@ const FieldDescriptionAndError = ({
   children,
   description,
   error,
+  width,
   messagePaddingTop,
   messagePaddingStart,
   learnMoreLink,
 }) => {
-  const child = Children.only(children);
-  const width = child.props.width;
+  // Callers migrated to S2 pass `width` explicitly, since the field itself no
+  // longer exposes a `width` string prop to introspect. Callers not yet
+  // migrated still get it from the wrapped field's own `width` prop.
+  const resolvedWidth = width ?? Children.only(children).props.width;
 
-  let className;
   let message;
-
+  let messageStyleKey;
   if (error) {
-    className = "FieldDescriptionAndError-error";
+    messageStyleKey = "error";
     message = error;
   } else if (description) {
-    className = "FieldDescriptionAndError-description";
+    messageStyleKey = "description";
     message = description;
   }
 
-  // By providing a width directly on the error and description
-  // divs, we ensure that the text wraps at the width of the field.
-  // We're using the same CSS variables here that the field itself receives.
-  // There may be a way to do all of this without Spectrum's CSS variables.
-  const widthStyle = width
-    ? `var(--spectrum-global-dimension-${width}, var(--spectrum-alias-${width}))`
-    : `var(--spectrum-field-default-width)`;
-
   return (
-    <Flex direction="column" UNSAFE_style={{ width: widthStyle }}>
+    <div className={CONTAINER_STYLE}>
       {children}
       {message && (
-        <View
-          UNSAFE_className={className}
-          UNSAFE_style={{ width: widthStyle }}
-          paddingTop={messagePaddingTop}
-          paddingStart={messagePaddingStart}
+        <div
+          className={mergeStyles(
+            MESSAGE_STYLES[messageStyleKey],
+            widthStyle(resolvedWidth) ?? NO_STYLE,
+            MESSAGE_PADDING_TOP_STYLES[messagePaddingTop] ?? NO_STYLE,
+            MESSAGE_PADDING_START_STYLES[messagePaddingStart] ?? NO_STYLE,
+          )}
         >
           {message}
           {learnMoreLink && (
@@ -68,9 +94,9 @@ const FieldDescriptionAndError = ({
               Learn more
             </Link>
           )}
-        </View>
+        </div>
       )}
-    </Flex>
+    </div>
   );
 };
 
@@ -78,6 +104,7 @@ FieldDescriptionAndError.propTypes = {
   children: PropTypes.node.isRequired,
   description: PropTypes.node,
   error: PropTypes.string,
+  width: PropTypes.string,
   messagePaddingTop: PropTypes.string,
   messagePaddingStart: PropTypes.string,
   learnMoreLink: PropTypes.object,
