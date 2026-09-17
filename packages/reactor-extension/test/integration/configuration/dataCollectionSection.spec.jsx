@@ -180,6 +180,9 @@ describe("Config data collection section", () => {
       expect(window.getComputedStyle(badge).display).toBe("inline-flex");
       expect(badge.parentElement.getBoundingClientRect().width).toBe(376);
       expect(radioStyle.maxInlineSize).toBe("100%");
+      expect(window.getComputedStyle(badge.parentElement).lineHeight).toBe(
+        "21px",
+      );
     }
   });
 
