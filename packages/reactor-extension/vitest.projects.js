@@ -55,8 +55,14 @@ export const reactorExtensionTestProjects = [
     // The S2 `style()` macro is imported from a build-time-only `./style`
     // subpath with no browser export. Keep Vite's dep pre-scanner from
     // resolving it as a runtime module; the macro plugin handles it instead.
+    // `illustrations/linear/Error` must be pre-bundled up front too: left to
+    // Vite's on-demand discovery under `isolate: true`, a test worker can pick
+    // up a second, differently-bundled copy of react-aria-components mid-run,
+    // which crashes with "Cannot read properties of null (reading
+    // 'useContext')" the first time an isolated file renders it.
     optimizeDeps: {
       exclude: ["@react-spectrum/s2/style"],
+      include: ["@react-spectrum/s2/illustrations/linear/Error"],
     },
     test: {
       name: "reactor-extension/integration",
@@ -107,6 +113,7 @@ export const reactorExtensionTestProjects = [
     ],
     optimizeDeps: {
       exclude: ["@react-spectrum/s2/style"],
+      include: ["@react-spectrum/s2/illustrations/linear/Error"],
     },
     test: {
       name: "reactor-extension/screenshots",
