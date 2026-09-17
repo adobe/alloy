@@ -11,15 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
+import { InlineAlert, Heading, Content } from "@react-spectrum/s2";
 import {
-  Flex,
-  View,
-  InlineAlert,
-  Heading,
-  Content,
-} from "@adobe/react-spectrum";
-import AsteriskIcon from "@spectrum-icons/workflow/Asterisk";
-import Delete from "@spectrum-icons/workflow/Delete";
+  style,
+  iconStyle,
+} from "@react-spectrum/s2/style" with { type: "macro" };
+import InfoIcon from "@react-spectrum/s2/icons/InfoCircle";
+import Delete from "@react-spectrum/s2/icons/Delete";
 import PopulationAmountIndicator from "./populationAmountIndicator";
 import { EMPTY, PARTIAL, FULL } from "./constants/populationAmount";
 import IndicatorDescription from "./indicatorDescription";
@@ -46,11 +44,17 @@ const NoSelectedNodeView = ({
   return (
     <div>
       {isSchemaMismatched && (
-        <View marginBottom="size-100">
+        <div
+          className={style({
+            marginBottom: 8,
+          })}
+        >
           <InlineAlert
             variant="notice"
             data-test-id="schemaChangedNotice"
-            width="size-5000"
+            styles={style({
+              width: 400,
+            })}
           >
             <Heading size="XXS">Schema changed</Heading>
             <Content>
@@ -60,7 +64,7 @@ const NoSelectedNodeView = ({
               .
             </Content>
           </InlineAlert>
-        </View>
+        </div>
       )}
       <div>
         <p>
@@ -68,7 +72,14 @@ const NoSelectedNodeView = ({
           attributes {verticalLayout ? "above" : "on the left"} and providing
           their values.
         </p>
-        <Flex direction="column" gap="size-100" marginBottom="size-500">
+        <div
+          className={style({
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+            marginBottom: 40,
+          })}
+        >
           <IndicatorDescription
             indicator={<PopulationAmountIndicator populationAmount={EMPTY} />}
           >
@@ -85,21 +96,25 @@ const NoSelectedNodeView = ({
           >
             A full circle indicates all of the attributes have been populated.
           </IndicatorDescription>
-          <IndicatorDescription indicator={<AsteriskIcon size="XS" />}>
+          <IndicatorDescription
+            indicator={<InfoIcon styles={iconStyle({ size: "XS" })} />}
+          >
             Fields that may be auto-populated when this data element is passed
             to the XDM option of the <b>Send event</b> action have this icon.
             Hovering over the icon shows a popup explaining when the field will
             be auto-populated.
           </IndicatorDescription>
           {updateMode && (
-            <IndicatorDescription indicator={<Delete size="XS" />}>
+            <IndicatorDescription
+              indicator={<Delete styles={iconStyle({ size: "XS" })} />}
+            >
               A delete icon indicates that the field will be cleared before
               setting any values. A field further up in the object is already
               cleared. This is controlled by the &quot;Clear exisiting
               values&quot; checkbox when editing a field.
             </IndicatorDescription>
           )}
-        </Flex>
+        </div>
       </div>
     </div>
   );

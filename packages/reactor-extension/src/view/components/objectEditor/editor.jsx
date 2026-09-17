@@ -13,12 +13,52 @@ governing permissions and limitations under the License.
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useFormikContext } from "formik";
-import { Flex, View } from "@adobe/react-spectrum";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import XdmTree, { scrollNodeIntoView } from "./xdmTree";
 import NodeEdit from "./nodeEdit";
 import NoSelectedNodeView from "./noSelectedNodeView";
 import getNodeEditData from "./helpers/getNodeEditData";
 import { ARRAY, OBJECT } from "./constants/schemaType";
+
+// The style() macro must be statically evaluable, so the verticalLayout
+// boolean can't be interpolated directly; precompute one variant per value
+// (see formikReactSpectrum3/../widthStyle.js for the same pattern).
+const CONTAINER_STYLES = {
+  true: style({
+    display: "flex",
+    flexDirection: "column",
+    marginTop: 8,
+    minHeight: 0,
+    gap: 32,
+  }),
+  false: style({
+    display: "flex",
+    flexDirection: "row",
+    marginTop: 8,
+    minHeight: 0,
+    gap: 32,
+  }),
+};
+
+// Tree pane: minimum 300px wide, but can grow if there's extra room (long
+// node names, several expanded nodes). Edit pane: takes the rest of the
+// row and shrinks first, so the tree's 300px minimum always wins.
+const TREE_PANE_STYLES = {
+  true: style({}),
+  false: style({ flexGrow: 1, flexShrink: 0, flexBasis: 300 }),
+};
+
+const EDIT_PANE_STYLES = {
+  true: style({ alignSelf: "start", position: "sticky", top: 0 }),
+  false: style({
+    flexGrow: 0,
+    flexShrink: 1,
+    flexBasis: "full",
+    alignSelf: "start",
+    position: "sticky",
+    top: 0,
+  }),
+};
 
 const fetchNodeIdsForDepth = (formStateNode, depth) => {
   if (depth === 0) {
@@ -102,13 +142,7 @@ const Editor = ({
   }, [nodeIdToScrollIntoViewInTree]);
 
   return (
-    <Flex
-      data-test-id="editor"
-      marginTop="size-100"
-      minHeight={0}
-      gap="size-400"
-      direction={verticalLayout ? "column" : ""}
-    >
+    <div data-test-id="editor" className={CONTAINER_STYLES[verticalLayout]}>
       {
         // Minimum of 300px wide, but can expand. This is for when the user
         // has nodes with really long text or they expand several nodes, making
@@ -118,7 +152,7 @@ const Editor = ({
         // scrolling the scroll wheel or swiping when the cursor is over an element
         // that has a scrollbar (vertical or horizontal).
       }
-      <View flex={verticalLayout ? "" : "1 0 300px"}>
+      <div className={TREE_PANE_STYLES[verticalLayout]}>
         <XdmTree
           selectedNodeId={selectedNodeId}
           expandedNodeIds={expandedNodeIdsInTree}
@@ -129,18 +163,13 @@ const Editor = ({
           }}
           showDisplayNames={showDisplayNames}
         />
-      </View>
+      </div>
       {
         // We want the first column to be at least 300px wide, but it can
         // grow the tree gets bigger. Then the second column will take the
         // rest of the space.
       }
-      <View
-        flex={verticalLayout ? "" : "0 1 100%"}
-        alignSelf="flex-start"
-        position="sticky"
-        top={0}
-      >
+      <div className={EDIT_PANE_STYLES[verticalLayout]}>
         {selectedNodeId ? (
           <NodeEdit
             onNodeSelect={(nodeId) => {
@@ -160,8 +189,8 @@ const Editor = ({
             updateMode={formState.updateMode}
           />
         )}
-      </View>
-    </Flex>
+      </div>
+    </div>
   );
 };
 

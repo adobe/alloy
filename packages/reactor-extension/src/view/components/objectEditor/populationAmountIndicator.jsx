@@ -11,38 +11,49 @@ governing permissions and limitations under the License.
 */
 import PropTypes from "prop-types";
 import classNames from "classnames";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { FULL, PARTIAL, EMPTY, BLANK } from "./constants/populationAmount";
-import "./populationAmountIndictor.css";
+
+const SIZE_STYLE = style({
+  width: 15,
+  height: 15,
+  minHeight: 15,
+  minWidth: 15,
+});
+const BASE_RING_STYLE = style({ stroke: "gray-400" });
+const EMPHASIS_RING_STYLE = style({ stroke: "blue-900" });
+
+// The style() macro must be statically evaluable, so the populationAmount
+// value can't be interpolated into a dasharray directly; precompute one
+// dasharray per possible amount and select at runtime.
+const DASH_ARRAY_BY_POPULATION_AMOUNT = {
+  [FULL]: "100 0",
+  [PARTIAL]: "50 50",
+  [EMPTY]: "0 200",
+};
 
 const PopulationAmountIndicator = ({ className, populationAmount }) => {
   return populationAmount && populationAmount !== BLANK ? (
-    <svg
-      width="100%"
-      height="100%"
-      viewBox="0 0 42 42"
-      className={classNames("PopulationAmountIndicator", className)}
-    >
+    <svg viewBox="0 0 42 42" className={classNames(SIZE_STYLE, className)}>
       <circle
-        className="PopulationAmountIndicator-baseRing"
+        className={BASE_RING_STYLE}
         cx="21"
         cy="21"
         r="15.91549430918954"
         fill="transparent"
+        strokeWidth="9"
       />
 
       <circle
-        className={classNames("PopulationAmountIndicator-emphasisRing", {
-          "is-full": populationAmount === FULL,
-          "is-partial": populationAmount === PARTIAL,
-          "is-empty": populationAmount === EMPTY,
-        })}
+        className={EMPHASIS_RING_STYLE}
         cx="21"
         cy="21"
         r="15.91549430918954"
         fill="transparent"
+        strokeWidth="9"
         strokeDashoffset="25"
+        strokeDasharray={DASH_ARRAY_BY_POPULATION_AMOUNT[populationAmount]}
         data-test-id="populationAmountIndicator"
-        // strokeDasharray={`${100 * populationAmount} ${100 * (1 - populationAmount)}`}
       />
     </svg>
   ) : null;

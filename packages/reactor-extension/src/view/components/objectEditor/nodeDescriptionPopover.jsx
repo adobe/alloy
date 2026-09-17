@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { ContextualHelp, Heading, Content, Text } from "@adobe/react-spectrum";
+import { ContextualHelp, Heading, Content, Text } from "@react-spectrum/s2";
 
 const NodeDescription = ({ title, description }) => {
   if (!description) {
