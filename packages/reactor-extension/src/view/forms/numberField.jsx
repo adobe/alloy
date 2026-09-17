@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 import { number, string } from "yup";
 import { useField } from "formik";
-import { Radio } from "@adobe/react-spectrum";
+import { Radio } from "@react-spectrum/s2";
 import PropTypes from "prop-types";
 import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
 import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";

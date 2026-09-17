@@ -11,7 +11,8 @@ governing permissions and limitations under the License.
 */
 import { array, object, string } from "yup";
 import { FieldArray, useField } from "formik";
-import { Well, Radio, Flex, Button } from "@adobe/react-spectrum";
+import { Radio, Button } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
 import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
@@ -193,11 +194,22 @@ export default function simpleMap({
                   <>
                     {items.map((__, index) => {
                       return (
-                        <Well
+                        <div
                           key={index}
-                          alignSelf="flex-start"
-                          direction="column"
-                          gap="size-100"
+                          className={style({
+                            display: "block",
+                            textAlign: "start",
+                            minWidth: 160,
+                            padding: 16,
+                            marginTop: 4,
+                            borderWidth: 1,
+                            borderRadius: "sm",
+                            backgroundColor: "layer-1",
+                            borderStyle: "solid",
+                            borderColor: "transparent-black-75",
+                            font: "body-sm",
+                            alignSelf: "flex-start",
+                          })}
                         >
                           <FormElementContainer>
                             <DataElementSelector>
@@ -222,7 +234,12 @@ export default function simpleMap({
                               />
                             </DataElementSelector>
                           </FormElementContainer>
-                          <Flex direction="row">
+                          <div
+                            className={style({
+                              display: "flex",
+                              flexDirection: "row",
+                            })}
+                          >
                             <Button
                               variant="secondary"
                               data-test-id={`${namePrefix}${name}${index}RemoveButton`}
@@ -231,12 +248,14 @@ export default function simpleMap({
                                 // using arrayHelpers.remove mangles the error message
                                 setItems(items.filter((_, i) => i !== index));
                               }}
-                              marginStart="auto"
+                              styles={style({
+                                marginStart: "[auto]",
+                              })}
                             >
                               Remove {singularLabel.toLowerCase()}
                             </Button>
-                          </Flex>
-                        </Well>
+                          </div>
+                        </div>
                       );
                     })}
                     <div>
