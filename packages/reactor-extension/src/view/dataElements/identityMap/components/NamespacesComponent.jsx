@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Item, Link } from "@adobe/react-spectrum";
+import { Item } from "@adobe/react-spectrum";
+import { Link } from "@react-spectrum/s2";
 import PropTypes from "prop-types";
 import { useField } from "formik";
 import { findNamespace } from "../utils/namespacesUtils";
@@ -64,7 +65,8 @@ const NamespacesComponent = ({ name, index, namespaces }) => {
           label="Namespace"
           allowsCustomValue
         >
-          {(namespace) => <Item key={namespace.code}>{namespace.code}</Item>}
+          {(namespace) => // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
+          <Item key={namespace.code}>{namespace.code}</Item>}
         </FormikComboBox>
       ) : (
         <FormikTextField
