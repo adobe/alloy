@@ -488,7 +488,7 @@ const OperationDialog = ({
   if (status === STATUS.CONFIRMING) {
     return (
       <Dialog data-test-id="repairConfirmationDialog" isDismissible>
-        <Heading>Repair data element references</Heading>
+        <Heading slot="title">Repair data element references</Heading>
 
         <Content>
           <div
@@ -551,7 +551,7 @@ const OperationDialog = ({
 
     return (
       <Dialog data-test-id="repairRunningDialog">
-        <Heading>Repairing data element references</Heading>
+        <Heading slot="title">Repairing data element references</Heading>
 
         <Content>
           <div
@@ -614,7 +614,7 @@ const OperationDialog = ({
   const alert = summaryAlertProps(result);
   return (
     <Dialog data-test-id="repairSummaryDialog" isDismissible>
-      <Heading>Repair complete</Heading>
+      <Heading slot="title">Repair complete</Heading>
 
       <Content>
         <div
