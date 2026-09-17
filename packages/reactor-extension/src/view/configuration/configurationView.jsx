@@ -379,7 +379,7 @@ const InstancesSection = ({ initInfo, context, isPreinstalled }) => {
               >
                 {deleteDialogOpen && (
                   <Dialog data-test-id="resourceUsageDialog">
-                    <Heading>Resource Usage</Heading>
+                    <Heading slot="title">Resource Usage</Heading>
 
                     <Content>
                       <Text>
