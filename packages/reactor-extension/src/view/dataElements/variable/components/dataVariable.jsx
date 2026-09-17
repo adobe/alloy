@@ -10,7 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Checkbox } from "@adobe/react-spectrum";
+import { Checkbox } from "@react-spectrum/s2";
+
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import FormikCheckboxGroup from "../../../components/formikReactSpectrum3/formikCheckboxGroup";
 import FieldSubset from "../../../components/fieldSubset";
 import { XDM } from "../constants/variableTypes";
@@ -75,7 +77,9 @@ const DataVariable = () => {
               key={solution}
               data-test-id={`${solution}Checkbox`}
               value={solution}
-              width="size-5000"
+              styles={style({
+                width: 400
+              })}
             >
               {name}
             </Checkbox>

@@ -10,15 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  Item,
-  InlineAlert,
-  Heading,
-  Content,
-  Link,
-  Flex,
-  View,
-} from "@adobe/react-spectrum";
+import { Item } from "@adobe/react-spectrum";
+import { InlineAlert, Heading, Content, Link } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import { useState } from "react";
 import PropTypes from "prop-types";
@@ -274,10 +268,11 @@ const XdmVariable = ({
         {(missingSavedSandbox || missingSavedSchema) && (
           <InlineAlert
             variant="notice"
-            width="size-5000"
-            marginBottom="size-200"
             data-test-id="schemaMissingAlert"
-          >
+            styles={style({
+              width: 400,
+              marginBottom: 16
+            })}>
             <Heading size="XXS">Could not load saved configuration</Heading>
             <Content>
               The previously saved sandbox or schema could not be retrieved. You
@@ -302,13 +297,21 @@ const XdmVariable = ({
           {(item) => {
             const region = item.region ? ` (${item.region.toUpperCase()})` : "";
             const label = `${item.type.toUpperCase()} ${item.title}${region}`;
-            return <Item key={item.name}>{label}</Item>;
+            return (
+              // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
+              <Item key={item.name}>{label}</Item>
+            );
           }}
         </FormikPicker>
 
         {sandbox && (
-          <Flex direction="row" gap="size-100">
-            <View>
+          <div
+            className={style({
+              display: "flex",
+              flexDirection: "row",
+              gap: 8
+            })}>
+            <div>
               <FormikPagedComboBox
                 data-test-id="schemaField"
                 name="schema"
@@ -324,16 +327,21 @@ const XdmVariable = ({
                 alertTitle="No schemas found"
                 alertDescription="No schemas were found in this sandbox. Please add a schema first or choose a sandbox with at least one schema."
               />
-            </View>
-            <Flex direction="row" marginTop="size-300">
+            </div>
+            <div
+              className={style({
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 24
+              })}>
               <RefreshButton
                 onPress={handleRefreshSchemas}
                 isDisabled={isRefreshing}
                 tooltipText="Refresh schema list"
                 ariaLabel="Refresh schemas"
               />
-            </Flex>
-          </Flex>
+            </div>
+          </div>
         )}
       </FormElementContainer>
     </FieldSubset>
