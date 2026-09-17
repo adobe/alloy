@@ -10,27 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import {
-  Tab,
-  Collection,
   Content,
-  Heading,
+  Heading as AlertHeading,
   InlineAlert,
+  PickerItem,
+  Tab,
   TabList,
+  TabPanel,
   Tabs,
 } from "@react-spectrum/s2";
-
-/*
-Copyright 2023 Adobe. All rights reserved.
-This file is licensed to you under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License. You may obtain a copy
-of the License at http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software distributed under
-the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-OF ANY KIND, either express or implied. See the License for the specific language
-governing permissions and limitations under the License.
-*/
-import { Item } from "@adobe/react-spectrum";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import PropTypes from "prop-types";
@@ -45,6 +33,7 @@ import {
 import FormElementContainer from "../formElementContainer";
 import SandboxSelector from "../sandboxSelector";
 import SectionHeader from "../sectionHeader";
+import SubsectionHeading from "../typography/heading";
 import DatastreamOverrideSelector from "./datastreamOverrideSelector";
 import { useFetchConfig, useFormikContextWithOverrides } from "./hooks";
 import OverrideInput from "./overrideInput";
@@ -67,41 +56,36 @@ import {
 const defaults = Object.freeze(bridge.getInstanceDefaults());
 const EnabledDisabledMatchOptions = Object.freeze(
   Object.entries(ENABLED_DISABLED_MATCH_FIELD_VALUES).map(([key, label]) => (
-    // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
-    <Item key={key}>{label}</Item>
+    <PickerItem key={key} id={key}>
+      {label}
+    </PickerItem>
   )),
 );
 
 const EnabledDisabledOptions = Object.freeze(
   Object.entries(ENABLED_DISABLED_FIELD_VALUES).map(([key, label]) => (
-    // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
-    <Item key={key}>{label}</Item>
+    <PickerItem key={key} id={key}>
+      {label}
+    </PickerItem>
   )),
 );
 const EnabledMatchOptions = Object.freeze(
   Object.entries(ENABLED_MATCH_FIELD_VALUES).map(([key, label]) => (
-    // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
-    <Item key={key}>{label}</Item>
+    <PickerItem key={key} id={key}>
+      {label}
+    </PickerItem>
   )),
 );
 
 /**
- *
- * @param {{ children: React.Element[], name: string, [k: string]: unknown }} param0
+ * @param {{ children: React.Element[], name: string }} param0
  * @returns
  */
-const ProductSubsection = ({ children, name, ...otherProps }) => (
-  <div // TODO(S2-upgrade): check this spread for style props
-    {...otherProps}
-  >
-    <Heading
-      level={3}
-      styles={style({
-        marginBottom: "[1px]",
-      })}
-    >
+const ProductSubsection = ({ children, name }) => (
+  <div>
+    <SubsectionHeading size="M" marginBottom="size-10">
       {name}
-    </Heading>
+    </SubsectionHeading>
     {children}
   </div>
 );
@@ -209,11 +193,12 @@ const Overrides = ({
         Datastream Configuration Overrides
       </SectionHeader>
       <InlineAlert
+        variant="informative"
         styles={style({
           width: 400,
         })}
       >
-        <Heading>Server-side vs client-side</Heading>
+        <AlertHeading>Server-side vs client-side</AlertHeading>
         <Content>
           Setting any client-side datastream configuration overrides for an
           environment below will override any server-side dynamic datastream
@@ -229,599 +214,579 @@ const Overrides = ({
               </Tab>
             ))}
           </TabList>
-          <Collection>
-            {OVERRIDE_ENVIRONMENTS.map((env) => {
-              const { result, isLoading, error } = edgeConfigs[env];
-              const useManualEntry = !result || Boolean(error);
+          {OVERRIDE_ENVIRONMENTS.map((env) => {
+            const { result, isLoading, error } = edgeConfigs[env];
+            const useManualEntry = !result || Boolean(error);
 
-              const isDisabled = createIsDisabled(`${prefix}.${env}`);
+            const isDisabled = createIsDisabled(`${prefix}.${env}`);
 
-              const serviceStatus = useServiceStatus(result);
+            const serviceStatus = useServiceStatus(result);
 
-              const envEdgeConfigIds = edgeConfigIds[`${env}Environment`];
+            const envEdgeConfigIds = edgeConfigIds[`${env}Environment`];
 
-              const validateEnabledDisabledMatchOrDataElement =
-                combineValidatorWithContainsDataElements(
-                  createValidateItemIsInArray(
-                    Object.values(ENABLED_DISABLED_MATCH_FIELD_VALUES),
-                    "The value must be 'Enabled', 'Disabled', 'No override' or a single data element.",
-                  ),
-                  false,
-                );
-
-              const validateEnabledDisabledOrDataElement =
-                combineValidatorWithContainsDataElements(
-                  createValidateItemIsInArray(
-                    Object.values(ENABLED_DISABLED_FIELD_VALUES),
-                    "The value must be 'Enabled', 'Disabled', or a single data element.",
-                  ),
-                  false,
-                );
-              const validateEnabledMatchOrDataElement =
-                combineValidatorWithContainsDataElements(
-                  createValidateItemIsInArray(
-                    Object.values(ENABLED_MATCH_FIELD_VALUES),
-                    "The value must be 'Enabled', 'No override' or a single data element.",
-                  ),
-                  false,
-                );
-
-              const primaryEventDataset =
-                result?.com_adobe_experience_platform?.datasets?.event?.find(
-                  ({ primary }) => primary,
-                )?.datasetId ?? "";
-              const eventDatasetOptions =
-                result?.com_adobe_experience_platform?.datasets?.event?.filter(
-                  ({ primary }) => !primary,
-                ) ?? [];
-              let eventDatasetDescription =
-                "The ID for the destination event dataset in the Adobe Experience Platform.  The value must be a preconfigured secondary dataset from your datastream configuration.";
-              if (primaryEventDataset) {
-                eventDatasetDescription = `Overrides the default dataset (${primaryEventDataset}). ${eventDatasetDescription}`;
-              }
-              const validateItemIsInDatasetsList = createValidateItemIsInArray(
-                eventDatasetOptions.map(({ datasetId }) => datasetId),
-                "The value must be one of the preconfigured datasets.",
-              );
-              const validateDatasetOption =
-                combineValidatorWithContainsDataElements(
-                  validateItemIsInDatasetsList,
-                );
-
-              const primaryIdSyncContainer = `${
-                result?.com_adobe_identity?.idSyncContainerId ?? ""
-              }`;
-              const idSyncContainers =
-                result?.com_adobe_identity?.idSyncContainerId__additional?.map(
-                  (value) => ({ value, label: `${value}` }),
-                ) ?? [];
-              let idSyncContainerDescription =
-                "The ID for the destination third-party ID sync container in Adobe Audience Manager. The value must be a preconfigured secondary container from your datastream configuration and overrides the primary container.";
-              if (primaryIdSyncContainer) {
-                idSyncContainerDescription = `Overrides the default container (${primaryIdSyncContainer}). ${idSyncContainerDescription}`;
-              }
-              const validateItemIsInContainersList =
+            const validateEnabledDisabledMatchOrDataElement =
+              combineValidatorWithContainsDataElements(
                 createValidateItemIsInArray(
-                  idSyncContainers.map(({ label }) => label),
-                  "The value must be one of the preconfigured ID sync containers.",
-                );
-              const validateIdSyncContainerOption = (value) => {
-                if (typeof value === "string" && value?.includes("%")) {
-                  // can only contain numbers and data elements
-                  if (/^\d*(?:%[^%\n]+%\d*)+$/.test(value)) {
-                    return undefined;
-                  }
-                  return "The value must contain one or more valid data elements.";
+                  Object.values(ENABLED_DISABLED_MATCH_FIELD_VALUES),
+                  "The value must be 'Enabled', 'Disabled', 'No override' or a single data element.",
+                ),
+                false,
+              );
+
+            const validateEnabledDisabledOrDataElement =
+              combineValidatorWithContainsDataElements(
+                createValidateItemIsInArray(
+                  Object.values(ENABLED_DISABLED_FIELD_VALUES),
+                  "The value must be 'Enabled', 'Disabled', or a single data element.",
+                ),
+                false,
+              );
+            const validateEnabledMatchOrDataElement =
+              combineValidatorWithContainsDataElements(
+                createValidateItemIsInArray(
+                  Object.values(ENABLED_MATCH_FIELD_VALUES),
+                  "The value must be 'Enabled', 'No override' or a single data element.",
+                ),
+                false,
+              );
+
+            const primaryEventDataset =
+              result?.com_adobe_experience_platform?.datasets?.event?.find(
+                ({ primary }) => primary,
+              )?.datasetId ?? "";
+            const eventDatasetOptions =
+              result?.com_adobe_experience_platform?.datasets?.event?.filter(
+                ({ primary }) => !primary,
+              ) ?? [];
+            let eventDatasetDescription =
+              "The ID for the destination event dataset in the Adobe Experience Platform.  The value must be a preconfigured secondary dataset from your datastream configuration.";
+            if (primaryEventDataset) {
+              eventDatasetDescription = `Overrides the default dataset (${primaryEventDataset}). ${eventDatasetDescription}`;
+            }
+            const validateItemIsInDatasetsList = createValidateItemIsInArray(
+              eventDatasetOptions.map(({ datasetId }) => datasetId),
+              "The value must be one of the preconfigured datasets.",
+            );
+            const validateDatasetOption =
+              combineValidatorWithContainsDataElements(
+                validateItemIsInDatasetsList,
+              );
+
+            const primaryIdSyncContainer = `${
+              result?.com_adobe_identity?.idSyncContainerId ?? ""
+            }`;
+            const idSyncContainers =
+              result?.com_adobe_identity?.idSyncContainerId__additional?.map(
+                (value) => ({ value, label: `${value}` }),
+              ) ?? [];
+            let idSyncContainerDescription =
+              "The ID for the destination third-party ID sync container in Adobe Audience Manager. The value must be a preconfigured secondary container from your datastream configuration and overrides the primary container.";
+            if (primaryIdSyncContainer) {
+              idSyncContainerDescription = `Overrides the default container (${primaryIdSyncContainer}). ${idSyncContainerDescription}`;
+            }
+            const validateItemIsInContainersList = createValidateItemIsInArray(
+              idSyncContainers.map(({ label }) => label),
+              "The value must be one of the preconfigured ID sync containers.",
+            );
+            const validateIdSyncContainerOption = (value) => {
+              if (typeof value === "string" && value?.includes("%")) {
+                // can only contain numbers and data elements
+                if (/^\d*(?:%[^%\n]+%\d*)+$/.test(value)) {
+                  return undefined;
                 }
-                try {
-                  // forbid empty string but allow other falsey inputs
-                  if (value === "" || value === undefined || value === null) {
-                    return undefined;
-                  }
-                  const parsedValue = parseInt(value, 10);
-                  if (Number.isNaN(parsedValue)) {
-                    return "The value must positive, whole number.";
-                  }
-                  if (parsedValue < 0) {
-                    return "The value must be a positive number.";
-                  }
-                  if (value.includes(".")) {
-                    return "The value must whole number.";
-                  }
-                } catch {
+                return "The value must contain one or more valid data elements.";
+              }
+              try {
+                // forbid empty string but allow other falsey inputs
+                if (value === "" || value === undefined || value === null) {
+                  return undefined;
+                }
+                const parsedValue = parseInt(value, 10);
+                if (Number.isNaN(parsedValue)) {
                   return "The value must positive, whole number.";
                 }
-                return validateItemIsInContainersList(value);
-              };
-
-              const primaryPropertyToken =
-                result?.com_adobe_target?.propertyToken ?? "";
-              const propertyTokenOptions =
-                result?.com_adobe_target?.propertyToken__additional?.map(
-                  (value) => ({ value, label: value }),
-                ) ?? [];
-              let propertyTokenDescription =
-                "The token for the destination property in Adobe Target. The value must be a preconfigured property override from your datastream configuration and overrides the primary property.";
-              if (primaryPropertyToken) {
-                propertyTokenDescription = `Overrides the default property (${primaryPropertyToken}). ${propertyTokenDescription}`;
+                if (parsedValue < 0) {
+                  return "The value must be a positive number.";
+                }
+                if (value.includes(".")) {
+                  return "The value must whole number.";
+                }
+              } catch {
+                return "The value must positive, whole number.";
               }
-              const itemIsInPropertyTokenOptions = createValidateItemIsInArray(
-                propertyTokenOptions.map(({ value }) => value),
-                "The value must be one of the preconfigured property tokens.",
+              return validateItemIsInContainersList(value);
+            };
+
+            const primaryPropertyToken =
+              result?.com_adobe_target?.propertyToken ?? "";
+            const propertyTokenOptions =
+              result?.com_adobe_target?.propertyToken__additional?.map(
+                (value) => ({ value, label: value }),
+              ) ?? [];
+            let propertyTokenDescription =
+              "The token for the destination property in Adobe Target. The value must be a preconfigured property override from your datastream configuration and overrides the primary property.";
+            if (primaryPropertyToken) {
+              propertyTokenDescription = `Overrides the default property (${primaryPropertyToken}). ${propertyTokenDescription}`;
+            }
+            const itemIsInPropertyTokenOptions = createValidateItemIsInArray(
+              propertyTokenOptions.map(({ value }) => value),
+              "The value must be one of the preconfigured property tokens.",
+            );
+            const validatePropertyTokenOption =
+              combineValidatorWithContainsDataElements(
+                itemIsInPropertyTokenOptions,
               );
-              const validatePropertyTokenOption =
-                combineValidatorWithContainsDataElements(
-                  itemIsInPropertyTokenOptions,
-                );
 
-              /** @type {string[]} */
-              const primaryReportSuites =
-                result?.com_adobe_analytics?.reportSuites ?? [];
-              const reportSuiteOptions =
-                primaryReportSuites
-                  .concat(result?.com_adobe_analytics?.reportSuites__additional)
-                  .filter(Boolean)
-                  .map((value) => ({ value, label: value })) ?? [];
-              const validateItemIsInReportSuiteOptions =
-                createValidateItemIsInArray(
-                  reportSuiteOptions.map(({ value }) => value),
-                  "The value must be one of the preconfigured report suites.",
-                );
-              /**
-               * @param {string} value
-               * @returns {string | undefined}
-               */
-              const validateReportSuiteOption = (value = "") =>
-                value
-                  .split(",")
-                  .map((v) => v.trim())
-                  .filter((v) => Boolean(v))
-                  .map(
-                    combineValidatorWithContainsDataElements(
-                      validateItemIsInReportSuiteOptions,
-                    ),
-                  )
-                  .filter((v) => Boolean(v))[0];
-              const sandboxFieldName = `${prefix}.${env}.${FIELD_NAMES.sandbox}`;
-              const [{ value: sandbox }] = useField(sandboxFieldName);
-              const dataElementDescription =
-                "When providing a data element, it should resolve to true to enable the service, false to disable the service, or null to provide no overrides.";
+            /** @type {string[]} */
+            const primaryReportSuites =
+              result?.com_adobe_analytics?.reportSuites ?? [];
+            const reportSuiteOptions =
+              primaryReportSuites
+                .concat(result?.com_adobe_analytics?.reportSuites__additional)
+                .filter(Boolean)
+                .map((value) => ({ value, label: value })) ?? [];
+            const validateItemIsInReportSuiteOptions =
+              createValidateItemIsInArray(
+                reportSuiteOptions.map(({ value }) => value),
+                "The value must be one of the preconfigured report suites.",
+              );
+            /**
+             * @param {string} value
+             * @returns {string | undefined}
+             */
+            const validateReportSuiteOption = (value = "") =>
+              value
+                .split(",")
+                .map((v) => v.trim())
+                .filter((v) => Boolean(v))
+                .map(
+                  combineValidatorWithContainsDataElements(
+                    validateItemIsInReportSuiteOptions,
+                  ),
+                )
+                .filter((v) => Boolean(v))[0];
+            const sandboxFieldName = `${prefix}.${env}.${FIELD_NAMES.sandbox}`;
+            const [{ value: sandbox }] = useField(sandboxFieldName);
+            const dataElementDescription =
+              "When providing a data element, it should resolve to true to enable the service, false to disable the service, or null to provide no overrides.";
 
-              return (
-                <Item key={env}>
-                  <div
-                    className={style({
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 8,
-                    })}
-                  >
-                    <SettingsCopySection currentEnv={env} onPress={onCopy} />
-                    {visibleFields.has(FIELD_NAMES.overridesEnabled) && (
-                      <OverrideInput
-                        aria-label="Enable or provide no datastream configuration overrides"
-                        data-test-id={FIELD_NAMES.overridesEnabled}
-                        allowsCustomValue
-                        validate={validateEnabledMatchOrDataElement}
-                        name={`${prefix}.${env}.enabled`}
-                        width="size-5000"
-                        pattern={enabledMatchOrDataElementRegex}
-                        description="When providing a data element, it should resolve to true to enable overrides, and false to provide no overrides."
-                        onBlur={onDisable}
-                      >
-                        {EnabledMatchOptions}
-                      </OverrideInput>
-                    )}
-                    {!isDisabled("enabled", true) && (
-                      <>
-                        {visibleFields.has(FIELD_NAMES.datastreamId) && (
-                          <>
-                            <SandboxSelector
-                              data-test-id={FIELD_NAMES.sandbox}
-                              initInfo={initInfo}
-                              label="Sandbox"
-                              name={sandboxFieldName}
-                              width="size-5000"
-                            />
-                            <DatastreamOverrideSelector
-                              data-test-id={FIELD_NAMES.datastreamId}
-                              label="Datastream"
-                              description={`Override the configured datastream${
-                                envEdgeConfigIds.datastreamId
-                                  ? ` (${envEdgeConfigIds.datastreamId})`
-                                  : ""
-                              }.`}
-                              orgId={configOrgId}
-                              imsAccess={initInfo.tokens.imsAccess}
-                              name={`${prefix}.${env}.datastreamId`}
-                              sandbox={sandbox}
-                              width="size-5000"
-                            />
-                          </>
-                        )}
-                        {(visibleFields.has(FIELD_NAMES.reportSuitesOverride) ||
-                          visibleFields.has(FIELD_NAMES.analyticsEnabled)) && (
-                          <ProductSubsection name="Adobe Analytics">
-                            {visibleFields.has(
-                              FIELD_NAMES.analyticsEnabled,
-                            ) && (
-                              <OverrideInput
-                                aria-label="Enable, disable, or provide no overrides for Adobe Analytics"
-                                data-test-id={FIELD_NAMES.analyticsEnabled}
-                                allowsCustomValue
-                                validate={
-                                  validateEnabledDisabledMatchOrDataElement
-                                }
-                                name={`${prefix}.${env}.com_adobe_analytics.enabled`}
-                                width="size-5000"
-                                pattern={enabledDisabledMatchOrDataElementRegex}
-                                isDisabled={
-                                  !serviceStatus.com_adobe_analytics.value
-                                }
-                                disabledDisplayValue="Disabled"
-                                description={dataElementDescription}
-                                onBlur={onDisable}
-                              >
-                                {EnabledDisabledMatchOptions}
-                              </OverrideInput>
-                            )}
-                            {visibleFields.has(
-                              FIELD_NAMES.reportSuitesOverride,
-                            ) &&
-                              !isDisabled(
-                                "com_adobe_analytics.enabled",
-                                serviceStatus.com_adobe_analytics.value,
-                              ) && (
-                                <ReportSuitesOverride
-                                  useManualEntry={useManualEntry}
-                                  validate={validateReportSuiteOption}
-                                  primaryItem={primaryReportSuites}
-                                  isDisabled={
-                                    !serviceStatus.com_adobe_analytics.value
-                                  }
-                                  items={reportSuiteOptions}
-                                  prefix={`${prefix}.${env}`}
-                                />
-                              )}
-                          </ProductSubsection>
-                        )}
-                        {visibleFields.has(
-                          FIELD_NAMES.audienceManagerEnabled,
-                        ) && (
-                          <ProductSubsection name="Adobe Audience Manager">
-                            {visibleFields.has(
-                              FIELD_NAMES.audienceManagerEnabled,
-                            ) && (
-                              <OverrideInput
-                                aria-label="Enable, disable, or provide no overrides for Adobe Audience Manager"
-                                data-test-id={
-                                  FIELD_NAMES.audienceManagerEnabled
-                                }
-                                allowsCustomValue
-                                validate={
-                                  validateEnabledDisabledMatchOrDataElement
-                                }
-                                name={`${prefix}.${env}.com_adobe_audiencemanager.enabled`}
-                                width="size-5000"
-                                pattern={enabledDisabledMatchOrDataElementRegex}
-                                isDisabled={
-                                  !serviceStatus.com_adobe_audiencemanager.value
-                                }
-                                disabledDisplayValue="Disabled"
-                                onBlur={onDisable}
-                                description={dataElementDescription}
-                              >
-                                {EnabledDisabledMatchOptions}
-                              </OverrideInput>
-                            )}
-                          </ProductSubsection>
-                        )}
-                        {visibleFields.has(
-                          FIELD_NAMES.idSyncContainerOverride,
-                        ) && (
-                          <OverrideInput
-                            data-test-id={FIELD_NAMES.idSyncContainerOverride}
-                            label="Third-party ID sync container"
-                            useManualEntry={
-                              useManualEntry || idSyncContainers.length === 0
-                            }
-                            allowsCustomValue
-                            overrideType="third-party ID sync container"
-                            primaryItem={primaryIdSyncContainer}
-                            defaultItems={idSyncContainers}
-                            isDisabled={!serviceStatus.com_adobe_identity.value}
-                            validate={validateIdSyncContainerOption}
-                            name={`${prefix}.${env}.com_adobe_identity.idSyncContainerId`}
-                            inputMode="numeric"
+            return (
+              <TabPanel key={env} id={env}>
+                <div
+                  className={style({
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                  })}
+                >
+                  <SettingsCopySection currentEnv={env} onPress={onCopy} />
+                  {visibleFields.has(FIELD_NAMES.overridesEnabled) && (
+                    <OverrideInput
+                      aria-label="Enable or provide no datastream configuration overrides"
+                      data-test-id={FIELD_NAMES.overridesEnabled}
+                      allowsCustomValue
+                      validate={validateEnabledMatchOrDataElement}
+                      name={`${prefix}.${env}.enabled`}
+                      width="size-5000"
+                      pattern={enabledMatchOrDataElementRegex}
+                      description="When providing a data element, it should resolve to true to enable overrides, and false to provide no overrides."
+                      onBlur={onDisable}
+                    >
+                      {EnabledMatchOptions}
+                    </OverrideInput>
+                  )}
+                  {!isDisabled("enabled", true) && (
+                    <>
+                      {visibleFields.has(FIELD_NAMES.datastreamId) && (
+                        <>
+                          <SandboxSelector
+                            data-test-id={FIELD_NAMES.sandbox}
+                            initInfo={initInfo}
+                            label="Sandbox"
+                            name={sandboxFieldName}
                             width="size-5000"
-                            pattern={/\d+/}
-                            description={idSyncContainerDescription}
-                          >
-                            {({ value, label }) => (
-                              <Item key={value}>{label}</Item>
-                            )}
-                          </OverrideInput>
-                        )}
-                        {[
-                          FIELD_NAMES.eventDatasetOverride,
-                          FIELD_NAMES.experiencePlatformEnabled,
-                          FIELD_NAMES.ajoEnabled,
-                          FIELD_NAMES.odeEnabled,
-                          FIELD_NAMES.edgeDestinationsEnabled,
-                          FIELD_NAMES.edgeSegmentationEnabled,
-                        ].some((field) => visibleFields.has(field)) && (
-                          <ProductSubsection name="Adobe Experience Platform">
-                            {visibleFields.has(
-                              FIELD_NAMES.experiencePlatformEnabled,
-                            ) && (
-                              <OverrideInput
-                                aria-label="Enable, disable, or provide no overrides for Adobe Experience Platform"
-                                data-test-id={
-                                  FIELD_NAMES.experiencePlatformEnabled
-                                }
-                                allowsCustomValue
-                                validate={
-                                  validateEnabledDisabledMatchOrDataElement
-                                }
-                                name={`${prefix}.${env}.com_adobe_experience_platform.enabled`}
-                                width="size-5000"
-                                pattern={enabledDisabledMatchOrDataElementRegex}
-                                isDisabled={
-                                  !serviceStatus.com_adobe_experience_platform
-                                    .value
-                                }
-                                onBlur={onDisable}
-                                disabledDisplayValue="Disabled"
-                                description={dataElementDescription}
-                              >
-                                {EnabledDisabledMatchOptions}
-                              </OverrideInput>
-                            )}
-                            {visibleFields.has(
-                              FIELD_NAMES.eventDatasetOverride,
-                            ) &&
-                              !isDisabled(
-                                "com_adobe_experience_platform.enabled",
-                                serviceStatus.com_adobe_experience_platform
-                                  .value,
-                              ) && (
-                                <OverrideInput
-                                  useManualEntry={
-                                    useManualEntry ||
-                                    eventDatasetOptions.length === 0
-                                  }
-                                  defaultItems={eventDatasetOptions}
-                                  data-test-id={
-                                    FIELD_NAMES.eventDatasetOverride
-                                  }
-                                  label="Event dataset"
-                                  description={eventDatasetDescription}
-                                  width="size-5000"
-                                  isDisabled={
-                                    !serviceStatus.com_adobe_experience_platform
-                                      .value
-                                  }
-                                  allowsCustomValue
-                                  validate={validateDatasetOption}
-                                  loadingState={isLoading}
-                                  name={`${prefix}.${env}.com_adobe_experience_platform.datasets.event.datasetId`}
-                                >
-                                  {({ datasetId }) => (
-                                    <Item key={datasetId}>{datasetId}</Item>
-                                  )}
-                                </OverrideInput>
-                              )}
-                            {visibleFields.has(FIELD_NAMES.odeEnabled) &&
-                              !isDisabled(
-                                "com_adobe_experience_platform.enabled",
-                                serviceStatus.com_adobe_experience_platform
-                                  .value,
-                              ) && (
-                                <OverrideInput
-                                  aria-label="Enable or disable Adobe Offer Decisioning Engine"
-                                  data-test-id={FIELD_NAMES.odeEnabled}
-                                  allowsCustomValue
-                                  label="Offer Decisioning"
-                                  validate={
-                                    validateEnabledDisabledOrDataElement
-                                  }
-                                  name={`${prefix}.${env}.com_adobe_experience_platform.com_adobe_edge_ode.enabled`}
-                                  width="size-5000"
-                                  pattern={enabledDisabledOrDataElementRegex}
-                                  onBlur={onDisable}
-                                  isDisabled={
-                                    !serviceStatus
-                                      .com_adobe_experience_platform_ode.value
-                                  }
-                                  disabledDisplayValue="Disabled"
-                                >
-                                  {EnabledDisabledOptions}
-                                </OverrideInput>
-                              )}
-                            {visibleFields.has(
-                              FIELD_NAMES.edgeSegmentationEnabled,
-                            ) &&
-                              !isDisabled(
-                                "com_adobe_experience_platform.enabled",
-                                serviceStatus.com_adobe_experience_platform
-                                  .value,
-                              ) && (
-                                <OverrideInput
-                                  aria-label="Enable or disable Adobe Edge Segmentation"
-                                  data-test-id={
-                                    FIELD_NAMES.edgeSegmentationEnabled
-                                  }
-                                  allowsCustomValue
-                                  label="Edge Segmentation"
-                                  validate={
-                                    validateEnabledDisabledOrDataElement
-                                  }
-                                  name={`${prefix}.${env}.com_adobe_experience_platform.com_adobe_edge_segmentation.enabled`}
-                                  width="size-5000"
-                                  pattern={enabledDisabledOrDataElementRegex}
-                                  onBlur={onDisable}
-                                  isDisabled={
-                                    !serviceStatus
-                                      .com_adobe_experience_platform_edge_segmentation
-                                      .value
-                                  }
-                                  disabledDisplayValue="Disabled"
-                                >
-                                  {EnabledDisabledOptions}
-                                </OverrideInput>
-                              )}
-                            {visibleFields.has(
-                              FIELD_NAMES.edgeDestinationsEnabled,
-                            ) &&
-                              !isDisabled(
-                                "com_adobe_experience_platform.enabled",
-                                serviceStatus.com_adobe_experience_platform
-                                  .value,
-                              ) && (
-                                <OverrideInput
-                                  aria-label="Enable or disable Personalization Destinations"
-                                  label="Personalization Destinations"
-                                  data-test-id={
-                                    FIELD_NAMES.edgeDestinationsEnabled
-                                  }
-                                  allowsCustomValue
-                                  validate={
-                                    validateEnabledDisabledOrDataElement
-                                  }
-                                  name={`${prefix}.${env}.com_adobe_experience_platform.com_adobe_edge_destinations.enabled`}
-                                  width="size-5000"
-                                  pattern={enabledDisabledOrDataElementRegex}
-                                  onBlur={onDisable}
-                                  isDisabled={
-                                    !serviceStatus
-                                      .com_adobe_experience_platform_edge_destinations
-                                      .value
-                                  }
-                                  disabledDisplayValue="Disabled"
-                                >
-                                  {EnabledDisabledOptions}
-                                </OverrideInput>
-                              )}
-                            {visibleFields.has(FIELD_NAMES.ajoEnabled) &&
-                              !isDisabled(
-                                "com_adobe_experience_platform.enabled",
-                                serviceStatus.com_adobe_experience_platform
-                                  .value,
-                              ) && (
-                                <OverrideInput
-                                  aria-label="Enable or disable Adobe Journey Optimizer"
-                                  data-test-id={FIELD_NAMES.ajoEnabled}
-                                  label="Adobe Journey Optimizer"
-                                  allowsCustomValue
-                                  validate={
-                                    validateEnabledDisabledOrDataElement
-                                  }
-                                  name={`${prefix}.${env}.com_adobe_experience_platform.com_adobe_edge_ajo.enabled`}
-                                  width="size-5000"
-                                  pattern={enabledDisabledOrDataElementRegex}
-                                  onBlur={onDisable}
-                                  isDisabled={
-                                    !serviceStatus
-                                      .com_adobe_experience_platform_ajo.value
-                                  }
-                                  disabledDisplayValue="Disabled"
-                                >
-                                  {EnabledDisabledOptions}
-                                </OverrideInput>
-                              )}
-                          </ProductSubsection>
-                        )}
-                        {visibleFields.has(FIELD_NAMES.ssefEnabled) && (
-                          <ProductSubsection name="Adobe Server-Side Event Forwarding">
+                          />
+                          <DatastreamOverrideSelector
+                            data-test-id={FIELD_NAMES.datastreamId}
+                            label="Datastream"
+                            description={`Override the configured datastream${
+                              envEdgeConfigIds.datastreamId
+                                ? ` (${envEdgeConfigIds.datastreamId})`
+                                : ""
+                            }.`}
+                            orgId={configOrgId}
+                            imsAccess={initInfo.tokens.imsAccess}
+                            name={`${prefix}.${env}.datastreamId`}
+                            sandbox={sandbox}
+                            width="size-5000"
+                          />
+                        </>
+                      )}
+                      {(visibleFields.has(FIELD_NAMES.reportSuitesOverride) ||
+                        visibleFields.has(FIELD_NAMES.analyticsEnabled)) && (
+                        <ProductSubsection name="Adobe Analytics">
+                          {visibleFields.has(FIELD_NAMES.analyticsEnabled) && (
                             <OverrideInput
-                              aria-label="Enable, disable, or provide no overrides for Adobe Server-Side Event Forwarding"
-                              data-test-id={FIELD_NAMES.ssefEnabled}
+                              aria-label="Enable, disable, or provide no overrides for Adobe Analytics"
+                              data-test-id={FIELD_NAMES.analyticsEnabled}
                               allowsCustomValue
                               validate={
                                 validateEnabledDisabledMatchOrDataElement
                               }
-                              name={`${prefix}.${env}.com_adobe_launch_ssf.enabled`}
+                              name={`${prefix}.${env}.com_adobe_analytics.enabled`}
                               width="size-5000"
                               pattern={enabledDisabledMatchOrDataElementRegex}
-                              onBlur={onDisable}
                               isDisabled={
-                                !serviceStatus.com_adobe_launch_ssf.value
+                                !serviceStatus.com_adobe_analytics.value
                               }
+                              disabledDisplayValue="Disabled"
+                              description={dataElementDescription}
+                              onBlur={onDisable}
+                            >
+                              {EnabledDisabledMatchOptions}
+                            </OverrideInput>
+                          )}
+                          {visibleFields.has(
+                            FIELD_NAMES.reportSuitesOverride,
+                          ) &&
+                            !isDisabled(
+                              "com_adobe_analytics.enabled",
+                              serviceStatus.com_adobe_analytics.value,
+                            ) && (
+                              <ReportSuitesOverride
+                                useManualEntry={useManualEntry}
+                                validate={validateReportSuiteOption}
+                                primaryItem={primaryReportSuites}
+                                isDisabled={
+                                  !serviceStatus.com_adobe_analytics.value
+                                }
+                                items={reportSuiteOptions}
+                                prefix={`${prefix}.${env}`}
+                              />
+                            )}
+                        </ProductSubsection>
+                      )}
+                      {visibleFields.has(
+                        FIELD_NAMES.audienceManagerEnabled,
+                      ) && (
+                        <ProductSubsection name="Adobe Audience Manager">
+                          {visibleFields.has(
+                            FIELD_NAMES.audienceManagerEnabled,
+                          ) && (
+                            <OverrideInput
+                              aria-label="Enable, disable, or provide no overrides for Adobe Audience Manager"
+                              data-test-id={FIELD_NAMES.audienceManagerEnabled}
+                              allowsCustomValue
+                              validate={
+                                validateEnabledDisabledMatchOrDataElement
+                              }
+                              name={`${prefix}.${env}.com_adobe_audiencemanager.enabled`}
+                              width="size-5000"
+                              pattern={enabledDisabledMatchOrDataElementRegex}
+                              isDisabled={
+                                !serviceStatus.com_adobe_audiencemanager.value
+                              }
+                              disabledDisplayValue="Disabled"
+                              onBlur={onDisable}
+                              description={dataElementDescription}
+                            >
+                              {EnabledDisabledMatchOptions}
+                            </OverrideInput>
+                          )}
+                        </ProductSubsection>
+                      )}
+                      {visibleFields.has(
+                        FIELD_NAMES.idSyncContainerOverride,
+                      ) && (
+                        <OverrideInput
+                          data-test-id={FIELD_NAMES.idSyncContainerOverride}
+                          label="Third-party ID sync container"
+                          useManualEntry={
+                            useManualEntry || idSyncContainers.length === 0
+                          }
+                          allowsCustomValue
+                          overrideType="third-party ID sync container"
+                          primaryItem={primaryIdSyncContainer}
+                          defaultItems={idSyncContainers}
+                          isDisabled={!serviceStatus.com_adobe_identity.value}
+                          validate={validateIdSyncContainerOption}
+                          name={`${prefix}.${env}.com_adobe_identity.idSyncContainerId`}
+                          inputMode="numeric"
+                          width="size-5000"
+                          pattern={/\d+/}
+                          description={idSyncContainerDescription}
+                        >
+                          {({ value, label }) => (
+                            <PickerItem key={value} id={value}>
+                              {label}
+                            </PickerItem>
+                          )}
+                        </OverrideInput>
+                      )}
+                      {[
+                        FIELD_NAMES.eventDatasetOverride,
+                        FIELD_NAMES.experiencePlatformEnabled,
+                        FIELD_NAMES.ajoEnabled,
+                        FIELD_NAMES.odeEnabled,
+                        FIELD_NAMES.edgeDestinationsEnabled,
+                        FIELD_NAMES.edgeSegmentationEnabled,
+                      ].some((field) => visibleFields.has(field)) && (
+                        <ProductSubsection name="Adobe Experience Platform">
+                          {visibleFields.has(
+                            FIELD_NAMES.experiencePlatformEnabled,
+                          ) && (
+                            <OverrideInput
+                              aria-label="Enable, disable, or provide no overrides for Adobe Experience Platform"
+                              data-test-id={
+                                FIELD_NAMES.experiencePlatformEnabled
+                              }
+                              allowsCustomValue
+                              validate={
+                                validateEnabledDisabledMatchOrDataElement
+                              }
+                              name={`${prefix}.${env}.com_adobe_experience_platform.enabled`}
+                              width="size-5000"
+                              pattern={enabledDisabledMatchOrDataElementRegex}
+                              isDisabled={
+                                !serviceStatus.com_adobe_experience_platform
+                                  .value
+                              }
+                              onBlur={onDisable}
                               disabledDisplayValue="Disabled"
                               description={dataElementDescription}
                             >
                               {EnabledDisabledMatchOptions}
                             </OverrideInput>
-                          </ProductSubsection>
-                        )}
-                        {(visibleFields.has(FIELD_NAMES.targetEnabled) ||
-                          visibleFields.has(
-                            FIELD_NAMES.targetPropertyTokenOverride,
-                          )) && (
-                          <ProductSubsection name="Adobe Target">
-                            {visibleFields.has(FIELD_NAMES.targetEnabled) && (
+                          )}
+                          {visibleFields.has(
+                            FIELD_NAMES.eventDatasetOverride,
+                          ) &&
+                            !isDisabled(
+                              "com_adobe_experience_platform.enabled",
+                              serviceStatus.com_adobe_experience_platform.value,
+                            ) && (
                               <OverrideInput
-                                aria-label="Enable, disable, or provide no overrides for Adobe Target"
-                                data-test-id={FIELD_NAMES.targetEnabled}
-                                allowsCustomValue
-                                validate={
-                                  validateEnabledDisabledMatchOrDataElement
+                                useManualEntry={
+                                  useManualEntry ||
+                                  eventDatasetOptions.length === 0
                                 }
-                                name={`${prefix}.${env}.com_adobe_target.enabled`}
+                                defaultItems={eventDatasetOptions}
+                                data-test-id={FIELD_NAMES.eventDatasetOverride}
+                                label="Event dataset"
+                                description={eventDatasetDescription}
                                 width="size-5000"
-                                pattern={enabledDisabledMatchOrDataElementRegex}
+                                isDisabled={
+                                  !serviceStatus.com_adobe_experience_platform
+                                    .value
+                                }
+                                allowsCustomValue
+                                validate={validateDatasetOption}
+                                loadingState={isLoading}
+                                name={`${prefix}.${env}.com_adobe_experience_platform.datasets.event.datasetId`}
+                              >
+                                {({ datasetId }) => (
+                                  <PickerItem key={datasetId} id={datasetId}>
+                                    {datasetId}
+                                  </PickerItem>
+                                )}
+                              </OverrideInput>
+                            )}
+                          {visibleFields.has(FIELD_NAMES.odeEnabled) &&
+                            !isDisabled(
+                              "com_adobe_experience_platform.enabled",
+                              serviceStatus.com_adobe_experience_platform.value,
+                            ) && (
+                              <OverrideInput
+                                aria-label="Enable or disable Adobe Offer Decisioning Engine"
+                                data-test-id={FIELD_NAMES.odeEnabled}
+                                allowsCustomValue
+                                label="Offer Decisioning"
+                                validate={validateEnabledDisabledOrDataElement}
+                                name={`${prefix}.${env}.com_adobe_experience_platform.com_adobe_edge_ode.enabled`}
+                                width="size-5000"
+                                pattern={enabledDisabledOrDataElementRegex}
                                 onBlur={onDisable}
+                                isDisabled={
+                                  !serviceStatus
+                                    .com_adobe_experience_platform_ode.value
+                                }
+                                disabledDisplayValue="Disabled"
+                              >
+                                {EnabledDisabledOptions}
+                              </OverrideInput>
+                            )}
+                          {visibleFields.has(
+                            FIELD_NAMES.edgeSegmentationEnabled,
+                          ) &&
+                            !isDisabled(
+                              "com_adobe_experience_platform.enabled",
+                              serviceStatus.com_adobe_experience_platform.value,
+                            ) && (
+                              <OverrideInput
+                                aria-label="Enable or disable Adobe Edge Segmentation"
+                                data-test-id={
+                                  FIELD_NAMES.edgeSegmentationEnabled
+                                }
+                                allowsCustomValue
+                                label="Edge Segmentation"
+                                validate={validateEnabledDisabledOrDataElement}
+                                name={`${prefix}.${env}.com_adobe_experience_platform.com_adobe_edge_segmentation.enabled`}
+                                width="size-5000"
+                                pattern={enabledDisabledOrDataElementRegex}
+                                onBlur={onDisable}
+                                isDisabled={
+                                  !serviceStatus
+                                    .com_adobe_experience_platform_edge_segmentation
+                                    .value
+                                }
+                                disabledDisplayValue="Disabled"
+                              >
+                                {EnabledDisabledOptions}
+                              </OverrideInput>
+                            )}
+                          {visibleFields.has(
+                            FIELD_NAMES.edgeDestinationsEnabled,
+                          ) &&
+                            !isDisabled(
+                              "com_adobe_experience_platform.enabled",
+                              serviceStatus.com_adobe_experience_platform.value,
+                            ) && (
+                              <OverrideInput
+                                aria-label="Enable or disable Personalization Destinations"
+                                label="Personalization Destinations"
+                                data-test-id={
+                                  FIELD_NAMES.edgeDestinationsEnabled
+                                }
+                                allowsCustomValue
+                                validate={validateEnabledDisabledOrDataElement}
+                                name={`${prefix}.${env}.com_adobe_experience_platform.com_adobe_edge_destinations.enabled`}
+                                width="size-5000"
+                                pattern={enabledDisabledOrDataElementRegex}
+                                onBlur={onDisable}
+                                isDisabled={
+                                  !serviceStatus
+                                    .com_adobe_experience_platform_edge_destinations
+                                    .value
+                                }
+                                disabledDisplayValue="Disabled"
+                              >
+                                {EnabledDisabledOptions}
+                              </OverrideInput>
+                            )}
+                          {visibleFields.has(FIELD_NAMES.ajoEnabled) &&
+                            !isDisabled(
+                              "com_adobe_experience_platform.enabled",
+                              serviceStatus.com_adobe_experience_platform.value,
+                            ) && (
+                              <OverrideInput
+                                aria-label="Enable or disable Adobe Journey Optimizer"
+                                data-test-id={FIELD_NAMES.ajoEnabled}
+                                label="Adobe Journey Optimizer"
+                                allowsCustomValue
+                                validate={validateEnabledDisabledOrDataElement}
+                                name={`${prefix}.${env}.com_adobe_experience_platform.com_adobe_edge_ajo.enabled`}
+                                width="size-5000"
+                                pattern={enabledDisabledOrDataElementRegex}
+                                onBlur={onDisable}
+                                isDisabled={
+                                  !serviceStatus
+                                    .com_adobe_experience_platform_ajo.value
+                                }
+                                disabledDisplayValue="Disabled"
+                              >
+                                {EnabledDisabledOptions}
+                              </OverrideInput>
+                            )}
+                        </ProductSubsection>
+                      )}
+                      {visibleFields.has(FIELD_NAMES.ssefEnabled) && (
+                        <ProductSubsection name="Adobe Server-Side Event Forwarding">
+                          <OverrideInput
+                            aria-label="Enable, disable, or provide no overrides for Adobe Server-Side Event Forwarding"
+                            data-test-id={FIELD_NAMES.ssefEnabled}
+                            allowsCustomValue
+                            validate={validateEnabledDisabledMatchOrDataElement}
+                            name={`${prefix}.${env}.com_adobe_launch_ssf.enabled`}
+                            width="size-5000"
+                            pattern={enabledDisabledMatchOrDataElementRegex}
+                            onBlur={onDisable}
+                            isDisabled={
+                              !serviceStatus.com_adobe_launch_ssf.value
+                            }
+                            disabledDisplayValue="Disabled"
+                            description={dataElementDescription}
+                          >
+                            {EnabledDisabledMatchOptions}
+                          </OverrideInput>
+                        </ProductSubsection>
+                      )}
+                      {(visibleFields.has(FIELD_NAMES.targetEnabled) ||
+                        visibleFields.has(
+                          FIELD_NAMES.targetPropertyTokenOverride,
+                        )) && (
+                        <ProductSubsection name="Adobe Target">
+                          {visibleFields.has(FIELD_NAMES.targetEnabled) && (
+                            <OverrideInput
+                              aria-label="Enable, disable, or provide no overrides for Adobe Target"
+                              data-test-id={FIELD_NAMES.targetEnabled}
+                              allowsCustomValue
+                              validate={
+                                validateEnabledDisabledMatchOrDataElement
+                              }
+                              name={`${prefix}.${env}.com_adobe_target.enabled`}
+                              width="size-5000"
+                              pattern={enabledDisabledMatchOrDataElementRegex}
+                              onBlur={onDisable}
+                              isDisabled={!serviceStatus.com_adobe_target.value}
+                              disabledDisplayValue="Disabled"
+                              description={dataElementDescription}
+                            >
+                              {EnabledDisabledMatchOptions}
+                            </OverrideInput>
+                          )}
+                          {visibleFields.has(
+                            FIELD_NAMES.targetPropertyTokenOverride,
+                          ) &&
+                            !isDisabled(
+                              "com_adobe_target.enabled",
+                              serviceStatus.com_adobe_target.value,
+                            ) && (
+                              <OverrideInput
+                                data-test-id={
+                                  FIELD_NAMES.targetPropertyTokenOverride
+                                }
+                                label="Target property token"
+                                allowsCustomValue
+                                overrideType="property token"
+                                primaryItem={primaryPropertyToken}
                                 isDisabled={
                                   !serviceStatus.com_adobe_target.value
                                 }
-                                disabledDisplayValue="Disabled"
-                                description={dataElementDescription}
+                                validate={validatePropertyTokenOption}
+                                defaultItems={propertyTokenOptions}
+                                useManualEntry={
+                                  useManualEntry ||
+                                  propertyTokenOptions.length === 0
+                                }
+                                name={`${prefix}.${env}.com_adobe_target.propertyToken`}
+                                description={propertyTokenDescription}
+                                width="size-5000"
                               >
-                                {EnabledDisabledMatchOptions}
+                                {({ value, label }) => (
+                                  <PickerItem key={value} id={value}>
+                                    {label}
+                                  </PickerItem>
+                                )}
                               </OverrideInput>
                             )}
-                            {visibleFields.has(
-                              FIELD_NAMES.targetPropertyTokenOverride,
-                            ) &&
-                              !isDisabled(
-                                "com_adobe_target.enabled",
-                                serviceStatus.com_adobe_target.value,
-                              ) && (
-                                <OverrideInput
-                                  data-test-id={
-                                    FIELD_NAMES.targetPropertyTokenOverride
-                                  }
-                                  label="Target property token"
-                                  allowsCustomValue
-                                  overrideType="property token"
-                                  primaryItem={primaryPropertyToken}
-                                  isDisabled={
-                                    !serviceStatus.com_adobe_target.value
-                                  }
-                                  validate={validatePropertyTokenOption}
-                                  defaultItems={propertyTokenOptions}
-                                  useManualEntry={
-                                    useManualEntry ||
-                                    propertyTokenOptions.length === 0
-                                  }
-                                  name={`${prefix}.${env}.com_adobe_target.propertyToken`}
-                                  description={propertyTokenDescription}
-                                  width="size-5000"
-                                >
-                                  {({ value, label }) => (
-                                    <Item key={value}>{label}</Item>
-                                  )}
-                                </OverrideInput>
-                              )}
-                          </ProductSubsection>
-                        )}
-                      </>
-                    )}
-                  </div>
-                </Item>
-              );
-            })}
-          </Collection>
+                        </ProductSubsection>
+                      )}
+                    </>
+                  )}
+                </div>
+              </TabPanel>
+            );
+          })}
         </Tabs>
       </FormElementContainer>
     </>
