@@ -10,7 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Tab, Collection, Button, TabList, Tabs, Text } from "@react-spectrum/s2";
+import {
+  Tab,
+  Collection,
+  Button,
+  TabList,
+  Tabs,
+  Text,
+} from "@react-spectrum/s2";
 
 /*
 Copyright 2022 Adobe. All rights reserved.
@@ -71,10 +78,12 @@ const Identity = ({ context }) => {
       render={(arrayHelpers) => {
         return (
           <>
-            <div className={style({
-              display: "flex",
-              alignItems: "center"
-            })}>
+            <div
+              className={style({
+                display: "flex",
+                alignItems: "center",
+              })}
+            >
               <Heading size="M">Identities</Heading>
               <Button
                 data-test-id="addIdentityButton"
@@ -84,7 +93,7 @@ const Identity = ({ context }) => {
                   setSelectedTabKey(String(identities.length));
                 }}
                 styles={style({
-                  marginStart: "[auto]"
+                  marginStart: "[auto]",
                 })}
               >
                 Add identity
@@ -100,7 +109,9 @@ const Identity = ({ context }) => {
             <Tabs
               aria-label="Identities"
               selectedKey={selectedTabKey}
-              onSelectionChange={setSelectedTabKey}><TabList items={identities}>
+              onSelectionChange={setSelectedTabKey}
+            >
+              <TabList items={identities}>
                 {identities.map((identity, index) => {
                   const label =
                     findNamespace(namespaces, identity.namespaceCode)?.name ||
@@ -112,7 +123,8 @@ const Identity = ({ context }) => {
                     </Tab>
                   );
                 })}
-              </TabList><Collection items={identities}>
+              </TabList>
+              <Collection items={identities}>
                 {identities.map((identity, index) => {
                   return (
                     <Item key={index}>
@@ -128,8 +140,9 @@ const Identity = ({ context }) => {
                                     display: "flex",
                                     marginTop: 8,
                                     alignItems: "flex-end",
-                                    justifyContent: "space-between"
-                                  })}>
+                                    justifyContent: "space-between",
+                                  })}
+                                >
                                   <NamespacesComponent
                                     name={`identities.${index}.namespaceCode`}
                                     selectedNamespaceCode={
@@ -154,8 +167,9 @@ const Identity = ({ context }) => {
                                   className={style({
                                     display: "flex",
                                     flexDirection: "column",
-                                    gap: 20
-                                  })}>
+                                    gap: 20,
+                                  })}
+                                >
                                   {identity.identifiers.map(
                                     (identifier, identifierIndex) => (
                                       <div
@@ -171,8 +185,9 @@ const Identity = ({ context }) => {
                                           backgroundColor: "layer-1",
                                           borderStyle: "solid",
                                           borderColor: "transparent-black-75",
-                                          font: "body-sm"
-                                        })}>
+                                          font: "body-sm",
+                                        })}
+                                      >
                                         <FormElementContainer>
                                           <DataElementSelector>
                                             <FormikTextField
@@ -237,7 +252,7 @@ const Identity = ({ context }) => {
                                               );
                                             }}
                                             styles={style({
-                                              marginTop: 12
+                                              marginTop: 12,
                                             })}
                                           >
                                             <DeleteIcon />
@@ -253,9 +268,11 @@ const Identity = ({ context }) => {
                           }}
                         />
                         {identities.length > 1 && (
-                          <div className={style({
-                            marginTop: 8
-                          })}>
+                          <div
+                            className={style({
+                              marginTop: 8,
+                            })}
+                          >
                             <Button
                               data-test-id={`deleteIdentity${index}Button`}
                               variant="secondary"
@@ -273,7 +290,8 @@ const Identity = ({ context }) => {
                     </Item>
                   );
                 })}
-              </Collection></Tabs>
+              </Collection>
+            </Tabs>
           </>
         );
       }}
