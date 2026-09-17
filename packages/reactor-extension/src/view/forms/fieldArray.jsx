@@ -12,8 +12,7 @@ governing permissions and limitations under the License.
 import Delete from "@react-spectrum/s2/icons/Delete";
 import { array, string } from "yup";
 import { FieldArray, useField } from "formik";
-import { Item } from "@adobe/react-spectrum";
-import { Radio, ActionButton, Button } from "@react-spectrum/s2";
+import { Radio, ActionButton, Button, ComboBoxItem } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
@@ -42,7 +41,6 @@ const StringItem = ({
         aria-label={`Item ${index + 1}`}
         name={`${namePrefix}${name}.${index}`}
         width="size-5000"
-        marginTop="size-0"
         description={isLast ? description : undefined}
         error={isLast ? error : undefined}
         invalid={error && touched}
@@ -78,7 +76,6 @@ const ComboboxItem = ({
         aria-label={`Item ${index + 1}`}
         name={`${namePrefix}${name}.${index}`}
         width="size-5000"
-        marginTop="size-0"
         description={isLast ? description : undefined}
         error={isLast ? error : undefined}
         invalid={error && touched}
@@ -89,10 +86,9 @@ const ComboboxItem = ({
         allowsCustomValue
       >
         {(item) => (
-          // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
-          <Item key={item.value} data-test-id={item.value}>
+          <ComboBoxItem key={item.value} data-test-id={item.value}>
             {item.label}
-          </Item>
+          </ComboBoxItem>
         )}
       </FormikKeyedComboBox>
     </DataElementSelector>
@@ -272,7 +268,6 @@ export default function fieldArray({
                             <ActionButton
                               data-test-id={`${namePrefix}${name}${index}RemoveButton`}
                               isQuiet
-                              variant="secondary"
                               onPress={() => {
                                 // using arrayHelpers.remove mangles the error message
                                 const newItems = items.filter(
