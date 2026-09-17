@@ -13,21 +13,21 @@ governing permissions and limitations under the License.
 import { useRef, useState } from "react";
 import { object } from "yup";
 import {
-  Item,
-  Flex,
   ProgressCircle,
-  Heading,
+  Heading as AlertHeading,
   Divider,
   Text,
   InlineAlert,
   Content,
   Link,
-} from "@adobe/react-spectrum";
+} from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import PropTypes from "prop-types";
 import ExtensionView from "../components/extensionView";
 import FormElementContainer from "../components/formElementContainer";
 import CodeField from "../components/codeField";
+import SubsectionHeading from "../components/typography/heading";
 import getValueFromFormState from "../components/objectEditor/helpers/getValueFromFormState";
 import fetchDataElements, {
   fetchDataElement,
@@ -51,6 +51,8 @@ import {
   ADOBE_TARGET,
 } from "../constants/solutions";
 import deepAssign from "../utils/deepAssign";
+
+const NO_MARGIN_DIVIDER_STYLE = style({ marginTop: 0, marginBottom: 0 });
 
 const isDataVariable = (data) => data?.settings?.solutions?.length > 0;
 
@@ -470,9 +472,11 @@ const UpdateVariable = ({
         <InlineAlert
           variant="negative"
           data-test-id="noDataElements"
-          width="size-5000"
+          styles={style({
+            width: 400,
+          })}
         >
-          <Heading size="XXS">Error</Heading>
+          <AlertHeading size="XXS">Error</AlertHeading>
           <Content>
             No `variable` type data elements are available.{" "}
             <Link
@@ -507,20 +511,20 @@ const UpdateVariable = ({
             getLabel={(item) => item?.name}
             firstPage={dataElementsFirstPage}
             firstPageCursor={dataElementsFirstPageCursor}
-          >
-            {(item) => <Item key={item.name}>{item.name}</Item>}
-          </FormikPagedComboBox>
+          />
         </>
       )}
       {context.schemaLoadFailed && dataElement && (
         <InlineAlert
-          variant="info"
+          variant="informative"
           data-test-id="dataElementSchemaMissingAlert"
-          width="size-5000"
+          styles={style({
+            width: 400,
+          })}
         >
-          <Heading size="XXS">
+          <AlertHeading size="XXS">
             The schema associated with this data element could not be loaded.
-          </Heading>
+          </AlertHeading>
           <Content>
             Either choose a new data element or update the selected data element
             with a valid schema.
@@ -529,10 +533,10 @@ const UpdateVariable = ({
       )}
       {hasSchema && isSchemaMatched && (
         <>
-          <Heading size="M" margin="0">
+          <SubsectionHeading size="M" marginTop={0} marginBottom={0}>
             Variable Editor
-          </Heading>
-          <Divider margin={0} size="M" />
+          </SubsectionHeading>
+          <Divider size="M" styles={NO_MARGIN_DIVIDER_STYLE} />
 
           <Editor
             key={isDataVariable(dataElement) ? "data" : "xdm"}
@@ -545,10 +549,10 @@ const UpdateVariable = ({
             verticalLayout={isDataVariable(dataElement)}
           />
 
-          <Heading size="M" margin="0">
+          <SubsectionHeading size="M" marginTop={0} marginBottom={0}>
             Custom Code
-          </Heading>
-          <Divider margin={0} size="M" />
+          </SubsectionHeading>
+          <Divider size="M" styles={NO_MARGIN_DIVIDER_STYLE} />
 
           <CodeField
             data-test-id="onBeforeEventSendEditButton"
@@ -591,9 +595,16 @@ const UpdateVariable = ({
       {!(hasSchema && isSchemaMatched) &&
         dataElement &&
         !context.schemaLoadFailed && (
-          <Flex alignItems="center" justifyContent="center" height="size-2000">
+          <div
+            className={style({
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: 160,
+            })}
+          >
             <ProgressCircle size="L" aria-label="Loading..." isIndeterminate />
-          </Flex>
+          </div>
         )}
     </FormElementContainer>
   );
