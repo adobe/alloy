@@ -13,8 +13,10 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { FieldArray } from "formik";
 import { object, string, array, mixed } from "yup";
-import { Item, Radio, Button, Well, Text, Flex } from "@adobe/react-spectrum";
-import Delete from "@spectrum-icons/workflow/Delete";
+import { Item } from "@adobe/react-spectrum";
+import { Radio, Button, Text } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import Delete from "@react-spectrum/s2/icons/Delete";
 import render from "../render";
 import ExtensionView from "../components/extensionView";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
@@ -247,7 +249,8 @@ const ConsentObject = ({ value, index }) => {
         items={[ADOBE, IAB_TCF]}
         width="size-5000"
       >
-        {(item) => <Item key={item.value}>{item.label}</Item>}
+        {(item) => // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
+        <Item key={item.value}>{item.label}</Item>}
       </FormikPicker>
       {value.standard === ADOBE.value && (
         <FormikPicker
@@ -258,7 +261,8 @@ const ConsentObject = ({ value, index }) => {
           items={[VERSION_1_0, VERSION_2_0]}
           width="size-5000"
         >
-          {(item) => <Item key={item.value}>{item.label}</Item>}
+          {(item) => // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
+          <Item key={item.value}>{item.label}</Item>}
         </FormikPicker>
       )}
       {value.standard === ADOBE.value &&
@@ -408,16 +412,35 @@ const SetConsent = () => {
                         onPress={() => {
                           arrayHelpers.push(createBlankConsentObject());
                         }}
-                        marginStart="auto"
+                        styles={style({
+                          marginStart: "[auto]"
+                        })}
                       >
                         Add consent object
                       </Button>
-                      <Flex direction="column" gap="size-250">
+                      <div
+                        className={style({
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 20
+                        })}>
                         {values.consent.map((value, index) => (
-                          <Well
+                          <div
                             data-test-id={`consentObject${index}`}
                             key={`consentObject${index}`}
-                          >
+                            className={style({
+                              display: "block",
+                              textAlign: "start",
+                              minWidth: 160,
+                              padding: 16,
+                              marginTop: 4,
+                              borderWidth: 1,
+                              borderRadius: "sm",
+                              backgroundColor: "layer-1",
+                              borderStyle: "solid",
+                              borderColor: "transparent-black-75",
+                              font: "body-sm"
+                            })}>
                             <FormElementContainer>
                               <ConsentObject value={value} index={index} />
                               {values.consent.length > 1 && (
@@ -428,16 +451,18 @@ const SetConsent = () => {
                                   }}
                                   aria-label="Delete"
                                   data-test-id="deleteConsentButton"
-                                  alignSelf="flex-start"
+                                  styles={style({
+                                    alignSelf: "flex-start"
+                                  })}
                                 >
                                   <Delete />
                                   <Text>Delete consent object</Text>
                                 </Button>
                               )}
                             </FormElementContainer>
-                          </Well>
+                          </div>
                         ))}
-                      </Flex>
+                      </div>
                     </>
                   )}
                 />
