@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
+import FormikTextField from "../forms/fields/TextField";
 import DataElementSelector from "../components/dataElementSelector";
 
 const EdgeConfigurationFreeformInputMethod = ({ name }) => {

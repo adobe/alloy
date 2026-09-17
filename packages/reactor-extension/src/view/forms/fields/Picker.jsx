@@ -14,7 +14,7 @@ import { Picker, PickerItem, mergeStyles } from "@react-spectrum/s2";
 import { css, style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import PropTypes from "prop-types";
-import widthStyle from "../widthStyle";
+import widthStyle from "./widthStyle";
 import normalizeCollectionChildren from "./normalizeCollectionChildren";
 
 // The Picker's styles prop only accepts layout properties. Keep the S1 field

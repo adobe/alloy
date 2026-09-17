@@ -13,8 +13,8 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { Radio } from "@react-spectrum/s2";
 import { useField } from "formik";
-import FormikRadioGroup from "../formikReactSpectrum3/formikRadioGroup";
-import FormikTextField from "../formikReactSpectrum3/formikTextField";
+import FormikRadioGroup from "../../forms/fields/RadioGroup";
+import FormikTextField from "../../forms/fields/TextField";
 import DataElementSelector from "../dataElementSelector";
 import { PARTS, WHOLE } from "./constants/populationStrategy";
 import FormElementContainer from "../formElementContainer";

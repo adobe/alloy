@@ -13,12 +13,12 @@ import { number, string } from "yup";
 import { useField } from "formik";
 import { Radio } from "@react-spectrum/s2";
 import PropTypes from "prop-types";
-import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
-import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
+import FormikTextField from "./fields/TextField";
+import FormikRadioGroup from "./fields/RadioGroup";
 import DataElementSelector from "../components/dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
-import FormikNumberField from "../components/formikReactSpectrum3/formikNumberField";
+import FormikNumberField from "./fields/NumberField";
 import isNonEmptyString from "../utils/isNonEmptyString";
 
 const NUMBER = "number";

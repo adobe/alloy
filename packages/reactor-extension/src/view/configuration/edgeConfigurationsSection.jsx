@@ -15,7 +15,7 @@ import { Radio, Link, Content } from "@react-spectrum/s2";
 import { object, string } from "yup";
 import { useField } from "formik";
 import SectionHeader from "../components/sectionHeader";
-import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
+import FormikRadioGroup from "../forms/fields/RadioGroup";
 import EdgeConfigurationSelectInputMethod from "./edgeConfigurationSelectInputMethod";
 import FormElementContainer from "../components/formElementContainer";
 import fetchSandboxes from "../utils/fetchSandboxes";

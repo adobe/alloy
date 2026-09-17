@@ -13,10 +13,10 @@ import { Picker, PickerItem, TextField } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import DataElementSelector from "../dataElementSelector";
-import FormikComboBox from "../formikReactSpectrum3/formikComboBox";
-import FormikPicker from "../formikReactSpectrum3/formikPicker";
-import FormikTextField from "../formikReactSpectrum3/formikTextField";
-import widthStyle from "../widthStyle";
+import FormikComboBox from "../../forms/fields/ComboBox";
+import FormikPicker from "../../forms/fields/Picker";
+import FormikTextField from "../../forms/fields/TextField";
+import widthStyle from "../../forms/fields/widthStyle";
 
 const FLEX_STYLE = style({ display: "flex" });
 
