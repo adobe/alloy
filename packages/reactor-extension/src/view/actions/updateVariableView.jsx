@@ -13,7 +13,15 @@ governing permissions and limitations under the License.
 import { useRef, useState } from "react";
 import { object } from "yup";
 import { Item } from "@adobe/react-spectrum";
-import { ProgressCircle, Heading, Divider, Text, InlineAlert, Content, Link } from "@react-spectrum/s2";
+import {
+  ProgressCircle,
+  Heading,
+  Divider,
+  Text,
+  InlineAlert,
+  Content,
+  Link,
+} from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import PropTypes from "prop-types";
@@ -463,7 +471,7 @@ const UpdateVariable = ({
           variant="negative"
           data-test-id="noDataElements"
           styles={style({
-            width: 400
+            width: 400,
           })}
         >
           <Heading size="XXS">Error</Heading>
@@ -502,8 +510,9 @@ const UpdateVariable = ({
             firstPage={dataElementsFirstPage}
             firstPageCursor={dataElementsFirstPageCursor}
           >
-            {(item) => // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
-            <Item key={item.name}>{item.name}</Item>}
+            {(
+              item, // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
+            ) => <Item key={item.name}>{item.name}</Item>}
           </FormikPagedComboBox>
         </>
       )}
@@ -512,7 +521,7 @@ const UpdateVariable = ({
           variant="informative"
           data-test-id="dataElementSchemaMissingAlert"
           styles={style({
-            width: 400
+            width: 400,
           })}
         >
           <Heading size="XXS">
@@ -527,11 +536,15 @@ const UpdateVariable = ({
       {hasSchema && isSchemaMatched && (
         <>
           {/* TODO(S2-upgrade): Could not transform style prop automatically: Error: invalid dimension: 0 */}
-          <Heading size="M" margin="0">Variable Editor
-                      </Heading>
-          <Divider size="M" styles={style({
-            margin: 0
-          })} />
+          <Heading size="M" margin="0">
+            Variable Editor
+          </Heading>
+          <Divider
+            size="M"
+            styles={style({
+              margin: 0,
+            })}
+          />
 
           <Editor
             key={isDataVariable(dataElement) ? "data" : "xdm"}
@@ -545,11 +558,15 @@ const UpdateVariable = ({
           />
 
           {/* TODO(S2-upgrade): Could not transform style prop automatically: Error: invalid dimension: 0 */}
-          <Heading size="M" margin="0">Custom Code
-                      </Heading>
-          <Divider size="M" styles={style({
-            margin: 0
-          })} />
+          <Heading size="M" margin="0">
+            Custom Code
+          </Heading>
+          <Divider
+            size="M"
+            styles={style({
+              margin: 0,
+            })}
+          />
 
           <CodeField
             data-test-id="onBeforeEventSendEditButton"
@@ -597,8 +614,9 @@ const UpdateVariable = ({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              height: 160
-            })}>
+              height: 160,
+            })}
+          >
             <ProgressCircle size="L" aria-label="Loading..." isIndeterminate />
           </div>
         )}
