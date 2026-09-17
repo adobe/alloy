@@ -58,9 +58,12 @@ const EventMergeId = () => (
 
       return isPreinstalled ? (
         <FillParentAndCenterChildren>
-          <InlineAlert variant="negative" styles={style({
-            width: 480
-          })}>
+          <InlineAlert
+            variant="negative"
+            styles={style({
+              width: 480,
+            })}
+          >
             <Heading>
               Not available when using a self-hosted Alloy instance
             </Heading>
@@ -80,9 +83,12 @@ const EventMergeId = () => (
           whole
         >
           <FillParentAndCenterChildren>
-            <InlineAlert variant="informative" styles={style({
-              width: 480
-            })}>
+            <InlineAlert
+              variant="informative"
+              styles={style({
+                width: 480,
+              })}
+            >
               <Heading size="XXS">Event merge ID caching</Heading>
               <Content>
                 This data element will provide an event merge ID. Regardless of
