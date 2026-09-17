@@ -15,7 +15,7 @@ import { mergeStyles } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import widthStyle from "../widthStyle";
 
-const MAX_WIDTH_STYLE = style({ maxWidth: "full" });
+const GROUP_ITEM_STYLE = style({ maxWidth: "full" });
 
 // S2's control and label gap is 2px wider than v3's. Compensate so a
 // size-5000 option keeps the same 376px text measure and line wrapping.
@@ -42,7 +42,7 @@ const reinterpretLeaf = (LeafComponent, node) => {
         styles={mergeStyles(
           widthStyle(width),
           GROUP_ITEM_WIDTH_STYLES[width],
-          MAX_WIDTH_STYLE,
+          GROUP_ITEM_STYLE,
           styles,
         )}
       />
