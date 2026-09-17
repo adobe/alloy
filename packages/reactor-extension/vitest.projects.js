@@ -9,13 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-// eslint-disable-next-line import/no-unresolved
+
 import { defineProject } from "vitest/config";
-// eslint-disable-next-line import/no-unresolved
+
 import { playwright } from "@vitest/browser-playwright";
 // eslint-disable-next-line import/no-unresolved
 import react from "@vitejs/plugin-react";
-// eslint-disable-next-line import/no-unresolved
+
 import macros from "unplugin-parcel-macros";
 const isCi = !!process.env.CI;
 
@@ -90,6 +90,46 @@ export const reactorExtensionTestProjects = [
         "packages/reactor-extension/test/integration/helpers/setup.js",
       ],
       coverage: packageCoverage,
+    },
+  }),
+  // Renders every view via the same bridge/driver contract as the
+  // integration project and screenshots it, for visual-regression baselines
+  // during the S2 migration. Kept as its own project (separate `include`
+  // glob) so it never runs as part of `test:integration`'s 258 specs; see
+  // `test/screenshots/views` for usage.
+  defineProject({
+    extends: false,
+    plugins: [
+      macros.vite(),
+      react({
+        jsxRuntime: "automatic",
+      }),
+    ],
+    optimizeDeps: {
+      exclude: ["@react-spectrum/s2/style"],
+    },
+    test: {
+      name: "reactor-extension/screenshots",
+      include: [
+        "packages/reactor-extension/test/screenshots/views/**/*.spec.jsx",
+      ],
+      testTimeout: 30_000,
+      hookTimeout: 30_000,
+      isolate: true,
+      browser: {
+        enabled: true,
+        instances: [{ browser: "chromium" }],
+        provider: playwright({
+          actionTimeout: 5_000,
+        }),
+        headless: true,
+        screenshotFailures: false,
+        locators: { testIdAttribute: "data-test-id" },
+        viewport: { width: 1000, height: 1000 },
+      },
+      setupFiles: [
+        "packages/reactor-extension/test/integration/helpers/setup.js",
+      ],
     },
   }),
 ];
