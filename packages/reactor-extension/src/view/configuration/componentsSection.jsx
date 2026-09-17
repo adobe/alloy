@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import camelCaseToTitleCase from "../utils/camelCaseToTitleCase";
-import FormikCheckbox from "../components/formikReactSpectrum3/formikCheckbox";
+import FormikCheckbox from "../forms/fields/Checkbox";
 import BetaBadge from "../components/betaBadge";
 import valueOrDefault from "../utils/valueOrDefault";
 import alloyComponents, {

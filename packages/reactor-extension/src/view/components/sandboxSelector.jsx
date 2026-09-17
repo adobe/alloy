@@ -15,7 +15,7 @@ import { useField } from "formik";
 import PropTypes from "prop-types";
 import { useEffect } from "react";
 import fetchSandboxes from "../utils/fetchSandboxes";
-import FormikPicker from "./formikReactSpectrum3/formikPicker";
+import FormikPicker from "../forms/fields/Picker";
 import sandboxItems from "./sandboxItems";
 
 /**

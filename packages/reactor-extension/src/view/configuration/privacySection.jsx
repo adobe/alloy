@@ -19,7 +19,7 @@ import { useField } from "formik";
 import SectionHeader from "../components/sectionHeader";
 import FormikRadioGroupWithDataElement, {
   createRadioGroupWithDataElementValidationSchema,
-} from "../components/formikReactSpectrum3/formikRadioGroupWithDataElement";
+} from "../forms/fields/RadioGroupWithDataElement";
 import FormElementContainer from "../components/formElementContainer";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";

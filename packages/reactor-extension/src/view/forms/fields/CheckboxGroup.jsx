@@ -11,18 +11,17 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { RadioGroup, Radio } from "@react-spectrum/s2";
+import { CheckboxGroup, Checkbox } from "@react-spectrum/s2";
 import { useField } from "formik";
-import FieldDescriptionAndError from "../fieldDescriptionAndError";
-import widthStyle from "../widthStyle";
+import FieldDescriptionAndError from "../../components/fieldDescriptionAndError";
+import widthStyle from "./widthStyle";
 import normalizeGroupChildren from "./normalizeGroupChildren";
 
-const FormikRadioGroup = ({
+const FormikCheckboxGroup = ({
   name,
   children,
   description,
   width,
-  onChange,
   ...otherProps
 }) => {
   const [{ value }, { touched, error }, { setValue, setTouched }] =
@@ -34,31 +33,25 @@ const FormikRadioGroup = ({
       error={touched && error ? error : undefined}
       width={width}
     >
-      <RadioGroup
+      <CheckboxGroup
         {...otherProps}
         value={value}
-        onChange={(currentValue) => {
-          setValue(currentValue);
-          if (onChange) {
-            onChange(currentValue);
-          }
-        }}
+        onChange={setValue}
         onBlur={() => setTouched(true)}
         isInvalid={Boolean(touched && error)}
         styles={widthStyle(width)}
       >
-        {normalizeGroupChildren(Radio, children)}
-      </RadioGroup>
+        {normalizeGroupChildren(Checkbox, children)}
+      </CheckboxGroup>
     </FieldDescriptionAndError>
   );
 };
 
-FormikRadioGroup.propTypes = {
+FormikCheckboxGroup.propTypes = {
   name: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
   description: PropTypes.string,
   width: PropTypes.string,
-  onChange: PropTypes.func,
 };
 
-export default FormikRadioGroup;
+export default FormikCheckboxGroup;

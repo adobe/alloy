@@ -62,11 +62,11 @@ const toS2Item = (ItemComponent, element) => {
   );
 };
 
-// Views that haven't been migrated yet still render `Item` (from
-// @adobe/react-spectrum) as Picker/ComboBox children. S2 collection
-// components require their own item type (PickerItem/ComboBoxItem/etc), so
-// this re-wraps whatever element a not-yet-migrated caller renders, keeping
-// those views working against the now-S2 field until their own PR flips them.
+// Views that haven't been migrated yet still render a generic `Item`
+// element as Picker/ComboBox children. S2 collection components require
+// their own item type (PickerItem/ComboBoxItem/etc), so this re-wraps
+// whatever element a not-yet-migrated caller renders, keeping those views
+// working against the now-S2 field until their own PR flips them.
 const normalizeCollectionChildren = (ItemComponent, children) => {
   if (typeof children === "function") {
     return (item) => toS2Item(ItemComponent, children(item));

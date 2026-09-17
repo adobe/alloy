@@ -35,7 +35,7 @@ import {
   PRODUCTION,
   ENVIRONMENTS,
 } from "../configuration/constants/environmentType";
-import FormikTextField from "./formikReactSpectrum3/formikTextField";
+import FormikTextField from "../forms/fields/TextField";
 import { capitialize } from "./overrides/utils";
 
 // The style() macro needs a literal object per call, so one style per

@@ -17,7 +17,7 @@ import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import getNodeEditData from "./helpers/getNodeEditData";
 import AutoPopulationAlert from "./autoPopulationAlert";
 import { ALWAYS, NONE } from "./constants/autoPopulationSource";
-import FormikCheckbox from "../formikReactSpectrum3/formikCheckbox";
+import FormikCheckbox from "../../forms/fields/Checkbox";
 import FieldDescriptionAndError from "../fieldDescriptionAndError";
 import getTypeSpecificView from "./helpers/getTypeSpecificView";
 import NodeDescription from "./nodeDescriptionPopover";
