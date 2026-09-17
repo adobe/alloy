@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { PickerItem } from "@react-spectrum/s2";
 import getInstanceOptions from "../utils/getInstanceOptions";
-import FormikPicker from "./formikReactSpectrum3/formikPicker";
+import FormikPicker from "../forms/fields/Picker";
 
 const InstanceNamePicker = ({
   "data-test-id": dataTestId,
