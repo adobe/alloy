@@ -11,6 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import { Children, cloneElement, isValidElement } from "react";
+import { mergeStyles } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import widthStyle from "../widthStyle";
+
+const MAX_WIDTH_STYLE = style({ maxWidth: "full" });
 
 // Views that haven't been migrated yet still render a v3 Radio/Checkbox
 // (from @adobe/react-spectrum) as RadioGroup/CheckboxGroup children. Those
@@ -23,7 +28,14 @@ const reinterpretLeaf = (LeafComponent, node) => {
     return node;
   }
   if (Object.hasOwn(node.props, "value")) {
-    return <LeafComponent key={node.key} {...node.props} />;
+    const { width, styles, ...props } = node.props;
+    return (
+      <LeafComponent
+        key={node.key}
+        {...props}
+        styles={mergeStyles(widthStyle(width), MAX_WIDTH_STYLE, styles)}
+      />
+    );
   }
   if (node.props.children !== undefined) {
     return cloneElement(

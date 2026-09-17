@@ -175,8 +175,11 @@ describe("Config data collection section", () => {
     ]) {
       const radio = view.getByTestId(testId).element();
       const badge = radio.querySelector('[role="presentation"]');
+      const radioStyle = window.getComputedStyle(radio);
 
       expect(window.getComputedStyle(badge).display).toBe("inline-flex");
+      expect(radioStyle.width).toBe("400px");
+      expect(radioStyle.maxInlineSize).toBe("100%");
     }
   });
 
