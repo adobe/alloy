@@ -22,10 +22,10 @@ import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
 import FormikRadioGroupWithDataElement, {
   createRadioGroupWithDataElementValidationSchema,
-} from "../components/formikReactSpectrum3/formikRadioGroupWithDataElement";
-import FormikPicker from "../components/formikReactSpectrum3/formikPicker";
-import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
-import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
+} from "../forms/fields/RadioGroupWithDataElement";
+import FormikPicker from "../forms/fields/Picker";
+import FormikTextField from "../forms/fields/TextField";
+import FormikRadioGroup from "../forms/fields/RadioGroup";
 import DataElementSelector from "../components/dataElementSelector";
 import FormElementContainer from "../components/formElementContainer";
 import InstanceNamePicker from "../components/instanceNamePicker";

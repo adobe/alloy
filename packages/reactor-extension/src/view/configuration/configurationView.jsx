@@ -38,7 +38,7 @@ import PropTypes from "prop-types";
 import ExtensionView from "../components/extensionView";
 import useNewlyValidatedFormSubmission from "../utils/useNewlyValidatedFormSubmission";
 import useFocusFirstError from "../utils/useFocusFirstError";
-import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
+import FormikRadioGroup from "../forms/fields/RadioGroup";
 import BasicSection, { bridge as basicSectionBridge } from "./basicSection";
 import EdgeConfigurationsSection, {
   bridge as edgeConfigurationsSectionBridge,

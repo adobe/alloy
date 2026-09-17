@@ -11,58 +11,63 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { ComboBox, ComboBoxItem } from "@react-spectrum/s2";
+import { TextArea, mergeStyles } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
-import widthStyle from "../widthStyle";
-import normalizeCollectionChildren from "./normalizeCollectionChildren";
+import widthStyle from "./widthStyle";
+
+// Was `.formik-field textarea { min-height: size-4600 !important }` in
+// global.css; size-4600 = 368px per the S1->S2 dimension token table.
+const MIN_HEIGHT_STYLE = style({ minHeight: 368 });
 
 /**
- * @param {object} params
+ * @param {Object} params
  * @param {string} params.name
  * @param {string?} params.width
- * @param {Function?} params.onBlur
  * @param {(value: T) => undefined | string} params.validate A function that will be called to validate
  * the value entered by the user. The function should return an error message if
  * the value is invalid, or null if the value is valid.
  * @returns {React.Element}
  */
-const FormikComboBox = ({
-  name,
-  width,
-  validate,
-  onBlur = () => {},
-  children,
-  ...otherProps
-}) => {
-  const [{ value }, { touched, error }, { setValue, setTouched }] = useField({
+const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
+  const [
+    { value },
+    { touched: fieldTouched, error: fieldError },
+    { setValue, setTouched },
+  ] = useField({
     name,
     validate,
   });
+
+  const touched = otherProps.touched || fieldTouched;
+  const error = otherProps.error === "" ? "" : otherProps.error || fieldError;
+  const isInvalid = Boolean(otherProps.invalid || (touched && error));
+
   return (
-    <ComboBox
+    <TextArea
       {...otherProps}
-      inputValue={value}
-      onInputChange={setValue}
-      onBlur={(...args) => {
-        onBlur(...args);
-        setTouched(true);
+      value={value}
+      onChange={(newValue) => {
+        setValue(newValue);
       }}
-      isInvalid={Boolean(touched && error)}
-      name={name}
-      styles={widthStyle(width)}
+      onBlur={() => {
+        setTouched(true);
+        if (onBlur) {
+          onBlur();
+        }
+      }}
+      isInvalid={isInvalid}
       errorMessage={error}
-    >
-      {normalizeCollectionChildren(ComboBoxItem, children)}
-    </ComboBox>
+      styles={mergeStyles(widthStyle(width), MIN_HEIGHT_STYLE)}
+    />
   );
 };
 
-FormikComboBox.propTypes = {
+FormikTextField.propTypes = {
   name: PropTypes.string.isRequired,
-  onBlur: PropTypes.func,
-  validate: PropTypes.func,
   width: PropTypes.string,
-  children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
+  validate: PropTypes.func,
+  onBlur: PropTypes.func,
 };
 
-export default FormikComboBox;
+export default FormikTextField;

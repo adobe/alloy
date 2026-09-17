@@ -16,11 +16,11 @@ import { useField, useFormikContext } from "formik";
 import PropTypes from "prop-types";
 import DataElementSelector from "../components/dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
-import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
+import FormikRadioGroup from "./fields/RadioGroup";
 import FieldSubset from "../components/fieldSubset";
 import form from "./form";
 import FormElementContainer from "../components/formElementContainer";
-import FormikTextArea from "../components/formikReactSpectrum3/formikTextArea";
+import FormikTextArea from "./fields/TextArea";
 
 import {
   PARTS,

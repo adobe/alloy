@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import { string } from "yup";
 import PropTypes from "prop-types";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
+import FormikTextField from "./fields/TextField";
 
 /** @typedef {import("./form").Form} Form */
 /**
