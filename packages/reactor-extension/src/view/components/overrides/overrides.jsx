@@ -10,16 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import {
+  Tab,
+  Collection,
   Content,
-  Flex,
   Heading,
   InlineAlert,
-  Item,
   TabList,
-  TabPanels,
   Tabs,
-  View,
-} from "@adobe/react-spectrum";
+} from "@react-spectrum/s2";
+
+/*
+Copyright 2023 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+import { Item } from "@adobe/react-spectrum";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import PropTypes from "prop-types";
 import { useRef } from "react";
@@ -55,17 +67,20 @@ import {
 const defaults = Object.freeze(bridge.getInstanceDefaults());
 const EnabledDisabledMatchOptions = Object.freeze(
   Object.entries(ENABLED_DISABLED_MATCH_FIELD_VALUES).map(([key, label]) => (
+    // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
     <Item key={key}>{label}</Item>
   )),
 );
 
 const EnabledDisabledOptions = Object.freeze(
   Object.entries(ENABLED_DISABLED_FIELD_VALUES).map(([key, label]) => (
+    // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
     <Item key={key}>{label}</Item>
   )),
 );
 const EnabledMatchOptions = Object.freeze(
   Object.entries(ENABLED_MATCH_FIELD_VALUES).map(([key, label]) => (
+    // TODO(S2-upgrade): Couldn't automatically detect what type of collection component this is rendered in. You'll need to update this manually.
     <Item key={key}>{label}</Item>
   )),
 );
@@ -76,12 +91,19 @@ const EnabledMatchOptions = Object.freeze(
  * @returns
  */
 const ProductSubsection = ({ children, name, ...otherProps }) => (
-  <View {...otherProps}>
-    <Heading level={3} marginBottom="size-10">
+  <div // TODO(S2-upgrade): check this spread for style props
+    {...otherProps}
+  >
+    <Heading
+      level={3}
+      styles={style({
+        marginBottom: "[1px]",
+      })}
+    >
       {name}
     </Heading>
     {children}
-  </View>
+  </div>
 );
 ProductSubsection.propTypes = {
   children: PropTypes.node.isRequired,
@@ -186,7 +208,11 @@ const Overrides = ({
       <SectionHeader learnMoreUrl="https://experienceleague.adobe.com/docs/experience-platform/edge/extension/web-sdk-extension-configuration.html?lang=en#datastream-configuration-overrides">
         Datastream Configuration Overrides
       </SectionHeader>
-      <InlineAlert width="size-5000">
+      <InlineAlert
+        styles={style({
+          width: 400,
+        })}
+      >
         <Heading>Server-side vs client-side</Heading>
         <Content>
           Setting any client-side datastream configuration overrides for an
@@ -198,12 +224,12 @@ const Overrides = ({
         <Tabs aria-label="Datastream configuration overrides environments">
           <TabList>
             {OVERRIDE_ENVIRONMENTS.map((env) => (
-              <Item key={env} data-test-id={`${env}OverridesTab`}>
+              <Tab id={env} data-test-id={`${env}OverridesTab`} key={env}>
                 {capitialize(env)}
-              </Item>
+              </Tab>
             ))}
           </TabList>
-          <TabPanels>
+          <Collection>
             {OVERRIDE_ENVIRONMENTS.map((env) => {
               const { result, isLoading, error } = edgeConfigs[env];
               const useManualEntry = !result || Boolean(error);
@@ -363,7 +389,13 @@ const Overrides = ({
 
               return (
                 <Item key={env}>
-                  <Flex direction="column" gap="size-100">
+                  <div
+                    className={style({
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 8,
+                    })}
+                  >
                     <SettingsCopySection currentEnv={env} onPress={onCopy} />
                     {visibleFields.has(FIELD_NAMES.overridesEnabled) && (
                       <OverrideInput
@@ -785,11 +817,11 @@ const Overrides = ({
                         )}
                       </>
                     )}
-                  </Flex>
+                  </div>
                 </Item>
               );
             })}
-          </TabPanels>
+          </Collection>
         </Tabs>
       </FormElementContainer>
     </>

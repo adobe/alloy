@@ -9,7 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { Picker, Flex, TextField, Item } from "@adobe/react-spectrum";
+import { PickerItem, Picker, TextField } from "@react-spectrum/s2";
+
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import DataElementSelector from "../dataElementSelector";
 import FormikComboBox from "../formikReactSpectrum3/formikComboBox";
@@ -23,17 +25,31 @@ const DisabledOverrideInput = ({
 }) => {
   if (useManualEntry) {
     return (
-      <Flex>
-        <TextField {...otherProps} defaultValue={disabledDisplayValue} />
-      </Flex>
+      <div
+        className={style({
+          display: "flex",
+        })}
+      >
+        <TextField // TODO(S2-upgrade): check this spread for style props
+          {...otherProps}
+          defaultValue={disabledDisplayValue}
+        />
+      </div>
     );
   }
   return (
-    <Flex>
-      <Picker {...otherProps} selectedKey="Disabled">
-        <Item key="Disabled">{disabledDisplayValue}</Item>
+    <div
+      className={style({
+        display: "flex",
+      })}
+    >
+      <Picker // TODO(S2-upgrade): check this spread for style props
+        {...otherProps}
+        value="Disabled"
+      >
+        <PickerItem id="Disabled">{disabledDisplayValue}</PickerItem>
       </Picker>
-    </Flex>
+    </div>
   );
 };
 /**
