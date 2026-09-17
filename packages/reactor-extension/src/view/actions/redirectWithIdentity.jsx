@@ -67,9 +67,12 @@ const RedirectWithIdentity = () => {
         const orgId = instanceSettings.orgId ?? initInfo.company.orgId;
         return (
           <>
-            <InlineAlert variant="informative" styles={style({
-              width: 400
-            })}>
+            <InlineAlert
+              variant="informative"
+              styles={style({
+                width: 400,
+              })}
+            >
               <Heading size="XXS">Redirect with identity</Heading>
               <Content>
                 Use this action to share identities from the current page to
