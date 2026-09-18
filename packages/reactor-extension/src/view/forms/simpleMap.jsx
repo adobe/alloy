@@ -11,7 +11,8 @@ governing permissions and limitations under the License.
 */
 import { array, object, string } from "yup";
 import { FieldArray, useField } from "formik";
-import { Well, Radio, Flex, Button } from "@adobe/react-spectrum";
+import { Radio, Button } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
 import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
@@ -23,6 +24,29 @@ import BetaBadge from "../components/betaBadge";
 
 const FORM = "form";
 const DATA_ELEMENT = "dataElement";
+
+// The bordered box a v3 Well rendered by default; padding/marginTop/border
+// values come from the S1->S2 dimension token migration table.
+const WELL_STYLE = style({
+  display: "block",
+  textAlign: "start",
+  minWidth: 160,
+  padding: 16,
+  marginTop: 4,
+  borderWidth: 1,
+  borderRadius: "sm",
+  backgroundColor: "layer-1",
+  borderStyle: "solid",
+  borderColor: "transparent-black-75",
+  font: "body-sm",
+});
+const WELL_CONTENT_STYLE = style({
+  display: "flex",
+  flexDirection: "column",
+  gap: 8,
+});
+const REMOVE_ROW_STYLE = style({ display: "flex" });
+const REMOVE_BUTTON_STYLE = style({ marginStart: "auto" });
 
 /** @typedef {import("./form").Form} Form */
 /**
@@ -193,50 +217,45 @@ export default function simpleMap({
                   <>
                     {items.map((__, index) => {
                       return (
-                        <Well
-                          key={index}
-                          alignSelf="flex-start"
-                          direction="column"
-                          gap="size-100"
-                        >
-                          <FormElementContainer>
-                            <DataElementSelector>
-                              <FormikTextField
-                                data-test-id={`${namePrefix}Key${index}Field`}
-                                label={keyLabel}
-                                name={`${namePrefix}${name}.${index}.key`}
-                                width="size-5000"
-                                marginTop="size-0"
-                                description={keyDescription}
-                                isRequired
-                              />
-                            </DataElementSelector>
-                            <DataElementSelector>
-                              <FormikTextField
-                                data-test-id={`${namePrefix}Value${index}Field`}
-                                label={valueLabel}
-                                name={`${namePrefix}${name}.${index}.value`}
-                                width="size-5000"
-                                marginTop="size-0"
-                                description={valueDescription}
-                              />
-                            </DataElementSelector>
-                          </FormElementContainer>
-                          <Flex direction="row">
-                            <Button
-                              variant="secondary"
-                              data-test-id={`${namePrefix}${name}${index}RemoveButton`}
-                              isDisabled={items.length === 1}
-                              onPress={() => {
-                                // using arrayHelpers.remove mangles the error message
-                                setItems(items.filter((_, i) => i !== index));
-                              }}
-                              marginStart="auto"
-                            >
-                              Remove {singularLabel.toLowerCase()}
-                            </Button>
-                          </Flex>
-                        </Well>
+                        <div key={index} className={WELL_STYLE}>
+                          <div className={WELL_CONTENT_STYLE}>
+                            <FormElementContainer>
+                              <DataElementSelector>
+                                <FormikTextField
+                                  data-test-id={`${namePrefix}Key${index}Field`}
+                                  label={keyLabel}
+                                  name={`${namePrefix}${name}.${index}.key`}
+                                  width="size-5000"
+                                  description={keyDescription}
+                                  isRequired
+                                />
+                              </DataElementSelector>
+                              <DataElementSelector>
+                                <FormikTextField
+                                  data-test-id={`${namePrefix}Value${index}Field`}
+                                  label={valueLabel}
+                                  name={`${namePrefix}${name}.${index}.value`}
+                                  width="size-5000"
+                                  description={valueDescription}
+                                />
+                              </DataElementSelector>
+                            </FormElementContainer>
+                            <div className={REMOVE_ROW_STYLE}>
+                              <Button
+                                variant="secondary"
+                                data-test-id={`${namePrefix}${name}${index}RemoveButton`}
+                                isDisabled={items.length === 1}
+                                onPress={() => {
+                                  // using arrayHelpers.remove mangles the error message
+                                  setItems(items.filter((_, i) => i !== index));
+                                }}
+                                styles={REMOVE_BUTTON_STYLE}
+                              >
+                                Remove {singularLabel.toLowerCase()}
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
                       );
                     })}
                     <div>
