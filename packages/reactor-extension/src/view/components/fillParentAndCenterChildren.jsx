@@ -11,19 +11,18 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { Flex } from "@adobe/react-spectrum";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+
+const CONTAINER_STYLE = style({
+  height: "full",
+  alignItems: "center",
+  justifyContent: "center",
+  display: "flex",
+  flexDirection: "column",
+});
 
 const FillParentAndCenterChildren = ({ children }) => {
-  return (
-    <Flex
-      height="100%"
-      alignItems="center"
-      justifyContent="center"
-      direction="column"
-    >
-      {children}
-    </Flex>
-  );
+  return <div className={CONTAINER_STYLE}>{children}</div>;
 };
 
 FillParentAndCenterChildren.propTypes = {

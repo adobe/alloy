@@ -1,5 +1,5 @@
 /*
-Copyright 2021 Adobe. All rights reserved.
+Copyright 2026 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,14 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/**
- * Given a React-Spectrum dimension value (e.g., "size-200", 16, "16px"),
- * returns a value that can be used as a CSS style value.
- */
-const getDimensionStyle = (size) => {
-  return typeof size === "string" && size.includes("size-")
-    ? `var(--spectrum-global-dimension-${size}, var(--spectrum-alias-${size})`
-    : size;
-};
-
-export default getDimensionStyle;
+.FormikPicker > button:not(:disabled) {
+  background-color: var(--spectrum-global-color-gray-50);
+  box-shadow: inset 0 0 0 1px var(--spectrum-alias-border-color);
+}
