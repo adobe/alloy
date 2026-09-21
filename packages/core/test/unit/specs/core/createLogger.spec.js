@@ -275,7 +275,7 @@ describe("createLogger", () => {
         expect.objectContaining({ options: expectedOptions }),
       );
     });
-    it("does not redact other commands' options, even if a field happens to be named like a secret", () => {
+    it("does not redact fields that merely look secret-ish, e.g. a real xdm.password field", () => {
       build();
       const options = { xdm: { password: "not-actually-a-secret-field" } };
 
@@ -287,6 +287,21 @@ describe("createLogger", () => {
       );
       expect(monitor.onBeforeCommand).toHaveBeenCalledWith(
         expect.objectContaining({ options }),
+      );
+    });
+    it("preserves functions on the config, e.g. onBeforeEventSend", () => {
+      build();
+      const onBeforeEventSend = () => {};
+      logger.logOnInstanceConfigured({
+        config: {
+          onBeforeEventSend,
+          edgeCredentials: { clientSecret: "shh" },
+        },
+      });
+      expect(monitor.onInstanceConfigured).toHaveBeenCalledWith(
+        expect.objectContaining({
+          config: expect.objectContaining({ onBeforeEventSend }),
+        }),
       );
     });
     it("does not mutate the original config/options objects", () => {

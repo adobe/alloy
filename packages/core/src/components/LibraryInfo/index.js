@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import defaultLibraryVersion from "../../constants/libraryVersion.js";
 import { CONFIGURE, SET_DEBUG } from "../../constants/coreCommands.js";
+import redactEdgeCredentials from "../../utils/redactEdgeCredentials.js";
 
 const prepareLibraryInfo = ({ config, componentRegistry, libraryVersion }) => {
   const allCommands = [
@@ -19,7 +20,7 @@ const prepareLibraryInfo = ({ config, componentRegistry, libraryVersion }) => {
     CONFIGURE,
     SET_DEBUG,
   ].sort();
-  const resultConfig = { ...config };
+  const resultConfig = { ...redactEdgeCredentials(config) };
   Object.keys(config).forEach((key) => {
     const value = config[key];
     if (typeof value !== "function") {

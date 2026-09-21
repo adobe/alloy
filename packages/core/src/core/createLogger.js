@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import redactSensitiveValues from "../utils/redactSensitiveValues.js";
+import redactEdgeCredentials from "../utils/redactEdgeCredentials.js";
 
 export default ({ getDebugEnabled, console, getMonitors, context }) => {
   let prefix = `[${context.instanceName}]`;
@@ -18,10 +18,18 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
     prefix += ` [${context.componentName}]`;
   }
 
+  // redactEdgeCredentials no-ops on anything without edgeCredentials, so
+  // applying it here covers every call site (config, command options, ...)
+  // without redacting each one individually.
   const notifyMonitors = (method, data) => {
     const monitors = getMonitors();
     if (monitors.length > 0) {
-      const dataWithContext = { ...context, ...data };
+      const dataWithContext = {
+        ...context,
+        ...data,
+        config: redactEdgeCredentials(data.config),
+        options: redactEdgeCredentials(data.options),
+      };
       monitors.forEach((monitor) => {
         if (monitor[method]) {
           monitor[method](dataWithContext);
@@ -33,16 +41,9 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
   const log = (level, ...rest) => {
     notifyMonitors("onBeforeLog", { level, arguments: rest });
     if (getDebugEnabled()) {
-      console[level](prefix, ...rest);
+      console[level](prefix, ...rest.map(redactEdgeCredentials));
     }
   };
-
-  // Scoped to "configure" only — other commands' options are arbitrary
-  // customer data that could coincidentally have a field named "password".
-  const redactOptionsIfConfigure = (data) =>
-    data.commandName === "configure"
-      ? { ...data, options: redactSensitiveValues(data.options) }
-      : data;
 
   return {
     get enabled() {
@@ -53,35 +54,23 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
       log("info", "Instance initialized.");
     },
     logOnInstanceConfigured(data) {
-      // Always redacted — always our own config shape, never customer data.
-      const redactedData = {
-        ...data,
-        config: redactSensitiveValues(data.config),
-      };
-      notifyMonitors("onInstanceConfigured", redactedData);
-      log(
-        "info",
-        "Instance configured. Computed configuration:",
-        redactedData.config,
-      );
+      notifyMonitors("onInstanceConfigured", data);
+      log("info", "Instance configured. Computed configuration:", data.config);
     },
     logOnBeforeCommand(data) {
-      const redactedData = redactOptionsIfConfigure(data);
-      notifyMonitors("onBeforeCommand", redactedData);
+      notifyMonitors("onBeforeCommand", data);
       log(
         "info",
         `Executing ${data.commandName} command. Options:`,
-        redactedData.options,
+        data.options,
       );
     },
     logOnCommandResolved(data) {
-      const redactedData = redactOptionsIfConfigure(data);
-      notifyMonitors("onCommandResolved", redactedData);
+      notifyMonitors("onCommandResolved", data);
       log("info", `${data.commandName} command resolved. Result:`, data.result);
     },
     logOnCommandRejected(data) {
-      const redactedData = redactOptionsIfConfigure(data);
-      notifyMonitors("onCommandRejected", redactedData);
+      notifyMonitors("onCommandRejected", data);
       log(
         "error",
         `${data.commandName} command was rejected. Error:`,

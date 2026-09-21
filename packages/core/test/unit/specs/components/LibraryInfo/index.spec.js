@@ -46,4 +46,19 @@ describe("LibraryInfo", () => {
 
     expect(libraryInfo.version).toBe("1.2.3");
   });
+
+  it("redacts edgeCredentials.clientSecret from configs", () => {
+    toolsMock.config.edgeCredentials = {
+      clientId: "myClientId",
+      clientSecret: "shh",
+    };
+
+    const { libraryInfo } =
+      createLibraryInfo(toolsMock).commands.getLibraryInfo.run();
+
+    expect(libraryInfo.configs.edgeCredentials).toEqual({
+      clientId: "myClientId",
+      clientSecret: "[REDACTED]",
+    });
+  });
 });
