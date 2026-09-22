@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { ActionButton, Button, PickerItem } from "@react-spectrum/s2";
+import { ActionButton, PickerItem } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
 import { FieldArray } from "formik";
@@ -112,15 +112,14 @@ const ReportSuitesOverride = ({
               </div>
             ))}
           </div>
-          <Button
+          <ActionButton
             data-test-id="addReportSuite"
-            variant="secondary"
             onPress={() => push("")}
             isDisabled={isDisabled}
             styles={style({ maxWidth: "fit" })}
           >
             Add Report Suite
-          </Button>
+          </ActionButton>
         </>
       )}
     </FieldArray>
