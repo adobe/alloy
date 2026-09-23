@@ -12,3 +12,7 @@ governing permissions and limitations under the License.
 
 export const EDGE = "edge.adobedc.net";
 export const ID_THIRD_PARTY = "adobedc.demdex.net";
+// The authenticated Edge Network Server API — a different domain
+// entirely from EDGE, used only when edgeCredentials are configured.
+export const SERVER = "server.adobedc.net";
+export const DEFAULT_IMS_HOST = "ims-na1.adobelogin.com";

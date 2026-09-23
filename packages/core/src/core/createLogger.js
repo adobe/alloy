@@ -10,16 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import redactEdgeCredentials from "../utils/redactEdgeCredentials.js";
+
 export default ({ getDebugEnabled, console, getMonitors, context }) => {
   let prefix = `[${context.instanceName}]`;
   if (context.componentName) {
     prefix += ` [${context.componentName}]`;
   }
 
+  // redactEdgeCredentials no-ops on anything without edgeCredentials, so
+  // applying it here covers every call site (config, command options, ...)
+  // without redacting each one individually.
   const notifyMonitors = (method, data) => {
     const monitors = getMonitors();
     if (monitors.length > 0) {
-      const dataWithContext = { ...context, ...data };
+      const dataWithContext = {
+        ...context,
+        ...data,
+        config: redactEdgeCredentials(data.config),
+        options: redactEdgeCredentials(data.options),
+      };
       monitors.forEach((monitor) => {
         if (monitor[method]) {
           monitor[method](dataWithContext);
@@ -29,9 +39,10 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
   };
 
   const log = (level, ...rest) => {
-    notifyMonitors("onBeforeLog", { level, arguments: rest });
+    const redactedRest = rest.map(redactEdgeCredentials);
+    notifyMonitors("onBeforeLog", { level, arguments: redactedRest });
     if (getDebugEnabled()) {
-      console[level](prefix, ...rest);
+      console[level](prefix, ...redactedRest);
     }
   };
 
