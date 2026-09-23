@@ -36,6 +36,7 @@
   "dependencies": {
     "@adobe/alloy": "workspace:*",
     "@adobe/react-spectrum": "^3.45.0",
+    "@react-spectrum/s2": "^1.7.1",
     "@react-stately/data": "^3.14.1",
     "@spectrum-icons/illustrations": "^3.6.26",
     "@spectrum-icons/workflow": "^4.2.25",
@@ -88,6 +89,16 @@
     "rollup-plugin-istanbul": "^5.0.0",
     "serve": "^14.2.5",
     "testcafe": "^3.7.4",
-    "testcafe-browser-provider-playwright": "^1.1.0"
+    "testcafe-browser-provider-playwright": "^1.1.0",
+    "unplugin-parcel-macros": "^0.2.0"
+  },
+  "@parcel/bundler-default": {
+    "manualSharedBundles": [
+      {
+        "name": "s2-styles",
+        "types": ["css"],
+        "assets": ["**/@react-spectrum/s2/**", "src/view/**/*.{js,jsx}"]
+      }
+    ]
   }
 }
