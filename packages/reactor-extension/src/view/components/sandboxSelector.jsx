@@ -108,7 +108,7 @@ const SandboxSelector = ({ initInfo, name, ...otherProps }) => {
       isDisabled={sandboxList.items.length <= 1}
       name={name}
       items={sandboxList.items}
-      isLoading={sandboxList.isLoading}
+      loadingState={sandboxList.loadingState}
     >
       {sandboxItems}
     </FormikPicker>

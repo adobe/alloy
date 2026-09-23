@@ -10,12 +10,29 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Picker, PickerItem } from "@react-spectrum/s2";
+import { Picker, PickerItem, mergeStyles } from "@react-spectrum/s2";
+import { css, style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import PropTypes from "prop-types";
 import widthStyle from "../widthStyle";
 import normalizeCollectionChildren from "./normalizeCollectionChildren";
-import "./formikPicker.css";
+
+// The Picker's styles prop only accepts layout properties. Keep the S1 field
+// appearance on its enabled trigger using S2 color tokens and a scoped macro
+// selector, without overriding the disabled trigger's own colors.
+const PICKER_APPEARANCE = mergeStyles(
+  style({
+    "--pickerBackground": { type: "backgroundColor", value: "gray-25" },
+    "--pickerBorder": { type: "borderColor", value: "gray-300" },
+  }),
+  css(
+    `& > * > button:not(:disabled) {
+      background-color: var(--pickerBackground);
+      box-shadow: inset 0 0 0 1px var(--pickerBorder);
+    }`,
+    "pickerAppearance",
+  ),
+);
 
 const FormikPicker = ({
   name,
@@ -31,25 +48,26 @@ const FormikPicker = ({
   });
 
   return (
-    <Picker
-      UNSAFE_className="FormikPicker"
-      value={value}
-      onChange={(key) => {
-        setValue(key);
-        if (onChange) {
-          onChange(key);
-        }
-      }}
-      onBlur={() => {
-        setTouched(true);
-      }}
-      isInvalid={Boolean(touched && error)}
-      errorMessage={error}
-      styles={widthStyle(width)}
-      {...otherProps}
-    >
-      {normalizeCollectionChildren(PickerItem, children)}
-    </Picker>
+    <div className={PICKER_APPEARANCE}>
+      <Picker
+        value={value}
+        onChange={(key) => {
+          setValue(key);
+          if (onChange) {
+            onChange(key);
+          }
+        }}
+        onBlur={() => {
+          setTouched(true);
+        }}
+        isInvalid={Boolean(touched && error)}
+        errorMessage={error}
+        styles={widthStyle(width)}
+        {...otherProps}
+      >
+        {normalizeCollectionChildren(PickerItem, children)}
+      </Picker>
+    </div>
   );
 };
 
