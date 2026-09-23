@@ -10,16 +10,24 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { TooltipTrigger, ActionButton, Tooltip } from "@adobe/react-spectrum";
-import Delete from "@spectrum-icons/workflow/Delete";
+import { TooltipTrigger, ActionButton, Tooltip } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import Delete from "@react-spectrum/s2/icons/Delete";
 import PropTypes from "prop-types";
+
+// Nudges the button down to align with a field that has a label above it.
+// size-300 = 24px per the S1->S2 dimension token table.
+const MARGIN_TOP_STYLES = {
+  "size-300": style({ marginTop: 24 }),
+  0: style({ marginTop: 0 }),
+};
 
 const ClearButton = ({ value, setValue, marginTop }) => {
   return (
     <TooltipTrigger>
       <ActionButton
         data-test-id="clearButton"
-        marginTop={marginTop}
+        styles={MARGIN_TOP_STYLES[marginTop]}
         isQuiet
         onPress={() => {
           setValue("");
@@ -37,7 +45,7 @@ const ClearButton = ({ value, setValue, marginTop }) => {
 ClearButton.propTypes = {
   value: PropTypes.string.isRequired,
   setValue: PropTypes.func.isRequired,
-  marginTop: PropTypes.string,
+  marginTop: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export default ClearButton;

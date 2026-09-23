@@ -15,6 +15,8 @@ import { describe, it, beforeEach, afterEach, expect } from "vitest";
 import useView from "../helpers/useView";
 import SendEventView from "../../../src/view/actions/sendEventView";
 import field from "../helpers/field";
+import { worker } from "../helpers/mocks/browser";
+import { sandboxWithoutProdHandlers } from "../helpers/mocks/defaultHandlers";
 
 let view;
 let driver;
@@ -39,6 +41,28 @@ describe("Send Event Action", () => {
 
   afterEach(() => {
     cleanup();
+  });
+
+  it("selects a sandbox by its S2 collection id in datastream overrides", async () => {
+    worker.use(...sandboxWithoutProdHandlers);
+    await driver.init({
+      extensionSettings: {
+        instances: [{ name: "alloy", edgeConfigId: "PR123" }],
+        components: {},
+      },
+    });
+
+    await field(view.getByTestId("overridesEnabled")).selectOption("Enabled");
+    await expect.element(view.getByTestId("sandbox")).toBeVisible();
+    const sandbox = field(view.getByTestId("sandbox"));
+    await sandbox.expectValue("PRODUCTION Test Sandbox 2 (VA7)");
+    await sandbox.selectOption("PRODUCTION Test Sandbox 1 (VA7)");
+    await sandbox.expectValue("PRODUCTION Test Sandbox 1 (VA7)");
+    await driver
+      .expectSettings(
+        (settings) => settings.edgeConfigOverrides.development.sandbox,
+      )
+      .toBe("testsandbox1");
   });
 
   describe("Component visibility based on configuration", () => {

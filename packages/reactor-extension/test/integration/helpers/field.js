@@ -49,29 +49,97 @@ const withRetries = async (fn) => {
   return undefined;
 };
 
+// S2 TextField/TextArea/NumberField forward `data-test-id` to their outer
+// react-aria-components wrapper, not the native <input>/<textarea> it renders
+// (v3 forwarded it straight to the control). Interactions that need a real
+// form control drill down to it when the located element isn't already one.
+const asControl = (locator) => {
+  const tagName = locator.element().tagName.toLowerCase();
+  if (tagName === "input" || tagName === "textarea" || tagName === "select") {
+    return locator;
+  }
+  return locator.locator("input, textarea, select").first();
+};
+
+// Same story for S2 Checkbox/Radio: `data-test-id` lands on the outer
+// <label>, which jest-dom's toBeChecked()/aria-checked assertions reject.
+const asCheckable = (locator) => {
+  const el = locator.element();
+  const isCheckableInput =
+    el.tagName.toLowerCase() === "input" &&
+    (el.type === "checkbox" || el.type === "radio");
+  if (isCheckableInput || el.hasAttribute("aria-checked")) {
+    return locator;
+  }
+  return locator
+    .locator('input[type="checkbox"], input[type="radio"], [aria-checked]')
+    .first();
+};
+
+// Same story for S2 Picker/ComboBox: `data-test-id` lands on the outer
+// field wrapper, not the trigger button (Picker) or input (ComboBox) that
+// actually carries aria-expanded/aria-controls.
+const asTrigger = (locator) => {
+  const tagName = locator.element().tagName.toLowerCase();
+  if (tagName === "input" || tagName === "button") {
+    return locator;
+  }
+  return locator.locator("input, button").first();
+};
+
+// isDisabled/isEnabled apply to every field type. The real control may be
+// the locator itself, or a nested control when `data-test-id` is on the S2
+// field wrapper - including a nested trigger button (Picker/ComboBox), whose
+// native `disabled` is what jest-dom reads. Fall back to the wrapper only
+// when no control is nested.
+const preferControl = (locator) => {
+  const tagName = locator.element().tagName.toLowerCase();
+  if (
+    tagName === "input" ||
+    tagName === "textarea" ||
+    tagName === "select" ||
+    tagName === "button"
+  ) {
+    return locator;
+  }
+  const nested = locator.locator("input, textarea, select, button").first();
+  return nested.query() ? nested : locator;
+};
+
+// Native checkbox/radio inputs report their state via the `checked`
+// property, not an `aria-checked` attribute (that's only for custom,
+// non-native role="checkbox"/"radio" elements).
+const isChecked = (el) => {
+  if (
+    el.tagName.toLowerCase() === "input" &&
+    (el.type === "checkbox" || el.type === "radio")
+  ) {
+    return el.checked;
+  }
+  return el.getAttribute("aria-checked") === "true";
+};
+
 const field = (locator) => ({
   // Actions:
   // ================================
   blur: async () =>
     withRetries(async () => {
       await expect.element(locator, TIMEOUT).toBeVisible();
-      locator.element().blur();
-      await expect.element(locator, TIMEOUT).not.toHaveFocus();
+      asControl(locator).element().blur();
+      await expect.element(asControl(locator), TIMEOUT).not.toHaveFocus();
     }),
   check: async () =>
     withRetries(async () => {
-      if (locator.element().getAttribute("aria-checked") !== "true") {
+      if (!isChecked(asCheckable(locator).element())) {
         await locator.click(TIMEOUT);
-        await expect
-          .element(locator, TIMEOUT)
-          .toHaveAttribute("aria-checked", "true");
+        await expect.element(asCheckable(locator), TIMEOUT).toBeChecked();
       }
     }),
   clear: async () =>
     withRetries(async () => {
-      await locator.clear(TIMEOUT);
+      await asControl(locator).clear(TIMEOUT);
       await userEvent.tab();
-      await expect.element(locator, TIMEOUT).toHaveValue("");
+      await expect.element(asControl(locator), TIMEOUT).toHaveValue("");
     }),
   click: async (options) =>
     withRetries(async () => {
@@ -105,15 +173,15 @@ const field = (locator) => ({
     }),
   fill: async (value) =>
     withRetries(async () => {
-      await locator.fill(value, TIMEOUT);
-      locator.element().blur();
-      await expect.element(locator, TIMEOUT).toHaveValue(value);
+      await asControl(locator).fill(value, TIMEOUT);
+      asControl(locator).element().blur();
+      await expect.element(asControl(locator), TIMEOUT).toHaveValue(value);
     }),
   focus: async () =>
     withRetries(async () => {
       await expect.element(locator, TIMEOUT).toBeVisible();
-      locator.element().focus();
-      await expect.element(locator, TIMEOUT).toHaveFocus();
+      asControl(locator).element().focus();
+      await expect.element(asControl(locator), TIMEOUT).toHaveFocus();
     }),
   scrollIntoView: () =>
     withRetries(async () => {
@@ -122,17 +190,20 @@ const field = (locator) => ({
     }),
   selectOption: async (name) =>
     withRetries(async () => {
-      if (locator.element().getAttribute("aria-expanded") === "false") {
-        const isComboBox = locator.element().tagName.toLowerCase() === "input";
-        const button = isComboBox
-          ? locator.locator("xpath=../../..").getByRole("button")
-          : locator;
+      const trigger = asTrigger(locator);
+      if (trigger.element().getAttribute("aria-expanded") === "false") {
+        const isComboBox = trigger.element().tagName.toLowerCase() === "input";
+        // The dropdown toggle button lives elsewhere in the ComboBox's own
+        // field wrapper, not the trigger input itself; scope the search to
+        // the original (outer) locator so it can't match an unrelated
+        // sibling button (e.g. a "Select data element" button next to it).
+        const button = isComboBox ? locator.getByRole("button") : trigger;
         await button.click(TIMEOUT);
         await expect
-          .element(locator, TIMEOUT)
+          .element(trigger, TIMEOUT)
           .toHaveAttribute("aria-expanded", "true");
       }
-      const listbox = locator.controls();
+      const listbox = trigger.controls();
       await expect.element(listbox, TIMEOUT).toBeVisible();
       const option = listbox.getByRole("option", { name, exact: true }).nth(0);
       await expect.element(option, TIMEOUT).toBeVisible();
@@ -145,36 +216,34 @@ const field = (locator) => ({
         await option.click(TIMEOUT);
       }
       await expect
-        .element(locator, TIMEOUT)
+        .element(trigger, TIMEOUT)
         .toHaveAttribute("aria-expanded", "false");
-      if (locator.element().tagName.toLowerCase() === "input") {
-        await expect.element(locator, TIMEOUT).toHaveValue(name);
+      if (trigger.element().tagName.toLowerCase() === "input") {
+        await expect.element(trigger, TIMEOUT).toHaveValue(name);
       } else {
-        await expect.element(locator, TIMEOUT).toHaveTextContent(name);
+        await expect.element(trigger, TIMEOUT).toHaveTextContent(name);
       }
     }),
   uncheck: async () =>
     withRetries(async () => {
-      if (locator.element().getAttribute("aria-checked") !== "false") {
+      if (isChecked(asCheckable(locator).element())) {
         await locator.click(TIMEOUT);
-        await expect
-          .element(locator, TIMEOUT)
-          .toHaveAttribute("aria-checked", "false");
+        await expect.element(asCheckable(locator), TIMEOUT).not.toBeChecked();
       }
     }),
   // Expectations:
   // ================================
   expectChecked: async () =>
     withRetries(async () => {
-      await expect.element(locator, TIMEOUT).toBeChecked();
+      await expect.element(asCheckable(locator), TIMEOUT).toBeChecked();
     }),
   expectDisabled: async () =>
     withRetries(async () => {
-      await expect.element(locator, TIMEOUT).toBeDisabled();
+      await expect.element(preferControl(locator), TIMEOUT).toBeDisabled();
     }),
   expectEnabled: async () =>
     withRetries(async () => {
-      await expect.element(locator, TIMEOUT).not.toBeDisabled();
+      await expect.element(preferControl(locator), TIMEOUT).not.toBeDisabled();
     }),
   expectExpanded: async () =>
     withRetries(async () => {
@@ -184,14 +253,14 @@ const field = (locator) => ({
     }),
   expectError: async (message) =>
     withRetries(async () => {
-      await expect.element(locator, TIMEOUT).not.toBeValid();
+      await expect.element(asControl(locator), TIMEOUT).not.toBeValid();
       await expect
-        .element(locator, TIMEOUT)
+        .element(asControl(locator), TIMEOUT)
         .toHaveAccessibleDescription(message);
     }),
   expectFocus: async () =>
     withRetries(async () => {
-      await expect.element(locator, TIMEOUT).toHaveFocus();
+      await expect.element(asControl(locator), TIMEOUT).toHaveFocus();
     }),
   expectHidden: async () =>
     withRetries(async () => {
@@ -217,23 +286,37 @@ const field = (locator) => ({
     }),
   expectUnchecked: async () =>
     withRetries(async () => {
-      await expect.element(locator, TIMEOUT).not.toBeChecked();
+      await expect.element(asCheckable(locator), TIMEOUT).not.toBeChecked();
+    }),
+  // S2 sets the native `required` attribute whenever `isRequired` is passed,
+  // regardless of Formik's touched/error state (v3 only reflected it via
+  // aria-required). So an empty required field is natively invalid the
+  // moment it renders - use this to assert no error is DISPLAYED to the
+  // user yet, rather than expectValid()'s native-constraint check.
+  expectNotInvalid: async () =>
+    withRetries(async () => {
+      await expect
+        .element(asControl(locator), TIMEOUT)
+        .not.toHaveAttribute("aria-invalid", "true");
     }),
   expectValid: async () =>
     withRetries(async () => {
-      await expect.element(locator, TIMEOUT).toBeValid();
+      await expect.element(asControl(locator), TIMEOUT).toBeValid();
     }),
   expectValue: async (value) =>
     withRetries(async () => {
-      if (locator.element().tagName.toLowerCase() === "button") {
-        await expect.element(locator, TIMEOUT).toHaveTextContent(value);
+      // A Picker's trigger is a button that shows the selected label as text,
+      // not a value-bearing form control - use whichever asTrigger finds.
+      const target = asTrigger(locator);
+      if (target.element().tagName.toLowerCase() === "button") {
+        await expect.element(target, TIMEOUT).toHaveTextContent(value);
       } else if (value instanceof RegExp) {
-        await expect.element(locator, TIMEOUT).toBeVisible();
-        const el = locator.element();
+        await expect.element(target, TIMEOUT).toBeVisible();
+        const el = target.element();
         expect(el.value).toMatch(value);
       } else {
         // It seems the regular toHaveValue does not support regexes.
-        await expect.element(locator, TIMEOUT).toHaveValue(value);
+        await expect.element(target, TIMEOUT).toHaveValue(value);
       }
     }),
   expectVisible: async () =>
@@ -246,11 +329,17 @@ const field = (locator) => ({
     withRetries(async () => {
       await expect.element(locator, TIMEOUT).toBeVisible();
       const el = locator.element();
+      const tagName = el.tagName.toLowerCase();
       if (
-        el.tagName.toLowerCase() === "input" ||
-        el.tagName.toLowerCase() === "textarea"
+        tagName === "input" ||
+        tagName === "textarea" ||
+        tagName === "select"
       ) {
         return el.value;
+      }
+      const control = el.querySelector("input, textarea, select");
+      if (control) {
+        return control.value;
       }
       return el.textContent ?? "";
     }),
