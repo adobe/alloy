@@ -87,7 +87,7 @@ describe("Config personalization section", () => {
     await tgtPicker.expectValue(/always/i);
   });
 
-  it("renders enabled dropdowns with a white background", async () => {
+  it("renders enabled dropdowns with the restored background and border", async () => {
     await driver.init(buildSettings());
 
     for (const testId of [
@@ -99,6 +99,9 @@ describe("Config personalization section", () => {
 
       expect(window.getComputedStyle(trigger).backgroundColor).toBe(
         "rgb(255, 255, 255)",
+      );
+      expect(window.getComputedStyle(trigger).boxShadow).toContain(
+        "0px 0px 0px 1px inset",
       );
     }
   });
