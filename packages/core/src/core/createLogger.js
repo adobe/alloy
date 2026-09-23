@@ -39,9 +39,10 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
   };
 
   const log = (level, ...rest) => {
-    notifyMonitors("onBeforeLog", { level, arguments: rest });
+    const redactedRest = rest.map(redactEdgeCredentials);
+    notifyMonitors("onBeforeLog", { level, arguments: redactedRest });
     if (getDebugEnabled()) {
-      console[level](prefix, ...rest.map(redactEdgeCredentials));
+      console[level](prefix, ...redactedRest);
     }
   };
 

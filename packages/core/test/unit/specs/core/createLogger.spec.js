@@ -214,8 +214,23 @@ describe("createLogger", () => {
         onBeforeCommand: vi.fn(),
         onCommandResolved: vi.fn(),
         onCommandRejected: vi.fn(),
+        onBeforeLog: vi.fn(),
       };
       getMonitors = () => [monitor];
+    });
+    it("redacts a secret in the arguments handed to onBeforeLog", () => {
+      build();
+      logger.logOnInstanceConfigured({
+        config: { edgeCredentials: { clientSecret: "shh" } },
+      });
+      expect(monitor.onBeforeLog).toHaveBeenCalledWith(
+        expect.objectContaining({
+          arguments: [
+            "Instance configured. Computed configuration:",
+            { edgeCredentials: { clientSecret: "[REDACTED]" } },
+          ],
+        }),
+      );
     });
     it("redacts a secret in logOnInstanceConfigured's config, in both the console log and the monitor payload", () => {
       build();
