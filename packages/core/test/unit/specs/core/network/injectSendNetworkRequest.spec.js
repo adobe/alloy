@@ -82,7 +82,40 @@ describe("injectSendNetworkRequest", () => {
         url,
         payload,
       });
-      expect(sendFetchRequest).toHaveBeenCalledWith(url, payloadJson);
+      expect(sendFetchRequest).toHaveBeenCalledWith(
+        url,
+        payloadJson,
+        undefined,
+      );
+    });
+  });
+
+  it("forwards headers through to sendFetchRequest", () => {
+    return sendNetworkRequest({
+      requestId,
+      payload,
+      url,
+      useSendBeacon: false,
+      headers: { Authorization: "Bearer token" },
+    }).then(() => {
+      expect(sendFetchRequest).toHaveBeenCalledWith(url, payloadJson, {
+        Authorization: "Bearer token",
+      });
+    });
+  });
+
+  it("uses fetch instead of sendBeacon when headers are present, since sendBeacon can't carry custom headers", () => {
+    return sendNetworkRequest({
+      requestId,
+      payload,
+      url,
+      useSendBeacon: true,
+      headers: { Authorization: "Bearer token" },
+    }).then(() => {
+      expect(sendBeaconRequest).not.toHaveBeenCalled();
+      expect(sendFetchRequest).toHaveBeenCalledWith(url, payloadJson, {
+        Authorization: "Bearer token",
+      });
     });
   });
   it("handles a response with a JSON body", () => {

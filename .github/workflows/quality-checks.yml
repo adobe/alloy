@@ -44,3 +44,14 @@ jobs:
           BUILD_NUMBER: $GITHUB_RUN_NUMBER
           BUILD_ID: $GITHUB_RUN_ID
           JOB_NUMBER: $GITHUB_JOB
+      # @adobe/alloy-node's integration suite hits the Edge Network with an
+      # OAuth Server-to-Server credential. It's separated into its own step
+      # so it can skip (does not fail) when the secrets are not set (eg on
+      # a fork's pull_request).
+      - run: pnpm run test:node-integration
+        env:
+          CLIENT_ID: ${{ secrets.ALLOY_NODE_INTEGRATION_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.ALLOY_NODE_INTEGRATION_CLIENT_SECRET }}
+          SCOPES: ${{ secrets.ALLOY_NODE_INTEGRATION_SCOPES }}
+          IMS_ORG_ID: ${{ secrets.ALLOY_NODE_INTEGRATION_IMS_ORG_ID }}
+          DATASTREAM_ID: ${{ secrets.ALLOY_NODE_INTEGRATION_DATASTREAM_ID }}

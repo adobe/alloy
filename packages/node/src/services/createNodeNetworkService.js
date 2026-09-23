@@ -26,12 +26,15 @@ const createNodeNetworkService = ({ headers: forwardedHeaders = {} } = {}) => {
   /**
    * @param {string} url
    * @param {string} body
+   * @param {Record<string, string>} [perCallHeaders] e.g. IMS auth headers
+   * for an authenticated Server API request. Can't override `Content-Type`.
    */
-  const sendFetchRequest = (url, body) =>
+  const sendFetchRequest = (url, body, perCallHeaders) =>
     fetch(url, {
       method: "POST",
       headers: {
         ...forwardedHeaders,
+        ...perCallHeaders,
         "Content-Type": "text/plain; charset=UTF-8",
       },
       body,

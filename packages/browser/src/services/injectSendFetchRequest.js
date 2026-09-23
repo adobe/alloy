@@ -11,13 +11,14 @@ governing permissions and limitations under the License.
 */
 
 export default ({ fetch }) => {
-  return (url, body) => {
+  return (url, body, headers) => {
     return fetch(url, {
       method: "POST",
       cache: "no-cache",
       credentials: "include", // To set the cookie header in the request.
       headers: {
         "Content-Type": "text/plain; charset=UTF-8",
+        ...headers,
       },
       referrerPolicy: "no-referrer-when-downgrade",
       body,

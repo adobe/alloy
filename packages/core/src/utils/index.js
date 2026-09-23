@@ -49,6 +49,7 @@ export { default as noop } from "./noop.js";
 export { default as parseUrl } from "./parseUrl.js";
 export { default as prepareConfigOverridesForEdge } from "./prepareConfigOverridesForEdge.js";
 export { default as queryString } from "./querystring.js";
+export { default as redactEdgeCredentials } from "./redactEdgeCredentials.js";
 export { default as sanitizeOrgIdForCookieName } from "./sanitizeOrgIdForCookieName.js";
 export { default as sortObjectKeysRecursively } from "./sortObjectKeysRecursively.js";
 export { default as stackError } from "./stackError.js";

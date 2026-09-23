@@ -291,7 +291,10 @@ describe("Config overrides section", () => {
 
   // Skipped: flakes under the coverage job's CPU contention — the Spectrum
   // overlay open/close timing stalls and the test exceeds its timeout. It
-  // passes reliably in the standalone integration run.
+  // passes reliably in the standalone integration run. The 60s timeout
+  // follows the same rationale as "updates form values and saves to
+  // settings" above: ~9 form actions in one test blows the default 30s
+  // project timeout under CI contention even though the test isn't hung.
   it.skip("allows you to save data elements", async () => {
     await driver.init(buildSettingsWithDummyDatastream());
 
@@ -334,7 +337,7 @@ describe("Config overrides section", () => {
           },
         },
       });
-  });
+  }, 60_000);
 
   // Skipped: flakes under the coverage job's CPU contention (overlay open/close
   // timing); passes reliably in the standalone integration run.
