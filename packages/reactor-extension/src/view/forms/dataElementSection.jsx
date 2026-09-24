@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { useField } from "formik";
-import { Radio } from "@adobe/react-spectrum";
+import { Radio } from "@react-spectrum/s2";
 import PropTypes from "prop-types";
 import { object } from "yup";
 import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
