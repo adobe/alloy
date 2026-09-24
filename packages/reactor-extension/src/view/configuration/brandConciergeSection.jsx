@@ -24,10 +24,10 @@ import {
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
 import SectionHeader from "../components/sectionHeader";
-import FormikCheckbox from "../components/formikReactSpectrum3/formikCheckbox";
-import FormikNumberField from "../components/formikReactSpectrum3/formikNumberField";
-import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
-import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
+import FormikCheckbox from "../forms/fields/Checkbox";
+import FormikNumberField from "../forms/fields/NumberField";
+import FormikTextField from "../forms/fields/TextField";
+import FormikRadioGroup from "../forms/fields/RadioGroup";
 import DataElementSelector from "../components/dataElementSelector";
 import FormElementContainer from "../components/formElementContainer";
 import BetaBadge from "../components/betaBadge";

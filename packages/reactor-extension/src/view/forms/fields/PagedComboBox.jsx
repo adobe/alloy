@@ -17,8 +17,8 @@ import { useField } from "formik";
 import usePagedComboBox from "../../utils/usePagedComboBox";
 
 import useIsFirstRender from "../../utils/useIsFirstRender";
-import Alert from "../alert";
-import widthStyle from "../widthStyle";
+import Alert from "../../components/alert";
+import widthStyle from "./widthStyle";
 
 const FormikPagedComboBox = ({
   name,

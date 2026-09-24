@@ -22,7 +22,7 @@ import XdmVariable, {
 import DataVariable, {
   bridge as dataVariableBridge,
 } from "./variable/components/dataVariable";
-import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
+import FormikRadioGroup from "../forms/fields/RadioGroup";
 import { XDM, DATA } from "./variable/constants/variableTypes";
 
 const getInitialValues =
