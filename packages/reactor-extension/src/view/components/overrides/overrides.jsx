@@ -82,12 +82,18 @@ const EnabledMatchOptions = Object.freeze(
  * @returns
  */
 const ProductSubsection = ({ children, name }) => (
-  <>
+  <div
+    className={style({
+      display: "flex",
+      flexDirection: "column",
+      gap: 8,
+    })}
+  >
     <SubsectionHeading size="XS" marginBottom="size-10">
       {name}
     </SubsectionHeading>
     {children}
-  </>
+  </div>
 );
 ProductSubsection.propTypes = {
   children: PropTypes.node.isRequired,
