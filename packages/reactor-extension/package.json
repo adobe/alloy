@@ -35,7 +35,6 @@
   },
   "dependencies": {
     "@adobe/alloy": "workspace:*",
-    "@adobe/react-spectrum": "^3.45.0",
     "@react-spectrum/s2": "^1.7.1",
     "@react-stately/data": "^3.14.1",
     "@spectrum-icons/illustrations": "^3.6.26",
@@ -96,8 +95,13 @@
     "manualSharedBundles": [
       {
         "name": "s2-styles",
-        "types": ["css"],
-        "assets": ["**/@react-spectrum/s2/**", "src/view/**/*.{js,jsx}"]
+        "types": [
+          "css"
+        ],
+        "assets": [
+          "**/@react-spectrum/s2/**",
+          "src/view/**/*.{js,jsx}"
+        ]
       }
     ]
   }

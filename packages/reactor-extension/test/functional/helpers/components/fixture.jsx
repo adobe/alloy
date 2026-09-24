@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { createRoot } from "react-dom/client";
-import { lightTheme, Provider } from "@adobe/react-spectrum";
+import { Provider as SpectrumProvider } from "@react-spectrum/s2";
 import deserializeReactElement from "./deserializeReactElement.mjs";
 import Heading from "../../../../src/view/components/typography/heading";
 import Body from "../../../../src/view/components/typography/body";
@@ -32,12 +32,8 @@ window.renderSerializedReactElement = (element) => {
   });
 
   root.render(
-    <Provider
-      theme={lightTheme}
-      colorScheme="light"
-      UNSAFE_className="react-spectrum-provider"
-    >
+    <SpectrumProvider background="base" colorScheme="light">
       {deserializedReactElement}
-    </Provider>,
+    </SpectrumProvider>,
   );
 };
