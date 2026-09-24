@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { InlineAlert, Heading, Content } from "@adobe/react-spectrum";
+import { InlineAlert, Heading, Content } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import render from "../render";
 import ExtensionView from "../components/extensionView";
 import FillParentAndCenterChildren from "../components/fillParentAndCenterChildren";
@@ -56,7 +57,12 @@ const EventMergeId = () => (
 
       return isPreinstalled ? (
         <FillParentAndCenterChildren>
-          <InlineAlert variant="negative" width="size-6000">
+          <InlineAlert
+            variant="negative"
+            styles={style({
+              width: 480,
+            })}
+          >
             <Heading>
               Not available when using a self-hosted Alloy instance
             </Heading>
@@ -76,7 +82,12 @@ const EventMergeId = () => (
           whole
         >
           <FillParentAndCenterChildren>
-            <InlineAlert variant="info" width="size-6000">
+            <InlineAlert
+              variant="informative"
+              styles={style({
+                width: 480,
+              })}
+            >
               <Heading size="XXS">Event merge ID caching</Heading>
               <Content>
                 This data element will provide an event merge ID. Regardless of
