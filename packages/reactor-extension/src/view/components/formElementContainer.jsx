@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { Flex } from "@adobe/react-spectrum";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 
 const FormElementContainer = ({
@@ -18,9 +18,18 @@ const FormElementContainer = ({
   ...otherProps
 }) => {
   return (
-    <Flex direction={direction} gap="size-100" {...otherProps}>
+    <div
+      {...otherProps}
+      className={style({
+        display: "flex",
+        gap: 8,
+      })}
+      style={{
+        flexDirection: direction,
+      }}
+    >
       {children}
-    </Flex>
+    </div>
   );
 };
 

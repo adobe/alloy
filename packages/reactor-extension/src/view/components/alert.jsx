@@ -11,10 +11,14 @@ governing permissions and limitations under the License.
 */
 
 import classNames from "classnames";
-import { Flex } from "@adobe/react-spectrum";
-import AlertIcon from "@spectrum-icons/workflow/Alert";
-import InfoIcon from "@spectrum-icons/workflow/Info";
-import CheckmarkCircle from "@spectrum-icons/workflow/CheckmarkCircle";
+import {
+  style,
+  iconStyle,
+  color,
+} from "@react-spectrum/s2/style" with { type: "macro" };
+import AlertIcon from "@react-spectrum/s2/icons/AlertTriangle";
+import InfoIcon from "@react-spectrum/s2/icons/InfoCircle";
+import CheckmarkCircle from "@react-spectrum/s2/icons/CheckmarkCircle";
 import "./alert.css";
 import PropTypes from "prop-types";
 import Heading from "./typography/heading";
@@ -29,6 +33,84 @@ const iconByVariant = {
   negative: AlertIcon,
 };
 
+// One style per variant: the style() macro needs a literal object per call,
+// so the rest of the box chrome (identical across variants) is duplicated
+// here instead of composed from a runtime variant value. borderColor only
+// has a named "negative" token (no informative/positive/notice), so the
+// other variants resolve their border through the color() macro instead.
+const CONTAINER_STYLES = {
+  neutral: style({
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+    boxSizing: "border-box",
+    borderWidth: 2,
+    borderStyle: "solid",
+    borderRadius: "sm",
+    padding: 24,
+    borderColor: "gray-600",
+  }),
+  informative: style({
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+    boxSizing: "border-box",
+    borderWidth: 2,
+    borderStyle: "solid",
+    borderRadius: "sm",
+    padding: 24,
+    borderColor: `[${color("informative-900")}]`,
+  }),
+  positive: style({
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+    boxSizing: "border-box",
+    borderWidth: 2,
+    borderStyle: "solid",
+    borderRadius: "sm",
+    padding: 24,
+    borderColor: `[${color("positive-900")}]`,
+  }),
+  notice: style({
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+    boxSizing: "border-box",
+    borderWidth: 2,
+    borderStyle: "solid",
+    borderRadius: "sm",
+    padding: 24,
+    borderColor: `[${color("notice-900")}]`,
+  }),
+  negative: style({
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+    boxSizing: "border-box",
+    borderWidth: 2,
+    borderStyle: "solid",
+    borderRadius: "sm",
+    padding: 24,
+    borderColor: "negative",
+  }),
+};
+
+const HEADER_STYLE = style({ display: "flex", alignItems: "center" });
+const DESCRIPTION_STYLE = style({ color: "gray-700" });
+
+// One iconStyle() per variant: the macro needs a literal color per call.
+const ICON_STYLES = {
+  informative: iconStyle({
+    size: "S",
+    color: "informative",
+    marginStart: "auto",
+  }),
+  positive: iconStyle({ size: "S", color: "positive", marginStart: "auto" }),
+  notice: iconStyle({ size: "S", color: "notice", marginStart: "auto" }),
+  negative: iconStyle({ size: "S", color: "negative", marginStart: "auto" }),
+};
+
 const Alert = ({
   variant = "neutral",
   title,
@@ -38,18 +120,18 @@ const Alert = ({
 }) => {
   const Icon = iconByVariant[variant];
   return (
-    <Flex
-      direction="column"
-      gap="size-100"
-      UNSAFE_className={classNames("Alert", `Alert--${variant}`, className)}
+    <div
+      className={classNames(CONTAINER_STYLES[variant], className)}
       {...otherProps}
     >
-      <Flex alignItems="center">
+      <div className={HEADER_STYLE}>
         <Heading size="XXS">{title}</Heading>
-        <Icon size="S" color={variant} marginStart="auto" />
-      </Flex>
-      <div className="Alert-description">{children}</div>
-    </Flex>
+        <Icon styles={ICON_STYLES[variant]} />
+      </div>
+      <div className={classNames("Alert-description", DESCRIPTION_STYLE)}>
+        {children}
+      </div>
+    </div>
   );
 };
 

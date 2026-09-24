@@ -10,9 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { ActionButton } from "@adobe/react-spectrum";
+import { ActionButton } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import PropTypes from "prop-types";
+
+const MARGIN_TOP_STYLE = style({ marginTop: 24 });
 
 const RestoreDefaultValueButton = ({
   "data-test-id": dataTestId,
@@ -29,7 +32,7 @@ const RestoreDefaultValueButton = ({
       onPress={() => {
         setValue(defaultValue, true);
       }}
-      marginTop={fieldHasLabel ? "size-300" : undefined}
+      styles={fieldHasLabel ? MARGIN_TOP_STYLE : undefined}
     >
       Restore default
     </ActionButton>

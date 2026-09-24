@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { Component } from "react";
 import PropTypes from "prop-types";
-import { Link } from "@adobe/react-spectrum";
+import { Link } from "@react-spectrum/s2";
 import ErrorMessage from "./errorMessage";
 import UserReportableError from "../errors/userReportableError";
 
