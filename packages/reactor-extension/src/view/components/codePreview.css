@@ -15,17 +15,16 @@ governing permissions and limitations under the License.
   font-family: monospace;
   white-space: pre;
   overflow: hidden !important;
+  height: 128px !important;
 }
 
 .CodePreview-openEditorButton {
   position: absolute !important;
-  /* The TextArea component has been given a specific
-  height, but that height includes the label as well.
-  we want the button to be centered within the underlying
-  textarea DOM element that's showing the code. */
+  /* Center the button within the 128px text area below its label. */
   top: 87px;
   left: 50%;
   transform: translate(-50%, -50%);
+  width: max-content;
   white-space: nowrap;
 
   /* This class must stay on a wrapper around the ActionButton, not on the
@@ -38,8 +37,7 @@ governing permissions and limitations under the License.
 /* This is a workaround for a react-spectrum bug */
 /* https://github.com/adobe/react-spectrum/issues/2475 */
 .CodePreview-textArea {
-
-  &>div,
+  & > div,
   & .spectrum-Field-field--multiline {
     flex: 1 1 auto !important;
   }
