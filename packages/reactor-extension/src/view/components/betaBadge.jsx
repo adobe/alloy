@@ -13,7 +13,10 @@ import { Badge } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 
-const BADGE_STYLE = style({ marginStart: 8 });
+const BADGE_STYLE = style({
+  marginStart: 8,
+  width: "fit",
+});
 
 // S2 Badge has no background-color override; the disabled look uses the
 // neutral variant instead of forcing a specific color like v3 did.

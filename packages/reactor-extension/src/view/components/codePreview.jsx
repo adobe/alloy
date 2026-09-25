@@ -53,7 +53,6 @@ const CodePreview = ({
           isInvalid={Boolean(error)}
           styles={style({
             width: 400,
-            height: 128,
           })}
         />
       </FieldDescriptionAndError>
