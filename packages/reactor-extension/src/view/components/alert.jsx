@@ -19,7 +19,6 @@ import {
 import AlertIcon from "@react-spectrum/s2/icons/AlertTriangle";
 import InfoIcon from "@react-spectrum/s2/icons/InfoCircle";
 import CheckmarkCircle from "@react-spectrum/s2/icons/CheckmarkCircle";
-import "./alert.css";
 import PropTypes from "prop-types";
 import Heading from "./typography/heading";
 
@@ -128,9 +127,7 @@ const Alert = ({
         <Heading size="XXS">{title}</Heading>
         <Icon styles={ICON_STYLES[variant]} />
       </div>
-      <div className={classNames("Alert-description", DESCRIPTION_STYLE)}>
-        {children}
-      </div>
+      <div className={DESCRIPTION_STYLE}>{children}</div>
     </div>
   );
 };
