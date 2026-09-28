@@ -19,10 +19,11 @@ import {
   InlineAlert,
   Heading,
   Content,
+  mergeStyles,
 } from "@react-spectrum/s2";
 import { useEffect } from "react";
 import { useAsyncList } from "@react-stately/data";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { css, style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import { useField } from "formik";
 import Copy from "@react-spectrum/s2/icons/Copy";
@@ -44,13 +45,29 @@ import { capitialize } from "./overrides/utils";
 const ACTIONS_ROW_STYLE_WIDE_MARGIN = style({
   display: "flex",
   flexDirection: "row",
-  marginTop: 24,
+  marginTop: 16,
 });
 const ACTIONS_ROW_STYLE = style({
   display: "flex",
   flexDirection: "row",
-  marginTop: 16,
+  marginTop: 8,
 });
+
+// Match the enabled Picker trigger appearance used by the extension's other
+// form pickers. Picker's `styles` prop only accepts layout properties.
+const PICKER_APPEARANCE = mergeStyles(
+  style({
+    "--pickerBackground": { type: "backgroundColor", value: "gray-25" },
+    "--pickerBorder": { type: "borderColor", value: "gray-300" },
+  }),
+  css(
+    `& > * > button:not(:disabled) {
+      background-color: var(--pickerBackground);
+      box-shadow: inset 0 0 0 1px var(--pickerBorder);
+    }`,
+    "datastreamPickerAppearance",
+  ),
+);
 
 const getKey = (datastream) => datastream && datastream._system.id;
 const getLabel = (datastream) => {
@@ -159,6 +176,7 @@ const DatastreamSelector = ({
             display: "flex",
             flexDirection: "row",
             gap: 8,
+            alignItems: "start",
           })}
         >
           <div>
@@ -242,9 +260,10 @@ const DatastreamSelector = ({
         display: "flex",
         flexDirection: "row",
         gap: 8,
+        alignItems: "start",
       })}
     >
-      <div>
+      <div className={PICKER_APPEARANCE}>
         <Picker
           {...datastreamProps}
           value={value}
