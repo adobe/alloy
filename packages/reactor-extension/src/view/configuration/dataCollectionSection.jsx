@@ -302,7 +302,7 @@ const DataCollectionSection = ({ instanceFieldName }) => {
           placeholder={ON_BEFORE_EVENT_SEND_PLACEHOLDER}
         />
         {activityCollectorEnabled ? (
-          <div>
+          <FormElementContainer>
             <FormikCheckbox
               data-test-id="internalLinkEnabledField"
               name={`${instanceFieldName}.clickCollection.internalLinkEnabled`}
@@ -458,7 +458,7 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                   />
                 </Flex>
               )}
-          </div>
+          </FormElementContainer>
         ) : (
           <View width="size-6000">
             <InlineAlert variant="info">

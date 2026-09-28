@@ -17,17 +17,30 @@ const BADGE_STYLE = style({
   marginStart: 8,
   width: "fit",
 });
+const BADGE_CONTAINER_STYLE = style({
+  display: "inline-flex",
+  verticalAlign: "middle",
+});
 
 // S2 Badge has no background-color override; the disabled look uses the
 // neutral variant instead of forcing a specific color like v3 did.
 const betaBadge = ({ isDisabled }) => {
   return (
-    <Badge
-      variant={isDisabled ? "neutral" : "informative"}
-      styles={BADGE_STYLE}
-    >
-      Beta
-    </Badge>
+    <span className={BADGE_CONTAINER_STYLE}>
+      {/* Keep the Beta badge at the compact height used before the S2 migration. */}
+      <Badge
+        variant={isDisabled ? "neutral" : "informative"}
+        styles={BADGE_STYLE}
+        UNSAFE_style={{
+          alignItems: "center",
+          height: 18,
+          minHeight: 18,
+          paddingBlock: 0,
+        }}
+      >
+        Beta
+      </Badge>
+    </span>
   );
 };
 

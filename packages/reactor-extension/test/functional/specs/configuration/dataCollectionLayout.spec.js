@@ -58,6 +58,15 @@ test("keeps callback buttons and beta badges inside their visual bounds", async 
         textareaHeight: textareaBounds.height,
       };
     });
+    const localGrouping = document.querySelector(
+      '[data-test-id="eventGroupingMemoryField"]',
+    );
+    const externalLinks = document.querySelector(
+      '[data-test-id="externalLinkEnabledField"]',
+    );
+    const eventGroupingGap =
+      externalLinks.getBoundingClientRect().top -
+      localGrouping.getBoundingClientRect().bottom;
 
     const badges = [
       "eventGroupingSessionStorageField",
@@ -73,14 +82,54 @@ test("keeps callback buttons and beta badges inside their visual bounds", async 
           left.getBoundingClientRect().width,
       )[0];
       const label = betaElements[betaElements.length - 1];
+      const badgeBounds = badge.getBoundingClientRect();
+      const labelBounds = label.getBoundingClientRect();
+      let sameLine;
+
+      if (testId === "eventGroupingMemoryField") {
+        const labelContainer = Array.from(option.querySelectorAll("span")).find(
+          (element) =>
+            element.textContent.startsWith(
+              "Event grouping using local object:",
+            ),
+        );
+        const textWalker = document.createTreeWalker(
+          labelContainer,
+          NodeFilter.SHOW_TEXT,
+        );
+        let textNode;
+
+        while ((textNode = textWalker.nextNode())) {
+          const phrase = "page applications.";
+          const phraseStart = textNode.textContent.lastIndexOf(phrase);
+          if (phraseStart >= 0) {
+            const range = document.createRange();
+            range.setStart(textNode, phraseStart);
+            range.setEnd(textNode, phraseStart + phrase.length);
+            const textBounds = range.getBoundingClientRect();
+            const badgeBounds = badge.getBoundingClientRect();
+            sameLine =
+              badgeBounds.top < textBounds.bottom &&
+              badgeBounds.bottom > textBounds.top;
+            break;
+          }
+        }
+      }
 
       return {
-        width: badge.getBoundingClientRect().width,
+        testId,
+        width: badgeBounds.width,
+        height: badgeBounds.height,
+        verticalCenterOffset: Math.abs(
+          (labelBounds.top + labelBounds.bottom) / 2 -
+            (badgeBounds.top + badgeBounds.bottom) / 2,
+        ),
         textClipped: label.scrollWidth > label.clientWidth,
+        sameLine,
       };
     });
 
-    return { callbackFields, badges };
+    return { callbackFields, badges, eventGroupingGap };
   });
 
   await t.expect(geometry.callbackFields.length).eql(2);
@@ -106,8 +155,27 @@ test("keeps callback buttons and beta badges inside their visual bounds", async 
   await t
     .expect(
       geometry.badges.every(
-        ({ width, textClipped }) => width <= 60 && !textClipped,
+        ({ width, height, textClipped, verticalCenterOffset }) =>
+          width <= 60 &&
+          height <= 20 &&
+          !textClipped &&
+          verticalCenterOffset <= 1,
       ),
     )
-    .ok("Beta badges must be content-sized without clipping their labels");
+    .ok(
+      "Beta badges must be compact and content-sized without clipping labels",
+    );
+  await t
+    .expect(
+      geometry.badges.find(
+        ({ testId }) => testId === "eventGroupingMemoryField",
+      ).sameLine,
+    )
+    .ok("The local event grouping badge must stay inline with its label");
+  await t
+    .expect(geometry.eventGroupingGap)
+    .gte(
+      8,
+      "Event grouping and the next checkbox must have consistent spacing",
+    );
 });
