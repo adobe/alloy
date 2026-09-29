@@ -48,6 +48,9 @@ test("keeps callback buttons and beta badges inside their visual bounds", async 
       const buttonBounds = button.getBoundingClientRect();
       const textareaBounds = textarea.getBoundingClientRect();
       const buttonLabel = button.querySelector("button span");
+      const buttonBackground = getComputedStyle(
+        button.querySelector("button"),
+      ).backgroundColor;
 
       return {
         buttonTop: buttonBounds.top,
@@ -56,6 +59,10 @@ test("keeps callback buttons and beta badges inside their visual bounds", async 
         textareaTop: textareaBounds.top,
         textareaBottom: textareaBounds.bottom,
         textareaHeight: textareaBounds.height,
+        backgroundColor: getComputedStyle(textarea).backgroundColor,
+        parentBackground: getComputedStyle(textarea.parentElement)
+          .backgroundColor,
+        buttonBackground,
       };
     });
     const localGrouping = document.querySelector(
@@ -152,6 +159,25 @@ test("keeps callback buttons and beta badges inside their visual bounds", async 
       ),
     )
     .ok("Callback buttons and labels must fit inside tall text areas");
+  await t
+    .expect(
+      geometry.callbackFields.every(
+        ({ backgroundColor, parentBackground }) =>
+          backgroundColor !== "rgb(255, 255, 255)" &&
+          backgroundColor !== "rgba(0, 0, 0, 0)" &&
+          parentBackground === backgroundColor,
+      ),
+    )
+    .ok(
+      "Callback code previews and their padding must share a grey background",
+    );
+  await t
+    .expect(
+      geometry.callbackFields.every(
+        ({ buttonBackground }) => buttonBackground === "rgb(255, 255, 255)",
+      ),
+    )
+    .ok("Callback editor buttons must remain white against the grey preview");
   await t
     .expect(
       geometry.badges.every(
