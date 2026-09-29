@@ -33,10 +33,16 @@ const CodePreview = ({
     <div
       className={style({
         position: "relative",
+        width: "fit",
+        "--codePreviewBackground": {
+          type: "backgroundColor",
+          value: "gray-200",
+        },
+        "--codePreviewButtonBackground": {
+          type: "backgroundColor",
+          value: "base",
+        },
       })}
-      style={{
-        width: "fit-content",
-      }}
     >
       <LabeledValue label={label} aria-label={ariaLabel} />
       {beta && <BetaBadge />}

@@ -10,6 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+.CodePreview-textArea > [role="presentation"],
+.CodePreview-textArea textarea {
+  background-color: var(--codePreviewBackground) !important;
+}
+
 .CodePreview-textArea textarea {
   font-size: 12px;
   font-family: monospace;
@@ -32,6 +37,10 @@ governing permissions and limitations under the License.
   pressed (pressScale), which would replace this centering transform mid-press
   and shift the button out from under the pointer, silently swallowing the
   click. */
+}
+
+.CodePreview-openEditorButton button:not([data-hovered]):not([data-pressed]) {
+  background-color: var(--codePreviewButtonBackground);
 }
 
 /* This is a workaround for a react-spectrum bug */
