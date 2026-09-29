@@ -10,11 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { View } from "@adobe/react-spectrum";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 
 const FieldSubset = ({ children }) => {
-  return <View marginStart="size-300">{children}</View>;
+  return (
+    <div
+      className={style({
+        marginStart: 24,
+      })}
+    >
+      {children}
+    </div>
+  );
 };
 
 FieldSubset.propTypes = {
