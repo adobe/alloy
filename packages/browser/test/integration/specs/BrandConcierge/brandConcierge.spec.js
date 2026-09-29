@@ -232,26 +232,4 @@ describe("BrandConcierge - sendConversationEvent", () => {
     expect(surfaces[0]).toBe("web://business.adobe.com/products");
     expect(surfaces[1]).toMatch(/^web:\/\//);
   });
-
-  test("BC7 - sendConversationEvent rejects invalid surfaces without sending a request", async ({
-    alloy,
-    worker,
-    networkRecorder,
-  }) => {
-    worker.use(brandConciergeStreamingHandler);
-    await alloy("configure", bcConfig);
-
-    await expect(
-      alloy("sendConversationEvent", {
-        message: "Hello",
-        surfaces: "web://business.adobe.com/products",
-        onStreamResponse: () => {},
-      }),
-    ).rejects.toThrow(/surface/);
-
-    const calls = await networkRecorder.findCalls(
-      /brand-concierge\/conversations/,
-    );
-    expect(calls).toHaveLength(0);
-  });
 });

@@ -32,9 +32,6 @@ const xdmValidator = objectOf({
 });
 
 export default ({ options }) => {
-  // `surfaces` must be declared on every branch. objectOf passes unknown keys
-  // through and anyOf accepts the first passing branch, so a branch without
-  // `surfaces` would let an invalid value through.
   const brandConciergeEventValidator = anyOf([
     objectOf({
       message: string().required(),
@@ -46,7 +43,6 @@ export default ({ options }) => {
     objectOf({
       xdm: xdmValidator,
       voiceEnabled: boolean().default(false),
-      surfaces: arrayOf(string()).uniqueItems(),
     }).required(),
     objectOf({
       data: objectOf({

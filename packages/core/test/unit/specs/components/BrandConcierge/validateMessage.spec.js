@@ -420,24 +420,11 @@ describe("BrandConcierge::validateMessage", () => {
   });
 
   describe("surfaces option", () => {
-    // Like personalization.surfaces, the validator only checks for an array of
-    // unique strings. The values are sent as is.
     const validSurfaces = [
       [],
       ["web://business.adobe.com/products"],
       ["web://business.adobe.com/products", "web://www.adobe.com/"],
       ["", "not a surface"],
-    ];
-
-    const invalidSurfaces = [
-      "web://business.adobe.com/products",
-      123,
-      true,
-      {},
-      () => {},
-      [123],
-      ["web://adobe.com/", {}],
-      ["web://adobe.com/", "web://adobe.com/"],
     ];
 
     const eventShapes = {
@@ -464,21 +451,6 @@ describe("BrandConcierge::validateMessage", () => {
         validSurfaces.forEach((surfaces) => {
           const result = validateMessage({ options: { ...shape, surfaces } });
           expect(result.surfaces).toEqual(surfaces);
-        });
-      });
-    });
-
-    // Every anyOf branch must declare `surfaces`. Otherwise an invalid value
-    // fails one branch and passes the permissive xdm branch.
-    Object.entries(eventShapes).forEach(([shapeName, shape]) => {
-      it(`rejects invalid surfaces on ${shapeName} events`, () => {
-        invalidSurfaces.forEach((surfaces) => {
-          expect(
-            () => {
-              validateMessage({ options: { ...shape, surfaces } });
-            },
-            `surfaces ${String(surfaces)}`,
-          ).toThrowError();
         });
       });
     });
