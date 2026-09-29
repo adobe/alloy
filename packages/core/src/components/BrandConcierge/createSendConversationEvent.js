@@ -40,6 +40,7 @@ export default ({
       xdm,
       data,
       voiceEnabled = false,
+      surfaces: requestSurfaces,
     } = options;
     const payload = createDataCollectionRequestPayload();
     const request = createConversationServiceRequest({
@@ -51,14 +52,22 @@ export default ({
 
     const event = eventManager.createEvent();
     if (message || data) {
+      const surfaces = [...(requestSurfaces || [])];
       const pageSurface = getPageSurface(getPageLocation);
+      if (!surfaces.includes(pageSurface)) {
+        surfaces.push(pageSurface);
+      }
       event.mergeQuery({
         conversation: {
-          surfaces: [pageSurface],
+          surfaces,
           message,
           data,
         },
       });
+    } else if (requestSurfaces && requestSurfaces.length > 0) {
+      logger.info(
+        "The surfaces option is ignored for events without a message or data.",
+      );
     }
 
     const { state } = consent.current();

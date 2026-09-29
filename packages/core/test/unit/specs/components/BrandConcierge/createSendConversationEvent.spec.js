@@ -338,6 +338,202 @@ describe("createSendConversationEvent", () => {
     await runWithConfig(false);
   });
 
+  describe("surfaces option", () => {
+    beforeEach(() => {
+      mockDependencies.sendConversationServiceRequest.mockResolvedValue({
+        ok: true,
+        status: 200,
+        body: createMockReadableStream([]),
+      });
+    });
+
+    it("sends only the page surface when surfaces is not provided", async () => {
+      const sendConversationEvent =
+        createSendConversationEvent(mockDependencies);
+      await sendConversationEvent({
+        message: "Hello",
+        onStreamResponse: vi.fn(),
+      });
+
+      expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
+        conversation: {
+          surfaces: ["web://test.adobe.com/page"],
+          message: "Hello",
+          data: undefined,
+        },
+      });
+    });
+
+    it("sends only the page surface when surfaces is null", async () => {
+      const sendConversationEvent =
+        createSendConversationEvent(mockDependencies);
+      await sendConversationEvent({
+        message: "Hello",
+        onStreamResponse: vi.fn(),
+        surfaces: null,
+      });
+
+      expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
+        conversation: {
+          surfaces: ["web://test.adobe.com/page"],
+          message: "Hello",
+          data: undefined,
+        },
+      });
+    });
+
+    it("sends only the page surface when surfaces is empty", async () => {
+      const sendConversationEvent =
+        createSendConversationEvent(mockDependencies);
+      await sendConversationEvent({
+        message: "Hello",
+        onStreamResponse: vi.fn(),
+        surfaces: [],
+      });
+
+      expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
+        conversation: {
+          surfaces: ["web://test.adobe.com/page"],
+          message: "Hello",
+          data: undefined,
+        },
+      });
+    });
+
+    it("adds the page surface after the provided surfaces for message events", async () => {
+      const sendConversationEvent =
+        createSendConversationEvent(mockDependencies);
+      await sendConversationEvent({
+        message: "Hello",
+        onStreamResponse: vi.fn(),
+        surfaces: ["web://business.adobe.com/products", "web://www.adobe.com/"],
+      });
+
+      expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
+        conversation: {
+          surfaces: [
+            "web://business.adobe.com/products",
+            "web://www.adobe.com/",
+            "web://test.adobe.com/page",
+          ],
+          message: "Hello",
+          data: undefined,
+        },
+      });
+    });
+
+    it("adds the page surface after the provided surfaces for data events", async () => {
+      const sendConversationEvent =
+        createSendConversationEvent(mockDependencies);
+      const data = { type: "form-fetch", payload: {} };
+      await sendConversationEvent({
+        data,
+        onStreamResponse: vi.fn(),
+        surfaces: ["web://www.adobe.com/creativecloud.html"],
+      });
+
+      expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
+        conversation: {
+          surfaces: [
+            "web://www.adobe.com/creativecloud.html",
+            "web://test.adobe.com/page",
+          ],
+          message: undefined,
+          data: data,
+        },
+      });
+    });
+
+    it("does not validate or normalize the provided surfaces", async () => {
+      const sendConversationEvent =
+        createSendConversationEvent(mockDependencies);
+      await sendConversationEvent({
+        message: "Hello",
+        onStreamResponse: vi.fn(),
+        surfaces: ["WEB://Business.Adobe.com/Products/", "   "],
+      });
+
+      expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
+        conversation: {
+          surfaces: [
+            "WEB://Business.Adobe.com/Products/",
+            "   ",
+            "web://test.adobe.com/page",
+          ],
+          message: "Hello",
+          data: undefined,
+        },
+      });
+    });
+
+    it("does not duplicate the page surface when it is provided", async () => {
+      const sendConversationEvent =
+        createSendConversationEvent(mockDependencies);
+      await sendConversationEvent({
+        message: "Hello",
+        onStreamResponse: vi.fn(),
+        surfaces: ["web://test.adobe.com/page"],
+      });
+
+      expect(mockEvent.mergeQuery).toHaveBeenCalledWith({
+        conversation: {
+          surfaces: ["web://test.adobe.com/page"],
+          message: "Hello",
+          data: undefined,
+        },
+      });
+    });
+
+    it("does not change the provided surfaces array", async () => {
+      const sendConversationEvent =
+        createSendConversationEvent(mockDependencies);
+      const surfaces = ["web://business.adobe.com/"];
+      await sendConversationEvent({
+        message: "Hello",
+        onStreamResponse: vi.fn(),
+        surfaces,
+      });
+
+      expect(surfaces).toEqual(["web://business.adobe.com/"]);
+    });
+
+    it("does not carry the surfaces over to later calls", async () => {
+      const sendConversationEvent =
+        createSendConversationEvent(mockDependencies);
+      await sendConversationEvent({
+        message: "First",
+        onStreamResponse: vi.fn(),
+        surfaces: ["web://business.adobe.com/"],
+      });
+      await sendConversationEvent({
+        message: "Second",
+        onStreamResponse: vi.fn(),
+      });
+
+      expect(mockEvent.mergeQuery).toHaveBeenLastCalledWith({
+        conversation: {
+          surfaces: ["web://test.adobe.com/page"],
+          message: "Second",
+          data: undefined,
+        },
+      });
+    });
+
+    it("ignores the surfaces and logs for xdm-only events", async () => {
+      const sendConversationEvent =
+        createSendConversationEvent(mockDependencies);
+      await sendConversationEvent({
+        xdm: { interactionId: "test-interaction-id" },
+        surfaces: ["web://business.adobe.com/"],
+      });
+
+      expect(mockEvent.mergeQuery).not.toHaveBeenCalled();
+      expect(mockDependencies.logger.info).toHaveBeenCalledWith(
+        "The surfaces option is ignored for events without a message or data.",
+      );
+    });
+  });
+
   it("handles stream timeout when no data is received within 10 seconds", async () => {
     vi.useFakeTimers();
 
