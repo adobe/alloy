@@ -208,4 +208,28 @@ describe("BrandConcierge - sendConversationEvent", () => {
       },
     });
   });
+
+  test("BC6 - sendConversationEvent with surfaces sends them followed by the page surface", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(brandConciergeStreamingHandler);
+    await alloy("configure", bcConfig);
+
+    await alloy("sendConversationEvent", {
+      message: "Hello",
+      surfaces: ["web://business.adobe.com/products"],
+      onStreamResponse: () => {},
+    });
+
+    const calls = await networkRecorder.findCalls(
+      /brand-concierge\/conversations/,
+    );
+    expect(calls.length).toBeGreaterThanOrEqual(1);
+    const { surfaces } = calls[0].request.body.events[0].query.conversation;
+    expect(surfaces).toHaveLength(2);
+    expect(surfaces[0]).toBe("web://business.adobe.com/products");
+    expect(surfaces[1]).toMatch(/^web:\/\//);
+  });
 });

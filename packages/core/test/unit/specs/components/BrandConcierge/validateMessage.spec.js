@@ -418,4 +418,41 @@ describe("BrandConcierge::validateMessage", () => {
       }).not.toThrowError();
     });
   });
+
+  describe("surfaces option", () => {
+    const validSurfaces = [
+      [],
+      ["web://business.adobe.com/products"],
+      ["web://business.adobe.com/products", "web://www.adobe.com/"],
+      ["", "not a surface"],
+    ];
+
+    const eventShapes = {
+      message: { message: "Hello" },
+      data: { data: { type: "action", payload: {} } },
+      xdm: { xdm: { interactionId: "test-id" } },
+    };
+
+    it("is optional for every event shape", () => {
+      Object.values(eventShapes).forEach((shape) => {
+        expect(() => {
+          validateMessage({ options: { ...shape } });
+        }).not.toThrowError();
+        [undefined, null].forEach((surfaces) => {
+          expect(() => {
+            validateMessage({ options: { ...shape, surfaces } });
+          }).not.toThrowError();
+        });
+      });
+    });
+
+    it("accepts arrays of unique strings for every event shape", () => {
+      Object.values(eventShapes).forEach((shape) => {
+        validSurfaces.forEach((surfaces) => {
+          const result = validateMessage({ options: { ...shape, surfaces } });
+          expect(result.surfaces).toEqual(surfaces);
+        });
+      });
+    });
+  });
 });
