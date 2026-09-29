@@ -50,13 +50,14 @@ const DEFAULT_ADVERTISING_SETTINGS = Object.freeze({
 });
 
 const xdmFieldDescription = (
-  <>
+  <span>
     Provide a data element which returns an object matching your XDM schema. You
     may want to use the{" "}
     <Link
       href="https://experienceleague.adobe.com/docs/experience-platform/edge/extension/data-element-types.html?lang=en#xdm-object"
       target="_blank"
       rel="noopener noreferrer"
+      isStandalone={false}
     >
       XDM Object
     </Link>{" "}
@@ -66,11 +67,12 @@ const xdmFieldDescription = (
       href="https://experienceleague.adobe.com/docs/experience-platform/tags/extensions/adobe/core/overview.html?lang=en#merged-objects"
       target="_blank"
       rel="noopener noreferrer"
+      isStandalone={false}
     >
       Merged Objects
     </Link>{" "}
     data element type from the Core extension.
-  </>
+  </span>
 );
 
 const wrapGetInitialValues =
