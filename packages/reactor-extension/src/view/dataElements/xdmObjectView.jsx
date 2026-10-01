@@ -14,12 +14,12 @@ import { useRef, useState } from "react";
 import PropTypes from "prop-types";
 import {
   ProgressCircle,
-  Flex,
   Switch,
   InlineAlert,
   Heading,
   Content,
-} from "@adobe/react-spectrum";
+} from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import { object, string } from "yup";
 import FormElementContainer from "../components/formElementContainer";
@@ -368,9 +368,16 @@ const XdmObject = ({ initInfo, context, formikProps }) => {
 
   if (selectedSchema && !hasSchema) {
     editorAreaContent = (
-      <Flex alignItems="center" justifyContent="center" height="size-2000">
+      <div
+        className={style({
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: 160,
+        })}
+      >
         <ProgressCircle size="L" aria-label="Loading..." isIndeterminate />
-      </Flex>
+      </div>
     );
   } else if (hasSchema) {
     editorAreaContent = (
@@ -388,21 +395,22 @@ const XdmObject = ({ initInfo, context, formikProps }) => {
   return (
     <div>
       <FormElementContainer>
-        <Flex alignItems="center" gap="size-100" marginBottom="size-200">
-          <Switch
-            isSelected={showDisplayNames}
-            onChange={setShowDisplayNames}
-            data-test-id="displayNamesSwitch"
-          >
-            Show display names for fields
-          </Switch>
-        </Flex>
+        <Switch
+          isSelected={showDisplayNames}
+          onChange={setShowDisplayNames}
+          data-test-id="displayNamesSwitch"
+          styles={style({ marginBottom: 16 })}
+        >
+          Show display names for fields
+        </Switch>
         {(context.missingSavedSandbox || context.missingSavedSchema) && (
           <InlineAlert
             variant="notice"
-            width="size-5000"
-            marginBottom="size-200"
             data-test-id="schemaMissingAlert"
+            styles={style({
+              width: 400,
+              marginBottom: 16,
+            })}
           >
             <Heading size="XXS">Could not load saved configuration</Heading>
             <Content>
