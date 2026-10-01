@@ -16,10 +16,10 @@ import { RadioGroup, Radio, TextField } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import { string } from "yup";
-import RawDataElementSelector from "../rawDataElementSelector";
+import RawDataElementSelector from "../../components/rawDataElementSelector";
 import singleDataElementRegex from "../../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../../constants/validationErrorMessages";
-import FieldSubset from "../fieldSubset";
+import FieldSubset from "../../components/fieldSubset";
 import normalizeGroupChildren from "./normalizeGroupChildren";
 
 export const createRadioGroupWithDataElementValidationSchema = (name) => {

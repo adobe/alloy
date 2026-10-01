@@ -15,7 +15,7 @@ import { InlineAlert, Heading, Content, Link } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
+import FormikTextField from "../forms/fields/TextField";
 import RestoreDefaultValueButton from "../components/restoreDefaultValueButton";
 import FormElementContainer from "../components/formElementContainer";
 import { bridge } from "./basicSectionBridge";

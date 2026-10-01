@@ -36,7 +36,7 @@ import fetchDataElementByName from "../utils/fetchDataElementByName";
 import fetchSchema from "../utils/fetchSchema";
 import Editor from "../components/objectEditor/editor";
 import getInitialFormState from "../components/objectEditor/helpers/getInitialFormState";
-import FormikPagedComboBox from "../components/formikReactSpectrum3/formikPagedComboBox";
+import FormikPagedComboBox from "../forms/fields/PagedComboBox";
 import useReportAsyncError from "../utils/useReportAsyncError";
 import useChanged from "../utils/useChanged";
 import useAbortPreviousRequestsAndCreateSignal from "../utils/useAbortPreviousRequestsAndCreateSignal";

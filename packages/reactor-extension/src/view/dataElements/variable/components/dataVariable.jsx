@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { Checkbox } from "@react-spectrum/s2";
 
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import FormikCheckboxGroup from "../../../components/formikReactSpectrum3/formikCheckboxGroup";
+import FormikCheckboxGroup from "../../../forms/fields/CheckboxGroup";
 import FieldSubset from "../../../components/fieldSubset";
 import { XDM } from "../constants/variableTypes";
 import {

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { ComboBoxItem } from "@react-spectrum/s2";
-import FormikKeyedComboBox from "../formikReactSpectrum3/formikKeyedComboBox";
+import FormikKeyedComboBox from "../../forms/fields/KeyedComboBox";
 import DataElementSelector from "../dataElementSelector";
 
 /**
