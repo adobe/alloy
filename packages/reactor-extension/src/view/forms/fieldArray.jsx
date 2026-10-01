@@ -9,10 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import Delete from "@spectrum-icons/workflow/Delete";
+import Delete from "@react-spectrum/s2/icons/Delete";
 import { array, string } from "yup";
 import { FieldArray, useField } from "formik";
-import { Flex, Radio, ActionButton, Button, Item } from "@adobe/react-spectrum";
+import { Radio, ActionButton, Button, ComboBoxItem } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
 import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
@@ -40,7 +41,6 @@ const StringItem = ({
         aria-label={`Item ${index + 1}`}
         name={`${namePrefix}${name}.${index}`}
         width="size-5000"
-        marginTop="size-0"
         description={isLast ? description : undefined}
         error={isLast ? error : undefined}
         invalid={error && touched}
@@ -76,7 +76,6 @@ const ComboboxItem = ({
         aria-label={`Item ${index + 1}`}
         name={`${namePrefix}${name}.${index}`}
         width="size-5000"
-        marginTop="size-0"
         description={isLast ? description : undefined}
         error={isLast ? error : undefined}
         invalid={error && touched}
@@ -87,9 +86,9 @@ const ComboboxItem = ({
         allowsCustomValue
       >
         {(item) => (
-          <Item key={item.value} data-test-id={item.value}>
+          <ComboBoxItem key={item.value} data-test-id={item.value}>
             {item.label}
-          </Item>
+          </ComboBoxItem>
         )}
       </FormikKeyedComboBox>
     </DataElementSelector>
@@ -239,10 +238,23 @@ export default function fieldArray({
               render={(arrayHelpers) => {
                 return (
                   <div>
-                    <Flex direction="column" gap="size-100" alignItems="start">
+                    <div
+                      className={style({
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 8,
+                        alignItems: "start",
+                      })}
+                    >
                       {items.map((item, index) => {
                         return (
-                          <Flex key={index} alignItems="start">
+                          <div
+                            key={index}
+                            className={style({
+                              display: "flex",
+                              alignItems: "start",
+                            })}
+                          >
                             <FieldItem
                               namePrefix={namePrefix}
                               name={name}
@@ -256,7 +268,6 @@ export default function fieldArray({
                             <ActionButton
                               data-test-id={`${namePrefix}${name}${index}RemoveButton`}
                               isQuiet
-                              variant="secondary"
                               onPress={() => {
                                 // using arrayHelpers.remove mangles the error message
                                 const newItems = items.filter(
@@ -268,14 +279,16 @@ export default function fieldArray({
                                 setItems(newItems);
                               }}
                               aria-label={`Remove ${label} ${index + 1}`}
-                              marginTop={0}
+                              styles={style({
+                                marginTop: 0,
+                              })}
                             >
                               <Delete />
                             </ActionButton>
-                          </Flex>
+                          </div>
                         );
                       })}
-                    </Flex>
+                    </div>
                     <Button
                       variant="secondary"
                       data-test-id={`${namePrefix}${name}AddButton`}
