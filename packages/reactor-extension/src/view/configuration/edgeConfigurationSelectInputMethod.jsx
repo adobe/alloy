@@ -11,7 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { Link, InlineAlert, Heading, Content } from "@adobe/react-spectrum";
+import { Link, InlineAlert, Heading, Content } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import EdgeConfigEnvironment from "./edgeConfigEnvironment";
 import { DEVELOPMENT, PRODUCTION, STAGING } from "./constants/environmentType";
 
@@ -22,11 +23,13 @@ const EdgeConfigurationSelectInputMethod = ({ name, initInfo, context }) => {
     return (
       <InlineAlert
         data-test-id="alertErrorFetchingConfigs"
-        variant="info"
-        width="size-5000"
-        marginTop="size-100"
+        variant="informative"
+        styles={style({
+          width: 400,
+          marginTop: 8,
+        })}
       >
-        <Heading size="XXS">
+        <Heading>
           You do not have enough permissions to fetch the organization
           configurations.
         </Heading>

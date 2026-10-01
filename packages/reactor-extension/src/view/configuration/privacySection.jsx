@@ -10,13 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  Radio,
-  View,
-  InlineAlert,
-  Heading,
-  Content,
-} from "@adobe/react-spectrum";
+import { Radio, InlineAlert, Heading, Content } from "@react-spectrum/s2";
+
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import { object, string } from "yup";
 import { useField } from "formik";
@@ -112,15 +108,19 @@ const PrivacySection = ({ instanceFieldName }) => {
           </FormikRadioGroupWithDataElement>
         </FormElementContainer>
       ) : (
-        <View width="size-6000">
-          <InlineAlert variant="info">
+        <div
+          className={style({
+            width: 480,
+          })}
+        >
+          <InlineAlert variant="informative">
             <Heading>Consent component disabled</Heading>
             <Content>
               The consent custom build component is disabled. Enable it above to
               configure consent settings.
             </Content>
           </InlineAlert>
-        </View>
+        </div>
       )}
     </>
   );
