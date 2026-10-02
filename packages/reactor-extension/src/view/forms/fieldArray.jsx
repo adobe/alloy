@@ -294,7 +294,7 @@ export default function fieldArray({
                       data-test-id={`${namePrefix}${name}AddButton`}
                       onPress={() => arrayHelpers.push("")}
                     >
-                      Add {singularLabel.toLowerCase()}
+                      {`Add ${singularLabel.toLowerCase()}`}
                     </Button>
                   </div>
                 );

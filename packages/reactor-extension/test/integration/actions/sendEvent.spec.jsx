@@ -43,6 +43,34 @@ describe("Send Event Action", () => {
     cleanup();
   });
 
+  it("centers personalization button labels and icons vertically", async () => {
+    await driver.init({
+      extensionSettings: {
+        instances: [{ name: "alloy", edgeConfigId: "PR123" }],
+        components: { personalization: true },
+      },
+    });
+
+    for (const name of ["decisionScopes", "surfaces"]) {
+      for (const suffix of ["AddButton", "0RemoveButton"]) {
+        const button = view.getByTestId(`${name}${suffix}`).element();
+        // Measure the text itself, not the Text slot's padded bounding box.
+        const content = button.querySelector("svg") || document.createRange();
+        if (content instanceof Range) {
+          content.selectNodeContents(button);
+        }
+        const buttonRect = button.getBoundingClientRect();
+        const contentRect = content.getBoundingClientRect();
+        expect(
+          Math.abs(
+            (contentRect.top + contentRect.bottom) / 2 -
+              (buttonRect.top + buttonRect.bottom) / 2,
+          ),
+        ).toBeLessThanOrEqual(1);
+      }
+    }
+  });
+
   it("selects a sandbox by its S2 collection id in datastream overrides", async () => {
     worker.use(...sandboxWithoutProdHandlers);
     await driver.init({

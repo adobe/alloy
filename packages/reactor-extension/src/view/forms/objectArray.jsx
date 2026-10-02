@@ -350,7 +350,7 @@ export default function objectArray(
                                     }
                                     styles={REMOVE_BUTTON_STYLE}
                                   >
-                                    Remove {lowerInitialLetters(singularLabel)}
+                                    {`Remove ${lowerInitialLetters(singularLabel)}`}
                                   </Button>
                                 </div>
                               </div>
@@ -394,7 +394,7 @@ export default function objectArray(
                         data-test-id={`${namePrefix}${name}AddButton`}
                         onPress={() => arrayHelpers.push(buildDefaultItem())}
                       >
-                        Add another {lowerInitialLetters(singularLabel)}
+                        {`Add another ${lowerInitialLetters(singularLabel)}`}
                       </ActionButton>
                     </div>
                   </>

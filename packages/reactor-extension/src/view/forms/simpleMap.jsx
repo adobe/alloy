@@ -251,7 +251,7 @@ export default function simpleMap({
                                 }}
                                 styles={REMOVE_BUTTON_STYLE}
                               >
-                                Remove {singularLabel.toLowerCase()}
+                                {`Remove ${singularLabel.toLowerCase()}`}
                               </Button>
                             </div>
                           </div>
@@ -266,7 +266,7 @@ export default function simpleMap({
                           arrayHelpers.push({ key: "", value: "" })
                         }
                       >
-                        Add {singularLabel.toLowerCase()}
+                        {`Add ${singularLabel.toLowerCase()}`}
                       </Button>
                     </div>
                   </>
