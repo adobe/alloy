@@ -338,6 +338,7 @@ export default function objectArray(
                                 <div className={REMOVE_ROW_STYLE}>
                                   <Button
                                     variant="secondary"
+                                    fillStyle="outline"
                                     data-test-id={`${namePrefix}${name}${index}RemoveButton`}
                                     onPress={() => {
                                       // using arrayHelpers.remove mangles the error message
@@ -390,12 +391,14 @@ export default function objectArray(
                       );
                     })}
                     <div>
-                      <ActionButton
+                      <Button
+                        variant="secondary"
+                        fillStyle="outline"
                         data-test-id={`${namePrefix}${name}AddButton`}
                         onPress={() => arrayHelpers.push(buildDefaultItem())}
                       >
                         {`Add another ${lowerInitialLetters(singularLabel)}`}
-                      </ActionButton>
+                      </Button>
                     </div>
                   </>
                 );

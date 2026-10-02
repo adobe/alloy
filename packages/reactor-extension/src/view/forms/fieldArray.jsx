@@ -291,6 +291,7 @@ export default function fieldArray({
                     </div>
                     <Button
                       variant="secondary"
+                      fillStyle="outline"
                       data-test-id={`${namePrefix}${name}AddButton`}
                       onPress={() => arrayHelpers.push("")}
                     >
