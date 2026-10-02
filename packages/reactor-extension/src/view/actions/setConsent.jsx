@@ -453,6 +453,7 @@ const SetConsent = () => {
                               {values.consent.length > 1 && (
                                 <Button
                                   variant="secondary"
+                                  fillStyle="outline"
                                   onPress={() => {
                                     arrayHelpers.remove(index);
                                   }}

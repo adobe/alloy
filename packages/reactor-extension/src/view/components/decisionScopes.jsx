@@ -163,6 +163,7 @@ const DecisionScopes = () => {
                     })}
                     <Button
                       variant="secondary"
+                      fillStyle="outline"
                       data-test-id="addDecisionScopeButton"
                       onPress={() => {
                         arrayHelpers.push("");

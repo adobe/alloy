@@ -243,6 +243,7 @@ export default function simpleMap({
                             <div className={REMOVE_ROW_STYLE}>
                               <Button
                                 variant="secondary"
+                                fillStyle="outline"
                                 data-test-id={`${namePrefix}${name}${index}RemoveButton`}
                                 isDisabled={items.length === 1}
                                 onPress={() => {
@@ -261,6 +262,7 @@ export default function simpleMap({
                     <div>
                       <Button
                         variant="secondary"
+                        fillStyle="outline"
                         data-test-id={`${namePrefix}${name}AddButton`}
                         onPress={() =>
                           arrayHelpers.push({ key: "", value: "" })
