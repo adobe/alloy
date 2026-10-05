@@ -64,10 +64,6 @@ export default ({
           data,
         },
       });
-    } else if (requestSurfaces && requestSurfaces.length > 0) {
-      logger.info(
-        "The surfaces option is ignored for events without a message or data.",
-      );
     }
 
     const { state } = consent.current();

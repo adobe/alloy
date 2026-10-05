@@ -519,7 +519,7 @@ describe("createSendConversationEvent", () => {
       });
     });
 
-    it("ignores the surfaces and logs for xdm-only events", async () => {
+    it("ignores the surfaces for xdm-only events", async () => {
       const sendConversationEvent =
         createSendConversationEvent(mockDependencies);
       await sendConversationEvent({
@@ -528,9 +528,6 @@ describe("createSendConversationEvent", () => {
       });
 
       expect(mockEvent.mergeQuery).not.toHaveBeenCalled();
-      expect(mockDependencies.logger.info).toHaveBeenCalledWith(
-        "The surfaces option is ignored for events without a message or data.",
-      );
     });
   });
 

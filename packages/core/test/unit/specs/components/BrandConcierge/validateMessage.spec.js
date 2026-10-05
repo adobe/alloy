@@ -468,8 +468,6 @@ describe("BrandConcierge::validateMessage", () => {
       });
     });
 
-    // Every anyOf branch must declare `surfaces`. Otherwise an invalid value
-    // fails one branch and passes the permissive xdm branch.
     Object.entries(eventShapes).forEach(([shapeName, shape]) => {
       it(`rejects invalid surfaces on ${shapeName} events`, () => {
         invalidSurfaces.forEach((surfaces) => {
