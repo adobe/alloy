@@ -26,10 +26,21 @@ import pkg from "../package.json" with { type: "json" };
 const { name, version } = pkg;
 
 const urlExists = async (url) => {
+  const startedAt = Date.now();
   try {
     const res = await fetch(url, { method: "HEAD" });
-    return res.ok;
-  } catch {
+    if (res.ok) {
+      return true;
+    }
+    console.error(
+      `CDN verification: HEAD ${url} — request failed with status ${res.status} ${res.statusText}`,
+    );
+    return false;
+  } catch (error) {
+    console.warn(
+      `CDN verification: HEAD ${url} — request failed (${Date.now() - startedAt}ms)`,
+      error,
+    );
     return false;
   }
 };
