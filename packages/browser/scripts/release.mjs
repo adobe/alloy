@@ -20,6 +20,7 @@ governing permissions and limitations under the License.
 import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
+import { setTimeout as sleep } from "node:timers/promises";
 import { fileURLToPath } from "url";
 import { isPrerelease, cdnUrlFor } from "./helpers/release.js";
 import pkg from "../package.json" with { type: "json" };
@@ -88,14 +89,44 @@ if (alreadyUploaded) {
     { input: ftpCommands, stdio: ["pipe", "inherit", "inherit"] },
   );
 
+  function* getRetryDelay() {
+    const getRandom = (min, max) =>
+      Math.floor(Math.random() * (max - min + 1)) + min;
+
+    yield 1000 + getRandom(-500, 500);
+    yield 1000 + getRandom(-500, 500);
+    yield 2000 + getRandom(-500, 500);
+    yield 3000 + getRandom(-500, 500);
+    yield 5000 + getRandom(-500, 500);
+  }
+  const verifyFile = async (file) => {
+    const url = cdnUrlFor(version, file);
+    let exists = await urlExists(url);
+    for (const delay of getRetryDelay()) {
+      if (exists) {
+        break;
+      }
+      console.log(`Retrying CDN verification for ${url} in ${delay}ms...`);
+      await sleep(delay);
+      exists = await urlExists(url);
+    }
+    return { file, exists };
+  };
+
   // Verify each artifact landed before reporting success.
-  const verifyResults = await Promise.all(
-    FILES_TO_UPLOAD.map(async (file) => ({
-      file,
-      exists: await urlExists(cdnUrlFor(version, file)),
-    })),
+  const verifyResults = await Promise.allSettled(
+    FILES_TO_UPLOAD.map(verifyFile),
   );
-  const missing = verifyResults.filter((r) => !r.exists).map((r) => r.file);
+  const missing = verifyResults.flatMap((result, index) => {
+    if (result.status === "rejected") {
+      console.error(
+        `CDN verification failed for ${FILES_TO_UPLOAD[index]}:`,
+        result.reason,
+      );
+      return [FILES_TO_UPLOAD[index]];
+    }
+    return result.value.exists ? [] : [result.value.file];
+  });
   if (missing.length > 0) {
     throw new Error(`CDN verification failed for: ${missing.join(", ")}`);
   }
