@@ -12,6 +12,7 @@
     "@adobe/alloy-sandbox-node": "0.0.4"
   },
   "changesets": [
+    "brand-concierge-conversation-surface",
     "plenty-otters-teach",
     "quiet-otters-sail",
     "wacky-donkeys-repeat",

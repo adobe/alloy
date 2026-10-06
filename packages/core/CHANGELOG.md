@@ -1,5 +1,11 @@
 # @adobe/alloy-core
 
+## 1.3.0-beta.1
+
+### Minor Changes
+
+- [#1596](https://github.com/adobe/alloy/pull/1596) [`9ab23ec`](https://github.com/adobe/alloy/commit/9ab23ece86f06800463c6d62aef99736d5590f0d) Thanks [@kaiyuan-developer](https://github.com/kaiyuan-developer)! - Added an optional `surfaces` option to the Brand Concierge `sendConversationEvent` command. The provided surfaces are sent with the conversation request, followed by the page surface.
+
 ## 1.3.0-beta.0
 
 ### Minor Changes
