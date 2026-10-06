@@ -38,10 +38,12 @@ export default ({ options }) => {
       xdm: xdmValidator,
       onStreamResponse: callback().default(noop),
       voiceEnabled: boolean().default(false),
+      surfaces: arrayOf(string()).uniqueItems(),
     }),
     objectOf({
       xdm: xdmValidator,
       voiceEnabled: boolean().default(false),
+      surfaces: arrayOf(string()).uniqueItems(),
     }).required(),
     objectOf({
       data: objectOf({
@@ -50,6 +52,7 @@ export default ({ options }) => {
       }).required(),
       onStreamResponse: callback().default(noop),
       voiceEnabled: boolean().default(false),
+      surfaces: arrayOf(string()).uniqueItems(),
     }),
   ]);
 
