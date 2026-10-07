@@ -22,5 +22,17 @@ export default defineConfig({
   build: {
     outDir: "build",
     sourcemap: true,
+    rolldownOptions: {
+      input: {
+        main: path.resolve(dirname, "index.html"),
+        alloyServiceWorker: path.resolve(dirname, "alloyServiceWorker.js"),
+      },
+      output: {
+        entryFileNames: (chunk) =>
+          chunk.name === "alloyServiceWorker"
+            ? "alloyServiceWorker.js"
+            : "assets/[name]-[hash].js",
+      },
+    },
   },
 });
