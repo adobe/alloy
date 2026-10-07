@@ -84,6 +84,15 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
     },
     logOnNetworkResponse(data) {
       notifyMonitors("onNetworkResponse", data);
+      if (data.sentWithBeacon) {
+        // sendBeacon only tells us the browser queued the request; there is
+        // no server response to report.
+        log(
+          "info",
+          `Request ${data.requestId}: Sent using sendBeacon. No response is available for sendBeacon requests. If the page navigates away, the browser keeps sending the request in the background, but its developer tools may show it as canceled.`,
+        );
+        return;
+      }
       const messagesSuffix =
         data.parsedBody || data.body ? `response body:` : `no response body.`;
       log(

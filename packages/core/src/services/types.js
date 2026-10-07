@@ -22,6 +22,10 @@ governing permissions and limitations under the License.
  * @property {number} statusCode
  * @property {string} body
  * @property {(name: string) => (string | null)} getHeader
+ * @property {boolean} [sentWithBeacon]
+ *   `true` when the request was handed to `navigator.sendBeacon`. The browser
+ *   gives no response for these, so `statusCode`, `body`, and `getHeader` are
+ *   placeholders rather than values from the server.
  */
 
 /**

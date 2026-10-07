@@ -263,4 +263,34 @@ describe("injectSendNetworkRequest", () => {
         expect(sendFetchRequest).toHaveBeenCalledTimes(3);
       });
   });
+  it("passes sentWithBeacon from a sendBeacon response through to the logger", () => {
+    sendBeaconRequest.mockReturnValue(
+      Promise.resolve({
+        statusCode: 204,
+        body: "",
+        getHeader,
+        sentWithBeacon: true,
+      }),
+    );
+    return sendNetworkRequest({
+      requestId,
+      payload,
+      url,
+      useSendBeacon: true,
+    }).then(() => {
+      expect(sendBeaconRequest).toHaveBeenCalledTimes(1);
+      expect(sendFetchRequest).not.toHaveBeenCalled();
+      expect(logger.logOnNetworkResponse).toHaveBeenCalledWith({
+        requestId,
+        url,
+        payload,
+        statusCode: 204,
+        body: "",
+        parsedBody: undefined,
+        retriesAttempted: 0,
+        getHeader,
+        sentWithBeacon: true,
+      });
+    });
+  });
 });
