@@ -8,7 +8,7 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 3000,
+    port: Number(process.env.BROWSER_SANDBOX_PORT || 3000),
     headers: {
       "Service-Worker-Allowed": "/",
     },
