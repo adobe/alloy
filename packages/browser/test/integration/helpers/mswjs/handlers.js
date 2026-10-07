@@ -188,6 +188,37 @@ export const inAppMessageHandler = http.post(
   },
 );
 
+export const inAppMessageUntilClickThroughHandler = http.post(
+  /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
+
+  async (req) => {
+    const url = new URL(req.request.url);
+    const configId = url.searchParams.get("configId");
+
+    if (configId === "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83") {
+      const requestBody = await req.request.json();
+      const eventType = requestBody.events?.[0]?.xdm?.eventType;
+      if (
+        eventType === "decisioning.propositionDisplay" ||
+        eventType === "decisioning.propositionInteract"
+      ) {
+        return HttpResponse.json({
+          requestId: "notification-ack",
+          handle: [],
+        });
+      }
+
+      return HttpResponse.text(
+        await readFile(
+          `${server.config.root}/packages/browser/test/integration/helpers/mocks/inAppMessageUntilClickThroughResponse.json`,
+        ),
+      );
+    }
+
+    throw new Error("Handler not configured properly");
+  },
+);
+
 export const contentCardsAndEventHistoryOperationsOnSendEvent = http.post(
   /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
 
