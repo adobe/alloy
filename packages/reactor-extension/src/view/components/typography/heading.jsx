@@ -10,9 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import classNames from "classnames";
 import PropTypes from "prop-types";
-import getDimensionStyle from "../../utils/getDimensionStyle";
+import { mergeStyles } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+
+const NO_STYLE = style({});
 
 const tagBySize = {
   XXXL: "h1",
@@ -25,48 +27,62 @@ const tagBySize = {
   XXS: "h6",
 };
 
+// One font style per heading size. The style() macro needs a literal object
+// per call, so these can't be generated from a size -> font token map.
+const FONT_STYLES = {
+  XXXL: style({ font: "heading-3xl" }),
+  XXL: style({ font: "heading-2xl" }),
+  XL: style({ font: "heading-xl" }),
+  L: style({ font: "heading-lg" }),
+  M: style({ font: "heading" }),
+  S: style({ font: "heading-sm" }),
+  XS: style({ font: "heading-xs" }),
+  XXS: style({ font: "heading-2xs" }),
+};
+
+// Only the tokens actually passed by callers are mapped; size-75 (6px in S1)
+// is rounded to the nearest S2 margin step (4px). Callers may pass either the
+// "size-0" token or a bare 0, so both keys are mapped to the same style.
+const MARGIN_TOP_STYLES = {
+  0: style({ marginTop: 0 }),
+  "size-0": style({ marginTop: 0 }),
+  "size-75": style({ marginTop: 4 }),
+  "size-100": style({ marginTop: 8 }),
+  "size-200": style({ marginTop: 16 }),
+  "size-300": style({ marginTop: 24 }),
+  "size-600": style({ marginTop: 48 }),
+};
+const MARGIN_BOTTOM_STYLES = {
+  0: style({ marginBottom: 0 }),
+  "size-0": style({ marginBottom: 0 }),
+  "size-75": style({ marginBottom: 4 }),
+  "size-100": style({ marginBottom: 8 }),
+  "size-200": style({ marginBottom: 16 }),
+  "size-300": style({ marginBottom: 24 }),
+  "size-600": style({ marginBottom: 48 }),
+};
+
 /**
- * Provides typography styling for a heading. This is different than
- * React-Spectrum's Heading component, which is used for
- * a heading "slot" within components like Dialog and IllustratedMessage
- * and receives its styling from the parent component.
- * See https://opensource.adobe.com/spectrum-css/typography-body.html
- * for more info. Once React-Spectrum provides a Heading component
- * that handles typography, we can get rid of this.
+ * Provides typography styling for a heading. This is different than S2's
+ * own `Heading` component, which is a slot used within components like
+ * Dialog and InlineAlert and receives its styling from the parent.
  */
 const Heading = ({
   "data-test-id": dataTestId,
   children,
   size = "S",
-  variant,
-  isSerif,
   marginTop,
   marginBottom,
 }) => {
-  const style = {};
-
-  if (marginTop !== undefined) {
-    style.marginTop = getDimensionStyle(marginTop);
-  }
-
-  if (marginBottom !== undefined) {
-    style.marginBottom = getDimensionStyle(marginBottom);
-  }
-
   const HeadingElement = tagBySize[size];
   return (
     <HeadingElement
       data-test-id={dataTestId}
-      className={classNames(
-        "spectrum-Heading",
-        `spectrum-Heading--size${size}`,
-        {
-          "spectrum-Heading--serif": isSerif,
-          "spectrum-Heading--heavy": variant === "heavy",
-          "spectrum-Heading--light": variant === "light",
-        },
+      className={mergeStyles(
+        FONT_STYLES[size],
+        MARGIN_TOP_STYLES[marginTop] ?? NO_STYLE,
+        MARGIN_BOTTOM_STYLES[marginBottom] ?? NO_STYLE,
       )}
-      style={style}
     >
       {children}
     </HeadingElement>
@@ -79,8 +95,6 @@ Heading.propTypes = {
   "data-test-id": PropTypes.string,
   children: PropTypes.node.isRequired,
   size: PropTypes.oneOf(Object.keys(tagBySize)),
-  variant: PropTypes.oneOf(["heavy", "light"]),
-  isSerif: PropTypes.bool,
   marginTop: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   marginBottom: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };

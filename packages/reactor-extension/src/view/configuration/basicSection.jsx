@@ -39,7 +39,7 @@ const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
           label="Name"
           name={`${instanceFieldName}.name`}
           description={
-            <>
+            <span>
               Must match an instance name that is defined in the Web SDK{" "}
               <Link
                 href="https://experienceleague.adobe.com/en/docs/experience-platform/collection/js/install/library"
@@ -49,7 +49,7 @@ const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
                 base code
               </Link>{" "}
               from your site.
-            </>
+            </span>
           }
           isRequired
           width="size-5000"

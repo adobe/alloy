@@ -166,6 +166,26 @@ describe("Config data collection section", () => {
     await eventGroupingRadio("Memory").expectUnchecked();
   });
 
+  it("keeps beta badges inline with wrapping event grouping labels", async () => {
+    await driver.init(buildSettings());
+
+    for (const testId of [
+      "eventGroupingSessionStorageField",
+      "eventGroupingMemoryField",
+    ]) {
+      const radio = view.getByTestId(testId).element();
+      const badge = radio.querySelector('[role="presentation"]');
+      const radioStyle = window.getComputedStyle(radio);
+
+      expect(window.getComputedStyle(badge).display).toBe("inline-flex");
+      expect(badge.parentElement.getBoundingClientRect().width).toBe(376);
+      expect(radioStyle.maxInlineSize).toBe("100%");
+      expect(window.getComputedStyle(badge.parentElement).lineHeight).toBe(
+        "21px",
+      );
+    }
+  });
+
   it("sets form values from settings with event grouping memory", async () => {
     await driver.init(
       buildSettings({

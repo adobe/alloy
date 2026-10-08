@@ -211,10 +211,12 @@ describe("Config push notifications section", () => {
       await ui.expand("Build options");
       await pushNotificationsComponentCheckbox.click();
 
-      // Fields are visible but touched state was reset — no errors should appear yet
-      await vapidPublicKeyField.expectValid();
-      await appIdField.expectValid();
-      await trackingDatasetIdField.expectValid();
+      // Fields are visible but touched state was reset — no errors should appear yet.
+      // These fields are required, so they're natively invalid the moment they
+      // render empty; assert no error is displayed instead of native validity.
+      await vapidPublicKeyField.expectNotInvalid();
+      await appIdField.expectNotInvalid();
+      await trackingDatasetIdField.expectNotInvalid();
     });
   });
 });

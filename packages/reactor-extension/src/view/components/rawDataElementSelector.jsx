@@ -11,9 +11,20 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import Data from "@spectrum-icons/workflow/Data";
-import { ActionButton, Flex } from "@adobe/react-spectrum";
+import Data from "@react-spectrum/s2/icons/Data";
+import { ActionButton } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import ClearButton from "./clearButton";
+
+const CONTAINER_STYLE = style({ display: "flex" });
+
+// Nudges the button down to align with a field that has a label above it.
+// size-300 = 24px per the S1->S2 dimension token table.
+// Keep the action target at the 32px width used before the S2 migration.
+const BUTTON_MARGIN_TOP_STYLES = {
+  "size-300": style({ marginTop: 24, minWidth: 32 }),
+  0: style({ marginTop: 0, minWidth: 32 }),
+};
 
 const RawDataElementSelector = ({
   children,
@@ -28,6 +39,7 @@ const RawDataElementSelector = ({
   // We have to vertically nudge down the data element selector
   // button if the field has a label so the button aligns
   // with the input box.
+  const marginTop = adjustForLabel ? "size-300" : 0;
   const openDataElementSelector = () => {
     window.extensionBridge
       .openDataElementSelector({ tokenize })
@@ -42,26 +54,21 @@ const RawDataElementSelector = ({
       });
   };
   return (
-    <Flex>
+    <div className={CONTAINER_STYLE}>
       {children}
       <ActionButton
         isQuiet
         isDisabled={isDisabled}
         onPress={openDataElementSelector}
         aria-label="Select data element"
-        marginTop={adjustForLabel ? "size-300" : 0}
-        minWidth={0}
+        styles={BUTTON_MARGIN_TOP_STYLES[marginTop]}
       >
         <Data />
       </ActionButton>
       {clearable && (
-        <ClearButton
-          value={value}
-          setValue={onChange}
-          marginTop={adjustForLabel ? "size-300" : 0}
-        />
+        <ClearButton value={value} setValue={onChange} marginTop={marginTop} />
       )}
-    </Flex>
+    </div>
   );
 };
 

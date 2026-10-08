@@ -10,15 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createRef, Children, cloneElement } from "react";
+import { Children } from "react";
 import PropTypes from "prop-types";
-import { RadioGroup, Radio, TextField } from "@adobe/react-spectrum";
+import { RadioGroup, Radio, TextField } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import { string } from "yup";
 import RawDataElementSelector from "../rawDataElementSelector";
 import singleDataElementRegex from "../../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../../constants/validationErrorMessages";
 import FieldSubset from "../fieldSubset";
+import normalizeGroupChildren from "./normalizeGroupChildren";
 
 export const createRadioGroupWithDataElementValidationSchema = (name) => {
   return string().when([`${name}DataElement`], {
@@ -47,27 +49,6 @@ const FormikRadioGroupWithDataElement = ({
     { touched: dataElementTouched },
     { setValue: dataElementSetValue, setTouched: dataElementSetTouched },
   ] = useField(`${name}DataElement`);
-
-  const radioGroupRef = createRef();
-
-  const radioOnBlur = (event) => {
-    // If the target that will receive focus is not a child of the
-    // radio group, we know the radio group has lost focus.
-    if (
-      !radioGroupRef.current.UNSAFE_getDOMNode().contains(event.relatedTarget)
-    ) {
-      setTouched(true);
-    }
-  };
-
-  // Not entirely sure this is the right approach, but there's
-  // no onBlur prop for RadioGroup, so we wire up Formik's
-  // onBlur to every radio.
-  const childrenWithOnBlur = Children.map(children, (child) => {
-    return cloneElement(child, {
-      onBlur: radioOnBlur,
-    });
-  });
 
   let radioValue;
   let dataElementText;
@@ -106,17 +87,16 @@ const FormikRadioGroupWithDataElement = ({
     <div>
       <RadioGroup
         {...otherProps}
-        ref={radioGroupRef}
         value={radioValue}
         onChange={(newValue) => {
           setValues(newValue, dataElementText);
         }}
+        onBlur={() => setTouched(true)}
       >
-        {childrenWithOnBlur}
+        {normalizeGroupChildren(Radio, children)}
         <Radio
           data-test-id={`${dataTestIdPrefix}DataElementRadio`}
           value="dataElement"
-          onBlur={radioOnBlur}
         >
           Provide a data element
         </Radio>
@@ -138,12 +118,12 @@ const FormikRadioGroupWithDataElement = ({
               onChange={(newValue) => setValues("dataElement", newValue)}
               onBlur={() => dataElementSetTouched(true)}
               description={dataElementDescription}
-              validationState={
-                dataElementTouched && error ? "invalid" : undefined
-              }
+              isInvalid={Boolean(dataElementTouched && error)}
               errorMessage={error}
-              width="size-5000"
               isRequired
+              styles={style({
+                width: 400,
+              })}
             />
           </RawDataElementSelector>
         </FieldSubset>

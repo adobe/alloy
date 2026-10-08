@@ -9,13 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import {
-  ActionButton,
-  Flex,
-  Item,
-  Radio,
-  useAsyncList,
-} from "@adobe/react-spectrum";
+import { ActionButton, Flex, Item, Radio } from "@adobe/react-spectrum";
+import { useAsyncList } from "@react-stately/data";
 import { useField } from "formik";
 import PropTypes from "prop-types";
 import { useEffect } from "react";
@@ -94,7 +89,7 @@ const DatastreamOverrideSelector = ({
   label,
   ...otherProps
 }) => {
-  /** @type {import("@adobe/react-spectrum").AsyncListData<Datastream, string>} */
+  /** @type {import("@react-stately/data").AsyncListData<Datastream, string>} */
   const datastreamList = useAsyncList({
     async load({ signal }) {
       /** @type {{ results: Datastream[] }} */
