@@ -16,7 +16,7 @@ import { useField } from "formik";
 import PropTypes from "prop-types";
 import Data from "@react-spectrum/s2/icons/Data";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikKeyedComboBox from "../components/formikReactSpectrum3/formikKeyedComboBox";
+import FormikKeyedComboBox from "./fields/KeyedComboBox";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 
 // Reserves the width of the DataElementSelector's icon button next to a combo

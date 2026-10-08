@@ -22,7 +22,7 @@ import { ARRAY, OBJECT } from "./constants/schemaType";
 
 // The style() macro must be statically evaluable, so the verticalLayout
 // boolean can't be interpolated directly; precompute one variant per value
-// (see formikReactSpectrum3/../widthStyle.js for the same pattern).
+// (see forms/fields/widthStyle.js for the same pattern).
 const CONTAINER_STYLES = {
   true: style({
     display: "flex",

@@ -31,10 +31,10 @@ import getDefaultIdentity from "../utils/getDefaultIdentity";
 import FormElementContainer from "../../../components/formElementContainer";
 import getDefaultIdentifier from "../utils/getDefaultIdentifier";
 import DataElementSelector from "../../../components/dataElementSelector";
-import FormikTextField from "../../../components/formikReactSpectrum3/formikTextField";
-import FormikPicker from "../../../components/formikReactSpectrum3/formikPicker";
+import FormikTextField from "../../../forms/fields/TextField";
+import FormikPicker from "../../../forms/fields/Picker";
 import * as AUTHENTICATED_STATE from "../constants/authenticatedState";
-import FormikCheckbox from "../../../components/formikReactSpectrum3/formikCheckbox";
+import FormikCheckbox from "../../../forms/fields/Checkbox";
 import NamespacesComponent from "./NamespacesComponent";
 import { findNamespace } from "../utils/namespacesUtils";
 

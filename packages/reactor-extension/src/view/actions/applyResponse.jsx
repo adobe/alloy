@@ -12,8 +12,8 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { object, string } from "yup";
-import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
-import FormikCheckbox from "../components/formikReactSpectrum3/formikCheckbox";
+import FormikTextField from "../forms/fields/TextField";
+import FormikCheckbox from "../forms/fields/Checkbox";
 import DataElementSelector from "../components/dataElementSelector";
 import render from "../render";
 import ExtensionView from "../components/extensionView";

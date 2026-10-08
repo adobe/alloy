@@ -18,7 +18,7 @@ import jsonOptionalEditor from "../../../../forms/jsonOptionalEditor";
 import numberAwareCompareFunction from "../../../../utils/numberAwareCompareFunction";
 import eventCompareFunction from "../../../../utils/eventCompareFunction";
 import conditional from "../../../../forms/conditional";
-import FormikPicker from "../../../formikReactSpectrum3/formikPicker";
+import FormikPicker from "../../../../forms/fields/Picker";
 
 const DYNAMIC_VARIABLE_REGEX = /^D=[cv]\d+$/;
 

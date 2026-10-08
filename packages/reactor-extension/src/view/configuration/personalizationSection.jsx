@@ -28,8 +28,8 @@ import prehidingSnippet from "./constants/prehidingSnippet";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
 import FormElementContainer from "../components/formElementContainer";
-import FormikCheckbox from "../components/formikReactSpectrum3/formikCheckbox";
-import FormikPicker from "../components/formikReactSpectrum3/formikPicker";
+import FormikCheckbox from "../forms/fields/Checkbox";
+import FormikPicker from "../forms/fields/Picker";
 
 export const bridge = {
   getInstanceDefaults: () => ({
