@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { Item } from "@adobe/react-spectrum";
+import { PickerItem } from "@react-spectrum/s2";
 import getInstanceOptions from "../utils/getInstanceOptions";
 import FormikPicker from "./formikReactSpectrum3/formikPicker";
 
@@ -38,7 +38,11 @@ const InstanceNamePicker = ({
       }
       onChange={onChange}
     >
-      {(item) => <Item key={item.value}>{item.label}</Item>}
+      {(item) => (
+        <PickerItem key={item.value} id={item.value}>
+          {item.label}
+        </PickerItem>
+      )}
     </FormikPicker>
   );
 };

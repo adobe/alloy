@@ -1,3 +1,11 @@
 .CapitalizedLabel {
   text-transform: capitalize;
 }
+
+/* text-transform inherits, but S2's field wrapper (unlike v3's) also
+contains the description/error text under the same node UNSAFE_className
+lands on - reset it there so only the label itself is capitalized. */
+.CapitalizedLabel [slot="description"],
+.CapitalizedLabel [slot="errorMessage"] {
+  text-transform: none;
+}

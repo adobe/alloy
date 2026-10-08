@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 
 import { useField } from "formik";
 import PropTypes from "prop-types";
-import { ActionButton, Flex, Text } from "@adobe/react-spectrum";
+import { ActionButton, Text } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import CodePreview from "./codePreview";
 
 /**
@@ -60,7 +61,13 @@ const CodeField = ({
   };
 
   return (
-    <Flex direction="row" gap="size-100">
+    <div
+      className={style({
+        display: "flex",
+        flexDirection: "row",
+        gap: 8,
+      })}
+    >
       <CodePreview
         data-test-id={dataTestId}
         value={value}
@@ -78,12 +85,14 @@ const CodeField = ({
           onPress={() => {
             setValue("");
           }}
-          marginTop={23}
+          styles={style({
+            marginTop: "[23px]",
+          })}
         >
           <Text>Clear</Text>
         </ActionButton>
       )}
-    </Flex>
+    </div>
   );
 };
 
