@@ -11,8 +11,12 @@ governing permissions and limitations under the License.
 
 import { render } from "vitest-browser-react";
 import { Provider, lightTheme } from "@adobe/react-spectrum";
+import { Provider as SpectrumProvider } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import ErrorBoundary from "../../../src/view/components/errorBoundary";
 
+// Mirror src/view/render.jsx: S2 provider nested inside the v3 provider so
+// tests render views that hold both Spectrum versions during migration.
 export default async (View) => {
   return render(
     <Provider
@@ -20,9 +24,20 @@ export default async (View) => {
       colorScheme="light"
       UNSAFE_className="react-spectrum-provider spectrum spectrum--medium spectrum--light spectrum-accessibility-overrides"
     >
-      <ErrorBoundary>
-        <View />
-      </ErrorBoundary>
+      <SpectrumProvider
+        background="base"
+        colorScheme="light"
+        styles={style({
+          display: "flex",
+          flexDirection: "column",
+          flexGrow: 1,
+          padding: 8,
+        })}
+      >
+        <ErrorBoundary>
+          <View />
+        </ErrorBoundary>
+      </SpectrumProvider>
     </Provider>,
   );
 };
