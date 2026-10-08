@@ -12,11 +12,11 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { useFormikContext } from "formik";
-import { Breadcrumbs, Checkbox, Item, Flex, View } from "@adobe/react-spectrum";
+import { Breadcrumb, Breadcrumbs, Checkbox } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import getNodeEditData from "./helpers/getNodeEditData";
 import AutoPopulationAlert from "./autoPopulationAlert";
 import { ALWAYS, NONE } from "./constants/autoPopulationSource";
-import "./nodeEdit.css";
 import FormikCheckbox from "../formikReactSpectrum3/formikCheckbox";
 import FieldDescriptionAndError from "../fieldDescriptionAndError";
 import getTypeSpecificView from "./helpers/getTypeSpecificView";
@@ -66,27 +66,29 @@ const NodeEdit = (props) => {
   }
 
   return (
-    <Flex
+    <div
       data-test-id="nodeEdit"
-      gap="size-200"
-      marginBottom="size-200"
-      direction="column"
+      className={style({
+        display: "flex",
+        gap: 16,
+        marginBottom: 16,
+        flexDirection: "column",
+      })}
     >
       {!verticalLayout && (
-        <View data-test-id="breadcrumb" UNSAFE_className="NodeEdit-breadcrumbs">
-          {
-            // There's currently a known error that occurs when Breadcrumbs
-            // is unmounted, but it doesn't seem to affect the UX.
-            // https://github.com/adobe/react-spectrum/issues/1979
-          }
+        <div data-test-id="breadcrumb" className={style({ marginStart: -8 })}>
           {breadcrumb.length > 1 && (
-            <Breadcrumbs onAction={(nodeId) => onNodeSelect(nodeId)}>
-              {breadcrumb.map((item) => (
-                <Item key={item.nodeId}>{item.label}</Item>
-              ))}
-            </Breadcrumbs>
+            <nav aria-label="Breadcrumb">
+              <Breadcrumbs onAction={(nodeId) => onNodeSelect(nodeId)}>
+                {breadcrumb.map((item) => (
+                  <Breadcrumb id={item.nodeId} key={item.nodeId}>
+                    {item.label}
+                  </Breadcrumb>
+                ))}
+              </Breadcrumbs>
+            </nav>
           )}
-        </View>
+        </div>
       )}
       {formStateNode.autoPopulationSource !== NONE && (
         <AutoPopulationAlert formStateNode={formStateNode} />
@@ -104,7 +106,9 @@ const NodeEdit = (props) => {
                 data-test-id="clearField"
                 isSelected
                 isDisabled
-                width="size-5000"
+                styles={style({
+                  width: 400,
+                })}
               >
                 Clear existing value
               </Checkbox>
@@ -123,7 +127,7 @@ const NodeEdit = (props) => {
           )}
         </>
       )}
-    </Flex>
+    </div>
   );
 };
 

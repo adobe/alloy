@@ -8,10 +8,10 @@
 
   &.ant-tree .ant-tree-node-content-wrapper {
     &:hover {
-      background-color: var(--spectrum-gray-200);
+      background-color: var(--xdm-tree-gray-200);
     }
     &.ant-tree-node-selected {
-      background-color: var(--spectrum-blue-300);
+      background-color: var(--xdm-tree-blue-300);
     }
   }
 }

@@ -11,32 +11,63 @@ governing permissions and limitations under the License.
 */
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import { Flex } from "@adobe/react-spectrum";
-import AlertIcon from "@spectrum-icons/workflow/Alert";
-import AsteriskIcon from "@spectrum-icons/workflow/Asterisk";
-import Delete from "@spectrum-icons/workflow/Delete";
+import {
+  style,
+  iconStyle,
+  color,
+} from "@react-spectrum/s2/style" with { type: "macro" };
+import AlertIcon from "@react-spectrum/s2/icons/AlertTriangle";
+import InfoIcon from "@react-spectrum/s2/icons/InfoCircle";
+import Delete from "@react-spectrum/s2/icons/Delete";
 import PopulationAmountIndicator from "./populationAmountIndicator";
 import "./xdmTreeNodeTitle.css";
 import { EMPTY, FULL, PARTIAL, BLANK } from "./constants/populationAmount";
+
+// xdmTreeNodeTitle.css still styles antd's own `.ant-tree-treenode-disabled`
+// ancestor class, which we don't render and so can't target with the
+// style() macro. Resolve the real gray-500 here and hand it down as a CSS
+// custom property so the plain CSS never has to hardcode a color.
+const GRAY_500 = color("gray-500");
+
+// The style() macro must be statically evaluable, so the `error` boolean
+// can't be interpolated directly; precompute both variants.
+const TEXT_COLOR_STYLES = {
+  true: style({ color: "negative" }),
+  false: style({}),
+};
+const TYPE_TEXT_COLOR_STYLES = {
+  true: style({ color: "negative" }),
+  false: style({ color: "gray-600" }),
+};
 
 const XdmTreeNodeTitle = (props) => {
   const { id, displayName, type, populationAmount, error, infoTip, clear } =
     props;
   return (
-    <Flex
+    <div
       data-test-id="xdmTreeNodeTitle"
       data-node-id={id}
-      alignItems="center"
-      gap="size-100"
-      UNSAFE_className={classNames("XdmTreeNodeTitle", {
-        "is-invalid": error,
-      })}
+      className={classNames(
+        "XdmTreeNodeTitle",
+        style({
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+        }),
+        TEXT_COLOR_STYLES[Boolean(error)],
+      )}
+      style={{ "--xdm-tree-node-title-gray-500": GRAY_500 }}
     >
       {error && (
         <div title={error}>
-          <Flex alignItems="center">
-            <AlertIcon color="negative" size="S" />
-          </Flex>
+          <div
+            className={style({
+              display: "flex",
+              alignItems: "center",
+            })}
+          >
+            <AlertIcon styles={iconStyle({ color: "negative", size: "S" })} />
+          </div>
         </div>
       )}
       <PopulationAmountIndicator populationAmount={populationAmount} />
@@ -47,19 +78,36 @@ const XdmTreeNodeTitle = (props) => {
         {displayName}
       </span>
       {clear && (
-        <Flex alignItems="center">
-          <Delete size="XS" />
-        </Flex>
+        <div
+          className={style({
+            display: "flex",
+            alignItems: "center",
+          })}
+        >
+          <Delete styles={iconStyle({ size: "XS" })} />
+        </div>
       )}
       {infoTip && (
         <div title={infoTip}>
-          <Flex alignItems="center">
-            <AsteriskIcon size="XS" />
-          </Flex>
+          <div
+            className={style({
+              display: "flex",
+              alignItems: "center",
+            })}
+          >
+            <InfoIcon styles={iconStyle({ size: "XS" })} />
+          </div>
         </div>
       )}
-      <span className="XdmTreeNodeTitle-type">{type.split("-")[0]}</span>
-    </Flex>
+      <span
+        className={classNames(
+          "XdmTreeNodeTitle-type",
+          TYPE_TEXT_COLOR_STYLES[Boolean(error)],
+        )}
+      >
+        {type.split("-")[0]}
+      </span>
+    </div>
   );
 };
 

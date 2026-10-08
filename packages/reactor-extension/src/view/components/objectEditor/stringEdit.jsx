@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { Item } from "@adobe/react-spectrum";
+import { ComboBoxItem } from "@react-spectrum/s2";
 import FormikTextField from "../formikReactSpectrum3/formikTextField";
 import FormikKeyedComboBox from "../formikReactSpectrum3/formikKeyedComboBox";
 import DataElementSelector from "../dataElementSelector";
@@ -36,9 +36,13 @@ const StringEdit = (props) => {
             contextualHelp={nodeDescription}
           >
             {(item) => (
-              <Item key={item.value} data-test-id={item.value}>
+              <ComboBoxItem
+                key={item.value}
+                id={item.value}
+                data-test-id={item.value}
+              >
                 {item.label}
-              </Item>
+              </ComboBoxItem>
             )}
           </FormikKeyedComboBox>
         ) : (

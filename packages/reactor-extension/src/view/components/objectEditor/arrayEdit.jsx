@@ -12,8 +12,9 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { FieldArray, useField } from "formik";
-import { Radio, Button, ActionButton, Flex } from "@adobe/react-spectrum";
-import Delete from "@spectrum-icons/workflow/Delete";
+import { Radio, Button, ActionButton } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import Delete from "@react-spectrum/s2/icons/Delete";
 import FormikRadioGroup from "../formikReactSpectrum3/formikRadioGroup";
 import FormikTextField from "../formikReactSpectrum3/formikTextField";
 import DataElementSelector from "../dataElementSelector";
@@ -61,29 +62,42 @@ const PartsPopulationStrategyForm = ({
       name={`${fieldName}.items`}
       render={(arrayHelpers) => {
         return (
-          <Flex gap="size-200" direction="column" alignItems="start">
+          <div
+            className={style({
+              display: "flex",
+              gap: 16,
+              flexDirection: "column",
+              alignItems: "start",
+            })}
+          >
             {items.map((itemNode, index) => {
               return (
-                <Flex gap="size-200" key={`${fieldName}.${index}`}>
-                  <Button
+                <div
+                  key={`${fieldName}.${index}`}
+                  className={style({
+                    display: "flex",
+                    gap: 16,
+                  })}
+                >
+                  <ActionButton
                     data-test-id={`item${index}SelectButton`}
                     isQuiet
-                    variant="secondary"
                     onPress={() => onNodeSelect(itemNode.id)}
                   >
                     Item {index + 1}
-                  </Button>
+                  </ActionButton>
                   <ActionButton
                     data-test-id={`item${index}RemoveButton`}
                     isQuiet
-                    variant="secondary"
-                    minWidth={0}
                     aria-label="Delete"
                     onPress={() => arrayHelpers.remove(index)}
+                    styles={style({
+                      minWidth: 0,
+                    })}
                   >
                     <Delete />
                   </ActionButton>
-                </Flex>
+                </div>
               );
             })}
             <Button
@@ -116,7 +130,7 @@ const PartsPopulationStrategyForm = ({
             >
               Add item
             </Button>
-          </Flex>
+          </div>
         );
       }}
     />
