@@ -29,6 +29,9 @@ overrides:
   underscore@<1.13.8: ^1.13.8
   yaml@<2.8.3: ^2.8.3
   tmp@<0.2.6: ^0.2.7
+  # @adobe/reactor-sandbox scans extension lib files via babel-extract-comments,
+  # whose babylon@6 cannot parse modern syntax (e.g. `?.`, object spread).
+  babel-extract-comments>babylon: npm:@babel/parser@^7.29.2
 allowBuilds:
   '@adobe/reactor-turbine': false
   '@parcel/watcher': true
