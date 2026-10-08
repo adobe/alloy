@@ -9,31 +9,40 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { Picker, Flex, TextField, Item } from "@adobe/react-spectrum";
+import { Picker, PickerItem, TextField } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import DataElementSelector from "../dataElementSelector";
 import FormikComboBox from "../formikReactSpectrum3/formikComboBox";
 import FormikPicker from "../formikReactSpectrum3/formikPicker";
 import FormikTextField from "../formikReactSpectrum3/formikTextField";
+import widthStyle from "../widthStyle";
+
+const FLEX_STYLE = style({ display: "flex" });
 
 const DisabledOverrideInput = ({
   useManualEntry,
   disabledDisplayValue = "",
+  width,
   ...otherProps
 }) => {
   if (useManualEntry) {
     return (
-      <Flex>
-        <TextField {...otherProps} defaultValue={disabledDisplayValue} />
-      </Flex>
+      <div className={FLEX_STYLE}>
+        <TextField
+          {...otherProps}
+          defaultValue={disabledDisplayValue}
+          styles={widthStyle(width)}
+        />
+      </div>
     );
   }
   return (
-    <Flex>
-      <Picker {...otherProps} selectedKey="Disabled">
-        <Item key="Disabled">{disabledDisplayValue}</Item>
+    <div className={FLEX_STYLE}>
+      <Picker {...otherProps} value="Disabled" styles={widthStyle(width)}>
+        <PickerItem id="Disabled">{disabledDisplayValue}</PickerItem>
       </Picker>
-    </Flex>
+    </div>
   );
 };
 /**
