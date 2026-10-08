@@ -19,6 +19,7 @@ governing permissions and limitations under the License.
  * @property {function({isIdentityEstablished: boolean}): string}  getAction
  * @property {function(): string|undefined} getDatastreamIdOverride
  * @property {Function} getUseSendBeacon
+ * @property {function(): boolean} getUseKeepalive
  * @property {function(): string|undefined} getEdgeSubPath
  * @property {Function} getUseIdThirdPartyDomain
  * @property {Function} setUseIdThirdPartyDomain

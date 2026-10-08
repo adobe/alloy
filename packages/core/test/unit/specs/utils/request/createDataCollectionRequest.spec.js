@@ -66,6 +66,32 @@ describe("createDataCollectionRequest", () => {
     expect(request.getAction()).toBe("interact");
     expect(request.getUseSendBeacon()).toBe(false);
   });
+  it("uses keepalive if document may unload, whether or not identity has been established", () => {
+    const payload = {
+      getDocumentMayUnload() {
+        return true;
+      },
+    };
+    const request = createDataCollectionRequest({
+      payload,
+    });
+    expect(request.getUseKeepalive()).toBe(true);
+    request.setIsIdentityEstablished();
+    expect(request.getUseKeepalive()).toBe(true);
+  });
+  it("does not use keepalive if document will not unload", () => {
+    const payload = {
+      getDocumentMayUnload() {
+        return false;
+      },
+    };
+    const request = createDataCollectionRequest({
+      payload,
+    });
+    expect(request.getUseKeepalive()).toBe(false);
+    request.setIsIdentityEstablished();
+    expect(request.getUseKeepalive()).toBe(false);
+  });
   it("passes the datastreamIdOverride to the request", () => {
     const payload = {};
     const datastreamIdOverride = "my-edge-config-id-override";
