@@ -58,6 +58,7 @@ describe("injectSendBeaconRequest", () => {
         expect(result.statusCode).toBe(204);
         expect(result.getHeader("Content-Type")).toBeNull();
         expect(result.body).toBe("");
+        expect(result.sentWithBeacon).toBe(true);
       },
     );
   });
