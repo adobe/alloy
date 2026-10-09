@@ -11,5 +11,8 @@
     "@adobe/alloy-sandbox-browser": "0.1.8",
     "@adobe/alloy-sandbox-node": "0.0.5"
   },
-  "changesets": []
+  "changesets": [
+    "beacon-log-message",
+    "keepalive-document-unloading"
+  ]
 }
