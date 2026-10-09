@@ -11,6 +11,8 @@ governing permissions and limitations under the License.
 */
 import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import createEventRegistry from "../../../../../src/components/RulesEngine/createEventRegistry.js";
+import extractPayloadsFromEventHistoryOperations from "../../../../../src/components/RulesEngine/utils/extractPayloadsFromEventHistoryOperations.js";
+import { EVENT_HISTORY_OPERATION } from "../../../../../src/constants/schema.js";
 
 describe("RulesEngine:createEventRegistry", () => {
   let storage;
@@ -232,5 +234,66 @@ describe("RulesEngine:createEventRegistry", () => {
         timestamps: [expect.any(Number)],
       },
     });
+  });
+
+  it("records an event history operation with iam.action in the same entry as a Web SDK interaction with that action", () => {
+    const activityId = "111#aaa";
+    const operationRegistry = createEventRegistry({
+      storage,
+      logger: { info: vi.fn() },
+    });
+    const interactionRegistry = createEventRegistry({
+      storage,
+      logger: { info: vi.fn() },
+    });
+
+    operationRegistry.addEventPayloads(
+      extractPayloadsFromEventHistoryOperations([
+        {
+          id: "prop1",
+          items: [
+            {
+              schema: EVENT_HISTORY_OPERATION,
+              data: {
+                operation: "insert",
+                content: {
+                  "iam.id": activityId,
+                  "iam.eventType": "interact",
+                  "iam.action": "clicked",
+                },
+              },
+            },
+          ],
+        },
+      ]),
+    );
+
+    interactionRegistry.addExperienceEdgeEvent({
+      getContent: () => ({
+        xdm: {
+          eventType: "decisioning.propositionInteract",
+          _experience: {
+            decisioning: {
+              propositions: [
+                {
+                  id: "111",
+                  scope: "web://something",
+                  scopeDetails: {
+                    decisionProvider: "AJO",
+                    activity: { id: activityId },
+                  },
+                },
+              ],
+              propositionEventType: { interact: 1 },
+              propositionAction: { id: "clicked" },
+            },
+          },
+        },
+      }),
+    });
+
+    expect(Object.keys(operationRegistry.toJSON())).toEqual(
+      Object.keys(interactionRegistry.toJSON()),
+    );
   });
 });

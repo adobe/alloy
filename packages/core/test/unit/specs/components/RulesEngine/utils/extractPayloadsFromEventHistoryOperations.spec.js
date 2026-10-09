@@ -185,4 +185,63 @@ describe("extractPayloadsFromEventHistoryOperations", () => {
     expect(result.length).toBe(2);
     expect(propositionList[0].items.length).toBe(0); // All items should be removed
   });
+
+  it("should extract iam.action as action", () => {
+    const propositionList = [
+      {
+        id: "prop1",
+        items: [
+          {
+            schema: EVENT_HISTORY_OPERATION,
+            data: {
+              operation: "insert",
+              content: {
+                "iam.id": "event123",
+                "iam.eventType": "interact",
+                "iam.action": "clicked",
+              },
+            },
+          },
+        ],
+      },
+    ];
+
+    const result = extractPayloadsFromEventHistoryOperations(propositionList);
+
+    expect(result).toEqual([
+      {
+        operation: "insert",
+        event: {
+          eventId: "event123",
+          eventType: "interact",
+          action: "clicked",
+        },
+      },
+    ]);
+  });
+
+  it("should not add an action when iam.action is not present", () => {
+    const propositionList = [
+      {
+        id: "prop1",
+        items: [
+          {
+            schema: EVENT_HISTORY_OPERATION,
+            data: {
+              operation: "insert",
+              content: {
+                "iam.id": "event123",
+                "iam.eventType": "display",
+              },
+            },
+          },
+        ],
+      },
+    ];
+
+    const [{ event }] =
+      extractPayloadsFromEventHistoryOperations(propositionList);
+
+    expect(event).not.toHaveProperty("action");
+  });
 });

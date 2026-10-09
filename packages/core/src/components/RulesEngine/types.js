@@ -83,6 +83,7 @@ governing permissions and limitations under the License.
  * @typedef {Record<string, string>} RulesEventPayload
  * @property {string} iam.eventType
  * @property {string} iam.id
+ * @property {string} [iam.action]
  */
 
 export const Types = {};
