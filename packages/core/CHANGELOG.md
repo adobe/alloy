@@ -1,5 +1,11 @@
 # @adobe/alloy-core
 
+## 1.3.1-beta.1
+
+### Patch Changes
+
+- [#1597](https://github.com/adobe/alloy/pull/1597) [`81f5979`](https://github.com/adobe/alloy/commit/81f5979294ae1ab572150fc1d0c969b9644f69e0) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Fixed event history operations from Adobe Journey Optimizer dropping the `iam.action` field. Inserted events now include the action, so they are recorded in the same event history entry as the matching Web SDK interaction (for example, an in-app message `clicked` interaction) and can be counted by historical rule conditions that filter on an action.
+
 ## 1.3.1-beta.0
 
 ### Patch Changes

@@ -13,6 +13,7 @@
   },
   "changesets": [
     "beacon-log-message",
+    "event-history-operation-iam-action",
     "keepalive-document-unloading"
   ]
 }
