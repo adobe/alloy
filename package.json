@@ -6,7 +6,8 @@
   "scripts": {
     "build": "pnpm -r --if-present run build",
     "clean": "pnpm -r --if-present run clean && rimraf coverage",
-    "dev": "concurrently --names build,sandbox \"pnpm --filter @adobe/alloy run build:watch\" \"pnpm --filter @adobe/alloy-sandbox-browser run start\"",
+    "dev": "pnpm -r --if-present run dev:prepare && BROWSER_SANDBOX_PORT=3001 pnpm -r --parallel --if-present run dev",
+    "dev:browser": "pnpm -r --filter '@adobe/alloy-sandbox-browser...' --if-present run dev:prepare && pnpm -r --parallel --filter '@adobe/alloy-sandbox-browser...' --if-present run dev",
     "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/{src,test,scripts},scripts}/**/*.{js,cjs,mjs,jsx}\"",
     "format": "prettier --log-level warn --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/{src,test,scripts},scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
     "format:check": "prettier --check \"*.{html,js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/{src,test,scripts},scripts}/**/*.{html,js,cjs,mjs,jsx}\"",

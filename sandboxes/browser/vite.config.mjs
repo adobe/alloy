@@ -8,7 +8,7 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 3000,
+    port: Number(process.env.BROWSER_SANDBOX_PORT || 3000),
     headers: {
       "Service-Worker-Allowed": "/",
     },
@@ -22,5 +22,17 @@ export default defineConfig({
   build: {
     outDir: "build",
     sourcemap: true,
+    rolldownOptions: {
+      input: {
+        main: path.resolve(dirname, "index.html"),
+        alloyServiceWorker: path.resolve(dirname, "alloyServiceWorker.js"),
+      },
+      output: {
+        entryFileNames: (chunk) =>
+          chunk.name === "alloyServiceWorker"
+            ? "alloyServiceWorker.js"
+            : "assets/[name]-[hash].js",
+      },
+    },
   },
 });

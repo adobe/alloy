@@ -10,9 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ fetch }) => {
-  return (url, body, headers) => {
-    return fetch(url, {
+/** @import { NetworkService } from "@adobe/alloy-core/services" */
+
+/**
+ * @param {Object} params
+ * @param {typeof window.fetch} params.fetch
+ * @param {{ info: (...args: any[]) => void }} params.logger
+ * @returns {NetworkService["sendFetchRequest"]}
+ */
+export default ({ fetch, logger }) => {
+  /**
+   * @param {string} url
+   * @param {string} body
+   * @param {Record<string, string> | undefined} headers
+   * @param {boolean} keepalive
+   */
+  const startFetch = (url, body, headers, keepalive) =>
+    fetch(url, {
       method: "POST",
       cache: "no-cache",
       credentials: "include", // To set the cookie header in the request.
@@ -22,7 +36,30 @@ export default ({ fetch }) => {
       },
       referrerPolicy: "no-referrer-when-downgrade",
       body,
-    }).then((response) => {
+      ...(keepalive ? { keepalive: true } : {}),
+    });
+
+  return (url, body, headers, { keepalive = false } = {}) => {
+    let responsePromise = startFetch(url, body, headers, keepalive);
+
+    if (keepalive) {
+      // Browsers reject keepalive requests whose body, together with every
+      // other in-flight keepalive request and sendBeacon on the page, exceeds
+      // 64 KiB. The rejection is a TypeError that looks the same as any other
+      // network error ("Failed to fetch", "NetworkError when attempting to
+      // fetch resource.", "Load failed") and arrives before anything is sent,
+      // so retry once without keepalive. Only fetch() itself is covered here;
+      // a failure while reading the response is not retried because the
+      // server already received the request.
+      responsePromise = responsePromise.catch(() => {
+        logger.info(
+          "Unable to send the request with `keepalive`; falling back to a regular `fetch`.",
+        );
+        return startFetch(url, body, headers, false);
+      });
+    }
+
+    return responsePromise.then((response) => {
       return response.text().then((responseBody) => ({
         statusCode: response.status,
         // We expose headers through a function instead of creating an object

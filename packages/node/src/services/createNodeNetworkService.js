@@ -14,7 +14,9 @@ governing permissions and limitations under the License.
 
 /**
  * Node has no `navigator.sendBeacon`, so there is no separate unload-safe
- * transport — both network strategies use `fetch`.
+ * transport — both network strategies use `fetch`. For the same reason the
+ * `keepalive` option of `sendFetchRequest` is ignored: there is no page to
+ * unload.
  *
  * @param {Object} [options]
  * @param {Record<string, string>} [options.headers] Extra headers merged

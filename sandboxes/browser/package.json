@@ -12,7 +12,8 @@
     "react-router": "^7.18.2"
   },
   "scripts": {
-    "start": "vite",
+    "dev": "vite",
+    "start": "pnpm run dev",
     "build": "vite build",
     "release": "node scripts/release.mjs"
   },
