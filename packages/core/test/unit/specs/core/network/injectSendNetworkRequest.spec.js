@@ -86,6 +86,9 @@ describe("injectSendNetworkRequest", () => {
         url,
         payloadJson,
         undefined,
+        {
+          keepalive: false,
+        },
       );
     });
   });
@@ -98,9 +101,12 @@ describe("injectSendNetworkRequest", () => {
       useSendBeacon: false,
       headers: { Authorization: "Bearer token" },
     }).then(() => {
-      expect(sendFetchRequest).toHaveBeenCalledWith(url, payloadJson, {
-        Authorization: "Bearer token",
-      });
+      expect(sendFetchRequest).toHaveBeenCalledWith(
+        url,
+        payloadJson,
+        { Authorization: "Bearer token" },
+        { keepalive: false },
+      );
     });
   });
 
@@ -113,11 +119,47 @@ describe("injectSendNetworkRequest", () => {
       headers: { Authorization: "Bearer token" },
     }).then(() => {
       expect(sendBeaconRequest).not.toHaveBeenCalled();
-      expect(sendFetchRequest).toHaveBeenCalledWith(url, payloadJson, {
-        Authorization: "Bearer token",
-      });
+      expect(sendFetchRequest).toHaveBeenCalledWith(
+        url,
+        payloadJson,
+        { Authorization: "Bearer token" },
+        { keepalive: false },
+      );
     });
   });
+  it("sends the fetch request with keepalive when useKeepalive is true", () => {
+    return sendNetworkRequest({
+      requestId,
+      payload,
+      url,
+      useSendBeacon: false,
+      useKeepalive: true,
+    }).then(() => {
+      expect(sendFetchRequest).toHaveBeenCalledWith(
+        url,
+        payloadJson,
+        undefined,
+        {
+          keepalive: true,
+        },
+      );
+      expect(sendBeaconRequest).not.toHaveBeenCalled();
+    });
+  });
+
+  it("uses sendBeacon instead of a keepalive fetch when useSendBeacon is true", () => {
+    return sendNetworkRequest({
+      requestId,
+      payload,
+      url,
+      useSendBeacon: true,
+      useKeepalive: true,
+    }).then(() => {
+      expect(sendBeaconRequest).toHaveBeenCalledWith(url, payloadJson);
+      expect(sendFetchRequest).not.toHaveBeenCalled();
+    });
+  });
+
   it("handles a response with a JSON body", () => {
     return sendNetworkRequest({
       payload,

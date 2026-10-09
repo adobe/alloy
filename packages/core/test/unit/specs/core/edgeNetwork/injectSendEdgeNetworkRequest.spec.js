@@ -126,6 +126,7 @@ describe("injectSendEdgeNetworkRequest", () => {
       getPayload: vi.fn().mockReturnValue(payload),
       getUseIdThirdPartyDomain: vi.fn().mockReturnValue(false),
       getUseSendBeacon: vi.fn().mockReturnValue(false),
+      getUseKeepalive: vi.fn().mockReturnValue(false),
       getDatastreamIdOverride: vi.fn().mockReturnValue(""),
       getEdgeSubPath: vi.fn().mockReturnValue(""),
     };
@@ -204,6 +205,7 @@ describe("injectSendEdgeNetworkRequest", () => {
         url: "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123",
         payload,
         useSendBeacon: false,
+        useKeepalive: false,
       });
     });
   });
@@ -222,6 +224,7 @@ describe("injectSendEdgeNetworkRequest", () => {
         url: "https://adobedc.demdex.net/ee/v1/test-action?configId=myconfigId&requestId=RID123",
         payload,
         useSendBeacon: false,
+        useKeepalive: false,
       });
     });
   });
@@ -240,6 +243,21 @@ describe("injectSendEdgeNetworkRequest", () => {
         url: "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123",
         payload,
         useSendBeacon: true,
+        useKeepalive: false,
+      });
+    });
+  });
+  it("sends request using keepalive", () => {
+    request.getUseKeepalive.mockReturnValue(true);
+    return sendEdgeNetworkRequest({
+      request,
+    }).then(() => {
+      expect(sendNetworkRequest).toHaveBeenCalledWith({
+        requestId: "RID123",
+        url: "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123",
+        payload,
+        useSendBeacon: false,
+        useKeepalive: true,
       });
     });
   });
@@ -514,6 +532,7 @@ describe("injectSendEdgeNetworkRequest", () => {
         url: "https://edge.example.com/ee/va6/v1/test-action?configId=myconfigId&requestId=RID123",
         payload,
         useSendBeacon: false,
+        useKeepalive: false,
       });
     });
   });
@@ -529,6 +548,7 @@ describe("injectSendEdgeNetworkRequest", () => {
         url: "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123&adobeAepValidationToken=abc-123",
         payload,
         useSendBeacon: false,
+        useKeepalive: false,
       });
     });
   });
@@ -549,6 +569,7 @@ describe("injectSendEdgeNetworkRequest", () => {
         url: "https://edge.example.com/ee/v1/test-action?configId=myconfigIdOverride&requestId=RID123",
         requestId: "RID123",
         useSendBeacon: false,
+        useKeepalive: false,
       });
     });
   });

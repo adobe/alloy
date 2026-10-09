@@ -25,7 +25,16 @@ governing permissions and limitations under the License.
  */
 
 /**
- * @typedef {(url: string, body: string) => Promise<NetworkResponse>} SendFetchRequest
+ * @typedef {Object} SendFetchRequestOptions
+ * @property {boolean} [keepalive] Send the request with `keepalive` so the
+ *   browser finishes it even if the page unloads. Implementations fall back to
+ *   a regular request if the browser refuses (for example, when in-flight
+ *   keepalive data on the page would exceed 64 KiB). Ignored where there is no
+ *   page to unload (Node).
+ */
+
+/**
+ * @typedef {(url: string, body: string, headers?: Record<string, string>, options?: SendFetchRequestOptions) => Promise<NetworkResponse>} SendFetchRequest
  */
 
 /**
