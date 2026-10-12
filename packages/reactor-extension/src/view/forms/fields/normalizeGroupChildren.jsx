@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { Children, cloneElement, isValidElement } from "react";
 import { mergeStyles } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import widthStyle from "../widthStyle";
+import widthStyle from "./widthStyle";
 
 const GROUP_ITEM_STYLE = style({ maxWidth: "full" });
 
