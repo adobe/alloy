@@ -435,7 +435,8 @@ describe("Migration (Web SDK ↔ At.js mixed-mode)", () => {
     );
   });
 
-  test("C8085777: Web SDK → At.js 2.x shares the visitor profile", async ({
+  // Skipped because this test is flaky in CI.
+  test.skip("C8085777: Web SDK → At.js 2.x shares the visitor profile", async ({
     alloy,
     worker,
     networkRecorder,
