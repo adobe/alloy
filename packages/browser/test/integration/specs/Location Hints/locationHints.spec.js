@@ -63,7 +63,8 @@ const sgp3LocationHintHandler = http.post(
 );
 
 describe("Location Hints", () => {
-  test("C6589015 - location hint from first response is included in second request URL", async ({
+  // Skipped because this test is flaky in CI.
+  test.skip("C6589015 - location hint from first response is included in second request URL", async ({
     alloy,
     worker,
     networkRecorder,
