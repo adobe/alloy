@@ -26,6 +26,11 @@ const device = injectDevice(window);
 const environment = injectEnvironment(window);
 const placeContext = injectPlaceContext(() => new Date());
 const timestamp = injectTimestamp(() => new Date());
+// A null timestamp tells Edge Network to stamp the event with its own time.
+/** @param {import("@adobe/alloy-core/core/types.js").Event} event */
+const serverSideTimestamp = (event) => {
+  event.mergeXdm({ timestamp: null });
+};
 const highEntropyUserAgentHints = injectHighEntropyUserAgentHints(navigator);
 const oneTimeAnalyticsReferrer = injectOneTimeAnalyticsReferrer(window);
 
@@ -38,14 +43,19 @@ const defaultEnabledContexts = {
 const defaultDisabledContexts = {
   highEntropyUserAgentHints,
   oneTimeAnalyticsReferrer,
+  serverSideTimestamp,
 };
 const optionalContexts = {
   ...defaultEnabledContexts,
   ...defaultDisabledContexts,
 };
-const requiredContexts = [timestamp, implementationDetails];
 
 const createContext = ({ config, logger }) => {
+  // serverSideTimestamp replaces the client timestamp. Optional contexts run
+  // before required ones, so the client timestamp would otherwise overwrite it.
+  const requiredContexts = config.context.includes("serverSideTimestamp")
+    ? [implementationDetails]
+    : [timestamp, implementationDetails];
   return createComponent(config, logger, optionalContexts, requiredContexts);
 };
 createContext.namespace = "Context";
