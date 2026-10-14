@@ -10,6 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import injectTimestamp from "@adobe/alloy-core/utils/injectTimestamp.js";
+
+const setTimestamp = injectTimestamp(() => new Date());
+
 /**
  * Creates a specialized handler for ad conversion events.
  * This follows a similar pattern to the media event handling in the StreamingMedia component.
@@ -20,11 +24,17 @@ export default ({
   createDataCollectionRequest,
   createDataCollectionRequestPayload,
   logger,
+  serverSideTimestamp = false,
 }) => {
   /**
    * Tracks an ad conversion event by sending it directly to the Edge Network
    */
   const trackAdConversion = ({ event }) => {
+    // Conversions skip the Context component, so they set their own
+    // timestamp. Edge Network stamps the event when it is left out.
+    if (!serverSideTimestamp) {
+      setTimestamp(event);
+    }
     const dataCollectionRequestPayload = createDataCollectionRequestPayload();
     dataCollectionRequestPayload.addEvent(event);
     event.finalize();

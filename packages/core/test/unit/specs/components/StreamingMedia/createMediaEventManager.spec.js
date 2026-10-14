@@ -14,6 +14,8 @@ governing permissions and limitations under the License.
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import createMediaEventManager from "../../../../../src/components/StreamingMedia/createMediaEventManager.js";
+import createEvent from "../../../../../src/core/createEvent.js";
+import injectTimestamp from "../../../../../src/utils/injectTimestamp.js";
 
 describe("StreamingMedia::createMediaEventManager", () => {
   let config;
@@ -149,5 +151,41 @@ describe("StreamingMedia::createMediaEventManager", () => {
     });
     expect(event.finalize).toHaveBeenCalled();
     expect(sendEdgeNetworkRequest).toHaveBeenCalled();
+  });
+
+  describe("with serverSideTimestamp in the context configuration", () => {
+    const clientTime = new Date("2026-03-04T05:06:07.890Z");
+    let serverSideMediaEventManager;
+
+    beforeEach(() => {
+      serverSideMediaEventManager = createMediaEventManager({
+        config: { ...config, context: ["web", "serverSideTimestamp"] },
+        eventManager: { createEvent, sendEvent: vi.fn() },
+        consent,
+        sendEdgeNetworkRequest,
+        setTimestamp: injectTimestamp(() => clientTime),
+      });
+    });
+
+    const finalizedXdm = (event) => {
+      event.finalize();
+      return event.toJSON().xdm;
+    };
+
+    it("leaves the timestamp out of the session start, which goes to Edge Network", () => {
+      const event = serverSideMediaEventManager.createMediaSession({
+        xdm: { mediaCollection: { sessionDetails: {} } },
+      });
+
+      expect(finalizedXdm(event)).not.toHaveProperty("timestamp");
+    });
+
+    it("stamps the client time on media events, which the media endpoint requires", () => {
+      const event = serverSideMediaEventManager.createMediaEvent({
+        options: { xdm: { eventType: "media.play" } },
+      });
+
+      expect(finalizedXdm(event).timestamp).toBe("2026-03-04T05:06:07.890Z");
+    });
   });
 });

@@ -15,6 +15,9 @@ import injectDevice from "./injectDevice.js";
 import injectEnvironment from "./injectEnvironment.js";
 import injectPlaceContext from "./injectPlaceContext.js";
 import injectTimestamp from "@adobe/alloy-core/utils/injectTimestamp.js";
+import isServerSideTimestampEnabled, {
+  SERVER_SIDE_TIMESTAMP,
+} from "@adobe/alloy-core/utils/isServerSideTimestampEnabled.js";
 import implementationDetails from "./implementationDetails.js";
 import createComponent from "./createComponent.js";
 import injectHighEntropyUserAgentHints from "./injectHighEntropyUserAgentHints.js";
@@ -26,11 +29,6 @@ const device = injectDevice(window);
 const environment = injectEnvironment(window);
 const placeContext = injectPlaceContext(() => new Date());
 const timestamp = injectTimestamp(() => new Date());
-// A null timestamp tells Edge Network to stamp the event with its own time.
-/** @param {import("@adobe/alloy-core/core/types.js").Event} event */
-const serverSideTimestamp = (event) => {
-  event.mergeXdm({ timestamp: null });
-};
 const highEntropyUserAgentHints = injectHighEntropyUserAgentHints(navigator);
 const oneTimeAnalyticsReferrer = injectOneTimeAnalyticsReferrer(window);
 
@@ -43,7 +41,9 @@ const defaultEnabledContexts = {
 const defaultDisabledContexts = {
   highEntropyUserAgentHints,
   oneTimeAnalyticsReferrer,
-  serverSideTimestamp,
+  // Adds nothing to the event. Its effect is to leave the client timestamp
+  // out (see createContext), so Edge Network stamps the event itself.
+  [SERVER_SIDE_TIMESTAMP]: () => {},
 };
 const optionalContexts = {
   ...defaultEnabledContexts,
@@ -51,9 +51,7 @@ const optionalContexts = {
 };
 
 const createContext = ({ config, logger }) => {
-  // serverSideTimestamp replaces the client timestamp rather than being merged
-  // over it, so the client-time injector is left out entirely.
-  const requiredContexts = config.context.includes("serverSideTimestamp")
+  const requiredContexts = isServerSideTimestampEnabled(config)
     ? [implementationDetails]
     : [timestamp, implementationDetails];
   return createComponent(config, logger, optionalContexts, requiredContexts);

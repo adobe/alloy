@@ -25,6 +25,7 @@ vi.mock(
 
 import createPushNotifications from "../../../../../src/components/PushNotifications/index.js";
 import getPushSubscriptionDetails from "../../../../../src/components/PushNotifications/helpers/getPushSubscriptionDetails.js";
+import readFromIndexedDb from "../../../../../src/components/PushNotifications/helpers/readFromIndexedDb.js";
 
 // Mirrors the real contract from createBrowserStorageService.js, where
 // getItem/setItem are async (backed by localStorage/sessionStorage).
@@ -112,5 +113,23 @@ describe("PushNotifications::index", () => {
     await pushNotifications.commands.sendPushSubscription.run();
 
     expect(sendEdgeNetworkRequest).toHaveBeenCalledTimes(1);
+  });
+
+  // The service worker sends its tracking calls without the SDK, so it reads
+  // this setting from the config the page stores in IndexedDB.
+  it("stores serverSideTimestamp for the service worker when it is configured", async () => {
+    config.context = ["web", "serverSideTimestamp"];
+
+    await buildPushNotifications().lifecycle.onComponentsRegistered();
+
+    const stored = await readFromIndexedDb({ error: vi.fn() });
+    expect(stored.serverSideTimestamp).toBe(true);
+  });
+
+  it("stores serverSideTimestamp as false when it is not configured", async () => {
+    await buildPushNotifications().lifecycle.onComponentsRegistered();
+
+    const stored = await readFromIndexedDb({ error: vi.fn() });
+    expect(stored.serverSideTimestamp).toBe(false);
   });
 });

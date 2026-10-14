@@ -102,4 +102,48 @@ describe("Streaming Media Events", () => {
       },
     });
   });
+
+  test("with serverSideTimestamp, the session start leaves the timestamp out and media events keep it", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(mediaSessionHandler, mediaEventHandler);
+
+    await alloy("configure", {
+      ...streamingMediaConfig,
+      context: ["serverSideTimestamp"],
+    });
+    await alloy("createMediaSession", {
+      playerId: "player1",
+      xdm: {
+        mediaCollection: {
+          sessionDetails: {
+            length: 60,
+            contentType: "VOD",
+            name: "test video",
+          },
+        },
+      },
+      getPlayerDetails: () => ({ playhead: 10 }),
+    });
+    await alloy("sendMediaEvent", {
+      playerId: "player1",
+      xdm: { eventType: "media.play" },
+    });
+
+    const sessionCall = (
+      await networkRecorder.findCalls(/edge\.adobedc\.net\/ee\/.*interact/)
+    ).find((call) => getEventFromCall(call, "media.sessionStart"));
+    expect(
+      getEventFromCall(sessionCall, "media.sessionStart").xdm,
+    ).not.toHaveProperty("timestamp");
+
+    const playCall = (await networkRecorder.findCalls(/\/va\//)).find((call) =>
+      getEventFromCall(call, "media.play"),
+    );
+    expect(getEventFromCall(playCall, "media.play").xdm.timestamp).toMatch(
+      /^\d{4}-\d{2}-\d{2}T/,
+    );
+  });
 });

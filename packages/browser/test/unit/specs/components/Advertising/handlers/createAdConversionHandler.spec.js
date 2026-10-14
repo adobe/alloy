@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { vi, beforeEach, describe, it, expect } from "vitest";
+import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
+import createEvent from "@adobe/alloy-core/core/createEvent.js";
 import createAdConversionHandler from "../../../../../../src/components/Advertising/handlers/createAdConversionHandler.js";
 
 describe("Advertising::createAdConversionHandler", () => {
@@ -34,6 +35,7 @@ describe("Advertising::createAdConversionHandler", () => {
 
     event = {
       finalize: vi.fn(),
+      mergeXdm: vi.fn(),
     };
 
     request = { id: "request" };
@@ -81,6 +83,45 @@ describe("Advertising::createAdConversionHandler", () => {
 
       await expect(handler.trackAdConversion({ event })).rejects.toThrow();
       expect(logger.error).toHaveBeenCalled();
+    });
+  });
+
+  describe("timestamp", () => {
+    const sendConversion = async ({ serverSideTimestamp }) => {
+      const conversionEvent = createEvent();
+      conversionEvent.setUserXdm({ eventType: "advertising.enrichment" });
+      sendEdgeNetworkRequest.mockResolvedValue({});
+      await createAdConversionHandler({
+        sendEdgeNetworkRequest,
+        consent,
+        createDataCollectionRequest: () => request,
+        createDataCollectionRequestPayload: () => ({ addEvent: () => {} }),
+        logger,
+        serverSideTimestamp,
+      }).trackAdConversion({ event: conversionEvent });
+      return conversionEvent.toJSON().xdm;
+    };
+
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ["Date"] });
+      vi.setSystemTime(new Date("2026-03-04T05:06:07.890Z"));
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("stamps the client time on the conversion event by default", async () => {
+      const xdm = await sendConversion({ serverSideTimestamp: false });
+
+      expect(xdm.timestamp).toBe("2026-03-04T05:06:07.890Z");
+    });
+
+    it("leaves the timestamp out when serverSideTimestamp is on", async () => {
+      const xdm = await sendConversion({ serverSideTimestamp: true });
+
+      expect(xdm).not.toHaveProperty("timestamp");
+      expect(xdm.eventType).toBe("advertising.enrichment");
     });
   });
 });
