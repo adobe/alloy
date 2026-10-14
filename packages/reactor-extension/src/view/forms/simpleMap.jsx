@@ -26,9 +26,12 @@ const FORM = "form";
 const DATA_ELEMENT = "dataElement";
 
 // The bordered box a v3 Well rendered by default; padding/marginTop/border
-// values come from the S1->S2 dimension token migration table.
+// values come from the S1->S2 dimension token migration table. alignSelf
+// replaces the v3 Well's alignSelf="flex-start", which sized the box to its
+// content instead of stretching it across the column.
 const WELL_STYLE = style({
   display: "block",
+  alignSelf: "start",
   textAlign: "start",
   minWidth: 160,
   padding: 16,
