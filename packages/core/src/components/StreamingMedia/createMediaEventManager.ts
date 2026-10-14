@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 import MediaEvents from "./constants/eventTypes.js";
 import createMediaRequest from "./createMediaRequest.js";
 import { toInteger } from "../../utils/index.js";
-import isServerSideTimestampEnabled from "../../utils/isServerSideTimestampEnabled.js";
 import { createDataCollectionRequestPayload } from "../../utils/request/index.js";
 import type {
   ComponentTools,
@@ -100,7 +99,10 @@ export interface CreateMediaEventManagerOptions {
   logger?: Logger;
   consent: Pick<ComponentTools["consent"], "awaitConsent">;
   sendEdgeNetworkRequest: ComponentTools["sendEdgeNetworkRequest"];
+  /** Sets the client time on media events (the media endpoint requires it). */
   setTimestamp: (event: Event) => void;
+  /** Sets the session start timestamp, unless serverSideTimestamp is on. */
+  setSessionStartTimestamp: (event: Event) => void;
 }
 
 export default ({
@@ -109,6 +111,7 @@ export default ({
   consent,
   sendEdgeNetworkRequest,
   setTimestamp,
+  setSessionStartTimestamp,
 }: CreateMediaEventManagerOptions): MediaEventManager => {
   return {
     createMediaEvent({ options }) {
@@ -139,12 +142,10 @@ export default ({
       const { playerName, channel, appVersion } = config.streamingMedia!;
       const event = eventManager.createEvent();
       const { sessionDetails } = options.xdm.mediaCollection;
-      // The session start goes to Edge Network, which stamps it when the
-      // timestamp is left out. Media events go to the media endpoint, which
-      // requires one, so createMediaEvent always sets it.
-      if (!isServerSideTimestampEnabled(config)) {
-        setTimestamp(event);
-      }
+      // The session start goes to Edge Network, so it honors the
+      // serverSideTimestamp option. Media events go to the media endpoint,
+      // which requires a timestamp, so they always use setTimestamp.
+      setSessionStartTimestamp(event);
       event.setUserXdm(options.xdm);
       event.mergeXdm({
         eventType: MediaEvents.SESSION_START,

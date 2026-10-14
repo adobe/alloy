@@ -20,6 +20,7 @@ import createMediaHelper from "./createMediaHelper.js";
 import createGetInstance from "./createGetInstance.js";
 import type { GetInstanceOptions } from "./createGetInstance.js";
 import injectTimestamp from "../../utils/injectTimestamp.js";
+import injectEdgeTimestamp from "../../utils/injectEdgeTimestamp.js";
 import type { ComponentTools } from "../../core/types.js";
 
 export type MediaAnalyticsBridgeOptions = Pick<
@@ -53,6 +54,7 @@ const createMediaAnalyticsBridge = ({
     consent,
     eventManager,
     setTimestamp: injectTimestamp(() => new Date()),
+    setSessionStartTimestamp: injectEdgeTimestamp(config, () => new Date()),
   });
 
   const trackMediaEvent = createTrackMediaEvent({
