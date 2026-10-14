@@ -51,8 +51,8 @@ const optionalContexts = {
 };
 
 const createContext = ({ config, logger }) => {
-  // serverSideTimestamp replaces the client timestamp. Optional contexts run
-  // before required ones, so the client timestamp would otherwise overwrite it.
+  // serverSideTimestamp replaces the client timestamp rather than being merged
+  // over it, so the client-time injector is left out entirely.
   const requiredContexts = config.context.includes("serverSideTimestamp")
     ? [implementationDetails]
     : [timestamp, implementationDetails];
