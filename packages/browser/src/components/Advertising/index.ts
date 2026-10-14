@@ -23,6 +23,7 @@ import {
   createDataCollectionRequestPayload,
 } from "@adobe/alloy-core/utils/request";
 import createAdConversionHandler from "./handlers/createAdConversionHandler.js";
+import isServerSideTimestampEnabled from "@adobe/alloy-core/utils/isServerSideTimestampEnabled.js";
 import createCookieManager from "./utils/advertisingCookieManager.js";
 import createHandleOnBeforeSendEvent from "./handlers/createOnBeforeSendEventHandler.js";
 import createSendAdConversion from "./handlers/sendAdConversion.js";
@@ -99,6 +100,7 @@ const createAdvertising: ComponentCreator<AdvertisingOptions> = ({
     createDataCollectionRequest,
     createDataCollectionRequestPayload,
     logger,
+    serverSideTimestamp: isServerSideTimestampEnabled(config),
   });
   const handleOnBeforeSendEvent = createHandleOnBeforeSendEvent({
     cookieManager,

@@ -15,6 +15,9 @@ import type { ConsentManager } from "@adobe/alloy-core/core/consent/types.js";
 import type { EdgeRequestExecutor } from "@adobe/alloy-core/core/edgeNetwork/types.js";
 import type * as request from "@adobe/alloy-core/utils/request";
 import type { AdConversionHandler } from "../types.js";
+import injectTimestamp from "@adobe/alloy-core/utils/injectTimestamp.js";
+
+const setTimestamp = injectTimestamp(() => new Date());
 
 /**
  * Creates a specialized handler for ad conversion events.
@@ -26,6 +29,7 @@ export default ({
   createDataCollectionRequest,
   createDataCollectionRequestPayload,
   logger,
+  serverSideTimestamp = false,
 }: {
   eventManager?: unknown;
   sendEdgeNetworkRequest: EdgeRequestExecutor;
@@ -33,11 +37,17 @@ export default ({
   createDataCollectionRequest: typeof request.createDataCollectionRequest;
   createDataCollectionRequestPayload: typeof request.createDataCollectionRequestPayload;
   logger: Logger;
+  serverSideTimestamp?: boolean;
 }): AdConversionHandler => {
   /**
    * Tracks an ad conversion event by sending it directly to the Edge Network
    */
   const trackAdConversion = ({ event }: { event: Event }) => {
+    // Conversions skip the Context component, so they set their own
+    // timestamp. Edge Network stamps the event when it is left out.
+    if (!serverSideTimestamp) {
+      setTimestamp(event);
+    }
     const dataCollectionRequestPayload = createDataCollectionRequestPayload();
     dataCollectionRequestPayload.addEvent(event);
     event.finalize();

@@ -74,7 +74,6 @@ export default async function handleClickThrough({
       },
     },
     eventType: AD_CONVERSION_CLICK_EVENT_TYPE,
-    timestamp: new Date().toISOString(),
   };
 
   event.setUserXdm(xdm);

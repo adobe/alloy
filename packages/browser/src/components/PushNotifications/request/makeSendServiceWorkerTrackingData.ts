@@ -43,8 +43,15 @@ export const createMakeSendServiceWorkerTrackingData = ({
     applicationLaunches?: number;
   }): Promise<boolean> => {
     const configData = await readFromIndexedDb(logger);
-    const { browser, ecid, edgeDomain, edgeBasePath, datastreamId, datasetId } =
-      configData || ({} as PushServiceWorkerConfig);
+    const {
+      browser,
+      ecid,
+      edgeDomain,
+      edgeBasePath,
+      datastreamId,
+      datasetId,
+      serverSideTimestamp,
+    } = configData || ({} as PushServiceWorkerConfig);
     let customActionData: { customAction?: { actionID: string } } = {};
 
     if (actionLabel) {
@@ -101,7 +108,10 @@ export const createMakeSendServiceWorkerTrackingData = ({
               identityMap: {
                 ECID: [{ id: validEcid }],
               },
-              timestamp: new Date().toISOString(),
+              // Edge Network stamps the event when the timestamp is left out.
+              ...(!serverSideTimestamp && {
+                timestamp: new Date().toISOString(),
+              }),
               pushNotificationTracking: {
                 ...customActionData,
                 pushProviderMessageID: uuidv4(),
