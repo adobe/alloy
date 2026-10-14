@@ -22,7 +22,7 @@ import createExtensionManifest from "./createExtensionManifest.mjs";
  * @param {object} settings
  * @returns {import("ajv").ErrorObject[] | null} The errors, or null if valid.
  */
-const validateConfigurationSettings = (settings) => {
+const getConfigurationSchemaErrors = (settings) => {
   const manifest = createExtensionManifest({ version: "0.0.0" });
   const ajv = new Ajv({ schemaId: "auto", strict: false });
   addAJVFormats(ajv);
@@ -32,7 +32,7 @@ const validateConfigurationSettings = (settings) => {
 
 describe("createExtensionManifest configuration schema", () => {
   test("accepts serverSideTimestamp in an instance's context", () => {
-    const errors = validateConfigurationSettings({
+    const errors = getConfigurationSchemaErrors({
       instances: [
         {
           name: "alloy",
@@ -46,7 +46,7 @@ describe("createExtensionManifest configuration schema", () => {
   });
 
   test("rejects an unknown context value", () => {
-    const errors = validateConfigurationSettings({
+    const errors = getConfigurationSchemaErrors({
       instances: [
         {
           name: "alloy",
