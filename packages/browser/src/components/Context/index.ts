@@ -31,6 +31,10 @@ const device = injectDevice(window);
 const environment = injectEnvironment(window);
 const placeContext = injectPlaceContext(() => new Date());
 const timestamp = injectTimestamp(() => new Date());
+// A null timestamp tells Edge Network to stamp the event with its own time.
+const serverSideTimestamp: ContextCollector = (event) => {
+  event.mergeXdm({ timestamp: null });
+};
 const highEntropyUserAgentHints = injectHighEntropyUserAgentHints(navigator);
 const oneTimeAnalyticsReferrer = injectOneTimeAnalyticsReferrer(window);
 
@@ -43,6 +47,7 @@ const defaultEnabledContexts = {
 const defaultDisabledContexts = {
   highEntropyUserAgentHints,
   oneTimeAnalyticsReferrer,
+  serverSideTimestamp,
 };
 const optionalContexts: Record<string, ContextCollector> = {
   ...defaultEnabledContexts,
@@ -51,13 +56,21 @@ const optionalContexts: Record<string, ContextCollector> = {
 const createContext: ComponentCreator<
   Pick<ComponentTools, "config" | "logger" | "platformServices">
 > = ({ config, logger, platformServices }) => {
-  const requiredContexts: ContextCollector[] = [
-    timestamp,
-    (event) => implementationDetails(event, platformServices?.libraryVersion),
-  ];
   // configValidators adds the context option to the computed config.
+  const contextConfig = config as ComponentTools["config"] & {
+    context: string[];
+  };
+  const details: ContextCollector = (event) =>
+    implementationDetails(event, platformServices?.libraryVersion);
+  // serverSideTimestamp replaces the client timestamp. Optional contexts run
+  // before required ones, so the client timestamp would otherwise overwrite it.
+  const requiredContexts: ContextCollector[] = contextConfig.context.includes(
+    "serverSideTimestamp",
+  )
+    ? [details]
+    : [timestamp, details];
   return createComponent(
-    config as ComponentTools["config"] & { context: string[] },
+    contextConfig,
     logger,
     optionalContexts,
     requiredContexts,
