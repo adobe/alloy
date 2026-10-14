@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 import MediaEvents from "./constants/eventTypes.js";
 import createMediaRequest from "./createMediaRequest.js";
 import { toInteger } from "../../utils/index.js";
+import isServerSideTimestampEnabled from "../../utils/isServerSideTimestampEnabled.js";
 import { createDataCollectionRequestPayload } from "../../utils/request/index.js";
 
 export default ({
@@ -47,7 +48,12 @@ export default ({
       const { playerName, channel, appVersion } = config.streamingMedia;
       const event = eventManager.createEvent();
       const { sessionDetails } = options.xdm.mediaCollection;
-      setTimestamp(event);
+      // The session start goes to Edge Network, which stamps it when the
+      // timestamp is left out. Media events go to the media endpoint, which
+      // requires one, so createMediaEvent always sets it.
+      if (!isServerSideTimestampEnabled(config)) {
+        setTimestamp(event);
+      }
       event.setUserXdm(options.xdm);
       event.mergeXdm({
         eventType: MediaEvents.SESSION_START,

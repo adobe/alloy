@@ -37,10 +37,10 @@ describe("Context::index", () => {
     vi.useRealTimers();
   });
 
-  it("sends a null timestamp when serverSideTimestamp is configured", async () => {
+  it("leaves the timestamp out when serverSideTimestamp is configured", async () => {
     const xdm = await sendThroughContext(["web", "serverSideTimestamp"]);
 
-    expect(xdm).toHaveProperty("timestamp", null);
+    expect(xdm).not.toHaveProperty("timestamp");
   });
 
   it("sends the client time as the timestamp by default", async () => {

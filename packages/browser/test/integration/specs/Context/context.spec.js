@@ -151,7 +151,7 @@ describe("Context", () => {
     expect(xdm.device).toBeFalsy();
   });
 
-  test("sends a null timestamp when serverSideTimestamp context is configured", async ({
+  test("leaves the timestamp out when serverSideTimestamp context is configured", async ({
     alloy,
     worker,
     networkRecorder,
@@ -168,7 +168,7 @@ describe("Context", () => {
     expect(call).toBeDefined();
 
     const xdm = call.request.body.events[0].xdm;
-    expect(xdm).toHaveProperty("timestamp", null);
+    expect(xdm).not.toHaveProperty("timestamp");
     // Local time stays client-side.
     expect(xdm.placeContext.localTime).toBeTruthy();
   });

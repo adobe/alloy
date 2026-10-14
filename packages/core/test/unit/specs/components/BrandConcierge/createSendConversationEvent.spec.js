@@ -22,6 +22,7 @@ describe("createSendConversationEvent", () => {
     mockEvent = {
       mergeQuery: vi.fn(),
       mergeXdm: vi.fn(),
+      setUserXdm: vi.fn(),
       finalize: vi.fn(),
       mergeMeta: vi.fn(),
     };
@@ -155,7 +156,7 @@ describe("createSendConversationEvent", () => {
           ],
         },
       });
-      expect(mockEvent.mergeXdm).toHaveBeenCalledWith({
+      expect(mockEvent.setUserXdm).toHaveBeenCalledWith({
         interactionId: "test-interaction-id",
         conversationId: "test-conversation-id",
       });

@@ -85,7 +85,9 @@ export default ({
       },
     });
 
-    event.mergeXdm({ ...xdm });
+    // Like sendEvent, the caller's XDM is merged after the Context component
+    // runs, so values the caller sets (such as timestamp) win.
+    event.setUserXdm(xdm);
 
     if (message || data) {
       streamingEnabled = true;
