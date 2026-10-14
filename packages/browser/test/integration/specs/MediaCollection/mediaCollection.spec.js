@@ -420,3 +420,42 @@ describe("MediaCollection", () => {
     expect(getCalls(networkRecorder, "media.ping", false)[0]).toBeUndefined();
   });
 });
+
+describe("MediaCollection - serverSideTimestamp", () => {
+  test("legacy tracker leaves the timestamp out of the session start and keeps it on media events", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(mediaSessionHandler, mediaEventHandler);
+    await alloy("configure", {
+      ...streamingMediaConfig,
+      context: ["serverSideTimestamp"],
+    });
+
+    const Media = await alloy("getMediaAnalyticsTracker");
+    const tracker = Media.getInstance();
+    tracker.trackSessionStart(
+      Media.createMediaObject(
+        "VideoName",
+        "video-id",
+        60,
+        Media.StreamType.VOD,
+        Media.MediaType.Video,
+      ),
+      {},
+    );
+    tracker.trackPlay();
+
+    const findEvent = (eventType) =>
+      networkRecorder.calls
+        .map((call) => call.request && getEventFromCall(call, eventType))
+        .find(Boolean);
+    await expect.poll(() => findEvent("media.play")).toBeTruthy();
+
+    expect(findEvent("media.sessionStart").xdm).not.toHaveProperty("timestamp");
+    expect(findEvent("media.play").xdm.timestamp).toMatch(
+      /^\d{4}-\d{2}-\d{2}T/,
+    );
+  });
+});

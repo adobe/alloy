@@ -15,7 +15,6 @@ governing permissions and limitations under the License.
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import createMediaEventManager from "../../../../../src/components/StreamingMedia/createMediaEventManager.js";
 import createEvent from "../../../../../src/core/createEvent.js";
-import injectTimestamp from "../../../../../src/utils/injectTimestamp.js";
 
 describe("StreamingMedia::createMediaEventManager", () => {
   let config;
@@ -47,6 +46,7 @@ describe("StreamingMedia::createMediaEventManager", () => {
       consent,
       sendEdgeNetworkRequest,
       setTimestamp,
+      setSessionStartTimestamp: vi.fn(),
     });
   });
   it("should create a media event with user xdm and call setTimestamp with the event", () => {
@@ -153,17 +153,18 @@ describe("StreamingMedia::createMediaEventManager", () => {
     expect(sendEdgeNetworkRequest).toHaveBeenCalled();
   });
 
-  describe("with serverSideTimestamp in the context configuration", () => {
-    const clientTime = new Date("2026-03-04T05:06:07.890Z");
-    let serverSideMediaEventManager;
+  describe("timestamps", () => {
+    let stampingMediaEventManager;
 
     beforeEach(() => {
-      serverSideMediaEventManager = createMediaEventManager({
-        config: { ...config, context: ["web", "serverSideTimestamp"] },
+      stampingMediaEventManager = createMediaEventManager({
+        config,
         eventManager: { createEvent, sendEvent: vi.fn() },
         consent,
         sendEdgeNetworkRequest,
-        setTimestamp: injectTimestamp(() => clientTime),
+        setTimestamp: (event) => event.mergeXdm({ timestamp: "media" }),
+        setSessionStartTimestamp: (event) =>
+          event.mergeXdm({ timestamp: "edge" }),
       });
     });
 
@@ -172,20 +173,20 @@ describe("StreamingMedia::createMediaEventManager", () => {
       return event.toJSON().xdm;
     };
 
-    it("leaves the timestamp out of the session start, which goes to Edge Network", () => {
-      const event = serverSideMediaEventManager.createMediaSession({
+    it("stamps the session start, which goes to Edge Network, with setSessionStartTimestamp", () => {
+      const event = stampingMediaEventManager.createMediaSession({
         xdm: { mediaCollection: { sessionDetails: {} } },
       });
 
-      expect(finalizedXdm(event)).not.toHaveProperty("timestamp");
+      expect(finalizedXdm(event).timestamp).toBe("edge");
     });
 
-    it("stamps the client time on media events, which the media endpoint requires", () => {
-      const event = serverSideMediaEventManager.createMediaEvent({
+    it("stamps media events, which go to the media endpoint, with setTimestamp", () => {
+      const event = stampingMediaEventManager.createMediaEvent({
         options: { xdm: { eventType: "media.play" } },
       });
 
-      expect(finalizedXdm(event).timestamp).toBe("2026-03-04T05:06:07.890Z");
+      expect(finalizedXdm(event).timestamp).toBe("media");
     });
   });
 });

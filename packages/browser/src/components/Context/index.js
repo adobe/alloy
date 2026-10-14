@@ -14,10 +14,9 @@ import injectWeb from "./injectWeb.js";
 import injectDevice from "./injectDevice.js";
 import injectEnvironment from "./injectEnvironment.js";
 import injectPlaceContext from "./injectPlaceContext.js";
-import injectTimestamp from "@adobe/alloy-core/utils/injectTimestamp.js";
-import isServerSideTimestampEnabled, {
-  SERVER_SIDE_TIMESTAMP,
-} from "@adobe/alloy-core/utils/isServerSideTimestampEnabled.js";
+import injectEdgeTimestamp from "@adobe/alloy-core/utils/injectEdgeTimestamp.js";
+import { SERVER_SIDE_TIMESTAMP } from "@adobe/alloy-core/utils/isServerSideTimestampEnabled.js";
+import { noop } from "@adobe/alloy-core/utils";
 import implementationDetails from "./implementationDetails.js";
 import createComponent from "./createComponent.js";
 import injectHighEntropyUserAgentHints from "./injectHighEntropyUserAgentHints.js";
@@ -28,7 +27,6 @@ const web = injectWeb(window);
 const device = injectDevice(window);
 const environment = injectEnvironment(window);
 const placeContext = injectPlaceContext(() => new Date());
-const timestamp = injectTimestamp(() => new Date());
 const highEntropyUserAgentHints = injectHighEntropyUserAgentHints(navigator);
 const oneTimeAnalyticsReferrer = injectOneTimeAnalyticsReferrer(window);
 
@@ -41,9 +39,8 @@ const defaultEnabledContexts = {
 const defaultDisabledContexts = {
   highEntropyUserAgentHints,
   oneTimeAnalyticsReferrer,
-  // Adds nothing to the event. Its effect is to leave the client timestamp
-  // out (see createContext), so Edge Network stamps the event itself.
-  [SERVER_SIDE_TIMESTAMP]: () => {},
+  // Adds nothing itself; the timestamp context reads it (injectEdgeTimestamp).
+  [SERVER_SIDE_TIMESTAMP]: noop,
 };
 const optionalContexts = {
   ...defaultEnabledContexts,
@@ -51,9 +48,8 @@ const optionalContexts = {
 };
 
 const createContext = ({ config, logger }) => {
-  const requiredContexts = isServerSideTimestampEnabled(config)
-    ? [implementationDetails]
-    : [timestamp, implementationDetails];
+  const timestamp = injectEdgeTimestamp(config, () => new Date());
+  const requiredContexts = [timestamp, implementationDetails];
   return createComponent(config, logger, optionalContexts, requiredContexts);
 };
 createContext.namespace = "Context";
