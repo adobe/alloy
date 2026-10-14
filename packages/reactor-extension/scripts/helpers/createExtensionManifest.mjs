@@ -432,6 +432,7 @@ const createExtensionManifest = ({ version }) => {
                           "placeContext",
                           "highEntropyUserAgentHints",
                           "oneTimeAnalyticsReferrer",
+                          "serverSideTimestamp",
                         ],
                       },
                     },
