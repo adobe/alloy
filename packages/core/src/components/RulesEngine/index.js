@@ -26,6 +26,8 @@ import { clearLocalStorage, createInMemoryStorage } from "./utils/storage.js";
 import { objectOf, boolean } from "../../utils/validation/index.js";
 import createCollect from "../../utils/createCollect.js";
 import { mergeDecisionsMeta } from "../../utils/event.js";
+import flattenObject from "../../utils/flattenObject.js";
+import extractPayloadsFromEventHistoryOperations from "./utils/extractPayloadsFromEventHistoryOperations.js";
 
 const createRulesEngine = ({
   config,
@@ -65,6 +67,24 @@ const createRulesEngine = ({
   });
   const subscribeRulesetItems = createSubscribeRulesetItems({ collect });
   let applyResponse;
+
+  // Events without a personalization query (display, interact, dismiss
+  // notifications) are never evaluated on response, so rules that react to
+  // them (e.g. "disqualify on dismiss") are evaluated here before sending.
+  const applyEventHistoryOperations = (event) => {
+    const propositions = decisionProvider.evaluate(
+      contextProvider.getContext({
+        ...flattenObject(event.getContent()),
+        [CONTEXT_KEY.TYPE]: CONTEXT_EVENT_TYPE.EDGE,
+        [CONTEXT_KEY.SOURCE]: CONTEXT_EVENT_SOURCE.REQUEST,
+      }),
+      { recordTrigger: false },
+    );
+
+    eventRegistry.addEventPayloads(
+      extractPayloadsFromEventHistoryOperations(propositions),
+    );
+  };
 
   return {
     lifecycle: {
@@ -117,6 +137,9 @@ const createRulesEngine = ({
           return;
         }
         events.forEach((event) => eventRegistry.addExperienceEdgeEvent(event));
+        events
+          .filter((event) => !event.hasQuery())
+          .forEach(applyEventHistoryOperations);
       },
     },
     commands: {

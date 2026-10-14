@@ -245,3 +245,210 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
     expect(persistentStorage.clear).toHaveBeenCalled();
   });
 });
+
+describe("createRulesEngine:lifecycle:onBeforeRequest", () => {
+  const ACTIVITY_ID = "campaign#treatment";
+  const CONTENT_CARD_SCHEMA =
+    "https://ns.adobe.com/personalization/message/content-card";
+
+  const matcher = (key, value) => ({
+    type: "matcher",
+    definition: { key, matcher: "eq", values: [value] },
+  });
+
+  const historical = (eventType, matcherName, value) => ({
+    type: "historical",
+    definition: {
+      events: [{ "iam.eventType": eventType, "iam.id": ACTIVITY_ID }],
+      matcher: matcherName,
+      value,
+    },
+  });
+
+  const isDismissOfActivity = [
+    matcher("xdm.eventType", "decisioning.propositionDismiss"),
+    matcher(
+      "xdm._experience.decisioning.propositions.0.scopeDetails.activity.id",
+      ACTIVITY_ID,
+    ),
+  ];
+
+  const rule = (conditions, detail) => ({
+    condition: {
+      type: "group",
+      definition: { logic: "and", conditions },
+    },
+    consequences: [{ id: `${detail.id}-consequence`, type: "schema", detail }],
+  });
+
+  const eventHistoryRule = (conditions, operation, eventType) =>
+    rule(conditions, {
+      id: `${eventType}-detail`,
+      schema: "https://ns.adobe.com/personalization/eventHistoryOperation",
+      data: {
+        operation,
+        content: { "iam.id": ACTIVITY_ID, "iam.eventType": eventType },
+      },
+    });
+
+  const cardRule = (conditions) =>
+    rule(conditions, {
+      id: "card-detail",
+      schema: CONTENT_CARD_SCHEMA,
+      data: { content: { title: { content: "Hello" } } },
+    });
+
+  const disqualifyOnDismissRules = [
+    eventHistoryRule(isDismissOfActivity, "insertIfNotExists", "disqualify"),
+    cardRule([historical("disqualify", "eq", 0)]),
+  ];
+
+  const createPayload = (rules) => ({
+    id: "proposition-id",
+    scope: "web://mywebsite.com/#cards",
+    scopeDetails: {
+      decisionProvider: "AJO",
+      activity: { id: ACTIVITY_ID },
+    },
+    items: [
+      {
+        id: "ruleset-item-id",
+        schema: "https://ns.adobe.com/personalization/ruleset-item",
+        data: { version: 1, rules },
+      },
+    ],
+  });
+
+  const createOutgoingEvent = (eventType, propositionEventType) => ({
+    hasQuery: () => false,
+    getContent: () => ({
+      xdm: {
+        eventType,
+        _experience: {
+          decisioning: {
+            propositionEventType: { [propositionEventType]: 1 },
+            propositions: [
+              {
+                id: "proposition-id",
+                scope: "web://mywebsite.com/#cards",
+                scopeDetails: {
+                  decisionProvider: "AJO",
+                  activity: { id: ACTIVITY_ID },
+                },
+              },
+            ],
+          },
+        },
+      },
+    }),
+  });
+
+  const createRequest = (events) => ({
+    getPayload: () => ({ toJSON: () => ({ events }) }),
+  });
+
+  let rulesEngine;
+
+  const getCardItems = () =>
+    rulesEngine.commands.evaluateRulesets
+      .run({})
+      .propositions.flatMap(({ items }) => items)
+      .filter(({ schema }) => schema === CONTENT_CARD_SCHEMA);
+
+  const setUp = (rules) => {
+    rulesEngine = createRulesEngine({
+      config: { orgId: "exampleOrgId", personalizationStorageEnabled: false },
+      consent: { awaitConsent: vi.fn().mockResolvedValue(undefined) },
+      getBrowser: vi.fn().mockReturnValue("foo"),
+      logger: { info: vi.fn() },
+      platformServices: {
+        storage: {
+          createNamespacedStorage: vi.fn().mockReturnValue({
+            persistent: {
+              getItem: vi.fn(),
+              setItem: vi.fn(),
+              clear: vi.fn(),
+            },
+          }),
+        },
+        globals: {
+          getWindowContext: () => ({
+            title: "title",
+            url: "https://mywebsite.com/",
+            referrer: "",
+            height: 100,
+            width: 100,
+            scrollY: 0,
+            scrollX: 0,
+          }),
+        },
+      },
+    });
+    rulesEngine.lifecycle.onComponentsRegistered({
+      lifecycle: { onDecision: vi.fn() },
+    });
+
+    rulesEngine.lifecycle.onBeforeEvent({
+      event: {
+        getContent: () => ({ query: {} }),
+        hasQuery: () => true,
+        getUserIdentityMap: () => undefined,
+      },
+      renderDecisions: false,
+      onResponse: (handler) =>
+        handler({
+          response: { getPayloadsByType: () => [createPayload(rules)] },
+        }),
+    });
+  };
+
+  const sendDismiss = () =>
+    rulesEngine.lifecycle.onBeforeRequest({
+      request: createRequest([
+        createOutgoingEvent("decisioning.propositionDismiss", "dismiss"),
+      ]),
+    });
+
+  beforeEach(() => setUp(disqualifyOnDismissRules));
+
+  it("applies event history operations from rules matching an outgoing dismiss event", () => {
+    expect(getCardItems().length).toBe(1);
+
+    sendDismiss();
+
+    expect(getCardItems()).toEqual([]);
+  });
+
+  it("does not write event history for outgoing events no rule reacts to", () => {
+    rulesEngine.lifecycle.onBeforeRequest({
+      request: createRequest([
+        createOutgoingEvent("decisioning.propositionDisplay", "display"),
+      ]),
+    });
+
+    expect(getCardItems().length).toBe(1);
+  });
+
+  it("does not evaluate rules for outgoing events that carry a personalization query", () => {
+    const event = createOutgoingEvent(
+      "decisioning.propositionDismiss",
+      "dismiss",
+    );
+    event.hasQuery = () => true;
+
+    rulesEngine.lifecycle.onBeforeRequest({ request: createRequest([event]) });
+
+    expect(getCardItems().length).toBe(1);
+  });
+
+  it("does not record trigger events while evaluating outgoing events", () => {
+    setUp([
+      eventHistoryRule(isDismissOfActivity, "insert", "seen"),
+      cardRule([historical("trigger", "le", 1)]),
+    ]);
+
+    sendDismiss();
+
+    expect(getCardItems().length).toBe(1);
+  });
+});
