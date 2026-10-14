@@ -62,8 +62,8 @@ const createContext: ComponentCreator<
   };
   const details: ContextCollector = (event) =>
     implementationDetails(event, platformServices?.libraryVersion);
-  // serverSideTimestamp replaces the client timestamp. Optional contexts run
-  // before required ones, so the client timestamp would otherwise overwrite it.
+  // serverSideTimestamp replaces the client timestamp rather than being merged
+  // over it, so the client-time injector is left out entirely.
   const requiredContexts: ContextCollector[] = contextConfig.context.includes(
     "serverSideTimestamp",
   )
