@@ -146,6 +146,7 @@ describe("Config data collection section", () => {
     await contextCheckbox("PlaceContext").expectUnchecked();
     await contextHighEntropyUserAgentHintsField.expectUnchecked();
     await contextOneTimeAnalyticsReferrerField.expectUnchecked();
+    await contextServerSideTimestampField.expectUnchecked();
   });
 
   it("sets form values from settings with event grouping session storage", async () => {
@@ -500,6 +501,7 @@ describe("Config data collection section", () => {
     await contextPlaceContextField.expectUnchecked();
     await contextHighEntropyUserAgentHintsField.expectUnchecked();
     await contextOneTimeAnalyticsReferrerField.expectChecked();
+    await contextServerSideTimestampField.expectUnchecked();
   });
 
   it("disables click collection when all link types are disabled", async () => {

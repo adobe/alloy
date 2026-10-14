@@ -107,7 +107,7 @@ const contextOptions = [
     value: "serverSideTimestamp",
     testId: "contextServerSideTimestampField",
     description:
-      "Edge Network sets the time of each event instead of the visitor's device clock. Use this when device clocks are unreliable. A timestamp you set yourself is still sent.",
+      "Edge Network sets the event time instead of the visitor's device clock. Use this when device clocks are unreliable. Timestamps you set yourself are still sent, and media events after a session starts keep the device time.",
     default: false,
   },
 ];
