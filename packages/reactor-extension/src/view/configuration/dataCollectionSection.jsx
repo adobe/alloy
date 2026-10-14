@@ -102,6 +102,14 @@ const contextOptions = [
       "Enable this setting to prevent duplicate referrer data from being sent to Adobe Analytics.",
     default: false,
   },
+  {
+    label: "Use server-side timestamp",
+    value: "serverSideTimestamp",
+    testId: "contextServerSideTimestampField",
+    description:
+      "Edge Network sets the time of each event instead of the visitor's device clock. Use this when device clocks are unreliable. A timestamp you set yourself is still sent.",
+    default: false,
+  },
 ];
 
 const clickCollectionIsEnabled = (instanceValues) => {
