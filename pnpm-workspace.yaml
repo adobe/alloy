@@ -12,16 +12,6 @@ minimumReleaseAgeExclude:
   - "@adobe/reactor-sandbox"
   - "@adobe/reactor-turbine"
   - "@adobe/reactor-turbine-schemas"
-ignoredBuiltDependencies:
-  - core-js
-  - lmdb
-  - msgpackr-extract
-onlyBuiltDependencies:
-  - "@parcel/watcher"
-  - "@swc/core"
-  - esbuild
-  - msw
-  - puppeteer
 verifyDepsBeforeRun: warn
 overrides:
   lodash@<4.18.1: ^4.18.1
@@ -33,9 +23,9 @@ overrides:
   # whose babylon@6 cannot parse modern syntax (e.g. `?.`, object spread).
   babel-extract-comments>babylon: npm:@babel/parser@^7.29.2
 allowBuilds:
-  '@adobe/reactor-turbine': false
-  '@parcel/watcher': true
-  '@swc/core': true
+  "@adobe/reactor-turbine": false
+  "@parcel/watcher": true
+  "@swc/core": true
   core-js: true
   esbuild: true
   keytar: true

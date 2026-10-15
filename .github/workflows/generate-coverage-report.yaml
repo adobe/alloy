@@ -19,7 +19,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v6
+      - uses: pnpm/setup@v1
+        with:
+          install: false
 
       - name: Set up Node.js version
         uses: actions/setup-node@v5
