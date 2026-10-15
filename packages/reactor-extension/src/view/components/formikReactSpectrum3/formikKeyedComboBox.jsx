@@ -12,9 +12,11 @@ governing permissions and limitations under the License.
 
 import { useRef } from "react";
 import PropTypes from "prop-types";
-import { ComboBox } from "@adobe/react-spectrum";
+import { ComboBox, ComboBoxItem } from "@react-spectrum/s2";
 import { useField } from "formik";
 import useForceRender from "../../utils/useForceRender";
+import widthStyle from "../widthStyle";
+import normalizeCollectionChildren from "./normalizeCollectionChildren";
 
 const FormikKeyedComboBox = ({
   name,
@@ -22,6 +24,7 @@ const FormikKeyedComboBox = ({
   items,
   getKey,
   getLabel,
+  children,
   ...otherProps
 }) => {
   const [{ value }, { touched, error }, { setValue, setTouched }] =
@@ -77,8 +80,8 @@ const FormikKeyedComboBox = ({
         }
         setTouched(true);
       }}
-      validationState={touched && error ? "invalid" : undefined}
-      width={width}
+      isInvalid={Boolean(touched && error)}
+      styles={widthStyle(width)}
       errorMessage={error}
       onOpenChange={(isOpen) => {
         if (!isOpen) {
@@ -87,7 +90,9 @@ const FormikKeyedComboBox = ({
           forceRender();
         }
       }}
-    />
+    >
+      {normalizeCollectionChildren(ComboBoxItem, children)}
+    </ComboBox>
   );
 };
 
@@ -97,6 +102,7 @@ FormikKeyedComboBox.propTypes = {
   items: PropTypes.array.isRequired,
   getKey: PropTypes.func.isRequired,
   getLabel: PropTypes.func.isRequired,
+  children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
 };
 
 export default FormikKeyedComboBox;

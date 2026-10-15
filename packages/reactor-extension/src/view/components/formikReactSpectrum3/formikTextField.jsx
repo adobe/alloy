@@ -11,8 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { TextField } from "@adobe/react-spectrum";
+import { TextField } from "@react-spectrum/s2";
 import { useField } from "formik";
+import widthStyle from "../widthStyle";
 
 /**
  * @param {Object} params
@@ -35,8 +36,7 @@ const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
 
   const touched = otherProps.touched || fieldTouched;
   const error = otherProps.error === "" ? "" : otherProps.error || fieldError;
-  const validationState =
-    otherProps.invalid || (touched && error) ? "invalid" : undefined;
+  const isInvalid = Boolean(otherProps.invalid || (touched && error));
 
   return (
     <TextField
@@ -51,9 +51,9 @@ const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
           onBlur();
         }
       }}
-      validationState={validationState}
+      isInvalid={isInvalid}
       errorMessage={error}
-      width={width}
+      styles={widthStyle(width)}
     />
   );
 };

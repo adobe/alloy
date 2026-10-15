@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import { useEffect } from "react";
 import { useField, useFormikContext } from "formik";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { object, string } from "yup";
 import {
   ActionButton,
@@ -33,6 +34,8 @@ import FormikTextField from "../components/formikReactSpectrum3/formikTextField"
 import FieldSubset from "../components/fieldSubset";
 import RestoreDefaultValueButton from "../components/restoreDefaultValueButton";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
+
+const EVENT_GROUPING_LABEL_STYLE = style({ font: "body-sm" });
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
 import FormElementContainer from "../components/formElementContainer";
 import FieldDescriptionAndError from "../components/fieldDescriptionAndError";
@@ -327,18 +330,23 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                     value={EVENT_GROUPING.SESSION_STORAGE}
                     width="size-5000"
                   >
-                    Event grouping using session storage: Keep internal link
-                    click data in session storage until the next page view event
-                    (Recommended). <BetaBadge />
+                    <span className={EVENT_GROUPING_LABEL_STYLE}>
+                      Event grouping using session storage: Keep internal link
+                      click data in session storage until the next page view
+                      event (Recommended). <BetaBadge />
+                    </span>
                   </Radio>
                   <Radio
                     data-test-id="eventGroupingMemoryField"
                     value={EVENT_GROUPING.MEMORY}
                     width="size-5000"
                   >
-                    Event grouping using local object: Keep internal link click
-                    data in a local object until the next page view event.
-                    Applicable for single-page applications. <BetaBadge />
+                    <span className={EVENT_GROUPING_LABEL_STYLE}>
+                      Event grouping using local object: Keep internal link
+                      click data in a local object until the next page view
+                      event. Applicable for single-page applications.{" "}
+                      <BetaBadge />
+                    </span>
                   </Radio>
                 </FormikRadioGroup>
               </FieldSubset>
