@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { describe, it, beforeEach, afterEach } from "vitest";
+import { describe, it, beforeEach, afterEach, expect } from "vitest";
 
 import useView from "../helpers/useView";
 import ConfigurationView from "../../../src/view/configuration/configurationView";
@@ -338,6 +338,45 @@ describe("Config overrides section", () => {
         },
       });
   }, 60_000);
+
+  it("spaces report suites from the preceding Analytics field", async () => {
+    await driver.init(buildSettingsWithDummyDatastream());
+
+    await overridesEnabled.selectOption("Enabled");
+    await analyticsEnabled.selectOption("Enabled");
+
+    const analyticsBounds = view
+      .getByTestId("analyticsEnabled")
+      .element()
+      .getBoundingClientRect();
+    const reportSuiteBounds = view
+      .getByTestId("reportSuitesOverride.0")
+      .element()
+      .getBoundingClientRect();
+
+    expect(
+      reportSuiteBounds.top - analyticsBounds.bottom,
+    ).toBeGreaterThanOrEqual(8);
+  });
+
+  it("separates top-level override groups", async () => {
+    await driver.init(buildSettingsWithDummyDatastream());
+
+    await overridesEnabled.selectOption("Enabled");
+
+    const audienceManagerBounds = view
+      .getByTestId("audienceManagerEnabled")
+      .element()
+      .getBoundingClientRect();
+    const idSyncBounds = view
+      .getByTestId("idSyncContainerOverride")
+      .element()
+      .getBoundingClientRect();
+
+    expect(
+      idSyncBounds.top - audienceManagerBounds.bottom,
+    ).toBeGreaterThanOrEqual(16);
+  });
 
   // Skipped: flakes under the coverage job's CPU contention (overlay open/close
   // timing); passes reliably in the standalone integration run.

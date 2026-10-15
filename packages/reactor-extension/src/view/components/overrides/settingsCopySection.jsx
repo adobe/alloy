@@ -9,7 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { ActionButton, Flex } from "@adobe/react-spectrum";
+import { ActionButton } from "@react-spectrum/s2";
+
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import { ENVIRONMENTS as OVERRIDE_ENVIRONMENTS } from "../../configuration/constants/environmentType";
 import { capitialize } from "./utils";
@@ -31,20 +33,29 @@ import { capitialize } from "./utils";
  */
 const SettingsCopySection = ({ currentEnv, onPress }) => {
   return (
-    <Flex direction="row" gap="size-100" wrap>
+    <div
+      className={style({
+        display: "flex",
+        flexDirection: "row",
+        gap: 8,
+        flexWrap: "wrap",
+      })}
+    >
       {OVERRIDE_ENVIRONMENTS.filter((source) => source !== currentEnv).map(
         (source) => (
           <ActionButton
             data-test-id={`copyFrom${capitialize(source)}Button`}
             key={source}
-            marginTop="size-100"
             onPress={() => onPress(source, currentEnv)}
+            styles={style({
+              marginTop: 8,
+            })}
           >
             Copy settings from {source}
           </ActionButton>
         ),
       )}
-    </Flex>
+    </div>
   );
 };
 

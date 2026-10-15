@@ -55,6 +55,7 @@ const MARGIN_TOP_STYLES = {
 const MARGIN_BOTTOM_STYLES = {
   0: style({ marginBottom: 0 }),
   "size-0": style({ marginBottom: 0 }),
+  "size-10": style({ marginBottom: "[1px]" }),
   "size-75": style({ marginBottom: 4 }),
   "size-100": style({ marginBottom: 8 }),
   "size-200": style({ marginBottom: 16 }),
