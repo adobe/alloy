@@ -502,8 +502,8 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3(rollup@4.60.1)
       adm-zip:
-        specifier: ^0.5.16
-        version: 0.5.17
+        specifier: ^0.6.1
+        version: 0.6.1
       ajv:
         specifier: ^8.18.0
         version: 8.18.0
@@ -4680,6 +4680,10 @@ packages:
   adm-zip@0.5.17:
     resolution: {integrity: sha512-+Ut8d9LLqwEvHHJl1+PIHqoyDxFgVN847JTVM3Izi3xHDWPE4UtzzXysMZQs64DMcrJfBeS/uoEP4AD3HQHnQQ==}
     engines: {node: '>=12.0'}
+
+  adm-zip@0.6.1:
+    resolution: {integrity: sha512-Xwrja8nx9e5o2N1my4DsKCeKpdrnACyr1wtbPxBDgGzKzKyE9kRtBFA8mWldI+RVlD7CBZNWY/wQ2+ydwOR6kQ==}
+    engines: {node: '>=14.0'}
 
   agent-base@6.0.2:
     resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
@@ -20415,6 +20419,8 @@ snapshots:
   address@2.0.3: {}
 
   adm-zip@0.5.17: {}
+
+  adm-zip@0.6.1: {}
 
   agent-base@6.0.2(supports-color@8.1.1):
     dependencies:
