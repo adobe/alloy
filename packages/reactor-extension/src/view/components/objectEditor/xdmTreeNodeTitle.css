@@ -1,37 +1,24 @@
-.XdmTreeNodeTitle {
-  &.is-invalid {
-    color: var(--spectrum-negative-visual-color);
-
-    .XdmTreeNodeTitle-type {
-      &:before {
-        border-left-color: var(--spectrum-negative-visual-color);
-      }
-      color: inherit;
-    }
-  }
-}
-
 .XdmTreeNodeTitle-displayName {
   white-space: nowrap;
 }
 
 .XdmTreeNodeTitle-type {
+  /*
+   * `color` is set by the component via the style() macro (gray by default,
+   * negative when the node has an error); `currentColor` keeps this
+   * divider in sync with whichever of those is active.
+   */
   &:before {
     content: " ";
-    border-left: 1.5px solid var(--spectrum-gray-500);
+    border-left: 1.5px solid currentColor;
     padding-left: 8px;
   }
-  color: var(--spectrum-gray-600);
 }
 
-.ant-tree-treenode-disabled {
-  .XdmTreeNodeTitle {
-    color: var(--spectrum-gray-500);
-    &:before {
-      border-left-color: var(--spectrum-gray-500)
-    }
-    .XdmTreeNodeTitle-type {
-      color: var(--spectrum-gray-500);
-    }
+.ant-tree-treenode-disabled .XdmTreeNodeTitle {
+  color: var(--xdm-tree-node-title-gray-500);
+
+  .XdmTreeNodeTitle-type {
+    color: var(--xdm-tree-node-title-gray-500);
   }
 }

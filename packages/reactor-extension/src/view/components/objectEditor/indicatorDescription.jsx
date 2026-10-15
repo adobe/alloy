@@ -10,23 +10,30 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Flex, View } from "@adobe/react-spectrum";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 
 const IndicatorDescription = ({ indicator, children }) => {
   return (
-    <Flex>
-      <Flex
-        width="size-500"
-        flexShrink={0}
-        flexGrow={0}
-        justifyContent="center"
-        marginTop="size-50"
+    <div
+      className={style({
+        display: "flex",
+      })}
+    >
+      <div
+        className={style({
+          display: "flex",
+          width: 40,
+          flexShrink: 0,
+          flexGrow: 0,
+          justifyContent: "center",
+          marginTop: 4,
+        })}
       >
         {indicator}
-      </Flex>
-      <View>{children}</View>
-    </Flex>
+      </div>
+      <div>{children}</div>
+    </div>
   );
 };
 

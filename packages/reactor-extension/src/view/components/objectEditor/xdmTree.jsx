@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { Tree } from "antd";
 import { useFormikContext } from "formik";
+import { color } from "@react-spectrum/s2/style" with { type: "macro" };
 import generateTreeStructure from "./helpers/generateTreeStructure";
 import getNodeIdsToExpandForValidation from "./helpers/getNodeIdsToExpandForValidation";
 import XdmTreeNodeTitle from "./xdmTreeNodeTitle";
@@ -29,6 +30,13 @@ import useNewlyValidatedFormSubmission from "../../utils/useNewlyValidatedFormSu
 // https://github.com/ant-design/ant-design/blob/832aa81c821b7b5750673b5aacafa39c9978b09c/components/tree/Tree.tsx#L200-L203
 import "antd/lib/tree/style/index";
 import "./xdmTree.css";
+
+// xdmTree.css styles antd's own `.ant-tree-node-content-wrapper` elements,
+// which we don't render and so can't target with the style() macro. Resolve
+// the real S2 colors here and hand them down as CSS custom properties so
+// the plain CSS never has to hardcode a color.
+const GRAY_200 = color("gray-200");
+const BLUE_300 = color("blue-300");
 
 export const scrollNodeIntoView = (nodeId) => {
   if (nodeId) {
@@ -92,6 +100,10 @@ const XdmTree = ({
     <Tree
       data-test-id="xdmTree"
       className="XdmTree"
+      style={{
+        "--xdm-tree-gray-200": GRAY_200,
+        "--xdm-tree-blue-300": BLUE_300,
+      }}
       treeData={treeStructure.children}
       onSelect={onTreeSelect}
       onExpand={onTreeExpand}
