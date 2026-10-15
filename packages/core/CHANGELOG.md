@@ -1,5 +1,69 @@
 # @adobe/alloy-core
 
+## 1.3.1
+
+### Patch Changes
+
+- [#1602](https://github.com/adobe/alloy/pull/1602) [`3d6416e`](https://github.com/adobe/alloy/commit/3d6416ebaee0121933f453cc3e006e19cf7e5613) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Requests sent with `sendBeacon` (for example, `sendEvent` with `documentUnloading: true`) no longer log "Received response with status code 204". The browser gives no response for `sendBeacon` requests, so the debug log now says the request was sent using `sendBeacon`, that no response is available, and that browser developer tools may show it as canceled if the page navigates away.
+
+- [#1597](https://github.com/adobe/alloy/pull/1597) [`81f5979`](https://github.com/adobe/alloy/commit/81f5979294ae1ab572150fc1d0c969b9644f69e0) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Fixed event history operations from Adobe Journey Optimizer dropping the `iam.action` field. Inserted events now include the action, so they are recorded in the same event history entry as the matching Web SDK interaction (for example, an in-app message `clicked` interaction) and can be counted by historical rule conditions that filter on an action.
+
+- [#1601](https://github.com/adobe/alloy/pull/1601) [`20570ba`](https://github.com/adobe/alloy/commit/20570bae426ca15d454171b7a6991c66670089e0) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Events sent with `documentUnloading: true` that still go to the `interact` endpoint with `fetch` (for example, before an identity has been established) now use `keepalive`, so the browser finishes the request even if the page navigates away. If the browser refuses the `keepalive` request because the page's in-flight `keepalive` data would exceed 64 KiB, the request is retried as a regular `fetch`.
+
+## 1.3.1-beta.1
+
+### Patch Changes
+
+- [#1597](https://github.com/adobe/alloy/pull/1597) [`81f5979`](https://github.com/adobe/alloy/commit/81f5979294ae1ab572150fc1d0c969b9644f69e0) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Fixed event history operations from Adobe Journey Optimizer dropping the `iam.action` field. Inserted events now include the action, so they are recorded in the same event history entry as the matching Web SDK interaction (for example, an in-app message `clicked` interaction) and can be counted by historical rule conditions that filter on an action.
+
+## 1.3.1-beta.0
+
+### Patch Changes
+
+- [#1602](https://github.com/adobe/alloy/pull/1602) [`3d6416e`](https://github.com/adobe/alloy/commit/3d6416ebaee0121933f453cc3e006e19cf7e5613) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Requests sent with `sendBeacon` (for example, `sendEvent` with `documentUnloading: true`) no longer log "Received response with status code 204". The browser gives no response for `sendBeacon` requests, so the debug log now says the request was sent using `sendBeacon`, that no response is available, and that browser developer tools may show it as canceled if the page navigates away.
+
+- [#1601](https://github.com/adobe/alloy/pull/1601) [`20570ba`](https://github.com/adobe/alloy/commit/20570bae426ca15d454171b7a6991c66670089e0) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Events sent with `documentUnloading: true` that still go to the `interact` endpoint with `fetch` (for example, before an identity has been established) now use `keepalive`, so the browser finishes the request even if the page navigates away. If the browser refuses the `keepalive` request because the page's in-flight `keepalive` data would exceed 64 KiB, the request is retried as a regular `fetch`.
+
+## 1.3.0
+
+### Minor Changes
+
+- [#1596](https://github.com/adobe/alloy/pull/1596) [`9ab23ec`](https://github.com/adobe/alloy/commit/9ab23ece86f06800463c6d62aef99736d5590f0d) Thanks [@kaiyuan-developer](https://github.com/kaiyuan-developer)! - Added an optional `surfaces` option to the Brand Concierge `sendConversationEvent` command. The provided surfaces are sent with the conversation request, followed by the page surface.
+
+- [#1571](https://github.com/adobe/alloy/pull/1571) [`28a2c3c`](https://github.com/adobe/alloy/commit/28a2c3c901b8f5f260669d2da45b5155fe2cee24) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Fixed `getLibraryInfo()` returning the literal, unreplaced `"__VERSION__"` build placeholder in Node (it now reports `@adobe/alloy-node`'s own version, the same way `implementationDetails.version` already did).
+
+  Added `edgeCredentials` (OAuth Server-to-Server) to `configure()`. When present, `sendEvent()` authenticates against the Edge Network Server API (v2) instead of the standard unauthenticated endpoint — verified against a real credentialed project. `setConsent`/`getIdentity` continue to use the standard v1 endpoint regardless, since the Server API has no v2 equivalent for those actions. An authenticated `sendEvent()` requires an explicit primary identity in the event (`xdm.identityMap`), since there's no browser cookie for Edge Network to resolve identity from server-to-server.
+
+  In `@adobe/alloy-node`, `edgeCredentials` is **required**, not optional — Node runs in a trusted, client-controlled environment, so `configure()` rejects if it's missing rather than falling back to the unauthenticated v1 endpoint. (It remains optional, and generally inadvisable, in the browser bundle, where shipping a client secret defeats the point of it being a secret.)
+
+  `@adobe/alloy-node`'s `configure()` also now rejects `defaultConsent: "pending"`. Node has no equivalent of a browser page's lifetime to hold a pending consent decision across separate HTTP requests — a pending `sendEvent()`/`getIdentity()` on one `forRequest()` call could only ever be released by a `setConsent()` on that exact same call, never by a later request for the same visitor, which was a footgun rather than a usable feature. Use `"in"` or `"out"`, and gate calling `sendEvent()`/`setConsent()` on your own persisted consent decision instead.
+
+### Patch Changes
+
+- [#1571](https://github.com/adobe/alloy/pull/1571) [`28a2c3c`](https://github.com/adobe/alloy/commit/28a2c3c901b8f5f260669d2da45b5155fe2cee24) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Fixed `edgeCredentials.clientSecret` being exposed in plaintext — via `getLibraryInfo()`'s result, the browser/Node console when `debugEnabled`/`setDebug` is on, and any registered `monitors` (e.g. `onInstanceConfigured`, `onBeforeCommand`). `clientSecret` is now replaced with `"[REDACTED]"` wherever a config/options object carrying `edgeCredentials` is logged, notified to a monitor, or returned from `getLibraryInfo()` — a real risk for customer implementations that naively log or inspect that data. Only `edgeCredentials.clientSecret` itself is touched; everything else, including functions like `onBeforeEventSend`, is left as the exact same reference.
+
+## 1.3.0-beta.1
+
+### Minor Changes
+
+- [#1596](https://github.com/adobe/alloy/pull/1596) [`9ab23ec`](https://github.com/adobe/alloy/commit/9ab23ece86f06800463c6d62aef99736d5590f0d) Thanks [@kaiyuan-developer](https://github.com/kaiyuan-developer)! - Added an optional `surfaces` option to the Brand Concierge `sendConversationEvent` command. The provided surfaces are sent with the conversation request, followed by the page surface.
+
+## 1.3.0-beta.0
+
+### Minor Changes
+
+- [#1571](https://github.com/adobe/alloy/pull/1571) [`28a2c3c`](https://github.com/adobe/alloy/commit/28a2c3c901b8f5f260669d2da45b5155fe2cee24) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Fixed `getLibraryInfo()` returning the literal, unreplaced `"__VERSION__"` build placeholder in Node (it now reports `@adobe/alloy-node`'s own version, the same way `implementationDetails.version` already did).
+
+  Added `edgeCredentials` (OAuth Server-to-Server) to `configure()`. When present, `sendEvent()` authenticates against the Edge Network Server API (v2) instead of the standard unauthenticated endpoint — verified against a real credentialed project. `setConsent`/`getIdentity` continue to use the standard v1 endpoint regardless, since the Server API has no v2 equivalent for those actions. An authenticated `sendEvent()` requires an explicit primary identity in the event (`xdm.identityMap`), since there's no browser cookie for Edge Network to resolve identity from server-to-server.
+
+  In `@adobe/alloy-node`, `edgeCredentials` is **required**, not optional — Node runs in a trusted, client-controlled environment, so `configure()` rejects if it's missing rather than falling back to the unauthenticated v1 endpoint. (It remains optional, and generally inadvisable, in the browser bundle, where shipping a client secret defeats the point of it being a secret.)
+
+  `@adobe/alloy-node`'s `configure()` also now rejects `defaultConsent: "pending"`. Node has no equivalent of a browser page's lifetime to hold a pending consent decision across separate HTTP requests — a pending `sendEvent()`/`getIdentity()` on one `forRequest()` call could only ever be released by a `setConsent()` on that exact same call, never by a later request for the same visitor, which was a footgun rather than a usable feature. Use `"in"` or `"out"`, and gate calling `sendEvent()`/`setConsent()` on your own persisted consent decision instead.
+
+### Patch Changes
+
+- [#1571](https://github.com/adobe/alloy/pull/1571) [`28a2c3c`](https://github.com/adobe/alloy/commit/28a2c3c901b8f5f260669d2da45b5155fe2cee24) Thanks [@Spencer-Smith](https://github.com/Spencer-Smith)! - Fixed `edgeCredentials.clientSecret` being exposed in plaintext — via `getLibraryInfo()`'s result, the browser/Node console when `debugEnabled`/`setDebug` is on, and any registered `monitors` (e.g. `onInstanceConfigured`, `onBeforeCommand`). `clientSecret` is now replaced with `"[REDACTED]"` wherever a config/options object carrying `edgeCredentials` is logged, notified to a monitor, or returned from `getLibraryInfo()` — a real risk for customer implementations that naively log or inspect that data. Only `edgeCredentials.clientSecret` itself is touched; everything else, including functions like `onBeforeEventSend`, is left as the exact same reference.
+
 ## 1.2.3
 
 ### Patch Changes

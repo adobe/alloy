@@ -15,7 +15,7 @@ governing permissions and limitations under the License.
 import packageJson from "../../package.json" with { type: "json" };
 import getHeader from "../services/getHeader.js";
 
-const LIBRARY_NAME = "https://ns.adobe.com/experience/alloy";
+const LIBRARY_NAME = "https://ns.adobe.com/experience/alloy-node";
 const { version: LIBRARY_VERSION } = packageJson;
 
 /**

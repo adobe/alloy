@@ -82,9 +82,84 @@ describe("injectSendNetworkRequest", () => {
         url,
         payload,
       });
-      expect(sendFetchRequest).toHaveBeenCalledWith(url, payloadJson);
+      expect(sendFetchRequest).toHaveBeenCalledWith(
+        url,
+        payloadJson,
+        undefined,
+        {
+          keepalive: false,
+        },
+      );
     });
   });
+
+  it("forwards headers through to sendFetchRequest", () => {
+    return sendNetworkRequest({
+      requestId,
+      payload,
+      url,
+      useSendBeacon: false,
+      headers: { Authorization: "Bearer token" },
+    }).then(() => {
+      expect(sendFetchRequest).toHaveBeenCalledWith(
+        url,
+        payloadJson,
+        { Authorization: "Bearer token" },
+        { keepalive: false },
+      );
+    });
+  });
+
+  it("uses fetch instead of sendBeacon when headers are present, since sendBeacon can't carry custom headers", () => {
+    return sendNetworkRequest({
+      requestId,
+      payload,
+      url,
+      useSendBeacon: true,
+      headers: { Authorization: "Bearer token" },
+    }).then(() => {
+      expect(sendBeaconRequest).not.toHaveBeenCalled();
+      expect(sendFetchRequest).toHaveBeenCalledWith(
+        url,
+        payloadJson,
+        { Authorization: "Bearer token" },
+        { keepalive: false },
+      );
+    });
+  });
+  it("sends the fetch request with keepalive when useKeepalive is true", () => {
+    return sendNetworkRequest({
+      requestId,
+      payload,
+      url,
+      useSendBeacon: false,
+      useKeepalive: true,
+    }).then(() => {
+      expect(sendFetchRequest).toHaveBeenCalledWith(
+        url,
+        payloadJson,
+        undefined,
+        {
+          keepalive: true,
+        },
+      );
+      expect(sendBeaconRequest).not.toHaveBeenCalled();
+    });
+  });
+
+  it("uses sendBeacon instead of a keepalive fetch when useSendBeacon is true", () => {
+    return sendNetworkRequest({
+      requestId,
+      payload,
+      url,
+      useSendBeacon: true,
+      useKeepalive: true,
+    }).then(() => {
+      expect(sendBeaconRequest).toHaveBeenCalledWith(url, payloadJson);
+      expect(sendFetchRequest).not.toHaveBeenCalled();
+    });
+  });
+
   it("handles a response with a JSON body", () => {
     return sendNetworkRequest({
       payload,
@@ -229,5 +304,35 @@ describe("injectSendNetworkRequest", () => {
         vi.advanceTimersByTime(1000);
         expect(sendFetchRequest).toHaveBeenCalledTimes(3);
       });
+  });
+  it("passes sentWithBeacon from a sendBeacon response through to the logger", () => {
+    sendBeaconRequest.mockReturnValue(
+      Promise.resolve({
+        statusCode: 204,
+        body: "",
+        getHeader,
+        sentWithBeacon: true,
+      }),
+    );
+    return sendNetworkRequest({
+      requestId,
+      payload,
+      url,
+      useSendBeacon: true,
+    }).then(() => {
+      expect(sendBeaconRequest).toHaveBeenCalledTimes(1);
+      expect(sendFetchRequest).not.toHaveBeenCalled();
+      expect(logger.logOnNetworkResponse).toHaveBeenCalledWith({
+        requestId,
+        url,
+        payload,
+        statusCode: 204,
+        body: "",
+        parsedBody: undefined,
+        retriesAttempted: 0,
+        getHeader,
+        sentWithBeacon: true,
+      });
+    });
   });
 });

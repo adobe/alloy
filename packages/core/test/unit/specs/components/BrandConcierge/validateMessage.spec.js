@@ -418,4 +418,67 @@ describe("BrandConcierge::validateMessage", () => {
       }).not.toThrowError();
     });
   });
+
+  describe("surfaces option", () => {
+    // Like personalization.surfaces, the validator only checks for an array of
+    // unique strings. The values are sent as is.
+    const validSurfaces = [
+      [],
+      ["web://business.adobe.com/products"],
+      ["web://business.adobe.com/products", "web://www.adobe.com/"],
+      ["", "not a surface"],
+    ];
+
+    const invalidSurfaces = [
+      "web://business.adobe.com/products",
+      123,
+      true,
+      {},
+      () => {},
+      [123],
+      ["web://adobe.com/", {}],
+      ["web://adobe.com/", "web://adobe.com/"],
+    ];
+
+    const eventShapes = {
+      message: { message: "Hello" },
+      data: { data: { type: "action", payload: {} } },
+      xdm: { xdm: { interactionId: "test-id" } },
+    };
+
+    it("is optional for every event shape", () => {
+      Object.values(eventShapes).forEach((shape) => {
+        expect(() => {
+          validateMessage({ options: { ...shape } });
+        }).not.toThrowError();
+        [undefined, null].forEach((surfaces) => {
+          expect(() => {
+            validateMessage({ options: { ...shape, surfaces } });
+          }).not.toThrowError();
+        });
+      });
+    });
+
+    it("accepts arrays of unique strings for every event shape", () => {
+      Object.values(eventShapes).forEach((shape) => {
+        validSurfaces.forEach((surfaces) => {
+          const result = validateMessage({ options: { ...shape, surfaces } });
+          expect(result.surfaces).toEqual(surfaces);
+        });
+      });
+    });
+
+    Object.entries(eventShapes).forEach(([shapeName, shape]) => {
+      it(`rejects invalid surfaces on ${shapeName} events`, () => {
+        invalidSurfaces.forEach((surfaces) => {
+          expect(
+            () => {
+              validateMessage({ options: { ...shape, surfaces } });
+            },
+            `surfaces ${String(surfaces)}`,
+          ).toThrowError();
+        });
+      });
+    });
+  });
 });

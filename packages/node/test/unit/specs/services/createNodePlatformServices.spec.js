@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect, vi, afterEach } from "vitest";
+import packageJson from "../../../../package.json" with { type: "json" };
 import createNodePlatformServices from "../../../../src/services/createNodePlatformServices.js";
 
 describe("createNodePlatformServices", () => {
@@ -25,6 +26,15 @@ describe("createNodePlatformServices", () => {
     expect(platformServices.runtime.now).toBeTypeOf("function");
     expect(platformServices.legacy.getEcidFromVisitor).toBeTypeOf("function");
     expect(platformServices.globals.isPageSsl()).toBe(true);
+  });
+
+  // Regression test: getLibraryInfo() used to return the literal,
+  // unreplaced "__VERSION__" placeholder in Node.
+  it("exposes @adobe/alloy-node's own real version as libraryVersionOverride", () => {
+    const platformServices = createNodePlatformServices();
+
+    expect(platformServices.libraryVersionOverride).toBe(packageJson.version);
+    expect(platformServices.libraryVersionOverride).not.toBe("__VERSION__");
   });
 
   it("uses a given cookie/storage/runtime/legacy/globals override wholesale instead of the default", () => {

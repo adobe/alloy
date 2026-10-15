@@ -18,11 +18,21 @@ governing permissions and limitations under the License.
 // packages/node/test/integration/nodeConsumer.spec.js.
 
 import { describe, it, expect, vi, afterEach } from "vitest";
+import { consent } from "@adobe/alloy-core";
 import createNodeAlloy from "../../../src/createNodeAlloy.js";
+
+// A fake edgeCredentials, sufficient to satisfy configure()'s requirement
+// — these tests mock fetch entirely, so no real IMS auth ever happens.
+const edgeCredentials = {
+  clientId: "test-client-id",
+  clientSecret: "test-client-secret",
+  scopes: ["openid"],
+};
 
 const config = {
   orgId: "TEST_ORG@AdobeOrg",
   datastreamId: "test-datastream-id",
+  edgeCredentials,
 };
 
 const COMMAND_METHOD_NAMES = [
@@ -39,6 +49,39 @@ const fakeEdgeNetworkResponse = () =>
   new Response(JSON.stringify({ requestId: "test-request-id", handle: [] }), {
     status: 200,
   });
+
+// sendEvent() now fetches an IMS token before hitting the Server API — this
+// stub answers both, returning a fresh Response each call (mockResolvedValue
+// would hand back the same already-consumed body on the second call).
+const createFetchMock = () =>
+  vi.fn(async (url) => {
+    if (url.includes("/ims/token/v3")) {
+      return new Response(
+        JSON.stringify({
+          access_token: "the-access-token",
+          token_type: "bearer",
+          expires_in: 86399,
+        }),
+        { status: 200 },
+      );
+    }
+    return fakeEdgeNetworkResponse();
+  });
+
+const imsCalls = (fetchMock) =>
+  fetchMock.mock.calls.filter(([url]) => url.includes("/ims/token/v3"));
+
+// edgeCredentials makes sendEvent()'s interact request eligible for the
+// Server API (v2), which uses a singular `event` key instead of v1's
+// `events` array — see toServerApiPayloadJSON in
+// injectSendEdgeNetworkRequest.js.
+const lastEventSent = (fetchMock) => {
+  const interactCalls = fetchMock.mock.calls.filter(([url]) =>
+    url.includes("/interact"),
+  );
+  const [, requestInit] = interactCalls.at(-1);
+  return JSON.parse(requestInit.body).event;
+};
 
 const createSpyCookieService = () => {
   const jar = new Map();
@@ -168,7 +211,7 @@ describe("createNodeAlloy", () => {
     });
 
     it("is always active — attaches implementationDetails even when no components were requested", async () => {
-      const fetchMock = vi.fn().mockResolvedValue(fakeEdgeNetworkResponse());
+      const fetchMock = createFetchMock();
       vi.stubGlobal("fetch", fetchMock);
       const alloy = createNodeAlloy({
         platformServices: { cookie: createSpyCookieService() },
@@ -177,15 +220,14 @@ describe("createNodeAlloy", () => {
 
       await alloy.sendEvent({ xdm: { eventType: "test" } });
 
-      const [, requestInit] = fetchMock.mock.calls.at(-1);
-      const { xdm } = JSON.parse(requestInit.body).events[0];
+      const { xdm } = lastEventSent(fetchMock);
       expect(xdm.implementationDetails).toEqual(
         expect.objectContaining({ environment: "server" }),
       );
     });
 
     it("forRequest({ request }) forwards the visitor's real headers to the default network service", async () => {
-      const fetchMock = vi.fn().mockResolvedValue(fakeEdgeNetworkResponse());
+      const fetchMock = createFetchMock();
       vi.stubGlobal("fetch", fetchMock);
       const alloy = createNodeAlloy({
         platformServices: { cookie: createSpyCookieService() },
@@ -207,14 +249,14 @@ describe("createNodeAlloy", () => {
       expect(requestInit.headers).toEqual(
         expect.objectContaining({ "user-agent": "Mozilla/5.0" }),
       );
-      const { xdm } = JSON.parse(requestInit.body).events[0];
+      const { xdm } = lastEventSent(fetchMock);
       expect(xdm.web).toEqual({
         webPageDetails: { URL: "https://example.com/page" },
       });
     });
 
     it("forwards Accept-Language in addition to User-Agent", async () => {
-      const fetchMock = vi.fn().mockResolvedValue(fakeEdgeNetworkResponse());
+      const fetchMock = createFetchMock();
       vi.stubGlobal("fetch", fetchMock);
       const alloy = createNodeAlloy({
         platformServices: { cookie: createSpyCookieService() },
@@ -234,9 +276,7 @@ describe("createNodeAlloy", () => {
     });
 
     it("does not leak one request's referer-derived URL into a later request with no referer", async () => {
-      const fetchMock = vi
-        .fn()
-        .mockImplementation(async () => fakeEdgeNetworkResponse());
+      const fetchMock = createFetchMock();
       vi.stubGlobal("fetch", fetchMock);
       const alloy = createNodeAlloy({
         platformServices: { cookie: createSpyCookieService() },
@@ -254,15 +294,12 @@ describe("createNodeAlloy", () => {
         .forRequest({ cookie: createSpyCookieService() })
         .sendEvent({ xdm: { eventType: "without-referer" } });
 
-      const [, requestInit] = fetchMock.mock.calls.at(-1);
-      const { xdm } = JSON.parse(requestInit.body).events[0];
+      const { xdm } = lastEventSent(fetchMock);
       expect(xdm.web).toBeUndefined();
     });
 
     it("attaches implementationDetails and the referer-derived URL to every event sent on one forRequest handle", async () => {
-      const fetchMock = vi
-        .fn()
-        .mockImplementation(async () => fakeEdgeNetworkResponse());
+      const fetchMock = createFetchMock();
       vi.stubGlobal("fetch", fetchMock);
       const alloy = createNodeAlloy({
         platformServices: { cookie: createSpyCookieService() },
@@ -276,8 +313,11 @@ describe("createNodeAlloy", () => {
       await request.sendEvent({ xdm: { eventType: "first" } });
       await request.sendEvent({ xdm: { eventType: "second" } });
 
-      fetchMock.mock.calls.slice(-2).forEach(([, requestInit]) => {
-        const { xdm } = JSON.parse(requestInit.body).events[0];
+      const interactCalls = fetchMock.mock.calls.filter(([url]) =>
+        url.includes("/interact"),
+      );
+      interactCalls.slice(-2).forEach(([, requestInit]) => {
+        const { xdm } = JSON.parse(requestInit.body).event;
         expect(xdm.implementationDetails).toEqual(
           expect.objectContaining({ environment: "server" }),
         );
@@ -288,7 +328,7 @@ describe("createNodeAlloy", () => {
     });
 
     it("lets a caller-supplied xdm.web.webPageDetails.URL win over the referer-derived one", async () => {
-      const fetchMock = vi.fn().mockResolvedValue(fakeEdgeNetworkResponse());
+      const fetchMock = createFetchMock();
       vi.stubGlobal("fetch", fetchMock);
       const alloy = createNodeAlloy({
         platformServices: { cookie: createSpyCookieService() },
@@ -306,11 +346,91 @@ describe("createNodeAlloy", () => {
         },
       });
 
-      const [, requestInit] = fetchMock.mock.calls.at(-1);
-      const { xdm } = JSON.parse(requestInit.body).events[0];
+      const { xdm } = lastEventSent(fetchMock);
       expect(xdm.web).toEqual({
         webPageDetails: { URL: "https://explicit.example.com/" },
       });
+    });
+  });
+
+  describe("edgeCredentials", () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    const edgeCredentials = {
+      clientId: "myClientId",
+      clientSecret: "myClientSecret",
+      scopes: ["openid"],
+      imsHost: "ims-na1.adobelogin.com",
+    };
+
+    it("authenticates with IMS once, then reuses the cached token across multiple forRequest() calls", async () => {
+      const fetchMock = createFetchMock();
+      vi.stubGlobal("fetch", fetchMock);
+      const alloy = createNodeAlloy();
+      await alloy.configure({ ...config, edgeCredentials });
+
+      await alloy
+        .forRequest({ cookie: createSpyCookieService() })
+        .sendEvent({ xdm: { eventType: "first" } });
+      await alloy
+        .forRequest({ cookie: createSpyCookieService() })
+        .sendEvent({ xdm: { eventType: "second" } });
+
+      expect(imsCalls(fetchMock)).toHaveLength(1);
+    });
+
+    it("sends the interact request to the Server API domain with auth headers", async () => {
+      const fetchMock = createFetchMock();
+      vi.stubGlobal("fetch", fetchMock);
+      const alloy = createNodeAlloy();
+      await alloy.configure({ ...config, edgeCredentials });
+
+      await alloy
+        .forRequest({ cookie: createSpyCookieService() })
+        .sendEvent({ xdm: { eventType: "test" } });
+
+      const [url, requestInit] = fetchMock.mock.calls.at(-1);
+      expect(url).toContain("https://server.adobedc.net/");
+      expect(url).toContain("dataStreamId=test-datastream-id");
+      expect(requestInit.headers).toEqual(
+        expect.objectContaining({
+          Authorization: "Bearer the-access-token",
+          "x-api-key": "myClientId",
+          "x-gw-ims-org-id": "TEST_ORG@AdobeOrg",
+        }),
+      );
+    });
+
+    it("rejects configure() without edgeCredentials — Node requires it, unlike the browser bundle", async () => {
+      const alloy = createNodeAlloy();
+      const { edgeCredentials: _unused, ...configWithoutCredentials } = config;
+
+      await expect(alloy.configure(configWithoutCredentials)).rejects.toThrow(
+        /edgeCredentials/,
+      );
+    });
+
+    // Confirmed against the real API: privacy/set-consent 404s under v2,
+    // so it must keep using v1 even when edgeCredentials is configured.
+    it("still sends setConsent through v1, not the Server API, even with edgeCredentials configured", async () => {
+      const fetchMock = createFetchMock();
+      vi.stubGlobal("fetch", fetchMock);
+      const alloy = createNodeAlloy({ components: [consent] });
+      await alloy.configure({ ...config, edgeCredentials });
+
+      await alloy.forRequest({ cookie: createSpyCookieService() }).setConsent({
+        consent: [
+          { standard: "Adobe", version: "1.0", value: { general: "in" } },
+        ],
+      });
+
+      expect(imsCalls(fetchMock)).toHaveLength(0);
+      const [url, requestInit] = fetchMock.mock.calls.at(-1);
+      expect(url).toContain("/v1/privacy/set-consent?configId=");
+      expect(url).not.toContain("server.adobedc.net");
+      expect(requestInit.headers.Authorization).toBeUndefined();
     });
   });
 });

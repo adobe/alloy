@@ -289,6 +289,9 @@ describe("Config overrides section", () => {
     await driver.expectValidate().toBe(true);
   });
 
+  // Same rationale as "updates form values and saves to settings" above:
+  // ~9 form actions in one test blows the default 30s project timeout
+  // under CI contention even though the test isn't hung.
   it("allows you to save data elements", async () => {
     await driver.init(buildSettingsWithDummyDatastream());
 
@@ -331,7 +334,7 @@ describe("Config overrides section", () => {
           },
         },
       });
-  });
+  }, 60_000);
 
   it("allows you to add and delete report suites", async () => {
     await driver.init(buildSettingsWithDummyDatastream());

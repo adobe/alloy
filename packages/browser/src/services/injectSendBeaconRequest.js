@@ -20,13 +20,15 @@ export default ({ sendBeacon, sendFetchRequest, logger }) => {
 
     // Using sendBeacon, we technically don't get a response back from
     // the server, but we'll resolve the promise with an object to maintain
-    // consistency with other network strategies.
+    // consistency with other network strategies. `sentWithBeacon` marks the
+    // response as synthetic so it isn't logged as a real server response.
     return Promise.resolve({
       statusCode: 204,
       getHeader() {
         return null;
       },
       body: "",
+      sentWithBeacon: true,
     });
   };
 };

@@ -30,6 +30,9 @@ export default defineConfig({
           environment: "node",
         },
       },
+      // Node integration tests are excluded from base test commands so other
+      // tests don't need credentials to run. Run explicitly with
+      // `pnpm run test:node-integration`.
       {
         extends: false,
         test: {

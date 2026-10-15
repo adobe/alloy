@@ -765,9 +765,11 @@ describe("C455258 - sendEvent routes to collect via sendBeacon once identity is 
     await alloy("configure", alloyConfig);
 
     // Before identity, documentUnloading still uses interact so the response
-    // can establish one.
+    // can establish one. It is sent with keepalive so the browser finishes it
+    // even if the page unloads.
     await alloy("sendEvent", { documentUnloading: true });
     expect(interactCalls(networkRecorder).length).toBe(1);
+    expect(interactCalls(networkRecorder)[0].request.keepalive).toBe(true);
     expect(sendBeaconCalls().length).toBe(0);
 
     networkRecorder.reset();
@@ -787,10 +789,43 @@ describe("C455258 - sendEvent routes to collect via sendBeacon once identity is 
     networkRecorder.reset();
     resetSendBeaconCalls();
 
-    // Without documentUnloading it always uses interact.
+    // Without documentUnloading it always uses interact, without keepalive.
     await alloy("sendEvent");
     expect(interactCalls(networkRecorder).length).toBe(1);
+    expect(interactCalls(networkRecorder)[0].request.keepalive).toBe(false);
     expect(sendBeaconCalls().length).toBe(0);
+  });
+});
+
+describe("documentUnloading interact requests use keepalive", () => {
+  test("falls back to a regular fetch when the keepalive request is over 64 KiB", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventWithIdentityCookieHandler);
+    const consoleSpy = vi.spyOn(console, "info");
+
+    await alloy("configure", { ...alloyConfig, debugEnabled: true });
+
+    // Browsers reject keepalive requests with more than 64 KiB of body before
+    // sending them. The SDK must retry without keepalive so the event isn't lost.
+    const largeValue = "a".repeat(70000);
+    await alloy("sendEvent", {
+      documentUnloading: true,
+      data: { largeValue },
+    });
+
+    const calls = interactCalls(networkRecorder);
+    expect(calls).toHaveLength(1);
+    expect(calls[0].request.keepalive).toBe(false);
+    expect(firstEvent(calls[0]).data.largeValue).toBe(largeValue);
+    expect(
+      searchForLogMessage(
+        consoleSpy,
+        "Unable to send the request with `keepalive`; falling back to a regular `fetch`.",
+      ),
+    ).toBe(true);
   });
 });
 

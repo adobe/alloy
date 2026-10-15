@@ -22,7 +22,14 @@ export default ({
   /**
    * Send a network request and returns details about the response.
    */
-  return ({ requestId, url, payload, useSendBeacon }) => {
+  return ({
+    requestId,
+    url,
+    payload,
+    useSendBeacon,
+    useKeepalive,
+    headers,
+  }) => {
     // We want to log raw payload and event data rather than
     // our fancy wrapper objects. Calling payload.toJSON() is
     // insufficient to get all the nested raw data, because it's
@@ -40,11 +47,17 @@ export default ({
     });
 
     const executeRequest = (retriesAttempted = 0) => {
-      const requestMethod = useSendBeacon
-        ? sendBeaconRequest
-        : sendFetchRequest;
+      // navigator.sendBeacon() has no way to attach custom headers, so a
+      // request that needs any (e.g. authenticated Server API requests)
+      // must always go through fetch, regardless of useSendBeacon.
+      const request =
+        useSendBeacon && !headers
+          ? sendBeaconRequest(url, stringifiedPayload)
+          : sendFetchRequest(url, stringifiedPayload, headers, {
+              keepalive: Boolean(useKeepalive),
+            });
 
-      return requestMethod(url, stringifiedPayload).then((response) => {
+      return request.then((response) => {
         const requestIsRetryable = isRequestRetryable({
           response,
           retriesAttempted,

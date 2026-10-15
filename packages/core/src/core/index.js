@@ -45,6 +45,7 @@ import {
   createGetAssuranceValidationTokenParams,
 } from "../utils/request/index.js";
 import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkRequest.js";
+import injectGetImsAccessToken from "./edgeNetwork/injectGetImsAccessToken.js";
 import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsAndErrors.js";
 import injectGetLocationHint from "./edgeNetwork/injectGetLocationHint.js";
 import isRequestRetryable from "./network/isRequestRetryable.js";
@@ -65,6 +66,9 @@ const defaultCoreConfigValidators = createCoreConfigs();
  * @param {Array<Function>} params.components
  * @param {() => import('../services/index.js').PlatformServices} params.createPlatformServices
  * @param {ReturnType<typeof createCoreConfigs>} [params.coreConfigValidators]
+ * @param {{ getAccessToken: () => Promise<string> }} [params.getImsAccessToken]
+ * Shared token cache for repeated configure() calls — see
+ * injectGetImsAccessToken.js. Defaults to a fresh one per call.
  */
 export const createExecuteCommand = ({
   instanceName,
@@ -72,6 +76,7 @@ export const createExecuteCommand = ({
   components,
   createPlatformServices,
   coreConfigValidators = defaultCoreConfigValidators,
+  getImsAccessToken: sharedGetImsAccessToken,
 }) => {
   const platformServices = createPlatformServices();
   const allMonitors = [...platformServices.globals.getMonitors(), ...monitors];
@@ -166,6 +171,10 @@ export const createExecuteCommand = ({
       orgId,
       cookieJar: platformServices.cookie,
     });
+    const getImsAccessToken = config.edgeCredentials
+      ? sharedGetImsAccessToken ||
+        injectGetImsAccessToken({ edgeCredentials: config.edgeCredentials })
+      : undefined;
     const sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
       config,
       lifecycle,
@@ -175,6 +184,7 @@ export const createExecuteCommand = ({
       processWarningsAndErrors,
       getLocationHint,
       getAssuranceValidationTokenParams,
+      getImsAccessToken,
     });
 
     const applyResponse = injectApplyResponse({

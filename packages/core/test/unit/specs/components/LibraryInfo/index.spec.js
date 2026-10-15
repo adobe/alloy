@@ -37,4 +37,28 @@ describe("LibraryInfo", () => {
       },
     });
   });
+
+  it("reports platformServices.libraryVersionOverride instead of the default when given", () => {
+    toolsMock.platformServices = { libraryVersionOverride: "1.2.3" };
+
+    const { libraryInfo } =
+      createLibraryInfo(toolsMock).commands.getLibraryInfo.run();
+
+    expect(libraryInfo.version).toBe("1.2.3");
+  });
+
+  it("redacts edgeCredentials.clientSecret from configs", () => {
+    toolsMock.config.edgeCredentials = {
+      clientId: "myClientId",
+      clientSecret: "shh",
+    };
+
+    const { libraryInfo } =
+      createLibraryInfo(toolsMock).commands.getLibraryInfo.run();
+
+    expect(libraryInfo.configs.edgeCredentials).toEqual({
+      clientId: "myClientId",
+      clientSecret: "[REDACTED]",
+    });
+  });
 });

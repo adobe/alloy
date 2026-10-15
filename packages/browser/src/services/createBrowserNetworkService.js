@@ -21,7 +21,7 @@ import injectSendBeaconRequest from "./injectSendBeaconRequest.js";
  */
 const createBrowserNetworkService = ({ logger }) => {
   const { fetch, navigator } = window;
-  const sendFetchRequest = injectSendFetchRequest({ fetch });
+  const sendFetchRequest = injectSendFetchRequest({ fetch, logger });
   const sendBeaconRequest =
     typeof navigator.sendBeacon === "function"
       ? injectSendBeaconRequest({

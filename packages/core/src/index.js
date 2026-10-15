@@ -39,6 +39,17 @@ import * as optionalComponents from "./core/componentCreators.js";
 export { default as createCoreConfigs } from "./core/config/createCoreConfigs.js";
 
 /**
+ * Creates an IMS access token getter for the authenticated Edge Network
+ * Server API (v2) — exchanges `edgeCredentials` for a token, caching it
+ * until shortly before it expires. Pass the same instance into every
+ * `createCustomInstance` call that reconfigures against a long-lived
+ * process (e.g. Node's `forRequest()`) as the 4th argument, or every call
+ * re-authenticates with IMS from scratch. See that function's
+ * documentation for details.
+ */
+export { default as createGetImsAccessToken } from "./core/edgeNetwork/injectGetImsAccessToken.js";
+
+/**
  * The Consent component creator, exported individually (rather than only
  * available bundled into `createInstance`'s full component set) so runtimes
  * like `@adobe/alloy-node` can opt into it without importing core's deep
@@ -61,6 +72,9 @@ export { default as consent } from "./components/Consent/index.js";
  * load," since a page load resets module state); pass a fresh instance per
  * call if that assumption doesn't hold for your runtime (e.g. one Node
  * process handling many requests).
+ * @param {ReturnType<typeof import('./core/edgeNetwork/injectGetImsAccessToken.js').default>} [getImsAccessToken]
+ * Only relevant when `edgeCredentials` is configured — see
+ * `createGetImsAccessToken` above.
  * @returns {(commandName: string, options?: Object) => Promise<any>} A callable Alloy instance.
  *
  * @see {@link https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/install/create-custom-build} for more details.
@@ -69,6 +83,7 @@ export const createCustomInstance = (
   options = {},
   createPlatformServices = undefined,
   coreConfigValidators = undefined,
+  getImsAccessToken = undefined,
 ) => {
   const eventOptionsValidator = objectOf({
     name: string().default("alloy"),
@@ -84,6 +99,7 @@ export const createCustomInstance = (
     components,
     createPlatformServices,
     coreConfigValidators,
+    getImsAccessToken,
   });
 };
 

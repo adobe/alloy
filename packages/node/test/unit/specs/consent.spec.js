@@ -16,13 +16,20 @@ import createNodeAlloy from "../../../src/createNodeAlloy.js";
 import createNodeCookieService from "../../../src/services/createNodeCookieService.js";
 import createFakeEdgeNetworkFetch from "./helpers/fakeEdgeNetworkFetch.js";
 
+// A fake edgeCredentials, sufficient to satisfy configure()'s requirement
+// — these tests mock fetch entirely, so no real IMS auth ever happens.
 const config = {
   orgId: "TEST_ORG@AdobeOrg",
   datastreamId: "test-datastream-id",
+  edgeCredentials: {
+    clientId: "test-client-id",
+    clientSecret: "test-client-secret",
+    scopes: ["openid"],
+  },
 };
 
 const interactCalls = (fetchMock) =>
-  fetchMock.mock.calls.filter(([url]) => /\/v1\/interact\b/.test(url));
+  fetchMock.mock.calls.filter(([url]) => /\/v[12]\/interact\b/.test(url));
 
 const setConsentCalls = (fetchMock) =>
   fetchMock.mock.calls.filter(([url]) => /\/privacy\/set-consent\b/.test(url));
@@ -43,27 +50,14 @@ describe("Consent", () => {
     vi.unstubAllGlobals();
   });
 
-  it("holds sendEvent while defaultConsent is pending, then sends after opt-in", async () => {
-    const fetchMock = createFakeEdgeNetworkFetch();
-    vi.stubGlobal("fetch", fetchMock);
+  // "pending" queues events with no way for a later, separate forRequest()
+  // to release them — see packages/node/README.md's Consent section.
+  it('rejects configure() with defaultConsent: "pending"', async () => {
     const alloy = createNodeAlloy({ components: [consent] });
-    await alloy.configure({ ...config, defaultConsent: "pending" });
 
-    let resolved = false;
-    const pending = alloy
-      .sendEvent({ xdm: { eventType: "test" } })
-      .then((result) => {
-        resolved = true;
-        return result;
-      });
-    await new Promise((resolve) => setTimeout(resolve, 10));
-    expect(resolved).toBe(false);
-    expect(interactCalls(fetchMock)).toHaveLength(0);
-
-    await alloy.setConsent({ consent: [inOption] });
-    await pending;
-    expect(resolved).toBe(true);
-    expect(interactCalls(fetchMock)).toHaveLength(1);
+    await expect(
+      alloy.configure({ ...config, defaultConsent: "pending" }),
+    ).rejects.toThrow(/pending/);
   });
 
   it("opt-out blocks the event: no /v1/interact request fires and sendEvent resolves empty", async () => {
@@ -238,41 +232,6 @@ describe("Consent", () => {
 
     const identity = await alloy.getIdentity();
     expect(identity.identity.ECID).toBeDefined();
-  });
-
-  it("holds getIdentity while consent is pending, then resolves after opt-in", async () => {
-    const fetchMock = createFakeEdgeNetworkFetch();
-    vi.stubGlobal("fetch", fetchMock);
-    const alloy = createNodeAlloy({ components: [consent] });
-    await alloy.configure({ ...config, defaultConsent: "pending" });
-
-    let resolved = false;
-    const pending = alloy.getIdentity().then((result) => {
-      resolved = true;
-      return result;
-    });
-    await new Promise((resolve) => setTimeout(resolve, 10));
-    expect(resolved).toBe(false);
-
-    await alloy.setConsent({ consent: [inOption] });
-    const identity = await pending;
-
-    expect(resolved).toBe(true);
-    expect(identity.identity.ECID).toBeDefined();
-  });
-
-  it("resolves appendIdentityToUrl with the unchanged URL while consent is pending, instead of hanging", async () => {
-    const fetchMock = createFakeEdgeNetworkFetch();
-    vi.stubGlobal("fetch", fetchMock);
-    const alloy = createNodeAlloy({ components: [consent] });
-    await alloy.configure({ ...config, defaultConsent: "pending" });
-
-    const result = await alloy.appendIdentityToUrl({
-      url: "https://example.com/?a=b",
-    });
-
-    expect(result).toEqual({ url: "https://example.com/?a=b" });
-    expect(interactCalls(fetchMock)).toHaveLength(0);
   });
 
   it("dedupes duplicate identical setConsent calls to a single /privacy/set-consent request", async () => {

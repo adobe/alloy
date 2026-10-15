@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 /** @import { NetworkService, StorageService, CookieService, RuntimeService, LegacyService, GlobalsService, PlatformServices } from "@adobe/alloy-core/services" */
 /** @import { Logger } from "@adobe/alloy-core/core/types.js" */
 
+import packageJson from "../../package.json" with { type: "json" };
 import createNodeNetworkService from "./createNodeNetworkService.js";
 import createNodeStorageService from "./createNodeStorageService.js";
 import createNodeCookieService from "./createNodeCookieService.js";
@@ -49,7 +50,7 @@ import pickForwardableHeaders from "./pickForwardableHeaders.js";
  * Node is proxying an event for, if any — forwarded to Edge Network via
  * `pickForwardableHeaders` (unless `network` is overridden), and exposed
  * as-is on the returned object for the Context component to read.
- * @returns {PlatformServices & { request?: NodeRequestLike }}
+ * @returns {PlatformServices & { request?: NodeRequestLike, libraryVersionOverride: string }}
  */
 const createNodePlatformServices = ({
   network,
@@ -72,6 +73,9 @@ const createNodePlatformServices = ({
   legacy: legacy || createNodeLegacyService(),
   globals: globals || createNodeGlobalsService(),
   request,
+  // Node ships unbundled source, so the build-time __VERSION__ placeholder
+  // never gets replaced — report the real package.json version instead.
+  libraryVersionOverride: packageJson.version,
 });
 
 export default createNodePlatformServices;

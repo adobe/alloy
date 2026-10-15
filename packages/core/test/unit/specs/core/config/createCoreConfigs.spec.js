@@ -143,6 +143,51 @@ describe("createCoreConfigs", () => {
     validator(config2);
     expect(() => validator("", config3)).toThrowError();
   });
+  describe("edgeCredentials", () => {
+    it("is undefined by default", () => {
+      const config = validator(baseConfig);
+      expect(config.edgeCredentials).toBeUndefined();
+    });
+    it("accepts a full, valid credential and defaults imsHost", () => {
+      const config = validator({
+        ...baseConfig,
+        edgeCredentials: {
+          clientId: "myClientId",
+          clientSecret: "myClientSecret",
+          scopes: ["openid"],
+        },
+      });
+      expect(config.edgeCredentials).toEqual({
+        clientId: "myClientId",
+        clientSecret: "myClientSecret",
+        scopes: ["openid"],
+        imsHost: "ims-na1.adobelogin.com",
+      });
+    });
+    it("rejects a credential missing clientSecret", () => {
+      expect(() =>
+        validator({
+          ...baseConfig,
+          edgeCredentials: {
+            clientId: "myClientId",
+            scopes: ["openid"],
+          },
+        }),
+      ).toThrowError();
+    });
+    it("rejects a credential with an empty scopes array", () => {
+      expect(() =>
+        validator({
+          ...baseConfig,
+          edgeCredentials: {
+            clientId: "myClientId",
+            clientSecret: "myClientSecret",
+            scopes: [],
+          },
+        }),
+      ).toThrowError();
+    });
+  });
   it("invalidates duplicate orgIds", () => {
     const config1 = {
       datastreamId: "a",

@@ -32,12 +32,21 @@ export default (propositionList) => {
     const filteredItems = [];
     proposition.items.forEach((item) => {
       if (item.schema === EVENT_HISTORY_OPERATION) {
+        const { content } = item.data;
+        const event = {
+          eventId: content["iam.id"],
+          eventType: content["iam.eventType"],
+        };
+
+        // Web SDK records interactions with an `action` (from
+        // propositionAction.id), so carry it over to land in the same entry.
+        if (content["iam.action"] !== undefined) {
+          event.action = content["iam.action"];
+        }
+
         result.push({
           operation: item.data.operation,
-          event: {
-            eventId: item.data.content["iam.id"],
-            eventType: item.data.content["iam.eventType"],
-          },
+          event,
         });
       } else {
         filteredItems.push(item);

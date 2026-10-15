@@ -46,9 +46,9 @@ export default ({
     // No error will be thrown and an identity is established. This is good.
     // 3. The document is unloaded and Alloy does not receive the empty response
     // back from the collect endpoint before navigation is completed. In this
-    // case, no error is thrown, but no identity was established and it's
-    // more likely that the request never makes it to the server because we're
-    // using fetch instead of sendBeacon.
+    // case, no error is thrown, but no identity was established. Because the
+    // fetch is sent with `keepalive` (see getUseKeepalive below), the browser
+    // still delivers the request to the server after the page unloads.
     //
     // The second approach seemed preferable.
     return (
@@ -56,6 +56,12 @@ export default ({
       isIdentityEstablished
     );
   };
+
+  // When the document may be unloading but we use fetch anyway (for example,
+  // before an identity is established), send the fetch with `keepalive` so the
+  // browser doesn't cancel the request when the page navigates away.
+  const getUseKeepalive = () =>
+    dataCollectionRequestPayload.getDocumentMayUnload();
 
   return createRequest({
     payload: dataCollectionRequestPayload,
@@ -65,6 +71,7 @@ export default ({
         : "interact";
     },
     getUseSendBeacon,
+    getUseKeepalive,
     datastreamIdOverride,
   });
 };

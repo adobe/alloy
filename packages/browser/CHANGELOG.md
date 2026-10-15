@@ -1,5 +1,56 @@
 # @adobe/alloy
 
+## 2.36.1
+
+### Patch Changes
+
+- [#1602](https://github.com/adobe/alloy/pull/1602) [`3d6416e`](https://github.com/adobe/alloy/commit/3d6416ebaee0121933f453cc3e006e19cf7e5613) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Requests sent with `sendBeacon` (for example, `sendEvent` with `documentUnloading: true`) no longer log "Received response with status code 204". The browser gives no response for `sendBeacon` requests, so the debug log now says the request was sent using `sendBeacon`, that no response is available, and that browser developer tools may show it as canceled if the page navigates away.
+
+- [#1601](https://github.com/adobe/alloy/pull/1601) [`20570ba`](https://github.com/adobe/alloy/commit/20570bae426ca15d454171b7a6991c66670089e0) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Events sent with `documentUnloading: true` that still go to the `interact` endpoint with `fetch` (for example, before an identity has been established) now use `keepalive`, so the browser finishes the request even if the page navigates away. If the browser refuses the `keepalive` request because the page's in-flight `keepalive` data would exceed 64 KiB, the request is retried as a regular `fetch`.
+
+- Updated dependencies [[`3d6416e`](https://github.com/adobe/alloy/commit/3d6416ebaee0121933f453cc3e006e19cf7e5613), [`81f5979`](https://github.com/adobe/alloy/commit/81f5979294ae1ab572150fc1d0c969b9644f69e0), [`20570ba`](https://github.com/adobe/alloy/commit/20570bae426ca15d454171b7a6991c66670089e0)]:
+  - @adobe/alloy-core@1.3.1
+
+## 2.36.1-beta.0
+
+### Patch Changes
+
+- [#1602](https://github.com/adobe/alloy/pull/1602) [`3d6416e`](https://github.com/adobe/alloy/commit/3d6416ebaee0121933f453cc3e006e19cf7e5613) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Requests sent with `sendBeacon` (for example, `sendEvent` with `documentUnloading: true`) no longer log "Received response with status code 204". The browser gives no response for `sendBeacon` requests, so the debug log now says the request was sent using `sendBeacon`, that no response is available, and that browser developer tools may show it as canceled if the page navigates away.
+
+- [#1601](https://github.com/adobe/alloy/pull/1601) [`20570ba`](https://github.com/adobe/alloy/commit/20570bae426ca15d454171b7a6991c66670089e0) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Events sent with `documentUnloading: true` that still go to the `interact` endpoint with `fetch` (for example, before an identity has been established) now use `keepalive`, so the browser finishes the request even if the page navigates away. If the browser refuses the `keepalive` request because the page's in-flight `keepalive` data would exceed 64 KiB, the request is retried as a regular `fetch`.
+
+- Updated dependencies [[`3d6416e`](https://github.com/adobe/alloy/commit/3d6416ebaee0121933f453cc3e006e19cf7e5613), [`20570ba`](https://github.com/adobe/alloy/commit/20570bae426ca15d454171b7a6991c66670089e0)]:
+  - @adobe/alloy-core@1.3.1-beta.0
+
+## 2.36.0
+
+### Minor Changes
+
+- [#1596](https://github.com/adobe/alloy/pull/1596) [`9ab23ec`](https://github.com/adobe/alloy/commit/9ab23ece86f06800463c6d62aef99736d5590f0d) Thanks [@kaiyuan-developer](https://github.com/kaiyuan-developer)! - Added an optional `surfaces` option to the Brand Concierge `sendConversationEvent` command. The provided surfaces are sent with the conversation request, followed by the page surface.
+
+### Patch Changes
+
+- Updated dependencies [[`9ab23ec`](https://github.com/adobe/alloy/commit/9ab23ece86f06800463c6d62aef99736d5590f0d), [`28a2c3c`](https://github.com/adobe/alloy/commit/28a2c3c901b8f5f260669d2da45b5155fe2cee24), [`28a2c3c`](https://github.com/adobe/alloy/commit/28a2c3c901b8f5f260669d2da45b5155fe2cee24)]:
+  - @adobe/alloy-core@1.3.0
+
+## 2.36.0-beta.1
+
+### Minor Changes
+
+- [#1596](https://github.com/adobe/alloy/pull/1596) [`9ab23ec`](https://github.com/adobe/alloy/commit/9ab23ece86f06800463c6d62aef99736d5590f0d) Thanks [@kaiyuan-developer](https://github.com/kaiyuan-developer)! - Added an optional `surfaces` option to the Brand Concierge `sendConversationEvent` command. The provided surfaces are sent with the conversation request, followed by the page surface.
+
+### Patch Changes
+
+- Updated dependencies [[`9ab23ec`](https://github.com/adobe/alloy/commit/9ab23ece86f06800463c6d62aef99736d5590f0d)]:
+  - @adobe/alloy-core@1.3.0-beta.1
+
+## 2.35.2-beta.0
+
+### Patch Changes
+
+- Updated dependencies [[`28a2c3c`](https://github.com/adobe/alloy/commit/28a2c3c901b8f5f260669d2da45b5155fe2cee24), [`28a2c3c`](https://github.com/adobe/alloy/commit/28a2c3c901b8f5f260669d2da45b5155fe2cee24)]:
+  - @adobe/alloy-core@1.3.0-beta.0
+
 ## 2.35.1
 
 ### Patch Changes

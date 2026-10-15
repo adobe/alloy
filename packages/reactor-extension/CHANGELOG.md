@@ -1,5 +1,40 @@
 # reactor-extension-alloy
 
+## 2.38.2
+
+### Patch Changes
+
+- Updated dependencies [[`3d6416e`](https://github.com/adobe/alloy/commit/3d6416ebaee0121933f453cc3e006e19cf7e5613), [`20570ba`](https://github.com/adobe/alloy/commit/20570bae426ca15d454171b7a6991c66670089e0)]:
+  - @adobe/alloy@2.36.1
+
+## 2.38.2-beta.0
+
+### Patch Changes
+
+- Updated dependencies [[`3d6416e`](https://github.com/adobe/alloy/commit/3d6416ebaee0121933f453cc3e006e19cf7e5613), [`20570ba`](https://github.com/adobe/alloy/commit/20570bae426ca15d454171b7a6991c66670089e0)]:
+  - @adobe/alloy@2.36.1-beta.0
+
+## 2.38.1
+
+### Patch Changes
+
+- Updated dependencies [[`9ab23ec`](https://github.com/adobe/alloy/commit/9ab23ece86f06800463c6d62aef99736d5590f0d)]:
+  - @adobe/alloy@2.36.0
+
+## 2.38.1-beta.1
+
+### Patch Changes
+
+- Updated dependencies [[`9ab23ec`](https://github.com/adobe/alloy/commit/9ab23ece86f06800463c6d62aef99736d5590f0d)]:
+  - @adobe/alloy@2.36.0-beta.1
+
+## 2.38.1-beta.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @adobe/alloy@2.35.2-beta.0
+
 ## 2.38.0
 
 ### Minor Changes

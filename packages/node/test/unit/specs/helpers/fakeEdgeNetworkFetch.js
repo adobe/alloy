@@ -113,6 +113,15 @@ const createFakeEdgeNetworkFetch = ({
   setConsentStatus,
 } = {}) =>
   vi.fn(async (url, init) => {
+    // The IMS token endpoint takes a form-urlencoded body, not JSON — handle
+    // it before the JSON.parse below, which would throw on it otherwise.
+    if (/\/ims\/token\/v3\b/.test(url)) {
+      return jsonResponse({
+        access_token: "fake-ims-access-token",
+        expires_in: 86400,
+      });
+    }
+
     const requestBody = init?.body ? JSON.parse(init.body) : {};
 
     if (/\/v1\/privacy\/set-consent\b/.test(url)) {
@@ -127,7 +136,7 @@ const createFakeEdgeNetworkFetch = ({
       );
     }
 
-    if (/\/v1\/interact\b/.test(url)) {
+    if (/\/v[12]\/interact\b/.test(url)) {
       return jsonResponse(buildInteractResponse({ orgId, ecid }));
     }
 

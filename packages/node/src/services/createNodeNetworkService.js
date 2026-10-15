@@ -14,7 +14,9 @@ governing permissions and limitations under the License.
 
 /**
  * Node has no `navigator.sendBeacon`, so there is no separate unload-safe
- * transport — both network strategies use `fetch`.
+ * transport — both network strategies use `fetch`. For the same reason the
+ * `keepalive` option of `sendFetchRequest` is ignored: there is no page to
+ * unload.
  *
  * @param {Object} [options]
  * @param {Record<string, string>} [options.headers] Extra headers merged
@@ -26,12 +28,15 @@ const createNodeNetworkService = ({ headers: forwardedHeaders = {} } = {}) => {
   /**
    * @param {string} url
    * @param {string} body
+   * @param {Record<string, string>} [perCallHeaders] e.g. IMS auth headers
+   * for an authenticated Server API request. Can't override `Content-Type`.
    */
-  const sendFetchRequest = (url, body) =>
+  const sendFetchRequest = (url, body, perCallHeaders) =>
     fetch(url, {
       method: "POST",
       headers: {
         ...forwardedHeaders,
+        ...perCallHeaders,
         "Content-Type": "text/plain; charset=UTF-8",
       },
       body,

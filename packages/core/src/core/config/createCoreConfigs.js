@@ -13,11 +13,15 @@ governing permissions and limitations under the License.
 import {
   boolean,
   string,
+  arrayOf,
   callback,
   objectOf,
 } from "../../utils/validation/index.js";
 import { noop, validateConfigOverride } from "../../utils/index.js";
-import { EDGE as EDGE_DOMAIN } from "../../constants/domain.js";
+import {
+  EDGE as EDGE_DOMAIN,
+  DEFAULT_IMS_HOST,
+} from "../../constants/domain.js";
 import EDGE_BASE_PATH from "../../constants/edgeBasePath.js";
 
 export default () =>
@@ -29,4 +33,12 @@ export default () =>
     orgId: string().unique().required(),
     onBeforeEventSend: callback().default(noop),
     edgeConfigOverrides: validateConfigOverride,
+    // Opt-in OAuth Server-to-Server credentials — when present, requests
+    // use the authenticated Server API (v2) instead of v1.
+    edgeCredentials: objectOf({
+      clientId: string().nonEmpty().required(),
+      clientSecret: string().nonEmpty().required(),
+      scopes: arrayOf(string().nonEmpty()).nonEmpty().required(),
+      imsHost: string().domain().default(DEFAULT_IMS_HOST),
+    }),
   }).renamed("edgeConfigId", string().unique(), "datastreamId");
