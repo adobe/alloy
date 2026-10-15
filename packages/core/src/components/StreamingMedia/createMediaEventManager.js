@@ -20,6 +20,7 @@ export default ({
   consent,
   sendEdgeNetworkRequest,
   setTimestamp,
+  setSessionStartTimestamp,
 }) => {
   return {
     createMediaEvent({ options }) {
@@ -47,7 +48,10 @@ export default ({
       const { playerName, channel, appVersion } = config.streamingMedia;
       const event = eventManager.createEvent();
       const { sessionDetails } = options.xdm.mediaCollection;
-      setTimestamp(event);
+      // The session start goes to Edge Network, so it honors the
+      // serverSideTimestamp option. Media events go to the media endpoint,
+      // which requires a timestamp, so they always use setTimestamp.
+      setSessionStartTimestamp(event);
       event.setUserXdm(options.xdm);
       event.mergeXdm({
         eventType: MediaEvents.SESSION_START,

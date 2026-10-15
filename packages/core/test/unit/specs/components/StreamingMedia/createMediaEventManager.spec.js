@@ -14,6 +14,7 @@ governing permissions and limitations under the License.
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import createMediaEventManager from "../../../../../src/components/StreamingMedia/createMediaEventManager.js";
+import createEvent from "../../../../../src/core/createEvent.js";
 
 describe("StreamingMedia::createMediaEventManager", () => {
   let config;
@@ -45,6 +46,7 @@ describe("StreamingMedia::createMediaEventManager", () => {
       consent,
       sendEdgeNetworkRequest,
       setTimestamp,
+      setSessionStartTimestamp: vi.fn(),
     });
   });
   it("should create a media event with user xdm and call setTimestamp with the event", () => {
@@ -149,5 +151,42 @@ describe("StreamingMedia::createMediaEventManager", () => {
     });
     expect(event.finalize).toHaveBeenCalled();
     expect(sendEdgeNetworkRequest).toHaveBeenCalled();
+  });
+
+  describe("timestamps", () => {
+    let stampingMediaEventManager;
+
+    beforeEach(() => {
+      stampingMediaEventManager = createMediaEventManager({
+        config,
+        eventManager: { createEvent, sendEvent: vi.fn() },
+        consent,
+        sendEdgeNetworkRequest,
+        setTimestamp: (event) => event.mergeXdm({ timestamp: "media" }),
+        setSessionStartTimestamp: (event) =>
+          event.mergeXdm({ timestamp: "edge" }),
+      });
+    });
+
+    const finalizedXdm = (event) => {
+      event.finalize();
+      return event.toJSON().xdm;
+    };
+
+    it("stamps the session start, which goes to Edge Network, with setSessionStartTimestamp", () => {
+      const event = stampingMediaEventManager.createMediaSession({
+        xdm: { mediaCollection: { sessionDetails: {} } },
+      });
+
+      expect(finalizedXdm(event).timestamp).toBe("edge");
+    });
+
+    it("stamps media events, which go to the media endpoint, with setTimestamp", () => {
+      const event = stampingMediaEventManager.createMediaEvent({
+        options: { xdm: { eventType: "media.play" } },
+      });
+
+      expect(finalizedXdm(event).timestamp).toBe("media");
+    });
   });
 });

@@ -254,4 +254,55 @@ describe("BrandConcierge - sendConversationEvent", () => {
     );
     expect(calls).toHaveLength(0);
   });
+
+  const sendConversationXdm = async ({
+    alloy,
+    networkRecorder,
+    config,
+    xdm,
+  }) => {
+    await alloy("configure", config);
+    await alloy("sendConversationEvent", {
+      message: "Hello",
+      xdm,
+      onStreamResponse: () => {},
+    });
+    const [call] = await networkRecorder.findCalls(
+      /brand-concierge\/conversations/,
+    );
+    return call.request.body.events[0].xdm;
+  };
+
+  test("sends an explicit xdm.timestamp", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(brandConciergeStreamingHandler);
+
+    const xdm = await sendConversationXdm({
+      alloy,
+      networkRecorder,
+      config: bcConfig,
+      xdm: { timestamp: "2026-01-02T03:04:05.000Z" },
+    });
+
+    expect(xdm.timestamp).toBe("2026-01-02T03:04:05.000Z");
+  });
+
+  test("leaves the timestamp out with serverSideTimestamp", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(brandConciergeStreamingHandler);
+
+    const xdm = await sendConversationXdm({
+      alloy,
+      networkRecorder,
+      config: { ...bcConfig, context: ["serverSideTimestamp"] },
+    });
+
+    expect(xdm).not.toHaveProperty("timestamp");
+  });
 });
