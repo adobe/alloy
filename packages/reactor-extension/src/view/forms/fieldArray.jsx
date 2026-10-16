@@ -15,12 +15,12 @@ import { FieldArray, useField } from "formik";
 import { Radio, ActionButton, Button, ComboBoxItem } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
-import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
-import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
+import FormikTextField from "./fields/TextField";
+import FormikRadioGroup from "./fields/RadioGroup";
 import DataElementSelector from "../components/dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
-import FormikKeyedComboBox from "../components/formikReactSpectrum3/formikKeyedComboBox";
+import FormikKeyedComboBox from "./fields/KeyedComboBox";
 
 const FORM = "form";
 const DATA_ELEMENT = "dataElement";

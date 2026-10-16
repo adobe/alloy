@@ -1,5 +1,5 @@
 /*
-Copyright 2021 Adobe. All rights reserved.
+Copyright 2024 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -11,9 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { TextField } from "@react-spectrum/s2";
+import { NumberField } from "@react-spectrum/s2";
 import { useField } from "formik";
-import widthStyle from "../widthStyle";
+import widthStyle from "./widthStyle";
 
 /**
  * @param {Object} params
@@ -24,45 +24,35 @@ import widthStyle from "../widthStyle";
  * the value is invalid, or null if the value is valid.
  * @returns {React.Element}
  */
-const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
-  const [
-    { value },
-    { touched: fieldTouched, error: fieldError },
-    { setValue, setTouched },
-  ] = useField({
+const FormikNumberField = ({ name, width, validate, ...otherProps }) => {
+  const [{ value }, { touched, error }, { setValue, setTouched }] = useField({
     name,
     validate,
   });
 
-  const touched = otherProps.touched || fieldTouched;
-  const error = otherProps.error === "" ? "" : otherProps.error || fieldError;
-  const isInvalid = Boolean(otherProps.invalid || (touched && error));
-
   return (
-    <TextField
+    <NumberField
       {...otherProps}
-      value={value}
-      onChange={(newValue) => {
-        setValue(newValue);
+      value={value === "" ? null : value}
+      onChange={(val) => {
+        setValue(val).then(() => {
+          setTouched(true);
+        });
       }}
       onBlur={() => {
         setTouched(true);
-        if (onBlur) {
-          onBlur();
-        }
       }}
-      isInvalid={isInvalid}
+      isInvalid={Boolean(touched && error)}
       errorMessage={error}
       styles={widthStyle(width)}
     />
   );
 };
 
-FormikTextField.propTypes = {
+FormikNumberField.propTypes = {
   name: PropTypes.string.isRequired,
   width: PropTypes.string,
   validate: PropTypes.func,
-  onBlur: PropTypes.func,
 };
 
-export default FormikTextField;
+export default FormikNumberField;

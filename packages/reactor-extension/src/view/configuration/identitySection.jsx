@@ -15,12 +15,12 @@ import { ComboBoxItem } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { object, string, lazy, mixed } from "yup";
 import SectionHeader from "../components/sectionHeader";
-import FormikCheckbox from "../components/formikReactSpectrum3/formikCheckbox";
+import FormikCheckbox from "../forms/fields/Checkbox";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
 import FormElementContainer from "../components/formElementContainer";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikComboBox from "../components/formikReactSpectrum3/formikComboBox";
+import FormikComboBox from "../forms/fields/ComboBox";
 import SINGLE_DATA_ELEMENT_REGEX from "../constants/singleDataElementRegex";
 
 const ENABLED = "Enabled";

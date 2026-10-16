@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { Children, cloneElement, isValidElement } from "react";
 import { mergeStyles } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import widthStyle from "../widthStyle";
+import widthStyle from "./widthStyle";
 
 const GROUP_ITEM_STYLE = style({ maxWidth: "full" });
 
@@ -23,12 +23,12 @@ const GROUP_ITEM_WIDTH_STYLES = {
   "size-5000": style({ width: 402 }),
 };
 
-// Views that haven't been migrated yet still render a v3 Radio/Checkbox
-// (from @adobe/react-spectrum) as RadioGroup/CheckboxGroup children. Those
-// read their selection state from a v3-only React context, which an S2
-// group no longer provides, so they crash. A Radio/Checkbox leaf is always
-// the element carrying `value`; everything else (Fragments, description
-// wrappers, etc.) is walked so a leaf nested a level deep is still found.
+// Views that haven't been migrated yet still render a legacy Radio/Checkbox
+// element as RadioGroup/CheckboxGroup children. Those read their selection
+// state from a React context that an S2 group no longer provides, so they
+// crash. A Radio/Checkbox leaf is always the element carrying `value`;
+// everything else (Fragments, description wrappers, etc.) is walked so a
+// leaf nested a level deep is still found.
 const reinterpretLeaf = (LeafComponent, node) => {
   if (!isValidElement(node)) {
     return node;

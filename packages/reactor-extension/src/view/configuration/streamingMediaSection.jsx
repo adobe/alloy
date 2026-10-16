@@ -17,8 +17,8 @@ import { InlineAlert, Heading, Content } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import SectionHeader from "../components/sectionHeader";
 import FormElementContainer from "../components/formElementContainer";
-import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
-import FormikNumberField from "../components/formikReactSpectrum3/formikNumberField";
+import FormikTextField from "../forms/fields/TextField";
+import FormikNumberField from "../forms/fields/NumberField";
 import isNonEmptyString from "../utils/isNonEmptyString";
 
 const getDefaultSettings = () => ({

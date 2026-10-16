@@ -18,7 +18,7 @@ import { useEffect } from "react";
 import Delete from "@react-spectrum/s2/icons/Delete";
 import fetchConfigs from "../../configuration/utils/fetchConfigs";
 import usePrevious from "../../utils/usePrevious";
-import FormikRadioGroup from "../formikReactSpectrum3/formikRadioGroup";
+import FormikRadioGroup from "../../forms/fields/RadioGroup";
 import OverrideInput from "./overrideInput";
 
 /**
