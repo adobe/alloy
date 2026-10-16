@@ -163,6 +163,7 @@ const Surfaces = () => {
                     })}
                     <Button
                       variant="secondary"
+                      fillStyle="outline"
                       data-test-id="addSurfaceButton"
                       onPress={() => {
                         arrayHelpers.push("");
