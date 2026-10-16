@@ -15,17 +15,16 @@ import PropTypes from "prop-types";
 import { useField, useFormikContext, FieldArray } from "formik";
 import {
   Content,
-  Flex,
   Heading,
   InlineAlert,
-  View,
   Button,
   ActionButton,
-  Item,
+  ComboBoxItem,
   LabeledValue,
   Text,
-} from "@adobe/react-spectrum";
-import Delete from "@spectrum-icons/workflow/Delete";
+} from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import Delete from "@react-spectrum/s2/icons/Delete";
 import { object, lazy, string, array, mixed } from "yup";
 import SectionHeader from "../components/sectionHeader";
 import FormElementContainer from "../components/formElementContainer";
@@ -480,20 +479,28 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
   }, [advertisingComponentEnabled, initInfo, instanceFieldName, setFieldValue]);
 
   const disabledView = (
-    <View width="size-6000">
-      <InlineAlert variant="info">
+    <div
+      className={style({
+        width: 480,
+      })}
+    >
+      <InlineAlert variant="informative">
         <Heading>Adobe Advertising component disabled</Heading>
         <Content>
           The Adobe Advertising custom build component is disabled. Enable it
           above to configure Adobe Advertising settings.
         </Content>
       </InlineAlert>
-    </View>
+    </div>
   );
 
   const multiInstanceView = (
-    <View width="size-6000">
-      <InlineAlert variant="info">
+    <div
+      className={style({
+        width: 480,
+      })}
+    >
+      <InlineAlert variant="informative">
         <Heading>Adobe Advertising available in first instance only</Heading>
         <Content>
           Adobe Advertising configuration is only available in the first
@@ -501,13 +508,18 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
           first instance.
         </Content>
       </InlineAlert>
-    </View>
+    </div>
   );
 
   const getAdvertisersContent = () => {
     // Show warning if API failed but still allow manual entry
     const apiWarning = error && (
-      <InlineAlert variant="notice" marginBottom="size-200">
+      <InlineAlert
+        variant="notice"
+        styles={style({
+          marginBottom: 16,
+        })}
+      >
         <Heading>Unable to load advertisers</Heading>
         <Content>
           Could not retrieve advertiser data from DSP. You can manually enter
@@ -520,7 +532,12 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
     const noAdvertisersInfo = !loading &&
       !error &&
       advertisers.length === 0 && (
-        <InlineAlert variant="notice" marginBottom="size-200">
+        <InlineAlert
+          variant="notice"
+          styles={style({
+            marginBottom: 16,
+          })}
+        >
           <Heading>No DSP Advertisers Found</Heading>
           <Content>
             No advertisers found for this IMS org in Adobe Advertising DSP. You
@@ -540,64 +557,80 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
           render={(arrayHelpers) => {
             return (
               <div>
-                <Flex direction="column" gap="size-100">
+                <div
+                  className={style({
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                  })}
+                >
                   {advertiserSettings.map((setting, index) => {
                     return (
-                      <Flex key={index} alignItems="start">
+                      <div
+                        key={index}
+                        className={style({
+                          display: "flex",
+                          alignItems: "start",
+                        })}
+                      >
                         {/* Show dropdown when API succeeds, text input when API fails */}
-                        {error ? (
-                          <FormikTextField
-                            data-test-id={`advertiser${index}Field`}
-                            name={`${instanceFieldName}.advertising.advertiserSettings.${index}.advertiserId`}
-                            UNSAFE_style={{ width: "224px" }}
-                            aria-label={`Advertiser ${index + 1}`}
-                            marginTop="size-0"
-                            marginEnd="size-200"
-                            isRequired
-                          />
-                        ) : (
-                          <FormikKeyedComboBox
-                            data-test-id={`advertiser${index}Field`}
-                            name={`${instanceFieldName}.advertising.advertiserSettings.${index}.advertiserId`}
-                            width="size-4000"
-                            aria-label={`Advertiser ${index + 1}`}
-                            marginTop="size-0"
-                            marginEnd="size-200"
-                            items={advertisers}
-                            getKey={(advertiser) => advertiser.advertiser_id}
-                            getLabel={(advertiser) =>
-                              advertiser.advertiser_name
-                            }
-                            isDisabled={loading}
-                            isRequired
-                            allowsCustomValue
-                          >
-                            {(advertiser) => (
-                              <Item
-                                key={advertiser.advertiser_id}
-                                data-test-id={advertiser.advertiser_id}
-                              >
-                                {advertiser.advertiser_name}
-                              </Item>
-                            )}
-                          </FormikKeyedComboBox>
-                        )}
+                        <div className={style({ marginEnd: 16 })}>
+                          {error ? (
+                            <FormikTextField
+                              data-test-id={`advertiser${index}Field`}
+                              name={`${instanceFieldName}.advertising.advertiserSettings.${index}.advertiserId`}
+                              UNSAFE_style={{ width: "224px" }}
+                              aria-label={`Advertiser ${index + 1}`}
+                              isRequired
+                            />
+                          ) : (
+                            <FormikKeyedComboBox
+                              data-test-id={`advertiser${index}Field`}
+                              name={`${instanceFieldName}.advertising.advertiserSettings.${index}.advertiserId`}
+                              width="size-4000"
+                              aria-label={`Advertiser ${index + 1}`}
+                              items={advertisers}
+                              getKey={(advertiser) => advertiser.advertiser_id}
+                              getLabel={(advertiser) =>
+                                advertiser.advertiser_name
+                              }
+                              isDisabled={loading}
+                              isRequired
+                              allowsCustomValue
+                            >
+                              {(advertiser) => (
+                                <ComboBoxItem
+                                  key={advertiser.advertiser_id}
+                                  id={advertiser.advertiser_id}
+                                  data-test-id={advertiser.advertiser_id}
+                                >
+                                  {advertiser.advertiser_name}
+                                </ComboBoxItem>
+                              )}
+                            </FormikKeyedComboBox>
+                          )}
+                        </div>
 
                         {/* Status Dropdown - Supports Data Elements */}
-                        <DataElementSelector marginEnd="size-100">
-                          <FormikComboBox
-                            data-test-id={`advertiserEnabled${index}Field`}
-                            name={`${instanceFieldName}.advertising.advertiserSettings.${index}.enabled`}
-                            width="size-2000"
-                            aria-label={`Advertiser ${index + 1} status`}
-                            marginTop="size-0"
-                            isRequired
-                            allowsCustomValue
-                          >
-                            <Item key={ENABLED}>{ENABLED}</Item>
-                            <Item key={DISABLED}>{DISABLED}</Item>
-                          </FormikComboBox>
-                        </DataElementSelector>
+                        <div className={style({ marginEnd: 8 })}>
+                          <DataElementSelector>
+                            <FormikComboBox
+                              data-test-id={`advertiserEnabled${index}Field`}
+                              name={`${instanceFieldName}.advertising.advertiserSettings.${index}.enabled`}
+                              width="size-2000"
+                              aria-label={`Advertiser ${index + 1} status`}
+                              isRequired
+                              allowsCustomValue
+                            >
+                              <ComboBoxItem key={ENABLED} id={ENABLED}>
+                                {ENABLED}
+                              </ComboBoxItem>
+                              <ComboBoxItem key={DISABLED} id={DISABLED}>
+                                {DISABLED}
+                              </ComboBoxItem>
+                            </FormikComboBox>
+                          </DataElementSelector>
+                        </div>
 
                         {/* Delete Button - Disabled when only 1 advertiser */}
                         <ActionButton
@@ -612,22 +645,24 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
                         >
                           <Delete />
                         </ActionButton>
-                      </Flex>
+                      </div>
                     );
                   })}
-                </Flex>
+                </div>
 
                 {/* Add Button */}
                 <Button
                   variant="secondary"
                   data-test-id="addAdvertiserButton"
-                  marginTop="size-100"
                   onPress={() => {
                     arrayHelpers.push({
                       advertiserId: "",
                       enabled: ENABLED,
                     });
                   }}
+                  styles={style({
+                    marginTop: 8,
+                  })}
                 >
                   Add advertiser
                 </Button>
@@ -651,7 +686,11 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
     return (
       <FormElementContainer>
         {/* Helper text for SSC users */}
-        <Text marginBottom="size-200">
+        <Text
+          styles={style({
+            marginBottom: 16,
+          })}
+        >
           <strong>Note:</strong> No advertising configuration is necessary to
           enable click-through measurement. Search, Social, and Commerce clients
           have no further action required; however, Demand-side Platform (DSP)
@@ -660,7 +699,13 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
         </Text>
 
         {/* DSP Enable/Disable Field */}
-        <Flex direction="row" gap="size-250">
+        <div
+          className={style({
+            display: "flex",
+            flexDirection: "row",
+            gap: 20,
+          })}
+        >
           <DataElementSelector>
             <FormikComboBox
               data-test-id="dspEnabledField"
@@ -671,24 +716,40 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
               isRequired
               allowsCustomValue
             >
-              <Item key={ENABLED}>{ENABLED}</Item>
-              <Item key={DISABLED}>{DISABLED}</Item>
+              <ComboBoxItem key={ENABLED} id={ENABLED}>
+                {ENABLED}
+              </ComboBoxItem>
+              <ComboBoxItem key={DISABLED} id={DISABLED}>
+                {DISABLED}
+              </ComboBoxItem>
             </FormikComboBox>
           </DataElementSelector>
-        </Flex>
+        </div>
 
         {/* Conditional content based on DSP enabled status */}
         {(dspEnabled === ENABLED ||
           (typeof dspEnabled === "string" && dspEnabled.includes("%"))) && (
           <>
-            <Flex direction="column" width="size-6000">
+            <div
+              className={style({
+                display: "flex",
+                flexDirection: "column",
+                width: 480,
+              })}
+            >
               {getAdvertisersContent()}
-            </Flex>
+            </div>
 
             {/* ID5 and RampID fields - shown when DSP is enabled (regardless of API status) */}
             {!loading && (
               <>
-                <Flex direction="row" gap="size-250">
+                <div
+                  className={style({
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: 20,
+                  })}
+                >
                   <DataElementSelector>
                     <FormikTextField
                       data-test-id="id5PartnerIdField"
@@ -699,8 +760,14 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
                       allowsCustomValue
                     />
                   </DataElementSelector>
-                </Flex>
-                <Flex direction="row" gap="size-250">
+                </div>
+                <div
+                  className={style({
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: 20,
+                  })}
+                >
                   <DataElementSelector>
                     <FormikTextField
                       data-test-id="rampIdJSPathField"
@@ -711,7 +778,7 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
                       allowsCustomValue
                     />
                   </DataElementSelector>
-                </Flex>
+                </div>
               </>
             )}
           </>
