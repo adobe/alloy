@@ -10,8 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Radio, Button, ActionButton, Flex } from "@adobe/react-spectrum";
-import Delete from "@spectrum-icons/workflow/Delete";
+import { Radio, Button, ActionButton } from "@react-spectrum/s2";
+
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import Delete from "@react-spectrum/s2/icons/Delete";
 import { FieldArray, useField } from "formik";
 import { object, string } from "yup";
 import FormikRadioGroup from "./formikReactSpectrum3/formikRadioGroup";
@@ -114,7 +116,14 @@ const Surfaces = () => {
       )}
       {surfacesInputMethod === CONSTANT && (
         <FieldSubset>
-          <Flex direction="column" gap="size-100" alignItems="start">
+          <div
+            className={style({
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
+              alignItems: "start",
+            })}
+          >
             <FieldArray
               name="surfacesArray"
               render={(arrayHelpers) => {
@@ -122,7 +131,13 @@ const Surfaces = () => {
                   <div>
                     {surfacesArray.map((surface, index) => {
                       return (
-                        <Flex key={index} alignItems="end">
+                        <div
+                          key={index}
+                          className={style({
+                            display: "flex",
+                            alignItems: "end",
+                          })}
+                        >
                           <FormikTextField
                             data-test-id={`surface${index}Field`}
                             label="Surface"
@@ -136,7 +151,6 @@ const Surfaces = () => {
                             data-test-id={`deleteSurface${index}Button`}
                             isQuiet
                             isDisabled={surfacesArray.length === 1}
-                            variant="secondary"
                             onPress={() => {
                               arrayHelpers.remove(index);
                             }}
@@ -144,16 +158,18 @@ const Surfaces = () => {
                           >
                             <Delete />
                           </ActionButton>
-                        </Flex>
+                        </div>
                       );
                     })}
                     <Button
                       variant="secondary"
                       data-test-id="addSurfaceButton"
-                      marginTop="size-100"
                       onPress={() => {
                         arrayHelpers.push("");
                       }}
+                      styles={style({
+                        marginTop: 8,
+                      })}
                     >
                       Add surface
                     </Button>
@@ -161,7 +177,7 @@ const Surfaces = () => {
                 );
               }}
             />
-          </Flex>
+          </div>
         </FieldSubset>
       )}
     </div>

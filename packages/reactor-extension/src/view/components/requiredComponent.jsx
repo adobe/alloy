@@ -11,7 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { InlineAlert, Content, Heading, Well } from "@adobe/react-spectrum";
+import { InlineAlert, Content, Heading } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import camelCaseToTitleCase from "../utils/camelCaseToTitleCase";
 import { LIBRARY_TYPE_PREINSTALLED } from "../constants/libraryType";
 import FillParentAndCenterChildren from "./fillParentAndCenterChildren";
@@ -55,9 +56,11 @@ const RequiredComponent = ({
       <>
         <InlineAlert
           variant="notice"
-          width="size-5000"
           data-test-id="preinstalledModeWarning"
-          marginBottom="size-100"
+          styles={style({
+            width: 400,
+            marginBottom: 8,
+          })}
         >
           <Heading>Self-hosted Alloy instance detected</Heading>
           <Content>
@@ -72,7 +75,28 @@ const RequiredComponent = ({
       </>
     );
 
-    return whole ? content : <Well marginBottom="size-200">{content}</Well>;
+    return whole ? (
+      content
+    ) : (
+      <div
+        className={style({
+          display: "block",
+          textAlign: "start",
+          minWidth: 160,
+          padding: 16,
+          marginTop: 4,
+          borderWidth: 1,
+          borderRadius: "sm",
+          backgroundColor: "layer-1",
+          borderStyle: "solid",
+          borderColor: "transparent-black-75",
+          font: "body-sm",
+          marginBottom: 16,
+        })}
+      >
+        {content}
+      </div>
+    );
   }
 
   if (!isComponentDisabled) {
@@ -88,9 +112,11 @@ const RequiredComponent = ({
       return (
         <FillParentAndCenterChildren>
           <InlineAlert
-            width="size-5000"
             variant="negative"
             data-test-id="requiredComponentError"
+            styles={style({
+              width: 400,
+            })}
           >
             <Heading>Custom build component disabled</Heading>
             <Content>
@@ -109,8 +135,10 @@ const RequiredComponent = ({
       <>
         <InlineAlert
           variant="notice"
-          width="size-5000"
           data-test-id="requiredComponentWarning"
+          styles={style({
+            width: 400,
+          })}
         >
           <Heading>Custom build component disabled</Heading>
           <Content>
@@ -127,7 +155,11 @@ const RequiredComponent = ({
 
   if (!deprecated) {
     return (
-      <InlineAlert width="size-5000">
+      <InlineAlert
+        styles={style({
+          width: 400,
+        })}
+      >
         <Heading>Custom build component disabled</Heading>
         <Content>
           This part of the configuration is hidden because a custom build
