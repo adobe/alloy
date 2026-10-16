@@ -155,6 +155,9 @@ test("keeps callback buttons and beta badges inside their visual bounds", async 
           textareaHeight >= 100 &&
           buttonTop >= textareaTop &&
           buttonBottom <= textareaBottom &&
+          Math.abs(
+            (buttonTop + buttonBottom) / 2 - (textareaTop + textareaBottom) / 2,
+          ) < 1 &&
           !buttonLabelClipped,
       ),
     )

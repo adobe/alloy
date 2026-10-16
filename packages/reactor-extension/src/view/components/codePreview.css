@@ -25,8 +25,8 @@ governing permissions and limitations under the License.
 
 .CodePreview-openEditorButton {
   position: absolute !important;
-  /* Center the button within the 128px text area below its label. */
-  top: 87px;
+  /* Center within the text area, independently of labels and descriptions. */
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: max-content;

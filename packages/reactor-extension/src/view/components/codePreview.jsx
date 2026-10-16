@@ -51,23 +51,25 @@ const CodePreview = ({
         error={error}
         width="size-5000"
       >
-        <TextArea
-          aria-label={label || ariaLabel}
-          value={value}
-          isDisabled
-          UNSAFE_className="CodePreview-textArea"
-          isInvalid={Boolean(error)}
-          styles={style({
-            width: 400,
-          })}
-        />
+        <div className={style({ position: "relative" })}>
+          <TextArea
+            aria-label={label || ariaLabel}
+            value={value}
+            isDisabled
+            UNSAFE_className="CodePreview-textArea"
+            isInvalid={Boolean(error)}
+            styles={style({
+              width: 400,
+            })}
+          />
+          <div className="CodePreview-openEditorButton">
+            <ActionButton data-test-id={dataTestId} onPress={onPress}>
+              <CodeIcon />
+              <Text>{buttonLabel}</Text>
+            </ActionButton>
+          </div>
+        </div>
       </FieldDescriptionAndError>
-      <div className="CodePreview-openEditorButton">
-        <ActionButton data-test-id={dataTestId} onPress={onPress}>
-          <CodeIcon />
-          <Text>{buttonLabel}</Text>
-        </ActionButton>
-      </div>
     </div>
   );
 };
