@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { ClientFunction } from "testcafe";
 import createExtensionViewFixture from "../../../helpers/createExtensionViewFixture.mjs";
 import * as datastreamMocks from "../../../helpers/endpointMocks/datastreamMocks.mjs";
 import * as datastreamsMocks from "../../../helpers/endpointMocks/datastreamsMocks.mjs";
@@ -86,6 +87,23 @@ const mockExtensionSettings = {
 createExtensionViewFixture({
   title: "Send Event View",
   viewPath: "actions/sendEvent.html",
+});
+
+const getDocumentationLinkLineCounts = ClientFunction(() => {
+  return ["#xdm-object", "#merged-objects"].map((fragment) => {
+    const link = document.querySelector(`a[href*='${fragment}']`);
+    const range = document.createRange();
+    range.selectNodeContents(link);
+    return range.getClientRects().length;
+  });
+});
+
+test("renders XDM documentation links inline", async (t) => {
+  await extensionViewController.init({
+    extensionSettings: mockExtensionSettings,
+  });
+
+  await t.expect(await getDocumentationLinkLineCounts()).eql([1, 1]);
 });
 
 runCommonExtensionViewTests({
