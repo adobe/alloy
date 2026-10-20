@@ -1,5 +1,11 @@
 # @adobe/alloy-core
 
+## 1.3.2-beta.0
+
+### Patch Changes
+
+- [#1610](https://github.com/adobe/alloy/pull/1610) [`6002ced`](https://github.com/adobe/alloy/commit/6002ced1f334c3c120548d8ae45f4f2e92fb1971) Thanks [@dompuiu](https://github.com/dompuiu)! - Rulesets are now evaluated against outgoing events that do not request personalization, such as content card display, interact and dismiss notifications, and event history operations from matching rules are recorded. For example, Adobe Journey Optimizer's "disqualify on dismiss" rule now records the dismissal, so a dismissed content card stays hidden without calling `evaluateRulesets` manually.
+
 ## 1.3.1
 
 ### Patch Changes

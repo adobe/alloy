@@ -11,5 +11,7 @@
     "@adobe/alloy-sandbox-browser": "0.1.9",
     "@adobe/alloy-sandbox-node": "0.0.6"
   },
-  "changesets": []
+  "changesets": [
+    "evaluate-rulesets-on-outgoing-events"
+  ]
 }
