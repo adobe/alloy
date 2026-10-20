@@ -31,13 +31,13 @@ export default ({ eventRegistry }) => {
     }
   };
 
-  const evaluate = (context = {}) => {
+  const evaluate = (context = {}, options = {}) => {
     const sortedPayloadsBasedOnActivityId = Object.values(
       payloadsBasedOnActivityId,
     ).sort(({ rank: rankA }, { rank: rankB }) => rankA - rankB);
 
     return sortedPayloadsBasedOnActivityId
-      .map((payload) => payload.evaluate(context))
+      .map((payload) => payload.evaluate(context, options))
       .filter((payload) => payload.items.length > 0);
   };
 
