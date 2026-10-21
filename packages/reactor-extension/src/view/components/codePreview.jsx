@@ -42,6 +42,10 @@ const CodePreview = ({
           type: "backgroundColor",
           value: "base",
         },
+        "--codePreviewButtonInteractiveBackground": {
+          type: "backgroundColor",
+          value: "gray-75",
+        },
       })}
     >
       <LabeledValue label={label} aria-label={ariaLabel} />

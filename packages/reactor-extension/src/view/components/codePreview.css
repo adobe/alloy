@@ -43,6 +43,11 @@ governing permissions and limitations under the License.
   background-color: var(--codePreviewButtonBackground);
 }
 
+.CodePreview-openEditorButton button[data-hovered],
+.CodePreview-openEditorButton button[data-pressed] {
+  background-color: var(--codePreviewButtonInteractiveBackground);
+}
+
 /* This is a workaround for a react-spectrum bug */
 /* https://github.com/adobe/react-spectrum/issues/2475 */
 .CodePreview-textArea {
