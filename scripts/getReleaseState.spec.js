@@ -129,7 +129,7 @@ describe("getReleaseState", () => {
     const output = execFileSync(
       process.execPath,
       [path.resolve("scripts/getReleaseState.js")],
-      { cwd: rootDir, encoding: "utf8" },
+      { cwd: rootDir, encoding: "utf8", env: {} },
     );
     expect(output).toBe("proceed=false\nenvironment=Beta\n");
   });

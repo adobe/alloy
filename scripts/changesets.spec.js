@@ -17,7 +17,7 @@ import http from "http";
 import { execFile } from "child_process";
 import { createRequire } from "module";
 import { promisify } from "util";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getReleaseState } from "./getReleaseState.js";
 
 const exec = promisify(execFile);
@@ -52,11 +52,16 @@ describe("Changesets release lifecycle", () => {
       cwd: rootDir,
       timeout: 20_000,
       env: {
-        ...process.env,
-        GITHUB_TOKEN: "",
-        GH_TOKEN: "",
-        NODE_AUTH_TOKEN: "",
-        NPM_TOKEN: "",
+        PATH: [
+          path.join(rootDir, "bin"),
+          path.dirname(process.execPath),
+          "/usr/bin",
+          "/bin",
+        ].join(path.delimiter),
+        HOME: rootDir,
+        TMPDIR: rootDir,
+        GIT_CONFIG_GLOBAL: os.devNull,
+        GIT_CONFIG_NOSYSTEM: "1",
         NPM_CONFIG_USERCONFIG: path.join(rootDir, ".npmrc"),
         npm_config_registry: `http://127.0.0.1:${registry.address().port}/`,
         CI: "true",
@@ -121,6 +126,8 @@ describe("Changesets release lifecycle", () => {
     });
     await new Promise((resolve) => registry.listen(0, "127.0.0.1", resolve));
 
+    fs.mkdirSync(path.join(rootDir, "bin"));
+    fs.symlinkSync(process.env.npm_execpath, path.join(rootDir, "bin", "pnpm"));
     fs.mkdirSync(path.join(rootDir, ".changeset"));
     writeJson("package.json", {
       name: "alloy-release-test",
@@ -162,7 +169,7 @@ describe("Changesets release lifecycle", () => {
         }),
       });
     }
-    fs.writeFileSync(path.join(rootDir, ".gitignore"), "node_modules\n");
+    fs.writeFileSync(path.join(rootDir, ".gitignore"), "bin\nnode_modules\n");
     await git("init", "-b", "main");
     await git("config", "user.email", "release-test@example.com");
     await git("config", "user.name", "Release test");
@@ -177,9 +184,50 @@ describe("Changesets release lifecycle", () => {
   });
 
   afterEach(async () => {
+    vi.unstubAllEnvs();
     registry.closeAllConnections();
     await new Promise((resolve) => registry.close(resolve));
     fs.rmSync(rootDir, { recursive: true, force: true });
+  });
+
+  it("does not inherit secrets or Git overrides from the parent environment", async () => {
+    vi.stubEnv("ALLOY_TEST_SECRET", "must-not-reach-child");
+    vi.stubEnv("GIT_DIR", path.join(rootDir, "decoy.git"));
+    vi.stubEnv("GIT_INDEX_FILE", path.join(rootDir, "decoy-index"));
+    vi.stubEnv("GIT_WORK_TREE", path.join(rootDir, "decoy-worktree"));
+    vi.stubEnv("GIT_CONFIG_GLOBAL", path.join(rootDir, "decoy-config"));
+    const { stdout } = await run(process.execPath, [
+      "-e",
+      "process.stdout.write(JSON.stringify(process.env))",
+    ]);
+    const env = JSON.parse(stdout);
+    expect(env.ALLOY_TEST_SECRET).toBeUndefined();
+    expect(env.GIT_DIR).toBeUndefined();
+    expect(env.GIT_INDEX_FILE).toBeUndefined();
+    expect(env.GIT_WORK_TREE).toBeUndefined();
+    expect(env.GIT_CONFIG_GLOBAL).toBe(os.devNull);
+    expect(env.GIT_CONFIG_NOSYSTEM).toBe("1");
+    expect(env.HOME).toBe(rootDir);
+    // macOS can add this variable at startup even when the supplied environment is empty.
+    const keys = Object.keys(env).filter(
+      (name) => name !== "__CF_USER_TEXT_ENCODING",
+    );
+    expect(keys.sort()).toEqual(
+      [
+        "CI",
+        "GIT_CONFIG_GLOBAL",
+        "GIT_CONFIG_NOSYSTEM",
+        "HOME",
+        "NPM_CONFIG_USERCONFIG",
+        "PATH",
+        "TMPDIR",
+        "npm_config_registry",
+      ].sort(),
+    );
+    const result = await git("rev-parse", "--show-toplevel");
+    expect(fs.realpathSync(result.stdout.trim())).toBe(
+      fs.realpathSync(rootDir),
+    );
   });
 
   it("versions two betas, promotes to stable, and tags private packages", async () => {
