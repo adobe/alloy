@@ -368,7 +368,7 @@ const PanelContent = ({
         >
           <Button
             data-test-id="repairStaleDataElementsButton"
-            variant="primary"
+            variant="secondary"
             onPress={onRepairClick}
           >
             Run repair
@@ -399,7 +399,7 @@ const PanelContent = ({
             >
               <Button
                 data-test-id="repairShowProgressButton"
-                variant="primary"
+                variant="secondary"
                 onPress={onShowProgress}
               >
                 Show progress
@@ -445,7 +445,7 @@ const PanelContent = ({
               </Button>
               <Button
                 data-test-id="repairRunAgainButton"
-                variant="primary"
+                variant="secondary"
                 onPress={onRunAgain}
               >
                 Run again
