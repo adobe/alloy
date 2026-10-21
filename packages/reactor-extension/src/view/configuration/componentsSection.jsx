@@ -74,7 +74,7 @@ export const bridge = {
 const ComponentsSection = () => {
   return (
     <div>
-      <SectionHeader marginTop="">Components</SectionHeader>
+      <SectionHeader marginTop={0}>Components</SectionHeader>
 
       {webSdkComponents.map(({ label, value, description, beta }) => {
         return (
