@@ -50,6 +50,37 @@ describe("Config Multiple Instances", () => {
     cleanup();
   });
 
+  it("keeps the header full-width behind the independent add action", async () => {
+    await driver.init(buildSettings());
+
+    const trigger = view.getByRole("button", { name: "SDK instances" });
+    const disclosureBounds = view
+      .getByTestId("instancesHeading")
+      .element()
+      .getBoundingClientRect();
+    const triggerBounds = trigger.element().getBoundingClientRect();
+    const addBounds = view
+      .getByTestId("addInstanceButton")
+      .element()
+      .getBoundingClientRect();
+
+    expect(triggerBounds.left).toBeCloseTo(disclosureBounds.left, 1);
+    expect(triggerBounds.right).toBeCloseTo(disclosureBounds.right, 1);
+    expect(addBounds.left).toBeGreaterThan(triggerBounds.left);
+    expect(addBounds.right).toBeLessThan(triggerBounds.right);
+    expect(addBounds.top).toBeGreaterThan(triggerBounds.top);
+    expect(addBounds.bottom).toBeLessThan(triggerBounds.bottom);
+
+    await trigger.click();
+    await expect.element(trigger).toHaveAttribute("aria-expanded", "false");
+    await addInstanceButton.click();
+    await expect.element(trigger).toHaveAttribute("aria-expanded", "true");
+    await driver.expectSettings((s) => s.instances).toHaveLength(2);
+    await expect
+      .element(view.getByRole("tab", { name: "alloy2" }))
+      .toHaveAttribute("aria-selected", "true");
+  });
+
   it("prevents creating two instances with the same name", async () => {
     await driver.init(
       buildSettings({

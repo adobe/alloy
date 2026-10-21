@@ -30,7 +30,7 @@ import {
   Radio,
   InlineAlert,
 } from "@react-spectrum/s2";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { size, style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useState, useRef } from "react";
 import { object, array, string } from "yup";
 import { FieldArray, useField } from "formik";
@@ -244,13 +244,25 @@ const InstancesSection = ({
       name="instances"
       render={(arrayHelpers) => {
         return (
-          <Disclosure id="instances" data-test-id="instancesHeading">
+          <Disclosure
+            id="instances"
+            data-test-id="instancesHeading"
+            styles={style({ position: "relative" })}
+          >
             <DisclosureHeader>
-              <DisclosureTitle>SDK instances</DisclosureTitle>
+              <DisclosureTitle>
+                <span className={style({ paddingY: 8, paddingEnd: size(144) })}>
+                  SDK instances
+                </span>
+              </DisclosureTitle>
               <Button
                 data-test-id="addInstanceButton"
                 variant="secondary"
-                styles={style({ marginY: 8, marginEnd: 8 })}
+                styles={style({
+                  position: "absolute",
+                  top: 8,
+                  insetEnd: 8,
+                })}
                 onPress={async () => {
                   const newInstance = await getInstanceDefaults({
                     initInfo,
