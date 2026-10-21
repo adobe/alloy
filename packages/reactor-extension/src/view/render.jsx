@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 
 import { createRoot } from "react-dom/client";
 
-import { Provider, lightTheme } from "@adobe/react-spectrum";
+import { Provider as SpectrumProvider } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import ErrorBoundary from "./components/errorBoundary";
 import "./global.css";
 import monitorForOriginatingErrors from "./utils/monitorForOriginatingErrors";
@@ -22,18 +23,31 @@ monitorForOriginatingErrors();
 const container = document.getElementById("root");
 const root = createRoot(container);
 
-export default (View, { noPadding = false } = {}) => {
-  const paddingClass = noPadding ? "" : " with-padding";
+// The style macro is evaluated at build time, so a runtime `noPadding` cannot
+// live inside a single style() call. Precompute both variants and pick one.
+const paddedStyles = style({
+  display: "flex",
+  flexDirection: "column",
+  flexGrow: 1,
+  padding: 8,
+});
+const flushStyles = style({
+  display: "flex",
+  flexDirection: "column",
+  flexGrow: 1,
+  padding: 0,
+});
 
+export default (View, { noPadding = false } = {}) => {
   root.render(
-    <Provider
-      theme={lightTheme}
+    <SpectrumProvider
+      background="base"
       colorScheme="light"
-      UNSAFE_className={`react-spectrum-provider spectrum spectrum--medium spectrum--light${paddingClass} spectrum-accessibility-overrides`}
+      styles={noPadding ? flushStyles : paddedStyles}
     >
       <ErrorBoundary>
         <View />
       </ErrorBoundary>
-    </Provider>,
+    </SpectrumProvider>,
   );
 };

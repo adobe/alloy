@@ -11,16 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import { useField } from "formik";
-import {
-  Flex,
-  InlineAlert,
-  Heading,
-  Content,
-  Link,
-} from "@adobe/react-spectrum";
+import { InlineAlert, Heading, Content, Link } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
+import FormikTextField from "../forms/fields/TextField";
 import RestoreDefaultValueButton from "../components/restoreDefaultValueButton";
 import FormElementContainer from "../components/formElementContainer";
 import { bridge } from "./basicSectionBridge";
@@ -39,7 +34,7 @@ const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
           label="Name"
           name={`${instanceFieldName}.name`}
           description={
-            <>
+            <span>
               Must match an instance name that is defined in the Web SDK{" "}
               <Link
                 href="https://experienceleague.adobe.com/en/docs/experience-platform/collection/js/install/library"
@@ -49,7 +44,7 @@ const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
                 base code
               </Link>{" "}
               from your site.
-            </>
+            </span>
           }
           isRequired
           width="size-5000"
@@ -60,9 +55,11 @@ const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
         <InlineAlert
           data-test-id="nameChangeAlert"
           variant="notice"
-          width="size-5000"
+          styles={style({
+            width: 400,
+          })}
         >
-          <Heading size="XXS">Potential problems due to name change</Heading>
+          <Heading>Potential problems due to name change</Heading>
           <Content>
             Any rule components or data elements using this instance will no
             longer function as expected when running on your website. We
@@ -73,7 +70,11 @@ const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
       ) : null}
       {!isPreinstalled && (
         <>
-          <Flex>
+          <div
+            className={style({
+              display: "flex",
+            })}
+          >
             <DataElementSelector>
               <FormikTextField
                 data-test-id="orgIdField"
@@ -89,8 +90,12 @@ const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
               name={`${instanceFieldName}.orgId`}
               defaultValue={instanceDefaults.orgId}
             />
-          </Flex>
-          <Flex>
+          </div>
+          <div
+            className={style({
+              display: "flex",
+            })}
+          >
             <DataElementSelector>
               <FormikTextField
                 data-test-id="edgeDomainField"
@@ -109,7 +114,7 @@ const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
               name={`${instanceFieldName}.edgeDomain`}
               defaultValue={instanceDefaults.edgeDomain}
             />
-          </Flex>
+          </div>
         </>
       )}
     </FormElementContainer>

@@ -13,18 +13,19 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { FieldArray } from "formik";
 import { object, string, array, mixed } from "yup";
-import { Item, Radio, Button, Well, Text, Flex } from "@adobe/react-spectrum";
-import Delete from "@spectrum-icons/workflow/Delete";
+import { PickerItem, Radio, Button, Text } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import Delete from "@react-spectrum/s2/icons/Delete";
 import render from "../render";
 import ExtensionView from "../components/extensionView";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
 import FormikRadioGroupWithDataElement, {
   createRadioGroupWithDataElementValidationSchema,
-} from "../components/formikReactSpectrum3/formikRadioGroupWithDataElement";
-import FormikPicker from "../components/formikReactSpectrum3/formikPicker";
-import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
-import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
+} from "../forms/fields/RadioGroupWithDataElement";
+import FormikPicker from "../forms/fields/Picker";
+import FormikTextField from "../forms/fields/TextField";
+import FormikRadioGroup from "../forms/fields/RadioGroup";
 import DataElementSelector from "../components/dataElementSelector";
 import FormElementContainer from "../components/formElementContainer";
 import InstanceNamePicker from "../components/instanceNamePicker";
@@ -247,7 +248,11 @@ const ConsentObject = ({ value, index }) => {
         items={[ADOBE, IAB_TCF]}
         width="size-5000"
       >
-        {(item) => <Item key={item.value}>{item.label}</Item>}
+        {(item) => (
+          <PickerItem key={item.value} id={item.value}>
+            {item.label}
+          </PickerItem>
+        )}
       </FormikPicker>
       {value.standard === ADOBE.value && (
         <FormikPicker
@@ -258,7 +263,11 @@ const ConsentObject = ({ value, index }) => {
           items={[VERSION_1_0, VERSION_2_0]}
           width="size-5000"
         >
-          {(item) => <Item key={item.value}>{item.label}</Item>}
+          {(item) => (
+            <PickerItem key={item.value} id={item.value}>
+              {item.label}
+            </PickerItem>
+          )}
         </FormikPicker>
       )}
       {value.standard === ADOBE.value &&
@@ -408,36 +417,60 @@ const SetConsent = () => {
                         onPress={() => {
                           arrayHelpers.push(createBlankConsentObject());
                         }}
-                        marginStart="auto"
+                        styles={style({
+                          marginStart: "auto",
+                        })}
                       >
                         Add consent object
                       </Button>
-                      <Flex direction="column" gap="size-250">
+                      <div
+                        className={style({
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 20,
+                        })}
+                      >
                         {values.consent.map((value, index) => (
-                          <Well
+                          <div
                             data-test-id={`consentObject${index}`}
                             key={`consentObject${index}`}
+                            className={style({
+                              display: "block",
+                              textAlign: "start",
+                              minWidth: 160,
+                              padding: 16,
+                              marginTop: 4,
+                              borderWidth: 1,
+                              borderRadius: "sm",
+                              backgroundColor: "layer-1",
+                              borderStyle: "solid",
+                              borderColor: "transparent-black-75",
+                              font: "body-sm",
+                            })}
                           >
                             <FormElementContainer>
                               <ConsentObject value={value} index={index} />
                               {values.consent.length > 1 && (
                                 <Button
                                   variant="secondary"
+                                  fillStyle="outline"
                                   onPress={() => {
                                     arrayHelpers.remove(index);
                                   }}
                                   aria-label="Delete"
                                   data-test-id="deleteConsentButton"
-                                  alignSelf="flex-start"
+                                  styles={style({
+                                    alignSelf: "start",
+                                  })}
                                 >
                                   <Delete />
                                   <Text>Delete consent object</Text>
                                 </Button>
                               )}
                             </FormElementContainer>
-                          </Well>
+                          </div>
                         ))}
-                      </Flex>
+                      </div>
                     </>
                   )}
                 />

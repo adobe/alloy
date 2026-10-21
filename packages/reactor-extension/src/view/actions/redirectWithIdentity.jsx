@@ -10,7 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Link, InlineAlert, Content, Heading } from "@adobe/react-spectrum";
+import { Link, InlineAlert, Content, Heading } from "@react-spectrum/s2";
+
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import render from "../render";
 import ExtensionView from "../components/extensionView";
 import FormElementContainer from "../components/formElementContainer";
@@ -65,7 +67,12 @@ const RedirectWithIdentity = () => {
         const orgId = instanceSettings.orgId ?? initInfo.company.orgId;
         return (
           <>
-            <InlineAlert variant="info" width="size-5000">
+            <InlineAlert
+              variant="informative"
+              styles={style({
+                width: 400,
+              })}
+            >
               <Heading size="XXS">Redirect with identity</Heading>
               <Content>
                 Use this action to share identities from the current page to
