@@ -18,6 +18,60 @@ describe("networkRecorder", () => {
     networkRecorder.reset();
   });
 
+  it.each(["request", "response"])(
+    "waits for both bodies when the %s capture finishes last",
+    async (lastCapture) => {
+      let resolveBody;
+      const delayedBody = new Promise((resolve) => {
+        resolveBody = resolve;
+      });
+      const body = '{"captured":true}';
+      const request = {
+        url: "https://edge.adobedc.net/ee/test/v1/interact",
+        method: "POST",
+        referrer: "",
+        headers: new Headers(),
+        clone: () => ({
+          text: () =>
+            lastCapture === "request" ? delayedBody : Promise.resolve(body),
+        }),
+      };
+      const response = {
+        status: 200,
+        statusText: "OK",
+        headers: new Headers(),
+        clone: () => ({
+          text: () =>
+            lastCapture === "response" ? delayedBody : Promise.resolve(body),
+        }),
+      };
+      const pendingCall = networkRecorder.waitForCall(/v1\/interact/);
+      let resolved = false;
+      pendingCall.then(() => {
+        resolved = true;
+      });
+      const captureRequest = networkRecorder.captureRequest({
+        request,
+        requestId: "delayed",
+      });
+      const captureResponse = networkRecorder.captureResponse({
+        requestId: "delayed",
+        response,
+      });
+
+      await (lastCapture === "request" ? captureResponse : captureRequest);
+      expect(resolved).toBe(false);
+
+      resolveBody(body);
+      await Promise.all([captureRequest, captureResponse]);
+
+      await expect(pendingCall).resolves.toMatchObject({
+        request: { url: request.url, body: { captured: true } },
+        response: { status: 200, body: { captured: true } },
+      });
+    },
+  );
+
   it("ignores captures that finish after reset", async () => {
     let resolveRequestBody;
     let resolveResponseBody;

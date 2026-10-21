@@ -504,7 +504,8 @@ describe("Migration (Web SDK ↔ At.js mixed-mode)", () => {
       },
     });
 
-    const edgeCall = await networkRecorder.findCall(EDGE_REQUEST);
+    const edgeCall = await networkRecorder.waitForCall(EDGE_REQUEST);
+    expect(edgeCall).toBeDefined();
     assertMigrationMetadata(edgeCall.request.body);
     const edgeEcid = edgeCall.response.body.handle
       .find(({ type }) => type === "identity:result")
@@ -515,7 +516,8 @@ describe("Migration (Web SDK ↔ At.js mixed-mode)", () => {
     await loadAtJs(1);
     await fetchAtJsOffer();
 
-    const targetCall = await networkRecorder.findCall(TARGET_REQUEST);
+    const targetCall = await networkRecorder.waitForCall(TARGET_REQUEST);
+    expect(targetCall).toBeDefined();
     expect(targetCall.response.status).toBe(200);
     const searchParams = new URL(targetCall.request.url).searchParams;
     expect(searchParams.get("mboxMCGVID")).toBe(edgeEcid);
