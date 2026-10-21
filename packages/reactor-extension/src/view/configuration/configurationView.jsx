@@ -250,6 +250,7 @@ const InstancesSection = ({
               <Button
                 data-test-id="addInstanceButton"
                 variant="secondary"
+                styles={style({ marginY: 8, marginEnd: 8 })}
                 onPress={async () => {
                   const newInstance = await getInstanceDefaults({
                     initInfo,
