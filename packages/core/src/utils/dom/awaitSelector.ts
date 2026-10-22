@@ -22,27 +22,36 @@ const VISIBLE = "visible";
 const DELAY = 100;
 const MAX_POLLING_TIMEOUT = 5000;
 
-const createError = (selector) => {
+type Win = Window & typeof globalThis;
+
+type SelectFunc = (selector: string) => Element[];
+
+const createError = (selector: string) => {
   return new Error(`Could not find: ${selector}`);
 };
 
-const createPromise = (executor) => {
+const createPromise = (
+  executor: (
+    resolve: (nodes: Element[]) => void,
+    reject: (error: Error) => void,
+  ) => void,
+): Promise<Element[]> => {
   return new Promise(executor);
 };
 
-export const canUseMutationObserver = (win) => {
+export const canUseMutationObserver = (win: Win) => {
   return isFunction(win[MUTATION_OBSERVER]);
 };
 
 export const awaitUsingMutationObserver = (
-  win,
-  doc,
-  selector,
-  timeout,
-  selectFunc,
+  win: Win,
+  doc: Node,
+  selector: string,
+  timeout: number,
+  selectFunc: SelectFunc,
 ) => {
   return createPromise((resolve, reject) => {
-    let timer;
+    let timer: ReturnType<typeof setTimeout> | undefined;
 
     const mutationObserver = new win[MUTATION_OBSERVER](() => {
       const nodes = selectFunc(selector);
@@ -65,15 +74,15 @@ export const awaitUsingMutationObserver = (
   });
 };
 
-export const canUseRequestAnimationFrame = (doc) => {
+export const canUseRequestAnimationFrame = (doc: Document) => {
   return doc[VISIBILITY_STATE] === VISIBLE;
 };
 
 export const awaitUsingRequestAnimation = (
-  win,
-  selector,
-  timeout,
-  selectFunc,
+  win: Win,
+  selector: string,
+  timeout: number,
+  selectFunc: SelectFunc,
 ) => {
   return createPromise((resolve, reject) => {
     const execute = () => {
@@ -95,7 +104,11 @@ export const awaitUsingRequestAnimation = (
   });
 };
 
-export const awaitUsingTimer = (selector, timeout, selectFunc) => {
+export const awaitUsingTimer = (
+  selector: string,
+  timeout: number,
+  selectFunc: SelectFunc,
+) => {
   return createPromise((resolve, reject) => {
     const execute = () => {
       const nodes = selectFunc(selector);
@@ -117,12 +130,12 @@ export const awaitUsingTimer = (selector, timeout, selectFunc) => {
 };
 
 export default (
-  selector,
-  selectFunc = selectNodes,
-  timeout = MAX_POLLING_TIMEOUT,
-  win = window,
-  doc = document,
-) => {
+  selector: string,
+  selectFunc: SelectFunc = selectNodes,
+  timeout: number = MAX_POLLING_TIMEOUT,
+  win: Win = window,
+  doc: Document = document,
+): Promise<Element[]> => {
   const nodes = selectFunc(selector);
 
   if (isNonEmptyArray(nodes)) {

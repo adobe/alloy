@@ -1,5 +1,5 @@
 /*
-Copyright 2019 Adobe. All rights reserved.
+Copyright 2022 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,17 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/**
- * Returns true if element matches the selector.
- * @param {String} selector
- * @param {Node} [element]
- * @returns {Boolean}
- */
-export default (selector, element) => {
-  if (element.matches) {
-    return element.matches(selector);
-  }
+import SHADOW_SEPARATOR from "../../constants/shadowSeparator.js";
 
-  // Making IE 11 happy
-  return element.msMatchesSelector(selector);
-};
+export default (str: string): boolean => str.indexOf(SHADOW_SEPARATOR) !== -1;

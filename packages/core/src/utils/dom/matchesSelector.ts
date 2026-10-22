@@ -1,5 +1,5 @@
 /*
-Copyright 2021 Adobe. All rights reserved.
+Copyright 2019 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,13 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import toArray from "../toArray.js";
-
-const SIBLING_PATTERN = /^\s*>/;
-
-export default (context, selector) => {
-  if (!SIBLING_PATTERN.test(selector)) {
-    return toArray(context.querySelectorAll(selector));
+/**
+ * Returns true if element matches the selector.
+ * @param selector
+ * @param element
+ */
+export default (
+  selector: string,
+  element: Element & { msMatchesSelector?: (selector: string) => boolean },
+): boolean => {
+  if (element.matches) {
+    return element.matches(selector);
   }
-  return toArray(context.querySelectorAll(`:scope ${selector}`));
+
+  // Making IE 11 happy
+  return (element.msMatchesSelector as (selector: string) => boolean)(selector);
 };

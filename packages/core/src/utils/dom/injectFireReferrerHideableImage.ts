@@ -35,29 +35,38 @@ export default ({
   awaitSelector = awaitSelectorInDocument,
   createNode = createNodeInDocument,
   fireImage = fireImageInDocument,
+}: {
+  appendNode?: typeof appendNodeToDocument;
+  awaitSelector?: (selector: string) => Promise<Element[]>;
+  createNode?: typeof createNodeInDocument;
+  fireImage?: typeof fireImageInDocument;
 } = {}) => {
   const fireOnPage = fireImage;
 
-  let hiddenIframe;
+  let hiddenIframe: HTMLIFrameElement | undefined;
 
-  const createIframe = () => {
+  const createIframe = (): Promise<HTMLIFrameElement> => {
     return awaitSelector(BODY).then(([body]) => {
       if (hiddenIframe) {
         return hiddenIframe;
       }
-      hiddenIframe = createNode(IFRAME, IFRAME_ATTRS, IFRAME_PROPS);
+      hiddenIframe = createNode(
+        IFRAME,
+        IFRAME_ATTRS,
+        IFRAME_PROPS,
+      ) as HTMLIFrameElement;
       return appendNode(body, hiddenIframe);
     });
   };
 
-  const fireInIframe = ({ src }) => {
+  const fireInIframe = ({ src }: { src: string }) => {
     return createIframe().then((iframe) => {
-      const currentDocument = iframe.contentWindow.document;
+      const currentDocument = (iframe.contentWindow as Window).document;
       return fireImage({ src, currentDocument });
     });
   };
 
-  return (request) => {
+  return (request: { hideReferrer?: boolean; url: string }) => {
     const { hideReferrer, url } = request;
     return hideReferrer ? fireInIframe({ src: url }) : fireOnPage({ src: url });
   };

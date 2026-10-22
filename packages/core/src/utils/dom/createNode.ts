@@ -13,26 +13,35 @@ governing permissions and limitations under the License.
 import appendNode from "./appendNode.js";
 import isObject from "../isObject.js";
 
-const populateElementProperties = (element, props) => {
+type Props = Record<string, unknown>;
+
+const populateElementProperties = (element: HTMLElement, props: Props) => {
   Object.keys(props).forEach((key) => {
     // The following is to support setting style properties to avoid CSP errors.
     if (key === "style" && isObject(props[key])) {
-      const styleProps = props[key];
+      const styleProps = props[key] as Record<string, string>;
       Object.keys(styleProps).forEach((styleKey) => {
-        element.style[styleKey] = styleProps[styleKey];
+        (element.style as unknown as Record<string, string>)[styleKey] =
+          styleProps[styleKey];
       });
     } else {
-      element[key] = props[key];
+      (element as unknown as Props)[key] = props[key];
     }
   });
 };
 
-export default (tag, attrs = {}, props = {}, children = [], doc = document) => {
+export default (
+  tag: string,
+  attrs: Record<string, string | number | boolean> = {},
+  props: Props = {},
+  children: Node[] = [],
+  doc: Document = document,
+): HTMLElement => {
   const result = doc.createElement(tag);
   Object.keys(attrs).forEach((key) => {
     // TODO: To highlight CSP problems consider throwing a descriptive error
     //       if nonce is available and key is style.
-    result.setAttribute(key, attrs[key]);
+    result.setAttribute(key, attrs[key] as string);
   });
   populateElementProperties(result, props);
   children.forEach((child) => appendNode(result, child));

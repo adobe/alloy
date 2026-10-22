@@ -13,16 +13,16 @@ governing permissions and limitations under the License.
 import createNode from "./createNode.js";
 import appendNode from "./appendNode.js";
 
-let nonce;
+let nonce: string | null | undefined;
 
 /**
  * Returns the nonce if available.
- * @param {Node} [context=document] defaults to document
- * @returns {(String|undefined)} the nonce or undefined if not available
+ * @param context - defaults to document
+ * @returns the nonce or undefined if not available
  */
-const getNonce = (context = document) => {
+const getNonce = (context: ParentNode = document) => {
   if (nonce === undefined) {
-    const n = context.querySelector("[nonce]");
+    const n = context.querySelector<HTMLElement>("[nonce]");
     // NOTE: We're keeping n.getAttribute("nonce") until it is safe to remove:
     //   ref: https://github.com/whatwg/html/issues/2369#issuecomment-280853946
     nonce = n && (n.nonce || n.getAttribute("nonce"));
@@ -33,21 +33,30 @@ const getNonce = (context = document) => {
 /**
  * Loads an external JavaScript file using Alloy's DOM utilities.
  * Enhanced version that supports additional script attributes.
- * @param {string} url The URL of the script to load.
- * @param {Object} options Additional options for script loading
- * @param {Object} options.attributes Additional attributes to set on script element
- * @param {Function} options.onLoad Optional callback when script loads successfully
- * @param {Function} options.onError Optional callback when script fails to load
- * @returns {Promise<void>} A promise that resolves when the script is loaded or rejects on error.
+ * @param url - The URL of the script to load.
+ * @param options - Additional options for script loading
+ * @param options.attributes - Additional attributes to set on script element
+ * @param options.onLoad - Optional callback when script loads successfully
+ * @param options.onError - Optional callback when script fails to load
+ * @returns A promise that resolves when the script is loaded or rejects on error.
  */
-const loadScript = (url, options = {}) => {
+export interface LoadScriptOptions {
+  attributes?: Record<string, string | number | boolean>;
+  onLoad?: () => void;
+  onError?: (error: Error) => void;
+}
+
+const loadScript = (
+  url: string,
+  options: LoadScriptOptions = {},
+): Promise<void> => {
   // Check if script already exists
   if (document.querySelector(`script[src="${url}"]`)) {
     if (options.onLoad) options.onLoad();
     return Promise.resolve();
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     const { attributes = {}, onLoad, onError } = options;
 
     const script = createNode(
@@ -56,7 +65,7 @@ const loadScript = (url, options = {}) => {
         type: "text/javascript",
         src: url,
         async: true,
-        ...(getNonce() && { nonce: getNonce() }),
+        ...(getNonce() && { nonce: getNonce() as string }),
         ...attributes, // Allow additional attributes like crossorigin
       },
       {

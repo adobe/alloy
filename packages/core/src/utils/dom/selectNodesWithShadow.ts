@@ -13,11 +13,11 @@ governing permissions and limitations under the License.
 import querySelectorAll from "./querySelectorAll.js";
 import SHADOW_SEPARATOR from "../../constants/shadowSeparator.js";
 
-const splitWithShadow = (selector) => {
+const splitWithShadow = (selector: string) => {
   return selector.split(SHADOW_SEPARATOR);
 };
 
-const transformPrefix = (parent, selector) => {
+const transformPrefix = (parent: ParentNode, selector: string) => {
   const result = selector;
   const hasChildCombinatorPrefix = result.startsWith(">");
   if (!hasChildCombinatorPrefix) {
@@ -32,7 +32,10 @@ const transformPrefix = (parent, selector) => {
   return `${prefix} ${result}`;
 };
 
-export default (context, selector) => {
+export default (
+  context: ParentNode,
+  selector: string,
+): Element[] | undefined => {
   const parts = splitWithShadow(selector);
 
   if (parts.length < 2) {
@@ -41,12 +44,12 @@ export default (context, selector) => {
 
   // split the selector into parts separated by :shadow pseudo-selectors
   // find each subselector element based on the previously selected node's shadowRoot
-  let parent = context;
+  let parent: ParentNode = context;
   for (let i = 0; i < parts.length; i += 1) {
     const part = parts[i].trim();
     // if part is empty, it means there's a chained :eq:shadow selector
-    if (part === "" && parent.shadowRoot) {
-      parent = parent.shadowRoot;
+    if (part === "" && (parent as Element).shadowRoot) {
+      parent = (parent as Element).shadowRoot as ShadowRoot;
 
       continue;
     }

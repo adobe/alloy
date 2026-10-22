@@ -16,14 +16,17 @@ import isShadowSelector from "./isShadowSelector.js";
 
 /**
  * Returns an array of matched DOM nodes.
- * @param {String} selector
- * @param {Node} [context=document] defaults to document
- * @returns {Array} an array of DOM nodes
+ * @param selector
+ * @param context - defaults to document
+ * @returns an array of DOM nodes
  */
-export default (selector, context = document) => {
+export default (
+  selector: string,
+  context: ParentNode = document,
+): Element[] => {
   if (!isShadowSelector(selector)) {
     return querySelectorAll(context, selector);
   }
 
-  return selectNodesWithShadow(context, selector);
+  return selectNodesWithShadow(context, selector) as Element[];
 };

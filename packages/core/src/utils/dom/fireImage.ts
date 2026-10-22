@@ -10,12 +10,29 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (node) => {
-  const parent = node.parentNode;
+import createNode from "./createNode.js";
+import { IMG } from "../../constants/tagName.js";
 
-  if (parent) {
-    return parent.removeChild(node);
-  }
+/**
+ * Fires an image pixel from the current document's window.
+ * @param currentDocument
+ * @param src
+ */
+export default ({
+  src,
+  currentDocument = document,
+}: {
+  src: string;
+  currentDocument?: Document;
+}): Promise<unknown> => {
+  return new Promise((resolve, reject) => {
+    const attrs = { src };
+    const props = {
+      onload: resolve,
+      onerror: reject,
+      onabort: reject,
+    };
 
-  return null;
+    createNode(IMG, attrs, props, [], currentDocument);
+  });
 };

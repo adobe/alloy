@@ -22,7 +22,7 @@
       "default": "./dist/utils/index.js"
     },
     "./utils/dom": {
-      "alloy-source": "./src/utils/dom/index.js",
+      "alloy-source": "./src/utils/dom/index.ts",
       "types": "./dist/utils/dom/index.d.ts",
       "default": "./dist/utils/dom/index.js"
     },
