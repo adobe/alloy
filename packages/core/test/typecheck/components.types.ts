@@ -27,12 +27,19 @@ import type {
   ComponentTools,
   EventManager,
   Logger,
+  Response,
 } from "../../src/core/types.js";
 import type { ConsentManager } from "../../src/core/consent/types.js";
 import type {
   ApplyResponseCommandOptions,
   SendEventCommandOptions,
 } from "../../src/components/DataCollector/index.js";
+import type { RequestPayload } from "../../src/utils/request/types.js";
+import type {
+  ConsentObject,
+  ConsentRequestPayload,
+  SetConsentOptions,
+} from "../../src/components/Consent/types.js";
 
 // Every built-in creator is a ComponentCreator.
 const {
@@ -131,5 +138,19 @@ expectTypeOf<SendEventCommandOptions["mergeId"]>().toEqualTypeOf<
 expectTypeOf<SendEventCommandOptions["notAnOption"]>().toBeUnknown();
 // DataCollector declares no lifecycle hooks.
 expectTypeOf(dataCollector(tools)).not.toHaveProperty("lifecycle");
+// Consent: the setConsent command and lifecycle hooks are typed.
+type ConsentComponent = ReturnType<typeof consent>;
+type SetConsentRun = NonNullable<
+  ConsentComponent["commands"]
+>["setConsent"]["run"];
+expectTypeOf<Parameters<SetConsentRun>[0]>().toEqualTypeOf<SetConsentOptions>();
+expectTypeOf<SetConsentOptions["consent"]>().toEqualTypeOf<ConsentObject[]>();
+type ConsentOnResponse = NonNullable<
+  ConsentComponent["lifecycle"]
+>["onResponse"];
+expectTypeOf<Parameters<ConsentOnResponse>[0]>().toEqualTypeOf<{
+  response: Response;
+}>();
+expectTypeOf<ConsentRequestPayload>().toExtend<RequestPayload>();
 
 export { greeter, needsMissingTool };

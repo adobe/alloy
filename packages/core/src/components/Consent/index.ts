@@ -24,13 +24,21 @@ import injectSendSetConsentRequest from "./injectSendSetConsentRequest.js";
 import parseConsentCookie from "./parseConsentCookie.js";
 import validateSetConsentOptions from "./validateSetConsentOptions.js";
 import configValidators from "./configValidators.js";
+import type { ComponentCreator, ComponentTools } from "../../core/types.js";
+import type { CookieJar } from "../../utils/types.js";
+import type { ConsentComponent } from "./createComponent.js";
+
+export type ConsentTools = Pick<
+  ComponentTools,
+  "config" | "consent" | "sendEdgeNetworkRequest" | "platformServices"
+>;
 
 const createConsent = ({
   config,
   consent,
   sendEdgeNetworkRequest,
   platformServices,
-}) => {
+}: ConsentTools) => {
   const { orgId, defaultConsent } = config;
   const storedConsent = createStoredConsent({
     parseConsentCookie,
@@ -53,13 +61,15 @@ const createConsent = ({
 
   const doesIdentityCookieExist = injectDoesIdentityCookieExist({
     orgId,
-    cookieJar: platformServices.cookie,
+    // Only get(name) is used; the CookieService/CookieJar mismatch is deferred.
+    cookieJar: platformServices.cookie as unknown as CookieJar,
   });
 
   return createComponent({
     storedConsent,
     taskQueue,
-    defaultConsent,
+    // configValidators defaults defaultConsent to one of the consent statuses.
+    defaultConsent: defaultConsent as string,
     consent,
     sendSetConsentRequest,
     validateSetConsentOptions,
@@ -70,4 +80,7 @@ const createConsent = ({
 
 createConsent.namespace = "Consent";
 createConsent.configValidators = configValidators;
-export default createConsent;
+export default createConsent satisfies ComponentCreator<
+  ConsentTools,
+  ConsentComponent
+>;

@@ -10,17 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { ConsentRequestPayload } from './types.js' */
-
 import { createRequestPayload } from "../../utils/request/index.js";
+import type { RequestContent } from "../../utils/request/types.js";
+import type {
+  ConsentObject,
+  ConsentRequestPayload,
+  IdentityMap,
+} from "./types.js";
 
-/**
- * @function
- *
- * @returns {ConsentRequestPayload}
- */
-export default () => {
-  const content = {};
+export default (): ConsentRequestPayload => {
+  const content: RequestContent & {
+    identityMap?: IdentityMap;
+    consent?: ConsentObject[];
+  } = {};
 
   const requestPayload = createRequestPayload({
     content,
@@ -38,8 +40,7 @@ export default () => {
     },
   });
 
-  /** @type {ConsentRequestPayload} */
-  const payload = {
+  const payload: ConsentRequestPayload = {
     ...requestPayload,
     setConsent: (consent) => {
       content.consent = consent;

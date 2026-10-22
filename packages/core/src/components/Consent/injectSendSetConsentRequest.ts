@@ -12,13 +12,40 @@ governing permissions and limitations under the License.
 
 import { isObject } from "../../utils/index.js";
 import { createRequestParams } from "../../utils/request/index.js";
+import type { EdgeRequestExecutor } from "../../core/edgeNetwork/types.js";
+import type { ConsentRequestOptions } from "./createConsentRequest.js";
+import type { Override, Request } from "../../utils/request/types.js";
+import type {
+  ConsentObject,
+  ConsentRequestPayload,
+  IdentityMap,
+} from "./types.js";
+
+export interface SendSetConsentRequestOptions {
+  createConsentRequestPayload: () => ConsentRequestPayload;
+  createConsentRequest: (
+    options: ConsentRequestOptions,
+  ) => Request<ConsentRequestPayload>;
+  sendEdgeNetworkRequest: EdgeRequestExecutor;
+  edgeConfigOverrides?: Override;
+}
+
+export interface SetConsentRequestOptions {
+  consentOptions: ConsentObject[];
+  identityMap?: IdentityMap;
+  edgeConfigOverrides?: Override;
+}
+
+export type SendSetConsentRequest = (
+  options: SetConsentRequestOptions,
+) => Promise<void>;
 
 export default ({
     createConsentRequestPayload,
     createConsentRequest,
     sendEdgeNetworkRequest,
     edgeConfigOverrides: globalConfigOverrides,
-  }) =>
+  }: SendSetConsentRequestOptions): SendSetConsentRequest =>
   ({
     consentOptions,
     identityMap,

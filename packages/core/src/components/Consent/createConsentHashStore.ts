@@ -10,19 +10,35 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import computeConsentHash from "./computeConsentHash.js";
+import type { Storage } from "../../services/types.js";
+import type { ConsentObject } from "./types.js";
 
-const getKey = ({ standard, version }) => {
+export interface ConsentHashStoreOptions {
+  storage: Storage;
+}
+
+export interface ConsentHashes {
+  isNew: () => Promise<boolean>;
+  save: () => Promise<void>;
+}
+
+export interface ConsentHashStore {
+  clear: () => void;
+  lookup: (consentObjects: ConsentObject[]) => ConsentHashes;
+}
+
+const getKey = ({ standard, version }: ConsentObject) => {
   return `${standard}.${version}`;
 };
 
-export default ({ storage }) => {
+export default ({ storage }: ConsentHashStoreOptions): ConsentHashStore => {
   return {
     clear() {
       storage.clear();
     },
     lookup(consentObjects) {
-      const currentHashes = {};
-      const getCurrentHash = (consentObject) => {
+      const currentHashes: Record<string, string> = {};
+      const getCurrentHash = (consentObject: ConsentObject) => {
         const key = getKey(consentObject);
         const { standard, version, ...rest } = consentObject;
         if (!currentHashes[key]) {

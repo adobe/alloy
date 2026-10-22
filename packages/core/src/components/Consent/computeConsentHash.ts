@@ -12,5 +12,5 @@ governing permissions and limitations under the License.
 
 import { fnv1a32Hex, sortObjectKeysRecursively } from "../../utils/index.js";
 
-export default (obj) =>
+export default (obj: unknown): string =>
   fnv1a32Hex(JSON.stringify(sortObjectKeysRecursively(obj)));

@@ -10,17 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import type { ConsentByPurpose } from "../../core/consent/types.js";
+
 /**
  * Parses a consent cookie.
- * @param {string} cookieValue Must be in the format a=b;c=d
- * @returns {Object} An object where the keys are purpose names and the values
+ * @param cookieValue Must be in the format a=b;c=d
+ * @returns An object where the keys are purpose names and the values
  * are the consent status for the purpose.
  */
-export default (cookieValue) => {
+export default (cookieValue: string): ConsentByPurpose => {
   const categoryPairs = cookieValue.split(";");
   return categoryPairs.reduce((consentByPurpose, categoryPair) => {
     const [name, value] = categoryPair.split("=");
     consentByPurpose[name] = value;
     return consentByPurpose;
-  }, {});
+  }, {} as ConsentByPurpose);
 };

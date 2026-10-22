@@ -11,8 +11,14 @@ governing permissions and limitations under the License.
 */
 
 import { createRequest } from "../../utils/request/index.js";
+import type { ConsentRequestPayload } from "./types.js";
 
-export default ({ payload, datastreamIdOverride }) => {
+export interface ConsentRequestOptions {
+  payload: ConsentRequestPayload;
+  datastreamIdOverride?: string;
+}
+
+export default ({ payload, datastreamIdOverride }: ConsentRequestOptions) => {
   return createRequest({
     payload,
     datastreamIdOverride,

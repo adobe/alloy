@@ -10,18 +10,34 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import type {
+  Identity,
+  Override,
+  RequestPayload,
+} from "../../utils/request/types.js";
+
+/** One consent object of a `setConsent` call, e.g. `{ standard, version, value }`. */
+export interface ConsentObject {
+  standard?: unknown;
+  version?: unknown;
+  [key: string]: unknown;
+}
+
+/** Identities keyed by namespace code. */
+export type IdentityMap = Record<string, Identity[]>;
+
+/** The validated options of the `setConsent` command. */
+export interface SetConsentOptions {
+  consent: ConsentObject[];
+  identityMap?: IdentityMap;
+  edgeConfigOverrides?: Override;
+}
+
 /**
  * Request payload object with methods for merging different types of data.
- *
- * @typedef {Object} ConsentRequestPayload
- * @property {Function} mergeMeta
- * @property {Function} mergeState
- * @property {Function} mergeQuery
- * @property {Function} mergeConfigOverride
- * @property {Function} addIdentity
- * @property {Function} hasIdentity
- * @property {Function} toJSON
- * @property {Function} setConsent
  */
+export interface ConsentRequestPayload extends RequestPayload {
+  setConsent: (consent: ConsentObject[]) => void;
+}
 
 export const Types = {};

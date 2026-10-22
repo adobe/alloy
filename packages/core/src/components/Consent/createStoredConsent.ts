@@ -12,8 +12,25 @@ governing permissions and limitations under the License.
 
 import { getNamespacedCookieName } from "../../utils/index.js";
 import { CONSENT } from "../../constants/cookieNameKey.js";
+import type { CookieService } from "../../services/types.js";
+import type { ConsentByPurpose } from "../../core/consent/types.js";
 
-export default ({ parseConsentCookie, orgId, cookieJar }) => {
+export interface StoredConsentOptions {
+  parseConsentCookie: (cookieValue: string) => ConsentByPurpose;
+  orgId: string;
+  cookieJar: Pick<CookieService, "get" | "remove">;
+}
+
+export interface StoredConsent {
+  read: () => Partial<ConsentByPurpose>;
+  clear: () => void;
+}
+
+export default ({
+  parseConsentCookie,
+  orgId,
+  cookieJar,
+}: StoredConsentOptions): StoredConsent => {
   const consentCookieName = getNamespacedCookieName(orgId, CONSENT);
 
   return {

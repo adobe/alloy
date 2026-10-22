@@ -11,6 +11,37 @@ governing permissions and limitations under the License.
 */
 
 import { GENERAL } from "../../constants/consentPurpose.js";
+import type createTaskQueue from "../../utils/createTaskQueue.js";
+import type {
+  Component,
+  ComponentCommand,
+  LifecycleHook,
+  Response,
+} from "../../core/types.js";
+import type { ConsentManager } from "../../core/consent/types.js";
+import type { ConsentHashStore } from "./createConsentHashStore.js";
+import type { StoredConsent } from "./createStoredConsent.js";
+import type { SendSetConsentRequest } from "./injectSendSetConsentRequest.js";
+import type { SetConsentOptions } from "./types.js";
+
+export interface ConsentComponentOptions {
+  storedConsent: StoredConsent;
+  taskQueue: ReturnType<typeof createTaskQueue>;
+  defaultConsent: string;
+  consent: ConsentManager;
+  sendSetConsentRequest: SendSetConsentRequest;
+  validateSetConsentOptions: (options: unknown) => SetConsentOptions;
+  consentHashStore: ConsentHashStore;
+  doesIdentityCookieExist: () => boolean;
+}
+
+export type ConsentComponent = Component<
+  { setConsent: ComponentCommand<unknown, SetConsentOptions> },
+  {
+    onResponse: LifecycleHook<{ response: Response }>;
+    onRequestFailure: LifecycleHook<{ error: unknown }>;
+  }
+>;
 
 export default ({
   storedConsent,
@@ -21,7 +52,7 @@ export default ({
   validateSetConsentOptions,
   consentHashStore,
   doesIdentityCookieExist,
-}) => {
+}: ConsentComponentOptions): ConsentComponent => {
   const defaultConsentByPurpose = { [GENERAL]: defaultConsent };
   let storedConsentByPurpose = storedConsent.read();
 
@@ -45,7 +76,8 @@ export default ({
       // Only read cookies when there are no outstanding setConsent
       // requests. This helps with race conditions.
       if (storedConsentObject[GENERAL] !== undefined) {
-        consent.setConsent(storedConsentObject);
+        // A stored GENERAL value means the cookie was parsed into a full map.
+        consent.setConsent(storedConsentObject as Record<string, string>);
       }
     }
   };
