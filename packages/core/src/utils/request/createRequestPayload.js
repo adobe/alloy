@@ -73,8 +73,8 @@ const createMergeConfigOverride = (content, key) => (updates) => {
  *
  * @param {Object} options
  * @param {Object} options.content
- * @param {function(string, Identity): void} options.addIdentity
- * @param {function(string):  boolean} options.hasIdentity
+ * @param {((arg0: string, arg1: Identity) => void)} options.addIdentity
+ * @param {((arg0: string) => boolean)} options.hasIdentity
  *
  * @returns {RequestPayload}
  */

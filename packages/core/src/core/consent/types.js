@@ -12,22 +12,22 @@ governing permissions and limitations under the License.
 
 /**
  * @typedef {Object} ConsentStateMachine
- * @property {function(string): void} in
- * @property {function(string): void} out
- * @property {function(string): void} pending
- * @property {function(boolean=): Promise<void>} awaitConsent
- * @property {function(): Promise<void>} withConsent
- * @property {function(): {state: string, wasSet: boolean}} current
+ * @property {((arg0: string) => void)} in
+ * @property {((arg0: string) => void)} out
+ * @property {((arg0: string) => void)} pending
+ * @property {((arg0?: boolean) => Promise<void>)} awaitConsent
+ * @property {(() => Promise<void>)} withConsent
+ * @property {(() => {state: string, wasSet: boolean})} current
  */
 
 /**
  * @typedef {Object} ConsentManager
- * @property {function(Object, Object): void} initializeConsent
- * @property {function(Object): void} setConsent
- * @property {function(): void} suspend
- * @property {function(): Promise<void>} awaitConsent
- * @property {function(): Promise<void>} withConsent
- * @property {function(): {state: string, wasSet: boolean}} current
+ * @property {((arg0: Object, arg1: Object) => void)} initializeConsent
+ * @property {((arg0: Object) => void)} setConsent
+ * @property {(() => void)} suspend
+ * @property {(() => Promise<void>)} awaitConsent
+ * @property {(() => Promise<void>)} withConsent
+ * @property {(() => {state: string, wasSet: boolean})} current
  */
 
 export const Types = {};

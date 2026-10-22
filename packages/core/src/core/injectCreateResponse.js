@@ -21,7 +21,7 @@ import { ADOBE_EDGE } from "../constants/httpHeaderNames.js";
  * @function
  *
  * @param {object} options
- * @param {function(string): Object} options.extractEdgeInfo
+ * @param {((arg0: string) => Object)} options.extractEdgeInfo
  *
  * @returns {ResponseCreator}
  */

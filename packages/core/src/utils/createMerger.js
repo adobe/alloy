@@ -19,7 +19,7 @@ import deepAssign from "./deepAssign.js";
  * @param {object} content The base object to modify
  * @param {string} key The property to merge updates into. This can be a dot-notation property path.
  *
- * @returns {function(object): void}
+ * @returns {((arg0: object) => void)}
  */
 export default (content, key) => (updates) => {
   const propertyPath = key.split(".");

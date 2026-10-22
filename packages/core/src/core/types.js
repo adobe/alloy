@@ -12,54 +12,54 @@ governing permissions and limitations under the License.
 
 /**
  * @typedef {object} AlloyMonitor
- * @property {function(any): void} [onBeforeLog]
- * @property {function(any): void} [onInstanceCreated]
- * @property {function(any): void} [onInstanceConfigured]
- * @property {function(any): void} [onBeforeCommand]
- * @property {function(any): void} [onCommandResolved]
- * @property {function(any): void} [onCommandRejected]
- * @property {function(any): void} [onBeforeNetworkRequest]
- * @property {function(any): void} [onNetworkResponse]
- * @property {function(any): void} [onNetworkError]
- * @property {function(any): void} [onContentHiding]
- * @property {function(any): void} [onContentRendering]
+ * @property {((arg0: any) => void)} [onBeforeLog]
+ * @property {((arg0: any) => void)} [onInstanceCreated]
+ * @property {((arg0: any) => void)} [onInstanceConfigured]
+ * @property {((arg0: any) => void)} [onBeforeCommand]
+ * @property {((arg0: any) => void)} [onCommandResolved]
+ * @property {((arg0: any) => void)} [onCommandRejected]
+ * @property {((arg0: any) => void)} [onBeforeNetworkRequest]
+ * @property {((arg0: any) => void)} [onNetworkResponse]
+ * @property {((arg0: any) => void)} [onNetworkError]
+ * @property {((arg0: any) => void)} [onContentHiding]
+ * @property {((arg0: any) => void)} [onContentRendering]
  */
 
 /**
  * @typedef {object} Logger
  * @property {boolean} enabled
- * @property {function(any): void} logOnInstanceCreated
- * @property {function(any): void} logOnInstanceConfigured
- * @property {function(any): void} logOnBeforeCommand
- * @property {function(any): void} logOnCommandResolved
- * @property {function(any): void} logOnCommandRejected
- * @property {function(any): void} logOnBeforeNetworkRequest
- * @property {function(any): void} logOnNetworkResponse
- * @property {function(any): void} logOnNetworkError
- * @property {function(any): void} logOnContentHiding
- * @property {function(any): void} logOnContentRendering
- * @property {function(...any): void} info
- * @property {function(...any): void} warn
- * @property {function(...any): void} error
+ * @property {((arg0: any) => void)} logOnInstanceCreated
+ * @property {((arg0: any) => void)} logOnInstanceConfigured
+ * @property {((arg0: any) => void)} logOnBeforeCommand
+ * @property {((arg0: any) => void)} logOnCommandResolved
+ * @property {((arg0: any) => void)} logOnCommandRejected
+ * @property {((arg0: any) => void)} logOnBeforeNetworkRequest
+ * @property {((arg0: any) => void)} logOnNetworkResponse
+ * @property {((arg0: any) => void)} logOnNetworkError
+ * @property {((arg0: any) => void)} logOnContentHiding
+ * @property {((arg0: any) => void)} logOnContentRendering
+ * @property {((...args: any[]) => void)} info
+ * @property {((...args: any[]) => void)} warn
+ * @property {((...args: any[]) => void)} error
  */
 
 /**
  * @typedef {object} Event
- * @property {function(): boolean} hasQuery
- * @property {function(): object} getContent
- * @property {function(object): void} setUserXdm
- * @property {function(object): void} setUserData
- * @property {function(object): void} mergeXdm
- * @property {function(object): void} mergeData
- * @property {function(object): void} mergeMeta
- * @property {function(object): void} mergeQuery
- * @property {function(): void} documentMayUnload
- * @property {function(function=): void} finalize
- * @property {function(): boolean} getDocumentMayUnload
- * @property {function(): boolean} isEmpty
- * @property {function(): boolean} shouldSend
- * @property {function(): string|undefined} getViewName
- * @property {function(): object} toJSON
+ * @property {(() => boolean)} hasQuery
+ * @property {(() => object)} getContent
+ * @property {((arg0: object) => void)} setUserXdm
+ * @property {((arg0: object) => void)} setUserData
+ * @property {((arg0: object) => void)} mergeXdm
+ * @property {((arg0: object) => void)} mergeData
+ * @property {((arg0: object) => void)} mergeMeta
+ * @property {((arg0: object) => void)} mergeQuery
+ * @property {(() => void)} documentMayUnload
+ * @property {((arg0?: function) => void)} finalize
+ * @property {(() => boolean)} getDocumentMayUnload
+ * @property {(() => boolean)} isEmpty
+ * @property {(() => boolean)} shouldSend
+ * @property {(() => string|undefined)} getViewName
+ * @property {(() => object)} toJSON
  */
 
 /**
@@ -84,9 +84,9 @@ configuration
 
 /**
  * @typedef {object} EventManager
- * @property {function(): Event} createEvent
- * @property {function(Event, SendEventOptions=): Promise<any>} sendEvent
- * @property {function(Event, ApplyResponseOptions=): Promise<any>} applyResponse
+ * @property {(() => Event)} createEvent
+ * @property {((arg0: Event, arg1?: SendEventOptions) => Promise<any>)} sendEvent
+ * @property {((arg0: Event, arg1?: ApplyResponseOptions) => Promise<any>)} applyResponse
  */
 
 /**
@@ -104,15 +104,15 @@ configuration
 
 /**
  * @typedef {Object} Response
- * @property {function(string): Array<any>} getPayloadsByType - Returns matching fragments by type (e.g., "identity:persist")
- * @property {function(): Array<object>} getErrors - Returns all error objects from the response
- * @property {function(): Array<object>} getWarnings - Returns all warning objects from the response
- * @property {function(): object} getEdge - Returns object containing regionId from x-adobe-edge header
- * @property {function(): ResponseContent} toJSON
+ * @property {((arg0: string) => Array<any>)} getPayloadsByType - Returns matching fragments by type (e.g., "identity:persist")
+ * @property {(() => Array<object>)} getErrors - Returns all error objects from the response
+ * @property {(() => Array<object>)} getWarnings - Returns all warning objects from the response
+ * @property {(() => object)} getEdge - Returns object containing regionId from x-adobe-edge header
+ * @property {(() => ResponseContent)} toJSON
  */
 
 /**
- * @typedef {function({content?: ResponseContent, getHeader: function(string): string|undefined}): Response} ResponseCreator
+ * @typedef {((arg0: {content?: ResponseContent, getHeader: ((arg0: string) => string|undefined)}) => Response)} ResponseCreator
  */
 
 export const Types = {};

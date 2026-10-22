@@ -73,11 +73,11 @@ const toServerApiPayloadJSON = (payload) => {
  * @param {{edgeDomain: string, edgeBasePath: string, datastreamId: string}} options.config
  * @param {object} options.lifecycle
  * @param {object} options.cookieTransfer
- * @param {function(object): Promise<Object>} options.sendNetworkRequest
+ * @param {((arg0: object) => Promise<Object>)} options.sendNetworkRequest
  * @param {ResponseCreator} options.createResponse
- * @param {function(object): void} options.processWarningsAndErrors
- * @param {function(): string|undefined} options.getLocationHint
- * @param {function(): string} options.getAssuranceValidationTokenParams
+ * @param {((arg0: object) => void)} options.processWarningsAndErrors
+ * @param {(() => string|undefined)} options.getLocationHint
+ * @param {(() => string)} options.getAssuranceValidationTokenParams
  * @param {{ getAccessToken: () => Promise<string> }} [options.getImsAccessToken]
  *
  * @returns {EdgeRequestExecutor} A function that sends edge network requests with lifecycle management

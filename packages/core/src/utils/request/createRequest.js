@@ -21,9 +21,9 @@ import { uuid } from "../index.js";
  *
  * @param {Object} options
  * @param {RequestPayload} options.payload
- * @param {function({isIdentityEstablished: boolean}): string} options.getAction
- * @param {function({isIdentityEstablished: boolean}): boolean} options.getUseSendBeacon
- * @param {function(): boolean} [options.getUseKeepalive] Whether a fetch
+ * @param {((arg0: {isIdentityEstablished: boolean}) => string)} options.getAction
+ * @param {((arg0: {isIdentityEstablished: boolean}) => boolean)} options.getUseSendBeacon
+ * @param {(() => boolean)} [options.getUseKeepalive] Whether a fetch
  *   request should be sent with `keepalive` so it survives a page unload.
  *   Defaults to false.
  * @param {string} [options.datastreamIdOverride]

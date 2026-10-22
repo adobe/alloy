@@ -14,7 +14,7 @@ import { isEmptyObject } from "../index.js";
 /**
  * @typedef {{ datastreamId: string, [k: string]: Object }} Override
  * @typedef {Object} RequestPayload
- * @property {function(Override): void} mergeConfigOverride
+ * @property {((arg0: Override) => void)} mergeConfigOverride
  * @param {Object} params
  * @param {Override} params.localConfigOverrides
  * @param {Override} params.globalConfigOverrides

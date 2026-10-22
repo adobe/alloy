@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 /** @import { Request } from '../../utils/request/types.js' */
 
 /**
- * @typedef {function({request: Request, runOnResponseCallbacks?: function(): void, runOnRequestFailureCallbacks?: function(): void}): Promise<Object>} EdgeRequestExecutor
+ * @typedef {((arg0: {request: Request, runOnResponseCallbacks?: (() => void), runOnRequestFailureCallbacks?: (() => void)}) => Promise<Object>)} EdgeRequestExecutor
  */
 
 export const Types = {};

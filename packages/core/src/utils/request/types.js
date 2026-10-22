@@ -14,13 +14,13 @@ governing permissions and limitations under the License.
  * Request object with methods to access and modify request properties.
  *
  * @typedef {Object} Request
- * @property {function(): string} getId
- * @property {function(): RequestPayload} getPayload
- * @property {function({isIdentityEstablished: boolean}): string}  getAction
- * @property {function(): string|undefined} getDatastreamIdOverride
+ * @property {(() => string)} getId
+ * @property {(() => RequestPayload)} getPayload
+ * @property {((arg0: {isIdentityEstablished: boolean}) => string)}  getAction
+ * @property {(() => string|undefined)} getDatastreamIdOverride
  * @property {Function} getUseSendBeacon
- * @property {function(): boolean} getUseKeepalive
- * @property {function(): string|undefined} getEdgeSubPath
+ * @property {(() => boolean)} getUseKeepalive
+ * @property {(() => string|undefined)} getEdgeSubPath
  * @property {Function} getUseIdThirdPartyDomain
  * @property {Function} setUseIdThirdPartyDomain
  * @property {Function} setIsIdentityEstablished
@@ -30,29 +30,29 @@ governing permissions and limitations under the License.
  * Request payload object with methods for merging different types of data.
  *
  * @typedef {Object} RequestPayload
- * @property {function(object): void} mergeMeta
- * @property {function(object): void} mergeState
- * @property {function(object): void} mergeQuery
- * @property {function(object): void} mergeConfigOverride
- * @property {function(string, Identity): void} options.addIdentity
- * @property {function(string): boolean} options.hasIdentity
- * @property {function(): object} toJSON
+ * @property {((arg0: object) => void)} mergeMeta
+ * @property {((arg0: object) => void)} mergeState
+ * @property {((arg0: object) => void)} mergeQuery
+ * @property {((arg0: object) => void)} mergeConfigOverride
+ * @property {((arg0: string, arg1: Identity) => void)} options.addIdentity
+ * @property {((arg0: string) => boolean)} options.hasIdentity
+ * @property {(() => object)} toJSON
  */
 
 /**
  * Request payload object with methods for merging different types of data.
  *
  * @typedef {Object} DataCollectionRequestPayload
- * @property {function(object): void} mergeMeta
- * @property {function(object): void} mergeState
- * @property {function(object): void} mergeQuery
- * @property {function(object): void} mergeConfigOverride
- * @property {function(string, Identity): void} options.addIdentity
- * @property {function(string): boolean} options.hasIdentity
- * @property {function(object): void} addEvent
- * @property {function(): Array} getEvents
- * @property {function(): boolean} getDocumentMayUnload
- * @property {function(): object} toJSON
+ * @property {((arg0: object) => void)} mergeMeta
+ * @property {((arg0: object) => void)} mergeState
+ * @property {((arg0: object) => void)} mergeQuery
+ * @property {((arg0: object) => void)} mergeConfigOverride
+ * @property {((arg0: string, arg1: Identity) => void)} options.addIdentity
+ * @property {((arg0: string) => boolean)} options.hasIdentity
+ * @property {((arg0: object) => void)} addEvent
+ * @property {(() => Array)} getEvents
+ * @property {(() => boolean)} getDocumentMayUnload
+ * @property {(() => object)} toJSON
  */
 
 /**

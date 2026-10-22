@@ -12,9 +12,9 @@ governing permissions and limitations under the License.
 
 /**
  * @typedef {Object} Storage
- * @property {function(string): string|null} getItem
- * @property {function(string, string): void} setItem
- * @property {function(): void} clear
+ * @property {((arg0: string) => string|null)} getItem
+ * @property {((arg0: string, arg1: string) => void)} setItem
+ * @property {(() => void)} clear
  */
 
 /**
@@ -28,21 +28,21 @@ governing permissions and limitations under the License.
 
 /**
  * @typedef {Object} CookieConverter
- * @property {function(string, string): string} [read] - Custom decoder function
- * @property {function(string, string): string} [write] - Custom encoder function
+ * @property {((arg0: string, arg1: string) => string)} [read] - Custom decoder function
+ * @property {((arg0: string, arg1: string) => string)} [write] - Custom encoder function
  */
 
 /**
  * @typedef {Object} CookieJar
- * @property {function(string): string|undefined} get - Get cookie value by name, or get all cookies as object if no name provided
- * @property {function(): Object<string, string>} get - Get all cookies as key-value object when called with no arguments
- * @property {function(string, string, CookieAttributes=): string|undefined} set - Set cookie with optional attributes
- * @property {function(string, CookieAttributes=): void} remove - Remove cookie with optional attributes (must match set attributes)
- * @property {function(CookieConverter): CookieJar} withConverter - Create new instance with custom encoding/decoding
+ * @property {((arg0: string) => string|undefined)} get - Get cookie value by name, or get all cookies as object if no name provided
+ * @property {(() => Object<string, string>)} get - Get all cookies as key-value object when called with no arguments
+ * @property {((arg0: string, arg1: string, arg2?: CookieAttributes) => string|undefined)} set - Set cookie with optional attributes
+ * @property {((arg0: string, arg1?: CookieAttributes) => void)} remove - Remove cookie with optional attributes (must match set attributes)
+ * @property {((arg0: CookieConverter) => CookieJar)} withConverter - Create new instance with custom encoding/decoding
  */
 
 /**
- * @typedef {function(string): { session: Storage, persistent: Storage }} StorageCreator
+ * @typedef {((arg0: string) => { session: Storage, persistent: Storage })} StorageCreator
  */
 
 export const Types = {};
