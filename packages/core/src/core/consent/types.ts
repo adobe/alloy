@@ -10,24 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/**
- * @typedef {Object} ConsentStateMachine
- * @property {((arg0: string) => void)} in
- * @property {((arg0: string) => void)} out
- * @property {((arg0: string) => void)} pending
- * @property {((arg0?: boolean) => Promise<void>)} awaitConsent
- * @property {(() => Promise<void>)} withConsent
- * @property {(() => {state: string, wasSet: boolean})} current
- */
+export interface ConsentStateMachine {
+  in: (source: string) => void;
+  out: (source: string) => void;
+  pending: (source?: string) => void;
+  awaitConsent: (allowPendingConsent?: boolean) => Promise<void>;
+  withConsent: () => Promise<void>;
+  current: () => { state: string; wasSet: boolean };
+}
 
-/**
- * @typedef {Object} ConsentManager
- * @property {((arg0: Object, arg1: Object) => void)} initializeConsent
- * @property {((arg0: Object) => void)} setConsent
- * @property {(() => void)} suspend
- * @property {(() => Promise<void>)} awaitConsent
- * @property {(() => Promise<void>)} withConsent
- * @property {(() => {state: string, wasSet: boolean})} current
- */
+/** Consent values keyed by purpose, e.g. `{ general: "in" }`. */
+export type ConsentByPurpose = Record<string, string>;
+
+export interface ConsentManager {
+  initializeConsent: (
+    defaultConsentByPurpose: ConsentByPurpose,
+    storedConsentByPurpose: Partial<ConsentByPurpose>,
+  ) => void;
+  setConsent: (consentByPurpose: ConsentByPurpose) => void;
+  suspend: () => void;
+  awaitConsent: () => Promise<void>;
+  withConsent: () => Promise<void>;
+  current: () => { state: string; wasSet: boolean };
+}
 
 export const Types = {};

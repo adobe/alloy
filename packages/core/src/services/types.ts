@@ -18,6 +18,7 @@ governing permissions and limitations under the License.
  */
 
 import type { AlloyMonitor, Logger } from "../core/types.js";
+import type { CookieAttributes, CookieConverter } from "../utils/types.js";
 
 export interface NetworkResponse {
   statusCode: number;
@@ -64,6 +65,7 @@ export interface NetworkService {
   sendBeaconRequest: SendBeaconRequest;
 }
 
+/** Asynchronous key-value storage a platform provides (see utils `Storage` for the sync one). */
 export interface Storage {
   getItem: (name: string) => Promise<string | null>;
   setItem: (name: string, value: string) => Promise<boolean>;
@@ -80,18 +82,7 @@ export interface StorageService {
   createNamespacedStorage: (namespace: string) => NamespacedStorage;
 }
 
-export interface CookieAttributes {
-  domain?: string;
-  path?: string;
-  expires?: Date | number;
-  secure?: boolean;
-  sameSite?: "strict" | "lax" | "none";
-}
-
-export interface CookieConverter {
-  read?: (value: string, name: string) => string;
-  write?: (value: string, name: string) => string;
-}
+export type { CookieAttributes, CookieConverter } from "../utils/types.js";
 
 export interface CookieService {
   get: (name: string) => string | undefined;

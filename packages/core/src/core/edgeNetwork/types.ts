@@ -10,10 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { Request } from '../../utils/request/types.js' */
+import type { Request } from "../../utils/request/types.js";
 
-/**
- * @typedef {((arg0: {request: Request, runOnResponseCallbacks?: (() => void), runOnRequestFailureCallbacks?: (() => void)}) => Promise<Object>)} EdgeRequestExecutor
- */
+export type EdgeRequestExecutor = (options: {
+  request: Request;
+  runOnResponseCallbacks?: () => void;
+  runOnRequestFailureCallbacks?: () => void;
+}) => Promise<Record<string, unknown>>;
 
 export const Types = {};

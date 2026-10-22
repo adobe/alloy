@@ -10,15 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { Logger } from '../../core/types.js' */
-/** @import { CookieJar } from '../../utils/types.js' */
-
-/**
- * @typedef {Object} IdentityManager
- * @property {Function} initialize
- * @property {Function} setIdentityAcquired - Marks identity as acquired and resolves any pending identity promises
- * @property {Function} awaitIdentity - Returns a promise that resolves when identity is acquired
- * @property {Function} getEcidFromCookie
- */
+export interface IdentityManager {
+  initialize: () => void;
+  /** Marks identity as acquired and resolves any pending identity promises */
+  setIdentityAcquired: () => void;
+  /** Returns a promise that resolves when identity is acquired */
+  awaitIdentity: () => Promise<void>;
+  getEcidFromCookie: () => string | null;
+}
 
 export const Types = {};

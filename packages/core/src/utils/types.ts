@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+/** Synchronous namespaced storage used by utils (see services `Storage` for the async one). */
 export interface Storage {
   getItem: (name: string) => string | null;
   setItem: (name: string, value: string) => boolean;
