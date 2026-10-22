@@ -17,140 +17,157 @@ governing permissions and limitations under the License.
  * @file
  */
 
-/**
- * @typedef {Object} NetworkResponse
- * @property {number} statusCode
- * @property {string} body
- * @property {(name: string) => (string | null)} getHeader
- * @property {boolean} [sentWithBeacon]
- *   `true` when the request was handed to `navigator.sendBeacon`. The browser
- *   gives no response for these, so `statusCode`, `body`, and `getHeader` are
- *   placeholders rather than values from the server.
- */
+import type { AlloyMonitor, Logger } from "../core/types.js";
 
-/**
- * @typedef {Object} SendFetchRequestOptions
- * @property {boolean} [keepalive] Send the request with `keepalive` so the
- *   browser finishes it even if the page unloads. Implementations fall back to
- *   a regular request if the browser refuses (for example, when in-flight
- *   keepalive data on the page would exceed 64 KiB). Ignored where there is no
- *   page to unload (Node).
- */
+export interface NetworkResponse {
+  statusCode: number;
+  body: string;
+  getHeader: (name: string) => string | null;
+  /**
+   * `true` when the request was handed to `navigator.sendBeacon`. The browser
+   * gives no response for these, so `statusCode`, `body`, and `getHeader` are
+   * placeholders rather than values from the server.
+   */
+  sentWithBeacon?: boolean;
+}
 
-/**
- * @typedef {(url: string, body: string, headers?: Record<string, string>, options?: SendFetchRequestOptions) => Promise<NetworkResponse>} SendFetchRequest
- */
+export interface SendFetchRequestOptions {
+  /**
+   * Send the request with `keepalive` so the browser finishes it even if the
+   * page unloads. Implementations fall back to a regular request if the
+   * browser refuses (for example, when in-flight keepalive data on the page
+   * would exceed 64 KiB). Ignored where there is no page to unload (Node).
+   */
+  keepalive?: boolean;
+}
 
-/**
- * @typedef {(url: string, body: string) => Promise<NetworkResponse>} SendBeaconRequest
- */
+export type SendFetchRequest = (
+  url: string,
+  body: string,
+  headers?: Record<string, string>,
+  options?: SendFetchRequestOptions,
+) => Promise<NetworkResponse>;
 
-/**
- * @typedef {Object} NetworkService
- * @property {SendFetchRequest} sendFetchRequest
- *   Must send cookies (`credentials: "include"` in browsers).
- * @property {SendBeaconRequest} sendBeaconRequest
- *   Falls back to `sendFetchRequest` when the underlying transport is unavailable.
- */
+export type SendBeaconRequest = (
+  url: string,
+  body: string,
+) => Promise<NetworkResponse>;
 
-/**
- * @typedef {Object} Storage
- * @property {(name: string) => Promise<string | null>} getItem
- * @property {(name: string, value: string) => Promise<boolean>} setItem
- * @property {(name: string) => Promise<boolean>} removeItem
- * @property {() => Promise<boolean>} clear
- */
+export interface NetworkService {
+  /**
+   * Must send cookies (`credentials: "include"` in browsers).
+   */
+  sendFetchRequest: SendFetchRequest;
+  /**
+   * Falls back to `sendFetchRequest` when the underlying transport is unavailable.
+   */
+  sendBeaconRequest: SendBeaconRequest;
+}
 
-/**
- * @typedef {Object} NamespacedStorage
- * @property {Storage} session
- * @property {Storage} persistent
- */
+export interface Storage {
+  getItem: (name: string) => Promise<string | null>;
+  setItem: (name: string, value: string) => Promise<boolean>;
+  removeItem: (name: string) => Promise<boolean>;
+  clear: () => Promise<boolean>;
+}
 
-/**
- * @typedef {Object} StorageService
- * @property {(namespace: string) => NamespacedStorage} createNamespacedStorage
- */
+export interface NamespacedStorage {
+  session: Storage;
+  persistent: Storage;
+}
 
-/**
- * @typedef {Object} CookieAttributes
- * @property {string} [domain]
- * @property {string} [path]
- * @property {Date | number} [expires]
- * @property {boolean} [secure]
- * @property {("strict" | "lax" | "none")} [sameSite]
- */
+export interface StorageService {
+  createNamespacedStorage: (namespace: string) => NamespacedStorage;
+}
 
-/**
- * @typedef {Object} CookieConverter
- * @property {(value: string, name: string) => string} [read]
- * @property {(value: string, name: string) => string} [write]
- */
+export interface CookieAttributes {
+  domain?: string;
+  path?: string;
+  expires?: Date | number;
+  secure?: boolean;
+  sameSite?: "strict" | "lax" | "none";
+}
 
-/**
- * @typedef {Object} CookieService
- * @property {(name: string) => (string | undefined)} get
- * @property {() => Record<string, string>} getAll
- * @property {(name: string, value: string, options?: CookieAttributes) => (string | undefined)} set
- * @property {(name: string, options?: CookieAttributes) => void} remove
- * @property {(converter: CookieConverter) => CookieService} withConverter
- */
+export interface CookieConverter {
+  read?: (value: string, name: string) => string;
+  write?: (value: string, name: string) => string;
+}
 
-/**
- * @typedef {Object} RuntimeService
- * @property {(handler: Function, timeout?: number, ...args: any[]) => any} setTimeout
- * @property {(id: any) => void} clearTimeout
- * @property {(data: string) => string} atob
- * @property {(data: string) => string} btoa
- * @property {typeof TextEncoder} TextEncoder
- * @property {typeof TextDecoder} TextDecoder
- * @property {() => number} now
- *   Epoch-millisecond timestamp.
- */
+export interface CookieService {
+  get: (name: string) => string | undefined;
+  getAll: () => Record<string, string>;
+  set: (
+    name: string,
+    value: string,
+    options?: CookieAttributes,
+  ) => string | undefined;
+  remove: (name: string, options?: CookieAttributes) => void;
+  withConverter: (converter: CookieConverter) => CookieService;
+}
+
+export interface RuntimeService {
+  setTimeout: (
+    handler: (...args: never[]) => void,
+    timeout?: number,
+    ...args: unknown[]
+  ) => ReturnType<typeof setTimeout>;
+  clearTimeout: (id: ReturnType<typeof setTimeout> | undefined) => void;
+  atob: (data: string) => string;
+  btoa: (data: string) => string;
+  TextEncoder: typeof TextEncoder;
+  TextDecoder: typeof TextDecoder;
+  /**
+   * Epoch-millisecond timestamp.
+   */
+  now: () => number;
+}
 
 /**
  * Bridge to legacy Adobe libraries (Visitor.js, `adobe.optIn`).
- *
- * @typedef {Object} LegacyService
- * @property {(params: { orgId: string, logger: import('../core/types.js').Logger }) => Promise<string | undefined>} getEcidFromVisitor
- * @property {(params: { logger: import('../core/types.js').Logger }) => Promise<void>} awaitVisitorOptIn
- *   Resolves immediately when no legacy opt-in object is present.
  */
+export interface LegacyService {
+  getEcidFromVisitor: (params: {
+    orgId: string;
+    logger: Logger;
+  }) => Promise<string | undefined>;
+  /**
+   * Resolves immediately when no legacy opt-in object is present.
+   */
+  awaitVisitorOptIn: (params: { logger: Logger }) => Promise<void>;
+}
 
-/**
- * @typedef {Object} WindowContext
- * @property {string} title
- * @property {string} url
- * @property {string} referrer
- * @property {number} height
- * @property {number} width
- * @property {number} scrollY
- * @property {number} scrollX
- */
+export interface WindowContext {
+  title: string;
+  url: string;
+  referrer: string;
+  height: number;
+  width: number;
+  scrollY: number;
+  scrollX: number;
+}
 
-/**
- * @typedef {Object} GlobalsService
- * @property {() => string[]} getInstanceNames
- * @property {(instanceName: string) => any[]} getInstanceQueue
- * @property {() => import('../core/types.js').AlloyMonitor[]} getMonitors
- * @property {() => string} getLocationSearch
- * @property {() => string} getLocationHash
- * @property {() => string} getUserAgent
- * @property {() => string} getHostname
- * @property {() => { host: string, pathname: string }} getPageLocation
- * @property {() => boolean} isPageSsl
- * @property {(request: { hideReferrer: boolean, url: string }) => Promise<void>} fireReferrerHideableImage
- * @property {() => WindowContext} getWindowContext
- */
+export interface GlobalsService {
+  getInstanceNames: () => string[];
+  getInstanceQueue: (instanceName: string) => unknown[];
+  getMonitors: () => AlloyMonitor[];
+  getLocationSearch: () => string;
+  getLocationHash: () => string;
+  getUserAgent: () => string;
+  getHostname: () => string;
+  getPageLocation: () => { host: string; pathname: string };
+  isPageSsl: () => boolean;
+  fireReferrerHideableImage: (request: {
+    hideReferrer: boolean;
+    url: string;
+  }) => Promise<void>;
+  getWindowContext: () => WindowContext;
+}
 
-/**
- * @typedef {Object} PlatformServices
- * @property {(logger: import('../core/types.js').Logger) => NetworkService} createNetworkService
- * @property {StorageService} storage
- * @property {CookieService} cookie
- * @property {RuntimeService} runtime
- * @property {LegacyService} legacy
- * @property {GlobalsService} globals
- */
-
-export {};
+export interface PlatformServices {
+  createNetworkService: (logger: Logger) => NetworkService;
+  storage: StorageService;
+  cookie: CookieService;
+  runtime: RuntimeService;
+  legacy: LegacyService;
+  globals: GlobalsService;
+}

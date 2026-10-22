@@ -10,19 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/**
- * @typedef {import("./types.js").NetworkResponse} NetworkResponse
- * @typedef {import("./types.js").NetworkService} NetworkService
- * @typedef {import("./types.js").Storage} Storage
- * @typedef {import("./types.js").NamespacedStorage} NamespacedStorage
- * @typedef {import("./types.js").StorageService} StorageService
- * @typedef {import("./types.js").CookieAttributes} CookieAttributes
- * @typedef {import("./types.js").CookieConverter} CookieConverter
- * @typedef {import("./types.js").CookieService} CookieService
- * @typedef {import("./types.js").RuntimeService} RuntimeService
- * @typedef {import("./types.js").LegacyService} LegacyService
- * @typedef {import("./types.js").GlobalsService} GlobalsService
- * @typedef {import("./types.js").PlatformServices} PlatformServices
- */
+export type {
+  NetworkResponse,
+  SendFetchRequestOptions,
+  SendFetchRequest,
+  SendBeaconRequest,
+  NetworkService,
+  Storage,
+  NamespacedStorage,
+  StorageService,
+  CookieAttributes,
+  CookieConverter,
+  CookieService,
+  RuntimeService,
+  LegacyService,
+  WindowContext,
+  GlobalsService,
+  PlatformServices,
+} from "./types.js";
 
 export const Services = {};
