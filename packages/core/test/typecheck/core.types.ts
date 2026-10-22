@@ -131,10 +131,6 @@ const response: Response = createResponse({ content, getHeader: () => "" });
 expectTypeOf(response.getPayloadsByType("identity:persist")).toEqualTypeOf<
   unknown[]
 >();
-// Callers name the payload shape they expect from Edge.
-expectTypeOf(
-  response.getPayloadsByType<{ id: string }>("identity:persist"),
-).toEqualTypeOf<{ id: string }[]>();
 expectTypeOf(response.toJSON()).toEqualTypeOf<ResponseContent>();
 
 // Consent and identity.

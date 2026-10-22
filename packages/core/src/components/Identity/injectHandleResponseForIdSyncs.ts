@@ -21,7 +21,7 @@ export default ({ processIdSyncs }: InjectHandleResponseForIdSyncsOptions) => {
     // no need to wait for response
     processIdSyncs(
       // Edge returns `identity:exchange` payloads in the IdSync shape.
-      response.getPayloadsByType<IdSync>("identity:exchange"),
+      response.getPayloadsByType("identity:exchange") as IdSync[],
     );
   };
 };

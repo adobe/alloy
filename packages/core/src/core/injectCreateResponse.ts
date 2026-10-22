@@ -38,11 +38,10 @@ export default ({
        * @example
        * getPayloadsByType("identity:persist")
        */
-      getPayloadsByType<T = unknown>(type: string) {
-        // The caller names the payload shape Edge sends for this type.
+      getPayloadsByType(type: string) {
         return handle
           .filter((fragment) => fragment.type === type)
-          .flatMap((fragment) => fragment.payload) as T[];
+          .flatMap((fragment) => fragment.payload);
       },
       /**
        * Returns all errors.

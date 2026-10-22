@@ -22,8 +22,9 @@ export interface ProcessResponseOptions {
 export default ({ processDestinations }: ProcessResponseOptions) => {
   return ({ response }: { response: Pick<Response, "getPayloadsByType"> }) => {
     // Edge returns destination payloads under these types; shape not validated.
-    const pushDestinations =
-      response.getPayloadsByType<Destination>("activation:push");
+    const pushDestinations = response.getPayloadsByType(
+      "activation:push",
+    ) as Destination[];
     // fire and forget
     processDestinations(pushDestinations);
     return {
