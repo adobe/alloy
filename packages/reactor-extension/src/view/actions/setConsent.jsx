@@ -412,18 +412,6 @@ const SetConsent = () => {
                   name="consent"
                   render={(arrayHelpers) => (
                     <>
-                      <Button
-                        variant="primary"
-                        data-test-id="addConsentButton"
-                        onPress={() => {
-                          arrayHelpers.push(createBlankConsentObject());
-                        }}
-                        styles={style({
-                          marginStart: "auto",
-                        })}
-                      >
-                        Add consent object
-                      </Button>
                       <div
                         className={style({
                           display: "flex",
@@ -459,6 +447,17 @@ const SetConsent = () => {
                             </FormElementContainer>
                           </FormEditGroup>
                         ))}
+                      </div>
+                      <div>
+                        <Button
+                          variant="primary"
+                          data-test-id="addConsentButton"
+                          onPress={() => {
+                            arrayHelpers.push(createBlankConsentObject());
+                          }}
+                        >
+                          Add consent object
+                        </Button>
                       </div>
                     </>
                   )}
