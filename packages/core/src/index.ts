@@ -31,8 +31,11 @@ export type CreatePlatformServices = () => PlatformServices;
 
 // The command result stays `any` on the public entry for consumer
 // compatibility (spec-ts-root Decision 1); core's own type is narrower.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AlloyInstance = (commandName: string, options?: unknown) => Promise<any>;
+export type AlloyInstance = (
+  commandName: string,
+  options?: unknown,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+) => Promise<any>;
 
 export interface CreateInstanceOptions {
   name?: string;
@@ -76,16 +79,14 @@ export { default as consent } from "./components/Consent/index.js";
  * @param [options.name=alloy] - The name of the instance.
  * @param [options.monitors] - Monitors for the instance.
  * @param [options.components] - Components for the instance.
- * @param createPlatformServices
- * @param [coreConfigValidators]
- * Tracks which orgId/datastreamId values have already been configured, to
+ * @param [createPlatformServices] - Creates the platform services for the instance.
+ * @param [coreConfigValidators] - Tracks which orgId/datastreamId values have already been configured, to
  * catch accidentally configuring two instances with the same one. Shared by
  * default for the module's lifetime (matches "configured once per page
  * load," since a page load resets module state); pass a fresh instance per
  * call if that assumption doesn't hold for your runtime (e.g. one Node
  * process handling many requests).
- * @param [getImsAccessToken]
- * Only relevant when `edgeCredentials` is configured — see
+ * @param [getImsAccessToken] - Only relevant when `edgeCredentials` is configured — see
  * `createGetImsAccessToken` above.
  * @returns A callable Alloy instance.
  *
@@ -93,9 +94,10 @@ export { default as consent } from "./components/Consent/index.js";
  */
 export const createCustomInstance = (
   options: CreateCustomInstanceOptions = {},
-  // Optional for callers, but createExecuteCommand calls it right away, so a
-  // missing value fails at runtime exactly as before. The cast keeps the
-  // `= undefined` default and the shorthand property in the emitted code.
+  // Optional for callers (matching the old declaration), but
+  // createExecuteCommand calls it right away, so a missing value fails at
+  // runtime exactly as before. The cast keeps the `= undefined` default and
+  // the shorthand property in the emitted code.
   createPlatformServices = undefined as unknown as CreatePlatformServices,
   coreConfigValidators:
     | ReturnType<typeof createCoreConfigs>
@@ -110,12 +112,12 @@ export const createCustomInstance = (
     components: arrayOf(callback()),
   }).noUnknownFields();
 
-  // The validator returns `unknown`; the schema above guarantees this shape.
-  const { name, monitors, components } = eventOptionsValidator(options) as {
-    name: string;
-    monitors: AlloyMonitor[];
-    components: ComponentCreator[];
-  };
+  // The validator returns `unknown`. The schema fills defaults and checks
+  // `components` are functions, but does not check the AlloyMonitor shape of
+  // `monitors`; the option types are trusted for that.
+  const { name, monitors, components } = eventOptionsValidator(
+    options,
+  ) as Required<CreateCustomInstanceOptions>;
 
   return createExecuteCommand({
     instanceName: name,
@@ -133,7 +135,7 @@ export const createCustomInstance = (
  * @param [options] - Configuration options for the instance.
  * @param [options.name=alloy] - The name of the instance.
  * @param [options.monitors] - (Optional) Monitors for the instance.
- * @param createPlatformServices
+ * @param [createPlatformServices] - Creates the platform services for the instance.
  * @returns A callable Alloy instance.
  *
  * @example
@@ -144,9 +146,7 @@ export const createCustomInstance = (
  */
 export const createInstance = (
   options: CreateInstanceOptions = {},
-  // Optional for callers, but createExecuteCommand calls it right away, so a
-  // missing value fails at runtime exactly as before. The cast keeps the
-  // `= undefined` default and the shorthand property in the emitted code.
+  // Same cast as in createCustomInstance above.
   createPlatformServices = undefined as unknown as CreatePlatformServices,
 ): AlloyInstance => {
   const eventOptionsValidator = objectOf({
@@ -154,11 +154,11 @@ export const createInstance = (
     monitors: arrayOf(objectOf({})).default([]),
   }).noUnknownFields();
 
-  // The validator returns `unknown`; the schema above guarantees this shape.
-  const { name, monitors } = eventOptionsValidator(options) as {
-    name: string;
-    monitors: AlloyMonitor[];
-  };
+  // The validator returns `unknown`. The schema fills defaults but does not
+  // check the AlloyMonitor shape of `monitors`; the option types are trusted.
+  const { name, monitors } = eventOptionsValidator(
+    options,
+  ) as Required<CreateInstanceOptions>;
 
   return createCustomInstance(
     {

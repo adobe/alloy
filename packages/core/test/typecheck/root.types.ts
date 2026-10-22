@@ -23,6 +23,7 @@ import {
   createInstance,
 } from "../../src/index.js";
 import type {
+  AlloyInstance,
   CreateCustomInstanceOptions,
   CreateInstanceOptions,
   CreatePlatformServices,
@@ -54,6 +55,12 @@ expectTypeOf<CreatePlatformServices>().toEqualTypeOf<() => PlatformServices>();
 expectTypeOf(createInstance)
   .parameter(0)
   .toEqualTypeOf<CreateInstanceOptions | undefined>();
+expectTypeOf(createInstance)
+  .parameter(1)
+  .toEqualTypeOf<CreatePlatformServices | undefined>();
+expectTypeOf(createCustomInstance)
+  .parameter(1)
+  .toEqualTypeOf<CreatePlatformServices | undefined>();
 expectTypeOf(createCustomInstance)
   .parameter(2)
   .toEqualTypeOf<ReturnType<typeof createCoreConfigs> | undefined>();
@@ -71,6 +78,7 @@ createInstance({ nmae: "alloy" }, createPlatformServices);
 
 // The instance is a callable command executor.
 const alloy = createInstance({ name: "alloy" }, createPlatformServices);
+expectTypeOf(alloy).toEqualTypeOf<AlloyInstance>();
 expectTypeOf(alloy).parameters.toEqualTypeOf<
   [commandName: string, options?: unknown]
 >();
