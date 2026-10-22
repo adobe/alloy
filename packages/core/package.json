@@ -27,7 +27,7 @@
       "default": "./dist/utils/dom/index.js"
     },
     "./utils/request": {
-      "alloy-source": "./src/utils/request/index.js",
+      "alloy-source": "./src/utils/request/index.ts",
       "types": "./dist/utils/request/index.d.ts",
       "default": "./dist/utils/request/index.js"
     },

@@ -10,7 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (content) => (namespaceCode) => {
+import type { RequestContent } from "./types.js";
+
+export default (content: RequestContent) => (namespaceCode: string) => {
   return (
     (content.xdm &&
       content.xdm.identityMap &&

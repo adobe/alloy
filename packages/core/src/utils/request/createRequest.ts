@@ -10,26 +10,27 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { Request, RequestPayload } from './types.js' */
-
 import { uuid } from "../index.js";
+import type { Request, RequestPayload } from "./types.js";
+
+export interface CreateRequestOptions<P extends RequestPayload> {
+  payload: P;
+  getAction: (arg0: { isIdentityEstablished: boolean }) => string;
+  getUseSendBeacon: (arg0: { isIdentityEstablished: boolean }) => boolean;
+  /**
+   * Whether a fetch request should be sent with `keepalive` so it survives a
+   * page unload. Defaults to false.
+   */
+  getUseKeepalive?: () => boolean;
+  datastreamIdOverride?: string;
+  edgeSubPath?: string;
+  requestParams?: Record<string, unknown>;
+}
 
 /**
  * Creates a request object with methods to access and modify request properties.
  *
- * @function
- *
- * @param {Object} options
- * @param {RequestPayload} options.payload
- * @param {((arg0: {isIdentityEstablished: boolean}) => string)} options.getAction
- * @param {((arg0: {isIdentityEstablished: boolean}) => boolean)} options.getUseSendBeacon
- * @param {(() => boolean)} [options.getUseKeepalive] Whether a fetch
- *   request should be sent with `keepalive` so it survives a page unload.
- *   Defaults to false.
- * @param {string} [options.datastreamIdOverride]
- * @param {string} [options.edgeSubPath]
- *
- * @returns {Request}
+ * @param options - Request options.
  *
  * @example
  * const request = createRequest({
@@ -44,7 +45,9 @@ import { uuid } from "../index.js";
  * request.setIsIdentityEstablished();
  * console.log(request.getAction()); // Returns action based on identity status
  */
-export default (options) => {
+export default <P extends RequestPayload>(
+  options: CreateRequestOptions<P>,
+): Request<P> => {
   const {
     payload,
     getAction,

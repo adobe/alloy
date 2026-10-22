@@ -10,19 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { DataCollectionRequestPayload } from './types.js' */
-
 import createRequestPayload from "./createRequestPayload.js";
 import createAddIdentity from "./createAddIdentity.js";
 import createHasIdentity from "./createHasIdentity.js";
+import type {
+  DataCollectionRequestPayload,
+  RequestContent,
+  RequestEvent,
+} from "./types.js";
 
-/**
- * @function
- *
- * @returns {DataCollectionRequestPayload}
- */
-export default () => {
-  const content = {};
+export default (): DataCollectionRequestPayload => {
+  const content: RequestContent = {};
   const requestPayload = createRequestPayload({
     content,
     addIdentity: createAddIdentity(content),
@@ -31,7 +29,7 @@ export default () => {
 
   return {
     ...requestPayload,
-    addEvent: (event) => {
+    addEvent: (event: RequestEvent) => {
       content.events = content.events || [];
       content.events.push(event);
     },

@@ -11,12 +11,20 @@ governing permissions and limitations under the License.
 */
 
 import createRequest from "./createRequest.js";
+import type { DataCollectionRequestPayload } from "./types.js";
 
 export default ({
   payload: dataCollectionRequestPayload,
   datastreamIdOverride,
+}: {
+  payload: DataCollectionRequestPayload;
+  datastreamIdOverride?: string;
 }) => {
-  const getUseSendBeacon = ({ isIdentityEstablished }) => {
+  const getUseSendBeacon = ({
+    isIdentityEstablished,
+  }: {
+    isIdentityEstablished: boolean;
+  }) => {
     // When the document may be unloading, we still hit the interact endpoint
     // using fetch if an identity has not been established. If we were instead
     // to hit the collect endpoint using sendBeacon in this case, one of three

@@ -15,7 +15,18 @@ import { uuid, queryString } from "../index.js";
 const ASSURANCE_VALIDATION_SESSION_URL_PARAM = "adb_validation_sessionid";
 const CLIENT_ID_KEY = "clientId";
 
-export default ({ getLocationSearch, storage }) => {
+interface Storage {
+  getItem: (key: string) => Promise<string | null | undefined>;
+  setItem: (key: string, value: string) => Promise<unknown> | unknown;
+}
+
+export default ({
+  getLocationSearch,
+  storage,
+}: {
+  getLocationSearch: () => string;
+  storage: Storage;
+}) => {
   // Start with a fresh UUID as an immediate fallback, then overwrite with the
   // persisted value once the async read resolves. Requests fired before the
   // read settles carry the fallback UUID; all subsequent requests (and all
@@ -27,7 +38,9 @@ export default ({ getLocationSearch, storage }) => {
       if (stored) {
         clientId = stored;
       } else {
-        const result = storage.setItem(CLIENT_ID_KEY, clientId);
+        const result = storage.setItem(CLIENT_ID_KEY, clientId) as
+          | Promise<unknown>
+          | undefined;
         if (result && typeof result.then === "function") {
           result.catch(() => {});
         }

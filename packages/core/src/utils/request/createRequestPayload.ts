@@ -10,9 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { RequestPayload, Identity } from './types.js' */
-
 import { createMerger, prepareConfigOverridesForEdge } from "../index.js";
+import type { Identity, RequestContent, RequestPayload } from "./types.js";
 
 /**
  * createMerger creates a function that does a deep merge. Example:
@@ -51,34 +50,31 @@ import { createMerger, prepareConfigOverridesForEdge } from "../index.js";
  * disabled.
  * This function does that.
  *
- * @param {Object} content
- * @param {string} key
- * @returns {(updates: Object) => void}
  */
-const createMergeConfigOverride = (content, key) => (updates) => {
-  const propertyPath = key.split(".");
-  const hostObjectForUpdates = propertyPath.reduce((obj, propertyName) => {
-    obj[propertyName] = obj[propertyName] || {};
-    return obj[propertyName];
-  }, content);
+const createMergeConfigOverride =
+  (content: Record<string, unknown>, key: string) => (updates: object) => {
+    const propertyPath = key.split(".");
+    const hostObjectForUpdates = propertyPath.reduce<Record<string, unknown>>(
+      (obj, propertyName) => {
+        obj[propertyName] = obj[propertyName] || {};
+        return obj[propertyName] as Record<string, unknown>;
+      },
+      content,
+    );
 
-  Object.assign(hostObjectForUpdates, updates);
-};
+    Object.assign(hostObjectForUpdates, updates);
+  };
 
 /**
  * Creates a request payload object with methods for merging different types of data.
  * This provides the base functionality that all types of request payloads share.
  *
- * @function
- *
- * @param {Object} options
- * @param {Object} options.content
- * @param {((arg0: string, arg1: Identity) => void)} options.addIdentity
- * @param {((arg0: string) => boolean)} options.hasIdentity
- *
- * @returns {RequestPayload}
  */
-export default (options) => {
+export default (options: {
+  content: RequestContent;
+  addIdentity: (namespaceCode: string, identity: Identity) => void;
+  hasIdentity: (namespaceCode: string) => boolean;
+}): RequestPayload => {
   const { content, addIdentity, hasIdentity } = options;
   const mergeConfigOverrides = createMergeConfigOverride(
     content,
@@ -88,7 +84,7 @@ export default (options) => {
     mergeMeta: createMerger(content, "meta"),
     mergeState: createMerger(content, "meta.state"),
     mergeQuery: createMerger(content, "query"),
-    mergeConfigOverride: (updates) => mergeConfigOverrides(updates),
+    mergeConfigOverride: (updates: object) => mergeConfigOverrides(updates),
     finalizeConfigOverrides: () => {
       if (content.meta?.configOverrides) {
         const prepared = prepareConfigOverridesForEdge(

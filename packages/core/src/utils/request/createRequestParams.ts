@@ -11,18 +11,27 @@ governing permissions and limitations under the License.
 */
 import { isEmptyObject } from "../index.js";
 
-/**
- * @typedef {{ datastreamId: string, [k: string]: Object }} Override
- * @typedef {Object} RequestPayload
- * @property {((arg0: Override) => void)} mergeConfigOverride
- * @param {Object} params
- * @param {Override} params.localConfigOverrides
- * @param {Override} params.globalConfigOverrides
- * @param {RequestPayload} params.payload
- * @returns {{ payload: RequestPayload, datastreamIdOverride: string }}
- */
-export default ({ localConfigOverrides, globalConfigOverrides, payload }) => {
-  const requestParams = { payload };
+import type { RequestPayload } from "./types.js";
+
+export type Override = { datastreamId?: string; [k: string]: unknown };
+
+export default <
+  P extends Pick<
+    RequestPayload,
+    "mergeConfigOverride" | "finalizeConfigOverrides"
+  >,
+>({
+  localConfigOverrides,
+  globalConfigOverrides,
+  payload,
+}: {
+  localConfigOverrides?: Override | null;
+  globalConfigOverrides?: Override | null;
+  payload: P;
+}): { payload: P; datastreamIdOverride?: string } => {
+  const requestParams: { payload: P; datastreamIdOverride?: string } = {
+    payload,
+  };
   const { datastreamId, ...localConfigOverridesWithoutDatastreamId } =
     localConfigOverrides || {};
   if (datastreamId) {
