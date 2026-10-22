@@ -17,7 +17,7 @@ export type PlaybackStateValue =
 
 export interface PlayerDetails {
   playhead: unknown;
-  qoeDataDetails?: Record<string, unknown>;
+  qoeDataDetails?: Record<string, unknown> | null;
 }
 
 export type GetPlayerDetails = (options: { playerId: string }) => PlayerDetails;

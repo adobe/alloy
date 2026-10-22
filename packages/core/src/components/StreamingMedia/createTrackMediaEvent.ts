@@ -14,7 +14,6 @@ import type { StreamingMediaComponentConfig } from "./configValidators.js";
 import type {
   MediaEventManager,
   MediaEventOptions,
-  MediaEventType,
 } from "./createMediaEventManager.js";
 import type {
   MediaSessionCacheManager,
@@ -36,7 +35,7 @@ export interface CreateTrackMediaEventOptions {
 export type TrackMediaEvent = (options: MediaEventOptions) => Promise<void>;
 
 const getContentState = (
-  eventType: MediaEventType,
+  eventType: string,
   sessionContentState: PlaybackStateValue | undefined,
 ) => {
   if (

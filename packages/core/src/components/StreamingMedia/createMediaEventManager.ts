@@ -45,9 +45,9 @@ export interface MediaCollection {
 export interface MediaEventOptions {
   playerId?: string;
   xdm: {
-    eventType: MediaEventType;
+    // Validated against MediaEventType; the MediaAnalyticsBridge passes strings.
+    eventType: string;
     mediaCollection?: MediaCollection;
-    [key: string]: unknown;
   };
 }
 
@@ -59,7 +59,6 @@ export interface MediaSessionOptions {
     // The validator requires sessionDetails in every accepted shape.
     mediaCollection: MediaCollection &
       Required<Pick<MediaCollection, "sessionDetails">>;
-    [key: string]: unknown;
   };
   edgeConfigOverrides?: Record<string, unknown>;
 }
@@ -76,7 +75,7 @@ export interface MediaEventManager {
   createMediaSession: (options: MediaSessionOptions) => Event;
   augmentMediaEvent: (options: {
     event: Event;
-    eventType?: MediaEventType;
+    eventType?: string;
     playerId?: string;
     getPlayerDetails?: GetPlayerDetails;
     sessionID?: string;
