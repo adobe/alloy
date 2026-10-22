@@ -11,20 +11,31 @@ governing permissions and limitations under the License.
 */
 
 import { stackError } from "../utils/index.js";
+import type { ComponentRegistry } from "./createComponentRegistry.js";
+import type { Lifecycle } from "./createLifecycle.js";
+import type { Component, ComponentCreator } from "./types.js";
+
+export interface InitializeComponentsOptions {
+  componentCreators: ComponentCreator[];
+  lifecycle: Lifecycle;
+  componentRegistry: ComponentRegistry;
+  getImmediatelyAvailableTools: (componentName: string) => unknown;
+}
 
 export default ({
   componentCreators,
   lifecycle,
   componentRegistry,
   getImmediatelyAvailableTools,
-}) => {
+}: InitializeComponentsOptions): Promise<ComponentRegistry> => {
   componentCreators.forEach((createComponent) => {
     const { namespace } = createComponent;
     // TO-DOCUMENT: Helpers that we inject into factories.
     const tools = getImmediatelyAvailableTools(namespace);
-    let component;
+    let component: Component;
     try {
-      component = createComponent(tools);
+      // Each component types its own tools.
+      component = createComponent(tools as never);
     } catch (error) {
       throw stackError({
         error,

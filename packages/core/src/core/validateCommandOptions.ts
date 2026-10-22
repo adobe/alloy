@@ -12,7 +12,18 @@ governing permissions and limitations under the License.
 
 const COMMAND_DOC_URI = "https://adobe.ly/3sHgQHb";
 
-export default ({ command, options }) => {
+export interface CommandToValidate {
+  commandName?: string;
+  documentationUri?: string;
+  optionsValidator?: (options: unknown) => unknown;
+}
+
+export interface ValidateCommandOptionsOptions {
+  command: CommandToValidate;
+  options: unknown;
+}
+
+export default ({ command, options }: ValidateCommandOptionsOptions) => {
   const {
     commandName,
     documentationUri = COMMAND_DOC_URI,

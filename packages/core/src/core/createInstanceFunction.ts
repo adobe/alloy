@@ -10,8 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (executeCommand) => {
-  return ([resolve, reject, [commandName, options]]) => {
+import type { ExecuteCommand } from "./injectExecuteCommand.js";
+
+/** A queued `alloy(...)` call: the promise callbacks and the call arguments. */
+export type InstanceCall = [
+  resolve: (result: Record<string, unknown>) => void,
+  reject: (error: unknown) => void,
+  args: [commandName: string, options?: unknown],
+];
+
+export default (executeCommand: ExecuteCommand) => {
+  return ([resolve, reject, [commandName, options]]: InstanceCall) => {
     executeCommand(commandName, options).then(resolve, reject);
   };
 };

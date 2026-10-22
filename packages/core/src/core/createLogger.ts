@@ -11,8 +11,24 @@ governing permissions and limitations under the License.
 */
 
 import redactEdgeCredentials from "../utils/redactEdgeCredentials.js";
+import type { AlloyMonitor, LogLevel, Logger, LoggerContext } from "./types.js";
 
-export default ({ getDebugEnabled, console, getMonitors, context }) => {
+export interface CreateLoggerOptions {
+  getDebugEnabled: () => boolean;
+  console: Pick<Console, LogLevel>;
+  getMonitors: () => AlloyMonitor[];
+  context: LoggerContext;
+}
+
+// redactEdgeCredentials passes through any value without edgeCredentials.
+type Redactable = { edgeCredentials?: object } | null | undefined;
+
+export default ({
+  getDebugEnabled,
+  console,
+  getMonitors,
+  context,
+}: CreateLoggerOptions): Logger => {
   let prefix = `[${context.instanceName}]`;
   if (context.componentName) {
     prefix += ` [${context.componentName}]`;
@@ -21,25 +37,31 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
   // redactEdgeCredentials no-ops on anything without edgeCredentials, so
   // applying it here covers every call site (config, command options, ...)
   // without redacting each one individually.
-  const notifyMonitors = (method, data) => {
+  const notifyMonitors = <T extends object>(
+    method: keyof AlloyMonitor,
+    data: T & { config?: unknown; options?: unknown },
+  ) => {
     const monitors = getMonitors();
     if (monitors.length > 0) {
       const dataWithContext = {
         ...context,
         ...data,
-        config: redactEdgeCredentials(data.config),
-        options: redactEdgeCredentials(data.options),
+        config: redactEdgeCredentials(data.config as Redactable),
+        options: redactEdgeCredentials(data.options as Redactable),
       };
       monitors.forEach((monitor) => {
         if (monitor[method]) {
-          monitor[method](dataWithContext);
+          // Each hook gets the payload of its own log method.
+          (monitor[method] as (data: unknown) => void)(dataWithContext);
         }
       });
     }
   };
 
-  const log = (level, ...rest) => {
-    const redactedRest = rest.map(redactEdgeCredentials);
+  const log = (level: LogLevel, ...rest: unknown[]) => {
+    const redactedRest = rest.map(
+      redactEdgeCredentials as (value: unknown) => unknown,
+    );
     notifyMonitors("onBeforeLog", { level, arguments: redactedRest });
     if (getDebugEnabled()) {
       console[level](prefix, ...redactedRest);

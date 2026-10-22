@@ -13,6 +13,22 @@ governing permissions and limitations under the License.
 import { isFunction, isObject } from "../utils/index.js";
 import { CONFIGURE, SET_DEBUG } from "../constants/coreCommands.js";
 import { objectOf, boolean } from "../utils/validation/index.js";
+import type { ComponentRegistry } from "./createComponentRegistry.js";
+import type validateCommandOptionsFn from "./validateCommandOptions.js";
+import type { Logger } from "./types.js";
+
+export interface InjectExecuteCommandOptions {
+  logger: Logger;
+  configureCommand: (options: unknown) => Promise<ComponentRegistry>;
+  setDebugCommand: (options: { enabled: boolean }) => void;
+  handleError: (error: unknown, operation: string) => unknown;
+  validateCommandOptions: typeof validateCommandOptionsFn;
+}
+
+export type ExecuteCommand = (
+  commandName: string,
+  options?: unknown,
+) => Promise<Record<string, unknown>>;
 
 export default ({
   logger,
@@ -20,11 +36,11 @@ export default ({
   setDebugCommand,
   handleError,
   validateCommandOptions,
-}) => {
-  let configurePromise;
+}: InjectExecuteCommandOptions): ExecuteCommand => {
+  let configurePromise: Promise<ComponentRegistry> | undefined;
 
-  const getExecutor = (commandName, options) => {
-    let executor;
+  const getExecutor = (commandName: string, options: unknown) => {
+    let executor: () => unknown;
 
     if (commandName === CONFIGURE) {
       if (configurePromise) {
@@ -55,11 +71,13 @@ export default ({
             options,
           });
 
-          setDebugCommand(validatedOptions);
+          // The optionsValidator above guarantees this shape.
+          setDebugCommand(validatedOptions as { enabled: boolean });
         };
       } else {
         executor = () => {
-          return configurePromise.then(
+          // Checked above; configurePromise is never unset.
+          return (configurePromise as Promise<ComponentRegistry>).then(
             (componentRegistry) => {
               const command = componentRegistry.getCommand(commandName);
               if (!command || !isFunction(command.run)) {

@@ -11,13 +11,41 @@ governing permissions and limitations under the License.
 */
 
 import { intersection, stackError } from "../utils/index.js";
+import type {
+  Component,
+  ComponentCommand,
+  ComponentLifecycle,
+  LifecycleHookName,
+} from "./types.js";
 
-const wrapForErrorHandling = (fn, stackMessage) => {
-  return (...args) => {
-    let result;
+export type LifecycleCallback = (...args: unknown[]) => unknown;
+
+/** A component command after registration. */
+export interface RegisteredCommand {
+  commandName: string;
+  documentationUri?: string;
+  optionsValidator?: (options: unknown) => unknown;
+  run: (options: unknown) => unknown;
+}
+
+export interface ComponentRegistry {
+  register: (namespace: string, component: Component) => void;
+  getCommand: (commandName: string) => RegisteredCommand | undefined;
+  getCommandNames: () => string[];
+  getLifecycleCallbacks: (hookName: LifecycleHookName) => LifecycleCallback[];
+  getComponentNames: () => string[];
+}
+
+const wrapForErrorHandling = (
+  fn: (...args: never[]) => unknown,
+  stackMessage: string,
+) => {
+  return (...args: unknown[]) => {
+    let result: unknown;
 
     try {
-      result = fn(...args);
+      // Components type their own hook and command params; core passes them through.
+      result = (fn as LifecycleCallback)(...args);
     } catch (error) {
       throw stackError({ error, message: stackMessage });
     }
@@ -33,14 +61,16 @@ const wrapForErrorHandling = (fn, stackMessage) => {
 };
 
 // TO-DOCUMENT: All public commands and their signatures.
-export default () => {
-  const componentsByNamespace = {};
-  const commandsByName = {};
-  const lifecycleCallbacksByName = {};
+export default (): ComponentRegistry => {
+  const componentsByNamespace: Record<string, Component> = {};
+  const commandsByName: Record<string, RegisteredCommand> = {};
+  const lifecycleCallbacksByName: Partial<
+    Record<LifecycleHookName, LifecycleCallback[]>
+  > = {};
 
   const registerComponentCommands = (
-    namespace,
-    componentCommandsByName = {},
+    namespace: string,
+    componentCommandsByName: Record<string, ComponentCommand> = {},
   ) => {
     const conflictingCommandNames = intersection(
       Object.keys(commandsByName),
@@ -63,21 +93,26 @@ export default () => {
         command.run,
         `[${namespace}] An error occurred while executing the ${commandName} command.`,
       );
-      commandsByName[commandName] = command;
+      // commandName is set and run is wrapped above.
+      commandsByName[commandName] = command as RegisteredCommand;
     });
   };
 
   const registerLifecycleCallbacks = (
-    namespace,
-    componentLifecycleCallbacksByName = {},
+    namespace: string,
+    componentLifecycleCallbacksByName: ComponentLifecycle = {},
   ) => {
-    Object.keys(componentLifecycleCallbacksByName).forEach((hookName) => {
+    // The keys of a ComponentLifecycle are hook names.
+    (
+      Object.keys(componentLifecycleCallbacksByName) as LifecycleHookName[]
+    ).forEach((hookName) => {
       lifecycleCallbacksByName[hookName] =
         lifecycleCallbacksByName[hookName] || [];
 
       lifecycleCallbacksByName[hookName].push(
         wrapForErrorHandling(
-          componentLifecycleCallbacksByName[hookName],
+          // hookName is an own key, so the callback is defined.
+          componentLifecycleCallbacksByName[hookName] as LifecycleCallback,
           `[${namespace}] An error occurred while executing the ${hookName} lifecycle hook.`,
         ),
       );

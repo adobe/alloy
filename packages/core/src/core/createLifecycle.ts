@@ -10,8 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import type { ComponentRegistry } from "./createComponentRegistry.js";
+import type { LifecycleHookName } from "./types.js";
+
+export type Lifecycle = Record<
+  LifecycleHookName,
+  (...args: unknown[]) => Promise<unknown[]>
+>;
+
 // TO-DOCUMENT: Lifecycle hooks and their params.
-const hookNames = [
+const hookNames: LifecycleHookName[] = [
   // Called after all components have been registered.
   "onComponentsRegistered",
   // Called before an event is sent on a data collection request
@@ -35,11 +43,14 @@ const hookNames = [
   "onDecision",
 ];
 
-const createHook = (componentRegistry, hookName) => {
-  return (...args) => {
+const createHook = (
+  componentRegistry: ComponentRegistry,
+  hookName: LifecycleHookName,
+) => {
+  return (...args: unknown[]) => {
     return Promise.all(
       componentRegistry.getLifecycleCallbacks(hookName).map((callback) => {
-        return new Promise((resolve) => {
+        return new Promise<unknown>((resolve) => {
           resolve(callback(...args));
         });
       }),
@@ -52,19 +63,20 @@ const createHook = (componentRegistry, hookName) => {
  * attempts to execute lifecycle method Y, that all X methods on all components
  * will have been called before any of their Y methods are called. It does
  * this by kicking the call to the Y method to the next JavaScript tick.
- * @returns {function}
+ * @returns The guarded hook.
  */
-const guardHook = (fn) => {
-  return (...args) => {
+const guardHook = (fn: (...args: unknown[]) => Promise<unknown[]>) => {
+  return (...args: unknown[]) => {
     return Promise.resolve().then(() => {
       return fn(...args);
     });
   };
 };
 
-export default (componentRegistry) => {
+export default (componentRegistry: ComponentRegistry): Lifecycle => {
   return hookNames.reduce((memo, hookName) => {
     memo[hookName] = guardHook(createHook(componentRegistry, hookName));
     return memo;
-  }, {});
+    // Every hook is added by the reduce.
+  }, {} as Lifecycle);
 };

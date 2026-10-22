@@ -10,13 +10,31 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import type { Storage } from "../services/types.js";
+import type { CreateLoggerOptions } from "./createLogger.js";
+import type { AlloyMonitor, LogLevel, Logger } from "./types.js";
+
+export interface CreateLogControllerOptions {
+  console: Pick<Console, LogLevel>;
+  createLogger: (options: CreateLoggerOptions) => Logger;
+  instanceName: string;
+  getMonitors: () => AlloyMonitor[];
+  storage: Storage;
+}
+
+export interface LogController {
+  setDebugEnabled: (value: boolean, options?: { fromConfig?: boolean }) => void;
+  logger: Logger;
+  createComponentLogger: (componentName: string) => Logger;
+}
+
 export default ({
   console,
   createLogger,
   instanceName,
   getMonitors,
   storage,
-}) => {
+}: CreateLogControllerOptions): LogController => {
   let debugEnabled = false;
   let debugSetByUser = false;
 
@@ -32,7 +50,10 @@ export default ({
     .catch(() => {});
 
   const getDebugEnabled = () => debugEnabled;
-  const setDebugEnabled = (value, { fromConfig = false } = {}) => {
+  const setDebugEnabled = (
+    value: boolean,
+    { fromConfig = false }: { fromConfig?: boolean } = {},
+  ) => {
     if (!fromConfig || !debugSetByUser) {
       debugEnabled = value;
     }
@@ -53,7 +74,7 @@ export default ({
       getMonitors,
       console,
     }),
-    createComponentLogger(componentName) {
+    createComponentLogger(componentName: string) {
       return createLogger({
         getDebugEnabled,
         context: { instanceName, componentName },
