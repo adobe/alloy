@@ -9,10 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-// eslint-disable-next-line @typescript-eslint/triple-slash-reference -- no import form preserves an ambient .d.ts
-/// <reference path="./aepRulesEngine.ts" preserve="true" />
+// Not preserved, so the emitted .d.ts files carry no global module declaration.
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference -- no import form loads an ambient .d.ts
+/// <reference path="./aepRulesEngine.d.ts" />
 import RulesEngine from "@adobe/aep-rules-engine";
-import type { Consequence } from "@adobe/aep-rules-engine";
 import { JSON_CONTENT_ITEM, RULESET_ITEM } from "../../constants/schema.js";
 import { DISPLAY } from "../../constants/eventType.js";
 import { PropositionEventType } from "../../constants/propositionEventType.js";
@@ -21,7 +21,7 @@ import { generateEventHash, getActivityId } from "./utils/index.js";
 import flattenArray from "../../utils/flattenArray.js";
 import createConsequenceAdapter from "./createConsequenceAdapter.js";
 import type { EventRegistryApi } from "./createEventRegistry.js";
-import type { Proposition, PropositionItem } from "./types.js";
+import type { Consequence, Proposition, PropositionItem } from "./types.js";
 
 export interface EvaluateOptions {
   recordTrigger?: boolean;

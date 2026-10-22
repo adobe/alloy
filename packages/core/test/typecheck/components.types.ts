@@ -40,6 +40,7 @@ import type {
   ConsentRequestPayload,
   SetConsentOptions,
 } from "../../src/components/Consent/types.js";
+import type * as RulesEngineTypes from "../../src/components/RulesEngine/types.js";
 
 // Every built-in creator is a ComponentCreator.
 const {
@@ -154,3 +155,20 @@ expectTypeOf<Parameters<ConsentOnResponse>[0]>().toEqualTypeOf<{
 expectTypeOf<ConsentRequestPayload>().toExtend<RequestPayload>();
 
 export { greeter, needsMissingTool };
+
+// RulesEngine typedef names are exported.
+expectTypeOf<
+  RulesEngineTypes.Consequence["detail"]
+>().toEqualTypeOf<RulesEngineTypes.ConsequenceDetail>();
+expectTypeOf<RulesEngineTypes.EventRegistry>().toEqualTypeOf<
+  Record<string, RulesEngineTypes.EventRecord>
+>();
+expectTypeOf<RulesEngineTypes.Proposition["items"]>().toEqualTypeOf<
+  RulesEngineTypes.PropositionItem[]
+>();
+expectTypeOf<
+  RulesEngineTypes.RulesEventPayload["iam.eventType"]
+>().toEqualTypeOf<string>();
+expectTypeOf<
+  RulesEngineTypes.EventHistoryOperationData["content"]
+>().toEqualTypeOf<RulesEngineTypes.RulesEventPayload>();

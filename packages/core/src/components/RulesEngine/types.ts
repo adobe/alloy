@@ -74,4 +74,21 @@ export interface RulesEventPayload {
   [key: string]: string | undefined;
 }
 
+/** A rule consequence's detail, as returned by `@adobe/aep-rules-engine`. */
+export interface ConsequenceDetail {
+  schema?: string;
+  data?: Record<string, unknown>;
+  id?: string;
+  html?: string;
+  mobileParameters?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+/** A rule consequence, as returned by `@adobe/aep-rules-engine`. */
+export interface Consequence {
+  id: string;
+  type: string;
+  detail: ConsequenceDetail;
+}
+
 export const Types = {};

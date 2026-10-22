@@ -11,29 +11,18 @@ governing permissions and limitations under the License.
 */
 
 // @adobe/aep-rules-engine points `types` at a missing `types/index.d.ts`.
+// A .d.ts so tsc does not emit it: dist declarations use ./types.js instead.
 declare module "@adobe/aep-rules-engine" {
-  export interface ConsequenceDetail {
-    schema?: string;
-    data?: Record<string, unknown>;
-    id?: string;
-    html?: string;
-    mobileParameters?: Record<string, unknown>;
-    [key: string]: unknown;
-  }
-
-  export interface Consequence {
-    id: string;
-    type: string;
-    detail: ConsequenceDetail;
-  }
-
   export interface RulesEngineOptions {
-    generateEventHash: (event: object) => string;
+    generateEventHash: (event: Record<string, unknown>) => string;
   }
 
-  /** Returns one consequence list per matching rule. */
+  /**
+   * Returns one consequence list per matching rule; each consequence is a
+   * `Consequence` from ./types.ts (ambient modules can't import it).
+   */
   export default function RulesEngine(
     ruleset: unknown,
     options?: RulesEngineOptions,
-  ): { execute: (context: Record<string, unknown>) => Consequence[][] };
+  ): { execute: (context: Record<string, unknown>) => unknown[][] };
 }

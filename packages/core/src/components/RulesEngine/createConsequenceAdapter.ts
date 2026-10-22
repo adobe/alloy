@@ -13,7 +13,7 @@ import inAppMessageConsequenceAdapter from "./consequenceAdapters/inAppMessageCo
 import schemaTypeConsequenceAdapter from "./consequenceAdapters/schemaTypeConsequenceAdapter.js";
 import { CJM_IN_APP_MESSAGE_TYPE, SCHEMA } from "./constants/index.js";
 
-import type { Consequence, ConsequenceDetail } from "@adobe/aep-rules-engine";
+import type { Consequence, ConsequenceDetail } from "./types.js";
 
 const adapters: Record<
   string,
