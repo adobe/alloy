@@ -10,8 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { EventData, EventPayload, EventRecord, EventRegistry } from './types.js' */
-
 import {
   getActivityId,
   hasExperienceData,
@@ -29,32 +27,68 @@ import {
   INSERT_OPERATION,
   INSERT_IF_NOT_EXISTS_OPERATION,
 } from "./constants/index.js";
+import type { Event, Logger } from "../../core/types.js";
+import type { EventStorage } from "./utils/storage.js";
+import type {
+  EventData,
+  EventPayload,
+  EventRecord,
+  EventRegistry,
+  Proposition,
+} from "./types.js";
+
+export interface CreateEventRegistryOptions {
+  /** The storage used to persist events. */
+  storage: EventStorage;
+  logger: Logger;
+}
+
+export interface EventRegistryApi {
+  addExperienceEdgeEvent: (event: Pick<Event, "getContent">) => void;
+  addEvent: (event?: EventData, operation?: string) => EventRecord | undefined;
+  addEventPayloads: (
+    eventPayloads?: EventPayload[],
+  ) => (EventRecord | undefined)[];
+  getEvent: (
+    eventType: string,
+    eventId: string | undefined,
+  ) => EventRecord | undefined;
+  toJSON: () => EventRegistry;
+  setStorage: (newStorage: EventStorage) => Promise<void>;
+}
+
+/** The `_experience.decisioning` fields the registry reads from XDM. */
+interface ExperienceXdm {
+  _experience: {
+    decisioning?: {
+      propositionEventType?: Record<string, unknown>;
+      propositionAction?: { id?: string };
+      propositions?: Proposition[];
+    };
+  };
+}
 
 /**
  * Creates an event registry to track and manage events
- * @param {Object} options - The options object
- * @param {Object} options.storage - The storage object used to persist events
- * @param {Object} options.logger - The logger object used for logging
- * @returns {Object} The event registry interface
  */
-export default ({ storage, logger }) => {
+export default ({
+  storage,
+  logger,
+}: CreateEventRegistryOptions): EventRegistryApi => {
   let currentStorage = storage;
 
   // Initialized to safe defaults so the registry is usable immediately;
   // setStorage updates them asynchronously when switching to persistent storage.
-  /** @type {EventRegistry} */
-  let eventRegistry = {};
+  let eventRegistry: EventRegistry = {};
 
-  /** @type {number} */
   let eventRegistrySize = 0;
 
   let save = createSaveStorage(storage, EVENT_HISTORY_STORAGE_KEY);
 
   /**
    * Sets a new storage object for the event registry
-   * @param {Object} newStorage
    */
-  const setStorage = async (newStorage) => {
+  const setStorage = async (newStorage: EventStorage) => {
     currentStorage = newStorage;
 
     const restore = createRestoreStorage(
@@ -62,7 +96,7 @@ export default ({ storage, logger }) => {
       EVENT_HISTORY_STORAGE_KEY,
     );
 
-    [eventRegistry, eventRegistrySize] = await restore({});
+    [eventRegistry, eventRegistrySize] = await restore<EventRegistry>({});
 
     save = createSaveStorage(currentStorage, EVENT_HISTORY_STORAGE_KEY);
 
@@ -77,12 +111,9 @@ export default ({ storage, logger }) => {
 
   /**
    * Adds a single event to the event registry
-   * @param {EventData} event
-   * @param {string} operation
-   * @returns {EventRecord|undefined}
    */
   const addEvent = (
-    event = { eventType: null, eventId: null },
+    event: EventData = { eventType: null, eventId: null },
     operation = INSERT_OPERATION,
   ) => {
     const { eventType, eventId } = event;
@@ -130,19 +161,16 @@ export default ({ storage, logger }) => {
 
   /**
    * Adds multiple events to the event registry
-   * @param {Array<EventPayload>} eventPayloads
-   * @returns {Array<EventRecord>}
    */
-  const addEventPayloads = (eventPayloads = []) =>
+  const addEventPayloads = (eventPayloads: EventPayload[] = []) =>
     eventPayloads.map(({ operation, event }) => addEvent(event, operation));
 
   /**
    * Processes and adds Experience Edge events to the registry
-   * @param {Object} event - The Experience Edge event object
-   * @returns {void}
    */
-  const addExperienceEdgeEvent = (event) => {
-    const { xdm } = event.getContent();
+  const addExperienceEdgeEvent = (event: Pick<Event, "getContent">) => {
+    // getContent is untyped; an event keeps its XDM under `xdm`.
+    const { xdm } = event.getContent() as { xdm?: Record<string, unknown> };
 
     if (!hasExperienceData(xdm)) {
       return;
@@ -156,7 +184,8 @@ export default ({ storage, logger }) => {
           propositions = [],
         } = {},
       },
-    } = xdm;
+      // hasExperienceData checked that `_experience` is an object.
+    } = xdm as unknown as ExperienceXdm;
 
     Object.keys(propositionEventType)
       .filter(
@@ -179,11 +208,9 @@ export default ({ storage, logger }) => {
 
   /**
    * Retrieves an event from the registry based on type and ID
-   * @param {string} eventType - The type of the event to retrieve
-   * @param {string} eventId - The ID of the event to retrieve
-   * @returns {EventRecord|undefined} The event object if found, otherwise undefined
+   * @returns The event object if found, otherwise undefined
    */
-  const getEvent = (eventType, eventId) => {
+  const getEvent = (eventType: string, eventId: string | undefined) => {
     const h = generateEventHash({ eventType, eventId });
 
     if (!eventRegistry[h]) {

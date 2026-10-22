@@ -28,6 +28,36 @@ import createCollect from "../../utils/createCollect.js";
 import { mergeDecisionsMeta } from "../../utils/event.js";
 import flattenObject from "../../utils/flattenObject.js";
 import extractPayloadsFromEventHistoryOperations from "./utils/extractPayloadsFromEventHistoryOperations.js";
+import type {
+  ComponentCreator,
+  ComponentTools,
+  Event,
+  Lifecycle,
+} from "../../core/types.js";
+
+import type { Request } from "../../utils/request/types.js";
+import type { ApplyResponse } from "./createApplyResponse.js";
+import type { EvaluateRulesetsUserOptions } from "./createEvaluateRulesetsCommand.js";
+import type { Proposition } from "./types.js";
+
+type CollectDependencies = Parameters<typeof createCollect>[0];
+
+export type RulesEngineTools = Pick<
+  ComponentTools,
+  | "config"
+  | "eventManager"
+  | "consent"
+  | "getBrowser"
+  | "logger"
+  | "platformServices"
+>;
+
+export interface RulesEngineBeforeEventOptions {
+  event: Event;
+  renderDecisions?: boolean;
+  personalization?: { decisionContext?: Record<string, unknown> };
+  onResponse?: (handler: ReturnType<typeof createOnResponseHandler>) => void;
+}
 
 const createRulesEngine = ({
   config,
@@ -36,11 +66,16 @@ const createRulesEngine = ({
   getBrowser,
   logger,
   platformServices,
-}) => {
+}: RulesEngineTools) => {
   const { orgId, personalizationStorageEnabled } = config;
+  // createCollect's parameter types disagree with core's (utils vs core Event,
+  // possibly-undefined event types) though runtime matches what it always did;
+  // aligning them is a core change (ask-first).
   const collect = createCollect({
-    eventManager,
-    mergeDecisionsMeta,
+    eventManager:
+      eventManager as unknown as CollectDependencies["eventManager"],
+    mergeDecisionsMeta:
+      mergeDecisionsMeta as CollectDependencies["mergeDecisionsMeta"],
   });
 
   const storage = platformServices.storage.createNamespacedStorage(
@@ -66,12 +101,12 @@ const createRulesEngine = ({
     decisionProvider,
   });
   const subscribeRulesetItems = createSubscribeRulesetItems({ collect });
-  let applyResponse;
+  let applyResponse: ApplyResponse;
 
   // Events without a personalization query (display, interact, dismiss
   // notifications) are never evaluated on response, so rules that react to
   // them (e.g. "disqualify on dismiss") are evaluated here before sending.
-  const applyEventHistoryOperations = (event) => {
+  const applyEventHistoryOperations = (event: Event) => {
     const propositions = decisionProvider.evaluate(
       contextProvider.getContext({
         ...flattenObject(event.getContent()),
@@ -88,10 +123,10 @@ const createRulesEngine = ({
 
   return {
     lifecycle: {
-      onDecision({ propositions }) {
+      onDecision({ propositions }: { propositions: Proposition[] }) {
         subscribeRulesetItems.refresh(propositions);
       },
-      onComponentsRegistered(tools) {
+      onComponentsRegistered(tools: { lifecycle: Lifecycle }) {
         applyResponse = createApplyResponse({
           lifecycle: tools.lifecycle,
           eventRegistry,
@@ -112,7 +147,7 @@ const createRulesEngine = ({
         renderDecisions,
         personalization = {},
         onResponse = noop,
-      }) {
+      }: RulesEngineBeforeEventOptions) {
         const { decisionContext = {} } = personalization;
 
         onResponse(
@@ -130,8 +165,9 @@ const createRulesEngine = ({
           }),
         );
       },
-      onBeforeRequest({ request }) {
-        const payload = request.getPayload().toJSON();
+      onBeforeRequest({ request }: { request: Request }) {
+        // A request payload serializes its events under `events`.
+        const payload = request.getPayload().toJSON() as { events?: Event[] };
         const { events = [] } = payload;
         if (events.length === 0) {
           return;
@@ -144,7 +180,10 @@ const createRulesEngine = ({
     },
     commands: {
       evaluateRulesets: {
-        run: ({ renderDecisions, personalization = {} }) => {
+        run: ({
+          renderDecisions,
+          personalization = {},
+        }: EvaluateRulesetsUserOptions) => {
           const { decisionContext = {} } = personalization;
           return evaluateRulesetsCommand.run({
             renderDecisions,
@@ -167,4 +206,4 @@ createRulesEngine.namespace = "RulesEngine";
 createRulesEngine.configValidators = objectOf({
   personalizationStorageEnabled: boolean().default(false),
 });
-export default createRulesEngine;
+export default createRulesEngine satisfies ComponentCreator<RulesEngineTools>;

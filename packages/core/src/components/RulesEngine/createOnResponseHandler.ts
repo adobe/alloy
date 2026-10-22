@@ -13,6 +13,20 @@ governing permissions and limitations under the License.
 import { PERSONALIZATION_DECISIONS_HANDLE } from "../../constants/decisionProvider.js";
 import flattenObject from "../../utils/flattenObject.js";
 
+import type { Event, Response } from "../../core/types.js";
+import type { ApplyResponse } from "./createApplyResponse.js";
+import type { DecisionProvider } from "./createDecisionProvider.js";
+import type { Proposition } from "./types.js";
+
+export interface CreateOnResponseHandlerOptions {
+  renderDecisions?: boolean;
+  decisionProvider: Pick<DecisionProvider, "addPayloads" | "evaluate">;
+  applyResponse: ApplyResponse;
+  event: Event;
+  personalization?: Record<string, unknown>;
+  decisionContext?: Record<string, unknown>;
+}
+
 export default ({
   renderDecisions,
   decisionProvider,
@@ -20,15 +34,18 @@ export default ({
   event,
   personalization,
   decisionContext,
-}) => {
+}: CreateOnResponseHandlerOptions) => {
   const context = {
     ...flattenObject(event.getContent()),
     ...decisionContext,
   };
 
-  return ({ response }) => {
+  return ({ response }: { response: Pick<Response, "getPayloadsByType"> }) => {
     decisionProvider.addPayloads(
-      response.getPayloadsByType(PERSONALIZATION_DECISIONS_HANDLE),
+      // Personalization decision payloads are propositions.
+      response.getPayloadsByType(
+        PERSONALIZATION_DECISIONS_HANDLE,
+      ) as Proposition[],
     );
 
     // only evaluate events that include a personalization query

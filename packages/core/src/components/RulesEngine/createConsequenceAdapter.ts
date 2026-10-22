@@ -13,13 +13,18 @@ import inAppMessageConsequenceAdapter from "./consequenceAdapters/inAppMessageCo
 import schemaTypeConsequenceAdapter from "./consequenceAdapters/schemaTypeConsequenceAdapter.js";
 import { CJM_IN_APP_MESSAGE_TYPE, SCHEMA } from "./constants/index.js";
 
-const adapters = {
+import type { Consequence, ConsequenceDetail } from "@adobe/aep-rules-engine";
+
+const adapters: Record<
+  string,
+  (id: string, type: string, detail: ConsequenceDetail) => ConsequenceDetail
+> = {
   [CJM_IN_APP_MESSAGE_TYPE]: inAppMessageConsequenceAdapter,
   [SCHEMA]: schemaTypeConsequenceAdapter,
 };
 
 export default () => {
-  return (consequence) => {
+  return (consequence: Consequence): ConsequenceDetail => {
     const { id, type, detail } = consequence;
 
     return typeof adapters[type] === "function"

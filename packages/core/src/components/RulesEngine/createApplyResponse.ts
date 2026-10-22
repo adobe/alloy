@@ -12,7 +12,31 @@ governing permissions and limitations under the License.
 
 import extractPayloadsFromEventHistoryOperations from "./utils/extractPayloadsFromEventHistoryOperations.js";
 
-export default ({ lifecycle, eventRegistry }) => {
+import type { Event, Lifecycle } from "../../core/types.js";
+
+import type { EventRegistryApi } from "./createEventRegistry.js";
+import type { PropositionList } from "./types.js";
+
+export interface CreateApplyResponseOptions {
+  lifecycle?: Pick<Lifecycle, "onDecision">;
+  eventRegistry: Pick<EventRegistryApi, "addEventPayloads">;
+}
+
+export interface ApplyResponseOptions {
+  renderDecisions?: boolean;
+  propositions?: PropositionList;
+  event?: Event;
+  personalization?: Record<string, unknown>;
+}
+
+export type ApplyResponse = (options: ApplyResponseOptions) => {
+  propositions: PropositionList;
+};
+
+export default ({
+  lifecycle,
+  eventRegistry,
+}: CreateApplyResponseOptions): ApplyResponse => {
   return ({
     renderDecisions = false,
     propositions = [],

@@ -10,80 +10,68 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/**
- * @typedef {Record<string, EventRecord>} EventRegistry
- */
+export type EventRegistry = Record<string, EventRecord>;
 
-/**
- * @typedef {object} EventPayload
- * @property {string} operation
- * @property {EventData} event
- */
+export interface EventPayload {
+  operation: string;
+  event: EventData;
+}
 
-/**
- * @typedef {Record<string, string>} EventData
- * @property {string} eventType
- * @property {string} eventId
- * @property {string} [action]
- */
+export interface EventData {
+  eventType?: string | null;
+  eventId?: string | null;
+  action?: string;
+}
 
-/**
- * @typedef {object} EventRecord
- * @property {Array<number>} timestamps
- */
+export interface EventRecord {
+  timestamps: number[];
+}
 
-/**
- * @typedef {Array<Proposition>} PropositionList
- */
+export type PropositionList = Proposition[];
 
-/**
- * @typedef {Object} Proposition
- * @property {string} id
- * @property {string} scope
- * @property {ScopeDetails} scopeDetails
- * @property {Array<PropositionItem>} items
- */
+export interface Proposition {
+  id: string;
+  scope: string;
+  scopeDetails: ScopeDetails;
+  items: PropositionItem[];
+}
 
-/**
- * @typedef {Object} ScopeDetails
- * @property {string} decisionProvider
- * @property {string} correlationID
- * @property {Characteristics} characteristics
- * @property {number} rank
- * @property {Activity} activity
- */
+// A type alias, so it is assignable to the `Record<string, unknown>` of DecisionMeta.
+export type ScopeDetails = {
+  decisionProvider: string;
+  correlationID: string;
+  characteristics: Characteristics;
+  rank: number;
+  activity: Activity;
+};
 
-/**
- * @typedef {Object} Characteristics
- * @property {string} eventToken
- */
+export interface Characteristics {
+  eventToken: string;
+}
 
-/**
- * @typedef {Object} Activity
- * @property {string} id
- * @property {number} priority
- * @property {Array<string>} matchedSurfaces
- */
+export interface Activity {
+  id: string;
+  priority: number;
+  matchedSurfaces: string[];
+}
 
-/**
- * @typedef {Object} PropositionItem
- * @property {string} schema
- * @property {EventHistoryOperationData|Object} data
- * @property {string} id
- */
+export interface PropositionItem {
+  schema: string;
+  data: EventHistoryOperationData | Record<string, unknown>;
+  id: string;
+}
 
-/**
- * @typedef {Object} EventHistoryOperationData
- * @property {string} operation
- * @property {RulesEventPayload} content
- * @property {number} qualifiedDate
- */
+export interface EventHistoryOperationData {
+  operation: string;
+  content: RulesEventPayload;
+  qualifiedDate: number;
+}
 
-/**
- * @typedef {Record<string, string>} RulesEventPayload
- * @property {string} iam.eventType
- * @property {string} iam.id
- * @property {string} [iam.action]
- */
+export interface RulesEventPayload {
+  "iam.eventType": string;
+  "iam.id": string;
+  "iam.action"?: string;
+  [key: string]: string | undefined;
+}
 
 export const Types = {};

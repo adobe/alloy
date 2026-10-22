@@ -10,8 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { PropositionList,  EventPayload } from '../types.js' */
 import { EVENT_HISTORY_OPERATION } from "../../../constants/schema.js";
+import type {
+  EventData,
+  EventHistoryOperationData,
+  EventPayload,
+  PropositionList,
+} from "../types.js";
 
 /**
  * Extracts event history operations from a proposition list and filters them out.
@@ -22,18 +27,19 @@ import { EVENT_HISTORY_OPERATION } from "../../../constants/schema.js";
  * 3. Removing these items from the original propositions
  * 4. Returning an array of the extracted event payloads
  *
- * @param {PropositionList} propositionList - The list of propositions to process
- * @returns {Array<EventPayload>} Array of extracted event payloads with operation
+ * @param propositionList - The list of propositions to process
+ * @returns Array of extracted event payloads with operation
  */
-export default (propositionList) => {
-  const result = [];
+export default (propositionList: PropositionList) => {
+  const result: EventPayload[] = [];
 
   propositionList.forEach((proposition) => {
-    const filteredItems = [];
+    const filteredItems: typeof proposition.items = [];
     proposition.items.forEach((item) => {
       if (item.schema === EVENT_HISTORY_OPERATION) {
-        const { content } = item.data;
-        const event = {
+        // The EVENT_HISTORY_OPERATION schema guarantees this data shape.
+        const { content } = item.data as EventHistoryOperationData;
+        const event: EventData = {
           eventId: content["iam.id"],
           eventType: content["iam.eventType"],
         };
@@ -45,7 +51,8 @@ export default (propositionList) => {
         }
 
         result.push({
-          operation: item.data.operation,
+          // The EVENT_HISTORY_OPERATION schema guarantees this data shape.
+          operation: (item.data as EventHistoryOperationData).operation,
           event,
         });
       } else {

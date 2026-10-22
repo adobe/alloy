@@ -10,8 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export const getActivityId = (proposition) =>
+import type { Proposition } from "../types.js";
+
+export const getActivityId = (proposition: Partial<Proposition> | undefined) =>
   proposition?.scopeDetails?.activity?.id;
 
-export const getDecisionProvider = (proposition) =>
-  proposition?.scopeDetails?.decisionProvider;
+export const getDecisionProvider = (
+  proposition: Partial<Proposition> | undefined,
+) => proposition?.scopeDetails?.decisionProvider;

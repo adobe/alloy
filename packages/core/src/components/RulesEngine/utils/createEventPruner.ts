@@ -14,52 +14,55 @@ import {
   EVENT_HISTORY_RETENTION_PERIOD,
 } from "../constants/index.js";
 import getExpirationDate from "./getExpirationDate.js";
+import type { EventRegistry } from "../types.js";
 
 /**
  * Creates an event pruner function that filters events based on retention period and maximum count
  *
- * @param {number} [retentionPeriod=EVENT_HISTORY_RETENTION_PERIOD] - The retention period in days
- * @param {number} [limit=EVENT_HISTORY_MAX_RECORDS] - Maximum number of events to keep
- * @returns {Function} A function that takes an events object and returns a pruned version of it
- * @param {Object} events - Object containing events with timestamps
- * @returns {Object} Pruned events object with events filtered by retention period and limited to max count
+ * @param retentionPeriod - The retention period in days
+ * @param limit - Maximum number of events to keep
+ * @returns A function that takes an events object and returns a pruned version of it,
+ * filtered by retention period and limited to max count
  */
 export default (
     retentionPeriod = EVENT_HISTORY_RETENTION_PERIOD,
     limit = EVENT_HISTORY_MAX_RECORDS,
   ) =>
-  (events) => {
-    let eventsWithHash = Object.entries(events).reduce(
-      (accumulator, [key, { timestamps = [] }]) => {
-        timestamps.forEach((timestamp) => {
-          accumulator.push({
-            key,
-            timestamp,
-          });
+  (events: EventRegistry) => {
+    let eventsWithHash = Object.entries(events).reduce<
+      { key: string; timestamp: number }[]
+    >((accumulator, [key, { timestamps = [] }]) => {
+      timestamps.forEach((timestamp) => {
+        accumulator.push({
+          key,
+          timestamp,
         });
+      });
 
-        return accumulator;
-      },
-      [],
-    );
+      return accumulator;
+    }, []);
 
     const expirationDate = getExpirationDate(retentionPeriod);
 
     eventsWithHash = eventsWithHash.filter(
-      ({ timestamp }) => timestamp >= expirationDate,
+      // The comparison coerces the Date to its epoch milliseconds.
+      ({ timestamp }) => timestamp >= (expirationDate as unknown as number),
     );
 
     eventsWithHash.sort((a, b) => a.timestamp - b.timestamp);
     eventsWithHash = eventsWithHash.slice(-limit);
 
-    return eventsWithHash.reduce((accumulator, { key, timestamp }) => {
-      if (!accumulator[key]) {
-        accumulator[key] = {
-          timestamps: [],
-        };
-      }
+    return eventsWithHash.reduce<EventRegistry>(
+      (accumulator, { key, timestamp }) => {
+        if (!accumulator[key]) {
+          accumulator[key] = {
+            timestamps: [],
+          };
+        }
 
-      accumulator[key].timestamps.push(timestamp);
-      return accumulator;
-    }, {});
+        accumulator[key].timestamps.push(timestamp);
+        return accumulator;
+      },
+      {},
+    );
   };

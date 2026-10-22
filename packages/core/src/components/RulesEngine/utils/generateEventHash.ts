@@ -14,11 +14,12 @@ import fnv1a32Hex from "../../../utils/fnv1a32Hex.js";
 /**
  * Generates an event history hash from an object by removing keys with empty values, sorting the keys,
  * converting the object to a string, and hashing the string.
- * @param {Object} o - The object to process.
- * @returns {string} - The hash of the processed object.
+ * @param o - The object to process.
+ * @returns The hash of the processed object.
  */
-export default (o) => {
-  const obj = structuredClone(o);
+export default (o: object) => {
+  // Only the clone's own enumerable keys are read.
+  const obj = structuredClone(o) as Record<string, unknown>;
 
   const objectString = Object.keys(obj)
     .sort()

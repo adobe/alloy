@@ -9,7 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference -- no import form preserves an ambient .d.ts
+/// <reference path="./aepRulesEngine.ts" preserve="true" />
 import RulesEngine from "@adobe/aep-rules-engine";
+import type { Consequence } from "@adobe/aep-rules-engine";
 import { JSON_CONTENT_ITEM, RULESET_ITEM } from "../../constants/schema.js";
 import { DISPLAY } from "../../constants/eventType.js";
 import { PropositionEventType } from "../../constants/propositionEventType.js";
@@ -17,8 +20,23 @@ import { generateEventHash, getActivityId } from "./utils/index.js";
 
 import flattenArray from "../../utils/flattenArray.js";
 import createConsequenceAdapter from "./createConsequenceAdapter.js";
+import type { EventRegistryApi } from "./createEventRegistry.js";
+import type { Proposition, PropositionItem } from "./types.js";
 
-const isRulesetItem = (item) => {
+export interface EvaluateOptions {
+  recordTrigger?: boolean;
+}
+
+export interface EvaluableRulesetPayload {
+  rank: number;
+  evaluate: (
+    context: Record<string, unknown>,
+    options?: EvaluateOptions,
+  ) => Proposition;
+  isEvaluable: boolean;
+}
+
+const isRulesetItem = (item: PropositionItem) => {
   const { schema, data } = item;
 
   if (schema === RULESET_ITEM) {
@@ -45,15 +63,18 @@ const isRulesetItem = (item) => {
   }
 };
 
-export default (payload, eventRegistry) => {
+export default (
+  payload: Proposition,
+  eventRegistry: Pick<EventRegistryApi, "addEvent" | "getEvent">,
+): EvaluableRulesetPayload => {
   const consequenceAdapter = createConsequenceAdapter();
   const activityId = getActivityId(payload);
-  const items = [];
+  const items: ReturnType<typeof RulesEngine>[] = [];
 
-  const addItem = (item) => {
+  const addItem = (item: PropositionItem) => {
     const { data = {}, schema } = item;
 
-    const content = schema === RULESET_ITEM ? data : data.content;
+    const content: unknown = schema === RULESET_ITEM ? data : data.content;
 
     if (!content) {
       return;
@@ -66,12 +87,16 @@ export default (payload, eventRegistry) => {
     );
   };
 
-  const evaluate = (context, { recordTrigger = true } = {}) => {
+  const evaluate = (
+    context: Record<string, unknown>,
+    { recordTrigger = true }: EvaluateOptions = {},
+  ): Proposition => {
     const displayEvent = eventRegistry.getEvent(DISPLAY, activityId);
     const displayedDate = displayEvent?.timestamps[0];
 
-    const qualifyingItems = flattenArray(
-      items.map((item) => item.execute(context)),
+    // flattenArray flattens fully; its FlatArray type cannot resolve the depth.
+    const qualifyingItems = (
+      flattenArray(items.map((item) => item.execute(context))) as Consequence[]
     )
       .map(consequenceAdapter)
       .map((item) => {
@@ -92,7 +117,8 @@ export default (payload, eventRegistry) => {
 
     return {
       ...payload,
-      items: qualifyingItems,
+      // Rule consequences carry proposition items; the engine types them loosely.
+      items: qualifyingItems as PropositionItem[],
     };
   };
 

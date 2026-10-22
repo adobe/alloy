@@ -10,7 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (id, type, detail) => {
+import type { ConsequenceDetail } from "@adobe/aep-rules-engine";
+
+export default (id: string, type: string, detail: ConsequenceDetail) => {
   const { schema, data, id: detailId } = detail;
 
   return { schema, data, id: detailId || id };

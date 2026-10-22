@@ -12,7 +12,9 @@ governing permissions and limitations under the License.
 import { MESSAGE_IN_APP } from "../../../constants/schema.js";
 import { TEXT_HTML } from "../../../constants/contentType.js";
 
-export default (id, type, detail) => {
+import type { ConsequenceDetail } from "@adobe/aep-rules-engine";
+
+export default (id: string, type: string, detail: ConsequenceDetail) => {
   const { html, mobileParameters } = detail;
 
   const webParameters = {};

@@ -13,7 +13,26 @@ import parseUrl from "../../utils/parseUrl.js";
 import flattenObject from "../../utils/flattenObject.js";
 import libraryVersion from "../../constants/libraryVersion.js";
 
-export default ({ eventRegistry, getWindowContext, getBrowser }) => {
+import type { WindowContext } from "../../services/types.js";
+import type { EventRegistryApi } from "./createEventRegistry.js";
+
+export interface CreateContextProviderOptions {
+  eventRegistry: Pick<EventRegistryApi, "toJSON">;
+  getWindowContext: () => WindowContext;
+  getBrowser: () => string;
+}
+
+export interface ContextProvider {
+  getContext: (
+    addedContext?: Record<string, unknown>,
+  ) => Record<string, unknown>;
+}
+
+export default ({
+  eventRegistry,
+  getWindowContext,
+  getBrowser,
+}: CreateContextProviderOptions): ContextProvider => {
   const pageLoadTimestamp = new Date().getTime();
   const getBrowserContext = () => {
     return {

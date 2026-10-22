@@ -11,11 +11,32 @@ governing permissions and limitations under the License.
 */
 import createEvaluableRulesetPayload from "./createEvaluableRulesetPayload.js";
 import { getActivityId } from "./utils/index.js";
+import type {
+  EvaluableRulesetPayload,
+  EvaluateOptions,
+} from "./createEvaluableRulesetPayload.js";
+import type { EventRegistryApi } from "./createEventRegistry.js";
+import type { Proposition } from "./types.js";
 
-export default ({ eventRegistry }) => {
-  const payloadsBasedOnActivityId = {};
+export interface CreateDecisionProviderOptions {
+  eventRegistry: Pick<EventRegistryApi, "addEvent" | "getEvent">;
+}
 
-  const addPayload = (payload) => {
+export interface DecisionProvider {
+  addPayload: (payload: Proposition) => void;
+  addPayloads: (personalizationPayloads: Proposition[]) => void;
+  evaluate: (
+    context?: Record<string, unknown>,
+    options?: EvaluateOptions,
+  ) => Proposition[];
+}
+
+export default ({
+  eventRegistry,
+}: CreateDecisionProviderOptions): DecisionProvider => {
+  const payloadsBasedOnActivityId: Record<string, EvaluableRulesetPayload> = {};
+
+  const addPayload = (payload: Proposition) => {
     const activityId = getActivityId(payload);
     if (!activityId) {
       return;
@@ -31,7 +52,10 @@ export default ({ eventRegistry }) => {
     }
   };
 
-  const evaluate = (context = {}, options = {}) => {
+  const evaluate = (
+    context: Record<string, unknown> = {},
+    options: EvaluateOptions = {},
+  ) => {
     const sortedPayloadsBasedOnActivityId = Object.values(
       payloadsBasedOnActivityId,
     ).sort(({ rank: rankA }, { rank: rankB }) => rankA - rankB);
@@ -41,7 +65,7 @@ export default ({ eventRegistry }) => {
       .filter((payload) => payload.items.length > 0);
   };
 
-  const addPayloads = (personalizationPayloads) => {
+  const addPayloads = (personalizationPayloads: Proposition[]) => {
     personalizationPayloads.forEach(addPayload);
   };
 

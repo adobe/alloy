@@ -11,7 +11,27 @@ governing permissions and limitations under the License.
 */
 import { boolean, objectOf } from "../../utils/validation/index.js";
 
-const validateOptions = ({ options }) => {
+import type { ApplyResponse } from "./createApplyResponse.js";
+import type { ContextProvider } from "./createContextProvider.js";
+import type { DecisionProvider } from "./createDecisionProvider.js";
+
+export interface CreateEvaluateRulesetsCommandOptions {
+  contextProvider: ContextProvider;
+  decisionProvider: Pick<DecisionProvider, "evaluate">;
+}
+
+export interface EvaluateRulesetsUserOptions {
+  renderDecisions?: boolean;
+  personalization?: { decisionContext?: Record<string, unknown> };
+}
+
+export interface EvaluateRulesetsRunOptions {
+  renderDecisions?: boolean;
+  decisionContext?: Record<string, unknown>;
+  applyResponse: ApplyResponse;
+}
+
+const validateOptions = ({ options }: { options: unknown }) => {
   const validator = objectOf({
     renderDecisions: boolean(),
     personalization: objectOf({
@@ -19,11 +39,19 @@ const validateOptions = ({ options }) => {
     }),
   }).noUnknownFields();
 
-  return validator(options);
+  // The validator above guarantees this shape.
+  return validator(options) as EvaluateRulesetsUserOptions;
 };
 
-export default ({ contextProvider, decisionProvider }) => {
-  const run = ({ renderDecisions, decisionContext, applyResponse }) => {
+export default ({
+  contextProvider,
+  decisionProvider,
+}: CreateEvaluateRulesetsCommandOptions) => {
+  const run = ({
+    renderDecisions,
+    decisionContext,
+    applyResponse,
+  }: EvaluateRulesetsRunOptions) => {
     return applyResponse({
       renderDecisions,
       propositions: decisionProvider.evaluate(
@@ -32,7 +60,7 @@ export default ({ contextProvider, decisionProvider }) => {
     });
   };
 
-  const optionsValidator = (options) => validateOptions({ options });
+  const optionsValidator = (options: unknown) => validateOptions({ options });
 
   return {
     optionsValidator,

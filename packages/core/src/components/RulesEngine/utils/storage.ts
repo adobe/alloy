@@ -10,12 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export const createRestoreStorage = (storage, storageKey) => {
-  return async (defaultValue) => {
+import type { Storage } from "../../../services/types.js";
+
+/** The subset of a platform or in-memory storage the event registry uses. */
+export interface EventStorage {
+  getItem: (key: string) => string | null | Promise<string | null>;
+  setItem: (key: string, value: string) => unknown;
+}
+
+export const createRestoreStorage = (
+  storage: EventStorage,
+  storageKey: string,
+) => {
+  return async <T>(defaultValue: T): Promise<[T, number]> => {
     try {
       const stored = await storage.getItem(storageKey);
       if (stored == null) return [defaultValue, 0];
-      const s = JSON.parse(stored);
+      const s: T = JSON.parse(stored);
       return [s, stored.length];
       // eslint-disable-next-line no-empty
     } catch {}
@@ -24,27 +35,29 @@ export const createRestoreStorage = (storage, storageKey) => {
   };
 };
 
-export const createSaveStorage = (storage, storageKey) => (value) => {
-  const result = storage.setItem(storageKey, JSON.stringify(value));
-  if (result && typeof result.then === "function") {
-    result.catch(() => {});
-  }
-};
+export const createSaveStorage =
+  (storage: EventStorage, storageKey: string) => (value: unknown) => {
+    const result = storage.setItem(storageKey, JSON.stringify(value));
+    // A thenable setItem result is the async platform storage's Promise.
+    if (result && typeof (result as Promise<unknown>).then === "function") {
+      (result as Promise<unknown>).catch(() => {});
+    }
+  };
 
 export const createInMemoryStorage = () => {
-  const inMemoryStorage = {};
+  const inMemoryStorage: Record<string, string> = {};
 
   return {
-    getItem: (key) => {
+    getItem: (key: string) => {
       return key in inMemoryStorage ? inMemoryStorage[key] : null;
     },
 
-    setItem: (key, value) => {
+    setItem: (key: string, value: string) => {
       inMemoryStorage[key] = value;
     },
   };
 };
 
-export const clearLocalStorage = (storage) => {
+export const clearLocalStorage = (storage: Pick<Storage, "clear">) => {
   storage.clear();
 };
