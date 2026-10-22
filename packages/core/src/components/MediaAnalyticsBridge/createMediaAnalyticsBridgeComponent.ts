@@ -21,6 +21,34 @@ import {
   STREAM_TYPE as StreamType,
   VIDEO_METADATA_KEYS as VideoMetadataKeys,
 } from "./constants/constants.js";
+import type { Config, Logger, Response } from "../../core/types.js";
+import type createMediaHelperFn from "./createMediaHelper.js";
+import type createGetInstanceFn from "./createGetInstance.js";
+import type { GetInstanceOptions, PlayerDetails } from "./createGetInstance.js";
+
+export interface MediaAnalyticsBridgeComponentOptions {
+  trackMediaEvent: GetInstanceOptions["trackMediaEvent"];
+  trackMediaSession: GetInstanceOptions["trackMediaSession"];
+  mediaResponseHandler: (options: {
+    playerId: string;
+    getPlayerDetails: () => PlayerDetails;
+    response: Response;
+  }) => unknown;
+  logger: Logger;
+  createMediaHelper: typeof createMediaHelperFn;
+  createGetInstance: typeof createGetInstanceFn;
+  config: Config;
+}
+
+/** The `onBeforeEvent` payload this component reads. */
+export interface MediaAnalyticsBridgeBeforeEventPayload {
+  mediaOptions?: {
+    legacy?: boolean;
+    playerId: string;
+    getPlayerDetails: () => PlayerDetails;
+  };
+  onResponse?: (callback: (options: { response: Response }) => unknown) => void;
+}
 
 export default ({
   trackMediaEvent,
@@ -30,10 +58,13 @@ export default ({
   createMediaHelper,
   createGetInstance,
   config,
-}) => {
+}: MediaAnalyticsBridgeComponentOptions) => {
   return {
     lifecycle: {
-      onBeforeEvent({ mediaOptions, onResponse = noop }) {
+      onBeforeEvent({
+        mediaOptions,
+        onResponse = noop,
+      }: MediaAnalyticsBridgeBeforeEventPayload) {
         if (!mediaOptions) {
           return;
         }

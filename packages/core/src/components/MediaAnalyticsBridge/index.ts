@@ -19,6 +19,12 @@ import createMediaAnalyticsBridgeComponent from "./createMediaAnalyticsBridgeCom
 import createMediaHelper from "./createMediaHelper.js";
 import createGetInstance from "./createGetInstance.js";
 import injectTimestamp from "../../utils/injectTimestamp.js";
+import type { ComponentTools } from "../../core/types.js";
+
+export type MediaAnalyticsBridgeOptions = Pick<
+  ComponentTools,
+  "eventManager" | "sendEdgeNetworkRequest" | "config" | "logger" | "consent"
+>;
 
 const createMediaAnalyticsBridge = ({
   eventManager,
@@ -26,8 +32,13 @@ const createMediaAnalyticsBridge = ({
   config,
   logger,
   consent,
-}) => {
-  const mediaSessionCacheManager = createMediaSessionCacheManager({ config });
+}: MediaAnalyticsBridgeOptions) => {
+  // The cache manager takes no options; the argument is kept so the bundle is unchanged.
+  const mediaSessionCacheManager = (
+    createMediaSessionCacheManager as (
+      options: unknown,
+    ) => ReturnType<typeof createMediaSessionCacheManager>
+  )({ config });
 
   const mediaEventManager = createMediaEventManager({
     sendEdgeNetworkRequest,

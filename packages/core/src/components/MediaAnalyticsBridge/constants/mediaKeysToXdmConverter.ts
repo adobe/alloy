@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export const mediaToXdmKeys = {
+export const mediaToXdmKeys: Record<string, string | undefined> = {
   "a.media.show": "show",
   "a.media.season": "season",
   "a.media.episode": "episode",
@@ -37,7 +37,7 @@ export const mediaToXdmKeys = {
   "media.resumed": "hasResume",
 };
 
-export const adsToXdmKeys = {
+export const adsToXdmKeys: Record<string, string | undefined> = {
   "a.media.ad.advertiser": "advertiser",
   "a.media.ad.campaign": "campaignID",
   "a.media.ad.creative": "creativeID",

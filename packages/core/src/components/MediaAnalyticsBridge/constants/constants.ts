@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 export const MEDIA_TYPE = {
   Video: "video",
   Audio: "audio",
-};
+} as const;
 export const STREAM_TYPE = {
   VOD: "vod",
   Live: "live",
@@ -21,14 +21,14 @@ export const STREAM_TYPE = {
   Podcast: "podcast",
   Audiobook: "audiobook",
   AOD: "aod",
-};
+} as const;
 export const PLAYER_STATE = {
   FullScreen: "fullScreen",
   ClosedCaption: "closedCaptioning",
   Mute: "mute",
   PictureInPicture: "pictureInPicture",
   InFocus: "inFocus",
-};
+} as const;
 
 export const EVENT = {
   /**
@@ -91,7 +91,7 @@ export const EVENT = {
    * Constant defining event type for Custom State End
    */
   StateEnd: "stateEnd",
-};
+} as const;
 export const MEDIA_EVENTS_INTERNAL = {
   SessionStart: "sessionStart",
   SessionEnd: "sessionEnd",
@@ -100,12 +100,12 @@ export const MEDIA_EVENTS_INTERNAL = {
   Pause: "pauseStart",
   Error: "error",
   StateUpdate: "statesUpdate",
-};
+} as const;
 
 export const MEDIA_OBJECT_KEYS = {
   MediaResumed: "media.resumed",
   GranularAdTracking: "media.granularadtracking",
-};
+} as const;
 
 export const VIDEO_METADATA_KEYS = {
   Show: "a.media.show",
@@ -125,7 +125,7 @@ export const VIDEO_METADATA_KEYS = {
   DayPart: "a.media.dayPart",
   Feed: "a.media.feed",
   StreamFormat: "a.media.format",
-};
+} as const;
 
 export const AUDIO_METADATA_KEYS = {
   Artist: "a.media.artist",
@@ -134,7 +134,7 @@ export const AUDIO_METADATA_KEYS = {
   Author: "a.media.author",
   Station: "a.media.station",
   Publisher: "a.media.publisher",
-};
+} as const;
 
 export const AD_METADATA_KEYS = {
   Advertiser: "a.media.ad.advertiser",
@@ -143,4 +143,4 @@ export const AD_METADATA_KEYS = {
   PlacementId: "a.media.ad.placement",
   SiteId: "a.media.ad.site",
   CreativeUrl: "a.media.ad.creativeURL",
-};
+} as const;

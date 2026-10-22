@@ -11,25 +11,40 @@ governing permissions and limitations under the License.
 */
 
 import { number, objectOf, string } from "../../utils/validation/index.js";
+import type {
+  AnyValidator,
+  StringValidator,
+} from "../../utils/validation/types.js";
 import LIBRARY_VERSION from "../../constants/libraryVersion.js";
+import type { Logger } from "../../core/types.js";
 
 // Follows the same API as Javascript 3.x SDK
 // https://adobe-marketing-cloud.github.io/media-sdks/reference/javascript_3x/index.html
 
-export default ({ logger }) => {
+export interface MediaHelperOptions {
+  logger: Logger;
+}
+
+export default ({ logger }: MediaHelperOptions) => {
   // Schema keys define positional argument order. mapValidatedToXdm receives the same order after validation.
-  const withValidation = (helperName, schema, mapValidatedToXdm) => {
+  const withValidation = <TArgs extends unknown[], TResult>(
+    helperName: string,
+    schema: Record<string, AnyValidator>,
+    mapValidatedToXdm: (...validatedArgs: TArgs) => TResult,
+  ) => {
     const validate = objectOf(schema);
     const paramKeys = Object.keys(schema);
 
-    return (...args) => {
+    return (...args: unknown[]): TResult | Record<string, never> => {
       const params = Object.fromEntries(
         paramKeys.map((key, index) => [key, args[index]]),
       );
       try {
-        const validated = validate(params);
+        // objectOf returns the validated params object.
+        const validated = validate(params) as Record<string, unknown>;
         const validatedArgs = paramKeys.map((key) => validated[key]);
-        return mapValidatedToXdm(...validatedArgs);
+        // The schema validated each argument in schema order.
+        return mapValidatedToXdm(...(validatedArgs as TArgs));
       } catch (error) {
         logger.warn(
           `An error occurred while creating the ${helperName}.`,
@@ -49,7 +64,13 @@ export default ({ logger }) => {
       streamType: string().nonEmpty(),
       mediaType: string().nonEmpty(),
     },
-    (name, id, length, streamType, mediaType) => ({
+    (
+      name: string,
+      id: string,
+      length: number,
+      streamType: string,
+      mediaType: string,
+    ) => ({
       sessionDetails: {
         friendlyName: name,
         name: id,
@@ -68,7 +89,7 @@ export default ({ logger }) => {
       position: number(),
       startTime: number(),
     },
-    (name, position, startTime) => ({
+    (name: string, position: number, startTime: number) => ({
       advertisingPodDetails: {
         friendlyName: name,
         index: position,
@@ -85,7 +106,7 @@ export default ({ logger }) => {
       position: number(),
       length: number(),
     },
-    (name, id, position, length) => ({
+    (name: string, id: string, position: number, length: number) => ({
       advertisingDetails: {
         friendlyName: name,
         name: id,
@@ -104,7 +125,7 @@ export default ({ logger }) => {
       length: number(),
       startTime: number(),
     },
-    (name, position, length, startTime) => ({
+    (name: string, position: number, length: number, startTime: number) => ({
       chapterDetails: {
         friendlyName: name,
         index: position,
@@ -119,12 +140,15 @@ export default ({ logger }) => {
   const createStateObject = withValidation(
     "StateObject",
     {
-      stateName: string().matches(
-        STATE_NAME_REGEX,
-        "This is not a valid state name.",
-      ),
+      // matches ignores the message argument; it is kept so the bundle is unchanged.
+      stateName: (
+        string().matches as (
+          pattern: RegExp,
+          message: string,
+        ) => ReturnType<StringValidator["matches"]>
+      )(STATE_NAME_REGEX, "This is not a valid state name."),
     },
-    (stateName) => ({
+    (stateName: string) => ({
       name: stateName,
     }),
   );
@@ -138,7 +162,12 @@ export default ({ logger }) => {
       fps: number(),
       droppedFrames: number(),
     },
-    (bitrate, startupTime, fps, droppedFrames) => ({
+    (
+      bitrate: number,
+      startupTime: number,
+      fps: number,
+      droppedFrames: number,
+    ) => ({
       bitrate,
       timeToStart: startupTime,
       framesPerSecond: fps,

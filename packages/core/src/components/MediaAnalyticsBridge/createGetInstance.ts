@@ -20,9 +20,51 @@ import {
   adsToXdmKeys,
   mediaToXdmKeys,
 } from "./constants/mediaKeysToXdmConverter.js";
+import type { Logger } from "../../core/types.js";
 
-export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
-  let trackerState = null;
+export interface MediaCollection {
+  sessionDetails?: Record<string, unknown>;
+  advertisingDetails?: Record<string, unknown>;
+  customMetadata?: { name: string; value: unknown }[];
+  statesStart?: Record<string, unknown>[];
+  statesEnd?: Record<string, unknown>[];
+  [key: string]: unknown;
+}
+
+export interface MediaXdm {
+  eventType: string;
+  mediaCollection: MediaCollection;
+}
+
+export interface PlayerDetails {
+  playhead: number;
+  qoeDataDetails: Record<string, unknown> | null;
+}
+
+export interface GetInstanceOptions {
+  logger: Logger;
+  trackMediaSession: (options: {
+    playerId: string;
+    getPlayerDetails: () => PlayerDetails;
+    xdm: MediaXdm;
+  }) => unknown;
+  trackMediaEvent: (options: { playerId: string; xdm: MediaXdm }) => unknown;
+  uuid: () => string;
+}
+
+interface TrackerState {
+  qoe: Record<string, unknown> | null;
+  lastPlayhead: number;
+  playerId: string;
+}
+
+export default ({
+  logger,
+  trackMediaSession,
+  trackMediaEvent,
+  uuid,
+}: GetInstanceOptions) => {
+  let trackerState: TrackerState | null = null;
   const instantiateTracker = () => {
     trackerState = {
       qoe: null,
@@ -30,7 +72,7 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
       playerId: uuid(),
     };
   };
-  const getEventType = ({ eventType }) => {
+  const getEventType = ({ eventType }: { eventType: string }) => {
     if (
       eventType === EVENT.BufferComplete ||
       eventType === EVENT.SeekComplete
@@ -48,8 +90,13 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
   const createXdmObject = ({
     eventType,
     mediaDetails = {},
-    contextData = [],
-  }) => {
+    // An empty array has no keys, like an empty context object.
+    contextData = [] as unknown as Record<string, unknown>,
+  }: {
+    eventType: string;
+    mediaDetails?: MediaCollection;
+    contextData?: Record<string, unknown>;
+  }): MediaXdm => {
     const action = getEventType({ eventType });
 
     if (eventType === EVENT.StateStart) {
@@ -70,20 +117,22 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
       };
       return xdm;
     }
-    const xdm = {
+    const xdm: MediaXdm = {
       eventType: `media.${action}`,
       mediaCollection: {
         ...mediaDetails,
       },
     };
 
-    const customMetadata = [];
+    const customMetadata: { name: string; value: unknown }[] = [];
     Object.keys(contextData).forEach((key) => {
       if (mediaToXdmKeys[key]) {
-        xdm.mediaCollection.sessionDetails[mediaToXdmKeys[key]] =
+        // A media object with context data carries sessionDetails; this threw before typing too.
+        xdm.mediaCollection.sessionDetails![mediaToXdmKeys[key]] =
           contextData[key];
       } else if (adsToXdmKeys[key]) {
-        xdm.mediaCollection.advertisingDetails[adsToXdmKeys[key]] =
+        // An ad object with context data carries advertisingDetails; this threw before typing too.
+        xdm.mediaCollection.advertisingDetails![adsToXdmKeys[key]] =
           contextData[key];
       } else {
         customMetadata.push({
@@ -100,7 +149,10 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
   };
 
   return {
-    trackSessionStart: (mediaObject, contextData = {}) => {
+    trackSessionStart: (
+      mediaObject: MediaCollection | null | undefined,
+      contextData: Record<string, unknown> = {},
+    ) => {
       if (isNil(mediaObject) || isEmptyObject(mediaObject)) {
         logger.warn("Invalid media object");
         return {};
@@ -118,11 +170,14 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
       });
 
       return trackMediaSession({
-        playerId: trackerState.playerId,
+        // instantiateTracker above set the state if it was null.
+        playerId: trackerState!.playerId,
         getPlayerDetails: () => {
           return {
-            playhead: trackerState.lastPlayhead,
-            qoeDataDetails: trackerState.qoe,
+            // Read lazily as before typing; after destroy() this throws, unchanged.
+            playhead: trackerState!.lastPlayhead,
+            // Read lazily as before typing; after destroy() this throws, unchanged.
+            qoeDataDetails: trackerState!.qoe,
           };
         },
         xdm,
@@ -172,7 +227,7 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
 
       return trackMediaEvent({ playerId: trackerState.playerId, xdm });
     },
-    trackError: (errorId) => {
+    trackError: (errorId: string) => {
       logger.warn(`trackError(${errorId})`);
       if (trackerState === null) {
         logger.warn("The Media Session was completed.");
@@ -190,7 +245,11 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
       });
       return trackMediaEvent({ playerId: trackerState.playerId, xdm });
     },
-    trackEvent: (eventType, info, contextData) => {
+    trackEvent: (
+      eventType: string,
+      info: MediaCollection,
+      contextData?: Record<string, unknown>,
+    ) => {
       if (isEmptyObject(info)) {
         logger.warn("Invalid media object.");
         return {};
@@ -199,7 +258,8 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
         logger.warn("The Media Session was completed.");
         return {};
       }
-      if (!Object.values(EVENT).includes(eventType)) {
+      // Widened so any caller string can be looked up among the literal event names.
+      if (!(Object.values(EVENT) as string[]).includes(eventType)) {
         logger.warn("Invalid event type");
         return {};
       }
@@ -211,17 +271,20 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
 
       return trackMediaEvent({ playerId: trackerState.playerId, xdm });
     },
-    updatePlayhead: (time) => {
+    updatePlayhead: (time: unknown) => {
       if (trackerState === null) {
         logger.warn("The Media Session was completed.");
         return;
       }
 
       if (isNumber(time)) {
-        trackerState.lastPlayhead = parseInt(time, 10);
+        // parseInt truncates the number through its string form, as before typing.
+        trackerState.lastPlayhead = parseInt(time as unknown as string, 10);
       }
     },
-    updateQoEObject: (qoeObject) => {
+    updateQoEObject: (
+      qoeObject: Record<string, unknown> | null | undefined,
+    ) => {
       if (trackerState === null) {
         logger.warn("The Media Session was completed.");
         return;
