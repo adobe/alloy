@@ -533,6 +533,17 @@ export default defineConfig([
         ...globals.node,
       },
     },
+    settings: {
+      // Config files run in Node; the typescript resolver would otherwise
+      // pick packages' "browser" entry (e.g. oxc-transform/browser.js).
+      "import/resolver": {
+        typescript: {
+          extensions: [".ts", ".js", ".cjs", ".mjs", ".jsx"],
+          conditionNames: ["types", "import", "node", "require", "default"],
+          mainFields: ["types", "module", "main"],
+        },
+      },
+    },
     rules: {
       "import/namespace": "off",
       "import/default": "off",
