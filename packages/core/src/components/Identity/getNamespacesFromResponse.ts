@@ -18,9 +18,8 @@ export interface IdentityResultPayload {
 
 export default (response: Pick<Response, "getPayloadsByType">) => {
   // Edge returns `identity:result` payloads in this shape.
-  const identityResultPayloads = response.getPayloadsByType(
-    "identity:result",
-  ) as IdentityResultPayload[];
+  const identityResultPayloads =
+    response.getPayloadsByType<IdentityResultPayload>("identity:result");
   return identityResultPayloads.reduce<Record<string, string>>(
     (acc, payload) => {
       if (payload.namespace && payload.namespace.code) {

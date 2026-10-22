@@ -40,9 +40,9 @@ export default ({
 }: CreateMediaResponseHandlerOptions): MediaResponseHandler => {
   return ({ response, playerId, getPlayerDetails }) => {
     // Edge sends new-session payloads as objects with a sessionId.
-    const mediaPayload = response.getPayloadsByType(
+    const mediaPayload = response.getPayloadsByType<{ sessionId?: string }>(
       "media-analytics:new-session",
-    ) as { sessionId?: string }[];
+    );
     if (isNonEmptyArray(mediaPayload)) {
       const { sessionId } = mediaPayload[0];
       if (isBlankString(sessionId)) {

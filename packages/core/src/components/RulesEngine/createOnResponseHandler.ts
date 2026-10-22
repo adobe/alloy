@@ -43,9 +43,7 @@ export default ({
   return ({ response }: { response: Pick<Response, "getPayloadsByType"> }) => {
     decisionProvider.addPayloads(
       // Personalization decision payloads are propositions.
-      response.getPayloadsByType(
-        PERSONALIZATION_DECISIONS_HANDLE,
-      ) as Proposition[],
+      response.getPayloadsByType<Proposition>(PERSONALIZATION_DECISIONS_HANDLE),
     );
 
     // only evaluate events that include a personalization query

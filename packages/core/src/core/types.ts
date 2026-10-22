@@ -217,8 +217,11 @@ export interface ResponseFragment {
 }
 
 export interface Response {
-  /** Returns matching fragments by type (e.g., "identity:persist") */
-  getPayloadsByType: (type: string) => unknown[];
+  /**
+   * Returns matching fragments by type (e.g., "identity:persist"). `T` is the
+   * payload shape the caller expects from Edge; it is not validated.
+   */
+  getPayloadsByType: <T = unknown>(type: string) => T[];
   /** Returns all error objects from the response */
   getErrors: () => Record<string, unknown>[];
   /** Returns all warning objects from the response */
