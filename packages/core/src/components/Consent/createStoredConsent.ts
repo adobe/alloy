@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { getNamespacedCookieName } from "../../utils/index.js";
 import { CONSENT } from "../../constants/cookieNameKey.js";
 import type { CookieService } from "../../services/types.js";
-import type { ConsentByPurpose } from "../../core/consent/types.js";
+import type { ConsentByPurpose } from "./types.js";
 
 export interface StoredConsentOptions {
   parseConsentCookie: (cookieValue: string) => ConsentByPurpose;

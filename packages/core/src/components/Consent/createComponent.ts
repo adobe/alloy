@@ -15,10 +15,10 @@ import type createTaskQueue from "../../utils/createTaskQueue.js";
 import type {
   Component,
   ComponentCommand,
+  ComponentTools,
   LifecycleHook,
   Response,
 } from "../../core/types.js";
-import type { ConsentManager } from "../../core/consent/types.js";
 import type { ConsentHashStore } from "./createConsentHashStore.js";
 import type { StoredConsent } from "./createStoredConsent.js";
 import type { SendSetConsentRequest } from "./injectSendSetConsentRequest.js";
@@ -28,7 +28,7 @@ export interface ConsentComponentOptions {
   storedConsent: StoredConsent;
   taskQueue: ReturnType<typeof createTaskQueue>;
   defaultConsent: string;
-  consent: ConsentManager;
+  consent: ComponentTools["consent"];
   sendSetConsentRequest: SendSetConsentRequest;
   validateSetConsentOptions: (options: unknown) => SetConsentOptions;
   consentHashStore: ConsentHashStore;

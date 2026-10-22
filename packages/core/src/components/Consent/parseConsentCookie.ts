@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import type { ConsentByPurpose } from "../../core/consent/types.js";
+import type { ConsentByPurpose } from "./types.js";
 
 /**
  * Parses a consent cookie.

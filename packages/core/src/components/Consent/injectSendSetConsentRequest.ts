@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { isObject } from "../../utils/index.js";
 import { createRequestParams } from "../../utils/request/index.js";
-import type { EdgeRequestExecutor } from "../../core/edgeNetwork/types.js";
+import type { ComponentTools } from "../../core/types.js";
 import type { ConsentRequestOptions } from "./createConsentRequest.js";
 import type { Override, Request } from "../../utils/request/types.js";
 import type {
@@ -26,7 +26,7 @@ export interface SendSetConsentRequestOptions {
   createConsentRequest: (
     options: ConsentRequestOptions,
   ) => Request<ConsentRequestPayload>;
-  sendEdgeNetworkRequest: EdgeRequestExecutor;
+  sendEdgeNetworkRequest: ComponentTools["sendEdgeNetworkRequest"];
   edgeConfigOverrides?: Override;
 }
 

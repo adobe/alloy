@@ -23,6 +23,9 @@ export interface ConsentObject {
   [key: string]: unknown;
 }
 
+/** Consent values keyed by purpose, e.g. `{ general: "in" }`. */
+export type ConsentByPurpose = Record<string, string>;
+
 /** Identities keyed by namespace code. */
 export type IdentityMap = Record<string, Identity[]>;
 
