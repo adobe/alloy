@@ -72,10 +72,11 @@ const Heading = ({
   "data-test-id": dataTestId,
   children,
   size = "S",
+  level,
   marginTop,
   marginBottom,
 }) => {
-  const HeadingElement = tagBySize[size];
+  const HeadingElement = level ? `h${level}` : tagBySize[size];
   return (
     <HeadingElement
       data-test-id={dataTestId}
@@ -96,6 +97,7 @@ Heading.propTypes = {
   "data-test-id": PropTypes.string,
   children: PropTypes.node.isRequired,
   size: PropTypes.oneOf(Object.keys(tagBySize)),
+  level: PropTypes.oneOf([1, 2, 3, 4, 5, 6]),
   marginTop: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   marginBottom: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };

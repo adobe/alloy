@@ -49,6 +49,18 @@ describe("Heading spacing", () => {
       .toHaveStyle({ "margin-top": "0px", "margin-bottom": "1px" });
   });
 
+  it("can set a semantic level without changing its typography", async () => {
+    view = await renderView(() => (
+      <Heading size="XS" level={3}>
+        Page guidance
+      </Heading>
+    ));
+
+    await expect
+      .element(view.getByRole("heading", { level: 3 }))
+      .toHaveStyle({ "font-size": "14px", "font-weight": "700" });
+  });
+
   it.each([
     [0, "0px"],
     ["size-300", "24px"],

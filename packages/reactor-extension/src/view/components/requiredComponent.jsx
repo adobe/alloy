@@ -17,6 +17,7 @@ import camelCaseToTitleCase from "../utils/camelCaseToTitleCase";
 import { LIBRARY_TYPE_PREINSTALLED } from "../constants/libraryType";
 import FillParentAndCenterChildren from "./fillParentAndCenterChildren";
 import { isDefaultComponent } from "../utils/alloyComponents.mjs";
+import InfoMessage from "./infoMessage";
 
 /**
  * A component that will render children if the required component is enabled.
@@ -59,7 +60,8 @@ const RequiredComponent = ({
           data-test-id="preinstalledModeWarning"
           styles={style({
             width: 400,
-            marginBottom: 8,
+            marginTop: 8,
+            marginBottom: 16,
           })}
         >
           <Heading>Self-hosted Alloy instance detected</Heading>
@@ -138,6 +140,8 @@ const RequiredComponent = ({
           data-test-id="requiredComponentWarning"
           styles={style({
             width: 400,
+            marginTop: 8,
+            marginBottom: 16,
           })}
         >
           <Heading>Custom build component disabled</Heading>
@@ -155,19 +159,12 @@ const RequiredComponent = ({
 
   if (!deprecated) {
     return (
-      <InlineAlert
-        styles={style({
-          width: 400,
-        })}
-      >
-        <Heading>Custom build component disabled</Heading>
-        <Content>
-          This part of the configuration is hidden because a custom build
-          component is disabled on this property. To set {title}, enable the{" "}
-          {componentLabel} component in the custom build section of the Web SDK
-          extension configuration.
-        </Content>
-      </InlineAlert>
+      <InfoMessage title="Custom build component disabled">
+        This part of the configuration is hidden because a custom build
+        component is disabled on this property. To set {title}, enable the{" "}
+        {componentLabel} component in the custom build section of the Web SDK
+        extension configuration.
+      </InfoMessage>
     );
   }
 

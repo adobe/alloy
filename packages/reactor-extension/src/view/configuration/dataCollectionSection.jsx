@@ -14,16 +14,10 @@ import { useEffect } from "react";
 import { useField, useFormikContext } from "formik";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { object, string } from "yup";
-import {
-  ActionButton,
-  Checkbox,
-  Radio,
-  InlineAlert,
-  Content,
-  Heading,
-} from "@react-spectrum/s2";
+import { ActionButton, Checkbox, Radio } from "@react-spectrum/s2";
 import PropTypes from "prop-types";
 import SectionHeader from "../components/sectionHeader";
+import InfoMessage from "../components/infoMessage";
 import CodeField from "../components/codeField";
 import FormikCheckbox from "../forms/fields/Checkbox";
 import FormikCheckboxGroup from "../forms/fields/CheckboxGroup";
@@ -490,19 +484,13 @@ const DataCollectionSection = ({ instanceFieldName }) => {
               )}
           </FormElementContainer>
         ) : (
-          <div
-            className={style({
-              width: 480,
-            })}
+          <InfoMessage
+            title="Activity collector component disabled"
+            styles={style({ width: 480 })}
           >
-            <InlineAlert variant="informative">
-              <Heading>Activity collector component disabled</Heading>
-              <Content>
-                The activity collector custom build component is disabled.
-                Enable it above to configure activity collector settings.
-              </Content>
-            </InlineAlert>
-          </div>
+            The activity collector custom build component is disabled. Enable it
+            above to configure activity collector settings.
+          </InfoMessage>
         )}
         <div>
           <FormikRadioGroup

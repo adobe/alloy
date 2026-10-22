@@ -27,6 +27,7 @@ import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
 import { object, lazy, string, array, mixed } from "yup";
 import SectionHeader from "../components/sectionHeader";
+import InfoMessage from "../components/infoMessage";
 import FormElementContainer from "../components/formElementContainer";
 import DataElementSelector from "../components/dataElementSelector";
 import FormikTextField from "../forms/fields/TextField";
@@ -479,36 +480,23 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
   }, [advertisingComponentEnabled, initInfo, instanceFieldName, setFieldValue]);
 
   const disabledView = (
-    <div
-      className={style({
-        width: 480,
-      })}
+    <InfoMessage
+      title="Adobe Advertising component disabled"
+      styles={style({ width: 480 })}
     >
-      <InlineAlert variant="informative">
-        <Heading>Adobe Advertising component disabled</Heading>
-        <Content>
-          The Adobe Advertising custom build component is disabled. Enable it
-          above to configure Adobe Advertising settings.
-        </Content>
-      </InlineAlert>
-    </div>
+      The Adobe Advertising custom build component is disabled. Enable it above
+      to configure Adobe Advertising settings.
+    </InfoMessage>
   );
 
   const multiInstanceView = (
-    <div
-      className={style({
-        width: 480,
-      })}
+    <InfoMessage
+      title="Adobe Advertising available in first instance only"
+      styles={style({ width: 480 })}
     >
-      <InlineAlert variant="informative">
-        <Heading>Adobe Advertising available in first instance only</Heading>
-        <Content>
-          Adobe Advertising configuration is only available in the first
-          instance. To configure Adobe Advertising settings, please use the
-          first instance.
-        </Content>
-      </InlineAlert>
-    </div>
+      Adobe Advertising configuration is only available in the first instance.
+      To configure Adobe Advertising settings, please use the first instance.
+    </InfoMessage>
   );
 
   const getAdvertisersContent = () => {

@@ -10,11 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Link, InlineAlert, Content, Heading } from "@react-spectrum/s2";
+import { Link } from "@react-spectrum/s2";
 
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import render from "../render";
 import ExtensionView from "../components/extensionView";
+import InfoMessage from "../components/infoMessage";
 import FormElementContainer from "../components/formElementContainer";
 import InstanceNamePicker from "../components/instanceNamePicker";
 import Overrides, { bridge as overridesBridge } from "../components/overrides";
@@ -67,27 +68,24 @@ const RedirectWithIdentity = () => {
         const orgId = instanceSettings.orgId ?? initInfo.company.orgId;
         return (
           <>
-            <InlineAlert
-              variant="informative"
-              styles={style({
-                width: 400,
-              })}
+            <InfoMessage
+              title="Redirect with identity"
+              headingLevel={3}
+              styles={style({ marginBottom: 24 })}
             >
-              <Heading size="XXS">Redirect with identity</Heading>
-              <Content>
-                Use this action to share identities from the current page to
-                other domains. This action is designed to be used with a click
-                event type and a value comparison condition. See{" "}
-                <Link
-                  href="https://experienceleague.adobe.com/docs/experience-platform/edge/identity/id-sharing.html#tags-extension"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  cross-domain ID sharing
-                </Link>{" "}
-                for more information.
-              </Content>
-            </InlineAlert>
+              Use this action to share identities from the current page to other
+              domains. This action is designed to be used with a click event
+              type and a value comparison condition. See{" "}
+              <Link
+                href="https://experienceleague.adobe.com/docs/experience-platform/edge/identity/id-sharing.html#tags-extension"
+                target="_blank"
+                rel="noopener noreferrer"
+                isStandalone={false}
+              >
+                cross-domain ID sharing
+              </Link>{" "}
+              for more information.
+            </InfoMessage>
             <FormElementContainer>
               <InstanceNamePicker
                 data-test-id="instanceNamePicker"

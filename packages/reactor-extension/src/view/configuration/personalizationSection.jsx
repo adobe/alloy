@@ -12,16 +12,11 @@ governing permissions and limitations under the License.
 
 import copyToClipboard from "clipboard-copy";
 import PropTypes from "prop-types";
-import {
-  Content,
-  InlineAlert,
-  Text,
-  Heading,
-  PickerItem,
-} from "@react-spectrum/s2";
+import { Text, PickerItem } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import SectionHeader from "../components/sectionHeader";
+import InfoMessage from "../components/infoMessage";
 import CodeField from "../components/codeField";
 import CodePreview from "../components/codePreview";
 import prehidingSnippet from "./constants/prehidingSnippet";
@@ -189,19 +184,13 @@ const PersonalizationSection = ({ instanceFieldName }) => {
               Enable personalization storage
             </FormikCheckbox>
           ) : (
-            <div
-              className={style({
-                width: 480,
-              })}
+            <InfoMessage
+              title="Rules engine component disabled"
+              styles={style({ width: 480 })}
             >
-              <InlineAlert variant="informative">
-                <Heading>Rules engine component disabled</Heading>
-                <Content>
-                  The rules engine custom build component is disabled. Enable it
-                  above to configure personalization storage settings.
-                </Content>
-              </InlineAlert>
-            </div>
+              The rules engine custom build component is disabled. Enable it
+              above to configure personalization storage settings.
+            </InfoMessage>
           )}
           <ClickCollectionPicker
             data-test-id="autoCollectPropositionInteractionsAJOPicker"
@@ -219,19 +208,13 @@ const PersonalizationSection = ({ instanceFieldName }) => {
           />
         </FormElementContainer>
       ) : (
-        <div
-          className={style({
-            width: 480,
-          })}
+        <InfoMessage
+          title="Personalization component disabled"
+          styles={style({ width: 480 })}
         >
-          <InlineAlert variant="informative">
-            <Heading>Personalization component disabled</Heading>
-            <Content>
-              The personalization custom build component is disabled. Enable it
-              above to configure personalization settings.
-            </Content>
-          </InlineAlert>
-        </div>
+          The personalization custom build component is disabled. Enable it
+          above to configure personalization settings.
+        </InfoMessage>
       )}
     </>
   );

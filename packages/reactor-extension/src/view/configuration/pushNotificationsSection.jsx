@@ -14,9 +14,10 @@ import PropTypes from "prop-types";
 import { object, string } from "yup";
 import { useEffect, useRef } from "react";
 import { useField, useFormikContext } from "formik";
-import { InlineAlert, Content, Link, Heading } from "@react-spectrum/s2";
+import { Content, Link } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import SectionHeader from "../components/sectionHeader";
+import InfoMessage from "../components/infoMessage";
 import FormElementContainer from "../components/formElementContainer";
 import DataElementSelector from "../components/dataElementSelector";
 import FormikTextField from "../forms/fields/TextField";
@@ -115,19 +116,13 @@ const PushNotificationsSection = ({ instanceFieldName }) => {
     return (
       <>
         <SectionHeader>Push Notifications</SectionHeader>
-        <div
-          className={style({
-            width: 480,
-          })}
+        <InfoMessage
+          title="Push Notifications component disabled"
+          styles={style({ width: 480 })}
         >
-          <InlineAlert variant="informative">
-            <Heading>Push Notifications component disabled</Heading>
-            <Content>
-              The Push Notifications custom build component is disabled. Enable
-              it above to configure push notification settings.
-            </Content>
-          </InlineAlert>
-        </div>
+          The Push Notifications custom build component is disabled. Enable it
+          above to configure push notification settings.
+        </InfoMessage>
       </>
     );
   }

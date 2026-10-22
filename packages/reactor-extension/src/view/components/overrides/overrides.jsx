@@ -200,9 +200,8 @@ const Overrides = ({
       </SectionHeader>
       <InlineAlert
         variant="informative"
-        styles={style({
-          width: 400,
-        })}
+        data-test-id="datastreamOverridesInfo"
+        styles={style({ width: 400, marginBottom: 24 })}
       >
         <AlertHeading>Server-side vs client-side</AlertHeading>
         <Content>

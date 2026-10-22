@@ -102,6 +102,39 @@ describe("Config overrides section", () => {
     cleanup();
   });
 
+  it("shows informative guidance with exterior spacing", async () => {
+    await driver.init(buildSettingsWithDummyDatastream());
+
+    await expect
+      .element(
+        view.getByRole("heading", {
+          name: "Server-side vs client-side",
+          level: 3,
+        }),
+      )
+      .toBeVisible();
+    await expect
+      .element(view.getByTestId("datastreamOverridesInfo"))
+      .toHaveStyle({
+        "border-top-style": "solid",
+        "border-top-width": "2px",
+        "margin-bottom": "24px",
+        width: "400px",
+      });
+    await expect
+      .element(
+        view
+          .getByTestId("datastreamOverridesInfo")
+          .getByRole("img", { name: "Information" }),
+      )
+      .toBeVisible();
+    await expect
+      .element(view.getByTestId("datastreamOverridesInfo"))
+      .toHaveTextContent(
+        "Setting any client-side datastream configuration overrides for an environment below will override any server-side dynamic datastream configurations and rules for that environment.",
+      );
+  });
+
   it("sets form values from settings", async () => {
     await driver.init(
       buildSettingsWithDummyDatastream({

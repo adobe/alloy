@@ -13,17 +13,11 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { object, boolean, number, string, array } from "yup";
 import { useField, FieldArray } from "formik";
-import {
-  InlineAlert,
-  Content,
-  Button,
-  ActionButton,
-  Radio,
-  Heading,
-} from "@react-spectrum/s2";
+import { Button, ActionButton, Radio } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
 import SectionHeader from "../components/sectionHeader";
+import InfoMessage from "../components/infoMessage";
 import FormikCheckbox from "../forms/fields/Checkbox";
 import FormikNumberField from "../forms/fields/NumberField";
 import FormikTextField from "../forms/fields/TextField";
@@ -209,19 +203,13 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
         <SectionHeader>
           Brand Concierge <BetaBadge />
         </SectionHeader>
-        <div
-          className={style({
-            width: 480,
-          })}
+        <InfoMessage
+          title="Brand Concierge component disabled"
+          styles={style({ width: 480 })}
         >
-          <InlineAlert variant="informative">
-            <Heading>Brand Concierge component disabled</Heading>
-            <Content>
-              The Brand Concierge custom build component is disabled. Enable it
-              above to configure Brand Concierge settings.
-            </Content>
-          </InlineAlert>
-        </div>
+          The Brand Concierge custom build component is disabled. Enable it
+          above to configure Brand Concierge settings.
+        </InfoMessage>
       </>
     );
   }

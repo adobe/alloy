@@ -17,6 +17,7 @@ import ExtensionView from "../components/extensionView";
 import FillParentAndCenterChildren from "../components/fillParentAndCenterChildren";
 import Body from "../components/typography/body";
 import RequiredComponent from "../components/requiredComponent";
+import InfoMessage from "../components/infoMessage";
 import { LIBRARY_TYPE_PREINSTALLED } from "../constants/libraryType";
 
 const getInitialValues = ({ initInfo }) => {
@@ -82,21 +83,17 @@ const EventMergeId = () => (
           whole
         >
           <FillParentAndCenterChildren>
-            <InlineAlert
-              variant="informative"
-              styles={style({
-                width: 480,
-              })}
+            <InfoMessage
+              title="Event merge ID caching"
+              headingLevel={3}
+              styles={style({ width: 480 })}
             >
-              <Heading size="XXS">Event merge ID caching</Heading>
-              <Content>
-                This data element will provide an event merge ID. Regardless of
-                what you choose for the data element storage duration in Launch,
-                the value of this data element will remain the same until either
-                the visitor to your website leaves the current page or the event
-                merge ID is reset using the <b>Reset event merge ID</b> action.
-              </Content>
-            </InlineAlert>
+              This data element will provide an event merge ID. Regardless of
+              what you choose for the data element storage duration in Launch,
+              the value of this data element will remain the same until either
+              the visitor to your website leaves the current page or the event
+              merge ID is reset using the <b>Reset event merge ID</b> action.
+            </InfoMessage>
             <Body size="L" marginTop="size-200">
               No configuration necessary.
             </Body>

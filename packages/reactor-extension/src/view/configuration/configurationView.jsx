@@ -496,8 +496,10 @@ const Configuration = ({ initInfo, context }) => {
             >
               <InlineAlert
                 variant="notice"
+                data-test-id="buildOptionsWarning"
                 styles={style({
                   width: 480,
+                  marginY: 8,
                 })}
               >
                 <Heading>Warning, advanced settings</Heading>
