@@ -22,7 +22,8 @@ const FormElementContainer = ({
       {...otherProps}
       className={style({
         display: "flex",
-        gap: 8,
+        rowGap: 24,
+        columnGap: 8,
       })}
       style={{
         flexDirection: direction,
