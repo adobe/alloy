@@ -9,11 +9,23 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
 import { assertValid } from "./utils.js";
-import isValidRegExp from "../isValidRegExp.js";
+import type { ValidatorFn } from "./types.js";
 
-export default (value, path) => {
-  assertValid(isValidRegExp(value), value, path, "a regular expression");
-  return value;
-};
+export default (elementValidator: ValidatorFn) =>
+  function arrayOf(this: unknown, value: unknown[], path?: string): unknown[] {
+    assertValid(Array.isArray(value), value, path, "an array");
+    const errors: string[] = [];
+    const validatedArray = value.map((subValue, i) => {
+      try {
+        return elementValidator.call(this, subValue, `${path}[${i}]`, value);
+      } catch (e) {
+        errors.push((e as Error).message);
+        return undefined;
+      }
+    });
+    if (errors.length) {
+      throw new Error(errors.join("\n"));
+    }
+    return validatedArray;
+  };

@@ -1,5 +1,5 @@
 /*
-Copyright 2023 Adobe. All rights reserved.
+Copyright 2019 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,13 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { assertValid } from "./utils.js";
+import type { ValidatorFn } from "./types.js";
 
-export default (typeName, maximum) => (value, path) => {
-  assertValid(
-    value <= maximum,
-    value,
-    path,
-    `${typeName} less than or equal to ${maximum}`,
-  );
-  return value;
-};
+export default (validators: ValidatorFn[], message?: string) =>
+  function anyOf(this: unknown, value: unknown, path?: string): unknown {
+    let newValue: unknown;
+    const valid = validators.find((validator) => {
+      try {
+        newValue = validator.call(this, value, path);
+        return true;
+      } catch {
+        return false;
+      }
+    });
+    assertValid(valid, value, path, message);
+    return newValue;
+  };

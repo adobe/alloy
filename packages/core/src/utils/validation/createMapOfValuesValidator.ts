@@ -12,13 +12,18 @@ governing permissions and limitations under the License.
 
 import isObject from "../isObject.js";
 import { assertValid } from "./utils.js";
+import type { ValidatorFn } from "./types.js";
 
-export default (valueValidator) =>
-  function mapOfValues(value, path) {
+export default (valueValidator: ValidatorFn) =>
+  function mapOfValues(
+    this: unknown,
+    value: Record<string, unknown>,
+    path?: string,
+  ): Record<string, unknown> {
     assertValid(isObject(value), value, path, "an object");
 
-    const errors = [];
-    const validatedObject = {};
+    const errors: string[] = [];
+    const validatedObject: Record<string, unknown> = {};
     Object.keys(value).forEach((subKey) => {
       const subValue = value[subKey];
       const subPath = path ? `${path}.${subKey}` : subKey;
@@ -28,7 +33,7 @@ export default (valueValidator) =>
           validatedObject[subKey] = validatedValue;
         }
       } catch (e) {
-        errors.push(e.message);
+        errors.push((e as Error).message);
       }
     });
 

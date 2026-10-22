@@ -1,5 +1,5 @@
 /*
-Copyright 2023 Adobe. All rights reserved.
+Copyright 2019 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -12,12 +12,16 @@ governing permissions and limitations under the License.
 
 import { assertValid } from "./utils.js";
 
-export default (regexp) => (value, path) => {
-  assertValid(
-    regexp.test(value),
-    value,
-    path,
-    `does not match the ${regexp.toString()}`,
-  );
-  return value;
+export default () => {
+  const values: unknown[] = [];
+  return (value: unknown, path?: string): unknown => {
+    assertValid(
+      values.indexOf(value) === -1,
+      value,
+      path,
+      "a unique value across instances",
+    );
+    values.push(value);
+    return value;
+  };
 };

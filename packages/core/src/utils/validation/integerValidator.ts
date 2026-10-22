@@ -1,5 +1,5 @@
 /*
-Copyright 2022 Adobe. All rights reserved.
+Copyright 2019 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,12 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { assertValid } from "./utils.js";
-import isUnique from "../isUnique.js";
 
-export default () => {
-  return (value, path) => {
-    assertValid(isUnique(value), value, path, "array values to be unique");
-    return value;
-  };
+import isInteger from "../isInteger.js";
+import { assertValid } from "./utils.js";
+
+export default (value: unknown, path?: string): unknown => {
+  assertValid(isInteger(value), value, path, "an integer");
+  return value;
 };

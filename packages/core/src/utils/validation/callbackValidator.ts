@@ -9,19 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
+import isFunction from "../isFunction.js";
 import { assertValid } from "./utils.js";
 
-export default () => {
-  const values = [];
-  return (value, path) => {
-    assertValid(
-      values.indexOf(value) === -1,
-      value,
-      path,
-      "a unique value across instances",
-    );
-    values.push(value);
-    return value;
-  };
+export default (value: unknown, path?: string): unknown => {
+  assertValid(isFunction(value), value, path, "a function");
+  return value;
 };

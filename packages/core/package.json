@@ -32,7 +32,7 @@
       "default": "./dist/utils/request/index.js"
     },
     "./utils/validation": {
-      "alloy-source": "./src/utils/validation/index.js",
+      "alloy-source": "./src/utils/validation/index.ts",
       "types": "./dist/utils/validation/index.d.ts",
       "default": "./dist/utils/validation/index.js"
     },

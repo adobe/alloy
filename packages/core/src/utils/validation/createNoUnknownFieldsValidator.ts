@@ -1,5 +1,5 @@
 /*
-Copyright 2024 Adobe. All rights reserved.
+Copyright 2020 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,16 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (warning = "This field has been deprecated") =>
-  function deprecated(value, path) {
-    let message = warning;
-    if (value !== undefined) {
-      if (path) {
-        message = `'${path}': ${message}`;
+import type { ObjectValidatorSchema } from "./types.js";
+
+export default (schema: ObjectValidatorSchema) =>
+  (value: object, path?: string): object => {
+    const errors: string[] = [];
+    Object.keys(value).forEach((subKey) => {
+      if (!(schema as Record<string, unknown>)[subKey]) {
+        const subPath = path ? `${path}.${subKey}` : subKey;
+        errors.push(`'${subPath}': Unknown field.`);
       }
-      if (this && this.logger) {
-        this.logger.warn(message);
-      }
+    });
+
+    if (errors.length) {
+      throw new Error(errors.join("\n"));
     }
+
     return value;
   };

@@ -12,16 +12,21 @@ governing permissions and limitations under the License.
 
 import isObject from "../isObject.js";
 import { assertValid } from "./utils.js";
+import type { ObjectValidatorSchema, ValidatorFn } from "./types.js";
 
-export default (schema) =>
-  function objectOf(value, path) {
+export default (schema: ObjectValidatorSchema) =>
+  function objectOf(
+    this: unknown,
+    value: Record<string, unknown>,
+    path?: string,
+  ): Record<string, unknown> {
     assertValid(isObject(value), value, path, "an object");
 
-    const errors = [];
-    const validatedObject = {};
+    const errors: string[] = [];
+    const validatedObject: Record<string, unknown> = {};
     Object.keys(schema).forEach((subKey) => {
       const subValue = value[subKey];
-      const subSchema = schema[subKey];
+      const subSchema = (schema as Record<string, ValidatorFn>)[subKey];
       const subPath = path ? `${path}.${subKey}` : subKey;
       try {
         const validatedValue = subSchema.call(this, subValue, subPath);
@@ -29,7 +34,7 @@ export default (schema) =>
           validatedObject[subKey] = validatedValue;
         }
       } catch (e) {
-        errors.push(e.message);
+        errors.push((e as Error).message);
       }
     });
 

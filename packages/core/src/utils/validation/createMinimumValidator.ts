@@ -9,11 +9,15 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-import isInteger from "../isInteger.js";
 import { assertValid } from "./utils.js";
 
-export default (value, path) => {
-  assertValid(isInteger(value), value, path, "an integer");
-  return value;
-};
+export default (typeName: string, minimum: number) =>
+  (value: number, path?: string): number => {
+    assertValid(
+      value >= minimum,
+      value,
+      path,
+      `${typeName} greater than or equal to ${minimum}`,
+    );
+    return value;
+  };

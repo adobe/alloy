@@ -1,5 +1,5 @@
 /*
-Copyright 2019 Adobe. All rights reserved.
+Copyright 2024 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,15 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assertValid } from "./utils.js";
-import isObject from "../isObject.js";
-import isEmptyObject from "../isEmptyObject.js";
+import type { ValidatorContext } from "./types.js";
 
-export default (message) => (value, path) => {
-  if (isObject(value)) {
-    assertValid(!isEmptyObject(value), value, path, message);
-  } else {
-    assertValid(value.length > 0, value, path, message);
-  }
-  return value;
-};
+export default (warning = "This field has been deprecated") =>
+  function deprecated(
+    this: ValidatorContext,
+    value: unknown,
+    path?: string,
+  ): unknown {
+    let message = warning;
+    if (value !== undefined) {
+      if (path) {
+        message = `'${path}': ${message}`;
+      }
+      if (this && this.logger) {
+        this.logger.warn(message);
+      }
+    }
+    return value;
+  };

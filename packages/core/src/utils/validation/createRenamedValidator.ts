@@ -11,9 +11,14 @@ governing permissions and limitations under the License.
 */
 import isObject from "../isObject.js";
 import { assertValid } from "./utils.js";
+import type { ValidatorContext, ValidatorFn } from "./types.js";
 
-export default (oldField, oldSchema, newField) =>
-  function deprecated(value, path) {
+export default (oldField: string, oldSchema: ValidatorFn, newField: string) =>
+  function deprecated(
+    this: ValidatorContext,
+    value: Record<string, unknown>,
+    path?: string,
+  ): Record<string, unknown> {
     assertValid(isObject(value), value, path, "an object");
 
     const {

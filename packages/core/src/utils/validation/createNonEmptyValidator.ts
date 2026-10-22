@@ -9,19 +9,22 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { assertValid } from "./utils.js";
 
-export default (validators, message) =>
-  function anyOf(value, path) {
-    let newValue;
-    const valid = validators.find((validator) => {
-      try {
-        newValue = validator.call(this, value, path);
-        return true;
-      } catch {
-        return false;
-      }
-    });
-    assertValid(valid, value, path, message);
-    return newValue;
+import { assertValid } from "./utils.js";
+import isObject from "../isObject.js";
+import isEmptyObject from "../isEmptyObject.js";
+
+export default (message: string) =>
+  (value: { length: number } | object, path?: string): unknown => {
+    if (isObject(value)) {
+      assertValid(!isEmptyObject(value), value, path, message);
+    } else {
+      assertValid(
+        (value as { length: number }).length > 0,
+        value,
+        path,
+        message,
+      );
+    }
+    return value;
   };
