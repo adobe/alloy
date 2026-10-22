@@ -12,10 +12,25 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { RadioGroup, Radio } from "@react-spectrum/s2";
+import { css } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import FieldDescriptionAndError from "../../components/fieldDescriptionAndError";
 import widthStyle from "./widthStyle";
 import normalizeGroupChildren from "./normalizeGroupChildren";
+
+// S2 has no label-gap prop; keep native Form grids unchanged.
+const RADIO_GROUP_LAYOUT_STYLE = css(
+  `
+  display: contents;
+
+  &[data-compact-radio-label]:not(form *)
+    [role="radiogroup"][aria-orientation="horizontal"]
+    > :first-child {
+    padding-bottom: 0.5rem;
+  }
+`,
+  "alloy",
+);
 
 const FormikRadioGroup = ({
   name,
@@ -29,27 +44,36 @@ const FormikRadioGroup = ({
     useField(name);
 
   return (
-    <FieldDescriptionAndError
-      description={description}
-      error={touched && error ? error : undefined}
-      width={width}
+    <div
+      className={RADIO_GROUP_LAYOUT_STYLE}
+      data-compact-radio-label={
+        otherProps.label && otherProps.labelPosition !== "side"
+          ? true
+          : undefined
+      }
     >
-      <RadioGroup
-        {...otherProps}
-        value={value}
-        onChange={(currentValue) => {
-          setValue(currentValue);
-          if (onChange) {
-            onChange(currentValue);
-          }
-        }}
-        onBlur={() => setTouched(true)}
-        isInvalid={Boolean(touched && error)}
-        styles={widthStyle(width)}
+      <FieldDescriptionAndError
+        description={description}
+        error={touched && error ? error : undefined}
+        width={width}
       >
-        {normalizeGroupChildren(Radio, children)}
-      </RadioGroup>
-    </FieldDescriptionAndError>
+        <RadioGroup
+          {...otherProps}
+          value={value}
+          onChange={(currentValue) => {
+            setValue(currentValue);
+            if (onChange) {
+              onChange(currentValue);
+            }
+          }}
+          onBlur={() => setTouched(true)}
+          isInvalid={Boolean(touched && error)}
+          styles={widthStyle(width)}
+        >
+          {normalizeGroupChildren(Radio, children)}
+        </RadioGroup>
+      </FieldDescriptionAndError>
+    </div>
   );
 };
 
