@@ -13,14 +13,46 @@ governing permissions and limitations under the License.
 import defaultLibraryVersion from "../../constants/libraryVersion.js";
 import { CONFIGURE, SET_DEBUG } from "../../constants/coreCommands.js";
 import redactEdgeCredentials from "../../utils/redactEdgeCredentials.js";
+/* eslint-disable import/no-restricted-paths -- type-only import of the component contract; erased at build. */
+import type {
+  ComponentCreator,
+  ComponentRegistry,
+  Config,
+} from "../../core/types.js";
+/* eslint-enable import/no-restricted-paths */
+import type { PlatformServices } from "../../services/types.js";
 
-const prepareLibraryInfo = ({ config, componentRegistry, libraryVersion }) => {
+export interface LibraryInfo {
+  version: string;
+  configs: Record<string, unknown>;
+  commands: string[];
+  components: string[];
+}
+
+export interface LibraryInfoOptions {
+  config: Config;
+  componentRegistry: ComponentRegistry;
+  /** Node's platform services add `libraryVersionOverride`. */
+  platformServices?: PlatformServices & { libraryVersionOverride?: string };
+}
+
+const prepareLibraryInfo = ({
+  config,
+  componentRegistry,
+  libraryVersion,
+}: {
+  config: Config;
+  componentRegistry: ComponentRegistry;
+  libraryVersion: string;
+}): LibraryInfo => {
   const allCommands = [
     ...componentRegistry.getCommandNames(),
     CONFIGURE,
     SET_DEBUG,
   ].sort();
-  const resultConfig = { ...redactEdgeCredentials(config) };
+  const resultConfig: Record<string, unknown> = {
+    ...redactEdgeCredentials(config),
+  };
   Object.keys(config).forEach((key) => {
     const value = config[key];
     if (typeof value !== "function") {
@@ -37,7 +69,11 @@ const prepareLibraryInfo = ({ config, componentRegistry, libraryVersion }) => {
   };
 };
 
-const createLibraryInfo = ({ config, componentRegistry, platformServices }) => {
+const createLibraryInfo = ({
+  config,
+  componentRegistry,
+  platformServices,
+}: LibraryInfoOptions) => {
   // defaultLibraryVersion is a build-time placeholder the browser bundler
   // replaces; other runtimes (e.g. Node) override it via platformServices.
   const libraryVersion =
@@ -60,4 +96,4 @@ const createLibraryInfo = ({ config, componentRegistry, platformServices }) => {
 };
 
 createLibraryInfo.namespace = "LibraryInfo";
-export default createLibraryInfo;
+export default createLibraryInfo satisfies ComponentCreator<LibraryInfoOptions>;
