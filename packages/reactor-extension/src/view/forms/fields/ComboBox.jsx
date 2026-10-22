@@ -15,6 +15,7 @@ import { ComboBox, ComboBoxItem } from "@react-spectrum/s2";
 import { useField } from "formik";
 import widthStyle from "./widthStyle";
 import normalizeCollectionChildren from "./normalizeCollectionChildren";
+import closeDataElementSuggestions from "./closeDataElementSuggestions";
 
 /**
  * @param {object} params
@@ -41,6 +42,8 @@ const FormikComboBox = ({
   return (
     <ComboBox
       {...otherProps}
+      menuTrigger={value?.startsWith("%") ? "manual" : otherProps.menuTrigger}
+      onInput={closeDataElementSuggestions}
       inputValue={value}
       onInputChange={setValue}
       onBlur={(...args) => {

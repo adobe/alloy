@@ -17,6 +17,7 @@ import { useField } from "formik";
 import useForceRender from "../../utils/useForceRender";
 import widthStyle from "./widthStyle";
 import normalizeCollectionChildren from "./normalizeCollectionChildren";
+import closeDataElementSuggestions from "./closeDataElementSuggestions";
 
 const FormikKeyedComboBox = ({
   name,
@@ -44,6 +45,8 @@ const FormikKeyedComboBox = ({
   return (
     <ComboBox
       {...otherProps}
+      menuTrigger={text?.startsWith("%") ? "manual" : otherProps.menuTrigger}
+      onInput={closeDataElementSuggestions}
       inputValue={text}
       items={itemsRef.current}
       loadingState="idle"
@@ -83,8 +86,8 @@ const FormikKeyedComboBox = ({
       isInvalid={Boolean(touched && error)}
       styles={widthStyle(width)}
       errorMessage={error}
-      onOpenChange={(isOpen) => {
-        if (!isOpen) {
+      onOpenChange={(isOpen, trigger) => {
+        if (!isOpen || trigger === "manual") {
           isFilteringRef.current = false;
           itemsRef.current = items;
           forceRender();
