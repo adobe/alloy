@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { isNonEmptyArray } from "../utils/index.js";
 import type { RequestPayload } from "../utils/request/types.js";
 import type { CookieAttributes, CookieService } from "../services/types.js";
-import type { CookieTransfer, CookieTransferState, Response } from "./types.js";
+import type { CookieTransfer, CookieTransferState } from "./types.js";
 
 export type { CookieTransfer, CookieTransferState };
 
@@ -88,36 +88,38 @@ export default ({
      * write first-party cookies, therefore we write first-party cookies
      * as directed in the response body.
      */
-    responseToCookies(response: Pick<Response, "getPayloadsByType">) {
+    responseToCookies(
+      response: Parameters<CookieTransfer["responseToCookies"]>[0],
+    ) {
       // state:store payloads are the cookie entries written by the Edge Network.
-      response
-        .getPayloadsByType<StateStoreItem>(STATE_STORE_HANDLE_TYPE)
-        .forEach((stateItem) => {
-          const options: CookieAttributes = { domain: apexDomain };
+      (
+        response.getPayloadsByType(STATE_STORE_HANDLE_TYPE) as StateStoreItem[]
+      ).forEach((stateItem) => {
+        const options: CookieAttributes = { domain: apexDomain };
 
-          const sameSite =
-            stateItem.attrs &&
-            stateItem.attrs.SameSite &&
-            stateItem.attrs.SameSite.toLowerCase();
+        const sameSite =
+          stateItem.attrs &&
+          stateItem.attrs.SameSite &&
+          stateItem.attrs.SameSite.toLowerCase();
 
-          if (stateItem.maxAge !== undefined) {
-            // cookieJar expects "expires" as a date object
-            options.expires = new Date(
-              dateProvider().getTime() + stateItem.maxAge * 1000,
-            );
-          }
-          if (sameSite !== undefined) {
-            // Passed through from the server without validation, as before.
-            options.sameSite = sameSite as CookieAttributes["sameSite"];
-          }
-          // When sameSite is set to none, the secure flag must be set.
-          // Experience edge will not set the secure flag in these cases.
-          if (sameSite === "none") {
-            options.secure = true;
-          }
+        if (stateItem.maxAge !== undefined) {
+          // cookieJar expects "expires" as a date object
+          options.expires = new Date(
+            dateProvider().getTime() + stateItem.maxAge * 1000,
+          );
+        }
+        if (sameSite !== undefined) {
+          // Passed through from the server without validation, as before.
+          options.sameSite = sameSite as CookieAttributes["sameSite"];
+        }
+        // When sameSite is set to none, the secure flag must be set.
+        // Experience edge will not set the secure flag in these cases.
+        if (sameSite === "none") {
+          options.secure = true;
+        }
 
-          cookieJar.set(stateItem.key, stateItem.value, options);
-        });
+        cookieJar.set(stateItem.key, stateItem.value, options);
+      });
     },
   };
 };

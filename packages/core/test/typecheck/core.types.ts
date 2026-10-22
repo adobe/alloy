@@ -21,6 +21,7 @@ import type {
   ApplyResponseOptions,
   Component,
   ComponentCreator,
+  CookieTransfer,
   Event,
   EventManager,
   Logger,
@@ -135,6 +136,10 @@ expectTypeOf(response.getPayloadsByType("identity:persist")).toEqualTypeOf<
 expectTypeOf(
   response.getPayloadsByType<{ id: string }>("identity:persist"),
 ).toEqualTypeOf<{ id: string }[]>();
+// cookieTransfer takes both the generic Response and an unknown[]-returning one.
+declare const cookieTransfer: CookieTransfer;
+cookieTransfer.responseToCookies(response);
+cookieTransfer.responseToCookies({ getPayloadsByType: (): unknown[] => [] });
 expectTypeOf(response.toJSON()).toEqualTypeOf<ResponseContent>();
 
 // Consent and identity.

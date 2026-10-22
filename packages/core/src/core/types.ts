@@ -338,7 +338,13 @@ export interface CookieTransfer {
     endpointDomain: string,
     extraCookieNames?: string[],
   ) => void;
-  responseToCookies: (response: Pick<Response, "getPayloadsByType">) => void;
+  /**
+   * Takes the non-generic `getPayloadsByType` shape, so both `Response` and
+   * implementations that return `unknown[]` are accepted.
+   */
+  responseToCookies: (response: {
+    getPayloadsByType: (type: string) => unknown[];
+  }) => void;
 }
 
 /** The per-component helpers core injects into every component creator. */

@@ -39,7 +39,6 @@ export default ({
        * getPayloadsByType("identity:persist")
        */
       getPayloadsByType<T = unknown>(type: string) {
-        // The caller names the payload shape Edge sends for this type.
         return handle
           .filter((fragment) => fragment.type === type)
           .flatMap((fragment) => fragment.payload) as T[];
