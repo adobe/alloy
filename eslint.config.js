@@ -257,10 +257,15 @@ export default defineConfig([
         "error",
         {
           zones: [
+            ...allComponentPaths.map((componentPath) => ({
+              target: componentPath + "/",
+              from: "packages/core/src/core",
+              // Components may import the shared contract types only.
+              except: ["./types.ts"],
+            })),
             ...allComponentPaths.map((componentPath, _, allPaths) => ({
               target: componentPath + "/",
               from: [
-                "packages/core/src/core",
                 "packages/core/src/baseCode",
                 ...allPaths
                   .filter((p) => {
