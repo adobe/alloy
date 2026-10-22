@@ -12,31 +12,60 @@ governing permissions and limitations under the License.
 import { createCallbackAggregator, noop } from "../../utils/index.js";
 import mergeLifecycleResponses from "./mergeLifecycleResponses.js";
 import handleRequestFailure from "./handleRequestFailure.js";
+import type { EdgeRequestExecutor } from "./types.js";
+import type { Response, ResponseContent, ResponseCreator } from "../types.js";
+import type { Request } from "../../utils/request/types.js";
+import type {
+  EdgeNetworkCookieTransfer,
+  EdgeNetworkLifecycle,
+} from "./injectSendEdgeNetworkRequest.js";
+import type { ProcessableNetworkResponse } from "./injectProcessWarningsAndErrors.js";
 
 const HTTP_STATUS_OK = 200;
+
+export interface InjectApplyResponseOptions {
+  cookieTransfer: EdgeNetworkCookieTransfer;
+  lifecycle: EdgeNetworkLifecycle;
+  createResponse: ResponseCreator;
+  processWarningsAndErrors: (
+    networkResponse: ProcessableNetworkResponse & {
+      getHeader: (key: string) => string | undefined;
+    },
+  ) => void;
+}
+
+export interface ApplyResponseExecutorOptions {
+  request: Request;
+  responseHeaders: Record<string, string>;
+  responseBody: ResponseContent;
+  runOnResponseCallbacks?: Parameters<EdgeRequestExecutor>[0]["runOnResponseCallbacks"];
+  runOnRequestFailureCallbacks?: Parameters<EdgeRequestExecutor>[0]["runOnRequestFailureCallbacks"];
+}
 
 export default ({
   cookieTransfer,
   lifecycle,
   createResponse,
   processWarningsAndErrors,
-}) => {
+}: InjectApplyResponseOptions) => {
   return ({
     request,
     responseHeaders,
     responseBody,
     runOnResponseCallbacks = noop,
     runOnRequestFailureCallbacks = noop,
-  }) => {
-    const onResponseCallbackAggregator = createCallbackAggregator();
+  }: ApplyResponseExecutorOptions): Promise<Record<string, unknown>> => {
+    const onResponseCallbackAggregator =
+      createCallbackAggregator<[{ response: Response }]>();
     onResponseCallbackAggregator.add(lifecycle.onResponse);
     onResponseCallbackAggregator.add(runOnResponseCallbacks);
 
-    const onRequestFailureCallbackAggregator = createCallbackAggregator();
+    const onRequestFailureCallbackAggregator =
+      createCallbackAggregator<[{ error: unknown }]>();
     onRequestFailureCallbackAggregator.add(lifecycle.onRequestFailure);
     onRequestFailureCallbackAggregator.add(runOnRequestFailureCallbacks);
 
-    const getHeader = (key) => responseHeaders[key];
+    const getHeader = (key: string) => responseHeaders[key];
 
     return lifecycle
       .onBeforeRequest({

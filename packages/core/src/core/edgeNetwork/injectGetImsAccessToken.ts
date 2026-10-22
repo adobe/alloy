@@ -26,19 +26,32 @@ const EXPIRY_SAFETY_MARGIN_MILLIS = 5 * 60 * 1000;
  * should create one of these once and reuse it across those rebuilds, or
  * every request would re-authenticate with IMS from scratch.
  *
- * @param {Object} params
- * @param {{ clientId: string, clientSecret: string, scopes: string[], imsHost: string }} params.edgeCredentials
- * @param {() => Date} [params.dateProvider]
- * @returns {{ getAccessToken: () => Promise<string> }}
  */
-export default ({ edgeCredentials, dateProvider = () => new Date() }) => {
-  /** @type {string | undefined} */
-  let cachedToken;
-  let expiresAt = 0;
-  /** @type {Promise<string> | undefined} */
-  let pendingFetch;
+export interface EdgeCredentials {
+  clientId: string;
+  clientSecret: string;
+  scopes: string[];
+  imsHost: string;
+}
 
-  const fetchNewToken = async () => {
+export interface InjectGetImsAccessTokenOptions {
+  edgeCredentials: EdgeCredentials;
+  dateProvider?: () => Date;
+}
+
+export interface ImsAccessTokenProvider {
+  getAccessToken: () => Promise<string>;
+}
+
+export default ({
+  edgeCredentials,
+  dateProvider = () => new Date(),
+}: InjectGetImsAccessTokenOptions): ImsAccessTokenProvider => {
+  let cachedToken: string | undefined;
+  let expiresAt = 0;
+  let pendingFetch: Promise<string> | undefined;
+
+  const fetchNewToken = async (): Promise<string> => {
     const { clientId, clientSecret, scopes, imsHost } = edgeCredentials;
     const body = new URLSearchParams({
       grant_type: "client_credentials",
@@ -60,7 +73,8 @@ export default ({ edgeCredentials, dateProvider = () => new Date() }) => {
     }
 
     const { access_token: accessToken, expires_in: expiresInSeconds } =
-      await response.json();
+      // Shape of the IMS token endpoint's JSON response.
+      (await response.json()) as { access_token: string; expires_in: number };
     cachedToken = accessToken;
     expiresAt =
       dateProvider().getTime() +

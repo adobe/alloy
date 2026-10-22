@@ -9,12 +9,20 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-export default (onRequestFailureCallbackAggregator) => {
-  return (error) => {
+import type createCallbackAggregator from "../../utils/createCallbackAggregator.js";
+
+export type RequestFailureCallbackAggregator = ReturnType<
+  typeof createCallbackAggregator<[{ error: unknown }]>
+>;
+
+export default (
+  onRequestFailureCallbackAggregator: RequestFailureCallbackAggregator,
+) => {
+  return (error: unknown): Promise<never> => {
     // Regardless of whether the network call failed, an unexpected status
     // code was returned, or the response body was malformed, we want to call
     // the onRequestFailure callbacks, but still throw the exception.
-    const throwError = () => {
+    const throwError = (): never => {
       throw error;
     };
     return onRequestFailureCallbackAggregator

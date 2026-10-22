@@ -12,12 +12,18 @@ governing permissions and limitations under the License.
 
 import { assignConcatArrayValues } from "../../utils/index.js";
 
-export default (returnValues) => {
+type LifecycleReturnValue = Record<string, unknown>;
+
+export default (returnValues: unknown[]): Record<string, unknown> => {
   // Merges all returned objects from all `onResponse` callbacks into
   // a single object that can later be returned to the customer.
-  const lifecycleOnResponseReturnValues = returnValues.shift() || [];
-  const consumerOnResponseReturnValues = returnValues.shift() || [];
-  const lifecycleOnBeforeRequestReturnValues = returnValues;
+  // Callback aggregators resolve to unknown[]; these entries are arrays of objects or objects.
+  const lifecycleOnResponseReturnValues = (returnValues.shift() ||
+    []) as LifecycleReturnValue[];
+  const consumerOnResponseReturnValues = (returnValues.shift() ||
+    []) as LifecycleReturnValue[];
+  const lifecycleOnBeforeRequestReturnValues =
+    returnValues as LifecycleReturnValue[];
 
   return assignConcatArrayValues(
     {},

@@ -10,9 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { EdgeRequestExecutor } from './types.js' */
-/** @import { ResponseCreator } from '../types.js' */
-
+import type { EdgeRequestExecutor } from "./types.js";
+import type { Response, ResponseContent, ResponseCreator } from "../types.js";
+import type { NetworkResponse } from "../../services/types.js";
+import type { Callback } from "../../utils/types.js";
+import type { Request, RequestPayload } from "../../utils/request/types.js";
+import type {
+  EdgeCredentials,
+  ImsAccessTokenProvider,
+} from "./injectGetImsAccessToken.js";
 import {
   ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN,
   SERVER as SERVER_DOMAIN,
@@ -26,7 +32,61 @@ import handleRequestFailure from "./handleRequestFailure.js";
 
 const MAX_QUEUE_TIME_MILLIS = 300000; // 5 minutes
 
-const calculateQueueTimeMillis = (payload) => {
+/** The lifecycle hooks the Edge request factories call. */
+export interface EdgeNetworkLifecycle {
+  onBeforeRequest: (options: {
+    request: Request;
+    onResponse: (callback: Callback<[{ response: Response }]>) => void;
+    onRequestFailure: (callback: Callback<[{ error: unknown }]>) => void;
+  }) => Promise<unknown>;
+  onResponse: Callback<[{ response: Response }]>;
+  onRequestFailure: Callback<[{ error: unknown }]>;
+}
+
+export interface EdgeNetworkCookieTransfer {
+  cookiesToPayload: (payload: RequestPayload, endpointDomain: string) => void;
+  responseToCookies: (response: Response) => void;
+}
+
+export interface SendNetworkRequestOptions {
+  requestId: string;
+  url: string;
+  payload: unknown;
+  useSendBeacon: boolean;
+  useKeepalive: boolean;
+  headers?: Record<string, string>;
+}
+
+export interface EdgeNetworkResponse extends NetworkResponse {
+  parsedBody?: ResponseContent;
+}
+
+export interface InjectSendEdgeNetworkRequestOptions {
+  config: {
+    edgeDomain: string;
+    edgeBasePath: string;
+    datastreamId: string;
+    orgId: string;
+    edgeCredentials?: EdgeCredentials;
+  };
+  lifecycle: EdgeNetworkLifecycle;
+  cookieTransfer: EdgeNetworkCookieTransfer;
+  sendNetworkRequest: (
+    options: SendNetworkRequestOptions,
+  ) => Promise<EdgeNetworkResponse>;
+  createResponse: ResponseCreator;
+  processWarningsAndErrors: (networkResponse: EdgeNetworkResponse) => void;
+  getLocationHint: () => string | undefined;
+  getAssuranceValidationTokenParams: () => string;
+  getImsAccessToken?: ImsAccessTokenProvider;
+}
+
+// Request events also carry getCreatedAt, which the RequestEvent contract omits.
+type QueuedRequestPayload = {
+  getEvents?: () => { getCreatedAt: () => number }[];
+};
+
+const calculateQueueTimeMillis = (payload: QueuedRequestPayload) => {
   if (typeof payload.getEvents !== "function") {
     return undefined;
   }
@@ -43,21 +103,23 @@ const calculateQueueTimeMillis = (payload) => {
   return clamp(Date.now() - earliestCreatedAt, 0, MAX_QUEUE_TIME_MILLIS);
 };
 
-const isDemdexBlockedError = (error, request) => {
+const isDemdexBlockedError = (error: Error, request: Request) => {
   return request.getUseIdThirdPartyDomain() && isNetworkError(error);
 };
 
 // Confirmed against the real API: the Server API (v2) only exists for the
 // interact action — privacy/set-consent and identity/acquire both 404
 // under v2.
-const isServerApiEligible = (request) => request.getAction() === "interact";
+const isServerApiEligible = (request: Request) =>
+  request.getAction() === "interact";
 
 // v2 expects a singular `event` object rather than v1's `events` array,
 // and requires an explicit primary identity in it (no browser cookie to
 // resolve identity from) — confirmed by testing against the real
 // endpoint; not documented anywhere we could find.
-const toServerApiPayloadJSON = (payload) => {
-  const { events, ...rest } = payload.toJSON();
+const toServerApiPayloadJSON = (payload: RequestPayload) => {
+  // toJSON() is typed as object; a data collection payload's JSON has an events array.
+  const { events, ...rest } = payload.toJSON() as { events?: unknown[] };
   if (!events || events.length !== 1) {
     throw new Error(
       `The authenticated Server API (v2) only supports exactly one event per request; got ${events ? events.length : 0}.`,
@@ -67,20 +129,7 @@ const toServerApiPayloadJSON = (payload) => {
 };
 
 /**
- * @function
- *
- * @param {object} options
- * @param {{edgeDomain: string, edgeBasePath: string, datastreamId: string}} options.config
- * @param {object} options.lifecycle
- * @param {object} options.cookieTransfer
- * @param {((arg0: object) => Promise<Object>)} options.sendNetworkRequest
- * @param {ResponseCreator} options.createResponse
- * @param {((arg0: object) => void)} options.processWarningsAndErrors
- * @param {(() => string|undefined)} options.getLocationHint
- * @param {(() => string)} options.getAssuranceValidationTokenParams
- * @param {{ getAccessToken: () => Promise<string> }} [options.getImsAccessToken]
- *
- * @returns {EdgeRequestExecutor} A function that sends edge network requests with lifecycle management
+ * Returns a function that sends edge network requests with lifecycle management.
  */
 export default ({
   config,
@@ -92,14 +141,18 @@ export default ({
   getLocationHint,
   getAssuranceValidationTokenParams,
   getImsAccessToken,
-}) => {
+}: InjectSendEdgeNetworkRequestOptions): EdgeRequestExecutor => {
   const { edgeDomain, edgeBasePath, datastreamId, orgId, edgeCredentials } =
     config;
   let hasDemdexFailed = false;
 
   // v2 differs from v1 in domain, version segment, and datastream query
   // param name — not just an extra header.
-  const buildEndpointUrl = (endpointDomain, request, useServerApi) => {
+  const buildEndpointUrl = (
+    endpointDomain: string,
+    request: Request,
+    useServerApi?: boolean,
+  ) => {
     // The cluster location hint is a browser/v1 CDN-routing artifact —
     // confirmed against the real API that the Server API domain 404s if
     // it's included, even though a v1 response can still write the cookie.
@@ -127,10 +180,12 @@ export default ({
   };
 
   const buildAuthHeaders = async () => {
-    const accessToken = await getImsAccessToken.getAccessToken();
+    // Only called when useServerApi is true, which requires edgeCredentials;
+    // core/index.js supplies getImsAccessToken whenever edgeCredentials is set.
+    const accessToken = await getImsAccessToken!.getAccessToken();
     return {
       Authorization: `Bearer ${accessToken}`,
-      "x-api-key": edgeCredentials.clientId,
+      "x-api-key": edgeCredentials!.clientId,
       "x-gw-ims-org-id": orgId,
     };
   };
@@ -144,11 +199,13 @@ export default ({
     runOnResponseCallbacks = noop,
     runOnRequestFailureCallbacks = noop,
   }) => {
-    const onResponseCallbackAggregator = createCallbackAggregator();
+    const onResponseCallbackAggregator =
+      createCallbackAggregator<[{ response: Response }]>();
     onResponseCallbackAggregator.add(lifecycle.onResponse);
     onResponseCallbackAggregator.add(runOnResponseCallbacks);
 
-    const onRequestFailureCallbackAggregator = createCallbackAggregator();
+    const onRequestFailureCallbackAggregator =
+      createCallbackAggregator<[{ error: unknown }]>();
     onRequestFailureCallbackAggregator.add(lifecycle.onRequestFailure);
     onRequestFailureCallbackAggregator.add(runOnRequestFailureCallbacks);
 
@@ -173,7 +230,10 @@ export default ({
         const url = buildEndpointUrl(endpointDomain, request, useServerApi);
         const payload = request.getPayload();
 
-        const queueTimeMillis = calculateQueueTimeMillis(payload);
+        const queueTimeMillis = calculateQueueTimeMillis(
+          // Only data collection payloads have getEvents; the helper checks for it.
+          payload as QueuedRequestPayload,
+        );
         if (queueTimeMillis !== undefined) {
           payload.mergeMeta({ queueTimeMillis });
         }
@@ -198,10 +258,11 @@ export default ({
         processWarningsAndErrors(networkResponse);
         return networkResponse;
       })
-      .catch(async (error) => {
+      .catch(async (error: Error) => {
         if (!useServerApi && isDemdexBlockedError(error, request)) {
           hasDemdexFailed = true;
-          request.setUseIdThirdPartyDomain(false);
+          // The Request contract declares no parameter; the argument is ignored.
+          (request.setUseIdThirdPartyDomain as (value: boolean) => void)(false);
           const url = buildEndpointUrl(edgeDomain, request);
           const payload = request.getPayload();
           cookieTransfer.cookiesToPayload(payload, edgeDomain);

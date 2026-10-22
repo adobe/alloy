@@ -10,12 +10,24 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import type { Logger, ResponseContent } from "../types.js";
 import { NO_CONTENT } from "../../constants/httpStatusCode.js";
 
 const MESSAGE_PREFIX = "The server responded with a";
 
-export default ({ logger }) => {
-  return (networkResponse) => {
+export interface InjectProcessWarningsAndErrorsOptions {
+  logger: Logger;
+}
+
+/** The parts of a network response that are checked for errors. */
+export interface ProcessableNetworkResponse {
+  statusCode: number;
+  body?: string;
+  parsedBody?: ResponseContent;
+}
+
+export default ({ logger }: InjectProcessWarningsAndErrorsOptions) => {
+  return (networkResponse: ProcessableNetworkResponse): void => {
     const { statusCode, body, parsedBody } = networkResponse;
 
     if (
