@@ -150,8 +150,8 @@ export type OnBeforeEventSend = (content: EventSendContent) => unknown;
 export interface Event extends BaseEvent {
   hasQuery: () => boolean;
   getContent: () => Record<string, unknown>;
-  setUserXdm: (xdm: Record<string, unknown>) => void;
-  setUserData: (data: Record<string, unknown>) => void;
+  setUserXdm: (xdm: Record<string, unknown> | undefined) => void;
+  setUserData: (data: Record<string, unknown> | undefined) => void;
   mergeData: (data: Record<string, unknown>) => void;
   mergeMeta: (meta: Record<string, unknown>) => void;
   finalize: (onBeforeEventSend?: OnBeforeEventSend) => void;
