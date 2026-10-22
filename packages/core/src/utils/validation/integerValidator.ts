@@ -14,7 +14,7 @@ import isInteger from "../isInteger.js";
 import { assertValid } from "./utils.js";
 import type { ValidatorFn } from "./types.js";
 
-export default ((value, path) => {
+export default ((value, path): number => {
   assertValid(isInteger(value), value, path, "an integer");
   return value;
 }) satisfies ValidatorFn<number>;

@@ -10,10 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import type { NonEmpty } from "./types.js";
 import isString from "./isString.js";
 
 /**
  * Returns whether the value is a populated string.
  */
-export default (value: unknown): value is string =>
+export default (value: unknown): value is string & NonEmpty =>
   isString(value) && value.length > 0;

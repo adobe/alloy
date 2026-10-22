@@ -49,16 +49,45 @@ declare const input: unknown;
 
 // Type guards narrow.
 if (isBoolean(input)) expectTypeOf(input).toEqualTypeOf<boolean>();
-if (isNumber(input)) expectTypeOf(input).toEqualTypeOf<number>();
-if (isInteger(input)) expectTypeOf(input).toEqualTypeOf<number>();
+if (isNumber(input)) expectTypeOf(input).toExtend<number>();
+if (isInteger(input)) expectTypeOf(input).toExtend<number>();
 if (isString(input)) expectTypeOf(input).toEqualTypeOf<string>();
-if (isNonEmptyString(input)) expectTypeOf(input).toEqualTypeOf<string>();
+if (isNonEmptyString(input)) expectTypeOf(input).toExtend<string>();
 if (isNil(input)) expectTypeOf(input).toEqualTypeOf<null | undefined>();
 if (isObject(input)) {
   expectTypeOf(input).toEqualTypeOf<Record<string, unknown>>();
 }
-if (isNonEmptyArray(input)) expectTypeOf(input).toEqualTypeOf<unknown[]>();
+if (isNonEmptyArray(input)) expectTypeOf(input).toExtend<unknown[]>();
 if (isFunction(input)) expectTypeOf(input).toBeFunction();
+
+// Refining guards narrow only on true: NaN, "" and [] keep the declared type
+// in the false branch.
+declare const maybeNumber: number | undefined;
+if (isNumber(maybeNumber)) {
+  expectTypeOf(maybeNumber).toExtend<number>();
+  expectTypeOf(maybeNumber + 1).toEqualTypeOf<number>();
+} else {
+  expectTypeOf(maybeNumber).toEqualTypeOf<number | undefined>();
+}
+if (isInteger(maybeNumber)) {
+  expectTypeOf(maybeNumber).toExtend<number>();
+} else {
+  expectTypeOf(maybeNumber).toEqualTypeOf<number | undefined>();
+}
+declare const maybeString: string | null;
+if (isNonEmptyString(maybeString)) {
+  expectTypeOf(maybeString).toExtend<string>();
+  expectTypeOf(maybeString.toLowerCase()).toEqualTypeOf<string>();
+} else {
+  expectTypeOf(maybeString).toEqualTypeOf<string | null>();
+}
+declare const maybeArray: string[] | undefined;
+if (isNonEmptyArray(maybeArray)) {
+  expectTypeOf(maybeArray).toExtend<string[]>();
+  expectTypeOf(maybeArray[0]).toEqualTypeOf<string>();
+} else {
+  expectTypeOf(maybeArray).toEqualTypeOf<string[] | undefined>();
+}
 
 // assertValid is an assertion function.
 declare const asserted: unknown;

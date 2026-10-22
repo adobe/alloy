@@ -10,8 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import type { NonNaN } from "./types.js";
+
 /**
  * Returns whether the value is a number.
  */
-export default (value: unknown): value is number =>
+export default (value: unknown): value is number & NonNaN =>
   typeof value === "number" && !Number.isNaN(value);

@@ -10,12 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import type { NonNaN } from "./types.js";
 import isNumber from "./isNumber.js";
 
 /**
  * Returns whether the value is an integer.
  */
-export default (value: unknown): value is number => {
+export default (value: unknown): value is number & NonNaN => {
   const parsed = parseInt(value as string, 10);
 
   return isNumber(parsed) && value === parsed;

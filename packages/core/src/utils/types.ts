@@ -77,3 +77,15 @@ export interface Event {
 }
 
 export const Types = {};
+
+declare const nonNaN: unique symbol;
+/** Brand for numbers known not to be NaN (see isNumber). Type-only. */
+export interface NonNaN {
+  readonly [nonNaN]: true;
+}
+
+declare const nonEmpty: unique symbol;
+/** Brand for strings known to be non-empty (see isNonEmptyString). Type-only. */
+export interface NonEmpty {
+  readonly [nonEmpty]: true;
+}

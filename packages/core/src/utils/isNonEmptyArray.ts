@@ -10,8 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+type NonEmptyArrayOf<T> = unknown extends T
+  ? [unknown, ...unknown[]]
+  : T extends readonly (infer E)[]
+    ? [E, ...E[]]
+    : never;
+
 /**
  * Returns whether the value is a non-empty array.
  */
-export default (value: unknown): value is unknown[] =>
+export default <T>(value: T): value is T & NonEmptyArrayOf<T> =>
   Array.isArray(value) && value.length > 0;
