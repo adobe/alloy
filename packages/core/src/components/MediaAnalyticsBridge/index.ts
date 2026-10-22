@@ -18,6 +18,7 @@ import createMediaResponseHandler from "../StreamingMedia/createMediaResponseHan
 import createMediaAnalyticsBridgeComponent from "./createMediaAnalyticsBridgeComponent.js";
 import createMediaHelper from "./createMediaHelper.js";
 import createGetInstance from "./createGetInstance.js";
+import type { GetInstanceOptions } from "./createGetInstance.js";
 import injectTimestamp from "../../utils/injectTimestamp.js";
 import type { ComponentTools } from "../../core/types.js";
 
@@ -53,12 +54,13 @@ const createMediaAnalyticsBridge = ({
     mediaEventManager,
     config,
   });
+  // createMediaSession has always read sessionDetails, which the legacy tracker sets for session starts.
   const trackMediaSession = createTrackMediaSession({
     config,
     mediaEventManager,
     mediaSessionCacheManager,
     legacy: true,
-  });
+  }) as GetInstanceOptions["trackMediaSession"];
   const mediaResponseHandler = createMediaResponseHandler({
     mediaSessionCacheManager,
     config,
