@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 /* eslint-disable no-bitwise */
-import type { CookieJar, Logger } from "./types.js";
+import type { Logger } from "./types.js";
 import { getNamespacedCookieName } from "./index.js";
 import { base64ToBytes } from "./bytes.js";
 
@@ -228,7 +228,7 @@ export default ({
   logger,
 }: {
   orgId: string;
-  cookieJar: CookieJar;
+  cookieJar: { get: (name: string) => string | undefined };
   logger: Logger;
 }) => {
   const kndctrCookieName = getNamespacedCookieName(orgId, "identity");

@@ -10,14 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import type { CookieJar } from "../../utils/types.js";
 import { getNamespacedCookieName } from "../../utils/index.js";
 import { CLUSTER } from "../../constants/cookieNameKey.js";
 import { MBOX_EDGE_CLUSTER } from "../../constants/legacyCookies.js";
 
 export interface InjectGetLocationHintOptions {
   orgId: string;
-  cookieJar: Pick<CookieJar, "get">;
+  cookieJar: { get: (name: string) => string | undefined };
 }
 
 export default ({ orgId, cookieJar }: InjectGetLocationHintOptions) => {

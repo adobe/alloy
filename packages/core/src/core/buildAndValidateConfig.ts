@@ -11,11 +11,22 @@ governing permissions and limitations under the License.
 */
 
 import type { ObjectValidator } from "../utils/validation/types.js";
-import type { ComponentCreator, Logger } from "./types.js";
+import type { ComponentCreator, Logger, OnBeforeEventSend } from "./types.js";
+import type { Override } from "../utils/request/createRequestParams.js";
+import type { EdgeCredentials } from "./edgeNetwork/injectGetImsAccessToken.js";
 
 /** The computed configuration. */
 export interface Config {
   debugEnabled: boolean;
+  datastreamId: string;
+  edgeDomain: string;
+  edgeBasePath: string;
+  orgId: string;
+  onBeforeEventSend: OnBeforeEventSend;
+  edgeConfigOverrides?: Override;
+  edgeCredentials?: EdgeCredentials;
+  /** Personalization option; core reads it to decide which cookies to transfer. */
+  targetMigrationEnabled?: boolean;
   [key: string]: unknown;
 }
 
@@ -24,7 +35,7 @@ export interface BuildAndValidateConfigOptions {
   options: unknown;
   componentCreators: ComponentCreator[];
   coreConfigValidators: ObjectValidator;
-  createConfig: (options: unknown) => Config;
+  createConfig: (options: Config) => Config;
   logger: Logger;
   setDebugEnabled: (value: boolean, options?: { fromConfig?: boolean }) => void;
 }
@@ -45,7 +56,8 @@ const transformOptions = ({
 }) => {
   try {
     const validator = combinedConfigValidator.noUnknownFields().required();
-    return validator.call({ logger }, options);
+    // The core config validators produce a Config.
+    return validator.call({ logger }, options) as Config;
   } catch (e) {
     throw new Error(
       `Resolve these configuration problems:\n\t - ${(e as Error).message

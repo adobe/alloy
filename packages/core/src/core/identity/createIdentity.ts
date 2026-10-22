@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import type { IdentityManager } from "./types.js";
 import type { Logger } from "../types.js";
-import type { CookieJar } from "../../utils/types.js";
 import createDecodeKndctrCookie from "../../utils/createDecodeKndctrCookie.js";
 
 /**
@@ -41,7 +40,7 @@ import createDecodeKndctrCookie from "../../utils/createDecodeKndctrCookie.js";
  */
 export interface IdentityOptions {
   logger: Logger;
-  loggingCookieJar: CookieJar;
+  loggingCookieJar: { get: (name: string) => string | undefined };
   config: { orgId: string };
 }
 

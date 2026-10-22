@@ -24,7 +24,12 @@ const cookieName = `${namespace}getTld`;
  *   capability; previously read directly from `window.location.hostname`).
  * @param cookieJar
  */
-export default (hostname: string, cookieJar: CookieJar): string => {
+export default (
+  hostname: string,
+  cookieJar: Pick<CookieJar, "set" | "remove"> & {
+    get: (name: string) => string | undefined;
+  },
+): string => {
   let topLevelCookieDomain = "";
 
   // If hostParts.length === 1, we may be on localhost.

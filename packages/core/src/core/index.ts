@@ -52,6 +52,11 @@ import isRequestRetryable from "./network/isRequestRetryable.js";
 import getRequestRetryDelay from "./network/getRequestRetryDelay.js";
 import injectApplyResponse from "./edgeNetwork/injectApplyResponse.js";
 import * as requiredComponents from "./requiredComponentCreators.js";
+import type { PlatformServices } from "../services/index.js";
+import type { ObjectValidator } from "../utils/validation/types.js";
+import type { AlloyMonitor, ComponentCreator } from "./types.js";
+import type { ImsAccessTokenProvider } from "./edgeNetwork/injectGetImsAccessToken.js";
+import type { InjectSendEdgeNetworkRequestOptions } from "./edgeNetwork/injectSendEdgeNetworkRequest.js";
 
 // Default, shared for the lifetime of this module — matches "configured
 // once per page load" in the browser, where module state resets on its own.
@@ -59,17 +64,19 @@ import * as requiredComponents from "./requiredComponentCreators.js";
 // many requests) can pass a fresh instance per call instead.
 const defaultCoreConfigValidators = createCoreConfigs();
 
-/**
- * @param {Object} params
- * @param {string} params.instanceName
- * @param {Array<import('./types.js').AlloyMonitor>} [params.monitors]
- * @param {Array<Function>} params.components
- * @param {() => import('../services/index.js').PlatformServices} params.createPlatformServices
- * @param {ReturnType<typeof createCoreConfigs>} [params.coreConfigValidators]
- * @param {{ getAccessToken: () => Promise<string> }} [params.getImsAccessToken]
- * Shared token cache for repeated configure() calls — see
- * injectGetImsAccessToken.js. Defaults to a fresh one per call.
- */
+export interface CreateExecuteCommandOptions {
+  instanceName: string;
+  monitors?: AlloyMonitor[];
+  components: ComponentCreator[];
+  createPlatformServices: () => PlatformServices;
+  coreConfigValidators?: ObjectValidator;
+  /**
+   * Shared token cache for repeated configure() calls — see
+   * injectGetImsAccessToken.js. Defaults to a fresh one per call.
+   */
+  getImsAccessToken?: ImsAccessTokenProvider;
+}
+
 export const createExecuteCommand = ({
   instanceName,
   monitors = [],
@@ -77,7 +84,7 @@ export const createExecuteCommand = ({
   createPlatformServices,
   coreConfigValidators = defaultCoreConfigValidators,
   getImsAccessToken: sharedGetImsAccessToken,
-}) => {
+}: CreateExecuteCommandOptions) => {
   const platformServices = createPlatformServices();
   const allMonitors = [...platformServices.globals.getMonitors(), ...monitors];
 
@@ -126,7 +133,7 @@ export const createExecuteCommand = ({
     Object.values(requiredComponents),
   );
 
-  const setDebugCommand = (options) => {
+  const setDebugCommand = (options: { enabled: boolean }) => {
     setDebugEnabled(options.enabled, { fromConfig: false });
   };
 
@@ -134,7 +141,7 @@ export const createExecuteCommand = ({
     logger,
     cookieJar: platformServices.cookie,
   });
-  const configureCommand = (options) => {
+  const configureCommand = (options: unknown) => {
     const config = buildAndValidateConfig({
       options,
       componentCreators,
@@ -155,13 +162,14 @@ export const createExecuteCommand = ({
       dateProvider: () => new Date(),
     });
 
+    // The Edge Network responds with ResponseContent JSON.
     const sendNetworkRequest = injectSendNetworkRequest({
       logger,
       sendFetchRequest: network.sendFetchRequest,
       sendBeaconRequest: network.sendBeaconRequest,
       isRequestRetryable,
       getRequestRetryDelay,
-    });
+    }) as InjectSendEdgeNetworkRequestOptions["sendNetworkRequest"];
     const processWarningsAndErrors = injectProcessWarningsAndErrors({
       logger,
     });

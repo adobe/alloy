@@ -18,7 +18,7 @@ import type { CookieJar, Logger } from "./types.js";
  * @function
  *
  */
-export default <T extends CookieJar>({
+export default <T extends Pick<CookieJar, "set">>({
   logger,
   cookieJar,
 }: {
