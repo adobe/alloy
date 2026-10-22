@@ -10,10 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { assertValid } from "./utils.js";
-import type { ValidatorFn } from "./types.js";
+import type { AnyValidatorFn, ValidatorContext } from "./types.js";
 
-export default (elementValidator: ValidatorFn) =>
-  function arrayOf(this: unknown, value: unknown[], path?: string): unknown[] {
+export default (elementValidator: AnyValidatorFn) =>
+  function arrayOf(
+    this: ValidatorContext,
+    value: unknown[],
+    path?: string,
+  ): unknown[] {
     assertValid(Array.isArray(value), value, path, "an array");
     const errors: string[] = [];
     const validatedArray = value.map((subValue, i) => {

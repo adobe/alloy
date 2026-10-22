@@ -11,8 +11,9 @@ governing permissions and limitations under the License.
 */
 import isFunction from "../isFunction.js";
 import { assertValid } from "./utils.js";
+import type { ValidatorFn } from "./types.js";
 
-export default (value: unknown, path?: string): unknown => {
+export default ((value, path) => {
   assertValid(isFunction(value), value, path, "a function");
   return value;
-};
+}) satisfies ValidatorFn<(...args: never[]) => unknown>;

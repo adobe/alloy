@@ -13,26 +13,49 @@ governing permissions and limitations under the License.
 import { EVENT_TYPE_TRUE } from "../constants/eventType.js";
 import type { Event } from "./types.js";
 
+/** One rendered proposition, as reported in `_experience.decisioning.propositions`. */
+export interface DecisionMeta {
+  id?: string;
+  scope?: string;
+  // Opaque server-provided details, echoed back to Edge unchanged.
+  scopeDetails?: Record<string, unknown>;
+}
+
+export type DecisionsMeta = DecisionMeta[];
+
+/** `_experience.decisioning.propositionAction`: what the user interacted with. */
+export interface PropositionAction {
+  id?: string;
+  label?: string;
+  tokens?: string[];
+  reason?: string;
+}
+
+/** The `_experience.decisioning` XDM sent with proposition notifications. */
+export interface Decisioning {
+  propositions: DecisionsMeta;
+  propositionEventType: Record<string, typeof EVENT_TYPE_TRUE>;
+  propositionAction?: PropositionAction;
+}
+
 export const mergeDecisionsMeta = (
   event: Event,
-  decisionsMeta: unknown[],
+  decisionsMeta: DecisionsMeta,
   propositionEventTypes: string[],
-  propositionAction?: unknown,
+  propositionAction?: PropositionAction,
 ) => {
   // Do not send a display notification with no decisions. Even empty view changes
   // should include a proposition.
   if (decisionsMeta.length === 0) {
     return;
   }
-  const propositionEventType: Record<string, unknown> = {};
+  const propositionEventType: Decisioning["propositionEventType"] = {};
 
   propositionEventTypes.forEach((type) => {
     propositionEventType[type] = EVENT_TYPE_TRUE;
   });
 
-  const xdm: {
-    _experience: { decisioning: Record<string, unknown> };
-  } = {
+  const xdm: { _experience: { decisioning: Decisioning } } = {
     _experience: {
       decisioning: {
         propositions: decisionsMeta,

@@ -17,7 +17,7 @@ const CLIENT_ID_KEY = "clientId";
 
 interface Storage {
   getItem: (key: string) => Promise<string | null | undefined>;
-  setItem: (key: string, value: string) => Promise<unknown> | unknown;
+  setItem: (key: string, value: string) => Promise<unknown> | boolean | void;
 }
 
 export default ({

@@ -14,30 +14,37 @@ import { getPropositionEventType } from "../constants/propositionEventType.js";
 import { isNonEmptyArray } from "./index.js";
 
 import type { Event } from "./types.js";
+import type { DecisionsMeta, PropositionAction } from "./event.js";
+
+/** XDM identityMap: namespace to identities. */
+type IdentityMap = Record<
+  string,
+  { id: string; authenticatedState?: string; primary?: boolean }[]
+>;
 
 interface CollectOptions {
-  decisionsMeta?: unknown[];
-  propositionAction?: unknown;
+  decisionsMeta?: DecisionsMeta;
+  propositionAction?: PropositionAction;
   documentMayUnload?: boolean;
   eventType?: string;
   propositionEventTypes?: string[];
   viewName?: string;
-  identityMap?: unknown;
+  identityMap?: IdentityMap;
 }
 
-export default ({
+export default <R = unknown>({
   eventManager,
   mergeDecisionsMeta,
 }: {
   eventManager: {
     createEvent: () => Event;
-    sendEvent: (event: Event) => Promise<unknown>;
+    sendEvent: (event: Event) => Promise<R>;
   };
   mergeDecisionsMeta: (
     event: Event,
-    decisionsMeta: unknown[],
+    decisionsMeta: DecisionsMeta,
     propositionEventTypes: string[],
-    propositionAction: unknown,
+    propositionAction: PropositionAction | undefined,
   ) => void;
 }) => {
   // Called when a decision is auto-rendered for the __view__ scope or a SPA view(display and empty display notification)

@@ -18,7 +18,7 @@ import toInteger from "./toInteger.js";
  * input to a string before padding.
  */
 const padStart = (
-  string: unknown,
+  string: number,
   targetLength: number,
   padString: string,
 ): string => {

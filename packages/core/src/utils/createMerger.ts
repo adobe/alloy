@@ -21,13 +21,12 @@ import deepAssign from "./deepAssign.js";
  */
 export default (content: object, key: string) => (updates: object) => {
   const propertyPath = key.split(".");
-  const hostObjectForUpdates = propertyPath.reduce(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- walks an arbitrary nested payload
-    (obj: any, propertyName) => {
+  const hostObjectForUpdates = propertyPath.reduce<Record<string, unknown>>(
+    (obj, propertyName) => {
       obj[propertyName] = obj[propertyName] || {};
-      return obj[propertyName];
+      return obj[propertyName] as Record<string, unknown>;
     },
-    content,
+    content as Record<string, unknown>,
   );
   deepAssign(hostObjectForUpdates, updates);
 };

@@ -10,6 +10,5 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- accepts arbitrarily nested arrays or passes non-arrays through
-export default (arr: any = []) =>
+export default <T>(arr: T[] = []): FlatArray<T[], number>[] =>
   Array.isArray(arr) ? arr.flat(Infinity) : arr;

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (value: unknown): unknown[] => {
+export default <T>(value: ArrayLike<T> | null | undefined): T[] => {
   if (Array.isArray(value)) {
     return value;
   }
@@ -19,5 +19,5 @@ export default (value: unknown): unknown[] => {
     return [];
   }
 
-  return [].slice.call(value as ArrayLike<unknown>);
+  return [].slice.call(value);
 };

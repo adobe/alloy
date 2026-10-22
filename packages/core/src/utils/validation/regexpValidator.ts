@@ -13,7 +13,8 @@ governing permissions and limitations under the License.
 import { assertValid } from "./utils.js";
 import isValidRegExp from "../isValidRegExp.js";
 
-export default (value: unknown, path?: string): unknown => {
+// Only chained after `string()`, so the input is already a string.
+export default (value: string, path?: string): string => {
   assertValid(isValidRegExp(value), value, path, "a regular expression");
   return value;
 };

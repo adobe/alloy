@@ -14,9 +14,25 @@ governing permissions and limitations under the License.
  * A validator is a function of a value and an optional path that returns the
  * computed value if valid, or throws if invalid. Some validators receive extra
  * context arguments (e.g. arrayOf passes the whole array).
+ *
+ * `T` is the validated result. `In` is the input: `unknown` (untrusted user
+ * config) for validators that start a chain, or a narrower type for
+ * validators only chained after one that already checked it (e.g. `domain`
+ * after `string`).
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- validators accept and return arbitrary user config values
-export type ValidatorFn = (value: any, path?: string, ...rest: any[]) => any;
+export type ValidatorFn<T = unknown, In = unknown> = (
+  value: In,
+  path?: string,
+  ...rest: unknown[]
+) => T;
+
+/**
+ * Any validator, as accepted by the chaining helpers. Validators are composed
+ * at runtime so each stage's input is whatever the previous stage returned;
+ * that can't be expressed statically, so the input is `any` here.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- see above
+export type AnyValidatorFn = ValidatorFn<unknown, any>;
 
 /**
  * The `this` a validator may be called with; when it has a logger, warnings
@@ -29,10 +45,9 @@ export type ValidatorContext =
 /**
  * The methods available on every validator, regardless of data type.
  */
-export type AnyValidator = ValidatorFn & {
+export type AnyValidator = AnyValidatorFn & {
   required: () => AnyValidator;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the default may be any config value
-  default: (defaultValue: any) => AnyValidator;
+  default: (defaultValue: unknown) => AnyValidator;
   deprecated: (message: string) => AnyValidator;
 };
 
@@ -66,7 +81,9 @@ export type MapOfValuesValidator = AnyValidator & {
  * it is also idiomatically called with a bare validator (e.g. `objectOf(anything())`)
  * to mean "an object, with no per-field validation."
  */
-export type ObjectValidatorSchema = Record<string, ValidatorFn> | ValidatorFn;
+export type ObjectValidatorSchema =
+  | Record<string, AnyValidatorFn>
+  | AnyValidatorFn;
 
 export type ObjectValidator = AnyValidator & {
   noUnknownFields: () => ObjectValidator;
@@ -74,7 +91,7 @@ export type ObjectValidator = AnyValidator & {
   concat: (otherObjectOfValidator: ObjectValidator) => ObjectValidator;
   renamed: (
     oldField: string,
-    oldSchema: ValidatorFn,
+    oldSchema: AnyValidatorFn,
     newField: string,
   ) => ObjectValidator;
   schema: ObjectValidatorSchema;

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 type IsEqual<T> = (a: T, b: T) => boolean;
 
-const REFERENCE_EQUALITY = (a: unknown, b: unknown) => a === b;
+const REFERENCE_EQUALITY = <T>(a: T, b: T) => a === b;
 
 const findIndex = <T>(array: T[], item: T, isEqual: IsEqual<T>) => {
   for (let i = 0; i < array.length; i += 1) {

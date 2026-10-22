@@ -15,4 +15,5 @@ import isString from "./isString.js";
 /**
  * Returns whether the value is a populated string.
  */
-export default (value: unknown): boolean => isString(value) && value.length > 0;
+export default (value: unknown): value is string =>
+  isString(value) && value.length > 0;

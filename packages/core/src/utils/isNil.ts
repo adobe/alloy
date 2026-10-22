@@ -13,4 +13,4 @@ governing permissions and limitations under the License.
 /**
  * Returns true when the value is null.
  */
-export default (value: unknown): boolean => value == null;
+export default (value: unknown): value is null | undefined => value == null;

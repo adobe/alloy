@@ -12,12 +12,12 @@ governing permissions and limitations under the License.
 
 import isObject from "../isObject.js";
 import { assertValid } from "./utils.js";
-import type { ValidatorFn } from "./types.js";
+import type { AnyValidatorFn, ValidatorContext } from "./types.js";
 
-export default (valueValidator: ValidatorFn) =>
+export default (valueValidator: AnyValidatorFn) =>
   function mapOfValues(
-    this: unknown,
-    value: Record<string, unknown>,
+    this: ValidatorContext,
+    value: unknown,
     path?: string,
   ): Record<string, unknown> {
     assertValid(isObject(value), value, path, "an object");

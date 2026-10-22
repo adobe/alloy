@@ -21,11 +21,12 @@ const populateElementProperties = (element: HTMLElement, props: Props) => {
     if (key === "style" && isObject(props[key])) {
       const styleProps = props[key] as Record<string, string>;
       Object.keys(styleProps).forEach((styleKey) => {
-        (element.style as unknown as Record<string, string>)[styleKey] =
-          styleProps[styleKey];
+        (element.style as CSSStyleDeclaration & Record<string, string>)[
+          styleKey
+        ] = styleProps[styleKey];
       });
     } else {
-      (element as unknown as Props)[key] = props[key];
+      (element as HTMLElement & Props)[key] = props[key];
     }
   });
 };

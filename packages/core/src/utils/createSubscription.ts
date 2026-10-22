@@ -10,7 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-type Callback = (...args: unknown[]) => unknown;
+import type { Callback } from "./types.js";
+
+// `params` is opaque data a subscriber registers with its callback; it is
+// only interpreted by the caller-supplied preprocessor and emission condition.
 type Preprocessor = (params: unknown, ...args: unknown[]) => unknown[];
 type EmissionCondition = (params: unknown, ...args: unknown[]) => boolean;
 
@@ -18,8 +21,7 @@ const defaultPreprocessor: Preprocessor = (params, ...args) => {
   return args;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const defaultEmissionCondition: EmissionCondition = (params, ...args) => true;
+const defaultEmissionCondition: EmissionCondition = () => true;
 
 const createSubscription = () => {
   let preprocessor = defaultPreprocessor;

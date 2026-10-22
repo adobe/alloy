@@ -13,5 +13,5 @@ governing permissions and limitations under the License.
 /**
  * Returns whether the value is a non-empty array.
  */
-export default (value: unknown): boolean =>
+export default (value: unknown): value is unknown[] =>
   Array.isArray(value) && value.length > 0;

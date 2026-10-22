@@ -13,5 +13,5 @@ governing permissions and limitations under the License.
 /**
  * Returns whether the value is a number.
  */
-export default (value: unknown): boolean =>
+export default (value: unknown): value is number =>
   typeof value === "number" && !Number.isNaN(value);

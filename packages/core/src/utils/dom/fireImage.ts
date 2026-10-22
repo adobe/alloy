@@ -24,7 +24,7 @@ export default ({
 }: {
   src: string;
   currentDocument?: Document;
-}): Promise<unknown> => {
+}): Promise<Event> => {
   return new Promise((resolve, reject) => {
     const attrs = { src };
     const props = {

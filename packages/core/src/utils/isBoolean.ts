@@ -13,4 +13,4 @@ governing permissions and limitations under the License.
 /**
  * Returns whether the value is a boolean.
  */
-export default (value: unknown): boolean => typeof value === "boolean";
+export default (value: unknown): value is boolean => typeof value === "boolean";

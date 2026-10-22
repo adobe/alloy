@@ -13,11 +13,7 @@ governing permissions and limitations under the License.
 import type { ValidatorContext } from "./types.js";
 
 export default (warning = "This field has been deprecated") =>
-  function deprecated(
-    this: ValidatorContext,
-    value: unknown,
-    path?: string,
-  ): unknown {
+  function deprecated<T>(this: ValidatorContext, value: T, path?: string): T {
     let message = warning;
     if (value !== undefined) {
       if (path) {

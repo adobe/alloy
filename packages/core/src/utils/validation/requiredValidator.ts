@@ -9,10 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import type { ValidatorFn } from "./types.js";
 
-export default (value: unknown, path?: string): unknown => {
+export default ((value, path) => {
   if (value == null) {
     throw new Error(`'${path}' is a required option`);
   }
   return value;
-};
+}) satisfies ValidatorFn<NonNullable<unknown>>;

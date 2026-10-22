@@ -15,7 +15,7 @@ import isObject from "../isObject.js";
 import isEmptyObject from "../isEmptyObject.js";
 
 export default (message: string) =>
-  (value: { length: number } | object, path?: string): unknown => {
+  <T extends { length: number } | object>(value: T, path?: string): T => {
     if (isObject(value)) {
       assertValid(!isEmptyObject(value), value, path, message);
     } else {

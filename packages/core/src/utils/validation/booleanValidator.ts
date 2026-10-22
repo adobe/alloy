@@ -12,8 +12,9 @@ governing permissions and limitations under the License.
 
 import isBoolean from "../isBoolean.js";
 import { assertValid } from "./utils.js";
+import type { ValidatorFn } from "./types.js";
 
-export default (value: unknown, path?: string): unknown => {
+export default ((value, path) => {
   assertValid(isBoolean(value), value, path, "true or false");
   return value;
-};
+}) satisfies ValidatorFn<boolean>;

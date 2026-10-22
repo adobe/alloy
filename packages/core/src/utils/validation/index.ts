@@ -69,7 +69,7 @@ governing permissions and limitations under the License.
  */
 
 import type {
-  ValidatorFn,
+  AnyValidatorFn,
   AnyValidator,
   ArrayValidator,
   NumberValidator,
@@ -218,7 +218,7 @@ const uniqueItems = function createUniqueItems(
 // top-level validators.  These are the first functions that are called to create a validator.
 const anyOf = function anyOf(
   this: AnyValidator,
-  validators: ValidatorFn[],
+  validators: AnyValidatorFn[],
   message?: string,
 ): AnyValidator {
   // use chain here because we don't want to accept null or undefined unless at least
@@ -230,7 +230,7 @@ const anything = function anything(this: AnyValidator): AnyValidator {
 };
 const arrayOf = function arrayOf(
   this: AnyValidator,
-  elementValidator: ValidatorFn,
+  elementValidator: AnyValidatorFn,
 ): ArrayValidator {
   return nullSafeChain(this, createArrayOfValidator(elementValidator), {
     nonEmpty: nonEmptyArray,
@@ -262,7 +262,7 @@ const number = function number(this: AnyValidator): NumberValidator {
 };
 const mapOfValues = function mapOfValues(
   this: AnyValidator,
-  valuesValidator: ValidatorFn,
+  valuesValidator: AnyValidatorFn,
 ): MapOfValuesValidator {
   return nullSafeChain(this, createMapOfValuesValidator(valuesValidator), {
     nonEmpty: nonEmptyObject,
@@ -293,7 +293,7 @@ const createObjectOfAdditionalProperties = (schema: ObjectValidatorSchema) => ({
   renamed: function renamed(
     this: ObjectValidator,
     oldField: string,
-    oldSchema: ValidatorFn,
+    oldSchema: AnyValidatorFn,
     newField: string,
   ): ObjectValidator {
     // Run the deprecated validator first so that the deprecated field is removed

@@ -80,6 +80,7 @@ const parseUri = (url: string): ParseUriResult => {
 };
 
 const parseUrl = (
+  // Callers may pass anything; non-strings parse as the empty URL.
   url: unknown,
   parseDomain: (host: string) => object = parseDomainBasic,
 ) => {

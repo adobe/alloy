@@ -13,4 +13,5 @@ governing permissions and limitations under the License.
 /**
  * Returns whether the value is a function.
  */
-export default (value: unknown): boolean => typeof value === "function";
+export default (value: unknown): value is (...args: never[]) => unknown =>
+  typeof value === "function";

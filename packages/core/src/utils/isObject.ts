@@ -15,5 +15,5 @@ import isNil from "./isNil.js";
 /**
  * Returns whether the value is an object.
  */
-export default (value: unknown): boolean =>
+export default (value: unknown): value is Record<string, unknown> =>
   !isNil(value) && !Array.isArray(value) && typeof value === "object";

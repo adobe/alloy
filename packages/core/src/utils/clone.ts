@@ -13,5 +13,5 @@ governing permissions and limitations under the License.
 /**
  * Clones a value by serializing then deserializing the value.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- deserialized JSON has no static shape
-export default (value: unknown): any => JSON.parse(JSON.stringify(value));
+// Assumes a JSON-safe value (no Dates, functions, undefined, etc.).
+export default <T>(value: T): T => JSON.parse(JSON.stringify(value));

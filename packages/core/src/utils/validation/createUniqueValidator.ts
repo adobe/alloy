@@ -13,8 +13,8 @@ governing permissions and limitations under the License.
 import { assertValid } from "./utils.js";
 
 export default () => {
-  const values: unknown[] = [];
-  return (value: unknown, path?: string): unknown => {
+  const values: (string | number)[] = [];
+  return (value: string | number, path?: string): string | number => {
     assertValid(
       values.indexOf(value) === -1,
       value,

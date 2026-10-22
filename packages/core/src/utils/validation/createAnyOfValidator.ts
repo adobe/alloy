@@ -10,10 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { assertValid } from "./utils.js";
-import type { ValidatorFn } from "./types.js";
+import type { AnyValidatorFn, ValidatorContext } from "./types.js";
 
-export default (validators: ValidatorFn[], message?: string) =>
-  function anyOf(this: unknown, value: unknown, path?: string): unknown {
+export default <V extends AnyValidatorFn>(validators: V[], message?: string) =>
+  function anyOf(
+    this: ValidatorContext,
+    value: unknown,
+    path?: string,
+  ): ReturnType<V> {
     let newValue: unknown;
     const valid = validators.find((validator) => {
       try {
@@ -24,5 +28,6 @@ export default (validators: ValidatorFn[], message?: string) =>
       }
     });
     assertValid(valid, value, path, message);
-    return newValue;
+    // newValue is the result of the validator that was found.
+    return newValue as ReturnType<V>;
   };

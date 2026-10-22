@@ -15,7 +15,7 @@ import isNumber from "./isNumber.js";
 /**
  * Returns whether the value is an integer.
  */
-export default (value: unknown): boolean => {
+export default (value: unknown): value is number => {
   const parsed = parseInt(value as string, 10);
 
   return isNumber(parsed) && value === parsed;

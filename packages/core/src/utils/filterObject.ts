@@ -25,15 +25,15 @@ import isObject from "./isObject.js";
  * representing if it should be included in the result object or not.
  * @returns A copy of the original object with the values that fail the predicate, filtered out.
  */
-const filterObject = (
-  obj: unknown,
+const filterObject = <T extends object>(
+  obj: T,
   predicate: (value: unknown, key: string) => boolean,
-): unknown => {
+): Partial<T> => {
   if (isNil(obj) || !isObject(obj)) {
     return obj;
   }
-  return Object.keys(obj as object).reduce((result: object, key) => {
-    const value = (obj as Record<string, unknown>)[key];
+  return Object.keys(obj).reduce((result: Partial<T>, key) => {
+    const value = obj[key];
     if (isObject(value)) {
       // value is object, go deeper
       const filteredValue = filterObject(value, predicate);

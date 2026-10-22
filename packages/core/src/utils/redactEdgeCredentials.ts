@@ -17,8 +17,9 @@ governing permissions and limitations under the License.
  * `value` (including functions like `onBeforeEventSend`) survives as the
  * exact same reference.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- returns the caller's value unchanged in shape
-export default (value: any): any => {
+export default <T extends { edgeCredentials?: object } | null | undefined>(
+  value: T,
+): T => {
   if (
     !value?.edgeCredentials ||
     !Object.prototype.hasOwnProperty.call(value.edgeCredentials, "clientSecret")

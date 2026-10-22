@@ -24,9 +24,7 @@ const sortObjectPropertiesDeep = (data: unknown): unknown => {
     return Object.keys(data)
       .sort()
       .reduce((memo: Record<string, unknown>, key) => {
-        memo[key] = sortObjectPropertiesDeep(
-          (data as Record<string, unknown>)[key],
-        );
+        memo[key] = sortObjectPropertiesDeep(data[key as keyof typeof data]);
         return memo;
       }, {});
   }
@@ -41,4 +39,4 @@ const sortObjectPropertiesDeep = (data: unknown): unknown => {
  * @param data - The data structure to serialize. It can be an object or an array.
  * @returns A new object or array with allo the container object having properties sorted.
  */
-export default (data: unknown): unknown => sortObjectPropertiesDeep(data);
+export default <T>(data: T): T => sortObjectPropertiesDeep(data) as T;

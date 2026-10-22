@@ -58,6 +58,11 @@ export type StorageCreator = (additionalNamespace: string) => {
   persistent: Storage;
 };
 
+/** A function registered by a caller to be invoked later with `A`. */
+export type Callback<A extends unknown[] = unknown[], R = unknown> = (
+  ...args: A
+) => R;
+
 /** The subset of the core logger used by utils. */
 export interface Logger {
   info: (...args: unknown[]) => void;

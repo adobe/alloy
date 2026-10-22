@@ -36,12 +36,11 @@ export const openIndexedDb = (
   });
 };
 
-export const getFromIndexedDbStore = (
+export const getFromIndexedDbStore = <T = unknown>(
   db: IDBDatabase,
   storeName: string,
   key: IDBValidKey,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- stored records have no static shape
-): Promise<any> => {
+): Promise<T | undefined> => {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction([storeName], "readonly");
     const store = transaction.objectStore(storeName);
@@ -55,6 +54,7 @@ export const getFromIndexedDbStore = (
 export const putToIndexedDbStore = (
   db: IDBDatabase,
   storeName: string,
+  // Any structured-cloneable value.
   data: unknown,
 ): Promise<IDBValidKey> => {
   return new Promise((resolve, reject) => {

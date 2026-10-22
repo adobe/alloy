@@ -9,20 +9,19 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import type { Callback } from "./types.js";
 
 /**
  * Allows callbacks to be registered and then later called. When the
  * callbacks are called, their responses are combined into a single promise.
  */
-type Callback = (...args: unknown[]) => unknown;
-
-export default () => {
-  const callbacks: Callback[] = [];
+export default <A extends unknown[] = unknown[], R = unknown>() => {
+  const callbacks: Callback<A, R>[] = [];
   return {
-    add(callback: Callback) {
+    add(callback: Callback<A, R>) {
       callbacks.push(callback);
     },
-    call(...args: unknown[]) {
+    call(...args: A) {
       // While this utility doesn't necessarily need to be doing the
       // Promise.all, it's currently useful everywhere this is used and
       // reduces repetitive code. We can factor it out later if we want

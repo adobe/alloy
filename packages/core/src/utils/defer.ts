@@ -17,8 +17,7 @@ governing permissions and limitations under the License.
 export interface Deferred<T = unknown> {
   promise: Promise<T>;
   resolve: (value: T) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- matches Promise reject's reason type
-  reject: (reason?: any) => void;
+  reject: (reason?: unknown) => void;
 }
 
 export default <T = unknown>(): Deferred<T> => {

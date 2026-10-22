@@ -16,7 +16,7 @@ const SIBLING_PATTERN = /^\s*>/;
 
 export default (context: ParentNode, selector: string): Element[] => {
   if (!SIBLING_PATTERN.test(selector)) {
-    return toArray(context.querySelectorAll(selector)) as Element[];
+    return toArray(context.querySelectorAll(selector));
   }
-  return toArray(context.querySelectorAll(`:scope ${selector}`)) as Element[];
+  return toArray(context.querySelectorAll(`:scope ${selector}`));
 };

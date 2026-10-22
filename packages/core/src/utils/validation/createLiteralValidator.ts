@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 import { assertValid } from "./utils.js";
 
-export default (literalValue: unknown) =>
-  (value: unknown, path?: string): unknown => {
+export default <T>(literalValue: T) =>
+  (value: unknown, path?: string): T => {
     assertValid(value === literalValue, value, path, `${literalValue}`);
-    return value;
+    return value as T;
   };

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import type { ValidatorFn } from "./types.js";
+import type { AnyValidatorFn, ValidatorContext } from "./types.js";
 
 /**
  * Wraps a validator returning the value if it is null or undefined, otherwise
@@ -18,8 +18,8 @@ import type { ValidatorFn } from "./types.js";
  *
  * @param validator - the validator to call if the value is not null
  */
-const skipIfNull = (validator: ValidatorFn): ValidatorFn =>
-  function skipIfNullValidator(this: unknown, value, path) {
+const skipIfNull = (validator: AnyValidatorFn): AnyValidatorFn =>
+  function skipIfNullValidator(this: ValidatorContext, value, path) {
     return value == null ? value : validator.call(this, value, path);
   };
 
@@ -33,10 +33,10 @@ const skipIfNull = (validator: ValidatorFn): ValidatorFn =>
  * @returns a new validator that calls the first and second validators
  */
 const callSequentially = (
-  firstValidator: ValidatorFn,
-  secondValidator: ValidatorFn,
-): ValidatorFn =>
-  function callSequentiallyValidator(this: unknown, value, path) {
+  firstValidator: AnyValidatorFn,
+  secondValidator: AnyValidatorFn,
+): AnyValidatorFn =>
+  function callSequentiallyValidator(this: ValidatorContext, value, path) {
     return secondValidator.call(
       this,
       firstValidator.call(this, value, path),
@@ -50,10 +50,14 @@ const callSequentially = (
  *
  */
 const callSequentiallyJoinErrors = (
-  firstValidator: ValidatorFn,
-  secondValidator: ValidatorFn,
-): ValidatorFn =>
-  function callSequentiallyJoinErrorsValidator(this: unknown, value, path) {
+  firstValidator: AnyValidatorFn,
+  secondValidator: AnyValidatorFn,
+): AnyValidatorFn =>
+  function callSequentiallyJoinErrorsValidator(
+    this: ValidatorContext,
+    value,
+    path,
+  ) {
     const errors: unknown[] = [];
     const newValue = [firstValidator, secondValidator].reduce(
       (memo, validator) => {
@@ -84,10 +88,10 @@ const callSequentiallyJoinErrors = (
  * validator.
  */
 export const chain = (
-  baseValidator: ValidatorFn,
-  newValidator: ValidatorFn,
+  baseValidator: AnyValidatorFn,
+  newValidator: AnyValidatorFn,
   additionalMethods?: object,
-): ValidatorFn => {
+): AnyValidatorFn => {
   return Object.assign(
     callSequentially(baseValidator, newValidator),
     baseValidator,
@@ -110,10 +114,10 @@ export const chain = (
  * validator.
  */
 export const nullSafeChain = (
-  baseValidator: ValidatorFn,
-  newValidator: ValidatorFn,
+  baseValidator: AnyValidatorFn,
+  newValidator: AnyValidatorFn,
   additionalMethods?: object,
-): ValidatorFn => {
+): AnyValidatorFn => {
   return Object.assign(
     callSequentially(baseValidator, skipIfNull(newValidator)),
     baseValidator,
@@ -132,10 +136,10 @@ export const nullSafeChain = (
  * validator.
  */
 export const reverseNullSafeChainJoinErrors = (
-  baseValidator: ValidatorFn,
-  newValidator: ValidatorFn,
+  baseValidator: AnyValidatorFn,
+  newValidator: AnyValidatorFn,
   additionalMethods?: object,
-): ValidatorFn => {
+): AnyValidatorFn => {
   return Object.assign(
     callSequentiallyJoinErrors(skipIfNull(newValidator), baseValidator),
     baseValidator,
@@ -152,12 +156,13 @@ export const reverseNullSafeChainJoinErrors = (
  * @param message - The expected part of the error message.
  * @throws Throws an error if the value is not valid.
  */
-export const assertValid = (
+// Assertion functions need an explicit type annotation on the declaration.
+export const assertValid: (
   isValid: unknown,
   value: unknown,
   path: string | undefined,
   message: string | undefined,
-): void => {
+) => asserts isValid = (isValid, value, path, message) => {
   if (!isValid) {
     throw new Error(
       `'${path}': Expected ${message}, but got ${JSON.stringify(value)}.`,

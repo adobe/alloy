@@ -32,7 +32,7 @@ const flattenObject = (
   return result;
 };
 
-export default (obj: unknown) => {
+export default <T>(obj: T): T | Indexable => {
   if (!isPlainObject(obj)) {
     return obj;
   }

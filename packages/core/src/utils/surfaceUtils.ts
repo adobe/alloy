@@ -42,17 +42,13 @@ const normalizePath = (path: string = "/") => {
 };
 
 const getSurfaceType = (surfaceTypeMatch: string | undefined) =>
-  isNonEmptyString(surfaceTypeMatch)
-    ? (surfaceTypeMatch as string).toLowerCase()
-    : "";
+  isNonEmptyString(surfaceTypeMatch) ? surfaceTypeMatch.toLowerCase() : "";
 
 const getAuthority = (authorityMatch: string | undefined) =>
-  isNonEmptyString(authorityMatch)
-    ? (authorityMatch as string).toLowerCase()
-    : "";
+  isNonEmptyString(authorityMatch) ? authorityMatch.toLowerCase() : "";
 
 const getPath = (pathMatch: string | undefined) =>
-  isNonEmptyString(pathMatch) ? normalizePath(pathMatch as string) : "/";
+  isNonEmptyString(pathMatch) ? normalizePath(pathMatch) : "/";
 
 const parseSurface = (surfaceString: string): ParsedSurface | null => {
   const matched = surfaceString.match(SURFACE_REGEX);
@@ -87,6 +83,7 @@ const expandFragmentSurface = (
     : surface;
 
 const validateSurface = (
+  // Surfaces come from user config and are validated here.
   surface: unknown,
   getPageLocation: GetPageLocation,
   logger: Logger,
@@ -99,7 +96,7 @@ const validateSurface = (
   if (!isNonEmptyString(surface)) {
     return invalidateSurface(`Invalid surface: ${surface}`);
   }
-  const expanded = expandFragmentSurface(surface as string, getPageLocation);
+  const expanded = expandFragmentSurface(surface, getPageLocation);
   const parsed = parseSurface(expanded);
   if (parsed === null) {
     return invalidateSurface(`Invalid surface: ${surface}`);

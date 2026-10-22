@@ -12,8 +12,9 @@ governing permissions and limitations under the License.
 
 import isInteger from "../isInteger.js";
 import { assertValid } from "./utils.js";
+import type { ValidatorFn } from "./types.js";
 
-export default (value: unknown, path?: string): unknown => {
+export default ((value, path) => {
   assertValid(isInteger(value), value, path, "an integer");
   return value;
-};
+}) satisfies ValidatorFn<number>;

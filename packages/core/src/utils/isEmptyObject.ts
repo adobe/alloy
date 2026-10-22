@@ -15,5 +15,5 @@ import isObject from "./isObject.js";
 /**
  * Returns whether the value is an empty object.
  */
-export default (value: unknown): boolean =>
-  isObject(value) && Object.keys(value as object).length === 0;
+export default (value: unknown): value is Record<string, never> =>
+  isObject(value) && Object.keys(value).length === 0;

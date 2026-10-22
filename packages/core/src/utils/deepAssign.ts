@@ -18,6 +18,11 @@ const DANGEROUS_KEYS = ["__proto__", "constructor", "prototype"];
 
 type Indexable = Record<string, unknown>;
 
+/** The intersection of every type in a tuple. */
+type Intersect<S extends unknown[]> = S extends [infer H, ...infer R]
+  ? H & Intersect<R>
+  : unknown;
+
 const deepAssignObject = (target: Indexable, source: Indexable) => {
   Object.keys(source).forEach((key) => {
     if (DANGEROUS_KEYS.includes(key)) {
@@ -25,7 +30,7 @@ const deepAssignObject = (target: Indexable, source: Indexable) => {
     }
 
     if (isObject(target[key]) && isObject(source[key])) {
-      deepAssignObject(target[key] as Indexable, source[key] as Indexable);
+      deepAssignObject(target[key], source[key]);
       return;
     }
     target[key] = source[key];
@@ -40,8 +45,10 @@ const deepAssignObject = (target: Indexable, source: Indexable) => {
  * deepAssign({ a: 'a', b: 'b' }, { b: 'B', c: 'c' });
  * // { a: 'a', b: 'B', c: 'c' }
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- returns the caller's target, whose shape is not tracked
-export default (target: any, ...sources: unknown[]): any => {
+export default <T extends object, S extends object[]>(
+  target: T,
+  ...sources: S
+): T & Intersect<S> => {
   if (isNil(target)) {
     throw new TypeError('deepAssign "target" cannot be null or undefined');
   }

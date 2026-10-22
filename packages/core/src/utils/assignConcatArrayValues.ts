@@ -11,11 +11,12 @@ governing permissions and limitations under the License.
 */
 import isObject from "./isObject.js";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- merges arbitrary caller-provided objects
-export default (...values: any[]): any => {
+type Indexable = Record<string, unknown>;
+
+export default (...values: Indexable[]): Indexable => {
   if (values.length < 2) {
     // if the number of args is 0 or 1, just use the default behavior from Object.assign
-    return Object.assign(...(values as [object, ...object[]]));
+    return Object.assign(...(values as [Indexable, ...Indexable[]]));
   }
   return values.reduce((accumulator, currentValue) => {
     if (isObject(currentValue)) {

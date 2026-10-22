@@ -15,6 +15,7 @@ governing permissions and limitations under the License.
  */
 export default () => {
   let queueLength = 0;
+  // Holds results of earlier tasks of any type; only used for sequencing.
   let lastPromiseInQueue: Promise<unknown> = Promise.resolve();
   return {
     /**
@@ -26,7 +27,7 @@ export default () => {
      * @returns A promise that will be resolved or rejected
      * with whatever value the task resolved or rejects its promise.
      */
-    addTask(task: () => Promise<unknown>): Promise<unknown> {
+    addTask<T>(task: () => Promise<T>): Promise<T> {
       queueLength += 1;
 
       const lastPromiseFulfilledHandler = () => {
@@ -39,7 +40,8 @@ export default () => {
         lastPromiseFulfilledHandler,
         lastPromiseFulfilledHandler,
       );
-      return lastPromiseInQueue;
+      // It was just set to the promise for this task.
+      return lastPromiseInQueue as Promise<T>;
     },
     /**
      * How many tasks are in the queue. This includes the task
