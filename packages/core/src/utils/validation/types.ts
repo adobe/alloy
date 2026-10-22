@@ -43,37 +43,41 @@ export type ValidatorContext =
   | undefined;
 
 /**
- * The methods available on every validator, regardless of data type. `Self`
- * is the validator type the chain continues with, so `string().required()`
- * keeps the string methods. Method syntax keeps `default`'s parameter
- * bivariant, so every validator stays assignable to `AnyValidator`.
+ * The methods available on every validator, regardless of data type. The
+ * data-type validators below list their own methods before `AnyValidator`, so
+ * their overloads win and chaining (`string().required().nonEmpty()`) keeps
+ * the data-type methods.
  */
-export interface BaseValidatorMethods<Self, Default = unknown> {
-  required(): Self;
-  default(defaultValue: Default): Self;
-  deprecated(message: string): Self;
-}
+export type AnyValidator = AnyValidatorFn & {
+  required: () => AnyValidator;
+  default: (defaultValue: unknown) => AnyValidator;
+  deprecated: (message: string) => AnyValidator;
+};
 
-export type AnyValidator = AnyValidatorFn & BaseValidatorMethods<AnyValidator>;
+export type ArrayValidator = {
+  nonEmpty: () => ArrayValidator;
+  uniqueItems: () => ArrayValidator;
+  required: () => ArrayValidator;
+  default: (defaultValue: unknown[]) => ArrayValidator;
+  deprecated: (message: string) => ArrayValidator;
+} & AnyValidator;
 
-export type ArrayValidator = AnyValidatorFn &
-  BaseValidatorMethods<ArrayValidator, unknown[]> & {
-    nonEmpty(): ArrayValidator;
-    uniqueItems(): ArrayValidator;
-  };
+export type NumberValidator = {
+  minimum: (minValue: number) => NumberValidator;
+  maximum: (maxValue: number) => NumberValidator;
+  integer: () => NumberValidator;
+  unique: () => NumberValidator;
+  required: () => NumberValidator;
+  default: (defaultValue: number) => NumberValidator;
+  deprecated: (message: string) => NumberValidator;
+} & AnyValidator;
 
-export type NumberValidator = AnyValidatorFn &
-  BaseValidatorMethods<NumberValidator, number> & {
-    minimum(minValue: number): NumberValidator;
-    maximum(maxValue: number): NumberValidator;
-    integer(): NumberValidator;
-    unique(): NumberValidator;
-  };
-
-export type MapOfValuesValidator = AnyValidatorFn &
-  BaseValidatorMethods<MapOfValuesValidator, object> & {
-    nonEmpty(): MapOfValuesValidator;
-  };
+export type MapOfValuesValidator = {
+  nonEmpty: () => MapOfValuesValidator;
+  required: () => MapOfValuesValidator;
+  default: (defaultValue: object) => MapOfValuesValidator;
+  deprecated: (message: string) => MapOfValuesValidator;
+} & AnyValidator;
 
 /**
  * objectOf's schema is normally a plain map of field name to validator, but
@@ -84,27 +88,31 @@ export type ObjectValidatorSchema =
   | Record<string, AnyValidatorFn>
   | AnyValidatorFn;
 
-export type ObjectValidator = AnyValidatorFn &
-  BaseValidatorMethods<ObjectValidator, object> & {
-    noUnknownFields(): ObjectValidator;
-    nonEmpty(): ObjectValidator;
-    concat(otherObjectOfValidator: ObjectValidator): ObjectValidator;
-    renamed(
-      oldField: string,
-      oldSchema: AnyValidatorFn,
-      newField: string,
-    ): ObjectValidator;
-    schema: ObjectValidatorSchema;
-  };
+export type ObjectValidator = {
+  noUnknownFields: () => ObjectValidator;
+  nonEmpty: () => ObjectValidator;
+  concat: (otherObjectOfValidator: ObjectValidator) => ObjectValidator;
+  renamed: (
+    oldField: string,
+    oldSchema: AnyValidatorFn,
+    newField: string,
+  ) => ObjectValidator;
+  schema: ObjectValidatorSchema;
+  required: () => ObjectValidator;
+  default: (defaultValue: object) => ObjectValidator;
+  deprecated: (message: string) => ObjectValidator;
+} & AnyValidator;
 
-export type StringValidator = AnyValidatorFn &
-  BaseValidatorMethods<StringValidator, string> & {
-    regexp(): StringValidator;
-    domain(): StringValidator;
-    nonEmpty(): StringValidator;
-    unique(): StringValidator;
-    /** `message` is accepted for callers' readability; it is not used. */
-    matches(pattern: RegExp, message?: string): StringValidator;
-  };
+export type StringValidator = {
+  regexp: () => StringValidator;
+  domain: () => StringValidator;
+  nonEmpty: () => StringValidator;
+  unique: () => StringValidator;
+  /** `message` is accepted for readability at call sites; it is not used. */
+  matches: (pattern: RegExp, message?: string) => StringValidator;
+  required: () => StringValidator;
+  default: (defaultValue: string) => StringValidator;
+  deprecated: (message: string) => StringValidator;
+} & AnyValidator;
 
 export const Types = {};
