@@ -17,8 +17,15 @@ import {
   objectOf,
   string,
 } from "../../utils/validation/index.js";
+import type { ApplyResponseCommandOptions } from "./index.js";
 
-export default ({ options }) => {
+export interface ValidateApplyResponseOptions {
+  options: unknown;
+}
+
+export default ({
+  options,
+}: ValidateApplyResponseOptions): ApplyResponseCommandOptions => {
   const validator = objectOf({
     renderDecisions: boolean(),
     responseHeaders: mapOfValues(string().required()),
@@ -36,5 +43,6 @@ export default ({ options }) => {
     }).default({ sendDisplayEvent: true }),
   }).noUnknownFields();
 
-  return validator(options);
+  // The validator checked the shape described by ApplyResponseCommandOptions.
+  return validator(options) as ApplyResponseCommandOptions;
 };

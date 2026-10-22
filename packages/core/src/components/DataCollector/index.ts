@@ -13,16 +13,44 @@ governing permissions and limitations under the License.
 import validateUserEventOptions from "./validateUserEventOptions.js";
 import validateApplyResponse from "./validateApplyResponse.js";
 import { deepAssign } from "../../utils/index.js";
+import type {
+  ApplyResponseOptions,
+  ComponentTools,
+  SendEventOptions,
+} from "../../core/types.js";
 
-const createDataCollector = ({ eventManager, logger }) => {
+/** The validated options of the `sendEvent` command. */
+export interface SendEventCommandOptions extends SendEventOptions {
+  type?: string;
+  xdm?: Record<string, unknown>;
+  data?: Record<string, unknown>;
+  documentUnloading?: boolean;
+  mergeId?: string;
+  /** @deprecated Use `edgeConfigOverrides` instead. */
+  datasetId?: string;
+  advertising?: { handleAdvertisingData?: string };
+}
+
+/** The validated options of the `applyResponse` command. */
+export type ApplyResponseCommandOptions = ApplyResponseOptions;
+
+export type DataCollectorOptions = Pick<
+  ComponentTools,
+  "eventManager" | "logger"
+>;
+
+const createDataCollector = ({
+  eventManager,
+  logger,
+}: DataCollectorOptions) => {
   return {
     commands: {
       sendEvent: {
         documentationUri: "https://adobe.ly/3GQ3Q7t",
-        optionsValidator: (options) => {
+        optionsValidator: (options: unknown) => {
           return validateUserEventOptions({ options });
         },
-        run: (options) => {
+        run: (options: SendEventCommandOptions) => {
           const {
             xdm,
             data,
@@ -39,8 +67,9 @@ const createDataCollector = ({ eventManager, logger }) => {
             event.documentMayUnload();
           }
 
-          event.setUserXdm(xdm);
-          event.setUserData(data);
+          // createEvent stores undefined as "no user xdm/data"; Event's type is narrower.
+          event.setUserXdm(xdm as Record<string, unknown>);
+          event.setUserData(data as Record<string, unknown>);
 
           if (type) {
             event.mergeXdm({
@@ -55,29 +84,37 @@ const createDataCollector = ({ eventManager, logger }) => {
           }
 
           if (edgeConfigOverrides) {
-            eventManagerOptions.edgeConfigOverrides = edgeConfigOverrides;
+            // The rest type drops edgeConfigOverrides, which we put back here.
+            (eventManagerOptions as SendEventOptions).edgeConfigOverrides =
+              edgeConfigOverrides;
           }
 
           if (datasetId) {
             logger.warn(
               "The 'datasetId' option has been deprecated. Please use 'edgeConfigOverrides.com_adobe_experience_platform.datasets.event.datasetId' instead.",
             );
-            eventManagerOptions.edgeConfigOverrides = edgeConfigOverrides || {};
-            deepAssign(eventManagerOptions.edgeConfigOverrides, {
-              com_adobe_experience_platform: {
-                datasets: { event: { datasetId } },
+            // The rest type drops edgeConfigOverrides, which we put back here.
+            (eventManagerOptions as SendEventOptions).edgeConfigOverrides =
+              edgeConfigOverrides || {};
+            // Assigned on the line above.
+            deepAssign(
+              (eventManagerOptions as SendEventOptions).edgeConfigOverrides!,
+              {
+                com_adobe_experience_platform: {
+                  datasets: { event: { datasetId } },
+                },
               },
-            });
+            );
           }
           return eventManager.sendEvent(event, eventManagerOptions);
         },
       },
       applyResponse: {
         documentationUri: "",
-        optionsValidator: (options) => {
+        optionsValidator: (options: unknown) => {
           return validateApplyResponse({ options });
         },
-        run: (options) => {
+        run: (options: ApplyResponseCommandOptions) => {
           const {
             renderDecisions = false,
             decisionContext = {},

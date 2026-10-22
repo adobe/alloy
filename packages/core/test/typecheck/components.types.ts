@@ -29,6 +29,10 @@ import type {
   Logger,
 } from "../../src/core/types.js";
 import type { ConsentManager } from "../../src/core/consent/types.js";
+import type {
+  ApplyResponseCommandOptions,
+  SendEventCommandOptions,
+} from "../../src/components/DataCollector/index.js";
 
 // Every built-in creator is a ComponentCreator.
 const {
@@ -111,5 +115,21 @@ initializeComponents({
   componentRegistry,
   getImmediatelyAvailableTools: () => tools,
 });
+
+// DataCollector commands take typed options.
+type DataCollectorCommands = ReturnType<typeof dataCollector>["commands"];
+expectTypeOf<
+  Parameters<DataCollectorCommands["sendEvent"]["run"]>[0]
+>().toEqualTypeOf<SendEventCommandOptions>();
+expectTypeOf<
+  Parameters<DataCollectorCommands["applyResponse"]["run"]>[0]
+>().toEqualTypeOf<ApplyResponseCommandOptions>();
+expectTypeOf<SendEventCommandOptions["mergeId"]>().toEqualTypeOf<
+  string | undefined
+>();
+// @ts-expect-error sendEvent has no such option.
+expectTypeOf<SendEventCommandOptions["notAnOption"]>().toBeUnknown();
+// DataCollector declares no lifecycle hooks.
+expectTypeOf(dataCollector(tools)).not.toHaveProperty("lifecycle");
 
 export { greeter, needsMissingTool };
