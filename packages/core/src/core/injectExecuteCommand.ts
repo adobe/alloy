@@ -14,6 +14,7 @@ import { isFunction, isObject } from "../utils/index.js";
 import { CONFIGURE, SET_DEBUG } from "../constants/coreCommands.js";
 import { objectOf, boolean } from "../utils/validation/index.js";
 import type { ComponentRegistry } from "./createComponentRegistry.js";
+import type injectHandleError from "./injectHandleError.js";
 import type validateCommandOptionsFn from "./validateCommandOptions.js";
 import type { Logger } from "./types.js";
 
@@ -21,7 +22,7 @@ export interface InjectExecuteCommandOptions {
   logger: Logger;
   configureCommand: (options: unknown) => Promise<ComponentRegistry>;
   setDebugCommand: (options: { enabled: boolean }) => void;
-  handleError: (error: unknown, operation: string) => unknown;
+  handleError: ReturnType<typeof injectHandleError>;
   validateCommandOptions: typeof validateCommandOptionsFn;
 }
 
