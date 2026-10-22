@@ -14,11 +14,20 @@ import { validateConfigOverride } from "../../../utils/index.js";
 import { objectOf, enumOf, arrayOf } from "../../../utils/validation/index.js";
 import ecidNamespace from "../../../constants/ecidNamespace.js";
 import coreNamespace from "../../../constants/coreNamespace.js";
+import type { GetIdentityOptions } from "./createGetIdentity.js";
+
+export interface ValidatedGetIdentityOptions extends GetIdentityOptions {
+  namespaces: string[];
+}
+
+export interface CreateGetIdentityOptionsValidatorOptions {
+  thirdPartyCookiesEnabled: boolean;
+}
 
 /**
  * Verifies user provided event options.
- * @param {*} options The user event options to validate
- * @returns {*} Validated options
+ * @param options - The user event options to validate
+ * @returns Validated options
  */
 
 const validator = objectOf({
@@ -33,9 +42,12 @@ const validator = objectOf({
     namespaces: [ecidNamespace],
   });
 
-export default ({ thirdPartyCookiesEnabled }) => {
-  return (options) => {
-    const validatedOptions = validator(options);
+export default ({
+  thirdPartyCookiesEnabled,
+}: CreateGetIdentityOptionsValidatorOptions) => {
+  return (options: unknown) => {
+    // The schema above defaults `namespaces` to a non-empty string array.
+    const validatedOptions = validator(options) as ValidatedGetIdentityOptions;
     if (
       !thirdPartyCookiesEnabled &&
       validatedOptions.namespaces.includes(coreNamespace)

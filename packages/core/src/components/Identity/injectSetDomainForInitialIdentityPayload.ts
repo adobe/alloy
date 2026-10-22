@@ -9,12 +9,18 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import type { Request } from "../../utils/request/types.js";
+
+export interface InjectSetDomainForInitialIdentityPayloadOptions {
+  thirdPartyCookiesEnabled: boolean;
+  areThirdPartyCookiesSupportedByDefault: () => boolean;
+}
 
 export default ({
   thirdPartyCookiesEnabled,
   areThirdPartyCookiesSupportedByDefault,
-}) => {
-  return (request) => {
+}: InjectSetDomainForInitialIdentityPayloadOptions) => {
+  return (request: Pick<Request, "setUseIdThirdPartyDomain">) => {
     if (thirdPartyCookiesEnabled && areThirdPartyCookiesSupportedByDefault()) {
       // If third-party cookies are enabled by the customer and
       // supported by the browser, we will send the request to a

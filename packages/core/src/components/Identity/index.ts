@@ -34,6 +34,9 @@ import createIdentityRequest from "./getIdentity/createIdentityRequest.js";
 import createIdentityRequestPayload from "./getIdentity/createIdentityRequestPayload.js";
 import injectAppendIdentityToUrl from "./appendIdentityToUrl/injectAppendIdentityToUrl.js";
 import createGetIdentityOptionsValidator from "./getIdentity/createGetIdentityOptionsValidator.js";
+import type { ComponentCreator, ComponentTools } from "../../core/types.js";
+import type { CookieJar } from "../../utils/types.js";
+import type { IdentityConfig } from "./configValidators.js";
 
 const createIdentity = ({
   config,
@@ -45,12 +48,13 @@ const createIdentity = ({
   getBrowser,
   identity,
   platformServices,
-}) => {
+}: ComponentTools) => {
   const {
     orgId,
     thirdPartyCookiesEnabled,
     edgeConfigOverrides: globalConfigOverrides,
-  } = config;
+    // configValidators adds these options to the computed config.
+  } = config as IdentityConfig;
 
   const getEcidFromVisitor = () =>
     platformServices.legacy.getEcidFromVisitor({ orgId, logger });
@@ -60,7 +64,8 @@ const createIdentity = ({
     cookieJar: platformServices.cookie,
   });
   const legacyIdentity = createLegacyIdentity({
-    config,
+    // configValidators adds idMigrationEnabled to the computed config.
+    config: config as IdentityConfig,
     getEcidFromVisitor,
     apexDomain,
     cookieJar: loggingCookieJar,
@@ -68,7 +73,8 @@ const createIdentity = ({
   });
   const doesIdentityCookieExist = injectDoesIdentityCookieExist({
     orgId,
-    cookieJar: platformServices.cookie,
+    // It only calls `get(name)`; CookieService and CookieJar differ on purpose (deferred merge).
+    cookieJar: platformServices.cookie as unknown as CookieJar,
   });
   const getIdentity = createGetIdentity({
     sendEdgeNetworkRequest,
@@ -147,4 +153,4 @@ const createIdentity = ({
 createIdentity.namespace = "Identity";
 createIdentity.configValidators = configValidators;
 
-export default createIdentity;
+export default createIdentity satisfies ComponentCreator;

@@ -10,6 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import type { CookieService } from "../../services/types.js";
+import type { CookieAttributes } from "../../utils/types.js";
+import type { IdentityConfig } from "./configValidators.js";
+
+export interface CreateLegacyIdentityOptions {
+  config: Pick<IdentityConfig, "idMigrationEnabled" | "orgId">;
+  getEcidFromVisitor: () => Promise<string | undefined>;
+  apexDomain: string;
+  isPageSsl: boolean;
+  cookieJar: Pick<CookieService, "get" | "set">;
+}
+
 /**
  * Handles migration of ECID to and from Visitor.js.
  */
@@ -19,12 +31,12 @@ export default ({
   apexDomain,
   isPageSsl,
   cookieJar,
-}) => {
+}: CreateLegacyIdentityOptions) => {
   const { idMigrationEnabled, orgId } = config;
   const amcvCookieName = `AMCV_${orgId}`;
 
   const getEcidFromLegacyCookies = () => {
-    let ecid = null;
+    let ecid: string | null = null;
     const secidCookieName = "s_ecid";
 
     const legacyEcidCookieValue =
@@ -54,9 +66,9 @@ export default ({
       }
       return Promise.resolve();
     },
-    setEcid(ecid) {
+    setEcid(ecid: string) {
       if (idMigrationEnabled && getEcidFromLegacyCookies() !== ecid) {
-        const extraOptions = isPageSsl
+        const extraOptions: CookieAttributes = isPageSsl
           ? { sameSite: "none", secure: true }
           : {};
 

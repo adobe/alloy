@@ -11,8 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import ecidNamespace from "../../constants/ecidNamespace.js";
+import type { RequestPayload } from "../../utils/request/types.js";
 
-export default (payload, ecid) => {
+export default (payload: Pick<RequestPayload, "addIdentity">, ecid: string) => {
   payload.addIdentity(ecidNamespace, {
     id: ecid,
   });

@@ -10,13 +10,29 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { noop } from "../../utils/index.js";
+import type { GlobalsService } from "../../services/types.js";
+import type { Logger } from "../../utils/types.js";
 
-const createResultLogMessage = (idSync, success) => {
+/** An `identity:exchange` payload from Edge. */
+export interface IdSync {
+  type: string;
+  spec: { url: string; hideReferrer: boolean };
+}
+
+export interface InjectProcessIdSyncsOptions {
+  fireReferrerHideableImage: GlobalsService["fireReferrerHideableImage"];
+  logger: Logger;
+}
+
+const createResultLogMessage = (idSync: IdSync, success: boolean) => {
   return `ID sync ${success ? "succeeded" : "failed"}: ${idSync.spec.url}`;
 };
 
-export default ({ fireReferrerHideableImage, logger }) =>
-  (idSyncs) => {
+export default ({
+    fireReferrerHideableImage,
+    logger,
+  }: InjectProcessIdSyncsOptions) =>
+  (idSyncs: IdSync[]) => {
     const urlIdSyncs = idSyncs.filter((idSync) => idSync.type === "url");
 
     if (!urlIdSyncs.length) {

@@ -9,6 +9,17 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import type { Request, RequestPayload } from "../../utils/request/types.js";
+import type { Logger } from "../../utils/types.js";
+import type { RequestCallbacks } from "./injectAwaitIdentityCookie.js";
+
+export interface InjectEnsureSingleIdentityOptions {
+  doesIdentityCookieExist: () => boolean;
+  setDomainForInitialIdentityPayload: (request: Request) => void;
+  addLegacyEcidToPayload: (payload: RequestPayload) => Promise<void>;
+  awaitIdentityCookie: (callbacks: RequestCallbacks) => Promise<void>;
+  logger: Logger;
+}
 
 // TO-DOCUMENT: We queue subsequent requests until we have an identity cookie.
 export default ({
@@ -17,10 +28,10 @@ export default ({
   addLegacyEcidToPayload,
   awaitIdentityCookie,
   logger,
-}) => {
-  let obtainedIdentityPromise;
+}: InjectEnsureSingleIdentityOptions) => {
+  let obtainedIdentityPromise: Promise<void> | undefined;
 
-  const allowRequestToGoWithoutIdentity = (request) => {
+  const allowRequestToGoWithoutIdentity = (request: Request) => {
     setDomainForInitialIdentityPayload(request);
     return addLegacyEcidToPayload(request.getPayload());
   };
@@ -44,7 +55,11 @@ export default ({
    * an identity is to prevent a single malformed request causing all other
    * requests to never send.
    */
-  return ({ request, onResponse, onRequestFailure }) => {
+  return ({
+    request,
+    onResponse,
+    onRequestFailure,
+  }: RequestCallbacks & { request: Request }) => {
     if (doesIdentityCookieExist()) {
       request.setIsIdentityEstablished();
       return Promise.resolve();

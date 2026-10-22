@@ -12,14 +12,20 @@ governing permissions and limitations under the License.
 
 import { validateConfigOverride } from "../../../utils/index.js";
 import { objectOf, string } from "../../../utils/validation/index.js";
+import type {
+  ObjectValidator,
+  StringValidator,
+} from "../../../utils/validation/types.js";
 /**
  * Verifies user provided event options.
- * @param {*} options The user event options to validate
- * @returns {*} Validated options
+ * @param options - The user event options to validate
+ * @returns Validated options
  */
-export default objectOf({
-  url: string().required().nonEmpty(),
-  edgeConfigOverrides: validateConfigOverride,
-})
-  .required()
-  .noUnknownFields();
+export default // `required` is typed on the base validator, so it loses the object methods.
+(
+  objectOf({
+    // `required` is typed on the base validator, so it loses the string methods.
+    url: (string().required() as StringValidator).nonEmpty(),
+    edgeConfigOverrides: validateConfigOverride,
+  }).required() as ObjectValidator
+).noUnknownFields();

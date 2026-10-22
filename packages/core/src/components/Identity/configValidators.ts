@@ -11,6 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import { boolean, objectOf } from "../../utils/validation/index.js";
+import type { Config } from "../../core/types.js";
+
+/** The computed configuration, with the options `configValidators` adds. */
+export interface IdentityConfig extends Config {
+  thirdPartyCookiesEnabled: boolean;
+  idMigrationEnabled: boolean;
+}
 
 const configValidators = objectOf({
   thirdPartyCookiesEnabled: boolean().default(true),

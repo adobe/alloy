@@ -11,14 +11,38 @@ governing permissions and limitations under the License.
 */
 
 import { createRequestParams } from "../../../utils/request/index.js";
+import type { ComponentTools } from "../../../core/types.js";
+import type {
+  Override,
+  Request,
+  RequestPayload,
+} from "../../../utils/request/types.js";
+
+export interface GetIdentityOptions {
+  namespaces?: string[];
+  edgeConfigOverrides?: Override;
+}
+
+export interface CreateGetIdentityOptions {
+  sendEdgeNetworkRequest: ComponentTools["sendEdgeNetworkRequest"];
+  createIdentityRequestPayload: (namespaces?: string[]) => RequestPayload;
+  createIdentityRequest: (params: {
+    payload: RequestPayload;
+    datastreamIdOverride?: string;
+  }) => Request;
+  globalConfigOverrides?: Override;
+}
 
 export default ({
   sendEdgeNetworkRequest,
   createIdentityRequestPayload,
   createIdentityRequest,
   globalConfigOverrides,
-}) => {
-  return ({ namespaces, edgeConfigOverrides: localConfigOverrides } = {}) => {
+}: CreateGetIdentityOptions) => {
+  return ({
+    namespaces,
+    edgeConfigOverrides: localConfigOverrides,
+  }: GetIdentityOptions = {}) => {
     const requestParams = createRequestParams({
       payload: createIdentityRequestPayload(namespaces),
       globalConfigOverrides,

@@ -9,9 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import type { Override } from "../../../utils/request/types.js";
+
 const URL_REGEX = /^([^?#]*)(\??[^#]*)(#?.*)$/;
 
-const getSeparator = (queryString) => {
+const getSeparator = (queryString: string) => {
   if (queryString === "") {
     return "?";
   }
@@ -21,13 +23,21 @@ const getSeparator = (queryString) => {
   return "&";
 };
 
-export default ({ dateProvider, orgId }) =>
-  (ecid, url) => {
+export interface InjectAppendIdentityToUrlOptions {
+  dateProvider: () => Date;
+  orgId: string;
+  /** Passed by the component but not read. */
+  globalConfigOverrides?: Override;
+}
+
+export default ({ dateProvider, orgId }: InjectAppendIdentityToUrlOptions) =>
+  (ecid: string, url: string) => {
     const ts = Math.round(dateProvider().getTime() / 1000);
     const adobemc = encodeURIComponent(
       `TS=${ts}|MCMID=${ecid}|MCORGID=${encodeURIComponent(orgId)}`,
     );
-    const [, location, queryString, fragment] = url.match(URL_REGEX);
+    // The regex matches any single-line string; a URL with a line break throws here, as before.
+    const [, location, queryString, fragment] = url.match(URL_REGEX)!;
     const separator = getSeparator(queryString);
     return `${location}${queryString}${separator}adobe_mc=${adobemc}${fragment}`;
   };

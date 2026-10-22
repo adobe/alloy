@@ -11,8 +11,17 @@ governing permissions and limitations under the License.
 */
 
 import { createRequest } from "../../../utils/request/index.js";
+import type { RequestPayload } from "../../../utils/request/types.js";
 
-export default ({ payload, datastreamIdOverride }) => {
+export interface CreateIdentityRequestOptions {
+  payload: RequestPayload;
+  datastreamIdOverride?: string;
+}
+
+export default ({
+  payload,
+  datastreamIdOverride,
+}: CreateIdentityRequestOptions) => {
   return createRequest({
     payload,
     datastreamIdOverride,

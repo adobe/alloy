@@ -11,6 +11,44 @@ governing permissions and limitations under the License.
 */
 import appendIdentityToUrlOptionsValidator from "./appendIdentityToUrl/appendIdentityToUrlOptionsValidator.js";
 import ecidNamespace from "../../constants/ecidNamespace.js";
+import type {
+  ComponentTools,
+  Config,
+  Logger,
+  Response,
+} from "../../core/types.js";
+import type { Request, RequestPayload } from "../../utils/request/types.js";
+import type { GetIdentityOptions } from "./getIdentity/createGetIdentity.js";
+import type { ValidatedGetIdentityOptions } from "./getIdentity/createGetIdentityOptionsValidator.js";
+import type { RequestCallbacks } from "./injectAwaitIdentityCookie.js";
+
+export interface AppendIdentityToUrlOptions extends GetIdentityOptions {
+  url: string;
+}
+
+export interface CreateComponentOptions {
+  addEcidQueryToPayload: (payload: RequestPayload) => void;
+  addQueryStringIdentityToPayload: (payload: RequestPayload) => void;
+  ensureSingleIdentity: (
+    options: RequestCallbacks & { request: Request },
+  ) => Promise<void>;
+  setLegacyEcid: (ecid: string) => void;
+  handleResponseForIdSyncs: (response: Response) => void;
+  getNamespacesFromResponse: (response: Response) => Record<string, string>;
+  getIdentity: (options?: GetIdentityOptions) => Promise<unknown>;
+  consent: Pick<ComponentTools["consent"], "awaitConsent" | "withConsent">;
+  appendIdentityToUrl: (ecid: string, url: string) => string;
+  logger: Logger;
+  identity: Pick<
+    ComponentTools["identity"],
+    "getEcidFromCookie" | "setIdentityAcquired"
+  >;
+  getIdentityOptionsValidator: (
+    options: unknown,
+  ) => ValidatedGetIdentityOptions;
+  /** Passed by the component but not read. */
+  config?: Config;
+}
 
 export default ({
   addEcidQueryToPayload,
@@ -25,19 +63,23 @@ export default ({
   logger,
   identity,
   getIdentityOptionsValidator,
-}) => {
-  let namespaces;
-  let edge = {};
+}: CreateComponentOptions) => {
+  let namespaces: Record<string, string> | undefined;
+  let edge: Record<string, unknown> = {};
   return {
     lifecycle: {
-      onBeforeRequest({ request, onResponse, onRequestFailure }) {
+      onBeforeRequest({
+        request,
+        onResponse,
+        onRequestFailure,
+      }: RequestCallbacks & { request: Request }) {
         // Querying the ECID on every request to be able to set the legacy cookie, and make it
         // available for the `getIdentity` command.
         addEcidQueryToPayload(request.getPayload());
         addQueryStringIdentityToPayload(request.getPayload());
         return ensureSingleIdentity({ request, onResponse, onRequestFailure });
       },
-      onResponse({ response }) {
+      onResponse({ response }: { response: Response }) {
         const newNamespaces = getNamespacesFromResponse(response);
         if (
           (!namespaces || !namespaces[ecidNamespace]) &&
@@ -66,7 +108,7 @@ export default ({
     commands: {
       getIdentity: {
         optionsValidator: getIdentityOptionsValidator,
-        run: (options) => {
+        run: (options: ValidatedGetIdentityOptions) => {
           const { namespaces: requestedNamespaces } = options;
           return consent
             .awaitConsent()
@@ -93,8 +135,11 @@ export default ({
             })
             .then(() => {
               return {
-                identity: requestedNamespaces.reduce((acc, namespace) => {
-                  acc[namespace] = namespaces[namespace] || null;
+                identity: requestedNamespaces.reduce<
+                  Record<string, string | null>
+                >((acc, namespace) => {
+                  // Set above from the cookie, or by onResponse when getIdentity resolved.
+                  acc[namespace] = namespaces![namespace] || null;
                   return acc;
                 }, {}),
                 edge,
@@ -104,7 +149,7 @@ export default ({
       },
       appendIdentityToUrl: {
         optionsValidator: appendIdentityToUrlOptionsValidator,
-        run: (options) => {
+        run: (options: AppendIdentityToUrlOptions) => {
           return consent
             .withConsent()
             .then(() => {
@@ -124,12 +169,13 @@ export default ({
             .then(() => {
               return {
                 url: appendIdentityToUrl(
-                  namespaces[ecidNamespace],
+                  // Set above from the cookie, or by onResponse when getIdentity resolved.
+                  namespaces![ecidNamespace],
                   options.url,
                 ),
               };
             })
-            .catch((error) => {
+            .catch((error: Error) => {
               logger.warn(`Unable to append identity to url. ${error.message}`);
               return options;
             });

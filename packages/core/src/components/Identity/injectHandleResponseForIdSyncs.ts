@@ -9,10 +9,19 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import type { Response } from "../../core/types.js";
+import type { IdSync } from "./injectProcessIdSyncs.js";
 
-export default ({ processIdSyncs }) => {
-  return (response) => {
+export interface InjectHandleResponseForIdSyncsOptions {
+  processIdSyncs: (idSyncs: IdSync[]) => Promise<void>;
+}
+
+export default ({ processIdSyncs }: InjectHandleResponseForIdSyncsOptions) => {
+  return (response: Pick<Response, "getPayloadsByType">) => {
     // no need to wait for response
-    processIdSyncs(response.getPayloadsByType("identity:exchange"));
+    processIdSyncs(
+      // Edge returns `identity:exchange` payloads in the IdSync shape.
+      response.getPayloadsByType("identity:exchange") as IdSync[],
+    );
   };
 };

@@ -16,7 +16,7 @@ import {
   createRequestPayload,
 } from "../../../utils/request/index.js";
 
-export default (namespaces) => {
+export default (namespaces?: string[]) => {
   const content = {
     query: {
       identity: {

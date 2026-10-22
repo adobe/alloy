@@ -16,6 +16,16 @@ import { queryString } from "../../utils/index.js";
 import queryStringIdentityParam from "../../constants/queryStringIdentityParam.js";
 import ecidNamespace from "../../constants/ecidNamespace.js";
 import decodeUriComponentSafely from "../../utils/decodeUriComponentSafely.js";
+import type { RequestPayload } from "../../utils/request/types.js";
+import type { Logger } from "../../utils/types.js";
+
+export interface InjectAddQueryStringIdentityToPayloadOptions {
+  locationSearch: string;
+  locationHash: string;
+  dateProvider: () => Date;
+  orgId: string;
+  logger: Logger;
+}
 
 const LINK_TTL_SECONDS = 300; // 5 minute link time to live
 const QUERY_TOKEN = "?";
@@ -26,8 +36,8 @@ export default ({
     dateProvider,
     orgId,
     logger,
-  }) =>
-  (payload) => {
+  }: InjectAddQueryStringIdentityToPayloadOptions) =>
+  (payload: Pick<RequestPayload, "hasIdentity" | "addIdentity">) => {
     if (payload.hasIdentity(ecidNamespace)) {
       // don't overwrite a user provided ecid identity
       return;
@@ -55,12 +65,14 @@ export default ({
       queryStringValue = decodeUriComponentSafely(queryStringValue);
     }
 
-    const properties = queryStringValue.split("|").reduce((memo, keyValue) => {
-      const [key, value] = keyValue.split("=");
-      memo[key] = decodeUriComponentSafely(value);
-      memo[key] = memo[key].replace(/[^a-zA-Z0-9@.]/g, ""); // sanitization
-      return memo;
-    }, {});
+    const properties = queryStringValue
+      .split("|")
+      .reduce<Record<string, string>>((memo, keyValue) => {
+        const [key, value] = keyValue.split("=");
+        memo[key] = decodeUriComponentSafely(value);
+        memo[key] = memo[key].replace(/[^a-zA-Z0-9@.]/g, ""); // sanitization
+        return memo;
+      }, {});
     // We are using MCMID and MCORGID to be compatible with Visitor.
     const ts = parseInt(properties.TS, 10);
     const mcmid = properties.MCMID;

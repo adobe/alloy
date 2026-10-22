@@ -11,9 +11,18 @@ governing permissions and limitations under the License.
 */
 
 import ecidNamespace from "../../constants/ecidNamespace.js";
+import type { RequestPayload } from "../../utils/request/types.js";
 
-export default ({ getLegacyEcid, addEcidToPayload }) => {
-  return (payload) => {
+export interface InjectAddLegacyEcidToPayloadOptions {
+  getLegacyEcid: () => Promise<string | null | undefined | void>;
+  addEcidToPayload: (payload: RequestPayload, ecid: string) => void;
+}
+
+export default ({
+  getLegacyEcid,
+  addEcidToPayload,
+}: InjectAddLegacyEcidToPayloadOptions) => {
+  return (payload: RequestPayload) => {
     if (payload.hasIdentity(ecidNamespace)) {
       // don't get the legacy identity if we already have the query string identity or if
       // the user specified it in the identity map

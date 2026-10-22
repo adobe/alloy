@@ -12,12 +12,18 @@ governing permissions and limitations under the License.
 
 import ecidNamespace from "../../constants/ecidNamespace.js";
 import coreNamespace from "../../constants/coreNamespace.js";
+import type { RequestPayload } from "../../utils/request/types.js";
+
+export interface InjectAddEcidQueryToPayloadOptions {
+  thirdPartyCookiesEnabled: boolean;
+  areThirdPartyCookiesSupportedByDefault: () => boolean;
+}
 
 export default ({
   thirdPartyCookiesEnabled,
   areThirdPartyCookiesSupportedByDefault,
-}) => {
-  const query = {
+}: InjectAddEcidQueryToPayloadOptions) => {
+  const query: { identity: { fetch: string[] } } = {
     identity: {
       fetch: [ecidNamespace],
     },
@@ -25,7 +31,7 @@ export default ({
   if (thirdPartyCookiesEnabled && areThirdPartyCookiesSupportedByDefault()) {
     query.identity.fetch.push(coreNamespace);
   }
-  return (payload) => {
+  return (payload: Pick<RequestPayload, "mergeQuery">) => {
     payload.mergeQuery(query);
   };
 };

@@ -9,15 +9,32 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import type { Logger } from "../../utils/types.js";
 
-export default ({ doesIdentityCookieExist, orgId, logger }) => {
+/** The callback registrars core passes to `onBeforeRequest`. */
+export interface RequestCallbacks {
+  onResponse: (callback: () => void) => void;
+  onRequestFailure: (callback: () => void) => void;
+}
+
+export interface InjectAwaitIdentityCookieOptions {
+  doesIdentityCookieExist: () => boolean;
+  orgId: string;
+  logger: Logger;
+}
+
+export default ({
+  doesIdentityCookieExist,
+  orgId,
+  logger,
+}: InjectAwaitIdentityCookieOptions) => {
   /**
    * Returns a promise that will be resolved once an identity cookie exists.
    * If an identity cookie doesn't already exist, it should always exist after
    * the first response.
    */
-  return ({ onResponse, onRequestFailure }) => {
-    return new Promise((resolve, reject) => {
+  return ({ onResponse, onRequestFailure }: RequestCallbacks) => {
+    return new Promise<void>((resolve, reject) => {
       onResponse(() => {
         if (doesIdentityCookieExist()) {
           resolve();
