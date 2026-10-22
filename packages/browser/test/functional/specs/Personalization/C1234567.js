@@ -11,8 +11,7 @@ governing permissions and limitations under the License.
 */
 /* eslint-disable func-style, prefer-object-spread */
 import { ClientFunction, t, Selector } from "testcafe";
-// eslint-disable-next-line import/no-relative-packages
-import uuid from "../../../../../core/src/utils/uuid.js";
+import { v4 as uuid } from "uuid";
 import createNetworkLogger from "../../helpers/networkLogger/index.js";
 import createFixture from "../../helpers/createFixture/index.js";
 import {
