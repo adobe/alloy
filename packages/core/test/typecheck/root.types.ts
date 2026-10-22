@@ -74,7 +74,8 @@ const alloy = createInstance({ name: "alloy" }, createPlatformServices);
 expectTypeOf(alloy).parameters.toEqualTypeOf<
   [commandName: string, options?: unknown]
 >();
-expectTypeOf(alloy("configure")).resolves.not.toBeAny();
+// Kept `any` for consumer compatibility (spec-ts-root Decision 1).
+expectTypeOf(alloy("configure")).resolves.toBeAny();
 
 // Component metadata.
 const metadata = getComponentMetadata();

@@ -24,11 +24,15 @@ import {
 import * as optionalComponents from "./core/componentCreators.js";
 import type { AlloyMonitor, ComponentCreator } from "./core/types.js";
 import type { PlatformServices } from "./services/index.js";
-import type { ExecuteCommand } from "./core/injectExecuteCommand.js";
 import type createCoreConfigs from "./core/config/createCoreConfigs.js";
 import type createGetImsAccessToken from "./core/edgeNetwork/injectGetImsAccessToken.js";
 
 export type CreatePlatformServices = () => PlatformServices;
+
+// The command result stays `any` on the public entry for consumer
+// compatibility (spec-ts-root Decision 1); core's own type is narrower.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AlloyInstance = (commandName: string, options?: unknown) => Promise<any>;
 
 export interface CreateInstanceOptions {
   name?: string;
@@ -99,7 +103,7 @@ export const createCustomInstance = (
   getImsAccessToken:
     | ReturnType<typeof createGetImsAccessToken>
     | undefined = undefined,
-): ExecuteCommand => {
+): AlloyInstance => {
   const eventOptionsValidator = objectOf({
     name: string().default("alloy"),
     monitors: arrayOf(objectOf({})).default([]),
@@ -144,7 +148,7 @@ export const createInstance = (
   // missing value fails at runtime exactly as before. The cast keeps the
   // `= undefined` default and the shorthand property in the emitted code.
   createPlatformServices = undefined as unknown as CreatePlatformServices,
-): ExecuteCommand => {
+): AlloyInstance => {
   const eventOptionsValidator = objectOf({
     name: string().default("alloy"),
     monitors: arrayOf(objectOf({})).default([]),
