@@ -22,11 +22,10 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import getBaseConfig from "../../helpers/getBaseConfig.js";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
 import addHtmlToBody from "../../helpers/dom/addHtmlToBody.js";
-// eslint-disable-next-line import/no-relative-packages
-import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../../core/src/constants/decisionProvider.js";
 import { responseStatus } from "../../helpers/assertions/index.js";
 import flushPromiseChains from "../../helpers/flushPromiseChains.js";
 
+const ADOBE_JOURNEY_OPTIMIZER = "AJO";
 const REASONABLE_WAIT_TIME = 250;
 
 const networkLogger = createNetworkLogger();

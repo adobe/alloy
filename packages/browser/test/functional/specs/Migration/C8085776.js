@@ -20,18 +20,15 @@ import {
 } from "../../helpers/constants/configParts/index.js";
 import { TEST_PAGE, TEST_PAGE_AT_JS_TWO } from "../../helpers/constants/url.js";
 import cookies from "../../helpers/cookies.js";
-/* eslint-disable import/no-relative-packages */
-import {
-  MBOX_EDGE_CLUSTER,
-  MBOX,
-} from "../../../../../core/src/constants/legacyCookies.js";
-/* eslint-enable import/no-relative-packages */
 import {
   assertTargetMigrationEnabledIsSent,
   getLocationHint,
   injectAlloyAndSendEvent,
 } from "./helper.js";
 import { responseStatus } from "../../helpers/assertions/index.js";
+
+const MBOX_EDGE_CLUSTER = "mboxEdgeCluster";
+const MBOX = "mbox";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled, targetMigrationEnabled);
