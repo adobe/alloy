@@ -22,7 +22,6 @@ import {
   validateIdentityMap,
 } from "../../utils/index.js";
 import { DISABLED, WAIT, AUTO } from "../../constants/consentStatus.js";
-import type { ObjectValidator } from "../../utils/validation/types.js";
 import type { SendEventCommandOptions } from "./index.js";
 
 export interface ValidateUserEventOptionsOptions {
@@ -37,33 +36,32 @@ export interface ValidateUserEventOptionsOptions {
 export default ({
   options,
 }: ValidateUserEventOptionsOptions): SendEventCommandOptions => {
-  const eventOptionsValidator = (
-    objectOf({
-      type: string(),
-      xdm: objectOf({
-        eventType: string(),
-        identityMap: validateIdentityMap,
-      }),
-      data: objectOf({}),
-      documentUnloading: boolean(),
-      renderDecisions: boolean(),
+  const eventOptionsValidator = objectOf({
+    type: string(),
+    xdm: objectOf({
+      eventType: string(),
+      identityMap: validateIdentityMap,
+    }),
+    data: objectOf({}),
+    documentUnloading: boolean(),
+    renderDecisions: boolean(),
+    decisionScopes: arrayOf(string()).uniqueItems(),
+    personalization: objectOf({
       decisionScopes: arrayOf(string()).uniqueItems(),
-      personalization: objectOf({
-        decisionScopes: arrayOf(string()).uniqueItems(),
-        surfaces: arrayOf(string()).uniqueItems(),
-        sendDisplayEvent: boolean().default(true),
-        includeRenderedPropositions: boolean().default(false),
-        defaultPersonalizationEnabled: boolean(),
-        decisionContext: objectOf({}),
-      }).default({ sendDisplayEvent: true }),
-      datasetId: string(),
-      mergeId: string(),
-      edgeConfigOverrides: validateConfigOverride,
-      advertising: objectOf({
-        handleAdvertisingData: enumOf(DISABLED, WAIT, AUTO).default(DISABLED),
-      }),
-    }).required() as ObjectValidator
-  ) // `required` on the intersection type resolves to AnyValidator's overload.
+      surfaces: arrayOf(string()).uniqueItems(),
+      sendDisplayEvent: boolean().default(true),
+      includeRenderedPropositions: boolean().default(false),
+      defaultPersonalizationEnabled: boolean(),
+      decisionContext: objectOf({}),
+    }).default({ sendDisplayEvent: true }),
+    datasetId: string(),
+    mergeId: string(),
+    edgeConfigOverrides: validateConfigOverride,
+    advertising: objectOf({
+      handleAdvertisingData: enumOf(DISABLED, WAIT, AUTO).default(DISABLED),
+    }),
+  })
+    .required()
     .noUnknownFields();
   // The validator checked the shape described by SendEventCommandOptions.
   return eventOptionsValidator(options) as SendEventCommandOptions;

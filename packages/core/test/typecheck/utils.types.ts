@@ -34,6 +34,13 @@ import createSubscription from "../../src/utils/createSubscription.js";
 import type { Callback } from "../../src/utils/types.js";
 import { mergeDecisionsMeta } from "../../src/utils/event.js";
 import type { DecisionsMeta } from "../../src/utils/event.js";
+import {
+  anything,
+  arrayOf,
+  number,
+  objectOf,
+  string,
+} from "../../src/utils/validation/index.js";
 import { assertValid } from "../../src/utils/validation/utils.js";
 import booleanValidator from "../../src/utils/validation/booleanValidator.js";
 import callbackValidator from "../../src/utils/validation/callbackValidator.js";
@@ -125,3 +132,11 @@ expectTypeOf(createSubscription().add).parameter(0).toEqualTypeOf<Callback>();
 
 // Proposition helpers use the decisioning shape.
 expectTypeOf(mergeDecisionsMeta).parameter(1).toEqualTypeOf<DecisionsMeta>();
+
+// Chained validator methods keep the data-type methods.
+expectTypeOf(string().required().nonEmpty).toBeFunction();
+expectTypeOf(arrayOf(anything()).required().nonEmpty).toBeFunction();
+expectTypeOf(objectOf({}).required().noUnknownFields).toBeFunction();
+expectTypeOf(number().default(1).integer).toBeFunction();
+// `matches` accepts the message argument callers pass.
+expectTypeOf(string().matches).toBeCallableWith(/a/, "message");

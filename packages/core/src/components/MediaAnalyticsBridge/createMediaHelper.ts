@@ -11,10 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { number, objectOf, string } from "../../utils/validation/index.js";
-import type {
-  AnyValidator,
-  StringValidator,
-} from "../../utils/validation/types.js";
+import type { AnyValidator } from "../../utils/validation/types.js";
 import LIBRARY_VERSION from "../../constants/libraryVersion.js";
 import type { Logger } from "../../core/types.js";
 
@@ -140,13 +137,10 @@ export default ({ logger }: MediaHelperOptions) => {
   const createStateObject = withValidation(
     "StateObject",
     {
-      // matches ignores the message argument; it is kept so the bundle is unchanged.
-      stateName: (
-        string().matches as (
-          pattern: RegExp,
-          message: string,
-        ) => ReturnType<StringValidator["matches"]>
-      )(STATE_NAME_REGEX, "This is not a valid state name."),
+      stateName: string().matches(
+        STATE_NAME_REGEX,
+        "This is not a valid state name.",
+      ),
     },
     (stateName: string) => ({
       name: stateName,

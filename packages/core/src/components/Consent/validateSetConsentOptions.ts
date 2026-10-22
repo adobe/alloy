@@ -14,16 +14,12 @@ import {
   validateIdentityMap,
   validateConfigOverride,
 } from "../../utils/index.js";
-import type {
-  ArrayValidator,
-  ValidatorFn,
-} from "../../utils/validation/types.js";
+import type { ValidatorFn } from "../../utils/validation/types.js";
 import type { SetConsentOptions } from "./types.js";
 
 // The validator is untyped at runtime; this schema returns SetConsentOptions.
 export default objectOf({
-  // ArrayValidator's required() resolves to AnyValidator's overload; it still returns an array validator.
-  consent: (arrayOf(anything()).required() as ArrayValidator).nonEmpty(),
+  consent: arrayOf(anything()).required().nonEmpty(),
   identityMap: validateIdentityMap,
   edgeConfigOverrides: validateConfigOverride,
 })
