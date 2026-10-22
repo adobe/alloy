@@ -59,6 +59,7 @@ const transformOptions = ({
     // The core config validators produce a Config.
     return validator.call({ logger }, options) as Config;
   } catch (e) {
+    // Validators throw Error instances.
     throw new Error(
       `Resolve these configuration problems:\n\t - ${(e as Error).message
         .split("\n")

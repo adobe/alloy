@@ -168,11 +168,12 @@ export default ({
   };
 
   const buildAuthHeaders = async () => {
-    // Only called when useServerApi is true, which requires edgeCredentials;
-    // core/index.js supplies getImsAccessToken whenever edgeCredentials is set.
+    // Only called when useServerApi is true, and useServerApi is only true when
+    // edgeCredentials is set; core/index.ts passes getImsAccessToken exactly then.
     const accessToken = await getImsAccessToken!.getAccessToken();
     return {
       Authorization: `Bearer ${accessToken}`,
+      // Non-null: useServerApi (the only caller path) implies edgeCredentials is set.
       "x-api-key": edgeCredentials!.clientId,
       "x-gw-ims-org-id": orgId,
     };

@@ -37,7 +37,7 @@ export type EventManagerLifecycle = Pick<
   "onBeforeEvent" | "onRequestFailure"
 >;
 
-export interface CreateEventManagerDependencies {
+export interface CreateEventManagerOptions {
   config: {
     onBeforeEventSend?: OnBeforeEventSend;
     edgeConfigOverrides?: Override;
@@ -73,7 +73,7 @@ export default ({
   createDataCollectionRequest,
   sendEdgeNetworkRequest,
   applyResponse,
-}: CreateEventManagerDependencies): EventManager => {
+}: CreateEventManagerOptions): EventManager => {
   const { onBeforeEventSend, edgeConfigOverrides: globalConfigOverrides } =
     config;
 

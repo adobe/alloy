@@ -37,7 +37,8 @@ const getXdmPropositions = (xdm: EventXdm | undefined): Proposition[] => {
     xdm._experience &&
     xdm._experience.decisioning &&
     isNonEmptyArray(xdm._experience.decisioning.propositions)
-    ? (xdm._experience.decisioning.propositions as Proposition[])
+    ? // isNonEmptyArray only narrows to unknown[]; XDM propositions are Proposition objects.
+      (xdm._experience.decisioning.propositions as Proposition[])
     : [];
 };
 

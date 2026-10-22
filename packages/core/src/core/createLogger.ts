@@ -46,6 +46,7 @@ export default ({
       const dataWithContext = {
         ...context,
         ...data,
+        // Log data is untyped; redactEdgeCredentials only reads optional edgeCredentials keys.
         config: redactEdgeCredentials(data.config as Redactable),
         options: redactEdgeCredentials(data.options as Redactable),
       };

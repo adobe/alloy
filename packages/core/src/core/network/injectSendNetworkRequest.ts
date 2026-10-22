@@ -20,7 +20,7 @@ import type { Logger } from "../types.js";
 import type { IsRequestRetryableOptions } from "./isRequestRetryable.js";
 import type { GetRequestRetryDelayOptions } from "./getRequestRetryDelay.js";
 
-export interface InjectSendNetworkRequestDependencies {
+export interface InjectSendNetworkRequestOptions {
   logger: Logger;
   sendFetchRequest: SendFetchRequest;
   sendBeaconRequest: SendBeaconRequest;
@@ -54,7 +54,7 @@ export default ({
   sendBeaconRequest,
   isRequestRetryable,
   getRequestRetryDelay,
-}: InjectSendNetworkRequestDependencies): SendNetworkRequest => {
+}: InjectSendNetworkRequestOptions): SendNetworkRequest => {
   /**
    * Send a network request and returns details about the response.
    */

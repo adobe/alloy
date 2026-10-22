@@ -20,8 +20,10 @@ export default (returnValues: unknown[]): Record<string, unknown> => {
   // Callback aggregators resolve to unknown[]; these entries are arrays of objects or objects.
   const lifecycleOnResponseReturnValues = (returnValues.shift() ||
     []) as LifecycleReturnValue[];
+  // Second entry: the consumer onResponse objects.
   const consumerOnResponseReturnValues = (returnValues.shift() ||
     []) as LifecycleReturnValue[];
+  // The remaining entries are the onBeforeRequest objects.
   const lifecycleOnBeforeRequestReturnValues =
     returnValues as LifecycleReturnValue[];
 
