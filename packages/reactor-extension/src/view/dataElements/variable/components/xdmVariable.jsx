@@ -251,7 +251,7 @@ const XdmVariable = ({
   return (
     <FieldSubset>
       <FormElementContainer>
-        <Content>
+        <div className={style({ font: "body-sm" })}>
           <Link
             href="https://experience.adobe.com/#/data-collection/platform/workflow/schema-create"
             target="_blank"
@@ -269,7 +269,7 @@ const XdmVariable = ({
           </Link>
           {") "}
           first, or choose an existing one below.
-        </Content>
+        </div>
         {(missingSavedSandbox || missingSavedSchema) && (
           <InlineAlert
             variant="notice"

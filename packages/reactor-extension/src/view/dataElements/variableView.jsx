@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import { useRef } from "react";
 import PropTypes from "prop-types";
 import { useField } from "formik";
-import { Content, Link, Radio } from "@react-spectrum/s2";
+import { Link, Radio } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import ExtensionView from "../components/extensionView";
 import FormElementContainer from "../components/formElementContainer";
@@ -60,8 +60,9 @@ const Schema = ({ xdmVariableContext, initInfo }) => {
 
   return (
     <>
-      <Content
-        styles={style({
+      <div
+        className={style({
+          font: "body-sm",
           width: 400,
         })}
       >
@@ -79,7 +80,7 @@ const Schema = ({ xdmVariableContext, initInfo }) => {
           Learn more about the Variable data element type
         </Link>
         .
-      </Content>
+      </div>
       <FormikRadioGroup
         label="Choose the property you want to populate"
         name="type"
