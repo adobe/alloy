@@ -24,7 +24,9 @@ import {
 } from "../../constants/domain.js";
 import EDGE_BASE_PATH from "../../constants/edgeBasePath.js";
 
-export default () =>
+import type { ObjectValidator } from "../../utils/validation/types.js";
+
+export default (): ObjectValidator =>
   objectOf({
     debugEnabled: boolean().default(false),
     datastreamId: string().unique().required(),

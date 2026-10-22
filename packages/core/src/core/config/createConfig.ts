@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const createConfig = (options) => {
+const createConfig = <T extends object>(options: T): T => {
   return { ...options };
 };
 

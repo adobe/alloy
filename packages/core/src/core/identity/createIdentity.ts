@@ -10,10 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { IdentityManager } from './types.js' */
-/** @import { Logger } from '../types.js' */
-/** @import { CookieJar } from '../../utils/types.js' */
-
+import type { IdentityManager } from "./types.js";
+import type { Logger } from "../types.js";
+import type { CookieJar } from "../../utils/types.js";
 import createDecodeKndctrCookie from "../../utils/createDecodeKndctrCookie.js";
 
 /**
@@ -22,15 +21,6 @@ import createDecodeKndctrCookie from "../../utils/createDecodeKndctrCookie.js";
  * This factory function creates an identity manager service that manages the state of identity resolution,
  * provides methods to check for existing identity cookies, and handles the asynchronous nature
  * of identity acquisition in Adobe Experience Platform Web SDK.
- *
- * @function
- *
- * @param {Object} options
- * @param {Logger} options.logger
- * @param {CookieJar} options.loggingCookieJar
- * @param {{orgId: string}} options.config
- *
- * @returns {IdentityManager}
  *
  * @example
  * // Create an identity service
@@ -49,10 +39,20 @@ import createDecodeKndctrCookie from "../../utils/createDecodeKndctrCookie.js";
  * // Get ECID from cookie
  * const ecid = identityManager.getEcidFromCookie();
  */
-export default ({ logger, loggingCookieJar, config }) => {
-  let awaitIdentityResolve = null;
+export interface IdentityOptions {
+  logger: Logger;
+  loggingCookieJar: CookieJar;
+  config: { orgId: string };
+}
 
-  const awaitIdentityPromise = new Promise((resolve) => {
+export default ({
+  logger,
+  loggingCookieJar,
+  config,
+}: IdentityOptions): IdentityManager => {
+  let awaitIdentityResolve: (() => void) | null = null;
+
+  const awaitIdentityPromise = new Promise<void>((resolve) => {
     awaitIdentityResolve = resolve;
   });
 
@@ -71,7 +71,8 @@ export default ({ logger, loggingCookieJar, config }) => {
     },
 
     setIdentityAcquired() {
-      awaitIdentityResolve();
+      // Non-null: the Promise executor above runs synchronously.
+      awaitIdentityResolve!();
     },
 
     awaitIdentity() {

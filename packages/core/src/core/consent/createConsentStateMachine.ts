@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { Logger } from '../../core/types.js' */
-/** @import { ConsentStateMachineUtils, ConsentStateMachine } from './types.js' */
-
+import type { Logger } from "../types.js";
+import type { Deferred } from "../../utils/defer.js";
+import type { ConsentStateMachine } from "./types.js";
 import { defer } from "../../utils/index.js";
 
 export const DECLINED_CONSENT = "The user declined consent.";
@@ -23,11 +23,9 @@ export const CONSENT_SOURCE_NEW = "new";
 
 /**
  * @private
- * @param {string} errorMessage
- * @returns {Error}
  */
-const createDeclinedConsentError = (errorMessage) => {
-  const error = new Error(errorMessage);
+const createDeclinedConsentError = (errorMessage: string): Error => {
+  const error: Error & { code?: string } = new Error(errorMessage);
   error.code = DECLINED_CONSENT_ERROR_CODE;
   error.message = errorMessage;
   return error;
@@ -42,11 +40,6 @@ const createDeclinedConsentError = (errorMessage) => {
  * - "out": User has declined consent (with default or explicit decline)
  * - "pending": Consent decision is awaiting user input
  *
- * @param {object} options
- * @param {Logger} options.logger
- *
- * @returns {ConsentStateMachine}
- *
  * @example
  * const consentStateMachine = createConsentStateMachine({ logger });
  *
@@ -59,18 +52,26 @@ const createDeclinedConsentError = (errorMessage) => {
  * // Check current state
  * const { state, wasSet } = consentStateMachine.current();
  */
-export default ({ logger }) => {
-  const deferreds = [];
+export interface ConsentStateMachineOptions {
+  logger: Logger;
+}
+
+export default ({
+  logger,
+}: ConsentStateMachineOptions): ConsentStateMachine => {
+  const deferreds: Deferred<void>[] = [];
 
   const runAll = () => {
     while (deferreds.length) {
-      deferreds.shift().resolve();
+      // Non-null: loop guard ensures the array is non-empty.
+      deferreds.shift()!.resolve();
     }
   };
   const discardAll = () => {
     while (deferreds.length) {
+      // Non-null: loop guard ensures the array is non-empty.
       deferreds
-        .shift()
+        .shift()!
         .reject(createDeclinedConsentError("The user declined consent."));
     }
   };
@@ -84,11 +85,11 @@ export default ({ logger }) => {
     );
   const awaitOut = () =>
     Promise.reject(createDeclinedConsentError("The user declined consent."));
-  const awaitPending = (returnImmediately) => {
+  const awaitPending = (returnImmediately?: boolean) => {
     if (returnImmediately) {
       return Promise.reject(new Error("Consent is pending."));
     }
-    const deferred = defer();
+    const deferred = defer<void>();
     deferreds.push(deferred);
     return deferred.promise;
   };
