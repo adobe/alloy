@@ -71,6 +71,38 @@ const setup = async (width = 960) => {
 describe("Object array remove action", () => {
   afterEach(() => view?.unmount());
 
+  it("groups editable fields without adding a selectable or focusable card", async () => {
+    await setup();
+    const group = view.getByRole("group", { name: "Scope 1", exact: true });
+    const element = group.element();
+    expect(element.tagName).toBe("DIV");
+    expect(element.tabIndex).toBe(-1);
+    expect(element.hasAttribute("aria-selected")).toBe(false);
+    expect(element.hasAttribute("href")).toBe(false);
+    const card = element.parentElement.parentElement;
+    expect(card.tabIndex).toBe(-1);
+    expect(card.hasAttribute("aria-selected")).toBe(false);
+    expect(card.hasAttribute("href")).toBe(false);
+    expect(getComputedStyle(card).overflow).toBe("clip");
+    expect(getComputedStyle(element.parentElement).display).toBe("grid");
+    await view
+      .getByTestId("metadata.0.scopeTextField")
+      .getByRole("textbox")
+      .fill("updated");
+    await view.getByTestId("metadataAddButton").click();
+    await expect
+      .element(view.getByRole("group", { name: "Scope 3", exact: true }))
+      .toBeVisible();
+    await expect.element(view.getByTestId("settings")).toHaveTextContent(
+      JSON.stringify({
+        metadata: {
+          updated: { selector: "#first" },
+          second: { selector: "#second" },
+        },
+      }),
+    );
+  });
+
   it.each([960, 360])(
     "stays beside the field group at %i px",
     async (width) => {

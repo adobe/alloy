@@ -37,6 +37,7 @@ import * as AUTHENTICATED_STATE from "../constants/authenticatedState";
 import FormikCheckbox from "../../../forms/fields/Checkbox";
 import NamespacesComponent from "./NamespacesComponent";
 import { findNamespace } from "../utils/namespacesUtils";
+import FormEditGroup from "../../../components/formEditGroup";
 
 const HEADER_ROW_STYLE = style({ display: "flex", alignItems: "center" });
 const ADD_IDENTITY_BUTTON_STYLE = style({ marginStart: "auto" });
@@ -50,21 +51,6 @@ const IDENTIFIERS_LIST_STYLE = style({
   display: "flex",
   flexDirection: "column",
   gap: 20,
-});
-// The bordered box a v3 Well rendered by default; padding/marginTop/border
-// values come from the S1->S2 dimension token migration table.
-const IDENTIFIER_WELL_STYLE = style({
-  display: "block",
-  textAlign: "start",
-  minWidth: 160,
-  padding: 16,
-  marginTop: 4,
-  borderWidth: 1,
-  borderRadius: "sm",
-  backgroundColor: "layer-1",
-  borderStyle: "solid",
-  borderColor: "transparent-black-75",
-  font: "body-sm",
 });
 const DELETE_IDENTIFIER_BUTTON_STYLE = style({ marginTop: 12 });
 const DELETE_IDENTITY_WRAPPER_STYLE = style({ marginTop: 8 });
@@ -160,9 +146,9 @@ const Identity = ({ context }) => {
                               <div className={IDENTIFIERS_LIST_STYLE}>
                                 {identity.identifiers.map(
                                   (identifier, identifierIndex) => (
-                                    <div
+                                    <FormEditGroup
                                       key={`identity${index}identifier${identifierIndex}`}
-                                      className={IDENTIFIER_WELL_STYLE}
+                                      label={`Identifier ${identifierIndex + 1}`}
                                     >
                                       <FormElementContainer>
                                         <DataElementSelector>
@@ -231,7 +217,7 @@ const Identity = ({ context }) => {
                                           <Text>Delete identifier</Text>
                                         </Button>
                                       )}
-                                    </div>
+                                    </FormEditGroup>
                                   ),
                                 )}
                               </div>

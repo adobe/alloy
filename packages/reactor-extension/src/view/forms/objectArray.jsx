@@ -23,6 +23,7 @@ import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
 import form from "./form";
 import numberAwareCompareFunction from "../utils/numberAwareCompareFunction";
 import FormElementContainer from "../components/formElementContainer";
+import FormEditGroup from "../components/formEditGroup";
 
 const FORM = "form";
 const DATA_ELEMENT = "dataElement";
@@ -34,38 +35,6 @@ const lowerInitialLetters = (s) => {
     .join(" ");
 };
 
-// The bordered box a v3 Well rendered by default; padding/marginTop/border
-// values come from the S1->S2 dimension token migration table.
-const WELL_STYLE = style({
-  display: "block",
-  width: "fit",
-  maxWidth: "full",
-  boxSizing: "border-box",
-  textAlign: "start",
-  minWidth: 160,
-  padding: 16,
-  marginTop: 4,
-  borderWidth: 1,
-  borderRadius: "sm",
-  backgroundColor: "layer-1",
-  borderStyle: "solid",
-  borderColor: "transparent-black-75",
-  font: "body-sm",
-});
-const HORIZONTAL_WELL_STYLE = style({
-  display: "block",
-  textAlign: "start",
-  minWidth: 160,
-  padding: 16,
-  paddingTop: 8,
-  marginTop: 4,
-  borderWidth: 1,
-  borderRadius: "sm",
-  backgroundColor: "layer-1",
-  borderStyle: "solid",
-  borderColor: "transparent-black-75",
-  font: "body-sm",
-});
 const WELL_CONTENT_STYLE = style({
   display: "flex",
   flexDirection: "column",
@@ -82,12 +51,12 @@ const HORIZONTAL_REMOVE_BUTTON_STYLES = {
   false: style({ marginTop: 0 }),
 };
 
-const ObjectArrayContainer = ({ horizontal, children }) => {
+const ObjectArrayContainer = ({ horizontal, label, children }) => {
   if (horizontal) {
     return (
-      <div className={HORIZONTAL_WELL_STYLE}>
+      <FormEditGroup label={label}>
         <FormElementContainer>{children}</FormElementContainer>
-      </div>
+      </FormEditGroup>
     );
   }
   return children;
@@ -95,6 +64,7 @@ const ObjectArrayContainer = ({ horizontal, children }) => {
 
 ObjectArrayContainer.propTypes = {
   horizontal: PropTypes.bool,
+  label: PropTypes.string,
   children: PropTypes.node,
 };
 
@@ -300,7 +270,7 @@ export default function objectArray(
       );
 
       return (
-        <ObjectArrayContainer horizontal={horizontal}>
+        <ObjectArrayContainer horizontal={horizontal} label={singularLabel}>
           {dataElementSupported && (
             <FormikRadioGroup
               name={`${namePrefix}${name}InputMethod`}
@@ -332,7 +302,9 @@ export default function objectArray(
                       return (
                         <div key={index}>
                           {!horizontal && (
-                            <div className={WELL_STYLE}>
+                            <FormEditGroup
+                              label={`${singularLabel} ${index + 1}`}
+                            >
                               <div className={WELL_CONTENT_STYLE}>
                                 <ItemComponent
                                   namePrefix={`${namePrefix}${name}.${index}.`}
@@ -358,7 +330,7 @@ export default function objectArray(
                                   </Button>
                                 </div>
                               </div>
-                            </div>
+                            </FormEditGroup>
                           )}
                           {horizontal && (
                             <div className={REMOVE_ROW_STYLE}>

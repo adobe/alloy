@@ -21,28 +21,12 @@ import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
 import FormElementContainer from "../components/formElementContainer";
 import BetaBadge from "../components/betaBadge";
+import FormEditGroup from "../components/formEditGroup";
 
 const FORM = "form";
 const DATA_ELEMENT = "dataElement";
 
-// The bordered box a v3 Well rendered by default; padding/marginTop/border
-// values come from the S1->S2 dimension token migration table. alignSelf
-// replaces the v3 Well's alignSelf="flex-start", which sized the box to its
-// content instead of stretching it across the column.
-const WELL_STYLE = style({
-  display: "block",
-  alignSelf: "start",
-  textAlign: "start",
-  minWidth: 160,
-  padding: 16,
-  marginTop: 4,
-  borderWidth: 1,
-  borderRadius: "sm",
-  backgroundColor: "layer-1",
-  borderStyle: "solid",
-  borderColor: "transparent-black-75",
-  font: "body-sm",
-});
+const GROUP_STYLE = style({ alignSelf: "start" });
 const WELL_CONTENT_STYLE = style({
   display: "flex",
   flexDirection: "column",
@@ -220,7 +204,11 @@ export default function simpleMap({
                   <>
                     {items.map((__, index) => {
                       return (
-                        <div key={index} className={WELL_STYLE}>
+                        <FormEditGroup
+                          key={index}
+                          label={`${singularLabel} ${index + 1}`}
+                          styles={GROUP_STYLE}
+                        >
                           <div className={WELL_CONTENT_STYLE}>
                             <FormElementContainer>
                               <DataElementSelector>
@@ -259,7 +247,7 @@ export default function simpleMap({
                               </Button>
                             </div>
                           </div>
-                        </div>
+                        </FormEditGroup>
                       );
                     })}
                     <div>

@@ -22,6 +22,7 @@ import FormikTextField from "../../forms/fields/TextField";
 import DataElementSelector from "../dataElementSelector";
 import { PARTS, WHOLE } from "./constants/populationStrategy";
 import FormElementContainer from "../formElementContainer";
+import FormEditGroup from "../formEditGroup";
 import {
   addToEntityFromVariables,
   addToVariablesFromEntity,
@@ -75,28 +76,12 @@ WholePopulationStrategyForm.propTypes = {
  * Displayed when the PARTS population strategy is selected.
  * Allows the user to provide individual items within the array.
  */
-const PartsPopulationStrategyForm = ({ fieldName, items }) => (
+const PartsPopulationStrategyForm = ({ displayName, fieldName, items }) => (
   <FieldArray
     name={`${fieldName}.items`}
     render={(arrayHelpers) => {
       return (
-        <div
-          className={style({
-            display: "block",
-            textAlign: "start",
-            minWidth: 160,
-            padding: 16,
-            paddingTop: 8,
-            marginTop: 4,
-            borderWidth: 1,
-            borderRadius: "sm",
-            backgroundColor: "layer-1",
-            borderStyle: "solid",
-            borderColor: "transparent-black-75",
-            font: "body-sm",
-            marginStart: 24,
-          })}
-        >
+        <FormEditGroup label={displayName} styles={style({ marginStart: 24 })}>
           <div
             className={style({
               display: "flex",
@@ -160,13 +145,14 @@ const PartsPopulationStrategyForm = ({ fieldName, items }) => (
               Add another property
             </ActionButton>
           </div>
-        </div>
+        </FormEditGroup>
       );
     }}
   />
 );
 
 PartsPopulationStrategyForm.propTypes = {
+  displayName: PropTypes.string.isRequired,
   fieldName: PropTypes.string.isRequired,
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
@@ -276,7 +262,11 @@ const ObjectJsonEdit = (props) => {
           }
         />
       ) : (
-        <PartsPopulationStrategyForm fieldName={fieldName} items={items} />
+        <PartsPopulationStrategyForm
+          displayName={displayName}
+          fieldName={fieldName}
+          items={items}
+        />
       )}
     </FormElementContainer>
   );

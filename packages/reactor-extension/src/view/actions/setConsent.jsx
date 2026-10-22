@@ -33,6 +33,7 @@ import Overrides, { bridge as overridesBridge } from "../components/overrides";
 import getEdgeConfigIds from "../utils/getEdgeConfigIds";
 import RequiredComponent from "../components/requiredComponent";
 import getRequiredComponentSchema from "../configuration/utils/getRequiredComponentSchema";
+import FormEditGroup from "../components/formEditGroup";
 
 const FORM = { value: "form", label: "Fill out a form" };
 const DATA_ELEMENT = { value: "dataElement", label: "Provide a data element" };
@@ -431,22 +432,10 @@ const SetConsent = () => {
                         })}
                       >
                         {values.consent.map((value, index) => (
-                          <div
+                          <FormEditGroup
                             data-test-id={`consentObject${index}`}
                             key={`consentObject${index}`}
-                            className={style({
-                              display: "block",
-                              textAlign: "start",
-                              minWidth: 160,
-                              padding: 16,
-                              marginTop: 4,
-                              borderWidth: 1,
-                              borderRadius: "sm",
-                              backgroundColor: "layer-1",
-                              borderStyle: "solid",
-                              borderColor: "transparent-black-75",
-                              font: "body-sm",
-                            })}
+                            label={`Consent object ${index + 1}`}
                           >
                             <FormElementContainer>
                               <ConsentObject value={value} index={index} />
@@ -468,7 +457,7 @@ const SetConsent = () => {
                                 </Button>
                               )}
                             </FormElementContainer>
-                          </div>
+                          </FormEditGroup>
                         ))}
                       </div>
                     </>
