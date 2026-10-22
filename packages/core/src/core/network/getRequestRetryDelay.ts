@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import { RETRY_AFTER } from "../../constants/httpHeaderNames.js";
 import { isInteger } from "../../utils/index.js";
+import type { NetworkResponse } from "../../services/types.js";
 
 // The retry gets incrementally (but not exponentially) longer for each retry.
 const FIRST_DELAY_MILLIS = 1000;
@@ -20,7 +21,7 @@ const INCREMENTAL_DELAY_MILLIS = 1000;
 // When the target delay is randomized, make it within the range of this percentage above or below the target delay.
 const MAX_RANDOM_VARIANCE_PERCENTAGE = 0.3;
 
-const calculateRetryDelay = (retriesAttempted) => {
+const calculateRetryDelay = (retriesAttempted: number): number => {
   const targetDelay =
     FIRST_DELAY_MILLIS + retriesAttempted * INCREMENTAL_DELAY_MILLIS;
   const maxVariance = targetDelay * MAX_RANDOM_VARIANCE_PERCENTAGE;
@@ -32,7 +33,7 @@ const calculateRetryDelay = (retriesAttempted) => {
   return randomizedDelayWithinRange;
 };
 
-const getDelayFromHeader = (response) => {
+const getDelayFromHeader = (response: NetworkResponse): number | undefined => {
   // According to the HTTP spec, if the header is defined, its value will be a string that
   // represents either:
   //  * An integer indicating the number of seconds to delay.
@@ -41,7 +42,7 @@ const getDelayFromHeader = (response) => {
   //    be helpful to know that this is the same format that a JavaScript date's
   //    toGMTString() returns.
   const headerValue = response.getHeader(RETRY_AFTER);
-  let delayInMillis;
+  let delayInMillis: number | undefined;
 
   if (headerValue) {
     const headerValueInt = parseInt(headerValue, 10);
@@ -64,7 +65,15 @@ const getDelayFromHeader = (response) => {
 // practices outlined in https://docs.microsoft.com/en-us/azure/architecture/best-practices/transient-faults:
 //  * Incremental retry
 //  * Random interval
-export default ({ response, retriesAttempted }) => {
+export interface GetRequestRetryDelayOptions {
+  response: NetworkResponse;
+  retriesAttempted: number;
+}
+
+export default ({
+  response,
+  retriesAttempted,
+}: GetRequestRetryDelayOptions): number => {
   // Technically, only 429 or 503 responses should have a Retry-After header, but we'll respect the
   // header if we find it on any response.
   let delayInMillis = getDelayFromHeader(response);

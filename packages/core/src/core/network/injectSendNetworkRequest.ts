@@ -11,6 +11,42 @@ governing permissions and limitations under the License.
 */
 
 import { stackError } from "../../utils/index.js";
+import type {
+  NetworkResponse,
+  SendBeaconRequest,
+  SendFetchRequest,
+} from "../../services/types.js";
+import type { Logger } from "../types.js";
+import type { IsRequestRetryableOptions } from "./isRequestRetryable.js";
+import type { GetRequestRetryDelayOptions } from "./getRequestRetryDelay.js";
+
+export interface InjectSendNetworkRequestDependencies {
+  logger: Logger;
+  sendFetchRequest: SendFetchRequest;
+  sendBeaconRequest: SendBeaconRequest;
+  isRequestRetryable: (options: IsRequestRetryableOptions) => boolean;
+  getRequestRetryDelay: (options: GetRequestRetryDelayOptions) => number;
+}
+
+export interface SendNetworkRequestOptions {
+  requestId: string;
+  url: string;
+  payload: unknown;
+  useSendBeacon?: boolean;
+  useKeepalive?: boolean;
+  headers?: Record<string, string>;
+}
+
+export interface SendNetworkRequestResult {
+  statusCode: number;
+  body: string;
+  parsedBody: unknown;
+  getHeader: NetworkResponse["getHeader"];
+}
+
+export type SendNetworkRequest = (
+  options: SendNetworkRequestOptions,
+) => Promise<SendNetworkRequestResult>;
 
 export default ({
   logger,
@@ -18,7 +54,7 @@ export default ({
   sendBeaconRequest,
   isRequestRetryable,
   getRequestRetryDelay,
-}) => {
+}: InjectSendNetworkRequestDependencies): SendNetworkRequest => {
   /**
    * Send a network request and returns details about the response.
    */
@@ -29,7 +65,7 @@ export default ({
     useSendBeacon,
     useKeepalive,
     headers,
-  }) => {
+  }: SendNetworkRequestOptions): Promise<SendNetworkRequestResult> => {
     // We want to log raw payload and event data rather than
     // our fancy wrapper objects. Calling payload.toJSON() is
     // insufficient to get all the nested raw data, because it's
@@ -46,7 +82,9 @@ export default ({
       payload: parsedPayload,
     });
 
-    const executeRequest = (retriesAttempted = 0) => {
+    const executeRequest = (
+      retriesAttempted = 0,
+    ): Promise<SendNetworkRequestResult> => {
       // navigator.sendBeacon() has no way to attach custom headers, so a
       // request that needs any (e.g. authenticated Server API requests)
       // must always go through fetch, regardless of useSendBeacon.
@@ -68,14 +106,14 @@ export default ({
             response,
             retriesAttempted,
           });
-          return new Promise((resolve) => {
+          return new Promise<SendNetworkRequestResult>((resolve) => {
             setTimeout(() => {
               resolve(executeRequest(retriesAttempted + 1));
             }, requestRetryDelay);
           });
         }
 
-        let parsedBody;
+        let parsedBody: unknown;
 
         try {
           parsedBody = JSON.parse(response.body);

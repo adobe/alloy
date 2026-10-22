@@ -16,6 +16,7 @@ import {
   BAD_GATEWAY,
   GATEWAY_TIMEOUT,
 } from "../../constants/httpStatusCode.js";
+import type { NetworkResponse } from "../../services/types.js";
 
 const MAX_RETRIES = 3;
 
@@ -28,7 +29,15 @@ const RETRYABLE_STATUS_CODES = [
 
 // These rules are in accordance with
 // https://git.corp.adobe.com/pages/experience-edge/konductor/#/apis/errors?id=handling-4xx-and-5xx-responses
-export default ({ response, retriesAttempted }) => {
+export interface IsRequestRetryableOptions {
+  response: NetworkResponse;
+  retriesAttempted: number;
+}
+
+export default ({
+  response,
+  retriesAttempted,
+}: IsRequestRetryableOptions): boolean => {
   return (
     retriesAttempted < MAX_RETRIES &&
     RETRYABLE_STATUS_CODES.includes(response.statusCode)
