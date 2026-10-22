@@ -13,7 +13,7 @@ export const ALWAYS = "always";
 export const NEVER = "never";
 export const DECORATED_ELEMENTS_ONLY = "decoratedElementsOnly";
 
-export const PROPOSITION_INTERACTION_TYPES = [
+export const PROPOSITION_INTERACTION_TYPES: string[] = [
   ALWAYS,
   NEVER,
   DECORATED_ELEMENTS_ONLY,

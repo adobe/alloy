@@ -16,4 +16,4 @@ export default [
   ["model", "string"],
   ["platformVersion", "string"],
   ["wow64", "boolean"],
-];
+] as [hint: string, type: "string" | "boolean"][];

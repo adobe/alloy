@@ -13,4 +13,4 @@ governing permissions and limitations under the License.
 // The __VERSION__ keyword will be replace at alloy build time with the package.json version.
 // see babel-plugin-version
 
-export default "__VERSION__";
+export default "__VERSION__" as string;

@@ -18,9 +18,15 @@ export const PropositionEventType = {
   TRIGGER: "trigger",
   DISMISS: "dismiss",
   SUPPRESS: "suppressDisplay",
-};
+} as const;
 
-const eventTypeToPropositionEventTypeMapping = {
+export type PropositionEventTypeValue =
+  (typeof PropositionEventType)[keyof typeof PropositionEventType];
+
+const eventTypeToPropositionEventTypeMapping: Record<
+  string,
+  PropositionEventTypeValue
+> = {
   [DISPLAY]: PropositionEventType.DISPLAY,
   [INTERACT]: PropositionEventType.INTERACT,
   [TRIGGER]: PropositionEventType.TRIGGER,
@@ -28,7 +34,7 @@ const eventTypeToPropositionEventTypeMapping = {
   [SUPPRESS]: PropositionEventType.SUPPRESS,
 };
 
-const propositionEventTypeToEventTypeMapping = {
+const propositionEventTypeToEventTypeMapping: Record<string, string> = {
   [PropositionEventType.DISPLAY]: DISPLAY,
   [PropositionEventType.INTERACT]: INTERACT,
   [PropositionEventType.TRIGGER]: TRIGGER,
@@ -36,8 +42,10 @@ const propositionEventTypeToEventTypeMapping = {
   [PropositionEventType.SUPPRESS]: SUPPRESS,
 };
 
-export const getPropositionEventType = (eventType) =>
+export const getPropositionEventType = (
+  eventType: string,
+): PropositionEventTypeValue =>
   eventTypeToPropositionEventTypeMapping[eventType];
 
-export const getEventType = (propositionEventType) =>
+export const getEventType = (propositionEventType: string): string =>
   propositionEventTypeToEventTypeMapping[propositionEventType];
