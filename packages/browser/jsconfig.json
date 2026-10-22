@@ -3,7 +3,7 @@
   "compilerOptions": {
     "rootDir": "..",
     "paths": {
-      "@adobe/alloy-core": ["../core/src/index.js"],
+      "@adobe/alloy-core": ["../core/src/index.ts"],
       "@adobe/alloy-core/*": ["../core/src/*"]
     }
   },
