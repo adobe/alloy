@@ -14,14 +14,6 @@ governing permissions and limitations under the License.
 // like the launch extension. Everything that is exported here can be used independently by other
 // npm projects.
 
-/** @import { AlloyMonitor } from './types.js' */
-/** @import { PlatformServices } from './services/index.js' */
-/** @import { Logger } from './core/types.js' */
-
-/**
- * @typedef {() => PlatformServices} CreatePlatformServices
- */
-
 import { createExecuteCommand } from "./core/index.js";
 import {
   arrayOf,
@@ -30,6 +22,22 @@ import {
   callback,
 } from "./utils/validation/index.js";
 import * as optionalComponents from "./core/componentCreators.js";
+import type { AlloyMonitor, ComponentCreator } from "./core/types.js";
+import type { PlatformServices } from "./services/index.js";
+import type { ExecuteCommand } from "./core/injectExecuteCommand.js";
+import type createCoreConfigs from "./core/config/createCoreConfigs.js";
+import type createGetImsAccessToken from "./core/edgeNetwork/injectGetImsAccessToken.js";
+
+export type CreatePlatformServices = () => PlatformServices;
+
+export interface CreateInstanceOptions {
+  name?: string;
+  monitors?: AlloyMonitor[];
+}
+
+export interface CreateCustomInstanceOptions extends CreateInstanceOptions {
+  components?: ComponentCreator[];
+}
 
 /**
  * Creates a fresh, independent scope for tracking which orgId/datastreamId
@@ -60,38 +68,50 @@ export { default as consent } from "./components/Consent/index.js";
 /**
  * Creates a custom Alloy instance which can reduce the library size and increase performance.
  *
- * @param {Object} [options] - Configuration options for the instance.
- * @param {string} [options.name=alloy] - The name of the instance.
- * @param {Array<AlloyMonitor>} [options.monitors] - Monitors for the instance.
- * @param {Array<Function>} [options.components] - Components for the instance.
- * @param {CreatePlatformServices} createPlatformServices
- * @param {ReturnType<typeof import('./core/config/createCoreConfigs.js').default>} [coreConfigValidators]
+ * @param [options] - Configuration options for the instance.
+ * @param [options.name=alloy] - The name of the instance.
+ * @param [options.monitors] - Monitors for the instance.
+ * @param [options.components] - Components for the instance.
+ * @param createPlatformServices
+ * @param [coreConfigValidators]
  * Tracks which orgId/datastreamId values have already been configured, to
  * catch accidentally configuring two instances with the same one. Shared by
  * default for the module's lifetime (matches "configured once per page
  * load," since a page load resets module state); pass a fresh instance per
  * call if that assumption doesn't hold for your runtime (e.g. one Node
  * process handling many requests).
- * @param {ReturnType<typeof import('./core/edgeNetwork/injectGetImsAccessToken.js').default>} [getImsAccessToken]
+ * @param [getImsAccessToken]
  * Only relevant when `edgeCredentials` is configured — see
  * `createGetImsAccessToken` above.
- * @returns {(commandName: string, options?: Object) => Promise<any>} A callable Alloy instance.
+ * @returns A callable Alloy instance.
  *
  * @see {@link https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/install/create-custom-build} for more details.
  */
 export const createCustomInstance = (
-  options = {},
-  createPlatformServices = undefined,
-  coreConfigValidators = undefined,
-  getImsAccessToken = undefined,
-) => {
+  options: CreateCustomInstanceOptions = {},
+  // Optional for callers, but createExecuteCommand calls it right away, so a
+  // missing value fails at runtime exactly as before. The cast keeps the
+  // `= undefined` default and the shorthand property in the emitted code.
+  createPlatformServices = undefined as unknown as CreatePlatformServices,
+  coreConfigValidators:
+    | ReturnType<typeof createCoreConfigs>
+    | undefined = undefined,
+  getImsAccessToken:
+    | ReturnType<typeof createGetImsAccessToken>
+    | undefined = undefined,
+): ExecuteCommand => {
   const eventOptionsValidator = objectOf({
     name: string().default("alloy"),
     monitors: arrayOf(objectOf({})).default([]),
     components: arrayOf(callback()),
   }).noUnknownFields();
 
-  const { name, monitors, components } = eventOptionsValidator(options);
+  // The validator returns `unknown`; the schema above guarantees this shape.
+  const { name, monitors, components } = eventOptionsValidator(options) as {
+    name: string;
+    monitors: AlloyMonitor[];
+    components: ComponentCreator[];
+  };
 
   return createExecuteCommand({
     instanceName: name,
@@ -106,11 +126,11 @@ export const createCustomInstance = (
 /**
  * Creates a new Alloy instance.
  *
- * @param {Object} [options] - Configuration options for the instance.
- * @param {string} [options.name=alloy] - The name of the instance.
- * @param {Array<AlloyMonitor>} [options.monitors] - (Optional) Monitors for the instance.
- * @param {CreatePlatformServices} createPlatformServices
- * @returns {(commandName: string, options?: Object) => Promise<any>} A callable Alloy instance.
+ * @param [options] - Configuration options for the instance.
+ * @param [options.name=alloy] - The name of the instance.
+ * @param [options.monitors] - (Optional) Monitors for the instance.
+ * @param createPlatformServices
+ * @returns A callable Alloy instance.
  *
  * @example
  * const alloy = createInstance({ name: "myInstance" });
@@ -119,15 +139,22 @@ export const createCustomInstance = (
  * @see {@link https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/install/npm} for more details.
  */
 export const createInstance = (
-  options = {},
-  createPlatformServices = undefined,
-) => {
+  options: CreateInstanceOptions = {},
+  // Optional for callers, but createExecuteCommand calls it right away, so a
+  // missing value fails at runtime exactly as before. The cast keeps the
+  // `= undefined` default and the shorthand property in the emitted code.
+  createPlatformServices = undefined as unknown as CreatePlatformServices,
+): ExecuteCommand => {
   const eventOptionsValidator = objectOf({
     name: string().default("alloy"),
     monitors: arrayOf(objectOf({})).default([]),
   }).noUnknownFields();
 
-  const { name, monitors } = eventOptionsValidator(options);
+  // The validator returns `unknown`; the schema above guarantees this shape.
+  const { name, monitors } = eventOptionsValidator(options) as {
+    name: string;
+    monitors: AlloyMonitor[];
+  };
 
   return createCustomInstance(
     {

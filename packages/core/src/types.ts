@@ -10,8 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/**
- * @typedef {import("./core/types.js").AlloyMonitor} AlloyMonitor
- */
+export type { AlloyMonitor } from "./core/types.js";
 
 export const Types = {};

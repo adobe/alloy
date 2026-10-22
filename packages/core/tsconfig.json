@@ -3,6 +3,8 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
+    // ES2020 cannot express the `with { type: "json" }` import attribute.
+    "module": "ESNext",
     "strict": true,
     "erasableSyntaxOnly": true,
     "allowJs": true,
