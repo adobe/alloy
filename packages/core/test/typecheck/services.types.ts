@@ -107,7 +107,6 @@ const windowContext: WindowContext = {
 declare const globals: GlobalsService;
 expectTypeOf(globals.getInstanceQueue("alloy")).toEqualTypeOf<unknown[]>();
 expectTypeOf(globals.getWindowContext()).toEqualTypeOf<WindowContext>();
-expectTypeOf(windowContext).toExtend<WindowContext>();
 
 declare const cookieImpl: CookieService;
 declare const runtimeImpl: RuntimeService;
@@ -120,7 +119,6 @@ const services: PlatformServices = {
   legacy: legacyImpl,
   globals,
 };
-expectTypeOf(services).toExtend<PlatformServices>();
 
 const badServices: PlatformServices = {
   ...services,
@@ -128,4 +126,4 @@ const badServices: PlatformServices = {
   storage: storage,
 };
 
-export { badSameSite, badServices };
+export { badSameSite, badServices, windowContext };
