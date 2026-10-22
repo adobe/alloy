@@ -15,37 +15,26 @@ import type {
   Component,
   ComponentCommand,
   ComponentLifecycle,
+  ComponentRegistry,
+  LifecycleCallback,
   LifecycleHookName,
+  RegisteredCommand,
 } from "./types.js";
 
-export type LifecycleCallback = (...args: unknown[]) => unknown;
+export type { ComponentRegistry, LifecycleCallback, RegisteredCommand };
 
-/** A component command after registration. */
-export interface RegisteredCommand {
-  commandName: string;
-  documentationUri?: string;
-  optionsValidator?: (options: unknown) => unknown;
-  run: (options: unknown) => unknown;
-}
+/**
+ * Method syntax makes the parameters bivariant, so a command or hook typed
+ * for its own payload is accepted; the registry only passes payloads through.
+ */
+type ComponentCallback = { callback(...args: unknown[]): unknown }["callback"];
 
-export interface ComponentRegistry {
-  register: (namespace: string, component: Component) => void;
-  getCommand: (commandName: string) => RegisteredCommand | undefined;
-  getCommandNames: () => string[];
-  getLifecycleCallbacks: (hookName: LifecycleHookName) => LifecycleCallback[];
-  getComponentNames: () => string[];
-}
-
-const wrapForErrorHandling = (
-  fn: (...args: never[]) => unknown,
-  stackMessage: string,
-) => {
+const wrapForErrorHandling = (fn: ComponentCallback, stackMessage: string) => {
   return (...args: unknown[]) => {
     let result: unknown;
 
     try {
-      // Components type their own hook and command params; core passes them through.
-      result = (fn as LifecycleCallback)(...args);
+      result = fn(...args);
     } catch (error) {
       throw stackError({ error, message: stackMessage });
     }
@@ -112,7 +101,7 @@ export default (): ComponentRegistry => {
       lifecycleCallbacksByName[hookName].push(
         wrapForErrorHandling(
           // hookName is an own key, so the callback is defined.
-          componentLifecycleCallbacksByName[hookName] as LifecycleCallback,
+          componentLifecycleCallbacksByName[hookName]!,
           `[${namespace}] An error occurred while executing the ${hookName} lifecycle hook.`,
         ),
       );

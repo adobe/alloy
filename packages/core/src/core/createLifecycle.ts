@@ -11,12 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import type { ComponentRegistry } from "./createComponentRegistry.js";
-import type { LifecycleHookName } from "./types.js";
+import type { Lifecycle, LifecycleHookName } from "./types.js";
 
-export type Lifecycle = Record<
-  LifecycleHookName,
-  (...args: unknown[]) => Promise<unknown[]>
->;
+export type { Lifecycle };
 
 // TO-DOCUMENT: Lifecycle hooks and their params.
 const hookNames: LifecycleHookName[] = [

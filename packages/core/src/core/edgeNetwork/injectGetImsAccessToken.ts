@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import type { EdgeCredentials } from "./types.js";
+
 // Refresh this long before the real ~24h expiry (Adobe's own guidance is to
 // rotate at 23h), so a slow request never straddles the token's actual
 // expiration.
@@ -27,12 +29,7 @@ const EXPIRY_SAFETY_MARGIN_MILLIS = 5 * 60 * 1000;
  * every request would re-authenticate with IMS from scratch.
  *
  */
-export interface EdgeCredentials {
-  clientId: string;
-  clientSecret: string;
-  scopes: string[];
-  imsHost: string;
-}
+export type { EdgeCredentials };
 
 export interface InjectGetImsAccessTokenOptions {
   edgeCredentials: EdgeCredentials;

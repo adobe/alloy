@@ -13,7 +13,9 @@ governing permissions and limitations under the License.
 import { isNonEmptyArray } from "../utils/index.js";
 import type { RequestPayload } from "../utils/request/types.js";
 import type { CookieAttributes, CookieService } from "../services/types.js";
-import type { Response } from "./types.js";
+import type { CookieTransfer, CookieTransferState, Response } from "./types.js";
+
+export type { CookieTransfer, CookieTransferState };
 
 const STATE_STORE_HANDLE_TYPE = "state:store";
 
@@ -22,21 +24,6 @@ interface StateStoreItem {
   value: string;
   maxAge?: number;
   attrs?: { SameSite?: string };
-}
-
-export interface CookieTransferState {
-  domain: string;
-  cookiesEnabled: boolean;
-  entries?: { key: string; value: string }[];
-}
-
-export interface CookieTransfer {
-  cookiesToPayload: (
-    payload: Pick<RequestPayload, "mergeState">,
-    endpointDomain: string,
-    extraCookieNames?: string[],
-  ) => void;
-  responseToCookies: (response: Pick<Response, "getPayloadsByType">) => void;
 }
 
 export interface CreateCookieTransferOptions {

@@ -11,24 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import type { ObjectValidator } from "../utils/validation/types.js";
-import type { ComponentCreator, Logger, OnBeforeEventSend } from "./types.js";
-import type { Override } from "../utils/request/createRequestParams.js";
-import type { EdgeCredentials } from "./edgeNetwork/injectGetImsAccessToken.js";
+import type { ComponentCreator, Config, Logger } from "./types.js";
 
-/** The computed configuration. */
-export interface Config {
-  debugEnabled: boolean;
-  datastreamId: string;
-  edgeDomain: string;
-  edgeBasePath: string;
-  orgId: string;
-  onBeforeEventSend: OnBeforeEventSend;
-  edgeConfigOverrides?: Override;
-  edgeCredentials?: EdgeCredentials;
-  /** Personalization option; core reads it to decide which cookies to transfer. */
-  targetMigrationEnabled?: boolean;
-  [key: string]: unknown;
-}
+export type { Config };
 
 export interface BuildAndValidateConfigOptions {
   /** The user's configure options. */

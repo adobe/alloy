@@ -13,13 +13,13 @@ governing permissions and limitations under the License.
 import { stackError } from "../utils/index.js";
 import type { ComponentRegistry } from "./createComponentRegistry.js";
 import type { Lifecycle } from "./createLifecycle.js";
-import type { Component, ComponentCreator } from "./types.js";
+import type { Component, ComponentCreator, ComponentTools } from "./types.js";
 
 export interface InitializeComponentsOptions {
   componentCreators: ComponentCreator[];
   lifecycle: Lifecycle;
   componentRegistry: ComponentRegistry;
-  getImmediatelyAvailableTools: (componentName: string) => unknown;
+  getImmediatelyAvailableTools: (componentName: string) => ComponentTools;
 }
 
 export default ({
@@ -34,8 +34,7 @@ export default ({
     const tools = getImmediatelyAvailableTools(namespace);
     let component: Component;
     try {
-      // Each component types its own tools.
-      component = createComponent(tools as never);
+      component = createComponent(tools);
     } catch (error) {
       throw stackError({
         error,

@@ -20,4 +20,11 @@ export type EdgeRequestExecutor = (options: {
   runOnRequestFailureCallbacks?: Callback<[{ error: unknown }]>;
 }) => Promise<Record<string, unknown>>;
 
+export interface EdgeCredentials {
+  clientId: string;
+  clientSecret: string;
+  scopes: string[];
+  imsHost: string;
+}
+
 export const Types = {};

@@ -11,9 +11,9 @@ governing permissions and limitations under the License.
 */
 import { isEmptyObject } from "../index.js";
 
-import type { RequestPayload } from "./types.js";
+import type { Override, RequestPayload } from "./types.js";
 
-export type Override = { datastreamId?: string; [k: string]: unknown };
+export type { Override };
 
 export default <
   P extends Pick<

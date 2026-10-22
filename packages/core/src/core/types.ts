@@ -10,12 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import type { PlatformServices } from "../services/index.js";
 import type { NetworkResponse } from "../services/types.js";
 import type {
   Event as BaseEvent,
   Logger as BaseLogger,
 } from "../utils/types.js";
+import type { Override, RequestPayload } from "../utils/request/types.js";
 import type { ObjectValidator } from "../utils/validation/types.js";
+import type { ConsentManager } from "./consent/types.js";
+import type {
+  EdgeCredentials,
+  EdgeRequestExecutor,
+} from "./edgeNetwork/types.js";
+import type { IdentityManager } from "./identity/types.js";
 
 /** Console methods the logger writes to. */
 export type LogLevel = "info" | "warn" | "error";
@@ -236,33 +244,131 @@ export type LifecycleHookName =
   | "onDecision";
 
 /**
- * Each hook takes one payload object whose shape depends on the hook. The
- * `never` parameter accepts a hook with any payload type.
+ * A callback declared with method syntax, so TypeScript checks its parameter
+ * bivariantly: a hook or command typed for its own payload still fits the
+ * registry, which passes payloads through without reading them.
  */
+type Bivariant<TArgs extends unknown[], TResult> = {
+  callback(...args: TArgs): TResult;
+}["callback"];
+
+/** A lifecycle hook; each hook takes one payload object. */
+export type LifecycleHook<TPayload = unknown> = Bivariant<[TPayload], unknown>;
+
 export type ComponentLifecycle = Partial<
-  Record<LifecycleHookName, (payload: never) => unknown>
+  Record<LifecycleHookName, LifecycleHook>
 >;
 
-export interface ComponentCommand {
+/**
+ * `TOptions` is what the user passes; `TValidated` is what `optionsValidator`
+ * returns and `run` receives.
+ */
+export interface ComponentCommand<TOptions = unknown, TValidated = TOptions> {
   /** Set by the component registry when the command is registered. */
   commandName?: string;
   documentationUri?: string;
   /** Takes the user's options and returns the validated options. */
-  optionsValidator?: (options: never) => unknown;
+  optionsValidator?: Bivariant<[TOptions], TValidated>;
   /** Takes the validated options. */
-  run: (options: never) => unknown;
+  run: Bivariant<[TValidated], unknown>;
 }
 
 /** What a component creator returns. */
-export interface Component {
-  lifecycle?: ComponentLifecycle;
-  commands?: Record<string, ComponentCommand>;
+export interface Component<
+  TCommands extends Record<string, ComponentCommand> = Record<
+    string,
+    ComponentCommand
+  >,
+  TLifecycle extends ComponentLifecycle = ComponentLifecycle,
+> {
+  lifecycle?: TLifecycle;
+  commands?: TCommands;
 }
 
-/** A component factory, with its static `namespace` and config validators. */
-export interface ComponentCreator {
-  /** `tools` are the per-component helpers core injects. */
-  (tools: never): Component;
+export type Lifecycle = Record<
+  LifecycleHookName,
+  (...args: unknown[]) => Promise<unknown[]>
+>;
+
+export type LifecycleCallback = (...args: unknown[]) => unknown;
+
+/** A component command after registration. */
+export interface RegisteredCommand {
+  commandName: string;
+  documentationUri?: string;
+  optionsValidator?: (options: unknown) => unknown;
+  run: (options: unknown) => unknown;
+}
+
+export interface ComponentRegistry {
+  register: (namespace: string, component: Component) => void;
+  getCommand: (commandName: string) => RegisteredCommand | undefined;
+  getCommandNames: () => string[];
+  getLifecycleCallbacks: (hookName: LifecycleHookName) => LifecycleCallback[];
+  getComponentNames: () => string[];
+}
+
+/** The computed configuration. */
+export interface Config {
+  debugEnabled: boolean;
+  datastreamId: string;
+  edgeDomain: string;
+  edgeBasePath: string;
+  orgId: string;
+  onBeforeEventSend: OnBeforeEventSend;
+  edgeConfigOverrides?: Override;
+  edgeCredentials?: EdgeCredentials;
+  /** Personalization option; core reads it to decide which cookies to transfer. */
+  targetMigrationEnabled?: boolean;
+  [key: string]: unknown;
+}
+
+export interface CookieTransferState {
+  domain: string;
+  cookiesEnabled: boolean;
+  entries?: { key: string; value: string }[];
+}
+
+export interface CookieTransfer {
+  cookiesToPayload: (
+    payload: Pick<RequestPayload, "mergeState">,
+    endpointDomain: string,
+    extraCookieNames?: string[],
+  ) => void;
+  responseToCookies: (response: Pick<Response, "getPayloadsByType">) => void;
+}
+
+/** The per-component helpers core injects into every component creator. */
+export interface ComponentTools {
+  loggingCookieJar: PlatformServices["cookie"];
+  instanceName: string;
+  config: Config;
+  componentRegistry: ComponentRegistry;
+  consent: ConsentManager;
+  identity: IdentityManager;
+  eventManager: EventManager;
+  fireReferrerHideableImage: PlatformServices["globals"]["fireReferrerHideableImage"];
+  /** Prefixed with the component's namespace. */
+  logger: Logger;
+  lifecycle: Lifecycle;
+  sendEdgeNetworkRequest: EdgeRequestExecutor;
+  handleError: (error: unknown, operation: string) => Record<string, never>;
+  apexDomain: string;
+  getBrowser: () => string;
+  cookieTransfer: CookieTransfer;
+  createResponse: ResponseCreator;
+  platformServices: PlatformServices;
+}
+
+/**
+ * A component factory, with its static `namespace` and config validators.
+ * A creator may declare any subset of `ComponentTools` as `TTools`.
+ */
+export interface ComponentCreator<
+  TTools = ComponentTools,
+  TComponent extends Component = Component,
+> {
+  (tools: TTools): TComponent;
   namespace: string;
   configValidators?: ObjectValidator;
   buildOnInstanceConfiguredExtraParams?: (options: {

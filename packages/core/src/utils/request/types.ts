@@ -75,4 +75,6 @@ export interface DataCollectionRequestPayload extends RequestPayload {
   getDocumentMayUnload: () => boolean;
 }
 
+export type Override = { datastreamId?: string; [k: string]: unknown };
+
 export const Types = {};
