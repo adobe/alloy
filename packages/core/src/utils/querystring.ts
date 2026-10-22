@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 // Kept in the emitted .d.ts so consumers get the ambient module types.
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference -- no import form preserves an ambient .d.ts
-/// <reference path="./reactorQueryString.d.ts" preserve="true" />
+/// <reference path="./reactorQueryString.ts" preserve="true" />
 import queryString from "@adobe/reactor-query-string";
 
 export default queryString;

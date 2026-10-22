@@ -48,6 +48,7 @@
     },
     "./*": {
       "alloy-source": "./src/*",
+      "types": "./dist/*.d.ts",
       "default": "./dist/*"
     }
   },
@@ -62,7 +63,7 @@
     "clean": "rimraf dist",
     "build": "pnpm run clean && tsc -p tsconfig.json",
     "prepack": "pnpm run build",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p test/typecheck/tsconfig.json"
   },
   "dependencies": {
     "@adobe/aep-rules-engine": "^3.1.3",
