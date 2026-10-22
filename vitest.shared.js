@@ -9,13 +9,19 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 /**
- * Clamps a value between a minimum and maximum value.
- * @param {number} value - The value to clamp.
- * @param {number} min - The minimum value.
- * @param {number} max - The maximum value.
- * @returns {number} The clamped value.
+ * Makes Vite resolve `@adobe/alloy-core` to its source (the `alloy-source` export
+ * condition) instead of its build output, so core never has to be built first.
+ * The remaining conditions are Vite's defaults.
  */
-export default (value, min, max) => {
-  return Math.max(min, Math.min(value, max));
+export const sourceConditionResolve = {
+  resolve: {
+    conditions: ["alloy-source", "module", "browser", "development|production"],
+  },
+  ssr: {
+    resolve: {
+      conditions: ["alloy-source", "module", "node", "development|production"],
+    },
+  },
 };

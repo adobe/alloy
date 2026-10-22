@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 // eslint-disable-next-line import/no-unresolved
 import { defineProject } from "vitest/config";
+import { sourceConditionResolve } from "../../vitest.shared.js";
 // eslint-disable-next-line import/no-unresolved
 import { playwright } from "@vitest/browser-playwright";
 
@@ -28,11 +29,10 @@ const packageCoverage = {
 export const coreTestProjects = [
   defineProject({
     extends: false,
+    ...sourceConditionResolve,
     test: {
       name: "core/unit",
-      include: [
-        "packages/core/test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)",
-      ],
+      include: ["packages/core/test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
       isolate: false,
       browser: {
         provider: playwright(),

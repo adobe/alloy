@@ -19,7 +19,9 @@ import { fileURLToPath } from "url";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(dirname, "../");
-const buildCmd = "node packages/browser/scripts/alloyBuilder.js build";
+// Run against @adobe/alloy-core's source; see registerTsFromJsHook.js.
+const buildCmd =
+  "node --conditions=alloy-source --import ./scripts/helpers/registerTsFromJsHook.js packages/browser/scripts/alloyBuilder.js build";
 
 /**
  * Run a custom alloy build and return the bundle source.

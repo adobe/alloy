@@ -1,0 +1,16 @@
+{
+  "extends": "../../jsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "strict": true,
+    "erasableSyntaxOnly": true,
+    "allowJs": true,
+    // Unconverted JavaScript is type-checked once it is converted to TypeScript.
+    "checkJs": false,
+    "declaration": true,
+    "verbatimModuleSyntax": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "distTest"]
+}
