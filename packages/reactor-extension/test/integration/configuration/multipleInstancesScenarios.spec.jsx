@@ -50,6 +50,26 @@ describe("Config Multiple Instances", () => {
     cleanup();
   });
 
+  it("keeps accordion and section headings larger than field labels", async () => {
+    await driver.init(buildSettings());
+
+    const accordion = view
+      .getByRole("button", { name: "SDK instances" })
+      .element();
+    const section = view
+      .getByRole("heading", { name: "Datastreams", level: 4 })
+      .element();
+    const label = view
+      .getByTestId("nameField")
+      .element()
+      .querySelector("label");
+    const fontSize = (element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize);
+
+    expect(fontSize(section)).toBeGreaterThan(fontSize(label));
+    expect(fontSize(accordion)).toBeGreaterThan(fontSize(section));
+  });
+
   it("keeps the header full-width behind the independent add action", async () => {
     await driver.init(buildSettings());
 
@@ -70,6 +90,10 @@ describe("Config Multiple Instances", () => {
     expect(addBounds.right).toBeLessThan(triggerBounds.right);
     expect(addBounds.top).toBeGreaterThan(triggerBounds.top);
     expect(addBounds.bottom).toBeLessThan(triggerBounds.bottom);
+    expect(addBounds.top + addBounds.height / 2).toBeCloseTo(
+      triggerBounds.top + triggerBounds.height / 2,
+      1,
+    );
 
     await trigger.click();
     await expect.element(trigger).toHaveAttribute("aria-expanded", "false");
@@ -79,6 +103,29 @@ describe("Config Multiple Instances", () => {
     await expect
       .element(view.getByRole("tab", { name: "alloy2" }))
       .toHaveAttribute("aria-selected", "true");
+  });
+
+  it("keeps the larger header aligned at a narrow width", async () => {
+    await driver.init(buildSettings());
+
+    const disclosure = view.getByTestId("instancesHeading").element();
+    const trigger = view
+      .getByRole("button", { name: "SDK instances" })
+      .element();
+    const originalHeight = trigger.getBoundingClientRect().height;
+
+    disclosure.style.width = "320px";
+    const headerBounds = trigger.getBoundingClientRect();
+    const addBounds = view
+      .getByTestId("addInstanceButton")
+      .element()
+      .getBoundingClientRect();
+
+    expect(headerBounds.height).toBeCloseTo(originalHeight, 1);
+    expect(addBounds.top + addBounds.height / 2).toBeCloseTo(
+      headerBounds.top + headerBounds.height / 2,
+      1,
+    );
   });
 
   it("prevents creating two instances with the same name", async () => {

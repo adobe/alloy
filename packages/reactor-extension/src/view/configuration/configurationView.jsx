@@ -251,7 +251,7 @@ const InstancesSection = ({
           >
             <DisclosureHeader>
               <DisclosureTitle>
-                <span className={style({ paddingY: 8, paddingEnd: size(144) })}>
+                <span className={style({ paddingEnd: size(128) })}>
                   SDK instances
                 </span>
               </DisclosureTitle>
@@ -479,6 +479,7 @@ const Configuration = ({ initInfo, context }) => {
       })}
     >
       <Accordion
+        size="XL"
         expandedKeys={expandedKeys}
         onExpandedChange={setExpandedKeys}
         allowsMultipleExpanded

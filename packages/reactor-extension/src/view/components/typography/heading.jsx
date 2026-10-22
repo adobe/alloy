@@ -35,8 +35,8 @@ const FONT_STYLES = {
   XL: style({ font: "heading-xl" }),
   L: style({ font: "heading-lg" }),
   M: style({ font: "heading" }),
-  S: style({ font: "heading-sm" }),
-  XS: style({ font: "heading-xs", marginTop: 0 }),
+  S: style({ font: "heading-xs" }),
+  XS: style({ font: "ui", fontWeight: "bold", marginTop: 0 }),
   XXS: style({ font: "heading-2xs" }),
 };
 

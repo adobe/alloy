@@ -21,6 +21,22 @@ describe("Heading spacing", () => {
     view?.unmount();
   });
 
+  it.each([
+    ["S", 4, "18px", "800"],
+    ["XS", 5, "14px", "700"],
+  ])(
+    "uses native typography tokens for size %s",
+    async (size, level, fontSize, fontWeight) => {
+      view = await renderView(() => (
+        <Heading size={size}>Section heading</Heading>
+      ));
+
+      await expect
+        .element(view.getByRole("heading", { level }))
+        .toHaveStyle({ "font-size": fontSize, "font-weight": fontWeight });
+    },
+  );
+
   it("leaves h5 top spacing to the surrounding layout", async () => {
     view = await renderView(() => (
       <Heading size="XS" marginBottom="size-10">
