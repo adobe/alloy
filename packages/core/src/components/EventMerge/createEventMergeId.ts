@@ -12,7 +12,11 @@ governing permissions and limitations under the License.
 
 import uuid from "../../utils/uuid.js";
 
-export default () => {
+export interface EventMergeIdResult {
+  eventMergeId: string;
+}
+
+export default (): EventMergeIdResult => {
   return {
     eventMergeId: uuid(),
   };

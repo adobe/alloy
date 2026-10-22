@@ -12,8 +12,9 @@ governing permissions and limitations under the License.
 
 import createEventMergeId from "./createEventMergeId.js";
 import createComponent from "./createComponent.js";
+import type { ComponentCreator } from "../../core/types.js";
 
-const createEventMerge = () => {
+const createEventMerge: ComponentCreator = () => {
   return createComponent({ createEventMergeId });
 };
 

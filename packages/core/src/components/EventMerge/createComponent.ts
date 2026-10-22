@@ -10,7 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ createEventMergeId }) => {
+import type { Component, ComponentCommand } from "../../core/types.js";
+import type { EventMergeIdResult } from "./createEventMergeId.js";
+
+export interface CreateComponentOptions {
+  createEventMergeId: () => EventMergeIdResult;
+}
+
+export default ({
+  createEventMergeId,
+}: CreateComponentOptions): Component<{
+  createEventMergeId: ComponentCommand<unknown>;
+}> => {
   return {
     commands: {
       createEventMergeId: {
