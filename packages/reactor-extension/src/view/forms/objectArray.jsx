@@ -38,6 +38,9 @@ const lowerInitialLetters = (s) => {
 // values come from the S1->S2 dimension token migration table.
 const WELL_STYLE = style({
   display: "block",
+  width: "fit",
+  maxWidth: "full",
+  boxSizing: "border-box",
   textAlign: "start",
   minWidth: 160,
   padding: 16,
