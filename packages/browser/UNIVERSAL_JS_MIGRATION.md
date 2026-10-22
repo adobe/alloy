@@ -54,7 +54,7 @@ Out of scope:
 
 ### 1) Core is not import-safe outside the browser
 
-~~Running `node -e "import('./packages/core/src/index.js')"` fails with `ReferenceError: window is not defined`.~~ **✅ Fixed** — all module-scope `window` references removed. `injectStorage(globalThis)` is used as a stopgap; storage gracefully no-ops in Node.js since `globalThis.localStorage` is undefined (caught by existing try/catch). Core is now import-safe; full execute-safety requires the async storage migration (PR 4b).
+~~Running `node -e "import('./packages/core/src/index.ts')"` fails with `ReferenceError: window is not defined`.~~ **✅ Fixed** — all module-scope `window` references removed. `injectStorage(globalThis)` is used as a stopgap; storage gracefully no-ops in Node.js since `globalThis.localStorage` is undefined (caught by existing try/catch). Core is now import-safe; full execute-safety requires the async storage migration (PR 4b).
 
 ### 2) Browser globals are widely referenced in core
 
@@ -62,7 +62,7 @@ Beyond `window` and `document`, core reaches for many browser-specific APIs dire
 
 - **Timers**: `setTimeout`, `clearTimeout` in BrandConcierge, StreamingMedia, Advertising, and DOM utilities.
 - **Network & Parsing**: `URL`, `URLSearchParams`, `TextDecoder`, `TextEncoder`, `Blob` used directly.
-- **Crypto & Encoding**: `atob` and `btoa` in `packages/core/src/utils/bytes.js`.
+- **Crypto & Encoding**: `atob` and `btoa` in `packages/core/src/utils/bytes.ts`.
 - **DOM capabilities**: `MutationObserver`, `requestAnimationFrame`, `DOMParser` in Personalization and DOM utilities.
 - **Console**: `const { console } = window` at module scope in both entry points.
 
@@ -75,7 +75,7 @@ Beyond `window` and `document`, core reaches for many browser-specific APIs dire
 - `packages/browser/src/index.js` re-exports `createInstance`/`createCustomInstance` from `@adobe/alloy-core`.
 - `packages/browser/src/standalone.js` references core component creators and the `initializeStandalone` function.
 - `packages/browser/scripts/alloyBuilder.js` reads `@adobe/alloy-core/componentMetadata.js`.
-- The Babel plugin (`entryPointGeneratorBabelPlugin.js`) rewrites `initializeStandalone()` calls expecting all components from `core/componentCreators.js`. Once browser-only components move out, the plugin's import source and filtering logic must change.
+- The Babel plugin (`entryPointGeneratorBabelPlugin.js`) rewrites `initializeStandalone()` calls expecting all components from `core/componentCreators.ts`. Once browser-only components move out, the plugin's import source and filtering logic must change.
 
 ### 5) Portability checks are missing from default test coverage
 
@@ -83,12 +83,12 @@ Today's unit tests run in a browser runtime (Playwright, via `vitest.config.js`)
 
 ### 6) Storage is fully synchronous; cookies depend on js-cookie
 
-`injectStorage.js` wraps `window.localStorage`/`sessionStorage` with synchronous `getItem`/`setItem`. Multiple core subsystems assume sync storage:
+`injectStorage.ts` wraps `window.localStorage`/`sessionStorage` with synchronous `getItem`/`setItem`. Multiple core subsystems assume sync storage:
 
-- `createLogController.js:27` — `storage.session.getItem("debug")`
-- `createGetAssuranceValidationTokenParams.js:20` — `storage.persistent.getItem(CLIENT_ID)`
-- `createConsentHashStore.js:38` — `storage.getItem(key)` in synchronous `isNew()`
-- `RulesEngine/index.js` — `eventRegistry.setStorage(storage.persistent)` after consent
+- `createLogController.ts:27` — `storage.session.getItem("debug")`
+- `createGetAssuranceValidationTokenParams.ts:20` — `storage.persistent.getItem(CLIENT_ID)`
+- `createConsentHashStore.ts:38` — `storage.getItem(key)` in synchronous `isNew()`
+- `RulesEngine/index.ts` — `eventRegistry.setStorage(storage.persistent)` after consent
 
 Additionally, `cookieJar.js` wraps `js-cookie`, which reads `document.cookie` directly. The `js-cookie` dependency must move from `packages/core/package.json` to `packages/browser/package.json`, replaced in core by the injected CookieService.
 
@@ -130,7 +130,7 @@ graph TD
     end
 
     subgraph Core Package ["@adobe/alloy-core"]
-        coreInit[core/src/index.js & core/src/core/index.js]
+        coreInit[core/src/index.ts & core/src/core/index.ts]
         coreComponents[Core Components]
         coreLogic[Core Business Logic]
 
@@ -147,7 +147,7 @@ graph TD
 Both `createInstance` and `createCustomInstance` will accept a `platformServices` object as a second parameter. The browser package instantiates concrete services and passes them in.
 
 ```javascript
-// packages/core/src/index.js
+// packages/core/src/index.ts
 export const createCustomInstance = (options, platformServices = {}) => { ... }
 export const createInstance = (options, platformServices = {}) => { ... }
 ```
@@ -176,7 +176,7 @@ The Context component collects environment-specific information (device resoluti
 **Decision:** Move the entire Context component to browser ownership.
 
 - Move `packages/core/src/components/Context/` to `packages/browser/src/components/BrowserContext/`.
-- Remove Context from `packages/core/src/core/requiredComponentCreators.js`.
+- Remove Context from `packages/core/src/core/requiredComponentCreators.ts`.
 - Inject BrowserContext dynamically from the browser wrapper via the components array.
 - Platform wrappers (like a future Node SDK) will provide their own context component.
 
@@ -202,8 +202,8 @@ The core SDK relies on making HTTP requests and optimizing delivery with platfor
 
 **Evidence:**
 
-- `packages/core/src/core/index.js:62` — `const { fetch, navigator } = window;` destructured and injected into `injectSendFetchRequest` and `injectSendBeaconRequest`.
-- `packages/core/src/components/BrandConcierge/index.js:35` — `const { fetch } = window;`
+- `packages/core/src/core/index.ts:62` — `const { fetch, navigator } = window;` destructured and injected into `injectSendFetchRequest` and `injectSendBeaconRequest`.
+- `packages/core/src/components/BrandConcierge/index.ts:35` — `const { fetch } = window;`
 - `packages/core/src/components/ActivityCollector/utils/trimQueryFromUrl.js` — direct `new URL()`.
 - `packages/core/src/components/Advertising/identities/collectSurferId.js` — `new URLSearchParams()`.
 
@@ -223,17 +223,17 @@ The SDK caches data across sessions and page views. `localStorage`/`sessionStora
 
 | Caller                                          | Current pattern                                   | Required change                                                              |
 | ----------------------------------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `createLogController.js:27`                     | `storage.session.getItem("debug")` sync read      | `await` or queue logs until resolved                                         |
-| `createGetAssuranceValidationTokenParams.js:20` | `storage.persistent.getItem(CLIENT_ID)` sync read | Async getter                                                                 |
-| `createConsentHashStore.js:38-42`               | `storage.getItem(key)` in sync `isNew()`          | `isNew()` returns `Promise<boolean>`                                         |
-| `RulesEngine/index.js:83`                       | `eventRegistry.setStorage(storage.persistent)`    | Already gated behind `await consent`; storage ops within registry must await |
+| `createLogController.ts:27`                     | `storage.session.getItem("debug")` sync read      | `await` or queue logs until resolved                                         |
+| `createGetAssuranceValidationTokenParams.ts:20` | `storage.persistent.getItem(CLIENT_ID)` sync read | Async getter                                                                 |
+| `createConsentHashStore.ts:38-42`               | `storage.getItem(key)` in sync `isNew()`          | `isNew()` returns `Promise<boolean>`                                         |
+| `RulesEngine/index.ts:83`                       | `eventRegistry.setStorage(storage.persistent)`    | Already gated behind `await consent`; storage ops within registry must await |
 
 **Note:** The browser adapter wraps sync `localStorage`/`sessionStorage` in Promise.resolve() for compatibility. Behavior remains synchronous in practice for browsers.
 
 **Evidence:**
 
-- `packages/core/src/utils/injectStorage.js` — wraps `window.localStorage`/`sessionStorage` with try-catch for Safari.
-- `packages/core/src/utils/indexedDb.js` — already async (Promise-based).
+- `packages/core/src/utils/injectStorage.ts` — wraps `window.localStorage`/`sessionStorage` with try-catch for Safari.
+- `packages/core/src/utils/indexedDb.ts` — already async (Promise-based).
 
 ### 4. CookieService
 
@@ -251,8 +251,8 @@ Identity and consent depend on cookie manipulation. Non-browser environments may
 **Evidence:**
 
 - `packages/core/src/utils/cookieJar.js` — wraps js-cookie.
-- `packages/core/src/core/createCookieTransfer.js` — cookie transfer logic.
-- `packages/core/src/utils/injectDoesIdentityCookieExist.js` — cookie existence check.
+- `packages/core/src/core/createCookieTransfer.ts` — cookie transfer logic.
+- `packages/core/src/utils/injectDoesIdentityCookieExist.ts` — cookie existence check.
 - Apex-domain probing behavior in `getApexDomain` must be preserved in the browser adapter.
 
 ### 5. LegacyBrowserService
@@ -286,12 +286,12 @@ These are available in Node 18+, modern Edge Workers, and all browsers. The brow
 
 **Evidence:**
 
-- `packages/core/src/utils/bytes.js` — `atob`, `btoa`.
-- `packages/core/src/components/BrandConcierge/createTimeoutWrapper.js` — `setTimeout`, `clearTimeout`.
-- `packages/core/src/components/BrandConcierge/createStreamParser.js` — `TextDecoder`.
-- `packages/core/src/utils/fnv1a32Hex.js` — `TextEncoder`.
-- `packages/core/src/utils/createDecodeKndctrCookie.js` — `TextDecoder`.
-- `packages/core/src/components/StreamingMedia/createTrackMediaEvent.js` — `setTimeout`, `clearTimeout`.
+- `packages/core/src/utils/bytes.ts` — `atob`, `btoa`.
+- `packages/core/src/components/BrandConcierge/createTimeoutWrapper.ts` — `setTimeout`, `clearTimeout`.
+- `packages/core/src/components/BrandConcierge/createStreamParser.ts` — `TextDecoder`.
+- `packages/core/src/utils/fnv1a32Hex.ts` — `TextEncoder`.
+- `packages/core/src/utils/createDecodeKndctrCookie.ts` — `TextDecoder`.
+- `packages/core/src/components/StreamingMedia/createTrackMediaEvent.ts` — `setTimeout`, `clearTimeout`.
 
 ### 7. GlobalsService
 
@@ -308,14 +308,14 @@ In the browser adapter, these read from `window`. In non-browser environments, t
 
 **Evidence:**
 
-- `packages/core/src/core/index.js:219-239` — `window.__alloyNS`, `window[instanceName]`.
+- `packages/core/src/core/index.ts:219-239` — `window.__alloyNS`, `window[instanceName]`.
 - `packages/core/src/core/getMonitors.js` — `window.__alloyMonitors`.
 - `packages/core/src/components/Advertising/identities/collectRampId.js` — `window.ats`.
 - `packages/core/src/components/Advertising/identities/collectID5Id.js` — `window.ID5`.
 
 ### 8. Platform APIs Policy
 
-The `uuid` package (used in `packages/core/src/utils/uuid.js`) is already runtime-agnostic and remains a direct dependency.
+The `uuid` package (used in `packages/core/src/utils/uuid.ts`) is already runtime-agnostic and remains a direct dependency.
 
 `Date.now()` and `Math.random()` are universal and do not require abstraction.
 
@@ -353,9 +353,9 @@ The `uuid` package (used in `packages/core/src/utils/uuid.js`) is already runtim
 
 - `packages/core/src/core/network/requestMethods/injectSendFetchRequest.js`
 - `packages/core/src/core/network/requestMethods/injectSendBeaconRequest.js`
-- `packages/core/src/core/index.js`
-- `packages/core/src/components/BrandConcierge/index.js`
-- `packages/core/src/components/BrandConcierge/createSendConversationServiceRequest.js`
+- `packages/core/src/core/index.ts`
+- `packages/core/src/components/BrandConcierge/index.ts`
+- `packages/core/src/components/BrandConcierge/createSendConversationServiceRequest.ts`
 - `packages/core/src/components/ActivityCollector/utils/trimQueryFromUrl.js` (`URL`)
 - `packages/core/src/components/Advertising/identities/collectSurferId.js` (`URLSearchParams`)
 
@@ -369,12 +369,12 @@ The `uuid` package (used in `packages/core/src/utils/uuid.js`) is already runtim
 
 **Files:**
 
-- `packages/core/src/utils/injectStorage.js`
-- `packages/core/src/utils/indexedDb.js`
-- `packages/core/src/utils/request/createGetAssuranceValidationTokenParams.js`
-- `packages/core/src/core/createLogController.js`
-- `packages/core/src/components/Consent/createConsentHashStore.js`
-- `packages/core/src/components/RulesEngine/index.js`
+- `packages/core/src/utils/injectStorage.ts`
+- `packages/core/src/utils/indexedDb.ts`
+- `packages/core/src/utils/request/createGetAssuranceValidationTokenParams.ts`
+- `packages/core/src/core/createLogController.ts`
+- `packages/core/src/components/Consent/createConsentHashStore.ts`
+- `packages/core/src/components/RulesEngine/index.ts`
 
 **Notes:**
 
@@ -389,13 +389,13 @@ The `uuid` package (used in `packages/core/src/utils/uuid.js`) is already runtim
 **Files:**
 
 - `packages/core/src/utils/cookieJar.js`
-- `packages/core/src/utils/injectDoesIdentityCookieExist.js`
-- `packages/core/src/core/createCookieTransfer.js`
-- `packages/core/src/core/index.js`
-- `packages/core/src/components/Identity/index.js`
-- `packages/core/src/components/Consent/index.js`
-- `packages/core/src/components/Audiences/index.js`
-- `packages/core/src/components/BrandConcierge/index.js`
+- `packages/core/src/utils/injectDoesIdentityCookieExist.ts`
+- `packages/core/src/core/createCookieTransfer.ts`
+- `packages/core/src/core/index.ts`
+- `packages/core/src/components/Identity/index.ts`
+- `packages/core/src/components/Consent/index.ts`
+- `packages/core/src/components/Audiences/index.ts`
+- `packages/core/src/components/BrandConcierge/index.ts`
 - `packages/core/src/components/Advertising/utils/advertisingCookieManager.js`
 
 **Notes:**
@@ -412,10 +412,10 @@ The `uuid` package (used in `packages/core/src/utils/uuid.js`) is already runtim
 - `packages/core/src/components/Personalization/index.js` (entire subtree)
 - `packages/core/src/components/Personalization/in-app-message-actions/actions/displayIframeContent.js` (`DOMParser`)
 - `packages/core/src/components/ActivityCollector/attachClickActivityCollector.js`
-- `packages/core/src/utils/dom/loadScript.js`
-- `packages/core/src/utils/injectFireReferrerHideableImage.js`
-- `packages/core/src/utils/fireImage.js`
-- `packages/core/src/utils/dom/awaitSelector.js` (`MutationObserver`, `requestAnimationFrame`)
+- `packages/core/src/utils/dom/loadScript.ts`
+- `packages/core/src/utils/dom/injectFireReferrerHideableImage.ts`
+- `packages/core/src/utils/dom/fireImage.ts`
+- `packages/core/src/utils/dom/awaitSelector.ts` (`MutationObserver`, `requestAnimationFrame`)
 - `packages/core/src/components/Advertising/identities/collectSurferId.js`
 
 **Notes:**
@@ -432,9 +432,9 @@ The `uuid` package (used in `packages/core/src/utils/uuid.js`) is already runtim
 - `packages/core/src/components/Context/injectWeb.js` (`window.location.href`, `window.document.referrer`)
 - `packages/core/src/components/Context/injectDevice.js` (`window.screen`, `window.matchMedia`)
 - `packages/core/src/components/Context/injectEnvironment.js` (`window.document.documentElement.clientWidth/Height`)
-- `packages/core/src/components/RulesEngine/createContextProvider.js` (`window.title`, `window.url`, `window.referrer`, viewport, scroll)
-- `packages/core/src/components/Audiences/index.js` (`window.location.protocol`)
-- `packages/core/src/components/BrandConcierge/index.js` (`window.location.search`)
+- `packages/core/src/components/RulesEngine/createContextProvider.ts` (`window.title`, `window.url`, `window.referrer`, viewport, scroll)
+- `packages/core/src/components/Audiences/index.ts` (`window.location.protocol`)
+- `packages/core/src/components/BrandConcierge/index.ts` (`window.location.search`)
 
 **Notes:**
 
@@ -447,7 +447,7 @@ The `uuid` package (used in `packages/core/src/utils/uuid.js`) is already runtim
 **Files:**
 
 - `packages/core/src/core/getMonitors.js`
-- `packages/core/src/core/index.js`
+- `packages/core/src/core/index.ts`
 - `packages/browser/src/baseCode/index.js`
 - `packages/browser/src/standalone.js`
 - `packages/core/src/components/Identity/visitorService/getVisitor.js` (`window.Visitor`)
@@ -477,12 +477,12 @@ The `uuid` package (used in `packages/core/src/utils/uuid.js`) is already runtim
 
 **Files:**
 
-- `packages/core/src/utils/bytes.js` (`atob`, `btoa`)
-- `packages/core/src/components/BrandConcierge/createTimeoutWrapper.js` (`setTimeout`, `clearTimeout`)
-- `packages/core/src/components/BrandConcierge/createStreamParser.js` (`TextDecoder`)
-- `packages/core/src/utils/fnv1a32Hex.js` (`TextEncoder`)
-- `packages/core/src/utils/createDecodeKndctrCookie.js` (`TextDecoder`)
-- `packages/core/src/components/StreamingMedia/createTrackMediaEvent.js` (`setTimeout`, `clearTimeout`)
+- `packages/core/src/utils/bytes.ts` (`atob`, `btoa`)
+- `packages/core/src/components/BrandConcierge/createTimeoutWrapper.ts` (`setTimeout`, `clearTimeout`)
+- `packages/core/src/components/BrandConcierge/createStreamParser.ts` (`TextDecoder`)
+- `packages/core/src/utils/fnv1a32Hex.ts` (`TextEncoder`)
+- `packages/core/src/utils/createDecodeKndctrCookie.ts` (`TextDecoder`)
+- `packages/core/src/components/StreamingMedia/createTrackMediaEvent.ts` (`setTimeout`, `clearTimeout`)
 
 **Notes:**
 
@@ -495,8 +495,8 @@ The `uuid` package (used in `packages/core/src/utils/uuid.js`) is already runtim
 
 - `packages/browser/scripts/alloyBuilder.js`
 - `packages/browser/scripts/helpers/entryPointGeneratorBabelPlugin.js`
-- `packages/core/src/componentMetadata.js`
-- `packages/core/src/core/componentCreators.js`
+- `packages/core/src/componentMetadata.ts`
+- `packages/core/src/core/componentCreators.ts`
 
 **Notes:**
 
@@ -575,7 +575,7 @@ Move a single component from core to browser to establish the pattern and valida
 Pick the simplest browser-bound component (e.g. `activityCollector` — small surface area, no deep core dependencies beyond storage and DOM click handler).
 
 - Move `packages/core/src/components/ActivityCollector/` to `packages/browser/src/components/BrowserActivityCollector/`.
-- Remove `activityCollector` from `packages/core/src/core/componentCreators.js`.
+- Remove `activityCollector` from `packages/core/src/core/componentCreators.ts`.
 - Add `BrowserActivityCollector` to the browser wrapper's component array in `packages/browser/src/index.js` and `packages/browser/src/standalone.js`.
 - Create browser-level component metadata registry that combines core-owned and browser-owned component lists.
 - Update `entryPointGeneratorBabelPlugin.js` to read from the combined registry instead of only `@adobe/alloy-core/componentMetadata.js`.
@@ -592,20 +592,20 @@ With the seam proven and build tooling updated, move the remaining browser-bound
 **PR 2a: Context → BrowserContext**
 
 - Move `packages/core/src/components/Context/` to `packages/browser/src/components/BrowserContext/`.
-- Remove Context from `packages/core/src/core/requiredComponentCreators.js`.
+- Remove Context from `packages/core/src/core/requiredComponentCreators.ts`.
 - Inject BrowserContext via the browser wrapper's component array.
-- Add Node import smoke test for `packages/core/src/index.js` (Context removal unblocks this).
+- Add Node import smoke test for `packages/core/src/index.ts` (Context removal unblocks this).
 
 **PR 2b: Personalization → BrowserPersonalization**
 
 - Move `packages/core/src/components/Personalization/` to `packages/browser/src/components/BrowserPersonalization/`.
-- Remove from `componentCreators.js`.
-- Move related DOM utilities (`awaitSelector.js`, etc.) if not already moved.
+- Remove from `componentCreators.ts`.
+- Move related DOM utilities (`awaitSelector.ts`, etc.) if not already moved.
 
 **PR 2c: Advertising → BrowserAdvertising**
 
 - Move `packages/core/src/components/Advertising/` to `packages/browser/src/components/BrowserAdvertising/`.
-- Remove from `componentCreators.js`.
+- Remove from `componentCreators.ts`.
 - `collectSurferId` (hidden iframe, cross-origin messaging) moves with it.
 
 **PR 2d: PushNotifications split**
@@ -616,7 +616,7 @@ With the seam proven and build tooling updated, move the remaining browser-bound
 **PR 2e: DOM utils and shared browser utilities**
 
 - Move `packages/core/src/utils/dom/` to `packages/browser/src/utils/dom/`.
-- Move `fireImage.js`, `injectFireReferrerHideableImage.js` to browser package.
+- Move `fireImage.ts`, `injectFireReferrerHideableImage.ts` to browser package.
 - Scrub any remaining core imports of moved paths.
 
 Each PR updates the combined component metadata registry and verifies custom build, standalone bundle, and full test suite.
@@ -675,7 +675,7 @@ With services available on `platformServices`, migrate each usage domain to cons
 **PR 4b: Migrate storage callers (async refactor)** ⏳ (stopgap only)
 
 - ✅ `injectStorage(window)` → `injectStorage(globalThis)` — removes `window` dependency; storage gracefully no-ops in Node.js.
-- ☐ Full async migration still needed: `createLogController.js`, `createGetAssuranceValidationTokenParams.js`, `createConsentHashStore.js`, RulesEngine storage callers.
+- ☐ Full async migration still needed: `createLogController.ts`, `createGetAssuranceValidationTokenParams.ts`, `createConsentHashStore.ts`, RulesEngine storage callers.
 
 **PR 4c: Migrate cookie callers** ✅ (partial — js-cookie dep move pending)
 
@@ -699,7 +699,7 @@ With services available on `platformServices`, migrate each usage domain to cons
 
 - ✅ Identity uses `platformServices.globals.isPageSsl()`, `getLocationSearch()`, `getLocationHash()`.
 - ✅ Audiences uses `platformServices.globals.isPageSsl()`.
-- ✅ BrandConcierge uses `platformServices.globals.getLocationSearch()`; `BrandConcierge/utils.js` uses `globalThis.location`.
+- ✅ BrandConcierge uses `platformServices.globals.getLocationSearch()`; `BrandConcierge/utils.ts` uses `globalThis.location`.
 - ✅ `createContextProvider` refactored to accept `getWindowContext` function; RulesEngine passes `platformServices.globals.getWindowContext`.
 - ✅ `GlobalsService` extended with `isPageSsl()`, `getLocationHash()`, `getWindowContext()`.
 
