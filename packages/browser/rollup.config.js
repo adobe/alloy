@@ -165,6 +165,12 @@ const stripTypesPlugin = () => ({
     if (result.errors.length) {
       this.error(result.errors[0].message);
     }
+    // oxc drops a leading license header when the first statement is
+    // type-only (e.g. `import type`), because the comment is attached to it.
+    const header = code.match(/^\/\*[\s\S]*?\*\//)?.[0];
+    if (header && !result.code.includes(header)) {
+      return { code: `${header}\n${result.code}`, map: null };
+    }
     return { code: result.code, map: null };
   },
 });
