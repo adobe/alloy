@@ -3,16 +3,6 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    // The ES2020 default (es2020.full) plus Error cause options.
-    "lib": [
-      "ES2020",
-      "DOM",
-      "DOM.Iterable",
-      "DOM.AsyncIterable",
-      "WebWorker.ImportScripts",
-      "ScriptHost",
-      "ES2022.Error"
-    ],
     "strict": true,
     "erasableSyntaxOnly": true,
     "allowJs": true,
