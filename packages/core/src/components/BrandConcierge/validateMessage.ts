@@ -31,7 +31,23 @@ const xdmValidator = objectOf({
   }),
 });
 
-export default ({ options }) => {
+export interface ValidateMessageOptions {
+  options: unknown;
+}
+
+export interface ConversationEventOptions {
+  message?: string;
+  xdm?: Record<string, unknown>;
+  data?: { type: string; payload?: Record<string, unknown> };
+  /** Absent for the xdm-only (feedback) form; callers rely on it only when streaming. */
+  onStreamResponse: (response: unknown) => void;
+  voiceEnabled: boolean;
+  surfaces?: string[];
+}
+
+export default ({
+  options,
+}: ValidateMessageOptions): ConversationEventOptions => {
   const brandConciergeEventValidator = anyOf([
     objectOf({
       message: string().required(),
@@ -56,5 +72,6 @@ export default ({ options }) => {
     }),
   ]);
 
-  return brandConciergeEventValidator(options);
+  // Cast: the validator applies the defaults declared above; its return type is unknown.
+  return brandConciergeEventValidator(options) as ConversationEventOptions;
 };

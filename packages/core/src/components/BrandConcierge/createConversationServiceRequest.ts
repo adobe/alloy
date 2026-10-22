@@ -10,17 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { createRequest } from "../../utils/request/index.js";
+import type { RequestPayload } from "../../utils/request/types.js";
 
 const BRAND_CONCIERGE_PATH = "/brand-concierge";
 const VOICE_BRAND_CONCIERGE_PATH = "/brand-concierge-voice";
 
-export default ({
+export interface CreateConversationServiceRequestOptions<
+  P extends RequestPayload,
+> {
+  payload: P;
+  action?: string;
+  sessionId: string;
+  voiceEnabled?: boolean;
+  region?: string;
+}
+
+export default <P extends RequestPayload>({
   payload,
   action = "conversations",
   sessionId,
   voiceEnabled = false,
   region,
-}) => {
+}: CreateConversationServiceRequestOptions<P>) => {
   const edgeSubPath = voiceEnabled
     ? VOICE_BRAND_CONCIERGE_PATH
     : `${BRAND_CONCIERGE_PATH}${region ? `/${region}` : ""}`;

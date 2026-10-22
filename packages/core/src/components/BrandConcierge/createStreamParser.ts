@@ -9,7 +9,25 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-export default () => {
+export interface StreamEvent {
+  type?: string;
+  data?: string;
+  id?: string;
+  error?: unknown;
+}
+
+export interface StreamCallbacks {
+  onEvent: (event: StreamEvent) => void;
+  onPing: () => void;
+  onComplete: () => void;
+}
+
+export type StreamParser = (
+  stream: ReadableStream<Uint8Array>,
+  callbacks: StreamCallbacks,
+) => Promise<void>;
+
+export default (): StreamParser => {
   // SSE streams are always UTF-8 encoded per specification
   const ENCODING = "utf-8";
   // SSE spec allows three line ending styles: CRLF (\r\n), LF (\n), or CR (\r)
@@ -26,7 +44,7 @@ export default () => {
    * @param {string} eventData - Raw event data
    * @returns {boolean} - True if this is a ping comment
    */
-  const isPingComment = (eventData) => {
+  const isPingComment = (eventData: string) => {
     const trimmed = eventData.trim();
 
     return trimmed.startsWith(PING_COMMENT);
@@ -39,9 +57,9 @@ export default () => {
    * @param {string} eventData - Raw event data (multi-line string containing SSE fields)
    * @returns {Object|null} - Parsed SSE event with structure { type, data, id } or null if invalid
    */
-  const parseEventFromBuffer = (eventData) => {
+  const parseEventFromBuffer = (eventData: string): StreamEvent | null => {
     const lines = eventData.split(LINE_ENDING_REGEX);
-    const parsedEvent = {};
+    const parsedEvent: StreamEvent = {};
 
     for (const line of lines) {
       const trimmedLine = line.trim();

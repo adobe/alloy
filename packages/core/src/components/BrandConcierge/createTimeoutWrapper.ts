@@ -21,9 +21,19 @@ governing permissions and limitations under the License.
  * @param {number} options.streamTimeout - Timeout duration in milliseconds
  * @returns {Object} Object with onEvent, onPing, and onComplete handler functions
  */
-export default ({ onStreamResponseCallback, streamTimeout }) => {
+import type { StreamCallbacks, StreamEvent } from "./createStreamParser.js";
+
+export interface CreateTimeoutWrapperOptions {
+  onStreamResponseCallback: (event: StreamEvent) => void;
+  streamTimeout: number;
+}
+
+export default ({
+  onStreamResponseCallback,
+  streamTimeout,
+}: CreateTimeoutWrapperOptions): StreamCallbacks => {
   let timedOut = false;
-  let timeoutId;
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
   const resetTimeout = () => {
     clearTimeout(timeoutId);

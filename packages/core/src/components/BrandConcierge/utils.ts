@@ -13,12 +13,23 @@ import { getNamespacedCookieName } from "../../utils/index.js";
 import { buildPageSurface } from "../../utils/surfaceUtils.js";
 import { BC_SESSION_COOKIE_NAME } from "./constants.js";
 import uuid from "../../utils/uuid.js";
+import type { BrandConciergeConfig } from "./configValidators.js";
 
-export const getPageSurface = (getLocation) => {
+export const getPageSurface = (
+  getLocation: Parameters<typeof buildPageSurface>[0],
+) => {
   return buildPageSurface(getLocation);
 };
 
-export const getConciergeSessionCookie = ({ loggingCookieJar, config }) => {
+export interface GetConciergeSessionCookieOptions {
+  loggingCookieJar: { get: (name: string) => string | undefined };
+  config: Pick<BrandConciergeConfig, "orgId" | "conversation">;
+}
+
+export const getConciergeSessionCookie = ({
+  loggingCookieJar,
+  config,
+}: GetConciergeSessionCookieOptions): string => {
   if (config.conversation.stickyConversationSession === false) {
     return uuid();
   }

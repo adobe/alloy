@@ -15,6 +15,37 @@ import { getPageSurface } from "./utils.js";
 import uuid from "../../utils/uuid.js";
 import createStreamParser from "./createStreamParser.js";
 import createTimeoutWrapper from "./createTimeoutWrapper.js";
+import type { StreamEvent } from "./createStreamParser.js";
+import type { BuildEndpointUrl } from "./createBuildEndpointUrl.js";
+import type { SendConversationServiceRequest } from "./createSendConversationServiceRequest.js";
+import type { BrandConciergeConfig } from "./configValidators.js";
+import type { ConversationEventOptions } from "./validateMessage.js";
+import type { ComponentTools, ResponseCreator } from "../../core/types.js";
+
+export interface CreateSendConversationEventOptions extends Partial<
+  Pick<
+    ComponentTools,
+    "loggingCookieJar" | "instanceName" | "sendEdgeNetworkRequest"
+  >
+> {
+  eventManager: ComponentTools["eventManager"];
+  config: BrandConciergeConfig;
+  logger: ComponentTools["logger"];
+  sendConversationServiceRequest: SendConversationServiceRequest;
+  buildEndpointUrl: BuildEndpointUrl;
+  cookieTransfer: ComponentTools["cookieTransfer"];
+  alwaysTransferCookies?: string[];
+  createResponse: ResponseCreator;
+  decodeKndctrCookie: () => string | null;
+  lifecycle: Pick<ComponentTools["lifecycle"], "onBeforeEvent">;
+  consent: Pick<ComponentTools["consent"], "current">;
+  session: { id: string };
+  getPageLocation: ComponentTools["platformServices"]["globals"]["getPageLocation"];
+}
+
+export type SendConversationEvent = (
+  options: ConversationEventOptions,
+) => Promise<void>;
 
 export default ({
   eventManager,
@@ -30,7 +61,7 @@ export default ({
   consent,
   session,
   getPageLocation,
-}) => {
+}: CreateSendConversationEventOptions): SendConversationEvent => {
   const { edgeDomain, datastreamId, onBeforeEventSend, conversation } = config;
   return (options) => {
     let streamingEnabled = false;
@@ -125,15 +156,19 @@ export default ({
             return;
           }
 
-          const onStreamResponseCallback = (event) => {
+          const onStreamResponseCallback = (event: StreamEvent) => {
             if (event.error) {
               logger.error("Stream error occurred", event.error);
               onStreamResponse({ error: event.error });
               return;
             }
-            const substr = event.data.replace("data: ", "");
+            // Non-null: the stream parser only emits non-error events that have data.
+            const substr = event.data!.replace("data: ", "");
             const responseJson = JSON.parse(substr);
-            const response = createResponse({ content: responseJson });
+            const response = createResponse(
+              // Cast: stream payloads carry no headers, so no getHeader is passed (getEdge is never called).
+              { content: responseJson } as Parameters<ResponseCreator>[0],
+            );
 
             cookieTransfer.responseToCookies(response);
 
@@ -153,7 +188,8 @@ export default ({
 
           const streamParser = createStreamParser();
 
-          streamParser(response.body, timeoutWrapper);
+          // Non-null: a successful non-204 fetch response has a body.
+          streamParser(response.body!, timeoutWrapper);
         });
       });
   };

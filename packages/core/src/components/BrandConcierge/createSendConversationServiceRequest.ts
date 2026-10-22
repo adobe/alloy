@@ -10,13 +10,37 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { stackError } from "../../utils/index.js";
-export default ({ logger, fetch }) => {
+import type { Request } from "../../utils/request/types.js";
+import type { Config, Logger } from "../../core/types.js";
+
+export interface CreateSendConversationServiceRequestOptions {
+  logger: Logger;
+  fetch: typeof fetch;
+  config?: Config;
+}
+
+export interface SendConversationServiceRequestOptions {
+  requestId: string;
+  url: string;
+  request: Request;
+  onStreamResponse?: (response: unknown) => void;
+  streamingEnabled?: boolean;
+}
+
+export type SendConversationServiceRequest = (
+  options: SendConversationServiceRequestOptions,
+) => Promise<globalThis.Response>;
+
+export default ({
+  logger,
+  fetch,
+}: CreateSendConversationServiceRequestOptions): SendConversationServiceRequest => {
   return async ({ requestId, url, request, streamingEnabled = true }) => {
     const payload = request.getPayload();
     const stringifiedPayload = JSON.stringify(payload);
     const parsedPayload = JSON.parse(stringifiedPayload);
 
-    const headers = { "Content-Type": "text/plain" };
+    const headers: Record<string, string> = { "Content-Type": "text/plain" };
     if (streamingEnabled) {
       headers.Accept = "text/event-stream";
     } else {
@@ -29,7 +53,9 @@ export default ({ logger, fetch }) => {
       payload: parsedPayload,
     });
 
-    const fetchWithRetries = async (attemptNumber = 1) => {
+    const fetchWithRetries = async (
+      attemptNumber = 1,
+    ): Promise<globalThis.Response> => {
       const maxAttempts = 4;
       const retryDelays = [2000, 3000, 5000];
 
@@ -53,7 +79,10 @@ export default ({ logger, fetch }) => {
             url,
             payload: parsedPayload,
             error: new Error(
-              `Attempt ${attemptNumber} failed, retrying in ${delay}ms: ${error.message}`,
+              `Attempt ${attemptNumber} failed, retrying in ${delay}ms: ${
+                // Cast: fetch and the !ok check only throw Error instances.
+                (error as Error).message
+              }`,
             ),
           });
           await new Promise((resolve) => setTimeout(resolve, delay));

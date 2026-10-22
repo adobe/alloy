@@ -9,8 +9,23 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import type { Request } from "../../utils/request/types.js";
 
-export default ({ queryString }) => {
+export interface CreateBuildEndpointUrlOptions {
+  queryString: { stringify: (params: Record<string, unknown>) => string };
+}
+
+export interface BuildEndpointUrlOptions {
+  edgeDomain: string;
+  request: Request;
+  datastreamId: string;
+}
+
+export type BuildEndpointUrl = (options: BuildEndpointUrlOptions) => string;
+
+export default ({
+  queryString,
+}: CreateBuildEndpointUrlOptions): BuildEndpointUrl => {
   return ({ edgeDomain, request, datastreamId }) => {
     const params = request.getRequestParams();
     const configId = request.getDatastreamIdOverride() || datastreamId;

@@ -17,6 +17,21 @@ import {
   string,
   arrayOf,
 } from "../../utils/validation/index.js";
+import type { Config } from "../../core/types.js";
+
+/** The `conversation` config option, after validation and defaults. */
+export interface ConversationConfig {
+  stickyConversationSession: boolean;
+  streamTimeout: number;
+  collectSources: boolean;
+  region?: string;
+  transferCookies: string[];
+}
+
+/** The computed config as seen by BrandConcierge. */
+export interface BrandConciergeConfig extends Config {
+  conversation: ConversationConfig;
+}
 
 export default objectOf({
   conversation: objectOf({

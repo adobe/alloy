@@ -18,6 +18,26 @@ import createGetEcidFromCookie from "../../utils/createDecodeKndctrCookie.js";
 import createSendConversationServiceRequest from "./createSendConversationServiceRequest.js";
 import configValidators from "./configValidators.js";
 import { SOURCES_QUERY_PARAM } from "./constants.js";
+import type { BrandConciergeConfig } from "./configValidators.js";
+import type { ComponentTools, Event } from "../../core/types.js";
+
+export interface CreateConciergeComponentOptions extends Pick<
+  ComponentTools,
+  | "loggingCookieJar"
+  | "logger"
+  | "eventManager"
+  | "consent"
+  | "instanceName"
+  | "sendEdgeNetworkRequest"
+  | "config"
+  | "lifecycle"
+  | "cookieTransfer"
+  | "createResponse"
+  | "platformServices"
+> {
+  /** Test seam. */
+  createSendConversationEvent?: typeof createSendConversationEvent;
+}
 
 const createConciergeComponent = ({
   loggingCookieJar,
@@ -33,9 +53,13 @@ const createConciergeComponent = ({
   platformServices,
   createSendConversationEvent:
     createSendConversationEventFactory = createSendConversationEvent,
-}) => {
+}: CreateConciergeComponentOptions) => {
   const session = {
-    id: getConciergeSessionCookie({ loggingCookieJar, config }),
+    id: getConciergeSessionCookie({
+      loggingCookieJar,
+      // Cast: configValidators guarantees `conversation` with its defaults.
+      config: config as BrandConciergeConfig,
+    }),
   };
 
   const buildEndpointUrl = createBuildEndpointUrl({ queryString });
@@ -57,11 +81,14 @@ const createConciergeComponent = ({
     consent,
     instanceName,
     sendEdgeNetworkRequest,
-    config,
+    // Cast: configValidators guarantees `conversation` with its defaults.
+    config: config as BrandConciergeConfig,
     buildEndpointUrl,
     lifecycle,
     cookieTransfer,
-    alwaysTransferCookies: config.conversation.transferCookies || [],
+    alwaysTransferCookies:
+      // Cast: see above.
+      (config as BrandConciergeConfig).conversation.transferCookies || [],
     createResponse,
     sendConversationServiceRequest,
     decodeKndctrCookie,
@@ -71,8 +98,9 @@ const createConciergeComponent = ({
 
   return {
     lifecycle: {
-      onBeforeEvent({ event }) {
-        if (config.conversation.collectSources) {
+      onBeforeEvent({ event }: { event: Event }) {
+        // Cast: see above.
+        if ((config as BrandConciergeConfig).conversation.collectSources) {
           const parsedParams = queryString.parse(
             platformServices.globals.getLocationSearch(),
           );
@@ -85,7 +113,7 @@ const createConciergeComponent = ({
     },
     commands: {
       sendConversationEvent: {
-        optionsValidator: (options) => validateMessage({ options }),
+        optionsValidator: (options: unknown) => validateMessage({ options }),
         run: sendConversationEvent,
       },
     },
