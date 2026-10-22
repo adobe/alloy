@@ -37,7 +37,7 @@
       "default": "./dist/utils/validation/index.js"
     },
     "./services": {
-      "alloy-source": "./src/services/index.js",
+      "alloy-source": "./src/services/index.ts",
       "types": "./dist/services/index.d.ts",
       "default": "./dist/services/index.js"
     },
