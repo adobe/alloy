@@ -13,4 +13,4 @@ export default {
   MAIN: "main",
   AD: "ad",
   COMPLETED: "completed",
-};
+} as const;

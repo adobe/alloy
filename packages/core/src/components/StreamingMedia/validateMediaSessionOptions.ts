@@ -20,7 +20,7 @@ import {
 } from "../../utils/validation/index.js";
 import { validateConfigOverride } from "../../utils/index.js";
 
-export default ({ options }) => {
+export default ({ options }: { options: unknown }) => {
   const sessionValidator = anyOf(
     [
       objectOf({

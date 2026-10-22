@@ -19,7 +19,7 @@ import {
 } from "../../utils/validation/index.js";
 import EventTypes from "./constants/eventTypes.js";
 
-export default ({ options }) => {
+export default ({ options }: { options: unknown }) => {
   const validator = anyOf(
     [
       objectOf({

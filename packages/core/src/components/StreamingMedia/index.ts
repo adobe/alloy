@@ -18,6 +18,13 @@ import createStreamingMediaComponent from "./createStreamingMediaComponent.js";
 import createTrackMediaSession from "./createTrackMediaSession.js";
 import createMediaResponseHandler from "./createMediaResponseHandler.js";
 import injectTimestamp from "../../utils/injectTimestamp.js";
+import type { ComponentCreator, ComponentTools } from "../../core/types.js";
+import type { MediaSessionCacheManager } from "./createMediaSessionCacheManager.js";
+
+export type StreamingMediaOptions = Pick<
+  ComponentTools,
+  "config" | "logger" | "eventManager" | "sendEdgeNetworkRequest" | "consent"
+>;
 
 const createStreamingMedia = ({
   config,
@@ -25,8 +32,13 @@ const createStreamingMedia = ({
   eventManager,
   sendEdgeNetworkRequest,
   consent,
-}) => {
-  const mediaSessionCacheManager = createMediaSessionCacheManager({ config });
+}: StreamingMediaOptions) => {
+  // The cache manager takes no options; `config` has always been passed anyway.
+  const mediaSessionCacheManager = (
+    createMediaSessionCacheManager as (options: {
+      config: ComponentTools["config"];
+    }) => MediaSessionCacheManager
+  )({ config });
   const mediaEventManager = createMediaEventManager({
     config,
     eventManager,
@@ -65,4 +77,4 @@ const createStreamingMedia = ({
 createStreamingMedia.namespace = "Streaming media";
 
 createStreamingMedia.configValidators = configValidators;
-export default createStreamingMedia;
+export default createStreamingMedia satisfies ComponentCreator<StreamingMediaOptions>;

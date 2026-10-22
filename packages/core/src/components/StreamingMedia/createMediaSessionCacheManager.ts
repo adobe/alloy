@@ -12,14 +12,56 @@ governing permissions and limitations under the License.
 
 import PlaybackState from "./constants/playbackState.js";
 
-export default () => {
-  let mediaSessionCache;
+export type PlaybackStateValue =
+  (typeof PlaybackState)[keyof typeof PlaybackState];
 
-  const getSession = (playerId) => {
+export interface PlayerDetails {
+  playhead: unknown;
+  qoeDataDetails?: Record<string, unknown>;
+}
+
+export type GetPlayerDetails = (options: { playerId: string }) => PlayerDetails;
+
+/** What a media session request resolves to; see `createMediaResponseHandler`. */
+export interface MediaSessionResult {
+  sessionId?: string;
+  [key: string]: unknown;
+}
+
+export interface MediaSessionDetails {
+  sessionPromise: Promise<MediaSessionResult | undefined>;
+  getPlayerDetails?: GetPlayerDetails;
+  playbackState?: PlaybackStateValue;
+  pingId?: ReturnType<typeof setTimeout> | null;
+}
+
+export interface MediaSessionCacheManager {
+  getSession: (playerId: string) => Partial<MediaSessionDetails>;
+  storeSession: (options: {
+    playerId?: string;
+    sessionDetails: MediaSessionDetails;
+  }) => void;
+  stopPing: (options: { playerId: string }) => void;
+  savePing: (options: {
+    playerId: string;
+    pingId: ReturnType<typeof setTimeout>;
+    playbackState: PlaybackStateValue | undefined;
+  }) => void;
+}
+
+export default (): MediaSessionCacheManager => {
+  // Unset until the first storeSession; the other methods assume it is set.
+  let mediaSessionCache: Record<string, MediaSessionDetails>;
+
+  const getSession = (playerId: string) => {
     return mediaSessionCache[playerId] || {};
   };
 
-  const savePing = ({ playerId, pingId, playbackState }) => {
+  const savePing: MediaSessionCacheManager["savePing"] = ({
+    playerId,
+    pingId,
+    playbackState,
+  }) => {
     if (!mediaSessionCache[playerId]) {
       return;
     }
@@ -31,24 +73,29 @@ export default () => {
     mediaSessionCache[playerId].playbackState = playbackState;
   };
 
-  const stopPing = ({ playerId }) => {
+  const stopPing: MediaSessionCacheManager["stopPing"] = ({ playerId }) => {
     const sessionDetails = mediaSessionCache[playerId];
 
     if (!sessionDetails) {
       return;
     }
 
-    clearTimeout(sessionDetails.pingId);
+    // clearTimeout ignores a null or undefined id.
+    clearTimeout(sessionDetails.pingId as ReturnType<typeof setTimeout>);
 
     sessionDetails.pingId = null;
     sessionDetails.playbackState = PlaybackState.COMPLETED;
   };
-  const storeSession = ({ playerId, sessionDetails }) => {
+  const storeSession: MediaSessionCacheManager["storeSession"] = ({
+    playerId,
+    sessionDetails,
+  }) => {
     if (mediaSessionCache === undefined) {
       mediaSessionCache = {};
     }
 
-    mediaSessionCache[playerId] = sessionDetails;
+    // A session without a playerId is stored under "undefined", as before.
+    mediaSessionCache[playerId as string] = sessionDetails;
   };
 
   return {

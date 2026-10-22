@@ -10,13 +10,36 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import PlaybackState from "./constants/playbackState.js";
+import type { StreamingMediaComponentConfig } from "./configValidators.js";
+import type {
+  MediaEventManager,
+  MediaSessionOptions,
+} from "./createMediaEventManager.js";
+import type {
+  MediaSessionCacheManager,
+  MediaSessionResult,
+} from "./createMediaSessionCacheManager.js";
+
+export interface CreateTrackMediaSessionOptions {
+  config: StreamingMediaComponentConfig;
+  mediaEventManager: Pick<
+    MediaEventManager,
+    "createMediaSession" | "augmentMediaEvent" | "trackMediaSession"
+  >;
+  mediaSessionCacheManager: Pick<MediaSessionCacheManager, "storeSession">;
+  legacy?: boolean;
+}
+
+export type TrackMediaSession = (
+  options: MediaSessionOptions,
+) => Promise<MediaSessionResult | undefined>;
 
 export default ({
   config,
   mediaEventManager,
   mediaSessionCacheManager,
   legacy = false,
-}) => {
+}: CreateTrackMediaSessionOptions): TrackMediaSession => {
   return (options) => {
     if (!config.streamingMedia) {
       return Promise.reject(new Error("Streaming media is not configured."));

@@ -28,4 +28,4 @@ export default {
   CHAPTER_START: "media.chapterStart",
   ERROR: "media.error",
   STATES_UPDATE: "media.statesUpdate",
-};
+} as const;

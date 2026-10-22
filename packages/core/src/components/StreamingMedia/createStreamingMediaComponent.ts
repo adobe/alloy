@@ -12,16 +12,43 @@ governing permissions and limitations under the License.
 import { noop } from "../../utils/index.js";
 import validateSessionOptions from "./validateMediaSessionOptions.js";
 import validateMediaEventOptions from "./validateMediaEventOptions.js";
+import type { Response } from "../../core/types.js";
+import type { StreamingMediaComponentConfig } from "./configValidators.js";
+import type {
+  MediaEventManager,
+  MediaEventOptions,
+  MediaOptions,
+} from "./createMediaEventManager.js";
+import type { MediaResponseHandler } from "./createMediaResponseHandler.js";
+import type { TrackMediaEvent } from "./createTrackMediaEvent.js";
+import type { TrackMediaSession } from "./createTrackMediaSession.js";
+
+export interface CreateStreamingMediaComponentOptions {
+  config: StreamingMediaComponentConfig;
+  trackMediaEvent: TrackMediaEvent;
+  trackMediaSession: TrackMediaSession;
+  mediaResponseHandler: MediaResponseHandler;
+  /** Passed by `index` but not used. */
+  mediaEventManager?: MediaEventManager;
+}
 
 export default ({
   config,
   trackMediaEvent,
   trackMediaSession,
   mediaResponseHandler,
-}) => {
+}: CreateStreamingMediaComponentOptions) => {
   return {
     lifecycle: {
-      onBeforeEvent({ mediaOptions, onResponse = noop }) {
+      onBeforeEvent({
+        mediaOptions,
+        onResponse = noop,
+      }: {
+        mediaOptions?: MediaOptions;
+        onResponse?: (
+          callback: (arg: { response: Response }) => unknown,
+        ) => void;
+      }) {
         if (!mediaOptions) {
           return;
         }
@@ -36,15 +63,17 @@ export default ({
     },
     commands: {
       createMediaSession: {
-        optionsValidator: (options) => validateSessionOptions({ options }),
+        optionsValidator: (options: unknown) =>
+          validateSessionOptions({ options }),
 
         run: trackMediaSession,
       },
 
       sendMediaEvent: {
-        optionsValidator: (options) => validateMediaEventOptions({ options }),
+        optionsValidator: (options: unknown) =>
+          validateMediaEventOptions({ options }),
 
-        run: (options) => {
+        run: (options: MediaEventOptions) => {
           if (!config.streamingMedia) {
             return Promise.reject(
               new Error("Streaming media is not configured."),

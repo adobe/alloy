@@ -13,6 +13,94 @@ import MediaEvents from "./constants/eventTypes.js";
 import createMediaRequest from "./createMediaRequest.js";
 import { toInteger } from "../../utils/index.js";
 import { createDataCollectionRequestPayload } from "../../utils/request/index.js";
+import type {
+  ComponentTools,
+  Event,
+  EventManager,
+  Logger,
+} from "../../core/types.js";
+import type { StreamingMediaComponentConfig } from "./configValidators.js";
+import type {
+  GetPlayerDetails,
+  MediaSessionResult,
+} from "./createMediaSessionCacheManager.js";
+
+export type MediaEventType = (typeof MediaEvents)[keyof typeof MediaEvents];
+
+/** The `xdm.mediaCollection` members this component reads. */
+export interface MediaCollection {
+  advertisingDetails?: { playerName?: string; [key: string]: unknown };
+  sessionDetails?: {
+    playerName?: string;
+    channel?: string;
+    appVersion?: string;
+    [key: string]: unknown;
+  };
+  playhead?: number;
+  sessionID?: string;
+  [key: string]: unknown;
+}
+
+/** The validated `sendMediaEvent` options. */
+export interface MediaEventOptions {
+  playerId?: string;
+  xdm: {
+    eventType: MediaEventType;
+    mediaCollection?: MediaCollection;
+    [key: string]: unknown;
+  };
+}
+
+/** The validated `createMediaSession` options. */
+export interface MediaSessionOptions {
+  playerId?: string;
+  getPlayerDetails?: GetPlayerDetails;
+  xdm: {
+    // The validator requires sessionDetails in every accepted shape.
+    mediaCollection: MediaCollection &
+      Required<Pick<MediaCollection, "sessionDetails">>;
+    [key: string]: unknown;
+  };
+  edgeConfigOverrides?: Record<string, unknown>;
+}
+
+/** Sent as `mediaOptions` to the `onBeforeEvent` hook. */
+export type MediaOptions = {
+  playerId?: string;
+  getPlayerDetails?: GetPlayerDetails;
+  legacy?: boolean;
+};
+
+export interface MediaEventManager {
+  createMediaEvent: (arg: { options: MediaEventOptions }) => Event;
+  createMediaSession: (options: MediaSessionOptions) => Event;
+  augmentMediaEvent: (options: {
+    event: Event;
+    eventType?: MediaEventType;
+    playerId?: string;
+    getPlayerDetails?: GetPlayerDetails;
+    sessionID?: string;
+  }) => Event;
+  trackMediaSession: (options: {
+    event: Event;
+    mediaOptions: MediaOptions;
+    edgeConfigOverrides?: Record<string, unknown>;
+  }) => Promise<MediaSessionResult | undefined>;
+  trackMediaEvent: (options: {
+    event: Event;
+    action: string;
+  }) => Promise<Record<string, never>>;
+}
+
+export interface CreateMediaEventManagerOptions {
+  config: StreamingMediaComponentConfig;
+  eventManager: EventManager;
+  /** Passed by `index` but not used. */
+  logger?: Logger;
+  consent: Pick<ComponentTools["consent"], "awaitConsent">;
+  sendEdgeNetworkRequest: ComponentTools["sendEdgeNetworkRequest"];
+  setTimestamp: (event: Event) => void;
+}
 
 export default ({
   config,
@@ -20,7 +108,7 @@ export default ({
   consent,
   sendEdgeNetworkRequest,
   setTimestamp,
-}) => {
+}: CreateMediaEventManagerOptions): MediaEventManager => {
   return {
     createMediaEvent({ options }) {
       const event = eventManager.createEvent();
@@ -29,14 +117,16 @@ export default ({
       event.setUserXdm(xdm);
 
       if (xdm.eventType === MediaEvents.AD_START) {
-        const { advertisingDetails } = options.xdm.mediaCollection;
+        // Ad start events have always been assumed to carry advertisingDetails.
+        const { advertisingDetails } = options.xdm.mediaCollection!;
 
         event.mergeXdm({
           mediaCollection: {
             advertisingDetails: {
               playerName:
-                advertisingDetails.playerName ||
-                config.streamingMedia.playerName,
+                // See above; streamingMedia is checked before any media event.
+                advertisingDetails!.playerName ||
+                config.streamingMedia!.playerName,
             },
           },
         });
@@ -44,7 +134,8 @@ export default ({
       return event;
     },
     createMediaSession(options) {
-      const { playerName, channel, appVersion } = config.streamingMedia;
+      // trackMediaSession checks streamingMedia before creating a session.
+      const { playerName, channel, appVersion } = config.streamingMedia!;
       const event = eventManager.createEvent();
       const { sessionDetails } = options.xdm.mediaCollection;
       setTimestamp(event);
@@ -70,7 +161,11 @@ export default ({
 
       event.mergeXdm({
         mediaCollection: {
-          playhead: toInteger(playhead),
+          // Called without a default since before TypeScript: an
+          // unparseable playhead becomes undefined.
+          playhead: (toInteger as (value: unknown) => number | undefined)(
+            playhead,
+          ),
           qoeDataDetails,
           sessionID,
         },

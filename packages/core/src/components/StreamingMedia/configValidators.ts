@@ -11,6 +11,20 @@ governing permissions and limitations under the License.
 */
 
 import { number, objectOf, string } from "../../utils/validation/index.js";
+import type { Config } from "../../core/types.js";
+
+/** The validated `streamingMedia` configuration. */
+export interface StreamingMediaConfig {
+  channel: string;
+  playerName: string;
+  appVersion?: string;
+  mainPingInterval: number;
+  adPingInterval: number;
+}
+
+export type StreamingMediaComponentConfig = Config & {
+  streamingMedia?: StreamingMediaConfig;
+};
 
 export default objectOf({
   streamingMedia: objectOf({

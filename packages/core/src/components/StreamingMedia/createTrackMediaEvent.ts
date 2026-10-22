@@ -10,8 +10,35 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import MediaEvents from "./constants/eventTypes.js";
+import type { StreamingMediaComponentConfig } from "./configValidators.js";
+import type {
+  MediaEventManager,
+  MediaEventOptions,
+  MediaEventType,
+} from "./createMediaEventManager.js";
+import type {
+  MediaSessionCacheManager,
+  PlaybackStateValue,
+} from "./createMediaSessionCacheManager.js";
 
-const getContentState = (eventType, sessionContentState) => {
+export interface CreateTrackMediaEventOptions {
+  mediaEventManager: Pick<
+    MediaEventManager,
+    "createMediaEvent" | "augmentMediaEvent" | "trackMediaEvent"
+  >;
+  mediaSessionCacheManager: Pick<
+    MediaSessionCacheManager,
+    "getSession" | "stopPing" | "savePing"
+  >;
+  config: StreamingMediaComponentConfig;
+}
+
+export type TrackMediaEvent = (options: MediaEventOptions) => Promise<void>;
+
+const getContentState = (
+  eventType: MediaEventType,
+  sessionContentState: PlaybackStateValue | undefined,
+) => {
   if (
     eventType === MediaEvents.AD_START ||
     eventType === MediaEvents.Ad_BREAK_START ||
@@ -38,16 +65,23 @@ const getContentState = (eventType, sessionContentState) => {
   return sessionContentState;
 };
 
-export default ({ mediaEventManager, mediaSessionCacheManager, config }) => {
-  const sendMediaEvent = (options) => {
+export default ({
+  mediaEventManager,
+  mediaSessionCacheManager,
+  config,
+}: CreateTrackMediaEventOptions): TrackMediaEvent => {
+  const sendMediaEvent = (options: MediaEventOptions): Promise<void> => {
     const event = mediaEventManager.createMediaEvent({ options });
     const { playerId, xdm } = options;
     const { eventType } = xdm;
     const action = eventType.split(".")[1];
     const { getPlayerDetails, sessionPromise, playbackState } =
-      mediaSessionCacheManager.getSession(playerId);
-    return sessionPromise.then((result) => {
-      if (!result.sessionId) {
+      // A missing playerId looks up "undefined", which is never stored.
+      mediaSessionCacheManager.getSession(playerId as string);
+    // Assumed since before TypeScript: an unknown session throws here.
+    return sessionPromise!.then((result) => {
+      // Assumed since before TypeScript: a canceled session throws here.
+      if (!result!.sessionId) {
         return Promise.reject(
           new Error(
             `Failed to trigger media event: ${eventType}. Session ID is not available for playerId: ${playerId}.`,
@@ -59,7 +93,8 @@ export default ({ mediaEventManager, mediaSessionCacheManager, config }) => {
         eventType,
         playerId,
         getPlayerDetails,
-        sessionID: result.sessionId,
+        // Dereferenced above, so it is set here.
+        sessionID: result!.sessionId,
       });
 
       return mediaEventManager.trackMediaEvent({ event, action }).then(() => {
@@ -78,10 +113,11 @@ export default ({ mediaEventManager, mediaSessionCacheManager, config }) => {
             if (sessionPlaybackState === "completed") {
               return;
             }
+            // The sendMediaEvent command rejects when streamingMedia is unset.
             const interval =
               sessionPlaybackState === "ad"
-                ? config.streamingMedia.adPingInterval
-                : config.streamingMedia.mainPingInterval;
+                ? config.streamingMedia!.adPingInterval
+                : config.streamingMedia!.mainPingInterval;
 
             const pingId = setTimeout(() => {
               const pingOptions = {

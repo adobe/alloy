@@ -11,8 +11,14 @@ governing permissions and limitations under the License.
 */
 
 import { createRequest } from "../../utils/request/index.js";
+import type { DataCollectionRequestPayload } from "../../utils/request/types.js";
 
-export default ({ mediaRequestPayload, action }) => {
+export interface CreateMediaRequestOptions {
+  mediaRequestPayload: DataCollectionRequestPayload;
+  action: string;
+}
+
+export default ({ mediaRequestPayload, action }: CreateMediaRequestOptions) => {
   return createRequest({
     payload: mediaRequestPayload,
     edgeSubPath: "/va",
