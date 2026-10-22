@@ -32,11 +32,6 @@ interface EventXdm {
   [key: string]: unknown;
 }
 
-export interface CreatedEvent extends Event {
-  getCreatedAt: () => number;
-  getUserIdentityMap: () => unknown;
-}
-
 const getXdmPropositions = (xdm: EventXdm | undefined): Proposition[] => {
   return xdm &&
     xdm._experience &&
@@ -46,7 +41,7 @@ const getXdmPropositions = (xdm: EventXdm | undefined): Proposition[] => {
     : [];
 };
 
-export default (): CreatedEvent => {
+export default (): Event => {
   const content: { xdm?: EventXdm; data?: Content; [key: string]: unknown } =
     {};
   const createdAt = Date.now();
@@ -64,7 +59,7 @@ export default (): CreatedEvent => {
     }
   };
 
-  const event: CreatedEvent = {
+  const event: Event = {
     hasQuery() {
       return Object.prototype.hasOwnProperty.call(this.getContent(), "query");
     },

@@ -11,9 +11,16 @@ governing permissions and limitations under the License.
 */
 
 import type { EdgeRequestExecutor } from "./types.js";
-import type { Response, ResponseContent, ResponseCreator } from "../types.js";
+import type {
+  Event,
+  Response,
+  ResponseContent,
+  ResponseCreator,
+} from "../types.js";
 import type { NetworkResponse } from "../../services/types.js";
-import type { Callback } from "../../utils/types.js";
+import type { Lifecycle } from "../createLifecycle.js";
+import type { CookieTransfer } from "../createCookieTransfer.js";
+import type { SendNetworkRequestOptions } from "../network/injectSendNetworkRequest.js";
 import type { Request, RequestPayload } from "../../utils/request/types.js";
 import type {
   EdgeCredentials,
@@ -33,29 +40,10 @@ import handleRequestFailure from "./handleRequestFailure.js";
 const MAX_QUEUE_TIME_MILLIS = 300000; // 5 minutes
 
 /** The lifecycle hooks the Edge request factories call. */
-export interface EdgeNetworkLifecycle {
-  onBeforeRequest: (options: {
-    request: Request;
-    onResponse: (callback: Callback<[{ response: Response }]>) => void;
-    onRequestFailure: (callback: Callback<[{ error: unknown }]>) => void;
-  }) => Promise<unknown>;
-  onResponse: Callback<[{ response: Response }]>;
-  onRequestFailure: Callback<[{ error: unknown }]>;
-}
-
-export interface EdgeNetworkCookieTransfer {
-  cookiesToPayload: (payload: RequestPayload, endpointDomain: string) => void;
-  responseToCookies: (response: Response) => void;
-}
-
-export interface SendNetworkRequestOptions {
-  requestId: string;
-  url: string;
-  payload: unknown;
-  useSendBeacon: boolean;
-  useKeepalive: boolean;
-  headers?: Record<string, string>;
-}
+export type EdgeNetworkLifecycle = Pick<
+  Lifecycle,
+  "onBeforeRequest" | "onResponse" | "onRequestFailure"
+>;
 
 export interface EdgeNetworkResponse extends NetworkResponse {
   parsedBody?: ResponseContent;
@@ -70,7 +58,7 @@ export interface InjectSendEdgeNetworkRequestOptions {
     edgeCredentials?: EdgeCredentials;
   };
   lifecycle: EdgeNetworkLifecycle;
-  cookieTransfer: EdgeNetworkCookieTransfer;
+  cookieTransfer: CookieTransfer;
   sendNetworkRequest: (
     options: SendNetworkRequestOptions,
   ) => Promise<EdgeNetworkResponse>;
@@ -81,9 +69,9 @@ export interface InjectSendEdgeNetworkRequestOptions {
   getImsAccessToken?: ImsAccessTokenProvider;
 }
 
-// Request events also carry getCreatedAt, which the RequestEvent contract omits.
+// Events added to a data collection payload are core Events.
 type QueuedRequestPayload = {
-  getEvents?: () => { getCreatedAt: () => number }[];
+  getEvents?: () => Pick<Event, "getCreatedAt">[];
 };
 
 const calculateQueueTimeMillis = (payload: QueuedRequestPayload) => {
@@ -261,8 +249,7 @@ export default ({
       .catch(async (error: Error) => {
         if (!useServerApi && isDemdexBlockedError(error, request)) {
           hasDemdexFailed = true;
-          // The Request contract declares no parameter; the argument is ignored.
-          (request.setUseIdThirdPartyDomain as (value: boolean) => void)(false);
+          request.setUseIdThirdPartyDomain(false);
           const url = buildEndpointUrl(edgeDomain, request);
           const payload = request.getPayload();
           cookieTransfer.cookiesToPayload(payload, edgeDomain);

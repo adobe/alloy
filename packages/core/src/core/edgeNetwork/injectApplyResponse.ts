@@ -15,16 +15,14 @@ import handleRequestFailure from "./handleRequestFailure.js";
 import type { EdgeRequestExecutor } from "./types.js";
 import type { Response, ResponseContent, ResponseCreator } from "../types.js";
 import type { Request } from "../../utils/request/types.js";
-import type {
-  EdgeNetworkCookieTransfer,
-  EdgeNetworkLifecycle,
-} from "./injectSendEdgeNetworkRequest.js";
+import type { EdgeNetworkLifecycle } from "./injectSendEdgeNetworkRequest.js";
+import type { CookieTransfer } from "../createCookieTransfer.js";
 import type { ProcessableNetworkResponse } from "./injectProcessWarningsAndErrors.js";
 
 const HTTP_STATUS_OK = 200;
 
 export interface InjectApplyResponseOptions {
-  cookieTransfer: EdgeNetworkCookieTransfer;
+  cookieTransfer: CookieTransfer;
   lifecycle: EdgeNetworkLifecycle;
   createResponse: ResponseCreator;
   processWarningsAndErrors: (

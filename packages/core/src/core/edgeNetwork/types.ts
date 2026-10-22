@@ -11,11 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import type { Request } from "../../utils/request/types.js";
+import type { Callback } from "../../utils/types.js";
+import type { Response } from "../types.js";
 
 export type EdgeRequestExecutor = (options: {
   request: Request;
-  runOnResponseCallbacks?: () => void;
-  runOnRequestFailureCallbacks?: () => void;
+  runOnResponseCallbacks?: Callback<[{ response: Response }]>;
+  runOnRequestFailureCallbacks?: Callback<[{ error: unknown }]>;
 }) => Promise<Record<string, unknown>>;
 
 export const Types = {};

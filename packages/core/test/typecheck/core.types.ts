@@ -52,6 +52,8 @@ expectTypeOf(Types).toEqualTypeOf<Record<never, never>>();
 // Core contracts are supersets of the subsets utils depends on.
 expectTypeOf<Logger>().toExtend<BaseLogger>();
 expectTypeOf<Event>().toExtend<BaseEvent>();
+expectTypeOf<Event["getCreatedAt"]>().toEqualTypeOf<() => number>();
+expectTypeOf<Event["getUserIdentityMap"]>().toEqualTypeOf<() => unknown>();
 
 // The services cookie types are the utils ones.
 expectTypeOf<ServicesCookieAttributes>().toEqualTypeOf<CookieAttributes>();

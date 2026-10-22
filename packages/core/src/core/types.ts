@@ -152,6 +152,9 @@ export interface Event extends BaseEvent {
   shouldSend: () => boolean;
   getViewName: () => string | undefined;
   toJSON: () => Record<string, unknown>;
+  /** Milliseconds since the epoch when the event was created. */
+  getCreatedAt: () => number;
+  getUserIdentityMap: () => unknown;
 }
 
 export interface SendEventOptions {

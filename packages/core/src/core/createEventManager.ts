@@ -19,6 +19,7 @@ import type {
 } from "../utils/request/types.js";
 import type { Override } from "../utils/request/createRequestParams.js";
 import type { ConsentManager } from "./consent/types.js";
+import type { Lifecycle } from "./createLifecycle.js";
 import type { EdgeRequestExecutor } from "./edgeNetwork/types.js";
 import type {
   ApplyResponseOptions,
@@ -31,10 +32,10 @@ import type {
 } from "./types.js";
 
 /** The lifecycle hooks the event manager runs; see `createLifecycle`. */
-export interface EventManagerLifecycle {
-  onBeforeEvent: (...args: unknown[]) => Promise<unknown>;
-  onRequestFailure: (...args: unknown[]) => Promise<unknown>;
-}
+export type EventManagerLifecycle = Pick<
+  Lifecycle,
+  "onBeforeEvent" | "onRequestFailure"
+>;
 
 export interface CreateEventManagerDependencies {
   config: {

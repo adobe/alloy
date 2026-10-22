@@ -30,9 +30,18 @@ export interface CookieTransferState {
   entries?: { key: string; value: string }[];
 }
 
+export interface CookieTransfer {
+  cookiesToPayload: (
+    payload: Pick<RequestPayload, "mergeState">,
+    endpointDomain: string,
+    extraCookieNames?: string[],
+  ) => void;
+  responseToCookies: (response: Pick<Response, "getPayloadsByType">) => void;
+}
+
 export interface CreateCookieTransferOptions {
   cookieJar: Pick<CookieService, "getAll" | "set">;
-  shouldTransferCookie: (name: string) => boolean;
+  shouldTransferCookie: (name: string) => boolean | undefined;
   apexDomain: string;
   dateProvider: () => Date;
 }
@@ -42,7 +51,7 @@ export default ({
   shouldTransferCookie,
   apexDomain,
   dateProvider,
-}: CreateCookieTransferOptions) => {
+}: CreateCookieTransferOptions): CookieTransfer => {
   return {
     /**
      * When sending to a third-party endpoint, the endpoint won't be able to

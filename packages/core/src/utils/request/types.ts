@@ -47,7 +47,7 @@ export interface Request<P extends RequestPayload = RequestPayload> {
   getUseKeepalive: () => boolean;
   getEdgeSubPath: () => string;
   getUseIdThirdPartyDomain: () => boolean;
-  setUseIdThirdPartyDomain: () => void;
+  setUseIdThirdPartyDomain: (value?: boolean) => void;
   setIsIdentityEstablished: () => void;
   getRequestParams: () => Record<string, unknown>;
 }
