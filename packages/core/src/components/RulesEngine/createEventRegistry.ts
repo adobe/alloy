@@ -34,7 +34,6 @@ import type {
   EventPayload,
   EventRecord,
   EventRegistry,
-  Proposition,
 } from "./types.js";
 
 export interface CreateEventRegistryOptions {
@@ -58,16 +57,6 @@ export interface EventRegistryApi {
 }
 
 /** The `_experience.decisioning` fields the registry reads from XDM. */
-interface ExperienceXdm {
-  _experience: {
-    decisioning?: {
-      propositionEventType?: Record<string, unknown>;
-      propositionAction?: { id?: string };
-      propositions?: Proposition[];
-    };
-  };
-}
-
 /**
  * Creates an event registry to track and manage events
  */
@@ -184,8 +173,7 @@ export default ({
           propositions = [],
         } = {},
       },
-      // hasExperienceData checked that `_experience` is an object.
-    } = xdm as unknown as ExperienceXdm;
+    } = xdm;
 
     Object.keys(propositionEventType)
       .filter(

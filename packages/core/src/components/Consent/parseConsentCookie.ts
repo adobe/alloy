@@ -20,9 +20,12 @@ import type { ConsentByPurpose } from "./types.js";
  */
 export default (cookieValue: string): ConsentByPurpose => {
   const categoryPairs = cookieValue.split(";");
-  return categoryPairs.reduce((consentByPurpose, categoryPair) => {
-    const [name, value] = categoryPair.split("=");
-    consentByPurpose[name] = value;
-    return consentByPurpose;
-  }, {} as ConsentByPurpose);
+  return categoryPairs.reduce<ConsentByPurpose>(
+    (consentByPurpose, categoryPair) => {
+      const [name, value] = categoryPair.split("=");
+      consentByPurpose[name] = value;
+      return consentByPurpose;
+    },
+    {},
+  );
 };

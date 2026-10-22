@@ -91,4 +91,15 @@ export interface Consequence {
   detail: ConsequenceDetail;
 }
 
+/** An event's XDM with decisioning data; inner fields are not validated. */
+export interface ExperienceXdm {
+  _experience: {
+    decisioning?: {
+      propositionEventType?: Record<string, unknown>;
+      propositionAction?: { id?: string };
+      propositions?: Proposition[];
+    };
+  };
+}
+
 export const Types = {};
