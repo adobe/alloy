@@ -67,9 +67,8 @@ const createDataCollector = ({
             event.documentMayUnload();
           }
 
-          // createEvent stores undefined as "no user xdm/data"; Event's type is narrower.
-          event.setUserXdm(xdm as Record<string, unknown>);
-          event.setUserData(data as Record<string, unknown>);
+          event.setUserXdm(xdm);
+          event.setUserData(data);
 
           if (type) {
             event.mergeXdm({
