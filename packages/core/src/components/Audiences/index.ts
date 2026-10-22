@@ -13,8 +13,14 @@ governing permissions and limitations under the License.
 import { createLoggingCookieJar } from "../../utils/index.js";
 import injectProcessDestinations from "./injectProcessDestinations.js";
 import injectProcessResponse from "./injectProcessResponse.js";
+import type { ComponentCreator, ComponentTools } from "../../core/types.js";
 
-const createAudiences = ({
+export type AudiencesOptions = Pick<
+  ComponentTools,
+  "logger" | "fireReferrerHideableImage" | "platformServices"
+>;
+
+const createAudiences: ComponentCreator<AudiencesOptions> = ({
   logger,
   fireReferrerHideableImage,
   platformServices,

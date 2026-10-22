@@ -9,7 +9,36 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const createResultLogMessage = (urlDestination, success) => {
+import type { Logger } from "../../core/types.js";
+import type { CookieService, GlobalsService } from "../../services/types.js";
+
+export interface CookieDestination {
+  type: "cookie";
+  spec: { name: string; value?: string; domain?: string; ttlDays?: number };
+}
+
+export interface UrlDestination {
+  type: "url";
+  spec: { url: string; hideReferrer: boolean };
+}
+
+export type Destination = CookieDestination | UrlDestination;
+
+export interface ProcessDestinationsOptions {
+  fireReferrerHideableImage: GlobalsService["fireReferrerHideableImage"];
+  logger: Logger;
+  cookieJar: Pick<CookieService, "set">;
+  isPageSsl: boolean;
+}
+
+export type ProcessDestinations = (
+  destinations: Destination[],
+) => Promise<unknown>;
+
+const createResultLogMessage = (
+  urlDestination: UrlDestination,
+  success: boolean,
+) => {
   return `URL destination ${success ? "succeeded" : "failed"}: ${
     urlDestination.spec.url
   }`;
@@ -20,13 +49,13 @@ export default ({
   logger,
   cookieJar,
   isPageSsl,
-}) => {
+}: ProcessDestinationsOptions): ProcessDestinations => {
   const extraCookieOptions = isPageSsl
-    ? { sameSite: "none", secure: true }
+    ? { sameSite: "none" as const, secure: true }
     : {};
-  const processCookies = (destinations) => {
+  const processCookies = (destinations: Destination[]) => {
     const cookieDestinations = destinations.filter(
-      (dest) => dest.type === "cookie",
+      (dest): dest is CookieDestination => dest.type === "cookie",
     );
 
     cookieDestinations.forEach((dest) => {
@@ -39,8 +68,10 @@ export default ({
     });
   };
 
-  const processUrls = async (destinations) => {
-    const urlDestinations = destinations.filter((dest) => dest.type === "url");
+  const processUrls = async (destinations: Destination[]) => {
+    const urlDestinations = destinations.filter(
+      (dest): dest is UrlDestination => dest.type === "url",
+    );
 
     await Promise.allSettled(
       urlDestinations.map(async (urlDestination) => {
@@ -54,7 +85,7 @@ export default ({
     );
   };
 
-  return (destinations) => {
+  return (destinations: Destination[]) => {
     processCookies(destinations);
     return processUrls(destinations);
   };

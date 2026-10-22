@@ -9,10 +9,22 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import type { Response } from "../../core/types.js";
+import type {
+  Destination,
+  ProcessDestinations,
+} from "./injectProcessDestinations.js";
 
-export default ({ processDestinations }) => {
-  return ({ response }) => {
-    const pushDestinations = response.getPayloadsByType("activation:push");
+export interface ProcessResponseOptions {
+  processDestinations: ProcessDestinations;
+}
+
+export default ({ processDestinations }: ProcessResponseOptions) => {
+  return ({ response }: { response: Pick<Response, "getPayloadsByType"> }) => {
+    // Edge returns destination payloads under these types; shape not validated.
+    const pushDestinations = response.getPayloadsByType(
+      "activation:push",
+    ) as Destination[];
     // fire and forget
     processDestinations(pushDestinations);
     return {
