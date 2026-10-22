@@ -11,27 +11,54 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray } from "../utils/index.js";
+import type { RequestPayload } from "../utils/request/types.js";
+import type { CookieAttributes, CookieService } from "../services/types.js";
+import type { Response } from "./types.js";
 
 const STATE_STORE_HANDLE_TYPE = "state:store";
+
+interface StateStoreItem {
+  key: string;
+  value: string;
+  maxAge?: number;
+  attrs?: { SameSite?: string };
+}
+
+export interface CookieTransferState {
+  domain: string;
+  cookiesEnabled: boolean;
+  entries?: { key: string; value: string }[];
+}
+
+export interface CreateCookieTransferOptions {
+  cookieJar: Pick<CookieService, "getAll" | "set">;
+  shouldTransferCookie: (name: string) => boolean;
+  apexDomain: string;
+  dateProvider: () => Date;
+}
 
 export default ({
   cookieJar,
   shouldTransferCookie,
   apexDomain,
   dateProvider,
-}) => {
+}: CreateCookieTransferOptions) => {
   return {
     /**
      * When sending to a third-party endpoint, the endpoint won't be able to
      * access first-party cookies, therefore we transfer cookies into
      * the request body so they can be read by the server.
      */
-    cookiesToPayload(payload, endpointDomain, extraCookieNames = []) {
+    cookiesToPayload(
+      payload: Pick<RequestPayload, "mergeState">,
+      endpointDomain: string,
+      extraCookieNames: string[] = [],
+    ) {
       // localhost is a special case where the apexDomain is ""
       // We want to treat localhost as a third-party domain.
       const isEndpointFirstParty =
         apexDomain !== "" && endpointDomain.endsWith(apexDomain);
-      const state = {
+      const state: CookieTransferState = {
         domain: apexDomain,
         cookiesEnabled: true,
       };
@@ -41,8 +68,8 @@ export default ({
       // headers.
       if (!isEndpointFirstParty || isNonEmptyArray(extraCookieNames)) {
         const cookies = cookieJar.getAll();
-        const entriesByKey = new Map();
-        const addEntry = (key) => {
+        const entriesByKey = new Map<string, { key: string; value: string }>();
+        const addEntry = (key: string) => {
           if (cookies[key] !== undefined && !entriesByKey.has(key)) {
             entriesByKey.set(key, { key, value: cookies[key] });
           }
@@ -65,34 +92,36 @@ export default ({
      * write first-party cookies, therefore we write first-party cookies
      * as directed in the response body.
      */
-    responseToCookies(response) {
-      response
-        .getPayloadsByType(STATE_STORE_HANDLE_TYPE)
-        .forEach((stateItem) => {
-          const options = { domain: apexDomain };
+    responseToCookies(response: Pick<Response, "getPayloadsByType">) {
+      // state:store payloads are the cookie entries written by the Edge Network.
+      (
+        response.getPayloadsByType(STATE_STORE_HANDLE_TYPE) as StateStoreItem[]
+      ).forEach((stateItem) => {
+        const options: CookieAttributes = { domain: apexDomain };
 
-          const sameSite =
-            stateItem.attrs &&
-            stateItem.attrs.SameSite &&
-            stateItem.attrs.SameSite.toLowerCase();
+        const sameSite =
+          stateItem.attrs &&
+          stateItem.attrs.SameSite &&
+          stateItem.attrs.SameSite.toLowerCase();
 
-          if (stateItem.maxAge !== undefined) {
-            // cookieJar expects "expires" as a date object
-            options.expires = new Date(
-              dateProvider().getTime() + stateItem.maxAge * 1000,
-            );
-          }
-          if (sameSite !== undefined) {
-            options.sameSite = sameSite;
-          }
-          // When sameSite is set to none, the secure flag must be set.
-          // Experience edge will not set the secure flag in these cases.
-          if (sameSite === "none") {
-            options.secure = true;
-          }
+        if (stateItem.maxAge !== undefined) {
+          // cookieJar expects "expires" as a date object
+          options.expires = new Date(
+            dateProvider().getTime() + stateItem.maxAge * 1000,
+          );
+        }
+        if (sameSite !== undefined) {
+          // Passed through from the server without validation, as before.
+          options.sameSite = sameSite as CookieAttributes["sameSite"];
+        }
+        // When sameSite is set to none, the secure flag must be set.
+        // Experience edge will not set the secure flag in these cases.
+        if (sameSite === "none") {
+          options.secure = true;
+        }
 
-          cookieJar.set(stateItem.key, stateItem.value, options);
-        });
+        cookieJar.set(stateItem.key, stateItem.value, options);
+      });
     },
   };
 };

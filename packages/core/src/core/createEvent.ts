@@ -16,26 +16,47 @@ import {
   isNonEmptyArray,
   deduplicateArray,
 } from "../utils/index.js";
+import type { Event, OnBeforeEventSend } from "./types.js";
 
-const getXdmPropositions = (xdm) => {
+type Content = Record<string, unknown>;
+
+interface Proposition {
+  id?: unknown;
+  scope?: unknown;
+}
+
+interface EventXdm {
+  _experience?: { decisioning?: { propositions?: unknown } };
+  web?: { webPageDetails?: { viewName?: string } };
+  identityMap?: unknown;
+  [key: string]: unknown;
+}
+
+export interface CreatedEvent extends Event {
+  getCreatedAt: () => number;
+  getUserIdentityMap: () => unknown;
+}
+
+const getXdmPropositions = (xdm: EventXdm | undefined): Proposition[] => {
   return xdm &&
     xdm._experience &&
     xdm._experience.decisioning &&
     isNonEmptyArray(xdm._experience.decisioning.propositions)
-    ? xdm._experience.decisioning.propositions
+    ? (xdm._experience.decisioning.propositions as Proposition[])
     : [];
 };
 
-export default () => {
-  const content = {};
+export default (): CreatedEvent => {
+  const content: { xdm?: EventXdm; data?: Content; [key: string]: unknown } =
+    {};
   const createdAt = Date.now();
-  let userXdm;
-  let userData;
+  let userXdm: EventXdm | undefined;
+  let userData: Content | undefined;
   let documentMayUnload = false;
   let isFinalized = false;
   let shouldSendEvent = true;
 
-  const throwIfEventFinalized = (methodName) => {
+  const throwIfEventFinalized = (methodName: string) => {
     if (isFinalized) {
       throw new Error(
         `${methodName} cannot be called after event is finalized.`,
@@ -43,12 +64,12 @@ export default () => {
     }
   };
 
-  const event = {
+  const event: CreatedEvent = {
     hasQuery() {
       return Object.prototype.hasOwnProperty.call(this.getContent(), "query");
     },
     getContent() {
-      const currentContent = JSON.parse(JSON.stringify(content));
+      const currentContent: Content = JSON.parse(JSON.stringify(content));
 
       if (userXdm) {
         deepAssign(currentContent, { xdm: userXdm });
@@ -102,20 +123,22 @@ export default () => {
 
       const newPropositions = deduplicateArray(
         [...getXdmPropositions(userXdm), ...getXdmPropositions(content.xdm)],
+        // deduplicateArray only checks truthiness; the && chain yields non-booleans.
         (a, b) =>
-          a === b ||
-          (a.id &&
-            b.id &&
-            a.id === b.id &&
-            a.scope &&
-            b.scope &&
-            a.scope === b.scope),
+          (a === b ||
+            (a.id &&
+              b.id &&
+              a.id === b.id &&
+              a.scope &&
+              b.scope &&
+              a.scope === b.scope)) as boolean,
       );
       if (userXdm) {
         this.mergeXdm(userXdm);
       }
       if (newPropositions.length > 0) {
-        content.xdm._experience.decisioning.propositions = newPropositions;
+        // Non-empty propositions imply content.xdm was merged above with this path.
+        content.xdm!._experience!.decisioning!.propositions = newPropositions;
       }
 
       if (userData) {
@@ -131,7 +154,7 @@ export default () => {
 
         // this allows the user to replace the xdm and data properties
         // on the object passed to the callback
-        const tempContent = {
+        const tempContent: Parameters<OnBeforeEventSend>[0] = {
           xdm: content.xdm || {},
           data: content.data || {},
         };

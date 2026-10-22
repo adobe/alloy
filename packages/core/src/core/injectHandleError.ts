@@ -12,10 +12,16 @@ governing permissions and limitations under the License.
 
 import { toError, updateErrorMessage } from "../utils/index.js";
 import { DECLINED_CONSENT_ERROR_CODE } from "./consent/createConsentStateMachine.js";
+import type { Logger } from "./types.js";
 
-export default ({ errorPrefix, logger }) =>
-  (error, operation) => {
-    const err = toError(error);
+export interface InjectHandleErrorOptions {
+  errorPrefix: string;
+  logger: Logger;
+}
+
+export default ({ errorPrefix, logger }: InjectHandleErrorOptions) =>
+  (error: unknown, operation: string): Record<string, never> => {
+    const err: Error & { code?: unknown } = toError(error);
 
     // In the case of declined consent, we've opted to not reject the promise
     // returned to the customer, but instead resolve the promise with an

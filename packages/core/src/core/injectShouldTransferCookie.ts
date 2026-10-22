@@ -13,8 +13,16 @@ governing permissions and limitations under the License.
 import { isNamespacedCookieName } from "../utils/index.js";
 import { AT_QA_MODE, MBOX, MUNCHKIN } from "../constants/legacyCookies.js";
 
-export default ({ orgId, targetMigrationEnabled }) =>
-  (name) => {
+export interface InjectShouldTransferCookieOptions {
+  orgId: string;
+  targetMigrationEnabled?: boolean;
+}
+
+export default ({
+    orgId,
+    targetMigrationEnabled,
+  }: InjectShouldTransferCookieOptions) =>
+  (name: string) => {
     // We have a contract with the server that we will pass
     // all cookies whose names are namespaced according to the
     // logic in isNamespacedCookieName as well as any legacy

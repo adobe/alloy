@@ -13,6 +13,51 @@ governing permissions and limitations under the License.
 import PAGE_WIDE_SCOPE from "../constants/pageWideScope.js";
 import { createCallbackAggregator, noop } from "../utils/index.js";
 import { createRequestParams } from "../utils/request/index.js";
+import type {
+  DataCollectionRequestPayload,
+  Request,
+} from "../utils/request/types.js";
+import type { Override } from "../utils/request/createRequestParams.js";
+import type { ConsentManager } from "./consent/types.js";
+import type { EdgeRequestExecutor } from "./edgeNetwork/types.js";
+import type {
+  ApplyResponseOptions,
+  Event,
+  EventManager,
+  Logger,
+  OnBeforeEventSend,
+  ResponseContent,
+  SendEventOptions,
+} from "./types.js";
+
+/** The lifecycle hooks the event manager runs; see `createLifecycle`. */
+export interface EventManagerLifecycle {
+  onBeforeEvent: (...args: unknown[]) => Promise<unknown>;
+  onRequestFailure: (...args: unknown[]) => Promise<unknown>;
+}
+
+export interface CreateEventManagerDependencies {
+  config: {
+    onBeforeEventSend?: OnBeforeEventSend;
+    edgeConfigOverrides?: Override;
+  };
+  logger: Logger;
+  lifecycle: EventManagerLifecycle;
+  consent: Pick<ConsentManager, "awaitConsent">;
+  createEvent: () => Event;
+  createDataCollectionRequestPayload: () => DataCollectionRequestPayload;
+  createDataCollectionRequest: (params: {
+    payload: DataCollectionRequestPayload;
+    datastreamIdOverride?: string;
+  }) => Request<DataCollectionRequestPayload>;
+  sendEdgeNetworkRequest: EdgeRequestExecutor;
+  applyResponse: (options: {
+    request: Request<DataCollectionRequestPayload>;
+    responseHeaders: Record<string, string>;
+    responseBody: ResponseContent;
+    runOnResponseCallbacks: () => Promise<unknown>;
+  }) => Promise<Record<string, unknown>>;
+}
 
 const EVENT_CANCELLATION_MESSAGE =
   "Event was canceled because the onBeforeEventSend callback returned false.";
@@ -27,7 +72,7 @@ export default ({
   createDataCollectionRequest,
   sendEdgeNetworkRequest,
   applyResponse,
-}) => {
+}: CreateEventManagerDependencies): EventManager => {
   const { onBeforeEventSend, edgeConfigOverrides: globalConfigOverrides } =
     config;
 
@@ -37,16 +82,14 @@ export default ({
      * Sends an event. This includes running the event and payload through the
      * appropriate lifecycle hooks, sending the request to the server, and
      * handling the response.
-     * @param {Object} event This will be JSON stringified and used inside the
+     * @param event - This will be JSON stringified and used inside the
      * request payload.
-     * @param {Object} [options] Options to pass on to the onBeforeEvent
-     * lifecycle method
-     * @param {Object} [options.edgeConfigOverrides] Settings that take
+     * @param options - Options to pass on to the onBeforeEvent
+     * lifecycle method. `edgeConfigOverrides` are settings that take
      * precedence over the global datastream configuration, including which
      * datastream to use.
-     * @returns {*}
      */
-    sendEvent(event, options = {}) {
+    sendEvent(event: Event, options: SendEventOptions = {}) {
       const { edgeConfigOverrides: localConfigOverrides, ...otherOptions } =
         options;
       const requestParams = createRequestParams({
@@ -90,7 +133,7 @@ export default ({
             const error = new Error(EVENT_CANCELLATION_MESSAGE);
             return onRequestFailureCallbackAggregator
               .call({ error })
-              .then(() => {
+              .then((): undefined => {
                 // Ensure the promise gets resolved with undefined instead
                 // of an array of return values from the callbacks.
               });
@@ -104,7 +147,7 @@ export default ({
           });
         });
     },
-    applyResponse(event, options = {}) {
+    applyResponse(event: Event, options: ApplyResponseOptions = {}) {
       const {
         renderDecisions = false,
         decisionContext = {},
