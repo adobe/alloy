@@ -13,10 +13,11 @@ governing permissions and limitations under the License.
  * Returns whether an array contains unique values.
  * @param values
  */
-export default (values: ArrayLike<PropertyKey>): boolean => {
+export default (values: ArrayLike<unknown>): boolean => {
   const storedVals: Record<PropertyKey, boolean> = Object.create(null);
   for (let i = 0; i < values.length; i += 1) {
-    const item = values[i];
+    // Values are used as object keys, so they are compared by their string form.
+    const item = values[i] as PropertyKey;
     if (item in storedVals) {
       return false;
     }

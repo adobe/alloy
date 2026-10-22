@@ -20,7 +20,7 @@ import isBoolean from "./isBoolean.js";
 // We want to avoid mapping between specific keys because we want Konductor
 // to be able to add overrides in the future without us needing to make
 // any changes to the Web SDK
-export default (configuration: unknown) => {
+export default (configuration: unknown): Record<string, unknown> | null => {
   if (isNil(configuration) || typeof configuration !== "object") {
     return null;
   }
@@ -49,5 +49,5 @@ export default (configuration: unknown) => {
     return null;
   }
 
-  return configOverrides;
+  return configOverrides as Record<string, unknown>;
 };
