@@ -27,7 +27,7 @@ interface CollectOptions {
   propositionAction?: PropositionAction;
   documentMayUnload?: boolean;
   eventType?: string;
-  propositionEventTypes?: string[];
+  propositionEventTypes?: (string | undefined)[];
   viewName?: string;
   identityMap?: IdentityMap;
 }
@@ -43,7 +43,7 @@ export default <R = unknown>({
   mergeDecisionsMeta: (
     event: Event,
     decisionsMeta: DecisionsMeta,
-    propositionEventTypes: string[],
+    propositionEventTypes: (string | undefined)[],
     propositionAction: PropositionAction | undefined,
   ) => void;
 }) => {

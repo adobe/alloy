@@ -44,8 +44,10 @@ const propositionEventTypeToEventTypeMapping: Record<string, string> = {
 
 export const getPropositionEventType = (
   eventType: string,
-): PropositionEventTypeValue =>
+): PropositionEventTypeValue | undefined =>
   eventTypeToPropositionEventTypeMapping[eventType];
 
-export const getEventType = (propositionEventType: string): string =>
+export const getEventType = (
+  propositionEventType: string,
+): string | undefined =>
   propositionEventTypeToEventTypeMapping[propositionEventType];
