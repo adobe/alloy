@@ -13,13 +13,11 @@ governing permissions and limitations under the License.
 import defaultLibraryVersion from "../../constants/libraryVersion.js";
 import { CONFIGURE, SET_DEBUG } from "../../constants/coreCommands.js";
 import redactEdgeCredentials from "../../utils/redactEdgeCredentials.js";
-/* eslint-disable import/no-restricted-paths -- type-only import of the component contract; erased at build. */
 import type {
   ComponentCreator,
   ComponentRegistry,
   Config,
 } from "../../core/types.js";
-/* eslint-enable import/no-restricted-paths */
 import type { PlatformServices } from "../../services/types.js";
 
 export interface LibraryInfo {
