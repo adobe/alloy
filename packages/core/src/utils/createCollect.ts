@@ -32,20 +32,26 @@ interface CollectOptions {
   identityMap?: IdentityMap;
 }
 
-export default <R = unknown>({
+/**
+ * `E` lets callers pass an event manager typed with a richer event (e.g. core's).
+ * `mergeDecisionsMeta` is a method so its parameters are checked bivariantly:
+ * the default event types may contain `undefined`, which utils'
+ * `mergeDecisionsMeta` (typed `string[]`) has always received.
+ */
+export default <R = unknown, E extends Event = Event>({
   eventManager,
   mergeDecisionsMeta,
 }: {
   eventManager: {
-    createEvent: () => Event;
-    sendEvent: (event: Event) => Promise<R>;
+    createEvent: () => E;
+    sendEvent: (event: E) => Promise<R>;
   };
-  mergeDecisionsMeta: (
-    event: Event,
+  mergeDecisionsMeta(
+    event: E,
     decisionsMeta: DecisionsMeta,
     propositionEventTypes: (string | undefined)[],
-    propositionAction: PropositionAction | undefined,
-  ) => void;
+    propositionAction?: PropositionAction,
+  ): void;
 }) => {
   // Called when a decision is auto-rendered for the __view__ scope or a SPA view(display and empty display notification)
   return ({

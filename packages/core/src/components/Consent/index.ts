@@ -25,7 +25,6 @@ import parseConsentCookie from "./parseConsentCookie.js";
 import validateSetConsentOptions from "./validateSetConsentOptions.js";
 import configValidators from "./configValidators.js";
 import type { ComponentCreator, ComponentTools } from "../../core/types.js";
-import type { CookieJar } from "../../utils/types.js";
 import type { ConsentComponent } from "./createComponent.js";
 
 export type ConsentTools = Pick<
@@ -61,8 +60,7 @@ const createConsent = ({
 
   const doesIdentityCookieExist = injectDoesIdentityCookieExist({
     orgId,
-    // Only get(name) is used; the CookieService/CookieJar mismatch is deferred.
-    cookieJar: platformServices.cookie as unknown as CookieJar,
+    cookieJar: platformServices.cookie,
   });
 
   return createComponent({

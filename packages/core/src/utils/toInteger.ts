@@ -18,12 +18,16 @@ import isString from "./isString.js";
  *
  * The coersion is attempted if value is a number or string.
  */
-export default <D>(value: unknown, defaultValue: D): number | D => {
+export default <D = undefined>(
+  value: unknown,
+  defaultValue?: D,
+): number | D => {
   if (isNumber(value) || isString(value)) {
     const n = Math.round(Number(value));
     if (!Number.isNaN(n)) {
       return n;
     }
   }
-  return defaultValue;
+  // When omitted, D defaults to undefined, which is what is returned.
+  return defaultValue as D;
 };

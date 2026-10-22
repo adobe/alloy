@@ -35,7 +35,6 @@ import createIdentityRequestPayload from "./getIdentity/createIdentityRequestPay
 import injectAppendIdentityToUrl from "./appendIdentityToUrl/injectAppendIdentityToUrl.js";
 import createGetIdentityOptionsValidator from "./getIdentity/createGetIdentityOptionsValidator.js";
 import type { ComponentCreator, ComponentTools } from "../../core/types.js";
-import type { CookieJar } from "../../utils/types.js";
 import type { IdentityConfig } from "./configValidators.js";
 
 const createIdentity = ({
@@ -73,8 +72,7 @@ const createIdentity = ({
   });
   const doesIdentityCookieExist = injectDoesIdentityCookieExist({
     orgId,
-    // It only calls `get(name)`; CookieService and CookieJar differ on purpose (deferred merge).
-    cookieJar: platformServices.cookie as unknown as CookieJar,
+    cookieJar: platformServices.cookie,
   });
   const getIdentity = createGetIdentity({
     sendEdgeNetworkRequest,

@@ -160,11 +160,8 @@ export default ({
 
       event.mergeXdm({
         mediaCollection: {
-          // Called without a default since before TypeScript: an
-          // unparseable playhead becomes undefined.
-          playhead: (toInteger as (value: unknown) => number | undefined)(
-            playhead,
-          ),
+          // An unparseable playhead becomes undefined.
+          playhead: toInteger(playhead),
           qoeDataDetails,
           sessionID,
         },

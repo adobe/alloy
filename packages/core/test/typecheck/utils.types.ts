@@ -26,6 +26,7 @@ import {
   isObject,
   isString,
   filterObject,
+  toInteger,
   toArray,
   deepAssign,
   createCallbackAggregator,
@@ -140,3 +141,7 @@ expectTypeOf(objectOf({}).required().noUnknownFields).toBeFunction();
 expectTypeOf(number().default(1).integer).toBeFunction();
 // `matches` accepts the message argument callers pass.
 expectTypeOf(string().matches).toBeCallableWith(/a/, "message");
+
+// toInteger's default is optional; omitting it yields undefined.
+expectTypeOf(toInteger("1")).toEqualTypeOf<number | undefined>();
+expectTypeOf(toInteger("1", 0)).toEqualTypeOf<number>();

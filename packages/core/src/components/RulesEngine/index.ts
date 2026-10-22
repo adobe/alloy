@@ -40,8 +40,6 @@ import type { ApplyResponse } from "./createApplyResponse.js";
 import type { EvaluateRulesetsUserOptions } from "./createEvaluateRulesetsCommand.js";
 import type { Proposition } from "./types.js";
 
-type CollectDependencies = Parameters<typeof createCollect>[0];
-
 export type RulesEngineTools = Pick<
   ComponentTools,
   | "config"
@@ -68,15 +66,7 @@ const createRulesEngine = ({
   platformServices,
 }: RulesEngineTools) => {
   const { orgId, personalizationStorageEnabled } = config;
-  // createCollect's parameter types disagree with core's (utils vs core Event,
-  // possibly-undefined event types) though runtime matches what it always did;
-  // aligning them is a core change (ask-first).
-  const collect = createCollect({
-    eventManager:
-      eventManager as unknown as CollectDependencies["eventManager"],
-    mergeDecisionsMeta:
-      mergeDecisionsMeta as CollectDependencies["mergeDecisionsMeta"],
-  });
+  const collect = createCollect({ eventManager, mergeDecisionsMeta });
 
   const storage = platformServices.storage.createNamespacedStorage(
     `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`,

@@ -12,14 +12,14 @@ governing permissions and limitations under the License.
 
 import getNamespacedCookieName from "./getNamespacedCookieName.js";
 import { IDENTITY } from "../constants/cookieNameKey.js";
-import type { CookieJar } from "./types.js";
 
 export default ({
   orgId,
   cookieJar,
 }: {
   orgId: string;
-  cookieJar: CookieJar;
+  /** Only `get(name)` is used, so a CookieJar or a CookieService both fit. */
+  cookieJar: { get: (name: string) => unknown };
 }) => {
   const identityCookieName = getNamespacedCookieName(orgId, IDENTITY);
   /**
