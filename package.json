@@ -6,7 +6,8 @@
   "scripts": {
     "build": "pnpm -r --if-present run build",
     "clean": "pnpm -r --if-present run clean && rimraf coverage",
-    "dev": "concurrently --names build,sandbox \"pnpm --filter @adobe/alloy run build:watch\" \"pnpm --filter @adobe/alloy-sandbox-browser run start\"",
+    "dev": "pnpm -r --if-present run dev:prepare && BROWSER_SANDBOX_PORT=3001 pnpm -r --parallel --if-present run dev",
+    "dev:browser": "pnpm -r --filter '@adobe/alloy-sandbox-browser...' --if-present run dev:prepare && pnpm -r --parallel --filter '@adobe/alloy-sandbox-browser...' --if-present run dev",
     "lint": "eslint --cache --fix \"*.{js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/{src,test,scripts},scripts}/**/*.{js,cjs,mjs,jsx}\"",
     "format": "prettier --log-level warn --write \"*.{html,js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/{src,test,scripts},scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
     "format:check": "prettier --check \"*.{html,js,cjs,mjs,jsx}\" \"{sandboxes/*/src,packages/*/{src,test,scripts},scripts}/**/*.{html,js,cjs,mjs,jsx}\"",
@@ -44,8 +45,8 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "11.11.0",
-      "onFail": "warn"
+      "version": "12.11.2",
+      "onFail": "download"
     }
   },
   "devDependencies": {
@@ -53,13 +54,13 @@
     "@babel/plugin-transform-modules-commonjs": "^7.28.6",
     "@babel/preset-react": "^7.28.5",
     "@changesets/changelog-github": "^0.7.0",
-    "@changesets/cli": "^2.31.0",
+    "@changesets/cli": "^3.0.3",
     "@eslint/js": "^10.0.1",
     "@octokit/rest": "^22.0.1",
     "@types/node": "^25.6.0",
     "@vitejs/plugin-react": "^6.0.1",
-    "@vitest/browser-playwright": "^4.1.6",
-    "@vitest/coverage-v8": "^4.1.6",
+    "@vitest/browser-playwright": "^4.1.11",
+    "@vitest/coverage-v8": "^4.1.11",
     "@vitest/eslint-plugin": "^1.6.16",
     "baseline-browser-mapping": "^2.10.27",
     "chalk": "^5.6.2",
@@ -87,7 +88,7 @@
     "semver": "^7.7.4",
     "typescript": "^6.0.3",
     "url-exists-nodejs": "^0.2.4",
-    "vitest": "^4.1.6",
+    "vitest": "^4.1.11",
     "vitest-browser-react": "^2.0.2"
   }
 }

@@ -30,6 +30,13 @@ describe("createConsentRequest", () => {
     });
     expect(request.getUseSendBeacon()).toBe(false);
   });
+  it("does not use keepalive", () => {
+    const payload = {};
+    const request = createConsentRequest({
+      payload,
+    });
+    expect(request.getUseKeepalive()).toBe(false);
+  });
   it("passes the datastreamIdOverride to the request", () => {
     const payload = {};
     const datastreamIdOverride = "my-edge-config-id-override";

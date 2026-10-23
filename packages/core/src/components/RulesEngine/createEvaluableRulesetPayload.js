@@ -66,7 +66,7 @@ export default (payload, eventRegistry) => {
     );
   };
 
-  const evaluate = (context) => {
+  const evaluate = (context, { recordTrigger = true } = {}) => {
     const displayEvent = eventRegistry.getEvent(DISPLAY, activityId);
     const displayedDate = displayEvent?.timestamps[0];
 
@@ -75,12 +75,14 @@ export default (payload, eventRegistry) => {
     )
       .map(consequenceAdapter)
       .map((item) => {
-        const event = eventRegistry.addEvent({
-          eventType: PropositionEventType.TRIGGER,
-          eventId: activityId,
-        });
+        const event = recordTrigger
+          ? eventRegistry.addEvent({
+              eventType: PropositionEventType.TRIGGER,
+              eventId: activityId,
+            })
+          : eventRegistry.getEvent(PropositionEventType.TRIGGER, activityId);
 
-        const qualifiedDate = event.timestamps[0];
+        const qualifiedDate = event?.timestamps[0];
 
         return {
           ...item,

@@ -10,8 +10,6 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Cheap gate so the Production approval is only requested when there's
-  # actual release work (changesets exist) or the operator forced a run.
   detect:
     runs-on: ubuntu-latest
     outputs:
@@ -20,26 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - id: check
-        run: |
-          shopt -s nullglob
-          changesets=()
-          for f in .changeset/*.md; do
-            [ "$(basename "$f")" = "README.md" ] || changesets+=("$f")
-          done
-          if [ ${#changesets[@]} -gt 0 ]; then
-            echo "proceed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "proceed=false" >> "$GITHUB_OUTPUT"
-          fi
-
-          # Route by changesets prerelease mode (the signal exit-prerelease.yml
-          # guards on, so both workflows agree). "pre" => beta channel; exiting
-          # or absent => stable. Emit the target environment name so `publish`
-          # references it verbatim with no branching in the workflow.
-          case "$(jq -r '.mode // "none"' .changeset/pre.json 2>/dev/null)" in
-            pre) echo "environment=Beta" >> "$GITHUB_OUTPUT" ;;
-            *)   echo "environment=Production" >> "$GITHUB_OUTPUT" ;;
-          esac
+        run: node scripts/getReleaseState.js >> "$GITHUB_OUTPUT"
 
   publish:
     needs: detect
@@ -58,7 +37,9 @@ jobs:
           fetch-depth: 0
           # use the SSH deploy key for all future git actions to bypass branch protection
           ssh-key: ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
-      - uses: pnpm/action-setup@v6
+      - uses: pnpm/setup@v1
+        with:
+          install: false
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
@@ -66,10 +47,9 @@ jobs:
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
 
-      # Bump versions and push the release commit BEFORE anything irreversible.
-      # `changeset version` is a no-op when changesets are absent, so this
-      # whole step idempotently does nothing on a retry.
+      # Manual recovery must reach publishing when there is nothing left to version.
       - name: Version, commit, push
+        if: needs.detect.outputs.proceed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -82,15 +62,11 @@ jobs:
             git push origin HEAD:main
           fi
 
-      # changeset publish skips already-on-npm versions; with
-      # privatePackages.tag: true in .changeset/config.json it also tags the
-      # private packages so all four share a uniform release marker.
-      # `changeset publish` only tags what it just published, so a retry after a
-      # post-publish crash drops the tag; `changeset tag` idempotently backfills it.
+      # Backfill tags if an earlier run published packages but failed before pushing tags.
       - name: Publish + tag
         run: |
           pnpm changeset publish
-          pnpm changeset tag
+          pnpm changeset git-tag
           git push --tags
 
       - uses: webfactory/ssh-agent@v0.10.0

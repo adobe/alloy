@@ -23,6 +23,9 @@ import { uuid } from "../index.js";
  * @param {RequestPayload} options.payload
  * @param {function({isIdentityEstablished: boolean}): string} options.getAction
  * @param {function({isIdentityEstablished: boolean}): boolean} options.getUseSendBeacon
+ * @param {function(): boolean} [options.getUseKeepalive] Whether a fetch
+ *   request should be sent with `keepalive` so it survives a page unload.
+ *   Defaults to false.
  * @param {string} [options.datastreamIdOverride]
  * @param {string} [options.edgeSubPath]
  *
@@ -46,6 +49,7 @@ export default (options) => {
     payload,
     getAction,
     getUseSendBeacon,
+    getUseKeepalive = () => false,
     datastreamIdOverride,
     edgeSubPath,
     requestParams = {},
@@ -70,6 +74,9 @@ export default (options) => {
     },
     getUseSendBeacon() {
       return getUseSendBeacon({ isIdentityEstablished });
+    },
+    getUseKeepalive() {
+      return getUseKeepalive();
     },
     getEdgeSubPath() {
       if (edgeSubPath) {

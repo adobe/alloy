@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/@changesets/config@3.1.2/schema.json",
+  "$schema": "https://unpkg.com/@changesets/config@4.0.1/schema.json",
   "changelog": [
     "./changelog.mjs",
     {
@@ -14,8 +14,5 @@
   "updateInternalDependencies": "patch",
   "bumpVersionsWithWorkspaceProtocolOnly": true,
   "ignore": [],
-  "privatePackages": {
-    "version": true,
-    "tag": true
-  }
+  "privatePackages": true
 }

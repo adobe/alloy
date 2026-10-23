@@ -394,6 +394,25 @@ describe("createLogger", () => {
       "",
     );
   });
+  it("logs onNetworkResponse for a request sent with sendBeacon", () => {
+    logEnabled = true;
+    build();
+    logger.logOnNetworkResponse({
+      body: "",
+      requestId: "abc123",
+      statusCode: 204,
+      sentWithBeacon: true,
+    });
+    expect(console.info).toHaveBeenCalledWith(
+      "[myinstance]",
+      "Request abc123: Sent using sendBeacon. No response is available for sendBeacon requests. If the page navigates away, the browser keeps sending the request in the background, but its developer tools may show it as canceled.",
+    );
+    expect(console.info).not.toHaveBeenCalledWith(
+      "[myinstance]",
+      expect.stringContaining("Received response"),
+      expect.anything(),
+    );
+  });
   it("logs onNetworkError", () => {
     logEnabled = true;
     build();

@@ -190,6 +190,7 @@ export default ({
           url,
           payload: outgoingPayload,
           useSendBeacon: request.getUseSendBeacon(),
+          useKeepalive: request.getUseKeepalive(),
           headers,
         });
       })
@@ -210,6 +211,7 @@ export default ({
             url,
             payload,
             useSendBeacon: request.getUseSendBeacon(),
+            useKeepalive: request.getUseKeepalive(),
           });
         }
         return handleRequestFailure(onRequestFailureCallbackAggregator)(error);

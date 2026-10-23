@@ -21,6 +21,7 @@ class NetworkRecorder {
    * @property {string} request.method
    * @property {string} request.referrer
    * @property {Record<string, string>} request.headers
+   * @property {boolean} request.keepalive
    * @property {number} request.timestamp
    * @property {number} request.sequence
    * @property {Object} [response]
@@ -111,6 +112,7 @@ class NetworkRecorder {
       method: request.method,
       referrer: request.referrer,
       headers: Object.fromEntries(request.headers.entries()),
+      keepalive: request.keepalive,
       timestamp: Date.now(),
       sequence,
       body,
