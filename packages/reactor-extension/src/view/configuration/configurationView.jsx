@@ -258,6 +258,7 @@ const InstancesSection = ({
               <Button
                 data-test-id="addInstanceButton"
                 variant="secondary"
+                fillStyle="outline"
                 styles={style({
                   position: "absolute",
                   top: 8,

@@ -11,6 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, beforeEach, afterEach, expect } from "vitest";
+import { userEvent } from "vitest/browser";
+import { Button } from "@react-spectrum/s2";
 
 import useView from "../helpers/useView";
 import ConfigurationView from "../../../src/view/configuration/configurationView";
@@ -30,7 +32,14 @@ let confirmDeleteInstanceButton;
 
 describe("Config Multiple Instances", () => {
   beforeEach(async () => {
-    ({ view, driver, cleanup } = await useView(ConfigurationView));
+    ({ view, driver, cleanup } = await useView(() => (
+      <>
+        <ConfigurationView />
+        <Button variant="secondary" fillStyle="outline">
+          Native outlined button reference
+        </Button>
+      </>
+    )));
     nameField = field(view.getByTestId("nameField"));
     orgIdField = field(view.getByTestId("orgIdField"));
     productionEnvironmentTextfield = field(
@@ -49,6 +58,57 @@ describe("Config Multiple Instances", () => {
   afterEach(() => {
     cleanup();
   });
+
+  it("gives Add instance the native outlined button affordance", async () => {
+    await driver.init(buildSettings());
+
+    const actual = getComputedStyle(
+      view.getByTestId("addInstanceButton").element(),
+    );
+    const reference = getComputedStyle(
+      view
+        .getByRole("button", { name: "Native outlined button reference" })
+        .element(),
+    );
+
+    expect(Number.parseFloat(reference.borderTopWidth)).toBeGreaterThan(0);
+    for (const property of [
+      "borderTopWidth",
+      "borderTopStyle",
+      "borderTopColor",
+      "borderRadius",
+      "backgroundColor",
+      "fontSize",
+      "fontWeight",
+      "minHeight",
+    ]) {
+      expect(actual[property]).toBe(reference[property]);
+    }
+  });
+
+  it.each(["mouse", "Enter", "Space"])(
+    "adds an instance without toggling its accordion using %s",
+    async (interaction) => {
+      await driver.init(buildSettings());
+
+      const trigger = view.getByRole("button", { name: "SDK instances" });
+      const add = view.getByTestId("addInstanceButton");
+      trigger.element().focus();
+      await userEvent.tab();
+      await expect.element(add).toHaveFocus();
+      if (interaction === "mouse") {
+        await add.click();
+      } else {
+        await userEvent.keyboard(`{${interaction}}`);
+      }
+
+      await expect.element(trigger).toHaveAttribute("aria-expanded", "true");
+      await driver.expectSettings((s) => s.instances).toHaveLength(2);
+      await expect
+        .element(view.getByRole("tab", { name: "alloy2" }))
+        .toHaveAttribute("aria-selected", "true");
+    },
+  );
 
   it("keeps accordion and section headings larger than field labels", async () => {
     await driver.init(buildSettings());
