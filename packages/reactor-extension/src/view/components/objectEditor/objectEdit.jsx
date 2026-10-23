@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { Radio } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import FormikRadioGroup from "../../forms/fields/RadioGroup";
 import FormikTextField from "../../forms/fields/TextField";
@@ -64,7 +65,7 @@ const ObjectEdit = ({
           />
         </DataElementSelector>
       ) : (
-        <div>
+        <div className={style({ font: "body-sm" })}>
           To provide values for individual attributes, please select the
           attributes in the tree {verticalLayout ? "above" : "on the left"}.
         </div>
