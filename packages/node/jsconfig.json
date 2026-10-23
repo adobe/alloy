@@ -15,6 +15,8 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "maxNodeModuleJsDepth": 0,
+    // Type-check against @adobe/alloy-core's source, not its build output.
+    "customConditions": ["alloy-source"],
     "noEmit": true,
     "paths": {
       "@adobe/alloy-core": ["./src/alloy-core.d.ts"]

@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 // eslint-disable-next-line import/no-unresolved
 import { defineProject } from "vitest/config";
+import { sourceConditionResolve } from "../../vitest.shared.js";
 // eslint-disable-next-line import/no-unresolved
 import { playwright } from "@vitest/browser-playwright";
 // eslint-disable-next-line import/no-unresolved
@@ -30,6 +31,7 @@ const packageCoverage = {
 export const reactorExtensionTestProjects = [
   defineProject({
     extends: false,
+    ...sourceConditionResolve,
     test: {
       name: "reactor-extension/unit",
       include: [
@@ -37,11 +39,13 @@ export const reactorExtensionTestProjects = [
       ],
       isolate: false,
       environment: "happy-dom",
+      setupFiles: ["scripts/helpers/registerTsFromJsHook.js"],
       coverage: packageCoverage,
     },
   }),
   defineProject({
     extends: false,
+    ...sourceConditionResolve,
     plugins: [
       react({
         jsxRuntime: "automatic",

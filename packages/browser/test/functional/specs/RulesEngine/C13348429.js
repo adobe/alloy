@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import { ClientFunction, t } from "testcafe";
 import { v4 as uuidv4 } from "uuid";
 import createNetworkLogger from "../../helpers/networkLogger/index.js";

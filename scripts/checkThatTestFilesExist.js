@@ -23,7 +23,7 @@ import { safePathJoin } from "./helpers/path.js";
 const ignorePatterns = [
   "**/.*",
   "**/constants/**",
-  "**/index.js",
+  "**/index.{js,ts}",
   "baseCode.js",
   "standalone.js",
 ];

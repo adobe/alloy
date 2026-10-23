@@ -43,7 +43,7 @@ const isComponentConfigured = ({
  * @param {Logger} options.logger
  * @param {ConsentManager} options.consent
  * @param {IdentityManager} options.identity
- * @param {function(): string} options.getBrowser
+ * @param {(() => string)} options.getBrowser
  * @param {EdgeRequestExecutor} options.sendEdgeNetworkRequest
  * @param {PlatformServices} options.platformServices
  * @returns {{ lifecycle: object, commands: { sendPushSubscription: object } }}

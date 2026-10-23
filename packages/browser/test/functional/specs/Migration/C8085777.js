@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger/index.js";
 import createFixture from "../../helpers/createFixture/index.js";
@@ -20,12 +21,6 @@ import {
 } from "../../helpers/constants/configParts/index.js";
 import { TEST_PAGE, TEST_PAGE_AT_JS_TWO } from "../../helpers/constants/url.js";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
-/* eslint-disable import/no-relative-packages */
-import {
-  MBOX_EDGE_CLUSTER,
-  MBOX,
-} from "../../../../../core/src/constants/legacyCookies.js";
-/* eslint-enable import/no-relative-packages */
 import {
   assertKonductorReturnsCookieAndCookieIsSet,
   assertSameLocationHintIsUsed,
@@ -35,6 +30,9 @@ import {
 } from "./helper.js";
 import migrationEnabled from "../../helpers/constants/configParts/migrationEnabled.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+
+const MBOX_EDGE_CLUSTER = "mboxEdgeCluster";
+const MBOX = "mbox";
 
 const favoriteColor = "violet-1234";
 const networkLogger = createNetworkLogger();
