@@ -217,6 +217,7 @@ const InstancesSection = ({
   initInfo,
   context,
   isPreinstalled,
+  isExpanded,
   onAddInstance,
 }) => {
   const [{ value: instances }] = useField("instances");
@@ -255,29 +256,31 @@ const InstancesSection = ({
                   SDK instances
                 </span>
               </DisclosureTitle>
-              <Button
-                data-test-id="addInstanceButton"
-                variant="secondary"
-                fillStyle="outline"
-                styles={style({
-                  position: "absolute",
-                  top: 8,
-                  insetEnd: 8,
-                })}
-                onPress={async () => {
-                  const newInstance = await getInstanceDefaults({
-                    initInfo,
-                    isFirstInstance: false,
-                    context,
-                    existingInstances: instances,
-                  });
-                  arrayHelpers.push(newInstance);
-                  setSelectedTabKey(String(instances.length));
-                  onAddInstance();
-                }}
-              >
-                Add instance
-              </Button>
+              {isExpanded && (
+                <Button
+                  data-test-id="addInstanceButton"
+                  variant="secondary"
+                  fillStyle="outline"
+                  styles={style({
+                    position: "absolute",
+                    top: 8,
+                    insetEnd: 8,
+                  })}
+                  onPress={async () => {
+                    const newInstance = await getInstanceDefaults({
+                      initInfo,
+                      isFirstInstance: false,
+                      context,
+                      existingInstances: instances,
+                    });
+                    arrayHelpers.push(newInstance);
+                    setSelectedTabKey(String(instances.length));
+                    onAddInstance();
+                  }}
+                >
+                  Add instance
+                </Button>
+              )}
             </DisclosureHeader>
             <DisclosurePanel>
               <div
@@ -449,6 +452,7 @@ InstancesSection.propTypes = {
   initInfo: PropTypes.object.isRequired,
   context: PropTypes.object.isRequired,
   isPreinstalled: PropTypes.bool.isRequired,
+  isExpanded: PropTypes.bool.isRequired,
   onAddInstance: PropTypes.func.isRequired,
 };
 
@@ -537,6 +541,7 @@ const Configuration = ({ initInfo, context }) => {
           initInfo={initInfo}
           context={context}
           isPreinstalled={isPreinstalled}
+          isExpanded={expandedKeys.has("instances")}
           onAddInstance={() => {
             setExpandedKeys((keys) => new Set([...keys, "instances"]));
           }}

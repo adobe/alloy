@@ -130,6 +130,64 @@ describe("Config Multiple Instances", () => {
     expect(fontSize(accordion)).toBeGreaterThan(fontSize(section));
   });
 
+  it.each(["mouse", "Enter", "Space"])(
+    "only exposes Add instance while expanded using %s",
+    async (interaction) => {
+      await driver.init(buildSettings());
+      await addInstanceButton.click();
+      await nameField.fill("savedInstance");
+      await orgIdField.fill("saved@AdobeOrg");
+
+      const trigger = view.getByRole("button", { name: "SDK instances" });
+      const build = view.getByRole("button", { name: "Build options" });
+      const add = view.getByTestId("addInstanceButton");
+      trigger.element().focus();
+      if (interaction === "mouse") {
+        await trigger.click();
+      } else {
+        await userEvent.keyboard(`{${interaction}}`);
+      }
+
+      await expect.element(trigger).toHaveAttribute("aria-expanded", "false");
+      await expect.element(add).not.toBeInTheDocument();
+      await expect.element(trigger).toHaveFocus();
+      await userEvent.tab();
+      await expect
+        .element(view.getByRole("button", { name: "Property actions" }))
+        .toHaveFocus();
+      await userEvent.tab({ shift: true });
+      await expect.element(trigger).toHaveFocus();
+      if (interaction === "mouse") {
+        await trigger.click();
+      } else {
+        await userEvent.keyboard(`{${interaction}}`);
+      }
+
+      await expect.element(trigger).toHaveAttribute("aria-expanded", "true");
+      await expect.element(add).toBeVisible();
+      await expect.element(build).toHaveAttribute("aria-expanded", "false");
+      await expect
+        .element(view.getByRole("tab", { name: "savedInstance" }))
+        .toHaveAttribute("aria-selected", "true");
+      await nameField.expectValue("savedInstance");
+      await orgIdField.expectValue("saved@AdobeOrg");
+      await driver.expectSettings((s) => s.instances[0].name).toBe("alloy");
+      await driver
+        .expectSettings((s) => s.instances[1].name)
+        .toBe("savedInstance");
+      await driver
+        .expectSettings((s) => s.instances[1].orgId)
+        .toBe("saved@AdobeOrg");
+      await driver.expectSettings((s) => s.components.eventMerge).toBe(false);
+
+      await userEvent.tab();
+      await expect.element(add).toHaveFocus();
+      await userEvent.keyboard("{Enter}");
+      await expect.element(trigger).toHaveAttribute("aria-expanded", "true");
+      await driver.expectSettings((s) => s.instances).toHaveLength(3);
+    },
+  );
+
   it("keeps the header full-width behind the independent add action", async () => {
     await driver.init(buildSettings());
 
@@ -157,12 +215,17 @@ describe("Config Multiple Instances", () => {
 
     await trigger.click();
     await expect.element(trigger).toHaveAttribute("aria-expanded", "false");
-    await addInstanceButton.click();
-    await expect.element(trigger).toHaveAttribute("aria-expanded", "true");
-    await driver.expectSettings((s) => s.instances).toHaveLength(2);
     await expect
-      .element(view.getByRole("tab", { name: "alloy2" }))
-      .toHaveAttribute("aria-selected", "true");
+      .element(view.getByTestId("addInstanceButton"))
+      .not.toBeInTheDocument();
+    await trigger.click({
+      position: {
+        x: addBounds.left + addBounds.width / 2 - triggerBounds.left,
+        y: addBounds.top + addBounds.height / 2 - triggerBounds.top,
+      },
+    });
+    await expect.element(trigger).toHaveAttribute("aria-expanded", "true");
+    await driver.expectSettings((s) => s.instances).toHaveLength(1);
   });
 
   it("keeps the larger header aligned at a narrow width", async () => {
