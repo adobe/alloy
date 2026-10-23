@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
+import createEvent from "@adobe/alloy-core/core/createEvent.js";
 import createAdConversionHandler from "../../../../../../src/components/Advertising/handlers/createAdConversionHandler.js";
 
 describe("Advertising::createAdConversionHandler", () => {
@@ -51,6 +52,7 @@ describe("Advertising::createAdConversionHandler", () => {
       createDataCollectionRequest: createRequest,
       createDataCollectionRequestPayload: createPayload,
       logger,
+      setTimestamp: vi.fn(),
     });
   });
 
@@ -81,6 +83,26 @@ describe("Advertising::createAdConversionHandler", () => {
 
       await expect(handler.trackAdConversion({ event })).rejects.toThrow();
       expect(logger.error).toHaveBeenCalled();
+    });
+  });
+
+  it("stamps the conversion event with setTimestamp before sending it", async () => {
+    const conversionEvent = createEvent();
+    conversionEvent.setUserXdm({ eventType: "advertising.enrichment" });
+    sendEdgeNetworkRequest.mockResolvedValue({});
+
+    await createAdConversionHandler({
+      sendEdgeNetworkRequest,
+      consent,
+      createDataCollectionRequest: () => request,
+      createDataCollectionRequestPayload: () => ({ addEvent: () => {} }),
+      logger,
+      setTimestamp: (event) => event.mergeXdm({ timestamp: "stamped" }),
+    }).trackAdConversion({ event: conversionEvent });
+
+    expect(conversionEvent.toJSON().xdm).toEqual({
+      eventType: "advertising.enrichment",
+      timestamp: "stamped",
     });
   });
 });

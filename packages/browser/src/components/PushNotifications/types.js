@@ -79,7 +79,7 @@ governing permissions and limitations under the License.
  * @property {Object} events[].xdm.identityMap
  * @property {Object[]} events[].xdm.identityMap.ECID
  * @property {string} events[].xdm.identityMap.ECID[].id
- * @property {string} events[].xdm.timestamp
+ * @property {string} [events[].xdm.timestamp]
  * @property {Object} events[].xdm.pushNotificationTracking
  * @property {string} events[].xdm.pushNotificationTracking.pushProviderMessageID
  * @property {string} events[].xdm.pushNotificationTracking.pushProvider
@@ -112,6 +112,7 @@ governing permissions and limitations under the License.
  * @property {string} [edgeBasePath]
  * @property {string} [datastreamId]
  * @property {string} [datasetId]
+ * @property {boolean} [serverSideTimestamp] Leave xdm.timestamp out of tracking calls.
  * @property {string} [id]
  * @property {number} [timestamp]
  */

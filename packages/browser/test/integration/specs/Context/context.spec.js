@@ -151,6 +151,73 @@ describe("Context", () => {
     expect(xdm.device).toBeFalsy();
   });
 
+  test("leaves the timestamp out when serverSideTimestamp context is configured", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      context: ["placeContext", "serverSideTimestamp"],
+    });
+    await alloy("sendEvent");
+
+    const call = await networkRecorder.findCall(/edge\.adobedc\.net/);
+    expect(call).toBeDefined();
+
+    const xdm = call.request.body.events[0].xdm;
+    expect(xdm).not.toHaveProperty("timestamp");
+    // Local time stays client-side.
+    expect(xdm.placeContext.localTime).toBeTruthy();
+  });
+
+  test("sends an explicit xdm.timestamp when serverSideTimestamp context is configured", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      context: ["serverSideTimestamp"],
+    });
+    await alloy("sendEvent", {
+      xdm: { timestamp: "2026-01-02T03:04:05.000Z" },
+    });
+
+    const call = await networkRecorder.findCall(/edge\.adobedc\.net/);
+    expect(call).toBeDefined();
+
+    const xdm = call.request.body.events[0].xdm;
+    expect(xdm.timestamp).toBe("2026-01-02T03:04:05.000Z");
+  });
+
+  test("sends a timestamp set in onBeforeEventSend when serverSideTimestamp context is configured", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(sendEventHandler);
+
+    await alloy("configure", {
+      ...alloyConfig,
+      context: ["serverSideTimestamp"],
+      onBeforeEventSend: (content) => {
+        content.xdm.timestamp = "2026-06-07T08:09:10.000Z";
+      },
+    });
+    await alloy("sendEvent");
+
+    const call = await networkRecorder.findCall(/edge\.adobedc\.net/);
+    expect(call).toBeDefined();
+
+    const xdm = call.request.body.events[0].xdm;
+    expect(xdm.timestamp).toBe("2026-06-07T08:09:10.000Z");
+  });
+
   test("C1911390 - user-provided context fields do not leak to subsequent requests", async ({
     alloy,
     worker,

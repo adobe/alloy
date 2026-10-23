@@ -20,11 +20,14 @@ export default ({
   createDataCollectionRequest,
   createDataCollectionRequestPayload,
   logger,
+  setTimestamp,
 }) => {
   /**
    * Tracks an ad conversion event by sending it directly to the Edge Network
    */
   const trackAdConversion = ({ event }) => {
+    // Conversions skip the Context component, so they set their own timestamp.
+    setTimestamp(event);
     const dataCollectionRequestPayload = createDataCollectionRequestPayload();
     dataCollectionRequestPayload.addEvent(event);
     event.finalize();

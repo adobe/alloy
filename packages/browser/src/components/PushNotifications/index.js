@@ -20,6 +20,7 @@ import { objectOf, string } from "@adobe/alloy-core/utils/validation";
 import { sanitizeOrgIdForCookieName } from "@adobe/alloy-core/utils";
 import makeSendPushSubscriptionRequest from "./request/makeSendPushSubscriptionRequest.js";
 import saveToIndexedDb from "./helpers/saveToIndexedDb.js";
+import isServerSideTimestampEnabled from "@adobe/alloy-core/utils/isServerSideTimestampEnabled.js";
 
 /**
  * @param {{ orgId?: string, pushNotifications?: { vapidPublicKey?: string, appId?: string, trackingDatasetId?: string } }} config
@@ -38,7 +39,7 @@ const isComponentConfigured = ({
  * @function
  *
  * @param {Object} options
- * @param {{ orgId: string, datastreamId: string, edgeDomain: string, edgeBasePath: string, pushNotifications: { vapidPublicKey: string, appId: string, trackingDatasetId: string }}} options.config
+ * @param {{ orgId: string, datastreamId: string, edgeDomain: string, edgeBasePath: string, context?: string[], pushNotifications: { vapidPublicKey: string, appId: string, trackingDatasetId: string }}} options.config
  * @param {EventManager} options.eventManager
  * @param {Logger} options.logger
  * @param {ConsentManager} options.consent
@@ -75,6 +76,7 @@ const createPushNotifications = ({
               edgeBasePath,
               datasetId: trackingDatasetId,
               browser: getBrowser(),
+              serverSideTimestamp: isServerSideTimestampEnabled(config),
             },
             logger,
           );
