@@ -14,7 +14,10 @@ import files from "@adobe/reactor-sandbox/src/tasks/constants/files.js";
 import appendScript from "./appendScript.mjs";
 
 export default async (container) => {
-  const buildFiles = build({ container });
+  // The sandbox build mutates the container it is given (it applies the
+  // manifest transforms in place), so build from a copy. Otherwise a container
+  // shared by several tests can only be built once.
+  const buildFiles = build({ container: structuredClone(container) });
   const launchLibrary = buildFiles[`/${files.LAUNCH_LIBRARY_FILENAME}`];
 
   return appendScript(launchLibrary);
