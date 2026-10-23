@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import injectApplyResponse from "../../../../../src/core/edgeNetwork/injectApplyResponse.js";
 import assertFunctionCallOrder from "../../../helpers/assertFunctionCallOrder.js";

@@ -24,6 +24,7 @@
     "test:integration:watch": "pnpm exec playwright install chromium && vitest --project=browser/integration --project=reactor-extension/integration",
     "test:integration:coverage": "pnpm exec playwright install chromium && vitest run --coverage --project=browser/integration --project=reactor-extension/integration",
     "test:scripts": "vitest run --project scripts",
+    "test:package": "vitest run --project=core/package",
     "test:node-integration": "vitest run --project=node-integration",
     "test:functional": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chromium",
     "test:functional:custom": "node scripts/helpers/runFunctionalTests.js",

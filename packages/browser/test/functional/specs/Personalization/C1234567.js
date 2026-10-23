@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 /* eslint-disable func-style, prefer-object-spread */
 import { ClientFunction, t, Selector } from "testcafe";
 import { v4 as uuid } from "uuid";

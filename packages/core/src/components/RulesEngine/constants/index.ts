@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 export const EVENT_HISTORY_MAX_RECORDS = 1000;
 export const EVENT_HISTORY_RETENTION_PERIOD = 30; // 30 days
 export const EVENT_HISTORY_STORAGE_KEY = "events";

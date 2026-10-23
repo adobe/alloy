@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import { Content, Heading, IllustratedMessage } from "@adobe/react-spectrum";
 import Error from "@spectrum-icons/illustrations/Error";
 import PropTypes from "prop-types";

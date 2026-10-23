@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import { TEST_PAGE as TEST_PAGE_URL } from "../constants/url.js";
 import { getFixtureClientScripts } from "./clientScripts.js";
 import destinationRequestMock from "./destinationRequestMock.js";

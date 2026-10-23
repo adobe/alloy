@@ -49,4 +49,14 @@ export const coreTestProjects = [
       coverage: packageCoverage,
     },
   }),
+  defineProject({
+    extends: false,
+    test: {
+      name: "core/package",
+      include: ["packages/core/test/package/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
+      environment: "node",
+      // Packing rebuilds dist/, so wait until no other tests are reading it.
+      sequence: { groupOrder: 1 },
+    },
+  }),
 ];

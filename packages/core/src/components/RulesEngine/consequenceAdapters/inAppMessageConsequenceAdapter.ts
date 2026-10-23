@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import { MESSAGE_IN_APP } from "../../../constants/schema.js";
 import { TEXT_HTML } from "../../../constants/contentType.js";
 

@@ -63,6 +63,11 @@ ruleTester.run("license-header", rule, {
       code: `#!/usr/bin/env node\n\n${HEADER_2000}\n\nconsole.log("hi");`,
       options: [{ year: 2000 }],
     },
+    {
+      name: "header only",
+      code: `${HEADER_2000}\n`,
+      options: [{ year: 2000 }],
+    },
     // Some historical files omit the blank line after the License URL.
     {
       name: "header without blank line after URL",
@@ -106,6 +111,20 @@ governing permissions and limitations under the License.
       options: [{ year: 2000 }],
       errors: [{ messageId: "missing" }],
       output: `#!/usr/bin/env node\n\n${HEADER_2000}\n\n`,
+    },
+    {
+      name: "header followed directly by code",
+      code: `${HEADER_2000}\nimport foo from "foo";`,
+      options: [{ year: 2000 }],
+      errors: [{ messageId: "missingBlankLine" }],
+      output: `${HEADER_2000}\n\nimport foo from "foo";`,
+    },
+    {
+      name: "header followed directly by a comment",
+      code: `${HEADER_2000}\n// a comment\nexport default 1;`,
+      options: [{ year: 2000 }],
+      errors: [{ messageId: "missingBlankLine" }],
+      output: `${HEADER_2000}\n\n// a comment\nexport default 1;`,
     },
   ],
 });

@@ -53,7 +53,7 @@ export default defineConfig([
     "**/scripts/**/*.mjs",
     "**/*.d.ts",
   ]),
-  // License: warn only
+  // License header
   {
     name: "alloy/license-header",
     files: ["**/*.{cjs,js,mjs,jsx,ts}"],
@@ -66,7 +66,7 @@ export default defineConfig([
       },
     },
     rules: {
-      "local/license": "warn",
+      "local/license": "error",
     },
   },
   // Base shared: rules that work for both core and extension
