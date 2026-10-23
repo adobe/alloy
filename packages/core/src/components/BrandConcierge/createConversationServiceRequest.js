@@ -21,9 +21,10 @@ export default ({
   voiceEnabled = false,
   region,
 }) => {
-  const edgeSubPath = voiceEnabled
+  const basePath = voiceEnabled
     ? VOICE_BRAND_CONCIERGE_PATH
-    : `${BRAND_CONCIERGE_PATH}${region ? `/${region}` : ""}`;
+    : BRAND_CONCIERGE_PATH;
+  const edgeSubPath = `${basePath}${region ? `/${region}` : ""}`;
 
   return createRequest({
     payload: payload,
