@@ -124,12 +124,23 @@ describe("createConversationServiceRequest", () => {
     expect(request.getEdgeSubPath()).toBe("/brand-concierge");
   });
 
-  it("does not include region in edge subpath for voice requests", () => {
+  it("includes region in edge subpath for voice requests", () => {
     const request = createConversationServiceRequest({
       payload: mockPayload,
       sessionId: mockSessionId,
       voiceEnabled: true,
-      region: "va7",
+      region: "aus5",
+    });
+
+    expect(request.getEdgeSubPath()).toBe("/brand-concierge-voice/aus5");
+  });
+
+  it("omits region from voice edge subpath when region is undefined", () => {
+    const request = createConversationServiceRequest({
+      payload: mockPayload,
+      sessionId: mockSessionId,
+      voiceEnabled: true,
+      region: undefined,
     });
 
     expect(request.getEdgeSubPath()).toBe("/brand-concierge-voice");
