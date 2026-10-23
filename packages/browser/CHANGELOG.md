@@ -1,5 +1,12 @@
 # @adobe/alloy
 
+## 2.36.2-beta.1
+
+### Patch Changes
+
+- Updated dependencies [[`d3c9bc0`](https://github.com/adobe/alloy/commit/d3c9bc096b9b4fc9090b98efe34288b517f46957)]:
+  - @adobe/alloy-core@1.4.0-beta.1
+
 ## 2.36.2-beta.0
 
 ### Patch Changes
