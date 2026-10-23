@@ -1,0 +1,83 @@
+/*
+Copyright 2024 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+import createMediaEventManager from "../StreamingMedia/createMediaEventManager.js";
+import createMediaSessionCacheManager from "../StreamingMedia/createMediaSessionCacheManager.js";
+import createTrackMediaEvent from "../StreamingMedia/createTrackMediaEvent.js";
+import createTrackMediaSession from "../StreamingMedia/createTrackMediaSession.js";
+import createMediaResponseHandler from "../StreamingMedia/createMediaResponseHandler.js";
+import createMediaAnalyticsBridgeComponent from "./createMediaAnalyticsBridgeComponent.js";
+import createMediaHelper from "./createMediaHelper.js";
+import createGetInstance from "./createGetInstance.js";
+import type { GetInstanceOptions } from "./createGetInstance.js";
+import injectTimestamp from "../../utils/injectTimestamp.js";
+import type { ComponentTools } from "../../core/types.js";
+
+export type MediaAnalyticsBridgeOptions = Pick<
+  ComponentTools,
+  "eventManager" | "sendEdgeNetworkRequest" | "config" | "logger" | "consent"
+>;
+
+const createMediaAnalyticsBridge = ({
+  eventManager,
+  sendEdgeNetworkRequest,
+  config,
+  logger,
+  consent,
+}: MediaAnalyticsBridgeOptions) => {
+  // The cache manager takes no options; the argument is kept so the bundle is unchanged.
+  const mediaSessionCacheManager = (
+    createMediaSessionCacheManager as (
+      options: unknown,
+    ) => ReturnType<typeof createMediaSessionCacheManager>
+  )({ config });
+
+  const mediaEventManager = createMediaEventManager({
+    sendEdgeNetworkRequest,
+    config,
+    consent,
+    eventManager,
+    setTimestamp: injectTimestamp(() => new Date()),
+  });
+
+  const trackMediaEvent = createTrackMediaEvent({
+    mediaSessionCacheManager,
+    mediaEventManager,
+    config,
+  });
+  // createMediaSession has always read sessionDetails, which the legacy tracker sets for session starts.
+  const trackMediaSession = createTrackMediaSession({
+    config,
+    mediaEventManager,
+    mediaSessionCacheManager,
+    legacy: true,
+  }) as GetInstanceOptions["trackMediaSession"];
+  const mediaResponseHandler = createMediaResponseHandler({
+    mediaSessionCacheManager,
+    config,
+    trackMediaEvent,
+  });
+
+  return createMediaAnalyticsBridgeComponent({
+    mediaResponseHandler,
+    trackMediaSession,
+    trackMediaEvent,
+    createMediaHelper,
+    createGetInstance,
+    logger,
+    config,
+  });
+};
+
+createMediaAnalyticsBridge.namespace = "Legacy Media Analytics";
+
+export default createMediaAnalyticsBridge;

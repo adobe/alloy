@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 export const AUTHORING_ENABLED = "Rendering is disabled for authoring mode.";
 export const REDIRECT_EXECUTION_ERROR =
   "An error occurred while executing the redirect offer.";

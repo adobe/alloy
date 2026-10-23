@@ -1,0 +1,55 @@
+/*
+Copyright 2026 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+import { STREAM_START_TIMEOUT_MS } from "./constants.js";
+import {
+  number,
+  objectOf,
+  boolean,
+  string,
+  arrayOf,
+} from "../../utils/validation/index.js";
+import type { Config } from "../../core/types.js";
+
+/** The `conversation` config option, after validation and defaults. */
+export interface ConversationConfig {
+  stickyConversationSession: boolean;
+  streamTimeout: number;
+  collectSources: boolean;
+  region?: string;
+  transferCookies: string[];
+}
+
+/** The computed config as seen by BrandConcierge. */
+export interface BrandConciergeConfig extends Config {
+  conversation: ConversationConfig;
+}
+
+export default objectOf({
+  conversation: objectOf({
+    stickyConversationSession: boolean().default(false),
+    streamTimeout: number()
+      .integer()
+      .minimum(STREAM_START_TIMEOUT_MS)
+      .default(STREAM_START_TIMEOUT_MS),
+    collectSources: boolean().default(false),
+    region: string().matches(/^[a-z]{2,4}[0-9]{1,2}$/i),
+    // Additional first-party cookie names to always transfer into the
+    // request meta.state object (on top of the ones transferred by default).
+    transferCookies: arrayOf(string()).default([]),
+  }).default({
+    stickyConversationSession: false,
+    streamTimeout: STREAM_START_TIMEOUT_MS,
+    collectSources: false,
+    transferCookies: [],
+  }),
+});

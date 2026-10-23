@@ -15,10 +15,12 @@ import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import replace from "@rollup/plugin-replace";
 import terser from "@rollup/plugin-terser";
+import { transform as oxcTransform } from "oxc-transform";
 import license from "rollup-plugin-license";
 import { fileURLToPath } from "url";
 import { gzip, brotliCompress as br, constants as zlibConstants } from "zlib";
 import { promisify } from "util";
+import { existsSync } from "fs";
 import { readFile, writeFile } from "fs/promises";
 import packageJson from "./package.json" with { type: "json" };
 const { version } = packageJson;
@@ -120,6 +122,73 @@ const bundleSizePlugin = (_options = {}) => {
     },
   };
 };
+/**
+ * Lets `.js` import specifiers resolve to `.ts` sources (core files converted
+ * to TypeScript keep being imported with a `.js` extension).
+ * @returns {import("rollup").Plugin}
+ */
+const resolveTsFromJsPlugin = () => ({
+  name: "resolve-ts-from-js",
+  async resolveId(source, importer, options) {
+    if (!importer || !source.endsWith(".js")) {
+      return null;
+    }
+    try {
+      const resolved = await this.resolve(
+        `${source.slice(0, -3)}.ts`,
+        importer,
+        { ...options, skipSelf: true },
+      );
+      // Export maps resolve without checking that the target exists.
+      return resolved && existsSync(resolved.id) ? resolved : null;
+    } catch {
+      return null;
+    }
+  },
+});
+
+/**
+ * Strips TypeScript types with oxc (not the TypeScript compiler), keeping
+ * comments so unminified bundles only differ in formatting.
+ * @returns {import("rollup").Plugin}
+ */
+const stripTypesPlugin = () => ({
+  name: "strip-types",
+  async transform(code, id) {
+    if (!id.endsWith(".ts")) {
+      return null;
+    }
+    const result = await oxcTransform(id, code, {
+      target: "esnext",
+      sourcemap: false,
+    });
+    if (result.errors.length) {
+      this.error(result.errors[0].message);
+    }
+    // oxc drops a leading license header when the first statement is
+    // type-only (e.g. `import type`), because the comment is attached to it.
+    const header = code.match(/^\/\*[\s\S]*?\*\//)?.[0];
+    if (header && !result.code.includes(header)) {
+      return { code: `${header}\n${result.code}`, map: null };
+    }
+    return { code: result.code, map: null };
+  },
+});
+
+/**
+ * Plugins that let Rollup bundle `@adobe/alloy-core` from its (partly
+ * TypeScript) source. Use together with `sourceExportConditions` in
+ * node-resolve.
+ * @returns {import("rollup").Plugin[]}
+ */
+export const typeScriptSourcePlugins = () => [
+  resolveTsFromJsPlugin(),
+  stripTypesPlugin(),
+];
+
+// Resolve @adobe/alloy-core to its source instead of its build output.
+export const sourceExportConditions = ["alloy-source"];
+
 // Set these boolean environment options to control which files are built:
 // build the snippet that must be add to the page
 const BASE_CODE = "BASE_CODE";
@@ -156,11 +225,13 @@ const buildPlugins = ({ variant, minify }) => {
       __VERSION__: version,
       preventAssignment: true,
     }),
+    ...typeScriptSourcePlugins(),
     resolve({
       preferBuiltins: false,
       // Support the browser field in dependencies' package.json.
       // Useful for the uuid package.
       mainFields: ["module", "main", "browser"],
+      exportConditions: sourceExportConditions,
     }),
     commonjs(),
   ];

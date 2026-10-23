@@ -45,7 +45,7 @@ describe("components.json manifest drift detection", () => {
     test("optional entries match core/componentCreators.js exports", () => {
       const manifestNames = coreManifest.optional.map((c) => c.name).sort();
       const barrelNames = readBarrelExports(
-        "../packages/core/src/core/componentCreators.js",
+        "../packages/core/src/core/componentCreators.ts",
       );
       expect(manifestNames).toEqual(barrelNames);
     });
@@ -53,7 +53,7 @@ describe("components.json manifest drift detection", () => {
     test("required entries match core/requiredComponentCreators.js exports", () => {
       const manifestNames = coreManifest.required.map((c) => c.name).sort();
       const barrelNames = readBarrelExports(
-        "../packages/core/src/core/requiredComponentCreators.js",
+        "../packages/core/src/core/requiredComponentCreators.ts",
       );
       expect(manifestNames).toEqual(barrelNames);
     });

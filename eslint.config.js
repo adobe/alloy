@@ -22,6 +22,7 @@ import testingLibrary from "eslint-plugin-testing-library";
 import { defineConfig, globalIgnores } from "eslint/config";
 import { glob } from "glob";
 import globals from "globals";
+import tseslint from "typescript-eslint";
 // eslint-disable-next-line import/extensions
 import license from "./scripts/eslint/licenseRule.js";
 
@@ -50,11 +51,12 @@ export default defineConfig([
     "packages/reactor-extension/dist/**",
     "packages/reactor-extension/src/lib/runAlloy.js",
     "**/scripts/**/*.mjs",
+    "**/*.d.ts",
   ]),
-  // License: warn only
+  // License header
   {
     name: "alloy/license-header",
-    files: ["**/*.{cjs,js,mjs,jsx}"],
+    files: ["**/*.{cjs,js,mjs,jsx,ts}"],
     ignores: [...sharedIgnores],
     plugins: {
       local: {
@@ -64,7 +66,7 @@ export default defineConfig([
       },
     },
     rules: {
-      "local/license": "warn",
+      "local/license": "error",
     },
   },
   // Base shared: rules that work for both core and extension
@@ -75,6 +77,10 @@ export default defineConfig([
     },
     settings: {
       "import/resolver": {
+        // Resolves `.js` specifiers to `.ts` sources.
+        typescript: {
+          extensions: [".ts", ".js", ".cjs", ".mjs", ".jsx"],
+        },
         node: {
           extensions: [".js", ".cjs", ".mjs", ".jsx"],
         },
@@ -138,7 +144,7 @@ export default defineConfig([
   // Stricter rules for all packages
   {
     name: "alloy/strict",
-    files: ["**/*.{cjs,js,mjs,jsx}"],
+    files: ["**/*.{cjs,js,mjs,jsx,ts}"],
     ignores: [...sharedIgnores],
     rules: {
       "func-names": "error",
@@ -173,7 +179,7 @@ export default defineConfig([
   },
   {
     name: "alloy/core-src-globals",
-    files: ["packages/core/src/**/*.{cjs,js}"],
+    files: ["packages/core/src/**/*.{cjs,js,ts}"],
     languageOptions: {
       // Declare browser + Node globals so ESLint doesn't fire no-undef for
       // things like setTimeout, TextEncoder, fetch, etc. The no-restricted-globals
@@ -186,7 +192,7 @@ export default defineConfig([
   },
   {
     name: "alloy/core-src-no-browser-globals",
-    files: ["packages/core/src/**/*.{cjs,js}"],
+    files: ["packages/core/src/**/*.{cjs,js,ts}"],
     ignores: ["packages/core/src/utils/dom/**"],
     rules: {
       "no-restricted-globals": [
@@ -233,7 +239,7 @@ export default defineConfig([
   },
   {
     name: "alloy/core-src",
-    files: ["packages/*/src/**/*.{cjs,js}"],
+    files: ["packages/*/src/**/*.{cjs,js,ts}"],
     rules: {
       "import/no-extraneous-dependencies": [
         "error",
@@ -251,10 +257,15 @@ export default defineConfig([
         "error",
         {
           zones: [
+            ...allComponentPaths.map((componentPath) => ({
+              target: componentPath + "/",
+              from: "packages/core/src/core",
+              // Components may import the shared contract types only.
+              except: ["./types.ts"],
+            })),
             ...allComponentPaths.map((componentPath, _, allPaths) => ({
               target: componentPath + "/",
               from: [
-                "packages/core/src/core",
                 "packages/core/src/baseCode",
                 ...allPaths
                   .filter((p) => {
@@ -307,11 +318,23 @@ export default defineConfig([
   },
 
   {
+    name: "alloy/typescript",
+    files: ["**/*.ts"],
+    extends: [tseslint.configs.recommended],
+    rules: {
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { ignoreRestSiblings: true },
+      ],
+    },
+  },
+  {
     name: "alloy/browser",
     files: [
       "packages/browser/**/*.{cjs,js,mjs,jsx}",
       "sandboxes/browser/**/*.{cjs,js,mjs,jsx}",
-      "packages/core/src/utils/dom/**/*.{cjs,js,mjs,jsx}",
+      "packages/core/src/utils/dom/**/*.{cjs,js,mjs,jsx,ts}",
     ],
     plugins: {
       compat: compatPlugin,
@@ -513,6 +536,17 @@ export default defineConfig([
     languageOptions: {
       globals: {
         ...globals.node,
+      },
+    },
+    settings: {
+      // Config files run in Node; the typescript resolver would otherwise
+      // pick packages' "browser" entry (e.g. oxc-transform/browser.js).
+      "import/resolver": {
+        typescript: {
+          extensions: [".ts", ".js", ".cjs", ".mjs", ".jsx"],
+          conditionNames: ["types", "import", "node", "require", "default"],
+          mainFields: ["types", "module", "main"],
+        },
       },
     },
     rules: {

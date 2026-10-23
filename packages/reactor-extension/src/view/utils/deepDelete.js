@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 /**
  * Deletes a deeply nested key from an object. Modifies the object in-place.
  * @param {object} obj the object to delete the property from

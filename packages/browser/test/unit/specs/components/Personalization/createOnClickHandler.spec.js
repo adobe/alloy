@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import { vi, beforeEach, describe, it, expect } from "vitest";
 import createOnClickHandler from "../../../../../src/components/Personalization/createOnClickHandler.js";
 import { mergeDecisionsMeta } from "@adobe/alloy-core/utils/event.js";

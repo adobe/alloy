@@ -10,7 +10,34 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line import/no-relative-packages
-import injectCreateResponse from "../../../../core/src/core/injectCreateResponse.js";
+// A copy of core's injectCreateResponse: TestCafe can't load core's
+// TypeScript source.
+const ADOBE_EDGE = "x-adobe-edge";
+
+const injectCreateResponse =
+  ({ extractEdgeInfo }) =>
+  ({ content = {}, getHeader }) => {
+    const { handle = [], errors = [], warnings = [] } = content;
+
+    return {
+      getPayloadsByType(type) {
+        return handle
+          .filter((fragment) => fragment.type === type)
+          .flatMap((fragment) => fragment.payload);
+      },
+      getErrors() {
+        return errors;
+      },
+      getWarnings() {
+        return warnings;
+      },
+      getEdge() {
+        return extractEdgeInfo(getHeader(ADOBE_EDGE));
+      },
+      toJSON() {
+        return content;
+      },
+    };
+  };
 
 export default injectCreateResponse({ logger: console });

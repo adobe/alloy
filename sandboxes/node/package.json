@@ -1,17 +1,17 @@
 {
   "name": "@adobe/alloy-sandbox-node",
-  "version": "0.0.7-beta.0",
+  "version": "0.0.7-beta.1",
   "private": true,
   "type": "module",
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "start": "node src/sendEvent.js",
-    "configure": "node src/configure.js",
-    "send-event": "node src/sendEvent.js",
-    "get-library-info": "node src/getLibraryInfo.js",
-    "for-request": "node src/forRequest.js"
+    "start": "node --conditions=alloy-source --import ../../scripts/helpers/registerTsFromJsHook.js src/sendEvent.js",
+    "configure": "node --conditions=alloy-source --import ../../scripts/helpers/registerTsFromJsHook.js src/configure.js",
+    "send-event": "node --conditions=alloy-source --import ../../scripts/helpers/registerTsFromJsHook.js src/sendEvent.js",
+    "get-library-info": "node --conditions=alloy-source --import ../../scripts/helpers/registerTsFromJsHook.js src/getLibraryInfo.js",
+    "for-request": "node --conditions=alloy-source --import ../../scripts/helpers/registerTsFromJsHook.js src/forRequest.js"
   },
   "dependencies": {
     "@adobe/alloy-node": "workspace:*"

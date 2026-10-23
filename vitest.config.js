@@ -9,7 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import { defineConfig } from "vitest/config";
+import { sourceConditionResolve } from "./vitest.shared";
 import { coreTestProjects } from "./packages/core/vitest.projects";
 import { browserTestProjects } from "./packages/browser/vitest.projects";
 import { reactorExtensionTestProjects } from "./packages/reactor-extension/vitest.projects";
@@ -24,6 +26,7 @@ export default defineConfig({
       ...reactorExtensionTestProjects,
       {
         extends: false,
+        ...sourceConditionResolve,
         test: {
           name: "node/unit",
           include: ["packages/node/test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
@@ -35,6 +38,7 @@ export default defineConfig({
       // `pnpm run test:node-integration`.
       {
         extends: false,
+        ...sourceConditionResolve,
         test: {
           name: "node-integration",
           include: [
@@ -52,6 +56,7 @@ export default defineConfig({
       },
       {
         extends: false,
+        ...sourceConditionResolve,
         test: {
           name: "scripts",
           include: [

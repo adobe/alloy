@@ -9,9 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import { defineProject } from "vitest/config";
+// eslint-disable-next-line import/no-relative-packages -- Shared monorepo test configuration.
+import { sourceConditionResolve } from "../../vitest.shared.js";
 import { playwright } from "@vitest/browser-playwright";
-// eslint-disable-next-line import/no-unresolved
 import react from "@vitejs/plugin-react";
 import macros from "unplugin-parcel-macros";
 const isCi = !!process.env.CI;
@@ -29,6 +31,7 @@ const packageCoverage = {
 export const reactorExtensionTestProjects = [
   defineProject({
     extends: false,
+    ...sourceConditionResolve,
     test: {
       name: "reactor-extension/unit",
       include: [
@@ -36,11 +39,13 @@ export const reactorExtensionTestProjects = [
       ],
       isolate: false,
       environment: "happy-dom",
+      setupFiles: ["scripts/helpers/registerTsFromJsHook.js"],
       coverage: packageCoverage,
     },
   }),
   defineProject({
     extends: false,
+    ...sourceConditionResolve,
     plugins: [
       // Must run before @vitejs/plugin-react so the S2 `style()` macro is
       // evaluated at build time (parity with Parcel's native macro support).

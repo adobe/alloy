@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, defaultClientConditions } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -7,6 +7,10 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    // Use @adobe/alloy-core's source instead of its build output.
+    conditions: ["alloy-source", ...defaultClientConditions],
+  },
   server: {
     port: Number(process.env.BROWSER_SANDBOX_PORT || 3000),
     headers: {

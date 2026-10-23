@@ -105,6 +105,16 @@ const hasLicenseHeaderAtStart = (text) => {
 };
 
 /**
+ * Checks if the header ends the file or is followed by a blank line. Without
+ * the blank line, tsc treats the header as part of the first statement and
+ * drops it from the build output when that statement is type-only.
+ * @param {string} afterHeader Text after the header's closing `*\/`.
+ * @returns {boolean}
+ */
+const hasBlankLineAfterHeader = (afterHeader) =>
+  /^[\t ]*(\r?\n[\t ]*\r?\n|\s*$)/.test(afterHeader);
+
+/**
  * The rule for the license header.
  * @type {import("eslint").Rule.RuleModule}
  */
@@ -129,6 +139,8 @@ export default {
     ],
     messages: {
       missing: "Missing Apache license header.",
+      missingBlankLine:
+        "Add a blank line after the license header, otherwise tsc can drop it from the build output.",
     },
   },
   create(context) {
@@ -147,6 +159,17 @@ export default {
         const checkStart = shebangEnd + leadingWhitespaceLength;
 
         if (hasLicenseHeaderAtStart(text.slice(checkStart))) {
+          const headerEnd = text.indexOf("*/", checkStart) + 2;
+          if (hasBlankLineAfterHeader(text.slice(headerEnd))) {
+            return;
+          }
+          const fixAt = bomOffset + headerEnd;
+          context.report({
+            node,
+            loc: sourceCode.getLocFromIndex(fixAt),
+            messageId: "missingBlankLine",
+            fix: (fixer) => fixer.insertTextAfterRange([fixAt, fixAt], "\n"),
+          });
           return;
         }
 
