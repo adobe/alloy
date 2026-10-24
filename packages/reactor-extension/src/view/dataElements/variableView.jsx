@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 import { useRef } from "react";
 import PropTypes from "prop-types";
 import { useField } from "formik";
-import { Content, Link, Radio } from "@adobe/react-spectrum";
+import { Link, Radio } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import ExtensionView from "../components/extensionView";
 import FormElementContainer from "../components/formElementContainer";
 import XdmVariable, {
@@ -21,7 +22,7 @@ import XdmVariable, {
 import DataVariable, {
   bridge as dataVariableBridge,
 } from "./variable/components/dataVariable";
-import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
+import FormikRadioGroup from "../forms/fields/RadioGroup";
 import { XDM, DATA } from "./variable/constants/variableTypes";
 
 const getInitialValues =
@@ -59,7 +60,12 @@ const Schema = ({ xdmVariableContext, initInfo }) => {
 
   return (
     <>
-      <Content width="size-5000">
+      <div
+        className={style({
+          font: "body-sm",
+          width: 400,
+        })}
+      >
         Variable data elements are used to build up an XDM or Data object using
         actions. Variable data elements start out empty, but you can update
         properties using Web SDK update variable actions. You can reference the
@@ -74,7 +80,7 @@ const Schema = ({ xdmVariableContext, initInfo }) => {
           Learn more about the Variable data element type
         </Link>
         .
-      </Content>
+      </div>
       <FormikRadioGroup
         label="Choose the property you want to populate"
         name="type"

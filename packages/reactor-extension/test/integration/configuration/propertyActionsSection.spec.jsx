@@ -13,7 +13,8 @@ governing permissions and limitations under the License.
 import { describe, it, beforeEach, afterEach, expect } from "vitest";
 import { http, HttpResponse } from "msw";
 import { render } from "vitest-browser-react";
-import { Provider, lightTheme } from "@adobe/react-spectrum";
+import { Provider as SpectrumProvider } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 
 import { worker } from "../helpers/mocks/browser";
 import field from "../helpers/field";
@@ -167,15 +168,20 @@ const ruleComponentPatchHandler = () =>
 
 const renderSection = async (initInfo = INIT_INFO) =>
   render(
-    <Provider
-      theme={lightTheme}
+    <SpectrumProvider
+      background="base"
       colorScheme="light"
-      UNSAFE_className="react-spectrum-provider spectrum spectrum--medium spectrum--light spectrum-accessibility-overrides"
+      styles={style({
+        display: "flex",
+        flexDirection: "column",
+        flexGrow: 1,
+        padding: 8,
+      })}
     >
       <ErrorBoundary>
         <PropertyActionsSection initInfo={initInfo} />
       </ErrorBoundary>
-    </Provider>,
+    </SpectrumProvider>,
   );
 
 let view;

@@ -67,6 +67,38 @@ test.requestHooks(dataElementsMocks.single)(
   },
 );
 
+test.requestHooks(dataElementsMocks.single)(
+  "centers the custom code button in the unlabeled preview",
+  async (t) => {
+    await extensionViewController.init({
+      propertySettings: {
+        id: "PRabcd",
+      },
+    });
+    await xdmTree.node("xdm").expectExists();
+
+    const centerOffset = await t.eval(() => {
+      const button = document.querySelector(
+        '[data-test-id="onBeforeEventSendEditButton"]',
+      );
+      const preview = button.closest(
+        ".CodePreview-openEditorButton",
+      ).parentElement;
+      const buttonBounds = button.getBoundingClientRect();
+      const textareaBounds = preview
+        .querySelector("textarea")
+        .getBoundingClientRect();
+
+      return Math.abs(
+        (buttonBounds.top + buttonBounds.bottom) / 2 -
+          (textareaBounds.top + textareaBounds.bottom) / 2,
+      );
+    });
+
+    await t.expect(centerOffset).lt(1);
+  },
+);
+
 test.requestHooks(
   dataElementsMocks.noneWithNextPage,
   dataElementsMocks.secondPageWithOne,

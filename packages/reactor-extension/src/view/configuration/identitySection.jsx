@@ -11,15 +11,16 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { Flex, Item } from "@adobe/react-spectrum";
+import { ComboBoxItem } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { object, string, lazy, mixed } from "yup";
 import SectionHeader from "../components/sectionHeader";
-import FormikCheckbox from "../components/formikReactSpectrum3/formikCheckbox";
+import FormikCheckbox from "../forms/fields/Checkbox";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
 import FormElementContainer from "../components/formElementContainer";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikComboBox from "../components/formikReactSpectrum3/formikComboBox";
+import FormikComboBox from "../forms/fields/ComboBox";
 import SINGLE_DATA_ELEMENT_REGEX from "../constants/singleDataElementRegex";
 
 const ENABLED = "Enabled";
@@ -104,7 +105,13 @@ const IdentitySection = ({ instanceFieldName }) => {
         >
           Migrate ECID from VisitorAPI to the web SDK
         </FormikCheckbox>
-        <Flex direction="row" gap="size-250">
+        <div
+          className={style({
+            display: "flex",
+            flexDirection: "row",
+            gap: 20,
+          })}
+        >
           <DataElementSelector>
             <FormikComboBox
               data-test-id="thirdPartyCookiesEnabledField"
@@ -115,11 +122,15 @@ const IdentitySection = ({ instanceFieldName }) => {
               isRequired
               allowsCustomValue
             >
-              <Item key={ENABLED}>{ENABLED}</Item>
-              <Item key={DISABLED}>{DISABLED}</Item>
+              <ComboBoxItem key={ENABLED} id={ENABLED}>
+                {ENABLED}
+              </ComboBoxItem>
+              <ComboBoxItem key={DISABLED} id={DISABLED}>
+                {DISABLED}
+              </ComboBoxItem>
             </FormikComboBox>
           </DataElementSelector>
-        </Flex>
+        </div>
       </FormElementContainer>
     </>
   );

@@ -13,11 +13,12 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { number, object, string, lazy } from "yup";
 import { useField } from "formik";
-import { InlineAlert, View, Heading, Content } from "@adobe/react-spectrum";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import SectionHeader from "../components/sectionHeader";
+import InfoMessage from "../components/infoMessage";
 import FormElementContainer from "../components/formElementContainer";
-import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
-import FormikNumberField from "../components/formikReactSpectrum3/formikNumberField";
+import FormikTextField from "../forms/fields/TextField";
+import FormikNumberField from "../forms/fields/NumberField";
 import isNonEmptyString from "../utils/isNonEmptyString";
 
 const getDefaultSettings = () => ({
@@ -212,15 +213,13 @@ const StreamingMediaSection = ({ instanceFieldName }) => {
           />
         </FormElementContainer>
       ) : (
-        <View width="size-6000">
-          <InlineAlert variant="info">
-            <Heading>Streaming media component disabled</Heading>
-            <Content>
-              The streaming media custom build component is disabled. Enable it
-              above to configure streaming media settings.
-            </Content>
-          </InlineAlert>
-        </View>
+        <InfoMessage
+          title="Streaming media component disabled"
+          styles={style({ width: 480 })}
+        >
+          The streaming media custom build component is disabled. Enable it
+          above to configure streaming media settings.
+        </InfoMessage>
       )}
     </>
   );

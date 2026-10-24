@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { describe, it, beforeEach, afterEach } from "vitest";
+import { describe, it, beforeEach, afterEach, expect } from "vitest";
 
 import useView from "../helpers/useView";
 import ConfigurationView from "../../../src/view/configuration/configurationView";
@@ -71,6 +71,20 @@ describe("Config components section", () => {
 
   afterEach(() => {
     cleanup();
+  });
+
+  it("keeps the advanced-settings warning with exterior spacing", async () => {
+    await driver.init();
+    await ui.expand("Build options");
+
+    await expect
+      .element(view.getByTestId("buildOptionsWarning"))
+      .toHaveStyle({ "margin-top": "8px", "margin-bottom": "8px" });
+    await expect
+      .element(
+        view.getByRole("heading", { name: "Warning, advanced settings" }),
+      )
+      .toBeVisible();
   });
 
   it("has all necessary components enabled by default", async () => {

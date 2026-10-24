@@ -12,16 +12,16 @@ governing permissions and limitations under the License.
 
 import { useEffect, useRef } from "react";
 import { string, object } from "yup";
-import { Radio } from "@adobe/react-spectrum";
+import { Radio } from "@react-spectrum/s2";
 import { useField, useFormikContext } from "formik";
 import PropTypes from "prop-types";
 import DataElementSelector from "../components/dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
-import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
+import FormikRadioGroup from "./fields/RadioGroup";
 import FieldSubset from "../components/fieldSubset";
 import form from "./form";
 import FormElementContainer from "../components/formElementContainer";
-import FormikTextArea from "../components/formikReactSpectrum3/formikTextArea";
+import FormikTextArea from "./fields/TextArea";
 
 import {
   PARTS,

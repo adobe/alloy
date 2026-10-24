@@ -13,24 +13,17 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { object, boolean, number, string, array } from "yup";
 import { useField, FieldArray } from "formik";
-import {
-  View,
-  InlineAlert,
-  Content,
-  Flex,
-  Button,
-  ActionButton,
-  Radio,
-} from "@adobe/react-spectrum";
-import Delete from "@spectrum-icons/workflow/Delete";
+import { Button, ActionButton, Radio } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import Delete from "@react-spectrum/s2/icons/Delete";
 import SectionHeader from "../components/sectionHeader";
-import FormikCheckbox from "../components/formikReactSpectrum3/formikCheckbox";
-import FormikNumberField from "../components/formikReactSpectrum3/formikNumberField";
-import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
-import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
+import InfoMessage from "../components/infoMessage";
+import FormikCheckbox from "../forms/fields/Checkbox";
+import FormikNumberField from "../forms/fields/NumberField";
+import FormikTextField from "../forms/fields/TextField";
+import FormikRadioGroup from "../forms/fields/RadioGroup";
 import DataElementSelector from "../components/dataElementSelector";
 import FormElementContainer from "../components/formElementContainer";
-import Heading from "../components/typography/heading";
 import BetaBadge from "../components/betaBadge";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
@@ -210,15 +203,13 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
         <SectionHeader>
           Brand Concierge <BetaBadge />
         </SectionHeader>
-        <View width="size-6000">
-          <InlineAlert variant="info">
-            <Heading>Brand Concierge component disabled</Heading>
-            <Content>
-              The Brand Concierge custom build component is disabled. Enable it
-              above to configure Brand Concierge settings.
-            </Content>
-          </InlineAlert>
-        </View>
+        <InfoMessage
+          title="Brand Concierge component disabled"
+          styles={style({ width: 480 })}
+        >
+          The Brand Concierge custom build component is disabled. Enable it
+          above to configure Brand Concierge settings.
+        </InfoMessage>
       </>
     );
   }
@@ -260,7 +251,7 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
         >
           Collect sources
         </FormikCheckbox>
-        <View data-test-id="transferCookiesField">
+        <div data-test-id="transferCookiesField">
           <FormikRadioGroup
             label="Transfer cookies"
             name={`${instanceFieldName}.conversation.transferCookiesInputMethod`}
@@ -290,9 +281,21 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
             <FieldArray
               name={`${instanceFieldName}.conversation.transferCookies`}
               render={(arrayHelpers) => (
-                <Flex direction="column" gap="size-100">
+                <div
+                  className={style({
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                  })}
+                >
                   {transferCookies.map((cookieName, index) => (
-                    <Flex key={index} alignItems="start">
+                    <div
+                      key={index}
+                      className={style({
+                        display: "flex",
+                        alignItems: "start",
+                      })}
+                    >
                       <DataElementSelector>
                         <FormikTextField
                           data-test-id={`transferCookie${index}Field`}
@@ -315,28 +318,32 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
                           arrayHelpers.remove(index);
                         }}
                         aria-label={`Remove transfer cookie ${index + 1}`}
-                        marginStart="size-100"
+                        styles={style({
+                          marginStart: 8,
+                        })}
                       >
                         <Delete />
                       </ActionButton>
-                    </Flex>
+                    </div>
                   ))}
                   <Button
                     variant="secondary"
                     data-test-id="addTransferCookieButton"
-                    marginTop="size-100"
-                    alignSelf="start"
                     onPress={() => {
                       arrayHelpers.push("");
                     }}
+                    styles={style({
+                      marginTop: 8,
+                      alignSelf: "start",
+                    })}
                   >
                     Add cookie
                   </Button>
-                </Flex>
+                </div>
               )}
             />
           )}
-        </View>
+        </div>
       </FormElementContainer>
     </>
   );

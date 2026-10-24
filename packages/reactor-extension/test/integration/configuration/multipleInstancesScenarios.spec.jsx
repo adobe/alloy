@@ -11,6 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, beforeEach, afterEach, expect } from "vitest";
+import { userEvent } from "vitest/browser";
+import { Button } from "@react-spectrum/s2";
 
 import useView from "../helpers/useView";
 import ConfigurationView from "../../../src/view/configuration/configurationView";
@@ -30,7 +32,14 @@ let confirmDeleteInstanceButton;
 
 describe("Config Multiple Instances", () => {
   beforeEach(async () => {
-    ({ view, driver, cleanup } = await useView(ConfigurationView));
+    ({ view, driver, cleanup } = await useView(() => (
+      <>
+        <ConfigurationView />
+        <Button variant="secondary" fillStyle="outline">
+          Native outlined button reference
+        </Button>
+      </>
+    )));
     nameField = field(view.getByTestId("nameField"));
     orgIdField = field(view.getByTestId("orgIdField"));
     productionEnvironmentTextfield = field(
@@ -48,6 +57,198 @@ describe("Config Multiple Instances", () => {
 
   afterEach(() => {
     cleanup();
+  });
+
+  it("gives Add instance the native outlined button affordance", async () => {
+    await driver.init(buildSettings());
+
+    const actual = getComputedStyle(
+      view.getByTestId("addInstanceButton").element(),
+    );
+    const reference = getComputedStyle(
+      view
+        .getByRole("button", { name: "Native outlined button reference" })
+        .element(),
+    );
+
+    expect(Number.parseFloat(reference.borderTopWidth)).toBeGreaterThan(0);
+    for (const property of [
+      "borderTopWidth",
+      "borderTopStyle",
+      "borderTopColor",
+      "borderRadius",
+      "backgroundColor",
+      "fontSize",
+      "fontWeight",
+      "minHeight",
+    ]) {
+      expect(actual[property]).toBe(reference[property]);
+    }
+  });
+
+  it.each(["mouse", "Enter", "Space"])(
+    "adds an instance without toggling its accordion using %s",
+    async (interaction) => {
+      await driver.init(buildSettings());
+
+      const trigger = view.getByRole("button", { name: "SDK instances" });
+      const add = view.getByTestId("addInstanceButton");
+      trigger.element().focus();
+      await userEvent.tab();
+      await expect.element(add).toHaveFocus();
+      if (interaction === "mouse") {
+        await add.click();
+      } else {
+        await userEvent.keyboard(`{${interaction}}`);
+      }
+
+      await expect.element(trigger).toHaveAttribute("aria-expanded", "true");
+      await driver.expectSettings((s) => s.instances).toHaveLength(2);
+      await expect
+        .element(view.getByRole("tab", { name: "alloy2" }))
+        .toHaveAttribute("aria-selected", "true");
+    },
+  );
+
+  it("keeps accordion and section headings larger than field labels", async () => {
+    await driver.init(buildSettings());
+
+    const accordion = view
+      .getByRole("button", { name: "SDK instances" })
+      .element();
+    const section = view
+      .getByRole("heading", { name: "Datastreams", level: 4 })
+      .element();
+    const label = view
+      .getByTestId("nameField")
+      .element()
+      .querySelector("label");
+    const fontSize = (element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize);
+
+    expect(fontSize(section)).toBeGreaterThan(fontSize(label));
+    expect(fontSize(accordion)).toBeGreaterThan(fontSize(section));
+  });
+
+  it.each(["mouse", "Enter", "Space"])(
+    "only exposes Add instance while expanded using %s",
+    async (interaction) => {
+      await driver.init(buildSettings());
+      await addInstanceButton.click();
+      await nameField.fill("savedInstance");
+      await orgIdField.fill("saved@AdobeOrg");
+
+      const trigger = view.getByRole("button", { name: "SDK instances" });
+      const build = view.getByRole("button", { name: "Build options" });
+      const add = view.getByTestId("addInstanceButton");
+      trigger.element().focus();
+      if (interaction === "mouse") {
+        await trigger.click();
+      } else {
+        await userEvent.keyboard(`{${interaction}}`);
+      }
+
+      await expect.element(trigger).toHaveAttribute("aria-expanded", "false");
+      await expect.element(add).not.toBeInTheDocument();
+      await expect.element(trigger).toHaveFocus();
+      await userEvent.tab();
+      await expect
+        .element(view.getByRole("button", { name: "Property actions" }))
+        .toHaveFocus();
+      await userEvent.tab({ shift: true });
+      await expect.element(trigger).toHaveFocus();
+      if (interaction === "mouse") {
+        await trigger.click();
+      } else {
+        await userEvent.keyboard(`{${interaction}}`);
+      }
+
+      await expect.element(trigger).toHaveAttribute("aria-expanded", "true");
+      await expect.element(add).toBeVisible();
+      await expect.element(build).toHaveAttribute("aria-expanded", "false");
+      await expect
+        .element(view.getByRole("tab", { name: "savedInstance" }))
+        .toHaveAttribute("aria-selected", "true");
+      await nameField.expectValue("savedInstance");
+      await orgIdField.expectValue("saved@AdobeOrg");
+      await driver.expectSettings((s) => s.instances[0].name).toBe("alloy");
+      await driver
+        .expectSettings((s) => s.instances[1].name)
+        .toBe("savedInstance");
+      await driver
+        .expectSettings((s) => s.instances[1].orgId)
+        .toBe("saved@AdobeOrg");
+      await driver.expectSettings((s) => s.components.eventMerge).toBe(false);
+
+      await userEvent.tab();
+      await expect.element(add).toHaveFocus();
+      await userEvent.keyboard("{Enter}");
+      await expect.element(trigger).toHaveAttribute("aria-expanded", "true");
+      await driver.expectSettings((s) => s.instances).toHaveLength(3);
+    },
+  );
+
+  it("keeps the header full-width behind the independent add action", async () => {
+    await driver.init(buildSettings());
+
+    const trigger = view.getByRole("button", { name: "SDK instances" });
+    const disclosureBounds = view
+      .getByTestId("instancesHeading")
+      .element()
+      .getBoundingClientRect();
+    const triggerBounds = trigger.element().getBoundingClientRect();
+    const addBounds = view
+      .getByTestId("addInstanceButton")
+      .element()
+      .getBoundingClientRect();
+
+    expect(triggerBounds.left).toBeCloseTo(disclosureBounds.left, 1);
+    expect(triggerBounds.right).toBeCloseTo(disclosureBounds.right, 1);
+    expect(addBounds.left).toBeGreaterThan(triggerBounds.left);
+    expect(addBounds.right).toBeLessThan(triggerBounds.right);
+    expect(addBounds.top).toBeGreaterThan(triggerBounds.top);
+    expect(addBounds.bottom).toBeLessThan(triggerBounds.bottom);
+    expect(addBounds.top + addBounds.height / 2).toBeCloseTo(
+      triggerBounds.top + triggerBounds.height / 2,
+      1,
+    );
+
+    await trigger.click();
+    await expect.element(trigger).toHaveAttribute("aria-expanded", "false");
+    await expect
+      .element(view.getByTestId("addInstanceButton"))
+      .not.toBeInTheDocument();
+    await trigger.click({
+      position: {
+        x: addBounds.left + addBounds.width / 2 - triggerBounds.left,
+        y: addBounds.top + addBounds.height / 2 - triggerBounds.top,
+      },
+    });
+    await expect.element(trigger).toHaveAttribute("aria-expanded", "true");
+    await driver.expectSettings((s) => s.instances).toHaveLength(1);
+  });
+
+  it("keeps the larger header aligned at a narrow width", async () => {
+    await driver.init(buildSettings());
+
+    const disclosure = view.getByTestId("instancesHeading").element();
+    const trigger = view
+      .getByRole("button", { name: "SDK instances" })
+      .element();
+    const originalHeight = trigger.getBoundingClientRect().height;
+
+    disclosure.style.width = "320px";
+    const headerBounds = trigger.getBoundingClientRect();
+    const addBounds = view
+      .getByTestId("addInstanceButton")
+      .element()
+      .getBoundingClientRect();
+
+    expect(headerBounds.height).toBeCloseTo(originalHeight, 1);
+    expect(addBounds.top + addBounds.height / 2).toBeCloseTo(
+      headerBounds.top + headerBounds.height / 2,
+      1,
+    );
   });
 
   it("prevents creating two instances with the same name", async () => {
