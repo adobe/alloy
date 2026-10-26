@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import type { AlloyMonitor } from "@adobe/alloy-core/core/types.js";
+import type { AtsApi, ID5Api } from "./components/Advertising/types.js";
 
 /** [resolve, reject, [commandName, options]] */
 export type AlloyQueueItem = [
@@ -58,5 +59,9 @@ declare global {
     Visitor?: LegacyVisitorApi;
     /** Legacy Adobe global, present only on pages that load it. */
     adobe?: { optIn?: LegacyOptIn };
+    /** ID5 script global, present only when the ID5 script is loaded. */
+    ID5?: ID5Api;
+    /** LiveRamp ATS script global, present only when the script is loaded. */
+    ats?: AtsApi;
   }
 }

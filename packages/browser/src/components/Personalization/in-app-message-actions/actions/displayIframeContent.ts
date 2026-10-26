@@ -312,6 +312,7 @@ const generateWebParameters = (
 };
 
 export const displayHTMLContentInIframe = (
+  // Callers pass the first argument explicitly; the default only guards undefined.
   // eslint-disable-next-line default-param-last
   settings: InAppMessageData = {},
   interact: Interact,

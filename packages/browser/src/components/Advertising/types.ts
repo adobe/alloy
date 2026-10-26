@@ -81,10 +81,3 @@ export interface ID5Api {
 export interface AtsApi {
   retrieveEnvelope: () => Promise<string>;
 }
-
-declare global {
-  interface Window {
-    ID5?: ID5Api;
-    ats?: AtsApi;
-  }
-}
