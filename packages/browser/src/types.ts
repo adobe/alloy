@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import type { AlloyMonitor } from "@adobe/alloy-core/core/types.js";
+
 /** [resolve, reject, [commandName, options]] */
 export type AlloyQueueItem = [
   (value: unknown) => unknown,
@@ -29,9 +31,32 @@ export interface AlloyInstance {
 /** Alloy instance names, keyed by the global name each instance lives under. */
 export type AlloyGlobalNamespace = Record<string, AlloyInstance>;
 
+export interface LegacyVisitor {
+  getMarketingCloudVisitorID: (
+    callback: (ecid: string) => void,
+    forceSync?: boolean,
+  ) => void;
+}
+
+export interface LegacyVisitorApi {
+  getInstance: (orgId: string, config: object) => LegacyVisitor;
+}
+
+export interface LegacyOptIn {
+  Categories: { ECID: string };
+  fetchPermissions: (callback: () => void, forceSync?: boolean) => void;
+  isApproved: (categories: string[]) => boolean;
+}
+
 declare global {
   interface Window {
     /** Names of the global Alloy instances created by the base code. */
     __alloyNS?: string[];
+    /** Monitors registered by tooling such as the Alloy debugger. */
+    __alloyMonitors?: AlloyMonitor[];
+    /** Legacy Visitor API, present only on pages that load it. */
+    Visitor?: LegacyVisitorApi;
+    /** Legacy Adobe global, present only on pages that load it. */
+    adobe?: { optIn?: LegacyOptIn };
   }
 }

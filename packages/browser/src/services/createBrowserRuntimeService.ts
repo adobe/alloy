@@ -10,10 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { RuntimeService } from "@adobe/alloy-core/services" */
+import type { RuntimeService } from "@adobe/alloy-core/services/index.js";
 
-/** @returns {RuntimeService} */
-const createBrowserRuntimeService = () => ({
+const createBrowserRuntimeService = (): RuntimeService => ({
   setTimeout: window.setTimeout.bind(window),
   clearTimeout: window.clearTimeout.bind(window),
   atob: window.atob.bind(window),

@@ -10,21 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { LegacyService } from "@adobe/alloy-core/services" */
-
+import type { LegacyService } from "@adobe/alloy-core/services/index.js";
+import type { Logger } from "@adobe/alloy-core/core/types.js";
+import type { LegacyVisitorApi } from "../types.js";
 import { isFunction, isObject } from "@adobe/alloy-core/utils/index.js";
 
-const getVisitor = () => {
+const getVisitor = (): LegacyVisitorApi | undefined => {
   const { Visitor } = window;
-  return isFunction(Visitor) && isFunction(Visitor.getInstance) && Visitor;
+  return isFunction(Visitor) && isFunction(Visitor.getInstance)
+    ? Visitor
+    : undefined;
 };
 
-/**
- * @param {{ logger: import('@adobe/alloy-core/core/types.js').Logger }} params
- * @returns {Promise<void>}
- */
-const awaitVisitorOptIn = ({ logger }) =>
-  new Promise((resolve, reject) => {
+const awaitVisitorOptIn = ({ logger }: { logger: Logger }): Promise<void> =>
+  new Promise<void>((resolve, reject) => {
     if (isObject(window.adobe) && isObject(window.adobe.optIn)) {
       const optInOld = window.adobe.optIn;
       logger.info(
@@ -45,11 +44,13 @@ const awaitVisitorOptIn = ({ logger }) =>
     }
   });
 
-/**
- * @param {{ orgId: string, logger: import('@adobe/alloy-core/core/types.js').Logger }} params
- * @returns {Promise<string | undefined>}
- */
-const getEcidFromVisitor = async ({ orgId, logger }) => {
+const getEcidFromVisitor = async ({
+  orgId,
+  logger,
+}: {
+  orgId: string;
+  logger: Logger;
+}): Promise<string | undefined> => {
   const Visitor = getVisitor();
   if (!Visitor) {
     return undefined;
@@ -59,7 +60,7 @@ const getEcidFromVisitor = async ({ orgId, logger }) => {
     logger.info(
       "Delaying request while using Visitor to retrieve ECID from server.",
     );
-    return await new Promise((resolve) => {
+    return await new Promise<string>((resolve) => {
       const visitor = Visitor.getInstance(orgId, {});
       visitor.getMarketingCloudVisitorID((ecid) => {
         logger.info(
@@ -74,7 +75,9 @@ const getEcidFromVisitor = async ({ orgId, logger }) => {
     // independently, but during ID migration AEP Web SDK needs to wait for
     // optIn so that only one ECID is generated.
     if (error) {
-      logger.info(`${error.message}, retrieving ECID from experience edge`);
+      logger.info(
+        `${(error as Error).message}, retrieving ECID from experience edge`,
+      );
     } else {
       logger.info("An error occurred while obtaining the ECID from Visitor.");
     }
@@ -82,8 +85,7 @@ const getEcidFromVisitor = async ({ orgId, logger }) => {
   }
 };
 
-/** @returns {LegacyService} */
-const createBrowserLegacyService = () => ({
+const createBrowserLegacyService = (): LegacyService => ({
   getEcidFromVisitor,
   awaitVisitorOptIn,
 });

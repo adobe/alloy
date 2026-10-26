@@ -10,18 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { NamespacedStorage, Storage, StorageService } from "@adobe/alloy-core/services" */
-
+import type {
+  Storage,
+  StorageService,
+} from "@adobe/alloy-core/services/index.js";
 import baseNamespace from "@adobe/alloy-core/constants/namespace.js";
 
 // On Safari with storage disabled, even referencing `window.localStorage`
 // throws — hence the try/catch around every access.
-/**
- * @param {string} storageType - "localStorage" or "sessionStorage".
- * @param {string} namespace
- * @returns {Storage}
- */
-const wrapStorageArea = (storageType, namespace) => ({
+type StorageType = "localStorage" | "sessionStorage";
+
+const wrapStorageArea = (
+  storageType: StorageType,
+  namespace: string,
+): Storage => ({
   getItem(name) {
     try {
       return Promise.resolve(window[storageType].getItem(namespace + name));
@@ -59,11 +61,9 @@ const wrapStorageArea = (storageType, namespace) => ({
   },
 });
 
-/** @returns {StorageService} */
-const createBrowserStorageService = () => ({
+const createBrowserStorageService = (): StorageService => ({
   createNamespacedStorage(additionalNamespace) {
     const finalNamespace = baseNamespace + additionalNamespace;
-    /** @type {NamespacedStorage} */
     return {
       session: wrapStorageArea("sessionStorage", finalNamespace),
       persistent: wrapStorageArea("localStorage", finalNamespace),

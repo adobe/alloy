@@ -10,22 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { NetworkService } from "@adobe/alloy-core/services" */
+import type { SendFetchRequest } from "@adobe/alloy-core/services/index.js";
+import type { Logger } from "@adobe/alloy-core/core/types.js";
 
-/**
- * @param {Object} params
- * @param {typeof window.fetch} params.fetch
- * @param {{ info: (...args: any[]) => void }} params.logger
- * @returns {NetworkService["sendFetchRequest"]}
- */
-export default ({ fetch, logger }) => {
-  /**
-   * @param {string} url
-   * @param {string} body
-   * @param {Record<string, string> | undefined} headers
-   * @param {boolean} keepalive
-   */
-  const startFetch = (url, body, headers, keepalive) =>
+export default ({
+  fetch,
+  logger,
+}: {
+  fetch: typeof window.fetch;
+  logger: Pick<Logger, "info">;
+}): SendFetchRequest => {
+  const startFetch = (
+    url: string,
+    body: string,
+    headers: Record<string, string> | undefined,
+    keepalive: boolean,
+  ) =>
     fetch(url, {
       method: "POST",
       cache: "no-cache",
