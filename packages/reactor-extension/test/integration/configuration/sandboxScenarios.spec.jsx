@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, beforeEach, afterEach, expect } from "vitest";
+import { http, HttpResponse } from "msw";
 
 import useView from "../helpers/useView";
 import ConfigurationView from "../../../src/view/configuration/configurationView";
@@ -60,5 +61,107 @@ describe("Config Sandboxes", () => {
         }),
       )
       .toBeVisible();
+  });
+
+  describe("PDCL-17391: only the production sandbox remains", () => {
+    const datastreamSettings = {
+      name: "alloy",
+      edgeConfigId: "2fdb3763-0507-42ea-8856-e91bf3b64faa",
+      stagingEdgeConfigId: "0a106b4d-1937-4196-a64d-4a324e972459",
+      developmentEdgeConfigId: "77469821-5ead-4045-97b6-acfd889ded6b",
+    };
+
+    beforeEach(() => {
+      worker.use(
+        http.get(
+          "https://platform.adobe.io/data/foundation/sandbox-management/",
+          () =>
+            HttpResponse.json({
+              sandboxes: [
+                {
+                  name: "prod",
+                  title: "Prod",
+                  state: "active",
+                  type: "production",
+                  region: "VA7",
+                  isDefault: true,
+                },
+              ],
+              _page: { limit: 200, count: 1 },
+            }),
+        ),
+      );
+    });
+
+    it.each([
+      ["a new extension", null],
+      [
+        "an existing production-only configuration",
+        {
+          instances: [
+            {
+              name: "alloy",
+              edgeConfigId: datastreamSettings.edgeConfigId,
+              sandbox: "prod",
+            },
+          ],
+        },
+      ],
+      [
+        "legacy settings without any sandbox names",
+        { instances: [{ ...datastreamSettings }] },
+      ],
+    ])("shows all three datastream fields for %s", async (_, settings) => {
+      await driver.init({ settings });
+
+      await edgeConfigInputMethodSelectRadio.expectChecked();
+      await productionSandboxField.expectDisabled();
+      await expect
+        .element(view.getByTestId("productionDatastreamField"))
+        .toBeVisible();
+      await expect
+        .element(view.getByTestId("stagingDatastreamField"))
+        .toBeVisible();
+      await expect
+        .element(view.getByTestId("developmentDatastreamField"))
+        .toBeVisible();
+    });
+
+    it.each([
+      ["missing", {}],
+      [
+        "deleted",
+        {
+          stagingSandbox: "deleted-staging",
+          developmentSandbox: "deleted-dev",
+        },
+      ],
+    ])(
+      "reproduces missing staging and development fields with %s saved sandbox names",
+      async (_, sandboxSettings) => {
+        await driver.init({
+          settings: {
+            instances: [
+              { ...datastreamSettings, sandbox: "prod", ...sandboxSettings },
+            ],
+          },
+        });
+
+        await edgeConfigInputMethodSelectRadio.expectChecked();
+        await productionSandboxField.expectDisabled();
+        await field(view.getByTestId("productionDatastreamField")).expectValue(
+          "analytics enabled",
+        );
+        await expect
+          .element(view.getByTestId("stagingDatastreamField"))
+          .not.toBeInTheDocument();
+        await expect
+          .element(view.getByTestId("developmentDatastreamField"))
+          .not.toBeInTheDocument();
+        await driver
+          .expectSettings((settings) => settings.instances[0])
+          .toMatchObject(datastreamSettings);
+      },
+    );
   });
 });
