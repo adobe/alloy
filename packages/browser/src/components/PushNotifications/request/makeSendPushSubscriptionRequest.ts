@@ -1,0 +1,107 @@
+/*
+Copyright 2025 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+import type { Storage } from "@adobe/alloy-core/services";
+import type { EventManager, Logger } from "@adobe/alloy-core/core/types.js";
+import type { IdentityManager } from "@adobe/alloy-core/core/identity/types.js";
+import type { ConsentManager } from "@adobe/alloy-core/core/consent/types.js";
+import type { EdgeRequestExecutor } from "@adobe/alloy-core/core/edgeNetwork/types.js";
+import { sortObjectKeysRecursively } from "@adobe/alloy-core/utils";
+import getPushSubscriptionDetailsDefault from "../helpers/getPushSubscriptionDetails.js";
+import createSendPushSubscriptionRequest from "./createSendPushSubscriptionRequest.js";
+import createSendPushSubscriptionPayload from "./createSendPushSubscriptionPayload.js";
+import saveToIndexedDb from "../helpers/saveToIndexedDb.js";
+
+const SUBSCRIPTION_DETAILS = "subscriptionDetails";
+
+/**
+ * Retrieves and returns push subscription details with sorted object keys.
+ *
+ * This function gets the push subscription details using the provided VAPID public key
+ * and returns the details with all object keys sorted recursively for consistent output.
+ */
+export default async ({
+  config: { vapidPublicKey, appId },
+  storage,
+  logger,
+  sendEdgeNetworkRequest,
+  consent,
+  eventManager,
+  identity,
+  window,
+  getPushSubscriptionDetails = getPushSubscriptionDetailsDefault,
+}: {
+  config: { vapidPublicKey: string; appId: string };
+  storage: Storage;
+  logger: Logger;
+  eventManager: EventManager;
+  identity: IdentityManager;
+  sendEdgeNetworkRequest: EdgeRequestExecutor;
+  consent: ConsentManager;
+  window: Window;
+  getPushSubscriptionDetails?: typeof getPushSubscriptionDetailsDefault;
+}): Promise<void> => {
+  await identity.awaitIdentity();
+  const ecid = identity.getEcidFromCookie();
+
+  if (!ecid) {
+    logger.info(
+      "No ECID is available. Not sending push subscription details to the server.",
+    );
+
+    return;
+  }
+
+  const pushSubscriptionDetails = await getPushSubscriptionDetails({
+    vapidPublicKey,
+    window,
+  });
+
+  const serializedPushSubscriptionDetails = JSON.stringify(
+    sortObjectKeysRecursively(pushSubscriptionDetails),
+  );
+
+  const cacheValue = `${ecid}${serializedPushSubscriptionDetails}`;
+  const storedValue = await storage.getItem(SUBSCRIPTION_DETAILS);
+
+  if (storedValue && cacheValue === storedValue) {
+    logger.info(
+      "Subscription details have not changed. Not sending to the server.",
+    );
+
+    return;
+  }
+
+  const payload = await createSendPushSubscriptionPayload({
+    eventManager,
+    ecid,
+    serializedPushSubscriptionDetails,
+    appId,
+  });
+
+  const request = createSendPushSubscriptionRequest({
+    payload,
+  });
+
+  await consent.awaitConsent();
+  await sendEdgeNetworkRequest({ request });
+
+  const savedToIndexedDb = await saveToIndexedDb({ ecid }, logger);
+
+  // Only cache the subscription details once the ECID has been persisted, so
+  // that a failed send or a failed IndexedDB write does not short-circuit the
+  // dedupe check on the next call. This lets a subsequent sendPushSubscription
+  // self-heal instead of getting stuck with a cached subscription but no ECID.
+  if (savedToIndexedDb) {
+    storage.setItem(SUBSCRIPTION_DETAILS, cacheValue);
+  }
+};
