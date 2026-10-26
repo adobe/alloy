@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Item, Link } from "@adobe/react-spectrum";
+import { ComboBoxItem, Link } from "@react-spectrum/s2";
 import PropTypes from "prop-types";
 import { useField } from "formik";
 import { findNamespace } from "../utils/namespacesUtils";
-import FormikComboBox from "../../../components/formikReactSpectrum3/formikComboBox";
+import FormikComboBox from "../../../forms/fields/ComboBox";
 import DataElementSelector from "../../../components/dataElementSelector";
-import FormikTextField from "../../../components/formikReactSpectrum3/formikTextField";
+import FormikTextField from "../../../forms/fields/TextField";
 
 const getSelectedNamespace = (namespaces, selectedNamespaceCode) => {
   if (namespaces.length < 1 || selectedNamespaceCode === "") {
@@ -64,7 +64,11 @@ const NamespacesComponent = ({ name, index, namespaces }) => {
           label="Namespace"
           allowsCustomValue
         >
-          {(namespace) => <Item key={namespace.code}>{namespace.code}</Item>}
+          {(namespace) => (
+            <ComboBoxItem key={namespace.code} id={namespace.code}>
+              {namespace.code}
+            </ComboBoxItem>
+          )}
         </FormikComboBox>
       ) : (
         <FormikTextField

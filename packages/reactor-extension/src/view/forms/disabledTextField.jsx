@@ -10,7 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { TextField } from "@adobe/react-spectrum";
+import { TextField } from "@react-spectrum/s2";
+
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 
 /** @typedef {import("./form").Form} Form */
@@ -40,11 +42,13 @@ export default function disabledTextField({
       <TextField
         data-test-id={`${namePrefix}${name}DisabledField`}
         value={valueLabel}
-        width="size-5000"
         label={label}
         isRequired={isRequired}
         description={description}
         isDisabled
+        styles={style({
+          width: 400,
+        })}
       />
     );
   };

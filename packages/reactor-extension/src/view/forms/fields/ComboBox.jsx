@@ -11,8 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { ComboBox } from "@adobe/react-spectrum";
+import { ComboBox, ComboBoxItem } from "@react-spectrum/s2";
 import { useField } from "formik";
+import widthStyle from "./widthStyle";
+import normalizeCollectionChildren from "./normalizeCollectionChildren";
+import closeDataElementSuggestions from "./closeDataElementSuggestions";
 
 /**
  * @param {object} params
@@ -29,6 +32,7 @@ const FormikComboBox = ({
   width,
   validate,
   onBlur = () => {},
+  children,
   ...otherProps
 }) => {
   const [{ value }, { touched, error }, { setValue, setTouched }] = useField({
@@ -38,17 +42,21 @@ const FormikComboBox = ({
   return (
     <ComboBox
       {...otherProps}
+      menuTrigger={value?.startsWith("%") ? "manual" : otherProps.menuTrigger}
+      onInput={closeDataElementSuggestions}
       inputValue={value}
       onInputChange={setValue}
       onBlur={(...args) => {
         onBlur(...args);
         setTouched(true);
       }}
-      validationState={touched && error ? "invalid" : undefined}
+      isInvalid={Boolean(touched && error)}
       name={name}
-      width={width}
+      styles={widthStyle(width)}
       errorMessage={error}
-    />
+    >
+      {normalizeCollectionChildren(ComboBoxItem, children)}
+    </ComboBox>
   );
 };
 
@@ -57,6 +65,7 @@ FormikComboBox.propTypes = {
   onBlur: PropTypes.func,
   validate: PropTypes.func,
   width: PropTypes.string,
+  children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
 };
 
 export default FormikComboBox;

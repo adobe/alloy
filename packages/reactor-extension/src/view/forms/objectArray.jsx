@@ -12,17 +12,19 @@ governing permissions and limitations under the License.
 
 import { array, string, object } from "yup";
 import { FieldArray, useField } from "formik";
-import { Flex, Radio, Button, Well, ActionButton } from "@adobe/react-spectrum";
+import { Radio, Button, ActionButton } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
-import Delete from "@spectrum-icons/workflow/Delete";
-import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
-import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
+import Delete from "@react-spectrum/s2/icons/Delete";
+import FormikRadioGroup from "./fields/RadioGroup";
+import FormikTextField from "./fields/TextField";
 import DataElementSelector from "../components/dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
 import form from "./form";
 import numberAwareCompareFunction from "../utils/numberAwareCompareFunction";
 import FormElementContainer from "../components/formElementContainer";
+import FormEditGroup from "../components/formEditGroup";
 
 const FORM = "form";
 const DATA_ELEMENT = "dataElement";
@@ -34,16 +36,28 @@ const lowerInitialLetters = (s) => {
     .join(" ");
 };
 
-const ObjectArrayContainer = ({ horizontal, children }) => {
+const WELL_CONTENT_STYLE = style({
+  display: "flex",
+  flexDirection: "column",
+  gap: 8,
+});
+const REMOVE_ROW_STYLE = style({ display: "flex" });
+const REMOVE_BUTTON_STYLE = style({ marginStart: "auto" });
+// Nudges the first row's remove button down to align with a field that has a
+// label above it. The style() macro needs a literal per call, so the
+// index === 0 comparison can't be interpolated directly; precompute both
+// variants. size-300 = 24px per the S1->S2 dimension token table.
+const HORIZONTAL_REMOVE_BUTTON_STYLES = {
+  true: style({ marginTop: 24 }),
+  false: style({ marginTop: 0 }),
+};
+
+const ObjectArrayContainer = ({ horizontal, label, children }) => {
   if (horizontal) {
     return (
-      <Well
-        UNSAFE_style={{
-          paddingTop: "var(--spectrum-global-dimension-size-100)",
-        }}
-      >
+      <FormEditGroup label={label}>
         <FormElementContainer>{children}</FormElementContainer>
-      </Well>
+      </FormEditGroup>
     );
   }
   return children;
@@ -51,6 +65,7 @@ const ObjectArrayContainer = ({ horizontal, children }) => {
 
 ObjectArrayContainer.propTypes = {
   horizontal: PropTypes.bool,
+  label: PropTypes.string,
   children: PropTypes.node,
 };
 
@@ -256,7 +271,7 @@ export default function objectArray(
       );
 
       return (
-        <ObjectArrayContainer horizontal={horizontal}>
+        <ObjectArrayContainer horizontal={horizontal} label={singularLabel}>
           {dataElementSupported && (
             <FormikRadioGroup
               name={`${namePrefix}${name}InputMethod`}
@@ -288,37 +303,38 @@ export default function objectArray(
                       return (
                         <div key={index}>
                           {!horizontal && (
-                            <Well
-                              alignSelf="flex-start"
-                              direction="column"
-                              gap="size-100"
+                            <FormEditGroup
+                              label={`${singularLabel} ${index + 1}`}
                             >
-                              <ItemComponent
-                                namePrefix={`${namePrefix}${name}.${index}.`}
-                                {...props}
-                              />
-                              <Flex direction="row">
-                                <Button
-                                  variant="secondary"
-                                  data-test-id={`${namePrefix}${name}${index}RemoveButton`}
-                                  onPress={() => {
-                                    // using arrayHelpers.remove mangles the error message
-                                    setItems(
-                                      items.filter((_, i) => i !== index),
-                                    );
-                                  }}
-                                  isDisabled={
-                                    items.length === 1 && isRowEmpty(item)
-                                  }
-                                  marginStart="auto"
-                                >
-                                  Remove {lowerInitialLetters(singularLabel)}
-                                </Button>
-                              </Flex>
-                            </Well>
+                              <div className={WELL_CONTENT_STYLE}>
+                                <ItemComponent
+                                  namePrefix={`${namePrefix}${name}.${index}.`}
+                                  {...props}
+                                />
+                                <div className={REMOVE_ROW_STYLE}>
+                                  <Button
+                                    variant="secondary"
+                                    fillStyle="outline"
+                                    data-test-id={`${namePrefix}${name}${index}RemoveButton`}
+                                    onPress={() => {
+                                      // using arrayHelpers.remove mangles the error message
+                                      setItems(
+                                        items.filter((_, i) => i !== index),
+                                      );
+                                    }}
+                                    isDisabled={
+                                      items.length === 1 && isRowEmpty(item)
+                                    }
+                                    styles={REMOVE_BUTTON_STYLE}
+                                  >
+                                    {`Remove ${lowerInitialLetters(singularLabel)}`}
+                                  </Button>
+                                </div>
+                              </div>
+                            </FormEditGroup>
                           )}
                           {horizontal && (
-                            <Flex direction="row">
+                            <div className={REMOVE_ROW_STYLE}>
                               <ItemComponent
                                 namePrefix={`${namePrefix}${name}.${index}.`}
                                 hideLabel={index > 0}
@@ -327,7 +343,6 @@ export default function objectArray(
                               />
                               <ActionButton
                                 isQuiet
-                                variant="secondary"
                                 data-test-id={`${namePrefix}${name}${index}RemoveButton`}
                                 onPress={() =>
                                   // using arrayHelpers.remove mangles the error message
@@ -340,22 +355,26 @@ export default function objectArray(
                                 isDisabled={
                                   items.length === 1 && isRowEmpty(item)
                                 }
-                                marginTop={index === 0 ? "size-300" : 0}
+                                styles={
+                                  HORIZONTAL_REMOVE_BUTTON_STYLES[index === 0]
+                                }
                               >
                                 <Delete />
                               </ActionButton>
-                            </Flex>
+                            </div>
                           )}
                         </div>
                       );
                     })}
                     <div>
-                      <ActionButton
+                      <Button
+                        variant="secondary"
+                        fillStyle="outline"
                         data-test-id={`${namePrefix}${name}AddButton`}
                         onPress={() => arrayHelpers.push(buildDefaultItem())}
                       >
-                        Add another {lowerInitialLetters(singularLabel)}
-                      </ActionButton>
+                        {`Add another ${lowerInitialLetters(singularLabel)}`}
+                      </Button>
                     </div>
                   </>
                 );

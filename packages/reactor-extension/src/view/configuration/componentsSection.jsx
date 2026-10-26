@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import camelCaseToTitleCase from "../utils/camelCaseToTitleCase";
-import FormikCheckbox from "../components/formikReactSpectrum3/formikCheckbox";
+import FormikCheckbox from "../forms/fields/Checkbox";
 import BetaBadge from "../components/betaBadge";
 import valueOrDefault from "../utils/valueOrDefault";
 import alloyComponents, {
@@ -74,7 +74,7 @@ export const bridge = {
 const ComponentsSection = () => {
   return (
     <div>
-      <SectionHeader marginTop="">Components</SectionHeader>
+      <SectionHeader marginTop={0}>Components</SectionHeader>
 
       {webSdkComponents.map(({ label, value, description, beta }) => {
         return (

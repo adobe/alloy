@@ -10,20 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  ActionButton,
-  Flex,
-  Item,
-  Radio,
-  useAsyncList,
-} from "@adobe/react-spectrum";
+import { ActionButton, PickerItem, Radio } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { useAsyncList } from "@react-stately/data";
 import { useField } from "formik";
 import PropTypes from "prop-types";
 import { useEffect } from "react";
-import Delete from "@spectrum-icons/workflow/Delete";
+import Delete from "@react-spectrum/s2/icons/Delete";
 import fetchConfigs from "../../configuration/utils/fetchConfigs";
 import usePrevious from "../../utils/usePrevious";
-import FormikRadioGroup from "../formikReactSpectrum3/formikRadioGroup";
+import FormikRadioGroup from "../../forms/fields/RadioGroup";
 import OverrideInput from "./overrideInput";
 
 /**
@@ -95,7 +91,7 @@ const DatastreamOverrideSelector = ({
   label,
   ...otherProps
 }) => {
-  /** @type {import("@adobe/react-spectrum").AsyncListData<Datastream, string>} */
+  /** @type {import("@react-stately/data").AsyncListData<Datastream, string>} */
   const datastreamList = useAsyncList({
     async load({ signal }) {
       /** @type {{ results: Datastream[] }} */
@@ -193,7 +189,12 @@ const DatastreamOverrideSelector = ({
           Enter values
         </Radio>
       </FormikRadioGroup>
-      <Flex direction="row">
+      <div
+        className={style({
+          display: "flex",
+          flexDirection: "row",
+        })}
+      >
         <OverrideInput
           {...otherProps}
           aria-label={label}
@@ -205,7 +206,9 @@ const DatastreamOverrideSelector = ({
           useManualEntry={useManualEntry}
         >
           {(/** @type {Datastream} */ item) => (
-            <Item key={getKey(item)}>{getLabel(item)}</Item>
+            <PickerItem key={getKey(item)} id={getKey(item)}>
+              {getLabel(item)}
+            </PickerItem>
           )}
         </OverrideInput>
         {!useManualEntry && (
@@ -213,7 +216,7 @@ const DatastreamOverrideSelector = ({
             <Delete />
           </ActionButton>
         )}
-      </Flex>
+      </div>
     </>
   );
 };

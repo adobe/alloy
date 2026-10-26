@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { InlineAlert, Heading, Content } from "@adobe/react-spectrum";
 import BetaBadge from "../components/betaBadge";
+import InfoMessage from "../components/infoMessage";
 
 /** @typedef {import("./form").Form} Form */
 /**
@@ -26,12 +26,16 @@ export default function notice({ title, description, beta }) {
   return {
     Component: () => {
       return (
-        <InlineAlert variant="info" width="size-5000">
-          <Heading size="XXS">
-            {title} {beta && <BetaBadge />}
-          </Heading>
-          <Content>{description}</Content>
-        </InlineAlert>
+        <InfoMessage
+          title={
+            <>
+              {title} {beta && <BetaBadge />}
+            </>
+          }
+          headingLevel={3}
+        >
+          {description}
+        </InfoMessage>
       );
     },
   };

@@ -10,7 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { Checkbox } from "@adobe/react-spectrum";
+import { Checkbox } from "@react-spectrum/s2";
+
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import FieldDescriptionAndError from "../components/fieldDescriptionAndError";
 import BetaBadge from "../components/betaBadge";
@@ -44,8 +46,10 @@ export default function disabledCheckbox({
         <Checkbox
           data-test-id={`${namePrefix}${name}DisabledCheckbox`}
           isSelected={value}
-          width="size-5000"
           isDisabled
+          styles={style({
+            width: 400,
+          })}
         >
           {label}
           {beta && <BetaBadge isDisabled />}
