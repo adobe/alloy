@@ -10,23 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { WindowWithAlloy, AlloyQueueItem } from './types.js' */
-
+import type { AlloyGlobalNamespace, AlloyQueueItem } from "./types.js";
 import { createCustomInstance } from "./index.js";
 
-const initializeStandalone = ({ components }) => {
-  const instanceNames = /** @type {WindowWithAlloy} */ (window).__alloyNS;
+const initializeStandalone = ({ components }: { components: any }) => {
+  const instanceNames = window.__alloyNS;
   if (!instanceNames) {
     return;
   }
+  // Instance names are dynamic, so the window is indexed as a namespace.
+  const namespace = window as unknown as AlloyGlobalNamespace;
   for (const name of instanceNames) {
-    const instance = createCustomInstance({ name, components });
-    const execute = (/** @type {AlloyQueueItem} */ item) => {
+    const instance = createCustomInstance({ name, components } as Parameters<
+      typeof createCustomInstance
+    >[0]);
+    const execute = (item: AlloyQueueItem) => {
       const [resolve, reject, [commandName, options]] = item;
       return instance(commandName, options).then(resolve, reject);
     };
-    const queue = window[name].q;
-    queue.push = execute;
+    const queue = namespace[name].q;
+    queue.push = execute as unknown as typeof queue.push;
     queue.forEach(execute);
   }
 };
