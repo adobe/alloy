@@ -129,6 +129,7 @@ export const isPageWideSurface = (scope: string | undefined) =>
   scope.indexOf(FRAGMENT_DELIMITER) === -1;
 
 export const normalizeSurfaces = (
+  // Callers pass the first argument explicitly; the default only guards undefined.
   // eslint-disable-next-line default-param-last
   surfaces: unknown[] = [],
   getPageLocation: GetPageLocation,
