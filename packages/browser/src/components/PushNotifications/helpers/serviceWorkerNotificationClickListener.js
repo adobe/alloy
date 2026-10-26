@@ -76,6 +76,7 @@ export default ({ makeSendServiceWorkerTrackingData, sw, logger }) => {
           if (sw.clients.openWindow) {
             return sw.clients.openWindow(targetUrl);
           }
+          return undefined;
         }),
       );
     }
