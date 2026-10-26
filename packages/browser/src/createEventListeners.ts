@@ -15,15 +15,26 @@ import createServiceWorkerNotificationClickListener from "./components/PushNotif
 import readFromIndexedDb from "./components/PushNotifications/helpers/readFromIndexedDb.js";
 import { createMakeSendServiceWorkerTrackingData } from "./components/PushNotifications/request/makeSendServiceWorkerTrackingData.js";
 import uuidv4 from "@adobe/alloy-core/utils/uuid.js";
+import type {
+  ServiceWorkerLogger,
+  ServiceWorkerNotificationClickEvent,
+  ServiceWorkerPushEvent,
+  ServiceWorkerScope,
+} from "./components/PushNotifications/types.js";
 
-/**
- * @type {Object} PlatformCapabilities
- * @property {Logger} logger
- * @property {(url: string, options: object) => Promise<Response>} fetch
- *
- * TODO: Remove dependency on sw (service worker)
- */
-const createEventListeners = ({ platform, sw }) => {
+interface PlatformCapabilities {
+  logger: ServiceWorkerLogger;
+  fetch: typeof fetch;
+}
+
+// TODO: Remove dependency on sw (service worker)
+const createEventListeners = ({
+  platform,
+  sw,
+}: {
+  platform: PlatformCapabilities;
+  sw: ServiceWorkerScope;
+}) => {
   const makeSendServiceWorkerTrackingData =
     createMakeSendServiceWorkerTrackingData({
       readFromIndexedDb,
@@ -41,12 +52,7 @@ const createEventListeners = ({ platform, sw }) => {
 
   return {
     pushNotifications: {
-      /**
-       *
-       * @param {PushEvent} event
-       * @returns Promise<void>
-       */
-      onPush(event) {
+      onPush(event: ServiceWorkerPushEvent) {
         return serviceWorkerPushListener({
           event,
           sw,
@@ -54,17 +60,10 @@ const createEventListeners = ({ platform, sw }) => {
           readFromIndexedDb,
         });
       },
-      /**
-       * @param {NotificationEvent} event
-       */
-      onNotificationClick(event) {
+      onNotificationClick(event: ServiceWorkerNotificationClickEvent) {
         serviceWorkerNotificationClickListener({ event });
       },
-      /**
-       *
-       * @param {NotificationEvent} event
-       */
-      async onNotificationClose(event) {
+      async onNotificationClose(event: ServiceWorkerNotificationClickEvent) {
         const data = event.notification.data;
 
         try {

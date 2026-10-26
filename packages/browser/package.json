@@ -25,7 +25,7 @@
     "LICENSE_BANNER"
   ],
   "scripts": {
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.serviceWorker.json",
     "clean": "rimraf dist distTest",
     "prepack": "pnpm run build",
     "release": "node scripts/release.mjs",

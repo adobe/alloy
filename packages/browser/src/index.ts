@@ -10,7 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createCustomInstance as createCoreCustomInstance } from "@adobe/alloy-core";
+import {
+  createCustomInstance as createCoreCustomInstance,
+  type CreateCustomInstanceOptions,
+} from "@adobe/alloy-core";
 import * as allOptionalComponents from "./allOptionalComponents.js";
 import * as allRequiredComponents from "./components/requiredComponentCreators.js";
 import createBrowserPlatformServices from "./services/createBrowserPlatformServices.js";
@@ -19,7 +22,7 @@ export const createCustomInstance = ({
   components = [],
   monitors = [],
   ...options
-} = {}) =>
+}: CreateCustomInstanceOptions = {}) =>
   createCoreCustomInstance(
     {
       ...options,
@@ -29,10 +32,12 @@ export const createCustomInstance = ({
     createBrowserPlatformServices,
   );
 
-export const createInstance = (options = {}) =>
+export const createInstance = (options: CreateCustomInstanceOptions = {}) =>
   createCustomInstance({
     ...options,
-    components: Object.values(allOptionalComponents),
+    components: Object.values(
+      allOptionalComponents,
+    ) as CreateCustomInstanceOptions["components"],
   });
 
 export { allOptionalComponents as components };
