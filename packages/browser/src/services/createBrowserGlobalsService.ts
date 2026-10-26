@@ -10,26 +10,31 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/* eslint-disable dot-notation */
-
-/** @import { GlobalsService } from "@adobe/alloy-core/services" */
+import type { GlobalsService } from "@adobe/alloy-core/services/index.js";
+import type { AlloyInstance } from "../types.js";
 import injectFireReferrerHideableImage from "@adobe/alloy-core/utils/dom/injectFireReferrerHideableImage.js";
 
-/** @returns {GlobalsService} */
-const createBrowserGlobalsService = () => ({
-  getInstanceNames: () => window["__alloyNS"] || [],
+const createBrowserGlobalsService = (): GlobalsService => ({
+  getInstanceNames: () => window.__alloyNS || [],
   getInstanceQueue: (instanceName) => {
-    const namespace = window[instanceName];
+    // Instance names are user-chosen globals, so the lookup cannot be keyed
+    // by a known union; narrow the value at the boundary instead.
+    const namespace = (window as unknown as Record<string, AlloyInstance>)[
+      instanceName
+    ] as AlloyInstance | undefined;
     return (namespace && namespace.q) || [];
   },
-  getMonitors: () => window["__alloyMonitors"] || [],
+  getMonitors: () => window.__alloyMonitors || [],
   getLocationSearch: () => window.location.search,
   getLocationHash: () => window.location.hash,
   getUserAgent: () => window.navigator.userAgent,
   getHostname: () => window.location.hostname,
   getPageLocation: () => window.location,
   isPageSsl: () => window.location.protocol === "https:",
-  fireReferrerHideableImage: injectFireReferrerHideableImage(),
+  // The core service contract resolves to void; callers ignore the value, so
+  // the Event the image load resolves with is safe to leave in place.
+  fireReferrerHideableImage:
+    injectFireReferrerHideableImage() as unknown as GlobalsService["fireReferrerHideableImage"],
   getWindowContext: () => ({
     title: document.title,
     url: window.location.href,

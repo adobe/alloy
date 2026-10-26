@@ -10,8 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ sendBeacon, sendFetchRequest, logger }) => {
-  return (url, body) => {
+import type {
+  NetworkResponse,
+  SendBeaconRequest,
+  SendFetchRequest,
+} from "@adobe/alloy-core/services/index.js";
+import type { Logger } from "@adobe/alloy-core/core/types.js";
+
+export default ({
+  sendBeacon,
+  sendFetchRequest,
+  logger,
+}: {
+  sendBeacon: (url: string, data: Blob) => boolean;
+  sendFetchRequest: SendFetchRequest;
+  logger: Logger;
+}): SendBeaconRequest => {
+  return (url, body): Promise<NetworkResponse> => {
     const blob = new Blob([body], { type: "text/plain; charset=UTF-8" });
     if (!sendBeacon(url, blob)) {
       logger.info("Unable to use `sendBeacon`; falling back to `fetch`.");

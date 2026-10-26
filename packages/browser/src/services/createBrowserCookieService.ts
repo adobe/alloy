@@ -10,18 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { CookieService } from "@adobe/alloy-core/services" */
-
-import Cookies from "js-cookie";
+import type { CookieService } from "@adobe/alloy-core/services/index.js";
+import Cookies, { type CookieJar } from "js-cookie";
 
 /**
  * The optional `jar` parameter is the recursion seam for `withConverter` —
  * every converted js-cookie instance must itself satisfy `CookieService`.
- *
- * @param {{ get: Function, set: Function, remove: Function, withConverter: Function }} [jar]
- * @returns {CookieService}
  */
-const createBrowserCookieService = (jar = Cookies) => ({
+const createBrowserCookieService = (
+  jar: CookieJar = Cookies,
+): CookieService => ({
   get: (name) => jar.get(name),
   getAll: () => jar.get(),
   set: (name, value, options) => jar.set(name, value, options),

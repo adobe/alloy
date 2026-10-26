@@ -10,16 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { NetworkService } from "@adobe/alloy-core/services" */
+import type { NetworkService } from "@adobe/alloy-core/services/index.js";
+import type { Logger } from "@adobe/alloy-core/core/types.js";
 
 import injectSendFetchRequest from "./injectSendFetchRequest.js";
 import injectSendBeaconRequest from "./injectSendBeaconRequest.js";
 
-/**
- * @param {{ logger: import("@adobe/alloy-core/core/types.js").Logger }} params
- * @returns {NetworkService}
- */
-const createBrowserNetworkService = ({ logger }) => {
+const createBrowserNetworkService = ({
+  logger,
+}: {
+  logger: Logger;
+}): NetworkService => {
   const { fetch, navigator } = window;
   const sendFetchRequest = injectSendFetchRequest({ fetch, logger });
   const sendBeaconRequest =

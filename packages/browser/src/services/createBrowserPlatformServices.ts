@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/** @import { PlatformServices } from "@adobe/alloy-core/services" */
+import type { PlatformServices } from "@adobe/alloy-core/services/index.js";
 
 import createBrowserNetworkService from "./createBrowserNetworkService.js";
 import createBrowserStorageService from "./createBrowserStorageService.js";
@@ -19,10 +19,7 @@ import createBrowserRuntimeService from "./createBrowserRuntimeService.js";
 import createBrowserLegacyService from "./createBrowserLegacyService.js";
 import createBrowserGlobalsService from "./createBrowserGlobalsService.js";
 
-/**
- * @returns {PlatformServices}
- */
-const createBrowserPlatformServices = () => ({
+const createBrowserPlatformServices = (): PlatformServices => ({
   createNetworkService: (logger) => createBrowserNetworkService({ logger }),
   storage: createBrowserStorageService(),
   cookie: createBrowserCookieService(),
