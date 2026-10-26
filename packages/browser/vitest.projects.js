@@ -67,4 +67,16 @@ export const browserTestProjects = [
       coverage: packageCoverage,
     },
   }),
+  defineProject({
+    extends: false,
+    test: {
+      name: "browser/package",
+      include: [
+        "packages/browser/test/package/**/*.{test,spec}.?(c|m)[jt]s?(x)",
+      ],
+      environment: "node",
+      // Packing rebuilds dist/, so wait until no other tests are reading it.
+      sequence: { groupOrder: 1 },
+    },
+  }),
 ];

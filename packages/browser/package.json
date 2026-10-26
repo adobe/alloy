@@ -25,12 +25,11 @@
     "LICENSE_BANNER"
   ],
   "scripts": {
-    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.serviceWorker.json",
+    "typecheck": "tsc -p tsconfig.typecheck.json && tsc -p tsconfig.serviceWorker.json",
     "clean": "rimraf dist distTest",
     "prepack": "pnpm run build",
     "release": "node scripts/release.mjs",
-    "build:types": "tsc -p jsconfig.json --declaration --emitDeclarationOnly --outDir dist/types --checkJs false --noEmit false",
-    "build": "pnpm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,SERVICE_WORKER,SERVICE_WORKER_MIN,UTILITY_EXPORTS,BUNDLESIZE && pnpm run build:types",
+    "build": "pnpm run clean && tsc -p tsconfig.json && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,SERVICE_WORKER,SERVICE_WORKER_MIN,UTILITY_EXPORTS,BUNDLESIZE",
     "build:watch": "rollup -c --watch --environment BASE_CODE_MIN,STANDALONE,SERVICE_WORKER,UTILITY_EXPORTS",
     "dev:prepare": "rollup -c --environment BASE_CODE_MIN,STANDALONE,SERVICE_WORKER,UTILITY_EXPORTS",
     "dev": "pnpm run build:watch",
@@ -44,35 +43,43 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/types/browser/src/index.d.ts",
-      "default": "./src/index.js"
+      "alloy-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./baseCode.js": {
-      "types": "./dist/types/browser/src/baseCode/index.d.ts",
-      "default": "./src/baseCode/index.js"
+      "alloy-source": "./src/baseCode/index.ts",
+      "types": "./dist/baseCode/index.d.ts",
+      "default": "./dist/baseCode/index.js"
     },
     "./standalone.js": {
-      "types": "./dist/types/browser/src/standalone.d.ts",
-      "default": "./src/standalone.js"
+      "alloy-source": "./src/standalone.ts",
+      "types": "./dist/standalone.d.ts",
+      "default": "./dist/standalone.js"
     },
     "./serviceWorker.js": {
-      "types": "./dist/types/browser/src/serviceWorker.d.ts",
-      "default": "./src/serviceWorker.js"
+      "alloy-source": "./src/serviceWorker.ts",
+      "types": "./dist/serviceWorker.d.ts",
+      "default": "./dist/serviceWorker.js"
     },
     "./utils/deepAssign.js": {
-      "types": "./dist/types/browser/src/utils/deepAssign.d.ts",
+      "alloy-source": "./src/utils/deepAssign.ts",
+      "types": "./dist/utils/deepAssign.d.ts",
       "default": "./dist/utils/deepAssign.js"
     },
     "./libEs6/utils/deepAssign": {
-      "types": "./dist/types/browser/src/utils/deepAssign.d.ts",
+      "alloy-source": "./src/utils/deepAssign.ts",
+      "types": "./dist/utils/deepAssign.d.ts",
       "default": "./dist/utils/deepAssign.js"
     },
     "./utils/createEventMergeId.js": {
-      "types": "./dist/types/browser/src/utils/createEventMergeId.d.ts",
+      "alloy-source": "./src/utils/createEventMergeId.ts",
+      "types": "./dist/utils/createEventMergeId.d.ts",
       "default": "./dist/utils/createEventMergeId.js"
     },
     "./libEs6/components/EventMerge/createEventMergeId": {
-      "types": "./dist/types/browser/src/utils/createEventMergeId.d.ts",
+      "alloy-source": "./src/utils/createEventMergeId.ts",
+      "types": "./dist/utils/createEventMergeId.d.ts",
       "default": "./dist/utils/createEventMergeId.js"
     },
     "./components.json": "./components.json"
