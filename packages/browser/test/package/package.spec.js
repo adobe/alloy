@@ -183,6 +183,29 @@ describe("@adobe/alloy npm package", () => {
     }
   });
 
+  test("gives every JavaScript export alloy-source, types and default", () => {
+    const entries = Object.entries(manifest.exports).filter(
+      ([key]) => !key.endsWith(".json"),
+    );
+    expect(entries.length).toBeGreaterThan(0);
+    entries.forEach(([, value]) => {
+      expect(Object.keys(value)).toEqual(["alloy-source", "types", "default"]);
+      expect(value.types).toMatch(/^\.\/dist\/.*\.d\.ts$/);
+      expect(value.default).toMatch(/^\.\/dist\/.*\.js$/);
+    });
+  });
+
+  test("contains every file the exports map points to", () => {
+    const packagePath = path.join(workPath, "node_modules/@adobe/alloy");
+    const targets = Object.values(manifest.exports).flatMap((value) =>
+      typeof value === "string" ? [value] : Object.values(value),
+    );
+    const missing = targets.filter(
+      (target) => !fs.existsSync(path.join(packagePath, target)),
+    );
+    expect(missing).toEqual([]);
+  });
+
   describe.each(["createInstance", "createCustomInstance", "standalone"])(
     "%s",
     (name) => {
