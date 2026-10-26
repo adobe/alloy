@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 /* eslint no-underscore-dangle: 0 */
 /* eslint-disable func-names */
 
+
 /**
  * This is the code, once minified, that an Alloy consumer copies and pastes
  * into their website's HTML. It sets up any global functions the consumer will
@@ -29,9 +30,11 @@ governing permissions and limitations under the License.
  * Take particular care to write well-minifiable code, as consumers are
  * particularly sensitive to base code size.
  *
+ * @param {Window} window
+ * @param {string[]} instanceNames
  */
 
-export default (window: any, instanceNames: string[]) => {
+export default (window, instanceNames) => {
   instanceNames.forEach(function (instanceName) {
     if (!window[instanceName]) {
       // __alloyNS stores a name of each "instance", or in other words, each

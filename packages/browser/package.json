@@ -29,7 +29,8 @@
     "clean": "rimraf dist distTest",
     "prepack": "pnpm run build",
     "release": "node scripts/release.mjs",
-    "build": "pnpm run clean && tsc -p tsconfig.json && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,SERVICE_WORKER,SERVICE_WORKER_MIN,UTILITY_EXPORTS,BUNDLESIZE",
+    "build": "pnpm run clean && tsc -p tsconfig.json && pnpm run build:baseCode && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,SERVICE_WORKER,SERVICE_WORKER_MIN,UTILITY_EXPORTS,BUNDLESIZE",
+    "build:baseCode": "node -e \"for (const e of ['js','d.ts']) require('fs').cpSync('src/baseCode/index.'+e,'dist/baseCode/index.'+e)\"",
     "build:watch": "rollup -c --watch --environment BASE_CODE_MIN,STANDALONE,SERVICE_WORKER,UTILITY_EXPORTS",
     "dev:prepare": "rollup -c --environment BASE_CODE_MIN,STANDALONE,SERVICE_WORKER,UTILITY_EXPORTS",
     "dev": "pnpm run build:watch",
@@ -48,7 +49,7 @@
       "default": "./dist/index.js"
     },
     "./baseCode.js": {
-      "alloy-source": "./src/baseCode/index.ts",
+      "alloy-source": "./src/baseCode/index.js",
       "types": "./dist/baseCode/index.d.ts",
       "default": "./dist/baseCode/index.js"
     },
