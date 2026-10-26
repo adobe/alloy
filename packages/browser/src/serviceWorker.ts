@@ -10,72 +10,45 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createEventListeners from "./createEventListeners.js";
-
 /* eslint-disable no-console */
 
-// @ts-check
 /// <reference lib="webworker" />
 
-/** @import { ServiceWorkerLogger } from './components/PushNotifications/types.js' */
+import createEventListeners from "./createEventListeners.js";
+import type { ServiceWorkerLogger } from "./components/PushNotifications/types.js";
 
-/** @type {ServiceWorkerGlobalScope} */
-// @ts-ignore
-const sw = self;
+declare const self: ServiceWorkerGlobalScope;
 
-/**
- * @type {ServiceWorkerLogger}
- */
-const logger = {
+const logger: ServiceWorkerLogger = {
   namespace: "[alloy][pushNotificationWorker]",
   info: (...args) => console.log(logger.namespace, ...args),
   error: (...args) => console.error(logger.namespace, ...args),
 };
 
 const eventListeners = createEventListeners({
-  sw,
+  sw: self,
   platform: {
     logger,
     fetch,
   },
 });
 
-/**
- * @listens install
- */
-sw.addEventListener("install", () => {
-  sw.skipWaiting();
+self.addEventListener("install", () => {
+  self.skipWaiting();
 });
 
-/**
- * @listens activate
- * @param {ExtendableEvent} event
- */
-sw.addEventListener("activate", (event) => {
-  event.waitUntil(sw.clients.claim());
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
 });
 
-/**
- * @listens push
- * @param {PushEvent} event
- * @returns {Promise<void>}
- */
-sw.addEventListener("push", (event) =>
+self.addEventListener("push", (event) =>
   eventListeners.pushNotifications.onPush(event),
 );
 
-/**
- * @listens notificationclick
- * @param {NotificationEvent} event
- */
-sw.addEventListener("notificationclick", (event) =>
+self.addEventListener("notificationclick", (event) =>
   eventListeners.pushNotifications.onNotificationClick(event),
 );
 
-/**
- * @listens notificationclose
- * @param {NotificationEvent} event
- */
-sw.addEventListener("notificationclose", (event) => {
+self.addEventListener("notificationclose", (event) => {
   eventListeners.pushNotifications.onNotificationClose(event);
 });

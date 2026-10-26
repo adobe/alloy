@@ -17,5 +17,11 @@
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "distTest", "src/input.js"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "distTest",
+    "src/input.js",
+    "src/serviceWorker.ts"
+  ]
 }

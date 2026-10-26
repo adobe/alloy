@@ -24,8 +24,8 @@ const ignorePatterns = [
   "**/.*",
   "**/constants/**",
   "**/index.{js,ts}",
-  "baseCode.js",
-  "standalone.js",
+  "baseCode.{js,ts}",
+  "standalone.{js,ts}",
 ];
 
 const filename = fileURLToPath(import.meta.url);

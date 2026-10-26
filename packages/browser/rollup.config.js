@@ -210,11 +210,11 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const utilityExportBuilds = [
   {
-    input: `${dirname}/src/utils/deepAssign.js`,
+    input: `${dirname}/src/utils/deepAssign.ts`,
     file: `${dirname}/dist/utils/deepAssign.js`,
   },
   {
-    input: `${dirname}/src/utils/createEventMergeId.js`,
+    input: `${dirname}/src/utils/createEventMergeId.ts`,
     file: `${dirname}/dist/utils/createEventMergeId.js`,
   },
 ];
@@ -286,7 +286,7 @@ const buildPlugins = ({ variant, minify }) => {
 export const buildConfig = ({
   variant = STANDALONE,
   minify = false,
-  input = `${dirname}/src/standalone.js`,
+  input = `${dirname}/src/standalone.ts`,
   file,
 }) => {
   const plugins = buildPlugins({ variant, minify });
@@ -294,7 +294,7 @@ export const buildConfig = ({
 
   if (variant === SERVICE_WORKER) {
     return {
-      input: `${dirname}/src/serviceWorker.js`,
+      input: `${dirname}/src/serviceWorker.ts`,
       output: [
         {
           file:
@@ -308,7 +308,7 @@ export const buildConfig = ({
 
   if (variant === BASE_CODE) {
     return {
-      input: `${dirname}/src/baseCode.js`,
+      input: `${dirname}/src/baseCode.ts`,
       output: [
         {
           file: `${dirname}/distTest/baseCode${minifiedExtension}.js`,
