@@ -70,26 +70,17 @@ const getFileSizeInKB = (filePath) => {
   return `${(fileSizeInBytes / 1024).toFixed(2)} K`;
 };
 
-const generateInputEntryFile = ({
-  inputPath,
-  outputFile = "input.js",
-  includedModules,
-}) => {
-  const source = generateEntryPointSource(includedModules);
-
-  const destinationDirectory = path.dirname(inputPath);
-  const outputPath = safePathJoin(destinationDirectory, outputFile);
-
-  fs.writeFileSync(outputPath, source);
-
-  return outputPath;
-};
+// The entry is served from memory rather than written into src/, so
+// concurrent builds can't overwrite or delete each other's entry file. Its id
+// sits in src/ so the relative imports it contains resolve normally.
+const createVirtualEntryPlugin = ({ id, source }) => ({
+  name: "alloy-custom-entry",
+  resolveId: (importee) => (importee === id ? id : null),
+  load: (loadId) => (loadId === id ? source : null),
+});
 
 const build = async (argv) => {
-  const inputFile = generateInputEntryFile({
-    inputPath: `${sourceRootPath}/standalone.js`,
-    includedModules: argv.include,
-  });
+  const inputFile = path.join(sourceRootPath, "__customBuildEntry__.js");
 
   const rollupConfig = buildConfig({
     variant: "CUSTOM_BUILD",
@@ -97,6 +88,12 @@ const build = async (argv) => {
     file: getOutputFilePath(argv),
     minify: argv.minify,
   });
+  rollupConfig.plugins.unshift(
+    createVirtualEntryPlugin({
+      id: inputFile,
+      source: generateEntryPointSource(argv.include),
+    }),
+  );
 
   let bundle;
   try {
@@ -112,7 +109,6 @@ const build = async (argv) => {
     );
   } finally {
     await bundle?.close();
-    fs.rmSync(inputFile, { force: true });
   }
 };
 

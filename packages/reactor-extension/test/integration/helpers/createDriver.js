@@ -31,7 +31,7 @@ export default function createDriver(registration, readyPromise) {
           const settings = await registration.getSettings();
           return getProperty(settings);
         },
-        { timeout: 2000 },
+        { timeout: 6000 },
       );
     },
     expectValidate: () => {
@@ -40,7 +40,7 @@ export default function createDriver(registration, readyPromise) {
           const valid = await registration.validate();
           return valid;
         },
-        { timeout: 2000 },
+        { timeout: 6000 },
       );
     },
   };

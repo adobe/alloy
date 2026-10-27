@@ -19,6 +19,7 @@ import {
   test,
 } from "../../helpers/testsSetup/extend.js";
 import alloyConfig from "../../helpers/alloy/config.js";
+import unloadVisitor from "../../helpers/visitorService/unloadVisitor.js";
 
 const { readFile } = server.commands;
 const TARGET_CLUSTER = "35";
@@ -256,14 +257,10 @@ afterEach(() => {
     .querySelectorAll("script[data-legacy-target]")
     .forEach((script) => script.remove());
   delete window.targetGlobalSettings;
-  delete window.adobe;
   delete window.mboxCreate;
   delete window.mboxDefine;
   delete window.mboxUpdate;
-  window.Visitor = undefined;
-  delete window.visitor;
-  window.s_c_il = [];
-  window.s_c_in = 0;
+  unloadVisitor();
 });
 
 describe("Migration (Web SDK ↔ At.js mixed-mode)", () => {
@@ -435,8 +432,7 @@ describe("Migration (Web SDK ↔ At.js mixed-mode)", () => {
     );
   });
 
-  // Skipped because this test is flaky in CI.
-  test.skip("C8085777: Web SDK → At.js 2.x shares the visitor profile", async ({
+  test("C8085777: Web SDK → At.js 2.x shares the visitor profile", async ({
     alloy,
     worker,
     networkRecorder,

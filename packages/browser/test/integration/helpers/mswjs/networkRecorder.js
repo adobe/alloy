@@ -12,6 +12,8 @@ governing permissions and limitations under the License.
 
 import waitFor from "../utils/waitFor.js";
 
+const IN_FLIGHT_TIMEOUT_MS = 5000;
+
 class NetworkRecorder {
   /**
    * @typedef {Object} NetworkCall
@@ -84,6 +86,9 @@ class NetworkRecorder {
       call = { requestId };
       this.calls.push(call);
     }
+    // Known synchronously so findCalls can tell a matching call is in flight
+    // while its request/response bodies are still being read.
+    call.url = request.url;
 
     const requestClone = request.clone();
     /** @type {string | Object} */
@@ -192,20 +197,28 @@ class NetworkRecorder {
     }
 
     let retriesLeft = retries;
+    const inFlightDeadline = Date.now() + IN_FLIGHT_TIMEOUT_MS;
+    const generation = this.generation;
 
     /** @type {NetworkCall[]} */
-    let calls = [];
+    let complete = [];
 
-    while (retriesLeft > 0) {
-      calls = this.calls.filter(
-        (call) => call.request && pattern.test(call.request.url),
+    while (generation === this.generation) {
+      const matching = this.calls.filter(
+        (call) => call.url && pattern.test(call.url),
       );
-
-      const complete = calls.filter((call) => call.request && call.response);
+      complete = matching.filter((call) => call.request && call.response);
       const enough =
         minCalls != null ? complete.length >= minCalls : complete.length > 0;
+      // A matching request already started but its capture is not finished.
+      // Under load this can outlast the retry budget, so wait for it instead
+      // of reporting the call as missing.
+      const inFlight = matching.length > complete.length;
 
-      if (enough) {
+      if (
+        enough ||
+        (retriesLeft <= 0 && (!inFlight || Date.now() >= inFlightDeadline))
+      ) {
         break;
       }
 
@@ -214,7 +227,7 @@ class NetworkRecorder {
       retriesLeft -= 1;
     }
 
-    return calls.filter((call) => call.request && call.response);
+    return complete;
   }
 
   /**

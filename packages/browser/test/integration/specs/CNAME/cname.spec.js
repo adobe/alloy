@@ -21,7 +21,9 @@ import {
   firstPartyAlloyHandler,
 } from "../../helpers/mswjs/handlers.js";
 
-const demdexUrlRegex = /\.demdex\.net/;
+// Only the Edge interact call carries the identity cookie; other demdex
+// traffic (e.g. Visitor.js ID syncs) must not be matched.
+const demdexUrlRegex = /^https:\/\/adobedc\.demdex\.net\/ee\/.*v1\/interact/;
 const getIdentityCookie = (call) => {
   const response = createResponse({
     content: call.response.body,
@@ -45,7 +47,7 @@ describe("Setting edgeDomain to CNAME", () => {
 
     worker.use(...[demdexHandler, firstPartyAlloyHandler]);
 
-    alloy("configure", {
+    await alloy("configure", {
       ...alloyConfig,
       edgeDomain: FIRST_PARTY_DOMAIN,
       thirdPartyCookiesEnabled: true,
@@ -61,6 +63,9 @@ describe("Setting edgeDomain to CNAME", () => {
     await alloy("sendEvent");
 
     expect(await networkRecorder.findCall(FIRST_PARTY_DOMAIN)).toBeDefined();
-    expect(networkRecorder.calls.length).toBe(1);
+    const edgeCalls = networkRecorder.calls.filter((call) =>
+      /\/ee\/.*v1\/interact/.test(call.url),
+    );
+    expect(edgeCalls).toHaveLength(1);
   });
 });
