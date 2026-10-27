@@ -332,7 +332,7 @@ export default defineConfig([
   {
     name: "alloy/browser",
     files: [
-      "packages/browser/**/*.{cjs,js,mjs,jsx}",
+      "packages/browser/**/*.{cjs,js,mjs,jsx,ts}",
       "sandboxes/browser/**/*.{cjs,js,mjs,jsx}",
       "packages/core/src/utils/dom/**/*.{cjs,js,mjs,jsx,ts}",
     ],

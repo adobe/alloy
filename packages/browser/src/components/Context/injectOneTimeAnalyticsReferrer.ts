@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import type { Event } from "@adobe/alloy-core/core/types.js";
 
 // Because these events are originated by the SDK rather than user actions, don't change the referrer
