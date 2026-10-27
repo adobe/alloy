@@ -72,6 +72,7 @@ const DatastreamField = ({
   const displayValue = match?.isExact ? getLabel(match.datastream) : value;
   const [inputValue, setInputValue] = useState(displayValue);
   const [isFocused, setIsFocused] = useState(false);
+  const [unfilteredText, setUnfilteredText] = useState(displayValue);
   // The combo box can call onBlur with a closure from before the latest
   // keystroke rendered, so the committed text is read from a ref.
   const inputValueRef = useRef(inputValue);
@@ -83,6 +84,7 @@ const DatastreamField = ({
   useEffect(() => {
     if (!isFocused) {
       updateInputValue(displayValue);
+      setUnfilteredText(displayValue);
     }
   }, [displayValue, isFocused]);
 
@@ -107,6 +109,16 @@ const DatastreamField = ({
     setValue(id);
     setSandbox(chosenSandboxName);
     updateInputValue(chosenLabel);
+    setUnfilteredText(chosenLabel);
+  };
+
+  // Typed text is saved immediately because the extension bridge can read
+  // settings while the field still has focus.
+  const onInputChange = (text) => {
+    updateInputValue(text);
+    if (text !== displayValue) {
+      setValue(text);
+    }
   };
 
   const commitInput = () => {
@@ -117,13 +129,11 @@ const DatastreamField = ({
     const labelMatch = findByLabel(groups, text);
     if (labelMatch) {
       choose(labelMatch.datastream._system.id, labelMatch.sandbox.name, text);
-      return;
     }
-    setValue(text);
   };
 
   const filterText =
-    inputValue === displayValue ? "" : inputValue.trim().toLowerCase();
+    inputValue === unfilteredText ? "" : inputValue.trim().toLowerCase();
   const sections = useMemo(
     () =>
       groups
@@ -159,7 +169,7 @@ const DatastreamField = ({
             match?.isExact && inputValue === displayValue ? value : null
           }
           inputValue={inputValue}
-          onInputChange={updateInputValue}
+          onInputChange={onInputChange}
           onSelectionChange={(key) => {
             if (key == null) {
               return;

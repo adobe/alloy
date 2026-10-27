@@ -388,6 +388,32 @@ describe("Config datastream fields", () => {
       });
   });
 
+  it("saves typed text before the field loses focus", async () => {
+    await driver.init();
+
+    await stagingDatastreamField.focus();
+    await userEvent.keyboard("%stagingDatastream%");
+
+    await driver
+      .expectSettings((settings) => settings.instances[0].stagingEdgeConfigId)
+      .toBe("%stagingDatastream%");
+  });
+
+  it("filters datastreams by the typed text", async () => {
+    await driver.init();
+
+    await stagingDatastreamField.focus();
+    await userEvent.keyboard("datastream en");
+
+    const listbox = view.getByRole("listbox");
+    await field(
+      listbox.getByRole("option", { name: "datastream enabled" }),
+    ).expectVisible();
+    await expect
+      .element(listbox.getByRole("option", { name: "aep-edge-samples" }))
+      .not.toBeInTheDocument();
+  });
+
   it("saves the sandbox when a typed value is a known datastream ID", async () => {
     await driver.init();
 
