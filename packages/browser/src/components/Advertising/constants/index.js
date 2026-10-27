@@ -66,6 +66,8 @@ export const ERROR_RAMP_ID_MAX_RETRIES =
   "Failed to retrieve RampID after maximum retries";
 
 // Log Messages
+export const LOG_ADVERTISING_DISABLED =
+  "Advertising is disabled because advertising.enabled is false";
 export const LOG_AD_CONVERSION_START = "Processing ad conversion";
 export const LOG_COOKIE_WRITTEN = "Ad tracking data saved";
 export const LOG_CONVERSION_TIME_UPDATED = "Conversion timing recorded";

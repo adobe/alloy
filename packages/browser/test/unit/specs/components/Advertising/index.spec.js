@@ -22,6 +22,7 @@ describe("Advertising::index", () => {
   let consent;
   let getBrowser;
   let getUrlParams;
+  let platformServices;
 
   beforeEach(() => {
     logger = {
@@ -51,6 +52,15 @@ describe("Advertising::index", () => {
     };
     getBrowser = vi.fn().mockReturnValue("Firefox");
     getUrlParams = vi.fn().mockReturnValue({ skwcid: null, efid: null });
+    platformServices = {
+      cookie: {
+        get: vi.fn(),
+        getAll: vi.fn().mockReturnValue({}),
+        set: vi.fn(),
+        remove: vi.fn(),
+        withConverter: vi.fn().mockReturnThis(),
+      },
+    };
 
     advertising = createAdvertising({
       logger,
@@ -60,15 +70,7 @@ describe("Advertising::index", () => {
       consent,
       getBrowser,
       getUrlParams,
-      platformServices: {
-        cookie: {
-          get: vi.fn(),
-          getAll: vi.fn().mockReturnValue({}),
-          set: vi.fn(),
-          remove: vi.fn(),
-          withConverter: vi.fn().mockReturnThis(),
-        },
-      },
+      platformServices,
     });
   });
 
@@ -81,5 +83,58 @@ describe("Advertising::index", () => {
     expect(advertising).toHaveProperty("lifecycle");
     expect(advertising.lifecycle).toHaveProperty("onComponentsRegistered");
     expect(advertising.lifecycle).toHaveProperty("onBeforeEvent");
+    expect(logger.info).not.toHaveBeenCalled();
+  });
+
+  it("should create the advertising component when enabled is true", () => {
+    config.advertising.enabled = true;
+    advertising = createAdvertising({
+      logger,
+      config,
+      eventManager,
+      sendEdgeNetworkRequest,
+      consent,
+      getBrowser,
+      platformServices,
+    });
+    expect(advertising.lifecycle).toHaveProperty("onComponentsRegistered");
+    expect(advertising.lifecycle).toHaveProperty("onBeforeEvent");
+  });
+
+  describe("when enabled is false", () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+      config.advertising.enabled = false;
+      advertising = createAdvertising({
+        logger,
+        config,
+        eventManager,
+        sendEdgeNetworkRequest,
+        consent,
+        getBrowser,
+        platformServices,
+      });
+    });
+
+    it("registers no lifecycle hooks or commands", () => {
+      expect(advertising).toEqual({});
+    });
+
+    it("logs that advertising is disabled", () => {
+      expect(logger.info).toHaveBeenCalledExactlyOnceWith(
+        "Advertising is disabled because advertising.enabled is false",
+      );
+    });
+
+    it("does not touch cookies or consent", () => {
+      expect(platformServices.cookie.get).not.toHaveBeenCalled();
+      expect(platformServices.cookie.getAll).not.toHaveBeenCalled();
+      expect(platformServices.cookie.set).not.toHaveBeenCalled();
+      expect(platformServices.cookie.remove).not.toHaveBeenCalled();
+      expect(platformServices.cookie.withConverter).not.toHaveBeenCalled();
+      expect(consent.awaitConsent).not.toHaveBeenCalled();
+      expect(consent.current).not.toHaveBeenCalled();
+      expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
+    });
   });
 });

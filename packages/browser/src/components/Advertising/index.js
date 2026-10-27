@@ -25,6 +25,7 @@ import { getID5Id } from "./identities/collectID5Id.js";
 import { getRampId } from "./identities/collectRampId.js";
 import { createInitiateAdvertisingIdentityCall } from "./identities/initiateAdvertisingIdentityCall.js";
 import createHashedIpHandler from "./identities/createHashedIpHandler.js";
+import { LOG_ADVERTISING_DISABLED } from "./constants/index.js";
 import {
   appendAdvertisingIdQueryToEvent,
   appendAdCloudIdentityToEvent,
@@ -43,6 +44,12 @@ const createAdvertising = ({
   platformServices,
 }) => {
   const componentConfig = config.advertising;
+  // When advertising is turned off, register no lifecycle hooks so the
+  // component sends no requests, loads no scripts, and touches no cookies.
+  if (componentConfig?.enabled === false) {
+    logger.info(LOG_ADVERTISING_DISABLED);
+    return {};
+  }
   const cookieManager = createCookieManager({
     orgId: config.orgId,
     logger,
