@@ -36,6 +36,11 @@
 <!--- List commands/suites run and their results, plus Sandbox or other manual checks. -->
 <!--- Explain any checks not run or not applicable, and note remaining validation gaps. -->
 
+## Risks & Mitigations
+
+<!--- Describe potential regressions or compatibility, performance, security, or privacy impacts, and how they are mitigated. -->
+<!--- Include rollout or rollback considerations if applicable. If no significant risks are expected, briefly explain why. -->
+
 ## Types of changes
 
 <!--- What types of changes does your code introduce? Put an `x` in all the boxes that apply: -->
