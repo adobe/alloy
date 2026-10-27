@@ -12,7 +12,6 @@
 - [ ] reactor-extension
 - [ ] browser sandbox
 - [ ] node sandbox
-- [ ] parcel-transformer-extension-name
 - [ ] shared tooling, CI, or documentation
 
 ## Description and Motivation
