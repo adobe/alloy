@@ -23,11 +23,6 @@ let cleanup;
 let nameField;
 let orgIdField;
 let edgeDomainField;
-let edgeConfigInputMethodFreeformRadio;
-let edgeConfigInputMethodSelectRadio;
-let productionEnvironmentTextfield;
-let stagingEnvironmentTextfield;
-let developmentEnvironmentTextfield;
 let productionDatastreamField;
 let stagingDatastreamField;
 let developmentDatastreamField;
@@ -40,21 +35,6 @@ describe("Config general settings and datastream section", () => {
     nameField = field(view.getByTestId("nameField"));
     orgIdField = field(view.getByTestId("orgIdField"));
     edgeDomainField = field(view.getByTestId("edgeDomainField"));
-    edgeConfigInputMethodFreeformRadio = field(
-      view.getByTestId("edgeConfigInputMethodFreeformRadio"),
-    );
-    edgeConfigInputMethodSelectRadio = field(
-      view.getByTestId("edgeConfigInputMethodSelectRadio"),
-    );
-    productionEnvironmentTextfield = field(
-      view.getByTestId("productionEnvironmentTextfield"),
-    );
-    stagingEnvironmentTextfield = field(
-      view.getByTestId("stagingEnvironmentTextfield"),
-    );
-    developmentEnvironmentTextfield = field(
-      view.getByTestId("developmentEnvironmentTextfield"),
-    );
     productionDatastreamField = field(
       view.getByTestId("productionDatastreamField"),
     );
@@ -72,7 +52,7 @@ describe("Config general settings and datastream section", () => {
     cleanup();
   });
 
-  it("sets free form values from settings", async () => {
+  it("sets typed datastream values from settings", async () => {
     await driver.init({
       settings: {
         components: {
@@ -95,11 +75,9 @@ describe("Config general settings and datastream section", () => {
     await orgIdField.expectValue("123456@AdobeOrg");
     await edgeDomainField.expectValue("custom.example.com");
 
-    await edgeConfigInputMethodFreeformRadio.expectChecked();
-
-    await productionEnvironmentTextfield.expectValue("prod-datastream-id");
-    await stagingEnvironmentTextfield.expectValue("staging-datastream-id");
-    await developmentEnvironmentTextfield.expectValue("dev-datastream-id");
+    await productionDatastreamField.expectValue("prod-datastream-id");
+    await stagingDatastreamField.expectValue("staging-datastream-id");
+    await developmentDatastreamField.expectValue("dev-datastream-id");
   });
 
   it("sets list form values from settings", async () => {
@@ -126,18 +104,16 @@ describe("Config general settings and datastream section", () => {
     await developmentDatastreamField.expectValue("datastream enabled");
   });
 
-  it("updates free form values and saves to settings", async () => {
+  it("updates typed datastream values and saves to settings", async () => {
     await driver.init(buildSettings());
 
     await nameField.fill("customInstance");
     await orgIdField.fill("987654@AdobeOrg");
     await edgeDomainField.fill("firstparty.example.com");
 
-    await edgeConfigInputMethodFreeformRadio.click();
-
-    await productionEnvironmentTextfield.fill("new-prod-datastream");
-    await stagingEnvironmentTextfield.fill("new-staging-datastream");
-    await developmentEnvironmentTextfield.fill("new-dev-datastream");
+    await productionDatastreamField.fill("new-prod-datastream");
+    await stagingDatastreamField.fill("new-staging-datastream");
+    await developmentDatastreamField.fill("new-dev-datastream");
 
     await driver
       .expectSettings((s) => s.instances[0])
@@ -285,12 +261,8 @@ describe("Config general settings and datastream section", () => {
         },
       });
 
-      await edgeConfigInputMethodFreeformRadio.expectChecked();
-
-      const envTextField = field(
-        view.getByTestId(`${name}EnvironmentTextfield`),
-      );
-      await envTextField.expectValue(`%${name}Datastream%`);
+      const datastreamField = field(view.getByTestId(`${name}DatastreamField`));
+      await datastreamField.expectValue(`%${name}Datastream%`);
 
       await driver
         .expectSettings(
@@ -418,16 +390,14 @@ describe("Config general settings and datastream section", () => {
       await driver.expectValidate().toBe(false);
     });
 
-    it("validates that production datastream is required in freeform mode", async () => {
+    it("validates that production datastream is required", async () => {
       await driver.init(buildSettings());
 
       await driver.expectValidate().toBe(true);
 
-      await edgeConfigInputMethodFreeformRadio.click();
+      await productionDatastreamField.clear();
 
-      await productionEnvironmentTextfield.clear();
-
-      await productionEnvironmentTextfield.expectError(
+      await productionDatastreamField.expectError(
         /please specify a datastream/i,
       );
 
@@ -439,15 +409,13 @@ describe("Config general settings and datastream section", () => {
 
       await driver.expectValidate().toBe(true);
 
-      await edgeConfigInputMethodFreeformRadio.click();
+      await productionDatastreamField.fill("prod-datastream-id");
 
-      await productionEnvironmentTextfield.fill("prod-datastream-id");
+      await stagingDatastreamField.fill("");
+      await stagingDatastreamField.expectValid();
 
-      await stagingEnvironmentTextfield.fill("");
-      await stagingEnvironmentTextfield.expectValid();
-
-      await developmentEnvironmentTextfield.fill("");
-      await developmentEnvironmentTextfield.expectValid();
+      await developmentDatastreamField.fill("");
+      await developmentDatastreamField.expectValid();
 
       await driver.expectValidate().toBe(true);
     });
@@ -459,11 +427,9 @@ describe("Config general settings and datastream section", () => {
       await orgIdField.fill("%myOrgId%");
       await edgeDomainField.fill("%myEdgeDomain%");
 
-      await edgeConfigInputMethodFreeformRadio.click();
-
-      await productionEnvironmentTextfield.fill("%prodDatastream%");
-      await stagingEnvironmentTextfield.fill("%stagingDatastream%");
-      await developmentEnvironmentTextfield.fill("%devDatastream%");
+      await productionDatastreamField.fill("%prodDatastream%");
+      await stagingDatastreamField.fill("%stagingDatastream%");
+      await developmentDatastreamField.fill("%devDatastream%");
 
       await driver.expectValidate().toBe(true);
     });
@@ -577,23 +543,6 @@ describe("Config general settings and datastream section", () => {
           }),
         )
         .not.toBeInTheDocument();
-    });
-  });
-
-  describe("datastream input method switching", () => {
-    it("can switch between select and freeform input methods", async () => {
-      await driver.init(buildSettings());
-
-      await edgeConfigInputMethodSelectRadio.expectChecked();
-
-      await edgeConfigInputMethodFreeformRadio.click();
-
-      await edgeConfigInputMethodFreeformRadio.expectChecked();
-
-      await productionEnvironmentTextfield.expectVisible();
-
-      await edgeConfigInputMethodSelectRadio.click();
-      await edgeConfigInputMethodSelectRadio.expectChecked();
     });
   });
 });

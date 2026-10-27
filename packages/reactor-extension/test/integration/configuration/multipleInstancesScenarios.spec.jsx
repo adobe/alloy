@@ -24,7 +24,7 @@ let driver;
 let cleanup;
 let nameField;
 let orgIdField;
-let productionEnvironmentTextfield;
+let productionDatastreamField;
 let addInstanceButton;
 let deleteInstanceButton;
 let cancelDeleteInstanceButton;
@@ -42,8 +42,8 @@ describe("Config Multiple Instances", () => {
     )));
     nameField = field(view.getByTestId("nameField"));
     orgIdField = field(view.getByTestId("orgIdField"));
-    productionEnvironmentTextfield = field(
-      view.getByTestId("productionEnvironmentTextfield"),
+    productionDatastreamField = field(
+      view.getByTestId("productionDatastreamField"),
     );
     addInstanceButton = field(view.getByTestId("addInstanceButton"));
     deleteInstanceButton = field(view.getByTestId("deleteInstanceButton"));
@@ -338,13 +338,13 @@ describe("Config Multiple Instances", () => {
 
     await driver.expectValidate().toBe(true);
 
-    await productionEnvironmentTextfield.fill(
+    await productionDatastreamField.fill(
       "2fdb3763-0507-42ea-8856-e91bf3b64faa",
     );
 
     await driver.expectValidate().toBe(false);
 
-    await productionEnvironmentTextfield.expectError(
+    await productionDatastreamField.expectError(
       /please provide a value unique from those used for other instances/i,
     );
   });

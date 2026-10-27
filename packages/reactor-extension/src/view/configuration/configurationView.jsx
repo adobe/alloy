@@ -39,6 +39,7 @@ import PropTypes from "prop-types";
 import ExtensionView from "../components/extensionView";
 import useNewlyValidatedFormSubmission from "../utils/useNewlyValidatedFormSubmission";
 import useFocusFirstError from "../utils/useFocusFirstError";
+import { useDatastreamCatalog } from "../utils/useDatastreamCatalog";
 import FormikRadioGroup from "../forms/fields/RadioGroup";
 import BasicSection, { bridge as basicSectionBridge } from "./basicSection";
 import EdgeConfigurationsSection, {
@@ -224,6 +225,11 @@ const InstancesSection = ({
   const [selectedTabKey, setSelectedTabKey] = useState("0");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [instanceToDelete, setInstanceToDelete] = useState(null);
+  const datastreamCatalog = useDatastreamCatalog({
+    orgId: initInfo.company.orgId,
+    imsAccess: initInfo.tokens.imsAccess,
+    isEnabled: !isPreinstalled,
+  });
 
   useNewlyValidatedFormSubmission((errors) => {
     // If the user just tried to save the configuration and there's
@@ -324,7 +330,7 @@ const InstancesSection = ({
                               instanceFieldName={instanceFieldName}
                               instanceIndex={index}
                               initInfo={initInfo}
-                              context={context}
+                              datastreamCatalog={datastreamCatalog}
                             />
                             <PrivacySection
                               instanceFieldName={instanceFieldName}

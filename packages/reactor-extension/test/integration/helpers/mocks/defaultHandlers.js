@@ -578,41 +578,6 @@ export const advertisersUnauthorizedHandlers = [
   ),
 ];
 
-export const singleSandboxNoDefaultHandlers = [
-  http.get(
-    "https://platform.adobe.io/data/foundation/sandbox-management/",
-    async () => {
-      return HttpResponse.json({
-        sandboxes: [
-          {
-            name: "prod",
-            title: "Prod",
-            state: "active",
-            type: "production",
-            region: "VA7",
-            isDefault: false,
-            eTag: -414156254,
-            createdDate: "2020-05-06 00:16:38",
-            lastModifiedDate: "2020-08-05 19:58:59",
-            createdBy: "system",
-            lastModifiedBy: "system",
-          },
-        ],
-        _page: {
-          limit: 200,
-          count: 1,
-        },
-        _links: {
-          page: {
-            href: "https://platform.adobe.io:443/data/foundation/sandbox-management/?limit={limit}&offset={offset}",
-            templated: true,
-          },
-        },
-      });
-    },
-  ),
-];
-
 export const sandboxUserRegionMissingHandlers = [
   http.get(
     "https://platform.adobe.io/data/foundation/sandbox-management/",
@@ -621,29 +586,6 @@ export const sandboxUserRegionMissingHandlers = [
         error_code: "403027",
         message: "User region is missing",
       });
-    },
-  ),
-];
-
-export const datastreamForbiddenHandlers = [
-  http.get(
-    "https://edge.adobe.io/metadata/namespaces/edge/datasets/datastreams/records/2fdb3763-0507-42ea-8856-e91bf3b64faa",
-    async () => {
-      return HttpResponse.json(
-        {
-          type: "https://ns.adobe.com/aep/errors/EXEG-3050-403",
-          status: 403,
-          title: "Forbidden",
-          detail: "Access is denied",
-          report: {
-            timestamp: "2022-10-20T12:31:11Z",
-            version: "1.3.13",
-            requestId: "1yMgl3lAhfaBzteXQiBPqymbbEhSNFQ5",
-            orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
-          },
-        },
-        { status: 403 },
-      );
     },
   ),
 ];
