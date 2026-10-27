@@ -60,7 +60,8 @@ export const defaultHandlers = [
   ),
   http.get(
     "https://edge.adobe.io/metadata/namespaces/edge/datasets/datastreams/records/",
-    async () => {
+    async ({ request }) => {
+      const sandbox = request.headers.get("x-sandbox-name") ?? "prod";
       return HttpResponse.json({
         _embedded: {
           records: [
@@ -222,7 +223,7 @@ export const defaultHandlers = [
                 },
               },
             },
-          ],
+          ].filter((record) => record.sandboxName === sandbox),
         },
         _links: {
           self: {
