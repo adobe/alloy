@@ -97,7 +97,8 @@ describe("Config Multiple Instances", () => {
       await userEvent.tab();
       await expect.element(add).toHaveFocus();
       if (interaction === "mouse") {
-        await add.click();
+        // Mounting the new instance's form can exceed the 5s action budget under CI load.
+        await add.click({ timeout: 15_000 });
       } else {
         await userEvent.keyboard(`{${interaction}}`);
       }
