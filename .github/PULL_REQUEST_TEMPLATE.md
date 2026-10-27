@@ -7,7 +7,13 @@
 <!--- Indicate which package your changes directly affect. -->
 <!--- (i.e., do not choose the extension if it's only change is updating its core version). -->
 - [ ] core
-- [ ] reactor-extension 
+- [ ] browser (Web SDK)
+- [ ] node (Node.js SDK)
+- [ ] reactor-extension
+- [ ] browser sandbox
+- [ ] node sandbox
+- [ ] parcel-transformer-extension-name
+- [ ] shared tooling, CI, or documentation
 
 ## Description
 
