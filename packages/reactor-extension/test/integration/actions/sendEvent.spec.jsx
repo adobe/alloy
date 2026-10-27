@@ -11,12 +11,12 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, beforeEach, afterEach, expect } from "vitest";
+import { http, HttpResponse } from "msw";
 
 import useView from "../helpers/useView";
 import SendEventView from "../../../src/view/actions/sendEventView";
 import field from "../helpers/field";
 import { worker } from "../helpers/mocks/browser";
-import { sandboxWithoutProdHandlers } from "../helpers/mocks/defaultHandlers";
 
 let view;
 let driver;
@@ -71,26 +71,111 @@ describe("Send Event Action", () => {
     }
   });
 
-  it("selects a sandbox by its S2 collection id in datastream overrides", async () => {
-    worker.use(...sandboxWithoutProdHandlers);
-    await driver.init({
-      extensionSettings: {
-        instances: [{ name: "alloy", edgeConfigId: "PR123" }],
-        components: {},
-      },
+  describe("datastream override", () => {
+    const extensionSettings = {
+      instances: [{ name: "alloy", edgeConfigId: "PR123" }],
+      components: {},
+    };
+
+    it("chooses a datastream from any sandbox without a sandbox picker", async () => {
+      worker.use(
+        http.get(
+          "https://edge.adobe.io/metadata/namespaces/edge/datasets/datastreams/records/",
+          ({ request }) => {
+            if (request.headers.get("x-sandbox-name") !== "number-two-prod") {
+              return undefined;
+            }
+            return HttpResponse.json({
+              _embedded: {
+                records: [
+                  {
+                    data: { title: "second sandbox datastream" },
+                    sandboxName: "number-two-prod",
+                    _system: { id: "second-sandbox-datastream-id" },
+                  },
+                ],
+              },
+            });
+          },
+        ),
+      );
+      await driver.init({ extensionSettings });
+
+      await field(view.getByTestId("overridesEnabled")).selectOption("Enabled");
+      await field(view.getByTestId("datastreamId")).selectOption(
+        "second sandbox datastream",
+      );
+
+      await expect.element(view.getByTestId("sandbox")).not.toBeInTheDocument();
+      await driver
+        .expectSettings((settings) => settings.edgeConfigOverrides.development)
+        .toMatchObject({
+          datastreamId: "second-sandbox-datastream-id",
+          sandbox: "number-two-prod",
+        });
     });
 
-    await field(view.getByTestId("overridesEnabled")).selectOption("Enabled");
-    await expect.element(view.getByTestId("sandbox")).toBeVisible();
-    const sandbox = field(view.getByTestId("sandbox"));
-    await sandbox.expectValue("PRODUCTION Test Sandbox 2 (VA7)");
-    await sandbox.selectOption("PRODUCTION Test Sandbox 1 (VA7)");
-    await sandbox.expectValue("PRODUCTION Test Sandbox 1 (VA7)");
-    await driver
-      .expectSettings(
-        (settings) => settings.edgeConfigOverrides.development.sandbox,
-      )
-      .toBe("testsandbox1");
+    it("shows a saved override by name, fills in its sandbox, and drops the input method", async () => {
+      await driver.init({
+        extensionSettings,
+        settings: {
+          instanceName: "alloy",
+          edgeConfigOverrides: {
+            development: {
+              enabled: true,
+              datastreamId: "2fdb3763-0507-42ea-8856-e91bf3b64faa",
+              datastreamIdInputMethod: "select",
+            },
+          },
+        },
+      });
+
+      await field(view.getByTestId("datastreamId")).expectValue(
+        "analytics enabled",
+      );
+      await driver
+        .expectSettings((settings) => settings.edgeConfigOverrides.development)
+        .toEqual({
+          enabled: true,
+          datastreamId: "2fdb3763-0507-42ea-8856-e91bf3b64faa",
+          sandbox: "prod",
+        });
+    });
+
+    it("sets a data element from the data element selector", async () => {
+      await driver.init({ extensionSettings });
+
+      await field(view.getByTestId("overridesEnabled")).selectOption("Enabled");
+      await field(view.getByTestId("datastreamId")).selectOption(
+        "analytics enabled",
+      );
+      await field(
+        view
+          .getByTestId("datastreamId")
+          .locator("xpath=..")
+          .getByRole("button", { name: "Select data element" }),
+      ).click();
+
+      await field(view.getByTestId("datastreamId")).expectValue(
+        "%data element name%",
+      );
+      await driver
+        .expectSettings((settings) => settings.edgeConfigOverrides.development)
+        .toEqual({ enabled: true, datastreamId: "%data element name%" });
+    });
+
+    it("saves a typed data element as entered", async () => {
+      await driver.init({ extensionSettings });
+
+      await field(view.getByTestId("overridesEnabled")).selectOption("Enabled");
+      await field(view.getByTestId("datastreamId")).fill(
+        "%overrideDatastream%",
+      );
+
+      await driver
+        .expectSettings((settings) => settings.edgeConfigOverrides.development)
+        .toEqual({ enabled: true, datastreamId: "%overrideDatastream%" });
+    });
   });
 
   describe("Component visibility based on configuration", () => {

@@ -32,10 +32,13 @@ import {
   PRODUCTION,
   STAGING,
 } from "../../configuration/constants/environmentType";
-import SandboxSelector from "../sandboxSelector";
 import SectionHeader from "../sectionHeader";
 import SubsectionHeading from "../typography/heading";
-import DatastreamOverrideSelector from "./datastreamOverrideSelector";
+import DatastreamField from "../datastreamField";
+import {
+  findDatastream,
+  useDatastreamCatalog,
+} from "../../utils/useDatastreamCatalog";
 import { useFetchConfig, useFormikContextWithOverrides } from "./hooks";
 import OverrideInput from "./overrideInput";
 import { bridge } from "./overridesBridge";
@@ -148,6 +151,12 @@ const Overrides = ({
 
   const requestCache = useRef({});
   const authOrgId = initInfo.company.orgId;
+  const datastreamCatalog = useDatastreamCatalog({
+    orgId: authOrgId,
+    imsAccess: initInfo.tokens.imsAccess,
+    isEnabled:
+      visibleFields.has(FIELD_NAMES.datastreamId) && configOrgId === authOrgId,
+  });
   const edgeConfigs = {
     [DEVELOPMENT]: useFetchConfig({
       authOrgId,
@@ -370,8 +379,13 @@ const Overrides = ({
                 ),
               )
               .filter((v) => Boolean(v))[0];
-          const sandboxFieldName = `${prefix}.${env}.${FIELD_NAMES.sandbox}`;
-          const [{ value: sandbox }] = useField(sandboxFieldName);
+          const configuredDatastream = findDatastream(
+            datastreamCatalog.groups,
+            envEdgeConfigIds.datastreamId,
+          );
+          const configuredDatastreamLabel = configuredDatastream?.isExact
+            ? configuredDatastream.datastream.data.title
+            : envEdgeConfigIds.datastreamId;
           const dataElementDescription =
             "When providing a data element, it should resolve to true to enable the service, false to disable the service, or null to provide no overrides.";
 
@@ -397,29 +411,18 @@ const Overrides = ({
                 {!isDisabled("enabled", true) && (
                   <>
                     {visibleFields.has(FIELD_NAMES.datastreamId) && (
-                      <>
-                        <SandboxSelector
-                          data-test-id={FIELD_NAMES.sandbox}
-                          initInfo={initInfo}
-                          label="Sandbox"
-                          name={sandboxFieldName}
-                          width="size-5000"
-                        />
-                        <DatastreamOverrideSelector
-                          data-test-id={FIELD_NAMES.datastreamId}
-                          label="Datastream"
-                          description={`Override the configured datastream${
-                            envEdgeConfigIds.datastreamId
-                              ? ` (${envEdgeConfigIds.datastreamId})`
-                              : ""
-                          }.`}
-                          orgId={configOrgId}
-                          imsAccess={initInfo.tokens.imsAccess}
-                          name={`${prefix}.${env}.datastreamId`}
-                          sandbox={sandbox}
-                          width="size-5000"
-                        />
-                      </>
+                      <DatastreamField
+                        data-test-id={FIELD_NAMES.datastreamId}
+                        label="Datastream"
+                        description={`Override the configured datastream${
+                          configuredDatastreamLabel
+                            ? ` (${configuredDatastreamLabel})`
+                            : ""
+                        }.`}
+                        name={`${prefix}.${env}.${FIELD_NAMES.datastreamId}`}
+                        sandboxName={`${prefix}.${env}.${FIELD_NAMES.sandbox}`}
+                        catalog={datastreamCatalog}
+                      />
                     )}
                     {(visibleFields.has(FIELD_NAMES.reportSuitesOverride) ||
                       visibleFields.has(FIELD_NAMES.analyticsEnabled)) && (
