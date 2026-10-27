@@ -31,7 +31,7 @@ import {
   InlineAlert,
 } from "@react-spectrum/s2";
 import { size, style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { object, array, string } from "yup";
 import { FieldArray, useField } from "formik";
 import DeleteIcon from "@react-spectrum/s2/icons/Delete";
@@ -158,7 +158,7 @@ const createValidationSchema = () => {
   });
 };
 
-const getInitialValues = async ({ initInfo, context }) => {
+const getInitialValues = async ({ initInfo }) => {
   const { instances: instancesSettings } = initInfo.settings || {};
 
   let instancesInitialValues;
@@ -170,13 +170,12 @@ const getInitialValues = async ({ initInfo, context }) => {
           initInfo,
           isFirstInstance: instanceSettingsIndex === 0,
           instanceSettings,
-          context,
         });
       }),
     );
   } else {
     instancesInitialValues = [
-      await getInstanceDefaults({ initInfo, isFirstInstance: true, context }),
+      await getInstanceDefaults({ initInfo, isFirstInstance: true }),
     ];
   }
 
@@ -216,7 +215,6 @@ const getSettings = async ({ values, initInfo }) => {
 
 const InstancesSection = ({
   initInfo,
-  context,
   isPreinstalled,
   isExpanded,
   onAddInstance,
@@ -276,7 +274,6 @@ const InstancesSection = ({
                     const newInstance = await getInstanceDefaults({
                       initInfo,
                       isFirstInstance: false,
-                      context,
                       existingInstances: instances,
                     });
                     arrayHelpers.push(newInstance);
@@ -456,13 +453,12 @@ const InstancesSection = ({
 
 InstancesSection.propTypes = {
   initInfo: PropTypes.object.isRequired,
-  context: PropTypes.object.isRequired,
   isPreinstalled: PropTypes.bool.isRequired,
   isExpanded: PropTypes.bool.isRequired,
   onAddInstance: PropTypes.func.isRequired,
 };
 
-const Configuration = ({ initInfo, context }) => {
+const Configuration = ({ initInfo }) => {
   const [expandedKeys, setExpandedKeys] = useState(new Set(["instances"]));
   const [{ value: libraryCode }] = useField("libraryCode");
 
@@ -545,7 +541,6 @@ const Configuration = ({ initInfo, context }) => {
         </Disclosure>
         <InstancesSection
           initInfo={initInfo}
-          context={context}
           isPreinstalled={isPreinstalled}
           isExpanded={expandedKeys.has("instances")}
           onAddInstance={() => {
@@ -565,21 +560,16 @@ const Configuration = ({ initInfo, context }) => {
 
 Configuration.propTypes = {
   initInfo: PropTypes.object.isRequired,
-  context: PropTypes.object.isRequired,
 };
 
 const ConfigurationView = () => {
-  const context = useRef();
-
   return (
     <ExtensionView
-      getInitialValues={({ initInfo }) =>
-        getInitialValues({ initInfo, context })
-      }
+      getInitialValues={getInitialValues}
       getSettings={getSettings}
       formikStateValidationSchema={createValidationSchema()}
       render={({ initInfo }) => {
-        return <Configuration initInfo={initInfo} context={context} />;
+        return <Configuration initInfo={initInfo} />;
       }}
     />
   );
