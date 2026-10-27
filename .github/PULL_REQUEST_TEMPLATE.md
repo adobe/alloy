@@ -15,9 +15,9 @@
 - [ ] parcel-transformer-extension-name
 - [ ] shared tooling, CI, or documentation
 
-## Description
+## Description and Motivation
 
-<!--- Describe your changes in detail -->
+<!--- Describe what changed, why it is needed, and what problem it solves. -->
 
 ## Related Issue
 
@@ -25,10 +25,6 @@
 <!--- If suggesting a new feature or change, please discuss it in an issue first -->
 <!--- If fixing a bug, there should be an issue describing it with steps to reproduce -->
 <!--- Please link to the issue here: -->
-
-## Motivation and Context
-
-<!--- Why is this change required? What problem does it solve? -->
 
 ## Screenshots (if appropriate):
 
