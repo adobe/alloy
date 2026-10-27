@@ -22,8 +22,8 @@ const CONTAINER_STYLE = style({ display: "flex" });
 // size-300 = 24px per the S1->S2 dimension token table.
 // Keep the action target at the 32px width used before the S2 migration.
 const BUTTON_MARGIN_TOP_STYLES = {
-  "size-300": style({ marginTop: 24, marginX: 8, minWidth: 32 }),
-  0: style({ marginTop: 0, marginX: 8, minWidth: 32 }),
+  "size-300": style({ marginTop: 24, marginStart: 8, minWidth: 32 }),
+  0: style({ marginTop: 0, marginStart: 8, minWidth: 32 }),
 };
 
 const RawDataElementSelector = ({

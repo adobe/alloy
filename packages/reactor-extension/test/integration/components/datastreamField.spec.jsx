@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { describe, it, beforeEach, afterEach } from "vitest";
+import { describe, it, beforeEach, afterEach, expect } from "vitest";
 import { http, HttpResponse } from "msw";
 
 import useView from "../helpers/useView";
@@ -69,6 +69,24 @@ describe("Datastream field actions", () => {
     await driver
       .expectSettings((settings) => settings.instances[0].edgeConfigId)
       .toBe("new-datastream-id");
+  });
+
+  it("spaces the data element, refresh, and copy buttons evenly", async () => {
+    await driver.init(buildSettings());
+    await field(view.getByTestId("productionDatastreamField")).expectVisible();
+
+    const [dataElement, refresh, copy] = [
+      "Select data element",
+      "Refresh datastreams",
+      "Copy datastream ID to clipboard",
+    ].map((name) =>
+      view
+        .getByRole("button", { name })
+        .first()
+        .element()
+        .getBoundingClientRect(),
+    );
+    expect(refresh.left - dataElement.right).toBe(copy.left - refresh.right);
   });
 
   it("copy button is enabled only when the field has a value", async () => {
