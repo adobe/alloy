@@ -32,7 +32,6 @@ import deepDelete from "../../utils/deepDelete";
  * @typedef {Object} EnvironmentConfigOverrideFormikState
  * @property {string} [sandbox]
  * @property {string} [datastreamId]
- * @property {string} [datastreamIdInputMethod]
  * @property {Object} [com_adobe_experience_platform]
  * @property {Object} [com_adobe_experience_platform.datasets]
  * @property {Object} [com_adobe_experience_platform.datasets.event]
@@ -54,7 +53,6 @@ import deepDelete from "../../utils/deepDelete";
  * @typedef {Object} EnvironmentConfigOverrideLaunchSettings
  * @property {string} [sandbox]
  * @property {string} [datastreamId]
- * @property {string} [datastreamIdInputMethod]
  * @property {Object} [com_adobe_experience_platform]
  * @property {Object} [com_adobe_experience_platform.datasets]
  * @property {Object} [com_adobe_experience_platform.datasets.event]
@@ -194,7 +192,6 @@ export const bridge = {
         [env]: {
           sandbox: "",
           datastreamId: "",
-          datastreamIdInputMethod: "freeform",
           enabled: ENABLED_DISABLED_MATCH_FIELD_VALUES.match,
           com_adobe_experience_platform: {
             enabled: ENABLED_DISABLED_MATCH_FIELD_VALUES.match,
@@ -447,9 +444,6 @@ export const bridge = {
           [env]: object({
             enabled: enabledMatchOrDataElementValidator,
             datastreamId: string().nullable(),
-            datastreamInputMethod: mixed()
-              .oneOf(["freeform", "select"])
-              .nullable(),
             sandbox: string().nullable(),
             com_adobe_experience_platform: object({
               enabled: enabledDisabledMatchOrDataElementValidator,
