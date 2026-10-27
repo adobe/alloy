@@ -123,9 +123,6 @@ const DatastreamField = ({
 
   const commitInput = () => {
     const text = inputValueRef.current;
-    if (text === displayValue) {
-      return;
-    }
     const labelMatch = findByLabel(groups, text);
     if (labelMatch) {
       choose(labelMatch.datastream._system.id, labelMatch.sandbox.name, text);

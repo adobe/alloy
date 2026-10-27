@@ -399,6 +399,21 @@ describe("Config datastream fields", () => {
       .toBe("%stagingDatastream%");
   });
 
+  it("converts a typed datastream name to its ID and sandbox", async () => {
+    await driver.init();
+
+    await stagingDatastreamField.focus();
+    await userEvent.keyboard("datastream enabled");
+    await userEvent.tab();
+
+    await driver
+      .expectSettings((settings) => settings.instances[0])
+      .toMatchObject({
+        stagingEdgeConfigId: DATASTREAM_ENABLED_ID,
+        stagingSandbox: "prod",
+      });
+  });
+
   it("filters datastreams by the typed text", async () => {
     await driver.init();
 
