@@ -27,34 +27,46 @@ export default ({
   getLocationSearch: () => string;
   storage: Storage;
 }) => {
-  // Start with a fresh UUID as an immediate fallback, then overwrite with the
-  // persisted value once the async read resolves. Requests fired before the
-  // read settles carry the fallback UUID; all subsequent requests (and all
-  // requests on future page loads) use the stable persisted ID.
-  let clientId = uuid();
-  storage
-    .getItem(CLIENT_ID_KEY)
-    .then((stored) => {
-      if (stored) {
-        clientId = stored;
-      } else {
-        const result = storage.setItem(CLIENT_ID_KEY, clientId) as
-          | Promise<unknown>
-          | undefined;
-        if (result && typeof result.then === "function") {
-          result.catch(() => {});
+  let clientId = "";
+
+  const getSessionId = () =>
+    queryString.parse(getLocationSearch())[
+      ASSURANCE_VALIDATION_SESSION_URL_PARAM
+    ];
+
+  const ensureClientId = () => {
+    if (clientId) {
+      return;
+    }
+    clientId = uuid();
+    storage
+      .getItem(CLIENT_ID_KEY)
+      .then((stored) => {
+        if (stored) {
+          clientId = stored;
+        } else {
+          const result = storage.setItem(CLIENT_ID_KEY, clientId) as
+            | Promise<unknown>
+            | undefined;
+          if (result && typeof result.then === "function") {
+            result.catch(() => {});
+          }
         }
-      }
-    })
-    .catch(() => {});
+      })
+      .catch(() => {});
+  };
+
+  // Start loading before the first request so it can reuse a persisted ID.
+  if (getSessionId()) {
+    ensureClientId();
+  }
 
   return () => {
-    const parsedQuery = queryString.parse(getLocationSearch());
-    const validationSessionId =
-      parsedQuery[ASSURANCE_VALIDATION_SESSION_URL_PARAM];
+    const validationSessionId = getSessionId();
     if (!validationSessionId) {
       return "";
     }
+    ensureClientId();
     const validationToken = `${validationSessionId}|${clientId}`;
     return `&${queryString.stringify({
       adobeAepValidationToken: validationToken,
