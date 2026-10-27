@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 /* eslint no-underscore-dangle: 0 */
 /* eslint-disable func-names */
 
-
 /**
  * This is the code, once minified, that an Alloy consumer copies and pastes
  * into their website's HTML. It sets up any global functions the consumer will

@@ -124,7 +124,9 @@ export interface ServiceWorkerScope {
     ) => Promise<void>;
   };
   clients: {
-    matchAll: (options: { type: "window" }) => Promise<readonly ServiceWorkerClient[]>;
+    matchAll: (options: {
+      type: "window";
+    }) => Promise<readonly ServiceWorkerClient[]>;
     openWindow?: (url: string) => Promise<unknown>;
   };
 }
