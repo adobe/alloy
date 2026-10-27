@@ -31,6 +31,11 @@
 ## Documentation
 <!-- Significant consumer-facing changes should be documented -->
 
+## Testing & Validation
+
+<!--- List commands/suites run and their results, plus Sandbox or other manual checks. -->
+<!--- Explain any checks not run or not applicable, and note remaining validation gaps. -->
+
 ## Types of changes
 
 <!--- What types of changes does your code introduce? Put an `x` in all the boxes that apply: -->
