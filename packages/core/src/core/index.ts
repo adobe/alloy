@@ -86,13 +86,12 @@ export const createExecuteCommand = ({
   getImsAccessToken: sharedGetImsAccessToken,
 }: CreateExecuteCommandOptions) => {
   const platformServices = createPlatformServices();
-  const allMonitors = [...platformServices.globals.getMonitors(), ...monitors];
 
   const logController = createLogController({
     console: globalThis.console,
     createLogger,
     instanceName,
-    getMonitors: () => allMonitors,
+    getMonitors: () => [...platformServices.globals.getMonitors(), ...monitors],
     storage: platformServices.storage.createNamespacedStorage(
       `instance.${instanceName}.`,
     ).session,
