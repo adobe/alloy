@@ -1,5 +1,11 @@
 # @adobe/alloy-core
 
+## 1.4.0-beta.2
+
+### Patch Changes
+
+- [#1620](https://github.com/adobe/alloy/pull/1620) [`4015990`](https://github.com/adobe/alloy/commit/401599025180f5a4e1aa5dade59b9be11517042b) Thanks [@carterworks](https://github.com/carterworks)! - Fix validation client IDs being created and persisted without an active Assurance validation session (PDCL-17400).
+
 ## 1.4.0-beta.1
 
 ### Minor Changes
