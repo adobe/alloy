@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 
 import Delete from "@react-spectrum/s2/icons/Delete";
 import { array, string } from "yup";
-import { FieldArray, useField } from "formik";
+import { FieldArray } from "formik";
+import useField from "./useField";
 import { Radio, ActionButton, Button, ComboBoxItem } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";

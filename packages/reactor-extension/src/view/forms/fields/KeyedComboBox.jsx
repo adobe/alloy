@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { useContext, useMemo, useRef } from "react";
 import PropTypes from "prop-types";
 import { ComboBox, ComboBoxItem } from "@react-spectrum/s2";
-import { useField } from "formik";
+import useField from "../useField";
 import useForceRender from "../../utils/useForceRender";
 import widthStyle from "./widthStyle";
 import normalizeCollectionChildren from "./normalizeCollectionChildren";

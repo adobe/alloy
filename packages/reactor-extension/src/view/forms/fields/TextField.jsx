@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { TextField } from "@react-spectrum/s2";
-import { useField } from "formik";
+import useField from "../useField";
 import widthStyle from "./widthStyle";
 import useDraftValue from "./useDraftValue";
 

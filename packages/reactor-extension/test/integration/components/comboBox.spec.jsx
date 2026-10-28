@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { afterEach, describe, expect, it } from "vitest";
 import { userEvent } from "vitest/browser";
-import { Formik } from "formik";
+import Formik from "../helpers/formikWithStore";
 import { ComboBoxItem } from "@react-spectrum/s2";
 import FormikComboBox from "../../../src/view/forms/fields/ComboBox";
 import FormikKeyedComboBox from "../../../src/view/forms/fields/KeyedComboBox";

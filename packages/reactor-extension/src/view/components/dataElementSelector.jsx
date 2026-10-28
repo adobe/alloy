@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { Children } from "react";
 import PropTypes from "prop-types";
-import { useField } from "formik";
+import useField from "../forms/useField";
 import RawDataElementSelector from "./rawDataElementSelector";
 
 const DataElementSelector = ({

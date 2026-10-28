@@ -18,7 +18,7 @@ import {
   PickerItem,
 } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "formik";
+import useField from "../../../forms/useField";
 import { useState } from "react";
 import PropTypes from "prop-types";
 import UserReportableError from "../../../errors/userReportableError";

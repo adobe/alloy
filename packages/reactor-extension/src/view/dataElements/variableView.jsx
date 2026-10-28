@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 
 import { useRef } from "react";
 import PropTypes from "prop-types";
-import { useField } from "formik";
+import useField from "../forms/useField";
 import { Link, Radio } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import ExtensionView from "../components/extensionView";

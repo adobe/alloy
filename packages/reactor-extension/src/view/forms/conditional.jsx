@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { mixed } from "yup";
-import { useField } from "formik";
+import useField from "./useField";
 import PropTypes from "prop-types";
 import form from "./form";
 

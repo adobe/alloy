@@ -14,7 +14,7 @@ import { Children } from "react";
 import PropTypes from "prop-types";
 import { RadioGroup, Radio, TextField } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "formik";
+import useField from "../useField";
 import { string } from "yup";
 import RawDataElementSelector from "../../components/rawDataElementSelector";
 import singleDataElementRegex from "../../constants/singleDataElementRegex";

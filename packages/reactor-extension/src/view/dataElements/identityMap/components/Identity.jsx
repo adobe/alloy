@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { FieldArray, useField } from "formik";
+import { FieldArray } from "formik";
+import useField from "../../../forms/useField";
 import { useState } from "react";
 import Delete from "@react-spectrum/s2/icons/Delete";
 import {

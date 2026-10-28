@@ -14,7 +14,8 @@ import { Radio, Button, ActionButton } from "@react-spectrum/s2";
 
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
-import { FieldArray, useField } from "formik";
+import { FieldArray } from "formik";
+import useField from "../forms/useField";
 import { object, string } from "yup";
 import FormikRadioGroup from "../forms/fields/RadioGroup";
 import FormikTextField from "../forms/fields/TextField";

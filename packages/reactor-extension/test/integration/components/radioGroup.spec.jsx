@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { afterEach, describe, expect, it } from "vitest";
 import { userEvent } from "vitest/browser";
-import { Formik } from "formik";
+import Formik from "../helpers/formikWithStore";
 import { Form, Radio } from "@react-spectrum/s2";
 import FormikRadioGroup from "../../../src/view/forms/fields/RadioGroup";
 import renderView from "../helpers/renderView";

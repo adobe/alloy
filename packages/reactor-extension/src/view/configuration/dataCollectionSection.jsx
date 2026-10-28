@@ -11,7 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { useEffect } from "react";
-import { useField, useFormikContext } from "formik";
+import { useFormikContext } from "formik";
+import useField from "../forms/useField";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { object, string } from "yup";
 import { ActionButton, Checkbox, Radio } from "@react-spectrum/s2";

@@ -24,7 +24,7 @@ import {
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Copy from "@react-spectrum/s2/icons/Copy";
 import copyToClipboard from "clipboard-copy";
-import { useField } from "formik";
+import useField from "../forms/useField";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import DataElementSelector from "./dataElementSelector";

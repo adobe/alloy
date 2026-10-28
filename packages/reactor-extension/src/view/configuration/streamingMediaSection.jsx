@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { number, object, string, lazy } from "yup";
-import { useField } from "formik";
+import useField from "../forms/useField";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import SectionHeader from "../components/sectionHeader";
 import InfoMessage from "../components/infoMessage";
