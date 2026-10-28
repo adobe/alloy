@@ -109,18 +109,13 @@ describe("Config personalization section", () => {
   it("updates form values and saves to settings", async () => {
     await driver.init(buildSettings());
 
-    await targetMigrationEnabledField.click();
-    await personalizationStorageEnabledField.click();
+    await targetMigrationEnabledField.check();
+    await personalizationStorageEnabledField.check();
 
     await prehidingStyleEditButton.click();
 
-    await ajoPicker.click();
-    await view.getByRole("option", { name: /never/i }).click();
-
-    await tgtPicker.click();
-    await view
-      .getByRole("option", { name: /decorated elements only/i })
-      .click();
+    await ajoPicker.selectOption(/^Never/);
+    await tgtPicker.selectOption(/^Decorated elements only/);
 
     await driver
       .expectSettings((s) => s.instances[0].targetMigrationEnabled)

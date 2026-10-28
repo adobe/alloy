@@ -17,12 +17,17 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
+// The monorepo root isn't a dependency of core, so it can't be imported by name.
+// eslint-disable-next-line import/no-relative-packages
+import withBuildLock from "../../../../scripts/helpers/withBuildLock.js";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const corePath = path.resolve(dirname, "../..");
 // Inside core's node_modules so the unpacked package resolves its dependencies.
-const workPath = path.join(corePath, "node_modules/.cache/package-test");
-const packagePath = path.join(workPath, "node_modules/@adobe/alloy-core");
+// Unique per run so concurrent test runs don't delete each other's files.
+const cachePath = path.join(corePath, "node_modules/.cache");
+let workPath;
+let packagePath;
 
 // Files with no imports or exports compile to scripts, which tsc prefixes
 // with "use strict".
@@ -45,14 +50,18 @@ const sourceModules = () =>
 describe("@adobe/alloy-core npm package", () => {
   let manifest;
 
-  beforeAll(() => {
-    fs.rmSync(workPath, { recursive: true, force: true });
+  beforeAll(async () => {
+    fs.mkdirSync(cachePath, { recursive: true });
+    workPath = fs.mkdtempSync(path.join(cachePath, "package-test-"));
+    packagePath = path.join(workPath, "node_modules/@adobe/alloy-core");
     fs.mkdirSync(packagePath, { recursive: true });
-    // `pnpm pack` runs `prepack`, which builds dist/.
-    const tarball = execFileSync(
-      "pnpm",
-      ["pack", "--json", "--pack-destination", workPath],
-      { cwd: corePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] },
+    // `pnpm pack` runs `prepack`, which rebuilds the shared dist/.
+    const tarball = await withBuildLock(() =>
+      execFileSync("pnpm", ["pack", "--json", "--pack-destination", workPath], {
+        cwd: corePath,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"],
+      }),
     );
     const { filename } = JSON.parse(tarball.slice(tarball.indexOf("{")));
     execFileSync("tar", [
@@ -68,7 +77,9 @@ describe("@adobe/alloy-core npm package", () => {
   }, 120_000);
 
   afterAll(() => {
-    fs.rmSync(workPath, { recursive: true, force: true });
+    if (workPath) {
+      fs.rmSync(workPath, { recursive: true, force: true });
+    }
   });
 
   test("contains every file the exports map points to", () => {

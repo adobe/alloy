@@ -32,6 +32,13 @@ const clearAllCookies = async () => {
   );
 };
 
+// Alloy persists state such as the debug flag and consent hashes in web
+// storage, which would otherwise leak between tests sharing a page.
+const clearAllStorage = () => {
+  sessionStorage.clear();
+  localStorage.clear();
+};
+
 // Extend the test with MSW worker
 export const testWithoutAlloy = baseTest.extend({
   worker: [
@@ -72,6 +79,7 @@ export const test = testWithoutAlloy.extend({
       // Clear all cookies for a clean slate before each test, so individual
       // tests don't leak identity/consent state into subsequent tests.
       await clearAllCookies();
+      clearAllStorage();
 
       await setupBaseCode();
       const alloy = await setupAlloy();
@@ -84,6 +92,7 @@ export const test = testWithoutAlloy.extend({
       // cookies before deleting cookies
       await commandDrain.drain();
       await clearAllCookies();
+      clearAllStorage();
 
       cleanAlloy();
       cleanupDom();

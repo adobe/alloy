@@ -21,6 +21,7 @@ import path, { dirname } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import archiver from "archiver";
 import { Command } from "commander";
+import withBuildLock from "../../../scripts/helpers/withBuildLock.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const cwd = path.join(__dirname, "..");
@@ -87,11 +88,12 @@ const getExtensionJson = () => {
 
 /**
  * @param {{ name: string, version: string }} extensionDescriptor
+ * @param {string} [outputDir]
  * @returns {string}
  */
-const getExtensionPackagePath = (extensionDescriptor) =>
+const getExtensionPackagePath = (extensionDescriptor, outputDir = cwd) =>
   path.join(
-    cwd,
+    outputDir,
     `package-${extensionDescriptor.name}-${extensionDescriptor.version}.zip`,
   );
 
@@ -315,28 +317,36 @@ const buildExtensionZip = async ({
 /**
  * @returns {Promise<string>} Absolute path to the produced zip file.
  */
-export const createExtensionPackage = async () => {
-  const { packageJson, packageLockJson, vendoredPackages } =
-    stageInstallablePackages();
+/**
+ * @param {{ outputDir?: string }} [options] - outputDir defaults to the
+ *   extension directory.
+ * @returns {Promise<string>} Path of the generated zip.
+ */
+export const createExtensionPackage = async ({ outputDir } = {}) =>
+  // Packing and building rewrite shared dist/ folders; serialize with any
+  // other process in this checkout (e.g. a second test run) doing the same.
+  withBuildLock(async () => {
+    const { packageJson, packageLockJson, vendoredPackages } =
+      stageInstallablePackages();
 
-  console.log("Running the build process (`pnpm run build`)...");
-  // Always stream the build live. It's the longest, noisiest step and the one
-  // most likely to fail; inheriting stdio guarantees the underlying error
-  // (e.g. a killed concurrently sub-build) lands in the CI log.
-  execute("pnpm", ["run", "build"], { cwd, verbose: true });
+    console.log("Running the build process (`pnpm run build`)...");
+    // Always stream the build live. It's the longest, noisiest step and the one
+    // most likely to fail; inheriting stdio guarantees the underlying error
+    // (e.g. a killed concurrently sub-build) lands in the CI log.
+    execute("pnpm", ["run", "build"], { cwd, verbose: true });
 
-  const packagePath = getExtensionPackagePath(getExtensionJson());
+    const packagePath = getExtensionPackagePath(getExtensionJson(), outputDir);
 
-  console.log("Building the extension zip...");
-  await buildExtensionZip({
-    packagePath,
-    packageJson,
-    packageLockJson,
-    vendoredPackages,
+    console.log("Building the extension zip...");
+    await buildExtensionZip({
+      packagePath,
+      packageJson,
+      packageLockJson,
+      vendoredPackages,
+    });
+    console.log("Done");
+    return packagePath;
   });
-  console.log("Done");
-  return packagePath;
-};
 
 const invokedAsCli =
   process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
@@ -348,7 +358,7 @@ if (invokedAsCli) {
     .name("createExtensionPackage")
     .description("Tool for generating the alloy extension package for Tags.");
 
-  program.action(createExtensionPackage);
+  program.action(() => createExtensionPackage());
 
   await program.parseAsync();
 }
