@@ -163,11 +163,7 @@ const getServiceStatus = (apiResult) =>
     },
   });
 
-export const useFormikContextWithOverrides = ({
-  prefix,
-  edgeConfigOverrides,
-  defaults,
-}) => {
+export const useFormikContextWithOverrides = ({ prefix, defaults }) => {
   const getFormState = useGetFormState();
   const setFieldValue = (...args) => getFormState().setFieldValue(...args);
   const setFieldTouched = (...args) => getFormState().setFieldTouched(...args);
@@ -222,6 +218,7 @@ export const useFormikContextWithOverrides = ({
    * @param {"production" | "staging" | "development"} destination
    */
   const onCopy = (source, destination) => {
+    const edgeConfigOverrides = deepGet(getFormState().values, prefix);
     [
       FIELD_NAMES.sandbox,
       FIELD_NAMES.datastreamId,

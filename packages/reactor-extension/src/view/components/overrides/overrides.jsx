@@ -22,7 +22,8 @@ import {
   Tabs,
 } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import useField from "../../forms/useField";
+import { getIn } from "formik";
+import { useFormSelector, useGetFormState } from "../../forms/formStore";
 import PropTypes from "prop-types";
 import { useRef } from "react";
 
@@ -58,6 +59,19 @@ import {
 } from "./utils";
 
 const defaults = Object.freeze(bridge.getInstanceDefaults());
+
+const LAYOUT_FIELDS = new Set([
+  "enabled",
+  FIELD_NAMES.datastreamId,
+  FIELD_NAMES.sandbox,
+]);
+
+// Serializes only the values that decide which controls are shown, so typing
+// into an override's text input does not re-render the whole section.
+const getLayoutKey = (overrides) =>
+  JSON.stringify(overrides, (key, value) =>
+    typeof value === "object" || LAYOUT_FIELDS.has(key) ? value : undefined,
+  );
 const EnabledDisabledMatchOptions = Object.freeze(
   Object.entries(ENABLED_DISABLED_MATCH_FIELD_VALUES).map(([key, label]) => (
     <PickerItem key={key} id={key}>
@@ -146,8 +160,10 @@ const Overrides = ({
     ),
   );
 
-  /** @type {{value: import("./overridesBridge").EnvironmentConfigOverrideFormikState}[] } */
-  const [{ value: edgeConfigOverrides }] = useField(prefix);
+  const getFormState = useGetFormState();
+  useFormSelector((state) => getLayoutKey(getIn(state.values, prefix)));
+  /** @type {import("./overridesBridge").EnvironmentConfigOverrideFormikState} */
+  const edgeConfigOverrides = getIn(getFormState().values, prefix);
 
   const requestCache = useRef({});
   const authOrgId = initInfo.company.orgId;
@@ -199,7 +215,6 @@ const Overrides = ({
   const { useServiceStatus, createIsDisabled, onCopy, onDisable } =
     useFormikContextWithOverrides({
       prefix,
-      edgeConfigOverrides,
       defaults,
     });
 

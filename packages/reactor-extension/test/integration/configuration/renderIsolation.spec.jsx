@@ -11,12 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { userEvent } from "vitest/browser";
 import useView from "../helpers/useView";
 import ConfigurationView from "../../../src/view/configuration/configurationView";
 import field from "../helpers/field";
 
 const { renders, countRenders } = vi.hoisted(() => {
-  const counts = { overrides: 0, advanced: 0 };
+  const counts = { overrides: 0, advanced: 0, sectionHeaders: 0 };
   return {
     renders: counts,
     countRenders: async (importOriginal, key) => {
@@ -37,23 +38,27 @@ vi.mock("../../../src/view/components/overrides", (importOriginal) =>
 vi.mock("../../../src/view/configuration/advancedSection", (importOriginal) =>
   countRenders(importOriginal, "advanced"),
 );
+vi.mock("../../../src/view/components/sectionHeader", (importOriginal) =>
+  countRenders(importOriginal, "sectionHeaders"),
+);
 
 describe("Configuration render isolation", () => {
   let view;
   let driver;
   let cleanup;
 
-  beforeEach(async () => {
-    ({ view, driver, cleanup } = await useView(ConfigurationView));
-    await driver.init({
-      settings: { instances: [{ name: "alloy", edgeDomain: "a.example.com" }] },
-    });
+  const init = async (settings) => {
+    await driver.init({ settings });
     await field(view.getByTestId("nameField")).expectValue("alloy");
     // The datastream catalog finishes loading after init and re-renders the
     // instance panels; wait for it so only the edit is measured.
     await field(
       view.getByRole("button", { name: "Refresh datastreams" }).first(),
     ).expectEnabled();
+  };
+
+  beforeEach(async () => {
+    ({ view, driver, cleanup } = await useView(ConfigurationView));
   });
 
   afterEach(() => cleanup());
@@ -64,6 +69,9 @@ describe("Configuration render isolation", () => {
   ])(
     "does not re-render unrelated sections when %s changes",
     async (testId, key, value) => {
+      await init({
+        instances: [{ name: "alloy", edgeDomain: "a.example.com" }],
+      });
       const before = { ...renders };
 
       await view.getByTestId(testId).getByRole("textbox").fill(value);
@@ -71,6 +79,73 @@ describe("Configuration render isolation", () => {
       await driver
         .expectSettings((settings) => settings.instances[0][key])
         .toBe(value);
+
+      expect(renders).toEqual(before);
+    },
+  );
+
+  it.each([
+    [
+      "advertiser0Field",
+      {
+        components: { advertising: true },
+        instances: [
+          {
+            name: "alloy",
+            advertising: {
+              dspEnabled: true,
+              advertiserSettings: [{ advertiserId: "custom", enabled: true }],
+            },
+          },
+        ],
+      },
+      (settings) =>
+        settings.instances[0].advertising.advertiserSettings[0].advertiserId,
+      "custom",
+    ],
+    [
+      "transferCookie0Field",
+      {
+        components: { brandConcierge: true },
+        instances: [
+          { name: "alloy", conversation: { transferCookies: ["cookie"] } },
+        ],
+      },
+      (settings) => settings.instances[0].conversation.transferCookies[0],
+      "cookie",
+    ],
+    [
+      "reportSuitesOverride.0",
+      {
+        instances: [
+          {
+            name: "alloy",
+            edgeConfigOverrides: {
+              development: {
+                enabled: true,
+                com_adobe_analytics: { reportSuites: ["suite"] },
+              },
+            },
+          },
+        ],
+      },
+      (settings) =>
+        settings.instances[0].edgeConfigOverrides.development
+          .com_adobe_analytics.reportSuites[0],
+      "suite",
+    ],
+  ])(
+    "does not re-render any section when %s changes",
+    async (testId, settings, getSetting, initial) => {
+      await init(settings);
+      const input = field(view.getByTestId(testId));
+      await input.expectValue(initial);
+      const before = { ...renders };
+
+      await input.focus();
+      await userEvent.keyboard("2");
+      await userEvent.tab();
+      await driver.expectSettings(getSetting).toBe(`${initial}2`);
 
       expect(renders).toEqual(before);
     },
