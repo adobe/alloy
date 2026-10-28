@@ -29,6 +29,7 @@ import PropTypes from "prop-types";
 import { useEffect, useMemo, useRef, useState } from "react";
 import DataElementSelector from "./dataElementSelector";
 import RefreshButton from "./refreshButton";
+import FormikTextField from "../forms/fields/TextField";
 import { findDatastream } from "../utils/useDatastreamCatalog";
 
 const getLabel = (datastream) => datastream.data.title;
@@ -144,6 +145,9 @@ const DatastreamField = ({
     [groups, filterText],
   );
 
+  const hasSuggestions =
+    catalog.isLoading || groups.some(({ datastreams }) => datastreams.length);
+
   return (
     <div
       className={style({
@@ -153,57 +157,73 @@ const DatastreamField = ({
       })}
     >
       <DataElementSelector>
-        <ComboBox
-          data-test-id={dataTestId}
-          name={name}
-          label={label}
-          description={description}
-          placeholder={placeholder}
-          isRequired={isRequired}
-          allowsCustomValue
-          items={sections}
-          selectedKey={
-            match?.isExact && inputValue === displayValue ? value : null
-          }
-          inputValue={inputValue}
-          onInputChange={onInputChange}
-          onSelectionChange={(key) => {
-            if (key == null) {
-              return;
+        {hasSuggestions ? (
+          <ComboBox
+            data-test-id={dataTestId}
+            name={name}
+            label={label}
+            description={description}
+            placeholder={placeholder}
+            isRequired={isRequired}
+            allowsCustomValue
+            items={sections}
+            selectedKey={
+              match?.isExact && inputValue === displayValue ? value : null
             }
-            const selected = findDatastream(groups, key);
-            if (selected) {
-              choose(key, selected.sandbox.name, getLabel(selected.datastream));
-            }
-          }}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => {
-            commitInput();
-            setIsFocused(false);
-            setTouched(true);
-          }}
-          loadingState={catalog.isLoading ? "loading" : "idle"}
-          isInvalid={Boolean(touched && error)}
-          errorMessage={touched ? error : undefined}
-          styles={style({ width: 400 })}
-        >
-          {(section) => (
-            <ComboBoxSection id={section.sandbox.name}>
-              <Header>{section.sandbox.title}</Header>
-              <Collection items={section.datastreams}>
-                {(datastream) => (
-                  <ComboBoxItem
-                    id={datastream._system.id}
-                    textValue={getLabel(datastream)}
-                  >
-                    <Text slot="label">{getLabel(datastream)}</Text>
-                    <Text slot="description">{datastream._system.id}</Text>
-                  </ComboBoxItem>
-                )}
-              </Collection>
-            </ComboBoxSection>
-          )}
-        </ComboBox>
+            inputValue={inputValue}
+            onInputChange={onInputChange}
+            onSelectionChange={(key) => {
+              if (key == null) {
+                return;
+              }
+              const selected = findDatastream(groups, key);
+              if (selected) {
+                choose(
+                  key,
+                  selected.sandbox.name,
+                  getLabel(selected.datastream),
+                );
+              }
+            }}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => {
+              commitInput();
+              setIsFocused(false);
+              setTouched(true);
+            }}
+            loadingState={catalog.isLoading ? "loading" : "idle"}
+            isInvalid={Boolean(touched && error)}
+            errorMessage={touched ? error : undefined}
+            styles={style({ width: 400 })}
+          >
+            {(section) => (
+              <ComboBoxSection id={section.sandbox.name}>
+                <Header>{section.sandbox.title}</Header>
+                <Collection items={section.datastreams}>
+                  {(datastream) => (
+                    <ComboBoxItem
+                      id={datastream._system.id}
+                      textValue={getLabel(datastream)}
+                    >
+                      <Text slot="label">{getLabel(datastream)}</Text>
+                      <Text slot="description">{datastream._system.id}</Text>
+                    </ComboBoxItem>
+                  )}
+                </Collection>
+              </ComboBoxSection>
+            )}
+          </ComboBox>
+        ) : (
+          <FormikTextField
+            data-test-id={dataTestId}
+            name={name}
+            label={label}
+            description={description}
+            placeholder={placeholder}
+            isRequired={isRequired}
+            width="size-5000"
+          />
+        )}
       </DataElementSelector>
       <div
         className={style({

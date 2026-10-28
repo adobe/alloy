@@ -83,6 +83,21 @@ const expectDatastreamsLoaded = () =>
     view.getByRole("button", { name: "Refresh datastreams" }).first(),
   ).expectEnabled();
 
+const expectTextInputs = async () => {
+  await expect
+    .element(
+      view
+        .getByRole("combobox", {
+          name: /^(production|staging|development) datastream\W*$/i,
+        })
+        .first(),
+    )
+    .not.toBeInTheDocument();
+  await expect
+    .element(view.getByRole("textbox", { name: /production datastream/i }))
+    .toBeVisible();
+};
+
 const expectAllEnvironmentFieldsVisible = async () => {
   await productionDatastreamField.expectVisible();
   await stagingDatastreamField.expectVisible();
@@ -533,6 +548,7 @@ describe("Config datastream fields", () => {
       await field(
         view.getByText(/datastream suggestions are unavailable/i),
       ).expectVisible();
+      await expectTextInputs();
       await driver
         .expectSettings((settings) => settings.instances[0])
         .toEqual(instance);
@@ -545,6 +561,52 @@ describe("Config datastream fields", () => {
         .toBe("typed-dev-id");
     },
   );
+
+  it("uses text inputs when no sandbox has datastreams", async () => {
+    worker.use(
+      http.get(DATASTREAMS_URL, () =>
+        HttpResponse.json({ _embedded: { records: [] }, _links: {} }),
+      ),
+    );
+    await driver.init();
+
+    await expectDatastreamsLoaded();
+    await expectTextInputs();
+
+    await productionDatastreamField.fill("typed-id");
+    await driver
+      .expectSettings((settings) => settings.instances[0].edgeConfigId)
+      .toBe("typed-id");
+  });
+
+  it("uses text inputs for a second instance of another org", async () => {
+    const otherOrgInstance = {
+      name: "alloy2",
+      orgId: "OTHER@AdobeOrg",
+      edgeConfigId: "other-org-datastream-id",
+    };
+    await driver.init({
+      settings: {
+        instances: [
+          { name: "alloy", edgeConfigId: ANALYTICS_ENABLED_ID },
+          { ...otherOrgInstance },
+        ],
+      },
+    });
+    await expectDatastreamsLoaded();
+    await view.getByRole("tab", { name: "alloy2" }).click();
+
+    await productionDatastreamField.expectValue("other-org-datastream-id");
+    await expectTextInputs();
+
+    await stagingDatastreamField.fill("typed-staging-id");
+    await driver
+      .expectSettings((settings) => settings.instances[1])
+      .toEqual({
+        ...otherOrgInstance,
+        stagingEdgeConfigId: "typed-staging-id",
+      });
+  });
 
   describe("validation", () => {
     it("requires a production datastream", async () => {
