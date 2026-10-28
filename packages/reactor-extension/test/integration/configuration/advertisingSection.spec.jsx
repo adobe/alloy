@@ -27,6 +27,7 @@ let view;
 let ui;
 let driver;
 let cleanup;
+let advertisingEnabledField;
 let dspEnabledField;
 let id5PartnerIdField;
 let rampIdJSPathField;
@@ -55,6 +56,9 @@ describe("Config advertising section", () => {
   beforeEach(async () => {
     ({ view, driver, cleanup } = await useView(ConfigurationView));
     ui = configurationUI(view);
+    advertisingEnabledField = field(
+      view.getByTestId("advertisingEnabledField"),
+    );
     dspEnabledField = field(view.getByTestId("dspEnabledField"));
     id5PartnerIdField = field(view.getByTestId("id5PartnerIdField"));
     rampIdJSPathField = field(view.getByTestId("rampIdJSPathField"));
@@ -684,6 +688,233 @@ describe("Config advertising section", () => {
         (s) => s.instances[0].advertising.advertiserSettings[0].enabled,
       )
       .toBe(true);
+  });
+
+  describe("advertising enabled field", () => {
+    const dspSettings = {
+      dspEnabled: true,
+      advertiserSettings: [
+        {
+          advertiserId: "167534",
+          enabled: true,
+        },
+      ],
+      id5PartnerId: "test-id5-partner",
+      rampIdJSPath: "https://example.com/ats.js",
+    };
+
+    it("defaults to Enabled and does not save an enabled key", async () => {
+      await driver.init(
+        buildSettings({
+          components: {
+            advertising: true,
+          },
+        }),
+      );
+
+      await advertisingEnabledField.expectValue("Enabled");
+      await dspEnabledField.expectVisible();
+      await driver
+        .expectSettings((s) => s.instances[0].advertising)
+        .not.toHaveProperty("enabled");
+    });
+
+    it("shows Enabled for existing settings without an enabled key", async () => {
+      await driver.init(
+        buildSettings({
+          components: {
+            advertising: true,
+          },
+          instances: [{ name: "alloy", advertising: dspSettings }],
+        }),
+      );
+
+      await advertisingEnabledField.expectValue("Enabled");
+      await driver
+        .expectSettings((s) => s.instances[0].advertising)
+        .toEqual(dspSettings);
+    });
+
+    it("shows Disabled and hides the other fields when enabled is false", async () => {
+      await driver.init(
+        buildSettings({
+          components: {
+            advertising: true,
+          },
+          instances: [
+            { name: "alloy", advertising: { ...dspSettings, enabled: false } },
+          ],
+        }),
+      );
+
+      await advertisingEnabledField.expectValue("Disabled");
+      await dspEnabledField.expectHidden();
+      await advertiser0Field.expectHidden();
+      await id5PartnerIdField.expectHidden();
+      await rampIdJSPathField.expectHidden();
+      await expect
+        .element(view.getByText(/no advertising configuration is necessary/i))
+        .not.toBeInTheDocument();
+    });
+
+    it("saves false and keeps the other settings when Disabled is picked", async () => {
+      await driver.init(
+        buildSettings({
+          components: {
+            advertising: true,
+          },
+          instances: [{ name: "alloy", advertising: dspSettings }],
+        }),
+      );
+
+      await waitForAdvertisersToLoad();
+      await advertisingEnabledField.selectOption("Disabled");
+
+      await dspEnabledField.expectHidden();
+      await advertiser0Field.expectHidden();
+      await id5PartnerIdField.expectHidden();
+      await rampIdJSPathField.expectHidden();
+      await driver
+        .expectSettings((s) => s.instances[0].advertising)
+        .toEqual({ enabled: false, ...dspSettings });
+    });
+
+    it("shows the other fields again when Enabled is picked", async () => {
+      await driver.init(
+        buildSettings({
+          components: {
+            advertising: true,
+          },
+          instances: [
+            { name: "alloy", advertising: { ...dspSettings, enabled: false } },
+          ],
+        }),
+      );
+
+      await advertisingEnabledField.selectOption("Enabled");
+
+      await waitForAdvertisersToLoad();
+      await waitForOptionalFieldsToLoad();
+      await dspEnabledField.expectValue("Enabled");
+      await id5PartnerIdField.expectValue("test-id5-partner");
+      await driver
+        .expectSettings((s) => s.instances[0].advertising)
+        .toEqual(dspSettings);
+    });
+
+    it("skips validation of the other fields when Disabled", async () => {
+      await driver.init(
+        buildSettings({
+          components: {
+            advertising: true,
+          },
+          instances: [
+            {
+              name: "alloy",
+              advertising: {
+                dspEnabled: true,
+                advertiserSettings: [],
+                id5PartnerId: "invalid%dataElement",
+              },
+            },
+          ],
+        }),
+      );
+
+      await waitForAdvertisersToLoad();
+      await driver.expectValidate().toBe(false);
+
+      await advertisingEnabledField.selectOption("Disabled");
+
+      await driver.expectValidate().toBe(true);
+    });
+
+    it("saves a data element and shows the other fields", async () => {
+      await driver.init(
+        buildSettings({
+          components: {
+            advertising: true,
+          },
+          instances: [
+            {
+              name: "alloy",
+              advertising: { ...dspSettings, enabled: "%advertisingOn%" },
+            },
+          ],
+        }),
+      );
+
+      await advertisingEnabledField.expectValue("%advertisingOn%");
+      await waitForAdvertisersToLoad();
+      await waitForOptionalFieldsToLoad();
+      await dspEnabledField.expectVisible();
+      await driver.expectValidate().toBe(true);
+      await driver
+        .expectSettings((s) => s.instances[0].advertising.enabled)
+        .toBe("%advertisingOn%");
+    });
+
+    it("still validates the other fields when enabled is a data element", async () => {
+      await driver.init(
+        buildSettings({
+          components: {
+            advertising: true,
+          },
+          instances: [
+            {
+              name: "alloy",
+              advertising: {
+                enabled: "%advertisingOn%",
+                dspEnabled: true,
+                advertiserSettings: [],
+              },
+            },
+          ],
+        }),
+      );
+
+      await waitForAdvertisersToLoad();
+      await driver.expectValidate().toBe(false);
+      await advertiser0Field.expectError(/please select an advertiser/i);
+    });
+
+    it("requires a value", async () => {
+      await driver.init(
+        buildSettings({
+          components: {
+            advertising: true,
+          },
+        }),
+      );
+
+      await advertisingEnabledField.clear();
+
+      await driver.expectValidate().toBe(false);
+      await advertisingEnabledField.expectError(
+        /please choose a value or specify a data element/i,
+      );
+    });
+
+    it("validates the data element format", async () => {
+      await driver.init(
+        buildSettings({
+          components: {
+            advertising: true,
+          },
+          instances: [
+            {
+              name: "alloy",
+              advertising: { enabled: "invalid%dataElement" },
+            },
+          ],
+        }),
+      );
+
+      await driver.expectValidate().toBe(false);
+      await advertisingEnabledField.expectError(
+        /please enter a valid data element/i,
+      );
+    });
   });
 
   describe("validation", () => {

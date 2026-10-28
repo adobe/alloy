@@ -31,8 +31,10 @@ export const createAdvertisingConfig = ({
   id5PartnerId,
   rampIdJSPath,
   dspEnabled = true,
+  enabled,
 } = {}) => ({
   advertising: {
+    ...(enabled !== undefined && { enabled }),
     ...(advertiserSettings && { advertiserSettings }),
     ...(id5PartnerId && { id5PartnerId }),
     ...(rampIdJSPath && { rampIdJSPath }),

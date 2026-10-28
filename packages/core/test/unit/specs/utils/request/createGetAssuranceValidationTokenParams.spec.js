@@ -23,22 +23,79 @@ const createStorage = (storedClientId = null) => ({
 });
 
 describe("createGetAssuranceValidationTokenParams", () => {
-  it("returns empty string when no session ID in query", () => {
+  it("does not persist a client ID when no session ID is in the query", async () => {
     currentSearch = "";
+    const storage = createStorage();
     const fn = createGetAssuranceValidationTokenParams({
       getLocationSearch,
-      storage: createStorage(),
+      storage,
     });
+    await Promise.resolve();
+    expect(storage.setItem).not.toHaveBeenCalled();
     expect(fn()).toEqual("");
+    await Promise.resolve();
+    expect(storage.setItem).not.toHaveBeenCalled();
   });
 
-  it("returns empty string when session ID param is empty", () => {
+  it("does not persist a client ID when the session ID param is empty", async () => {
     currentSearch = "?adb_validation_sessionid=";
+    const storage = createStorage();
     const fn = createGetAssuranceValidationTokenParams({
       getLocationSearch,
-      storage: createStorage(),
+      storage,
     });
+    await Promise.resolve();
+    expect(storage.setItem).not.toHaveBeenCalled();
     expect(fn()).toEqual("");
+    await Promise.resolve();
+    expect(storage.setItem).not.toHaveBeenCalled();
+  });
+
+  it.each([null, "previously-stored-uuid"])(
+    "initializes the client ID when a session appears after initialization (stored ID: %s)",
+    async (storedId) => {
+      currentSearch = "";
+      const storage = createStorage(storedId);
+      const fn = createGetAssuranceValidationTokenParams({
+        getLocationSearch,
+        storage,
+      });
+      await Promise.resolve();
+      expect(fn()).toEqual("");
+      expect(storage.setItem).not.toHaveBeenCalled();
+
+      currentSearch = "?adb_validation_sessionid=abc-123";
+      const [, fallbackId] = fn().split("%7C");
+      expect(uuidV4Regex.test(fallbackId)).toBe(true);
+
+      await Promise.resolve();
+      const token = fn();
+      const [, clientId] = token.split("%7C");
+      expect(clientId).toBe(storedId || fallbackId);
+      expect(fn()).toBe(token);
+      expect(storage.getItem).toHaveBeenCalledTimes(1);
+      expect(storage.setItem.mock.calls).toEqual(
+        storedId ? [] : [["clientId", clientId]],
+      );
+    },
+  );
+
+  it("uses a stable fallback client ID when the storage read fails", async () => {
+    currentSearch = "?adb_validation_sessionid=abc-123";
+    const storage = createStorage();
+    storage.getItem.mockRejectedValue(new Error("Storage unavailable"));
+    const fn = createGetAssuranceValidationTokenParams({
+      getLocationSearch,
+      storage,
+    });
+    const token = fn();
+    expect(uuidV4Regex.test(token.split("%7C")[1])).toBe(true);
+
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(fn()).toBe(token);
+    expect(storage.getItem).toHaveBeenCalledTimes(1);
+    expect(storage.setItem).not.toHaveBeenCalled();
   });
 
   it("returns validation token with UUID client ID when session ID present", async () => {
