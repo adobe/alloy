@@ -64,6 +64,7 @@ export const testWithoutAlloy = baseTest.extend({
     async ({}, use) => {
       networkRecorder.reset();
       await use(networkRecorder);
+      await networkRecorder.waitForIdle();
       networkRecorder.reset();
     },
     { auto: true }, // Apply to all tests even if not explicitly using networkRecorder

@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import waitFor from "../utils/waitFor.js";
+import { pendingFetchCount } from "../utils/fetchTracker.js";
 
 const IN_FLIGHT_TIMEOUT_MS = 5000;
 
@@ -212,13 +213,13 @@ class NetworkRecorder {
         minCalls != null ? complete.length >= minCalls : complete.length > 0;
       // A matching request already started but its capture is not finished.
       // Under load this can outlast the retry budget, so wait for it instead
-      // of reporting the call as missing.
+      // of reporting the call as missing. Wait for it even when there are
+      // already enough complete calls: returning early hands back a list
+      // without it, so positional lookups pick up the wrong call.
       const inFlight = matching.length > complete.length;
+      const inFlightExpired = Date.now() >= inFlightDeadline;
 
-      if (
-        enough ||
-        (retriesLeft <= 0 && (!inFlight || Date.now() >= inFlightDeadline))
-      ) {
+      if ((enough || retriesLeft <= 0) && (!inFlight || inFlightExpired)) {
         break;
       }
 
@@ -275,6 +276,36 @@ class NetworkRecorder {
       }, timeoutMs);
       this.waiters.push(waiter);
     });
+  }
+
+  /**
+   * Resolves once every fetch started in the page has settled and the
+   * recorder has seen each of those requests start, or after timeoutMs (with a
+   * warning). Used at teardown so requests still running at the end of a test
+   * finish before reset() rather than leaking into the next test's recording.
+   * A response captured after reset() is already dropped by the generation
+   * guard, so only request starts need to be waited for here.
+   * @param {Object} [options]
+   * @param {number} [options.timeoutMs=1000]
+   * @returns {Promise<void>}
+   */
+  async waitForIdle({ timeoutMs = 1000 } = {}) {
+    const deadline = Date.now() + timeoutMs;
+    const generation = this.generation;
+    const isBusy = () =>
+      pendingFetchCount() > 0 || this.calls.some((call) => !call.request);
+    while (generation === this.generation && isBusy()) {
+      if (Date.now() >= deadline) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `networkRecorder.waitForIdle: gave up after ${timeoutMs}ms with ${pendingFetchCount()} fetch(es) pending; they may leak into the next test.`,
+          this.calls.filter((call) => !call.request).map((call) => call.url),
+        );
+        return;
+      }
+      // eslint-disable-next-line no-await-in-loop
+      await waitFor(10);
+    }
   }
 
   reset() {
