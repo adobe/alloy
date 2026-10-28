@@ -1,5 +1,15 @@
 # reactor-extension-alloy
 
+## 2.39.0-beta.4
+
+### Minor Changes
+
+- [#1619](https://github.com/adobe/alloy/pull/1619) [`f43ed9e`](https://github.com/adobe/alloy/commit/f43ed9e96f71e44284d6c002dc5aa9b36d018bac) Thanks [@carterworks](https://github.com/carterworks)! - Fixed Staging and Development datastream fields disappearing from the extension configuration when their saved sandbox was missing or no longer available.
+
+  Each environment now always shows a single datastream field, replacing the "Choose from list" and "Enter values" options and the sandbox pickers. In this field you can choose a datastream from any sandbox you have access to (grouped by sandbox and searchable by name or ID), type a datastream ID, or select a data element. Datastream overrides in actions use the same field.
+
+  Saved datastream IDs and data elements are kept as entered. When a saved datastream is found, its sandbox is filled in or corrected automatically. Datastream overrides no longer save which input method was used.
+
 ## 2.39.0-beta.3
 
 ### Minor Changes
