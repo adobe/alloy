@@ -20,17 +20,11 @@ import cleanAlloy from "../alloy/clean.js";
 import { createCommandDrain } from "../alloy/commandDrain.js";
 import { cleanupDom } from "../utils/domHelpers.js";
 import { resetSendBeaconCalls } from "../utils/sendBeacon.js";
+import clearAllCookies from "../utils/clearAllCookies.js";
 
 const worker = createWorker();
 
 let workerStarted = false;
-
-const clearAllCookies = async () => {
-  const cookies = await cookieStore.getAll();
-  await Promise.all(
-    cookies.map((c) => cookieStore.delete({ name: c.name, path: c.path })),
-  );
-};
 
 // Alloy persists state such as the debug flag and consent hashes in web
 // storage, which would otherwise leak between tests sharing a page.
@@ -85,6 +79,10 @@ export const test = testWithoutAlloy.extend({
       await setupBaseCode();
       const alloy = await setupAlloy();
       resetSendBeaconCalls();
+
+      // Loading alloy takes time, and background work from the previous test
+      // can write cookies meanwhile. Clear again so the test starts clean.
+      await clearAllCookies();
 
       // Make alloy available in the test context
       await use(alloy);

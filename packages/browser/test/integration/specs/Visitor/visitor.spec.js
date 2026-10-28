@@ -24,6 +24,7 @@ import { CONSENT_IN } from "../../helpers/constants/consent.js";
 import getVisitorEcid from "../../helpers/visitorService/getVisitorEcid.js";
 import loadVisitor from "../../helpers/visitorService/loadVisitor.js";
 import unloadVisitor from "../../helpers/visitorService/unloadVisitor.js";
+import clearAllCookies from "../../helpers/utils/clearAllCookies.js";
 
 const EDGE_ECID = "41861666193140161934276845651148876988";
 const VISITOR_ECID = "12345678901234567890123456789012345678";
@@ -74,7 +75,23 @@ const createVisitorApiHandler = ({ deferred = false } = {}) => {
 
   return {
     handler,
-    requestStarted,
+    waitForRequestStarted: () => {
+      let timer;
+      const timeout = new Promise((resolve, reject) => {
+        timer = setTimeout(
+          () =>
+            reject(
+              new Error(
+                "Visitor did not request an ECID within 5s. Was an identity cookie already set?",
+              ),
+            ),
+          5000,
+        );
+      });
+      return Promise.race([requestStarted, timeout]).finally(() =>
+        clearTimeout(timer),
+      );
+    },
     release: () => releaseResponse(),
   };
 };
@@ -101,6 +118,10 @@ describe("Visitor ID migration", () => {
   }) => {
     const visitorApi = createVisitorApiHandler({ deferred: true });
     worker.use(visitorApi.handler, acquireHandler);
+    // Background work from an earlier test (for example an Advertising
+    // conversion that starts after its test ended) can still write an identity
+    // cookie. With an identity, Alloy never waits for Visitor.
+    await clearAllCookies();
     await alloy("configure", { ...alloyConfig, idMigrationEnabled: true });
     await loadVisitor();
 
@@ -110,7 +131,7 @@ describe("Visitor ID migration", () => {
       return result;
     });
 
-    await visitorApi.requestStarted;
+    await visitorApi.waitForRequestStarted();
     expect(settled).toBe(false);
 
     visitorApi.release();
