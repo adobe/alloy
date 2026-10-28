@@ -11,11 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 import { ComboBox, ComboBoxItem } from "@react-spectrum/s2";
 import { useField } from "formik";
 import widthStyle from "./widthStyle";
 import normalizeCollectionChildren from "./normalizeCollectionChildren";
 import closeDataElementSuggestions from "./closeDataElementSuggestions";
+import useDraftValue from "./useDraftValue";
 
 /**
  * @param {object} params
@@ -39,16 +41,26 @@ const FormikComboBox = ({
     name,
     validate,
   });
+  const [draft, setDraft, draftRef] = useDraftValue(value, name, setValue);
+  const [selectedKey, setSelectedKey] = useState(null);
+  // React Aria reports the key before updating the input to the selected label.
+  useEffect(() => {
+    if (selectedKey != null) {
+      setValue(draftRef.current);
+    }
+  }, [selectedKey]);
   return (
     <ComboBox
       {...otherProps}
-      menuTrigger={value?.startsWith("%") ? "manual" : otherProps.menuTrigger}
+      menuTrigger={draft?.startsWith("%") ? "manual" : otherProps.menuTrigger}
       onInput={closeDataElementSuggestions}
-      inputValue={value}
-      onInputChange={setValue}
+      inputValue={draft}
+      onInputChange={setDraft}
+      onSelectionChange={setSelectedKey}
       onBlur={(...args) => {
+        setTouched(true, false);
+        setValue(draftRef.current);
         onBlur(...args);
-        setTouched(true);
       }}
       isInvalid={Boolean(touched && error)}
       name={name}

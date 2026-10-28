@@ -15,6 +15,7 @@ import { TextArea, mergeStyles } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import widthStyle from "./widthStyle";
+import useDraftValue from "./useDraftValue";
 
 // Was `.formik-field textarea { min-height: size-4600 !important }` in
 // global.css; size-4600 = 368px per the S1->S2 dimension token table.
@@ -38,6 +39,7 @@ const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
     name,
     validate,
   });
+  const [draft, setDraft, draftRef] = useDraftValue(value, name, setValue);
 
   const touched = otherProps.touched || fieldTouched;
   const error = otherProps.error === "" ? "" : otherProps.error || fieldError;
@@ -46,12 +48,11 @@ const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
   return (
     <TextArea
       {...otherProps}
-      value={value}
-      onChange={(newValue) => {
-        setValue(newValue);
-      }}
+      value={draft}
+      onChange={setDraft}
       onBlur={() => {
-        setTouched(true);
+        setTouched(true, false);
+        setValue(draftRef.current);
         if (onBlur) {
           onBlur();
         }

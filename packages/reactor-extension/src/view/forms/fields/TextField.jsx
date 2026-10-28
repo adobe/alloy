@@ -14,6 +14,7 @@ import PropTypes from "prop-types";
 import { TextField } from "@react-spectrum/s2";
 import { useField } from "formik";
 import widthStyle from "./widthStyle";
+import useDraftValue from "./useDraftValue";
 
 /**
  * @param {Object} params
@@ -33,6 +34,7 @@ const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
     name,
     validate,
   });
+  const [draft, setDraft, draftRef] = useDraftValue(value, name, setValue);
 
   const touched = otherProps.touched || fieldTouched;
   const error = otherProps.error === "" ? "" : otherProps.error || fieldError;
@@ -41,12 +43,11 @@ const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
   return (
     <TextField
       {...otherProps}
-      value={value}
-      onChange={(newValue) => {
-        setValue(newValue);
-      }}
+      value={draft}
+      onChange={setDraft}
       onBlur={() => {
-        setTouched(true);
+        setTouched(true, false);
+        setValue(draftRef.current);
         if (onBlur) {
           onBlur();
         }

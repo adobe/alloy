@@ -18,6 +18,7 @@ import useForceRender from "../../utils/useForceRender";
 import widthStyle from "./widthStyle";
 import normalizeCollectionChildren from "./normalizeCollectionChildren";
 import closeDataElementSuggestions from "./closeDataElementSuggestions";
+import useDraftValue from "./useDraftValue";
 
 const FormikKeyedComboBox = ({
   name,
@@ -30,16 +31,17 @@ const FormikKeyedComboBox = ({
 }) => {
   const [{ value }, { touched, error }, { setValue, setTouched }] =
     useField(name);
+  const [draft, setDraft, draftRef] = useDraftValue(value, name, setValue);
   const forceRender = useForceRender();
   const isFilteringRef = useRef(false);
   const itemsRef = useRef(items);
 
   let text;
   if (isFilteringRef.current) {
-    text = value;
+    text = draft;
   } else {
-    const currentItem = items.find((item) => getKey(item) === value);
-    text = currentItem ? getLabel(currentItem) : value;
+    const currentItem = items.find((item) => getKey(item) === draft);
+    text = currentItem ? getLabel(currentItem) : draft;
   }
 
   return (
@@ -62,13 +64,13 @@ const FormikKeyedComboBox = ({
               getKey(item).toLowerCase().includes(newTextLowerCase),
           );
         }
-        // This will cause a re-render.
-        setValue(newText);
+        setDraft(newText);
       }}
       onSelectionChange={(key) => {
         if (key) {
           isFilteringRef.current = false;
           itemsRef.current = items;
+          setDraft(key);
           setValue(key);
         }
       }}
@@ -76,12 +78,16 @@ const FormikKeyedComboBox = ({
         isFilteringRef.current = false;
         itemsRef.current = items;
         const selectedItem = items.find(
-          (item) => getKey(item) === value || getLabel(item) === value,
+          (item) =>
+            getKey(item) === draftRef.current ||
+            getLabel(item) === draftRef.current,
         );
-        if (selectedItem) {
-          setValue(getKey(selectedItem));
-        }
-        setTouched(true);
+        const nextValue = selectedItem
+          ? getKey(selectedItem)
+          : draftRef.current;
+        setDraft(nextValue);
+        setTouched(true, false);
+        setValue(nextValue);
       }}
       isInvalid={Boolean(touched && error)}
       styles={widthStyle(width)}
