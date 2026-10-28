@@ -152,5 +152,17 @@ describe.each([true, false])(
 
       await driver.expectSettings((settings) => settings[name]).toBe(value);
     });
+
+    it.each(["combo", "keyed"])(
+      "opens %s suggestions on focus only in configuration",
+      async (name) => {
+        const input = view.getByTestId(name).getByRole("combobox");
+        await field(input).focus();
+
+        await expect
+          .element(input)
+          .toHaveAttribute("aria-expanded", String(commitOnBlur));
+      },
+    );
   },
 );

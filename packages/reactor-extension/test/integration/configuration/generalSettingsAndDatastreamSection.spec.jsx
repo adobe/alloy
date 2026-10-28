@@ -127,6 +127,31 @@ describe("Config general settings and datastream section", () => {
       });
   });
 
+  it.each([
+    ["nameField", "name", "originalName", "updatedName"],
+    ["orgIdField", "orgId", "old@AdobeOrg", "new@AdobeOrg"],
+    ["edgeDomainField", "edgeDomain", "old.example.com", "new.example.com"],
+  ])(
+    "commits %s when focus leaves the field",
+    async (testId, key, initial, updated) => {
+      await driver.init({
+        settings: { instances: [{ name: "alloy", [key]: initial }] },
+      });
+
+      await view.getByTestId(testId).getByRole("textbox").fill(updated);
+
+      await driver
+        .expectSettings((settings) => settings.instances[0][key])
+        .toBe(initial);
+
+      await field(view.getByTestId(testId)).blur();
+
+      await driver
+        .expectSettings((settings) => settings.instances[0][key])
+        .toBe(updated);
+    },
+  );
+
   it("updates list form values and saves to settings", async () => {
     await driver.init(
       buildSettings({

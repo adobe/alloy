@@ -26,11 +26,12 @@ import Copy from "@react-spectrum/s2/icons/Copy";
 import copyToClipboard from "clipboard-copy";
 import { useField } from "formik";
 import PropTypes from "prop-types";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import DataElementSelector from "./dataElementSelector";
 import RefreshButton from "./refreshButton";
 import FormikTextField from "../forms/fields/TextField";
 import { findDatastream } from "../utils/useDatastreamCatalog";
+import { CommitOnBlurContext } from "../forms/fields/useDraftValue";
 
 const getLabel = (datastream) => datastream.data.title;
 
@@ -46,6 +47,20 @@ const findByLabel = (groups, label) => {
   );
   return matches.length === 1 ? matches[0] : undefined;
 };
+
+const renderDatastream = (datastream) => (
+  <ComboBoxItem id={datastream._system.id} textValue={getLabel(datastream)}>
+    <Text slot="label">{getLabel(datastream)}</Text>
+    <Text slot="description">{datastream._system.id}</Text>
+  </ComboBoxItem>
+);
+
+const renderSection = (section) => (
+  <ComboBoxSection id={section.sandbox.name}>
+    <Header>{section.sandbox.title}</Header>
+    <Collection items={section.datastreams}>{renderDatastream}</Collection>
+  </ComboBoxSection>
+);
 
 /**
  * A combo box for choosing a datastream from any sandbox, or entering any
@@ -63,6 +78,7 @@ const DatastreamField = ({
   isRequired,
   "data-test-id": dataTestId,
 }) => {
+  const commitOnBlur = useContext(CommitOnBlurContext);
   const [{ value = "" }, { touched, error }, { setValue, setTouched }] =
     useField(name);
   const [{ value: sandbox = "" }, , { setValue: setSandbox }] =
@@ -113,20 +129,13 @@ const DatastreamField = ({
     setUnfilteredText(chosenLabel);
   };
 
-  // Typed text is saved immediately because the extension bridge can read
-  // settings while the field still has focus.
-  const onInputChange = (text) => {
-    updateInputValue(text);
-    if (text !== displayValue) {
-      setValue(text);
-    }
-  };
-
   const commitInput = () => {
     const text = inputValueRef.current;
     const labelMatch = findByLabel(groups, text);
     if (labelMatch) {
       choose(labelMatch.datastream._system.id, labelMatch.sandbox.name, text);
+    } else if (text !== displayValue) {
+      setValue(text);
     }
   };
 
@@ -148,83 +157,8 @@ const DatastreamField = ({
   const hasSuggestions =
     catalog.isLoading || groups.some(({ datastreams }) => datastreams.length);
 
-  return (
-    <div
-      className={style({
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "start",
-      })}
-    >
-      <DataElementSelector>
-        {hasSuggestions ? (
-          <ComboBox
-            data-test-id={dataTestId}
-            name={name}
-            label={label}
-            description={description}
-            placeholder={placeholder}
-            isRequired={isRequired}
-            allowsCustomValue
-            items={sections}
-            selectedKey={
-              match?.isExact && inputValue === displayValue ? value : null
-            }
-            inputValue={inputValue}
-            onInputChange={onInputChange}
-            onSelectionChange={(key) => {
-              if (key == null) {
-                return;
-              }
-              const selected = findDatastream(groups, key);
-              if (selected) {
-                choose(
-                  key,
-                  selected.sandbox.name,
-                  getLabel(selected.datastream),
-                );
-              }
-            }}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => {
-              commitInput();
-              setIsFocused(false);
-              setTouched(true);
-            }}
-            loadingState={catalog.isLoading ? "loading" : "idle"}
-            isInvalid={Boolean(touched && error)}
-            errorMessage={touched ? error : undefined}
-            styles={style({ width: 400 })}
-          >
-            {(section) => (
-              <ComboBoxSection id={section.sandbox.name}>
-                <Header>{section.sandbox.title}</Header>
-                <Collection items={section.datastreams}>
-                  {(datastream) => (
-                    <ComboBoxItem
-                      id={datastream._system.id}
-                      textValue={getLabel(datastream)}
-                    >
-                      <Text slot="label">{getLabel(datastream)}</Text>
-                      <Text slot="description">{datastream._system.id}</Text>
-                    </ComboBoxItem>
-                  )}
-                </Collection>
-              </ComboBoxSection>
-            )}
-          </ComboBox>
-        ) : (
-          <FormikTextField
-            data-test-id={dataTestId}
-            name={name}
-            label={label}
-            description={description}
-            placeholder={placeholder}
-            isRequired={isRequired}
-            width="size-5000"
-          />
-        )}
-      </DataElementSelector>
+  const actions = useMemo(
+    () => (
       <div
         className={style({
           display: "flex",
@@ -250,6 +184,79 @@ const DatastreamField = ({
           <Tooltip>Copy datastream ID to clipboard.</Tooltip>
         </TooltipTrigger>
       </div>
+    ),
+    [catalog.reload, catalog.isLoading, value],
+  );
+
+  return (
+    <div
+      className={style({
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "start",
+      })}
+    >
+      <DataElementSelector>
+        {hasSuggestions ? (
+          <ComboBox
+            data-test-id={dataTestId}
+            name={name}
+            label={label}
+            description={description}
+            placeholder={placeholder}
+            isRequired={isRequired}
+            allowsCustomValue
+            menuTrigger={commitOnBlur ? "focus" : "input"}
+            items={sections}
+            selectedKey={
+              match?.isExact && inputValue === displayValue ? value : null
+            }
+            inputValue={inputValue}
+            onInputChange={(text) => {
+              updateInputValue(text);
+              if (!commitOnBlur && text !== displayValue) {
+                setValue(text);
+              }
+            }}
+            onSelectionChange={(key) => {
+              if (key == null) {
+                return;
+              }
+              const selected = findDatastream(groups, key);
+              if (selected) {
+                choose(
+                  key,
+                  selected.sandbox.name,
+                  getLabel(selected.datastream),
+                );
+              }
+            }}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => {
+              commitInput();
+              setIsFocused(false);
+              setTouched(true);
+            }}
+            loadingState={catalog.isLoading ? "loading" : "idle"}
+            isInvalid={Boolean(touched && error)}
+            errorMessage={touched ? error : undefined}
+            styles={style({ width: 400 })}
+          >
+            {renderSection}
+          </ComboBox>
+        ) : (
+          <FormikTextField
+            data-test-id={dataTestId}
+            name={name}
+            label={label}
+            description={description}
+            placeholder={placeholder}
+            isRequired={isRequired}
+            width="size-5000"
+          />
+        )}
+      </DataElementSelector>
+      {actions}
     </div>
   );
 };

@@ -403,11 +403,18 @@ describe("Config datastream fields", () => {
       });
   });
 
-  it("saves typed text before the field loses focus", async () => {
+  it("keeps typing local until the field loses focus", async () => {
     await driver.init();
 
     await stagingDatastreamField.focus();
     await userEvent.keyboard("%stagingDatastream%");
+
+    await stagingDatastreamField.expectValue("%stagingDatastream%");
+    await driver
+      .expectSettings((settings) => settings.instances[0].stagingEdgeConfigId)
+      .toBeUndefined();
+
+    await userEvent.tab();
 
     await driver
       .expectSettings((settings) => settings.instances[0].stagingEdgeConfigId)
@@ -442,6 +449,15 @@ describe("Config datastream fields", () => {
     await expect
       .element(listbox.getByRole("option", { name: "aep-edge-samples" }))
       .not.toBeInTheDocument();
+  });
+
+  it("opens suggestions on focus rather than making the first keystroke open them", async () => {
+    await driver.init();
+    await expectDatastreamsLoaded();
+
+    await stagingDatastreamField.focus();
+
+    await expect.element(view.getByRole("listbox")).toBeVisible();
   });
 
   it("saves the sandbox when a typed value is a known datastream ID", async () => {
@@ -609,6 +625,21 @@ describe("Config datastream fields", () => {
   });
 
   describe("validation", () => {
+    it("validates the committed text rather than the previous value on blur", async () => {
+      await driver.init();
+      await productionDatastreamField.focus();
+      await productionDatastreamField.blur();
+      await productionDatastreamField.expectError(
+        /please specify a datastream/i,
+      );
+
+      await productionDatastreamField.focus();
+      await userEvent.keyboard("valid-datastream-id");
+      await userEvent.tab();
+
+      await productionDatastreamField.expectNotInvalid();
+    });
+
     it("requires a production datastream", async () => {
       await driver.init({ settings: { instances: [{ name: "alloy" }] } });
 

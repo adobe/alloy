@@ -89,6 +89,7 @@ import {
   createNameValidation,
   createUniqueNameTest,
 } from "./basicSectionBridge";
+import { CommitOnBlurContext } from "../forms/fields/useDraftValue";
 
 const sectionBridges = [
   basicSectionBridge,
@@ -564,14 +565,16 @@ Configuration.propTypes = {
 
 const ConfigurationView = () => {
   return (
-    <ExtensionView
-      getInitialValues={getInitialValues}
-      getSettings={getSettings}
-      formikStateValidationSchema={createValidationSchema()}
-      render={({ initInfo }) => {
-        return <Configuration initInfo={initInfo} />;
-      }}
-    />
+    <CommitOnBlurContext.Provider value>
+      <ExtensionView
+        getInitialValues={getInitialValues}
+        getSettings={getSettings}
+        formikStateValidationSchema={createValidationSchema()}
+        render={({ initInfo }) => {
+          return <Configuration initInfo={initInfo} />;
+        }}
+      />
+    </CommitOnBlurContext.Provider>
   );
 };
 

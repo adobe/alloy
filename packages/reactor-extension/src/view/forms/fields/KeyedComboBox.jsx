@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { useRef } from "react";
+import { useContext, useMemo, useRef } from "react";
 import PropTypes from "prop-types";
 import { ComboBox, ComboBoxItem } from "@react-spectrum/s2";
 import { useField } from "formik";
@@ -18,7 +18,7 @@ import useForceRender from "../../utils/useForceRender";
 import widthStyle from "./widthStyle";
 import normalizeCollectionChildren from "./normalizeCollectionChildren";
 import closeDataElementSuggestions from "./closeDataElementSuggestions";
-import useDraftValue from "./useDraftValue";
+import useDraftValue, { CommitOnBlurContext } from "./useDraftValue";
 
 const FormikKeyedComboBox = ({
   name,
@@ -29,12 +29,17 @@ const FormikKeyedComboBox = ({
   children,
   ...otherProps
 }) => {
+  const commitOnBlur = useContext(CommitOnBlurContext);
   const [{ value }, { touched, error }, { setValue, setTouched }] =
     useField(name);
   const [draft, setDraft, draftRef] = useDraftValue(value, name, setValue);
   const forceRender = useForceRender();
   const isFilteringRef = useRef(false);
   const itemsRef = useRef(items);
+  const collectionChildren = useMemo(
+    () => normalizeCollectionChildren(ComboBoxItem, children),
+    [children],
+  );
 
   let text;
   if (isFilteringRef.current) {
@@ -47,7 +52,11 @@ const FormikKeyedComboBox = ({
   return (
     <ComboBox
       {...otherProps}
-      menuTrigger={text?.startsWith("%") ? "manual" : otherProps.menuTrigger}
+      menuTrigger={
+        text?.startsWith("%")
+          ? "manual"
+          : (otherProps.menuTrigger ?? (commitOnBlur ? "focus" : "input"))
+      }
       onInput={closeDataElementSuggestions}
       inputValue={text}
       items={itemsRef.current}
@@ -100,7 +109,7 @@ const FormikKeyedComboBox = ({
         }
       }}
     >
-      {normalizeCollectionChildren(ComboBoxItem, children)}
+      {collectionChildren}
     </ComboBox>
   );
 };

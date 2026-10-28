@@ -11,13 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { ComboBox, ComboBoxItem } from "@react-spectrum/s2";
 import { useField } from "formik";
 import widthStyle from "./widthStyle";
 import normalizeCollectionChildren from "./normalizeCollectionChildren";
 import closeDataElementSuggestions from "./closeDataElementSuggestions";
-import useDraftValue from "./useDraftValue";
+import useDraftValue, { CommitOnBlurContext } from "./useDraftValue";
 
 /**
  * @param {object} params
@@ -37,12 +37,17 @@ const FormikComboBox = ({
   children,
   ...otherProps
 }) => {
+  const commitOnBlur = useContext(CommitOnBlurContext);
   const [{ value }, { touched, error }, { setValue, setTouched }] = useField({
     name,
     validate,
   });
   const [draft, setDraft, draftRef] = useDraftValue(value, name, setValue);
   const [selectedKey, setSelectedKey] = useState(null);
+  const collectionChildren = useMemo(
+    () => normalizeCollectionChildren(ComboBoxItem, children),
+    [children],
+  );
   // React Aria reports the key before updating the input to the selected label.
   useEffect(() => {
     if (selectedKey != null) {
@@ -52,7 +57,11 @@ const FormikComboBox = ({
   return (
     <ComboBox
       {...otherProps}
-      menuTrigger={draft?.startsWith("%") ? "manual" : otherProps.menuTrigger}
+      menuTrigger={
+        draft?.startsWith("%")
+          ? "manual"
+          : (otherProps.menuTrigger ?? (commitOnBlur ? "focus" : "input"))
+      }
       onInput={closeDataElementSuggestions}
       inputValue={draft}
       onInputChange={setDraft}
@@ -67,7 +76,7 @@ const FormikComboBox = ({
       styles={widthStyle(width)}
       errorMessage={error}
     >
-      {normalizeCollectionChildren(ComboBoxItem, children)}
+      {collectionChildren}
     </ComboBox>
   );
 };
