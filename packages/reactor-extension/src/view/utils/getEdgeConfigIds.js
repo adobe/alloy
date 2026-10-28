@@ -37,26 +37,6 @@ const getEdgeConfigIds = (instanceSettings) => {
       productionEnvironment: {},
     };
   }
-  if (instanceSettings.edgeConfigInputMethod === "freeform") {
-    return {
-      developmentEnvironment: {
-        datastreamId:
-          instanceSettings.edgeConfigFreeformInputMethod
-            .developmentEdgeConfigId,
-      },
-      stagingEnvironment: {
-        datastreamId:
-          instanceSettings.edgeConfigFreeformInputMethod.stagingEdgeConfigId,
-      },
-      productionEnvironment: {
-        datastreamId:
-          instanceSettings.edgeConfigFreeformInputMethod.edgeConfigId,
-      },
-    };
-  }
-  if (instanceSettings.edgeConfigInputMethod === "select") {
-    return instanceSettings.edgeConfigSelectInputMethod;
-  }
   return {
     developmentEnvironment: {
       datastreamId: instanceSettings.developmentEdgeConfigId,
