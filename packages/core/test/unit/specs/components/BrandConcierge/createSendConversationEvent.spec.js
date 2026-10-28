@@ -258,7 +258,7 @@ describe("createSendConversationEvent", () => {
     expect(request.getEdgeSubPath()).toBe("/brand-concierge/va7");
   });
 
-  it("does not include region in edge subpath for voice requests", async () => {
+  it("includes region in edge subpath for voice requests", async () => {
     const mockResponse = {
       ok: true,
       status: 200,
@@ -277,7 +277,7 @@ describe("createSendConversationEvent", () => {
     });
 
     const [{ request }] = mockDependencies.buildEndpointUrl.mock.calls[0];
-    expect(request.getEdgeSubPath()).toBe("/brand-concierge-voice");
+    expect(request.getEdgeSubPath()).toBe("/brand-concierge-voice/va7");
   });
 
   it("defaults to text subpath when voiceEnabled is not provided", async () => {
