@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "noEmit": true,
+    "paths": {
+      "@adobe/alloy-core": ["../core/src/index.ts"],
+      "@adobe/alloy-core/*": ["../core/src/*"]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "distTest",
+    "src/input.js",
+    "src/serviceWorker.ts"
+  ]
+}

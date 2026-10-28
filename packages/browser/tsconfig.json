@@ -1,0 +1,16 @@
+{
+  "extends": "../../jsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "module": "ESNext",
+    "strict": true,
+    "erasableSyntaxOnly": true,
+    "allowJs": false,
+    "checkJs": false,
+    "declaration": true,
+    "verbatimModuleSyntax": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "distTest", "src/input.js"]
+}

@@ -1,0 +1,49 @@
+/*
+Copyright 2026 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+import type { GlobalsService } from "@adobe/alloy-core/services/index.js";
+import type { AlloyInstance } from "../types.js";
+import injectFireReferrerHideableImage from "@adobe/alloy-core/utils/dom/injectFireReferrerHideableImage.js";
+
+const createBrowserGlobalsService = (): GlobalsService => ({
+  getInstanceNames: () => window.__alloyNS || [],
+  getInstanceQueue: (instanceName) => {
+    // Instance names are user-chosen globals, so the lookup cannot be keyed
+    // by a known union; narrow the value at the boundary instead.
+    const namespace = (window as unknown as Record<string, AlloyInstance>)[
+      instanceName
+    ] as AlloyInstance | undefined;
+    return (namespace && namespace.q) || [];
+  },
+  getMonitors: () => window.__alloyMonitors || [],
+  getLocationSearch: () => window.location.search,
+  getLocationHash: () => window.location.hash,
+  getUserAgent: () => window.navigator.userAgent,
+  getHostname: () => window.location.hostname,
+  getPageLocation: () => window.location,
+  isPageSsl: () => window.location.protocol === "https:",
+  // The core service contract resolves to void; callers ignore the value, so
+  // the Event the image load resolves with is safe to leave in place.
+  fireReferrerHideableImage:
+    injectFireReferrerHideableImage() as unknown as GlobalsService["fireReferrerHideableImage"],
+  getWindowContext: () => ({
+    title: document.title,
+    url: window.location.href,
+    referrer: document.referrer,
+    height: window.innerHeight,
+    width: window.innerWidth,
+    scrollY: window.scrollY,
+    scrollX: window.scrollX,
+  }),
+});
+
+export default createBrowserGlobalsService;

@@ -60,18 +60,18 @@ describe("components.json manifest drift detection", () => {
   });
 
   describe("packages/browser/components.json", () => {
-    test("optional entries match browser/components/componentCreators.js exports", () => {
+    test("optional entries match browser/components/componentCreators.ts exports", () => {
       const manifestNames = browserManifest.optional.map((c) => c.name).sort();
       const barrelNames = readBarrelExports(
-        "../packages/browser/src/components/componentCreators.js",
+        "../packages/browser/src/components/componentCreators.ts",
       );
       expect(manifestNames).toEqual(barrelNames);
     });
 
-    test("required entries match browser/components/requiredComponentCreators.js exports", () => {
+    test("required entries match browser/components/requiredComponentCreators.ts exports", () => {
       const manifestNames = browserManifest.required.map((c) => c.name).sort();
       const barrelNames = readBarrelExports(
-        "../packages/browser/src/components/requiredComponentCreators.js",
+        "../packages/browser/src/components/requiredComponentCreators.ts",
       );
       expect(manifestNames).toEqual(barrelNames);
     });

@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.typecheck.json",
+  "compilerOptions": {
+    "lib": ["ES2020", "WebWorker", "ES2022.Error"],
+    "declaration": false,
+    "noEmit": true
+  },
+  "include": ["src/serviceWorker.ts"],
+  "exclude": ["node_modules", "dist", "distTest"]
+}
