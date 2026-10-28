@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy-sandbox-browser",
-  "version": "0.1.10-beta.3",
+  "version": "0.1.10-beta.4",
   "private": true,
   "dependencies": {
     "@adobe/alloy": "workspace:*",

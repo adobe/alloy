@@ -1,5 +1,12 @@
 # reactor-extension-alloy
 
+## 2.38.3-beta.2
+
+### Patch Changes
+
+- Updated dependencies [[`fb2d750`](https://github.com/adobe/alloy/commit/fb2d7501268b8b9692a4eda70533da7fdeb181bb)]:
+  - @adobe/alloy@2.37.0-beta.2
+
 ## 2.38.3-beta.1
 
 ### Patch Changes
