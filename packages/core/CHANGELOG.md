@@ -1,5 +1,11 @@
 # @adobe/alloy-core
 
+## 1.4.0-beta.3
+
+### Patch Changes
+
+- [#1623](https://github.com/adobe/alloy/pull/1623) [`d4a93ca`](https://github.com/adobe/alloy/commit/d4a93ca4e62e10329520c6bfbf57a41d89b726f0) Thanks [@carterworks](https://github.com/carterworks)! - Fixed monitoring hooks not firing for monitors registered after instance creation, including the Web SDK Tags extension's "Monitoring hook triggered" events.
+
 ## 1.4.0-beta.2
 
 ### Patch Changes
