@@ -16,6 +16,9 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
+// The monorepo root isn't a dependency of browser, so it can't be imported by name.
+// eslint-disable-next-line import/no-relative-packages
+import withBuildLock from "../../../../scripts/helpers/withBuildLock.js";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const browserPath = path.resolve(dirname, "../..");
@@ -25,14 +28,16 @@ const packagePath = path.join(workPath, "package");
 describe("@adobe/alloy npm package", () => {
   let manifest;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     fs.rmSync(workPath, { recursive: true, force: true });
     fs.mkdirSync(packagePath, { recursive: true });
-    // `pnpm pack` runs `prepack`, which builds dist/.
-    const tarball = execFileSync(
-      "pnpm",
-      ["pack", "--json", "--pack-destination", workPath],
-      { cwd: browserPath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] },
+    // `pnpm pack` runs `prepack`, which builds dist/ from the shared core dist/.
+    const tarball = await withBuildLock(() =>
+      execFileSync("pnpm", ["pack", "--json", "--pack-destination", workPath], {
+        cwd: browserPath,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"],
+      }),
     );
     const { filename } = JSON.parse(tarball.slice(tarball.indexOf("{")));
     execFileSync("tar", [
