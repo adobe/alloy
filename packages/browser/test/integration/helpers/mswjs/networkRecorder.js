@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import waitFor from "../utils/waitFor.js";
+import { pendingFetchCount } from "../utils/fetchTracker.js";
 
 const IN_FLIGHT_TIMEOUT_MS = 5000;
 
@@ -278,10 +279,12 @@ class NetworkRecorder {
   }
 
   /**
-   * Resolves once no recorded call is waiting for its response, or after
-   * timeoutMs. Used at teardown so requests still running at the end of a test
+   * Resolves once every fetch started in the page has settled and the
+   * recorder has seen each of those requests start, or after timeoutMs (with a
+   * warning). Used at teardown so requests still running at the end of a test
    * finish before reset() rather than leaking into the next test's recording.
-   * Kept short because a bypassed request that fails never gets a response.
+   * A response captured after reset() is already dropped by the generation
+   * guard, so only request starts need to be waited for here.
    * @param {Object} [options]
    * @param {number} [options.timeoutMs=1000]
    * @returns {Promise<void>}
@@ -289,11 +292,17 @@ class NetworkRecorder {
   async waitForIdle({ timeoutMs = 1000 } = {}) {
     const deadline = Date.now() + timeoutMs;
     const generation = this.generation;
-    while (
-      generation === this.generation &&
-      Date.now() < deadline &&
-      this.calls.some((call) => !call.request || !call.response)
-    ) {
+    const isBusy = () =>
+      pendingFetchCount() > 0 || this.calls.some((call) => !call.request);
+    while (generation === this.generation && isBusy()) {
+      if (Date.now() >= deadline) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `networkRecorder.waitForIdle: gave up after ${timeoutMs}ms with ${pendingFetchCount()} fetch(es) pending; they may leak into the next test.`,
+          this.calls.filter((call) => !call.request).map((call) => call.url),
+        );
+        return;
+      }
       // eslint-disable-next-line no-await-in-loop
       await waitFor(10);
     }
