@@ -64,6 +64,12 @@ FormStoreProvider.propTypes = {
 export const useFormStore = () => useContext(FormStoreContext);
 
 /**
+ * Returns a stable function that reads the current Formik state without
+ * subscribing to it; use for event handlers and effects.
+ */
+export const useGetFormState = () => useFormStore().getState;
+
+/**
  * Re-renders only when the selected value changes (by Object.is), so
  * selectors should return primitives or existing references.
  */

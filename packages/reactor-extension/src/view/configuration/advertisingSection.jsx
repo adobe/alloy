@@ -12,8 +12,9 @@ governing permissions and limitations under the License.
 
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { useFormikContext, FieldArray } from "formik";
+import { FieldArray } from "formik";
 import useField from "../forms/useField";
+import { useFormSelector, useGetFormState } from "../forms/formStore";
 import {
   Content,
   Heading,
@@ -444,7 +445,7 @@ export const bridge = {
 };
 
 const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
-  const { setFieldValue } = useFormikContext();
+  const getFormState = useGetFormState();
   const [{ value: advertisingComponentEnabled }] = useField(
     "components.advertising",
   );
@@ -457,7 +458,9 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
   const [{ value: advertiserSettings }] = useField(
     `${instanceFieldName}.advertising.advertiserSettings`,
   );
-  const [{ value: instances }] = useField("instances");
+  const hasMultipleInstances = useFormSelector(
+    (state) => state.values.instances.length > 1,
+  );
 
   const [advertisers, setAdvertisers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -466,7 +469,6 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
   // Extract instance index from instanceFieldName (e.g., "instances.0" -> 0)
   const instanceIndex = parseInt(instanceFieldName.split(".")[1], 10);
   const isFirstInstance = instanceIndex === 0;
-  const hasMultipleInstances = instances && instances.length > 1;
 
   // Fetch advertisers from Adobe Advertising API when component is enabled
   useEffect(() => {
@@ -493,9 +495,12 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
 
         setAdvertisers(advertisersList);
         // API succeeded - use dropdown mode
-        setFieldValue(`${instanceFieldName}.advertising.useManualEntry`, false);
+        getFormState().setFieldValue(
+          `${instanceFieldName}.advertising.useManualEntry`,
+          false,
+        );
         // Store valid advertiser IDs for validation
-        setFieldValue(
+        getFormState().setFieldValue(
           `${instanceFieldName}.advertising.validAdvertiserIds`,
           advertisersList.map((adv) => adv.advertiser_id),
         );
@@ -504,14 +509,17 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
           "Unable to retrieve advertiser data. Please contact your system administrator for assistance.",
         );
         // API failed - use manual entry mode
-        setFieldValue(`${instanceFieldName}.advertising.useManualEntry`, true);
+        getFormState().setFieldValue(
+          `${instanceFieldName}.advertising.useManualEntry`,
+          true,
+        );
       } finally {
         setLoading(false);
       }
     };
 
     fetchAdvertisersData();
-  }, [advertisingComponentEnabled, initInfo, instanceFieldName, setFieldValue]);
+  }, [advertisingComponentEnabled, initInfo, instanceFieldName]);
 
   const disabledView = (
     <InfoMessage

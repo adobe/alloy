@@ -11,8 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import { useEffect } from "react";
-import { useFormikContext } from "formik";
+import { getIn } from "formik";
 import useField from "../forms/useField";
+import { useGetFormState } from "../forms/formStore";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { object, string } from "yup";
 import { ActionButton, Checkbox, Radio } from "@react-spectrum/s2";
@@ -264,8 +265,19 @@ export const bridge = {
 };
 
 const DataCollectionSection = ({ instanceFieldName }) => {
-  const { setFieldValue } = useFormikContext();
-  const [{ value: instanceValues }] = useField(instanceFieldName);
+  const getFormState = useGetFormState();
+  const [{ value: clickCollection }] = useField(
+    `${instanceFieldName}.clickCollection`,
+  );
+  const [{ value: linkCallbackType }] = useField(
+    `${instanceFieldName}.linkCallbackType`,
+  );
+  const [{ value: onBeforeLinkClickSendInitiallySpecified }] = useField(
+    `${instanceFieldName}.onBeforeLinkClickSendInitiallySpecified`,
+  );
+  const [{ value: contextGranularity }] = useField(
+    `${instanceFieldName}.contextGranularity`,
+  );
   const instanceDefaults = bridge.getInstanceDefaults();
   const [{ value: activityCollectorEnabled }] = useField(
     "components.activityCollector",
@@ -304,7 +316,7 @@ const DataCollectionSection = ({ instanceFieldName }) => {
             >
               Collect internal link clicks
             </FormikCheckbox>
-            {instanceValues.clickCollection.internalLinkEnabled && (
+            {clickCollection.internalLinkEnabled && (
               <FieldSubset>
                 <FormikRadioGroup
                   label="Event grouping options:"
@@ -366,7 +378,7 @@ const DataCollectionSection = ({ instanceFieldName }) => {
             >
               Collect download link clicks
             </FormikCheckbox>
-            {instanceValues.clickCollection.downloadLinkEnabled && (
+            {clickCollection.downloadLinkEnabled && (
               <FieldSubset>
                 <div
                   className={style({
@@ -385,8 +397,11 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                   <ActionButton
                     data-test-id="downloadLinkQualifierTestButton"
                     onPress={async () => {
-                      const currentPattern =
-                        instanceValues.downloadLinkQualifier;
+                      const { values, setFieldValue } = getFormState();
+                      const currentPattern = getIn(
+                        values,
+                        `${instanceFieldName}.downloadLinkQualifier`,
+                      );
                       const newPattern =
                         await window.extensionBridge.openRegexTester({
                           pattern: currentPattern,
@@ -410,8 +425,8 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                 </div>
               </FieldSubset>
             )}
-            {clickCollectionIsEnabled(instanceValues) &&
-              instanceValues.onBeforeLinkClickSendInitiallySpecified && (
+            {clickCollectionIsEnabled({ clickCollection }) &&
+              onBeforeLinkClickSendInitiallySpecified && (
                 <div
                   className={style({
                     display: "flex",
@@ -443,9 +458,8 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                   </FormikRadioGroup>
                 </div>
               )}
-            {clickCollectionIsEnabled(instanceValues) &&
-              instanceValues.linkCallbackType !==
-                LINK_CALLBACK.ON_BEFORE_LINK_CLICK_SEND && (
+            {clickCollectionIsEnabled({ clickCollection }) &&
+              linkCallbackType !== LINK_CALLBACK.ON_BEFORE_LINK_CLICK_SEND && (
                 <div
                   className={style({
                     display: "flex",
@@ -463,9 +477,8 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                   />
                 </div>
               )}
-            {clickCollectionIsEnabled(instanceValues) &&
-              instanceValues.linkCallbackType ===
-                LINK_CALLBACK.ON_BEFORE_LINK_CLICK_SEND && (
+            {clickCollectionIsEnabled({ clickCollection }) &&
+              linkCallbackType === LINK_CALLBACK.ON_BEFORE_LINK_CLICK_SEND && (
                 <div
                   className={style({
                     display: "flex",
@@ -512,8 +525,7 @@ const DataCollectionSection = ({ instanceFieldName }) => {
             </Radio>
           </FormikRadioGroup>
 
-          {instanceValues.contextGranularity ===
-            CONTEXT_GRANULARITY.SPECIFIC && (
+          {contextGranularity === CONTEXT_GRANULARITY.SPECIFIC && (
             <FieldSubset>
               <FormikCheckboxGroup
                 aria-label="Context data categories"

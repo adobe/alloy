@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { useEffect, useRef } from "react";
-import { useFormikContext } from "formik";
+import { useFormSelector, useGetFormState } from "../forms/formStore";
 
 /**
  * Focuses the first field with a validation error after form submission.
@@ -30,12 +30,15 @@ import { useFormikContext } from "formik";
  * };
  */
 export default () => {
-  const { submitCount, isSubmitting, errors } = useFormikContext();
+  const submitCount = useFormSelector((state) => state.submitCount);
+  const isSubmitting = useFormSelector((state) => state.isSubmitting);
+  const getFormState = useGetFormState();
   const previousSubmitCountRef = useRef(0);
   const timeoutIdRef = useRef(null);
   const rafIdRef = useRef(null);
 
   useEffect(() => {
+    const { errors } = getFormState();
     // Only process when:
     // 1. A new submit attempt has been made (submitCount changed)
     // 2. Form is no longer submitting (validation complete)
@@ -125,7 +128,7 @@ export default () => {
         }, 150); // Wait 150ms for state updates + remounting
       });
     }
-  }, [submitCount, isSubmitting, errors]);
+  }, [submitCount, isSubmitting]);
 
   // Cleanup on unmount
   useEffect(() => {

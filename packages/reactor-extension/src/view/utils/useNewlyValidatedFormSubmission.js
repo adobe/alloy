@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { useEffect, useRef } from "react";
-import { useFormikContext } from "formik";
+import { useFormSelector, useGetFormState } from "../forms/formStore";
 
 /**
  * A react hook which calls the callback after a user attempts to
@@ -22,7 +22,9 @@ import { useFormikContext } from "formik";
  * attempts to submit a formik form and validation completes.
  */
 export default (callback) => {
-  const { submitCount, isSubmitting, errors } = useFormikContext();
+  const submitCount = useFormSelector((state) => state.submitCount);
+  const isSubmitting = useFormSelector((state) => state.isSubmitting);
+  const getFormState = useGetFormState();
   const previousProcessedSubmitCountRef = useRef(0);
   useEffect(() => {
     // Let's consider our state before form submission:
@@ -41,7 +43,7 @@ export default (callback) => {
       !isSubmitting
     ) {
       previousProcessedSubmitCountRef.current = submitCount;
-      callback(errors);
+      callback(getFormState().errors);
     }
   }, [submitCount, isSubmitting]);
 };

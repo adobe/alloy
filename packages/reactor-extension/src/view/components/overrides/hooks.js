@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { useFormikContext } from "formik";
+import { useGetFormState } from "../../forms/formStore";
 import { useEffect, useState } from "react";
 import fetchConfig from "../../configuration/utils/fetchConfig";
 import deepGet from "../../utils/deepGet";
@@ -168,7 +168,9 @@ export const useFormikContextWithOverrides = ({
   edgeConfigOverrides,
   defaults,
 }) => {
-  const { values, setFieldValue, setFieldTouched } = useFormikContext();
+  const getFormState = useGetFormState();
+  const setFieldValue = (...args) => getFormState().setFieldValue(...args);
+  const setFieldTouched = (...args) => getFormState().setFieldTouched(...args);
 
   const useServiceStatus = (apiResult) => {
     const serviceStatus = getServiceStatus(apiResult);
@@ -181,7 +183,10 @@ export const useFormikContextWithOverrides = ({
    */
   const createIsDisabled =
     (prefixWithEnv) => (shortPropName, serviceIsEnabled) => {
-      const value = deepGet(values, `${prefixWithEnv}.${shortPropName}`);
+      const value = deepGet(
+        getFormState().values,
+        `${prefixWithEnv}.${shortPropName}`,
+      );
       return (
         !serviceIsEnabled ||
         value === ENABLED_DISABLED_MATCH_FIELD_VALUES.disabled ||
@@ -240,7 +245,6 @@ export const useFormikContextWithOverrides = ({
   };
 
   return {
-    values,
     useServiceStatus,
     createIsDisabled,
     onDisable,

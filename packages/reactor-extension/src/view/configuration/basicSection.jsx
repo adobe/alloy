@@ -23,7 +23,10 @@ import { bridge } from "./basicSectionBridge";
 export { bridge };
 
 const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
-  const [{ value: instanceValues }] = useField(instanceFieldName);
+  const [{ value: name }] = useField(`${instanceFieldName}.name`);
+  const [{ value: persistedName }] = useField(
+    `${instanceFieldName}.persistedName`,
+  );
   const instanceDefaults = bridge.getInstanceDefaults({ initInfo });
 
   return (
@@ -50,8 +53,7 @@ const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
           width="size-5000"
         />
       </DataElementSelector>
-      {instanceValues.persistedName &&
-      instanceValues.name !== instanceValues.persistedName ? (
+      {persistedName && name !== persistedName ? (
         <InlineAlert
           data-test-id="nameChangeAlert"
           variant="notice"
