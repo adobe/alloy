@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import { http, HttpResponse } from "msw";
 import { test, expect, describe } from "../../helpers/testsSetup/extend.js";
-import { sendEventHandler } from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
 import { MAIN_CLUSTER_COOKIE_NAME } from "../../helpers/constants/cookies.js";
 
@@ -63,13 +62,55 @@ const sgp3LocationHintHandler = http.post(
   },
 );
 
+// A hint no shared mock response uses, so requests leaking in from other tests
+// (which carry the common "or2" hint) can't satisfy this test's assertions.
+const UNIQUE_EDGE_HINT = "va6";
+
+const uniqueLocationHintHandler = http.post(
+  /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
+  async (req) => {
+    const url = new URL(req.request.url);
+    const configId = url.searchParams.get("configId");
+
+    if (configId === alloyConfig.datastreamId) {
+      return HttpResponse.json({
+        requestId: "unique-location-hint-test",
+        handle: [
+          {
+            payload: [
+              {
+                scope: "EdgeNetwork",
+                hint: UNIQUE_EDGE_HINT,
+                ttlSeconds: 1800,
+              },
+            ],
+            type: "locationHint:result",
+          },
+          {
+            payload: [
+              {
+                key: MAIN_CLUSTER_COOKIE_NAME,
+                value: UNIQUE_EDGE_HINT,
+                maxAge: 1800,
+              },
+            ],
+            type: "state:store",
+          },
+        ],
+      });
+    }
+
+    throw new Error("Handler not configured properly");
+  },
+);
+
 describe("Location Hints", () => {
   test("C6589015 - location hint from first response is included in second request URL", async ({
     alloy,
     worker,
     networkRecorder,
   }) => {
-    worker.use(sendEventHandler);
+    worker.use(uniqueLocationHintHandler);
 
     await alloy("configure", {
       ...alloyConfig,
@@ -78,25 +119,22 @@ describe("Location Hints", () => {
     });
     await alloy("sendEvent", {});
 
+    // Match this test's requests by URL rather than by position: requests
+    // leaking in from earlier tests can also be recorded.
+    const noHintCalls = await networkRecorder.findCalls(
+      /edge\.adobedc\.net\/ee\/v1\/interact/,
+    );
+    expect(noHintCalls.length).toBeGreaterThan(0);
+
     const clusterCookie = await cookieStore.get(MAIN_CLUSTER_COOKIE_NAME);
-    const locationHint = clusterCookie?.value;
-    expect(locationHint).toBeTruthy();
+    expect(clusterCookie?.value).toBe(UNIQUE_EDGE_HINT);
 
     await alloy("sendEvent", {});
 
-    const calls = await networkRecorder.findCalls(/edge\.adobedc\.net/, {
-      minCalls: 2,
-    });
-    expect(calls.length).toBe(2);
-
-    // no hint
-    expect(calls[0].request.url).toMatch(
-      /^https:\/\/[^/]+\/[^/]+\/v1\/interact/,
+    const hintCalls = await networkRecorder.findCalls(
+      new RegExp(`edge\\.adobedc\\.net/ee/${UNIQUE_EDGE_HINT}/v1/interact`),
     );
-    // yes hint
-    expect(calls[1].request.url).toMatch(
-      new RegExp(`edge\\.adobedc\\.net/ee/${locationHint}/v1/interact`),
-    );
+    expect(hintCalls.length).toBe(1);
   });
 
   test("C6944931 - legacy mboxEdgeCluster cookie is translated to a location hint on the first request", async ({

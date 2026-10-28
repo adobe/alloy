@@ -212,13 +212,13 @@ class NetworkRecorder {
         minCalls != null ? complete.length >= minCalls : complete.length > 0;
       // A matching request already started but its capture is not finished.
       // Under load this can outlast the retry budget, so wait for it instead
-      // of reporting the call as missing.
+      // of reporting the call as missing. Wait for it even when there are
+      // already enough complete calls: returning early hands back a list
+      // without it, so positional lookups pick up the wrong call.
       const inFlight = matching.length > complete.length;
+      const inFlightExpired = Date.now() >= inFlightDeadline;
 
-      if (
-        enough ||
-        (retriesLeft <= 0 && (!inFlight || Date.now() >= inFlightDeadline))
-      ) {
+      if ((enough || retriesLeft <= 0) && (!inFlight || inFlightExpired)) {
         break;
       }
 
@@ -275,6 +275,28 @@ class NetworkRecorder {
       }, timeoutMs);
       this.waiters.push(waiter);
     });
+  }
+
+  /**
+   * Resolves once no recorded call is waiting for its response, or after
+   * timeoutMs. Used at teardown so requests still running at the end of a test
+   * finish before reset() rather than leaking into the next test's recording.
+   * Kept short because a bypassed request that fails never gets a response.
+   * @param {Object} [options]
+   * @param {number} [options.timeoutMs=1000]
+   * @returns {Promise<void>}
+   */
+  async waitForIdle({ timeoutMs = 1000 } = {}) {
+    const deadline = Date.now() + timeoutMs;
+    const generation = this.generation;
+    while (
+      generation === this.generation &&
+      Date.now() < deadline &&
+      this.calls.some((call) => !call.request || !call.response)
+    ) {
+      // eslint-disable-next-line no-await-in-loop
+      await waitFor(10);
+    }
   }
 
   reset() {
