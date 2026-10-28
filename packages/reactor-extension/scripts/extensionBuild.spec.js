@@ -56,9 +56,12 @@ const buildAndRead = async (forgeDir, { env, flags = "", signal } = {}) => {
 const test = baseTest
   // eslint-disable-next-line no-empty-pattern
   .extend("extensionPackage", { scope: "file" }, async ({}, { onCleanup }) => {
-    const extensionPackage = await createExtensionPackage();
-    onCleanup(() => fs.rmSync(extensionPackage, { force: true }));
-    return extensionPackage;
+    // Own output dir so a concurrent run can't overwrite the zip mid-read.
+    const outputDir = fs.mkdtempSync(
+      path.join(os.tmpdir(), "extension-package-"),
+    );
+    onCleanup(() => fs.rmSync(outputDir, { recursive: true, force: true }));
+    return createExtensionPackage({ outputDir });
   })
   .extend(
     "forgeDir",

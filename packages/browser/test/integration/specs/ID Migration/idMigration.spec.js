@@ -262,8 +262,7 @@ describe("ID Migration", () => {
     );
   });
 
-  // Skipped because this test is flaky in CI.
-  test.skip("C14403: migration disabled + no AMCV cookie → AMCV cookie NOT created after sendEvent", async ({
+  test("C14403: migration disabled + no AMCV cookie → AMCV cookie NOT created after sendEvent", async ({
     alloy,
     worker,
     networkRecorder,
@@ -293,8 +292,7 @@ describe("ID Migration", () => {
     );
   });
 
-  // Skipped because this test is flaky in CI.
-  test.skip("C5752639: identity changed via adobe_mc query param when migration enabled", async ({
+  test("C5752639: identity changed via adobe_mc query param when migration enabled", async ({
     alloy,
     worker,
     networkRecorder,

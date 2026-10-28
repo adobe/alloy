@@ -23,6 +23,7 @@ import { setConsentHandler } from "../../helpers/mswjs/handlers.js";
 import { CONSENT_IN } from "../../helpers/constants/consent.js";
 import getVisitorEcid from "../../helpers/visitorService/getVisitorEcid.js";
 import loadVisitor from "../../helpers/visitorService/loadVisitor.js";
+import unloadVisitor from "../../helpers/visitorService/unloadVisitor.js";
 
 const EDGE_ECID = "41861666193140161934276845651148876988";
 const VISITOR_ECID = "12345678901234567890123456789012345678";
@@ -89,13 +90,7 @@ const setUpOptIn = (approved) => {
 };
 
 afterEach(() => {
-  window.s_c_il = [];
-  window.s_c_in = 0;
-  window.adobe.optIn = {
-    fetchPermissions: (callback) => callback(),
-    isApproved: () => true,
-    Categories: { ECID: "ecid" },
-  };
+  unloadVisitor();
 });
 
 describe("Visitor ID migration", () => {
@@ -120,7 +115,9 @@ describe("Visitor ID migration", () => {
 
     visitorApi.release();
     const identityResult = await identityPromise;
-    const { request } = await networkRecorder.findCall(/v1\/identity\/acquire/);
+    const { request } = await networkRecorder.waitForCall(
+      /v1\/identity\/acquire/,
+    );
 
     expect(request.body.xdm.identityMap.ECID[0].id).toBe(VISITOR_ECID);
     expect(identityResult.identity).toEqual({ ECID: VISITOR_ECID });

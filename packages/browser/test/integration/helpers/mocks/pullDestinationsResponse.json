@@ -16,10 +16,7 @@
       "payload": [
         {
           "id": "ed6a852f-3e99-4cf3-86f7-0027fabeb4fb",
-          "segments": [
-            { "id": "seg-AAA" },
-            { "id": "seg-BBB" }
-          ]
+          "segments": [{ "id": "seg-AAA" }, { "id": "seg-BBB" }]
         },
         {
           "id": "d6211043-fb49-45f1-84a9-a56336c1f6fe",

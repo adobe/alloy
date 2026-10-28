@@ -229,11 +229,7 @@ describe("sendEvent config overrides in request payload (C7437530)", () => {
 });
 
 describe("getIdentity config overrides in request payload (C7437531)", () => {
-  // TODO(findCall-flake): request-only `findCall` returns undefined when the
-  // mocked response lags under the coverage job's CPU starvation, so line ~243
-  // reads `request` off undefined and throws. Un-skip once networkRecorder.js
-  // gains a `requireResponse` flag for request-only assertions.
-  test.skip("getIdentity passes config overrides from command options", async ({
+  test("getIdentity passes config overrides from command options", async ({
     alloy,
     worker,
     networkRecorder,
@@ -320,8 +316,7 @@ describe("getIdentity config overrides in request payload (C7437531)", () => {
     ).toEqual(overrides.com_adobe_target.propertyToken);
   });
 
-  // Skipped because this test is flaky in CI.
-  test.skip("empty config override values are not sent by getIdentity", async ({
+  test("empty config override values are not sent by getIdentity", async ({
     alloy,
     worker,
     networkRecorder,
