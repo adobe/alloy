@@ -19,6 +19,7 @@ import { ProgressCircle } from "@react-spectrum/s2";
 import useExtensionBridge from "../utils/useExtensionBridge";
 import useReportAsyncError from "../utils/useReportAsyncError";
 import FillParentAndCenterChildren from "./fillParentAndCenterChildren";
+import { FormStoreProvider } from "../forms/formStore";
 
 const ExtensionView = ({
   render,
@@ -220,11 +221,13 @@ const ExtensionView = ({
   return (
     <div>
       <FormikProvider value={formikPropsRef.current}>
-        {render({
-          initInfo,
-          formikProps: formikPropsRef.current,
-          registerImperativeFormApi,
-        })}
+        <FormStoreProvider>
+          {render({
+            initInfo,
+            formikProps: formikPropsRef.current,
+            registerImperativeFormApi,
+          })}
+        </FormStoreProvider>
       </FormikProvider>
     </div>
   );
