@@ -12,8 +12,8 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { object, boolean, number, string, array } from "yup";
-import { FieldArray } from "formik";
 import useField from "../forms/useField";
+import useFieldArray from "../forms/useFieldArray";
 import { Button, ActionButton, Radio } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
@@ -191,7 +191,7 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
   const [{ value: brandConciergeComponentEnabled }] = useField(
     "components.brandConcierge",
   );
-  const [{ value: transferCookies = [] }] = useField(
+  const transferCookies = useFieldArray(
     `${instanceFieldName}.conversation.transferCookies`,
   );
   const [{ value: transferCookiesInputMethod }] = useField(
@@ -279,70 +279,65 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
               />
             </DataElementSelector>
           ) : (
-            <FieldArray
-              name={`${instanceFieldName}.conversation.transferCookies`}
-              render={(arrayHelpers) => (
+            <div
+              className={style({
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+              })}
+            >
+              {Array.from({ length: transferCookies.length }, (_, index) => (
                 <div
+                  key={index}
                   className={style({
                     display: "flex",
-                    flexDirection: "column",
-                    gap: 8,
+                    alignItems: "start",
                   })}
                 >
-                  {transferCookies.map((cookieName, index) => (
-                    <div
-                      key={index}
-                      className={style({
-                        display: "flex",
-                        alignItems: "start",
-                      })}
-                    >
-                      <DataElementSelector>
-                        <FormikTextField
-                          data-test-id={`transferCookie${index}Field`}
-                          aria-label={`Transfer cookie ${index + 1}`}
-                          name={`${instanceFieldName}.conversation.transferCookies.${index}`}
-                          description={
-                            index === transferCookies.length - 1
-                              ? TRANSFER_COOKIES_DESCRIPTION
-                              : undefined
-                          }
-                          width="size-4600"
-                        />
-                      </DataElementSelector>
-                      <ActionButton
-                        data-test-id={`deleteTransferCookie${index}Button`}
-                        isQuiet
-                        variant="secondary"
-                        isDisabled={transferCookies.length <= 1}
-                        onPress={() => {
-                          arrayHelpers.remove(index);
-                        }}
-                        aria-label={`Remove transfer cookie ${index + 1}`}
-                        styles={style({
-                          marginStart: 8,
-                        })}
-                      >
-                        <Delete />
-                      </ActionButton>
-                    </div>
-                  ))}
-                  <Button
+                  <DataElementSelector>
+                    <FormikTextField
+                      data-test-id={`transferCookie${index}Field`}
+                      aria-label={`Transfer cookie ${index + 1}`}
+                      name={`${instanceFieldName}.conversation.transferCookies.${index}`}
+                      description={
+                        index === transferCookies.length - 1
+                          ? TRANSFER_COOKIES_DESCRIPTION
+                          : undefined
+                      }
+                      width="size-4600"
+                    />
+                  </DataElementSelector>
+                  <ActionButton
+                    data-test-id={`deleteTransferCookie${index}Button`}
+                    isQuiet
                     variant="secondary"
-                    data-test-id="addTransferCookieButton"
+                    isDisabled={transferCookies.length <= 1}
                     onPress={() => {
-                      arrayHelpers.push("");
+                      transferCookies.remove(index);
                     }}
+                    aria-label={`Remove transfer cookie ${index + 1}`}
                     styles={style({
-                      marginTop: 8,
-                      alignSelf: "start",
+                      marginStart: 8,
                     })}
                   >
-                    Add cookie
-                  </Button>
+                    <Delete />
+                  </ActionButton>
                 </div>
-              )}
-            />
+              ))}
+              <Button
+                variant="secondary"
+                data-test-id="addTransferCookieButton"
+                onPress={() => {
+                  transferCookies.push("");
+                }}
+                styles={style({
+                  marginTop: 8,
+                  alignSelf: "start",
+                })}
+              >
+                Add cookie
+              </Button>
+            </div>
           )}
         </div>
       </FormElementContainer>

@@ -34,7 +34,8 @@ import { size, style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { memo, useState } from "react";
 import { object, array, string } from "yup";
 import useField from "../forms/useField";
-import { useFormSelector, useGetFormState } from "../forms/formStore";
+import useFieldArray from "../forms/useFieldArray";
+import { useGetFormState } from "../forms/formStore";
 import DeleteIcon from "@react-spectrum/s2/icons/Delete";
 import PropTypes from "prop-types";
 import ExtensionView from "../components/extensionView";
@@ -265,25 +266,14 @@ InstanceOverridesSection.propTypes = {
   initInfo: PropTypes.object.isRequired,
 };
 
-const withoutIndex = (array, index) => {
-  if (!array) {
-    return array;
-  }
-  // Spreading keeps the positions of holes in sparse error/touched arrays.
-  const copy = [...array];
-  copy.splice(index, 1);
-  return copy.length ? copy : undefined;
-};
-
 const InstancesSection = ({
   initInfo,
   isPreinstalled,
   isExpanded,
   onAddInstance,
 }) => {
-  const instanceCount = useFormSelector(
-    (state) => state.values.instances.length,
-  );
+  const instances = useFieldArray("instances");
+  const instanceCount = instances.length;
   const getFormState = useGetFormState();
   const [selectedTabKey, setSelectedTabKey] = useState("0");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -338,10 +328,7 @@ const InstancesSection = ({
                 isFirstInstance: false,
                 existingInstances: values.instances,
               });
-              getFormState().setFieldValue("instances", [
-                ...getFormState().values.instances,
-                newInstance,
-              ]);
+              instances.push(newInstance);
               setSelectedTabKey(String(values.instances.length));
               onAddInstance();
             }}
@@ -477,35 +464,7 @@ const InstancesSection = ({
                     data-test-id="confirmDeleteInstanceButton"
                     variant="accent"
                     onPress={() => {
-                      const { setFormikState, validateForm } = getFormState();
-                      setFormikState((state) => {
-                        const values = {
-                          ...state.values,
-                          instances: withoutIndex(
-                            state.values.instances,
-                            instanceToDelete,
-                          ),
-                        };
-                        validateForm(values);
-                        return {
-                          ...state,
-                          values,
-                          errors: {
-                            ...state.errors,
-                            instances: withoutIndex(
-                              state.errors.instances,
-                              instanceToDelete,
-                            ),
-                          },
-                          touched: {
-                            ...state.touched,
-                            instances: withoutIndex(
-                              state.touched.instances,
-                              instanceToDelete,
-                            ),
-                          },
-                        };
-                      });
+                      instances.remove(instanceToDelete);
                       setSelectedTabKey(
                         String(instanceToDelete > 0 ? instanceToDelete - 1 : 0),
                       );

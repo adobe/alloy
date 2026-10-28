@@ -12,8 +12,8 @@ governing permissions and limitations under the License.
 
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { FieldArray } from "formik";
 import useField from "../forms/useField";
+import useFieldArray from "../forms/useFieldArray";
 import { useFormSelector, useGetFormState } from "../forms/formStore";
 import {
   Content,
@@ -455,7 +455,7 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
   const [{ value: dspEnabled }] = useField(
     `${instanceFieldName}.advertising.dspEnabled`,
   );
-  const [{ value: advertiserSettings }] = useField(
+  const advertiserSettings = useFieldArray(
     `${instanceFieldName}.advertising.advertiserSettings`,
   );
   const hasMultipleInstances = useFormSelector(
@@ -582,124 +582,115 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
         {apiWarning}
         {noAdvertisersInfo}
         <LabeledValue label="Advertisers" />
-        <FieldArray
-          name={`${instanceFieldName}.advertising.advertiserSettings`}
-          render={(arrayHelpers) => {
-            return (
-              <div>
+        <div>
+          <div
+            className={style({
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
+            })}
+          >
+            {Array.from({ length: advertiserSettings.length }, (_, index) => {
+              return (
                 <div
+                  key={index}
                   className={style({
                     display: "flex",
-                    flexDirection: "column",
-                    gap: 8,
+                    alignItems: "start",
                   })}
                 >
-                  {advertiserSettings.map((setting, index) => {
-                    return (
-                      <div
-                        key={index}
-                        className={style({
-                          display: "flex",
-                          alignItems: "start",
-                        })}
+                  {/* Show dropdown when API succeeds, text input when API fails */}
+                  <div className={style({ marginEnd: 16 })}>
+                    {error ? (
+                      <FormikTextField
+                        data-test-id={`advertiser${index}Field`}
+                        name={`${instanceFieldName}.advertising.advertiserSettings.${index}.advertiserId`}
+                        UNSAFE_style={{ width: "224px" }}
+                        aria-label={`Advertiser ${index + 1}`}
+                        isRequired
+                      />
+                    ) : (
+                      <FormikKeyedComboBox
+                        data-test-id={`advertiser${index}Field`}
+                        name={`${instanceFieldName}.advertising.advertiserSettings.${index}.advertiserId`}
+                        width="size-4000"
+                        aria-label={`Advertiser ${index + 1}`}
+                        items={advertisers}
+                        getKey={(advertiser) => advertiser.advertiser_id}
+                        getLabel={(advertiser) => advertiser.advertiser_name}
+                        isDisabled={loading}
+                        isRequired
+                        allowsCustomValue
                       >
-                        {/* Show dropdown when API succeeds, text input when API fails */}
-                        <div className={style({ marginEnd: 16 })}>
-                          {error ? (
-                            <FormikTextField
-                              data-test-id={`advertiser${index}Field`}
-                              name={`${instanceFieldName}.advertising.advertiserSettings.${index}.advertiserId`}
-                              UNSAFE_style={{ width: "224px" }}
-                              aria-label={`Advertiser ${index + 1}`}
-                              isRequired
-                            />
-                          ) : (
-                            <FormikKeyedComboBox
-                              data-test-id={`advertiser${index}Field`}
-                              name={`${instanceFieldName}.advertising.advertiserSettings.${index}.advertiserId`}
-                              width="size-4000"
-                              aria-label={`Advertiser ${index + 1}`}
-                              items={advertisers}
-                              getKey={(advertiser) => advertiser.advertiser_id}
-                              getLabel={(advertiser) =>
-                                advertiser.advertiser_name
-                              }
-                              isDisabled={loading}
-                              isRequired
-                              allowsCustomValue
-                            >
-                              {(advertiser) => (
-                                <ComboBoxItem
-                                  key={advertiser.advertiser_id}
-                                  id={advertiser.advertiser_id}
-                                  data-test-id={advertiser.advertiser_id}
-                                >
-                                  {advertiser.advertiser_name}
-                                </ComboBoxItem>
-                              )}
-                            </FormikKeyedComboBox>
-                          )}
-                        </div>
+                        {(advertiser) => (
+                          <ComboBoxItem
+                            key={advertiser.advertiser_id}
+                            id={advertiser.advertiser_id}
+                            data-test-id={advertiser.advertiser_id}
+                          >
+                            {advertiser.advertiser_name}
+                          </ComboBoxItem>
+                        )}
+                      </FormikKeyedComboBox>
+                    )}
+                  </div>
 
-                        {/* Status Dropdown - Supports Data Elements */}
-                        <div className={style({ marginEnd: 8 })}>
-                          <DataElementSelector>
-                            <FormikComboBox
-                              data-test-id={`advertiserEnabled${index}Field`}
-                              name={`${instanceFieldName}.advertising.advertiserSettings.${index}.enabled`}
-                              width="size-2000"
-                              aria-label={`Advertiser ${index + 1} status`}
-                              isRequired
-                              allowsCustomValue
-                            >
-                              <ComboBoxItem key={ENABLED} id={ENABLED}>
-                                {ENABLED}
-                              </ComboBoxItem>
-                              <ComboBoxItem key={DISABLED} id={DISABLED}>
-                                {DISABLED}
-                              </ComboBoxItem>
-                            </FormikComboBox>
-                          </DataElementSelector>
-                        </div>
+                  {/* Status Dropdown - Supports Data Elements */}
+                  <div className={style({ marginEnd: 8 })}>
+                    <DataElementSelector>
+                      <FormikComboBox
+                        data-test-id={`advertiserEnabled${index}Field`}
+                        name={`${instanceFieldName}.advertising.advertiserSettings.${index}.enabled`}
+                        width="size-2000"
+                        aria-label={`Advertiser ${index + 1} status`}
+                        isRequired
+                        allowsCustomValue
+                      >
+                        <ComboBoxItem key={ENABLED} id={ENABLED}>
+                          {ENABLED}
+                        </ComboBoxItem>
+                        <ComboBoxItem key={DISABLED} id={DISABLED}>
+                          {DISABLED}
+                        </ComboBoxItem>
+                      </FormikComboBox>
+                    </DataElementSelector>
+                  </div>
 
-                        {/* Delete Button - Disabled when only 1 advertiser */}
-                        <ActionButton
-                          data-test-id={`deleteAdvertiser${index}Button`}
-                          isQuiet
-                          variant="secondary"
-                          isDisabled={advertiserSettings.length <= 1}
-                          onPress={() => {
-                            arrayHelpers.remove(index);
-                          }}
-                          aria-label="Remove advertiser"
-                        >
-                          <Delete />
-                        </ActionButton>
-                      </div>
-                    );
-                  })}
+                  {/* Delete Button - Disabled when only 1 advertiser */}
+                  <ActionButton
+                    data-test-id={`deleteAdvertiser${index}Button`}
+                    isQuiet
+                    variant="secondary"
+                    isDisabled={advertiserSettings.length <= 1}
+                    onPress={() => {
+                      advertiserSettings.remove(index);
+                    }}
+                    aria-label="Remove advertiser"
+                  >
+                    <Delete />
+                  </ActionButton>
                 </div>
+              );
+            })}
+          </div>
 
-                {/* Add Button */}
-                <Button
-                  variant="secondary"
-                  data-test-id="addAdvertiserButton"
-                  onPress={() => {
-                    arrayHelpers.push({
-                      advertiserId: "",
-                      enabled: ENABLED,
-                    });
-                  }}
-                  styles={style({
-                    marginTop: 8,
-                  })}
-                >
-                  Add advertiser
-                </Button>
-              </div>
-            );
-          }}
-        />
+          {/* Add Button */}
+          <Button
+            variant="secondary"
+            data-test-id="addAdvertiserButton"
+            onPress={() => {
+              advertiserSettings.push({
+                advertiserId: "",
+                enabled: ENABLED,
+              });
+            }}
+            styles={style({
+              marginTop: 8,
+            })}
+          >
+            Add advertiser
+          </Button>
+        </div>
       </div>
     );
   };
