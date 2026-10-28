@@ -19,6 +19,7 @@ import {
 
 export default objectOf({
   advertising: objectOf({
+    enabled: boolean().default(true),
     id5PartnerId: string(),
     rampIdJSPath: string(),
     dspEnabled: boolean(),
