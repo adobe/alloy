@@ -40,10 +40,39 @@ import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefault
 const ENABLED = "Enabled";
 const DISABLED = "Disabled";
 
+const isDataElement = (value) =>
+  typeof value === "string" && value.includes("%");
+
+/**
+ * The DSP fields (advertisers, ID5, RampID) apply when advertising is not
+ * turned off and DSP is enabled or comes from a data element.
+ */
+const areDspFieldsActive = (enabled, dspEnabled) =>
+  enabled !== DISABLED && (dspEnabled === ENABLED || isDataElement(dspEnabled));
+
+/**
+ * Validates an Enabled/Disabled combo box that also accepts a data element.
+ */
+const enabledDisabledOrDataElementSchema = (value) =>
+  isDataElement(value)
+    ? string()
+        .matches(SINGLE_DATA_ELEMENT_REGEX, {
+          message: "Please enter a valid data element.",
+          excludeEmptyString: true,
+        })
+        .nullable()
+    : mixed()
+        .oneOf(
+          [ENABLED, DISABLED],
+          "Please choose a value or specify a data element.",
+        )
+        .required("Please choose a value or specify a data element.");
+
 /**
  * Returns the default settings for the advertising section
  */
 const getDefaultSettings = () => ({
+  enabled: ENABLED,
   dspEnabled: DISABLED,
   advertiserSettings: [
     {
@@ -167,6 +196,11 @@ export const bridge = {
       },
     );
 
+    // Convert boolean enabled to ENABLED/DISABLED string for UI display
+    if (typeof advertising.enabled === "boolean") {
+      advertising.enabled = advertising.enabled ? ENABLED : DISABLED;
+    }
+
     // Convert boolean dspEnabled to ENABLED/DISABLED string for UI display
     if (typeof advertising.dspEnabled === "boolean") {
       advertising.dspEnabled = advertising.dspEnabled ? ENABLED : DISABLED;
@@ -186,6 +220,7 @@ export const bridge = {
     if (components.advertising) {
       const {
         advertising: {
+          enabled,
           dspEnabled,
           advertiserSettings,
           id5PartnerId,
@@ -193,6 +228,14 @@ export const bridge = {
         },
       } = instanceValues;
       const advertising = {};
+
+      // Enabled is the Web SDK default, so it is not saved. Disabled is saved
+      // as false and data elements are saved as is.
+      if (enabled === DISABLED) {
+        advertising.enabled = false;
+      } else if (enabled !== undefined && enabled !== ENABLED) {
+        advertising.enabled = enabled;
+      }
 
       // Handle DSP enabled conversion from UI string to boolean
       if (dspEnabled !== undefined) {
@@ -252,33 +295,24 @@ export const bridge = {
 
   /**
    * Yup validation schema for advertising section
-   * Validates DSP enabled status and conditionally validates advertiser settings,
-   * ID5 Partner ID, and RampID JS Path only when DSP is enabled or uses data elements
+   * Validates the advertising enabled and DSP enabled values. When advertising
+   * is Disabled, the other fields are hidden and not validated. Otherwise
+   * advertiser settings, ID5 Partner ID, and RampID JS Path are validated only
+   * when DSP is enabled or uses data elements.
    */
   instanceValidationSchema: object().shape({
     advertising: object().when("$components.advertising", {
       is: true,
       then: (schema) =>
         schema.shape({
-          dspEnabled: lazy((value) =>
-            typeof value === "string" && value.includes("%")
-              ? string()
-                  .matches(SINGLE_DATA_ELEMENT_REGEX, {
-                    message: "Please enter a valid data element.",
-                    excludeEmptyString: true,
-                  })
-                  .nullable()
-              : mixed()
-                  .oneOf(
-                    [ENABLED, DISABLED],
-                    "Please choose a value or specify a data element.",
-                  )
-                  .required("Please choose a value or specify a data element."),
+          enabled: lazy(enabledDisabledOrDataElementSchema),
+          dspEnabled: lazy((value, { parent }) =>
+            parent?.enabled === DISABLED
+              ? mixed().nullable()
+              : enabledDisabledOrDataElementSchema(value),
           ),
-          advertiserSettings: array().when("dspEnabled", {
-            is: (dspEnabled) =>
-              dspEnabled === ENABLED ||
-              (typeof dspEnabled === "string" && dspEnabled.includes("%")),
+          advertiserSettings: array().when(["enabled", "dspEnabled"], {
+            is: areDspFieldsActive,
             then: (arraySchema) =>
               arraySchema
                 .of(
@@ -372,10 +406,8 @@ export const bridge = {
                 )
                 .nullable(),
           }),
-          id5PartnerId: string().when("dspEnabled", {
-            is: (dspEnabled) =>
-              dspEnabled === ENABLED ||
-              (typeof dspEnabled === "string" && dspEnabled.includes("%")),
+          id5PartnerId: string().when(["enabled", "dspEnabled"], {
+            is: areDspFieldsActive,
             then: () =>
               lazy((value) =>
                 typeof value === "string" && value.includes("%")
@@ -389,10 +421,8 @@ export const bridge = {
               ),
             otherwise: (stringSchema) => stringSchema.nullable().notRequired(),
           }),
-          rampIdJSPath: string().when("dspEnabled", {
-            is: (dspEnabled) =>
-              dspEnabled === ENABLED ||
-              (typeof dspEnabled === "string" && dspEnabled.includes("%")),
+          rampIdJSPath: string().when(["enabled", "dspEnabled"], {
+            is: areDspFieldsActive,
             then: () =>
               lazy((value) =>
                 typeof value === "string" && value.includes("%")
@@ -416,6 +446,9 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
   const { setFieldValue } = useFormikContext();
   const [{ value: advertisingComponentEnabled }] = useField(
     "components.advertising",
+  );
+  const [{ value: enabled }] = useField(
+    `${instanceFieldName}.advertising.enabled`,
   );
   const [{ value: dspEnabled }] = useField(
     `${instanceFieldName}.advertising.dspEnabled`,
@@ -662,17 +695,9 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
     );
   };
 
-  const renderContent = () => {
-    if (!advertisingComponentEnabled) {
-      return disabledView;
-    }
-
-    if (hasMultipleInstances && !isFirstInstance) {
-      return multiInstanceView;
-    }
-
+  const renderAdvertisingSettings = () => {
     return (
-      <FormElementContainer>
+      <>
         {/* Helper text for SSC users */}
         <Text
           styles={style({
@@ -771,6 +796,50 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
             )}
           </>
         )}
+      </>
+    );
+  };
+
+  const renderContent = () => {
+    if (!advertisingComponentEnabled) {
+      return disabledView;
+    }
+
+    if (hasMultipleInstances && !isFirstInstance) {
+      return multiInstanceView;
+    }
+
+    return (
+      <FormElementContainer>
+        {/* Advertising Enable/Disable Field */}
+        <div
+          className={style({
+            display: "flex",
+            flexDirection: "row",
+            gap: 20,
+          })}
+        >
+          <DataElementSelector>
+            <FormikComboBox
+              data-test-id="advertisingEnabledField"
+              label="Advertising"
+              name={`${instanceFieldName}.advertising.enabled`}
+              description="Turn advertising features on or off when Web SDK is configured. To remove the advertising code from the library, uncheck Advertising under Build options."
+              width="size-5000"
+              isRequired
+              allowsCustomValue
+            >
+              <ComboBoxItem key={ENABLED} id={ENABLED}>
+                {ENABLED}
+              </ComboBoxItem>
+              <ComboBoxItem key={DISABLED} id={DISABLED}>
+                {DISABLED}
+              </ComboBoxItem>
+            </FormikComboBox>
+          </DataElementSelector>
+        </div>
+
+        {enabled !== DISABLED && renderAdvertisingSettings()}
       </FormElementContainer>
     );
   };
