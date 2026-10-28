@@ -7,11 +7,16 @@
 <!--- Indicate which package your changes directly affect. -->
 <!--- (i.e., do not choose the extension if it's only change is updating its core version). -->
 - [ ] core
-- [ ] reactor-extension 
+- [ ] browser (Web SDK)
+- [ ] node (Node.js SDK)
+- [ ] reactor-extension
+- [ ] browser sandbox
+- [ ] node sandbox
+- [ ] shared tooling, CI, or documentation
 
-## Description
+## Description and Motivation
 
-<!--- Describe your changes in detail -->
+<!--- Describe what changed, why it is needed, and what problem it solves. -->
 
 ## Related Issue
 
@@ -20,14 +25,20 @@
 <!--- If fixing a bug, there should be an issue describing it with steps to reproduce -->
 <!--- Please link to the issue here: -->
 
-## Motivation and Context
-
-<!--- Why is this change required? What problem does it solve? -->
-
 ## Screenshots (if appropriate):
 
 ## Documentation
 <!-- Significant consumer-facing changes should be documented -->
+
+## Testing & Validation
+
+<!--- List commands/suites run and their results, plus Sandbox or other manual checks. -->
+<!--- Explain any checks not run or not applicable, and note remaining validation gaps. -->
+
+## Risks & Mitigations
+
+<!--- Describe potential regressions or compatibility, performance, security, or privacy impacts, and how they are mitigated. -->
+<!--- Include rollout or rollback considerations if applicable. If no significant risks are expected, briefly explain why. -->
 
 ## Types of changes
 

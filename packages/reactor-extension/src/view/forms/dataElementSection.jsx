@@ -9,12 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import { useField } from "formik";
-import { Radio } from "@adobe/react-spectrum";
+import { Radio } from "@react-spectrum/s2";
 import PropTypes from "prop-types";
 import { object } from "yup";
-import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
-import FormikTextField from "../components/formikReactSpectrum3/formikTextField";
+import FormikRadioGroup from "./fields/RadioGroup";
+import FormikTextField from "./fields/TextField";
 import DataElementSelector from "../components/dataElementSelector";
 import form from "./form";
 import SectionHeader from "../components/sectionHeader";

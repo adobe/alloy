@@ -12,24 +12,19 @@ governing permissions and limitations under the License.
 
 import copyToClipboard from "clipboard-copy";
 import PropTypes from "prop-types";
-import {
-  Content,
-  InlineAlert,
-  View,
-  Item,
-  Text,
-  Heading,
-} from "@adobe/react-spectrum";
+import { Text, PickerItem } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useField } from "formik";
 import SectionHeader from "../components/sectionHeader";
+import InfoMessage from "../components/infoMessage";
 import CodeField from "../components/codeField";
 import CodePreview from "../components/codePreview";
 import prehidingSnippet from "./constants/prehidingSnippet";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
 import FormElementContainer from "../components/formElementContainer";
-import FormikCheckbox from "../components/formikReactSpectrum3/formikCheckbox";
-import FormikPicker from "../components/formikReactSpectrum3/formikPicker";
+import FormikCheckbox from "../forms/fields/Checkbox";
+import FormikPicker from "../forms/fields/Picker";
 
 export const bridge = {
   getInstanceDefaults: () => ({
@@ -109,25 +104,29 @@ export const bridge = {
 const ClickCollectionPicker = (props) => {
   return (
     <FormikPicker {...props}>
-      <Item textValue="Always" key="always">
+      <PickerItem key="always" id="always" textValue="Always">
         <Text>Always</Text>
         <Text slot="description">
           Collect all interactions with propositions.
         </Text>
-      </Item>
-      <Item textValue="Decorated elements only" key="decoratedElementsOnly">
+      </PickerItem>
+      <PickerItem
+        key="decoratedElementsOnly"
+        id="decoratedElementsOnly"
+        textValue="Decorated elements only"
+      >
         <Text>Decorated elements only</Text>
         <Text slot="description">
           Only collect interactions on elements with data-aep-click-label or
           data-aep-click-token attributes.
         </Text>
-      </Item>
-      <Item textValue="Never" key="never">
+      </PickerItem>
+      <PickerItem key="never" id="never" textValue="Never">
         <Text>Never</Text>
         <Text slot="description">
           Do not collect interactions with propositions.
         </Text>
-      </Item>
+      </PickerItem>
     </FormikPicker>
   );
 };
@@ -185,15 +184,13 @@ const PersonalizationSection = ({ instanceFieldName }) => {
               Enable personalization storage
             </FormikCheckbox>
           ) : (
-            <View width="size-6000">
-              <InlineAlert variant="info">
-                <Heading>Rules engine component disabled</Heading>
-                <Content>
-                  The rules engine custom build component is disabled. Enable it
-                  above to configure personalization storage settings.
-                </Content>
-              </InlineAlert>
-            </View>
+            <InfoMessage
+              title="Rules engine component disabled"
+              styles={style({ width: 480 })}
+            >
+              The rules engine custom build component is disabled. Enable it
+              above to configure personalization storage settings.
+            </InfoMessage>
           )}
           <ClickCollectionPicker
             data-test-id="autoCollectPropositionInteractionsAJOPicker"
@@ -211,15 +208,13 @@ const PersonalizationSection = ({ instanceFieldName }) => {
           />
         </FormElementContainer>
       ) : (
-        <View width="size-6000">
-          <InlineAlert variant="info">
-            <Heading>Personalization component disabled</Heading>
-            <Content>
-              The personalization custom build component is disabled. Enable it
-              above to configure personalization settings.
-            </Content>
-          </InlineAlert>
-        </View>
+        <InfoMessage
+          title="Personalization component disabled"
+          styles={style({ width: 480 })}
+        >
+          The personalization custom build component is disabled. Enable it
+          above to configure personalization settings.
+        </InfoMessage>
       )}
     </>
   );

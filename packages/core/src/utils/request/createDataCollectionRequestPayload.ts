@@ -1,0 +1,45 @@
+/*
+Copyright 2019 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+import createRequestPayload from "./createRequestPayload.js";
+import createAddIdentity from "./createAddIdentity.js";
+import createHasIdentity from "./createHasIdentity.js";
+import type {
+  DataCollectionRequestPayload,
+  RequestContent,
+  RequestEvent,
+} from "./types.js";
+
+export default (): DataCollectionRequestPayload => {
+  const content: RequestContent = {};
+  const requestPayload = createRequestPayload({
+    content,
+    addIdentity: createAddIdentity(content),
+    hasIdentity: createHasIdentity(content),
+  });
+
+  return {
+    ...requestPayload,
+    addEvent: (event: RequestEvent) => {
+      content.events = content.events || [];
+      content.events.push(event);
+    },
+    getEvents: () => {
+      return content.events || [];
+    },
+    getDocumentMayUnload: () => {
+      return (content.events || []).some((event) =>
+        event.getDocumentMayUnload(),
+      );
+    },
+  };
+};

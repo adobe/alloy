@@ -19,6 +19,7 @@ import {
   test,
 } from "../../helpers/testsSetup/extend.js";
 import alloyConfig from "../../helpers/alloy/config.js";
+import unloadVisitor from "../../helpers/visitorService/unloadVisitor.js";
 
 const { readFile } = server.commands;
 const TARGET_CLUSTER = "35";
@@ -256,14 +257,10 @@ afterEach(() => {
     .querySelectorAll("script[data-legacy-target]")
     .forEach((script) => script.remove());
   delete window.targetGlobalSettings;
-  delete window.adobe;
   delete window.mboxCreate;
   delete window.mboxDefine;
   delete window.mboxUpdate;
-  window.Visitor = undefined;
-  delete window.visitor;
-  window.s_c_il = [];
-  window.s_c_in = 0;
+  unloadVisitor();
 });
 
 describe("Migration (Web SDK ↔ At.js mixed-mode)", () => {
@@ -503,7 +500,8 @@ describe("Migration (Web SDK ↔ At.js mixed-mode)", () => {
       },
     });
 
-    const edgeCall = await networkRecorder.findCall(EDGE_REQUEST);
+    const edgeCall = await networkRecorder.waitForCall(EDGE_REQUEST);
+    expect(edgeCall).toBeDefined();
     assertMigrationMetadata(edgeCall.request.body);
     const edgeEcid = edgeCall.response.body.handle
       .find(({ type }) => type === "identity:result")
@@ -514,7 +512,8 @@ describe("Migration (Web SDK ↔ At.js mixed-mode)", () => {
     await loadAtJs(1);
     await fetchAtJsOffer();
 
-    const targetCall = await networkRecorder.findCall(TARGET_REQUEST);
+    const targetCall = await networkRecorder.waitForCall(TARGET_REQUEST);
+    expect(targetCall).toBeDefined();
     expect(targetCall.response.status).toBe(200);
     const searchParams = new URL(targetCall.request.url).searchParams;
     expect(searchParams.get("mboxMCGVID")).toBe(edgeEcid);

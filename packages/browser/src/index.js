@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import { createCustomInstance as createCoreCustomInstance } from "@adobe/alloy-core";
 import * as allOptionalComponents from "./allOptionalComponents.js";
 import * as allRequiredComponents from "./components/requiredComponentCreators.js";

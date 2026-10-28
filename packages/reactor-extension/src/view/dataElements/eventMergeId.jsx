@@ -10,12 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { InlineAlert, Heading, Content } from "@adobe/react-spectrum";
+import { InlineAlert, Heading, Content } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import render from "../render";
 import ExtensionView from "../components/extensionView";
 import FillParentAndCenterChildren from "../components/fillParentAndCenterChildren";
 import Body from "../components/typography/body";
 import RequiredComponent from "../components/requiredComponent";
+import InfoMessage from "../components/infoMessage";
 import { LIBRARY_TYPE_PREINSTALLED } from "../constants/libraryType";
 
 const getInitialValues = ({ initInfo }) => {
@@ -56,7 +58,12 @@ const EventMergeId = () => (
 
       return isPreinstalled ? (
         <FillParentAndCenterChildren>
-          <InlineAlert variant="negative" width="size-6000">
+          <InlineAlert
+            variant="negative"
+            styles={style({
+              width: 480,
+            })}
+          >
             <Heading>
               Not available when using a self-hosted Alloy instance
             </Heading>
@@ -76,16 +83,17 @@ const EventMergeId = () => (
           whole
         >
           <FillParentAndCenterChildren>
-            <InlineAlert variant="info" width="size-6000">
-              <Heading size="XXS">Event merge ID caching</Heading>
-              <Content>
-                This data element will provide an event merge ID. Regardless of
-                what you choose for the data element storage duration in Launch,
-                the value of this data element will remain the same until either
-                the visitor to your website leaves the current page or the event
-                merge ID is reset using the <b>Reset event merge ID</b> action.
-              </Content>
-            </InlineAlert>
+            <InfoMessage
+              title="Event merge ID caching"
+              headingLevel={3}
+              styles={style({ width: 480 })}
+            >
+              This data element will provide an event merge ID. Regardless of
+              what you choose for the data element storage duration in Launch,
+              the value of this data element will remain the same until either
+              the visitor to your website leaves the current page or the event
+              merge ID is reset using the <b>Reset event merge ID</b> action.
+            </InfoMessage>
             <Body size="L" marginTop="size-200">
               No configuration necessary.
             </Body>

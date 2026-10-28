@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// Mirrors of the service typedefs in `packages/core/src/services/types.js`.
-// When you add or rename a method on a typedef, update the matching entry
+// Mirrors of the service interfaces in `packages/core/src/services/types.ts`.
+// When you add or rename a method on an interface, update the matching entry
 // below. Only presence is checked here — signatures and semantics are
 // covered by the sibling behavioral specs.
 import { describe, it, expect } from "vitest";

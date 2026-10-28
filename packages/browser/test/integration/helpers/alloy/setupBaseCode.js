@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 
 import { server } from "vitest/browser";
 import { installSendBeaconRecorder } from "../utils/sendBeacon.js";
+import { installFetchTracker } from "../utils/fetchTracker.js";
 
 const { readFile } = server.commands;
 
@@ -22,8 +23,10 @@ export default async () => {
   // Must run before the alloy script is injected below: alloy creates its
   // instance (and its network service) at bundle load, and that service
   // binds navigator.sendBeacon by value at that moment, so a later swap would
-  // be ignored. Per-test reset lives in the extend.js alloy fixture.
+  // be ignored. The same applies to fetch. Per-test reset lives in the
+  // extend.js alloy fixture.
   installSendBeaconRecorder();
+  installFetchTracker();
 
   document.body.innerHTML = "Alloy Test Page";
 

@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy",
-  "version": "2.36.2-beta.0",
+  "version": "2.36.2-beta.1",
   "description": "Adobe Experience Platform Web SDK",
   "type": "module",
   "repository": {
@@ -33,7 +33,7 @@
     "build:watch": "rollup -c --watch --environment BASE_CODE_MIN,STANDALONE,SERVICE_WORKER,UTILITY_EXPORTS",
     "dev:prepare": "rollup -c --environment BASE_CODE_MIN,STANDALONE,SERVICE_WORKER,UTILITY_EXPORTS",
     "dev": "pnpm run build:watch",
-    "build:custom": "node scripts/alloyBuilder.js",
+    "build:custom": "node --conditions=alloy-source --import ../../scripts/helpers/registerTsFromJsHook.js scripts/alloyBuilder.js",
     "test:functional": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe playwright:chromium",
     "test:functional:custom": "node ./scripts/runFunctionalTests.js",
     "test:functional:watch": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ../../scripts/watchFunctionalTests.js --browsers playwright:chromium",
@@ -78,13 +78,14 @@
   },
   "dependencies": {
     "@adobe/alloy-core": "workspace:^",
-    "js-cookie": "3.0.7",
     "@inquirer/prompts": "^7.9.0",
     "@rollup/plugin-commonjs": "^29.0.2",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-replace": "^6.0.0",
     "@rollup/plugin-terser": "^1.0.0",
     "commander": "^14.0.2",
+    "js-cookie": "3.0.7",
+    "oxc-transform": "^0.155.0",
     "rollup": "^4.60.3",
     "rollup-plugin-license": "^3.7.1"
   },

@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import createExtensionViewFixture from "../../../helpers/createExtensionViewFixture.mjs";
 import * as dataElementsMocks from "../../../helpers/endpointMocks/dataElementsMocks.mjs";
 import * as dataElementMocks from "../../../helpers/endpointMocks/dataElementMocks.mjs";

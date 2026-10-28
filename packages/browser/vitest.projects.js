@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 // eslint-disable-next-line import/no-unresolved
 import { defineProject } from "vitest/config";
+import { sourceConditionResolve } from "../../vitest.shared.js";
 // eslint-disable-next-line import/no-unresolved
 import { playwright } from "@vitest/browser-playwright";
 
@@ -43,6 +44,7 @@ const createBrowserMode = () => ({
 export const browserTestProjects = [
   defineProject({
     extends: false,
+    ...sourceConditionResolve,
     test: {
       name: "browser/unit",
       include: ["packages/browser/test/unit/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
@@ -53,6 +55,7 @@ export const browserTestProjects = [
   }),
   defineProject({
     extends: false,
+    ...sourceConditionResolve,
     test: {
       name: "browser/integration",
       include: [

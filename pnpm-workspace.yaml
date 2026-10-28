@@ -33,3 +33,4 @@ allowBuilds:
   msgpackr-extract: true
   msw: true
   puppeteer: true
+  unrs-resolver: false

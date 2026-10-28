@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { Selector, t } from "testcafe";
 import extensionViewController from "../../../helpers/extensionViewController.mjs";
 import spectrum from "../../../helpers/spectrum.mjs";
 import testInstanceNameOptions from "../../../helpers/testInstanceNameOptions.mjs";
@@ -103,6 +104,32 @@ test("initializes form fields with minimal settings", async () => {
   await metadata[0].scopeField.expectValue("");
   await metadata[0].selectorField.expectValue("");
   await metadata[0].actionType.expectText("");
+});
+
+test("explains how to apply proposition metadata", async () => {
+  await extensionViewController.init({
+    extensionSettings: mockExtensionSettings,
+  });
+
+  await t
+    .expect(
+      Selector("div").withExactText(
+        "Enter the scope (i.e. mbox or AJO surface name) for the propositions that you would like to apply these settings",
+      ).visible,
+    )
+    .ok()
+    .expect(
+      Selector("div").withExactText(
+        "Enter the CSS selector where this proposition should be rendered",
+      ).visible,
+    )
+    .ok()
+    .expect(
+      Selector("div").withExactText(
+        "Select how this proposition should be applied",
+      ).visible,
+    )
+    .ok();
 });
 
 test("initializes form fields with no settings", async () => {

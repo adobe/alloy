@@ -1,0 +1,49 @@
+/*
+Copyright 2025 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+import { getNamespacedCookieName } from "../../utils/index.js";
+import { buildPageSurface } from "../../utils/surfaceUtils.js";
+import { BC_SESSION_COOKIE_NAME } from "./constants.js";
+import uuid from "../../utils/uuid.js";
+import type { BrandConciergeConfig } from "./configValidators.js";
+
+export const getPageSurface = (
+  getLocation: Parameters<typeof buildPageSurface>[0],
+) => {
+  return buildPageSurface(getLocation);
+};
+
+export interface GetConciergeSessionCookieOptions {
+  loggingCookieJar: { get: (name: string) => string | undefined };
+  config: Pick<BrandConciergeConfig, "orgId" | "conversation">;
+}
+
+export const getConciergeSessionCookie = ({
+  loggingCookieJar,
+  config,
+}: GetConciergeSessionCookieOptions): string => {
+  if (config.conversation.stickyConversationSession === false) {
+    return uuid();
+  }
+
+  const cookieName = getNamespacedCookieName(
+    config.orgId,
+    BC_SESSION_COOKIE_NAME,
+  );
+  const sessionId = loggingCookieJar.get(cookieName);
+
+  if (sessionId) {
+    return sessionId;
+  }
+
+  return uuid();
+};

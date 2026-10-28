@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import { string } from "yup";
 import renderForm from "../forms/renderForm";
 import instancePicker from "../forms/instancePicker";
@@ -53,19 +54,21 @@ const applyPropositionsForm = requiredComponent(
         textField({
           name: "scope",
           label: "Scope",
-          description: "Enter your scope",
+          description:
+            "Enter the scope (i.e. mbox or AJO surface name) for the propositions that you would like to apply these settings",
           validationSchemaBase: string().required("Please provide a scope."),
         }),
         textField({
           name: "selector",
           label: "Selector",
-          description: "Enter your selector",
+          description:
+            "Enter the CSS selector where this proposition should be rendered",
           validationSchemaBase: string().required("Please provide a selector."),
         }),
         comboBox({
           name: "actionType",
           label: "Action Type",
-          description: "Select your action type",
+          description: "Select how this proposition should be applied",
           items: [
             { value: "setHtml", label: "Set HTML" },
             { value: "replaceHtml", label: "Replace HTML" },

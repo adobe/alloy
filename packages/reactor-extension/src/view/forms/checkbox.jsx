@@ -9,8 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import PropTypes from "prop-types";
-import FormikCheckbox from "../components/formikReactSpectrum3/formikCheckbox";
+import FormikCheckbox from "./fields/Checkbox";
 import BetaBadge from "../components/betaBadge";
 
 /** @typedef {import("./form").Form} Form */

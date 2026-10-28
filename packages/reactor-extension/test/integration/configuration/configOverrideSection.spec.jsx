@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { describe, it, beforeEach, afterEach } from "vitest";
+import { describe, it, beforeEach, afterEach, expect } from "vitest";
 
 import useView from "../helpers/useView";
 import ConfigurationView from "../../../src/view/configuration/configurationView";
@@ -100,6 +100,39 @@ describe("Config overrides section", () => {
 
   afterEach(() => {
     cleanup();
+  });
+
+  it("shows informative guidance with exterior spacing", async () => {
+    await driver.init(buildSettingsWithDummyDatastream());
+
+    await expect
+      .element(
+        view.getByRole("heading", {
+          name: "Server-side vs client-side",
+          level: 3,
+        }),
+      )
+      .toBeVisible();
+    await expect
+      .element(view.getByTestId("datastreamOverridesInfo"))
+      .toHaveStyle({
+        "border-top-style": "solid",
+        "border-top-width": "2px",
+        "margin-bottom": "24px",
+        width: "400px",
+      });
+    await expect
+      .element(
+        view
+          .getByTestId("datastreamOverridesInfo")
+          .getByRole("img", { name: "Information" }),
+      )
+      .toBeVisible();
+    await expect
+      .element(view.getByTestId("datastreamOverridesInfo"))
+      .toHaveTextContent(
+        "Setting any client-side datastream configuration overrides for an environment below will override any server-side dynamic datastream configurations and rules for that environment.",
+      );
   });
 
   it("sets form values from settings", async () => {
@@ -289,9 +322,9 @@ describe("Config overrides section", () => {
     await driver.expectValidate().toBe(true);
   });
 
-  // Same rationale as "updates form values and saves to settings" above:
-  // ~9 form actions in one test blows the default 30s project timeout
-  // under CI contention even though the test isn't hung.
+  // The 60s timeout follows the same rationale as "updates form values and saves to
+  // settings" above: ~9 form actions in one test blows the default 30s
+  // project timeout under CI contention even though the test isn't hung.
   it("allows you to save data elements", async () => {
     await driver.init(buildSettingsWithDummyDatastream());
 
@@ -335,6 +368,45 @@ describe("Config overrides section", () => {
         },
       });
   }, 60_000);
+
+  it("spaces report suites from the preceding Analytics field", async () => {
+    await driver.init(buildSettingsWithDummyDatastream());
+
+    await overridesEnabled.selectOption("Enabled");
+    await analyticsEnabled.selectOption("Enabled");
+
+    const analyticsBounds = view
+      .getByTestId("analyticsEnabled")
+      .element()
+      .getBoundingClientRect();
+    const reportSuiteBounds = view
+      .getByTestId("reportSuitesOverride.0")
+      .element()
+      .getBoundingClientRect();
+
+    expect(
+      reportSuiteBounds.top - analyticsBounds.bottom,
+    ).toBeGreaterThanOrEqual(8);
+  });
+
+  it("separates top-level override groups", async () => {
+    await driver.init(buildSettingsWithDummyDatastream());
+
+    await overridesEnabled.selectOption("Enabled");
+
+    const audienceManagerBounds = view
+      .getByTestId("audienceManagerEnabled")
+      .element()
+      .getBoundingClientRect();
+    const idSyncBounds = view
+      .getByTestId("idSyncContainerOverride")
+      .element()
+      .getBoundingClientRect();
+
+    expect(
+      idSyncBounds.top - audienceManagerBounds.bottom,
+    ).toBeGreaterThanOrEqual(16);
+  });
 
   it("allows you to add and delete report suites", async () => {
     await driver.init(buildSettingsWithDummyDatastream());

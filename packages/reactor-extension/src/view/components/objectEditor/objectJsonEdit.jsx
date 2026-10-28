@@ -13,20 +13,29 @@ governing permissions and limitations under the License.
 import { useCallback } from "react";
 import PropTypes from "prop-types";
 import { FieldArray, useField, useFormikContext } from "formik";
-import { Radio, ActionButton, Well, Flex } from "@adobe/react-spectrum";
-import Delete from "@spectrum-icons/workflow/Delete";
-import FormikRadioGroup from "../formikReactSpectrum3/formikRadioGroup";
-import FormikTextArea from "../formikReactSpectrum3/formikTextArea";
-import FormikTextField from "../formikReactSpectrum3/formikTextField";
+import { Radio, ActionButton } from "@react-spectrum/s2";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import Delete from "@react-spectrum/s2/icons/Delete";
+import FormikRadioGroup from "../../forms/fields/RadioGroup";
+import FormikTextArea from "../../forms/fields/TextArea";
+import FormikTextField from "../../forms/fields/TextField";
 import DataElementSelector from "../dataElementSelector";
 import { PARTS, WHOLE } from "./constants/populationStrategy";
 import FormElementContainer from "../formElementContainer";
+import FormEditGroup from "../formEditGroup";
 import {
   addToEntityFromVariables,
   addToVariablesFromEntity,
 } from "./helpers/entityVariablesConverter";
 
 const getEmptyItem = () => ({ key: "", value: "" });
+
+// The style() macro must be statically evaluable, so the index === 0
+// comparison can't be interpolated directly; precompute both variants.
+const REMOVE_BUTTON_STYLES = {
+  true: style({ marginTop: 24 }),
+  false: style({}),
+};
 
 /**
  * Displayed when the WHOLE population strategy is selected.
@@ -38,21 +47,22 @@ const WholePopulationStrategyForm = ({
   nodeDescription,
 }) => {
   return (
-    <DataElementSelector clearable>
-      <FormikTextArea
-        data-test-id="valueField"
-        label={displayName}
-        name={`${fieldName}.value`}
-        aria-label="Value"
-        description={
-          "You can provide Data Elements for individual fields within the JSON " +
-          '(e.g. "%My Data%") or provide one data element for the entire object.'
-        }
-        width="size-6000"
-        marginStart="size-300"
-        contextualHelp={nodeDescription}
-      />
-    </DataElementSelector>
+    <div className={style({ marginStart: 24 })}>
+      <DataElementSelector clearable>
+        <FormikTextArea
+          data-test-id="valueField"
+          label={displayName}
+          name={`${fieldName}.value`}
+          aria-label="Value"
+          description={
+            "You can provide Data Elements for individual fields within the JSON " +
+            '(e.g. "%My Data%") or provide one data element for the entire object.'
+          }
+          width="size-6000"
+          contextualHelp={nodeDescription}
+        />
+      </DataElementSelector>
+    </div>
   );
 };
 
@@ -66,21 +76,28 @@ WholePopulationStrategyForm.propTypes = {
  * Displayed when the PARTS population strategy is selected.
  * Allows the user to provide individual items within the array.
  */
-const PartsPopulationStrategyForm = ({ fieldName, items }) => (
+const PartsPopulationStrategyForm = ({ displayName, fieldName, items }) => (
   <FieldArray
     name={`${fieldName}.items`}
     render={(arrayHelpers) => {
       return (
-        <Well
-          marginStart="size-300"
-          UNSAFE_style={{
-            paddingTop: "var(--spectrum-global-dimension-size-100)",
-          }}
-        >
-          <Flex gap="size-100" direction="column" alignItems="start">
+        <FormEditGroup label={displayName} styles={style({ marginStart: 24 })}>
+          <div
+            className={style({
+              display: "flex",
+              gap: 8,
+              flexDirection: "column",
+              alignItems: "start",
+            })}
+          >
             {items.map(({ key, value }, index) => {
               return (
-                <Flex key={`${fieldName}.${index}`}>
+                <div
+                  key={`${fieldName}.${index}`}
+                  className={style({
+                    display: "flex",
+                  })}
+                >
                   <FormikTextField
                     data-test-id={`keyField${index}`}
                     name={`${fieldName}.items.${index}.key`}
@@ -89,24 +106,24 @@ const PartsPopulationStrategyForm = ({ fieldName, items }) => (
                     width="size-3000"
                   />
 
-                  <DataElementSelector clearable>
-                    <FormikTextField
-                      data-test-id={`valueField${index}`}
-                      name={`${fieldName}.items.${index}.value`}
-                      aria-label="Value"
-                      label={index === 0 ? "Value" : ""}
-                      width="size-3000"
-                      marginStart="size-100"
-                    />
-                  </DataElementSelector>
+                  <div className={style({ marginStart: 8 })}>
+                    <DataElementSelector clearable>
+                      <FormikTextField
+                        data-test-id={`valueField${index}`}
+                        name={`${fieldName}.items.${index}.value`}
+                        aria-label="Value"
+                        label={index === 0 ? "Value" : ""}
+                        width="size-3000"
+                      />
+                    </DataElementSelector>
+                  </div>
 
                   <ActionButton
                     data-test-id={`item${index}RemoveButton`}
                     isQuiet
-                    variant="secondary"
                     aria-label="Delete"
                     isDisabled={items.length === 1 && !key && !value}
-                    marginTop={index === 0 ? "size-300" : ""}
+                    styles={REMOVE_BUTTON_STYLES[index === 0]}
                     onPress={() =>
                       items.length > 1
                         ? arrayHelpers.remove(index)
@@ -115,7 +132,7 @@ const PartsPopulationStrategyForm = ({ fieldName, items }) => (
                   >
                     <Delete />
                   </ActionButton>
-                </Flex>
+                </div>
               );
             })}
 
@@ -127,14 +144,15 @@ const PartsPopulationStrategyForm = ({ fieldName, items }) => (
             >
               Add another property
             </ActionButton>
-          </Flex>
-        </Well>
+          </div>
+        </FormEditGroup>
       );
     }}
   />
 );
 
 PartsPopulationStrategyForm.propTypes = {
+  displayName: PropTypes.string.isRequired,
   fieldName: PropTypes.string.isRequired,
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
@@ -244,7 +262,11 @@ const ObjectJsonEdit = (props) => {
           }
         />
       ) : (
-        <PartsPopulationStrategyForm fieldName={fieldName} items={items} />
+        <PartsPopulationStrategyForm
+          displayName={displayName}
+          fieldName={fieldName}
+          items={items}
+        />
       )}
     </FormElementContainer>
   );

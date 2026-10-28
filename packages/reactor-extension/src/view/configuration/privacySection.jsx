@@ -10,20 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  Radio,
-  View,
-  InlineAlert,
-  Heading,
-  Content,
-} from "@adobe/react-spectrum";
+import { Radio } from "@react-spectrum/s2";
+
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import { object, string } from "yup";
 import { useField } from "formik";
 import SectionHeader from "../components/sectionHeader";
+import InfoMessage from "../components/infoMessage";
 import FormikRadioGroupWithDataElement, {
   createRadioGroupWithDataElementValidationSchema,
-} from "../components/formikReactSpectrum3/formikRadioGroupWithDataElement";
+} from "../forms/fields/RadioGroupWithDataElement";
 import FormElementContainer from "../components/formElementContainer";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
@@ -112,15 +109,13 @@ const PrivacySection = ({ instanceFieldName }) => {
           </FormikRadioGroupWithDataElement>
         </FormElementContainer>
       ) : (
-        <View width="size-6000">
-          <InlineAlert variant="info">
-            <Heading>Consent component disabled</Heading>
-            <Content>
-              The consent custom build component is disabled. Enable it above to
-              configure consent settings.
-            </Content>
-          </InlineAlert>
-        </View>
+        <InfoMessage
+          title="Consent component disabled"
+          styles={style({ width: 480 })}
+        >
+          The consent custom build component is disabled. Enable it above to
+          configure consent settings.
+        </InfoMessage>
       )}
     </>
   );

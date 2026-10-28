@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import { string } from "yup";
 import form from "../../../../forms/form";
 import textField from "../../../../forms/textField";
@@ -18,7 +19,7 @@ import jsonOptionalEditor from "../../../../forms/jsonOptionalEditor";
 import numberAwareCompareFunction from "../../../../utils/numberAwareCompareFunction";
 import eventCompareFunction from "../../../../utils/eventCompareFunction";
 import conditional from "../../../../forms/conditional";
-import FormikPicker from "../../../formikReactSpectrum3/formikPicker";
+import FormikPicker from "../../../../forms/fields/Picker";
 
 const DYNAMIC_VARIABLE_REGEX = /^D=[cv]\d+$/;
 

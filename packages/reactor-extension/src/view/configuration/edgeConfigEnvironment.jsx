@@ -9,13 +9,14 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import PropTypes from "prop-types";
 import { useField } from "formik";
 
 import DatastreamSelector from "../components/datastreamSelector";
 import { PRODUCTION } from "./constants/environmentType";
 import "./style.css";
-import FormikPicker from "../components/formikReactSpectrum3/formikPicker";
+import FormikPicker from "../forms/fields/Picker";
 import sandboxItems from "../components/sandboxItems";
 
 const EdgeConfigEnvironment = ({

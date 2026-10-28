@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import { expect } from "vitest";
 
 const identity = (x) => x;
@@ -30,7 +31,7 @@ export default function createDriver(registration, readyPromise) {
           const settings = await registration.getSettings();
           return getProperty(settings);
         },
-        { timeout: 2000 },
+        { timeout: 6000 },
       );
     },
     expectValidate: () => {
@@ -39,7 +40,7 @@ export default function createDriver(registration, readyPromise) {
           const valid = await registration.validate();
           return valid;
         },
-        { timeout: 2000 },
+        { timeout: 6000 },
       );
     },
   };

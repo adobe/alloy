@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 // TODO: Use a real config ID since 9999999 is going away.
 // TODO: Need configs in `int` & prod`.
 import getBaseConfig from "../../getBaseConfig.js";

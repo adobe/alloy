@@ -10,38 +10,36 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { useState, useRef } from "react";
-import { object, array, string } from "yup";
-import { FieldArray, useField } from "formik";
 import {
+  Accordion,
+  Tab,
+  TabPanel,
   Button,
   ButtonGroup,
   Content,
   DialogContainer,
   Dialog,
-  Flex,
-  Heading as HeadingSlot,
-  Item,
-  Divider,
+  Heading,
   Text,
   TabList,
-  TabPanels,
   Tabs,
-  View,
-  Accordion,
   Disclosure,
+  DisclosureHeader,
   DisclosureTitle,
   DisclosurePanel,
   Radio,
-  Heading,
   InlineAlert,
-} from "@adobe/react-spectrum";
-import DeleteIcon from "@spectrum-icons/workflow/Delete";
+} from "@react-spectrum/s2";
+import { size, style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { useState, useRef } from "react";
+import { object, array, string } from "yup";
+import { FieldArray, useField } from "formik";
+import DeleteIcon from "@react-spectrum/s2/icons/Delete";
 import PropTypes from "prop-types";
 import ExtensionView from "../components/extensionView";
 import useNewlyValidatedFormSubmission from "../utils/useNewlyValidatedFormSubmission";
 import useFocusFirstError from "../utils/useFocusFirstError";
-import FormikRadioGroup from "../components/formikReactSpectrum3/formikRadioGroup";
+import FormikRadioGroup from "../forms/fields/RadioGroup";
 import BasicSection, { bridge as basicSectionBridge } from "./basicSection";
 import EdgeConfigurationsSection, {
   bridge as edgeConfigurationsSectionBridge,
@@ -215,7 +213,13 @@ const getSettings = async ({ values, initInfo }) => {
   };
 };
 
-const InstancesSection = ({ initInfo, context, isPreinstalled }) => {
+const InstancesSection = ({
+  initInfo,
+  context,
+  isPreinstalled,
+  isExpanded,
+  onAddInstance,
+}) => {
   const [{ value: instances }] = useField("instances");
   const [selectedTabKey, setSelectedTabKey] = useState("0");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -237,16 +241,31 @@ const InstancesSection = ({ initInfo, context, isPreinstalled }) => {
   useFocusFirstError();
 
   return (
-    <Flex direction="column" gap="size-50">
-      <FieldArray
-        name="instances"
-        render={(arrayHelpers) => {
-          return (
-            <div>
-              <Flex alignItems="center">
+    <FieldArray
+      name="instances"
+      render={(arrayHelpers) => {
+        return (
+          <Disclosure
+            id="instances"
+            data-test-id="instancesHeading"
+            styles={style({ position: "relative" })}
+          >
+            <DisclosureHeader>
+              <DisclosureTitle>
+                <span className={style({ paddingEnd: size(128) })}>
+                  SDK instances
+                </span>
+              </DisclosureTitle>
+              {isExpanded && (
                 <Button
                   data-test-id="addInstanceButton"
                   variant="secondary"
+                  fillStyle="outline"
+                  styles={style({
+                    position: "absolute",
+                    top: 8,
+                    insetEnd: 8,
+                  })}
                   onPress={async () => {
                     const newInstance = await getInstanceDefaults({
                       initInfo,
@@ -256,35 +275,44 @@ const InstancesSection = ({ initInfo, context, isPreinstalled }) => {
                     });
                     arrayHelpers.push(newInstance);
                     setSelectedTabKey(String(instances.length));
+                    onAddInstance();
                   }}
-                  position="absolute"
-                  top="12px"
-                  right="16px"
                 >
                   Add instance
                 </Button>
-              </Flex>
-              <Tabs
-                aria-label="SDK instances"
-                items={instances}
-                selectedKey={selectedTabKey}
-                onSelectionChange={setSelectedTabKey}
+              )}
+            </DisclosureHeader>
+            <DisclosurePanel>
+              <div
+                className={style({
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 4,
+                })}
               >
-                <TabList marginBottom="size-200">
-                  {instances.map((instance, index) => {
-                    return (
-                      <Item key={index}>
-                        {instance.name || "Unnamed instance"}
-                      </Item>
-                    );
-                  })}
-                </TabList>
-                <TabPanels>
+                <Tabs
+                  aria-label="SDK instances"
+                  selectedKey={selectedTabKey}
+                  onSelectionChange={setSelectedTabKey}
+                >
+                  <TabList
+                    styles={style({
+                      marginBottom: 16,
+                    })}
+                  >
+                    {instances.map((instance, index) => {
+                      return (
+                        <Tab key={index} id={String(index)}>
+                          {instance.name || "Unnamed instance"}
+                        </Tab>
+                      );
+                    })}
+                  </TabList>
                   {instances.map((instance, index) => {
                     const instanceFieldName = `instances.${index}`;
                     const edgeConfigIds = getEdgeConfigIds(instance);
                     return (
-                      <Item key={index}>
+                      <TabPanel key={index} id={String(index)}>
                         <BasicSection
                           instanceFieldName={instanceFieldName}
                           initInfo={initInfo}
@@ -336,82 +364,87 @@ const InstancesSection = ({ initInfo, context, isPreinstalled }) => {
                           </>
                         )}
                         {instances.length > 1 && (
-                          <View marginTop="size-300">
+                          <div
+                            className={style({
+                              marginTop: 24,
+                            })}
+                          >
                             <Button
                               data-test-id="deleteInstanceButton"
-                              icon={<DeleteIcon />}
                               variant="secondary"
-                              disabled={instances.length === 1}
+                              isDisabled={instances.length === 1}
                               onPress={() => {
                                 setInstanceToDelete(index);
                                 setDeleteDialogOpen(true);
                               }}
                             >
-                              Delete instance
+                              <DeleteIcon />
+                              <Text>Delete instance</Text>
                             </Button>
-                          </View>
+                          </div>
                         )}{" "}
-                      </Item>
+                      </TabPanel>
                     );
                   })}
-                </TabPanels>
-              </Tabs>
-              <DialogContainer
-                onDismiss={() => {
-                  setDeleteDialogOpen(false);
-                  setInstanceToDelete(null);
-                }}
-              >
-                {deleteDialogOpen && (
-                  <Dialog data-test-id="resourceUsageDialog">
-                    <HeadingSlot>Resource Usage</HeadingSlot>
-                    <Divider />
-                    <Content>
-                      <Text>
-                        Any rule components or data elements using this instance
-                        will no longer function as expected when running on your
-                        website. We recommend removing these resources or
-                        switching them to use a different instance before
-                        publishing your next library. Would you like to proceed?
-                      </Text>
-                    </Content>
-                    <ButtonGroup>
-                      <Button
-                        data-test-id="cancelDeleteInstanceButton"
-                        variant="secondary"
-                        onPress={() => {
-                          setDeleteDialogOpen(false);
-                          setInstanceToDelete(null);
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        data-test-id="confirmDeleteInstanceButton"
-                        variant="cta"
-                        onPress={() => {
-                          arrayHelpers.remove(instanceToDelete);
-                          setSelectedTabKey(
-                            String(
-                              instanceToDelete > 0 ? instanceToDelete - 1 : 0,
-                            ),
-                          );
-                          setDeleteDialogOpen(false);
-                          setInstanceToDelete(null);
-                        }}
-                        autoFocus
-                      >
-                        Delete
-                      </Button>
-                    </ButtonGroup>
-                  </Dialog>
-                )}
-              </DialogContainer>{" "}
-            </div>
-          );
-        }}
-      />
-    </Flex>
+                </Tabs>
+                <DialogContainer
+                  onDismiss={() => {
+                    setDeleteDialogOpen(false);
+                    setInstanceToDelete(null);
+                  }}
+                >
+                  {deleteDialogOpen && (
+                    <Dialog data-test-id="resourceUsageDialog">
+                      <Heading slot="title">Resource Usage</Heading>
+
+                      <Content>
+                        <Text>
+                          Any rule components or data elements using this
+                          instance will no longer function as expected when
+                          running on your website. We recommend removing these
+                          resources or switching them to use a different
+                          instance before publishing your next library. Would
+                          you like to proceed?
+                        </Text>
+                      </Content>
+                      <ButtonGroup>
+                        <Button
+                          data-test-id="cancelDeleteInstanceButton"
+                          variant="secondary"
+                          onPress={() => {
+                            setDeleteDialogOpen(false);
+                            setInstanceToDelete(null);
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          data-test-id="confirmDeleteInstanceButton"
+                          variant="accent"
+                          onPress={() => {
+                            arrayHelpers.remove(instanceToDelete);
+                            setSelectedTabKey(
+                              String(
+                                instanceToDelete > 0 ? instanceToDelete - 1 : 0,
+                              ),
+                            );
+                            setDeleteDialogOpen(false);
+                            setInstanceToDelete(null);
+                          }}
+                          autoFocus
+                        >
+                          Delete
+                        </Button>
+                      </ButtonGroup>
+                    </Dialog>
+                  )}
+                </DialogContainer>{" "}
+              </div>
+            </DisclosurePanel>
+          </Disclosure>
+        );
+      }}
+    />
   );
 };
 
@@ -419,6 +452,8 @@ InstancesSection.propTypes = {
   initInfo: PropTypes.object.isRequired,
   context: PropTypes.object.isRequired,
   isPreinstalled: PropTypes.bool.isRequired,
+  isExpanded: PropTypes.bool.isRequired,
+  onAddInstance: PropTypes.func.isRequired,
 };
 
 const Configuration = ({ initInfo, context }) => {
@@ -441,8 +476,15 @@ const Configuration = ({ initInfo, context }) => {
   const isPreinstalled = libraryCode?.type === LIBRARY_TYPE_PREINSTALLED;
 
   return (
-    <Flex direction="column" gap="size-200">
+    <div
+      className={style({
+        display: "flex",
+        flexDirection: "column",
+        gap: 16,
+      })}
+    >
       <Accordion
+        size="XL"
         expandedKeys={expandedKeys}
         onExpandedChange={setExpandedKeys}
         allowsMultipleExpanded
@@ -450,8 +492,21 @@ const Configuration = ({ initInfo, context }) => {
         <Disclosure id="buildOptions" data-test-id="buildOptionsHeading">
           <DisclosureTitle>Build options</DisclosureTitle>
           <DisclosurePanel>
-            <Flex direction="column" gap="size-200">
-              <InlineAlert variant="notice" width="size-6000">
+            <div
+              className={style({
+                display: "flex",
+                flexDirection: "column",
+                gap: 16,
+              })}
+            >
+              <InlineAlert
+                variant="notice"
+                data-test-id="buildOptionsWarning"
+                styles={style({
+                  width: 480,
+                  marginY: 8,
+                })}
+              >
                 <Heading>Warning, advanced settings</Heading>
                 <Content>
                   Modifying settings here can break your implementation. You can
@@ -479,19 +534,18 @@ const Configuration = ({ initInfo, context }) => {
                 </Radio>
               </FormikRadioGroup>
               {!isPreinstalled && <ComponentsSection />}
-            </Flex>
+            </div>
           </DisclosurePanel>
         </Disclosure>
-        <Disclosure id="instances" data-test-id="instancesHeading">
-          <DisclosureTitle>SDK instances</DisclosureTitle>
-          <DisclosurePanel>
-            <InstancesSection
-              initInfo={initInfo}
-              context={context}
-              isPreinstalled={isPreinstalled}
-            />
-          </DisclosurePanel>
-        </Disclosure>
+        <InstancesSection
+          initInfo={initInfo}
+          context={context}
+          isPreinstalled={isPreinstalled}
+          isExpanded={expandedKeys.has("instances")}
+          onAddInstance={() => {
+            setExpandedKeys((keys) => new Set([...keys, "instances"]));
+          }}
+        />
         <Disclosure id="propertyActions" data-test-id="propertyActionsHeading">
           <DisclosureTitle>Property actions</DisclosureTitle>
           <DisclosurePanel>
@@ -499,7 +553,7 @@ const Configuration = ({ initInfo, context }) => {
           </DisclosurePanel>
         </Disclosure>
       </Accordion>
-    </Flex>
+    </div>
   );
 };
 

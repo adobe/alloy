@@ -87,21 +87,35 @@ describe("Config personalization section", () => {
     await tgtPicker.expectValue(/always/i);
   });
 
+  it("renders enabled dropdowns with the restored background and border", async () => {
+    await driver.init(buildSettings());
+
+    for (const testId of [
+      "autoCollectPropositionInteractionsAJOPicker",
+      "autoCollectPropositionInteractionsTGTPicker",
+    ]) {
+      const picker = view.getByTestId(testId).element();
+      const trigger = picker.querySelector("button");
+
+      expect(window.getComputedStyle(trigger).backgroundColor).toBe(
+        "rgb(255, 255, 255)",
+      );
+      expect(window.getComputedStyle(trigger).boxShadow).toContain(
+        "0px 0px 0px 1px inset",
+      );
+    }
+  });
+
   it("updates form values and saves to settings", async () => {
     await driver.init(buildSettings());
 
-    await targetMigrationEnabledField.click();
-    await personalizationStorageEnabledField.click();
+    await targetMigrationEnabledField.check();
+    await personalizationStorageEnabledField.check();
 
     await prehidingStyleEditButton.click();
 
-    await ajoPicker.click();
-    await view.getByRole("option", { name: /never/i }).click();
-
-    await tgtPicker.click();
-    await view
-      .getByRole("option", { name: /decorated elements only/i })
-      .click();
+    await ajoPicker.selectOption(/^Never/);
+    await tgtPicker.selectOption(/^Decorated elements only/);
 
     await driver
       .expectSettings((s) => s.instances[0].targetMigrationEnabled)

@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import { groupBy, isNonEmptyArray } from "@adobe/alloy-core/utils";
 import PAGE_WIDE_SCOPE from "@adobe/alloy-core/constants/pageWideScope.js";
 import { REDIRECT_ITEM } from "@adobe/alloy-core/constants/schema.js";
