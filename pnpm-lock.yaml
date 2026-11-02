@@ -194,6 +194,8 @@ overrides:
   yaml@<2.8.3: ^2.8.3
   tmp@<0.2.6: ^0.2.7
   babel-extract-comments>babylon: npm:@babel/parser@^7.29.2
+  yargs@>=16 <16.2.2: ^16.2.2
+  yargs@>=17 <17.7.3: ^17.7.3
 
 importers:
 
@@ -10141,12 +10143,12 @@ packages:
     resolution: {integrity: sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==}
     engines: {node: '>=12'}
 
-  yargs@16.2.0:
-    resolution: {integrity: sha512-D1mvvtDG0L5ft/jGWkLpG1+m0eQxOfaBvTNELraWj22wSVUMWxZUvYgJYcKh6jGGIkJFhH4IZPQhR4TKpc8mBw==}
+  yargs@16.2.2:
+    resolution: {integrity: sha512-Nt9ZJjXTv5R8MHbqby/wXQ6Gi0Bb3TcYZkR1bzuL4yB2OxWPkXknz513gEF0GoA6tn00UpbPvERW8rzCuWCA6w==}
     engines: {node: '>=10'}
 
-  yargs@17.7.2:
-    resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
+  yargs@17.7.3:
+    resolution: {integrity: sha512-GZtjxm/J/4TSxuL3FNYjCmLktBTnIw/rVmKSIyKeYAZpmJB2ig9VauCC5xsa82GNKVKDAqpOn3KVzNt0zmrU0g==}
     engines: {node: '>=12'}
 
   yauzl@2.10.0:
@@ -10183,7 +10185,7 @@ snapshots:
       chalk: 5.6.2
       inquirer: 9.3.8(@types/node@25.6.2)
       node-fetch: 3.3.2
-      yargs: 17.7.2
+      yargs: 17.7.3
     transitivePeerDependencies:
       - '@types/node'
 
@@ -10396,7 +10398,7 @@ snapshots:
       ramda: 0.27.2
       requires-regex: 1.0.4
       strip-comments: 2.0.1
-      yargs: 16.2.0
+      yargs: 16.2.2
 
   '@adobe/reactor-promise@2.0.0': {}
 
@@ -10409,7 +10411,7 @@ snapshots:
       inquirer: 10.2.2
       node-fetch: 2.7.0
       prettyjson: 1.2.5
-      yargs: 16.2.0
+      yargs: 16.2.2
     transitivePeerDependencies:
       - '@types/node'
       - encoding
@@ -10472,7 +10474,7 @@ snapshots:
   '@adobe/reactor-token-scripts-edge@1.2.0(supports-color@8.1.1)':
     dependencies:
       '@babel/core': 7.29.0(supports-color@8.1.1)
-      yargs: 17.7.2
+      yargs: 17.7.3
     transitivePeerDependencies:
       - supports-color
 
@@ -10514,7 +10516,7 @@ snapshots:
       ora: 5.4.1
       prettyjson: 1.2.5
       request-debug: 0.2.0
-      yargs: 16.2.0
+      yargs: 16.2.2
       yauzl: 2.10.0
     transitivePeerDependencies:
       - '@types/node'
@@ -13844,7 +13846,7 @@ snapshots:
       proxy-agent: 6.5.0(supports-color@8.1.1)
       semver: 7.7.4
       tar-fs: 3.1.2
-      yargs: 17.7.2
+      yargs: 17.7.3
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
@@ -20008,7 +20010,7 @@ snapshots:
       spawn-command: 0.0.2
       supports-color: 8.1.1
       tree-kill: 1.2.2
-      yargs: 17.7.2
+      yargs: 17.7.3
 
   concurrently@9.2.1:
     dependencies:
@@ -20017,7 +20019,7 @@ snapshots:
       shell-quote: 1.8.3
       supports-color: 8.1.1
       tree-kill: 1.2.2
-      yargs: 17.7.2
+      yargs: 17.7.3
 
   config-chain@1.1.13:
     dependencies:
@@ -22243,7 +22245,7 @@ snapshots:
       tough-cookie: 6.0.1
       type-fest: 5.5.0
       until-async: 3.0.2
-      yargs: 17.7.2
+      yargs: 17.7.3
     optionalDependencies:
       typescript: '@typescript/typescript6@6.0.2'
     transitivePeerDependencies:
@@ -22268,7 +22270,7 @@ snapshots:
       tough-cookie: 6.0.1
       type-fest: 5.5.0
       until-async: 3.0.2
-      yargs: 17.7.2
+      yargs: 17.7.3
     optionalDependencies:
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -25113,7 +25115,7 @@ snapshots:
 
   yargs-parser@21.1.1: {}
 
-  yargs@16.2.0:
+  yargs@16.2.2:
     dependencies:
       cliui: 7.0.4
       escalade: 3.2.0
@@ -25123,7 +25125,7 @@ snapshots:
       y18n: 5.0.8
       yargs-parser: 20.2.9
 
-  yargs@17.7.2:
+  yargs@17.7.3:
     dependencies:
       cliui: 8.0.1
       escalade: 3.2.0

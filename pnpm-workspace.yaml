@@ -22,6 +22,10 @@ overrides:
   # @adobe/reactor-sandbox scans extension lib files via babel-extract-comments,
   # whose babylon@6 cannot parse modern syntax (e.g. `?.`, object spread).
   babel-extract-comments>babylon: npm:@babel/parser@^7.29.2
+  # Older yargs ship an extensionless CJS `yargs/yargs` in a "type": "module"
+  # package, which Node 26 loads as ESM and breaks the Reactor CLIs.
+  yargs@>=16 <16.2.2: ^16.2.2
+  yargs@>=17 <17.7.3: ^17.7.3
 allowBuilds:
   "@adobe/reactor-turbine": false
   "@parcel/watcher": true
