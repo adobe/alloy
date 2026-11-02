@@ -1,5 +1,16 @@
 # @adobe/alloy
 
+## 2.37.0
+
+### Minor Changes
+
+- [#1615](https://github.com/adobe/alloy/pull/1615) [`fb2d750`](https://github.com/adobe/alloy/commit/fb2d7501268b8b9692a4eda70533da7fdeb181bb) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Added an `advertising.enabled` configuration option. It is `true` by default. Set it to `false` to turn off the Advertising component at runtime without removing it from your build: Web SDK then sends no click-through or view-through conversions, adds no advertising IDs to events (even when `handleAdvertisingData` is `"auto"` or `"wait"`), loads no advertising scripts or iframes, and leaves advertising cookies alone. The value must be a boolean.
+
+### Patch Changes
+
+- Updated dependencies [[`d3c9bc0`](https://github.com/adobe/alloy/commit/d3c9bc096b9b4fc9090b98efe34288b517f46957), [`6002ced`](https://github.com/adobe/alloy/commit/6002ced1f334c3c120548d8ae45f4f2e92fb1971), [`4015990`](https://github.com/adobe/alloy/commit/401599025180f5a4e1aa5dade59b9be11517042b), [`d4a93ca`](https://github.com/adobe/alloy/commit/d4a93ca4e62e10329520c6bfbf57a41d89b726f0)]:
+  - @adobe/alloy-core@1.4.0
+
 ## 2.37.0-beta.2
 
 ### Minor Changes

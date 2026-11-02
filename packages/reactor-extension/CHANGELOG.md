@@ -1,5 +1,22 @@
 # reactor-extension-alloy
 
+## 2.39.0
+
+### Minor Changes
+
+- [#1616](https://github.com/adobe/alloy/pull/1616) [`82946d6`](https://github.com/adobe/alloy/commit/82946d6c3211513f9b856925e4988abcf2e4cc40) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Added an "Advertising" field to the top of the Adobe Advertising section of the extension configuration. Choose Enabled (the default), Disabled, or a data element that returns `true` or `false`. Disabled turns off the Advertising component at runtime using the Web SDK `advertising.enabled` option, without removing it from your build, and hides the other advertising fields. To remove the advertising code from the library instead, uncheck Advertising under Build options.
+
+- [#1619](https://github.com/adobe/alloy/pull/1619) [`f43ed9e`](https://github.com/adobe/alloy/commit/f43ed9e96f71e44284d6c002dc5aa9b36d018bac) Thanks [@carterworks](https://github.com/carterworks)! - Fixed Staging and Development datastream fields disappearing from the extension configuration when their saved sandbox was missing or no longer available.
+
+  Each environment now always shows a single datastream field, replacing the "Choose from list" and "Enter values" options and the sandbox pickers. In this field you can choose a datastream from any sandbox you have access to (grouped by sandbox and searchable by name or ID), type a datastream ID, or select a data element. Datastream overrides in actions use the same field.
+
+  Saved datastream IDs and data elements are kept as entered. When a saved datastream is found, its sandbox is filled in or corrected automatically. Datastream overrides no longer save which input method was used.
+
+### Patch Changes
+
+- Updated dependencies [[`fb2d750`](https://github.com/adobe/alloy/commit/fb2d7501268b8b9692a4eda70533da7fdeb181bb)]:
+  - @adobe/alloy@2.37.0
+
 ## 2.39.0-beta.4
 
 ### Minor Changes
