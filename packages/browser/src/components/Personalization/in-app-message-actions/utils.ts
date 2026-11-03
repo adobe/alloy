@@ -22,7 +22,7 @@ export const removeElementById = (id: string) => {
 };
 // A parameter repeated in the query parses to an array; the first value wins.
 const firstValue = (value: string | string[] | null | undefined) =>
-  (Array.isArray(value) ? value[0] : value) ?? undefined;
+  Array.isArray(value) ? value[0] : value;
 
 export const parseAnchor = (anchor: HTMLAnchorElement | null | undefined) => {
   const nothing: {

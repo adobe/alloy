@@ -172,34 +172,31 @@ const initiateRampIDCall = (
               } else {
                 state.envelopeRetrievalInProgress = false;
                 window.addEventListener("lrEnvelopePresent", () => {
-                  // window.ats was present when the script loaded.
                   if (state.envelopeRetrievalInProgress || timedOut) return;
                   state.envelopeRetrievalInProgress = true;
-                  (window as unknown as AlloyWindow)
-                    .ats!.retrieveEnvelope()
-                    .then(
-                      (envelopeResult) => {
-                        if (!timedOut) {
-                          processEnvelope(
-                            envelopeResult,
-                            resolve,
-                            cookieManager,
-                            logger,
-                          );
-                        }
-                      },
-                      (error) => {
-                        if (!timedOut) {
-                          logger.error(
-                            "Failed to retrieve envelope after event",
-                            error,
-                          );
-                          state.envelopeRetrievalInProgress = false;
-                          reject(error);
-                          state.inProgressRampIdPromise = null;
-                        }
-                      },
-                    );
+                  ats.retrieveEnvelope().then(
+                    (envelopeResult) => {
+                      if (!timedOut) {
+                        processEnvelope(
+                          envelopeResult,
+                          resolve,
+                          cookieManager,
+                          logger,
+                        );
+                      }
+                    },
+                    (error) => {
+                      if (!timedOut) {
+                        logger.error(
+                          "Failed to retrieve envelope after event",
+                          error,
+                        );
+                        state.envelopeRetrievalInProgress = false;
+                        reject(error);
+                        state.inProgressRampIdPromise = null;
+                      }
+                    },
+                  );
                 });
               }
             })

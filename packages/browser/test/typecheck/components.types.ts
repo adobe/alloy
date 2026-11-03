@@ -49,6 +49,10 @@ export const clickOptions: ClickedElementOptions = {
 };
 // @ts-expect-error Known fields keep their types.
 export const badClickOptions: ClickedElementOptions = { xdm: { eventType: 1 } };
+export const badNestedClickOptions: ClickedElementOptions = {
+  // @ts-expect-error Known nested fields keep their types.
+  xdm: { web: { webInteraction: { linkClicks: { value: "1" } } } },
+};
 
 // Each clickable alternative is a ClickableElement on its own.
 expectTypeOf<HTMLAnchorElement>().toExtend<ClickableElement>();

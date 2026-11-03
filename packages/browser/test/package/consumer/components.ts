@@ -12,14 +12,13 @@ governing permissions and limitations under the License.
 
 // A consumer composing a custom build from the published component creators.
 import { createCustomInstance, components } from "@adobe/alloy";
-import { brandConcierge } from "@adobe/alloy-core/core/componentCreators.js";
 
 export const withPersonalization = createCustomInstance({
   components: [components.personalization],
 });
 
 export const withBrandConcierge = createCustomInstance({
-  components: [components.brandConcierge, brandConcierge],
+  components: [components.brandConcierge],
 });
 
 export const withEverything = createCustomInstance({
