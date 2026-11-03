@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import validateMessage from "./validateMessage.js";
 import createSendConversationEvent from "./createSendConversationEvent.js";
 import createBuildEndpointUrl from "./createBuildEndpointUrl.js";
-import queryString from "@adobe/reactor-query-string";
+import queryString from "../../utils/querystring.js";
 import { getConciergeSessionCookie } from "./utils.js";
 import createGetEcidFromCookie from "../../utils/createDecodeKndctrCookie.js";
 import createSendConversationServiceRequest from "./createSendConversationServiceRequest.js";
