@@ -64,26 +64,26 @@ import {
   ADOBE_JOURNEY_OPTIMIZER,
   ADOBE_TARGET,
 } from "@adobe/alloy-core/constants/decisionProvider.js";
-import type { ConsentManager } from "@adobe/alloy-core/core/consent/types.js";
 import type {
   ComponentCreator,
-  EventManager,
+  ComponentTools,
+  Config,
 } from "@adobe/alloy-core/core/types.js";
-import type { DecisionMeta, Logger, PersonalizationConfig } from "./types.js";
+import type { DecisionMeta, PersonalizationConfig } from "./types.js";
 
-export interface PersonalizationOptions {
-  config: PersonalizationConfig;
-  logger: Logger;
-  eventManager: EventManager;
-  consent: ConsentManager;
-}
+export type PersonalizationOptions = Pick<
+  ComponentTools,
+  "config" | "logger" | "eventManager" | "consent"
+>;
 
 const createPersonalization: ComponentCreator<PersonalizationOptions> = ({
-  config,
+  config: baseConfig,
   logger,
   eventManager,
   consent,
 }) => {
+  // configValidators adds the personalization options to the computed config.
+  const config = baseConfig as Config & PersonalizationConfig;
   const {
     targetMigrationEnabled,
     prehidingStyle,

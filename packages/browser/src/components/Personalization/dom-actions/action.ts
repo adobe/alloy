@@ -15,8 +15,10 @@ import { hideElements, showElements } from "../flicker/index.js";
 import { selectNodesWithEq } from "./dom/index.js";
 import type {
   DecorateProposition,
+  DomActionData,
   DomActionModule,
   RenderStatusHandler,
+  TypedDomActionModule,
 } from "../types.js";
 
 export { default as setText } from "./setText.js";
@@ -41,13 +43,6 @@ export { default as rearrangeChildren } from "./rearrangeChildren.js";
  * @param {(container: Element, content: string, decorateProposition: (element: Element) => void) => Promise<void>} params.renderFunc
  * @returns {Promise<void>} A promise that resolves when the content is rendered.
  */
-// Edge always sends a selector and prehiding selector with DOM actions.
-interface DomActionData {
-  selector: string;
-  prehidingSelector: string;
-  content: unknown;
-}
-
 interface RenderContentParams<C> {
   containers: Element[];
   content: C;
@@ -90,7 +85,7 @@ const renderContent = <C>({
 export const createAction = <C>(
   renderFunc: RenderContentParams<C>["renderFunc"],
   alwaysRender = false,
-): DomActionModule => {
+): TypedDomActionModule<C> => {
   /**
    * Renders content into a container element.
    *
@@ -103,7 +98,7 @@ export const createAction = <C>(
       selector: containerSelector,
       prehidingSelector,
       content,
-    } = itemData as DomActionData;
+    } = itemData;
     hideElements(prehidingSelector);
     try {
       const containers = await awaitSelector(
@@ -112,9 +107,7 @@ export const createAction = <C>(
       );
       renderContent<C>({
         containers,
-        // The shape of `content` depends on the action type, which Edge guarantees
-        // matches the render function registered for that type.
-        content: content as C,
+        content,
         decorateProposition,
         renderFunc,
         renderStatusHandler,
@@ -125,3 +118,17 @@ export const createAction = <C>(
     }
   };
 };
+
+/**
+ * Registers a typed action for dispatch by type name. This is the raw dispatch
+ * boundary: Edge pairs each action type with the selectors and content shape
+ * its render function expects, which the dispatcher cannot check.
+ */
+export const toDomActionModule =
+  <C>(action: TypedDomActionModule<C>): DomActionModule =>
+  (itemData, decorateProposition, renderStatusHandler) =>
+    action(
+      itemData as DomActionData<C>,
+      decorateProposition,
+      renderStatusHandler,
+    );

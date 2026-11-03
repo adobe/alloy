@@ -20,6 +20,10 @@ export const removeElementById = (id: string) => {
     removeNode(element[0]);
   }
 };
+// A parameter repeated in the query parses to an array; the first value wins.
+const firstValue = (value: string | string[] | null | undefined) =>
+  (Array.isArray(value) ? value[0] : value) ?? undefined;
+
 export const parseAnchor = (anchor: HTMLAnchorElement | null | undefined) => {
   const nothing: {
     action?: string;
@@ -48,13 +52,9 @@ export const parseAnchor = (anchor: HTMLAnchorElement | null | undefined) => {
   let link: string | undefined;
 
   if (isNonEmptyArray(hrefParts)) {
-    // Anchors carry a single value for each of these parameters.
-    const queryParams = queryString.parse(hrefParts[1]) as Record<
-      string,
-      string | undefined
-    >;
-    interaction = queryParams.interaction || "";
-    link = decodeUriComponentSafely(queryParams.link || "");
+    const queryParams = queryString.parse(hrefParts[1]);
+    interaction = firstValue(queryParams.interaction) || "";
+    link = decodeUriComponentSafely(firstValue(queryParams.link) || "");
   }
   return {
     action,

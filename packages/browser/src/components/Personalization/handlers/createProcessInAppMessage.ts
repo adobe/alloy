@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { APPLICATION_JSON } from "@adobe/alloy-core/constants/contentType.js";
+import { isObject } from "@adobe/alloy-core/utils/index.js";
 import type {
   InAppMessageData,
   InAppMessageModules,
@@ -39,9 +40,27 @@ const isValidInAppMessage = (
     }
   }
 
-  const { content, contentType } = data;
+  const invalid = (reason: string) => {
+    logger.warn(`Invalid in-app message data: ${reason}.`, data);
+    return false;
+  };
+
+  const { content, contentType, mobileParameters, webParameters } = data;
+
+  if (typeof contentType !== "string") {
+    return invalid("'contentType' must be a string");
+  }
+  if (mobileParameters !== undefined && !isObject(mobileParameters)) {
+    return invalid("'mobileParameters' must be an object");
+  }
+  if (webParameters !== undefined && !isObject(webParameters)) {
+    return invalid("'webParameters' must be an object");
+  }
 
   if (contentType === APPLICATION_JSON) {
+    if (!isObject(content)) {
+      return invalid("'content' must be an object");
+    }
     for (let i = 0; i < expectedContentProps.length; i += 1) {
       const prop = expectedContentProps[i];
       if (!Object.prototype.hasOwnProperty.call(content, prop)) {

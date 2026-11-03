@@ -12,11 +12,11 @@ governing permissions and limitations under the License.
 
 import type { LegacyService } from "@adobe/alloy-core/services/index.js";
 import type { Logger } from "@adobe/alloy-core/core/types.js";
-import type { LegacyVisitorApi } from "../types.js";
+import type { AlloyWindow, LegacyVisitorApi } from "../types.js";
 import { isFunction, isObject } from "@adobe/alloy-core/utils/index.js";
 
 const getVisitor = (): LegacyVisitorApi | undefined => {
-  const { Visitor } = window;
+  const { Visitor } = window as unknown as AlloyWindow;
   return isFunction(Visitor) && isFunction(Visitor.getInstance)
     ? Visitor
     : undefined;
@@ -24,8 +24,9 @@ const getVisitor = (): LegacyVisitorApi | undefined => {
 
 const awaitVisitorOptIn = ({ logger }: { logger: Logger }): Promise<void> =>
   new Promise<void>((resolve, reject) => {
-    if (isObject(window.adobe) && isObject(window.adobe.optIn)) {
-      const optInOld = window.adobe.optIn;
+    const { adobe } = window as unknown as AlloyWindow;
+    if (isObject(adobe) && isObject(adobe.optIn)) {
+      const optInOld = adobe.optIn;
       logger.info(
         "Delaying request while waiting for legacy opt-in to let Visitor retrieve ECID from server.",
       );

@@ -10,7 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import type { AlloyGlobalNamespace, AlloyQueueItem } from "./types.js";
+import type {
+  AlloyGlobalNamespace,
+  AlloyQueueItem,
+  AlloyWindow,
+} from "./types.js";
 import { createCustomInstance } from "./index.js";
 import type { CreateCustomInstanceOptions } from "@adobe/alloy-core/index.js";
 
@@ -19,7 +23,7 @@ const initializeStandalone = ({
 }: {
   components: readonly unknown[];
 }) => {
-  const instanceNames = window.__alloyNS;
+  const instanceNames = (window as unknown as AlloyWindow).__alloyNS;
   if (!instanceNames) {
     return;
   }

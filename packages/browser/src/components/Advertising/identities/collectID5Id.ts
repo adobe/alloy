@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import type { Logger } from "@adobe/alloy-core/core/types.js";
 import { loadScript } from "@adobe/alloy-core/utils/dom";
 import { ID5_SCRIPT_URL } from "../constants/index.js";
+import type { AlloyWindow } from "../../../types.js";
 
 let id5Id: string | null | undefined = "";
 let inProgressId5Promise: Promise<string | null> | null = null;
@@ -43,7 +44,7 @@ const initiateID5Call = (
 
     const handleId5 = () => {
       try {
-        const { ID5 } = window;
+        const { ID5 } = window as unknown as AlloyWindow;
         if (typeof ID5 === "undefined") {
           reject(new Error("ID5 object not available after script load"));
           return;
@@ -84,7 +85,7 @@ const initiateID5Call = (
       }
     };
 
-    if (typeof window.ID5 !== "undefined") {
+    if (typeof (window as unknown as AlloyWindow).ID5 !== "undefined") {
       handleId5();
     } else {
       loadScript(ID5_SCRIPT_URL, {

@@ -49,19 +49,23 @@ export interface LegacyOptIn {
   isApproved: (categories: string[]) => boolean;
 }
 
-declare global {
-  interface Window {
-    /** Names of the global Alloy instances created by the base code. */
-    __alloyNS?: string[];
-    /** Monitors registered by tooling such as the Alloy debugger. */
-    __alloyMonitors?: AlloyMonitor[];
-    /** Legacy Visitor API, present only on pages that load it. */
-    Visitor?: LegacyVisitorApi;
-    /** Legacy Adobe global, present only on pages that load it. */
-    adobe?: { optIn?: LegacyOptIn };
-    /** ID5 script global, present only when the ID5 script is loaded. */
-    ID5?: ID5Api;
-    /** LiveRamp ATS script global, present only when the script is loaded. */
-    ats?: AtsApi;
-  }
+/**
+ * The globals Alloy reads from `window`. Kept private rather than merged into
+ * the global `Window`, so consumers' own typings of these names stay intact.
+ * Read it with `window as unknown as AlloyWindow`; consumers may type these
+ * names incompatibly.
+ */
+export interface AlloyWindow {
+  /** Names of the global Alloy instances created by the base code. */
+  __alloyNS?: string[];
+  /** Monitors registered by tooling such as the Alloy debugger. */
+  __alloyMonitors?: AlloyMonitor[];
+  /** Legacy Visitor API, present only on pages that load it. */
+  Visitor?: LegacyVisitorApi;
+  /** Legacy Adobe global, present only on pages that load it. */
+  adobe?: { optIn?: LegacyOptIn };
+  /** ID5 script global, present only when the ID5 script is loaded. */
+  ID5?: ID5Api;
+  /** LiveRamp ATS script global, present only when the script is loaded. */
+  ats?: AtsApi;
 }

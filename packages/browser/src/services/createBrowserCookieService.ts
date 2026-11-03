@@ -10,6 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+// The reference keeps js-cookie's types reachable when compiling from source
+// through the `alloy-source` condition; an import cannot load an ambient
+// module declaration.
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
+/// <reference path="../js-cookie.d.ts" />
+
 import type { CookieService } from "@adobe/alloy-core/services/index.js";
 import Cookies, { type CookieJar } from "js-cookie";
 

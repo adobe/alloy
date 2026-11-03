@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import type { GlobalsService } from "@adobe/alloy-core/services/index.js";
-import type { AlloyInstance } from "../types.js";
+import type { AlloyInstance, AlloyWindow } from "../types.js";
 import injectFireReferrerHideableImage from "@adobe/alloy-core/utils/dom/injectFireReferrerHideableImage.js";
 
 const createBrowserGlobalsService = (): GlobalsService => ({
-  getInstanceNames: () => window.__alloyNS || [],
+  getInstanceNames: () => (window as unknown as AlloyWindow).__alloyNS || [],
   getInstanceQueue: (instanceName) => {
     // Instance names are user-chosen globals, so the lookup cannot be keyed
     // by a known union; narrow the value at the boundary instead.
@@ -24,7 +24,7 @@ const createBrowserGlobalsService = (): GlobalsService => ({
     ] as AlloyInstance | undefined;
     return (namespace && namespace.q) || [];
   },
-  getMonitors: () => window.__alloyMonitors || [],
+  getMonitors: () => (window as unknown as AlloyWindow).__alloyMonitors || [],
   getLocationSearch: () => window.location.search,
   getLocationHash: () => window.location.hash,
   getUserAgent: () => window.navigator.userAgent,

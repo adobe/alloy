@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import type { Logger } from "@adobe/alloy-core/core/types.js";
 import createClickedElementProperties from "./createClickedElementProperties.js";
-import type { ClickableNode } from "./utils/dom/findClickableElement.js";
+import type { ClickableElement } from "./utils/dom/findClickableElement.js";
 import type { ActivityCollectorConfig, ClickActivityStorage } from "./types.js";
 
 interface GetClickedElementPropertiesDeps {
@@ -21,14 +21,14 @@ interface GetClickedElementPropertiesDeps {
   getLinkRegion: (node: Node) => string;
   getAbsoluteUrlFromAnchorElement: (
     window: Window,
-    element: ClickableNode,
+    element: ClickableElement,
   ) => string;
-  findClickableElement: (element: Node | null) => ClickableNode | null;
+  findClickableElement: (element: Node | null) => ClickableElement | null;
   determineLinkType: (
     window: Window,
     config: ActivityCollectorConfig,
     linkUrl: string | undefined,
-    clickedObj: ClickableNode,
+    clickedObj: ClickableElement,
   ) => string;
 }
 

@@ -90,7 +90,7 @@ describe("Personalization::createClickStorage", () => {
     expect(clickStorage.getClickSelectors()).toEqual([]);
   });
   it("returns empty object when no metadata for this selector", () => {
-    expect(clickStorage.getClickMetas("123")).toEqual({});
+    expect(clickStorage.getClickMetas("123")).toEqual([]);
   });
   it("stores clicks as a map in the click storage and returns the selectors and metadata", () => {
     clickStorage.storeClickMeta(FIRST_CLICK);

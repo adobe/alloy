@@ -120,6 +120,9 @@ const createConciergeComponent = ({
     },
   };
 };
-createConciergeComponent.namespace = "BrandConcierge";
-createConciergeComponent.configValidators = configValidators;
-export default createConciergeComponent;
+// Object.assign, rather than property assignments, keeps `namespace` in the
+// emitted declaration.
+export default Object.assign(createConciergeComponent, {
+  namespace: "BrandConcierge",
+  configValidators,
+});

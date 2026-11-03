@@ -25,27 +25,33 @@ export interface ClickedElementProps {
   filteredData?: ClickedElementData;
 }
 
-/** The parts of the XDM the click collector reads; other fields pass through. */
+/**
+ * The parts of the XDM the click collector reads. Other fields pass through at
+ * every level, such as `web.webPageDetails`.
+ */
 export type ClickedElementXdm = Record<string, unknown> & {
   eventType?: string;
-  web?: {
-    webInteraction?: {
+  web?: Record<string, unknown> & {
+    webInteraction?: Record<string, unknown> & {
       name?: string;
       region?: string;
       type?: string;
       URL?: string;
-      linkClicks?: { value: number };
+      linkClicks?: Record<string, unknown> & { value: number };
     };
   };
 };
 
-/** The parts of the data object the click collector reads. */
+/**
+ * The parts of the data object the click collector reads. Other fields pass
+ * through at every level, such as `__adobe.analytics.eVar1`.
+ */
 export type ClickedElementData = Record<string, unknown> & {
-  __adobe?: {
-    analytics?: {
-      contextData?: {
-        a?: {
-          activitymap?: {
+  __adobe?: Record<string, unknown> & {
+    analytics?: Record<string, unknown> & {
+      contextData?: Record<string, unknown> & {
+        a?: Record<string, unknown> & {
+          activitymap?: Record<string, unknown> & {
             page?: string;
             link?: string;
             region?: string;

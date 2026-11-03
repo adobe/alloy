@@ -206,6 +206,69 @@ describe("@adobe/alloy npm package", () => {
     expect(missing).toEqual([]);
   });
 
+  describe("compiles a strict TypeScript consumer", () => {
+    let consumerPath;
+
+    beforeAll(() => {
+      consumerPath = path.join(workPath, "consumer");
+      fs.cpSync(
+        path.join(path.dirname(fileURLToPath(import.meta.url)), "consumer"),
+        consumerPath,
+        { recursive: true },
+      );
+      fs.writeFileSync(
+        path.join(consumerPath, "package.json"),
+        JSON.stringify({ type: "module" }),
+      );
+    });
+
+    test.each([
+      ["Bundler", { module: "ESNext", moduleResolution: "Bundler" }],
+      ["NodeNext", { module: "NodeNext", moduleResolution: "NodeNext" }],
+      [
+        "Bundler with the alloy-source condition",
+        {
+          module: "ESNext",
+          moduleResolution: "Bundler",
+          customConditions: ["alloy-source"],
+        },
+      ],
+    ])("with %s resolution", (name, resolutionOptions) => {
+      const tsconfigPath = path.join(
+        consumerPath,
+        `tsconfig.${name.replace(/\W+/g, "-")}.json`,
+      );
+      fs.writeFileSync(
+        tsconfigPath,
+        JSON.stringify({
+          compilerOptions: {
+            ...resolutionOptions,
+            strict: true,
+            skipLibCheck: false,
+            noEmit: true,
+            target: "ES2022",
+            lib: ["ES2022", "DOM", "DOM.Iterable"],
+            types: [],
+          },
+          include: ["*.ts"],
+        }),
+      );
+      const result = (() => {
+        try {
+          execFileSync("pnpm", ["exec", "tsc", "-p", tsconfigPath], {
+            cwd: browserPath,
+            encoding: "utf8",
+            stdio: "pipe",
+          });
+          return "";
+        } catch (error) {
+          return `${error.stdout}${error.stderr}`;
+        }
+      })();
+      expect(result).toBe("");
+    });
+  });
+
   describe.each(["createInstance", "createCustomInstance", "standalone"])(
     "%s",
     (name) => {

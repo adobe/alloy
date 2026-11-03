@@ -15,28 +15,36 @@ import elementHasClickHandler from "./elementHasClickHandler.js";
 import isInputSubmitElement from "./isInputSubmitElement.js";
 import isButtonSubmitElement from "./isButtonSubmitElement.js";
 
-export type ClickableNode = Node &
-  Partial<HTMLAnchorElement & HTMLInputElement & HTMLButtonElement> &
-  Pick<HTMLInputElement, "getAttribute">;
+/** An element whose clicks the activity collector reports. */
+export type ClickableElement =
+  | HTMLAnchorElement
+  | HTMLAreaElement
+  | HTMLInputElement
+  | HTMLButtonElement
+  /** Any other element with an `onclick` handler. */
+  | (Element & GlobalEventHandlers);
 
-export default (element: Node | null): ClickableNode | null => {
-  let node = element as ClickableNode | null;
+export default (element: Node | null): ClickableElement | null => {
+  let node = element;
   while (node) {
     // Stop looking when BODY is reached
-    if (node.nodeName && node.nodeName === "BODY") {
+    if (node.nodeName === "BODY") {
       break;
     }
-    if (
-      isSupportedAnchorElement(node) ||
-      elementHasClickHandler(node) ||
-      isInputSubmitElement(node) ||
-      isButtonSubmitElement(node)
-    ) {
-      return node;
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      const candidate = node as Element;
+      if (
+        isSupportedAnchorElement(candidate) ||
+        elementHasClickHandler(candidate) ||
+        isInputSubmitElement(candidate) ||
+        isButtonSubmitElement(candidate)
+      ) {
+        // The checks above match on tag name or an onclick handler, which
+        // are exactly the alternatives of ClickableElement.
+        return candidate as ClickableElement;
+      }
     }
-    // parentNode can be a non-element such as document; the predicates above
-    // check element properties structurally, so the cast is safe.
-    node = node.parentNode as ClickableNode | null;
+    node = node.parentNode;
   }
   return null;
 };

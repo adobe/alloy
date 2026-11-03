@@ -146,6 +146,24 @@ export interface RenderStatusHandler {
   markAsRendered: (propositionContainer: Element) => void;
 }
 
+/**
+ * A DOM action's item data. Edge always sends both selectors, and the shape of
+ * `content` depends on the action type.
+ */
+export type DomActionData<C = unknown> = ItemData & {
+  selector: string;
+  prehidingSelector: string;
+  content: C;
+};
+
+/** Renders one DOM action type, typed by the content that type carries. */
+export type TypedDomActionModule<C> = (
+  itemData: DomActionData<C>,
+  decorateProposition: DecorateProposition,
+  renderStatusHandler: RenderStatusHandler,
+) => Promise<void>;
+
+/** A DOM action module as the dispatcher sees it: raw item data from Edge. */
 export type DomActionModule = (
   itemData: ItemData,
   decorateProposition: DecorateProposition,

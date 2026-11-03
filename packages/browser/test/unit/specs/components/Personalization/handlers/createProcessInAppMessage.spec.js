@@ -105,6 +105,37 @@ describe("Personalization::handlers::createProcessInAppMessage", () => {
       identityMap: undefined,
     });
   });
+  it("rejects a non-string contentType, and logs", () => {
+    meta = { id: "abc" };
+    data = { content: "<div>message</div>", contentType: 42 };
+    expect(processInAppMessage(item)).toEqual({});
+    expect(logger.warn).toHaveBeenCalledWith(
+      "Invalid in-app message data: 'contentType' must be a string.",
+      data,
+    );
+  });
+  it("rejects JSON content that is not an object, and logs", () => {
+    meta = { id: "abc" };
+    data = { content: null, contentType: "application/json" };
+    expect(processInAppMessage(item)).toEqual({});
+    expect(logger.warn).toHaveBeenCalledWith(
+      "Invalid in-app message data: 'content' must be an object.",
+      data,
+    );
+  });
+  it("rejects parameters that are not objects, and logs", () => {
+    meta = { id: "abc" };
+    data = {
+      content: "<div>message</div>",
+      contentType: "text/html",
+      webParameters: "wide",
+    };
+    expect(processInAppMessage(item)).toEqual({});
+    expect(logger.warn).toHaveBeenCalledWith(
+      "Invalid in-app message data: 'webParameters' must be an object.",
+      data,
+    );
+  });
   it("handles an invalid in app message type, and logs", () => {
     meta = {
       id: "abc",

@@ -49,10 +49,9 @@ export default () => {
   const getClickMetas = (selector: string): ClickMeta[] => {
     const metas = clickStorage[selector];
     if (!metas) {
-      // Only selectors that have stored metas are requested, so this is not reached.
-      return {} as ClickMeta[];
+      return [];
     }
-    return metasToArray(clickStorage[selector]);
+    return metasToArray(metas);
   };
   return {
     storeClickMeta,

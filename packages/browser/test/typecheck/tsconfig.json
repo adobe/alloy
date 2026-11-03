@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.typecheck.json",
+  "compilerOptions": {
+    "rootDir": "../../..",
+    "paths": {
+      "@adobe/alloy-core": ["../../../core/src/index.ts"],
+      "@adobe/alloy-core/*": ["../../../core/src/*"]
+    }
+  },
+  "include": ["./**/*.ts", "../../src/js-cookie.d.ts"],
+  "exclude": []
+}

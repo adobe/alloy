@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import type { Logger } from "@adobe/alloy-core/core/types.js";
 import type { CookieManager } from "../types.js";
+import type { AlloyWindow } from "../../../types.js";
 import { loadScript } from "@adobe/alloy-core/utils/dom";
 import { RAMP_ID, RAMP_ID_EXPIRES } from "../constants/index.js";
 
@@ -105,14 +106,16 @@ const retrieveEnvelopeWithRetries = (
       retryCount -= 1;
       timerMultiplier += 1;
 
+      const { ats } = window as unknown as AlloyWindow;
+
       if (
-        typeof window.ats !== "undefined" &&
-        window.ats !== null &&
+        ats !== undefined &&
+        ats !== null &&
         !state.rampIdEnv &&
         !state.envelopeRetrievalInProgress
       ) {
         state.envelopeRetrievalInProgress = true;
-        window.ats.retrieveEnvelope().then(
+        ats.retrieveEnvelope().then(
           (rampIdResponse) => {
             processEnvelope(rampIdResponse, resolve, cookieManager, logger);
             if (!state.rampIdEnv) tryToRetrieve();
@@ -151,12 +154,10 @@ const initiateRampIDCall = (
   const mainPromise = new Promise<string>((resolve, reject) => {
     loadScript(rampIdScriptPath, {
       onLoad: () => {
-        if (
-          typeof window.ats !== "undefined" &&
-          !state.envelopeRetrievalInProgress
-        ) {
+        const { ats } = window as unknown as AlloyWindow;
+        if (ats !== undefined && !state.envelopeRetrievalInProgress) {
           state.envelopeRetrievalInProgress = true;
-          window.ats
+          ats
             .retrieveEnvelope()
             .then((envelopeResponse) => {
               if (envelopeResponse) {
@@ -174,29 +175,31 @@ const initiateRampIDCall = (
                   // window.ats was present when the script loaded.
                   if (state.envelopeRetrievalInProgress || timedOut) return;
                   state.envelopeRetrievalInProgress = true;
-                  window.ats!.retrieveEnvelope().then(
-                    (envelopeResult) => {
-                      if (!timedOut) {
-                        processEnvelope(
-                          envelopeResult,
-                          resolve,
-                          cookieManager,
-                          logger,
-                        );
-                      }
-                    },
-                    (error) => {
-                      if (!timedOut) {
-                        logger.error(
-                          "Failed to retrieve envelope after event",
-                          error,
-                        );
-                        state.envelopeRetrievalInProgress = false;
-                        reject(error);
-                        state.inProgressRampIdPromise = null;
-                      }
-                    },
-                  );
+                  (window as unknown as AlloyWindow)
+                    .ats!.retrieveEnvelope()
+                    .then(
+                      (envelopeResult) => {
+                        if (!timedOut) {
+                          processEnvelope(
+                            envelopeResult,
+                            resolve,
+                            cookieManager,
+                            logger,
+                          );
+                        }
+                      },
+                      (error) => {
+                        if (!timedOut) {
+                          logger.error(
+                            "Failed to retrieve envelope after event",
+                            error,
+                          );
+                          state.envelopeRetrievalInProgress = false;
+                          reject(error);
+                          state.inProgressRampIdPromise = null;
+                        }
+                      },
+                    );
                 });
               }
             })

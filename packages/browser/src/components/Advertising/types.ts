@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import type { Event } from "@adobe/alloy-core/core/types.js";
+import type { CookieAttributes } from "@adobe/alloy-core/services";
 
 export interface AdvertiserSetting {
   advertiserId: string;
@@ -54,7 +55,7 @@ export interface CookieManager {
   setValue: (
     key: string,
     value?: unknown,
-    options?: Record<string, unknown>,
+    options?: CookieAttributes,
   ) => boolean;
 }
 

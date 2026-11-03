@@ -13,7 +13,8 @@ governing permissions and limitations under the License.
 import { removeNode } from "@adobe/alloy-core/utils/dom";
 import setHtml from "./setHtml.js";
 import prependHtml from "./prependHtml.js";
-import { createAction } from "./action.js";
+import { createAction, toDomActionModule } from "./action.js";
+import type { DomActionModules } from "../types.js";
 import setText from "./setText.js";
 import setAttributes from "./setAttributes.js";
 import swapImage from "./swapImage.js";
@@ -45,23 +46,35 @@ export const DOM_ACTION_APPEND_HTML = "appendHtml";
 export const DOM_ACTION_CLICK = "click";
 export const DOM_ACTION_COLLECT_INTERACTIONS = "collectInteractions";
 
-export default () => {
+export default (): DomActionModules => {
   return {
-    [DOM_ACTION_SET_HTML]: createAction(setHtml, true),
-    [DOM_ACTION_CUSTOM_CODE]: createAction(prependHtml, true),
-    [DOM_ACTION_SET_TEXT]: createAction(setText, true),
-    [DOM_ACTION_SET_ATTRIBUTE]: createAction(setAttributes, true),
-    [DOM_ACTION_SET_IMAGE_SOURCE]: createAction(swapImage, true),
-    [DOM_ACTION_SET_STYLE]: createAction(setStyles, true),
-    [DOM_ACTION_MOVE]: createAction(move, true),
-    [DOM_ACTION_RESIZE]: createAction(resize, true),
-    [DOM_ACTION_REARRANGE]: createAction(rearrangeChildren),
-    [DOM_ACTION_REMOVE]: createAction(removeNode, true),
-    [DOM_ACTION_INSERT_AFTER]: createAction(insertHtmlAfter),
-    [DOM_ACTION_INSERT_BEFORE]: createAction(insertHtmlBefore),
-    [DOM_ACTION_REPLACE_HTML]: createAction(replaceHtml, true),
-    [DOM_ACTION_PREPEND_HTML]: createAction(prependHtml),
-    [DOM_ACTION_APPEND_HTML]: createAction(appendHtml),
-    [DOM_ACTION_COLLECT_INTERACTIONS]: createAction(collectInteractions, true),
+    [DOM_ACTION_SET_HTML]: toDomActionModule(createAction(setHtml, true)),
+    [DOM_ACTION_CUSTOM_CODE]: toDomActionModule(
+      createAction(prependHtml, true),
+    ),
+    [DOM_ACTION_SET_TEXT]: toDomActionModule(createAction(setText, true)),
+    [DOM_ACTION_SET_ATTRIBUTE]: toDomActionModule(
+      createAction(setAttributes, true),
+    ),
+    [DOM_ACTION_SET_IMAGE_SOURCE]: toDomActionModule(
+      createAction(swapImage, true),
+    ),
+    [DOM_ACTION_SET_STYLE]: toDomActionModule(createAction(setStyles, true)),
+    [DOM_ACTION_MOVE]: toDomActionModule(createAction(move, true)),
+    [DOM_ACTION_RESIZE]: toDomActionModule(createAction(resize, true)),
+    [DOM_ACTION_REARRANGE]: toDomActionModule(createAction(rearrangeChildren)),
+    [DOM_ACTION_REMOVE]: toDomActionModule(createAction(removeNode, true)),
+    [DOM_ACTION_INSERT_AFTER]: toDomActionModule(createAction(insertHtmlAfter)),
+    [DOM_ACTION_INSERT_BEFORE]: toDomActionModule(
+      createAction(insertHtmlBefore),
+    ),
+    [DOM_ACTION_REPLACE_HTML]: toDomActionModule(
+      createAction(replaceHtml, true),
+    ),
+    [DOM_ACTION_PREPEND_HTML]: toDomActionModule(createAction(prependHtml)),
+    [DOM_ACTION_APPEND_HTML]: toDomActionModule(createAction(appendHtml)),
+    [DOM_ACTION_COLLECT_INTERACTIONS]: toDomActionModule(
+      createAction(collectInteractions, true),
+    ),
   };
 };
