@@ -690,4 +690,13 @@ export default defineConfig([
       "vitest/valid-title": "warn",
     },
   },
+  // Packed-package consumer fixtures import export-map keys verbatim (e.g.
+  // `./baseCode.js`), which resolve only once dist/ is built.
+  {
+    name: "alloy/browser/package-consumer-fixtures",
+    files: ["packages/browser/test/package/consumer/**/*.ts"],
+    rules: {
+      "import/extensions": "off",
+    },
+  },
 ]);

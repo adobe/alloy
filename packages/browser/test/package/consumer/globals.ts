@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 // A consumer that types the vendor globals Alloy reads in its own way. Alloy's
 // declarations must not merge their own shapes into the consumer's `Window`.
-// eslint-disable-next-line import/extensions -- the package export is named `./baseCode.js`
+
 import "@adobe/alloy/baseCode.js";
 import { createInstance } from "@adobe/alloy";
 
