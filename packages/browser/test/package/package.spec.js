@@ -96,21 +96,33 @@ describe("@adobe/alloy npm package", () => {
       globalThis.document = window.document;
       Object.defineProperty(globalThis, "navigator", { value: window.navigator });
 
-      const { createCustomInstance } = await import("@adobe/alloy");
-      const alloy = createCustomInstance();
-      let implementationDetails;
-      await alloy("configure", {
-        orgId: "test@AdobeOrg",
-        datastreamId: "test-datastream",
-        context: [],
-        onBeforeEventSend({ xdm }) {
-          implementationDetails = xdm.implementationDetails;
-          return false;
-        },
-      });
-      await alloy("sendEvent");
-      const { libraryInfo } = await alloy("getLibraryInfo");
-      console.log(JSON.stringify({ implementationDetails, libraryInfo }));
+      const { createInstance, createCustomInstance } = await import("@adobe/alloy");
+      const { default: setupBaseCode } = await import("@adobe/alloy/baseCode.js");
+      setupBaseCode(window, ["standalone"]);
+      await import("@adobe/alloy/standalone.js");
+
+      const instances = {
+        createInstance: createInstance(),
+        createCustomInstance: createCustomInstance(),
+        standalone: window.standalone,
+      };
+      const results = {};
+      for (const [name, alloy] of Object.entries(instances)) {
+        let implementationDetails;
+        await alloy("configure", {
+          orgId: name + "@AdobeOrg",
+          datastreamId: name + "-datastream",
+          context: [],
+          onBeforeEventSend({ xdm }) {
+            implementationDetails = xdm.implementationDetails;
+            return false;
+          },
+        });
+        await alloy("sendEvent");
+        const { libraryInfo } = await alloy("getLibraryInfo");
+        results[name] = { implementationDetails, libraryInfo };
+      }
+      console.log(JSON.stringify(results));
       await window.happyDOM.close();
     `;
     const output = execFileSync(
@@ -127,15 +139,20 @@ describe("@adobe/alloy npm package", () => {
     }
   });
 
-  test("uses the browser package version in XDM implementationDetails", () => {
-    expect(result.implementationDetails).toEqual({
-      name: "https://ns.adobe.com/experience/alloy",
-      version: manifest.version,
-      environment: "browser",
-    });
-  });
+  describe.each(["createInstance", "createCustomInstance", "standalone"])(
+    "%s",
+    (name) => {
+      test("uses the browser package version in XDM implementationDetails", () => {
+        expect(result[name].implementationDetails).toEqual({
+          name: "https://ns.adobe.com/experience/alloy",
+          version: manifest.version,
+          environment: "browser",
+        });
+      });
 
-  test("reports the browser package version in getLibraryInfo", () => {
-    expect(result.libraryInfo.version).toBe(manifest.version);
-  });
+      test("reports the browser package version in getLibraryInfo", () => {
+        expect(result[name].libraryInfo.version).toBe(manifest.version);
+      });
+    },
+  );
 });

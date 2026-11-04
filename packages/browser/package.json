@@ -29,9 +29,9 @@
     "prepack": "pnpm run build",
     "release": "node scripts/release.mjs",
     "build:types": "tsc -p jsconfig.json --declaration --emitDeclarationOnly --outDir dist/types --checkJs false --noEmit false",
-    "build": "pnpm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,SERVICE_WORKER,SERVICE_WORKER_MIN,UTILITY_EXPORTS,BUNDLESIZE && pnpm run build:types",
-    "build:watch": "rollup -c --watch --environment BASE_CODE_MIN,STANDALONE,SERVICE_WORKER,UTILITY_EXPORTS",
-    "dev:prepare": "rollup -c --environment BASE_CODE_MIN,STANDALONE,SERVICE_WORKER,UTILITY_EXPORTS",
+    "build": "pnpm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN,NPM_PACKAGE,SERVICE_WORKER,SERVICE_WORKER_MIN,UTILITY_EXPORTS,BUNDLESIZE && pnpm run build:types",
+    "build:watch": "rollup -c --watch --environment BASE_CODE_MIN,STANDALONE,NPM_PACKAGE,SERVICE_WORKER,UTILITY_EXPORTS",
+    "dev:prepare": "rollup -c --environment BASE_CODE_MIN,STANDALONE,NPM_PACKAGE,SERVICE_WORKER,UTILITY_EXPORTS",
     "dev": "pnpm run build:watch",
     "build:custom": "node --conditions=alloy-source --import ../../scripts/helpers/registerTsFromJsHook.js scripts/alloyBuilder.js",
     "test:functional": "pnpm exec playwright install chromium && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe playwright:chromium",
@@ -43,16 +43,18 @@
   },
   "exports": {
     ".": {
+      "alloy-source": "./src/index.js",
       "types": "./dist/types/browser/src/index.d.ts",
-      "default": "./src/index.js"
+      "default": "./dist/index.js"
     },
     "./baseCode.js": {
       "types": "./dist/types/browser/src/baseCode/index.d.ts",
       "default": "./src/baseCode/index.js"
     },
     "./standalone.js": {
+      "alloy-source": "./src/standalone.js",
       "types": "./dist/types/browser/src/standalone.d.ts",
-      "default": "./src/standalone.js"
+      "default": "./dist/alloy.js"
     },
     "./serviceWorker.js": {
       "types": "./dist/types/browser/src/serviceWorker.d.ts",

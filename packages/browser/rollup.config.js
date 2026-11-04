@@ -194,6 +194,7 @@ export const sourceExportConditions = ["alloy-source"];
 const BASE_CODE = "BASE_CODE";
 // build the standalone distribution
 const STANDALONE = "STANDALONE";
+const NPM_PACKAGE = "NPM_PACKAGE";
 // build the npm package entrypoint (createInstance) for functional tests
 const FUNCTIONAL_TEST_LOCAL = "FUNCTIONAL_TEST_LOCAL";
 // build from the published npm package for functional tests
@@ -264,6 +265,7 @@ const buildPlugins = ({ variant, minify }) => {
   }
   if (
     variant === STANDALONE ||
+    variant === NPM_PACKAGE ||
     variant === CUSTOM_BUILD ||
     variant === SERVICE_WORKER ||
     variant === UTILITY_EXPORTS
@@ -333,12 +335,12 @@ export const buildConfig = ({
     };
   }
 
-  if (variant === UTILITY_EXPORTS) {
+  if (variant === NPM_PACKAGE || variant === UTILITY_EXPORTS) {
     return {
-      input,
+      input: variant === NPM_PACKAGE ? `${dirname}/src/index.js` : input,
       output: [
         {
-          file,
+          file: file || `${dirname}/dist/index.js`,
           format: "es",
         },
       ],
@@ -385,6 +387,7 @@ const addUtilityExportConfigs = () => {
 
 addConfig(BASE_CODE);
 addConfig(STANDALONE);
+addConfig(NPM_PACKAGE);
 addConfig(FUNCTIONAL_TEST_LOCAL);
 addConfig(FUNCTIONAL_TEST_PROD);
 addConfig(SERVICE_WORKER);
