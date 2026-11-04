@@ -14,7 +14,6 @@ import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import { useForm } from "@tanstack/react-form";
-import { object } from "yup";
 import { ProgressCircle } from "@react-spectrum/s2";
 import useExtensionBridge from "../utils/useExtensionBridge";
 import useReportAsyncError from "../utils/useReportAsyncError";
@@ -25,7 +24,6 @@ import {
   submitForm,
   validateOnChangeBlurAndSubmit,
 } from "../forms/formContext";
-import { getYupErrors, isValidAgainstSchema } from "../forms/yupValidation";
 import {
   flattenErrors,
   getErrors as getSchemaErrors,
@@ -63,24 +61,19 @@ const ExtensionView = ({
         reportAsyncError(e);
       }
     }
-    return object();
+    return undefined;
   };
 
   const getErrors = (values) => {
     try {
-      return Object.assign(
-        getFieldValidatorErrors(form, values),
-        ...[]
-          .concat(resolveValidationSchema())
-          .map((schema) =>
-            typeof schema === "function"
-              ? getSchemaErrors(schema, values)
-              : getYupErrors(schema, values),
-          ),
-        flattenErrors(
+      const schema = resolveValidationSchema();
+      return {
+        ...getFieldValidatorErrors(form, values),
+        ...(schema ? getSchemaErrors(schema, values) : {}),
+        ...flattenErrors(
           viewRegistrationRef.current?.validateFormState?.({ values }),
         ),
-      );
+      };
     } catch {
       reportAsyncError(
         new Error("An error occurred while validating the view."),
@@ -110,15 +103,7 @@ const ExtensionView = ({
     await submitForm(form);
 
     // Setting context to the values so you can use "$..." in when conditions
-    return (
-      []
-        .concat(resolveValidationSchema())
-        .every(
-          (schema) =>
-            typeof schema === "function" ||
-            isValidAgainstSchema(schema, form.state.values),
-        ) && Object.keys(getErrors(form.state.values)).length === 0
-    );
+    return Object.keys(getErrors(form.state.values)).length === 0;
   };
 
   const myValidateNonFormState = async () => {

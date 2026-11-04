@@ -74,8 +74,7 @@ export const when = (predicate, then, otherwise) =>
     return !schema || applySchema(schema, value, ctx);
   });
 
-// Fields missing from the values are not validated, like Yup did for
-// undefined values.
+// Fields missing from the values are not validated.
 export const shape = (fields) =>
   type(
     Object.fromEntries(

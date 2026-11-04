@@ -20,7 +20,7 @@ import FormElementContainer from "../components/formElementContainer";
  * @property {Function} [getSettings] - A function that converts the form state
  * into an object of Adobe Tags settings.
  * @property {object} [validationShape] - An object containing form fields as
- * keys and Yup validation schemas as values.
+ * keys and ArkType validation schemas as values.
  * @property {Function} [getValidationShape] - A function that takes an existing
  * validation shape and returns a new validation shape. This is useful if you need to
  * modify an existing validator for the same field. Only use one of "validationShape"

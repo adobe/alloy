@@ -134,7 +134,7 @@ ComboboxItem.propTypes = {
  * data element should be.
  * @param {boolean} [options.isRequired] - Whether or not the field is
  * required. When required, the user will need to enter at least one string.
- * @param options.validationSchema - A yup validation schema to use for each
+ * @param options.validationSchema - An ArkType validation schema to use for each
  * string in the array.
  * @param options.fieldItems
  * @returns {Form} A form field for an array of strings.
