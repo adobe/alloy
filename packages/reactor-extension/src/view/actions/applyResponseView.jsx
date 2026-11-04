@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { object, string } from "yup";
+import { all, matches, required, shape } from "../forms/validation";
 import FormTextField from "../forms/fields/TextField";
 import FormCheckbox from "../forms/fields/Checkbox";
 import DataElementSelector from "../components/dataElementSelector";
@@ -55,14 +55,12 @@ const getSettings = ({ values }) => {
   return settings;
 };
 
-const validationSchema = object().shape({
-  responseHeaders: string().matches(
-    singleDataElementRegex,
-    DATA_ELEMENT_REQUIRED,
+const validationSchema = shape({
+  responseHeaders: matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
+  responseBody: all(
+    required("Please provide a response body."),
+    matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
   ),
-  responseBody: string()
-    .matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED)
-    .required("Please provide a response body."),
 });
 
 const FormFields = ({ initInfo }) => {

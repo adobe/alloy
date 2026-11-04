@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { useRef, useState } from "react";
-import { object } from "yup";
+import { required, shape } from "../forms/validation";
 import {
   ProgressCircle,
   Heading as AlertHeading,
@@ -316,8 +316,8 @@ const getSettings =
     return response;
   };
 
-const validationSchema = object().shape({
-  dataElement: object().required("Please specify a data element."),
+const validationSchema = shape({
+  dataElement: required("Please specify a data element."),
 });
 
 const validateFormState =

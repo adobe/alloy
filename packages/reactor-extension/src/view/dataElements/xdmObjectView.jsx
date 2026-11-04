@@ -22,7 +22,7 @@ import {
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useFormField } from "../forms/formContext";
 import { useFieldValue } from "../utils/useFieldValue";
-import { object, string } from "yup";
+import { required, shape } from "../forms/validation";
 import FormElementContainer from "../components/formElementContainer";
 import ExtensionView from "../components/extensionView";
 import validate from "../components/objectEditor/helpers/validate";
@@ -231,9 +231,9 @@ const getSettings =
     };
   };
 
-const validationSchema = object().shape({
-  sandboxName: string().required("Please select a sandbox."),
-  selectedSchema: object().nullable().required("Please select a schema."),
+const validationSchema = shape({
+  sandboxName: required("Please select a sandbox."),
+  selectedSchema: required("Please select a schema."),
 });
 
 const validateFormState =
