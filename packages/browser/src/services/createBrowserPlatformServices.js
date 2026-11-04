@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 /** @import { PlatformServices } from "@adobe/alloy-core/services" */
 
+import packageJson from "../../package.json" with { type: "json" };
 import createBrowserNetworkService from "./createBrowserNetworkService.js";
 import createBrowserStorageService from "./createBrowserStorageService.js";
 import createBrowserCookieService from "./createBrowserCookieService.js";
@@ -23,6 +24,7 @@ import createBrowserGlobalsService from "./createBrowserGlobalsService.js";
  * @returns {PlatformServices}
  */
 const createBrowserPlatformServices = () => ({
+  libraryVersionOverride: packageJson.version,
   createNetworkService: (logger) => createBrowserNetworkService({ logger }),
   storage: createBrowserStorageService(),
   cookie: createBrowserCookieService(),

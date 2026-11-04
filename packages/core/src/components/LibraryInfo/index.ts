@@ -30,8 +30,7 @@ export interface LibraryInfo {
 export interface LibraryInfoOptions {
   config: Config;
   componentRegistry: ComponentRegistry;
-  /** Node's platform services add `libraryVersionOverride`. */
-  platformServices?: PlatformServices & { libraryVersionOverride?: string };
+  platformServices?: PlatformServices;
 }
 
 const prepareLibraryInfo = ({
@@ -72,8 +71,6 @@ const createLibraryInfo = ({
   componentRegistry,
   platformServices,
 }: LibraryInfoOptions) => {
-  // defaultLibraryVersion is a build-time placeholder the browser bundler
-  // replaces; other runtimes (e.g. Node) override it via platformServices.
   const libraryVersion =
     platformServices?.libraryVersionOverride ?? defaultLibraryVersion;
   return {

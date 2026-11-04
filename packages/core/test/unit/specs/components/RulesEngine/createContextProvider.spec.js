@@ -48,6 +48,16 @@ describe("RulesEngine:createContextProvider", () => {
   afterEach(() => {
     vi.useRealTimers();
   });
+  it("uses the supplied library version in the decisioning context", () => {
+    contextProvider = createContextProvider({
+      eventRegistry: { toJSON: () => ({}) },
+      getWindowContext: () => window,
+      getBrowser,
+      libraryVersion: "9.8.7",
+    });
+    expect(contextProvider.getContext()["~sdkver"]).toBe("9.8.7");
+  });
+
   it("returns page context", () => {
     eventRegistry = createEventRegistry({
       storage,

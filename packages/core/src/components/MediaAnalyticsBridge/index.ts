@@ -24,7 +24,12 @@ import type { ComponentTools } from "../../core/types.js";
 
 export type MediaAnalyticsBridgeOptions = Pick<
   ComponentTools,
-  "eventManager" | "sendEdgeNetworkRequest" | "config" | "logger" | "consent"
+  | "eventManager"
+  | "sendEdgeNetworkRequest"
+  | "config"
+  | "logger"
+  | "consent"
+  | "platformServices"
 >;
 
 const createMediaAnalyticsBridge = ({
@@ -33,6 +38,7 @@ const createMediaAnalyticsBridge = ({
   config,
   logger,
   consent,
+  platformServices,
 }: MediaAnalyticsBridgeOptions) => {
   // The cache manager takes no options; the argument is kept so the bundle is unchanged.
   const mediaSessionCacheManager = (
@@ -75,6 +81,7 @@ const createMediaAnalyticsBridge = ({
     createGetInstance,
     logger,
     config,
+    libraryVersion: platformServices.libraryVersionOverride,
   });
 };
 

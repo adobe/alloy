@@ -14,6 +14,18 @@ import { describe, it, expect, vi } from "vitest";
 import implementationDetails from "../../../../../src/components/Context/implementationDetails.js";
 
 describe("Context::implementationDetails", () => {
+  it("uses the platform library version override", () => {
+    const event = { mergeXdm: vi.fn() };
+    implementationDetails(event, "9.8.7");
+    expect(event.mergeXdm).toHaveBeenCalledWith({
+      implementationDetails: {
+        name: "https://ns.adobe.com/experience/alloy",
+        version: "9.8.7",
+        environment: "browser",
+      },
+    });
+  });
+
   it("works", () => {
     const event = {
       mergeXdm: vi.fn(),

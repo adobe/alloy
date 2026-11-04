@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { number, objectOf, string } from "../../utils/validation/index.js";
 import type { AnyValidator } from "../../utils/validation/types.js";
-import LIBRARY_VERSION from "../../constants/libraryVersion.js";
+import defaultLibraryVersion from "../../constants/libraryVersion.js";
 import type { Logger } from "../../core/types.js";
 
 // Follows the same API as Javascript 3.x SDK
@@ -20,9 +20,13 @@ import type { Logger } from "../../core/types.js";
 
 export interface MediaHelperOptions {
   logger: Logger;
+  libraryVersion?: string;
 }
 
-export default ({ logger }: MediaHelperOptions) => {
+export default ({
+  logger,
+  libraryVersion = defaultLibraryVersion,
+}: MediaHelperOptions) => {
   // Schema keys define positional argument order. mapValidatedToXdm receives the same order after validation.
   const withValidation = <TArgs extends unknown[], TResult>(
     helperName: string,
@@ -176,6 +180,6 @@ export default ({ logger }: MediaHelperOptions) => {
     createChapterObject,
     createStateObject,
     createQoEObject,
-    version: `WEBSDK ${LIBRARY_VERSION}`,
+    version: `WEBSDK ${libraryVersion}`,
   };
 };

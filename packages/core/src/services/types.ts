@@ -155,6 +155,7 @@ export interface GlobalsService {
 }
 
 export interface PlatformServices {
+  libraryVersionOverride?: string;
   createNetworkService: (logger: Logger) => NetworkService;
   storage: StorageService;
   cookie: CookieService;

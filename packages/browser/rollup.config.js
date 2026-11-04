@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import path from "path";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
+import json from "@rollup/plugin-json";
 import replace from "@rollup/plugin-replace";
 import terser from "@rollup/plugin-terser";
 import { transform as oxcTransform } from "oxc-transform";
@@ -176,12 +177,13 @@ const stripTypesPlugin = () => ({
 });
 
 /**
- * Plugins that let Rollup bundle `@adobe/alloy-core` from its (partly
- * TypeScript) source. Use together with `sourceExportConditions` in
+ * Plugins that let Rollup bundle SDK sources, including TypeScript and
+ * package metadata imports. Use together with `sourceExportConditions` in
  * node-resolve.
  * @returns {import("rollup").Plugin[]}
  */
 export const typeScriptSourcePlugins = () => [
+  json(),
   resolveTsFromJsPlugin(),
   stripTypesPlugin(),
 ];
@@ -194,7 +196,6 @@ export const sourceExportConditions = ["alloy-source"];
 const BASE_CODE = "BASE_CODE";
 // build the standalone distribution
 const STANDALONE = "STANDALONE";
-const NPM_PACKAGE = "NPM_PACKAGE";
 // build the npm package entrypoint (createInstance) for functional tests
 const FUNCTIONAL_TEST_LOCAL = "FUNCTIONAL_TEST_LOCAL";
 // build from the published npm package for functional tests
@@ -265,7 +266,6 @@ const buildPlugins = ({ variant, minify }) => {
   }
   if (
     variant === STANDALONE ||
-    variant === NPM_PACKAGE ||
     variant === CUSTOM_BUILD ||
     variant === SERVICE_WORKER ||
     variant === UTILITY_EXPORTS
@@ -335,12 +335,12 @@ export const buildConfig = ({
     };
   }
 
-  if (variant === NPM_PACKAGE || variant === UTILITY_EXPORTS) {
+  if (variant === UTILITY_EXPORTS) {
     return {
-      input: variant === NPM_PACKAGE ? `${dirname}/src/index.js` : input,
+      input,
       output: [
         {
-          file: file || `${dirname}/dist/index.js`,
+          file,
           format: "es",
         },
       ],
@@ -387,7 +387,6 @@ const addUtilityExportConfigs = () => {
 
 addConfig(BASE_CODE);
 addConfig(STANDALONE);
-addConfig(NPM_PACKAGE);
 addConfig(FUNCTIONAL_TEST_LOCAL);
 addConfig(FUNCTIONAL_TEST_PROD);
 addConfig(SERVICE_WORKER);

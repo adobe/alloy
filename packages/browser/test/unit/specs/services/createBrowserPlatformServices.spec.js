@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import { afterEach, describe, it, expect } from "vitest";
 import createBrowserPlatformServices from "../../../../src/services/createBrowserPlatformServices.js";
+import packageJson from "../../../../package.json";
 
 const WIRING_COOKIE = "alloy_wiring_test";
 
@@ -22,6 +23,11 @@ afterEach(() => {
 });
 
 describe("createBrowserPlatformServices (wiring)", () => {
+  it("exposes the browser package version as libraryVersionOverride", () => {
+    const services = createBrowserPlatformServices();
+    expect(services.libraryVersionOverride).toBe(packageJson.version);
+  });
+
   it("returns an object with all service keys", () => {
     const services = createBrowserPlatformServices();
     expect(services).toHaveProperty("createNetworkService");

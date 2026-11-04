@@ -38,6 +38,7 @@ export interface MediaAnalyticsBridgeComponentOptions {
   createMediaHelper: typeof createMediaHelperFn;
   createGetInstance: typeof createGetInstanceFn;
   config: Config;
+  libraryVersion?: string;
 }
 
 /** The `onBeforeEvent` payload this component reads. */
@@ -58,6 +59,7 @@ export default ({
   createMediaHelper,
   createGetInstance,
   config,
+  libraryVersion,
 }: MediaAnalyticsBridgeComponentOptions) => {
   return {
     lifecycle: {
@@ -87,7 +89,10 @@ export default ({
             );
           }
           logger.info("Streaming media is configured in legacy mode.");
-          const mediaAnalyticsHelper = createMediaHelper({ logger });
+          const mediaAnalyticsHelper = createMediaHelper({
+            logger,
+            libraryVersion,
+          });
 
           return Promise.resolve({
             getInstance: () => {

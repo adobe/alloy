@@ -113,6 +113,9 @@ describe("@adobe/alloy npm package", () => {
           orgId: name + "@AdobeOrg",
           datastreamId: name + "-datastream",
           context: [],
+          ...(name === "createCustomInstance" ? {} : {
+            streamingMedia: { channel: "test", playerName: "test" },
+          }),
           onBeforeEventSend({ xdm }) {
             implementationDetails = xdm.implementationDetails;
             return false;
@@ -121,6 +124,10 @@ describe("@adobe/alloy npm package", () => {
         await alloy("sendEvent");
         const { libraryInfo } = await alloy("getLibraryInfo");
         results[name] = { implementationDetails, libraryInfo };
+        if (name !== "createCustomInstance") {
+          const tracker = await alloy("getMediaAnalyticsTracker");
+          results[name].mediaVersion = tracker.version;
+        }
       }
       console.log(JSON.stringify(results));
       await window.happyDOM.close();
@@ -153,6 +160,12 @@ describe("@adobe/alloy npm package", () => {
       test("reports the browser package version in getLibraryInfo", () => {
         expect(result[name].libraryInfo.version).toBe(manifest.version);
       });
+
+      if (name !== "createCustomInstance") {
+        test("uses the browser package version in the media tracker", () => {
+          expect(result[name].mediaVersion).toBe(`WEBSDK ${manifest.version}`);
+        });
+      }
     },
   );
 });
