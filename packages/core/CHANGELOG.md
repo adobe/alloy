@@ -1,5 +1,13 @@
 # @adobe/alloy-core
 
+## 1.4.1
+
+### Patch Changes
+
+- [#1629](https://github.com/adobe/alloy/pull/1629) [`b78cb3e`](https://github.com/adobe/alloy/commit/b78cb3ec5f03db81aa005ae1c9c678d8cb8e0ca1) Thanks [@carterworks](https://github.com/carterworks)! - Use the platform-provided SDK version consistently in XDM implementation details, library info, rules, and media metadata. This fixes npm installations reporting the literal `__VERSION__` placeholder without changing package entry points.
+
+  Platform services expose the optional version as `libraryVersion`. Library info continues to accept the legacy `libraryVersionOverride` field for compatibility with existing Node SDK releases.
+
 ## 1.4.1-beta.0
 
 ### Patch Changes

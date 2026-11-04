@@ -1,5 +1,12 @@
 # @adobe/alloy-sandbox-node
 
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies [[`b78cb3e`](https://github.com/adobe/alloy/commit/b78cb3ec5f03db81aa005ae1c9c678d8cb8e0ca1)]:
+  - @adobe/alloy-node@0.2.3
+
 ## 0.0.8-beta.0
 
 ### Patch Changes
