@@ -32,7 +32,7 @@ import {
 } from "@react-spectrum/s2";
 import { size, style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useState } from "react";
-import { object, array, string } from "yup";
+import { shape, when } from "../forms/validation";
 import { useFormContext } from "../forms/formContext";
 import { useFieldValue } from "../utils/useFieldValue";
 import DeleteIcon from "@react-spectrum/s2/icons/Delete";
@@ -85,10 +85,7 @@ import {
   LIBRARY_TYPE_MANAGED,
   LIBRARY_TYPE_PREINSTALLED,
 } from "../constants/libraryType";
-import {
-  createNameValidation,
-  createUniqueNameTest,
-} from "./basicSectionBridge";
+import { nameSchema } from "./basicSectionBridge";
 
 const sectionBridges = [
   basicSectionBridge,
@@ -129,34 +126,19 @@ const getInstanceSettings = getMergedBridgeMethod("getInstanceSettings");
 /**
  * Creates the validation schema based on library type
  */
-const createValidationSchema = () => {
-  // Create full validation schema by merging all bridge schemas
-  const fullInstanceSchema = sectionBridges.reduce((instanceSchema, bridge) => {
-    return bridge.instanceValidationSchema
-      ? instanceSchema.concat(bridge.instanceValidationSchema)
-      : instanceSchema;
-  }, object());
+const fullInstanceSchema = sectionBridges
+  .map((bridge) => bridge.instanceValidationSchema)
+  .filter(Boolean)
+  .reduce((schema, bridgeSchema) => schema.and(bridgeSchema));
 
-  // Create minimal schema for preinstalled mode (only name validation)
-  const preinstalledInstanceSchema = object()
-    .shape({
-      name: createNameValidation(),
-    })
-    .test(createUniqueNameTest());
-
-  return object().shape({
-    libraryCode: object().shape({
-      type: string().required(),
-    }),
-    instances: array().of(
-      object().when("$libraryCode.type", {
-        is: LIBRARY_TYPE_PREINSTALLED,
-        then: () => preinstalledInstanceSchema,
-        otherwise: () => fullInstanceSchema,
-      }),
-    ),
-  });
-};
+const validationSchema = shape({
+  instances: when(
+    (instances, ctx) =>
+      ctx.root.libraryCode?.type === LIBRARY_TYPE_PREINSTALLED,
+    shape({ name: nameSchema }).array(),
+    fullInstanceSchema.array(),
+  ),
+});
 
 const getInitialValues = async ({ initInfo }) => {
   const { instances: instancesSettings } = initInfo.settings || {};
@@ -609,7 +591,7 @@ const ConfigurationView = () => {
     <ExtensionView
       getInitialValues={getInitialValues}
       getSettings={getSettings}
-      validationSchema={createValidationSchema()}
+      validationSchema={validationSchema}
       render={({ initInfo }) => {
         return <Configuration initInfo={initInfo} />;
       }}

@@ -16,6 +16,7 @@ import { RadioGroup, Radio, TextField } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useFieldError, useFormField } from "../formContext";
 import { string } from "yup";
+import { all, matches, parentOf, required, when } from "../validation";
 import RawDataElementSelector from "../../components/rawDataElementSelector";
 import singleDataElementRegex from "../../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../../constants/validationErrorMessages";
@@ -31,6 +32,15 @@ export const createRadioGroupWithDataElementValidationSchema = (name) => {
         .matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
   });
 };
+
+export const radioGroupWithDataElementSchema = (name) =>
+  when(
+    (value, ctx) => parentOf(ctx)[`${name}DataElement`]?.isDataElement,
+    all(
+      required(DATA_ELEMENT_REQUIRED),
+      matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
+    ),
+  );
 
 const FormRadioGroupWithDataElement = ({
   name,

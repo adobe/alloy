@@ -14,7 +14,15 @@ import { useEffect } from "react";
 import { setFieldBlurred, useFormContext } from "../forms/formContext";
 import { useFieldValue } from "../utils/useFieldValue";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { object, string } from "yup";
+import {
+  all,
+  isEmpty,
+  parentOf,
+  required,
+  rule,
+  shape,
+  when,
+} from "../forms/validation";
 import { ActionButton, Checkbox, Radio } from "@react-spectrum/s2";
 import PropTypes from "prop-types";
 import SectionHeader from "../components/sectionHeader";
@@ -228,38 +236,30 @@ export const bridge = {
 
     return instanceSettings;
   },
-  instanceValidationSchema: object().shape({
-    downloadLinkQualifier: string().when(
-      ["$components.activityCollector", "clickCollection.downloadLinkEnabled"],
-      {
-        is: true,
-        then: (schema) =>
-          schema.required("Please provide a regular expression.").test({
-            name: "invalidDownloadLinkQualifier",
-            message: "Please provide a valid regular expression.",
-            test(value) {
-              try {
-                return RegExp(value) !== null;
-              } catch {
-                return false;
-              }
-            },
-          }),
-      },
+  instanceValidationSchema: shape({
+    downloadLinkQualifier: when(
+      (value, ctx) =>
+        ctx.root.components?.activityCollector === true &&
+        parentOf(ctx).clickCollection?.downloadLinkEnabled === true,
+      all(
+        required("Please provide a regular expression."),
+        rule((value) => {
+          try {
+            return RegExp(value) !== null;
+          } catch {
+            return false;
+          }
+        }, "Please provide a valid regular expression."),
+      ),
     ),
-    onBeforeLinkClickSend: string().when(
-      ["eventGrouping", "linkCallbackType"],
-      {
-        is: (eventGrouping, linkCallbackType) =>
-          eventGrouping !== EVENT_GROUPING.NONE &&
-          linkCallbackType === LINK_CALLBACK.ON_BEFORE_LINK_CLICK_SEND,
-        then: (schema) =>
-          schema.oneOf(
-            [""],
-            "Event grouping cannot be used when the onBeforeLinkClickSend callback is specified. Use filterClickDetails instead or turn off event grouping.",
-          ),
-      },
-    ),
+    onBeforeLinkClickSend: rule((value, ctx) => {
+      const { eventGrouping, linkCallbackType } = parentOf(ctx);
+      return (
+        isEmpty(value) ||
+        eventGrouping === EVENT_GROUPING.NONE ||
+        linkCallbackType !== LINK_CALLBACK.ON_BEFORE_LINK_CLICK_SEND
+      );
+    }, "Event grouping cannot be used when the onBeforeLinkClickSend callback is specified. Use filterClickDetails instead or turn off event grouping."),
   }),
 };
 

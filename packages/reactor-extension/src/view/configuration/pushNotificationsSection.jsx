@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { object, string } from "yup";
+import { required, shape, when } from "../forms/validation";
 import { useEffect, useRef } from "react";
 import { setFieldBlurred, useFormContext } from "../forms/formContext";
 import { useFieldValue } from "../utils/useFieldValue";
@@ -70,20 +70,15 @@ export const bridge = {
     return instanceSettings;
   },
 
-  instanceValidationSchema: object().shape({
-    pushNotifications: object().when("$components.pushNotifications", {
-      is: true,
-      then: (schema) =>
-        schema.shape({
-          vapidPublicKey: string().required(
-            "Please provide a VAPID public key.",
-          ),
-          appId: string().required("Please provide an Application ID."),
-          trackingDatasetId: string().required(
-            "Please provide a Tracking Dataset ID.",
-          ),
-        }),
-    }),
+  instanceValidationSchema: shape({
+    pushNotifications: when(
+      (value, ctx) => ctx.root.components?.pushNotifications === true,
+      shape({
+        vapidPublicKey: required("Please provide a VAPID public key."),
+        appId: required("Please provide an Application ID."),
+        trackingDatasetId: required("Please provide a Tracking Dataset ID."),
+      }),
+    ),
   }),
 };
 

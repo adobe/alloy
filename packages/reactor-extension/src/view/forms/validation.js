@@ -23,7 +23,11 @@ export const parentOf = (ctx) => getBy(ctx.root, ctx.path.slice(0, -1));
 // on, and read the other values through `parentOf(ctx)` or `ctx.root`.
 export const rule = (check, message) =>
   type("unknown").narrow(
-    (value, ctx) => check(value, ctx) || ctx.reject({ message }),
+    (value, ctx) =>
+      check(value, ctx) ||
+      ctx.reject({
+        message: typeof message === "function" ? message(value, ctx) : message,
+      }),
   );
 
 export const required = (message) => rule((value) => !isEmpty(value), message);

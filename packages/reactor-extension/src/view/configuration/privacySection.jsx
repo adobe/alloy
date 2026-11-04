@@ -14,12 +14,12 @@ import { Radio } from "@react-spectrum/s2";
 
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
-import { object, string } from "yup";
+import { shape, when } from "../forms/validation";
 import { useFieldValue } from "../utils/useFieldValue";
 import SectionHeader from "../components/sectionHeader";
 import InfoMessage from "../components/infoMessage";
 import FormRadioGroupWithDataElement, {
-  createRadioGroupWithDataElementValidationSchema,
+  radioGroupWithDataElementSchema,
 } from "../forms/fields/RadioGroupWithDataElement";
 import FormElementContainer from "../components/formElementContainer";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
@@ -61,12 +61,11 @@ export const bridge = {
 
     return instanceSettings;
   },
-  instanceValidationSchema: object().shape({
-    defaultConsent: string().when("$components.consent", {
-      is: true,
-      then: () =>
-        createRadioGroupWithDataElementValidationSchema("defaultConsent"),
-    }),
+  instanceValidationSchema: shape({
+    defaultConsent: when(
+      (value, ctx) => ctx.root.components?.consent === true,
+      radioGroupWithDataElementSchema("defaultConsent"),
+    ),
   }),
 };
 

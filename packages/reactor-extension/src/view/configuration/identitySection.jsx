@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { ComboBoxItem } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { object, string, lazy, mixed } from "yup";
+import { matches, rule, shape, when } from "../forms/validation";
 import SectionHeader from "../components/sectionHeader";
 import FormCheckbox from "../forms/fields/Checkbox";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
@@ -71,21 +71,14 @@ export const bridge = {
     }
     return instanceSettings;
   },
-  instanceValidationSchema: object().shape({
-    thirdPartyCookiesEnabled: lazy((value) =>
-      typeof value === "string" && value.includes("%")
-        ? string()
-            .matches(SINGLE_DATA_ELEMENT_REGEX, {
-              message: "Please enter a valid data element.",
-              excludeEmptyString: true,
-            })
-            .nullable()
-        : mixed()
-            .oneOf(
-              [ENABLED, DISABLED],
-              "Please choose a value or specify a data element.",
-            )
-            .required("Please choose a value or specify a data element."),
+  instanceValidationSchema: shape({
+    thirdPartyCookiesEnabled: when(
+      (value) => typeof value === "string" && value.includes("%"),
+      matches(SINGLE_DATA_ELEMENT_REGEX, "Please enter a valid data element."),
+      rule(
+        (value) => [ENABLED, DISABLED].includes(value),
+        "Please choose a value or specify a data element.",
+      ),
     ),
   }),
 };

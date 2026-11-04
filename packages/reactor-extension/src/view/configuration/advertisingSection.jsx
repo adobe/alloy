@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import { getBy } from "@tanstack/react-form";
 import { useFormContext } from "../forms/formContext";
 import { useFieldValue } from "../utils/useFieldValue";
 import {
@@ -26,7 +27,15 @@ import {
 } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
-import { object, lazy, string, array, mixed } from "yup";
+import {
+  all,
+  isEmpty,
+  matches,
+  parentOf,
+  rule,
+  shape,
+  when,
+} from "../forms/validation";
 import SectionHeader from "../components/sectionHeader";
 import InfoMessage from "../components/infoMessage";
 import FormElementContainer from "../components/formElementContainer";
@@ -51,23 +60,65 @@ const isDataElement = (value) =>
 const areDspFieldsActive = (enabled, dspEnabled) =>
   enabled !== DISABLED && (dspEnabled === ENABLED || isDataElement(dspEnabled));
 
+const ENABLED_DISABLED_MESSAGE =
+  "Please choose a value or specify a data element.";
+
+const validDataElement = matches(
+  SINGLE_DATA_ELEMENT_REGEX,
+  "Please enter a valid data element.",
+);
+
 /**
  * Validates an Enabled/Disabled combo box that also accepts a data element.
  */
-const enabledDisabledOrDataElementSchema = (value) =>
-  isDataElement(value)
-    ? string()
-        .matches(SINGLE_DATA_ELEMENT_REGEX, {
-          message: "Please enter a valid data element.",
-          excludeEmptyString: true,
-        })
-        .nullable()
-    : mixed()
-        .oneOf(
-          [ENABLED, DISABLED],
-          "Please choose a value or specify a data element.",
+const enabledDisabledOrDataElementSchema = when(
+  isDataElement,
+  validDataElement,
+  rule(
+    (value) => [ENABLED, DISABLED].includes(value),
+    ENABLED_DISABLED_MESSAGE,
+  ),
+);
+
+const dspDataElementField = when((value, ctx) => {
+  const { enabled, dspEnabled } = parentOf(ctx);
+  return areDspFieldsActive(enabled, dspEnabled) && isDataElement(value);
+}, validDataElement);
+
+// Advertiser rules read the advertising object two levels above the setting.
+const advertisingOf = (ctx) => getBy(ctx.root, ctx.path.slice(0, -3));
+
+const advertiserIdSchema = all(
+  rule(
+    (value) => !isEmpty(value) && value.trim() !== "",
+    (value, ctx) =>
+      advertisingOf(ctx)?.useManualEntry
+        ? "Please enter an advertiser ID."
+        : "Please select an advertiser.",
+  ),
+  rule((value, ctx) => {
+    const { useManualEntry = false, validAdvertiserIds = [] } =
+      advertisingOf(ctx) ?? {};
+    return (
+      isDataElement(value) ||
+      useManualEntry ||
+      validAdvertiserIds.length === 0 ||
+      validAdvertiserIds.includes(value)
+    );
+  }, "Unrecognized advertiser ID."),
+  rule((value, ctx) => {
+    const settings = getBy(ctx.root, ctx.path.slice(0, -2));
+    return (
+      isDataElement(value) ||
+      !settings
+        .slice(0, ctx.path.at(-2))
+        .some(
+          (setting) =>
+            setting.advertiserId?.trim() && setting.advertiserId === value,
         )
-        .required("Please choose a value or specify a data element.");
+    );
+  }, "Duplicate advertiser not allowed."),
+);
 
 /**
  * Returns the default settings for the advertising section
@@ -86,58 +137,6 @@ const getDefaultSettings = () => ({
   id5PartnerId: "",
   rampIdJSPath: "",
 });
-
-/**
- * Validates that advertiser IDs are unique within the advertiser settings array.
- * Skips validation for data elements (strings containing %).
- * Only checks against previous items to avoid self-comparison.
- *
- * @param {Object} settingObject - The advertiser setting object being validated
- * @param {Object} context - Yup validation context containing parent array and path
- * @returns {boolean} - True if valid, throws error if duplicate found
- */
-const validateNoDuplicateAdvertisers = (settingObject, context) => {
-  const { parent } = context;
-
-  if (
-    !settingObject ||
-    !settingObject.advertiserId ||
-    settingObject.advertiserId.trim() === "" ||
-    !Array.isArray(parent)
-  ) {
-    return true;
-  }
-
-  // Only validate if it's not a data element (contains %)
-  if (
-    typeof settingObject.advertiserId === "string" &&
-    settingObject.advertiserId.includes("%")
-  ) {
-    return true;
-  }
-
-  // Get all advertiser settings from the parent array
-  const allSettings = [...parent];
-  const currentIndex = allSettings.indexOf(settingObject);
-  const otherSettings = allSettings.slice(0, currentIndex);
-
-  // Check if any previous setting has the same advertiser ID
-  const hasDuplicate = otherSettings.some(
-    (setting) =>
-      setting.advertiserId &&
-      setting.advertiserId.trim() !== "" &&
-      setting.advertiserId === settingObject.advertiserId,
-  );
-
-  if (hasDuplicate) {
-    throw context.createError({
-      path: `${context.path}.advertiserId`,
-      message: "Duplicate advertiser not allowed.",
-    });
-  }
-
-  return true;
-};
 
 export const bridge = {
   /**
@@ -295,151 +294,50 @@ export const bridge = {
   },
 
   /**
-   * Yup validation schema for advertising section
    * Validates the advertising enabled and DSP enabled values. When advertising
    * is Disabled, the other fields are hidden and not validated. Otherwise
    * advertiser settings, ID5 Partner ID, and RampID JS Path are validated only
    * when DSP is enabled or uses data elements.
    */
-  instanceValidationSchema: object().shape({
-    advertising: object().when("$components.advertising", {
-      is: true,
-      then: (schema) =>
-        schema.shape({
-          enabled: lazy(enabledDisabledOrDataElementSchema),
-          dspEnabled: lazy((value, { parent }) =>
-            parent?.enabled === DISABLED
-              ? mixed().nullable()
-              : enabledDisabledOrDataElementSchema(value),
+  instanceValidationSchema: shape({
+    advertising: when(
+      (value, ctx) => ctx.root.components?.advertising === true,
+      shape({
+        enabled: enabledDisabledOrDataElementSchema,
+        dspEnabled: when(
+          (value, ctx) => parentOf(ctx).enabled !== DISABLED,
+          enabledDisabledOrDataElementSchema,
+        ),
+        advertiserSettings: when(
+          (value, ctx) => {
+            const { enabled, dspEnabled } = parentOf(ctx);
+            return (
+              Array.isArray(value) && areDspFieldsActive(enabled, dspEnabled)
+            );
+          },
+          shape({
+            advertiserId: advertiserIdSchema,
+            enabled: enabledDisabledOrDataElementSchema,
+          }).array(),
+          when(
+            (value) => Array.isArray(value),
+            shape({
+              enabled: when(
+                isDataElement,
+                validDataElement,
+                rule(
+                  (value) =>
+                    isEmpty(value) || [ENABLED, DISABLED].includes(value),
+                  ENABLED_DISABLED_MESSAGE,
+                ),
+              ),
+            }).array(),
           ),
-          advertiserSettings: array().when(["enabled", "dspEnabled"], {
-            is: areDspFieldsActive,
-            then: (arraySchema) =>
-              arraySchema
-                .of(
-                  object()
-                    .shape({
-                      advertiserId: string().test(
-                        "advertiser-validation",
-                        function testAdvertiserValidation(value) {
-                          // Access advertising object from parent hierarchy
-                          // this.from[0] is advertiser setting object, this.from[1] is advertising object
-                          const advertisingObject = this.from?.[1]?.value;
-                          const useManualEntry =
-                            advertisingObject?.useManualEntry ?? false;
-                          const validAdvertiserIds =
-                            advertisingObject?.validAdvertiserIds ?? [];
-
-                          // Check if value is empty
-                          if (!value || value.trim() === "") {
-                            return this.createError({
-                              message: useManualEntry
-                                ? "Please enter an advertiser ID."
-                                : "Please select an advertiser.",
-                            });
-                          }
-
-                          // Skip validation for data elements
-                          if (value.includes("%")) {
-                            return true;
-                          }
-
-                          // If API succeeded and we have valid IDs, check if value matches
-                          if (
-                            !useManualEntry &&
-                            validAdvertiserIds.length > 0 &&
-                            !validAdvertiserIds.includes(value)
-                          ) {
-                            return this.createError({
-                              message: "Unrecognized advertiser ID.",
-                            });
-                          }
-
-                          return true;
-                        },
-                      ),
-                      enabled: lazy((value) =>
-                        typeof value === "string" && value.includes("%")
-                          ? string()
-                              .matches(SINGLE_DATA_ELEMENT_REGEX, {
-                                message: "Please enter a valid data element.",
-                                excludeEmptyString: true,
-                              })
-                              .nullable()
-                          : mixed()
-                              .oneOf(
-                                [ENABLED, DISABLED],
-                                "Please choose a value or specify a data element.",
-                              )
-                              .required(
-                                "Please choose a value or specify a data element.",
-                              ),
-                      ),
-                    })
-                    .test(
-                      "no-duplicate-advertiser",
-                      "Duplicate advertiser not allowed.",
-                      validateNoDuplicateAdvertisers,
-                    ),
-                )
-                .nullable(),
-            otherwise: (arraySchema) =>
-              arraySchema
-                .of(
-                  object().shape({
-                    advertiserId: string().nullable(),
-                    enabled: lazy((value) =>
-                      typeof value === "string" && value.includes("%")
-                        ? string()
-                            .matches(SINGLE_DATA_ELEMENT_REGEX, {
-                              message: "Please enter a valid data element.",
-                              excludeEmptyString: true,
-                            })
-                            .nullable()
-                        : mixed()
-                            .oneOf(
-                              [ENABLED, DISABLED],
-                              "Please choose a value or specify a data element.",
-                            )
-                            .nullable(),
-                    ),
-                  }),
-                )
-                .nullable(),
-          }),
-          id5PartnerId: string().when(["enabled", "dspEnabled"], {
-            is: areDspFieldsActive,
-            then: () =>
-              lazy((value) =>
-                typeof value === "string" && value.includes("%")
-                  ? string()
-                      .matches(SINGLE_DATA_ELEMENT_REGEX, {
-                        message: "Please enter a valid data element.",
-                        excludeEmptyString: true,
-                      })
-                      .nullable()
-                  : string().nullable(),
-              ),
-            otherwise: (stringSchema) => stringSchema.nullable().notRequired(),
-          }),
-          rampIdJSPath: string().when(["enabled", "dspEnabled"], {
-            is: areDspFieldsActive,
-            then: () =>
-              lazy((value) =>
-                typeof value === "string" && value.includes("%")
-                  ? string()
-                      .matches(SINGLE_DATA_ELEMENT_REGEX, {
-                        message: "Please enter a valid data element.",
-                        excludeEmptyString: true,
-                      })
-                      .nullable()
-                  : string().nullable(),
-              ),
-            otherwise: (stringSchema) => stringSchema.nullable().notRequired(),
-          }),
-        }),
-      otherwise: (schema) => schema.nullable().strip(),
-    }),
+        ),
+        id5PartnerId: dspDataElementField,
+        rampIdJSPath: dspDataElementField,
+      }),
+    ),
   }),
 };
 
