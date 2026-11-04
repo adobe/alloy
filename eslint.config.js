@@ -332,7 +332,7 @@ export default defineConfig([
   {
     name: "alloy/browser",
     files: [
-      "packages/browser/**/*.{cjs,js,mjs,jsx}",
+      "packages/browser/**/*.{cjs,js,mjs,jsx,ts}",
       "sandboxes/browser/**/*.{cjs,js,mjs,jsx}",
       "packages/core/src/utils/dom/**/*.{cjs,js,mjs,jsx,ts}",
     ],
@@ -688,6 +688,15 @@ export default defineConfig([
     files: ["packages/reactor-extension/test/unit/**/*.{cjs,js,jsx}"],
     rules: {
       "vitest/valid-title": "warn",
+    },
+  },
+  // Packed-package consumer fixtures import export-map keys verbatim (e.g.
+  // `./baseCode.js`), which resolve only once dist/ is built.
+  {
+    name: "alloy/browser/package-consumer-fixtures",
+    files: ["packages/browser/test/package/consumer/**/*.ts"],
+    rules: {
+      "import/extensions": "off",
     },
   },
 ]);

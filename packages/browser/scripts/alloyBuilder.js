@@ -11,11 +11,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import terser from "@rollup/plugin-terser";
-import resolve from "@rollup/plugin-node-resolve";
-import commonjs from "@rollup/plugin-commonjs";
-import license from "rollup-plugin-license";
-import { fileURLToPath } from "url";
 import { checkbox, input, select } from "@inquirer/prompts";
 import { Command, InvalidOptionArgumentError, Option } from "commander";
 import fs from "fs";
@@ -28,8 +23,6 @@ import {
   requiredComponentNames,
 } from "./helpers/componentMetadata.js";
 import { getBrowserPackageRoot, safePathJoin } from "./helpers/path.js";
-
-const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const browserPackageRoot = getBrowserPackageRoot();
 
@@ -118,38 +111,11 @@ const buildPushNotificationsServiceWorker = async (argv) => {
     `alloyServiceWorker${argv.minify ? ".min" : ""}.js`,
   );
 
-  const plugins = [
-    resolve({
-      preferBuiltins: false,
-      // Support the browser field in dependencies' package.json.
-      // Useful for the uuid package.
-      mainFields: ["module", "main", "browser"],
-    }),
-    commonjs(),
-  ];
-  if (argv.minify) {
-    plugins.push(terser());
-    plugins.push(
-      license({
-        cwd: path.join(dirname, ".."),
-        banner: {
-          content: {
-            file: path.join(dirname, "..", "LICENSE_BANNER"),
-          },
-        },
-      }),
-    );
-  }
-  const rollupConfig = {
-    input: `${sourceRootPath}/serviceWorker.js`,
-    output: [
-      {
-        file: outputPath,
-        format: "es",
-      },
-    ],
-    plugins,
-  };
+  const rollupConfig = buildConfig({
+    variant: "SERVICE_WORKER",
+    file: outputPath,
+    minify: argv.minify,
+  });
 
   const bundle = await rollup(rollupConfig);
   try {

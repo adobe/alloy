@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import validateMessage from "./validateMessage.js";
 import createSendConversationEvent from "./createSendConversationEvent.js";
 import createBuildEndpointUrl from "./createBuildEndpointUrl.js";
-import queryString from "@adobe/reactor-query-string";
+import queryString from "../../utils/querystring.js";
 import { getConciergeSessionCookie } from "./utils.js";
 import createGetEcidFromCookie from "../../utils/createDecodeKndctrCookie.js";
 import createSendConversationServiceRequest from "./createSendConversationServiceRequest.js";
@@ -120,6 +120,9 @@ const createConciergeComponent = ({
     },
   };
 };
-createConciergeComponent.namespace = "BrandConcierge";
-createConciergeComponent.configValidators = configValidators;
-export default createConciergeComponent;
+// Object.assign, rather than property assignments, keeps `namespace` in the
+// emitted declaration.
+export default Object.assign(createConciergeComponent, {
+  namespace: "BrandConcierge",
+  configValidators,
+});

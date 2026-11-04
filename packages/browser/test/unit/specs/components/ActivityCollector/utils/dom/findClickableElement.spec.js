@@ -32,6 +32,32 @@ describe("ActivityCollector::findClickableElement", () => {
     parentElement.appendChild(element);
     expect(findClickableElement(element)).toBe(parentElement);
   });
+  it("returns an area element with a href", () => {
+    const element = document.createElement("area");
+    element.href = "http://www.example.com";
+    expect(findClickableElement(element)).toBe(element);
+  });
+  it("returns a submit input or button", () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "submit");
+    const button = document.createElement("button");
+    button.type = "submit";
+    expect(findClickableElement(input)).toBe(input);
+    expect(findClickableElement(button)).toBe(button);
+  });
+  it("returns any other element with a click handler", () => {
+    const element = document.createElement("span");
+    const parentElement = document.createElement("div");
+    parentElement.onclick = () => {};
+    parentElement.appendChild(element);
+    expect(findClickableElement(element)).toBe(parentElement);
+  });
+  it("skips non-element ancestors", () => {
+    const fragment = document.createDocumentFragment();
+    const element = document.createElement("div");
+    fragment.appendChild(element);
+    expect(findClickableElement(element)).toBeNull();
+  });
   it("returns null if the BODY node is reached", () => {
     const element = document.createElement("div");
     const parentElement = document.createElement("body");

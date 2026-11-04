@@ -13,8 +13,6 @@ governing permissions and limitations under the License.
 /* eslint no-underscore-dangle: 0 */
 /* eslint-disable func-names */
 
-/** @import { WindowWithAlloy } from '../types.js' */
-
 /**
  * This is the code, once minified, that an Alloy consumer copies and pastes
  * into their website's HTML. It sets up any global functions the consumer will
@@ -31,7 +29,7 @@ governing permissions and limitations under the License.
  * Take particular care to write well-minifiable code, as consumers are
  * particularly sensitive to base code size.
  *
- * @param {WindowWithAlloy} window
+ * @param {Window} window
  * @param {string[]} instanceNames
  */
 

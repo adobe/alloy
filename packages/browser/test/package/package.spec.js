@@ -183,6 +183,92 @@ describe("@adobe/alloy npm package", () => {
     }
   });
 
+  test("gives every JavaScript export alloy-source, types and default", () => {
+    const entries = Object.entries(manifest.exports).filter(
+      ([key]) => !key.endsWith(".json"),
+    );
+    expect(entries.length).toBeGreaterThan(0);
+    entries.forEach(([, value]) => {
+      expect(Object.keys(value)).toEqual(["alloy-source", "types", "default"]);
+      expect(value.types).toMatch(/^\.\/dist\/.*\.d\.ts$/);
+      expect(value.default).toMatch(/^\.\/dist\/.*\.js$/);
+    });
+  });
+
+  test("contains every file the exports map points to", () => {
+    const packagePath = path.join(workPath, "node_modules/@adobe/alloy");
+    const targets = Object.values(manifest.exports).flatMap((value) =>
+      typeof value === "string" ? [value] : Object.values(value),
+    );
+    const missing = targets.filter(
+      (target) => !fs.existsSync(path.join(packagePath, target)),
+    );
+    expect(missing).toEqual([]);
+  });
+
+  describe("compiles a strict TypeScript consumer", () => {
+    let consumerPath;
+
+    beforeAll(() => {
+      consumerPath = path.join(workPath, "consumer");
+      fs.cpSync(
+        path.join(path.dirname(fileURLToPath(import.meta.url)), "consumer"),
+        consumerPath,
+        { recursive: true },
+      );
+      fs.writeFileSync(
+        path.join(consumerPath, "package.json"),
+        JSON.stringify({ type: "module" }),
+      );
+    });
+
+    test.each([
+      ["Bundler", { module: "ESNext", moduleResolution: "Bundler" }],
+      ["NodeNext", { module: "NodeNext", moduleResolution: "NodeNext" }],
+      [
+        "Bundler with the alloy-source condition",
+        {
+          module: "ESNext",
+          moduleResolution: "Bundler",
+          customConditions: ["alloy-source"],
+        },
+      ],
+    ])("with %s resolution", (name, resolutionOptions) => {
+      const tsconfigPath = path.join(
+        consumerPath,
+        `tsconfig.${name.replace(/\W+/g, "-")}.json`,
+      );
+      fs.writeFileSync(
+        tsconfigPath,
+        JSON.stringify({
+          compilerOptions: {
+            ...resolutionOptions,
+            strict: true,
+            skipLibCheck: false,
+            noEmit: true,
+            target: "ES2022",
+            lib: ["ES2022", "DOM", "DOM.Iterable"],
+            types: [],
+          },
+          include: ["*.ts"],
+        }),
+      );
+      const result = (() => {
+        try {
+          execFileSync("pnpm", ["exec", "tsc", "-p", tsconfigPath], {
+            cwd: browserPath,
+            encoding: "utf8",
+            stdio: "pipe",
+          });
+          return "";
+        } catch (error) {
+          return `${error.stdout}${error.stderr}`;
+        }
+      })();
+      expect(result).toBe("");
+    });
+  });
+
   describe.each(["createInstance", "createCustomInstance", "standalone"])(
     "%s",
     (name) => {

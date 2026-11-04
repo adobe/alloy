@@ -90,3 +90,25 @@ describe("Custom build", { timeout: 20_000 }, () => {
     expect(bundle.length).toBeLessThan(defaultBundle.length);
   });
 });
+
+describe("Custom service worker build", { timeout: 20_000 }, () => {
+  test.each([
+    [false, "alloyServiceWorker.js"],
+    [true, "alloyServiceWorker.min.js"],
+  ])("minify=%s writes %s", async (minify, fileName) => {
+    const outDir = fs.mkdtempSync(path.join(tmpdir(), "alloy-sw-build-"));
+    try {
+      await new Promise((resolve, reject) => {
+        exec(
+          `${buildCmd}-sw${minify ? " --minify" : ""} -o ${outDir}`,
+          { cwd: root },
+          (err) => (err ? reject(err) : resolve()),
+        );
+      });
+      const bundle = fs.readFileSync(path.join(outDir, fileName), "utf8");
+      expect(bundle).toContain("notificationclick");
+    } finally {
+      fs.rmSync(outDir, { recursive: true, force: true });
+    }
+  });
+});

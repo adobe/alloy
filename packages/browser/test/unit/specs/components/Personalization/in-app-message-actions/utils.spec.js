@@ -11,7 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { beforeEach, describe, it, expect } from "vitest";
-import { removeElementById } from "../../../../../../src/components/Personalization/in-app-message-actions/utils.js";
+import {
+  parseAnchor,
+  removeElementById,
+} from "../../../../../../src/components/Personalization/in-app-message-actions/utils.js";
 
 describe("removeElementById", () => {
   beforeEach(() => {
@@ -30,5 +33,39 @@ describe("removeElementById", () => {
     const nonExistentId = "non-existent-element";
     removeElementById(nonExistentId);
     expect(document.getElementById(nonExistentId)).toBeNull();
+  });
+});
+
+describe("parseAnchor", () => {
+  const createAnchor = (href) => {
+    const anchor = document.createElement("a");
+    anchor.href = href;
+    anchor.setAttribute("data-uuid", "abc");
+    return anchor;
+  };
+  it("reads the action and query parameters", () => {
+    expect(
+      parseAnchor(
+        createAnchor(
+          "adbinapp://dismiss?interaction=clicked&link=https%3A%2F%2Fexample.com",
+        ),
+      ),
+    ).toEqual(
+      expect.objectContaining({
+        action: "dismiss",
+        interaction: "clicked",
+        link: "https://example.com",
+        uuid: "abc",
+      }),
+    );
+  });
+  it("uses the first value of a repeated parameter", () => {
+    const { interaction, link } = parseAnchor(
+      createAnchor(
+        "adbinapp://dismiss?interaction=first&interaction=second&link=a&link=b",
+      ),
+    );
+    expect(interaction).toBe("first");
+    expect(link).toBe("a");
   });
 });
