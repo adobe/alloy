@@ -123,4 +123,17 @@ describe("XDM Object Data Element Error Handling", () => {
       await field(view.getByTestId("schemaMissingAlert")).expectVisible();
     });
   });
+
+  describe("Validation", () => {
+    it("requires a schema", async () => {
+      ({ view, driver, cleanup } = await useView(XdmObjectView));
+      await driver.init();
+      await expect.element(view.getByTestId("schemaField")).toBeVisible();
+
+      await driver.expectValidate().toBe(false);
+      await field(view.getByTestId("schemaField")).expectError(
+        /please select a schema/i,
+      );
+    });
+  });
 });

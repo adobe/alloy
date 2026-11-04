@@ -88,6 +88,17 @@ describe("Update Variable action", () => {
     worker.resetHandlers();
   });
 
+  it("requires a data element", async () => {
+    ({ view, driver, cleanup } = await useView(UpdateVariableView));
+    await driver.init({});
+    await expect.element(view.getByTestId("dataElementField")).toBeVisible();
+
+    await driver.expectValidate().toBe(false);
+    await field(view.getByTestId("dataElementField")).expectError(
+      /please specify a data element/i,
+    );
+  });
+
   describe("dataElementName handling", () => {
     it("outputs dataElementName in settings when a data element is selected", async () => {
       ({ view, driver, cleanup } = await useView(UpdateVariableView));
