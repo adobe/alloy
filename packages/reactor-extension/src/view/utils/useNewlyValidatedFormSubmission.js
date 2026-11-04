@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { useEffect, useRef } from "react";
-import { useFormikContext } from "formik";
+import { useFormikContext } from "../forms/formikCompat";
 
 /**
  * A react hook which calls the callback after a user attempts to

@@ -20,7 +20,7 @@ import {
   Content,
 } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "formik";
+import { useField } from "../forms/formikCompat";
 import { object, string } from "yup";
 import FormElementContainer from "../components/formElementContainer";
 import ExtensionView from "../components/extensionView";

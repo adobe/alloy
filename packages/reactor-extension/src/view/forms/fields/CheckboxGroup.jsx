@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { CheckboxGroup, Checkbox } from "@react-spectrum/s2";
-import { useField } from "formik";
+import { useField } from "../formikCompat";
 import FieldDescriptionAndError from "../../components/fieldDescriptionAndError";
 import widthStyle from "./widthStyle";
 import normalizeGroupChildren from "./normalizeGroupChildren";

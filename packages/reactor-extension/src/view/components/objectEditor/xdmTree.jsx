@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { Tree } from "antd";
-import { useFormikContext } from "formik";
+import { useFormikContext } from "../../forms/formikCompat";
 import { color } from "@react-spectrum/s2/style" with { type: "macro" };
 import generateTreeStructure from "./helpers/generateTreeStructure";
 import getNodeIdsToExpandForValidation from "./helpers/getNodeIdsToExpandForValidation";

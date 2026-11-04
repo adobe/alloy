@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { ActionButton, PickerItem } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
-import { FieldArray } from "formik";
+import { FieldArray } from "../../forms/formikCompat";
 import PropTypes from "prop-types";
 import { useFieldValue } from "../../utils/useFieldValue";
 import OverrideInput from "./overrideInput";

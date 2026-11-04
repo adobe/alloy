@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { useFormikContext } from "formik";
+import { useFormikContext } from "./formikCompat";
 import InstanceNamePicker from "../components/instanceNamePicker";
 
 /** @typedef {import("./form").Form} Form */

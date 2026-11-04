@@ -12,7 +12,11 @@ governing permissions and limitations under the License.
 
 import { useCallback } from "react";
 import PropTypes from "prop-types";
-import { FieldArray, useField, useFormikContext } from "formik";
+import {
+  FieldArray,
+  useField,
+  useFormikContext,
+} from "../../forms/formikCompat";
 import { Radio, ActionButton } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";

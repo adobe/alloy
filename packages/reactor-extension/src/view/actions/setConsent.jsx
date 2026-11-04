@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { FieldArray } from "formik";
+import { FieldArray } from "../forms/formikCompat";
 import { object, string, array, mixed } from "yup";
 import { PickerItem, Radio, Button, Text } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };

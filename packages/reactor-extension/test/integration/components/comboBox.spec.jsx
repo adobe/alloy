@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { afterEach, describe, expect, it } from "vitest";
 import { userEvent } from "vitest/browser";
-import { Formik } from "formik";
+import TestForm from "../helpers/TestForm";
 import { ComboBoxItem } from "@react-spectrum/s2";
 import FormikComboBox from "../../../src/view/forms/fields/ComboBox";
 import FormikKeyedComboBox from "../../../src/view/forms/fields/KeyedComboBox";
@@ -47,7 +47,7 @@ describe.each([
         : {};
 
     view = await renderView(() => (
-      <Formik initialValues={{ setting: "" }} onSubmit={() => {}}>
+      <TestForm initialValues={{ setting: "" }}>
         {({ values }) => (
           <>
             <Component
@@ -64,7 +64,7 @@ describe.each([
             <output data-test-id="value">{values.setting}</output>
           </>
         )}
-      </Formik>
+      </TestForm>
     ));
     input = view.getByRole("combobox", { name: "Setting" });
   };

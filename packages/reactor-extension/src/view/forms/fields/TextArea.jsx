@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { TextArea, mergeStyles } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "formik";
+import { useField } from "../formikCompat";
 import widthStyle from "./widthStyle";
 
 // Was `.formik-field textarea { min-height: size-4600 !important }` in

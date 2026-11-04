@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 /* Simplifies centering things vertically in the middle of the view (like loading errors) or
 creating columns that are the full height of the view and separately scrollable. */
 html {
-  height: 100%
+  height: 100%;
 }
 
 /* Typically, body has margin automatically provided by the browser,

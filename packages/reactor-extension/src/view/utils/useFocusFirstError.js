@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { useEffect, useRef } from "react";
-import { useFormikContext } from "formik";
+import { useFormikContext } from "../forms/formikCompat";
 
 /**
  * Focuses the first field with a validation error after form submission.

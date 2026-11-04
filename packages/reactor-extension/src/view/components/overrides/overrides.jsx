@@ -22,7 +22,7 @@ import {
   Tabs,
 } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "formik";
+import { useField } from "../../forms/formikCompat";
 import PropTypes from "prop-types";
 import { useRef } from "react";
 

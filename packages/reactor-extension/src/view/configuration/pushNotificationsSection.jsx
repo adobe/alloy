@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { object, string } from "yup";
 import { useEffect, useRef } from "react";
-import { useField, useFormikContext } from "formik";
+import { useField, useFormikContext } from "../forms/formikCompat";
 import { Content, Link } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import SectionHeader from "../components/sectionHeader";

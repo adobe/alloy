@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { useEffect, useRef } from "react";
 import { string, object } from "yup";
 import { Radio } from "@react-spectrum/s2";
-import { useField, useFormikContext } from "formik";
+import { useField, useFormikContext } from "./formikCompat";
 import PropTypes from "prop-types";
 import DataElementSelector from "../components/dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";

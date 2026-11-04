@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { ActionButton } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "formik";
+import { useField } from "../forms/formikCompat";
 import PropTypes from "prop-types";
 
 const MARGIN_TOP_STYLE = style({ marginTop: 24 });

@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { RadioGroup, Radio } from "@react-spectrum/s2";
 import { css } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "formik";
+import { useField } from "../formikCompat";
 import FieldDescriptionAndError from "../../components/fieldDescriptionAndError";
 import widthStyle from "./widthStyle";
 import normalizeGroupChildren from "./normalizeGroupChildren";

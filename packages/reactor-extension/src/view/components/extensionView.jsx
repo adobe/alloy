@@ -13,12 +13,19 @@ governing permissions and limitations under the License.
 import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { useFormik, FormikProvider } from "formik";
+import { useForm, useStore } from "@tanstack/react-form";
 import { object } from "yup";
 import { ProgressCircle } from "@react-spectrum/s2";
 import useExtensionBridge from "../utils/useExtensionBridge";
 import useReportAsyncError from "../utils/useReportAsyncError";
 import FillParentAndCenterChildren from "./fillParentAndCenterChildren";
+import {
+  formContext,
+  getFieldValidatorErrors,
+  submitForm,
+  validateOnChangeBlurAndSubmit,
+} from "../forms/formContext";
+import { getFormErrors, isValidAgainstSchema } from "../forms/yupValidation";
 
 const ExtensionView = ({
   render,
@@ -33,8 +40,8 @@ const ExtensionView = ({
   const [initInfo, setInitInfo] = useState();
   const [canRenderView, setCanRenderView] = useState(false);
   const viewRegistrationRef = useRef();
-  const formikPropsRef = useRef();
   const getInitialValuesPromiseRef = useRef();
+  const hasValuesRef = useRef(false);
 
   const getValidationSchema = () => {
     const {
@@ -56,57 +63,50 @@ const ExtensionView = ({
     return object();
   };
 
-  formikPropsRef.current = useFormik({
-    onSubmit: () => {},
-    validate: (values) => {
-      let errors;
+  const getErrors = (values) => {
+    try {
+      return {
+        ...getFieldValidatorErrors(form, values),
+        ...getFormErrors({
+          schema: getValidationSchema(),
+          validate: viewRegistrationRef.current?.validateFormikState,
+          values,
+        }),
+      };
+    } catch {
+      reportAsyncError(
+        new Error("An error occurred while validating the view."),
+      );
+      return {};
+    }
+  };
 
-      // Formik swallows errors that occur during validation, but we want
-      // to handle them in a proper manner.
-      try {
-        if (viewRegistrationRef.current?.validateFormikState) {
-          errors = viewRegistrationRef.current.validateFormikState({ values });
-        }
-      } catch {
-        reportAsyncError(
-          new Error("An error occurred while validating the view."),
-        );
-      }
-
-      return errors;
+  const form = useForm({
+    validationLogic: validateOnChangeBlurAndSubmit,
+    validators: {
+      onDynamic: ({ value }) => {
+        const errors = getErrors(value);
+        return Object.keys(errors).length > 0
+          ? { form: errors, fields: {} }
+          : undefined;
+      },
     },
-    validationSchema: getValidationSchema(),
   });
+  const values = useStore(form.store, (state) => state.values);
 
   const myValidateFormikState = async () => {
-    // The view hasn't yet initialized formik with initialValues.
-    if (!formikPropsRef.current.values) {
+    // The view hasn't yet initialized the form with initial values.
+    if (!hasValuesRef.current) {
       return false;
     }
 
-    try {
-      await formikPropsRef.current.submitForm();
+    await submitForm(form);
 
-      // The docs say that the promise submitForm returns
-      // will be rejected if there are errors, but that is not the case.
-      // Therefore, after the promise is resolved, we manually validate
-      // to see if the form is valid.
-      // https://github.com/jaredpalmer/formik/issues/1580
-      formikPropsRef.current.setSubmitting(false);
-
-      // Setting context to the values so you can use "$..." in when conditions
-      const validationSchema = getValidationSchema();
-      await validationSchema.validate(formikPropsRef.current.values, {
-        abortEarly: false,
-        context: formikPropsRef.current.values,
-      });
-
-      // validate the formik state
-      const formikErrors = await formikPropsRef.current.validateForm();
-      return Object.keys(formikErrors).length === 0;
-    } catch {
-      return false;
-    }
+    // Setting context to the values so you can use "$..." in when conditions
+    return (
+      isValidAgainstSchema(getValidationSchema(), form.state.values) &&
+      Object.keys(getErrors(form.state.values)).length === 0
+    );
   };
 
   const myValidateNonFormikState = async () => {
@@ -129,14 +129,14 @@ const ExtensionView = ({
       setInitInfo(_initInfo);
     },
     async getSettings() {
-      if (!viewRegistrationRef.current || !formikPropsRef?.current?.values) {
+      if (!viewRegistrationRef.current || !hasValuesRef.current) {
         return {};
       }
 
       try {
         return await viewRegistrationRef.current.getSettings({
           initInfo,
-          values: formikPropsRef.current.values,
+          values: form.state.values,
         });
       } catch (e) {
         // This will update the UI to show that an error has occurred.
@@ -187,9 +187,8 @@ const ExtensionView = ({
           try {
             const getInitialValuesPromise = getInitialValues({ initInfo });
             getInitialValuesPromiseRef.current = getInitialValuesPromise;
-            formikPropsRef.current.resetForm({
-              values: await getInitialValuesPromise,
-            });
+            form.reset(await getInitialValuesPromise);
+            hasValuesRef.current = true;
             setCanRenderView(true);
             window.loaded = true;
           } catch (e) {
@@ -219,13 +218,16 @@ const ExtensionView = ({
 
   return (
     <div>
-      <FormikProvider value={formikPropsRef.current}>
+      <formContext.Provider value={form}>
         {render({
           initInfo,
-          formikProps: formikPropsRef.current,
+          formikProps: {
+            values,
+            resetForm: ({ values: newValues }) => form.reset(newValues),
+          },
           registerImperativeFormApi,
         })}
-      </FormikProvider>
+      </formContext.Provider>
     </div>
   );
 };

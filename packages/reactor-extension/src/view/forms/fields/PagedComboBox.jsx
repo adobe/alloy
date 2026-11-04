@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { ComboBoxItem, ComboBox } from "@react-spectrum/s2";
 import { useEffect } from "react";
 import PropTypes from "prop-types";
-import { useField } from "formik";
+import { useField } from "../formikCompat";
 import usePagedComboBox from "../../utils/usePagedComboBox";
 
 import useIsFirstRender from "../../utils/useIsFirstRender";

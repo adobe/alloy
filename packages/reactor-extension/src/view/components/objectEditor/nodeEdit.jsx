@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { useFormikContext } from "formik";
+import { useFormikContext } from "../../forms/formikCompat";
 import { Breadcrumb, Breadcrumbs, Checkbox } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import getNodeEditData from "./helpers/getNodeEditData";

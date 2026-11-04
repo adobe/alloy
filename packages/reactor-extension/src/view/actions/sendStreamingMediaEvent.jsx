@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { object, string } from "yup";
-import { isEmptyArray } from "formik";
+import { isEmptyArray } from "../forms/formikCompat";
 import comboBox from "../forms/comboBox";
 import instancePicker from "../forms/instancePicker";
 import conditional from "../forms/conditional";

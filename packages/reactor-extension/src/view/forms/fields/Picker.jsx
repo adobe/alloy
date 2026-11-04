@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { Picker, PickerItem, mergeStyles } from "@react-spectrum/s2";
 import { css, style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "formik";
+import { useField } from "../formikCompat";
 import PropTypes from "prop-types";
 import widthStyle from "./widthStyle";
 import normalizeCollectionChildren from "./normalizeCollectionChildren";

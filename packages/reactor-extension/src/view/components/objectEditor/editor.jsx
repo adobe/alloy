@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { useFormikContext } from "formik";
+import { useFormikContext } from "../../forms/formikCompat";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import XdmTree, { scrollNodeIntoView } from "./xdmTree";
 import NodeEdit from "./nodeEdit";

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { useField, useFormikContext, FieldArray } from "formik";
+import { useField, useFormikContext, FieldArray } from "../forms/formikCompat";
 import {
   Content,
   Heading,

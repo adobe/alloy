@@ -33,7 +33,7 @@ import {
 import { size, style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useState } from "react";
 import { object, array, string } from "yup";
-import { FieldArray, useField } from "formik";
+import { FieldArray, useField } from "../forms/formikCompat";
 import DeleteIcon from "@react-spectrum/s2/icons/Delete";
 import PropTypes from "prop-types";
 import ExtensionView from "../components/extensionView";
