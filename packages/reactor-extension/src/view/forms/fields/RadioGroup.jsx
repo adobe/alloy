@@ -42,7 +42,10 @@ const FormikRadioGroup = ({
 }) => {
   const field = useFormField(name);
   const error = useFieldError(name);
-  const { value, meta: { isBlurred: touched } } = field.state;
+  const {
+    value,
+    meta: { isBlurred: touched },
+  } = field.state;
 
   return (
     <div

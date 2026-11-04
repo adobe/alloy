@@ -774,31 +774,27 @@ const eventBasedDetailFormConditionals = [
   ),
 ];
 
-const onInstanceChange = ({ context, instanceName, initInfo }) => {
+const onInstanceChange = ({ form, instanceName, initInfo }) => {
   const extensionSettings = initInfo.extensionSettings;
   const instanceSettings = extensionSettings.instances.find(
     (instance) => instance.name === instanceName,
   );
 
-  context.setFieldValue(
+  form.setFieldValue(
     `sessionDetails.channel`,
     instanceSettings.streamingMedia.channel || "",
-    true,
   );
-  context.setFieldValue(
+  form.setFieldValue(
     `sessionDetails.playerName`,
     instanceSettings.streamingMedia.playerName || "",
-    true,
   );
-  context.setFieldValue(
+  form.setFieldValue(
     `sessionDetails.appVersion`,
     instanceSettings.streamingMedia.appVersion || "",
-    true,
   );
-  context.setFieldValue(
+  form.setFieldValue(
     `advertisingDetails.playerName`,
     instanceSettings.streamingMedia.playerName || "",
-    true,
   );
 };
 

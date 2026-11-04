@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 
 import Delete from "@react-spectrum/s2/icons/Delete";
 import { array, string } from "yup";
-import { FieldArray, useField } from "./formikCompat";
+import { useFieldBlurred, useFieldError, useFormField } from "./formContext";
+import { useFieldValue } from "../utils/useFieldValue";
 import { Radio, ActionButton, Button, ComboBoxItem } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
@@ -205,16 +206,11 @@ export default function fieldArray({
     },
     validationShape,
     Component: ({ namePrefix = "" }) => {
-      const [{ value: inputMethod }] = useField(
-        `${namePrefix}${name}InputMethod`,
-      );
-      const [
-        { value: items },
-        { touched: itemsTouched, error: itemsError },
-        { setValue: setItems },
-      ] = useField(`${namePrefix}${name}`);
-
-      const error = typeof itemsError === "string" ? itemsError : undefined;
+      const inputMethod = useFieldValue(`${namePrefix}${name}InputMethod`);
+      const itemsField = useFormField(`${namePrefix}${name}`);
+      const items = itemsField.state.value;
+      const itemsTouched = useFieldBlurred(`${namePrefix}${name}`);
+      const error = useFieldError(`${namePrefix}${name}`);
       return (
         <>
           <FormikRadioGroup
@@ -234,74 +230,64 @@ export default function fieldArray({
             </Radio>
           </FormikRadioGroup>
           {inputMethod === FORM && (
-            <FieldArray
-              name={name}
-              render={(arrayHelpers) => {
-                return (
-                  <div>
+            <div>
+              <div
+                className={style({
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                  alignItems: "start",
+                })}
+              >
+                {items.map((item, index) => {
+                  return (
                     <div
+                      key={index}
                       className={style({
                         display: "flex",
-                        flexDirection: "column",
-                        gap: 8,
                         alignItems: "start",
                       })}
                     >
-                      {items.map((item, index) => {
-                        return (
-                          <div
-                            key={index}
-                            className={style({
-                              display: "flex",
-                              alignItems: "start",
-                            })}
-                          >
-                            <FieldItem
-                              namePrefix={namePrefix}
-                              name={name}
-                              index={index}
-                              description={description}
-                              error={error}
-                              touched={itemsTouched}
-                              isLast={index === items.length - 1}
-                              items={fieldItems}
-                            />
-                            <ActionButton
-                              data-test-id={`${namePrefix}${name}${index}RemoveButton`}
-                              isQuiet
-                              onPress={() => {
-                                // using arrayHelpers.remove mangles the error message
-                                const newItems = items.filter(
-                                  (_, i) => i !== index,
-                                );
-                                if (newItems.length === 0) {
-                                  newItems.push("");
-                                }
-                                setItems(newItems);
-                              }}
-                              aria-label={`Remove ${label} ${index + 1}`}
-                              styles={style({
-                                marginTop: 0,
-                              })}
-                            >
-                              <Delete />
-                            </ActionButton>
-                          </div>
-                        );
-                      })}
+                      <FieldItem
+                        namePrefix={namePrefix}
+                        name={name}
+                        index={index}
+                        description={description}
+                        error={error}
+                        touched={itemsTouched}
+                        isLast={index === items.length - 1}
+                        items={fieldItems}
+                      />
+                      <ActionButton
+                        data-test-id={`${namePrefix}${name}${index}RemoveButton`}
+                        isQuiet
+                        onPress={() => {
+                          const newItems = items.filter((_, i) => i !== index);
+                          if (newItems.length === 0) {
+                            newItems.push("");
+                          }
+                          itemsField.handleChange(newItems);
+                        }}
+                        aria-label={`Remove ${label} ${index + 1}`}
+                        styles={style({
+                          marginTop: 0,
+                        })}
+                      >
+                        <Delete />
+                      </ActionButton>
                     </div>
-                    <Button
-                      variant="secondary"
-                      fillStyle="outline"
-                      data-test-id={`${namePrefix}${name}AddButton`}
-                      onPress={() => arrayHelpers.push("")}
-                    >
-                      {`Add ${singularLabel.toLowerCase()}`}
-                    </Button>
-                  </div>
-                );
-              }}
-            />
+                  );
+                })}
+              </div>
+              <Button
+                variant="secondary"
+                fillStyle="outline"
+                data-test-id={`${namePrefix}${name}AddButton`}
+                onPress={() => itemsField.pushValue("")}
+              >
+                {`Add ${singularLabel.toLowerCase()}`}
+              </Button>
+            </div>
           )}
           {inputMethod === DATA_ELEMENT && (
             <DataElementSelector>

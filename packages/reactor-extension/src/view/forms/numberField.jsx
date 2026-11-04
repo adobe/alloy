@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { number, string } from "yup";
-import { useField } from "./formikCompat";
+import { useFieldValue } from "../utils/useFieldValue";
 import { Radio } from "@react-spectrum/s2";
 import PropTypes from "prop-types";
 import FormikTextField from "./fields/TextField";
@@ -119,9 +119,7 @@ export default function numberField({
     },
     validationShape,
     Component: ({ namePrefix = "" }) => {
-      const [{ value: inputMethod }] = useField(
-        `${namePrefix}${name}InputMethod`,
-      );
+      const inputMethod = useFieldValue(`${namePrefix}${name}InputMethod`);
 
       return (
         <>

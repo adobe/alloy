@@ -120,3 +120,15 @@ export const useFormField = (name, { validate, mode } = {}) => {
   useFieldValidator(form, name, validate);
   return useField({ form, name, mode });
 };
+
+// Formik treated an array or object as touched once any of its children was,
+// which array-level errors (e.g. "Please provide at least one item") rely on.
+export const useFieldBlurred = (name) => {
+  const form = useFormContext();
+  return useStore(form.store, (state) =>
+    Object.entries(state.fieldMeta).some(
+      ([path, meta]) =>
+        meta?.isBlurred && (path === name || path.startsWith(`${name}.`)),
+    ),
+  );
+};

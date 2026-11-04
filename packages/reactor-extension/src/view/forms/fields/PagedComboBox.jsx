@@ -37,7 +37,10 @@ const FormikPagedComboBox = ({
   const isFirstRender = useIsFirstRender();
   const field = useFormField(name);
   const error = useFieldError(name);
-  const { value, meta: { isBlurred: touched } } = field.state;
+  const {
+    value,
+    meta: { isBlurred: touched },
+  } = field.state;
 
   const pagedComboBox = usePagedComboBox({
     defaultSelectedItem: value,

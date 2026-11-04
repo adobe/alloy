@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { mixed } from "yup";
-import { useField } from "./formikCompat";
+import { useFieldValue } from "../utils/useFieldValue";
 import PropTypes from "prop-types";
 import form from "./form";
 
@@ -74,10 +74,9 @@ export default function conditional({ args, condition }, children) {
     },
     Component: (props) => {
       const { namePrefix = "" } = props;
-      const conditionalArgValues = argsArray.map((arg) => {
-        const [{ value }] = useField(`${namePrefix}${arg}`);
-        return value;
-      });
+      const conditionalArgValues = argsArray.map((arg) =>
+        useFieldValue(`${namePrefix}${arg}`),
+      );
       if (!condition(...conditionalArgValues)) {
         return null;
       }

@@ -44,7 +44,10 @@ const FormikPicker = ({
 }) => {
   const field = useFormField(name, { validate });
   const error = useFieldError(name);
-  const { value, meta: { isBlurred: touched } } = field.state;
+  const {
+    value,
+    meta: { isBlurred: touched },
+  } = field.state;
 
   return (
     <div className={PICKER_APPEARANCE}>

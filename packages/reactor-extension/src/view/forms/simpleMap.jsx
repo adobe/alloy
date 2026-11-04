@@ -11,7 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { array, object, string } from "yup";
-import { FieldArray, useField } from "./formikCompat";
+import { useFormField } from "./formContext";
+import { useFieldValue } from "../utils/useFieldValue";
 import { Radio, Button } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
@@ -167,12 +168,9 @@ export default function simpleMap({
     },
     validationShape,
     Component: ({ namePrefix = "" }) => {
-      const [{ value: inputMethod }] = useField(
-        `${namePrefix}${name}InputMethod`,
-      );
-      const [{ value: items }, , { setValue: setItems }] = useField(
-        `${namePrefix}${name}`,
-      );
+      const inputMethod = useFieldValue(`${namePrefix}${name}InputMethod`);
+      const itemsField = useFormField(`${namePrefix}${name}`);
+      const items = itemsField.state.value;
       const labelElement = (
         <>
           {label}
@@ -198,75 +196,67 @@ export default function simpleMap({
             </Radio>
           </FormikRadioGroup>
           {inputMethod === FORM && (
-            <FieldArray
-              name={name}
-              render={(arrayHelpers) => {
+            <>
+              {items.map((__, index) => {
                 return (
-                  <>
-                    {items.map((__, index) => {
-                      return (
-                        <FormEditGroup
-                          key={index}
-                          label={`${singularLabel} ${index + 1}`}
-                          styles={GROUP_STYLE}
+                  <FormEditGroup
+                    key={index}
+                    label={`${singularLabel} ${index + 1}`}
+                    styles={GROUP_STYLE}
+                  >
+                    <div className={WELL_CONTENT_STYLE}>
+                      <FormElementContainer>
+                        <DataElementSelector>
+                          <FormikTextField
+                            data-test-id={`${namePrefix}Key${index}Field`}
+                            label={keyLabel}
+                            name={`${namePrefix}${name}.${index}.key`}
+                            width="size-5000"
+                            description={keyDescription}
+                            isRequired
+                          />
+                        </DataElementSelector>
+                        <DataElementSelector>
+                          <FormikTextField
+                            data-test-id={`${namePrefix}Value${index}Field`}
+                            label={valueLabel}
+                            name={`${namePrefix}${name}.${index}.value`}
+                            width="size-5000"
+                            description={valueDescription}
+                          />
+                        </DataElementSelector>
+                      </FormElementContainer>
+                      <div className={REMOVE_ROW_STYLE}>
+                        <Button
+                          variant="secondary"
+                          fillStyle="outline"
+                          data-test-id={`${namePrefix}${name}${index}RemoveButton`}
+                          isDisabled={items.length === 1}
+                          onPress={() => {
+                            itemsField.handleChange(
+                              items.filter((_, i) => i !== index),
+                            );
+                          }}
+                          styles={REMOVE_BUTTON_STYLE}
                         >
-                          <div className={WELL_CONTENT_STYLE}>
-                            <FormElementContainer>
-                              <DataElementSelector>
-                                <FormikTextField
-                                  data-test-id={`${namePrefix}Key${index}Field`}
-                                  label={keyLabel}
-                                  name={`${namePrefix}${name}.${index}.key`}
-                                  width="size-5000"
-                                  description={keyDescription}
-                                  isRequired
-                                />
-                              </DataElementSelector>
-                              <DataElementSelector>
-                                <FormikTextField
-                                  data-test-id={`${namePrefix}Value${index}Field`}
-                                  label={valueLabel}
-                                  name={`${namePrefix}${name}.${index}.value`}
-                                  width="size-5000"
-                                  description={valueDescription}
-                                />
-                              </DataElementSelector>
-                            </FormElementContainer>
-                            <div className={REMOVE_ROW_STYLE}>
-                              <Button
-                                variant="secondary"
-                                fillStyle="outline"
-                                data-test-id={`${namePrefix}${name}${index}RemoveButton`}
-                                isDisabled={items.length === 1}
-                                onPress={() => {
-                                  // using arrayHelpers.remove mangles the error message
-                                  setItems(items.filter((_, i) => i !== index));
-                                }}
-                                styles={REMOVE_BUTTON_STYLE}
-                              >
-                                {`Remove ${singularLabel.toLowerCase()}`}
-                              </Button>
-                            </div>
-                          </div>
-                        </FormEditGroup>
-                      );
-                    })}
-                    <div>
-                      <Button
-                        variant="secondary"
-                        fillStyle="outline"
-                        data-test-id={`${namePrefix}${name}AddButton`}
-                        onPress={() =>
-                          arrayHelpers.push({ key: "", value: "" })
-                        }
-                      >
-                        {`Add ${singularLabel.toLowerCase()}`}
-                      </Button>
+                          {`Remove ${singularLabel.toLowerCase()}`}
+                        </Button>
+                      </div>
                     </div>
-                  </>
+                  </FormEditGroup>
                 );
-              }}
-            />
+              })}
+              <div>
+                <Button
+                  variant="secondary"
+                  fillStyle="outline"
+                  data-test-id={`${namePrefix}${name}AddButton`}
+                  onPress={() => itemsField.pushValue({ key: "", value: "" })}
+                >
+                  {`Add ${singularLabel.toLowerCase()}`}
+                </Button>
+              </div>
+            </>
           )}
           {inputMethod === DATA_ELEMENT && (
             <DataElementSelector>

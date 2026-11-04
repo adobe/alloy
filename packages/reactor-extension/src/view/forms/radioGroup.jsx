@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { string } from "yup";
 import { Radio } from "@react-spectrum/s2";
-import { useField } from "./formikCompat";
+import { useFieldValue } from "../utils/useFieldValue";
 import PropTypes from "prop-types";
 import DataElementSelector from "../components/dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
@@ -105,7 +105,7 @@ export default function radioGroup({
     },
     validationShape,
     Component: ({ namePrefix = "" }) => {
-      const [{ value }] = useField(`${namePrefix}${name}`);
+      const value = useFieldValue(`${namePrefix}${name}`);
       return (
         <>
           <FormikRadioGroup

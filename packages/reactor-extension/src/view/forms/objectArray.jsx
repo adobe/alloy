@@ -11,7 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { array, string, object } from "yup";
-import { FieldArray, useField } from "./formikCompat";
+import { useFormField } from "./formContext";
+import { useFieldValue } from "../utils/useFieldValue";
 import { Radio, Button, ActionButton } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
@@ -263,12 +264,9 @@ export default function objectArray(
       };
     },
     Component: ({ namePrefix = "", ...props }) => {
-      const [{ value: inputMethod }] = useField(
-        `${namePrefix}${name}InputMethod`,
-      );
-      const [{ value: items }, , { setValue: setItems }] = useField(
-        `${namePrefix}${name}`,
-      );
+      const inputMethod = useFieldValue(`${namePrefix}${name}InputMethod`);
+      const itemsField = useFormField(`${namePrefix}${name}`);
+      const items = itemsField.state.value;
 
       return (
         <ObjectArrayContainer horizontal={horizontal} label={singularLabel}>
@@ -294,92 +292,77 @@ export default function objectArray(
             </FormikRadioGroup>
           )}
           {inputMethod === FORM && (
-            <FieldArray
-              name={`${namePrefix}${name}`}
-              render={(arrayHelpers) => {
+            <>
+              {items.map((item, index) => {
                 return (
-                  <>
-                    {items.map((item, index) => {
-                      return (
-                        <div key={index}>
-                          {!horizontal && (
-                            <FormEditGroup
-                              label={`${singularLabel} ${index + 1}`}
+                  <div key={index}>
+                    {!horizontal && (
+                      <FormEditGroup label={`${singularLabel} ${index + 1}`}>
+                        <div className={WELL_CONTENT_STYLE}>
+                          <ItemComponent
+                            namePrefix={`${namePrefix}${name}.${index}.`}
+                            {...props}
+                          />
+                          <div className={REMOVE_ROW_STYLE}>
+                            <Button
+                              variant="secondary"
+                              fillStyle="outline"
+                              data-test-id={`${namePrefix}${name}${index}RemoveButton`}
+                              onPress={() => {
+                                itemsField.handleChange(
+                                  items.filter((_, i) => i !== index),
+                                );
+                              }}
+                              isDisabled={
+                                items.length === 1 && isRowEmpty(item)
+                              }
+                              styles={REMOVE_BUTTON_STYLE}
                             >
-                              <div className={WELL_CONTENT_STYLE}>
-                                <ItemComponent
-                                  namePrefix={`${namePrefix}${name}.${index}.`}
-                                  {...props}
-                                />
-                                <div className={REMOVE_ROW_STYLE}>
-                                  <Button
-                                    variant="secondary"
-                                    fillStyle="outline"
-                                    data-test-id={`${namePrefix}${name}${index}RemoveButton`}
-                                    onPress={() => {
-                                      // using arrayHelpers.remove mangles the error message
-                                      setItems(
-                                        items.filter((_, i) => i !== index),
-                                      );
-                                    }}
-                                    isDisabled={
-                                      items.length === 1 && isRowEmpty(item)
-                                    }
-                                    styles={REMOVE_BUTTON_STYLE}
-                                  >
-                                    {`Remove ${lowerInitialLetters(singularLabel)}`}
-                                  </Button>
-                                </div>
-                              </div>
-                            </FormEditGroup>
-                          )}
-                          {horizontal && (
-                            <div className={REMOVE_ROW_STYLE}>
-                              <ItemComponent
-                                namePrefix={`${namePrefix}${name}.${index}.`}
-                                hideLabel={index > 0}
-                                horizontal
-                                {...props}
-                              />
-                              <ActionButton
-                                isQuiet
-                                data-test-id={`${namePrefix}${name}${index}RemoveButton`}
-                                onPress={() =>
-                                  // using arrayHelpers.remove mangles the error message
-                                  items.length > 1
-                                    ? setItems(
-                                        items.filter((_, i) => i !== index),
-                                      )
-                                    : setItems([buildDefaultItem()])
-                                }
-                                isDisabled={
-                                  items.length === 1 && isRowEmpty(item)
-                                }
-                                styles={
-                                  HORIZONTAL_REMOVE_BUTTON_STYLES[index === 0]
-                                }
-                              >
-                                <Delete />
-                              </ActionButton>
-                            </div>
-                          )}
+                              {`Remove ${lowerInitialLetters(singularLabel)}`}
+                            </Button>
+                          </div>
                         </div>
-                      );
-                    })}
-                    <div>
-                      <Button
-                        variant="secondary"
-                        fillStyle="outline"
-                        data-test-id={`${namePrefix}${name}AddButton`}
-                        onPress={() => arrayHelpers.push(buildDefaultItem())}
-                      >
-                        {`Add another ${lowerInitialLetters(singularLabel)}`}
-                      </Button>
-                    </div>
-                  </>
+                      </FormEditGroup>
+                    )}
+                    {horizontal && (
+                      <div className={REMOVE_ROW_STYLE}>
+                        <ItemComponent
+                          namePrefix={`${namePrefix}${name}.${index}.`}
+                          hideLabel={index > 0}
+                          horizontal
+                          {...props}
+                        />
+                        <ActionButton
+                          isQuiet
+                          data-test-id={`${namePrefix}${name}${index}RemoveButton`}
+                          onPress={() =>
+                            items.length > 1
+                              ? itemsField.handleChange(
+                                  items.filter((_, i) => i !== index),
+                                )
+                              : itemsField.handleChange([buildDefaultItem()])
+                          }
+                          isDisabled={items.length === 1 && isRowEmpty(item)}
+                          styles={HORIZONTAL_REMOVE_BUTTON_STYLES[index === 0]}
+                        >
+                          <Delete />
+                        </ActionButton>
+                      </div>
+                    )}
+                  </div>
                 );
-              }}
-            />
+              })}
+              <div>
+                <Button
+                  variant="secondary"
+                  fillStyle="outline"
+                  data-test-id={`${namePrefix}${name}AddButton`}
+                  onPress={() => itemsField.pushValue(buildDefaultItem())}
+                >
+                  {`Add another ${lowerInitialLetters(singularLabel)}`}
+                </Button>
+              </div>
+            </>
           )}
           {inputMethod === DATA_ELEMENT && (
             <DataElementSelector>

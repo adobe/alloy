@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { string } from "yup";
 import { ComboBoxItem } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "./formikCompat";
+import { useFieldValue } from "../utils/useFieldValue";
 import PropTypes from "prop-types";
 import Data from "@react-spectrum/s2/icons/Data";
 import DataElementSelector from "../components/dataElementSelector";
@@ -147,7 +147,7 @@ export default function comboBox({
     },
     Component: ({ namePrefix = "", hideLabel = false }) => {
       if (dataElementSupported) {
-        const [{ value = "" }] = useField(`${namePrefix}${name}`);
+        const value = useFieldValue(`${namePrefix}${name}`) ?? "";
         return (
           <DataElementSelector>
             <InnerComponent

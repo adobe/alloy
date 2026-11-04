@@ -19,7 +19,10 @@ import widthStyle from "./widthStyle";
 const FormikCheckbox = ({ name, description, width, ...otherProps }) => {
   const field = useFormField(name);
   const error = useFieldError(name);
-  const { value, meta: { isBlurred: touched } } = field.state;
+  const {
+    value,
+    meta: { isBlurred: touched },
+  } = field.state;
   return (
     <FieldDescriptionAndError
       description={description}

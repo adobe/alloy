@@ -30,7 +30,10 @@ const FormikKeyedComboBox = ({
 }) => {
   const field = useFormField(name);
   const error = useFieldError(name);
-  const { value, meta: { isBlurred: touched } } = field.state;
+  const {
+    value,
+    meta: { isBlurred: touched },
+  } = field.state;
   const forceRender = useForceRender();
   const isFilteringRef = useRef(false);
   const itemsRef = useRef(items);

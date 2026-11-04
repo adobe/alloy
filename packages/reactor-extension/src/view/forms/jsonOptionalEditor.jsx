@@ -13,7 +13,8 @@ governing permissions and limitations under the License.
 import { useEffect, useRef } from "react";
 import { string, object } from "yup";
 import { Radio } from "@react-spectrum/s2";
-import { useField, useFormikContext } from "./formikCompat";
+import { submitForm, useFormContext } from "./formContext";
+import { useFieldValue } from "../utils/useFieldValue";
 import PropTypes from "prop-types";
 import DataElementSelector from "../components/dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
@@ -123,12 +124,14 @@ export default function jsonOptionalEditor(
     Component: ({ namePrefix = "" }) => {
       // We use submitForm so that when you switch population strategies,
       // we can mark all the fields as touched and it will show the errors.
-      const { submitForm } = useFormikContext();
-      const [{ value: optionValue }] = useField(`${namePrefix}${optionName}`);
-      const [{ value }, , { setValue }] = useField(`${namePrefix}${name}`);
-      const [{ value: wholeValue }, , { setValue: setWholeValue }] = useField(
-        `${namePrefix}${name}Whole`,
-      );
+      const form = useFormContext();
+      const optionValue = useFieldValue(`${namePrefix}${optionName}`);
+      const value = useFieldValue(`${namePrefix}${name}`);
+      const wholeValue = useFieldValue(`${namePrefix}${name}Whole`);
+      const setValue = (newValue) =>
+        form.setFieldValue(`${namePrefix}${name}`, newValue);
+      const setWholeValue = (newValue) =>
+        form.setFieldValue(`${namePrefix}${name}Whole`, newValue);
       const lastOptionValue = useRef(optionValue);
       useEffect(() => {
         if (optionValue === PARTS && lastOptionValue.current === WHOLE) {
@@ -150,7 +153,7 @@ export default function jsonOptionalEditor(
                 getChildrenInitialValues({ initInfo: { settings: {} } }),
               );
             })
-            .then(() => submitForm());
+            .then(() => submitForm(form));
         } else if (optionValue === WHOLE && lastOptionValue.current === PARTS) {
           validationShape[name]
             .validate(value)
@@ -168,7 +171,7 @@ export default function jsonOptionalEditor(
             .catch(() => {
               return setWholeValue("");
             })
-            .then(() => submitForm());
+            .then(() => submitForm(form));
         }
         lastOptionValue.current = optionValue;
       }, [optionValue]);
