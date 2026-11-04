@@ -22,7 +22,7 @@ import {
   Link,
 } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "../forms/formikCompat";
+import { useFieldValue } from "../utils/useFieldValue";
 import PropTypes from "prop-types";
 import ExtensionView from "../components/extensionView";
 import FormElementContainer from "../components/formElementContainer";
@@ -389,8 +389,8 @@ const UpdateVariable = ({
     previouslySavedSchemaInfo,
   } = context;
 
-  const [{ value: dataElement }] = useField("dataElement");
-  const [{ value: customCode }] = useField("customCode");
+  const dataElement = useFieldValue("dataElement");
+  const customCode = useFieldValue("customCode");
   const [hasSchema, setHasSchema] = useState(schema != null);
   const [selectedNodeId, setSelectedNodeId] = useState(() => {
     if (dataElement?.settings?.solutions) {

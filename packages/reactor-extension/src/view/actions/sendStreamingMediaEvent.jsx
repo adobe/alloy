@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { object, string } from "yup";
-import { isEmptyArray } from "../forms/formikCompat";
 import comboBox from "../forms/comboBox";
 import instancePicker from "../forms/instancePicker";
 import conditional from "../forms/conditional";
@@ -175,11 +174,11 @@ const wrapGetSettings =
       mediaCollection.customMetadata = customMetadata;
     }
 
-    if (!isEmptyArray(statesEnd)) {
+    if (statesEnd?.length !== 0) {
       mediaCollection.statesEnd = statesEnd;
     }
 
-    if (!isEmptyArray(statesStart)) {
+    if (statesStart?.length !== 0) {
       mediaCollection.statesStart = statesStart;
     }
 

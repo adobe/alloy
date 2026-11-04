@@ -18,7 +18,7 @@ import {
   PickerItem,
 } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "../../../forms/formikCompat";
+import { useFieldValue } from "../../../utils/useFieldValue";
 import { useState } from "react";
 import PropTypes from "prop-types";
 import UserReportableError from "../../../errors/userReportableError";
@@ -206,7 +206,7 @@ const XdmVariable = ({
     tokens: { imsAccess },
   } = initInfo;
 
-  const [{ value: sandbox }] = useField("sandbox");
+  const sandbox = useFieldValue("sandbox");
   const [schemasData, setSchemasData] = useState({
     firstPage: schemasFirstPage,
     firstPageCursor: schemasFirstPageCursor,

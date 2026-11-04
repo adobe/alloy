@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 
 import { useRef } from "react";
 import PropTypes from "prop-types";
-import { useField } from "../forms/formikCompat";
+import { useFieldValue } from "../utils/useFieldValue";
 import { Link, Radio } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import ExtensionView from "../components/extensionView";
@@ -56,7 +56,7 @@ const validateFormikState = ({ values }) => ({
 });
 
 const Schema = ({ xdmVariableContext, initInfo }) => {
-  const [{ value: type }] = useField("type");
+  const type = useFieldValue("type");
 
   return (
     <>

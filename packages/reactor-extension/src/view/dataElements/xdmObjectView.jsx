@@ -20,7 +20,8 @@ import {
   Content,
 } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "../forms/formikCompat";
+import { useFormField } from "../forms/formContext";
+import { useFieldValue } from "../utils/useFieldValue";
 import { object, string } from "yup";
 import FormElementContainer from "../components/formElementContainer";
 import ExtensionView from "../components/extensionView";
@@ -280,9 +281,10 @@ const XdmObject = ({ initInfo, context, formikProps }) => {
   const abortPreviousRequestsAndCreateSignal =
     useAbortPreviousRequestsAndCreateSignal();
 
-  const [{ value: selectedSandboxName }] = useField("sandboxName");
-  const [{ value: selectedSchema }, , { setValue: setSelectedSchema }] =
-    useField("selectedSchema");
+  const selectedSandboxName = useFieldValue("sandboxName");
+  const selectedSchemaField = useFormField("selectedSchema");
+  const selectedSchema = selectedSchemaField.state.value;
+  const setSelectedSchema = selectedSchemaField.handleChange;
 
   useChanged(() => {
     setHasSchema(false);
