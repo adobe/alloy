@@ -22,7 +22,7 @@ import {
   Tabs,
 } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "../../forms/formikCompat";
+import { useFieldValue } from "../../utils/useFieldValue";
 import PropTypes from "prop-types";
 import { useRef } from "react";
 
@@ -39,7 +39,7 @@ import {
   findDatastream,
   useDatastreamCatalog,
 } from "../../utils/useDatastreamCatalog";
-import { useFetchConfig, useFormikContextWithOverrides } from "./hooks";
+import { useFetchConfig, useOverridesForm } from "./hooks";
 import OverrideInput from "./overrideInput";
 import { bridge } from "./overridesBridge";
 import ReportSuitesOverride from "./reportSuiteOverrides";
@@ -147,7 +147,7 @@ const Overrides = ({
   );
 
   /** @type {{value: import("./overridesBridge").EnvironmentConfigOverrideFormikState}[] } */
-  const [{ value: edgeConfigOverrides }] = useField(prefix);
+  const edgeConfigOverrides = useFieldValue(prefix);
 
   const requestCache = useRef({});
   const authOrgId = initInfo.company.orgId;
@@ -197,7 +197,7 @@ const Overrides = ({
   };
 
   const { useServiceStatus, createIsDisabled, onCopy, onDisable } =
-    useFormikContextWithOverrides({
+    useOverridesForm({
       prefix,
       edgeConfigOverrides,
       defaults,

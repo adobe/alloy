@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { useFormikContext } from "../../forms/formikCompat";
+import { setFieldBlurred, useFormContext } from "../../forms/formContext";
 import { useEffect, useState } from "react";
 import fetchConfig from "../../configuration/utils/fetchConfig";
 import deepGet from "../../utils/deepGet";
@@ -163,12 +163,8 @@ const getServiceStatus = (apiResult) =>
     },
   });
 
-export const useFormikContextWithOverrides = ({
-  prefix,
-  edgeConfigOverrides,
-  defaults,
-}) => {
-  const { values, setFieldValue, setFieldTouched } = useFormikContext();
+export const useOverridesForm = ({ prefix, edgeConfigOverrides, defaults }) => {
+  const form = useFormContext();
 
   const useServiceStatus = (apiResult) => {
     const serviceStatus = getServiceStatus(apiResult);
@@ -181,7 +177,10 @@ export const useFormikContextWithOverrides = ({
    */
   const createIsDisabled =
     (prefixWithEnv) => (shortPropName, serviceIsEnabled) => {
-      const value = deepGet(values, `${prefixWithEnv}.${shortPropName}`);
+      const value = deepGet(
+        form.state.values,
+        `${prefixWithEnv}.${shortPropName}`,
+      );
       return (
         !serviceIsEnabled ||
         value === ENABLED_DISABLED_MATCH_FIELD_VALUES.disabled ||
@@ -206,8 +205,8 @@ export const useFormikContextWithOverrides = ({
       parentFieldName.replace(prefix, "edgeConfigOverrides"),
     );
     fieldDefaults.enabled = ENABLED_DISABLED_MATCH_FIELD_VALUES.disabled;
-    setFieldValue(parentFieldName, fieldDefaults, true);
-    setFieldTouched(parentFieldName, true, true);
+    form.setFieldValue(parentFieldName, fieldDefaults);
+    setFieldBlurred(form, parentFieldName);
   };
 
   /**
@@ -230,17 +229,15 @@ export const useFormikContextWithOverrides = ({
           deepGet(edgeConfigOverrides[destination], field),
       )
       .forEach((field) => {
-        setFieldValue(
+        form.setFieldValue(
           `${prefix}.${destination}.${field}`,
           deepGet(edgeConfigOverrides[source], field),
-          true,
         );
-        setFieldTouched(`${prefix}.${destination}.${field}`, true, true);
+        setFieldBlurred(form, `${prefix}.${destination}.${field}`);
       });
   };
 
   return {
-    values,
     useServiceStatus,
     createIsDisabled,
     onDisable,
