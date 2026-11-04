@@ -31,10 +31,10 @@ const ExtensionView = ({
   render,
   getInitialValues,
   getSettings,
-  validateFormikState,
-  formikStateValidationSchema,
-  getFormikStateValidationSchema,
-  validateNonFormikState,
+  validateFormState,
+  validationSchema,
+  getValidationSchema,
+  validateNonFormState,
 }) => {
   const reportAsyncError = useReportAsyncError();
   const [initInfo, setInitInfo] = useState();
@@ -43,11 +43,9 @@ const ExtensionView = ({
   const getInitialValuesPromiseRef = useRef();
   const hasValuesRef = useRef(false);
 
-  const getValidationSchema = () => {
-    const {
-      getFormikStateValidationSchema: getSchema,
-      formikStateValidationSchema: schema,
-    } = viewRegistrationRef.current ?? {};
+  const resolveValidationSchema = () => {
+    const { getValidationSchema: getSchema, validationSchema: schema } =
+      viewRegistrationRef.current ?? {};
 
     if (schema) {
       return schema;
@@ -55,7 +53,7 @@ const ExtensionView = ({
     if (getSchema && initInfo) {
       try {
         const newSchema = getSchema({ initInfo });
-        viewRegistrationRef.current.formikStateValidationSchema = newSchema;
+        viewRegistrationRef.current.validationSchema = newSchema;
       } catch (e) {
         reportAsyncError(e);
       }
@@ -68,8 +66,8 @@ const ExtensionView = ({
       return {
         ...getFieldValidatorErrors(form, values),
         ...getFormErrors({
-          schema: getValidationSchema(),
-          validate: viewRegistrationRef.current?.validateFormikState,
+          schema: resolveValidationSchema(),
+          validate: viewRegistrationRef.current?.validateFormState,
           values,
         }),
       };
@@ -93,7 +91,7 @@ const ExtensionView = ({
     },
   });
 
-  const myValidateFormikState = async () => {
+  const myValidateFormState = async () => {
     // The view hasn't yet initialized the form with initial values.
     if (!hasValuesRef.current) {
       return false;
@@ -103,23 +101,23 @@ const ExtensionView = ({
 
     // Setting context to the values so you can use "$..." in when conditions
     return (
-      isValidAgainstSchema(getValidationSchema(), form.state.values) &&
+      isValidAgainstSchema(resolveValidationSchema(), form.state.values) &&
       Object.keys(getErrors(form.state.values)).length === 0
     );
   };
 
-  const myValidateNonFormikState = async () => {
+  const myValidateNonFormState = async () => {
     if (!viewRegistrationRef.current) {
       // If the view hasn't registered yet, we don't want to consider
       // it valid.
       return false;
     }
 
-    if (!viewRegistrationRef.current.validateNonFormikState) {
+    if (!viewRegistrationRef.current.validateNonFormState) {
       return true;
     }
 
-    return viewRegistrationRef.current.validateNonFormikState();
+    return viewRegistrationRef.current.validateNonFormState();
   };
 
   useExtensionBridge({
@@ -149,8 +147,8 @@ const ExtensionView = ({
         await getInitialValuesPromiseRef.current;
       }
       const results = await Promise.all([
-        myValidateFormikState(),
-        myValidateNonFormikState(),
+        myValidateFormState(),
+        myValidateNonFormState(),
       ]);
       return results.every((result) => result);
     },
@@ -159,23 +157,20 @@ const ExtensionView = ({
   const registerImperativeFormApi = (api) => {
     viewRegistrationRef.current = viewRegistrationRef.current || {};
     viewRegistrationRef.current.getSettings = api.getSettings;
-    viewRegistrationRef.current.validateFormikState = api.validateFormikState;
-    viewRegistrationRef.current.formikStateValidationSchema =
-      api.formikStateValidationSchema;
-    viewRegistrationRef.current.getFormikStateValidationSchema =
-      api.getFormikStateValidationSchema;
-    viewRegistrationRef.current.validateNonFormikState =
-      api.validateNonFormikState;
+    viewRegistrationRef.current.validateFormState = api.validateFormState;
+    viewRegistrationRef.current.validationSchema = api.validationSchema;
+    viewRegistrationRef.current.getValidationSchema = api.getValidationSchema;
+    viewRegistrationRef.current.validateNonFormState = api.validateNonFormState;
   };
 
   if (getSettings) {
     useEffect(() => {
       registerImperativeFormApi({
         getSettings,
-        validateFormikState,
-        formikStateValidationSchema,
-        getFormikStateValidationSchema,
-        validateNonFormikState,
+        validateFormState,
+        validationSchema,
+        getValidationSchema,
+        validateNonFormState,
       });
     }, []);
   }
@@ -232,10 +227,10 @@ ExtensionView.propTypes = {
   render: PropTypes.func,
   getInitialValues: PropTypes.func,
   getSettings: PropTypes.func,
-  validateFormikState: PropTypes.func,
-  formikStateValidationSchema: PropTypes.object,
-  getFormikStateValidationSchema: PropTypes.func,
-  validateNonFormikState: PropTypes.func,
+  validateFormState: PropTypes.func,
+  validationSchema: PropTypes.object,
+  getValidationSchema: PropTypes.func,
+  validateNonFormState: PropTypes.func,
 };
 
 export default ExtensionView;

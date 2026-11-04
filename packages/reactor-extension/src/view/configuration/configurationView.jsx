@@ -553,7 +553,7 @@ const ConfigurationView = () => {
     <ExtensionView
       getInitialValues={getInitialValues}
       getSettings={getSettings}
-      formikStateValidationSchema={createValidationSchema()}
+      validationSchema={createValidationSchema()}
       render={({ initInfo }) => {
         return <Configuration initInfo={initInfo} />;
       }}

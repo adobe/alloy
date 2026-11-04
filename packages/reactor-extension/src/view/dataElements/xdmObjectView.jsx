@@ -231,16 +231,16 @@ const getSettings =
     };
   };
 
-const formikStateValidationSchema = object().shape({
+const validationSchema = object().shape({
   sandboxName: string().required("Please select a sandbox."),
   selectedSchema: object().nullable().required("Please select a schema."),
 });
 
-const validateFormikState =
+const validateFormState =
   (context) =>
   ({ values }) => {
     // We can't and don't need to do validation on the form values
-    // if the editor isn't even renderable. validateNonFormikState
+    // if the editor isn't even renderable. validateNonFormState
     // will ensure that the view is properly marked invalid in this
     // case.
     const { schema } = context;
@@ -251,7 +251,7 @@ const validateFormikState =
     return validate(values);
   };
 
-const validateNonFormikState = (context) => () => {
+const validateNonFormState = (context) => () => {
   const { schema } = context;
   if (!schema) {
     context.showEditorNotReadyValidationError = true;
@@ -469,9 +469,9 @@ const XdmObjectView = () => {
     <ExtensionView
       getInitialValues={getInitialValues(context)}
       getSettings={getSettings(context)}
-      formikStateValidationSchema={formikStateValidationSchema}
-      validateFormikState={validateFormikState(context)}
-      validateNonFormikState={validateNonFormikState(context)}
+      validationSchema={validationSchema}
+      validateFormState={validateFormState(context)}
+      validateNonFormState={validateNonFormState(context)}
       render={({ initInfo, form }) => {
         return <XdmObject initInfo={initInfo} form={form} context={context} />;
       }}

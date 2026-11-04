@@ -111,7 +111,7 @@ const FormExtensionView = () => {
     <ExtensionView
       getInitialValues={getInitialValues}
       getSettings={getSettings}
-      getFormikStateValidationSchema={getValidationSchema}
+      getValidationSchema={getValidationSchema}
       render={(props) => <FormComponent {...props} />}
     />
   );

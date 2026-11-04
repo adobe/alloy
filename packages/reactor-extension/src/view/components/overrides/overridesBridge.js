@@ -436,7 +436,7 @@ export const bridge = {
 
     return instanceSettings;
   },
-  formikStateValidationSchema: object({
+  validationSchema: object({
     edgeConfigOverrides: object(
       OVERRIDE_ENVIRONMENTS.reduce(
         (acc, env) => ({

@@ -155,7 +155,7 @@ const IdentityMapExtensionView = () => {
         getInitialValues({ initInfo, context })
       }
       getSettings={getSettings}
-      formikStateValidationSchema={validationSchema}
+      validationSchema={validationSchema}
       render={() => {
         return <Identity context={context} />;
       }}

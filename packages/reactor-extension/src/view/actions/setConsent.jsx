@@ -235,7 +235,7 @@ const getValidationSchema = getRequiredComponentSchema("consent", () => {
           ),
       }),
     })
-    .concat(overridesBridge.formikStateValidationSchema);
+    .concat(overridesBridge.validationSchema);
 });
 
 const ConsentObject = ({ value, index }) => {
@@ -485,7 +485,7 @@ const SetConsent = () => {
     <ExtensionView
       getInitialValues={getInitialValues}
       getSettings={getSettings}
-      getFormikStateValidationSchema={getValidationSchema}
+      getValidationSchema={getValidationSchema}
       render={({ initInfo }) => <SetConsentForm initInfo={initInfo} />}
     />
   );

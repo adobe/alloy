@@ -50,9 +50,9 @@ const getSettings = ({ values }) => {
   return settings;
 };
 
-const validateFormikState = ({ values }) => ({
-  ...xdmVariableBridge.validateFormikState(values),
-  ...dataVariableBridge.validateFormikState(values),
+const validateFormState = ({ values }) => ({
+  ...xdmVariableBridge.validateFormState(values),
+  ...dataVariableBridge.validateFormState(values),
 });
 
 const Schema = ({ xdmVariableContext, initInfo }) => {
@@ -113,7 +113,7 @@ const VariableView = () => {
     <ExtensionView
       getInitialValues={getInitialValues({ xdmVariableContext })}
       getSettings={getSettings}
-      validateFormikState={validateFormikState}
+      validateFormState={validateFormState}
       render={({ initInfo }) => (
         <FormElementContainer>
           <Schema xdmVariableContext={xdmVariableContext} initInfo={initInfo} />

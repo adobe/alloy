@@ -33,7 +33,7 @@ export default function configOverrides(hideFields) {
     },
     validationShape: {
       edgeConfigOverrides: reach(
-        overridesBridge.formikStateValidationSchema,
+        overridesBridge.validationSchema,
         "edgeConfigOverrides",
       ),
     },

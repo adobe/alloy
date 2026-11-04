@@ -1616,20 +1616,20 @@ describe("overridesBridge", () => {
     });
   });
 
-  describe("formikStateValidationSchema", () => {
+  describe("validationSchema", () => {
     it("should return a yup schema", () => {
-      const schema = bridge.formikStateValidationSchema;
+      const schema = bridge.validationSchema;
       expect(schema).toBeDefined();
     });
 
     it("should validate the edge config overrides", () => {
       expect(() => {
-        bridge.formikStateValidationSchema.validateSync({
+        bridge.validationSchema.validateSync({
           ...bridge.getInstanceDefaults(),
         });
       }).not.toThrow();
       expect(() => {
-        bridge.formikStateValidationSchema.validateSync({
+        bridge.validationSchema.validateSync({
           edgeConfigOverrides: {
             development: {
               sandbox: "prod",
@@ -1677,7 +1677,7 @@ describe("overridesBridge", () => {
         });
       }).not.toThrow();
       expect(() => {
-        bridge.formikStateValidationSchema.validateSync({
+        bridge.validationSchema.validateSync({
           edgeConfigOverrides: {
             development: {
               enabled: ENV_FIELD.enabled,
@@ -1797,7 +1797,7 @@ describe("overridesBridge", () => {
 
     it("should coerce the id sync container is a string", () => {
       expect(() => {
-        const value = bridge.formikStateValidationSchema.validateSync({
+        const value = bridge.validationSchema.validateSync({
           edgeConfigOverrides: {
             development: {
               com_adobe_identity: {
@@ -1815,7 +1815,7 @@ describe("overridesBridge", () => {
 
     it("validates data elements", () => {
       expect(() => {
-        bridge.formikStateValidationSchema.validateSync({
+        bridge.validationSchema.validateSync({
           edgeConfigOverrides: {
             development: {
               com_adobe_target: {
@@ -1941,7 +1941,7 @@ describe("overridesBridge", () => {
 
     it("validates partial data elements", () => {
       expect(() => {
-        bridge.formikStateValidationSchema.validateSync({
+        bridge.validationSchema.validateSync({
           edgeConfigOverrides: {
             development: {
               com_adobe_target: {
@@ -1993,7 +1993,7 @@ describe("overridesBridge", () => {
 
     it("does not accept partial or multiple data elements in the `enabled` fields", () => {
       expect(() => {
-        bridge.formikStateValidationSchema.validateSync({
+        bridge.validationSchema.validateSync({
           edgeConfigOverrides: {
             development: {
               com_adobe_target: {
@@ -2045,7 +2045,7 @@ describe("overridesBridge", () => {
 
     it("gives friendly errors", () => {
       try {
-        bridge.formikStateValidationSchema.validateSync({
+        bridge.validationSchema.validateSync({
           edgeConfigOverrides: {
             development: {
               com_adobe_identity: {
@@ -2064,7 +2064,7 @@ describe("overridesBridge", () => {
 
     it("rejects negative and non-integer idSyncContainerId", () => {
       expect(() =>
-        bridge.formikStateValidationSchema.validateSync({
+        bridge.validationSchema.validateSync({
           edgeConfigOverrides: {
             development: {
               com_adobe_identity: {
@@ -2076,7 +2076,7 @@ describe("overridesBridge", () => {
       ).toThrow();
 
       expect(() =>
-        bridge.formikStateValidationSchema.validateSync({
+        bridge.validationSchema.validateSync({
           edgeConfigOverrides: {
             development: {
               com_adobe_identity: {
@@ -2090,7 +2090,7 @@ describe("overridesBridge", () => {
 
     it("allows for empty string entries", () => {
       expect(() =>
-        bridge.formikStateValidationSchema.validateSync({
+        bridge.validationSchema.validateSync({
           edgeConfigOverrides: {
             development: {
               com_adobe_experience_platform: {
@@ -2117,7 +2117,7 @@ describe("overridesBridge", () => {
 
     it("allows for null and undefined entries", () => {
       expect(() =>
-        bridge.formikStateValidationSchema.validateSync({
+        bridge.validationSchema.validateSync({
           edgeConfigOverrides: {
             development: {
               com_adobe_experience_platform: {
@@ -2161,7 +2161,7 @@ describe("overridesBridge", () => {
       ).not.toThrow();
 
       expect(() =>
-        bridge.formikStateValidationSchema.validateSync({
+        bridge.validationSchema.validateSync({
           edgeConfigOverrides: {
             development: {
               com_adobe_experience_platform: {

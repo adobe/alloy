@@ -169,7 +169,7 @@ export const bridge = {
       },
     };
   },
-  validateFormikState: ({ type, sandbox, schema }) => {
+  validateFormState: ({ type, sandbox, schema }) => {
     const result = {};
 
     if (type === DATA) {

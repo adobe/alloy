@@ -48,7 +48,7 @@ export const bridge = {
 
     return result;
   },
-  validateFormikState: ({ type, solutions }) => {
+  validateFormState: ({ type, solutions }) => {
     const result = {};
 
     if (type === XDM) return result;

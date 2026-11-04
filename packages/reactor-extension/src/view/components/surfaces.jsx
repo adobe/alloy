@@ -72,7 +72,7 @@ export const bridge = {
     }
     return undefined;
   },
-  formikStateValidationSchema: object().shape({
+  validationSchema: object().shape({
     surfacesDataElement: string().when("surfacesInputMethod", {
       is: DATA_ELEMENT,
       then: (schema) =>

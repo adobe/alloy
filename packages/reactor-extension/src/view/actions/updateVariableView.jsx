@@ -320,7 +320,7 @@ const validationSchema = object().shape({
   dataElement: object().required("Please specify a data element."),
 });
 
-const validateFormikState =
+const validateFormState =
   (context) =>
   ({ values }) => {
     const { schema } = context;
@@ -617,8 +617,8 @@ const UpdateVariableExtensionView = () => {
     <ExtensionView
       getInitialValues={getInitialValues(context)}
       getSettings={getSettings(context)}
-      formikStateValidationSchema={validationSchema}
-      validateFormikState={validateFormikState(context)}
+      validationSchema={validationSchema}
+      validateFormState={validateFormState(context)}
       render={(props) => {
         return <UpdateVariable context={context} {...props} />;
       }}

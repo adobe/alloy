@@ -76,7 +76,7 @@ export const bridge = {
     }
     return undefined;
   },
-  formikStateValidationSchema: object().shape({
+  validationSchema: object().shape({
     decisionScopesDataElement: string().when("decisionsInputMethod", {
       is: DATA_ELEMENT,
       then: (schema) =>

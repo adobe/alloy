@@ -116,7 +116,7 @@ const ApplyResponse = () => {
     <ExtensionView
       getInitialValues={getInitialValues}
       getSettings={getSettings}
-      formikStateValidationSchema={validationSchema}
+      validationSchema={validationSchema}
       render={({ initInfo }) => <FormFields initInfo={initInfo} />}
     />
   );
