@@ -39,8 +39,29 @@ describe("LibraryInfo", () => {
     });
   });
 
-  it("reports platformServices.libraryVersionOverride instead of the default when given", () => {
+  it("reports the platform library version when given", () => {
+    toolsMock.platformServices = { libraryVersion: "1.2.3" };
+
+    const { libraryInfo } =
+      createLibraryInfo(toolsMock).commands.getLibraryInfo.run();
+
+    expect(libraryInfo.version).toBe("1.2.3");
+  });
+
+  it("supports the legacy version field used by released Node packages", () => {
     toolsMock.platformServices = { libraryVersionOverride: "1.2.3" };
+
+    const { libraryInfo } =
+      createLibraryInfo(toolsMock).commands.getLibraryInfo.run();
+
+    expect(libraryInfo.version).toBe("1.2.3");
+  });
+
+  it("prefers libraryVersion over the legacy field", () => {
+    toolsMock.platformServices = {
+      libraryVersion: "1.2.3",
+      libraryVersionOverride: "4.5.6",
+    };
 
     const { libraryInfo } =
       createLibraryInfo(toolsMock).commands.getLibraryInfo.run();

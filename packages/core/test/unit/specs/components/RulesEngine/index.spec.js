@@ -62,7 +62,7 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
 
   const setUpDecisionEngine = ({
     personalizationStorageEnabled,
-    libraryVersionOverride,
+    libraryVersion,
   }) => {
     const config = {
       orgId: "exampleOrgId",
@@ -75,7 +75,7 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
       getBrowser,
       logger: { info: vi.fn() },
       platformServices: {
-        libraryVersionOverride,
+        libraryVersion,
         storage: {
           createNamespacedStorage: vi.fn().mockReturnValue({
             persistent: persistentStorage,
@@ -99,10 +99,10 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
     return rulesEngine;
   };
 
-  it("evaluates SDK version rules using the platform override", () => {
+  it("evaluates SDK version rules using the platform library version", () => {
     const rulesEngine = setUpDecisionEngine({
       personalizationStorageEnabled: false,
-      libraryVersionOverride: "9.8.7",
+      libraryVersion: "9.8.7",
     });
     rulesEngine.lifecycle.onBeforeEvent({
       event: mockEvent,

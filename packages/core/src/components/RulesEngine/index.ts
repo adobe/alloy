@@ -85,7 +85,7 @@ const createRulesEngine = ({
     eventRegistry,
     getWindowContext: platformServices.globals.getWindowContext,
     getBrowser,
-    libraryVersion: platformServices.libraryVersionOverride,
+    libraryVersion: platformServices.libraryVersion,
   });
 
   const evaluateRulesetsCommand = createEvaluateRulesetsCommand({

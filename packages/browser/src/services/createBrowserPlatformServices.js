@@ -24,7 +24,7 @@ import createBrowserGlobalsService from "./createBrowserGlobalsService.js";
  * @returns {PlatformServices}
  */
 const createBrowserPlatformServices = () => ({
-  libraryVersionOverride: packageJson.version,
+  libraryVersion: packageJson.version,
   createNetworkService: (logger) => createBrowserNetworkService({ logger }),
   storage: createBrowserStorageService(),
   cookie: createBrowserCookieService(),

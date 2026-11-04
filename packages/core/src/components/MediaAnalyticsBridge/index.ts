@@ -81,7 +81,7 @@ const createMediaAnalyticsBridge = ({
     createGetInstance,
     logger,
     config,
-    libraryVersion: platformServices.libraryVersionOverride,
+    libraryVersion: platformServices.libraryVersion,
   });
 };
 

@@ -72,7 +72,9 @@ const createLibraryInfo = ({
   platformServices,
 }: LibraryInfoOptions) => {
   const libraryVersion =
-    platformServices?.libraryVersionOverride ?? defaultLibraryVersion;
+    platformServices?.libraryVersion ??
+    platformServices?.libraryVersionOverride ??
+    defaultLibraryVersion;
   return {
     commands: {
       getLibraryInfo: {

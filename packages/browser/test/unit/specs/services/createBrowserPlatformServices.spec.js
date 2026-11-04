@@ -23,9 +23,9 @@ afterEach(() => {
 });
 
 describe("createBrowserPlatformServices (wiring)", () => {
-  it("exposes the browser package version as libraryVersionOverride", () => {
+  it("exposes the browser package version as libraryVersion", () => {
     const services = createBrowserPlatformServices();
-    expect(services.libraryVersionOverride).toBe(packageJson.version);
+    expect(services.libraryVersion).toBe(packageJson.version);
   });
 
   it("returns an object with all service keys", () => {

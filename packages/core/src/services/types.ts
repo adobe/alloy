@@ -155,6 +155,8 @@ export interface GlobalsService {
 }
 
 export interface PlatformServices {
+  libraryVersion?: string;
+  /** @deprecated Use libraryVersion instead. */
   libraryVersionOverride?: string;
   createNetworkService: (logger: Logger) => NetworkService;
   storage: StorageService;

@@ -46,8 +46,7 @@ const optionalContexts = {
 const createContext = ({ config, logger, platformServices }) => {
   const requiredContexts = [
     timestamp,
-    (event) =>
-      implementationDetails(event, platformServices?.libraryVersionOverride),
+    (event) => implementationDetails(event, platformServices?.libraryVersion),
   ];
   return createComponent(config, logger, optionalContexts, requiredContexts);
 };

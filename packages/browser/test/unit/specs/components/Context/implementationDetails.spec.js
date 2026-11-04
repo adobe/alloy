@@ -14,7 +14,7 @@ import { describe, it, expect, vi } from "vitest";
 import implementationDetails from "../../../../../src/components/Context/implementationDetails.js";
 
 describe("Context::implementationDetails", () => {
-  it("uses the platform library version override", () => {
+  it("uses the platform library version", () => {
     const event = { mergeXdm: vi.fn() };
     implementationDetails(event, "9.8.7");
     expect(event.mergeXdm).toHaveBeenCalledWith({
