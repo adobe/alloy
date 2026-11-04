@@ -15,7 +15,7 @@ import { Radio } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import { object, string } from "yup";
-import { useField } from "../forms/formikCompat";
+import { useFieldValue } from "../utils/useFieldValue";
 import SectionHeader from "../components/sectionHeader";
 import InfoMessage from "../components/infoMessage";
 import FormikRadioGroupWithDataElement, {
@@ -71,7 +71,7 @@ export const bridge = {
 };
 
 const PrivacySection = ({ instanceFieldName }) => {
-  const [{ value: consentComponentEnabled }] = useField("components.consent");
+  const consentComponentEnabled = useFieldValue("components.consent");
   return (
     <>
       <SectionHeader learnMoreUrl="https://adobe.ly/2WSngEh">

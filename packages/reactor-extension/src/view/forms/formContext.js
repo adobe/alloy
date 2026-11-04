@@ -89,22 +89,26 @@ const collectLeafPaths = (value, path, paths) => {
 // Fields that are not mounted (other tabs, collapsed sections, unselected
 // tree nodes) still need to show their errors once they appear, so every
 // leaf value is marked as touched rather than only the registered fields.
-const markBlurred = (meta) => ({
+const withBlurred = (meta, isBlurred) => ({
   errorMap: {},
   errorSourceMap: {},
   ...meta,
-  isTouched: true,
-  isBlurred: true,
+  isTouched: isBlurred,
+  isBlurred,
 });
 
-export const setFieldBlurred = (form, name) =>
-  form.setFieldMeta(name, markBlurred);
+export const setFieldBlurred = (form, name, isBlurred = true) => {
+  form.setFieldMeta(name, (meta) => withBlurred(meta, isBlurred));
+  if (isBlurred) {
+    form.validate("blur");
+  }
+};
 
 export const submitForm = async (form) => {
   form.baseStore.setState((state) => {
     const fieldMetaBase = { ...state.fieldMetaBase };
     collectLeafPaths(state.values, "", []).forEach((path) => {
-      fieldMetaBase[path] = markBlurred(fieldMetaBase[path]);
+      fieldMetaBase[path] = withBlurred(fieldMetaBase[path], true);
     });
     return { ...state, fieldMetaBase };
   });

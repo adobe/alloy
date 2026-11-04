@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { useField } from "../forms/formikCompat";
+import { useFieldValue } from "../utils/useFieldValue";
 import { InlineAlert, Heading, Content, Link } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
@@ -23,7 +23,7 @@ import { bridge } from "./basicSectionBridge";
 export { bridge };
 
 const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
-  const [{ value: instanceValues }] = useField(instanceFieldName);
+  const instanceValues = useFieldValue(instanceFieldName);
   const instanceDefaults = bridge.getInstanceDefaults({ initInfo });
 
   return (

@@ -33,7 +33,8 @@ import {
 import { size, style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useState } from "react";
 import { object, array, string } from "yup";
-import { FieldArray, useField } from "../forms/formikCompat";
+import { useFormContext } from "../forms/formContext";
+import { useFieldValue } from "../utils/useFieldValue";
 import DeleteIcon from "@react-spectrum/s2/icons/Delete";
 import PropTypes from "prop-types";
 import ExtensionView from "../components/extensionView";
@@ -219,7 +220,8 @@ const InstancesSection = ({
   isExpanded,
   onAddInstance,
 }) => {
-  const [{ value: instances }] = useField("instances");
+  const form = useFormContext();
+  const instances = useFieldValue("instances");
   const [selectedTabKey, setSelectedTabKey] = useState("0");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [instanceToDelete, setInstanceToDelete] = useState(null);
@@ -245,209 +247,193 @@ const InstancesSection = ({
   useFocusFirstError();
 
   return (
-    <FieldArray
-      name="instances"
-      render={(arrayHelpers) => {
-        return (
-          <Disclosure
-            id="instances"
-            data-test-id="instancesHeading"
-            styles={style({ position: "relative" })}
+    <Disclosure
+      id="instances"
+      data-test-id="instancesHeading"
+      styles={style({ position: "relative" })}
+    >
+      <DisclosureHeader>
+        <DisclosureTitle>
+          <span className={style({ paddingEnd: size(128) })}>
+            SDK instances
+          </span>
+        </DisclosureTitle>
+        {isExpanded && (
+          <Button
+            data-test-id="addInstanceButton"
+            variant="secondary"
+            fillStyle="outline"
+            styles={style({
+              position: "absolute",
+              top: 8,
+              insetEnd: 8,
+            })}
+            onPress={async () => {
+              const newInstance = await getInstanceDefaults({
+                initInfo,
+                isFirstInstance: false,
+                existingInstances: instances,
+              });
+              form.pushFieldValue("instances", newInstance);
+              setSelectedTabKey(String(instances.length));
+              onAddInstance();
+            }}
           >
-            <DisclosureHeader>
-              <DisclosureTitle>
-                <span className={style({ paddingEnd: size(128) })}>
-                  SDK instances
-                </span>
-              </DisclosureTitle>
-              {isExpanded && (
-                <Button
-                  data-test-id="addInstanceButton"
-                  variant="secondary"
-                  fillStyle="outline"
-                  styles={style({
-                    position: "absolute",
-                    top: 8,
-                    insetEnd: 8,
-                  })}
-                  onPress={async () => {
-                    const newInstance = await getInstanceDefaults({
-                      initInfo,
-                      isFirstInstance: false,
-                      existingInstances: instances,
-                    });
-                    arrayHelpers.push(newInstance);
-                    setSelectedTabKey(String(instances.length));
-                    onAddInstance();
-                  }}
-                >
-                  Add instance
-                </Button>
-              )}
-            </DisclosureHeader>
-            <DisclosurePanel>
-              <div
-                className={style({
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 4,
-                })}
-              >
-                <Tabs
-                  aria-label="SDK instances"
-                  selectedKey={selectedTabKey}
-                  onSelectionChange={setSelectedTabKey}
-                >
-                  <TabList
-                    styles={style({
-                      marginBottom: 16,
-                    })}
-                  >
-                    {instances.map((instance, index) => {
-                      return (
-                        <Tab key={index} id={String(index)}>
-                          {instance.name || "Unnamed instance"}
-                        </Tab>
-                      );
-                    })}
-                  </TabList>
-                  {instances.map((instance, index) => {
-                    const instanceFieldName = `instances.${index}`;
-                    const edgeConfigIds = getEdgeConfigIds(instance);
-                    return (
-                      <TabPanel key={index} id={String(index)}>
-                        <BasicSection
-                          instanceFieldName={instanceFieldName}
-                          initInfo={initInfo}
-                          isPreinstalled={isPreinstalled}
-                        />
-                        {!isPreinstalled && (
-                          <>
-                            <EdgeConfigurationsSection
-                              instanceFieldName={instanceFieldName}
-                              instanceIndex={index}
-                              initInfo={initInfo}
-                              datastreamCatalog={datastreamCatalog}
-                            />
-                            <PrivacySection
-                              instanceFieldName={instanceFieldName}
-                            />
-                            <IdentitySection
-                              instanceFieldName={instanceFieldName}
-                            />
-                            <PersonalizationSection
-                              instanceFieldName={instanceFieldName}
-                            />
-                            <DataCollectionSection
-                              instanceFieldName={instanceFieldName}
-                            />
-                            <StreamingMediaSection
-                              instanceFieldName={instanceFieldName}
-                            />
-                            <PushNotificationsSection
-                              instanceFieldName={instanceFieldName}
-                            />
-                            <BrandConciergeSection
-                              instanceFieldName={instanceFieldName}
-                            />
-                            <AdvertisingSection
-                              instanceFieldName={instanceFieldName}
-                              initInfo={initInfo}
-                            />
-                            <OverridesSection
-                              initInfo={initInfo}
-                              instanceFieldName={instanceFieldName}
-                              edgeConfigIds={edgeConfigIds}
-                              configOrgId={instance.orgId}
-                              hideFields={[FIELD_NAMES.datastreamId]}
-                            />
-                            <AdvancedSection
-                              instanceFieldName={instanceFieldName}
-                            />
-                          </>
-                        )}
-                        {instances.length > 1 && (
-                          <div
-                            className={style({
-                              marginTop: 24,
-                            })}
-                          >
-                            <Button
-                              data-test-id="deleteInstanceButton"
-                              variant="secondary"
-                              isDisabled={instances.length === 1}
-                              onPress={() => {
-                                setInstanceToDelete(index);
-                                setDeleteDialogOpen(true);
-                              }}
-                            >
-                              <DeleteIcon />
-                              <Text>Delete instance</Text>
-                            </Button>
-                          </div>
-                        )}{" "}
-                      </TabPanel>
-                    );
-                  })}
-                </Tabs>
-                <DialogContainer
-                  onDismiss={() => {
-                    setDeleteDialogOpen(false);
-                    setInstanceToDelete(null);
-                  }}
-                >
-                  {deleteDialogOpen && (
-                    <Dialog data-test-id="resourceUsageDialog">
-                      <Heading slot="title">Resource Usage</Heading>
-
-                      <Content>
-                        <Text>
-                          Any rule components or data elements using this
-                          instance will no longer function as expected when
-                          running on your website. We recommend removing these
-                          resources or switching them to use a different
-                          instance before publishing your next library. Would
-                          you like to proceed?
-                        </Text>
-                      </Content>
-                      <ButtonGroup>
-                        <Button
-                          data-test-id="cancelDeleteInstanceButton"
-                          variant="secondary"
-                          onPress={() => {
-                            setDeleteDialogOpen(false);
-                            setInstanceToDelete(null);
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          data-test-id="confirmDeleteInstanceButton"
-                          variant="accent"
-                          onPress={() => {
-                            arrayHelpers.remove(instanceToDelete);
-                            setSelectedTabKey(
-                              String(
-                                instanceToDelete > 0 ? instanceToDelete - 1 : 0,
-                              ),
-                            );
-                            setDeleteDialogOpen(false);
-                            setInstanceToDelete(null);
-                          }}
-                          autoFocus
-                        >
-                          Delete
-                        </Button>
-                      </ButtonGroup>
-                    </Dialog>
+            Add instance
+          </Button>
+        )}
+      </DisclosureHeader>
+      <DisclosurePanel>
+        <div
+          className={style({
+            display: "flex",
+            flexDirection: "column",
+            gap: 4,
+          })}
+        >
+          <Tabs
+            aria-label="SDK instances"
+            selectedKey={selectedTabKey}
+            onSelectionChange={setSelectedTabKey}
+          >
+            <TabList
+              styles={style({
+                marginBottom: 16,
+              })}
+            >
+              {instances.map((instance, index) => {
+                return (
+                  <Tab key={index} id={String(index)}>
+                    {instance.name || "Unnamed instance"}
+                  </Tab>
+                );
+              })}
+            </TabList>
+            {instances.map((instance, index) => {
+              const instanceFieldName = `instances.${index}`;
+              const edgeConfigIds = getEdgeConfigIds(instance);
+              return (
+                <TabPanel key={index} id={String(index)}>
+                  <BasicSection
+                    instanceFieldName={instanceFieldName}
+                    initInfo={initInfo}
+                    isPreinstalled={isPreinstalled}
+                  />
+                  {!isPreinstalled && (
+                    <>
+                      <EdgeConfigurationsSection
+                        instanceFieldName={instanceFieldName}
+                        instanceIndex={index}
+                        initInfo={initInfo}
+                        datastreamCatalog={datastreamCatalog}
+                      />
+                      <PrivacySection instanceFieldName={instanceFieldName} />
+                      <IdentitySection instanceFieldName={instanceFieldName} />
+                      <PersonalizationSection
+                        instanceFieldName={instanceFieldName}
+                      />
+                      <DataCollectionSection
+                        instanceFieldName={instanceFieldName}
+                      />
+                      <StreamingMediaSection
+                        instanceFieldName={instanceFieldName}
+                      />
+                      <PushNotificationsSection
+                        instanceFieldName={instanceFieldName}
+                      />
+                      <BrandConciergeSection
+                        instanceFieldName={instanceFieldName}
+                      />
+                      <AdvertisingSection
+                        instanceFieldName={instanceFieldName}
+                        initInfo={initInfo}
+                      />
+                      <OverridesSection
+                        initInfo={initInfo}
+                        instanceFieldName={instanceFieldName}
+                        edgeConfigIds={edgeConfigIds}
+                        configOrgId={instance.orgId}
+                        hideFields={[FIELD_NAMES.datastreamId]}
+                      />
+                      <AdvancedSection instanceFieldName={instanceFieldName} />
+                    </>
                   )}
-                </DialogContainer>{" "}
-              </div>
-            </DisclosurePanel>
-          </Disclosure>
-        );
-      }}
-    />
+                  {instances.length > 1 && (
+                    <div
+                      className={style({
+                        marginTop: 24,
+                      })}
+                    >
+                      <Button
+                        data-test-id="deleteInstanceButton"
+                        variant="secondary"
+                        isDisabled={instances.length === 1}
+                        onPress={() => {
+                          setInstanceToDelete(index);
+                          setDeleteDialogOpen(true);
+                        }}
+                      >
+                        <DeleteIcon />
+                        <Text>Delete instance</Text>
+                      </Button>
+                    </div>
+                  )}{" "}
+                </TabPanel>
+              );
+            })}
+          </Tabs>
+          <DialogContainer
+            onDismiss={() => {
+              setDeleteDialogOpen(false);
+              setInstanceToDelete(null);
+            }}
+          >
+            {deleteDialogOpen && (
+              <Dialog data-test-id="resourceUsageDialog">
+                <Heading slot="title">Resource Usage</Heading>
+
+                <Content>
+                  <Text>
+                    Any rule components or data elements using this instance
+                    will no longer function as expected when running on your
+                    website. We recommend removing these resources or switching
+                    them to use a different instance before publishing your next
+                    library. Would you like to proceed?
+                  </Text>
+                </Content>
+                <ButtonGroup>
+                  <Button
+                    data-test-id="cancelDeleteInstanceButton"
+                    variant="secondary"
+                    onPress={() => {
+                      setDeleteDialogOpen(false);
+                      setInstanceToDelete(null);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    data-test-id="confirmDeleteInstanceButton"
+                    variant="accent"
+                    onPress={() => {
+                      form.removeFieldValue("instances", instanceToDelete);
+                      setSelectedTabKey(
+                        String(instanceToDelete > 0 ? instanceToDelete - 1 : 0),
+                      );
+                      setDeleteDialogOpen(false);
+                      setInstanceToDelete(null);
+                    }}
+                    autoFocus
+                  >
+                    Delete
+                  </Button>
+                </ButtonGroup>
+              </Dialog>
+            )}
+          </DialogContainer>{" "}
+        </div>
+      </DisclosurePanel>
+    </Disclosure>
   );
 };
 
@@ -460,7 +446,7 @@ InstancesSection.propTypes = {
 
 const Configuration = ({ initInfo }) => {
   const [expandedKeys, setExpandedKeys] = useState(new Set(["instances"]));
-  const [{ value: libraryCode }] = useField("libraryCode");
+  const libraryCode = useFieldValue("libraryCode");
 
   useNewlyValidatedFormSubmission((errors) => {
     if (errors) {

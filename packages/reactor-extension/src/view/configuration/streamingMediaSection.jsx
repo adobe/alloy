@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { number, object, string, lazy } from "yup";
-import { useField } from "../forms/formikCompat";
+import { useFieldValue } from "../utils/useFieldValue";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import SectionHeader from "../components/sectionHeader";
 import InfoMessage from "../components/infoMessage";
@@ -150,13 +150,13 @@ export const bridge = {
 };
 
 const StreamingMediaSection = ({ instanceFieldName }) => {
-  const [{ value: mediaChannel }] = useField(
+  const mediaChannel = useFieldValue(
     `${instanceFieldName}.streamingMedia.channel`,
   );
-  const [{ value: playerName }] = useField(
+  const playerName = useFieldValue(
     `${instanceFieldName}.streamingMedia.playerName`,
   );
-  const [{ value: streamingMediaComponentEnabled }] = useField(
+  const streamingMediaComponentEnabled = useFieldValue(
     "components.streamingMedia",
   );
 

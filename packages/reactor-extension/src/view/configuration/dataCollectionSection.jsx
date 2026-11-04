@@ -11,7 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { useEffect } from "react";
-import { useField, useFormikContext } from "../forms/formikCompat";
+import { setFieldBlurred, useFormContext } from "../forms/formContext";
+import { useFieldValue } from "../utils/useFieldValue";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { object, string } from "yup";
 import { ActionButton, Checkbox, Radio } from "@react-spectrum/s2";
@@ -263,19 +264,16 @@ export const bridge = {
 };
 
 const DataCollectionSection = ({ instanceFieldName }) => {
-  const { setFieldValue } = useFormikContext();
-  const [{ value: instanceValues }] = useField(instanceFieldName);
+  const form = useFormContext();
+  const instanceValues = useFieldValue(instanceFieldName);
   const instanceDefaults = bridge.getInstanceDefaults();
-  const [{ value: activityCollectorEnabled }] = useField(
+  const activityCollectorEnabled = useFieldValue(
     "components.activityCollector",
   );
   // Always mark the onBeforeLinkClickSend field to be touched so it will show errors immediately when
   // event grouping is used.
-  const [, , { setTouched }] = useField(
-    `${instanceFieldName}.onBeforeLinkClickSend`,
-  );
   useEffect(() => {
-    setTouched(true);
+    setFieldBlurred(form, `${instanceFieldName}.onBeforeLinkClickSend`);
   }, []);
 
   return (
@@ -390,7 +388,7 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                         await window.extensionBridge.openRegexTester({
                           pattern: currentPattern,
                         });
-                      setFieldValue(
+                      form.setFieldValue(
                         `${instanceFieldName}.downloadLinkQualifier`,
                         newPattern,
                       );

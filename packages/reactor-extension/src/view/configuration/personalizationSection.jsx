@@ -14,7 +14,7 @@ import copyToClipboard from "clipboard-copy";
 import PropTypes from "prop-types";
 import { Text, PickerItem } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "../forms/formikCompat";
+import { useFieldValue } from "../utils/useFieldValue";
 import SectionHeader from "../components/sectionHeader";
 import InfoMessage from "../components/infoMessage";
 import CodeField from "../components/codeField";
@@ -132,10 +132,10 @@ const ClickCollectionPicker = (props) => {
 };
 
 const PersonalizationSection = ({ instanceFieldName }) => {
-  const [{ value: personalizationComponentEnabled }] = useField(
+  const personalizationComponentEnabled = useFieldValue(
     "components.personalization",
   );
-  const [{ value: rulesEngineEnabled }] = useField("components.rulesEngine");
+  const rulesEngineEnabled = useFieldValue("components.rulesEngine");
 
   return (
     <>
