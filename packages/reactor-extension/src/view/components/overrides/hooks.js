@@ -163,7 +163,7 @@ const getServiceStatus = (apiResult) =>
     },
   });
 
-export const useOverridesForm = ({ prefix, edgeConfigOverrides, defaults }) => {
+export const useOverridesForm = ({ prefix, defaults }) => {
   const form = useFormContext();
 
   const useServiceStatus = (apiResult) => {
@@ -216,6 +216,7 @@ export const useOverridesForm = ({ prefix, edgeConfigOverrides, defaults }) => {
    * @param {"production" | "staging" | "development"} destination
    */
   const onCopy = (source, destination) => {
+    const edgeConfigOverrides = form.getFieldValue(prefix);
     [
       FIELD_NAMES.sandbox,
       FIELD_NAMES.datastreamId,

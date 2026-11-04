@@ -84,4 +84,41 @@ describe("Configuration render isolation", () => {
       expect(renders).toEqual(before);
     },
   );
+
+  it("does not re-render the overrides while typing in an override field", async () => {
+    await driver.init({
+      settings: {
+        instances: [
+          {
+            name: "alloy",
+            edgeConfigOverrides: {
+              development: {
+                enabled: true,
+                com_adobe_experience_platform: {
+                  datasets: { event: { datasetId: "dataset" } },
+                },
+              },
+            },
+          },
+        ],
+      },
+    });
+    const eventDataset = field(view.getByTestId("eventDatasetOverride"));
+    await eventDataset.expectValue("dataset");
+    await field(
+      view.getByRole("button", { name: "Refresh datastreams" }).first(),
+    ).expectEnabled();
+    const before = { ...renders };
+
+    await eventDataset.fill("other-dataset");
+
+    await driver
+      .expectSettings(
+        (settings) =>
+          settings.instances[0].edgeConfigOverrides.development
+            .com_adobe_experience_platform.datasets.event.datasetId,
+      )
+      .toBe("other-dataset");
+    expect(renders).toEqual(before);
+  });
 });

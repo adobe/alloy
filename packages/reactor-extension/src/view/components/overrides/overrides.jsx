@@ -23,6 +23,7 @@ import {
 } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useFieldValue } from "../../utils/useFieldValue";
+import { useFormContext } from "../../forms/formContext";
 import PropTypes from "prop-types";
 import { useRef } from "react";
 
@@ -130,6 +131,19 @@ ProductSubsection.propTypes = {
  * @param {OverridesProps} options
  * @returns {React.Element}
  */
+// Override text values (datasets, report suites, tokens) are rendered by their
+// own fields; only these keys change which fields are shown or which datastream
+// settings are fetched, so the overrides re-render only when they change.
+const LAYOUT_KEYS = new Set(["enabled", "datastreamId", "sandbox"]);
+const getLayout = (overrides) =>
+  JSON.stringify(overrides, (key, value) =>
+    key === "" ||
+    LAYOUT_KEYS.has(key) ||
+    (value !== null && typeof value === "object")
+      ? value
+      : undefined,
+  );
+
 const Overrides = ({
   initInfo,
   instanceFieldName,
@@ -146,8 +160,10 @@ const Overrides = ({
     ),
   );
 
+  const form = useFormContext();
+  useFieldValue(prefix, getLayout);
   /** @type {{value: import("./overridesBridge").EnvironmentConfigOverrideFormState}[] } */
-  const edgeConfigOverrides = useFieldValue(prefix);
+  const edgeConfigOverrides = form.getFieldValue(prefix);
 
   const requestCache = useRef({});
   const authOrgId = initInfo.company.orgId;
@@ -199,7 +215,6 @@ const Overrides = ({
   const { useServiceStatus, createIsDisabled, onCopy, onDisable } =
     useOverridesForm({
       prefix,
-      edgeConfigOverrides,
       defaults,
     });
 
