@@ -19,7 +19,7 @@ import FormElementContainer from "../components/formElementContainer";
  * Tags settings to an object of initial values to include in the form state.
  * @property {Function} [getSettings] - A function that converts the form state
  * into an object of Adobe Tags settings.
- * @property {object} [validationShape] - An object containing Formik fields as
+ * @property {object} [validationShape] - An object containing form fields as
  * keys and Yup validation schemas as values.
  * @property {Function} [getValidationShape] - A function that takes an existing
  * validation shape and returns a new validation shape. This is useful if you need to

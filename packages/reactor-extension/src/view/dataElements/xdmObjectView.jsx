@@ -28,8 +28,8 @@ import ExtensionView from "../components/extensionView";
 import validate from "../components/objectEditor/helpers/validate";
 import Editor from "../components/objectEditor/editor";
 import useChanged from "../utils/useChanged";
-import FormikPicker from "../forms/fields/Picker";
-import FormikPagedComboBox from "../forms/fields/PagedComboBox";
+import FormPicker from "../forms/fields/Picker";
+import FormPagedComboBox from "../forms/fields/PagedComboBox";
 import DEFAULT_SANDBOX_NAME from "../components/objectEditor/constants/defaultSandboxName";
 import fetchSandboxes from "../utils/fetchSandboxes";
 import fetchSchemasMeta from "../utils/fetchSchemasMeta";
@@ -239,7 +239,7 @@ const formikStateValidationSchema = object().shape({
 const validateFormikState =
   (context) =>
   ({ values }) => {
-    // We can't and don't need to do validation on the formik values
+    // We can't and don't need to do validation on the form values
     // if the editor isn't even renderable. validateNonFormikState
     // will ensure that the view is properly marked invalid in this
     // case.
@@ -420,7 +420,7 @@ const XdmObject = ({ initInfo, context, form }) => {
             </Content>
           </InlineAlert>
         )}
-        <FormikPicker
+        <FormPicker
           label="Sandbox"
           name="sandboxName"
           data-test-id="sandboxField"
@@ -434,9 +434,9 @@ const XdmObject = ({ initInfo, context, form }) => {
           }
         >
           {sandboxItems}
-        </FormikPicker>
+        </FormPicker>
 
-        <FormikPagedComboBox
+        <FormPagedComboBox
           data-test-id="schemaField"
           name="selectedSchema"
           label="Schema"

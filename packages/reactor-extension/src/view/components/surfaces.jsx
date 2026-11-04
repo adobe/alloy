@@ -17,8 +17,8 @@ import Delete from "@react-spectrum/s2/icons/Delete";
 import { useFormField } from "../forms/formContext";
 import { useFieldValue } from "../utils/useFieldValue";
 import { object, string } from "yup";
-import FormikRadioGroup from "../forms/fields/RadioGroup";
-import FormikTextField from "../forms/fields/TextField";
+import FormRadioGroup from "../forms/fields/RadioGroup";
+import FormTextField from "../forms/fields/TextField";
 import DataElementSelector from "./dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
@@ -88,7 +88,7 @@ const Surfaces = () => {
 
   return (
     <div>
-      <FormikRadioGroup
+      <FormRadioGroup
         name="surfacesInputMethod"
         orientation="horizontal"
         label="Surfaces"
@@ -102,11 +102,11 @@ const Surfaces = () => {
         >
           Provide a data element
         </Radio>
-      </FormikRadioGroup>
+      </FormRadioGroup>
       {surfacesInputMethod === DATA_ELEMENT && (
         <FieldSubset>
           <DataElementSelector>
-            <FormikTextField
+            <FormTextField
               data-test-id="surfaceDataElementField"
               label="Data element"
               name="surfacesDataElement"
@@ -136,7 +136,7 @@ const Surfaces = () => {
                       alignItems: "end",
                     })}
                   >
-                    <FormikTextField
+                    <FormTextField
                       data-test-id={`surface${index}Field`}
                       label="Surface"
                       name={`surfacesArray.${index}`}

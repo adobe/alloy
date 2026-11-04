@@ -23,8 +23,8 @@ import prehidingSnippet from "./constants/prehidingSnippet";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
 import FormElementContainer from "../components/formElementContainer";
-import FormikCheckbox from "../forms/fields/Checkbox";
-import FormikPicker from "../forms/fields/Picker";
+import FormCheckbox from "../forms/fields/Checkbox";
+import FormPicker from "../forms/fields/Picker";
 
 export const bridge = {
   getInstanceDefaults: () => ({
@@ -103,7 +103,7 @@ export const bridge = {
 
 const ClickCollectionPicker = (props) => {
   return (
-    <FormikPicker {...props}>
+    <FormPicker {...props}>
       <PickerItem key="always" id="always" textValue="Always">
         <Text>Always</Text>
         <Text slot="description">
@@ -127,7 +127,7 @@ const ClickCollectionPicker = (props) => {
           Do not collect interactions with propositions.
         </Text>
       </PickerItem>
-    </FormikPicker>
+    </FormPicker>
   );
 };
 
@@ -144,7 +144,7 @@ const PersonalizationSection = ({ instanceFieldName }) => {
       </SectionHeader>
       {personalizationComponentEnabled ? (
         <FormElementContainer>
-          <FormikCheckbox
+          <FormCheckbox
             data-test-id="targetMigrationEnabledField"
             name={`${instanceFieldName}.targetMigrationEnabled`}
             description="Use this option to enable the Web SDK to read and write the legacy
@@ -152,7 +152,7 @@ const PersonalizationSection = ({ instanceFieldName }) => {
             width="size-5000"
           >
             Migrate Target from at.js to the Web SDK
-          </FormikCheckbox>
+          </FormCheckbox>
           <CodeField
             data-test-id="prehidingStyleEditButton"
             label="Prehiding style"
@@ -175,14 +175,14 @@ const PersonalizationSection = ({ instanceFieldName }) => {
             }}
           />
           {rulesEngineEnabled ? (
-            <FormikCheckbox
+            <FormCheckbox
               data-test-id="personalizationStorageEnabledField"
               name={`${instanceFieldName}.personalizationStorageEnabled`}
               description="Use this option to store personalization events in the browser's local storage. This allows the Web SDK to keep track of which experiences have been seen by the user across page loads."
               width="size-5000"
             >
               Enable personalization storage
-            </FormikCheckbox>
+            </FormCheckbox>
           ) : (
             <InfoMessage
               title="Rules engine component disabled"

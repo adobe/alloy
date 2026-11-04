@@ -16,8 +16,8 @@ import { useFieldValue } from "../utils/useFieldValue";
 import { Radio, Button } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
-import FormikTextField from "./fields/TextField";
-import FormikRadioGroup from "./fields/RadioGroup";
+import FormTextField from "./fields/TextField";
+import FormRadioGroup from "./fields/RadioGroup";
 import DataElementSelector from "../components/dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
@@ -41,7 +41,7 @@ const REMOVE_BUTTON_STYLE = style({ marginStart: "auto" });
 /**
  * This creates a form that builds an object with key value pairs.
  * @param {object} options - Options for the field.
- * @param {string} options.name - The formik key to use for this field.
+ * @param {string} options.name - The form key to use for this field.
  * - `${key}` will be used to store the object.
  * - `${key}InputMethod` will be used to determine whether or not to use a data
  *   element.
@@ -179,7 +179,7 @@ export default function simpleMap({
       );
       return (
         <>
-          <FormikRadioGroup
+          <FormRadioGroup
             name={`${namePrefix}${name}InputMethod`}
             orientation="horizontal"
             label={labelElement}
@@ -194,7 +194,7 @@ export default function simpleMap({
             >
               Provide a data element.
             </Radio>
-          </FormikRadioGroup>
+          </FormRadioGroup>
           {inputMethod === FORM && (
             <>
               {items.map((__, index) => {
@@ -207,7 +207,7 @@ export default function simpleMap({
                     <div className={WELL_CONTENT_STYLE}>
                       <FormElementContainer>
                         <DataElementSelector>
-                          <FormikTextField
+                          <FormTextField
                             data-test-id={`${namePrefix}Key${index}Field`}
                             label={keyLabel}
                             name={`${namePrefix}${name}.${index}.key`}
@@ -217,7 +217,7 @@ export default function simpleMap({
                           />
                         </DataElementSelector>
                         <DataElementSelector>
-                          <FormikTextField
+                          <FormTextField
                             data-test-id={`${namePrefix}Value${index}Field`}
                             label={valueLabel}
                             name={`${namePrefix}${name}.${index}.value`}
@@ -260,7 +260,7 @@ export default function simpleMap({
           )}
           {inputMethod === DATA_ELEMENT && (
             <DataElementSelector>
-              <FormikTextField
+              <FormTextField
                 data-test-id={`${namePrefix}${name}DataElementField`}
                 name={`${namePrefix}${name}DataElement`}
                 description={dataElementDescription}

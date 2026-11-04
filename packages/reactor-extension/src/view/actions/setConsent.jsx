@@ -21,12 +21,12 @@ import ExtensionView from "../components/extensionView";
 import { useFormContext } from "../forms/formContext";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
-import FormikRadioGroupWithDataElement, {
+import FormRadioGroupWithDataElement, {
   createRadioGroupWithDataElementValidationSchema,
 } from "../forms/fields/RadioGroupWithDataElement";
-import FormikPicker from "../forms/fields/Picker";
-import FormikTextField from "../forms/fields/TextField";
-import FormikRadioGroup from "../forms/fields/RadioGroup";
+import FormPicker from "../forms/fields/Picker";
+import FormTextField from "../forms/fields/TextField";
+import FormRadioGroup from "../forms/fields/RadioGroup";
 import DataElementSelector from "../components/dataElementSelector";
 import FormElementContainer from "../components/formElementContainer";
 import InstanceNamePicker from "../components/instanceNamePicker";
@@ -80,34 +80,34 @@ const getInitialValues = ({ initInfo }) => {
     initialValues.inputMethod = FORM.value;
     initialValues.dataElement = "";
     initialValues.consent = consent.reduce((memo, consentObject) => {
-      const formikConsentObject = createBlankConsentObject();
+      const consentFormValues = createBlankConsentObject();
       if (consentObject.standard === ADOBE.label) {
-        formikConsentObject.standard = ADOBE.value;
+        consentFormValues.standard = ADOBE.value;
         if (consentObject.version) {
-          formikConsentObject.adobeVersion = consentObject.version;
+          consentFormValues.adobeVersion = consentObject.version;
         }
         if (consentObject.value && consentObject.value.general) {
-          formikConsentObject.general = consentObject.value.general;
+          consentFormValues.general = consentObject.value.general;
         } else if (consentObject.value) {
-          formikConsentObject.value = consentObject.value;
+          consentFormValues.value = consentObject.value;
         }
       } else if (consentObject.standard === IAB_TCF.label) {
-        formikConsentObject.standard = IAB_TCF.value;
+        consentFormValues.standard = IAB_TCF.value;
         if (consentObject.version) {
-          formikConsentObject.iabVersion = consentObject.version;
+          consentFormValues.iabVersion = consentObject.version;
         }
         if (consentObject.value) {
-          formikConsentObject.iabValue = consentObject.value;
+          consentFormValues.iabValue = consentObject.value;
         }
         if (consentObject.gdprApplies != null) {
-          formikConsentObject.gdprApplies = consentObject.gdprApplies;
+          consentFormValues.gdprApplies = consentObject.gdprApplies;
         }
         if (consentObject.gdprContainsPersonalData != null) {
-          formikConsentObject.gdprContainsPersonalData =
+          consentFormValues.gdprContainsPersonalData =
             consentObject.gdprContainsPersonalData;
         }
       }
-      memo.push(formikConsentObject);
+      memo.push(consentFormValues);
       return memo;
     }, []);
   } else {
@@ -141,31 +141,30 @@ const getSettings = ({ values }) => {
   if (inputMethod === DATA_ELEMENT.value) {
     settings.consent = dataElement;
   } else {
-    settings.consent = consent.reduce((memo, formikConsentObject) => {
-      if (formikConsentObject.standard === ADOBE.value) {
-        if (formikConsentObject.adobeVersion === "1.0") {
+    settings.consent = consent.reduce((memo, consentFormValues) => {
+      if (consentFormValues.standard === ADOBE.value) {
+        if (consentFormValues.adobeVersion === "1.0") {
           memo.push({
             standard: ADOBE.label,
-            version: formikConsentObject.adobeVersion,
+            version: consentFormValues.adobeVersion,
             value: {
-              general: formikConsentObject.general,
+              general: consentFormValues.general,
             },
           });
         } else {
           memo.push({
             standard: ADOBE.label,
-            version: formikConsentObject.adobeVersion,
-            value: formikConsentObject.value,
+            version: consentFormValues.adobeVersion,
+            value: consentFormValues.value,
           });
         }
-      } else if (formikConsentObject.standard === IAB_TCF.value) {
+      } else if (consentFormValues.standard === IAB_TCF.value) {
         memo.push({
           standard: IAB_TCF.label,
-          version: formikConsentObject.iabVersion,
-          value: formikConsentObject.iabValue,
-          gdprApplies: formikConsentObject.gdprApplies,
-          gdprContainsPersonalData:
-            formikConsentObject.gdprContainsPersonalData,
+          version: consentFormValues.iabVersion,
+          value: consentFormValues.iabValue,
+          gdprApplies: consentFormValues.gdprApplies,
+          gdprContainsPersonalData: consentFormValues.gdprContainsPersonalData,
         });
       }
       return memo;
@@ -242,7 +241,7 @@ const getValidationSchema = getRequiredComponentSchema("consent", () => {
 const ConsentObject = ({ value, index }) => {
   return (
     <>
-      <FormikPicker
+      <FormPicker
         data-test-id="standardPicker"
         name={`consent[${index}].standard`}
         label="Standard"
@@ -255,9 +254,9 @@ const ConsentObject = ({ value, index }) => {
             {item.label}
           </PickerItem>
         )}
-      </FormikPicker>
+      </FormPicker>
       {value.standard === ADOBE.value && (
-        <FormikPicker
+        <FormPicker
           data-test-id="adobeVersionPicker"
           name={`consent[${index}].adobeVersion`}
           label="Version"
@@ -270,11 +269,11 @@ const ConsentObject = ({ value, index }) => {
               {item.label}
             </PickerItem>
           )}
-        </FormikPicker>
+        </FormPicker>
       )}
       {value.standard === ADOBE.value &&
         value.adobeVersion === VERSION_1_0.value && (
-          <FormikRadioGroupWithDataElement
+          <FormRadioGroupWithDataElement
             dataTestIdPrefix="general"
             name={`consent[${index}].general`}
             label="General consent"
@@ -286,12 +285,12 @@ const ConsentObject = ({ value, index }) => {
             <Radio data-test-id="generalOutRadio" value="out">
               Out
             </Radio>
-          </FormikRadioGroupWithDataElement>
+          </FormRadioGroupWithDataElement>
         )}
       {value.standard === ADOBE.value &&
         value.adobeVersion !== VERSION_1_0.value && (
           <DataElementSelector>
-            <FormikTextField
+            <FormTextField
               data-test-id="valueField"
               name={`consent[${index}].value`}
               label="Value"
@@ -303,7 +302,7 @@ const ConsentObject = ({ value, index }) => {
         )}
       {value.standard === IAB_TCF.value && (
         <>
-          <FormikTextField
+          <FormTextField
             data-test-id="iabVersionField"
             name={`consent[${index}].iabVersion`}
             label="Version"
@@ -312,7 +311,7 @@ const ConsentObject = ({ value, index }) => {
             isRequired
           />
           <DataElementSelector>
-            <FormikTextField
+            <FormTextField
               data-test-id="iabValueField"
               name={`consent[${index}].iabValue`}
               label="Value"
@@ -321,7 +320,7 @@ const ConsentObject = ({ value, index }) => {
               isRequired
             />
           </DataElementSelector>
-          <FormikRadioGroupWithDataElement
+          <FormRadioGroupWithDataElement
             dataTestIdPrefix="gdprApplies"
             name={`consent[${index}].gdprApplies`}
             label="Does GDPR apply to this consent value?"
@@ -333,8 +332,8 @@ const ConsentObject = ({ value, index }) => {
             <Radio data-test-id="gdprAppliesNoRadio" value={false}>
               No
             </Radio>
-          </FormikRadioGroupWithDataElement>
-          <FormikRadioGroupWithDataElement
+          </FormRadioGroupWithDataElement>
+          <FormRadioGroupWithDataElement
             dataTestIdPrefix="gdprContainsPersonalData"
             name={`consent[${index}].gdprContainsPersonalData`}
             label="Does the event data associated with this user contain personal data?"
@@ -346,7 +345,7 @@ const ConsentObject = ({ value, index }) => {
             <Radio data-test-id="gdprContainsPersonalDataNoRadio" value={false}>
               No
             </Radio>
-          </FormikRadioGroupWithDataElement>
+          </FormRadioGroupWithDataElement>
         </>
       )}
     </>
@@ -382,7 +381,7 @@ const SetConsentForm = ({ initInfo }) => {
           initInfo={initInfo}
         />
         <DataElementSelector>
-          <FormikTextField
+          <FormTextField
             data-test-id="identityMapField"
             name="identityMap"
             label="Identity map"
@@ -390,7 +389,7 @@ const SetConsentForm = ({ initInfo }) => {
             width="size-5000"
           />
         </DataElementSelector>
-        <FormikRadioGroup
+        <FormRadioGroup
           name="inputMethod"
           orientation="horizontal"
           label="Consent information"
@@ -404,7 +403,7 @@ const SetConsentForm = ({ initInfo }) => {
           >
             {DATA_ELEMENT.label}
           </Radio>
-        </FormikRadioGroup>
+        </FormRadioGroup>
         {values.inputMethod === FORM.value && (
           <>
             <div
@@ -458,7 +457,7 @@ const SetConsentForm = ({ initInfo }) => {
         )}
         {values.inputMethod === DATA_ELEMENT.value && (
           <DataElementSelector>
-            <FormikTextField
+            <FormTextField
               data-test-id="dataElementField"
               label="Data element"
               name="dataElement"

@@ -14,8 +14,8 @@ import PropTypes from "prop-types";
 import { Radio } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useFieldValue } from "../../utils/useFieldValue";
-import FormikRadioGroup from "../../forms/fields/RadioGroup";
-import FormikTextField from "../../forms/fields/TextField";
+import FormRadioGroup from "../../forms/fields/RadioGroup";
+import FormTextField from "../../forms/fields/TextField";
 import DataElementSelector from "../dataElementSelector";
 import { PARTS, WHOLE } from "./constants/populationStrategy";
 import FormElementContainer from "../formElementContainer";
@@ -37,7 +37,7 @@ const ObjectEdit = ({
   return (
     <FormElementContainer>
       {isPartsPopulationStrategySupported && (
-        <FormikRadioGroup
+        <FormRadioGroup
           label={displayName}
           name={`${fieldName}.populationStrategy`}
           orientation="horizontal"
@@ -49,11 +49,11 @@ const ObjectEdit = ({
           <Radio data-test-id="wholePopulationStrategyField" value={WHOLE}>
             Provide entire object
           </Radio>
-        </FormikRadioGroup>
+        </FormRadioGroup>
       )}
       {populationStrategy === WHOLE ? (
         <DataElementSelector clearable>
-          <FormikTextField
+          <FormTextField
             data-test-id="valueField"
             name={`${fieldName}.value`}
             label={isPartsPopulationStrategySupported ? "" : displayName}

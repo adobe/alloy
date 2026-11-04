@@ -21,7 +21,7 @@ import SectionHeader from "../components/sectionHeader";
 import InfoMessage from "../components/infoMessage";
 import FormElementContainer from "../components/formElementContainer";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikTextField from "../forms/fields/TextField";
+import FormTextField from "../forms/fields/TextField";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
 
@@ -151,7 +151,7 @@ const PushNotificationsSection = ({ instanceFieldName }) => {
       </Content>
       <FormElementContainer>
         <DataElementSelector>
-          <FormikTextField
+          <FormTextField
             data-test-id="vapidPublicKeyField"
             label="VAPID Public Key"
             name={`${instanceFieldName}.pushNotifications.vapidPublicKey`}
@@ -163,7 +163,7 @@ const PushNotificationsSection = ({ instanceFieldName }) => {
       </FormElementContainer>
       <FormElementContainer>
         <DataElementSelector>
-          <FormikTextField
+          <FormTextField
             data-test-id="appIdField"
             label="Application ID"
             name={`${instanceFieldName}.pushNotifications.appId`}
@@ -175,7 +175,7 @@ const PushNotificationsSection = ({ instanceFieldName }) => {
       </FormElementContainer>
       <FormElementContainer>
         <DataElementSelector>
-          <FormikTextField
+          <FormTextField
             data-test-id="trackingDatasetIdField"
             label="Tracking Dataset ID"
             name={`${instanceFieldName}.pushNotifications.trackingDatasetId`}

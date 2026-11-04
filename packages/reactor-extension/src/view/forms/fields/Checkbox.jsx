@@ -16,7 +16,7 @@ import { useFieldError, useFormField } from "../formContext";
 import FieldDescriptionAndError from "../../components/fieldDescriptionAndError";
 import widthStyle from "./widthStyle";
 
-const FormikCheckbox = ({ name, description, width, ...otherProps }) => {
+const FormCheckbox = ({ name, description, width, ...otherProps }) => {
   const field = useFormField(name);
   const error = useFieldError(name);
   const {
@@ -45,10 +45,10 @@ const FormikCheckbox = ({ name, description, width, ...otherProps }) => {
   );
 };
 
-FormikCheckbox.propTypes = {
+FormCheckbox.propTypes = {
   name: PropTypes.string.isRequired,
   description: PropTypes.string,
   width: PropTypes.string,
 };
 
-export default FormikCheckbox;
+export default FormCheckbox;

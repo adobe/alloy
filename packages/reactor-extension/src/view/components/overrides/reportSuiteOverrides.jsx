@@ -26,7 +26,7 @@ const FIRST_ROW_MARGIN_TOP_STYLE = style({ marginTop: 24 });
  *
  * @param {Object} props
  * @param {string} props.prefix The common prefix for all the data input
- * fields in the Formik state object.
+ * fields in the form state object.
  * @param {{ value: string, label: string }} props.items The list of items to
  * display in the dropdown.
  * @param {string[]} props.primaryItem The list of report suites that are being

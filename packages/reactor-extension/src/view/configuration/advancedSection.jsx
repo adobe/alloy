@@ -15,7 +15,7 @@ import { object, string } from "yup";
 import PropTypes from "prop-types";
 import SectionHeader from "../components/sectionHeader";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikTextField from "../forms/fields/TextField";
+import FormTextField from "../forms/fields/TextField";
 import RestoreDefaultValueButton from "../components/restoreDefaultValueButton";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
@@ -66,7 +66,7 @@ const AdvancedSection = ({ instanceFieldName }) => {
           })}
         >
           <DataElementSelector>
-            <FormikTextField
+            <FormTextField
               data-test-id="edgeBasePathField"
               label="Edge base path"
               name={`${instanceFieldName}.edgeBasePath`}

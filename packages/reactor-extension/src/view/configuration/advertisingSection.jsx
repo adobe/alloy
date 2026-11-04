@@ -31,9 +31,9 @@ import SectionHeader from "../components/sectionHeader";
 import InfoMessage from "../components/infoMessage";
 import FormElementContainer from "../components/formElementContainer";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikTextField from "../forms/fields/TextField";
-import FormikKeyedComboBox from "../forms/fields/KeyedComboBox";
-import FormikComboBox from "../forms/fields/ComboBox";
+import FormTextField from "../forms/fields/TextField";
+import FormKeyedComboBox from "../forms/fields/KeyedComboBox";
+import FormComboBox from "../forms/fields/ComboBox";
 import fetchAdvertisers from "../utils/fetchAdvertisers";
 import SINGLE_DATA_ELEMENT_REGEX from "../constants/singleDataElementRegex";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
@@ -596,7 +596,7 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
                   {/* Show dropdown when API succeeds, text input when API fails */}
                   <div className={style({ marginEnd: 16 })}>
                     {error ? (
-                      <FormikTextField
+                      <FormTextField
                         data-test-id={`advertiser${index}Field`}
                         name={`${instanceFieldName}.advertising.advertiserSettings.${index}.advertiserId`}
                         UNSAFE_style={{ width: "224px" }}
@@ -604,7 +604,7 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
                         isRequired
                       />
                     ) : (
-                      <FormikKeyedComboBox
+                      <FormKeyedComboBox
                         data-test-id={`advertiser${index}Field`}
                         name={`${instanceFieldName}.advertising.advertiserSettings.${index}.advertiserId`}
                         width="size-4000"
@@ -625,14 +625,14 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
                             {advertiser.advertiser_name}
                           </ComboBoxItem>
                         )}
-                      </FormikKeyedComboBox>
+                      </FormKeyedComboBox>
                     )}
                   </div>
 
                   {/* Status Dropdown - Supports Data Elements */}
                   <div className={style({ marginEnd: 8 })}>
                     <DataElementSelector>
-                      <FormikComboBox
+                      <FormComboBox
                         data-test-id={`advertiserEnabled${index}Field`}
                         name={`${instanceFieldName}.advertising.advertiserSettings.${index}.enabled`}
                         width="size-2000"
@@ -646,7 +646,7 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
                         <ComboBoxItem key={DISABLED} id={DISABLED}>
                           {DISABLED}
                         </ComboBoxItem>
-                      </FormikComboBox>
+                      </FormComboBox>
                     </DataElementSelector>
                   </div>
 
@@ -720,7 +720,7 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
           })}
         >
           <DataElementSelector>
-            <FormikComboBox
+            <FormComboBox
               data-test-id="dspEnabledField"
               label="Adobe Advertising DSP"
               name={`${instanceFieldName}.advertising.dspEnabled`}
@@ -735,7 +735,7 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
               <ComboBoxItem key={DISABLED} id={DISABLED}>
                 {DISABLED}
               </ComboBoxItem>
-            </FormikComboBox>
+            </FormComboBox>
           </DataElementSelector>
         </div>
 
@@ -764,7 +764,7 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
                   })}
                 >
                   <DataElementSelector>
-                    <FormikTextField
+                    <FormTextField
                       data-test-id="id5PartnerIdField"
                       label="ID5 partner ID (optional)"
                       name={`${instanceFieldName}.advertising.id5PartnerId`}
@@ -782,7 +782,7 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
                   })}
                 >
                   <DataElementSelector>
-                    <FormikTextField
+                    <FormTextField
                       data-test-id="rampIdJSPathField"
                       label="RampID JavaScript path (optional)"
                       name={`${instanceFieldName}.advertising.rampIdJSPath`}
@@ -820,7 +820,7 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
           })}
         >
           <DataElementSelector>
-            <FormikComboBox
+            <FormComboBox
               data-test-id="advertisingEnabledField"
               label="Advertising"
               name={`${instanceFieldName}.advertising.enabled`}
@@ -835,7 +835,7 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
               <ComboBoxItem key={DISABLED} id={DISABLED}>
                 {DISABLED}
               </ComboBoxItem>
-            </FormikComboBox>
+            </FormComboBox>
           </DataElementSelector>
         </div>
 

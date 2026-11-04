@@ -20,10 +20,10 @@ import PropTypes from "prop-types";
 import SectionHeader from "../components/sectionHeader";
 import InfoMessage from "../components/infoMessage";
 import CodeField from "../components/codeField";
-import FormikCheckbox from "../forms/fields/Checkbox";
-import FormikCheckboxGroup from "../forms/fields/CheckboxGroup";
-import FormikRadioGroup from "../forms/fields/RadioGroup";
-import FormikTextField from "../forms/fields/TextField";
+import FormCheckbox from "../forms/fields/Checkbox";
+import FormCheckboxGroup from "../forms/fields/CheckboxGroup";
+import FormRadioGroup from "../forms/fields/RadioGroup";
+import FormTextField from "../forms/fields/TextField";
 import FieldSubset from "../components/fieldSubset";
 import RestoreDefaultValueButton from "../components/restoreDefaultValueButton";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
@@ -293,17 +293,17 @@ const DataCollectionSection = ({ instanceFieldName }) => {
         />
         {activityCollectorEnabled ? (
           <FormElementContainer>
-            <FormikCheckbox
+            <FormCheckbox
               data-test-id="internalLinkEnabledField"
               name={`${instanceFieldName}.clickCollection.internalLinkEnabled`}
               description="Collect data associated with clicks on links within the current domain."
               width="size-5000"
             >
               Collect internal link clicks
-            </FormikCheckbox>
+            </FormCheckbox>
             {instanceValues.clickCollection.internalLinkEnabled && (
               <FieldSubset>
-                <FormikRadioGroup
+                <FormRadioGroup
                   label="Event grouping options:"
                   name={`${instanceFieldName}.eventGrouping`}
                 >
@@ -344,25 +344,25 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                       <BetaBadge />
                     </span>
                   </Radio>
-                </FormikRadioGroup>
+                </FormRadioGroup>
               </FieldSubset>
             )}
-            <FormikCheckbox
+            <FormCheckbox
               data-test-id="externalLinkEnabledField"
               name={`${instanceFieldName}.clickCollection.externalLinkEnabled`}
               description="Collect data associated with clicks on links to external domains."
               width="size-5000"
             >
               Collect external link clicks
-            </FormikCheckbox>
-            <FormikCheckbox
+            </FormCheckbox>
+            <FormCheckbox
               data-test-id="downloadLinkEnabledField"
               name={`${instanceFieldName}.clickCollection.downloadLinkEnabled`}
               description="Collect data assocated with clicks on links that qualify as download links."
               width="size-5000"
             >
               Collect download link clicks
-            </FormikCheckbox>
+            </FormCheckbox>
             {instanceValues.clickCollection.downloadLinkEnabled && (
               <FieldSubset>
                 <div
@@ -371,7 +371,7 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                     gap: 8,
                   })}
                 >
-                  <FormikTextField
+                  <FormTextField
                     data-test-id="downloadLinkQualifierField"
                     label="Download link qualifier"
                     name={`${instanceFieldName}.downloadLinkQualifier`}
@@ -415,7 +415,7 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                     gap: 8,
                   })}
                 >
-                  <FormikRadioGroup
+                  <FormRadioGroup
                     label="Link callback type"
                     name={`${instanceFieldName}.linkCallbackType`}
                   >
@@ -437,7 +437,7 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                     >
                       onBeforeLinkClickSend (deprecated)
                     </Radio>
-                  </FormikRadioGroup>
+                  </FormRadioGroup>
                 </div>
               )}
             {clickCollectionIsEnabled(instanceValues) &&
@@ -491,7 +491,7 @@ const DataCollectionSection = ({ instanceFieldName }) => {
           </InfoMessage>
         )}
         <div>
-          <FormikRadioGroup
+          <FormRadioGroup
             label="When sending event data, automatically include:"
             name={`${instanceFieldName}.contextGranularity`}
           >
@@ -507,12 +507,12 @@ const DataCollectionSection = ({ instanceFieldName }) => {
             >
               Specific context information
             </Radio>
-          </FormikRadioGroup>
+          </FormRadioGroup>
 
           {instanceValues.contextGranularity ===
             CONTEXT_GRANULARITY.SPECIFIC && (
             <FieldSubset>
-              <FormikCheckboxGroup
+              <FormCheckboxGroup
                 aria-label="Context data categories"
                 name={`${instanceFieldName}.context`}
               >
@@ -537,7 +537,7 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                     </FieldDescriptionAndError>
                   );
                 })}
-              </FormikCheckboxGroup>
+              </FormCheckboxGroup>
             </FieldSubset>
           )}
         </div>

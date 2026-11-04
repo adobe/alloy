@@ -17,7 +17,7 @@ import { useFieldValue } from "../utils/useFieldValue";
 import PropTypes from "prop-types";
 import Data from "@react-spectrum/s2/icons/Data";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikKeyedComboBox from "./fields/KeyedComboBox";
+import FormKeyedComboBox from "./fields/KeyedComboBox";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 
 // Reserves the width of the DataElementSelector's icon button next to a combo
@@ -35,7 +35,7 @@ const HIDDEN_ICON_STYLE = style({ visibility: "hidden" });
 /**
  * Form builder for a combo box. Use this when you have a static list of items.
  * @param {object} options - Options for the combo box.
- * @param {string} options.name - The formik key for the field.
+ * @param {string} options.name - The form key for the field.
  * @param {boolean} [options.isRequired] - If true, an asterisk is added
  * to the label, and the schema is updated to require the field.
  * @param {boolean} [options.dataElementSupported] - If true, the field
@@ -65,7 +65,7 @@ export default function comboBox({
   allowsCustomValue = false,
   width = "size-5000",
   defaultValue = "",
-  Component = FormikKeyedComboBox,
+  Component = FormKeyedComboBox,
   validationSchemaBase = string(),
 }) {
   let fieldSchema = validationSchemaBase;

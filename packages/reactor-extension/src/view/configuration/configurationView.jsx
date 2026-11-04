@@ -41,7 +41,7 @@ import ExtensionView from "../components/extensionView";
 import useNewlyValidatedFormSubmission from "../utils/useNewlyValidatedFormSubmission";
 import useFocusFirstError from "../utils/useFocusFirstError";
 import { useDatastreamCatalog } from "../utils/useDatastreamCatalog";
-import FormikRadioGroup from "../forms/fields/RadioGroup";
+import FormRadioGroup from "../forms/fields/RadioGroup";
 import BasicSection, { bridge as basicSectionBridge } from "./basicSection";
 import EdgeConfigurationsSection, {
   bridge as edgeConfigurationsSectionBridge,
@@ -506,7 +506,7 @@ const Configuration = ({ initInfo }) => {
                 </Content>
               </InlineAlert>
 
-              <FormikRadioGroup
+              <FormRadioGroup
                 width="size-6000"
                 data-test-id="libraryCodeField"
                 name="libraryCode.type"
@@ -520,7 +520,7 @@ const Configuration = ({ initInfo }) => {
                 <Radio value={LIBRARY_TYPE_PREINSTALLED}>
                   Use a self-hosted alloy.js instance
                 </Radio>
-              </FormikRadioGroup>
+              </FormRadioGroup>
               {!isPreinstalled && <ComponentsSection />}
             </div>
           </DisclosurePanel>

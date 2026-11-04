@@ -22,7 +22,7 @@ import XdmVariable, {
 import DataVariable, {
   bridge as dataVariableBridge,
 } from "./variable/components/dataVariable";
-import FormikRadioGroup from "../forms/fields/RadioGroup";
+import FormRadioGroup from "../forms/fields/RadioGroup";
 import { XDM, DATA } from "./variable/constants/variableTypes";
 
 const getInitialValues =
@@ -81,7 +81,7 @@ const Schema = ({ xdmVariableContext, initInfo }) => {
         </Link>
         .
       </div>
-      <FormikRadioGroup
+      <FormRadioGroup
         label="Choose the property you want to populate"
         name="type"
         orientation="horizontal"
@@ -92,7 +92,7 @@ const Schema = ({ xdmVariableContext, initInfo }) => {
         <Radio data-test-id="dataRadioButton" value={DATA}>
           Data
         </Radio>
-      </FormikRadioGroup>
+      </FormRadioGroup>
 
       {type === XDM && (
         <XdmVariable context={xdmVariableContext} initInfo={initInfo} />

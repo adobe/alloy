@@ -16,9 +16,9 @@ import { useFieldValue } from "../utils/useFieldValue";
 import PropTypes from "prop-types";
 import DataElementSelector from "../components/dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
-import FormikRadioGroup from "./fields/RadioGroup";
+import FormRadioGroup from "./fields/RadioGroup";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
-import FormikTextField from "./fields/TextField";
+import FormTextField from "./fields/TextField";
 import FieldSubset from "../components/fieldSubset";
 import BetaBadge from "../components/betaBadge";
 
@@ -26,8 +26,8 @@ import BetaBadge from "../components/betaBadge";
 /**
  * This creates a form field for a radio group and supports data elements.
  * @param {object} options - Options for the radio group.
- * @param {string} options.name - The formik key to use for this field. The
- * following formik keys will be used:
+ * @param {string} options.name - The form key to use for this field. The
+ * following form keys will be used:
  *  - `${name}` - The radio group field.
  *  - `${name}DataElement` - The data element field.
  * @param {boolean} [options.isRequired] - Whether or not the field is required.
@@ -108,7 +108,7 @@ export default function radioGroup({
       const value = useFieldValue(`${namePrefix}${name}`);
       return (
         <>
-          <FormikRadioGroup
+          <FormRadioGroup
             data-test-id={`${namePrefix}${name}Field`}
             name={`${namePrefix}${name}`}
             label={labelElement}
@@ -136,11 +136,11 @@ export default function radioGroup({
                 </Radio>
               )}
             </>
-          </FormikRadioGroup>
+          </FormRadioGroup>
           {dataElementSupported && value === "dataElement" && (
             <FieldSubset>
               <DataElementSelector>
-                <FormikTextField
+                <FormTextField
                   data-test-id={`${namePrefix}${name}DataElementField`}
                   name={`${namePrefix}${name}DataElement`}
                   aria-label={`${label} data element`}

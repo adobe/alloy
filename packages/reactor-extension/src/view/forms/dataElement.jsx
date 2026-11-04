@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { string } from "yup";
 import PropTypes from "prop-types";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikTextField from "./fields/TextField";
+import FormTextField from "./fields/TextField";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
 
@@ -58,7 +58,7 @@ export default function dataElement({
     Component: ({ namePrefix = "" }) => {
       return (
         <DataElementSelector tokenize={tokenize}>
-          <FormikTextField
+          <FormTextField
             data-test-id={`${namePrefix}${name}TextField`}
             name={`${namePrefix}${name}`}
             label={label}

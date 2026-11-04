@@ -19,7 +19,7 @@ import widthStyle from "./widthStyle";
 import normalizeCollectionChildren from "./normalizeCollectionChildren";
 import closeDataElementSuggestions from "./closeDataElementSuggestions";
 
-const FormikKeyedComboBox = ({
+const FormKeyedComboBox = ({
   name,
   width,
   items,
@@ -103,7 +103,7 @@ const FormikKeyedComboBox = ({
   );
 };
 
-FormikKeyedComboBox.propTypes = {
+FormKeyedComboBox.propTypes = {
   name: PropTypes.string.isRequired,
   width: PropTypes.string,
   items: PropTypes.array.isRequired,
@@ -112,4 +112,4 @@ FormikKeyedComboBox.propTypes = {
   children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
 };
 
-export default FormikKeyedComboBox;
+export default FormKeyedComboBox;

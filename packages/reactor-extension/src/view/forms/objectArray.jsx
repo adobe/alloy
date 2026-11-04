@@ -17,8 +17,8 @@ import { Radio, Button, ActionButton } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import Delete from "@react-spectrum/s2/icons/Delete";
-import FormikRadioGroup from "./fields/RadioGroup";
-import FormikTextField from "./fields/TextField";
+import FormRadioGroup from "./fields/RadioGroup";
+import FormTextField from "./fields/TextField";
 import DataElementSelector from "../components/dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
@@ -76,7 +76,7 @@ ObjectArrayContainer.propTypes = {
  * objects, or an object with string keys and object values. Any items with no
  * values filled in will be removed from the final settings.
  * @param {object} options - Options for the field.
- * @param {string} options.name - The formik key to use for this field.
+ * @param {string} options.name - The form key to use for this field.
  *  - `${key}` will be used to store the array of objects.
  *  - `${key}InputMethod` will be used to determine whether or not to use a data
  *    element.
@@ -88,7 +88,7 @@ ObjectArrayContainer.propTypes = {
  * the data element field. Usually you would use this to describe the type the
  * data element should be.
  * @param {string} [options.objectKey] - If you want to create an object, use
- * this to specify the Formik key to use for the keys of the object. If you want
+ * this to specify the form key to use for the keys of the object. If you want
  * to create an array of objects, omit this.
  * @param {string} [options.objectLabelPlural] - If you have set `objectKey`,
  * this will be used to describe the object keys in the validation error message
@@ -271,7 +271,7 @@ export default function objectArray(
       return (
         <ObjectArrayContainer horizontal={horizontal} label={singularLabel}>
           {dataElementSupported && (
-            <FormikRadioGroup
+            <FormRadioGroup
               name={`${namePrefix}${name}InputMethod`}
               orientation="horizontal"
               label={label}
@@ -289,7 +289,7 @@ export default function objectArray(
               >
                 Provide a data element.
               </Radio>
-            </FormikRadioGroup>
+            </FormRadioGroup>
           )}
           {inputMethod === FORM && (
             <>
@@ -366,7 +366,7 @@ export default function objectArray(
           )}
           {inputMethod === DATA_ELEMENT && (
             <DataElementSelector>
-              <FormikTextField
+              <FormTextField
                 data-test-id={`${namePrefix}${name}DataElementField`}
                 name={`${namePrefix}${name}DataElement`}
                 description={dataElementDescription}

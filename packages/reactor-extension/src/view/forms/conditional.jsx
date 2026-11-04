@@ -20,7 +20,7 @@ import form from "./form";
  * This function is used to create a form that conditionally renders
  * other form based on a conditional function.
  * @param {object} options The options for the conditional form.
- * @param {Array | string} options.args The name of the formik state field or fields
+ * @param {Array | string} options.args The name of the form state field or fields
  * that will be passed to the conditional function as arguments.
  * @param {Function} options.condition If this function returns true, the part's
  * Components will be rendered, the part's schema will be used, and the part's
@@ -38,7 +38,7 @@ export default function conditional({ args, condition }, children) {
 
   const parts = {
     // getInitialValues should run regardless of the condition so that the
-    // default formik state can be set up.
+    // default form state can be set up.
     getInitialValues,
     getSettings({ values }) {
       const conditionalArgValues = argsArray.map((arg) => values[arg]);

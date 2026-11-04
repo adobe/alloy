@@ -34,7 +34,7 @@ const PICKER_APPEARANCE = mergeStyles(
   ),
 );
 
-const FormikPicker = ({
+const FormPicker = ({
   name,
   width,
   validate,
@@ -73,7 +73,7 @@ const FormikPicker = ({
   );
 };
 
-FormikPicker.propTypes = {
+FormPicker.propTypes = {
   name: PropTypes.string.isRequired,
   width: PropTypes.string,
   validate: PropTypes.func,
@@ -81,4 +81,4 @@ FormikPicker.propTypes = {
   children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
 };
 
-export default FormikPicker;
+export default FormPicker;

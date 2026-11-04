@@ -14,9 +14,9 @@ import { Picker, PickerItem, TextField } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import DataElementSelector from "../dataElementSelector";
-import FormikComboBox from "../../forms/fields/ComboBox";
-import FormikPicker from "../../forms/fields/Picker";
-import FormikTextField from "../../forms/fields/TextField";
+import FormComboBox from "../../forms/fields/ComboBox";
+import FormPicker from "../../forms/fields/Picker";
+import FormTextField from "../../forms/fields/TextField";
 import widthStyle from "../../forms/fields/widthStyle";
 
 const FLEX_STYLE = style({ display: "flex" });
@@ -47,8 +47,8 @@ const DisabledOverrideInput = ({
   );
 };
 /**
- * The OverrideInput component is a wrapper around either a FormikComboBox or
- * FormikTextField. It is used to allow the user to override a value that is
+ * The OverrideInput component is a wrapper around either a FormComboBox or
+ * FormTextField. It is used to allow the user to override a value that is
  * being set in the rule. The component will display a popup that shows the
  * value that is being overridden.
  *
@@ -78,18 +78,18 @@ const OverrideInput = (options) => {
   if (useManualEntry) {
     return (
       <DataElementSelector>
-        <FormikTextField {...otherProps} />
+        <FormTextField {...otherProps} />
       </DataElementSelector>
     );
   }
   if (!allowsCustomValue) {
-    return <FormikPicker {...otherProps}>{children}</FormikPicker>;
+    return <FormPicker {...otherProps}>{children}</FormPicker>;
   }
   return (
     <DataElementSelector>
-      <FormikComboBox allowsCustomValue {...otherProps}>
+      <FormComboBox allowsCustomValue {...otherProps}>
         {children}
-      </FormikComboBox>
+      </FormComboBox>
     </DataElementSelector>
   );
 };

@@ -36,7 +36,7 @@ import fetchDataElementByName from "../utils/fetchDataElementByName";
 import fetchSchema from "../utils/fetchSchema";
 import Editor from "../components/objectEditor/editor";
 import getInitialFormState from "../components/objectEditor/helpers/getInitialFormState";
-import FormikPagedComboBox from "../forms/fields/PagedComboBox";
+import FormPagedComboBox from "../forms/fields/PagedComboBox";
 import useReportAsyncError from "../utils/useReportAsyncError";
 import useChanged from "../utils/useChanged";
 import useAbortPreviousRequestsAndCreateSignal from "../utils/useAbortPreviousRequestsAndCreateSignal";
@@ -493,7 +493,7 @@ const UpdateVariable = ({ initInfo, form, context }) => {
           >
             Learn more about the Update Variable action
           </Link>
-          <FormikPagedComboBox
+          <FormPagedComboBox
             data-test-id="dataElementField"
             name="dataElement"
             label="Data element"

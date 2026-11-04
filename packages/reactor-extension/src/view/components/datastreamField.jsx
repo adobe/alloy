@@ -29,7 +29,7 @@ import PropTypes from "prop-types";
 import { useEffect, useMemo, useRef, useState } from "react";
 import DataElementSelector from "./dataElementSelector";
 import RefreshButton from "./refreshButton";
-import FormikTextField from "../forms/fields/TextField";
+import FormTextField from "../forms/fields/TextField";
 import { findDatastream } from "../utils/useDatastreamCatalog";
 
 const getLabel = (datastream) => datastream.data.title;
@@ -218,7 +218,7 @@ const DatastreamField = ({
             )}
           </ComboBox>
         ) : (
-          <FormikTextField
+          <FormTextField
             data-test-id={dataTestId}
             name={name}
             label={label}

@@ -17,7 +17,7 @@ import FieldDescriptionAndError from "../../components/fieldDescriptionAndError"
 import widthStyle from "./widthStyle";
 import normalizeGroupChildren from "./normalizeGroupChildren";
 
-const FormikCheckboxGroup = ({
+const FormCheckboxGroup = ({
   name,
   children,
   description,
@@ -51,11 +51,11 @@ const FormikCheckboxGroup = ({
   );
 };
 
-FormikCheckboxGroup.propTypes = {
+FormCheckboxGroup.propTypes = {
   name: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
   description: PropTypes.string,
   width: PropTypes.string,
 };
 
-export default FormikCheckboxGroup;
+export default FormCheckboxGroup;

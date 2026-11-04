@@ -17,12 +17,12 @@ import { useFieldValue } from "../utils/useFieldValue";
 import { Radio, ActionButton, Button, ComboBoxItem } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
-import FormikTextField from "./fields/TextField";
-import FormikRadioGroup from "./fields/RadioGroup";
+import FormTextField from "./fields/TextField";
+import FormRadioGroup from "./fields/RadioGroup";
 import DataElementSelector from "../components/dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
-import FormikKeyedComboBox from "./fields/KeyedComboBox";
+import FormKeyedComboBox from "./fields/KeyedComboBox";
 
 const FORM = "form";
 const DATA_ELEMENT = "dataElement";
@@ -38,7 +38,7 @@ const StringItem = ({
 }) => {
   return (
     <DataElementSelector>
-      <FormikTextField
+      <FormTextField
         data-test-id={`${namePrefix}${name}${index}Field`}
         aria-label={`Item ${index + 1}`}
         name={`${namePrefix}${name}.${index}`}
@@ -73,7 +73,7 @@ const ComboboxItem = ({
 }) => {
   return (
     <DataElementSelector>
-      <FormikKeyedComboBox
+      <FormKeyedComboBox
         data-test-id={`${namePrefix}${name}${index}Field`}
         aria-label={`Item ${index + 1}`}
         name={`${namePrefix}${name}.${index}`}
@@ -92,7 +92,7 @@ const ComboboxItem = ({
             {item.label}
           </ComboBoxItem>
         )}
-      </FormikKeyedComboBox>
+      </FormKeyedComboBox>
     </DataElementSelector>
   );
 };
@@ -114,7 +114,7 @@ ComboboxItem.propTypes = {
  * filled in will be removed from the array. Each item in the array can be a
  * data element or the entire array can be a data element.
  * @param {object} options - Options for the field.
- * @param {string} options.name - The formik key to use for this field.
+ * @param {string} options.name - The form key to use for this field.
  * - `${key}` will be used to store the array of strings.
  * - `${key}InputMethod` will be used to determine whether or not to use a data
  *   element.
@@ -213,7 +213,7 @@ export default function fieldArray({
       const error = useFieldError(`${namePrefix}${name}`);
       return (
         <>
-          <FormikRadioGroup
+          <FormRadioGroup
             name={`${namePrefix}${name}InputMethod`}
             orientation="horizontal"
             label={label}
@@ -228,7 +228,7 @@ export default function fieldArray({
             >
               Provide a data element.
             </Radio>
-          </FormikRadioGroup>
+          </FormRadioGroup>
           {inputMethod === FORM && (
             <div>
               <div
@@ -291,7 +291,7 @@ export default function fieldArray({
           )}
           {inputMethod === DATA_ELEMENT && (
             <DataElementSelector>
-              <FormikTextField
+              <FormTextField
                 data-test-id={`${namePrefix}${name}DataElementField`}
                 name={`${namePrefix}${name}DataElement`}
                 description={dataElementDescription}

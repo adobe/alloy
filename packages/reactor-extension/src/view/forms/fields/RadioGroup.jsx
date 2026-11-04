@@ -32,7 +32,7 @@ const RADIO_GROUP_LAYOUT_STYLE = css(
   "alloy",
 );
 
-const FormikRadioGroup = ({
+const FormRadioGroup = ({
   name,
   children,
   description,
@@ -81,7 +81,7 @@ const FormikRadioGroup = ({
   );
 };
 
-FormikRadioGroup.propTypes = {
+FormRadioGroup.propTypes = {
   name: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
   description: PropTypes.string,
@@ -89,4 +89,4 @@ FormikRadioGroup.propTypes = {
   onChange: PropTypes.func,
 };
 
-export default FormikRadioGroup;
+export default FormRadioGroup;

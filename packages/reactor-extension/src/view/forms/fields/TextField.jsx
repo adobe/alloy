@@ -24,7 +24,7 @@ import widthStyle from "./widthStyle";
  * the value is invalid, or null if the value is valid.
  * @returns {React.Element}
  */
-const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
+const FormTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
   const field = useFormField(name, { validate });
   const fieldError = useFieldError(name);
   const {
@@ -56,11 +56,11 @@ const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
   );
 };
 
-FormikTextField.propTypes = {
+FormTextField.propTypes = {
   name: PropTypes.string.isRequired,
   width: PropTypes.string,
   validate: PropTypes.func,
   onBlur: PropTypes.func,
 };
 
-export default FormikTextField;
+export default FormTextField;

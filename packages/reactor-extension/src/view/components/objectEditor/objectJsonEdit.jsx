@@ -21,9 +21,9 @@ import { useFieldValue } from "../../utils/useFieldValue";
 import { Radio, ActionButton } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
-import FormikRadioGroup from "../../forms/fields/RadioGroup";
-import FormikTextArea from "../../forms/fields/TextArea";
-import FormikTextField from "../../forms/fields/TextField";
+import FormRadioGroup from "../../forms/fields/RadioGroup";
+import FormTextArea from "../../forms/fields/TextArea";
+import FormTextField from "../../forms/fields/TextField";
 import DataElementSelector from "../dataElementSelector";
 import { PARTS, WHOLE } from "./constants/populationStrategy";
 import FormElementContainer from "../formElementContainer";
@@ -54,7 +54,7 @@ const WholePopulationStrategyForm = ({
   return (
     <div className={style({ marginStart: 24 })}>
       <DataElementSelector clearable>
-        <FormikTextArea
+        <FormTextArea
           data-test-id="valueField"
           label={displayName}
           name={`${fieldName}.value`}
@@ -101,7 +101,7 @@ const PartsPopulationStrategyForm = ({ displayName, fieldName, items }) => {
                 display: "flex",
               })}
             >
-              <FormikTextField
+              <FormTextField
                 data-test-id={`keyField${index}`}
                 name={`${fieldName}.items.${index}.key`}
                 aria-label="Key"
@@ -111,7 +111,7 @@ const PartsPopulationStrategyForm = ({ displayName, fieldName, items }) => {
 
               <div className={style({ marginStart: 8 })}>
                 <DataElementSelector clearable>
-                  <FormikTextField
+                  <FormTextField
                     data-test-id={`valueField${index}`}
                     name={`${fieldName}.items.${index}.value`}
                     aria-label="Value"
@@ -251,7 +251,7 @@ const ObjectJsonEdit = (props) => {
   return (
     <FormElementContainer>
       {isPartsPopulationStrategySupported && (
-        <FormikRadioGroup
+        <FormRadioGroup
           aria-label="Population strategy"
           label={displayName}
           name={`${fieldName}.populationStrategy`}
@@ -265,7 +265,7 @@ const ObjectJsonEdit = (props) => {
           <Radio data-test-id="wholePopulationStrategyField" value={WHOLE}>
             Provide JSON or Data Element
           </Radio>
-        </FormikRadioGroup>
+        </FormRadioGroup>
       )}
       {populationStrategy === WHOLE ? (
         <WholePopulationStrategyForm

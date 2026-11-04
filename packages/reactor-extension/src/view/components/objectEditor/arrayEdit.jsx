@@ -16,8 +16,8 @@ import { useFieldValue } from "../../utils/useFieldValue";
 import { Radio, Button, ActionButton } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
-import FormikRadioGroup from "../../forms/fields/RadioGroup";
-import FormikTextField from "../../forms/fields/TextField";
+import FormRadioGroup from "../../forms/fields/RadioGroup";
+import FormTextField from "../../forms/fields/TextField";
 import DataElementSelector from "../dataElementSelector";
 import getInitialFormState, {
   formStateNodePropTypes,
@@ -33,7 +33,7 @@ import FormElementContainer from "../formElementContainer";
 const WholePopulationStrategyForm = ({ fieldName }) => {
   return (
     <DataElementSelector clearable>
-      <FormikTextField
+      <FormTextField
         data-test-id="valueField"
         name={`${fieldName}.value`}
         description="This data element should resolve to an array."
@@ -158,7 +158,7 @@ const ArrayEdit = (props) => {
   return (
     <FormElementContainer>
       {isPartsPopulationStrategySupported && (
-        <FormikRadioGroup
+        <FormRadioGroup
           label={displayName}
           name={`${fieldName}.populationStrategy`}
           orientation="horizontal"
@@ -170,7 +170,7 @@ const ArrayEdit = (props) => {
           <Radio data-test-id="wholePopulationStrategyField" value={WHOLE}>
             Provide entire array
           </Radio>
-        </FormikRadioGroup>
+        </FormRadioGroup>
       )}
       <div>
         {populationStrategy === WHOLE ? (

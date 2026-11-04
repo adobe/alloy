@@ -18,7 +18,7 @@ import CodeField from "../components/codeField";
 /**
  * This creates a form field for a code field.
  * @param {object} options - Options for the field.
- * @param {string} options.name - The formik key to use for this field.
+ * @param {string} options.name - The form key to use for this field.
  * @param {boolean} [options.isRequired] - Whether or not the field is
  * required.
  * @param {string} options.label - The label to use for the field.

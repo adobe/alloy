@@ -29,7 +29,7 @@ import clone from "../../utils/clone";
 import deepDelete from "../../utils/deepDelete";
 
 /**
- * @typedef {Object} EnvironmentConfigOverrideFormikState
+ * @typedef {Object} EnvironmentConfigOverrideFormState
  * @property {string} [sandbox]
  * @property {string} [datastreamId]
  * @property {Object} [com_adobe_experience_platform]
@@ -45,10 +45,10 @@ import deepDelete from "../../utils/deepDelete";
  * @property {Object} [com_adobe_target]
  * @property {string} [com_adobe_target.propertyToken]
  *
- * @typedef {Object} ConfigOverridesFormikState
- * @property {EnvironmentConfigOverrideFormikState} [development]
- * @property {EnvironmentConfigOverrideFormikState} [staging]
- * @property {EnvironmentConfigOverrideFormikState} [production]
+ * @typedef {Object} ConfigOverridesFormState
+ * @property {EnvironmentConfigOverrideFormState} [development]
+ * @property {EnvironmentConfigOverrideFormState} [staging]
+ * @property {EnvironmentConfigOverrideFormState} [production]
  *
  * @typedef {Object} EnvironmentConfigOverrideLaunchSettings
  * @property {string} [sandbox]
@@ -182,8 +182,8 @@ const migrations = [
 
 export const bridge = {
   /**
-   * Get the default formik state for the overrides form.
-   * @returns {ConfigOverridesFormikState}
+   * Get the default form state for the overrides form.
+   * @returns {ConfigOverridesFormState}
    */
   getInstanceDefaults: () => ({
     edgeConfigOverrides: OVERRIDE_ENVIRONMENTS.reduce(
@@ -236,9 +236,9 @@ export const bridge = {
     ),
   }),
   /**
-   * Converts the saved Launch instance settings to the formik state.
+   * Converts the saved Launch instance settings to the form state.
    * @param {{ edgeConfigOverrides: ConfigOverridesLaunchSettings }} params
-   * @returns {ConfigOverridesFormikState}
+   * @returns {ConfigOverridesFormState}
    */
   getInitialInstanceValues: ({ instanceSettings }) => {
     const instanceValues = {};
@@ -332,8 +332,8 @@ export const bridge = {
     return instanceValues;
   },
   /**
-   * Converts the formik state to the Launch instance settings.
-   * @param {{ instanceValues: { edgeConfigOverrides: ConfigOverridesFormikState }}} params
+   * Converts the form state to the Launch instance settings.
+   * @param {{ instanceValues: { edgeConfigOverrides: ConfigOverridesFormState }}} params
    * @returns {{ edgeConfigOverrides: ConfigOverridesLaunchSettings }}
    */
   getInstanceSettings: ({ instanceValues }) => {

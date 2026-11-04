@@ -42,13 +42,13 @@ import { ENUM } from "../constants/schemaType";
  * @param {Function} [notifyParentOfTouched] When called, notifies the parent
  * node that the "whole value" field of this node or a descendant node has
  * been touched by the user. This helps determine if validation errors should
- * be shown for the node. "Touched" here is according to Formik's definition.
+ * be shown for the node. "Touched" here means the field was blurred or the form was submitted.
  * @param {Object} [errors] Errors that were collected during validation.
  * The structure of the errors object matches the structure of the
  * formStateNode, though only properties with errors will exist.
  * @param {Object} [touched] A record of which fields have been touched by
  * the user. The structure of the touched object matches the structure of
- * formStateNode. "Touched" here is according to Formik's definition.
+ * formStateNode. "Touched" here means the field was blurred or the form was submitted.
  * @returns TreeNode
  */
 const getTreeNode = ({
@@ -123,8 +123,7 @@ const getTreeNode = ({
   // item is empty. However, we don't want to show the error until
   // we've given the user a chance to populate the item. For this reason,
   // we wait until the user has touched the node or its descendants or
-  // has tried to save the data element (formik marks all fields as touched
-  // upon save).
+  // has tried to save the data element (submitting marks all fields as touched).
   if (isTouchedAtCurrentOrDescendantNode && errors) {
     treeNode.error =
       Object.keys(errors).length > 0

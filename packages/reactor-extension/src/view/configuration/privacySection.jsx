@@ -18,7 +18,7 @@ import { object, string } from "yup";
 import { useFieldValue } from "../utils/useFieldValue";
 import SectionHeader from "../components/sectionHeader";
 import InfoMessage from "../components/infoMessage";
-import FormikRadioGroupWithDataElement, {
+import FormRadioGroupWithDataElement, {
   createRadioGroupWithDataElementValidationSchema,
 } from "../forms/fields/RadioGroupWithDataElement";
 import FormElementContainer from "../components/formElementContainer";
@@ -79,7 +79,7 @@ const PrivacySection = ({ instanceFieldName }) => {
       </SectionHeader>
       {consentComponentEnabled ? (
         <FormElementContainer>
-          <FormikRadioGroupWithDataElement
+          <FormRadioGroupWithDataElement
             dataTestIdPrefix="defaultConsent"
             name={`${instanceFieldName}.defaultConsent`}
             label="Default consent (not persisted to user's profile)"
@@ -106,7 +106,7 @@ const PrivacySection = ({ instanceFieldName }) => {
               Pending - Queue events that occur before the user provides consent
               preferences.
             </Radio>
-          </FormikRadioGroupWithDataElement>
+          </FormRadioGroupWithDataElement>
         </FormElementContainer>
       ) : (
         <InfoMessage

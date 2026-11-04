@@ -17,8 +17,8 @@ import Delete from "@react-spectrum/s2/icons/Delete";
 import { useFormField } from "../forms/formContext";
 import { useFieldValue } from "../utils/useFieldValue";
 import { object, string } from "yup";
-import FormikRadioGroup from "../forms/fields/RadioGroup";
-import FormikTextField from "../forms/fields/TextField";
+import FormRadioGroup from "../forms/fields/RadioGroup";
+import FormTextField from "../forms/fields/TextField";
 import DataElementSelector from "./dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
@@ -94,7 +94,7 @@ const DecisionScopes = () => {
 
   return (
     <div>
-      <FormikRadioGroup
+      <FormRadioGroup
         name="decisionsInputMethod"
         orientation="horizontal"
         label="Decision scopes"
@@ -105,11 +105,11 @@ const DecisionScopes = () => {
         <Radio data-test-id="scopeDataElementOptionField" value={DATA_ELEMENT}>
           Provide a data element
         </Radio>
-      </FormikRadioGroup>
+      </FormRadioGroup>
       {decisionsInputMethod === DATA_ELEMENT && (
         <FieldSubset>
           <DataElementSelector>
-            <FormikTextField
+            <FormTextField
               data-test-id="scopeDataElementField"
               label="Data element"
               name="decisionScopesDataElement"
@@ -139,7 +139,7 @@ const DecisionScopes = () => {
                       alignItems: "end",
                     })}
                   >
-                    <FormikTextField
+                    <FormTextField
                       data-test-id={`scope${index}Field`}
                       label="Scope"
                       name={`decisionScopesArray.${index}`}

@@ -27,7 +27,7 @@ import closeDataElementSuggestions from "./closeDataElementSuggestions";
  * the value is invalid, or null if the value is valid.
  * @returns {React.Element}
  */
-const FormikComboBox = ({
+const FormComboBox = ({
   name,
   width,
   validate,
@@ -62,7 +62,7 @@ const FormikComboBox = ({
   );
 };
 
-FormikComboBox.propTypes = {
+FormComboBox.propTypes = {
   name: PropTypes.string.isRequired,
   onBlur: PropTypes.func,
   validate: PropTypes.func,
@@ -70,4 +70,4 @@ FormikComboBox.propTypes = {
   children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
 };
 
-export default FormikComboBox;
+export default FormComboBox;

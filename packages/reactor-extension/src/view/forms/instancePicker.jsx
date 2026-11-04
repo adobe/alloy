@@ -18,7 +18,7 @@ import InstanceNamePicker from "../components/instanceNamePicker";
 /**
  * This creates a form field for an instance name picker.
  * @param {object} options - Options for the field.
- * @param {string} options.name - The formik key to use for this field.
+ * @param {string} options.name - The form key to use for this field.
  * @returns {Form} A form field for an instance name picker.
  */
 export default function instancePicker({ name, onInstanceChange }) {

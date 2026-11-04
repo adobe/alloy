@@ -17,8 +17,8 @@ import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import SectionHeader from "../components/sectionHeader";
 import InfoMessage from "../components/infoMessage";
 import FormElementContainer from "../components/formElementContainer";
-import FormikTextField from "../forms/fields/TextField";
-import FormikNumberField from "../forms/fields/NumberField";
+import FormTextField from "../forms/fields/TextField";
+import FormNumberField from "../forms/fields/NumberField";
 import isNonEmptyString from "../utils/isNonEmptyString";
 
 const getDefaultSettings = () => ({
@@ -171,7 +171,7 @@ const StreamingMediaSection = ({ instanceFieldName }) => {
       <SectionHeader>Streaming media</SectionHeader>
       {streamingMediaComponentEnabled ? (
         <FormElementContainer>
-          <FormikTextField
+          <FormTextField
             data-test-id="mediaChannelField"
             label="Channel"
             name={`${instanceFieldName}.streamingMedia.channel`}
@@ -179,7 +179,7 @@ const StreamingMediaSection = ({ instanceFieldName }) => {
             width="size-5000"
             isRequired={mediaRequiredFieldsProvided()}
           />
-          <FormikTextField
+          <FormTextField
             data-test-id="mediaPlayerNameField"
             label="Player Name"
             name={`${instanceFieldName}.streamingMedia.playerName`}
@@ -187,7 +187,7 @@ const StreamingMediaSection = ({ instanceFieldName }) => {
             width="size-5000"
             isRequired={mediaRequiredFieldsProvided()}
           />
-          <FormikTextField
+          <FormTextField
             data-test-id="mediaVersionField"
             label="Application version"
             name={`${instanceFieldName}.streamingMedia.appVersion`}
@@ -195,7 +195,7 @@ const StreamingMediaSection = ({ instanceFieldName }) => {
             width="size-5000"
             isDisabled={!mediaRequiredFieldsProvided()}
           />
-          <FormikNumberField
+          <FormNumberField
             data-test-id="mediaMainPingIntervalField"
             label="Main ping interval"
             name={`${instanceFieldName}.streamingMedia.mainPingInterval`}
@@ -203,7 +203,7 @@ const StreamingMediaSection = ({ instanceFieldName }) => {
             width="size-5000"
             isDisabled={!mediaRequiredFieldsProvided()}
           />
-          <FormikNumberField
+          <FormNumberField
             data-test-id="mediaAdPingIntervalField"
             label="Ad ping interval"
             name={`${instanceFieldName}.streamingMedia.adPingInterval`}

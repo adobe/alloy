@@ -18,11 +18,11 @@ import { useFieldValue } from "../utils/useFieldValue";
 import PropTypes from "prop-types";
 import DataElementSelector from "../components/dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
-import FormikRadioGroup from "./fields/RadioGroup";
+import FormRadioGroup from "./fields/RadioGroup";
 import FieldSubset from "../components/fieldSubset";
 import form from "./form";
 import FormElementContainer from "../components/formElementContainer";
-import FormikTextArea from "./fields/TextArea";
+import FormTextArea from "./fields/TextArea";
 
 import {
   PARTS,
@@ -177,7 +177,7 @@ export default function jsonOptionalEditor(
       }, [optionValue]);
       return (
         <FormElementContainer>
-          <FormikRadioGroup
+          <FormRadioGroup
             data-test-id={`${namePrefix}${name}Field`}
             name={`${namePrefix}${optionName}`}
             label={label}
@@ -197,11 +197,11 @@ export default function jsonOptionalEditor(
             >
               Provide JSON or Data Element
             </Radio>
-          </FormikRadioGroup>
+          </FormRadioGroup>
           {optionValue === WHOLE && (
             <FieldSubset>
               <DataElementSelector>
-                <FormikTextArea
+                <FormTextArea
                   data-test-id={`${namePrefix}${name}Whole`}
                   name={`${namePrefix}${name}Whole`}
                   aria-label="Value"

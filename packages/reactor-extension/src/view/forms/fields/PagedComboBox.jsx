@@ -20,7 +20,7 @@ import useIsFirstRender from "../../utils/useIsFirstRender";
 import Alert from "../../components/alert";
 import widthStyle from "./widthStyle";
 
-const FormikPagedComboBox = ({
+const FormPagedComboBox = ({
   name,
   width,
   loadItems,
@@ -108,7 +108,7 @@ const FormikPagedComboBox = ({
   );
 };
 
-FormikPagedComboBox.propTypes = {
+FormPagedComboBox.propTypes = {
   name: PropTypes.string.isRequired,
   width: PropTypes.string,
   loadItems: PropTypes.func.isRequired,
@@ -122,4 +122,4 @@ FormikPagedComboBox.propTypes = {
   "data-test-id": PropTypes.string,
 };
 
-export default FormikPagedComboBox;
+export default FormPagedComboBox;

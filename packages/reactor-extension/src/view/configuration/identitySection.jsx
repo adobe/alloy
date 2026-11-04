@@ -15,12 +15,12 @@ import { ComboBoxItem } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { object, string, lazy, mixed } from "yup";
 import SectionHeader from "../components/sectionHeader";
-import FormikCheckbox from "../forms/fields/Checkbox";
+import FormCheckbox from "../forms/fields/Checkbox";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
 import FormElementContainer from "../components/formElementContainer";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikComboBox from "../forms/fields/ComboBox";
+import FormComboBox from "../forms/fields/ComboBox";
 import SINGLE_DATA_ELEMENT_REGEX from "../constants/singleDataElementRegex";
 
 const ENABLED = "Enabled";
@@ -97,14 +97,14 @@ const IdentitySection = ({ instanceFieldName }) => {
         Identity
       </SectionHeader>
       <FormElementContainer>
-        <FormikCheckbox
+        <FormCheckbox
           data-test-id="idMigrationEnabledField"
           name={`${instanceFieldName}.idMigrationEnabled`}
           description="Enables the web SDK to preserve existing ECIDs by reading and writing the AMCV cookie. If your website was or is still using VisitorAPI, enable this option until users are fully migrated to the web SDK's identity cookie. This will prevent visitor cliffing."
           width="size-5000"
         >
           Migrate ECID from VisitorAPI to the web SDK
-        </FormikCheckbox>
+        </FormCheckbox>
         <div
           className={style({
             display: "flex",
@@ -113,7 +113,7 @@ const IdentitySection = ({ instanceFieldName }) => {
           })}
         >
           <DataElementSelector>
-            <FormikComboBox
+            <FormComboBox
               data-test-id="thirdPartyCookiesEnabledField"
               label="Use third-party cookies"
               name={`${instanceFieldName}.thirdPartyCookiesEnabled`}
@@ -128,7 +128,7 @@ const IdentitySection = ({ instanceFieldName }) => {
               <ComboBoxItem key={DISABLED} id={DISABLED}>
                 {DISABLED}
               </ComboBoxItem>
-            </FormikComboBox>
+            </FormComboBox>
           </DataElementSelector>
         </div>
       </FormElementContainer>

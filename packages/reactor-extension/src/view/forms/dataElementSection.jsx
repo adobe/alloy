@@ -14,8 +14,8 @@ import { useFieldValue } from "../utils/useFieldValue";
 import { Radio } from "@react-spectrum/s2";
 import PropTypes from "prop-types";
 import { object } from "yup";
-import FormikRadioGroup from "./fields/RadioGroup";
-import FormikTextField from "./fields/TextField";
+import FormRadioGroup from "./fields/RadioGroup";
+import FormTextField from "./fields/TextField";
 import DataElementSelector from "../components/dataElementSelector";
 import form from "./form";
 import SectionHeader from "../components/sectionHeader";
@@ -28,7 +28,7 @@ const DATA_ELEMENT = "dataElement";
  * This creates a form element that allows to create a section with a form or a string data element. Any items with no
  * values filled in will be removed from the final settings.
  * @param {object} options - Options for the field.
- * @param {string} options.name - The formik key to use for this field.
+ * @param {string} options.name - The form key to use for this field.
  *  - `${key}` will be used to store the object.
  *  - `${key}InputMethod` will be used to determine whether to use a data
  *    element.
@@ -107,7 +107,7 @@ export default function dataElementSection(
       return (
         <>
           <SectionHeader learnMoreUrl={learnMoreUrl}>{label}</SectionHeader>
-          <FormikRadioGroup
+          <FormRadioGroup
             name={`${namePrefix}${name}InputMethod`}
             orientation="horizontal"
             aria-label="Select the input method"
@@ -121,7 +121,7 @@ export default function dataElementSection(
             >
               Provide a data element.
             </Radio>
-          </FormikRadioGroup>
+          </FormRadioGroup>
           {inputMethod === FORM && (
             <Component
               name={name}
@@ -131,7 +131,7 @@ export default function dataElementSection(
           )}
           {inputMethod === DATA_ELEMENT && (
             <DataElementSelector>
-              <FormikTextField
+              <FormTextField
                 data-test-id={`${namePrefix}${name}DataElementField`}
                 name={`${namePrefix}${name}DataElement`}
                 description={dataElementDescription}

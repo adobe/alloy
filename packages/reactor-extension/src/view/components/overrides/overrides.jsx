@@ -110,7 +110,7 @@ ProductSubsection.propTypes = {
  * @typedef {Object} OverridesProps
  * @property {Object} initInfo
  * @property {string?} options.instanceFieldName
- * The name of the Formik parent form. State will be stored as a nested object under the "edgeConfigOverrides" key.
+ * The name of the parent form. State will be stored as a nested object under the "edgeConfigOverrides" key.
  * @property {Array<"eventDatasetOverride" | "idSyncContainerOverride" | "targetPropertyTokenOverride" | "targetPropertyTokenOverride" | "reportSuitesOverride">} options.showFields
  * Which fields to show. Defaults to showing all fields
  * @property {string} options.configOrgId The org id to use for fetching datastream configurations.
@@ -146,7 +146,7 @@ const Overrides = ({
     ),
   );
 
-  /** @type {{value: import("./overridesBridge").EnvironmentConfigOverrideFormikState}[] } */
+  /** @type {{value: import("./overridesBridge").EnvironmentConfigOverrideFormState}[] } */
   const edgeConfigOverrides = useFieldValue(prefix);
 
   const requestCache = useRef({});

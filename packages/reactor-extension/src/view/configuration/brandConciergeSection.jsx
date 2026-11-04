@@ -19,10 +19,10 @@ import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
 import SectionHeader from "../components/sectionHeader";
 import InfoMessage from "../components/infoMessage";
-import FormikCheckbox from "../forms/fields/Checkbox";
-import FormikNumberField from "../forms/fields/NumberField";
-import FormikTextField from "../forms/fields/TextField";
-import FormikRadioGroup from "../forms/fields/RadioGroup";
+import FormCheckbox from "../forms/fields/Checkbox";
+import FormNumberField from "../forms/fields/NumberField";
+import FormTextField from "../forms/fields/TextField";
+import FormRadioGroup from "../forms/fields/RadioGroup";
 import DataElementSelector from "../components/dataElementSelector";
 import FormElementContainer from "../components/formElementContainer";
 import BetaBadge from "../components/betaBadge";
@@ -221,29 +221,29 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
         Brand Concierge <BetaBadge />
       </SectionHeader>
       <FormElementContainer>
-        <FormikTextField
+        <FormTextField
           data-test-id="regionField"
           label="Region"
           name={`${instanceFieldName}.conversation.region`}
           description="The Brand Concierge region (e.g. va7, or2, irl1). Leave blank to use the default region."
           width="size-5000"
         />
-        <FormikCheckbox
+        <FormCheckbox
           data-test-id="stickyConversationSessionField"
           name={`${instanceFieldName}.conversation.stickyConversationSession`}
           description="Persist Adobe Brand Concierge sessions across page loads using a session cookie."
           width="size-5000"
         >
           Sticky conversation session
-        </FormikCheckbox>
-        <FormikNumberField
+        </FormCheckbox>
+        <FormNumberField
           data-test-id="streamTimeoutDataTestId"
           label="Stream timeout (seconds)"
           name={`${instanceFieldName}.conversation.streamTimeout`}
           description="If the conversation stream chunks are not returned within this timeout duration, a timeout error will be triggered."
           width="size-5000"
         />
-        <FormikCheckbox
+        <FormCheckbox
           data-test-id="collectSourcesDataTestId"
           label=""
           name={`${instanceFieldName}.conversation.collectSources`}
@@ -251,9 +251,9 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
           width="size-5000"
         >
           Collect sources
-        </FormikCheckbox>
+        </FormCheckbox>
         <div data-test-id="transferCookiesField">
-          <FormikRadioGroup
+          <FormRadioGroup
             label="Transfer cookies"
             name={`${instanceFieldName}.conversation.transferCookiesInputMethod`}
             orientation="horizontal"
@@ -267,10 +267,10 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
             >
               Use a data element
             </Radio>
-          </FormikRadioGroup>
+          </FormRadioGroup>
           {transferCookiesInputMethod === DATA_ELEMENT ? (
             <DataElementSelector>
-              <FormikTextField
+              <FormTextField
                 data-test-id="transferCookiesDataElementField"
                 aria-label="Transfer cookies data element"
                 name={`${instanceFieldName}.conversation.transferCookiesDataElement`}
@@ -295,7 +295,7 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
                   })}
                 >
                   <DataElementSelector>
-                    <FormikTextField
+                    <FormTextField
                       data-test-id={`transferCookie${index}Field`}
                       aria-label={`Transfer cookie ${index + 1}`}
                       name={`${instanceFieldName}.conversation.transferCookies.${index}`}

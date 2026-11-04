@@ -32,10 +32,10 @@ import getDefaultIdentity from "../utils/getDefaultIdentity";
 import FormElementContainer from "../../../components/formElementContainer";
 import getDefaultIdentifier from "../utils/getDefaultIdentifier";
 import DataElementSelector from "../../../components/dataElementSelector";
-import FormikTextField from "../../../forms/fields/TextField";
-import FormikPicker from "../../../forms/fields/Picker";
+import FormTextField from "../../../forms/fields/TextField";
+import FormPicker from "../../../forms/fields/Picker";
 import * as AUTHENTICATED_STATE from "../constants/authenticatedState";
-import FormikCheckbox from "../../../forms/fields/Checkbox";
+import FormCheckbox from "../../../forms/fields/Checkbox";
 import NamespacesComponent from "./NamespacesComponent";
 import { findNamespace } from "../utils/namespacesUtils";
 import FormEditGroup from "../../../components/formEditGroup";
@@ -145,7 +145,7 @@ const Identity = ({ context }) => {
                       >
                         <FormElementContainer>
                           <DataElementSelector>
-                            <FormikTextField
+                            <FormTextField
                               data-test-id={`identity${index}idField${identifierIndex}`}
                               label="ID"
                               name={`identities.${index}.identifiers.${identifierIndex}.id`}
@@ -154,7 +154,7 @@ const Identity = ({ context }) => {
                               width="size-5000"
                             />
                           </DataElementSelector>
-                          <FormikPicker
+                          <FormPicker
                             data-test-id={`identity${index}authenticatedStateField${identifierIndex}`}
                             label="Authenticated state"
                             name={`identities.${index}.identifiers.${identifierIndex}.authenticatedState`}
@@ -178,15 +178,15 @@ const Identity = ({ context }) => {
                             >
                               Logged Out
                             </PickerItem>
-                          </FormikPicker>
-                          <FormikCheckbox
+                          </FormPicker>
+                          <FormCheckbox
                             width="size-5000"
                             data-test-id={`identity${index}primaryField${identifierIndex}`}
                             name={`identities.${index}.identifiers.${identifierIndex}.primary`}
                             description="Adobe Experience Platform will use the identity as an identifier to help stitch together more information about that individual. If left unchecked, the identifier within this namespace will still be collected, but the ECID will be used as the primary identifier for stitching."
                           >
                             Primary
-                          </FormikCheckbox>
+                          </FormCheckbox>
                         </FormElementContainer>
                         {identities[index].identifiers.length > 1 && (
                           <Button

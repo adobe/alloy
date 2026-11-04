@@ -14,9 +14,9 @@ import { ComboBoxItem, Link } from "@react-spectrum/s2";
 import PropTypes from "prop-types";
 import { useFieldValue } from "../../../utils/useFieldValue";
 import { findNamespace } from "../utils/namespacesUtils";
-import FormikComboBox from "../../../forms/fields/ComboBox";
+import FormComboBox from "../../../forms/fields/ComboBox";
 import DataElementSelector from "../../../components/dataElementSelector";
-import FormikTextField from "../../../forms/fields/TextField";
+import FormTextField from "../../../forms/fields/TextField";
 
 const getSelectedNamespace = (namespaces, selectedNamespaceCode) => {
   if (namespaces.length < 1 || selectedNamespaceCode === "") {
@@ -51,7 +51,7 @@ const NamespacesComponent = ({ name, index, namespaces }) => {
   return (
     <DataElementSelector>
       {namespaces.length > 0 ? (
-        <FormikComboBox
+        <FormComboBox
           data-test-id={`namespace${index}Combobox`}
           name={name}
           items={namespaces}
@@ -69,9 +69,9 @@ const NamespacesComponent = ({ name, index, namespaces }) => {
               {namespace.code}
             </ComboBoxItem>
           )}
-        </FormikComboBox>
+        </FormComboBox>
       ) : (
-        <FormikTextField
+        <FormTextField
           data-test-id={`namespace${index}Field`}
           label="Namespace"
           name={name}

@@ -15,7 +15,7 @@ import { InlineAlert, Heading, Content, Link } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikTextField from "../forms/fields/TextField";
+import FormTextField from "../forms/fields/TextField";
 import RestoreDefaultValueButton from "../components/restoreDefaultValueButton";
 import FormElementContainer from "../components/formElementContainer";
 import { bridge } from "./basicSectionBridge";
@@ -29,7 +29,7 @@ const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
   return (
     <FormElementContainer>
       <DataElementSelector>
-        <FormikTextField
+        <FormTextField
           data-test-id="nameField"
           label="Name"
           name={`${instanceFieldName}.name`}
@@ -76,7 +76,7 @@ const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
             })}
           >
             <DataElementSelector>
-              <FormikTextField
+              <FormTextField
                 data-test-id="orgIdField"
                 label="IMS organization ID"
                 name={`${instanceFieldName}.orgId`}
@@ -97,7 +97,7 @@ const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
             })}
           >
             <DataElementSelector>
-              <FormikTextField
+              <FormTextField
                 data-test-id="edgeDomainField"
                 label="Edge domain"
                 name={`${instanceFieldName}.edgeDomain`}

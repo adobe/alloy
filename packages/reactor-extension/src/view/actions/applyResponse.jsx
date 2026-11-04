@@ -12,8 +12,8 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { object, string } from "yup";
-import FormikTextField from "../forms/fields/TextField";
-import FormikCheckbox from "../forms/fields/Checkbox";
+import FormTextField from "../forms/fields/TextField";
+import FormCheckbox from "../forms/fields/Checkbox";
 import DataElementSelector from "../components/dataElementSelector";
 import render from "../render";
 import ExtensionView from "../components/extensionView";
@@ -77,7 +77,7 @@ const FormFields = ({ initInfo }) => {
         initInfo={initInfo}
       />
       <DataElementSelector>
-        <FormikTextField
+        <FormTextField
           data-test-id="responseHeadersField"
           name="responseHeaders"
           label="Response headers"
@@ -86,7 +86,7 @@ const FormFields = ({ initInfo }) => {
         />
       </DataElementSelector>
       <DataElementSelector>
-        <FormikTextField
+        <FormTextField
           data-test-id="responseBodyField"
           name="responseBody"
           label="Response body"
@@ -95,14 +95,14 @@ const FormFields = ({ initInfo }) => {
           isRequired
         />
       </DataElementSelector>
-      <FormikCheckbox
+      <FormCheckbox
         data-test-id="renderDecisionsField"
         name="renderDecisions"
         description="Check this to automatically render personalization and pre-hide the content to prevent flicker."
         width="size-5000"
       >
         Render visual personalization decisions
-      </FormikCheckbox>
+      </FormCheckbox>
     </FormElementContainer>
   );
 };

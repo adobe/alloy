@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import FormikTextField from "../../forms/fields/TextField";
+import FormTextField from "../../forms/fields/TextField";
 import DataElementSelector from "../dataElementSelector";
 
 /**
@@ -23,7 +23,7 @@ const IntegerEdit = (props) => {
   return (
     <div>
       <DataElementSelector clearable>
-        <FormikTextField
+        <FormTextField
           data-test-id="valueField"
           name={`${fieldName}.value`}
           label={displayName}
