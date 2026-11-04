@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "yup";
 import PropTypes from "prop-types";
 import CodeField from "../components/codeField";
+import { all, required } from "./validation";
 
 /** @typedef {import("./form").Form} Form */
 /**
@@ -35,12 +35,11 @@ export default function codeField({
   placeholder,
   buttonLabelSuffix,
 }) {
-  let validationSchema = string();
-  if (isRequired) {
-    validationSchema = validationSchema.required(
-      `Please provide a ${label.toLowerCase()}.`,
-    );
-  }
+  const validationSchema = all(
+    ...(isRequired
+      ? [required(`Please provide a ${label.toLowerCase()}.`)]
+      : []),
+  );
 
   const Component = ({ namePrefix = "" }) => (
     <CodeField

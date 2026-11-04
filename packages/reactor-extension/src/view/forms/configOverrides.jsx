@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { reach } from "yup";
 import PropTypes from "prop-types";
 import { useFieldValue } from "../utils/useFieldValue";
 import Overrides, { bridge as overridesBridge } from "../components/overrides";
@@ -32,10 +31,7 @@ export default function configOverrides(hideFields) {
       return overridesBridge.getInstanceSettings({ instanceValues: values });
     },
     validationShape: {
-      edgeConfigOverrides: reach(
-        overridesBridge.validationSchema,
-        "edgeConfigOverrides",
-      ),
+      edgeConfigOverrides: overridesBridge.edgeConfigOverridesSchema,
     },
     Component({ initInfo }) {
       const instanceName = useFieldValue("instanceName");

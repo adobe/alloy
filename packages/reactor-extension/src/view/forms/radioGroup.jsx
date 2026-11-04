@@ -10,17 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "yup";
 import { Radio } from "@react-spectrum/s2";
 import { useFieldValue } from "../utils/useFieldValue";
 import PropTypes from "prop-types";
 import DataElementSelector from "../components/dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import FormRadioGroup from "./fields/RadioGroup";
-import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
 import FormTextField from "./fields/TextField";
 import FieldSubset from "../components/fieldSubset";
 import BetaBadge from "../components/betaBadge";
+import { dataElementRequired, parentOf, required, when } from "./validation";
 
 /** @typedef {import("./form").Form} Form */
 /**
@@ -59,16 +58,13 @@ export default function radioGroup({
 }) {
   const validationShape = {};
   if (isRequired) {
-    validationShape[name] = string().required("Please select an option.");
+    validationShape[name] = required("Please select an option.");
   }
   if (dataElementSupported) {
-    validationShape[`${name}DataElement`] = string().when(name, {
-      is: "dataElement",
-      then: (schema) =>
-        schema
-          .matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED)
-          .required(DATA_ELEMENT_REQUIRED),
-    });
+    validationShape[`${name}DataElement`] = when(
+      (value, ctx) => parentOf(ctx)[name] === "dataElement",
+      dataElementRequired,
+    );
   }
 
   const labelElement = (

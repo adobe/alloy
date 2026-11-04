@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { object } from "yup";
 import PropTypes from "prop-types";
 import ExtensionView from "../components/extensionView";
+import { shape } from "./validation";
 
 const FormExtensionView = ({
   getInitialValues,
@@ -43,8 +43,7 @@ FormExtensionView.propTypes = {
  */
 export default ({ getValidationShape, ...formPart }) => {
   formPart.getValidationSchema = ({ initInfo }) => {
-    const shape = getValidationShape({ initInfo, existingValidationShape: {} });
-    return object().shape(shape);
+    return shape(getValidationShape({ initInfo, existingValidationShape: {} }));
   };
 
   const GeneratedForm = () => <FormExtensionView {...formPart} />;

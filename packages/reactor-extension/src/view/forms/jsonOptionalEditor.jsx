@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import { useEffect, useRef } from "react";
-import { string, object } from "yup";
 import { Radio } from "@react-spectrum/s2";
 import { submitForm, useFormContext } from "./formContext";
 import { useFieldValue } from "../utils/useFieldValue";
@@ -28,6 +27,7 @@ import {
   PARTS,
   WHOLE,
 } from "../components/objectEditor/constants/populationStrategy";
+import { getErrors, isEmpty, parentOf, rule, shape, when } from "./validation";
 
 /** @typedef {import("./form").Form} Form */
 /**
@@ -59,30 +59,21 @@ export default function jsonOptionalEditor(
   } = form({}, children);
 
   const validationShape = {};
-  validationShape[`${name}Whole`] = string().when(optionName, {
-    is: WHOLE,
-    then: (schema) =>
-      schema.test(
-        "is-json-or-data-element",
-        "Please provide a valid JSON object or a data element.",
-        (value, context) => {
-          if (value === "" || value.match(singleDataElementRegex)) {
-            return true;
-          }
-          try {
-            JSON.parse(value);
-            return true;
-          } catch ({ message = "" }) {
-            context.createError({
-              path: `${name}DataElement`,
-              message: `Please provide a valid JSON object or a data element. ${message}`,
-            });
-            return false;
-          }
-        },
-      ),
-  });
-  validationShape[name] = object().shape(
+  validationShape[`${name}Whole`] = when(
+    (value, ctx) => parentOf(ctx)[optionName] === WHOLE,
+    rule((value) => {
+      if (isEmpty(value) || singleDataElementRegex.test(value)) {
+        return true;
+      }
+      try {
+        JSON.parse(value);
+        return true;
+      } catch {
+        return false;
+      }
+    }, "Please provide a valid JSON object or a data element."),
+  );
+  validationShape[name] = shape(
     childrenGetValidationShape({ initInfo: {}, existingValidationShape: {} }),
   );
 
@@ -155,23 +146,19 @@ export default function jsonOptionalEditor(
             })
             .then(() => submitForm(form));
         } else if (optionValue === WHOLE && lastOptionValue.current === PARTS) {
-          validationShape[name]
-            .validate(value)
-            .then(() => {
-              const v = JSON.stringify(
-                getChildrenSettings({ values: value }),
-                null,
-                2,
-              );
-              if (v !== "{}") {
-                return setWholeValue(v);
-              }
-              return Promise.resolve();
-            })
-            .catch(() => {
-              return setWholeValue("");
-            })
-            .then(() => submitForm(form));
+          const isValid =
+            Object.keys(getErrors(validationShape[name], value)).length === 0;
+          const childrenJson = JSON.stringify(
+            getChildrenSettings({ values: value }),
+            null,
+            2,
+          );
+          if (!isValid) {
+            setWholeValue("");
+          } else if (childrenJson !== "{}") {
+            setWholeValue(childrenJson);
+          }
+          submitForm(form);
         }
         lastOptionValue.current = optionValue;
       }, [optionValue]);

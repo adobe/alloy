@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "yup";
 import PropTypes from "prop-types";
 import DataElementSelector from "../components/dataElementSelector";
 import FormTextField from "./fields/TextField";
+import { all, required } from "./validation";
 
 /** @typedef {import("./form").Form} Form */
 /**
@@ -36,16 +36,16 @@ export default function textField({
   label,
   description,
   width = "size-5000",
-  validationSchemaBase = string(),
+  validationSchemaBase,
   ariaLabel = label,
   isDisabled = false,
 }) {
-  let validationSchema = validationSchemaBase;
-  if (isRequired) {
-    validationSchema = validationSchema.required(
-      `Please provide a ${label.toLowerCase()}.`,
-    );
-  }
+  const validationSchema = all(
+    ...[
+      isRequired && required(`Please provide a ${label.toLowerCase()}.`),
+      validationSchemaBase,
+    ].filter(Boolean),
+  );
 
   let Component;
   if (dataElementSupported) {

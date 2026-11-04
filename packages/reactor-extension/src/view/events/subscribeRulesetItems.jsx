@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "yup";
 import renderForm from "../forms/renderForm";
 import instancePicker from "../forms/instancePicker";
 import fieldArray from "../forms/fieldArray";
 import { validateSurface } from "../utils/surfaceUtils";
 import notice from "../forms/notice";
 import requiredComponent from "../forms/requiredComponent";
+import { rule } from "../forms/validation";
 
 const subscribeRulesetItemsForm = requiredComponent(
   {
@@ -88,16 +88,9 @@ const subscribeRulesetItemsForm = requiredComponent(
       description: "Create an array of surfaces to filter the ruleset items.",
       dataElementDescription:
         "This data element should resolve to an array of surfaces.",
-      validationSchema: string().test(
-        "is-surface",
-        () => "Please provide a valid surface",
-        (value, testContext) => {
-          const message = validateSurface(value);
-          if (message) {
-            return testContext.createError({ message });
-          }
-          return true;
-        },
+      validationSchema: rule(
+        (value) => !validateSurface(value),
+        (value) => validateSurface(value),
       ),
     }),
   ],

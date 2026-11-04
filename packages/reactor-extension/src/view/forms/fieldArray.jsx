@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import Delete from "@react-spectrum/s2/icons/Delete";
-import { array, string } from "yup";
 import { useFieldBlurred, useFieldError, useFormField } from "./formContext";
 import { useFieldValue } from "../utils/useFieldValue";
 import { Radio, ActionButton, Button, ComboBoxItem } from "@react-spectrum/s2";
@@ -20,9 +19,15 @@ import PropTypes from "prop-types";
 import FormTextField from "./fields/TextField";
 import FormRadioGroup from "./fields/RadioGroup";
 import DataElementSelector from "../components/dataElementSelector";
-import singleDataElementRegex from "../constants/singleDataElementRegex";
-import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
 import FormKeyedComboBox from "./fields/KeyedComboBox";
+import {
+  all,
+  dataElementRequired,
+  isEmpty,
+  parentOf,
+  rule,
+  when,
+} from "./validation";
 
 const FORM = "form";
 const DATA_ELEMENT = "dataElement";
@@ -144,34 +149,31 @@ export default function fieldArray({
   validationSchema,
   fieldItems,
 }) {
+  const inputMethodIs = (inputMethod) => (value, ctx) =>
+    parentOf(ctx)[`${name}InputMethod`] === inputMethod;
   const validationShape = {
-    [name]: array(),
+    [name]: when(
+      inputMethodIs(FORM),
+      all(
+        ...[
+          isRequired &&
+            rule(
+              (items) => items.some(Boolean),
+              `Please provide at least one ${singularLabel.toLowerCase()}.`,
+            ),
+          validationSchema &&
+            when(
+              (items) => Array.isArray(items),
+              when((item) => !isEmpty(item), validationSchema).array(),
+            ),
+        ].filter(Boolean),
+      ),
+    ),
+    [`${name}DataElement`]: when(
+      inputMethodIs(DATA_ELEMENT),
+      dataElementRequired,
+    ),
   };
-  if (isRequired) {
-    validationShape[name] = validationShape[name]
-      .compact()
-      .when(`${name}InputMethod`, {
-        is: FORM,
-        then: (schema) =>
-          schema.min(
-            1,
-            `Please provide at least one ${singularLabel.toLowerCase()}.`,
-          ),
-      });
-  }
-  if (validationSchema) {
-    validationShape[name] = validationShape[name].when(`${name}InputMethod`, {
-      is: FORM,
-      then: (schema) => schema.of(validationSchema),
-    });
-  }
-  validationShape[`${name}DataElement`] = string().when(`${name}InputMethod`, {
-    is: DATA_ELEMENT,
-    then: (schema) =>
-      schema
-        .matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED)
-        .required(DATA_ELEMENT_REQUIRED),
-  });
 
   const FieldItem = fieldItems ? ComboboxItem : StringItem;
 

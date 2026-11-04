@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { useStore } from "@tanstack/react-form";
-import { object, string, array, mixed } from "yup";
 import { PickerItem, Radio, Button, Text } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
@@ -21,7 +20,7 @@ import { useFormContext } from "../forms/formContext";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
 import FormRadioGroupWithDataElement, {
-  createRadioGroupWithDataElementValidationSchema,
+  radioGroupWithDataElementSchema,
 } from "../forms/fields/RadioGroupWithDataElement";
 import FormPicker from "../forms/fields/Picker";
 import FormTextField from "../forms/fields/TextField";
@@ -34,6 +33,14 @@ import getEdgeConfigIds from "../utils/getEdgeConfigIds";
 import RequiredComponent from "../components/requiredComponent";
 import getRequiredComponentSchema from "../configuration/utils/getRequiredComponentSchema";
 import FormEditGroup from "../components/formEditGroup";
+import {
+  dataElementRequired,
+  matches,
+  parentOf,
+  required,
+  shape,
+  when,
+} from "../forms/validation";
 
 const FORM = { value: "form", label: "Fill out a form" };
 const DATA_ELEMENT = { value: "dataElement", label: "Provide a data element" };
@@ -173,69 +180,57 @@ const getSettings = ({ values }) => {
   return settings;
 };
 
-const getValidationSchema = getRequiredComponentSchema("consent", () => {
-  return object()
-    .shape({
-      instanceName: string().required(),
-      identityMap: string().matches(
-        singleDataElementRegex,
-        DATA_ELEMENT_REQUIRED,
-      ),
-      dataElement: mixed().when("inputMethod", {
-        is: DATA_ELEMENT.value,
-        then: () =>
-          string()
-            .matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED)
-            .required(DATA_ELEMENT_REQUIRED),
-      }),
-      consent: array().when("inputMethod", {
-        is: FORM.value,
-        then: (schema) =>
-          schema.of(
-            object().shape({
-              standard: string().required("Please specify a standard."),
-              general: mixed().when(["standard", "adobeVersion"], {
-                is: (standard, adobeVersion) =>
-                  standard === ADOBE.value && adobeVersion === "1.0",
-                then: () =>
-                  createRadioGroupWithDataElementValidationSchema("general"),
-              }),
-              value: mixed().when(["standard", "adobeVersion"], {
-                is: (standard, adobeVersion) =>
-                  standard === ADOBE.value && adobeVersion !== "1.0",
-                then: () =>
-                  string()
-                    .required(DATA_ELEMENT_REQUIRED)
-                    .matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
-              }),
-              iabVersion: mixed().when("standard", {
-                is: IAB_TCF.value,
-                then: () => string().required("Please specify a version."),
-              }),
-              iabValue: mixed().when("standard", {
-                is: IAB_TCF.value,
-                then: () => string().required("Please specify a value."),
-              }),
-              gdprApplies: mixed().when("standard", {
-                is: IAB_TCF.value,
-                then: () =>
-                  createRadioGroupWithDataElementValidationSchema(
-                    "gdprApplies",
-                  ),
-              }),
-              gdprContainsPersonalData: mixed().when("standard", {
-                is: IAB_TCF.value,
-                then: () =>
-                  createRadioGroupWithDataElementValidationSchema(
-                    "gdprContainsPersonalData",
-                  ),
-              }),
-            }),
-          ),
-      }),
-    })
-    .concat(overridesBridge.validationSchema);
-});
+const consentStandardIs =
+  (standard, adobeVersionMatches = () => true) =>
+  (value, ctx) => {
+    const consentObject = parentOf(ctx);
+    return (
+      consentObject.standard === standard &&
+      adobeVersionMatches(consentObject.adobeVersion)
+    );
+  };
+
+const getValidationSchema = getRequiredComponentSchema("consent", () =>
+  shape({
+    instanceName: required("instanceName is a required field"),
+    identityMap: matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
+    dataElement: when(
+      (value, ctx) => parentOf(ctx).inputMethod === DATA_ELEMENT.value,
+      dataElementRequired,
+    ),
+    consent: when(
+      (value, ctx) =>
+        parentOf(ctx).inputMethod === FORM.value && Array.isArray(value),
+      shape({
+        standard: required("Please specify a standard."),
+        general: when(
+          consentStandardIs(ADOBE.value, (version) => version === "1.0"),
+          radioGroupWithDataElementSchema("general"),
+        ),
+        value: when(
+          consentStandardIs(ADOBE.value, (version) => version !== "1.0"),
+          dataElementRequired,
+        ),
+        iabVersion: when(
+          consentStandardIs(IAB_TCF.value),
+          required("Please specify a version."),
+        ),
+        iabValue: when(
+          consentStandardIs(IAB_TCF.value),
+          required("Please specify a value."),
+        ),
+        gdprApplies: when(
+          consentStandardIs(IAB_TCF.value),
+          radioGroupWithDataElementSchema("gdprApplies"),
+        ),
+        gdprContainsPersonalData: when(
+          consentStandardIs(IAB_TCF.value),
+          radioGroupWithDataElementSchema("gdprContainsPersonalData"),
+        ),
+      }).array(),
+    ),
+  }).and(overridesBridge.validationSchema),
+);
 
 const ConsentObject = ({ value, index }) => {
   return (

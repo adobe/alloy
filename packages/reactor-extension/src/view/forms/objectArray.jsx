@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { array, string, object } from "yup";
 import { useFormField } from "./formContext";
 import { useFieldValue } from "../utils/useFieldValue";
 import { Radio, Button, ActionButton } from "@react-spectrum/s2";
@@ -20,12 +19,20 @@ import Delete from "@react-spectrum/s2/icons/Delete";
 import FormRadioGroup from "./fields/RadioGroup";
 import FormTextField from "./fields/TextField";
 import DataElementSelector from "../components/dataElementSelector";
-import singleDataElementRegex from "../constants/singleDataElementRegex";
-import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
 import form from "./form";
 import numberAwareCompareFunction from "../utils/numberAwareCompareFunction";
 import FormElementContainer from "../components/formElementContainer";
 import FormEditGroup from "../components/formEditGroup";
+import {
+  all,
+  dataElementRequired,
+  parentOf,
+  previousItems,
+  required,
+  rule,
+  shape,
+  when,
+} from "./validation";
 
 const FORM = "form";
 const DATA_ELEMENT = "dataElement";
@@ -185,79 +192,45 @@ export default function objectArray(
       return settings;
     },
     getValidationShape({ initInfo, existingValidationShape }) {
-      let itemSchema = object().shape(
-        getItemValidationShape({ initInfo, existingValidationShape: {} }),
-      );
+      const itemShape = getItemValidationShape({
+        initInfo,
+        existingValidationShape: {},
+      });
 
       if (objectKey) {
-        itemSchema = itemSchema
-          .test(
-            "unique",
-            `Duplicate ${lowerInitialLetters(objectLabelPlural)} are not allowed`,
-            (value, context) => {
-              if (!value || !value[objectKey]) {
-                return true;
-              }
-
-              const { path, parent } = context;
-              const items = [...parent];
-              const currentIndex = items.indexOf(value);
-              const previousItems = items.slice(0, currentIndex);
-
-              if (
-                previousItems.some(
-                  (item) => item[objectKey] === value[objectKey],
-                )
-              ) {
-                throw context.createError({
-                  path: `${path}.${objectKey}`,
-                  message: `Duplicate ${lowerInitialLetters(
-                    objectLabelPlural,
-                  )} are not allowed`,
-                });
-              }
-
-              return true;
-            },
-          )
-          .test(
-            "key-required-when-values-present",
-            `Please provide a ${lowerInitialLetters(singularLabel)}.`,
-            (value, context) => {
-              if (
-                value[objectKey] === undefined &&
-                Object.keys(value).length !== 0
-              ) {
-                throw context.createError({
-                  path: `${context.path}.${objectKey}`,
-                  message: `Please provide a ${lowerInitialLetters(singularLabel)}.`,
-                });
-              }
-              return true;
-            },
-          );
+        itemShape[objectKey] = all(
+          ...[
+            itemShape[objectKey],
+            required(`Please provide a ${lowerInitialLetters(singularLabel)}.`),
+            rule(
+              (key, ctx) =>
+                !previousItems(ctx).some((item) => item[objectKey] === key),
+              `Duplicate ${lowerInitialLetters(objectLabelPlural)} are not allowed`,
+            ),
+          ].filter(Boolean),
+        );
       }
 
-      const validationShape = {};
-      validationShape[name] = array()
-        .compact(
-          (item) => Object.keys(getItemSettings({ values: item })).length === 0,
-        )
-        .when(`${name}InputMethod`, {
-          is: FORM,
-          then: (schema) => schema.of(itemSchema),
-        });
-
-      validationShape[`${name}DataElement`] = string().when(
-        `${name}InputMethod`,
-        {
-          is: DATA_ELEMENT,
-          then: (schema) =>
-            schema
-              .matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED)
-              .required(DATA_ELEMENT_REQUIRED),
-        },
+      // Rows without any settings are left out when saving, so they are not
+      // validated either.
+      const itemSchema = when(
+        (item) => Object.keys(getItemSettings({ values: item })).length > 0,
+        shape(itemShape),
       );
+
+      const inputMethodIs = (inputMethod) => (value, ctx) =>
+        parentOf(ctx)[`${name}InputMethod`] === inputMethod;
+      const validationShape = {
+        [name]: when(
+          (items, ctx) =>
+            inputMethodIs(FORM)(items, ctx) && Array.isArray(items),
+          itemSchema.array(),
+        ),
+        [`${name}DataElement`]: when(
+          inputMethodIs(DATA_ELEMENT),
+          dataElementRequired,
+        ),
+      };
       return {
         ...existingValidationShape,
         ...validationShape,

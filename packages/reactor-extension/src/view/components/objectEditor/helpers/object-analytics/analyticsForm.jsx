@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "yup";
 import form from "../../../../forms/form";
 import textField from "../../../../forms/textField";
 import objectArray from "../../../../forms/objectArray";
@@ -20,6 +19,7 @@ import numberAwareCompareFunction from "../../../../utils/numberAwareCompareFunc
 import eventCompareFunction from "../../../../utils/eventCompareFunction";
 import conditional from "../../../../forms/conditional";
 import FormPicker from "../../../../forms/fields/Picker";
+import { all, required, rule } from "../../../../forms/validation";
 
 const DYNAMIC_VARIABLE_REGEX = /^D=[cv]\d+$/;
 
@@ -235,7 +235,7 @@ const setOrCopyRow = (name, label, items, requiredMessage) => {
       items,
       width: "size-3000",
       label,
-      validationSchemaBase: string().required(requiredMessage),
+      validationSchemaBase: required(requiredMessage),
     }),
     comboBox({
       name: "action",
@@ -333,7 +333,7 @@ const analyticsForm = form(
           items: eventItems,
           width: "size-3000",
           label: "Event",
-          validationSchemaBase: string().required("Please choose an event."),
+          validationSchemaBase: required("Please choose an event."),
         }),
         textField({
           name: "id",
@@ -363,9 +363,7 @@ const analyticsForm = form(
           dataElementSupported: false,
           width: "size-3000",
           label: "Context data key",
-          validationSchemaBase: string().required(
-            "Please provide a context data key.",
-          ),
+          validationSchemaBase: required("Please provide a context data key."),
         }),
         textField({
           name: "value",
@@ -393,13 +391,13 @@ const analyticsForm = form(
           width: "size-3000",
           label: "Additional property",
           allowsCustomValue: true,
-          validationSchemaBase: string()
-            .test(
-              "is-valid-additional-property",
-              "Please use the fields provided above for this property.",
+          validationSchemaBase: all(
+            required("Please choose an additional property."),
+            rule(
               (value) => !INVALID_ADDITIONAL_FIELDS_REGEX.test(value),
-            )
-            .required("Please choose an additional property."),
+              "Please use the fields provided above for this property.",
+            ),
+          ),
         }),
         textField({
           name: "value",

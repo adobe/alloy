@@ -13,12 +13,12 @@ governing permissions and limitations under the License.
 import { useFieldValue } from "../utils/useFieldValue";
 import { Radio } from "@react-spectrum/s2";
 import PropTypes from "prop-types";
-import { object } from "yup";
 import FormRadioGroup from "./fields/RadioGroup";
 import FormTextField from "./fields/TextField";
 import DataElementSelector from "../components/dataElementSelector";
 import form from "./form";
 import SectionHeader from "../components/sectionHeader";
+import { shape } from "./validation";
 
 const FORM = "form";
 const DATA_ELEMENT = "dataElement";
@@ -93,12 +93,12 @@ export default function dataElementSection(
     getValidationShape({ initInfo, existingValidationShape }) {
       return {
         ...existingValidationShape,
-        [name]: object().shape({
-          ...getChildrenValidationShape({
+        [name]: shape(
+          getChildrenValidationShape({
             initInfo,
             existingValidationShape: {},
           }),
-        }),
+        ),
       };
     },
     Component: ({ namePrefix = "", ...props }) => {

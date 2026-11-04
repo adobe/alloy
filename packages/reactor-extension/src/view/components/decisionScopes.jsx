@@ -16,13 +16,13 @@ import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
 import { useFormField } from "../forms/formContext";
 import { useFieldValue } from "../utils/useFieldValue";
-import { object, string } from "yup";
 import FormRadioGroup from "../forms/fields/RadioGroup";
 import FormTextField from "../forms/fields/TextField";
 import DataElementSelector from "./dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
 import FieldSubset from "./fieldSubset";
+import { matches, parentOf, shape, when } from "../forms/validation";
 
 const CONSTANT = "constant";
 const DATA_ELEMENT = "dataElement";
@@ -76,12 +76,11 @@ export const bridge = {
     }
     return undefined;
   },
-  validationSchema: object().shape({
-    decisionScopesDataElement: string().when("decisionsInputMethod", {
-      is: DATA_ELEMENT,
-      then: (schema) =>
-        schema.matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
-    }),
+  validationSchema: shape({
+    decisionScopesDataElement: when(
+      (value, ctx) => parentOf(ctx).decisionsInputMethod === DATA_ELEMENT,
+      matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
+    ),
   }),
 };
 

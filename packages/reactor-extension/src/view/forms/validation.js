@@ -12,11 +12,17 @@ governing permissions and limitations under the License.
 
 import { type } from "arktype";
 import { getBy } from "@tanstack/react-form";
+import singleDataElementRegex from "../constants/singleDataElementRegex";
+import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
 
 export const isEmpty = (value) =>
   value === undefined || value === null || value === "";
 
 export const parentOf = (ctx) => getBy(ctx.root, ctx.path.slice(0, -1));
+
+// For a field of an array item, the items before the one being validated.
+export const previousItems = (ctx) =>
+  getBy(ctx.root, ctx.path.slice(0, -2)).slice(0, ctx.path.at(-2));
 
 // ArkType skips an object's own predicates when one of its properties fails,
 // so rules that depend on other fields are attached to the field they report
@@ -103,3 +109,8 @@ export const flattenErrors = (errors, path = "", flat = {}) => {
   }
   return flat;
 };
+
+export const dataElementRequired = all(
+  required(DATA_ELEMENT_REQUIRED),
+  matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
+);

@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { array, object, string } from "yup";
 import { useFormField } from "./formContext";
 import { useFieldValue } from "../utils/useFieldValue";
 import { Radio, Button } from "@react-spectrum/s2";
@@ -19,11 +18,18 @@ import PropTypes from "prop-types";
 import FormTextField from "./fields/TextField";
 import FormRadioGroup from "./fields/RadioGroup";
 import DataElementSelector from "../components/dataElementSelector";
-import singleDataElementRegex from "../constants/singleDataElementRegex";
-import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
 import FormElementContainer from "../components/formElementContainer";
 import BetaBadge from "../components/betaBadge";
 import FormEditGroup from "../components/formEditGroup";
+import {
+  all,
+  dataElementRequired,
+  parentOf,
+  previousItems,
+  rule,
+  shape,
+  when,
+} from "./validation";
 
 const FORM = "form";
 const DATA_ELEMENT = "dataElement";
@@ -77,56 +83,33 @@ export default function simpleMap({
   valueDescription,
   beta,
 }) {
-  const itemSchema = object()
-    .shape({
-      key: string(),
-      value: string(),
-    })
-    .test(
-      "Map key unique and present",
-      `Duplicate ${keyLabelPlural.toLowerCase()} are not allowed`,
-      (item, context) => {
-        const { key, value } = item || {};
-        if (!key && !value) {
-          return true;
-        }
-
-        if (!key && value) {
-          throw context.createError({
-            path: `${context.path}.key`,
-            message: `Please provide a ${keyLabel.toLowerCase()}.`,
-          });
-        }
-
-        const { path, parent } = context;
-        const items = [...parent];
-        const currentIndex = items.indexOf(item);
-        const previousItems = items.slice(0, currentIndex);
-        if (previousItems.some(({ key: previousKey }) => key === previousKey)) {
-          throw context.createError({
-            path: `${path}.key`,
-            message: `Duplicate ${keyLabelPlural.toLowerCase()} are not allowed`,
-          });
-        }
-
-        return true;
-      },
-    );
-
-  const validationShape = {
-    [name]: array().when(`${name}InputMethod`, {
-      is: FORM,
-      then: (schema) => schema.of(itemSchema),
-    }),
-  };
-
-  validationShape[`${name}DataElement`] = string().when(`${name}InputMethod`, {
-    is: DATA_ELEMENT,
-    then: (schema) =>
-      schema
-        .matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED)
-        .required(DATA_ELEMENT_REQUIRED),
+  // Rows with neither a key nor a value are ignored.
+  const itemSchema = shape({
+    key: all(
+      rule(
+        (key, ctx) => Boolean(key) || !parentOf(ctx).value,
+        `Please provide a ${keyLabel.toLowerCase()}.`,
+      ),
+      rule(
+        (key, ctx) =>
+          !key || !previousItems(ctx).some((item) => item.key === key),
+        `Duplicate ${keyLabelPlural.toLowerCase()} are not allowed`,
+      ),
+    ),
   });
+
+  const inputMethodIs = (inputMethod) => (value, ctx) =>
+    parentOf(ctx)[`${name}InputMethod`] === inputMethod;
+  const validationShape = {
+    [name]: when(
+      (items, ctx) => inputMethodIs(FORM)(items, ctx) && Array.isArray(items),
+      itemSchema.array(),
+    ),
+    [`${name}DataElement`]: when(
+      inputMethodIs(DATA_ELEMENT),
+      dataElementRequired,
+    ),
+  };
 
   const part = {
     getInitialValues({ initInfo }) {

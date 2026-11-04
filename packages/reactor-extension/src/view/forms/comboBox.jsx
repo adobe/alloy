@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "yup";
 import { ComboBoxItem } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useFieldValue } from "../utils/useFieldValue";
@@ -19,6 +18,7 @@ import Data from "@react-spectrum/s2/icons/Data";
 import DataElementSelector from "../components/dataElementSelector";
 import FormKeyedComboBox from "./fields/KeyedComboBox";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
+import { all, isEmpty, required, rule } from "./validation";
 
 // Reserves the width of the DataElementSelector's icon button next to a combo
 // box that has no data element button of its own, so sibling fields with and
@@ -66,26 +66,25 @@ export default function comboBox({
   width = "size-5000",
   defaultValue = "",
   Component = FormKeyedComboBox,
-  validationSchemaBase = string(),
+  validationSchemaBase,
 }) {
-  let fieldSchema = validationSchemaBase;
-  if (!allowsCustomValue) {
-    fieldSchema = fieldSchema.test(
-      name,
-      `Please choose a ${
-        label ? label.toLowerCase() : "value"
-      } from the list or specify a single data element.`,
-      (value) =>
-        !value ||
-        items.find((item) => item.value === value) ||
-        value.match(singleDataElementRegex),
-    );
-  }
-  if (isRequired) {
-    fieldSchema = fieldSchema.required(
-      `Please choose a ${label ? label.toLowerCase() : "value"}.`,
-    );
-  }
+  const fieldSchema = all(
+    ...[
+      isRequired &&
+        required(`Please choose a ${label ? label.toLowerCase() : "value"}.`),
+      validationSchemaBase,
+      !allowsCustomValue &&
+        rule(
+          (value) =>
+            isEmpty(value) ||
+            items.some((item) => item.value === value) ||
+            singleDataElementRegex.test(value),
+          `Please choose a ${
+            label ? label.toLowerCase() : "value"
+          } from the list or specify a single data element.`,
+        ),
+    ].filter(Boolean),
+  );
 
   // DataElementSelector looks for name and label to do its calculations, so we have to have them here.
   const InnerComponent = ({

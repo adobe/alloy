@@ -10,10 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { mixed } from "yup";
+import { getBy } from "@tanstack/react-form";
 import { useFieldValue } from "../utils/useFieldValue";
 import PropTypes from "prop-types";
 import form from "./form";
+import { parentOf, when } from "./validation";
 
 /** @typedef {import("./form").Form} Form */
 /**
@@ -52,21 +53,11 @@ export default function conditional({ args, condition }, children) {
         initInfo,
         existingValidationShape: {},
       });
+      const conditionHolds = (value, ctx) =>
+        condition(...argsArray.map((arg) => getBy(parentOf(ctx), arg)));
       return Object.keys(validationShape).reduce(
         (memo, key) => {
-          const existingValidation = memo[key];
-          if (existingValidation) {
-            memo[key] = mixed().when(args, {
-              is: condition,
-              then: () => validationShape[key],
-              otherwise: () => existingValidation,
-            });
-          } else {
-            memo[key] = mixed().when(args, {
-              is: condition,
-              then: () => validationShape[key],
-            });
-          }
+          memo[key] = when(conditionHolds, validationShape[key], memo[key]);
           return memo;
         },
         { ...existingValidationShape },

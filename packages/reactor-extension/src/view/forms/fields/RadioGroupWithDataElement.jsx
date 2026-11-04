@@ -15,31 +15,15 @@ import PropTypes from "prop-types";
 import { RadioGroup, Radio, TextField } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useFieldError, useFormField } from "../formContext";
-import { string } from "yup";
-import { all, matches, parentOf, required, when } from "../validation";
 import RawDataElementSelector from "../../components/rawDataElementSelector";
-import singleDataElementRegex from "../../constants/singleDataElementRegex";
-import { DATA_ELEMENT_REQUIRED } from "../../constants/validationErrorMessages";
 import FieldSubset from "../../components/fieldSubset";
 import normalizeGroupChildren from "./normalizeGroupChildren";
-
-export const createRadioGroupWithDataElementValidationSchema = (name) => {
-  return string().when([`${name}DataElement`], {
-    is: ({ isDataElement } = {}) => isDataElement,
-    then: (schema) =>
-      schema
-        .required(DATA_ELEMENT_REQUIRED)
-        .matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
-  });
-};
+import { dataElementRequired, parentOf, when } from "../validation";
 
 export const radioGroupWithDataElementSchema = (name) =>
   when(
     (value, ctx) => parentOf(ctx)[`${name}DataElement`]?.isDataElement,
-    all(
-      required(DATA_ELEMENT_REQUIRED),
-      matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
-    ),
+    dataElementRequired,
   );
 
 const FormRadioGroupWithDataElement = ({

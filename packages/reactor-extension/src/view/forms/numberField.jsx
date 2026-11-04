@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { number, string } from "yup";
 import { useFieldValue } from "../utils/useFieldValue";
 import { Radio } from "@react-spectrum/s2";
 import PropTypes from "prop-types";
@@ -21,6 +20,15 @@ import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
 import FormNumberField from "./fields/NumberField";
 import isNonEmptyString from "../utils/isNonEmptyString";
+import {
+  all,
+  dataElementRequired,
+  isEmpty,
+  matches,
+  parentOf,
+  rule,
+  when,
+} from "./validation";
 
 const NUMBER = "number";
 const DATA_ELEMENT = "dataElement";
@@ -53,39 +61,34 @@ export default function numberField({
   description,
   dataElementDescription,
 }) {
+  const numberMessage = `Please provide the ${label.toLowerCase()} as a number.`;
+  const inputMethodIs = (inputMethod) => (value, ctx) =>
+    parentOf(ctx)[`${name}InputMethod`] === inputMethod;
+  const isNumber = rule(
+    (value) => isEmpty(value) || !Number.isNaN(Number(value)),
+    numberMessage,
+  );
   const validationShape = {
-    [name]: number().typeError(
-      `Please provide the ${label.toLowerCase()} as a number.`,
-    ),
-    [`${name}DataElement`]: string().when(`${name}InputMethod`, {
-      is: DATA_ELEMENT,
-      then: (schema) =>
-        schema.matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
-    }),
-  };
-
-  if (isRequired) {
-    validationShape[name] = number()
-      .min(0)
-      .typeError(`Please provide the ${label.toLowerCase()} as a number.`)
-      .when(`${name}InputMethod`, {
-        is: NUMBER,
-        then: (schema) =>
-          schema.required(
-            `Please provide the ${label.toLowerCase()} as a number.`,
+    [name]: isRequired
+      ? all(
+          when(
+            inputMethodIs(NUMBER),
+            rule((value) => !isEmpty(value), numberMessage),
           ),
-      });
-    validationShape[`${name}DataElement`] = string().when(
-      `${name}InputMethod`,
-      {
-        is: DATA_ELEMENT,
-        then: (schema) =>
-          schema
-            .matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED)
-            .required(DATA_ELEMENT_REQUIRED),
-      },
-    );
-  }
+          isNumber,
+          rule(
+            (value) => isEmpty(value) || Number(value) >= 0,
+            `${label} must be greater than or equal to 0`,
+          ),
+        )
+      : isNumber,
+    [`${name}DataElement`]: when(
+      inputMethodIs(DATA_ELEMENT),
+      isRequired
+        ? dataElementRequired
+        : matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
+    ),
+  };
   const part = {
     getInitialValues({ initInfo }) {
       const { [name]: value } = initInfo.settings || {};
