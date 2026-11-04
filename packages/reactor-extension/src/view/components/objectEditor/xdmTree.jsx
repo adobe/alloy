@@ -12,7 +12,12 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { Tree } from "antd";
-import { useFormikContext } from "../../forms/formikCompat";
+import { useStore } from "@tanstack/react-form";
+import {
+  selectBlurredTree,
+  selectErrorTree,
+  useFormContext,
+} from "../../forms/formContext";
 import { color } from "@react-spectrum/s2/style" with { type: "macro" };
 import generateTreeStructure from "./helpers/generateTreeStructure";
 import getNodeIdsToExpandForValidation from "./helpers/getNodeIdsToExpandForValidation";
@@ -65,7 +70,10 @@ const XdmTree = ({
   onSelect = () => {},
   showDisplayNames = false,
 }) => {
-  const { values: formState, errors, touched } = useFormikContext();
+  const form = useFormContext();
+  const formState = useStore(form.store, (state) => state.values);
+  const errors = useStore(form.store, selectErrorTree);
+  const touched = useStore(form.store, selectBlurredTree);
 
   const treeStructure = generateTreeStructure({
     treeNodeComponent: XdmTreeNodeTitle,

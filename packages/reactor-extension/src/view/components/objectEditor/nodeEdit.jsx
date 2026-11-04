@@ -11,7 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { useFormikContext } from "../../forms/formikCompat";
+import { useStore } from "@tanstack/react-form";
+import { useFormContext } from "../../forms/formContext";
 import { Breadcrumb, Breadcrumbs, Checkbox } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import getNodeEditData from "./helpers/getNodeEditData";
@@ -27,7 +28,8 @@ import NodeDescription from "./nodeDescriptionPopover";
  * that are shown depend on the node's type.
  */
 const NodeEdit = (props) => {
-  const { values: formState } = useFormikContext();
+  const form = useFormContext();
+  const formState = useStore(form.store, (state) => state.values);
   const { onNodeSelect, selectedNodeId, verticalLayout = false } = props;
 
   const {

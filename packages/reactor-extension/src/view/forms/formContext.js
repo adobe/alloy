@@ -137,3 +137,47 @@ export const useFieldBlurred = (name) => {
     ),
   );
 };
+
+const setIn = (target, path, value) => {
+  const keys = path.split(".");
+  const last = keys.pop();
+  const parent = keys.reduce((node, key, index) => {
+    if (node[key] === null || typeof node[key] !== "object") {
+      node[key] = /^\d+$/.test(keys[index + 1] ?? last) ? [] : {};
+    }
+    return node[key];
+  }, target);
+  parent[last] = value;
+};
+
+const nest = (entries) =>
+  entries.reduce((nested, [path, value]) => {
+    if (getBy(nested, path) === undefined) {
+      setIn(nested, path, value);
+    }
+    return nested;
+  }, {});
+
+const cachedByState = (compute) => {
+  const cache = new WeakMap();
+  return (state) => {
+    if (!cache.has(state)) {
+      cache.set(state, compute(state));
+    }
+    return cache.get(state);
+  };
+};
+
+// Errors and blurred flags shaped like the form values, for components that
+// walk a whole subtree (e.g. the XDM tree) rather than read single fields.
+export const selectErrorTree = cachedByState((state) =>
+  nest(Object.entries(state.errorMap.onDynamic ?? {})),
+);
+
+export const selectBlurredTree = cachedByState((state) =>
+  nest(
+    Object.entries(state.fieldMeta)
+      .filter(([, meta]) => meta?.isBlurred)
+      .map(([path]) => [path, true]),
+  ),
+);

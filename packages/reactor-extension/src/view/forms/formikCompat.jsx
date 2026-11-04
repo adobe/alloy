@@ -16,54 +16,13 @@ import {
   useField as useTanStackField,
   useStore,
 } from "@tanstack/react-form";
-import { submitForm, useFieldValidator, useFormContext } from "./formContext";
-
-const setIn = (target, path, value) => {
-  const keys = path.split(".");
-  const last = keys.pop();
-  const parent = keys.reduce((node, key, index) => {
-    if (node[key] === null || typeof node[key] !== "object") {
-      node[key] = /^\d+$/.test(keys[index + 1] ?? last) ? [] : {};
-    }
-    return node[key];
-  }, target);
-  parent[last] = value;
-};
-
-const nest = (entries) =>
-  entries.reduce((nested, [path, value]) => {
-    if (getBy(nested, path) === undefined) {
-      setIn(nested, path, value);
-    }
-    return nested;
-  }, {});
-
-const cachedByState = (compute) => {
-  const cache = new WeakMap();
-  return (state) => {
-    if (!cache.has(state)) {
-      cache.set(state, compute(state));
-    }
-    return cache.get(state);
-  };
-};
-
-const nestedErrors = cachedByState((state) =>
-  nest([
-    ...Object.entries(state.fieldMeta)
-      .filter(([, meta]) => meta?.errors?.length)
-      .map(([path, meta]) => [path, meta.errors[0]]),
-    ...Object.entries(state.errorMap.onDynamic ?? {}),
-  ]),
-);
-
-const nestedTouched = cachedByState((state) =>
-  nest(
-    Object.entries(state.fieldMeta)
-      .filter(([, meta]) => meta?.isBlurred)
-      .map(([path]) => [path, true]),
-  ),
-);
+import {
+  selectBlurredTree as nestedTouched,
+  selectErrorTree as nestedErrors,
+  submitForm,
+  useFieldValidator,
+  useFormContext,
+} from "./formContext";
 
 const setFieldValue = async (form, name, value) => {
   form.setFieldValue(name, value, { dontUpdateMeta: true, dontValidate: true });

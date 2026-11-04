@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { useFormikContext } from "../../forms/formikCompat";
+import { useStore } from "@tanstack/react-form";
+import { useFormContext } from "../../forms/formContext";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import XdmTree, { scrollNodeIntoView } from "./xdmTree";
 import NodeEdit from "./nodeEdit";
@@ -99,7 +100,8 @@ const Editor = ({
   verticalLayout = false,
   showDisplayNames = false,
 }) => {
-  const { values: formState } = useFormikContext();
+  const form = useFormContext();
+  const formState = useStore(form.store, (state) => state.values);
   const [expandedNodeIdsInTree, setExpandedNodeIdsInTree] = useState(() => {
     // There is a root node with the id node-1. We don't want that.
     return fetchNodeIdsForDepth(formState, initialExpandedDepth + 1).slice(1);
