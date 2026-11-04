@@ -33,7 +33,20 @@ export const rule = (check, message) =>
 export const required = (message) => rule((value) => !isEmpty(value), message);
 
 export const matches = (regex, message) =>
-  rule((value) => isEmpty(value) || regex.test(value), message);
+  rule(
+    (value) => isEmpty(value) || String(value).search(regex) !== -1,
+    message,
+  );
+
+const alwaysChecked = new WeakSet();
+
+// Fails even when the field has no value, e.g. to block saving a view whose
+// required component is disabled.
+export const invalid = (message) => {
+  const schema = rule(() => false, message);
+  alwaysChecked.add(schema);
+  return schema;
+};
 
 // Validating with `schema(value)` would start a new traversal rooted at the
 // value, hiding the rest of the form from rules that read `ctx.root` or
@@ -60,7 +73,10 @@ export const when = (predicate, then, otherwise) =>
 export const shape = (fields) =>
   type(
     Object.fromEntries(
-      Object.entries(fields).map(([key, schema]) => [`${key}?`, schema]),
+      Object.entries(fields).map(([key, schema]) => [
+        alwaysChecked.has(schema) ? key : `${key}?`,
+        schema,
+      ]),
     ),
   );
 

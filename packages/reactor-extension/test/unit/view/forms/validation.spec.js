@@ -15,6 +15,7 @@ import { type } from "arktype";
 import {
   all,
   getErrors,
+  invalid,
   matches,
   parentOf,
   required,
@@ -114,6 +115,14 @@ describe("validation", () => {
     });
     expect(getErrors(schema, { interval: 0 })).toEqual({
       interval: "At least 1.",
+    });
+  });
+
+  it("fails an invalid field even when it has no value", () => {
+    const schema = shape({ requiredComponent: invalid("Disabled.") });
+    expect(Object.keys(getErrors(schema, {}))).toEqual(["requiredComponent"]);
+    expect(getErrors(schema, { requiredComponent: true })).toEqual({
+      requiredComponent: "Disabled.",
     });
   });
 });

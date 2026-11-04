@@ -58,6 +58,7 @@ const ExtensionView = ({
       try {
         const newSchema = getSchema({ initInfo });
         viewRegistrationRef.current.validationSchema = newSchema;
+        return newSchema;
       } catch (e) {
         reportAsyncError(e);
       }
