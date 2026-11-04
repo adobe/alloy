@@ -43,9 +43,11 @@ const optionalContexts = {
   ...defaultEnabledContexts,
   ...defaultDisabledContexts,
 };
-const requiredContexts = [timestamp, implementationDetails];
-
-const createContext = ({ config, logger }) => {
+const createContext = ({ config, logger, platformServices }) => {
+  const requiredContexts = [
+    timestamp,
+    (event) => implementationDetails(event, platformServices?.libraryVersion),
+  ];
   return createComponent(config, logger, optionalContexts, requiredContexts);
 };
 createContext.namespace = "Context";

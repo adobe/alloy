@@ -56,6 +56,24 @@ describe("MediaAnalyticsBridge::createMediaAnalyticsBridgeComponent", () => {
       mediaAnalyticsBridgeComponent.commands.getMediaAnalyticsTracker;
     return expect(getMediaAnalyticsTracker.run()).rejects.toThrowError();
   });
+  it("passes the library version to the media helper", async () => {
+    const component = createMediaAnalyticsBridgeComponent({
+      config,
+      logger,
+      trackMediaEvent,
+      mediaResponseHandler,
+      trackMediaSession,
+      createMediaHelper,
+      createGetInstance,
+      libraryVersion: "9.8.7",
+    });
+    await component.commands.getMediaAnalyticsTracker.run();
+    expect(createMediaHelper).toHaveBeenCalledWith({
+      logger,
+      libraryVersion: "9.8.7",
+    });
+  });
+
   it("should call createGetInstance when getInstance Media API is called", async () => {
     build(config);
     const { getMediaAnalyticsTracker } = mediaAnalyticsBridgeComponent.commands;

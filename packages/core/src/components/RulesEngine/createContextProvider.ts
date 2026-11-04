@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import parseUrl from "../../utils/parseUrl.js";
 import flattenObject from "../../utils/flattenObject.js";
-import libraryVersion from "../../constants/libraryVersion.js";
+import defaultLibraryVersion from "../../constants/libraryVersion.js";
 
 import type { WindowContext } from "../../services/types.js";
 import type { EventRegistryApi } from "./createEventRegistry.js";
@@ -21,6 +21,7 @@ export interface CreateContextProviderOptions {
   eventRegistry: Pick<EventRegistryApi, "toJSON">;
   getWindowContext: () => WindowContext;
   getBrowser: () => string;
+  libraryVersion?: string;
 }
 
 export interface ContextProvider {
@@ -33,6 +34,7 @@ export default ({
   eventRegistry,
   getWindowContext,
   getBrowser,
+  libraryVersion = defaultLibraryVersion,
 }: CreateContextProviderOptions): ContextProvider => {
   const pageLoadTimestamp = new Date().getTime();
   const getBrowserContext = () => {

@@ -60,7 +60,10 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
     window.referrer = originalReferrer;
   });
 
-  const setUpDecisionEngine = ({ personalizationStorageEnabled }) => {
+  const setUpDecisionEngine = ({
+    personalizationStorageEnabled,
+    libraryVersion,
+  }) => {
     const config = {
       orgId: "exampleOrgId",
       personalizationStorageEnabled,
@@ -72,6 +75,7 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
       getBrowser,
       logger: { info: vi.fn() },
       platformServices: {
+        libraryVersion,
         storage: {
           createNamespacedStorage: vi.fn().mockReturnValue({
             persistent: persistentStorage,
@@ -94,6 +98,32 @@ describe("createRulesEngine:commands:evaluateRulesets", () => {
     rulesEngine.lifecycle.onComponentsRegistered(() => {});
     return rulesEngine;
   };
+
+  it("evaluates SDK version rules using the platform library version", () => {
+    const rulesEngine = setUpDecisionEngine({
+      personalizationStorageEnabled: false,
+      libraryVersion: "9.8.7",
+    });
+    rulesEngine.lifecycle.onBeforeEvent({
+      event: mockEvent,
+      renderDecisions: true,
+      onResponse: (handler) => {
+        handler({
+          response: mockRulesetResponseWithCondition({
+            definition: {
+              key: "~sdkver",
+              matcher: "eq",
+              values: ["9.8.7"],
+            },
+            type: "matcher",
+          }),
+        });
+      },
+    });
+    expect(rulesEngine.commands.evaluateRulesets.run({})).toEqual({
+      propositions: [proposition],
+    });
+  });
 
   it("should run the evaluateRulesets command and satisfy the rule based on global context", async () => {
     const rulesEngine = setUpDecisionEngine({

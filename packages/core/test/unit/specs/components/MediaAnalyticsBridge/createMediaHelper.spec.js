@@ -212,6 +212,11 @@ describe("createMediaHelper", () => {
     });
   });
   describe("version", () => {
+    it("uses the supplied library version", () => {
+      const helper = createMediaHelper({ logger, libraryVersion: "9.8.7" });
+      expect(helper.version).toBe("WEBSDK 9.8.7");
+    });
+
     it("should return the version", () => {
       const expectedResult = `WEBSDK __VERSION__`;
       const result = mediaHelper.version;

@@ -30,11 +30,11 @@ describe("createNodePlatformServices", () => {
 
   // Regression test: getLibraryInfo() used to return the literal,
   // unreplaced "__VERSION__" placeholder in Node.
-  it("exposes @adobe/alloy-node's own real version as libraryVersionOverride", () => {
+  it("exposes @adobe/alloy-node's own real version as libraryVersion", () => {
     const platformServices = createNodePlatformServices();
 
-    expect(platformServices.libraryVersionOverride).toBe(packageJson.version);
-    expect(platformServices.libraryVersionOverride).not.toBe("__VERSION__");
+    expect(platformServices.libraryVersion).toBe(packageJson.version);
+    expect(platformServices.libraryVersion).not.toBe("__VERSION__");
   });
 
   it("uses a given cookie/storage/runtime/legacy/globals override wholesale instead of the default", () => {

@@ -50,7 +50,7 @@ import pickForwardableHeaders from "./pickForwardableHeaders.js";
  * Node is proxying an event for, if any — forwarded to Edge Network via
  * `pickForwardableHeaders` (unless `network` is overridden), and exposed
  * as-is on the returned object for the Context component to read.
- * @returns {PlatformServices & { request?: NodeRequestLike, libraryVersionOverride: string }}
+ * @returns {PlatformServices & { request?: NodeRequestLike, libraryVersion: string }}
  */
 const createNodePlatformServices = ({
   network,
@@ -75,7 +75,7 @@ const createNodePlatformServices = ({
   request,
   // Node ships unbundled source, so the build-time __VERSION__ placeholder
   // never gets replaced — report the real package.json version instead.
-  libraryVersionOverride: packageJson.version,
+  libraryVersion: packageJson.version,
 });
 
 export default createNodePlatformServices;

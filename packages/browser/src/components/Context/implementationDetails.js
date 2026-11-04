@@ -11,13 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import libraryName from "@adobe/alloy-core/constants/libraryName.js";
-import libraryVersion from "@adobe/alloy-core/constants/libraryVersion.js";
+import defaultLibraryVersion from "@adobe/alloy-core/constants/libraryVersion.js";
 
-export default (event) => {
+export default (event, libraryVersion) => {
   event.mergeXdm({
     implementationDetails: {
       name: libraryName,
-      version: libraryVersion,
+      version: libraryVersion ?? defaultLibraryVersion,
       environment: "browser",
     },
   });
