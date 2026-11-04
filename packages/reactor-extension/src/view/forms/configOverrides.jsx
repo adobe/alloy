@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import { reach } from "yup";
 import PropTypes from "prop-types";
+import { useFieldValue } from "../utils/useFieldValue";
 import Overrides, { bridge as overridesBridge } from "../components/overrides";
 import getEdgeConfigIds from "../utils/getEdgeConfigIds";
 
@@ -36,8 +37,8 @@ export default function configOverrides(hideFields) {
         "edgeConfigOverrides",
       ),
     },
-    Component({ initInfo, formikProps: { values } }) {
-      const { instanceName } = values;
+    Component({ initInfo }) {
+      const instanceName = useFieldValue("instanceName");
       const instanceSettings = initInfo.extensionSettings.instances.find(
         (instance) => instance.name === instanceName,
       );
@@ -56,9 +57,6 @@ export default function configOverrides(hideFields) {
 
   part.Component.propTypes = {
     initInfo: PropTypes.object.isRequired,
-    formikProps: PropTypes.shape({
-      values: PropTypes.object.isRequired,
-    }).isRequired,
   };
 
   return part;

@@ -855,7 +855,7 @@ const FormComponent = (props) => {
 
 FormComponent.propTypes = {
   initInfo: PropTypes.object,
-  formikProps: PropTypes.object,
+  form: PropTypes.object,
   namePrefix: PropTypes.string,
   horizontal: PropTypes.bool,
 };

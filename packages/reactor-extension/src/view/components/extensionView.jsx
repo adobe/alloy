@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { useForm, useStore } from "@tanstack/react-form";
+import { useForm } from "@tanstack/react-form";
 import { object } from "yup";
 import { ProgressCircle } from "@react-spectrum/s2";
 import useExtensionBridge from "../utils/useExtensionBridge";
@@ -92,7 +92,6 @@ const ExtensionView = ({
       },
     },
   });
-  const values = useStore(form.store, (state) => state.values);
 
   const myValidateFormikState = async () => {
     // The view hasn't yet initialized the form with initial values.
@@ -221,10 +220,7 @@ const ExtensionView = ({
       <formContext.Provider value={form}>
         {render({
           initInfo,
-          formikProps: {
-            values,
-            resetForm: ({ values: newValues }) => form.reset(newValues),
-          },
+          form,
           registerImperativeFormApi,
         })}
       </formContext.Provider>

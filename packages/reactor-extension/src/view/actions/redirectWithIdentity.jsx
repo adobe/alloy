@@ -10,11 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import PropTypes from "prop-types";
+import { useStore } from "@tanstack/react-form";
+
 import { Link } from "@react-spectrum/s2";
 
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import render from "../render";
 import ExtensionView from "../components/extensionView";
+import { useFormContext } from "../forms/formContext";
 import InfoMessage from "../components/infoMessage";
 import FormElementContainer from "../components/formElementContainer";
 import InstanceNamePicker from "../components/instanceNamePicker";
@@ -53,56 +57,67 @@ const getSettings = ({ values }) => {
 
 const validationSchema = overridesBridge.formikStateValidationSchema;
 
+const RedirectWithIdentityForm = ({ initInfo }) => {
+  const form = useFormContext();
+  const values = useStore(form.store, (state) => state.values);
+
+  const { instanceName } = values;
+  const instanceSettings = initInfo.extensionSettings.instances.find(
+    (instance) => instance.name === instanceName,
+  );
+  const edgeConfigIds = getEdgeConfigIds(instanceSettings);
+  const orgId = instanceSettings.orgId ?? initInfo.company.orgId;
+  return (
+    <>
+      <InfoMessage
+        title="Redirect with identity"
+        headingLevel={3}
+        styles={style({ marginBottom: 24 })}
+      >
+        Use this action to share identities from the current page to other
+        domains. This action is designed to be used with a click event type and
+        a value comparison condition. See{" "}
+        <Link
+          href="https://experienceleague.adobe.com/docs/experience-platform/edge/identity/id-sharing.html#tags-extension"
+          target="_blank"
+          rel="noopener noreferrer"
+          isStandalone={false}
+        >
+          cross-domain ID sharing
+        </Link>{" "}
+        for more information.
+      </InfoMessage>
+      <FormElementContainer>
+        <InstanceNamePicker
+          data-test-id="instanceNamePicker"
+          name="instanceName"
+          initInfo={initInfo}
+          description="Choose the instance with the identity you would like to use on the linked page."
+          disabledDescription="Only one instance was configured for this extension so no configuration is required for this action."
+        />
+      </FormElementContainer>
+      <Overrides
+        initInfo={initInfo}
+        edgeConfigIds={edgeConfigIds}
+        configOrgId={orgId}
+      />
+    </>
+  );
+};
+
+RedirectWithIdentityForm.propTypes = {
+  initInfo: PropTypes.object.isRequired,
+};
+
 const RedirectWithIdentity = () => {
   return (
     <ExtensionView
       getInitialValues={getInitialValues}
       getSettings={getSettings}
       formikStateValidationSchema={validationSchema}
-      render={({ initInfo, formikProps: { values } }) => {
-        const { instanceName } = values;
-        const instanceSettings = initInfo.extensionSettings.instances.find(
-          (instance) => instance.name === instanceName,
-        );
-        const edgeConfigIds = getEdgeConfigIds(instanceSettings);
-        const orgId = instanceSettings.orgId ?? initInfo.company.orgId;
-        return (
-          <>
-            <InfoMessage
-              title="Redirect with identity"
-              headingLevel={3}
-              styles={style({ marginBottom: 24 })}
-            >
-              Use this action to share identities from the current page to other
-              domains. This action is designed to be used with a click event
-              type and a value comparison condition. See{" "}
-              <Link
-                href="https://experienceleague.adobe.com/docs/experience-platform/edge/identity/id-sharing.html#tags-extension"
-                target="_blank"
-                rel="noopener noreferrer"
-                isStandalone={false}
-              >
-                cross-domain ID sharing
-              </Link>{" "}
-              for more information.
-            </InfoMessage>
-            <FormElementContainer>
-              <InstanceNamePicker
-                data-test-id="instanceNamePicker"
-                name="instanceName"
-                initInfo={initInfo}
-                description="Choose the instance with the identity you would like to use on the linked page."
-                disabledDescription="Only one instance was configured for this extension so no configuration is required for this action."
-              />
-            </FormElementContainer>
-            <Overrides
-              initInfo={initInfo}
-              edgeConfigIds={edgeConfigIds}
-              configOrgId={orgId}
-            />
-          </>
-        );
-      }}
+      render={({ initInfo }) => (
+        <RedirectWithIdentityForm initInfo={initInfo} />
+      )}
     />
   );
 };

@@ -16,8 +16,8 @@ import FormElementContainer from "../components/formElementContainer";
 /**
  * @typedef {object} Form
  * @property {Function} [getInitialValues] - A function that converts the Adobe
- * Tags settings to an object of initial values to include in the Formik state.
- * @property {Function} [getSettings] - A function that converts the Formik state
+ * Tags settings to an object of initial values to include in the form state.
+ * @property {Function} [getSettings] - A function that converts the form state
  * into an object of Adobe Tags settings.
  * @property {object} [validationShape] - An object containing Formik fields as
  * keys and Yup validation schemas as values.
@@ -28,7 +28,7 @@ import FormElementContainer from "../components/formElementContainer";
  * initInfo is passed to getValidationShape.
  * @property {Function} [Component] - The react component to render. This
  * component will be passes the props "namePrefix", "initInfo", and
- * "formikProps".
+ * "form".
  */
 
 const Identity = (x) => x;

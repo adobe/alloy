@@ -263,13 +263,12 @@ const validateNonFormikState = (context) => () => {
 const getSchemaKey = (item) => item && `${item.$id}_${item.version}`;
 const getSchemaLabel = (item) => item?.title;
 
-const XdmObject = ({ initInfo, context, formikProps }) => {
+const XdmObject = ({ initInfo, context, form }) => {
   const {
     company: { orgId },
     tokens: { imsAccess },
   } = initInfo;
   const settings = initInfo.settings || {};
-  const { resetForm, values } = formikProps;
 
   const { sandboxes, schema, schemasFirstPage, schemasFirstPageCursor } =
     context;
@@ -312,6 +311,7 @@ const XdmObject = ({ initInfo, context, formikProps }) => {
       });
       if (newSchema) {
         context.schema = newSchema;
+        const { values } = form.state;
         const initialFormState = getInitialFormState(
           values && values.schema
             ? {
@@ -323,12 +323,10 @@ const XdmObject = ({ initInfo, context, formikProps }) => {
                 value: settings?.data,
               },
         );
-        resetForm({
-          values: {
-            ...initialFormState,
-            selectedSchema,
-            sandboxName: selectedSandboxName,
-          },
+        form.reset({
+          ...initialFormState,
+          selectedSchema,
+          sandboxName: selectedSandboxName,
         });
         setHasSchema(true);
       }
@@ -460,7 +458,7 @@ const XdmObject = ({ initInfo, context, formikProps }) => {
 
 XdmObject.propTypes = {
   initInfo: PropTypes.object,
-  formikProps: PropTypes.object,
+  form: PropTypes.object,
   context: PropTypes.object,
 };
 
@@ -474,14 +472,8 @@ const XdmObjectView = () => {
       formikStateValidationSchema={formikStateValidationSchema}
       validateFormikState={validateFormikState(context)}
       validateNonFormikState={validateNonFormikState(context)}
-      render={({ initInfo, formikProps }) => {
-        return (
-          <XdmObject
-            initInfo={initInfo}
-            formikProps={formikProps}
-            context={context}
-          />
-        );
+      render={({ initInfo, form }) => {
+        return <XdmObject initInfo={initInfo} form={form} context={context} />;
       }}
     />
   );

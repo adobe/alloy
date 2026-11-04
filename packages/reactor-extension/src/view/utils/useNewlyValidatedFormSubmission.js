@@ -11,37 +11,33 @@ governing permissions and limitations under the License.
 */
 
 import { useEffect, useRef } from "react";
-import { useFormikContext } from "../forms/formikCompat";
+import { useStore } from "@tanstack/react-form";
+import { selectErrorTree, useFormContext } from "../forms/formContext";
 
 /**
  * A react hook which calls the callback after a user attempts to
- * submit a formik form (rather than just changes a field value)
+ * submit the form (rather than just changes a field value)
  * and validation completes.
  *
  * @param {Function} callback A function to call whenever the user
- * attempts to submit a formik form and validation completes.
+ * attempts to submit the form and validation completes.
  */
 export default (callback) => {
-  const { submitCount, isSubmitting, errors } = useFormikContext();
+  const form = useFormContext();
+  const submitCount = useStore(form.store, (state) => state.submissionAttempts);
+  const isSubmitting = useStore(form.store, (state) => state.isSubmitting);
   const previousProcessedSubmitCountRef = useRef(0);
   useEffect(() => {
-    // Let's consider our state before form submission:
-    // submitCount=0, isSubmitting=false, isValidating=false
-    // When form submission occurs, formik props change multiple
-    // times during the submission process as follows:
-    // 1. submitCount=1, isSubmitting=true, isValidating=false
-    // 2. submitCount=1, isSubmitting=true, isValidating=true
-    // 3. submitCount=1, isSubmitting=true, isValidating=false
-    // 4. submitCount=1, isSubmitting=false, isValidating=false
-    // We want to call the callback on every form submission soon
-    // after validation is finished, so the simplest way is to wait
-    // until step 4, which we can do without actually tracking isValidating.
+    // A submission increments submissionAttempts, then sets isSubmitting
+    // while validating. Waiting for isSubmitting to clear calls back once per
+    // submission, after its validation has finished. A submission that stops
+    // early because the form is already invalid never sets isSubmitting.
     if (
       submitCount !== previousProcessedSubmitCountRef.current &&
       !isSubmitting
     ) {
       previousProcessedSubmitCountRef.current = submitCount;
-      callback(errors);
+      callback(selectErrorTree(form.state));
     }
   }, [submitCount, isSubmitting]);
 };

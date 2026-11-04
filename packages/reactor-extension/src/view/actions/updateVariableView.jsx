@@ -377,11 +377,7 @@ const findFirstNodeIdForDepth = (formStateNode, depth) => {
   return id;
 };
 
-const UpdateVariable = ({
-  initInfo,
-  formikProps: { resetForm, values },
-  context,
-}) => {
+const UpdateVariable = ({ initInfo, form, context }) => {
   const {
     schema,
     dataElementsFirstPage,
@@ -394,7 +390,7 @@ const UpdateVariable = ({
   const [hasSchema, setHasSchema] = useState(schema != null);
   const [selectedNodeId, setSelectedNodeId] = useState(() => {
     if (dataElement?.settings?.solutions) {
-      return findFirstNodeIdForDepth(values, 3);
+      return findFirstNodeIdForDepth(form.state.values, 3);
     }
     return null;
   });
@@ -423,14 +419,12 @@ const UpdateVariable = ({
             orgId,
             imsAccess,
             transforms,
-            existingFormStateNode: values,
+            existingFormStateNode: form.state.values,
             signal,
           });
 
           if (!signal.aborted) {
-            resetForm({
-              values: { ...initialFormState, dataElement, customCode },
-            });
+            form.reset({ ...initialFormState, dataElement, customCode });
             if (context.schema) {
               setHasSchema(true);
             }
@@ -613,7 +607,7 @@ const UpdateVariable = ({
 UpdateVariable.propTypes = {
   context: PropTypes.object,
   initInfo: PropTypes.object,
-  formikProps: PropTypes.object,
+  form: PropTypes.object,
 };
 
 const UpdateVariableExtensionView = () => {
