@@ -127,6 +127,43 @@ describe("@adobe/alloy npm package", () => {
         if (name !== "createCustomInstance") {
           const tracker = await alloy("getMediaAnalyticsTracker");
           results[name].mediaVersion = tracker.version;
+          const rulesets = [
+            ["sdk-version-match", ${JSON.stringify(manifest.version)}],
+            ["sdk-version-placeholder", "__VERSION__"],
+          ].map(([id, version]) => ({
+            id,
+            scope: "web://example.com",
+            scopeDetails: { activity: { id } },
+            items: [{
+              id: id + "-ruleset",
+              schema: "https://ns.adobe.com/personalization/ruleset-item",
+              data: {
+                version: 1,
+                rules: [{
+                  condition: {
+                    type: "matcher",
+                    definition: { key: "~sdkver", matcher: "eq", values: [version] },
+                  },
+                  consequences: [{
+                    id: id + "-consequence",
+                    type: "schema",
+                    detail: {
+                      schema: "https://ns.adobe.com/personalization/json-content-item",
+                      data: { content: { id } },
+                    },
+                  }],
+                }],
+              },
+            }],
+          }));
+          await alloy("applyResponse", {
+            renderDecisions: false,
+            responseBody: {
+              handle: [{ type: "personalization:decisions", payload: rulesets }],
+            },
+          });
+          const { propositions } = await alloy("evaluateRulesets");
+          results[name].rulesetPropositionIds = propositions.map(({ id }) => id);
         }
       }
       console.log(JSON.stringify(results));
@@ -164,6 +201,12 @@ describe("@adobe/alloy npm package", () => {
       if (name !== "createCustomInstance") {
         test("uses the browser package version in the media tracker", () => {
           expect(result[name].mediaVersion).toBe(`WEBSDK ${manifest.version}`);
+        });
+
+        test("uses the browser package version for RulesEngine ~sdkver", () => {
+          expect(result[name].rulesetPropositionIds).toEqual([
+            "sdk-version-match",
+          ]);
         });
       }
     },
