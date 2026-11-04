@@ -26,18 +26,25 @@ export interface ClickedElementProps {
 }
 
 /**
+ * Fields the click collector doesn't read. `any` rather than `unknown` so
+ * named interfaces without an index signature are assignable.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- see above
+type PassThrough = Record<string, any>;
+
+/**
  * The parts of the XDM the click collector reads. Other fields pass through at
  * every level, such as `web.webPageDetails`.
  */
-export type ClickedElementXdm = Record<string, unknown> & {
+export type ClickedElementXdm = PassThrough & {
   eventType?: string;
-  web?: Record<string, unknown> & {
-    webInteraction?: Record<string, unknown> & {
+  web?: PassThrough & {
+    webInteraction?: PassThrough & {
       name?: string;
       region?: string;
       type?: string;
       URL?: string;
-      linkClicks?: Record<string, unknown> & { value: number };
+      linkClicks?: PassThrough & { value: number };
     };
   };
 };
@@ -46,12 +53,12 @@ export type ClickedElementXdm = Record<string, unknown> & {
  * The parts of the data object the click collector reads. Other fields pass
  * through at every level, such as `__adobe.analytics.eVar1`.
  */
-export type ClickedElementData = Record<string, unknown> & {
-  __adobe?: Record<string, unknown> & {
-    analytics?: Record<string, unknown> & {
-      contextData?: Record<string, unknown> & {
-        a?: Record<string, unknown> & {
-          activitymap?: Record<string, unknown> & {
+export type ClickedElementData = PassThrough & {
+  __adobe?: PassThrough & {
+    analytics?: PassThrough & {
+      contextData?: PassThrough & {
+        a?: PassThrough & {
+          activitymap?: PassThrough & {
             page?: string;
             link?: string;
             region?: string;

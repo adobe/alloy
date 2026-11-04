@@ -18,6 +18,7 @@ import { expectTypeOf } from "vitest";
 import type { CookieAttributes } from "@adobe/alloy-core/services";
 import type { CookieManager } from "../../src/components/Advertising/types.js";
 import type { ClickedElementOptions } from "../../src/components/ActivityCollector/types.js";
+import getAbsoluteUrlFromAnchorElement from "../../src/components/ActivityCollector/utils/dom/getAbsoluteUrlFromAnchorElement.js";
 import type { ClickableElement } from "../../src/components/ActivityCollector/utils/dom/findClickableElement.js";
 import { createAction } from "../../src/components/Personalization/dom-actions/action.js";
 import type { DomActionData } from "../../src/components/Personalization/types.js";
@@ -53,6 +54,34 @@ export const badNestedClickOptions: ClickedElementOptions = {
   // @ts-expect-error Known nested fields keep their types.
   xdm: { web: { webInteraction: { linkClicks: { value: "1" } } } },
 };
+
+// Named interfaces without index signatures pass through too.
+interface WebPayload {
+  webInteraction: { name: string };
+  webPageDetails: { name: string };
+}
+interface AnalyticsPayload {
+  eVar1: string;
+  contextData: { a: { activitymap: { page: string } } };
+}
+declare const web: WebPayload;
+declare const analytics: AnalyticsPayload;
+export const namedClickOptions: ClickedElementOptions = {
+  xdm: { web },
+  data: { __adobe: { analytics } },
+};
+declare const badWeb: { webInteraction: { name: number } };
+export const badNamedClickOptions: ClickedElementOptions = {
+  // @ts-expect-error Known fields of named interfaces keep their types.
+  xdm: { web: badWeb },
+};
+
+// The anchor URL helper accepts HTML and SVG anchors.
+getAbsoluteUrlFromAnchorElement(window, document.createElement("a"));
+getAbsoluteUrlFromAnchorElement(
+  window,
+  document.createElementNS("http://www.w3.org/2000/svg", "a"),
+);
 
 // Each clickable alternative is a ClickableElement on its own.
 expectTypeOf<HTMLAnchorElement>().toExtend<ClickableElement>();

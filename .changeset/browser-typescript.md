@@ -1,5 +1,6 @@
 ---
 "@adobe/alloy": minor
+"@adobe/alloy-core": patch
 ---
 
 `@adobe/alloy` is now written in TypeScript. Runtime behavior is unchanged. Packaging changes:

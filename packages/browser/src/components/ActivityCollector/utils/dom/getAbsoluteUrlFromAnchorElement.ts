@@ -10,15 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (window: Window, element: Partial<HTMLAnchorElement>) => {
+import type { ClickableElement } from "./findClickableElement.js";
+
+export default (window: Window, element: ClickableElement | SVGAElement) => {
   const base = window.location.href;
-  let href: string | object = element.href || "";
-  // Some objects (like SVG animations) can contain a href object instead of a string
-  if (typeof href !== "string") {
-    href = "";
-  }
+  const href = ("href" in element && element.href) || "";
   try {
-    return new URL(href, base).href;
+    // An SVG <a> exposes href as an SVGAnimatedString object, not a string.
+    return new URL(typeof href === "string" ? href : "", base).href;
   } catch {
     return base;
   }
