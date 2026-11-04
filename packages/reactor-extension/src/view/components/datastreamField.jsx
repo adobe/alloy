@@ -24,7 +24,7 @@ import {
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Copy from "@react-spectrum/s2/icons/Copy";
 import copyToClipboard from "clipboard-copy";
-import { useField } from "../forms/formikCompat";
+import { useFieldError, useFormField } from "../forms/formContext";
 import PropTypes from "prop-types";
 import { useEffect, useMemo, useRef, useState } from "react";
 import DataElementSelector from "./dataElementSelector";
@@ -63,10 +63,14 @@ const DatastreamField = ({
   isRequired,
   "data-test-id": dataTestId,
 }) => {
-  const [{ value = "" }, { touched, error }, { setValue, setTouched }] =
-    useField(name);
-  const [{ value: sandbox = "" }, , { setValue: setSandbox }] =
-    useField(sandboxName);
+  const field = useFormField(name);
+  const error = useFieldError(name);
+  const sandboxField = useFormField(sandboxName);
+  const value = field.state.value ?? "";
+  const touched = field.state.meta.isBlurred;
+  const sandbox = sandboxField.state.value ?? "";
+  const setValue = field.handleChange;
+  const setSandbox = sandboxField.handleChange;
   const { groups } = catalog;
 
   const match = findDatastream(groups, value);
@@ -189,7 +193,7 @@ const DatastreamField = ({
             onBlur={() => {
               commitInput();
               setIsFocused(false);
-              setTouched(true);
+              field.handleBlur();
             }}
             loadingState={catalog.isLoading ? "loading" : "idle"}
             isInvalid={Boolean(touched && error)}

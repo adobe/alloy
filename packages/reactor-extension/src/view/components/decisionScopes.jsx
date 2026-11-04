@@ -14,7 +14,8 @@ import { Radio, Button, ActionButton } from "@react-spectrum/s2";
 
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
-import { FieldArray, useField } from "../forms/formikCompat";
+import { useFormField } from "../forms/formContext";
+import { useFieldValue } from "../utils/useFieldValue";
 import { object, string } from "yup";
 import FormikRadioGroup from "../forms/fields/RadioGroup";
 import FormikTextField from "../forms/fields/TextField";
@@ -85,8 +86,11 @@ export const bridge = {
 };
 
 const DecisionScopes = () => {
-  const [{ value: decisionsInputMethod }] = useField("decisionsInputMethod");
-  const [{ value: decisionScopesArray }] = useField("decisionScopesArray");
+  const decisionsInputMethod = useFieldValue("decisionsInputMethod");
+  const decisionScopesArrayField = useFormField("decisionScopesArray", {
+    mode: "array",
+  });
+  const decisionScopesArray = decisionScopesArrayField.state.value;
 
   return (
     <div>
@@ -125,56 +129,49 @@ const DecisionScopes = () => {
               alignItems: "start",
             })}
           >
-            <FieldArray
-              name="decisionScopesArray"
-              render={(arrayHelpers) => {
+            <div>
+              {decisionScopesArray.map((scope, index) => {
                 return (
-                  <div>
-                    {decisionScopesArray.map((scope, index) => {
-                      return (
-                        <div
-                          key={index}
-                          className={style({
-                            display: "flex",
-                            alignItems: "end",
-                          })}
-                        >
-                          <FormikTextField
-                            data-test-id={`scope${index}Field`}
-                            label="Scope"
-                            name={`decisionScopesArray.${index}`}
-                            width="size-5000"
-                            aria-label="Decision scope"
-                            marginTop="size-0"
-                          />
-                          <ActionButton
-                            data-test-id={`deleteScope${index}Button`}
-                            isQuiet
-                            isDisabled={decisionScopesArray.length === 1}
-                            onPress={() => {
-                              arrayHelpers.remove(index);
-                            }}
-                            aria-label="Remove decision scope"
-                          >
-                            <Delete />
-                          </ActionButton>
-                        </div>
-                      );
+                  <div
+                    key={index}
+                    className={style({
+                      display: "flex",
+                      alignItems: "end",
                     })}
-                    <Button
-                      variant="secondary"
-                      fillStyle="outline"
-                      data-test-id="addDecisionScopeButton"
+                  >
+                    <FormikTextField
+                      data-test-id={`scope${index}Field`}
+                      label="Scope"
+                      name={`decisionScopesArray.${index}`}
+                      width="size-5000"
+                      aria-label="Decision scope"
+                      marginTop="size-0"
+                    />
+                    <ActionButton
+                      data-test-id={`deleteScope${index}Button`}
+                      isQuiet
+                      isDisabled={decisionScopesArray.length === 1}
                       onPress={() => {
-                        arrayHelpers.push("");
+                        decisionScopesArrayField.removeValue(index);
                       }}
+                      aria-label="Remove decision scope"
                     >
-                      Add scope
-                    </Button>
+                      <Delete />
+                    </ActionButton>
                   </div>
                 );
-              }}
-            />
+              })}
+              <Button
+                variant="secondary"
+                fillStyle="outline"
+                data-test-id="addDecisionScopeButton"
+                onPress={() => {
+                  decisionScopesArrayField.pushValue("");
+                }}
+              >
+                Add scope
+              </Button>
+            </div>
           </div>
         </FieldSubset>
       )}
