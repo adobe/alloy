@@ -11,10 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import { useRef } from "react";
-import { array, boolean, object, string } from "yup";
+import { all, required, rule, shape } from "../forms/validation";
 import ExtensionView from "../components/extensionView";
 import getDefaultIdentity from "./identityMap/utils/getDefaultIdentity";
-import * as AUTHENTICATED_STATE from "./identityMap/constants/authenticatedState";
 import Identity from "./identityMap/components/Identity";
 import { getNamespacesOptions } from "./identityMap/utils/namespacesUtils";
 
@@ -56,95 +55,51 @@ const getSettings = ({ values }) => {
   return identitiesArrayToMap(values.identities);
 };
 
-const validateDuplicateValue = (
-  createError,
-  identities,
-  key,
-  message,
-  validateBooleanTrue,
-) => {
-  const values = identities.map((identity) =>
-    // If the user didn't enter a value for the property
-    // we're checking duplicates for, then the property will have
-    // an undefined value (not an empty string).
-    identity[key] ? identity[key].toUpperCase() : identity[key],
+// Namespaces are compared case-insensitively; only the first repeat is flagged.
+const findDuplicateNamespaceIndex = (identities) => {
+  const codes = identities.map(({ namespaceCode }) =>
+    namespaceCode ? namespaceCode.toUpperCase() : namespaceCode,
   );
-  const duplicateIndex = values.findIndex(
-    (value, index) =>
-      values.indexOf(value) < index && (!validateBooleanTrue || value === true),
-  );
-
-  return (
-    duplicateIndex === -1 ||
-    createError({
-      path: `identities[${duplicateIndex}].${key}`,
-      message,
-    })
-  );
+  return codes.findIndex((code, index) => codes.indexOf(code) < index);
 };
 
-const hasPrimary = (identifier) => identifier.primary;
-
-const validateOnePrimary = (createError, identities, message) => {
-  let primaries = 0;
-
-  for (let i = 0; i < identities.length; i += 1) {
-    const { identifiers = [] } = identities[i];
-
-    for (let j = 0; j < identifiers.length; j += 1) {
-      if (hasPrimary(identifiers[j])) {
-        primaries += 1;
-      }
-
-      if (primaries > 1) {
-        return createError({
-          path: `identities[${i}].identifiers[${j}].primary`,
-          message,
-        });
-      }
-    }
-  }
-  return true;
+const findSecondPrimary = (identities) => {
+  const primaries = identities.flatMap(({ identifiers = [] }, identityIndex) =>
+    identifiers
+      .map((identifier, identifierIndex) => [identifier, identifierIndex])
+      .filter(([identifier]) => identifier.primary)
+      .map(([, identifierIndex]) => [identityIndex, identifierIndex]),
+  );
+  return primaries[1];
 };
 
-const validationSchema = object()
-  .shape({
-    identities: array().of(
-      object().shape({
-        namespaceCode: string()
-          .required("Please select a namespace.")
-          .test({
-            name: "notECID",
-            message: "ECID is not allowed",
-            test(value) {
-              return !value || value.toUpperCase() !== "ECID";
-            },
-          }),
-        identifiers: array().of(
-          object().shape({
-            id: string().required("Please specify an ID."),
-            authenticatedState: string().default(AUTHENTICATED_STATE.AMBIGUOUS),
-            primary: boolean().default(false),
-          }),
-        ),
-      }),
+const validationSchema = shape({
+  identities: shape({
+    namespaceCode: all(
+      required("Please select a namespace."),
+      rule(
+        (value) => !value || value.toUpperCase() !== "ECID",
+        "ECID is not allowed",
+      ),
+      rule(
+        (value, ctx) =>
+          findDuplicateNamespaceIndex(ctx.root.identities) !== ctx.path[1],
+        "Please provide a unique namespace.",
+      ),
     ),
-  })
-  .test("uniqueNamespace", function uniqueNamespace(settings) {
-    return validateDuplicateValue(
-      this.createError.bind(this),
-      settings.identities,
-      "namespaceCode",
-      "Please provide a unique namespace.",
-    );
-  })
-  .test("uniquePrimary", function uniquePrimary(settings) {
-    return validateOnePrimary(
-      this.createError.bind(this),
-      settings.identities,
-      "Only one identifier can be primary.",
-    );
-  });
+    identifiers: shape({
+      id: required("Please specify an ID."),
+      primary: rule((value, ctx) => {
+        const secondPrimary = findSecondPrimary(ctx.root.identities);
+        return (
+          !secondPrimary ||
+          secondPrimary[0] !== ctx.path[1] ||
+          secondPrimary[1] !== ctx.path[3]
+        );
+      }, "Only one identifier can be primary."),
+    }).array(),
+  }).array(),
+});
 
 const IdentityMapExtensionView = () => {
   const context = useRef();
