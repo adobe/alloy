@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { useRef } from "react";
 import PropTypes from "prop-types";
 import { ComboBox, ComboBoxItem } from "@react-spectrum/s2";
-import { useField } from "../formikCompat";
+import { useFieldError, useFormField } from "../formContext";
 import useForceRender from "../../utils/useForceRender";
 import widthStyle from "./widthStyle";
 import normalizeCollectionChildren from "./normalizeCollectionChildren";
@@ -28,8 +28,9 @@ const FormikKeyedComboBox = ({
   children,
   ...otherProps
 }) => {
-  const [{ value }, { touched, error }, { setValue, setTouched }] =
-    useField(name);
+  const field = useFormField(name);
+  const error = useFieldError(name);
+  const { value, meta: { isBlurred: touched } } = field.state;
   const forceRender = useForceRender();
   const isFilteringRef = useRef(false);
   const itemsRef = useRef(items);
@@ -63,13 +64,13 @@ const FormikKeyedComboBox = ({
           );
         }
         // This will cause a re-render.
-        setValue(newText);
+        field.handleChange(newText);
       }}
       onSelectionChange={(key) => {
         if (key) {
           isFilteringRef.current = false;
           itemsRef.current = items;
-          setValue(key);
+          field.handleChange(key);
         }
       }}
       onBlur={() => {
@@ -79,9 +80,9 @@ const FormikKeyedComboBox = ({
           (item) => getKey(item) === value || getLabel(item) === value,
         );
         if (selectedItem) {
-          setValue(getKey(selectedItem));
+          field.handleChange(getKey(selectedItem));
         }
-        setTouched(true);
+        field.handleBlur();
       }}
       isInvalid={Boolean(touched && error)}
       styles={widthStyle(width)}

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { CheckboxGroup, Checkbox } from "@react-spectrum/s2";
-import { useField } from "../formikCompat";
+import { useFieldError, useFormField } from "../formContext";
 import FieldDescriptionAndError from "../../components/fieldDescriptionAndError";
 import widthStyle from "./widthStyle";
 import normalizeGroupChildren from "./normalizeGroupChildren";
@@ -24,8 +24,9 @@ const FormikCheckboxGroup = ({
   width,
   ...otherProps
 }) => {
-  const [{ value }, { touched, error }, { setValue, setTouched }] =
-    useField(name);
+  const field = useFormField(name);
+  const error = useFieldError(name);
+  const { value, meta: { isBlurred: touched } } = field.state;
 
   return (
     <FieldDescriptionAndError
@@ -36,8 +37,8 @@ const FormikCheckboxGroup = ({
       <CheckboxGroup
         {...otherProps}
         value={value}
-        onChange={setValue}
-        onBlur={() => setTouched(true)}
+        onChange={field.handleChange}
+        onBlur={() => field.handleBlur()}
         isInvalid={Boolean(touched && error)}
         styles={widthStyle(width)}
       >

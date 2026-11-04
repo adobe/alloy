@@ -10,18 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { useField } from "../forms/formikCompat";
+import { getBy, useStore } from "@tanstack/react-form";
+import { useFormContext } from "../forms/formContext";
 
 /**
- * A wrapper around the formik hook useField that returns just the reactive
- * value of that field.
- *
- * See https://formik.org/docs/api/useField for more information.
+ * Returns the reactive value of a form field without registering the field.
  *
  * @param {string} fieldName
  * @returns {any} The value of the field.
  */
 export const useFieldValue = (fieldName) => {
-  const [, { value }] = useField(fieldName);
-  return value;
+  const form = useFormContext();
+  return useStore(form.store, (state) => getBy(state.values, fieldName));
 };

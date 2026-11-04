@@ -14,7 +14,7 @@ import { Children } from "react";
 import PropTypes from "prop-types";
 import { RadioGroup, Radio, TextField } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "../formikCompat";
+import { useFieldError, useFormField } from "../formContext";
 import { string } from "yup";
 import RawDataElementSelector from "../../components/rawDataElementSelector";
 import singleDataElementRegex from "../../constants/singleDataElementRegex";
@@ -43,12 +43,14 @@ const FormikRadioGroupWithDataElement = ({
     const { value } = child.props;
     return value;
   });
-  const [{ value }, { error }, { setValue, setTouched }] = useField(name);
-  const [
-    { value: dataElementValue },
-    { touched: dataElementTouched },
-    { setValue: dataElementSetValue, setTouched: dataElementSetTouched },
-  ] = useField(`${name}DataElement`);
+  const field = useFormField(name);
+  const error = useFieldError(name);
+  const dataElementField = useFormField(`${name}DataElement`);
+  const { value } = field.state;
+  const {
+    value: dataElementValue,
+    meta: { isBlurred: dataElementTouched },
+  } = dataElementField.state;
 
   let radioValue;
   let dataElementText;
@@ -73,14 +75,13 @@ const FormikRadioGroupWithDataElement = ({
 
   const setValues = (newRadioValue, newDataElement) => {
     // set the dataElement value first because the main field validation uses it
-    dataElementSetValue(
-      {
-        isDataElement: newRadioValue === "dataElement",
-        dataElement: newDataElement,
-      },
-      false,
+    dataElementField.handleChange({
+      isDataElement: newRadioValue === "dataElement",
+      dataElement: newDataElement,
+    });
+    field.handleChange(
+      newRadioValue === "dataElement" ? newDataElement : newRadioValue,
     );
-    setValue(newRadioValue === "dataElement" ? newDataElement : newRadioValue);
   };
 
   return (
@@ -91,7 +92,7 @@ const FormikRadioGroupWithDataElement = ({
         onChange={(newValue) => {
           setValues(newValue, dataElementText);
         }}
-        onBlur={() => setTouched(true)}
+        onBlur={field.handleBlur}
       >
         {normalizeGroupChildren(Radio, children)}
         <Radio
@@ -108,7 +109,7 @@ const FormikRadioGroupWithDataElement = ({
             adjustForLabel
             onChange={(newValue) => {
               setValues("dataElement", newValue);
-              dataElementSetTouched(true);
+              dataElementField.handleBlur();
             }}
           >
             <TextField
@@ -116,7 +117,7 @@ const FormikRadioGroupWithDataElement = ({
               value={dataElementText}
               data-test-id={`${dataTestIdPrefix}DataElementField`}
               onChange={(newValue) => setValues("dataElement", newValue)}
-              onBlur={() => dataElementSetTouched(true)}
+              onBlur={dataElementField.handleBlur}
               description={dataElementDescription}
               isInvalid={Boolean(dataElementTouched && error)}
               errorMessage={error}

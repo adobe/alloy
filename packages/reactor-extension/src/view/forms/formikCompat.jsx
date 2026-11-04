@@ -60,7 +60,7 @@ const nestedErrors = cachedByState((state) =>
 const nestedTouched = cachedByState((state) =>
   nest(
     Object.entries(state.fieldMeta)
-      .filter(([, meta]) => meta?.isTouched)
+      .filter(([, meta]) => meta?.isBlurred)
       .map(([path]) => [path, true]),
   ),
 );

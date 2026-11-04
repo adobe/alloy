@@ -11,7 +11,12 @@ governing permissions and limitations under the License.
 */
 
 import { useEffect } from "react";
-import { createFormHookContexts, getBy } from "@tanstack/react-form";
+import {
+  createFormHookContexts,
+  getBy,
+  useField,
+  useStore,
+} from "@tanstack/react-form";
 
 export const { formContext, useFormContext } = createFormHookContexts();
 
@@ -105,5 +110,13 @@ export const submitForm = async (form) => {
 // field meta, because TanStack clears a field's errors when it unmounts and
 // does not revalidate when it mounts again. Formik kept them, so a field in
 // another tab or a collapsed section still shows its error when it reappears.
-export const getFieldError = (formState, fieldMeta, name) =>
-  fieldMeta?.errors?.[0] ?? formState.errorMap.onDynamic?.[name];
+export const useFieldError = (name) => {
+  const form = useFormContext();
+  return useStore(form.store, (state) => state.errorMap.onDynamic?.[name]);
+};
+
+export const useFormField = (name, { validate, mode } = {}) => {
+  const form = useFormContext();
+  useFieldValidator(form, name, validate);
+  return useField({ form, name, mode });
+};

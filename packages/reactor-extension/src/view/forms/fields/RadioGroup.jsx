@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { RadioGroup, Radio } from "@react-spectrum/s2";
 import { css } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "../formikCompat";
+import { useFieldError, useFormField } from "../formContext";
 import FieldDescriptionAndError from "../../components/fieldDescriptionAndError";
 import widthStyle from "./widthStyle";
 import normalizeGroupChildren from "./normalizeGroupChildren";
@@ -40,8 +40,9 @@ const FormikRadioGroup = ({
   onChange,
   ...otherProps
 }) => {
-  const [{ value }, { touched, error }, { setValue, setTouched }] =
-    useField(name);
+  const field = useFormField(name);
+  const error = useFieldError(name);
+  const { value, meta: { isBlurred: touched } } = field.state;
 
   return (
     <div
@@ -61,12 +62,12 @@ const FormikRadioGroup = ({
           {...otherProps}
           value={value}
           onChange={(currentValue) => {
-            setValue(currentValue);
+            field.handleChange(currentValue);
             if (onChange) {
               onChange(currentValue);
             }
           }}
-          onBlur={() => setTouched(true)}
+          onBlur={() => field.handleBlur()}
           isInvalid={Boolean(touched && error)}
           styles={widthStyle(width)}
         >

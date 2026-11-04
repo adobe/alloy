@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { ComboBox, ComboBoxItem } from "@react-spectrum/s2";
-import { useField } from "../formikCompat";
+import { useFieldError, useFormField } from "../formContext";
 import widthStyle from "./widthStyle";
 import normalizeCollectionChildren from "./normalizeCollectionChildren";
 import closeDataElementSuggestions from "./closeDataElementSuggestions";
@@ -35,20 +35,19 @@ const FormikComboBox = ({
   children,
   ...otherProps
 }) => {
-  const [{ value }, { touched, error }, { setValue, setTouched }] = useField({
-    name,
-    validate,
-  });
+  const field = useFormField(name, { validate });
+  const error = useFieldError(name);
+  const { value, meta: { isBlurred: touched } } = field.state;
   return (
     <ComboBox
       {...otherProps}
       menuTrigger={value?.startsWith("%") ? "manual" : otherProps.menuTrigger}
       onInput={closeDataElementSuggestions}
       inputValue={value}
-      onInputChange={setValue}
+      onInputChange={field.handleChange}
       onBlur={(...args) => {
         onBlur(...args);
-        setTouched(true);
+        field.handleBlur();
       }}
       isInvalid={Boolean(touched && error)}
       name={name}

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { NumberField } from "@react-spectrum/s2";
-import { useField } from "../formikCompat";
+import { useFieldError, useFormField } from "../formContext";
 import widthStyle from "./widthStyle";
 
 /**
@@ -25,22 +25,20 @@ import widthStyle from "./widthStyle";
  * @returns {React.Element}
  */
 const FormikNumberField = ({ name, width, validate, ...otherProps }) => {
-  const [{ value }, { touched, error }, { setValue, setTouched }] = useField({
-    name,
-    validate,
-  });
+  const field = useFormField(name, { validate });
+  const error = useFieldError(name);
+  const { value, meta: { isBlurred: touched } } = field.state;
 
   return (
     <NumberField
       {...otherProps}
       value={value === "" ? null : value}
       onChange={(val) => {
-        setValue(val).then(() => {
-          setTouched(true);
-        });
+        field.handleChange(val);
+        field.handleBlur();
       }}
       onBlur={() => {
-        setTouched(true);
+        field.handleBlur();
       }}
       isInvalid={Boolean(touched && error)}
       errorMessage={error}

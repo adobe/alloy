@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { TextArea, mergeStyles } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "../formikCompat";
+import { useFieldError, useFormField } from "../formContext";
 import widthStyle from "./widthStyle";
 
 // Was `.formik-field textarea { min-height: size-4600 !important }` in
@@ -30,14 +30,12 @@ const MIN_HEIGHT_STYLE = style({ minHeight: 368 });
  * @returns {React.Element}
  */
 const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
-  const [
-    { value },
-    { touched: fieldTouched, error: fieldError },
-    { setValue, setTouched },
-  ] = useField({
-    name,
-    validate,
-  });
+  const field = useFormField(name, { validate });
+  const fieldError = useFieldError(name);
+  const {
+    value,
+    meta: { isBlurred: fieldTouched },
+  } = field.state;
 
   const touched = otherProps.touched || fieldTouched;
   const error = otherProps.error === "" ? "" : otherProps.error || fieldError;
@@ -48,10 +46,10 @@ const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
       {...otherProps}
       value={value}
       onChange={(newValue) => {
-        setValue(newValue);
+        field.handleChange(newValue);
       }}
       onBlur={() => {
-        setTouched(true);
+        field.handleBlur();
         if (onBlur) {
           onBlur();
         }

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { TextField } from "@react-spectrum/s2";
-import { useField } from "../formikCompat";
+import { useFieldError, useFormField } from "../formContext";
 import widthStyle from "./widthStyle";
 
 /**
@@ -25,14 +25,12 @@ import widthStyle from "./widthStyle";
  * @returns {React.Element}
  */
 const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
-  const [
-    { value },
-    { touched: fieldTouched, error: fieldError },
-    { setValue, setTouched },
-  ] = useField({
-    name,
-    validate,
-  });
+  const field = useFormField(name, { validate });
+  const fieldError = useFieldError(name);
+  const {
+    value,
+    meta: { isBlurred: fieldTouched },
+  } = field.state;
 
   const touched = otherProps.touched || fieldTouched;
   const error = otherProps.error === "" ? "" : otherProps.error || fieldError;
@@ -43,10 +41,10 @@ const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
       {...otherProps}
       value={value}
       onChange={(newValue) => {
-        setValue(newValue);
+        field.handleChange(newValue);
       }}
       onBlur={() => {
-        setTouched(true);
+        field.handleBlur();
         if (onBlur) {
           onBlur();
         }
