@@ -53,6 +53,22 @@ const findByLabel = (groups, label) => {
  * the datastream ID or the exact text entered; the sandbox of a chosen
  * datastream is saved alongside it so later API calls can use it.
  */
+// Stable render functions let React Aria reuse cached item elements instead
+// of rebuilding all 100+ suggestions on every keystroke.
+const renderDatastream = (datastream) => (
+  <ComboBoxItem id={datastream._system.id} textValue={getLabel(datastream)}>
+    <Text slot="label">{getLabel(datastream)}</Text>
+    <Text slot="description">{datastream._system.id}</Text>
+  </ComboBoxItem>
+);
+
+const renderSection = (section) => (
+  <ComboBoxSection id={section.sandbox.name}>
+    <Header>{section.sandbox.title}</Header>
+    <Collection items={section.datastreams}>{renderDatastream}</Collection>
+  </ComboBoxSection>
+);
+
 const DatastreamField = ({
   name,
   sandboxName,
@@ -105,7 +121,7 @@ const DatastreamField = ({
   // datastream list.
   const savedValue = useRef(value);
   useEffect(() => {
-    if (value !== savedValue.current && !match) {
+    if (value !== savedValue.current && !match && sandbox !== "") {
       setSandbox("");
     }
   }, [value]);
@@ -200,22 +216,7 @@ const DatastreamField = ({
             errorMessage={touched ? error : undefined}
             styles={style({ width: 400 })}
           >
-            {(section) => (
-              <ComboBoxSection id={section.sandbox.name}>
-                <Header>{section.sandbox.title}</Header>
-                <Collection items={section.datastreams}>
-                  {(datastream) => (
-                    <ComboBoxItem
-                      id={datastream._system.id}
-                      textValue={getLabel(datastream)}
-                    >
-                      <Text slot="label">{getLabel(datastream)}</Text>
-                      <Text slot="description">{datastream._system.id}</Text>
-                    </ComboBoxItem>
-                  )}
-                </Collection>
-              </ComboBoxSection>
-            )}
+            {renderSection}
           </ComboBox>
         ) : (
           <FormTextField
