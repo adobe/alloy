@@ -34,7 +34,7 @@ export default () => {
   const form = useFormContext();
   const submitCount = useStore(form.store, (state) => state.submissionAttempts);
   const isSubmitting = useStore(form.store, (state) => state.isSubmitting);
-  const errors = useStore(form.store, (state) => state.errorMap.onDynamic);
+
   const previousSubmitCountRef = useRef(0);
   const timeoutIdRef = useRef(null);
   const rafIdRef = useRef(null);
@@ -47,8 +47,7 @@ export default () => {
     if (
       submitCount !== previousSubmitCountRef.current &&
       !isSubmitting &&
-      errors &&
-      Object.keys(errors).length > 0
+      form.state.errorMap.onDynamic
     ) {
       previousSubmitCountRef.current = submitCount;
 
@@ -129,7 +128,7 @@ export default () => {
         }, 150); // Wait 150ms for state updates + remounting
       });
     }
-  }, [submitCount, isSubmitting, errors]);
+  }, [submitCount, isSubmitting]);
 
   // Cleanup on unmount
   useEffect(() => {

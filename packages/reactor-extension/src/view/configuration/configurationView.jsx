@@ -67,7 +67,6 @@ import OverridesSection, {
 import AdvancedSection, {
   bridge as advancedSectionBridge,
 } from "./advancedSection";
-import getEdgeConfigIds from "../utils/getEdgeConfigIds";
 import { FIELD_NAMES } from "../components/overrides/utils";
 import StreamingMediaSection, {
   bridge as mediaBridge,
@@ -214,6 +213,66 @@ const getSettings = async ({ values, initInfo }) => {
   };
 };
 
+// Each instance field subscribes to its own value, so these small components
+// keep a keystroke from re-rendering every section of every instance.
+const InstanceTabLabel = ({ index }) =>
+  useFieldValue(`instances.${index}.name`) || "Unnamed instance";
+
+InstanceTabLabel.propTypes = {
+  index: PropTypes.number.isRequired,
+};
+
+// Overrides only fetch a datastream's settings when its sandbox is known, and
+// only for the signed-in org, so a partly typed datastream ID or org ID is
+// passed as empty rather than re-rendering the overrides on every keystroke.
+const useFetchableDatastreamId = (instanceFieldName, idKey, sandboxKey) => {
+  const sandbox = useFieldValue(`${instanceFieldName}.${sandboxKey}`);
+  const datastreamId = useFieldValue(`${instanceFieldName}.${idKey}`, (id) =>
+    sandbox ? id : "",
+  );
+  return { datastreamId, sandbox };
+};
+
+const InstanceOverridesSection = ({ initInfo, instanceFieldName }) => {
+  const authOrgId = initInfo.company.orgId;
+  const configOrgId = useFieldValue(`${instanceFieldName}.orgId`, (orgId) =>
+    orgId === authOrgId ? orgId : "",
+  );
+  const production = useFetchableDatastreamId(
+    instanceFieldName,
+    "edgeConfigId",
+    "sandbox",
+  );
+  const staging = useFetchableDatastreamId(
+    instanceFieldName,
+    "stagingEdgeConfigId",
+    "stagingSandbox",
+  );
+  const development = useFetchableDatastreamId(
+    instanceFieldName,
+    "developmentEdgeConfigId",
+    "developmentSandbox",
+  );
+  return (
+    <OverridesSection
+      initInfo={initInfo}
+      instanceFieldName={instanceFieldName}
+      edgeConfigIds={{
+        productionEnvironment: production,
+        stagingEnvironment: staging,
+        developmentEnvironment: development,
+      }}
+      configOrgId={configOrgId}
+      hideFields={[FIELD_NAMES.datastreamId]}
+    />
+  );
+};
+
+InstanceOverridesSection.propTypes = {
+  initInfo: PropTypes.object.isRequired,
+  instanceFieldName: PropTypes.string.isRequired,
+};
+
 const InstancesSection = ({
   initInfo,
   isPreinstalled,
@@ -221,7 +280,8 @@ const InstancesSection = ({
   onAddInstance,
 }) => {
   const form = useFormContext();
-  const instances = useFieldValue("instances");
+  const instanceCount = useFieldValue("instances.length");
+  const instanceIndexes = Array.from({ length: instanceCount }, (_, i) => i);
   const [selectedTabKey, setSelectedTabKey] = useState("0");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [instanceToDelete, setInstanceToDelete] = useState(null);
@@ -272,10 +332,10 @@ const InstancesSection = ({
               const newInstance = await getInstanceDefaults({
                 initInfo,
                 isFirstInstance: false,
-                existingInstances: instances,
+                existingInstances: form.state.values.instances,
               });
               form.pushFieldValue("instances", newInstance);
-              setSelectedTabKey(String(instances.length));
+              setSelectedTabKey(String(instanceCount));
               onAddInstance();
             }}
           >
@@ -301,17 +361,16 @@ const InstancesSection = ({
                 marginBottom: 16,
               })}
             >
-              {instances.map((instance, index) => {
+              {instanceIndexes.map((index) => {
                 return (
                   <Tab key={index} id={String(index)}>
-                    {instance.name || "Unnamed instance"}
+                    <InstanceTabLabel index={index} />
                   </Tab>
                 );
               })}
             </TabList>
-            {instances.map((instance, index) => {
+            {instanceIndexes.map((index) => {
               const instanceFieldName = `instances.${index}`;
-              const edgeConfigIds = getEdgeConfigIds(instance);
               return (
                 <TabPanel key={index} id={String(index)}>
                   <BasicSection
@@ -348,17 +407,14 @@ const InstancesSection = ({
                         instanceFieldName={instanceFieldName}
                         initInfo={initInfo}
                       />
-                      <OverridesSection
+                      <InstanceOverridesSection
                         initInfo={initInfo}
                         instanceFieldName={instanceFieldName}
-                        edgeConfigIds={edgeConfigIds}
-                        configOrgId={instance.orgId}
-                        hideFields={[FIELD_NAMES.datastreamId]}
                       />
                       <AdvancedSection instanceFieldName={instanceFieldName} />
                     </>
                   )}
-                  {instances.length > 1 && (
+                  {instanceCount > 1 && (
                     <div
                       className={style({
                         marginTop: 24,
@@ -367,7 +423,7 @@ const InstancesSection = ({
                       <Button
                         data-test-id="deleteInstanceButton"
                         variant="secondary"
-                        isDisabled={instances.length === 1}
+                        isDisabled={instanceCount === 1}
                         onPress={() => {
                           setInstanceToDelete(index);
                           setDeleteDialogOpen(true);

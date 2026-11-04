@@ -265,7 +265,15 @@ export const bridge = {
 
 const DataCollectionSection = ({ instanceFieldName }) => {
   const form = useFormContext();
-  const instanceValues = useFieldValue(instanceFieldName);
+  const field = (name) => useFieldValue(`${instanceFieldName}.${name}`);
+  const instanceValues = {
+    clickCollection: field("clickCollection"),
+    onBeforeLinkClickSendInitiallySpecified: field(
+      "onBeforeLinkClickSendInitiallySpecified",
+    ),
+    linkCallbackType: field("linkCallbackType"),
+    contextGranularity: field("contextGranularity"),
+  };
   const instanceDefaults = bridge.getInstanceDefaults();
   const activityCollectorEnabled = useFieldValue(
     "components.activityCollector",
@@ -382,8 +390,9 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                   <ActionButton
                     data-test-id="downloadLinkQualifierTestButton"
                     onPress={async () => {
-                      const currentPattern =
-                        instanceValues.downloadLinkQualifier;
+                      const currentPattern = form.getFieldValue(
+                        `${instanceFieldName}.downloadLinkQualifier`,
+                      );
                       const newPattern =
                         await window.extensionBridge.openRegexTester({
                           pattern: currentPattern,

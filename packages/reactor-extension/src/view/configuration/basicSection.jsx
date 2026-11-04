@@ -23,7 +23,11 @@ import { bridge } from "./basicSectionBridge";
 export { bridge };
 
 const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
-  const instanceValues = useFieldValue(instanceFieldName);
+  const isRenamed = useFieldValue(
+    instanceFieldName,
+    ({ name, persistedName }) =>
+      Boolean(persistedName) && name !== persistedName,
+  );
   const instanceDefaults = bridge.getInstanceDefaults({ initInfo });
 
   return (
@@ -50,8 +54,7 @@ const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
           width="size-5000"
         />
       </DataElementSelector>
-      {instanceValues.persistedName &&
-      instanceValues.name !== instanceValues.persistedName ? (
+      {isRenamed ? (
         <InlineAlert
           data-test-id="nameChangeAlert"
           variant="notice"

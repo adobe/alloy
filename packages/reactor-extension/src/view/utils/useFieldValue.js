@@ -13,13 +13,19 @@ governing permissions and limitations under the License.
 import { getBy, useStore } from "@tanstack/react-form";
 import { useFormContext } from "../forms/formContext";
 
+const identity = (value) => value;
+
 /**
  * Returns the reactive value of a form field without registering the field.
+ * Pass `select` to re-render only when a value derived from the field changes.
  *
  * @param {string} fieldName
- * @returns {any} The value of the field.
+ * @param {Function} [select]
+ * @returns {any} The value of the field, or the selected value.
  */
-export const useFieldValue = (fieldName) => {
+export const useFieldValue = (fieldName, select = identity) => {
   const form = useFormContext();
-  return useStore(form.store, (state) => getBy(state.values, fieldName));
+  return useStore(form.store, (state) =>
+    select(getBy(state.values, fieldName)),
+  );
 };

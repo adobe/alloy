@@ -453,7 +453,7 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
   const advertiserSettings = useFieldValue(
     `${instanceFieldName}.advertising.advertiserSettings`,
   );
-  const instances = useFieldValue("instances");
+  const instanceCount = useFieldValue("instances.length");
 
   const [advertisers, setAdvertisers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -462,7 +462,7 @@ const AdvertisingSection = ({ instanceFieldName, initInfo }) => {
   // Extract instance index from instanceFieldName (e.g., "instances.0" -> 0)
   const instanceIndex = parseInt(instanceFieldName.split(".")[1], 10);
   const isFirstInstance = instanceIndex === 0;
-  const hasMultipleInstances = instances && instances.length > 1;
+  const hasMultipleInstances = instanceCount > 1;
 
   // Fetch advertisers from Adobe Advertising API when component is enabled
   useEffect(() => {

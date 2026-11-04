@@ -96,13 +96,15 @@ const EdgeConfigurationsSection = ({
   initInfo,
   datastreamCatalog,
 }) => {
-  const instanceOrgId = useFieldValue(`${instanceFieldName}.orgId`);
   // Datastreams can only be listed for the user's active org, so suggesting
   // them for an instance configured for another org would be misleading.
-  const catalog =
-    instanceIndex === 0 || instanceOrgId === initInfo.company.orgId
-      ? datastreamCatalog
-      : { ...datastreamCatalog, groups: [], isLoading: false, error: null };
+  const showSuggestions = useFieldValue(
+    `${instanceFieldName}.orgId`,
+    (orgId) => instanceIndex === 0 || orgId === initInfo.company.orgId,
+  );
+  const catalog = showSuggestions
+    ? datastreamCatalog
+    : { ...datastreamCatalog, groups: [], isLoading: false, error: null };
   const isCatalogUnavailable =
     !catalog.isLoading &&
     (Boolean(catalog.error) ||
