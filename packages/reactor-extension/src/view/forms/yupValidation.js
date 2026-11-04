@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { getBy, setBy } from "@tanstack/react-form";
+import { flattenErrors } from "./validation";
 
 const isPlainObject = (value) =>
   value !== null &&
@@ -33,17 +34,6 @@ const prepareDataForValidation = (values) => {
       );
 };
 
-const flatten = (errors, path = "", flat = {}) => {
-  if (typeof errors === "string") {
-    flat[path] = errors;
-  } else if (errors && typeof errors === "object") {
-    Object.entries(errors).forEach(([key, value]) =>
-      flatten(value, path ? `${path}.${key}` : key, flat),
-    );
-  }
-  return flat;
-};
-
 const yupErrors = (schema, values) => {
   const prepared = prepareDataForValidation(values);
   try {
@@ -62,13 +52,8 @@ const yupErrors = (schema, values) => {
   }
 };
 
-/**
- * Returns the errors Formik would have produced, keyed by field path.
- */
-export const getFormErrors = ({ schema, validate, values }) => ({
-  ...flatten(yupErrors(schema, values)),
-  ...flatten(validate?.({ values })),
-});
+export const getYupErrors = (schema, values) =>
+  flattenErrors(yupErrors(schema, values));
 
 export const isValidAgainstSchema = (schema, values) => {
   try {

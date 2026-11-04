@@ -94,5 +94,8 @@
     "url-exists-nodejs": "^0.2.4",
     "vitest": "^4.1.11",
     "vitest-browser-react": "^2.0.2"
+  },
+  "@parcel/resolver-default": {
+    "packageExports": true
   }
 }

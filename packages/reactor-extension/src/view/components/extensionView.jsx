@@ -25,7 +25,11 @@ import {
   submitForm,
   validateOnChangeBlurAndSubmit,
 } from "../forms/formContext";
-import { getFormErrors, isValidAgainstSchema } from "../forms/yupValidation";
+import { getYupErrors, isValidAgainstSchema } from "../forms/yupValidation";
+import {
+  flattenErrors,
+  getErrors as getSchemaErrors,
+} from "../forms/validation";
 
 const ExtensionView = ({
   render,
@@ -63,14 +67,19 @@ const ExtensionView = ({
 
   const getErrors = (values) => {
     try {
-      return {
-        ...getFieldValidatorErrors(form, values),
-        ...getFormErrors({
-          schema: resolveValidationSchema(),
-          validate: viewRegistrationRef.current?.validateFormState,
-          values,
-        }),
-      };
+      return Object.assign(
+        getFieldValidatorErrors(form, values),
+        ...[]
+          .concat(resolveValidationSchema())
+          .map((schema) =>
+            typeof schema === "function"
+              ? getSchemaErrors(schema, values)
+              : getYupErrors(schema, values),
+          ),
+        flattenErrors(
+          viewRegistrationRef.current?.validateFormState?.({ values }),
+        ),
+      );
     } catch {
       reportAsyncError(
         new Error("An error occurred while validating the view."),
@@ -101,8 +110,13 @@ const ExtensionView = ({
 
     // Setting context to the values so you can use "$..." in when conditions
     return (
-      isValidAgainstSchema(resolveValidationSchema(), form.state.values) &&
-      Object.keys(getErrors(form.state.values)).length === 0
+      []
+        .concat(resolveValidationSchema())
+        .every(
+          (schema) =>
+            typeof schema === "function" ||
+            isValidAgainstSchema(schema, form.state.values),
+        ) && Object.keys(getErrors(form.state.values)).length === 0
     );
   };
 

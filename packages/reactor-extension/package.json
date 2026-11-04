@@ -42,6 +42,7 @@
     "@spectrum-icons/workflow": "^4.2.25",
     "@tanstack/react-form": "^1.33.5",
     "antd": "^5.29.1",
+    "arktype": "^2.2.9",
     "classnames": "^2.5.1",
     "clipboard-copy": "^4.0.1",
     "commander": "^14.0.2",
