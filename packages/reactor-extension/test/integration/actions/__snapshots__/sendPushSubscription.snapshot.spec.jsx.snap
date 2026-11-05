@@ -1,0 +1,99 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Send push subscription settings snapshots > round trips empty settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Send push subscription settings snapshots > round trips minimal settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Send push subscription settings snapshots > round trips new settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Send push subscription settings snapshots > round trips populated settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Send push subscription settings snapshots > round trips with components disabled 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Send push subscription settings snapshots > round trips with self hosted 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Send push subscription settings snapshots > switches instances 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
