@@ -1,0 +1,1445 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Update variable settings snapshots > adds an array item 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "xdm",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "tags",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "Item 3",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > blurs a cleared data element input 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "xdm",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > clears a field through a transform 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "xdm",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+    "transforms": {
+      "count": {
+        "clear": true,
+      },
+    },
+  },
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+    "transforms": {
+      "count": {
+        "clear": true,
+      },
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > edits count to "" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "xdm",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > edits count to "%count%" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "xdm",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": "%count%",
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": "%count%",
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > edits count to "-1" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "xdm",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": -1,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": -1,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > edits count to "42" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "xdm",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 42,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 42,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > edits count to "abc" 1`] = `
+{
+  "errors": [
+    {
+      "field": "Count",
+      "messages": [
+        "Value must be a data element or integer.",
+      ],
+      "testId": "valueField",
+    },
+  ],
+  "schemaTreeErrors": [
+    {
+      "field": "xdm",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "count",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": NaN,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": NaN,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > edits custom code through the extension bridge 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "xdm",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "customCode": "content.xdm.count = 42;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 42;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > edits testField to "" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "xdm",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > edits testField to "%edited%" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "xdm",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%edited%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%edited%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > edits testField to "typed text" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "xdm",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "typed text",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "typed text",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > populates an entire array with a data element 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "xdm",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": "%tags%",
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": "%tags%",
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > populates an entire object with a data element 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "xdm",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": "%nested%",
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": "%nested%",
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > removes a saved clear transform 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {
+      "count": 42,
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "count": 42,
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Update variable settings snapshots > removes the first array item 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "xdm",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > round trips clear transform settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {
+      "testField": "new",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+    "transforms": {
+      "count": {
+        "clear": true,
+      },
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "testField": "new",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+    "transforms": {
+      "count": {
+        "clear": true,
+      },
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Update variable settings snapshots > round trips data variable settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {
+      "__adobe": {
+        "analytics": {
+          "pageName": "Home",
+        },
+        "target": {
+          "mbox": "home",
+        },
+      },
+    },
+    "dataElementId": "DE2",
+    "dataElementName": "Data variable",
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "__adobe": {
+        "analytics": {
+          "pageName": "Home",
+        },
+        "target": {
+          "mbox": "home",
+        },
+      },
+    },
+    "dataElementId": "DE2",
+    "dataElementName": "Data variable",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Update variable settings snapshots > round trips empty settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Data element",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "dataElementField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {},
+    "dataElementId": undefined,
+    "dataElementName": undefined,
+  },
+  "settingsBeforeValidate": {
+    "data": {},
+    "dataElementId": undefined,
+    "dataElementName": undefined,
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > round trips legacy data element ID settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {
+      "testField": "legacy",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "testField": "legacy",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Update variable settings snapshots > round trips lowercase audience manager settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {
+      "__adobe": {
+        "audiencemanager": {
+          "d_uuid": "123",
+        },
+      },
+    },
+    "dataElementId": "DE2",
+    "dataElementName": "Data variable",
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "__adobe": {
+        "audiencemanager": {
+          "d_uuid": "123",
+        },
+      },
+    },
+    "dataElementId": "DE2",
+    "dataElementName": "Data variable",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Update variable settings snapshots > round trips minimal settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {},
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {},
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Update variable settings snapshots > round trips minimal settings with components disabled 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {},
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {},
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Update variable settings snapshots > round trips minimal settings with self hosted 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {},
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {},
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Update variable settings snapshots > round trips missing name falls back to ID settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {},
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {},
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Update variable settings snapshots > round trips name preferred over ID settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {},
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {},
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Update variable settings snapshots > round trips new settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Data element",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "dataElementField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {},
+    "dataElementId": undefined,
+    "dataElementName": undefined,
+  },
+  "settingsBeforeValidate": {
+    "data": {},
+    "dataElementId": undefined,
+    "dataElementName": undefined,
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > round trips populated settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "xdm",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > round trips root clear transform settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {},
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+    "transforms": {
+      "": {
+        "clear": true,
+      },
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {},
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+    "transforms": {
+      "": {
+        "clear": true,
+      },
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Update variable settings snapshots > round trips stale legacy ID settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {
+      "testField": "legacy",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "testField": "legacy",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Update variable settings snapshots > round trips whole object data element settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": "%object%",
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": "%object%",
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Update variable settings snapshots > selects a data element for a new action 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {},
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {},
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Update variable settings snapshots > switches from an XDM variable to a Data variable 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {},
+    "dataElementId": "DE2",
+    "dataElementName": "Data variable",
+  },
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {},
+    "dataElementId": "DE2",
+    "dataElementName": "Data variable",
+  },
+  "valid": false,
+}
+`;
