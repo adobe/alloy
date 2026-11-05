@@ -14,6 +14,703 @@ exports[`Apply propositions settings snapshots > clears the view name 1`] = `
 }
 `;
 
+exports[`Apply propositions settings snapshots > clicks metadata0RemoveButton 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > clicks metadataAddButton 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates metadata.0.actionTypeField 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "%edited%",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "%edited%",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates metadata.0.actionTypeField 2`] = `
+{
+  "errors": [
+    {
+      "field": "Action Type",
+      "messages": [
+        "Please provide an action type.",
+      ],
+      "testId": "metadata.0.actionTypeField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates metadata.0.actionTypeField 3`] = `
+{
+  "errors": [
+    {
+      "field": "Action Type",
+      "messages": [
+        "Please choose a action type from the list or specify a single data element.",
+      ],
+      "testId": "metadata.0.actionTypeField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "not a data element",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "not a data element",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates metadata.0.scopeTextField 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "%edited%": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "%edited%": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates metadata.0.scopeTextField 2`] = `
+{
+  "errors": [
+    {
+      "field": "Scope",
+      "messages": [
+        "Please provide a scope.",
+      ],
+      "testId": "metadata.0.scopeTextField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates metadata.0.scopeTextField 3`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+      "not a data element": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+      "not a data element": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates metadata.0.selectorTextField 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": "%edited%",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": "%edited%",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates metadata.0.selectorTextField 2`] = `
+{
+  "errors": [
+    {
+      "field": "Selector",
+      "messages": [
+        "Please provide a selector.",
+      ],
+      "testId": "metadata.0.selectorTextField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates metadata.0.selectorTextField 3`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": "not a data element",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": "not a data element",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates propositionsTextField 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%edited%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%edited%",
+    "viewName": "checkout",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates propositionsTextField 2`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "viewName": "checkout",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates propositionsTextField 3`] = `
+{
+  "errors": [
+    {
+      "field": "Propositions",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "propositionsTextField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "not a data element",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "not a data element",
+    "viewName": "checkout",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates viewNameTextField 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "%edited%",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "%edited%",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates viewNameTextField 2`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates viewNameTextField 3`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "not a data element",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "not a data element",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > keeps a blank metadata row before an invalid row 1`] = `
+{
+  "errors": [
+    {
+      "field": "Selector",
+      "messages": [
+        "Please provide a selector.",
+      ],
+      "testId": "metadata.0.selectorTextField",
+    },
+    {
+      "field": "Action Type",
+      "messages": [
+        "Please provide an action type.",
+      ],
+      "testId": "metadata.0.actionTypeField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+    "metadata": {
+      "home": {},
+    },
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+    "metadata": {
+      "home": {},
+    },
+  },
+  "valid": false,
+}
+`;
+
 exports[`Apply propositions settings snapshots > rejects an invalid propositions data element 1`] = `
 {
   "errors": [
@@ -38,7 +735,117 @@ exports[`Apply propositions settings snapshots > rejects an invalid propositions
 }
 `;
 
+exports[`Apply propositions settings snapshots > rejects duplicate scopes 1`] = `
+{
+  "errors": [
+    {
+      "field": "Scope",
+      "messages": [
+        "Duplicate scopes are not allowed",
+      ],
+      "testId": "metadata.1.scopeTextField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply propositions settings snapshots > round trips all fields settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > round trips data elements settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+    "metadata": "%metadata%",
+    "propositions": "%props%",
+    "viewName": "%view%",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+    "metadata": "%metadata%",
+    "propositions": "%props%",
+    "viewName": "%view%",
+  },
+  "valid": false,
+}
+`;
+
 exports[`Apply propositions settings snapshots > round trips empty settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > round trips minimal settings 1`] = `
 {
   "errors": [],
   "schemaTreeErrors": [],
@@ -63,6 +870,38 @@ exports[`Apply propositions settings snapshots > round trips new settings 1`] = 
     "instanceName": "alloy",
   },
   "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > round trips partial metadata row settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Selector",
+      "messages": [
+        "Please provide a selector.",
+      ],
+      "testId": "metadata.0.selectorTextField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+    "metadata": {
+      "home": {
+        "actionType": "setHtml",
+      },
+    },
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+    "metadata": {
+      "home": {
+        "actionType": "setHtml",
+      },
+    },
+  },
+  "valid": false,
 }
 `;
 
@@ -107,6 +946,182 @@ exports[`Apply propositions settings snapshots > round trips view name settings 
   "settingsBeforeValidate": {
     "instanceName": "alloy",
     "viewName": "hello",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > round trips with components disabled 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {},
+  "settingsBeforeValidate": {},
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > round trips with self hosted 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > selects a metadata action 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "replaceHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "replaceHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > switches instances 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+    "metadata": {
+      "checkout": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+      "home": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > switches metadata to empty, invalid, and valid data elements 1`] = `
+{
+  "errors": [
+    {
+      "field": "Proposition metadata data element",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "metadataDataElementField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": "",
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": "",
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply propositions settings snapshots > switches metadata to empty, invalid, and valid data elements 2`] = `
+{
+  "errors": [
+    {
+      "field": "Proposition metadata data element",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "metadataDataElementField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": "not a data element",
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": "not a data element",
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply propositions settings snapshots > switches metadata to empty, invalid, and valid data elements 3`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "metadata": "%edited%",
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": "%edited%",
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
   },
   "valid": true,
 }
