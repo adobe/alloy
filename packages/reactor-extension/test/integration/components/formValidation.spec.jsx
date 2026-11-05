@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { afterEach, describe, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import { Checkbox } from "@react-spectrum/s2";
 import useView from "../helpers/useView";
 import field from "../helpers/field";
 import generateComponentFromForm from "../../../src/view/forms/generateComponentFromForm";
@@ -27,6 +28,9 @@ import checkbox from "../../../src/view/forms/checkbox";
 import conditional from "../../../src/view/forms/conditional";
 import requiredComponent from "../../../src/view/forms/requiredComponent";
 import jsonOptionalEditor from "../../../src/view/forms/jsonOptionalEditor";
+import FormCheckboxGroup from "../../../src/view/forms/fields/CheckboxGroup";
+import FormTextField from "../../../src/view/forms/fields/TextField";
+import { rule } from "../../../src/view/forms/validation";
 
 let view;
 let driver;
@@ -293,5 +297,63 @@ describe("Form builder validation", () => {
       "dataWhole",
       /please provide a valid json object or a data element/i,
     );
+  });
+
+  it("shows the error of an empty checkbox group on save", async () => {
+    await renderForm(
+      [
+        {
+          getInitialValues: () => ({ solutions: [] }),
+          getSettings: ({ values }) => ({ solutions: values.solutions }),
+          validationShape: {
+            solutions: rule(
+              (solutions) => solutions.length > 0,
+              "Please select at least one solution.",
+            ),
+          },
+          Component: () => (
+            <FormCheckboxGroup name="solutions" label="Solutions">
+              <Checkbox value="analytics">Analytics</Checkbox>
+            </FormCheckboxGroup>
+          ),
+        },
+      ],
+      { settings: {} },
+    );
+
+    await driver.expectValidate().toBe(false);
+    await expect
+      .element(view.getByText("Please select at least one solution."))
+      .toBeVisible();
+  });
+
+  it("shows field validator errors on the first save of an already invalid form", async () => {
+    await renderForm(
+      [
+        textField({ name: "name", label: "Name", isRequired: true }),
+        checkbox({ name: "enabled", label: "Enabled" }),
+        conditional({ args: "enabled", condition: (enabled) => enabled }, [
+          {
+            getInitialValues: ({ initInfo }) => ({
+              code: initInfo.settings.code,
+            }),
+            Component: () => (
+              <FormTextField
+                data-test-id="codeField"
+                name="code"
+                label="Code"
+                validate={(code) => (code === "bad" ? "Bad code." : undefined)}
+              />
+            ),
+          },
+        ]),
+      ],
+      { settings: { enabled: false, code: "bad" } },
+    );
+
+    await field(view.getByTestId("enabledCheckbox")).click();
+
+    await driver.expectValidate().toBe(false);
+    await expectError("codeField", /bad code/i);
   });
 });

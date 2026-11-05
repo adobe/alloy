@@ -71,24 +71,22 @@ export const validateOnChangeBlurAndSubmit = ({
     form,
   });
 
-const collectLeafPaths = (value, path, paths) => {
+const collectPaths = (value, path, paths) => {
+  if (path) {
+    paths.push(path);
+  }
   if (Array.isArray(value)) {
     value.forEach((item, index) =>
-      collectLeafPaths(item, `${path}.${index}`, paths),
+      collectPaths(item, path ? `${path}.${index}` : `${index}`, paths),
     );
   } else if (value !== null && typeof value === "object") {
     Object.entries(value).forEach(([key, item]) =>
-      collectLeafPaths(item, path ? `${path}.${key}` : key, paths),
+      collectPaths(item, path ? `${path}.${key}` : key, paths),
     );
-  } else if (path) {
-    paths.push(path);
   }
   return paths;
 };
 
-// Fields that are not mounted (other tabs, collapsed sections, unselected
-// tree nodes) still need to show their errors once they appear, so every
-// leaf value is marked as touched rather than only the registered fields.
 const withBlurred = (meta, isBlurred) => ({
   errorMap: {},
   errorSourceMap: {},
@@ -104,14 +102,21 @@ export const setFieldBlurred = (form, name, isBlurred = true) => {
   }
 };
 
+// Fields that are not mounted (other tabs, collapsed sections, unselected
+// tree nodes) still need to show their errors once they appear, so every
+// value is marked as touched rather than only the registered fields. Arrays
+// and objects are included, like Formik, so an empty list shows its error.
 export const submitForm = async (form) => {
   form.baseStore.setState((state) => {
     const fieldMetaBase = { ...state.fieldMetaBase };
-    collectLeafPaths(state.values, "", []).forEach((path) => {
+    collectPaths(state.values, "", []).forEach((path) => {
       fieldMetaBase[path] = withBlurred(fieldMetaBase[path], true);
     });
     return { ...state, fieldMetaBase };
   });
+  // The first submit of an already invalid form skips validation, so errors
+  // from validators registered since the last change would not show.
+  form.validate("submit");
   await form.handleSubmit();
 };
 
