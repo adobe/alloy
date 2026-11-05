@@ -1,0 +1,1174 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`XDM object settings snapshots > adds an array item 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "tags",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "Item 3",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`XDM object settings snapshots > blurs a cleared schema input 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`XDM object settings snapshots > edits count to "" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "data": {
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`XDM object settings snapshots > edits count to "%count%" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "data": {
+      "count": "%count%",
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "count": "%count%",
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`XDM object settings snapshots > edits count to "-1" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "data": {
+      "count": -1,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "count": -1,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`XDM object settings snapshots > edits count to "42" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "data": {
+      "count": 42,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "count": 42,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`XDM object settings snapshots > edits count to "abc" 1`] = `
+{
+  "errors": [
+    {
+      "field": "Count",
+      "messages": [
+        "Value must be a data element or integer.",
+      ],
+      "testId": "valueField",
+    },
+  ],
+  "schemaTreeErrors": [
+    {
+      "field": "count",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "data": {
+      "count": NaN,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "count": NaN,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`XDM object settings snapshots > edits testField to "" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`XDM object settings snapshots > edits testField to "%edited%" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%edited%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%edited%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`XDM object settings snapshots > edits testField to "typed text" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "typed text",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "typed text",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`XDM object settings snapshots > populates an entire array with a data element 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": "%tags%",
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": "%tags%",
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`XDM object settings snapshots > populates an entire object with a data element 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": "%nested%",
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": "%nested%",
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`XDM object settings snapshots > removes the first array item 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`XDM object settings snapshots > round trips empty settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {},
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {},
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`XDM object settings snapshots > round trips invalid negative integer settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {
+      "count": -1,
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "count": -1,
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`XDM object settings snapshots > round trips minimal settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {},
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {},
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`XDM object settings snapshots > round trips minimal settings with components disabled 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {},
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {},
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`XDM object settings snapshots > round trips minimal settings with self hosted 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {},
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {},
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`XDM object settings snapshots > round trips new settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {},
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {},
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`XDM object settings snapshots > round trips populated settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`XDM object settings snapshots > round trips schema without sandbox settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": {
+      "testField": "Legacy",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "testField": "Legacy",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`XDM object settings snapshots > round trips whole object data element settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "data": "%object%",
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": "%object%",
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`XDM object settings snapshots > sets whole object value to "" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`XDM object settings snapshots > sets whole object value to "not a data element" 1`] = `
+{
+  "errors": [
+    {
+      "field": "INPUT",
+      "messages": [
+        "Value must be a data element.",
+      ],
+      "testId": "valueField",
+    },
+  ],
+  "schemaTreeErrors": [
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "nested",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": "not a data element",
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": "not a data element",
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`XDM object settings snapshots > shows display names without changing settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "Flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
