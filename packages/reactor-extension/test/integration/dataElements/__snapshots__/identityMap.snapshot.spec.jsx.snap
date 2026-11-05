@@ -1,0 +1,1227 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Identity map settings snapshots > adds a custom namespace 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+    "NewNamespace": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "%id%",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+    "NewNamespace": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "%id%",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Identity map settings snapshots > adds an identifier 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+      {
+        "authenticatedState": "ambiguous",
+        "id": "%newId%",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+      {
+        "authenticatedState": "ambiguous",
+        "id": "%newId%",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Identity map settings snapshots > changes the authenticated state 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Identity map settings snapshots > clears the first ID in the second identity 1`] = `
+{
+  "errors": [
+    {
+      "field": "ID",
+      "messages": [
+        "Please specify an ID.",
+      ],
+      "testId": "identity1idField0",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Identity map settings snapshots > deletes an identifier 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Identity map settings snapshots > deletes an identity 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Identity map settings snapshots > edits the ID to "" 1`] = `
+{
+  "errors": [
+    {
+      "field": "ID",
+      "messages": [
+        "Please specify an ID.",
+      ],
+      "testId": "identity0idField0",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Identity map settings snapshots > edits the ID to "%edited%" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "%edited%",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "%edited%",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Identity map settings snapshots > edits the ID to "not a data element" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "not a data element",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "not a data element",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Identity map settings snapshots > edits the namespace to "" 1`] = `
+{
+  "errors": [
+    {
+      "field": "Namespace",
+      "messages": [
+        "Please select a namespace.",
+      ],
+      "testId": "namespace0Combobox",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Identity map settings snapshots > edits the namespace to "%edited%" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "%edited%": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "%edited%": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Identity map settings snapshots > edits the namespace to "not a data element" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+    "not a data element": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+    "not a data element": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Identity map settings snapshots > makes an identifier in another namespace primary 1`] = `
+{
+  "errors": [
+    {
+      "field": "Primary",
+      "messages": [],
+      "testId": "identity1primaryField0",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": true,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": true,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Identity map settings snapshots > makes the second identifier primary 1`] = `
+{
+  "errors": [
+    {
+      "field": "Primary",
+      "messages": [],
+      "testId": "identity1primaryField1",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": true,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": true,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Identity map settings snapshots > populates an ID through the extension bridge 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "Email": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "%data element name%",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "Email": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "%data element name%",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Identity map settings snapshots > rejects duplicate namespaces 1`] = `
+{
+  "errors": [
+    {
+      "field": "Namespace",
+      "messages": [
+        "Please provide a unique namespace.",
+      ],
+      "testId": "namespace1Combobox",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Identity map settings snapshots > round trips duplicate primary identifiers settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Primary",
+      "messages": [],
+      "testId": "identity0primaryField1",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "Email": [
+      {
+        "id": "a",
+        "primary": true,
+      },
+      {
+        "id": "b",
+        "primary": true,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "Email": [
+      {
+        "id": "a",
+        "primary": true,
+      },
+      {
+        "id": "b",
+        "primary": true,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Identity map settings snapshots > round trips empty ID settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "ID",
+      "messages": [
+        "Please specify an ID.",
+      ],
+      "testId": "identity0idField0",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "Email": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "Email": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Identity map settings snapshots > round trips forbidden ECID settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Namespace",
+      "messages": [
+        "ECID is not allowed",
+      ],
+      "testId": "namespace0Combobox",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "ECID": [
+      {
+        "id": "123",
+        "primary": true,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "ECID": [
+      {
+        "id": "123",
+        "primary": true,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Identity map settings snapshots > round trips minimal settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "Email": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "person@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "Email": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "person@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Identity map settings snapshots > round trips minimal settings with components disabled 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "Email": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "person@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "Email": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "person@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Identity map settings snapshots > round trips minimal settings with self hosted 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "Email": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "person@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "Email": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "person@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Identity map settings snapshots > round trips new settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Namespace",
+      "messages": [
+        "Please select a namespace.",
+      ],
+      "testId": "namespace0Combobox",
+    },
+    {
+      "field": "ID",
+      "messages": [
+        "Please specify an ID.",
+      ],
+      "testId": "identity0idField0",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Identity map settings snapshots > round trips populated settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Identity map settings snapshots > validates an empty added identifier 1`] = `
+{
+  "errors": [
+    {
+      "field": "ID",
+      "messages": [
+        "Please specify an ID.",
+      ],
+      "testId": "identity0idField1",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+      {
+        "authenticatedState": "ambiguous",
+        "id": "",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+      {
+        "authenticatedState": "ambiguous",
+        "id": "",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Identity map settings snapshots > validates an empty added identity 1`] = `
+{
+  "errors": [
+    {
+      "field": "Namespace",
+      "messages": [
+        "Please select a namespace.",
+      ],
+      "testId": "namespace2Combobox",
+    },
+    {
+      "field": "ID",
+      "messages": [
+        "Please specify an ID.",
+      ],
+      "testId": "identity2idField0",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "",
+        "primary": false,
+      },
+    ],
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "",
+        "primary": false,
+      },
+    ],
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
