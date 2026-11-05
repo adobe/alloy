@@ -1,0 +1,587 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Quality of experience settings snapshots > bitrate > sets the numeric value to "" 1`] = `
+{
+  "errors": [
+    {
+      "field": "DIV",
+      "messages": [],
+      "testId": "bitrateNumberField",
+    },
+    {
+      "field": "Average bitrate (in kbps) number field",
+      "messages": [
+        "Please provide the average bitrate (in kbps) as a number.",
+      ],
+      "testId": "bitrateNumberField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": NaN,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": NaN,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "valid": false,
+}
+`;
+
+exports[`Quality of experience settings snapshots > bitrate > sets the numeric value to "-1" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": -1,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": -1,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > bitrate > sets the numeric value to "25" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": 25,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": 25,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > bitrate > switches to a data element 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": "%edited%",
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": "%edited%",
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > droppedFrames > sets the numeric value to "" 1`] = `
+{
+  "errors": [
+    {
+      "field": "DIV",
+      "messages": [],
+      "testId": "droppedFramesNumberField",
+    },
+    {
+      "field": "Dropped frames (Int) number field",
+      "messages": [
+        "Please provide the dropped frames (int) as a number.",
+      ],
+      "testId": "droppedFramesNumberField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": 320,
+    "droppedFrames": NaN,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": 320,
+    "droppedFrames": NaN,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "valid": false,
+}
+`;
+
+exports[`Quality of experience settings snapshots > droppedFrames > sets the numeric value to "-1" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": 320,
+    "droppedFrames": -1,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": 320,
+    "droppedFrames": -1,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > droppedFrames > sets the numeric value to "25" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": 320,
+    "droppedFrames": 25,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": 320,
+    "droppedFrames": 25,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > droppedFrames > switches to a data element 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": 320,
+    "droppedFrames": "%edited%",
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": 320,
+    "droppedFrames": "%edited%",
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > framesPerSecond > sets the numeric value to "" 1`] = `
+{
+  "errors": [
+    {
+      "field": "DIV",
+      "messages": [],
+      "testId": "framesPerSecondNumberField",
+    },
+    {
+      "field": "Frames per second number field",
+      "messages": [
+        "Please provide the frames per second as a number.",
+      ],
+      "testId": "framesPerSecondNumberField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": 320,
+    "droppedFrames": 2,
+    "framesPerSecond": NaN,
+    "timeToStart": 500,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": 320,
+    "droppedFrames": 2,
+    "framesPerSecond": NaN,
+    "timeToStart": 500,
+  },
+  "valid": false,
+}
+`;
+
+exports[`Quality of experience settings snapshots > framesPerSecond > sets the numeric value to "-1" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": 320,
+    "droppedFrames": 2,
+    "framesPerSecond": -1,
+    "timeToStart": 500,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": 320,
+    "droppedFrames": 2,
+    "framesPerSecond": -1,
+    "timeToStart": 500,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > framesPerSecond > sets the numeric value to "25" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": 320,
+    "droppedFrames": 2,
+    "framesPerSecond": 25,
+    "timeToStart": 500,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": 320,
+    "droppedFrames": 2,
+    "framesPerSecond": 25,
+    "timeToStart": 500,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > framesPerSecond > switches to a data element 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": 320,
+    "droppedFrames": 2,
+    "framesPerSecond": "%edited%",
+    "timeToStart": 500,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": 320,
+    "droppedFrames": 2,
+    "framesPerSecond": "%edited%",
+    "timeToStart": 500,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > round trips data elements settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": "%bitrate%",
+    "droppedFrames": "%frames%",
+    "framesPerSecond": "%fps%",
+    "timeToStart": "%time%",
+  },
+  "settingsBeforeValidate": {
+    "bitrate": "%bitrate%",
+    "droppedFrames": "%frames%",
+    "framesPerSecond": "%fps%",
+    "timeToStart": "%time%",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > round trips empty settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": undefined,
+    "droppedFrames": undefined,
+    "framesPerSecond": undefined,
+    "timeToStart": undefined,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": undefined,
+    "droppedFrames": undefined,
+    "framesPerSecond": undefined,
+    "timeToStart": undefined,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > round trips invalid data element settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Average bitrate (in kbps) data element",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "bitrateDataElementField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": "not a data element",
+    "droppedFrames": undefined,
+    "framesPerSecond": undefined,
+    "timeToStart": undefined,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": "not a data element",
+    "droppedFrames": undefined,
+    "framesPerSecond": undefined,
+    "timeToStart": undefined,
+  },
+  "valid": false,
+}
+`;
+
+exports[`Quality of experience settings snapshots > round trips minimal settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": 0,
+    "droppedFrames": undefined,
+    "framesPerSecond": undefined,
+    "timeToStart": undefined,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": 0,
+    "droppedFrames": undefined,
+    "framesPerSecond": undefined,
+    "timeToStart": undefined,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > round trips new settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": undefined,
+    "droppedFrames": undefined,
+    "framesPerSecond": undefined,
+    "timeToStart": undefined,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": undefined,
+    "droppedFrames": undefined,
+    "framesPerSecond": undefined,
+    "timeToStart": undefined,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > round trips populated settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": 320,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": 320,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > round trips with components disabled 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": 0,
+    "droppedFrames": undefined,
+    "framesPerSecond": undefined,
+    "timeToStart": undefined,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": 0,
+    "droppedFrames": undefined,
+    "framesPerSecond": undefined,
+    "timeToStart": undefined,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > round trips with self hosted 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": 0,
+    "droppedFrames": undefined,
+    "framesPerSecond": undefined,
+    "timeToStart": undefined,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": 0,
+    "droppedFrames": undefined,
+    "framesPerSecond": undefined,
+    "timeToStart": undefined,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > sets the bitrate data element to "" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "settingsBeforeValidate": {
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > sets the bitrate data element to "not a data element" 1`] = `
+{
+  "errors": [
+    {
+      "field": "Average bitrate (in kbps) data element",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "bitrateDataElementField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": "not a data element",
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": "not a data element",
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "valid": false,
+}
+`;
+
+exports[`Quality of experience settings snapshots > timeToStart > sets the numeric value to "" 1`] = `
+{
+  "errors": [
+    {
+      "field": "DIV",
+      "messages": [],
+      "testId": "timeToStartNumberField",
+    },
+    {
+      "field": "Time to start (milliseconds) number field",
+      "messages": [
+        "Please provide the time to start (milliseconds) as a number.",
+      ],
+      "testId": "timeToStartNumberField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": 320,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": NaN,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": 320,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": NaN,
+  },
+  "valid": false,
+}
+`;
+
+exports[`Quality of experience settings snapshots > timeToStart > sets the numeric value to "-1" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": 320,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": -1,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": 320,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": -1,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > timeToStart > sets the numeric value to "25" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": 320,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 25,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": 320,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 25,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > timeToStart > switches to a data element 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": 320,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": "%edited%",
+  },
+  "settingsBeforeValidate": {
+    "bitrate": 320,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": "%edited%",
+  },
+  "valid": true,
+}
+`;
