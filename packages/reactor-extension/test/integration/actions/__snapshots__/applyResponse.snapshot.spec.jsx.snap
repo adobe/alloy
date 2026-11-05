@@ -1,0 +1,344 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Apply response settings snapshots > edits, clears, and invalidates responseBodyField 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "renderDecisions": true,
+    "responseBody": "%edited%",
+    "responseHeaders": "%headers%",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "renderDecisions": true,
+    "responseBody": "%edited%",
+    "responseHeaders": "%headers%",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply response settings snapshots > edits, clears, and invalidates responseBodyField 2`] = `
+{
+  "errors": [
+    {
+      "field": "Response body",
+      "messages": [
+        "Please provide a response body.",
+      ],
+      "testId": "responseBodyField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "renderDecisions": true,
+    "responseHeaders": "%headers%",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "renderDecisions": true,
+    "responseHeaders": "%headers%",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply response settings snapshots > edits, clears, and invalidates responseBodyField 3`] = `
+{
+  "errors": [
+    {
+      "field": "Response body",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "responseBodyField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "renderDecisions": true,
+    "responseBody": "not a data element",
+    "responseHeaders": "%headers%",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "renderDecisions": true,
+    "responseBody": "not a data element",
+    "responseHeaders": "%headers%",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply response settings snapshots > edits, clears, and invalidates responseHeadersField 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "renderDecisions": true,
+    "responseBody": "%body%",
+    "responseHeaders": "%edited%",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "renderDecisions": true,
+    "responseBody": "%body%",
+    "responseHeaders": "%edited%",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply response settings snapshots > edits, clears, and invalidates responseHeadersField 2`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "renderDecisions": true,
+    "responseBody": "%body%",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "renderDecisions": true,
+    "responseBody": "%body%",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply response settings snapshots > edits, clears, and invalidates responseHeadersField 3`] = `
+{
+  "errors": [
+    {
+      "field": "Response headers",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "responseHeadersField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "renderDecisions": true,
+    "responseBody": "%body%",
+    "responseHeaders": "not a data element",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "renderDecisions": true,
+    "responseBody": "%body%",
+    "responseHeaders": "not a data element",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply response settings snapshots > round trips empty settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Response body",
+      "messages": [
+        "Please provide a response body.",
+      ],
+      "testId": "responseBodyField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply response settings snapshots > round trips invalid settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Response headers",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "responseHeadersField",
+    },
+    {
+      "field": "Response body",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "responseBodyField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+    "responseBody": "plain",
+    "responseHeaders": "%broken",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+    "responseBody": "plain",
+    "responseHeaders": "%broken",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply response settings snapshots > round trips minimal settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+    "responseBody": "%body%",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+    "responseBody": "%body%",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply response settings snapshots > round trips new settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Response body",
+      "messages": [
+        "Please provide a response body.",
+      ],
+      "testId": "responseBodyField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply response settings snapshots > round trips populated settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "renderDecisions": true,
+    "responseBody": "%body%",
+    "responseHeaders": "%headers%",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "renderDecisions": true,
+    "responseBody": "%body%",
+    "responseHeaders": "%headers%",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply response settings snapshots > round trips with components disabled 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+    "responseBody": "%body%",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+    "responseBody": "%body%",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply response settings snapshots > round trips with self hosted 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+    "responseBody": "%body%",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+    "responseBody": "%body%",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply response settings snapshots > selects a response body through the bridge 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "renderDecisions": true,
+    "responseBody": "%data element name%",
+    "responseHeaders": "%headers%",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "renderDecisions": true,
+    "responseBody": "%data element name%",
+    "responseHeaders": "%headers%",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply response settings snapshots > switches instances 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+    "renderDecisions": true,
+    "responseBody": "%body%",
+    "responseHeaders": "%headers%",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+    "renderDecisions": true,
+    "responseBody": "%body%",
+    "responseHeaders": "%headers%",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply response settings snapshots > turns off rendering decisions 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "secondary",
+    "responseBody": "%body%",
+    "responseHeaders": "%headers%",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "responseBody": "%body%",
+    "responseHeaders": "%headers%",
+  },
+  "valid": true,
+}
+`;
