@@ -1,0 +1,3404 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Set consent settings snapshots > clicks addConsentButton 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > clicks gdprAppliesYesRadio 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": true,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": true,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > clicks gdprContainsPersonalDataNoRadio 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": false,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": false,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > clicks generalInRadio 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > deletes the first consent object 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "edgeConfigOverrides": {
+      "development": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-development",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-development",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 1,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-development",
+        },
+        "datastreamId": "ds-development",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+      "production": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-production",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-production",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 3,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-production",
+        },
+        "datastreamId": "ds-production",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+      "staging": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-staging",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-staging",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 2,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-staging",
+        },
+        "datastreamId": "ds-staging",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+    },
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "edgeConfigOverrides": {
+      "development": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-development",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-development",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 1,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-development",
+        },
+        "datastreamId": "ds-development",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+      "production": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-production",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-production",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 3,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-production",
+        },
+        "datastreamId": "ds-production",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+      "staging": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-staging",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-staging",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 2,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-staging",
+        },
+        "datastreamId": "ds-staging",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+    },
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > edits, clears, and invalidates iabValueField 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "%edited%",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "%edited%",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > edits, clears, and invalidates iabValueField 2`] = `
+{
+  "errors": [
+    {
+      "field": "Value",
+      "messages": [
+        "Please specify a value.",
+      ],
+      "testId": "iabValueField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Set consent settings snapshots > edits, clears, and invalidates iabValueField 3`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "not a data element",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "not a data element",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > edits, clears, and invalidates iabVersionField 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "%edited%",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "%edited%",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > edits, clears, and invalidates iabVersionField 2`] = `
+{
+  "errors": [
+    {
+      "field": "Version",
+      "messages": [
+        "Please specify a version.",
+      ],
+      "testId": "iabVersionField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Set consent settings snapshots > edits, clears, and invalidates iabVersionField 3`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "not a data element",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "not a data element",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > edits, clears, and invalidates identityMapField 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%edited%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%edited%",
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > edits, clears, and invalidates identityMapField 2`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > edits, clears, and invalidates identityMapField 3`] = `
+{
+  "errors": [
+    {
+      "field": "Identity map",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "identityMapField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "not a data element",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "not a data element",
+    "instanceName": "secondary",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Set consent settings snapshots > edits, clears, and invalidates valueField 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%edited%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%edited%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > edits, clears, and invalidates valueField 2`] = `
+{
+  "errors": [
+    {
+      "field": "Value",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "valueField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Set consent settings snapshots > edits, clears, and invalidates valueField 3`] = `
+{
+  "errors": [
+    {
+      "field": "Value",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "valueField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "not a data element",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "not a data element",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Set consent settings snapshots > returns from a whole consent data element to the form 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > round trips Adobe 1.0 data element settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "%general%",
+        },
+        "version": "1.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "%general%",
+        },
+        "version": "1.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > round trips Adobe 2.0 settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > round trips IAB data elements settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "gdprApplies": "%gdpr%",
+        "gdprContainsPersonalData": "%personal%",
+        "standard": "IAB TCF",
+        "value": "%iab%",
+        "version": "2.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "gdprApplies": "%gdpr%",
+        "gdprContainsPersonalData": "%personal%",
+        "standard": "IAB TCF",
+        "value": "%iab%",
+        "version": "2.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > round trips data element settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": "%consent%",
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "consent": "%consent%",
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > round trips empty consent array settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [],
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "consent": [],
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > round trips empty settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > round trips invalid settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Identity map",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "identityMapField",
+    },
+    {
+      "field": "Value",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "valueField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": "",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "plain",
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": "",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "plain",
+    "instanceName": "alloy",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Set consent settings snapshots > round trips minimal Adobe 1.0 settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > round trips new settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > round trips populated settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "edgeConfigOverrides": {
+      "development": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-development",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-development",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 1,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-development",
+        },
+        "datastreamId": "ds-development",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+      "production": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-production",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-production",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 3,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-production",
+        },
+        "datastreamId": "ds-production",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+      "staging": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-staging",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-staging",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 2,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-staging",
+        },
+        "datastreamId": "ds-staging",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+    },
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "edgeConfigOverrides": {
+      "development": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-development",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-development",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 1,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-development",
+        },
+        "datastreamId": "ds-development",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+      "production": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-production",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-production",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 3,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-production",
+        },
+        "datastreamId": "ds-production",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+      "staging": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-staging",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-staging",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 2,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-staging",
+        },
+        "datastreamId": "ds-staging",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+    },
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > round trips with components disabled 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > round trips with self hosted 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > sets general consent out 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > switches Adobe 1.0 to Adobe 2.0 1`] = `
+{
+  "errors": [
+    {
+      "field": "Value",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "valueField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": "",
+        "version": "2.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": "",
+        "version": "2.0",
+      },
+    ],
+    "instanceName": "alloy",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Set consent settings snapshots > switches gdprAppliesDataElementRadio and validates empty, invalid, and valid data elements 1`] = `
+{
+  "errors": [
+    {
+      "field": "Data element",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "gdprAppliesDataElementField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": "",
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": "",
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Set consent settings snapshots > switches gdprAppliesDataElementRadio and validates empty, invalid, and valid data elements 2`] = `
+{
+  "errors": [
+    {
+      "field": "Data element",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "gdprAppliesDataElementField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": "not a data element",
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": "not a data element",
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Set consent settings snapshots > switches gdprAppliesDataElementRadio and validates empty, invalid, and valid data elements 3`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": "%edited%",
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": "%edited%",
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > switches gdprContainsPersonalDataDataElementRadio and validates empty, invalid, and valid data elements 1`] = `
+{
+  "errors": [
+    {
+      "field": "Data element",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "gdprContainsPersonalDataDataElementField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": "",
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": "",
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Set consent settings snapshots > switches gdprContainsPersonalDataDataElementRadio and validates empty, invalid, and valid data elements 2`] = `
+{
+  "errors": [
+    {
+      "field": "Data element",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "gdprContainsPersonalDataDataElementField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": "not a data element",
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": "not a data element",
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Set consent settings snapshots > switches gdprContainsPersonalDataDataElementRadio and validates empty, invalid, and valid data elements 3`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": "%edited%",
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": "%edited%",
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > switches generalDataElementRadio and validates empty, invalid, and valid data elements 1`] = `
+{
+  "errors": [
+    {
+      "field": "Data element",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "generalDataElementField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Set consent settings snapshots > switches generalDataElementRadio and validates empty, invalid, and valid data elements 2`] = `
+{
+  "errors": [
+    {
+      "field": "Data element",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "generalDataElementField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "not a data element",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "not a data element",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Set consent settings snapshots > switches generalDataElementRadio and validates empty, invalid, and valid data elements 3`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "%edited%",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "%edited%",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > switches inputMethodDataElementRadio and validates empty, invalid, and valid data elements 1`] = `
+{
+  "errors": [
+    {
+      "field": "Data element",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "dataElementField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": "",
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": "",
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Set consent settings snapshots > switches inputMethodDataElementRadio and validates empty, invalid, and valid data elements 2`] = `
+{
+  "errors": [
+    {
+      "field": "Data element",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "dataElementField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": "not a data element",
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": "not a data element",
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Set consent settings snapshots > switches inputMethodDataElementRadio and validates empty, invalid, and valid data elements 3`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": "%edited%",
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": "%edited%",
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > switches instances 1`] = `
+{
+  "errors": [
+    {
+      "field": "Report suite override #1",
+      "messages": [
+        "The value must be one of the preconfigured report suites.",
+      ],
+      "testId": "reportSuitesOverride.0",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "edgeConfigOverrides": {
+      "development": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-development",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-development",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 1,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-development",
+        },
+        "datastreamId": "ds-development",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+      "production": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-production",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-production",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 3,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-production",
+        },
+        "datastreamId": "ds-production",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+      "staging": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-staging",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-staging",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 2,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-staging",
+        },
+        "datastreamId": "ds-staging",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+    },
+    "identityMap": "%identity%",
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "out",
+        },
+        "version": "1.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "edgeConfigOverrides": {
+      "development": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-development",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-development",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 1,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-development",
+        },
+        "datastreamId": "ds-development",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+      "production": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-production",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-production",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 3,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-production",
+        },
+        "datastreamId": "ds-production",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+      "staging": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-staging",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-staging",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 2,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-staging",
+        },
+        "datastreamId": "ds-staging",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+    },
+    "identityMap": "%identity%",
+    "instanceName": "alloy",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Set consent settings snapshots > switches the first object to IAB TCF 1`] = `
+{
+  "errors": [
+    {
+      "field": "Value",
+      "messages": [
+        "Please specify a value.",
+      ],
+      "testId": "iabValueField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "gdprApplies": true,
+        "gdprContainsPersonalData": false,
+        "standard": "IAB TCF",
+        "value": "",
+        "version": "2.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "edgeConfigOverrides": {
+      "development": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-development",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-development",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 1,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-development",
+        },
+        "datastreamId": "ds-development",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+      "production": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-production",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-production",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 3,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-production",
+        },
+        "datastreamId": "ds-production",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+      "staging": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-staging",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-staging",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 2,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-staging",
+        },
+        "datastreamId": "ds-staging",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+    },
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "gdprApplies": true,
+        "gdprContainsPersonalData": false,
+        "standard": "IAB TCF",
+        "value": "",
+        "version": "2.0",
+      },
+      {
+        "standard": "Adobe",
+        "value": "%consent2%",
+        "version": "2.0",
+      },
+      {
+        "gdprApplies": false,
+        "gdprContainsPersonalData": true,
+        "standard": "IAB TCF",
+        "value": "tc-string",
+        "version": "2.0",
+      },
+    ],
+    "edgeConfigOverrides": {
+      "development": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-development",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-development",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 1,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-development",
+        },
+        "datastreamId": "ds-development",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+      "production": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-production",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-production",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 3,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-production",
+        },
+        "datastreamId": "ds-production",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+      "staging": {
+        "com_adobe_analytics": {
+          "reportSuites": [
+            "suite-staging",
+            "%suite%",
+          ],
+        },
+        "com_adobe_audiencemanager": {
+          "enabled": false,
+        },
+        "com_adobe_experience_platform": {
+          "com_adobe_edge_ajo": {
+            "enabled": false,
+          },
+          "com_adobe_edge_destinations": {
+            "enabled": false,
+          },
+          "com_adobe_edge_ode": {
+            "enabled": false,
+          },
+          "com_adobe_edge_segmentation": {
+            "enabled": false,
+          },
+          "datasets": {
+            "event": {
+              "datasetId": "dataset-staging",
+            },
+          },
+        },
+        "com_adobe_identity": {
+          "idSyncContainerId": 2,
+        },
+        "com_adobe_launch_ssf": {
+          "enabled": false,
+        },
+        "com_adobe_target": {
+          "propertyToken": "token-staging",
+        },
+        "datastreamId": "ds-staging",
+        "enabled": true,
+        "sandbox": "prod",
+      },
+    },
+    "identityMap": "%identity%",
+    "instanceName": "secondary",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Set consent settings snapshots > validates saved ID-sync override "%id%" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+    ],
+    "edgeConfigOverrides": {
+      "development": {
+        "com_adobe_identity": {
+          "idSyncContainerId": "%id%",
+        },
+        "enabled": true,
+      },
+    },
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+    ],
+    "edgeConfigOverrides": {
+      "development": {
+        "com_adobe_identity": {
+          "idSyncContainerId": "%id%",
+        },
+        "enabled": true,
+      },
+    },
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Set consent settings snapshots > validates saved ID-sync override 123 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+    ],
+    "edgeConfigOverrides": {
+      "development": {
+        "com_adobe_identity": {
+          "idSyncContainerId": 123,
+        },
+        "enabled": true,
+      },
+    },
+    "instanceName": "secondary",
+  },
+  "settingsBeforeValidate": {
+    "consent": [
+      {
+        "standard": "Adobe",
+        "value": {
+          "general": "in",
+        },
+        "version": "1.0",
+      },
+    ],
+    "edgeConfigOverrides": {
+      "development": {
+        "com_adobe_identity": {
+          "idSyncContainerId": 123,
+        },
+        "enabled": true,
+      },
+    },
+    "instanceName": "secondary",
+  },
+  "valid": true,
+}
+`;
