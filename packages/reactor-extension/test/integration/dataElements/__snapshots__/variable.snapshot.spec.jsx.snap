@@ -1,0 +1,391 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Variable settings snapshots > blurs a cleared schema input 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Variable settings snapshots > round trips XDM settings with components disabled 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Variable settings snapshots > round trips XDM settings with self hosted 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Variable settings snapshots > round trips all data solutions settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "solutions": [
+      "analytics",
+      "audiencemanager",
+      "target",
+    ],
+  },
+  "settingsBeforeValidate": {
+    "solutions": [
+      "analytics",
+      "audiencemanager",
+      "target",
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Variable settings snapshots > round trips empty settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Variable settings snapshots > round trips legacy audienceManager solution settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "solutions": [
+      "analytics",
+      "audiencemanager",
+      "target",
+    ],
+  },
+  "settingsBeforeValidate": {
+    "solutions": [
+      "analytics",
+      "audiencemanager",
+      "target",
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Variable settings snapshots > round trips minimal XDM settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Variable settings snapshots > round trips new settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Variable settings snapshots > round trips schema without sandbox settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Schema",
+      "messages": [
+        "Please select a schema.",
+      ],
+      "testId": "schemaField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": undefined,
+      "version": undefined,
+    },
+  },
+  "settingsBeforeValidate": {
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": undefined,
+      "version": undefined,
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Variable settings snapshots > round trips untouched empty solutions settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Adobe Analytics",
+      "messages": [],
+      "testId": "analyticsCheckbox",
+    },
+    {
+      "field": "Adobe Audience Manager",
+      "messages": [],
+      "testId": "audiencemanagerCheckbox",
+    },
+    {
+      "field": "Adobe Target",
+      "messages": [],
+      "testId": "targetCheckbox",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {},
+  "settingsBeforeValidate": {},
+  "valid": false,
+}
+`;
+
+exports[`Variable settings snapshots > switches from Data to XDM 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "settingsBeforeValidate": {
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Variable settings snapshots > switches from XDM to Data and selects a solution 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "solutions": [
+      "analytics",
+    ],
+  },
+  "settingsBeforeValidate": {
+    "solutions": [
+      "analytics",
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Variable settings snapshots > unchecks all solutions while the last checkbox keeps focus 1`] = `
+{
+  "errors": [
+    {
+      "field": "Adobe Analytics",
+      "messages": [],
+      "testId": "analyticsCheckbox",
+    },
+    {
+      "field": "Adobe Audience Manager",
+      "messages": [],
+      "testId": "audiencemanagerCheckbox",
+    },
+    {
+      "field": "Adobe Target",
+      "messages": [],
+      "testId": "targetCheckbox",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {},
+  "settingsBeforeValidate": {},
+  "valid": false,
+}
+`;
+
+exports[`Variable settings snapshots > unchecks the analytics solution 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "solutions": [
+      "audiencemanager",
+      "target",
+    ],
+  },
+  "settingsBeforeValidate": {
+    "solutions": [
+      "audiencemanager",
+      "target",
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Variable settings snapshots > unchecks the audiencemanager solution 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "solutions": [
+      "analytics",
+      "target",
+    ],
+  },
+  "settingsBeforeValidate": {
+    "solutions": [
+      "analytics",
+      "target",
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Variable settings snapshots > unchecks the target solution 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "solutions": [
+      "analytics",
+      "audiencemanager",
+    ],
+  },
+  "settingsBeforeValidate": {
+    "solutions": [
+      "analytics",
+      "audiencemanager",
+    ],
+  },
+  "valid": true,
+}
+`;
