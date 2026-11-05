@@ -18,9 +18,15 @@ import getEdgeConfigIds from "../utils/getEdgeConfigIds";
 /** @typedef {import("./form").Form} Form */
 /**
  * This creates a form field for edge config overrides.
+ * @param {string[]} [hideFields] Override fields to hide.
+ * @param {object} [edgeConfigOverridesSchema] The schema to validate the
+ * overrides with.
  * @returns {Form} A config overrides form.
  */
-export default function configOverrides(hideFields) {
+export default function configOverrides(
+  hideFields,
+  edgeConfigOverridesSchema = overridesBridge.edgeConfigOverridesSchema,
+) {
   const part = {
     getInitialValues({ initInfo }) {
       return overridesBridge.getInitialInstanceValues({
@@ -31,7 +37,7 @@ export default function configOverrides(hideFields) {
       return overridesBridge.getInstanceSettings({ instanceValues: values });
     },
     validationShape: {
-      edgeConfigOverrides: overridesBridge.edgeConfigOverridesSchema,
+      edgeConfigOverrides: edgeConfigOverridesSchema,
     },
     Component({ initInfo }) {
       const instanceName = useFieldValue("instanceName");

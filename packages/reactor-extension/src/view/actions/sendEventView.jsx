@@ -24,6 +24,7 @@ import disabledTextField from "../forms/disabledTextField";
 import conditional from "../forms/conditional";
 import disabledCheckbox from "../forms/disabledCheckbox";
 import configOverrides from "../forms/configOverrides";
+import { bridge as overridesBridge } from "../components/overrides";
 import simpleMap from "../forms/simpleMap";
 import requiredComponent from "../forms/requiredComponent";
 
@@ -412,6 +413,10 @@ const decisionContext = requiredComponent(
 );
 
 const configOverrideFields = configOverrides();
+const guidedConfigOverrideFields = configOverrides(
+  undefined,
+  overridesBridge.edgeConfigOverridesWithoutIdSyncNumbersSchema,
+);
 const datasetIdField = textField({
   name: "datasetId",
   label: "Dataset ID (deprecated)",
@@ -557,7 +562,7 @@ const sendEventForm = form(
                 ),
               ],
             ),
-            configOverrideFields,
+            guidedConfigOverrideFields,
           ],
         ),
         conditional(
@@ -589,7 +594,7 @@ const sendEventForm = form(
                 ),
               ],
             ),
-            configOverrideFields,
+            guidedConfigOverrideFields,
           ],
         ),
       ],

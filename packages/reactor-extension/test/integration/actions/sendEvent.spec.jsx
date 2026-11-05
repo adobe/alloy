@@ -184,6 +184,41 @@ describe("Send Event Action", () => {
       components: { personalization: true },
     };
 
+    const idSyncOverride = (idSyncContainerId) => ({
+      instanceName: "alloy",
+      edgeConfigOverrides: {
+        development: {
+          enabled: true,
+          com_adobe_identity: { idSyncContainerId },
+        },
+      },
+    });
+
+    it("accepts a numeric ID sync container override", async () => {
+      await driver.init({ extensionSettings, settings: idSyncOverride(123) });
+
+      await driver.expectValidate().toBe(true);
+    });
+
+    it.each([
+      ["request personalization", undefined],
+      ["collect analytics", "guidedEventcollectOption"],
+    ])(
+      "only accepts a data element ID sync container override for guided %s events",
+      async (_, guidedEventOption) => {
+        await driver.init({ extensionSettings, settings: idSyncOverride(123) });
+        await field(view.getByTestId("guidedEventsEnabledCheckbox")).click();
+        if (guidedEventOption) {
+          await field(view.getByTestId(guidedEventOption)).click();
+        }
+
+        await driver.expectValidate().toBe(false);
+        await field(view.getByTestId("idSyncContainerOverride")).expectError(
+          /please enter a number/i,
+        );
+      },
+    );
+
     it("rejects an invalid surface", async () => {
       await driver.init({
         extensionSettings,

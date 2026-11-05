@@ -122,43 +122,65 @@ const idSyncContainerIdValidator = when(
   ),
 );
 
-const environmentOverridesSchema = shape({
-  enabled: enabledMatchOrDataElementValidator,
-  com_adobe_experience_platform: shape({
-    enabled: enabledDisabledMatchOrDataElementValidator,
-    com_adobe_edge_ode: shape({
-      enabled: enabledDisabledOrDataElementValidator,
+const createEnvironmentOverridesSchema = (idSyncContainerIdSchema) =>
+  shape({
+    enabled: enabledMatchOrDataElementValidator,
+    com_adobe_experience_platform: shape({
+      enabled: enabledDisabledMatchOrDataElementValidator,
+      com_adobe_edge_ode: shape({
+        enabled: enabledDisabledOrDataElementValidator,
+      }),
+      com_adobe_edge_segmentation: shape({
+        enabled: enabledDisabledOrDataElementValidator,
+      }),
+      com_adobe_edge_destinations: shape({
+        enabled: enabledDisabledOrDataElementValidator,
+      }),
+      com_adobe_edge_ajo: shape({
+        enabled: enabledDisabledOrDataElementValidator,
+      }),
     }),
-    com_adobe_edge_segmentation: shape({
-      enabled: enabledDisabledOrDataElementValidator,
+    com_adobe_analytics: shape({
+      enabled: enabledDisabledMatchOrDataElementValidator,
     }),
-    com_adobe_edge_destinations: shape({
-      enabled: enabledDisabledOrDataElementValidator,
+    com_adobe_identity: shape({ idSyncContainerId: idSyncContainerIdSchema }),
+    com_adobe_target: shape({
+      enabled: enabledDisabledMatchOrDataElementValidator,
     }),
-    com_adobe_edge_ajo: shape({
-      enabled: enabledDisabledOrDataElementValidator,
+    com_adobe_audiencemanager: shape({
+      enabled: enabledDisabledMatchOrDataElementValidator,
     }),
-  }),
-  com_adobe_analytics: shape({
-    enabled: enabledDisabledMatchOrDataElementValidator,
-  }),
-  com_adobe_identity: shape({ idSyncContainerId: idSyncContainerIdValidator }),
-  com_adobe_target: shape({
-    enabled: enabledDisabledMatchOrDataElementValidator,
-  }),
-  com_adobe_audiencemanager: shape({
-    enabled: enabledDisabledMatchOrDataElementValidator,
-  }),
-  com_adobe_launch_ssf: shape({
-    enabled: enabledDisabledMatchOrDataElementValidator,
-  }),
-});
+    com_adobe_launch_ssf: shape({
+      enabled: enabledDisabledMatchOrDataElementValidator,
+    }),
+  });
 
-const edgeConfigOverridesSchema = shape(
-  Object.fromEntries(
-    OVERRIDE_ENVIRONMENTS.map((env) => [env, environmentOverridesSchema]),
-  ),
+const createEdgeConfigOverridesSchema = (idSyncContainerIdSchema) =>
+  shape(
+    Object.fromEntries(
+      OVERRIDE_ENVIRONMENTS.map((env) => [
+        env,
+        createEnvironmentOverridesSchema(idSyncContainerIdSchema),
+      ]),
+    ),
+  );
+
+const edgeConfigOverridesSchema = createEdgeConfigOverridesSchema(
+  idSyncContainerIdValidator,
 );
+
+// The send event action's guided modes validated overrides two Yup
+// conditions deep, where Yup does not convert the ID sync container's text to
+// a number, so only an empty value or a data element passed. Kept so those
+// actions accept exactly what they did before.
+const edgeConfigOverridesWithoutIdSyncNumbersSchema =
+  createEdgeConfigOverridesSchema(
+    when(
+      isDataElementOrEmpty,
+      matches(containsDataElementsRegex, "Please enter a valid data element."),
+      rule(isEmpty, "Please enter a number."),
+    ),
+  );
 
 /**
  * Convert older versions of settings to newer versions of settings.
@@ -492,5 +514,6 @@ export const bridge = {
     return instanceSettings;
   },
   edgeConfigOverridesSchema,
+  edgeConfigOverridesWithoutIdSyncNumbersSchema,
   validationSchema: shape({ edgeConfigOverrides: edgeConfigOverridesSchema }),
 };
