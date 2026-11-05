@@ -259,6 +259,15 @@ describe("Form builder validation", () => {
       await driver.expectValidate().toBe(false);
     });
 
+    it("returns its settings before the first validation", async () => {
+      await renderForm(parts(), {
+        extensionSettings: { components: { personalization: true } },
+        settings: { scope: "products" },
+      });
+
+      await driver.expectSettings().toEqual({ scope: "products" });
+    });
+
     it("allows saving when the component is enabled", async () => {
       await renderForm(parts(), {
         extensionSettings: { components: { personalization: true } },

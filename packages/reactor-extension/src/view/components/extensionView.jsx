@@ -182,6 +182,9 @@ const ExtensionView = ({
             const getInitialValuesPromise = getInitialValues({ initInfo });
             getInitialValuesPromiseRef.current = getInitialValuesPromise;
             form.reset(await getInitialValuesPromise);
+            // Form parts such as requiredComponent decide which settings to
+            // save while building the schema, so build it before any read.
+            resolveValidationSchema();
             hasValuesRef.current = true;
             setCanRenderView(true);
             window.loaded = true;
