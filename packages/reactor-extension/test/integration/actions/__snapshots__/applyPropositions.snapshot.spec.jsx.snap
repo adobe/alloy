@@ -1,0 +1,113 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Apply propositions settings snapshots > clears the view name 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > rejects an invalid propositions data element 1`] = `
+{
+  "errors": [
+    {
+      "field": "Propositions",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "propositionsTextField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+    "propositions": "not a data element",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+    "propositions": "not a data element",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply propositions settings snapshots > round trips empty settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > round trips new settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > round trips populated settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+    "metadata": {
+      "scope1": {
+        "actionType": "setHtml",
+        "selector": "#a",
+      },
+    },
+    "propositions": "%props%",
+    "viewName": "hello",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+    "metadata": {
+      "scope1": {
+        "actionType": "setHtml",
+        "selector": "#a",
+      },
+    },
+    "propositions": "%props%",
+    "viewName": "hello",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > round trips view name settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "instanceName": "alloy",
+    "viewName": "hello",
+  },
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+    "viewName": "hello",
+  },
+  "valid": true,
+}
+`;
