@@ -1,0 +1,197 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Monitor triggered settings snapshots > round trips data element settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "name": "%hook%",
+  },
+  "settingsBeforeValidate": {
+    "name": "%hook%",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Monitor triggered settings snapshots > round trips empty settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Monitoring hook",
+      "messages": [
+        "Please choose a monitoring hook.",
+      ],
+      "testId": "nameField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {},
+  "settingsBeforeValidate": {},
+  "valid": false,
+}
+`;
+
+exports[`Monitor triggered settings snapshots > round trips invalid settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Monitoring hook",
+      "messages": [
+        "Please choose a monitoring hook from the list or specify a single data element.",
+      ],
+      "testId": "nameField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "name": "not-a-hook",
+  },
+  "settingsBeforeValidate": {
+    "name": "not-a-hook",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Monitor triggered settings snapshots > round trips minimal settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "name": "onBeforeCommand",
+  },
+  "settingsBeforeValidate": {
+    "name": "onBeforeCommand",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Monitor triggered settings snapshots > round trips new settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Monitoring hook",
+      "messages": [
+        "Please choose a monitoring hook.",
+      ],
+      "testId": "nameField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {},
+  "settingsBeforeValidate": {},
+  "valid": false,
+}
+`;
+
+exports[`Monitor triggered settings snapshots > round trips populated settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "name": "onNetworkResponse",
+  },
+  "settingsBeforeValidate": {
+    "name": "onNetworkResponse",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Monitor triggered settings snapshots > round trips with components disabled 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "name": "onBeforeCommand",
+  },
+  "settingsBeforeValidate": {
+    "name": "onBeforeCommand",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Monitor triggered settings snapshots > round trips with self hosted 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "name": "onBeforeCommand",
+  },
+  "settingsBeforeValidate": {
+    "name": "onBeforeCommand",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Monitor triggered settings snapshots > selects another monitoring hook 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "name": "onCommandRejected",
+  },
+  "settingsBeforeValidate": {
+    "name": "onCommandRejected",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Monitor triggered settings snapshots > sets the monitoring hook to "" 1`] = `
+{
+  "errors": [
+    {
+      "field": "Monitoring hook",
+      "messages": [
+        "Please choose a monitoring hook.",
+      ],
+      "testId": "nameField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {},
+  "settingsBeforeValidate": {},
+  "valid": false,
+}
+`;
+
+exports[`Monitor triggered settings snapshots > sets the monitoring hook to "%edited%" 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "name": "%edited%",
+  },
+  "settingsBeforeValidate": {
+    "name": "%edited%",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Monitor triggered settings snapshots > sets the monitoring hook to "not a data element" 1`] = `
+{
+  "errors": [
+    {
+      "field": "Monitoring hook",
+      "messages": [
+        "Please choose a monitoring hook from the list or specify a single data element.",
+      ],
+      "testId": "nameField",
+    },
+  ],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "name": "not a data element",
+  },
+  "settingsBeforeValidate": {
+    "name": "not a data element",
+  },
+  "valid": false,
+}
+`;
