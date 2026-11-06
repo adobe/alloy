@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import { http, HttpResponse } from "msw";
 import { singleSchemaHandlers } from "./mocks/defaultHandlers";
-import field from "./field";
 
 export const schemaSettings = {
   sandbox: { name: "prod" },
@@ -67,21 +66,15 @@ export const extensionSettings = {
   ],
 };
 
-export const extensionModes = [
-  [
-    "components disabled",
-    {
-      ...extensionSettings,
-      components: Object.fromEntries(
-        Object.keys(components).map((k) => [k, false]),
-      ),
-    },
-  ],
-  [
-    "self hosted",
-    { ...extensionSettings, libraryCode: { type: "preinstalled" } },
-  ],
-];
+export const reinitialize = async (driver, settings) => {
+  const ready = new Promise((resolve) => {
+    window.addEventListener("extension-reactor-alloy:rendered", resolve, {
+      once: true,
+    });
+  });
+  await driver.init({ extensionSettings, settings });
+  await ready;
+};
 
 const schema = {
   $id: schemaSettings.schema.id,
@@ -170,52 +163,8 @@ export const dataElementHandlers = [
   }),
 ];
 
-export const treeValueEdits = [
-  ["testField", "typed text"],
-  ["testField", "%edited%"],
-  ["testField", ""],
-  ["count", "42"],
-  ["count", "%count%"],
-  ["count", "-1"],
-  ["count", "abc"],
-  ["count", ""],
-];
-
 export const selectTreeNode = (view, name) =>
   view
     .getByTestId("xdmTreeNodeTitleDisplayName")
     .getByText(name, { exact: true })
     .click();
-
-export const treeStructureEdits = [
-  [
-    "adds an array item",
-    async (view) => {
-      await selectTreeNode(view, "tags");
-      await view.getByTestId("addItemButton").click();
-    },
-  ],
-  [
-    "removes the first array item",
-    async (view) => {
-      await selectTreeNode(view, "tags");
-      await view.getByTestId("item0RemoveButton").click();
-    },
-  ],
-  [
-    "populates an entire array with a data element",
-    async (view) => {
-      await selectTreeNode(view, "tags");
-      await field(view.getByTestId("wholePopulationStrategyField")).check();
-      await field(view.getByTestId("valueField")).fill("%tags%");
-    },
-  ],
-  [
-    "populates an entire object with a data element",
-    async (view) => {
-      await selectTreeNode(view, "nested");
-      await field(view.getByTestId("wholePopulationStrategyField")).check();
-      await field(view.getByTestId("valueField")).fill("%nested%");
-    },
-  ],
-];

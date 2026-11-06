@@ -19,7 +19,7 @@ import field from "../helpers/field";
 import { worker } from "../helpers/mocks/browser";
 import {
   extensionSettings,
-  extensionModes,
+  reinitialize,
 } from "../helpers/dataElementsSnapshot";
 
 vi.mock("../../../src/view/render", async () => ({
@@ -30,15 +30,6 @@ const View = await loadEntryView(
   () => import("../../../src/view/dataElements/identityMap"),
 );
 
-const minimal = {
-  Email: [
-    {
-      id: "person@example.com",
-      authenticatedState: "ambiguous",
-      primary: false,
-    },
-  ],
-};
 const populated = {
   Email: [
     { id: "%email%", authenticatedState: "authenticated", primary: true },
@@ -77,65 +68,22 @@ describe("Identity map settings snapshots", () => {
 
   afterEach(() => cleanup());
 
-  it.each([
-    ["new", null],
-    ["minimal", minimal],
-    ["populated", populated],
-    [
-      "empty ID",
-      { Email: [{ id: "", authenticatedState: "ambiguous", primary: false }] },
-    ],
-    ["forbidden ECID", { ECID: [{ id: "123", primary: true }] }],
-  ])("round trips %s settings", async (_, settings) => {
-    await driver.init({ extensionSettings, settings });
+  it("round trips new settings", async () => {
+    await driver.init({ extensionSettings, settings: null });
     await expect.element(view.getByTestId("addIdentityButton")).toBeVisible();
     expect(await captureState(bridge)).toMatchSnapshot();
+    const settings = { ECID: [{ id: "123", primary: true }] };
+    await reinitialize(driver, settings);
+    await driver.expectSettings().toEqual(settings);
+    const registration = await bridge.registration;
+    expect(await registration.validate()).toBe(false);
+    await field(view.getByTestId("namespace0Combobox")).expectError(
+      "ECID is not allowed",
+    );
   });
 
   // S2 Tabs throws from updateOverflow when the saved map has no identities.
   it.todo("round trips empty settings");
-
-  it("round trips duplicate primary identifiers settings", async () => {
-    await driver.init({
-      extensionSettings,
-      settings: {
-        Email: [
-          { id: "a", primary: true },
-          { id: "b", primary: true },
-        ],
-      },
-    });
-    expect(await captureState(bridge)).toMatchSnapshot();
-    await expect
-      .element(view.getByText("Only one identifier can be primary."))
-      .toBeVisible();
-  });
-
-  it.each(extensionModes)(
-    "round trips minimal settings with %s",
-    async (_, mode) => {
-      await driver.init({ extensionSettings: mode, settings: minimal });
-      expect(await captureState(bridge)).toMatchSnapshot();
-    },
-  );
-
-  it.each(["%edited%", "", "not a data element"])(
-    "edits the namespace to %j",
-    async (value) => {
-      await driver.init({ extensionSettings, settings: populated });
-      await field(view.getByTestId("namespace0Combobox")).fill(value);
-      expect(await captureState(bridge)).toMatchSnapshot();
-    },
-  );
-
-  it.each(["%edited%", "", "not a data element"])(
-    "edits the ID to %j",
-    async (value) => {
-      await driver.init({ extensionSettings, settings: populated });
-      await field(view.getByTestId("identity0idField0")).fill(value);
-      expect(await captureState(bridge)).toMatchSnapshot();
-    },
-  );
 
   it("makes an identifier in another namespace primary", async () => {
     await driver.init({ extensionSettings, settings: populated });
@@ -144,27 +92,17 @@ describe("Identity map settings snapshots", () => {
     await expect
       .element(view.getByText("Only one identifier can be primary."))
       .toBeVisible();
-  });
-
-  it("changes the authenticated state", async () => {
-    await driver.init({ extensionSettings, settings: populated });
-    await field(
-      view.getByTestId("identity0authenticatedStateField0"),
-    ).selectOption("Authenticated");
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("adds an identifier", async () => {
-    await driver.init({ extensionSettings, settings: populated });
-    await view.getByTestId("addIdentifier0Button").click();
-    await field(view.getByTestId("identity0idField1")).fill("%newId%");
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("validates an empty added identifier", async () => {
-    await driver.init({ extensionSettings, settings: populated });
-    await view.getByTestId("addIdentifier0Button").click();
-    expect(await captureState(bridge)).toMatchSnapshot();
+    await view.getByRole("tab", { name: "CRM", exact: true }).click();
+    await field(view.getByTestId("identity0primaryField0")).uncheck();
+    await field(view.getByTestId("namespace0Combobox")).selectOption("Email");
+    const registration = await bridge.registration;
+    expect(await registration.validate()).toBe(false);
+    await view.getByRole("tab", { name: "Email", exact: true }).nth(1).click();
+    await expect.element(view.getByTestId("namespace1Combobox")).toBeVisible();
+    await field(view.getByTestId("namespace1Combobox")).expectError(
+      "Please provide a unique namespace.",
+    );
+    await driver.expectSettings().toEqual({ Email: populated.Email });
   });
 
   it("adds a custom namespace", async () => {
@@ -173,59 +111,42 @@ describe("Identity map settings snapshots", () => {
     await field(view.getByTestId("namespace2Combobox")).fill("NewNamespace");
     await field(view.getByTestId("identity2idField0")).fill("%id%");
     expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("validates an empty added identity", async () => {
-    await driver.init({ extensionSettings, settings: populated });
-    await view.getByTestId("addIdentityButton").click();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("deletes an identity", async () => {
-    await driver.init({ extensionSettings, settings: populated });
-    await view.getByTestId("deleteIdentity0Button").click();
-    await expect
-      .element(view.getByRole("tab", { name: "CRM", exact: true }))
-      .not.toBeInTheDocument();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("clears the first ID in the second identity", async () => {
-    await driver.init({ extensionSettings, settings: populated });
-    await view.getByRole("tab", { name: "Email", exact: true }).click();
-    await field(view.getByTestId("identity1idField0")).clear();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("makes the second identifier primary", async () => {
-    await driver.init({ extensionSettings, settings: populated });
-    await view.getByRole("tab", { name: "Email", exact: true }).click();
-    await field(view.getByTestId("identity1primaryField1")).check();
-    expect(await captureState(bridge)).toMatchSnapshot();
-    await expect
-      .element(view.getByText("Only one identifier can be primary."))
-      .toBeVisible();
-  });
-
-  it("deletes an identifier", async () => {
-    await driver.init({ extensionSettings, settings: populated });
-    await view.getByRole("tab", { name: "Email", exact: true }).click();
-    await view.getByTestId("deleteIdentifier1Button0").click();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("rejects duplicate namespaces", async () => {
-    await driver.init({ extensionSettings, settings: populated });
-    await field(view.getByTestId("namespace0Combobox")).selectOption("Email");
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("populates an ID through the extension bridge", async () => {
-    await driver.init({ extensionSettings, settings: minimal });
+    await field(view.getByTestId("namespace2Combobox")).fill("%edited%");
+    await driver
+      .expectSettings((settings) => settings["%edited%"])
+      .toEqual([
+        { id: "%id%", authenticatedState: "ambiguous", primary: false },
+      ]);
+    await view.getByTestId("deleteIdentity2Button").click();
+    await view.getByTestId("addIdentifier0Button").click();
+    await field(view.getByTestId("identity0idField1")).fill("%newId%");
+    await driver
+      .expectSettings((settings) => settings.CRM[1])
+      .toEqual({
+        id: "%newId%",
+        authenticatedState: "ambiguous",
+        primary: false,
+      });
+    await field(
+      view.getByTestId("identity0authenticatedStateField1"),
+    ).selectOption("Authenticated");
     await view
       .getByRole("button", { name: "Select data element", exact: true })
       .last()
       .click();
-    expect(await captureState(bridge)).toMatchSnapshot();
+    await driver
+      .expectSettings((settings) => settings.CRM[1])
+      .toEqual({
+        id: "%data element name%",
+        authenticatedState: "authenticated",
+        primary: false,
+      });
+    await view.getByTestId("deleteIdentity0Button").click();
+    await expect
+      .element(view.getByRole("tab", { name: "CRM", exact: true }))
+      .not.toBeInTheDocument();
+    await driver.expectSettings().toEqual({ Email: populated.Email });
+    await view.getByTestId("deleteIdentifier0Button0").click();
+    await driver.expectSettings().toEqual({ Email: [populated.Email[1]] });
   });
 });

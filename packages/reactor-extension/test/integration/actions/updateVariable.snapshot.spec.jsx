@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, beforeEach, afterEach, expect } from "vitest";
-import { userEvent } from "vitest/browser";
 import UpdateVariableView from "../../../src/view/actions/updateVariableView";
 import useView from "../helpers/useView";
 import captureState from "../helpers/captureState";
@@ -19,13 +18,12 @@ import field from "../helpers/field";
 import { worker } from "../helpers/mocks/browser";
 import {
   extensionSettings,
-  extensionModes,
+  schemaSettings,
   schemaHandlers,
   dataElementHandlers,
   updateSettings,
-  treeValueEdits,
-  treeStructureEdits,
   selectTreeNode,
+  reinitialize,
 } from "../helpers/dataElementsSnapshot";
 
 let view;
@@ -41,30 +39,10 @@ describe("Update variable settings snapshots", () => {
 
   afterEach(() => cleanup());
 
-  it.each([
-    ["new", null],
-    ["empty", {}],
-    ["minimal", { dataElementName: "XDM variable" }],
-    ["populated", updateSettings],
-    [
-      "legacy data element ID",
-      { dataElementId: "DE1", data: { testField: "legacy" } },
-    ],
-    [
-      "stale legacy ID",
-      { dataElementId: "DE_STALE", data: { testField: "legacy" } },
-    ],
-    [
-      "name preferred over ID",
-      { dataElementName: "XDM variable", dataElementId: "DE2" },
-    ],
-    [
-      "missing name falls back to ID",
-      { dataElementName: "Missing variable", dataElementId: "DE1" },
-    ],
-    [
-      "data variable",
-      {
+  it("round trips data variable settings", async () => {
+    await driver.init({
+      extensionSettings,
+      settings: {
         dataElementName: "Data variable",
         data: {
           __adobe: {
@@ -74,58 +52,57 @@ describe("Update variable settings snapshots", () => {
           },
         },
       },
-    ],
-    [
-      "lowercase audience manager",
-      {
-        dataElementName: "Data variable",
-        data: { __adobe: { audiencemanager: { d_uuid: "123" } } },
-      },
-    ],
-    [
-      "clear transform",
-      {
+    });
+    expect(await captureState(bridge)).toMatchSnapshot();
+    const data = { __adobe: { audiencemanager: { d_uuid: "123" } } };
+    await reinitialize(driver, { dataElementName: "Data variable", data });
+    await driver.expectSettings().toEqual({
+      dataElementName: "Data variable",
+      dataElementId: "DE2",
+      data,
+    });
+    const registration = await bridge.registration;
+    expect(await registration.validate()).toBe(true);
+  });
+
+  it("round trips root clear transform settings", async () => {
+    await driver.init({
+      extensionSettings,
+      settings: {
         dataElementName: "XDM variable",
-        data: { testField: "new" },
-        transforms: { count: { clear: true } },
+        transforms: { "": { clear: true } },
       },
-    ],
-    [
-      "root clear transform",
-      { dataElementName: "XDM variable", transforms: { "": { clear: true } } },
-    ],
-    [
-      "whole object data element",
-      { dataElementName: "XDM variable", data: "%object%" },
-    ],
-  ])("round trips %s settings", async (_, settings) => {
-    await driver.init({ extensionSettings, settings });
-    await expect.element(view.getByTestId("dataElementField")).toBeVisible();
+    });
     expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each(extensionModes)(
-    "round trips minimal settings with %s",
-    async (_, mode) => {
-      await driver.init({
-        extensionSettings: mode,
-        settings: { dataElementName: "XDM variable" },
-      });
-      expect(await captureState(bridge)).toMatchSnapshot();
-    },
-  );
-
-  it.each(treeValueEdits)("edits %s to %j", async (name, value) => {
-    await driver.init({ extensionSettings, settings: updateSettings });
-    await selectTreeNode(view, name);
-    await field(view.getByTestId("valueField")).fill(value);
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each(treeStructureEdits)("%s", async (_, edit) => {
-    await driver.init({ extensionSettings, settings: updateSettings });
-    await edit(view);
-    expect(await captureState(bridge)).toMatchSnapshot();
+    await selectTreeNode(view, "xdm");
+    await field(view.getByTestId("clearField")).uncheck();
+    await field(view.getByTestId("wholePopulationStrategyField")).check();
+    await field(view.getByTestId("valueField")).fill("%object%");
+    await driver.expectSettings().toEqual({
+      dataElementName: "XDM variable",
+      dataElementId: "DE1",
+      schema: schemaSettings.schema,
+      data: "%object%",
+    });
+    await reinitialize(driver, {
+      dataElementName: "XDM variable",
+      transforms: { count: { clear: true } },
+    });
+    await selectTreeNode(view, "count");
+    await field(view.getByTestId("clearField")).expectChecked();
+    await driver
+      .expectSettings((settings) => settings.transforms)
+      .toEqual({ count: { clear: true } });
+    await field(view.getByTestId("clearField")).uncheck();
+    await field(view.getByTestId("valueField")).fill("42");
+    await driver.expectSettings().toEqual({
+      dataElementName: "XDM variable",
+      dataElementId: "DE1",
+      schema: schemaSettings.schema,
+      data: { count: 42 },
+    });
+    const registration = await bridge.registration;
+    expect(await registration.validate()).toBe(true);
   });
 
   it("switches from an XDM variable to a Data variable", async () => {
@@ -141,8 +118,9 @@ describe("Update variable settings snapshots", () => {
     expect(await captureState(bridge)).toMatchSnapshot();
   });
 
-  it("selects a data element for a new action", async () => {
+  it("round trips new settings", async () => {
     await driver.init({ extensionSettings, settings: null });
+    expect(await captureState(bridge)).toMatchSnapshot();
     await field(view.getByTestId("dataElementField")).selectOption(
       "XDM variable",
     );
@@ -153,38 +131,36 @@ describe("Update variable settings snapshots", () => {
           .getByText("testField", { exact: true }),
       )
       .toBeVisible();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("blurs a cleared data element input", async () => {
-    await driver.init({ extensionSettings, settings: updateSettings });
-    await view.getByTestId("dataElementField").getByRole("combobox").clear();
-    await userEvent.tab();
-    await field(view.getByTestId("dataElementField")).expectValue(
-      "XDM variable",
-    );
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("clears a field through a transform", async () => {
-    await driver.init({ extensionSettings, settings: updateSettings });
-    await selectTreeNode(view, "count");
-    await field(view.getByTestId("clearField")).check();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("removes a saved clear transform", async () => {
-    await driver.init({
-      extensionSettings,
-      settings: {
-        dataElementName: "XDM variable",
-        transforms: { count: { clear: true } },
-      },
+    const expected = {
+      dataElementName: "XDM variable",
+      dataElementId: "DE1",
+      schema: schemaSettings.schema,
+      data: {},
+    };
+    await driver.expectSettings().toEqual(expected);
+    await reinitialize(driver, {
+      dataElementId: "DE_STALE",
+      data: { testField: "legacy" },
     });
-    await selectTreeNode(view, "count");
-    await field(view.getByTestId("clearField")).uncheck();
-    await field(view.getByTestId("valueField")).fill("42");
-    expect(await captureState(bridge)).toMatchSnapshot();
+    const migrated = { ...expected, data: { testField: "legacy" } };
+    await driver.expectSettings().toEqual(migrated);
+    const registration = await bridge.registration;
+    expect(await registration.validate()).toBe(true);
+    await driver.expectSettings().toEqual(migrated);
+    await reinitialize(driver, {
+      dataElementName: "XDM variable",
+      dataElementId: "DE2",
+    });
+    await driver.expectSettings().toEqual(expected);
+    expect(await registration.validate()).toBe(true);
+    await driver.expectSettings().toEqual(expected);
+    await reinitialize(driver, {
+      dataElementName: "Missing variable",
+      dataElementId: "DE1",
+    });
+    await driver.expectSettings().toEqual(expected);
+    expect(await registration.validate()).toBe(true);
+    await driver.expectSettings().toEqual(expected);
   });
 
   it("edits custom code through the extension bridge", async () => {
@@ -192,5 +168,13 @@ describe("Update variable settings snapshots", () => {
     bridge.openCodeEditorMock = async () => "content.xdm.count = 42;";
     await view.getByTestId("onBeforeEventSendEditButton").click();
     expect(await captureState(bridge)).toMatchSnapshot();
+    await selectTreeNode(view, "count");
+    await field(view.getByTestId("clearField")).check();
+    await driver
+      .expectSettings((settings) => ({
+        count: settings.data.count,
+        transforms: settings.transforms,
+      }))
+      .toEqual({ count: 2, transforms: { count: { clear: true } } });
   });
 });

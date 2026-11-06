@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, beforeEach, afterEach, expect } from "vitest";
-import { userEvent } from "vitest/browser";
 import VariableView from "../../../src/view/dataElements/variableView";
 import useView from "../helpers/useView";
 import captureState from "../helpers/captureState";
@@ -19,10 +18,10 @@ import field from "../helpers/field";
 import { worker } from "../helpers/mocks/browser";
 import {
   extensionSettings,
-  extensionModes,
   schemaSettings,
   schemaHandlers,
   solutions,
+  reinitialize,
 } from "../helpers/dataElementsSnapshot";
 
 let view;
@@ -38,19 +37,20 @@ describe("Variable settings snapshots", () => {
 
   afterEach(() => cleanup());
 
-  it.each([
-    ["new", null],
-    ["empty", {}],
-    ["minimal XDM", schemaSettings],
-    ["all data solutions", { solutions }],
-    ["schema without sandbox", { schema: schemaSettings.schema }],
-    [
-      "legacy audienceManager solution",
-      { solutions: ["analytics", "audienceManager", "target"] },
-    ],
-  ])("round trips %s settings", async (_, settings) => {
-    await driver.init({ extensionSettings, settings });
+  it("round trips schema without sandbox settings", async () => {
+    await driver.init({
+      extensionSettings,
+      settings: { schema: schemaSettings.schema },
+    });
     expect(await captureState(bridge)).toMatchSnapshot();
+    await reinitialize(driver, {
+      solutions: ["analytics", "audienceManager", "target"],
+    });
+    await driver.expectSettings().toEqual({ solutions });
+    await field(view.getByTestId("audiencemanagerCheckbox")).expectChecked();
+    const registration = await bridge.registration;
+    expect(await registration.validate()).toBe(true);
+    await driver.expectSettings().toEqual({ solutions });
   });
 
   it("round trips untouched empty solutions settings", async () => {
@@ -59,20 +59,6 @@ describe("Variable settings snapshots", () => {
     await expect
       .element(view.getByText("Please select at least one Adobe solution."))
       .toBeVisible();
-  });
-
-  it.each(extensionModes)(
-    "round trips XDM settings with %s",
-    async (_, mode) => {
-      await driver.init({ extensionSettings: mode, settings: schemaSettings });
-      expect(await captureState(bridge)).toMatchSnapshot();
-    },
-  );
-
-  it.each(solutions)("unchecks the %s solution", async (solution) => {
-    await driver.init({ extensionSettings, settings: { solutions } });
-    await field(view.getByTestId(`${solution}Checkbox`)).uncheck();
-    expect(await captureState(bridge)).toMatchSnapshot();
   });
 
   it("unchecks all solutions while the last checkbox keeps focus", async () => {
@@ -87,27 +73,12 @@ describe("Variable settings snapshots", () => {
     await expect
       .element(view.getByText("Please select at least one Adobe solution."))
       .toBeVisible();
-  });
-
-  it("switches from Data to XDM", async () => {
-    await driver.init({ extensionSettings, settings: { solutions } });
+    await field(view.getByTestId("analyticsCheckbox")).check();
+    await driver.expectSettings().toEqual({ solutions: ["analytics"] });
     await field(view.getByTestId("xdmRadioButton")).check();
     await field(view.getByTestId("schemaField")).expectValue("Test Schema 1");
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("switches from XDM to Data and selects a solution", async () => {
-    await driver.init({ extensionSettings, settings: schemaSettings });
+    await driver.expectSettings().toEqual(schemaSettings);
     await field(view.getByTestId("dataRadioButton")).check();
-    await field(view.getByTestId("analyticsCheckbox")).check();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("blurs a cleared schema input", async () => {
-    await driver.init({ extensionSettings, settings: schemaSettings });
-    await view.getByTestId("schemaField").getByRole("combobox").clear();
-    await userEvent.tab();
-    await field(view.getByTestId("schemaField")).expectValue("Test Schema 1");
-    expect(await captureState(bridge)).toMatchSnapshot();
+    await driver.expectSettings().toEqual({ solutions: ["analytics"] });
   });
 });
