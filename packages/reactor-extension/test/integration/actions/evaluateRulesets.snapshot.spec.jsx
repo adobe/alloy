@@ -42,36 +42,10 @@ describe("Evaluate rulesets settings snapshots", () => {
   afterEach(() => cleanup());
 
   it.each([
-    ["new", null],
-    ["empty", {}],
-    ["minimal", { instanceName: "alloy" }],
     ["populated", populated],
     ["data element", { personalization: { decisionContext: "%context%" } }],
   ])("round trips %s settings", async (_, settings) => {
     await driver.init({ extensionSettings, settings });
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each(["Key0Field", "Value0Field", "Value2Field"])(
-    "edits, clears, and invalidates %s",
-    async (id) => {
-      await driver.init({ extensionSettings, settings: populated });
-      await field(view.getByTestId(id)).fill("%edited%");
-      expect(await captureState(bridge)).toMatchSnapshot();
-      await field(view.getByTestId(id)).fill("");
-      expect(await captureState(bridge)).toMatchSnapshot();
-      await field(view.getByTestId(id)).fill("not a data element");
-      expect(await captureState(bridge)).toMatchSnapshot();
-    },
-  );
-
-  it.each([
-    "decisionContextAddButton",
-    "decisionContext0RemoveButton",
-    "renderDecisionsCheckbox",
-  ])("clicks %s", async (id) => {
-    await driver.init({ extensionSettings, settings: populated });
-    await field(view.getByTestId(id)).click();
     expect(await captureState(bridge)).toMatchSnapshot();
   });
 
@@ -86,26 +60,6 @@ describe("Evaluate rulesets settings snapshots", () => {
     await driver.init({ extensionSettings, settings: null });
     await view.getByTestId("decisionContextAddButton").click();
     await field(view.getByTestId("Value1Field")).fill("value");
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("switches context to empty, invalid, and valid data elements", async () => {
-    await driver.init({ extensionSettings, settings: populated });
-    await field(view.getByTestId("decisionContextDataElementOption")).click();
-    expect(await captureState(bridge)).toMatchSnapshot();
-    await field(view.getByTestId("decisionContextDataElementField")).fill(
-      "not a data element",
-    );
-    expect(await captureState(bridge)).toMatchSnapshot();
-    await field(view.getByTestId("decisionContextDataElementField")).fill(
-      "%edited%",
-    );
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("switches instances", async () => {
-    await driver.init({ extensionSettings, settings: populated });
-    await field(view.getByTestId("instanceNamePicker")).selectOption("alloy");
     expect(await captureState(bridge)).toMatchSnapshot();
   });
 

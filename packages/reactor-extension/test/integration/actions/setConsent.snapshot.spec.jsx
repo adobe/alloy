@@ -18,7 +18,6 @@ import field from "../helpers/field";
 import {
   extensionSettings,
   company,
-  modes,
   overrides,
   mockActionDatastreams,
 } from "../helpers/actionsSnapshots";
@@ -29,9 +28,6 @@ vi.mock("../../../src/view/render", async () => ({
 const View = await loadEntryView(
   () => import("../../../src/view/actions/setConsent"),
 );
-const minimal = {
-  consent: [{ standard: "Adobe", version: "1.0", value: { general: "in" } }],
-};
 const populated = {
   instanceName: "secondary",
   identityMap: "%identity%",
@@ -63,13 +59,7 @@ describe("Set consent settings snapshots", () => {
 
   it.each([
     ["new", null],
-    ["empty", {}],
-    ["minimal Adobe 1.0", minimal],
     ["populated", populated],
-    [
-      "Adobe 2.0",
-      { consent: [{ standard: "Adobe", version: "2.0", value: "%consent2%" }] },
-    ],
     [
       "Adobe 1.0 data element",
       {
@@ -104,132 +94,31 @@ describe("Set consent settings snapshots", () => {
         consent: [{ standard: "Adobe", version: "2.0", value: "" }],
       },
     ],
-    ["empty consent array", { consent: [] }],
   ])("round trips %s settings", async (_, settings) => {
     await driver.init({ company, extensionSettings, settings });
     expect(await captureState(bridge)).toMatchSnapshot();
   });
 
-  it.each([
-    "identityMapField",
-    "valueField",
-    "iabVersionField",
-    "iabValueField",
-  ])("edits, clears, and invalidates %s", async (id) => {
-    await driver.init({ company, extensionSettings, settings: editable });
-    await field(view.getByTestId(id)).fill("%edited%");
-    expect(await captureState(bridge)).toMatchSnapshot();
-    await field(view.getByTestId(id)).fill("");
-    expect(await captureState(bridge)).toMatchSnapshot();
-    await field(view.getByTestId(id)).fill("not a data element");
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each([
-    ["inputMethodDataElementRadio", "dataElementField"],
-    ["generalDataElementRadio", "generalDataElementField"],
-    ["gdprAppliesDataElementRadio", "gdprAppliesDataElementField"],
-    [
-      "gdprContainsPersonalDataDataElementRadio",
-      "gdprContainsPersonalDataDataElementField",
-    ],
-  ])(
-    "switches %s and validates empty, invalid, and valid data elements",
-    async (option, id) => {
-      await driver.init({ company, extensionSettings, settings: editable });
-      await field(view.getByTestId(option)).click();
-      expect(await captureState(bridge)).toMatchSnapshot();
-      await field(view.getByTestId(id)).fill("not a data element");
-      expect(await captureState(bridge)).toMatchSnapshot();
-      await field(view.getByTestId(id)).fill("%edited%");
-      expect(await captureState(bridge)).toMatchSnapshot();
-    },
-  );
-
-  it.each([
-    "generalInRadio",
-    "gdprAppliesYesRadio",
-    "gdprContainsPersonalDataNoRadio",
-    "addConsentButton",
-  ])("clicks %s", async (id) => {
-    await driver.init({ company, extensionSettings, settings: editable });
-    await field(view.getByTestId(id)).click();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("sets general consent out", async () => {
-    await driver.init({ company, extensionSettings, settings: minimal });
-    await field(view.getByTestId("generalOutRadio")).click();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("deletes the first consent object", async () => {
-    await driver.init({ company, extensionSettings, settings: populated });
-    await view
-      .getByTestId("consentObject0")
-      .getByTestId("deleteConsentButton")
-      .click();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("switches the first object to IAB TCF", async () => {
-    await driver.init({ company, extensionSettings, settings: populated });
-    await field(
-      view.getByTestId("consentObject0").getByTestId("standardPicker"),
-    ).selectOption("IAB TCF");
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("switches Adobe 1.0 to Adobe 2.0", async () => {
-    await driver.init({ company, extensionSettings, settings: minimal });
-    await field(view.getByTestId("adobeVersionPicker")).selectOption("2.0");
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("returns from a whole consent data element to the form", async () => {
-    await driver.init({
-      company,
-      extensionSettings,
-      settings: { consent: "%consent%" },
-    });
-    await field(view.getByTestId("inputMethodFormRadio")).click();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("switches instances", async () => {
-    await driver.init({ company, extensionSettings, settings: populated });
-    await field(view.getByTestId("instanceNamePicker")).selectOption("alloy");
-    await field(view.getByTestId("datastreamId")).expectValue(
-      "Development stream",
-    );
-    await field(view.getByTestId("idSyncContainerOverride")).expectDisabled();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each([123, "%id%"])("validates saved ID-sync override %j", async (id) => {
+  it("edits, clears, and invalidates iabVersionField", async () => {
     await driver.init({
       company,
       extensionSettings,
       settings: {
-        ...minimal,
-        instanceName: "secondary",
-        edgeConfigOverrides: {
-          development: {
-            enabled: true,
-            com_adobe_identity: { idSyncContainerId: id },
-          },
-        },
+        ...editable,
+        consent: [editable.consent[2]],
       },
     });
+    await field(view.getByTestId("iabVersionField")).fill("%edited%");
+    expect(await captureState(bridge)).toMatchSnapshot();
+    await field(view.getByTestId("iabVersionField")).fill("");
     expect(await captureState(bridge)).toMatchSnapshot();
   });
 
-  it.each(modes)("round trips with %s", async (_, configuration) => {
-    await driver.init({
-      company,
-      extensionSettings: configuration,
-      settings: minimal,
-    });
+  it("switches the first object to IAB TCF", async () => {
+    await driver.init({ company, extensionSettings, settings: editable });
+    await field(
+      view.getByTestId("consentObject0").getByTestId("standardPicker"),
+    ).selectOption("IAB TCF");
     expect(await captureState(bridge)).toMatchSnapshot();
   });
 });

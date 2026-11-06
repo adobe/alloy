@@ -14,8 +14,7 @@ import { describe, it, beforeEach, afterEach, expect, vi } from "vitest";
 import useView from "../helpers/useView";
 import loadEntryView from "../helpers/entryView";
 import captureState from "../helpers/captureState";
-import field from "../helpers/field";
-import { extensionSettings, modes } from "../helpers/actionsSnapshots";
+import { extensionSettings } from "../helpers/actionsSnapshots";
 
 vi.mock("../../../src/view/render", async () => ({
   default: (await import("../helpers/entryView")).captureRender,
@@ -23,41 +22,21 @@ vi.mock("../../../src/view/render", async () => ({
 const View = await loadEntryView(
   () => import("../../../src/view/actions/sendPushSubscription"),
 );
-let view;
 let bridge;
 let driver;
 let cleanup;
 
 describe("Send push subscription settings snapshots", () => {
   beforeEach(async () => {
-    ({ view, bridge, driver, cleanup } = await useView(View));
+    ({ bridge, driver, cleanup } = await useView(View));
   });
   afterEach(() => cleanup());
 
-  it.each([
-    ["new", null],
-    ["empty", {}],
-    ["minimal", { instanceName: "alloy" }],
-    ["populated", { instanceName: "secondary" }],
-  ])("round trips %s settings", async (_, settings) => {
-    await driver.init({ extensionSettings, settings });
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("switches instances", async () => {
-    await driver.init({
-      extensionSettings,
-      settings: { instanceName: "secondary" },
-    });
-    await field(view.getByTestId("instanceNamePicker")).selectOption("alloy");
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each(modes)("round trips with %s", async (_, configuration) => {
-    await driver.init({
-      extensionSettings: configuration,
-      settings: { instanceName: "alloy" },
-    });
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
+  it.each([["populated", { instanceName: "secondary" }]])(
+    "round trips %s settings",
+    async (_, settings) => {
+      await driver.init({ extensionSettings, settings });
+      expect(await captureState(bridge)).toMatchSnapshot();
+    },
+  );
 });

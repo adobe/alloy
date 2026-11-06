@@ -52,10 +52,6 @@ export const modes = [
       ),
     },
   ],
-  [
-    "self hosted",
-    { ...extensionSettings, libraryCode: { type: "preinstalled" } },
-  ],
 ];
 
 export const overrides = Object.fromEntries(

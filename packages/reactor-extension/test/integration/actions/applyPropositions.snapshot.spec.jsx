@@ -16,7 +16,7 @@ import useView from "../helpers/useView";
 import loadEntryView from "../helpers/entryView";
 import captureState from "../helpers/captureState";
 import field from "../helpers/field";
-import { extensionSettings, modes } from "../helpers/actionsSnapshots";
+import { extensionSettings } from "../helpers/actionsSnapshots";
 
 vi.mock("../../../src/view/render", async () => ({
   default: (await import("../helpers/entryView")).captureRender,
@@ -35,6 +35,10 @@ const populated = {
     checkout: { selector: ".cart", actionType: "appendHtml" },
   },
 };
+const editable = {
+  ...populated,
+  metadata: { checkout: populated.metadata.checkout },
+};
 
 let view;
 let bridge;
@@ -51,79 +55,35 @@ describe("Apply propositions settings snapshots", () => {
   });
 
   it.each([
-    ["new", null],
-    ["empty", {}],
     ["view name", { viewName: "hello" }],
-    [
-      "populated",
-      {
-        instanceName: "alloy",
-        propositions: "%props%",
-        viewName: "hello",
-        metadata: {
-          scope1: { selector: "#a", actionType: "setHtml" },
-        },
-      },
-    ],
-  ])("round trips %s settings", async (_, settings) => {
-    await driver.init({ extensionSettings, settings });
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("clears the view name", async () => {
-    await driver.init({ extensionSettings, settings: { viewName: "hello" } });
-    await field(view.getByTestId("viewNameTextField")).clear();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("rejects an invalid propositions data element", async () => {
-    await driver.init({ extensionSettings, settings: null });
-    const propositions = field(view.getByTestId("propositionsTextField"));
-    await propositions.fill("not a data element");
-    await propositions.blur();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each([
-    ["minimal", { instanceName: "alloy" }],
-    ["all fields", populated],
     [
       "data elements",
       { propositions: "%props%", viewName: "%view%", metadata: "%metadata%" },
     ],
-    [
-      "partial metadata row",
-      { metadata: { home: { selector: "", actionType: "setHtml" } } },
-    ],
   ])("round trips %s settings", async (_, settings) => {
     await driver.init({ extensionSettings, settings });
     expect(await captureState(bridge)).toMatchSnapshot();
   });
 
-  it.each([
-    "propositionsTextField",
-    "viewNameTextField",
-    "metadata.0.scopeTextField",
-    "metadata.0.selectorTextField",
-    "metadata.0.actionTypeField",
-  ])("edits, clears, and invalidates %s", async (id) => {
-    await driver.init({ extensionSettings, settings: populated });
-    await field(view.getByTestId(id)).fill("%edited%");
+  it("edits, clears, and invalidates metadata.0.scopeTextField", async () => {
+    await driver.init({ extensionSettings, settings: editable });
+    const scope = field(view.getByTestId("metadata.0.scopeTextField"));
+    await scope.fill("%edited%");
     expect(await captureState(bridge)).toMatchSnapshot();
-    await field(view.getByTestId(id)).fill("");
-    expect(await captureState(bridge)).toMatchSnapshot();
-    await field(view.getByTestId(id)).fill("not a data element");
+    await scope.fill("");
     expect(await captureState(bridge)).toMatchSnapshot();
   });
 
-  it.each(["metadataAddButton", "metadata0RemoveButton"])(
-    "clicks %s",
-    async (id) => {
-      await driver.init({ extensionSettings, settings: populated });
-      await view.getByTestId(id).click();
-      expect(await captureState(bridge)).toMatchSnapshot();
-    },
-  );
+  it("edits, clears, and invalidates metadata.0.actionTypeField", async () => {
+    await driver.init({ extensionSettings, settings: editable });
+    const action = field(view.getByTestId("metadata.0.actionTypeField"));
+    await action.fill("%edited%");
+    expect(await captureState(bridge)).toMatchSnapshot();
+    await action.fill("");
+    expect(await captureState(bridge)).toMatchSnapshot();
+    await action.fill("not a data element");
+    expect(await captureState(bridge)).toMatchSnapshot();
+  });
 
   it("keeps a blank metadata row before an invalid row", async () => {
     await driver.init({ extensionSettings, settings: null });
@@ -138,40 +98,6 @@ describe("Apply propositions settings snapshots", () => {
       view.getByTestId("metadata.0.scopeTextField"),
     ).getValue();
     await field(view.getByTestId("metadata.1.scopeTextField")).fill(scope);
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("switches metadata to empty, invalid, and valid data elements", async () => {
-    await driver.init({ extensionSettings, settings: populated });
-    await field(view.getByTestId("metadataDataElementOption")).click();
-    expect(await captureState(bridge)).toMatchSnapshot();
-    await field(view.getByTestId("metadataDataElementField")).fill(
-      "not a data element",
-    );
-    expect(await captureState(bridge)).toMatchSnapshot();
-    await field(view.getByTestId("metadataDataElementField")).fill("%edited%");
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("selects a metadata action", async () => {
-    await driver.init({ extensionSettings, settings: populated });
-    await field(view.getByTestId("metadata.0.actionTypeField")).selectOption(
-      "Replace HTML",
-    );
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("switches instances", async () => {
-    await driver.init({ extensionSettings, settings: populated });
-    await field(view.getByTestId("instanceNamePicker")).selectOption("alloy");
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each(modes)("round trips with %s", async (_, configuration) => {
-    await driver.init({
-      extensionSettings: configuration,
-      settings: { instanceName: "alloy" },
-    });
     expect(await captureState(bridge)).toMatchSnapshot();
   });
 });

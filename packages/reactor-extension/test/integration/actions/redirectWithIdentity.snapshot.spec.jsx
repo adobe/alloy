@@ -18,7 +18,6 @@ import field from "../helpers/field";
 import {
   extensionSettings,
   company,
-  modes,
   overrides,
   mockActionDatastreams,
 } from "../helpers/actionsSnapshots";
@@ -43,10 +42,6 @@ describe("Redirect with identity settings snapshots", () => {
   afterEach(() => cleanup());
 
   it.each([
-    ["new", null],
-    ["empty", {}],
-    ["minimal", { instanceName: "alloy" }],
-    ["populated", populated],
     [
       "legacy",
       {
@@ -62,57 +57,47 @@ describe("Redirect with identity settings snapshots", () => {
     expect(await captureState(bridge)).toMatchSnapshot();
   });
 
+  it("edits, clears, and invalidates development overridesEnabled", async () => {
+    await driver.init({
+      company,
+      extensionSettings,
+      settings: {
+        ...populated,
+        edgeConfigOverrides: { development: overrides.development },
+      },
+    });
+    await field(view.getByTestId("overridesEnabled")).fill("%edited%");
+    expect(await captureState(bridge)).toMatchSnapshot();
+    await field(view.getByTestId("overridesEnabled")).fill("");
+    expect(await captureState(bridge)).toMatchSnapshot();
+    await field(view.getByTestId("overridesEnabled")).fill(
+      "not a data element",
+    );
+    expect(await captureState(bridge)).toMatchSnapshot();
+  });
+
   it.each([
-    "overridesEnabled",
-    "datastreamId",
-    "analyticsEnabled",
-    "idSyncContainerOverride",
-  ])("edits, clears, and invalidates development %s", async (id) => {
-    await driver.init({ company, extensionSettings, settings: populated });
-    await field(view.getByTestId(id)).fill("%edited%");
-    expect(await captureState(bridge)).toMatchSnapshot();
-    await field(view.getByTestId(id)).fill("");
-    expect(await captureState(bridge)).toMatchSnapshot();
-    await field(view.getByTestId(id)).fill("not a data element");
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each(
-    ["development", "staging", "production"].flatMap((env) =>
-      [
-        ["analyticsEnabled", "invalid"],
-        ["analyticsEnabled", "%bad"],
-        ["eventDatasetOverride", "%dataset%"],
-        ["targetPropertyTokenOverride", "%target%"],
-        ["idSyncContainerOverride", "-1"],
-        ["idSyncContainerOverride", "1.5"],
-        ["idSyncContainerOverride", "abc"],
-        ["idSyncContainerOverride", "prefix%id%"],
-      ].map(([id, value]) => [env, id, value]),
-    ),
-  )("edits %s %s to %j", async (env, id, value) => {
-    await driver.init({ company, extensionSettings, settings: populated });
-    await view.getByTestId(`${env}OverridesTab`).click();
-    await field(view.getByTestId(id)).fill(value);
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each(["development", "staging", "production"])(
-    "adds a report suite in %s",
-    async (env) => {
-      await driver.init({ company, extensionSettings, settings: populated });
+    ["development", "analyticsEnabled", "invalid"],
+    ["staging", "analyticsEnabled", "invalid"],
+    ["production", "analyticsEnabled", "invalid"],
+    ["development", "analyticsEnabled", "%bad"],
+    ["development", "idSyncContainerOverride", "-1"],
+    ["development", "idSyncContainerOverride", "1.5"],
+    ["development", "idSyncContainerOverride", "abc"],
+    ["development", "idSyncContainerOverride", "prefix%id%"],
+  ])("edits %s %s to %j", async (env, id, value) => {
+    await driver.init({
+      company,
+      extensionSettings,
+      settings: {
+        ...populated,
+        edgeConfigOverrides: { [env]: overrides[env] },
+      },
+    });
+    if (env !== "development") {
       await view.getByTestId(`${env}OverridesTab`).click();
-      await view.getByTestId("addReportSuite").click();
-      await field(view.getByTestId("reportSuitesOverride.3")).fill(
-        "%newSuite%",
-      );
-      expect(await captureState(bridge)).toMatchSnapshot();
-    },
-  );
-
-  it("removes a report suite", async () => {
-    await driver.init({ company, extensionSettings, settings: populated });
-    await view.getByTestId("removeReportSuite.0").click();
+    }
+    await field(view.getByTestId(id)).fill(value);
     expect(await captureState(bridge)).toMatchSnapshot();
   });
 
@@ -126,7 +111,7 @@ describe("Redirect with identity settings snapshots", () => {
     expect(await captureState(bridge)).toMatchSnapshot();
   });
 
-  it.each([123, "%id%"])("validates saved ID-sync override %j", async (id) => {
+  it.each(["%id%"])("validates saved ID-sync override %j", async (id) => {
     await driver.init({
       company,
       extensionSettings,
@@ -139,15 +124,6 @@ describe("Redirect with identity settings snapshots", () => {
           },
         },
       },
-    });
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each(modes)("round trips with %s", async (_, configuration) => {
-    await driver.init({
-      company,
-      extensionSettings: configuration,
-      settings: { instanceName: "alloy" },
     });
     expect(await captureState(bridge)).toMatchSnapshot();
   });

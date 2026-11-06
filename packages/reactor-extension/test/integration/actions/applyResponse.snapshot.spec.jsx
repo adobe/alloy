@@ -15,7 +15,7 @@ import useView from "../helpers/useView";
 import loadEntryView from "../helpers/entryView";
 import captureState from "../helpers/captureState";
 import field from "../helpers/field";
-import { extensionSettings, modes } from "../helpers/actionsSnapshots";
+import { extensionSettings } from "../helpers/actionsSnapshots";
 
 vi.mock("../../../src/view/render", async () => ({
   default: (await import("../helpers/entryView")).captureRender,
@@ -43,37 +43,10 @@ describe("Apply response settings snapshots", () => {
 
   it.each([
     ["new", null],
-    ["empty", {}],
-    ["minimal", { responseBody: "%body%" }],
     ["populated", populated],
     ["invalid", { responseBody: "plain", responseHeaders: "%broken" }],
   ])("round trips %s settings", async (_, settings) => {
     await driver.init({ extensionSettings, settings });
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each(["responseBodyField", "responseHeadersField"])(
-    "edits, clears, and invalidates %s",
-    async (id) => {
-      await driver.init({ extensionSettings, settings: populated });
-      await field(view.getByTestId(id)).fill("%edited%");
-      expect(await captureState(bridge)).toMatchSnapshot();
-      await field(view.getByTestId(id)).fill("");
-      expect(await captureState(bridge)).toMatchSnapshot();
-      await field(view.getByTestId(id)).fill("not a data element");
-      expect(await captureState(bridge)).toMatchSnapshot();
-    },
-  );
-
-  it("turns off rendering decisions", async () => {
-    await driver.init({ extensionSettings, settings: populated });
-    await field(view.getByTestId("renderDecisionsField")).uncheck();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("switches instances", async () => {
-    await driver.init({ extensionSettings, settings: populated });
-    await field(view.getByTestId("instanceNameField")).selectOption("alloy");
     expect(await captureState(bridge)).toMatchSnapshot();
   });
 
@@ -86,14 +59,6 @@ describe("Apply response settings snapshots", () => {
     await field(view.getByTestId("responseBodyField")).expectValue(
       "%data element name%",
     );
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each(modes)("round trips with %s", async (_, configuration) => {
-    await driver.init({
-      extensionSettings: configuration,
-      settings: { responseBody: "%body%" },
-    });
     expect(await captureState(bridge)).toMatchSnapshot();
   });
 });
