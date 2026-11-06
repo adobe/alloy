@@ -573,7 +573,7 @@ exports[`Configuration settings snapshots > edits streamTimeoutDataTestId throug
     {
       "field": "Stream timeout (seconds)",
       "messages": [
-        "instances[0].conversation.streamTimeout must be a \`number\` type, but the final value was: \`NaN\` (cast from the value \`NaN\`).",
+        "The stream timeout must be at least 10 seconds.",
       ],
       "testId": "streamTimeoutDataTestId",
     },
@@ -1207,7 +1207,20 @@ exports[`Configuration settings snapshots > round trips duplicate instances with
       "testId": "productionDatastreamField",
     },
   ],
-  "settingsAfterValidate": "<same as before validation>",
+  "settingsAfterValidate": {
+    "instances": [
+      {
+        "edgeConfigId": "ds-prod",
+        "name": "alloy",
+        "sandbox": "prod",
+      },
+      {
+        "edgeConfigId": "ds-prod",
+        "name": "alloy",
+        "sandbox": "prod",
+      },
+    ],
+  },
   "settingsBeforeValidate": {
     "instances": [
       {

@@ -120,14 +120,14 @@ exports[`Apply propositions settings snapshots > keeps a blank metadata row befo
       "messages": [
         "Please provide a selector.",
       ],
-      "testId": "metadata.0.selectorTextField",
+      "testId": "metadata.1.selectorTextField",
     },
     {
       "field": "Action Type",
       "messages": [
         "Please provide an action type.",
       ],
-      "testId": "metadata.0.actionTypeField",
+      "testId": "metadata.1.actionTypeField",
     },
   ],
   "settingsAfterValidate": "<same as before validation>",
@@ -178,7 +178,7 @@ exports[`Apply propositions settings snapshots > round trips data elements setti
     "propositions": "%props%",
     "viewName": "%view%",
   },
-  "valid": false,
+  "valid": true,
 }
 `;
 

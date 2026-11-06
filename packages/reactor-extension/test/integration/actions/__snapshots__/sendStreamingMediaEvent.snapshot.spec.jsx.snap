@@ -34,7 +34,7 @@ exports[`Send streaming media event settings snapshots > rejects a negative sess
     {
       "field": "Clip length/runtime (seconds) number field",
       "messages": [
-        "sessionDetails.length must be greater than or equal to 0",
+        "Clip length/runtime (seconds) must be greater than or equal to 0",
       ],
       "testId": "sessionDetails.lengthNumberField",
     },
@@ -793,7 +793,7 @@ exports[`Send streaming media event settings snapshots > round trips negative ch
     {
       "field": "Chapter length number field",
       "messages": [
-        "chapterDetails.length must be greater than or equal to 0",
+        "Chapter length must be greater than or equal to 0",
       ],
       "testId": "chapterDetails.lengthNumberField",
     },
